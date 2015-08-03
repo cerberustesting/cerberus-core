@@ -31,6 +31,9 @@ import org.cerberus.factory.impl.FactoryLogEvent;
 import org.cerberus.service.ILogEventService;
 import org.cerberus.service.IProjectService;
 import org.cerberus.service.impl.LogEventService;
+import org.cerberus.util.answer.Answer;
+import org.json.JSONException;
+import org.json.JSONObject;
 import org.springframework.context.ApplicationContext;
 import org.springframework.web.context.support.WebApplicationContextUtils;
 
@@ -41,9 +44,8 @@ import org.springframework.web.context.support.WebApplicationContextUtils;
 public class UpdateProject extends HttpServlet {
 
     /**
-     * Processes requests for both HTTP
-     * <code>GET</code> and
-     * <code>POST</code> methods.
+     * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
+     * methods.
      *
      * @param request servlet request
      * @param response servlet response
@@ -51,54 +53,46 @@ public class UpdateProject extends HttpServlet {
      * @throws IOException if an I/O error occurs
      */
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException, CerberusException {
-        String key = request.getParameter("id");
-        int columnPosition = Integer.parseInt(request.getParameter("columnPosition"));
-        String value = request.getParameter("value").replaceAll("'", "");
-
+            throws ServletException, IOException, CerberusException, JSONException {
+        Answer ans = new Answer();
+        JSONObject jsonResponse = new JSONObject();
+        String idProject = request.getParameter("idProject");
+        String code = request.getParameter("VCCode");
+        String description = request.getParameter("Description");
+        String active = request.getParameter("Active");
 
         ApplicationContext appContext = WebApplicationContextUtils.getWebApplicationContext(this.getServletContext());
         IProjectService projectService = appContext.getBean(IProjectService.class);
 
+        Project projectData = projectService.findProjectByKey(idProject);
+        projectData.setCode(code);
+        projectData.setDescription(description);
+        projectData.setActive(active);
 
-        Project projectData = projectService.findProjectByKey(key);
-
-        switch (columnPosition) {
-            case 0:
-                break;
-            case 1:
-                projectData.setCode(value);
-                break;
-            case 2:
-                projectData.setDescription(value);
-                break;
-            case 3:
-                projectData.setActive(value);
-                break;
-            case 4:
-                break;
-        }
-
-        projectService.updateProject(projectData);
+        ans = projectService.updateProject(projectData);
 
         /**
          * Adding Log entry.
          */
         ILogEventService logEventService = appContext.getBean(LogEventService.class);
         IFactoryLogEvent factoryLogEvent = appContext.getBean(FactoryLogEvent.class);
+
         try {
-            logEventService.insertLogEvent(factoryLogEvent.create(0, 0, request.getUserPrincipal().getName(), null, "/UpdateProject", "UPDATE", "Updated Project : ['" + key + "']", "", ""));
+            logEventService.insertLogEvent(factoryLogEvent.create(0, 0, request.getUserPrincipal().getName(), null, "/UpdateProject", "UPDATE", "Updated Project : ['" + idProject + "']", "", ""));
         } catch (CerberusException ex) {
             Logger.getLogger(UpdateProject.class.getName()).log(Level.SEVERE, null, ex);
         }
 
-        response.getWriter().print(value);
+        jsonResponse.put("messageType", ans.getResultMessage().getMessage().getCodeString());
+        jsonResponse.put("message", ans.getResultMessage().getDescription());
+        response.setContentType("application/json");
+        response.getWriter().print(jsonResponse);
+        response.getWriter().flush();
     }
 
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
     /**
-     * Handles the HTTP
-     * <code>GET</code> method.
+     * Handles the HTTP <code>GET</code> method.
      *
      * @param request servlet request
      * @param response servlet response
@@ -110,14 +104,17 @@ public class UpdateProject extends HttpServlet {
             throws ServletException, IOException {
         try {
             processRequest(request, response);
+
         } catch (CerberusException ex) {
+            Logger.getLogger(UpdateProject.class
+                    .getName()).log(Level.SEVERE, null, ex);
+        } catch (JSONException ex) {
             Logger.getLogger(UpdateProject.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
 
     /**
-     * Handles the HTTP
-     * <code>POST</code> method.
+     * Handles the HTTP <code>POST</code> method.
      *
      * @param request servlet request
      * @param response servlet response
@@ -129,7 +126,11 @@ public class UpdateProject extends HttpServlet {
             throws ServletException, IOException {
         try {
             processRequest(request, response);
+
         } catch (CerberusException ex) {
+            Logger.getLogger(UpdateProject.class
+                    .getName()).log(Level.SEVERE, null, ex);
+        } catch (JSONException ex) {
             Logger.getLogger(UpdateProject.class.getName()).log(Level.SEVERE, null, ex);
         }
     }

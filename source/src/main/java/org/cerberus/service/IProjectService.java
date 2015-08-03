@@ -22,6 +22,8 @@ package org.cerberus.service;
 import java.util.List;
 import org.cerberus.entity.Project;
 import org.cerberus.exception.CerberusException;
+import org.cerberus.util.answer.Answer;
+import org.cerberus.util.answer.AnswerItem;
 import org.cerberus.util.answer.AnswerList;
 
 /**
@@ -53,12 +55,14 @@ public interface IProjectService {
      */
     boolean isProjectExist(String project);
     
-    public void createProject(Project project) throws CerberusException;
+    public Answer createProject(Project project) throws CerberusException;
 
-    public void deleteProject(Project project) throws CerberusException;
+    public Answer deleteProject(Project project) throws CerberusException;
 
-    public void updateProject(Project project) throws CerberusException;
+    public Answer updateProject(Project project) throws CerberusException;
 
     public AnswerList findProjectListByCriteria(int startPosition, int length, String columnName, String sort, String searchParameter, String string);
+
+    public AnswerItem findProjectByString(String id);
 
 }

@@ -25,6 +25,8 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import org.cerberus.entity.MessageEvent;
+import org.cerberus.entity.MessageEventEnum;
 import org.cerberus.entity.Project;
 import org.cerberus.exception.CerberusException;
 import org.cerberus.factory.IFactoryLogEvent;
@@ -34,6 +36,10 @@ import org.cerberus.service.ILogEventService;
 import org.cerberus.service.IProjectService;
 import org.cerberus.service.impl.LogEventService;
 import org.cerberus.service.impl.UserService;
+import org.cerberus.util.answer.Answer;
+import org.cerberus.util.answer.AnswerItem;
+import org.json.JSONException;
+import org.json.JSONObject;
 import org.springframework.context.ApplicationContext;
 import org.springframework.web.context.support.WebApplicationContextUtils;
 
@@ -44,9 +50,8 @@ import org.springframework.web.context.support.WebApplicationContextUtils;
 public class DeleteProject extends HttpServlet {
 
     /**
-     * Processes requests for both HTTP
-     * <code>GET</code> and
-     * <code>POST</code> methods.
+     * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
+     * methods.
      *
      * @param request servlet request
      * @param response servlet response
@@ -54,9 +59,12 @@ public class DeleteProject extends HttpServlet {
      * @throws IOException if an I/O error occurs
      */
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException, CerberusException {
+            throws ServletException, IOException, CerberusException, JSONException {
         response.setContentType("text/html;charset=UTF-8");
-        PrintWriter out = response.getWriter();
+        JSONObject jsonResponse = new JSONObject();
+        Answer ans = null;
+        
+//        PrintWriter out = response.getWriter();
         try {
             String key = request.getParameter("id");
 
@@ -66,7 +74,7 @@ public class DeleteProject extends HttpServlet {
             IProjectService projectService = appContext.getBean(IProjectService.class);
 
             Project projectData = projectService.findProjectByKey(key);
-            projectService.deleteProject(projectData);
+            ans = projectService.deleteProject(projectData);
 
             /**
              * Adding Log entry.
@@ -78,17 +86,20 @@ public class DeleteProject extends HttpServlet {
             } catch (CerberusException ex) {
                 org.apache.log4j.Logger.getLogger(UserService.class.getName()).log(org.apache.log4j.Level.ERROR, null, ex);
             }
-
-
         } finally {
-            out.close();
+//            out.close();
         }
+        
+        jsonResponse.put("messageType", ans.getResultMessage().getMessage().getCodeString());
+        jsonResponse.put("message", ans.getResultMessage().getDescription());
+
+        response.setContentType("application/json");
+        response.getWriter().print(jsonResponse.toString());
     }
 
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
     /**
-     * Handles the HTTP
-     * <code>GET</code> method.
+     * Handles the HTTP <code>GET</code> method.
      *
      * @param request servlet request
      * @param response servlet response
@@ -102,12 +113,13 @@ public class DeleteProject extends HttpServlet {
             processRequest(request, response);
         } catch (CerberusException ex) {
             Logger.getLogger(DeleteProject.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (JSONException ex) {
+            Logger.getLogger(DeleteProject.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
 
     /**
-     * Handles the HTTP
-     * <code>POST</code> method.
+     * Handles the HTTP <code>POST</code> method.
      *
      * @param request servlet request
      * @param response servlet response
@@ -120,6 +132,8 @@ public class DeleteProject extends HttpServlet {
         try {
             processRequest(request, response);
         } catch (CerberusException ex) {
+            Logger.getLogger(DeleteProject.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (JSONException ex) {
             Logger.getLogger(DeleteProject.class.getName()).log(Level.SEVERE, null, ex);
         }
     }

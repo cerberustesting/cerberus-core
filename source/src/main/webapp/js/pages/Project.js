@@ -62,6 +62,7 @@ function deleteProjectHandlerClick() {
 }
 
 function deleteProject(idProject) {
+    clearResponseMessageMainPage();
     var messageComplete = "Do you want to delete " + idProject + " project ?";
     showModalConfirmation(deleteProjectHandlerClick, "Delete - Project", messageComplete, idProject);
 }

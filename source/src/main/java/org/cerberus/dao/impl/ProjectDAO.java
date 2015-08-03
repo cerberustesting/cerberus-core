@@ -35,6 +35,8 @@ import org.cerberus.entity.Project;
 import org.cerberus.exception.CerberusException;
 import org.cerberus.factory.IFactoryProject;
 import org.cerberus.log.MyLogger;
+import org.cerberus.util.answer.Answer;
+import org.cerberus.util.answer.AnswerItem;
 import org.cerberus.util.answer.AnswerList;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
@@ -49,6 +51,8 @@ public class ProjectDAO implements IProjectDAO {
     private DatabaseSpring databaseSpring;
     @Autowired
     private IFactoryProject factoryProject;
+
+    private final String SQL_DUPLICATED_CODE = "23000";
 
     @Override
     public Project findProjectByKey(String project) {
@@ -148,8 +152,9 @@ public class ProjectDAO implements IProjectDAO {
     }
 
     @Override
-    public void createProject(Project project) throws CerberusException {
+    public Answer createProject(Project project) throws CerberusException {
         boolean throwExcep = false;
+        MessageEvent msg = null;
         StringBuilder query = new StringBuilder();
         query.append("INSERT INTO project (`idproject`, `VCCode`, `Description`, `active` ) ");
         query.append("VALUES (?,?,?,?)");
@@ -165,14 +170,26 @@ public class ProjectDAO implements IProjectDAO {
 
                 preStat.executeUpdate();
                 throwExcep = false;
+                msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
+                msg.setDescription(msg.getDescription().replace("%ITEM%", "Project").replace("%OPERATION%", "INSERT"));
 
             } catch (SQLException exception) {
                 MyLogger.log(ProjectDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
+
+                if (exception.getSQLState().equals(SQL_DUPLICATED_CODE)) { //23000 is the sql state for duplicate entries
+                    msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_DUPLICATE_ERROR);
+                    msg.setDescription(msg.getDescription().replace("%ITEM%", "Project").replace("%OPERATION%", "INSERT"));
+                } else {
+                    msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_UNEXPECTED_ERROR);
+                    msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", "Unable to create data!"));
+                }
             } finally {
                 preStat.close();
             }
         } catch (SQLException exception) {
             MyLogger.log(ProjectDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
+            msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_UNEXPECTED_ERROR);
+            msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", "Unable to execute query - INSERT Project"));
         } finally {
             try {
                 if (connection != null) {
@@ -185,11 +202,13 @@ public class ProjectDAO implements IProjectDAO {
         if (throwExcep) {
             throw new CerberusException(new MessageGeneral(MessageGeneralEnum.CANNOT_UPDATE_TABLE));
         }
+        return new Answer(msg);
     }
 
     @Override
-    public void deleteProject(Project project) throws CerberusException {
+    public Answer deleteProject(Project project) throws CerberusException {
         boolean throwExcep = false;
+        MessageEvent msg = null;
         final String query = "DELETE FROM project WHERE idproject = ? ";
 
         Connection connection = this.databaseSpring.connect();
@@ -199,13 +218,19 @@ public class ProjectDAO implements IProjectDAO {
                 preStat.setString(1, project.getIdProject());
 
                 throwExcep = preStat.executeUpdate() == 0;
+                msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
+                msg.setDescription(msg.getDescription().replace("%ITEM%", "Project").replace("%OPERATION%", "DELETE"));
             } catch (SQLException exception) {
                 MyLogger.log(ProjectDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
+                msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_UNEXPECTED_ERROR);
+                msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", "Unable to delete data!"));
             } finally {
                 preStat.close();
             }
         } catch (SQLException exception) {
             MyLogger.log(ProjectDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
+            msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_UNEXPECTED_ERROR);
+            msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", "Unable to execute query - DELETE Project"));
         } finally {
             try {
                 if (connection != null) {
@@ -218,11 +243,13 @@ public class ProjectDAO implements IProjectDAO {
         if (throwExcep) {
             throw new CerberusException(new MessageGeneral(MessageGeneralEnum.CANNOT_UPDATE_TABLE));
         }
+        return new Answer(msg);
     }
 
     @Override
-    public void updateProject(Project project) throws CerberusException {
+    public Answer updateProject(Project project) throws CerberusException {
         boolean throwExcep = false;
+        MessageEvent msg = null;
         final String query = "UPDATE project SET VCCode = ?, Description = ?, active = ?  WHERE idproject = ? ";
 
         Connection connection = this.databaseSpring.connect();
@@ -235,13 +262,19 @@ public class ProjectDAO implements IProjectDAO {
                 preStat.setString(4, project.getIdProject());
 
                 throwExcep = preStat.executeUpdate() == 0;
+                msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
+                msg.setDescription(msg.getDescription().replace("%ITEM%", "Project").replace("%OPERATION%", "UPDATE"));
             } catch (SQLException exception) {
                 MyLogger.log(ProjectDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
+                msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_UNEXPECTED_ERROR);
+                msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", "Unable to update data!"));
             } finally {
                 preStat.close();
             }
         } catch (SQLException exception) {
             MyLogger.log(ProjectDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
+            msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_UNEXPECTED_ERROR);
+            msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", "Unable to execute query - DELETE Project"));
         } finally {
             try {
                 if (connection != null) {
@@ -254,6 +287,7 @@ public class ProjectDAO implements IProjectDAO {
         if (throwExcep) {
             throw new CerberusException(new MessageGeneral(MessageGeneralEnum.CANNOT_UPDATE_TABLE));
         }
+        return new Answer(msg);
     }
 
     @Override
@@ -329,7 +363,7 @@ public class ProjectDAO implements IProjectDAO {
                     response = new AnswerList(projectList, nrTotalRows);
 
                 } catch (SQLException exception) {
-                    MyLogger.log(TestDataLibDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
+                    MyLogger.log(ProjectDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
                     msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_UNEXPECTED_ERROR);
                     msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", "Unable to retrieve the list of entries!"));
 
@@ -367,6 +401,71 @@ public class ProjectDAO implements IProjectDAO {
         response.setResultMessage(msg);
         response.setDataList(projectList);
         return response;
+    }
+
+    /**
+     *
+     * @param project - idProject
+     * @return ans - AnswerIterm
+     */
+    public AnswerItem findProjectByString(String project) {
+        AnswerItem ans = new AnswerItem();
+        Project result = null;
+        String idProject;
+        String vcCode;
+        String description;
+        final String query = "SELECT * FROM project WHERE idproject = ?";
+        MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
+
+        Connection connection = this.databaseSpring.connect();
+        try {
+            PreparedStatement preStat = connection.prepareStatement(query);
+            try {
+                preStat.setString(1, project);
+                ResultSet resultSet = preStat.executeQuery();
+                try {
+                    if (resultSet.first()) {
+                        idProject = resultSet.getString("idproject") == null ? "" : resultSet.getString("idproject");
+                        vcCode = resultSet.getString("VCCode") == null ? "" : resultSet.getString("VCCode");
+                        description = resultSet.getString("Description") == null ? "" : resultSet.getString("Description");
+                        String active = resultSet.getString("active") == null ? "" : resultSet.getString("active");
+                        String dateCreation = resultSet.getString("dateCre") == null ? "" : resultSet.getString("dateCre");
+                        result = factoryProject.create(idProject, vcCode, description, active, dateCreation);
+                        msg.setDescription(msg.getDescription().replace("%ITEM%", "Project Lib").replace("%DESCRIPTION%", "SELECT"));
+
+                        ans.setItem(result);
+                    }
+                } catch (SQLException exception) {
+                    MyLogger.log(ProjectDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
+                    msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_UNEXPECTED_ERROR);
+                    msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", "Unable to execute query"));
+                } finally {
+                    resultSet.close();
+                }
+            } catch (SQLException exception) {
+                MyLogger.log(ProjectDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
+                msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_UNEXPECTED_ERROR);
+                msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", "Unable to execute query"));
+            } finally {
+                preStat.close();
+            }
+        } catch (SQLException exception) {
+            MyLogger.log(ProjectDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
+            msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_UNEXPECTED_ERROR);
+            msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", "Unable to execute query"));
+        } finally {
+            try {
+                if (connection != null) {
+                    connection.close();
+                }
+            } catch (SQLException e) {
+                MyLogger.log(ProjectDAO.class.getName(), Level.WARN, e.toString());
+            }
+        }
+
+        //sets the message
+        ans.setResultMessage(msg);
+        return ans;
     }
 
     private Project loadProjectFromResultSet(ResultSet resultSet) throws SQLException {
