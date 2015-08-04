@@ -81,7 +81,7 @@ public class GetLogEvent extends HttpServlet {
         }
         if (!StringUtil.isNullOrEmpty(sAmount)) {
             amount = Integer.parseInt(sAmount);
-            if (amount < 10 || amount > 100) {
+            if (amount < 5 || amount > 10000) {
                 amount = 10;
             }
         }
