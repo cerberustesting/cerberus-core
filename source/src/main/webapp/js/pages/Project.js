@@ -29,6 +29,8 @@ $.when($.getScript("js/pages/global.js")).then(function () {
         $('#addProjectModal').on('hidden.bs.modal', addProjectModalCloseHandler);
         $('#editProjectModal').on('hidden.bs.modal', editProjectModalCloseHandler);
 
+        initColumnsName();
+
         //configure and create the dataTable
         var configurations = new TableConfigurationsServerSide("projectsTable", "ReadProject", "contentTable", aoColumnsFunc());
 
@@ -184,6 +186,19 @@ function renderOptionsForProject(data) {
             $('#project #createProjectButton').click(CreateProjectClick);
         }
     }
+}
+
+function initColumnsName() {
+    $("#projectsTable th").each(function (i, elem) {
+        if (i === 0) {
+            return;
+        } else {
+            var jqxhr = $.get("DocumentationField", "docTable=project&docField=" + elem.id);
+            $.when(jqxhr).then(function (data) {
+                elem.innerHTML = data;
+            });
+        }
+    });
 }
 
 function aoColumnsFunc() {
