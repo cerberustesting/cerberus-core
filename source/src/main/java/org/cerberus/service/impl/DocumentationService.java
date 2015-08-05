@@ -79,7 +79,12 @@ public class DocumentationService implements IDocumentationService {
                 label.append(docTable);
                 label.append("&DocField=");
                 label.append(docField);
-                label.append("\")\'>?</a>");
+                // need for a function in the header of dataTables so the table doesn't sort when we click on '?' anchor
+                if (defaultLabel.equals("table")) {
+                    label.append("\")\' onclick=\"stopPropagation(event)\">?</a>");
+                } else {
+                    label.append("\")\'>?</a>");
+                }
             }
         }
         result = label.toString();

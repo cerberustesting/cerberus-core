@@ -549,6 +549,20 @@ function createDataTable(tableConfigurations){
     
 }
 
+/**
+ * This function is used to stop the propagtion of the click on the "?" anchor present on dataTables header so when we click on it, the sorting of the column doesn't change.
+ * It should be called directly in the <a> tag with the onclick attribute
+ * @param {type} event
+ * @returns {undefined}
+ */
+
+function stopPropagation(event) {
+    if (event.stopPropagation !== undefined) {
+        event.stopPropagation();
+    } else {
+        event.cancelBubble = true;
+    }
+}
     
 /**
  * Plugin used to delay the search filter; the purpose is to minimise the number of requests made to the server. Source: //cdn.datatables.net/plug-ins/1.10.7/api/fnSetFilteringDelay.js

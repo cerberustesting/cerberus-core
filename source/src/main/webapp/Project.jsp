@@ -47,12 +47,12 @@
                 <table id="projectsTable" class="table table-hover display responsive nowrap" name="projectsTable">
                     <thead>
                         <tr>
-                            <th>Actions</th>
-                            <th>Project</th>
-                            <th>Code</th>
-                            <th>Description</th>
-                            <th>Active</th>
-                            <th>Created</th>
+                            <th id="action">Actions</th>
+                            <th id="idproject">Project</th>
+                            <th id="code">Code</th>
+                            <th id="description">Description</th>
+                            <th id="active">Active</th>
+                            <th id="dateCreation">Created</th>
                         </tr>
                     </thead>
                 </table>
