@@ -70,6 +70,8 @@
         <%@ include file="include/header.jsp"%>
         <%
             IDocumentationService docService = appContext.getBean(IDocumentationService.class);
+            String myLang = request.getAttribute("MyLang").toString();
+
         %>
         <p class="dttTitle">Environments Per Country</p>
         <div style="width: 100%; font: 90% sans-serif">
@@ -77,20 +79,20 @@
                 <thead>
                     <tr>
                         <th>id</th>
-                        <th><%=docService.findLabel("Invariant", "Country", "")%></th>
-                        <th><%=docService.findLabel("Invariant", "Environment", "")%></th>
-                        <th><%=docService.findLabel("buildrevisioninvariant", "versionname01", "")%></th>
-                        <th><%=docService.findLabel("buildrevisioninvariant", "versionname02", "")%></th>
-                        <th><%=docService.findLabel("countryenvparam", "Chain", "")%></th>
-                        <th><%=docService.findLabel("countryenvparam", "DistribList", "")%></th>
-                        <th><%=docService.findLabel("countryenvparam", "EmailBodyRevision", "")%></th>
-                        <th><%=docService.findLabel("countryenvparam", "Type", "")%></th>
-                        <th><%=docService.findLabel("countryenvparam", "EmailBodyChain", "")%></th>
-                        <th><%=docService.findLabel("countryenvparam", "EmailBodyDisableEnvironment", "")%></th>
-                        <th><%=docService.findLabel("countryenvparam", "Active", "")%></th>
-                        <th><%=docService.findLabel("countryenvparam", "MaintenanceAct", "")%></th>
-                        <th><%=docService.findLabel("countryenvparam", "MaintenanceStr", "")%></th>
-                        <th><%=docService.findLabel("countryenvparam", "MaintenanceEnd", "")%></th>
+                        <th><%=docService.findLabel("Invariant", "Country", "", myLang)%></th>
+                        <th><%=docService.findLabel("Invariant", "Environment", "", myLang)%></th>
+                        <th><%=docService.findLabel("buildrevisioninvariant", "versionname01", "", myLang)%></th>
+                        <th><%=docService.findLabel("buildrevisioninvariant", "versionname02", "", myLang)%></th>
+                        <th><%=docService.findLabel("countryenvparam", "Chain", "", myLang)%></th>
+                        <th><%=docService.findLabel("countryenvparam", "DistribList", "", myLang)%></th>
+                        <th><%=docService.findLabel("countryenvparam", "EmailBodyRevision", "", myLang)%></th>
+                        <th><%=docService.findLabel("countryenvparam", "Type", "", myLang)%></th>
+                        <th><%=docService.findLabel("countryenvparam", "EmailBodyChain", "", myLang)%></th>
+                        <th><%=docService.findLabel("countryenvparam", "EmailBodyDisableEnvironment", "", myLang)%></th>
+                        <th><%=docService.findLabel("countryenvparam", "Active", "", myLang)%></th>
+                        <th><%=docService.findLabel("countryenvparam", "MaintenanceAct", "", myLang)%></th>
+                        <th><%=docService.findLabel("countryenvparam", "MaintenanceStr", "", myLang)%></th>
+                        <th><%=docService.findLabel("countryenvparam", "MaintenanceEnd", "", myLang)%></th>
                     </tr>
                 </thead>
                 <tbody>
@@ -122,14 +124,14 @@
             <table  class="display" id="countryEnvironmentApplicationTable" name="countryEnvironmentApplicationTable">
                 <thead>
                     <tr>
-                        <th><%=docService.findLabel("Application", "System", "")%></th>
-                        <th><%=docService.findLabel("Application", "Country", "")%></th>
-                        <th><%=docService.findLabel("Application", "Environment", "")%></th>
-                        <th><%=docService.findLabel("Application", "Application", "")%></th>
-                        <th><%=docService.findLabel("countryenvironmentparameters", "Ip", "")%></th>
-                        <th><%=docService.findLabel("countryenvironmentparameters", "Domain", "")%></th>
-                        <th><%=docService.findLabel("countryenvironmentparameters", "Url", "")%></th>
-                        <th><%=docService.findLabel("countryenvironmentparameters", "UrlLogin", "")%></th>
+                        <th><%=docService.findLabel("Application", "System", "", myLang)%></th>
+                        <th><%=docService.findLabel("Application", "Country", "", myLang)%></th>
+                        <th><%=docService.findLabel("Application", "Environment", "", myLang)%></th>
+                        <th><%=docService.findLabel("Application", "Application", "", myLang)%></th>
+                        <th><%=docService.findLabel("countryenvironmentparameters", "Ip", "", myLang)%></th>
+                        <th><%=docService.findLabel("countryenvironmentparameters", "Domain", "", myLang)%></th>
+                        <th><%=docService.findLabel("countryenvironmentparameters", "Url", "", myLang)%></th>
+                        <th><%=docService.findLabel("countryenvironmentparameters", "UrlLogin", "", myLang)%></th>
                     </tr>
                 </thead>
                 <tbody>
@@ -154,8 +156,8 @@
                 <thead>
                     <tr>
                         <th>id</th>
-                        <th><%=docService.findLabel("Invariant", "Country", "")%></th>
-                        <th><%=docService.findLabel("Invariant", "Environment", "")%></th>
+                        <th><%=docService.findLabel("Invariant", "Country", "", myLang)%></th>
+                        <th><%=docService.findLabel("Invariant", "Environment", "", myLang)%></th>
                         <th>Database</th>
                         <th>ConnectionPoolName</th>
                     </tr>
@@ -517,50 +519,50 @@
             });
         </script>
         <form id="formAddNewCountryEnvParam" class="formForDataTable" action="#" title="Add Country Environment Entry" style="width:600px" method="post">
-            <label for="System" rel="0" style="font-weight:bold"><%=docService.findLabelHTML("Application", "System", "")%></label>
+            <label for="System" rel="0" style="font-weight:bold"><%=docService.findLabelHTML("Application", "System", "", myLang)%></label>
             <%=ComboInvariantAjax(appContext, "System", "", "System", "0", "SYSTEM", "", "", false)%>
-            <label for="Country" rel="1" style="font-weight:bold"><%=docService.findLabelHTML("Invariant", "Country", "")%></label>
+            <label for="Country" rel="1" style="font-weight:bold"><%=docService.findLabelHTML("Invariant", "Country", "", myLang)%></label>
             <%=ComboInvariantAjax(appContext, "Country", "", "Country", "1", "COUNTRY", "", "", false)%>
-            <label for="Environment" rel="2" style="font-weight:bold"><%=docService.findLabelHTML("Invariant", "Environment", "")%></label>
+            <label for="Environment" rel="2" style="font-weight:bold"><%=docService.findLabelHTML("Invariant", "Environment", "", myLang)%></label>
             <%=ComboInvariantAjax(appContext, "Environment", "", "Environment", "2", "ENVIRONMENT", "", "", false)%>
             <br><br>
-            <label for="Build" style="font-weight:bold"><%=docService.findLabelHTML("buildrevisioninvariant", "versionname01", "")%></label>
+            <label for="Build" style="font-weight:bold"><%=docService.findLabelHTML("buildrevisioninvariant", "versionname01", "", myLang)%></label>
             <input id="Build" name="Build" style="width:200px;" 
                    class="ncdetailstext" rel="4" >
-            <label for="Revision" style="font-weight:bold"><%=docService.findLabelHTML("buildrevisioninvariant", "versionname02", "")%></label>
+            <label for="Revision" style="font-weight:bold"><%=docService.findLabelHTML("buildrevisioninvariant", "versionname02", "", myLang)%></label>
             <input id="Revision" name="Revision" style="width:200px;" 
                    class="ncdetailstext" rel="3" >
             <br><br>
-            <label for="Chain" style="font-weight:bold"><%=docService.findLabelHTML("countryenvparam", "Chain", "")%></label>
+            <label for="Chain" style="font-weight:bold"><%=docService.findLabelHTML("countryenvparam", "Chain", "", myLang)%></label>
             <input id="Chain" name="Chain" style="width:100px;" 
                    class="ncdetailstext" rel="7" >
-            <label for="Type" style="font-weight:bold"><%=docService.findLabelHTML("countryenvparam", "Type", "")%></label>
+            <label for="Type" style="font-weight:bold"><%=docService.findLabelHTML("countryenvparam", "Type", "", myLang)%></label>
             <%=ComboInvariantAjax(appContext, "Type", "", "Type", "6", "ENVTYPE", "", "", false)%>
             <br><br>
-            <label for="DistribList" style="font-weight:bold"><%=docService.findLabelHTML("countryenvparam", "DistribList", "")%></label>
+            <label for="DistribList" style="font-weight:bold"><%=docService.findLabelHTML("countryenvparam", "DistribList", "", myLang)%></label>
             <input id="DistribList" name="DistribList" style="width:500px;" 
                    class="ncdetailstext" rel="5" >
             <br><br>
-            <label for="EmailBodyRevision" style="font-weight:bold"><%=docService.findLabelHTML("countryenvparam", "EmailBodyRevision", "")%></label>
+            <label for="EmailBodyRevision" style="font-weight:bold"><%=docService.findLabelHTML("countryenvparam", "EmailBodyRevision", "", myLang)%></label>
             <input id="EmailBodyRevision" name="EmailBodyRevision" style="width:600px;" 
                    class="ncdetailstext" rel="14" >
             <br><br>
-            <label for="EmailBodyChain" style="font-weight:bold"><%=docService.findLabelHTML("countryenvparam", "EmailBodyChain", "")%></label>
+            <label for="EmailBodyChain" style="font-weight:bold"><%=docService.findLabelHTML("countryenvparam", "EmailBodyChain", "", myLang)%></label>
             <input id="EmailBodyChain" name="EmailBodyChain" style="width:500px;" 
                    class="ncdetailstext" rel="8" >
             <br><br>
-            <label for="EmailBodyDisableEnvironment" style="font-weight:bold"><%=docService.findLabelHTML("countryenvparam", "EmailBodyDisableEnvironment", "")%></label>
+            <label for="EmailBodyDisableEnvironment" style="font-weight:bold"><%=docService.findLabelHTML("countryenvparam", "EmailBodyDisableEnvironment", "", myLang)%></label>
             <input id="EmailBodyDisableEnvironment" name="EmailBodyDisableEnvironment" style="width:500px;" 
                    class="ncdetailstext" rel="9" >
             <br><br>
-            <label for="Active" style="font-weight:bold"><%=docService.findLabelHTML("countryenvparam", "Active", "")%></label>
+            <label for="Active" style="font-weight:bold"><%=docService.findLabelHTML("countryenvparam", "Active", "", myLang)%></label>
             <%=ComboInvariantAjax(appContext, "Active", "", "Active", "10", "TCACTIVE", "", "", false)%>
-            <br><br> <label for="MaintenanceAct" style="font-weight:bold"><%=docService.findLabelHTML("countryenvparam", "MaintenanceAct", "")%></label>
+            <br><br> <label for="MaintenanceAct" style="font-weight:bold"><%=docService.findLabelHTML("countryenvparam", "MaintenanceAct", "", myLang)%></label>
             <%=ComboInvariantAjax(appContext, "MaintenanceAct", "", "MaintenanceAct", "11", "TCACTIVE", "", "", false)%>
-            <label for="MaintenanceStr" style="font-weight:bold"><%=docService.findLabelHTML("countryenvparam", "MaintenanceStr", "")%></label>
+            <label for="MaintenanceStr" style="font-weight:bold"><%=docService.findLabelHTML("countryenvparam", "MaintenanceStr", "", myLang)%></label>
             <input id="MaintenanceStr" name="MaintenanceStr" style="width:50px;" 
                    class="ncdetailstext" rel="12" >
-            <label for="MaintenanceEnd" style="font-weight:bold"><%=docService.findLabelHTML("countryenvparam", "MaintenanceEnd", "")%></label>
+            <label for="MaintenanceEnd" style="font-weight:bold"><%=docService.findLabelHTML("countryenvparam", "MaintenanceEnd", "", myLang)%></label>
             <input id="MaintenanceEnd" name="MaintenanceEnd" style="width:50px;" 
                    class="ncdetailstext" rel="13" >
             <br><br>
@@ -568,36 +570,36 @@
             <button id="btnAddNewCountryEnvParamCancel">Cancel</button>
         </form>
         <form id="formAddNewCountryEnvironmentParameter" class="formForDataTable" title="Add Content Entry" style="width:900px; height:600px" method="post">
-            <label for="AddNewCountryEnvironmentParameterSystem" style="font-weight:bold"><%=docService.findLabelHTML("Application", "System", "")%></label>
+            <label for="AddNewCountryEnvironmentParameterSystem" style="font-weight:bold"><%=docService.findLabelHTML("Application", "System", "", myLang)%></label>
             <input id="AddNewCountryEnvironmentParameterSystem" name="System" style="width:150px;" 
                    class="ncdetailstext" rel="0" readonly>
-            <label for="AddNewCountryEnvironmentParameterCountry" style="font-weight:bold"><%=docService.findLabelHTML("Invariant", "Country", "")%></label>
+            <label for="AddNewCountryEnvironmentParameterCountry" style="font-weight:bold"><%=docService.findLabelHTML("Invariant", "Country", "", myLang)%></label>
             <input id="AddNewCountryEnvironmentParameterCountry" name="Country" style="width:150px;" 
                    class="System" rel="1" value="<%=request.getAttribute("Country")%>" readonly>
-            <label for="AddNewCountryEnvironmentParameterEnvironment" style="font-weight:bold"><%=docService.findLabelHTML("Invariant", "Environment", "")%></label>
+            <label for="AddNewCountryEnvironmentParameterEnvironment" style="font-weight:bold"><%=docService.findLabelHTML("Invariant", "Environment", "", myLang)%></label>
             <input id="AddNewCountryEnvironmentParameterEnvironment" name="Environment" style="width:100px;" 
                    class="ncdetailstext" rel="2" readonly>
             <br>
             <br>
             <br>
             <br>
-            <label for="Application" style="font-weight:bold"><%=docService.findLabelHTML("Application", "Application", "")%></label>
+            <label for="Application" style="font-weight:bold"><%=docService.findLabelHTML("Application", "Application", "", myLang)%></label>
             <input id="Application" name="Application" style="width:400px;" 
                    class="ncdetailstext" rel="3" >
             <br><br>
-            <label for="IP" style="font-weight:bold"><%=docService.findLabelHTML("countryenvironmentparameters", "IP", "")%></label>
+            <label for="IP" style="font-weight:bold"><%=docService.findLabelHTML("countryenvironmentparameters", "IP", "", myLang)%></label>
             <input id="IP" name="IP" style="width:100px;" 
                    class="ncdetailstext" rel="4" >
             <br><br>
-            <label for="Domain" style="font-weight:bold"><%=docService.findLabelHTML("countryenvironmentparameters", "domain", "")%></label>
+            <label for="Domain" style="font-weight:bold"><%=docService.findLabelHTML("countryenvironmentparameters", "domain", "", myLang)%></label>
             <input id="domain" name="domain" style="width:100px;" 
                    class="ncdetailstext" rel="5" >
             <br><br>
-            <label for="Url" style="font-weight:bold"><%=docService.findLabelHTML("countryenvironmentparameters", "url", "")%></label>
+            <label for="Url" style="font-weight:bold"><%=docService.findLabelHTML("countryenvironmentparameters", "url", "", myLang)%></label>
             <input id="Url" name="Url" style="width:400px;" 
                    class="ncdetailstext" rel="6" >
             <br><br>
-            <label for="UrlLogin" style="font-weight:bold"><%=docService.findLabelHTML("countryenvironmentparameters", "urllogin", "")%></label>
+            <label for="UrlLogin" style="font-weight:bold"><%=docService.findLabelHTML("countryenvironmentparameters", "urllogin", "", myLang)%></label>
             <input id="UrlLogin" name="UrlLogin" style="width:600px;" 
                    class="ncdetailstext" rel="7" >
             <br><br>
@@ -605,17 +607,17 @@
             <button id="btnAddNewCountryEnvironmentParameterCancel">Cancel</button>
         </form>
             <form id="formAddNewCountryEnvironmentDatabase" class="formForDataTable" action="#" title="Add Connection Pool" style="width:600px" method="post">
-                <label for="System" rel="0" style="font-weight:bold"><%=docService.findLabelHTML("Application", "System", "")%></label>
+                <label for="System" rel="0" style="font-weight:bold"><%=docService.findLabelHTML("Application", "System", "", myLang)%></label>
                 <%=ComboInvariantAjax(appContext, "System", "", "System", "0", "SYSTEM", "", "", false)%>
-                <label for="Country" rel="1" style="font-weight:bold"><%=docService.findLabelHTML("Invariant", "Country", "")%></label>
+                <label for="Country" rel="1" style="font-weight:bold"><%=docService.findLabelHTML("Invariant", "Country", "", myLang)%></label>
                 <%=ComboInvariantAjax(appContext, "Country", "", "Country", "1", "COUNTRY", "", "", false)%>
-                <label for="Environment" rel="2" style="font-weight:bold"><%=docService.findLabelHTML("Invariant", "Environment", "")%></label>
+                <label for="Environment" rel="2" style="font-weight:bold"><%=docService.findLabelHTML("Invariant", "Environment", "", myLang)%></label>
                 <%=ComboInvariantAjax(appContext, "Environment", "", "Environment", "2", "ENVIRONMENT", "", "", false)%>
                 <br><br>
-                <label for="Database" style="font-weight:bold"><%=docService.findLabelHTML("buildrevisioninvariant", "Database", "")%></label>
+                <label for="Database" style="font-weight:bold"><%=docService.findLabelHTML("buildrevisioninvariant", "Database", "", myLang)%></label>
                 <input id="Database" name="Database" style="width:200px;" 
                        class="ncdetailstext" rel="3" >
-                <label for="ConnectionPoolName" style="font-weight:bold"><%=docService.findLabelHTML("buildrevisioninvariant", "ConnectionPoolName", "")%></label>
+                <label for="ConnectionPoolName" style="font-weight:bold"><%=docService.findLabelHTML("buildrevisioninvariant", "ConnectionPoolName", "", myLang)%></label>
                 <input id="ConnectionPoolName" name="ConnectionPoolName" style="width:200px;" 
                        class="ncdetailstext" rel="4" >
                 <br><br>

@@ -51,6 +51,7 @@
 
                     Connection conn = db.connect();
                     IDocumentationService docService = appContext.getBean(IDocumentationService.class);
+                    String myLang = request.getAttribute("MyLang").toString();
 
                     try {
 
@@ -265,17 +266,17 @@
                             <!--         <form method="post" name="ToolParameters" action="ToolParameters" >-->
                             <table border="0px">
                                 <tr>                                         
-                                    <td id="wob" style="font-weight: bold; width: 150px"><% out.print(docService.findLabelHTML("page_runtests", "SeleniumServerIP", "Selenium Server IP "));%></td>
+                                    <td id="wob" style="font-weight: bold; width: 150px"><% out.print(docService.findLabelHTML("page_runtests", "SeleniumServerIP", "Selenium Server IP", myLang));%></td>
                                     <td id="wob"><input type="text" name="ss_ip" value="<%= ssIP%>" />
                                     </td>
                                 </tr>
                                 <tr>
-                                    <td id="wob" style="font-weight: bold; width: 150px"><% out.print(docService.findLabelHTML("page_runtests", "SeleniumServerPort", "Selenium Server Port "));%></td>
+                                    <td id="wob" style="font-weight: bold; width: 150px"><% out.print(docService.findLabelHTML("page_runtests", "SeleniumServerPort", "Selenium Server Port", myLang));%></td>
                                     <td id="wob"><input type="text" name="ss_p" value="<%= ssPort%>" />
                                     </td>
                                 </tr>
                                 <tr>
-                                    <td id="wob" style="font-weight: bold; width: 150px"><% out.print(docService.findLabelHTML("page_runtests", "Browser", "Browser"));%></td>
+                                    <td id="wob" style="font-weight: bold; width: 150px"><% out.print(docService.findLabelHTML("page_runtests", "Browser", "Browser", myLang));%></td>
                                     <td id="wob"><input type="text" name="browser" value="<%= browser%>"
                                                         style="width: 450px" />
                                     </td>
@@ -313,7 +314,7 @@
                             <!--         <form method="post" name="Tests" action="Tests" >-->
                             <table border="0px">
                                 <tr>
-                                    <td COLSPAN=3 id="wob" style="font-weight: bold; width: 100px"><% out.print(docService.findLabelHTML("testcase", "TestCase", "Test Case"));%></td>
+                                    <td COLSPAN=3 id="wob" style="font-weight: bold; width: 100px"><% out.print(docService.findLabelHTML("testcase", "TestCase", "Test Case", myLang));%></td>
 
 
                                     <%/*

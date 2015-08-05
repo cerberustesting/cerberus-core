@@ -497,7 +497,7 @@
                 ];
 
                 $.each(docData, function(key, value) {
-                    $.get("DocumentationField", {docTable: value.dTable, docField: value.dField, docLabel: value.dLabel}, function(doc) {
+                    $.get("DocumentationField", {docTable: value.dTable, docField: value.dField, docLabel: value.dLabel, lang: "en"}, function(doc) {
                         $("label[for='" + value.label + "']").html(doc);
                     });
                 });

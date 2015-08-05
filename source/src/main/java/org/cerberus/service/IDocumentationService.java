@@ -27,17 +27,17 @@ import org.cerberus.entity.Documentation;
  */
 public interface IDocumentationService {
 
-    String findLabel(String docTable, String docField, String defaultLabel);
+    String findLabel(String docTable, String docField, String defaultLabel, String lang);
     
-    String findLabelHTML(String docTable, String docField, String defaultLabel);
+    String findLabelHTML(String docTable, String docField, String defaultLabel, String lang);
 
-    List<Documentation> findDocumentationsWithNotEmptyValueAndDescription(String docTable, String docField);
+    List<Documentation> findDocumentationsWithNotEmptyValueAndDescription(String docTable, String docField, String lang);
 
-    List<Documentation> findDocumentationsWithEmptyValueAndNotEmptyDescription(String docTable, String docField);
+    List<Documentation> findDocumentationsWithEmptyValueAndNotEmptyDescription(String docTable, String docField, String lang);
 
-    String findLabelFromTableAndField(String docTable, String docField);
+    String findLabelFromTableAndField(String docTable, String docField, String lang);
 
-    String findDescriptionFromTableFieldAndValue(String docTable, String docField, String docValue);
+    String findDescriptionFromTableFieldAndValue(String docTable, String docField, String docValue, String lang);
 
     List<Documentation> findAll();
 }

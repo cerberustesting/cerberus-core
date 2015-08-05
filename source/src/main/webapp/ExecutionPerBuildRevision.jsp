@@ -58,6 +58,8 @@
             <select name="Sprint" onchange="document.sprintForm.submit()">
                 <option value="">Choose Sprint</option>
                 <%
+                String myLang = request.getAttribute("MyLang").toString();
+                        
                 IUserService myUserService = appContext.getBean(IUserService.class);
                 User MyUserobj = myUserService.findUserByKeyWithDependencies(request.getUserPrincipal().getName());
                 
@@ -77,17 +79,17 @@
         %>
 
         <%
-            String title1 = docService.findLabelHTML("page_exeperbuildrevision", "RegressionExecutionStatus", "");
-            String build = docService.findLabelHTML("testcaseexecution", "Build", "Build");
-            String revision = docService.findLabelHTML("testcaseexecution", "Revision", "Revision");
-            String nbExecution = docService.findLabelHTML("page_exeperbuildrevision", "NbExecution", "NbExecution");
-            String nbOK = docService.findLabelHTML("page_exeperbuildrevision", "NbOK", "NbOK");
-            String okPercentage = docService.findLabelHTML("page_exeperbuildrevision", "OK_percentage", "%OK");
-            String nbTC = docService.findLabelHTML("page_exeperbuildrevision", "NbTC", "NbTC");
-            String nbExePerTc = docService.findLabelHTML("page_exeperbuildrevision", "nb_exe_per_tc", "nb_exe_per_tc");
-            String days = docService.findLabelHTML("page_exeperbuildrevision", "Days", "Days");
-            String nbTcPerDay = docService.findLabelHTML("page_exeperbuildrevision", "nb_tc_per_day", "nb_tc_per_day");
-            String nbApp = docService.findLabelHTML("page_exeperbuildrevision", "NbAPP", "NbAPP");
+            String title1 = docService.findLabelHTML("page_exeperbuildrevision", "RegressionExecutionStatus", "", myLang);
+            String build = docService.findLabelHTML("testcaseexecution", "Build", "Build", myLang);
+            String revision = docService.findLabelHTML("testcaseexecution", "Revision", "Revision", myLang);
+            String nbExecution = docService.findLabelHTML("page_exeperbuildrevision", "NbExecution", "NbExecution", myLang);
+            String nbOK = docService.findLabelHTML("page_exeperbuildrevision", "NbOK", "NbOK", myLang);
+            String okPercentage = docService.findLabelHTML("page_exeperbuildrevision", "OK_percentage", "%OK", myLang);
+            String nbTC = docService.findLabelHTML("page_exeperbuildrevision", "NbTC", "NbTC", myLang);
+            String nbExePerTc = docService.findLabelHTML("page_exeperbuildrevision", "nb_exe_per_tc", "nb_exe_per_tc", myLang);
+            String days = docService.findLabelHTML("page_exeperbuildrevision", "Days", "Days", myLang);
+            String nbTcPerDay = docService.findLabelHTML("page_exeperbuildrevision", "nb_tc_per_day", "nb_tc_per_day", myLang);
+            String nbApp = docService.findLabelHTML("page_exeperbuildrevision", "NbAPP", "NbAPP", myLang);
         %>
 
         <div class="divBorder">
@@ -217,7 +219,7 @@
         </div>
 
         <%
-            title1 = docService.findLabelHTML("page_exeperbuildrevision", "RegressionExecutionStatus1", "");
+            title1 = docService.findLabelHTML("page_exeperbuildrevision", "RegressionExecutionStatus1", "", myLang);
 
             arrayExecution = (ArrayList<ArrayList<String>>) request.getAttribute("arrayExecutionExternal");
             arrayExecutionEnv = (ArrayList<ArrayList<ArrayList<String>>>) request.getAttribute("arrayExecutionEnvExternal");

@@ -44,6 +44,7 @@
         <%@ include file="include/header.jsp" %>
         <%
             IDocumentationService docService = appContext.getBean(IDocumentationService.class);
+            String myLang = request.getAttribute("MyLang").toString();
         %>
         <script type="text/javascript">
             $(document).ready(function(){
@@ -109,10 +110,10 @@
                 <thead>
                     <tr>
                         <th>Key</th>
-                        <th><%=docService.findLabel("application", "SYSTEM", "")%></th>
-                        <th><%=docService.findLabel("buildrevisioninvariant", "level", "Level")%></th>
-                        <th><%=docService.findLabel("buildrevisioninvariant", "seq", "Seq")%></th>
-                        <th><%=docService.findLabel("buildrevisioninvariant", "versionname", "Version Name")%></th>
+                        <th><%=docService.findLabel("application", "SYSTEM", "", myLang)%></th>
+                        <th><%=docService.findLabel("buildrevisioninvariant", "level", "Level", myLang)%></th>
+                        <th><%=docService.findLabel("buildrevisioninvariant", "seq", "Seq", myLang)%></th>
+                        <th><%=docService.findLabel("buildrevisioninvariant", "versionname", "Version Name", myLang)%></th>
                     </tr>
                 </thead>
                 <tbody>
@@ -126,19 +127,19 @@
                     <input id="InvKey" name="InvKey" style="width:100px;" 
                            class="ncdetailstext" rel="0" >
                 </div>
-                <label for="System" style="font-weight:bold"><%=docService.findLabelHTML("application", "SYSTEM", "")%></label>
+                <label for="System" style="font-weight:bold"><%=docService.findLabelHTML("application", "SYSTEM", "", myLang)%></label>
                 <input id="System" name="System" style="width:150px;" 
                        class="System" rel="1" value="<%=request.getAttribute("MySystem")%>" readonly>
                 <br><br>
-                <label for="Level" style="font-weight:bold"><%=docService.findLabelHTML("buildrevisioninvariant", "level", "")%></label>
+                <label for="Level" style="font-weight:bold"><%=docService.findLabelHTML("buildrevisioninvariant", "level", "", myLang)%></label>
                 <select id="Level" name="Level" style="width:100px;" 
                         class="Level" rel="2" ><option value="1">1</option><option value="2">2</option></select>
                 <br>
-                <label for="Seq" style="font-weight:bold"><%=docService.findLabelHTML("buildrevisioninvariant", "Seq", "")%></label>
+                <label for="Seq" style="font-weight:bold"><%=docService.findLabelHTML("buildrevisioninvariant", "Seq", "", myLang)%></label>
                 <input id="Seq" name="Seq" style="width:50px;" 
                        class="Seq" rel="3" >
                 <br>
-                <label for="VersionName" style="font-weight:bold"><%=docService.findLabelHTML("buildrevisioninvariant", "versionname", "")%></label>
+                <label for="VersionName" style="font-weight:bold"><%=docService.findLabelHTML("buildrevisioninvariant", "versionname", "", myLang)%></label>
                 <input id="VersionName" name="VersionName" style="width:400px;" 
                        class="VersionName" rel="4" >
                 <br><br>

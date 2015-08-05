@@ -78,6 +78,7 @@
             IUserService userService = appContext.getBean(IUserService.class);
             User myUser = userService.findUserByKey(request.getUserPrincipal().getName());
             String MySystem = ParameterParserUtil.parseStringParam(request.getParameter("MySystem"), "");
+            String myLang = ParameterParserUtil.parseStringParam(request.getAttribute("MyLang").toString(), "en");
 
             if (MySystem.equals("")) {
                 MySystem = myUser.getDefaultSystem();
@@ -104,7 +105,7 @@
         %>
          <div class="filters" style="float:left; width:100%; height:30px">
                 <div style="float:left; width:100px"><p class="dttTitle">Filters</p></div>
-                <div style="float:left; width:100px;font-weight: bold;"><%out.print(docService.findLabelHTML("application", "application", "Application"));%></div>
+                <div style="float:left; width:100px;font-weight: bold;"><%out.print(docService.findLabelHTML("application", "application", "Application", myLang));%></div>
                 <div id="selectboxtestpage" style="float:left">
                     <form action="TestPerApplication.jsp" method="post" name="selectApplication">
                         <select id="Application" name="Application" style="width: 500px">

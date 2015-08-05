@@ -36,6 +36,8 @@
         <div id="body">
 <%
     IDocumentationService docService = appContext.getBean(IDocumentationService.class);
+    String myLang = ParameterParserUtil.parseStringParam(request.getAttribute("MyLang").toString(), "en");
+
 %>
 
             <form method="post" name="CreateTest" action="CreateTest"> 
@@ -45,22 +47,22 @@
                             <h3 style="color: blue">Test Parameters</h3>
                             <table>
                                 <tr>
-                                    <td class="wob" style="font-weight: bold; width: 110px"><%out.print(docService.findLabelHTML("test", "test", "Test"));%></td>
+                                    <td class="wob" style="font-weight: bold; width: 110px"><%out.print(docService.findLabelHTML("test", "test", "Test", myLang));%></td>
                                     <td class="wob"><input style="font-weight: bold; width: 200px" name="createTest" id="createTest"</td>
                                 </tr>
                                 <tr>
-                                    <td id="wob" style="font-weight: bold; width: 110px"><%out.print(docService.findLabelHTML("test", "description", "Description"));%></td>
+                                    <td id="wob" style="font-weight: bold; width: 110px"><%out.print(docService.findLabelHTML("test", "description", "Description", myLang));%></td>
                                     <td class="wob" ><input id="createDescription" style="width: 900px" name="createDescription"></td>
                                 </tr>
                                 <tr>
-                                    <td id="wob" style="font-weight: bold; width: 110px"><%out.print(docService.findLabelHTML("test", "active", "Active"));%></td>
+                                    <td id="wob" style="font-weight: bold; width: 110px"><%out.print(docService.findLabelHTML("test", "active", "Active", myLang));%></td>
                                     <td class="wob" ><select id="createActive" style="width: 40px;" name="createActive">
                                             <option value="Y">Y</option>
                                             <option value="N">N</option>
                                         </select></td>
                                 </tr>
                                 <tr>
-                                    <td id="wob" style="font-weight: bold; width: 110px"><%out.print(docService.findLabelHTML("test", "automated", "Automated"));%></td>
+                                    <td id="wob" style="font-weight: bold; width: 110px"><%out.print(docService.findLabelHTML("test", "automated", "Automated", myLang));%></td>
                                     <td class="wob" ><select id="createAutomated" style="width: 40px;" name="createAutomated">
                                             <option value="Y">Y</option>
                                             <option value="N">N</option>

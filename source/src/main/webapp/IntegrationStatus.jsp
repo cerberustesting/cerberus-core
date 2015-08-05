@@ -67,6 +67,9 @@
 
                             String MySystem = ParameterParserUtil.parseStringParam(request.getAttribute("MySystem").toString(), "");
                             Logger.getLogger("IntegrationStatus.jsp").log(Level.DEBUG, Infos.getInstance().getProjectNameAndVersion() + " - System : " + MySystem);
+                            
+                            String myLang = request.getAttribute("MyLang").toString();
+
         %>
 
         <%
@@ -82,7 +85,7 @@
             <table>
                 <tr>
                     <td style="alignment-baseline: central; text-align: center; background-color: lightgrey">Last modifications done on environments since the last <%=NBDAYS%> days<br>
-                <ftxt><%=docService.findLabelHTML("invariant", "environmentgp", "")%></ftxt> <select id="envgp" name="envgp" style="width: 80px" OnChange ="document.EnvFilters.submit()">
+                <ftxt><%=docService.findLabelHTML("invariant", "environmentgp", "", myLang)%></ftxt> <select id="envgp" name="envgp" style="width: 80px" OnChange ="document.EnvFilters.submit()">
                     <option style="width: 200px" value="ALL">-- ALL --</option>
                     <%
                     	ResultSet rsEnvgp = stmtEnvgp.executeQuery("SELECT distinct gp1 "
@@ -94,7 +97,7 @@
                     <%
                     	}
                     %></select>
-                <ftxt><%=docService.findLabelHTML("invariant", "FILTERNBDAYS", "")%></ftxt> <select id="nbdays" name="nbdays" style="width: 80px" OnChange ="document.EnvFilters.submit()">
+                <ftxt><%=docService.findLabelHTML("invariant", "FILTERNBDAYS", "", myLang)%></ftxt> <select id="nbdays" name="nbdays" style="width: 80px" OnChange ="document.EnvFilters.submit()">
                     <%
                     	ResultSet rsNbDays = stmtEnvgp.executeQuery("SELECT value, description "
                                                                         + "FROM invariant "
@@ -194,12 +197,12 @@
                         %>
                         <table  style="text-align: left; border-collapse:collapse ; border-color: gainsboro" border="1">
                             <tr id="header">
-                                <td><b><%=docService.findLabelHTML("buildrevisioninvariant", "versionname01", "")%></b></td>
-                                <td><b><%=docService.findLabelHTML("buildrevisioninvariant", "versionname02", "")%></b></td>
-                                <td><%=docService.findLabelHTML("page_integrationstatus", "DEV", "")%></td>
-                                <td><%=docService.findLabelHTML("page_integrationstatus", "QA", "")%></td>
-                                <td><%=docService.findLabelHTML("page_integrationstatus", "UAT", "")%></td>
-                                <td><%=docService.findLabelHTML("page_integrationstatus", "PROD", "")%></td>
+                                <td><b><%=docService.findLabelHTML("buildrevisioninvariant", "versionname01", "", myLang)%></b></td>
+                                <td><b><%=docService.findLabelHTML("buildrevisioninvariant", "versionname02", "", myLang)%></b></td>
+                                <td><%=docService.findLabelHTML("page_integrationstatus", "DEV", "", myLang)%></td>
+                                <td><%=docService.findLabelHTML("page_integrationstatus", "QA", "", myLang)%></td>
+                                <td><%=docService.findLabelHTML("page_integrationstatus", "UAT", "", myLang)%></td>
+                                <td><%=docService.findLabelHTML("page_integrationstatus", "PROD", "", myLang)%></td>
                             </tr><%
                             	rsBuild = stmtBuild.executeQuery(BRSQL);
                                                                                         while (rsBuild.next()) {

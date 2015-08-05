@@ -54,7 +54,7 @@
 
 %>
 <tr>
-    <td class="wob"><span style="font-weight: bold"><%out.print(docService.findLabelHTML("testcase", "testcase", "OriginTestCase"));%></span>
+    <td class="wob"><span style="font-weight: bold"><%out.print(docService.findLabelHTML("testcase", "testcase", "OriginTestCase", "en"));%></span>
         <select id="fromTestCase" name="FromTestCase" onchange="getTestCasesForImportStep()">
             <%
                 if (test.compareTo("%%") == 0) {

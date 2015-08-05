@@ -58,6 +58,9 @@
                     try {
 
                         /* Parameter Setup */
+                        
+                        String myLang = request.getAttribute("MyLang").toString();
+
 
                         String system = "";
                         if (request.getParameter("system") != null && request.getParameter("system").compareTo("") != 0) {
@@ -143,19 +146,19 @@
                 <td colspan="2" style="background-color: lightyellow; text-align: center">EMail Notification Preview</td>
             </tr>
             <tr>
-                <td><%=docService.findLabelHTML("page_notification", "To", "")%></td>
+                <td><%=docService.findLabelHTML("page_notification", "To", "", myLang)%></td>
                 <td><table border><tr><td><%=to%></td></tr></table></td>
             </tr> 
             <tr>
-                <td><%=docService.findLabelHTML("page_notification", "Cc", "")%></td>
+                <td><%=docService.findLabelHTML("page_notification", "Cc", "", myLang)%></td>
                 <td><table border><tr><td><%=cc%></td></tr></table></td>
             </tr> 
             <tr>
-                <td><%=docService.findLabelHTML("page_notification", "Subject", "")%></td>
+                <td><%=docService.findLabelHTML("page_notification", "Subject", "", myLang)%></td>
                 <td><table border><tr><td><%=subject%></td></tr></table></td>
             </tr>
             <tr>
-                <td><%=docService.findLabelHTML("page_notification", "Body", "")%></td>
+                <td><%=docService.findLabelHTML("page_notification", "Body", "", myLang)%></td>
                 <td><table border><tr><td><%=body%></td></tr></table></td>
             </tr>
         </table>

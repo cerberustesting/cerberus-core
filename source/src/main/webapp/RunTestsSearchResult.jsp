@@ -29,6 +29,9 @@
     IDocumentationService docService = appContext.getBean(IDocumentationService.class);
     ITestCaseService testCaseService = appContext.getBean(ITestCaseService.class);
     IManualTestCaseService manualTestCaseService = appContext.getBean(IManualTestCaseService.class);
+    String myLang = request.getParameterValues("MyLang").toString();
+
+
 
     try {
 %>

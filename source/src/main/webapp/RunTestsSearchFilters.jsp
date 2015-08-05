@@ -55,6 +55,8 @@
                 IBuildRevisionInvariantService buildRevisionInvariantService = appContext.getBean(IBuildRevisionInvariantService.class);
                 ICampaignService campaignService = appContext.getBean(ICampaignService.class);
                 ITestBatteryService batteryService = appContext.getBean(ITestBatteryService.class);
+                
+                String myLang = request.getParameterValues("MyLang").toString();
 
                 try {
             %>
@@ -64,7 +66,7 @@
                         <p style="text-align:left" class="dttTitle">Testcase Filters</p>
                         <div style="float:left">
                             <div style="float:left; width:10%">
-                                <div style="width:150px; text-align: left"><%=docService.findLabelHTML("test", "Test", "Test")%></div>
+                                <div style="width:150px; text-align: left"><%=docService.findLabelHTML("test", "Test", "Test", myLang)%></div>
                                 <div>
                                     <%
                                         options.clear();
@@ -77,7 +79,7 @@
                                 </div>
                             </div>
                             <div style="float:left; width:10%">
-                                <div style="width:150px; text-align: left"><%=docService.findLabelHTML("project", "idproject", "Project")%></div>
+                                <div style="width:150px; text-align: left"><%=docService.findLabelHTML("project", "idproject", "Project", myLang)%></div>
                                 <div>
                                     <%
                                         options.clear();
@@ -92,7 +94,7 @@
                                 </div>
                             </div>
                             <div style="float:left; width:10%">
-                                <div style="clear:both; width:150px; text-align: left"><%=docService.findLabelHTML("application", "System", "System")%></div>
+                                <div style="clear:both; width:150px; text-align: left"><%=docService.findLabelHTML("application", "System", "System", myLang)%></div>
                                 <div style="clear:both">
                                     <%
                                         options.clear();
@@ -105,7 +107,7 @@
                                 </div>
                             </div>
                             <div style="float:left">
-                                <div style="clear:both; width:150px; text-align: left"><%=docService.findLabelHTML("application", "Application", "Application")%></div>
+                                <div style="clear:both; width:150px; text-align: left"><%=docService.findLabelHTML("application", "Application", "Application", myLang)%></div>
                                 <div style="clear:both">
                                     <%
                                         options.clear();
@@ -118,7 +120,7 @@
                                 </div>
                             </div>
                             <div style="float:left">
-                                <div style="clear:both; width:150px; text-align: left"><%=docService.findLabelHTML("testcase", "tcactive", "TestCase Active")%></div>
+                                <div style="clear:both; width:150px; text-align: left"><%=docService.findLabelHTML("testcase", "tcactive", "TestCase Active", myLang)%></div>
                                 <div style="clear:both">
                                     <%
                                         options.clear();
@@ -130,7 +132,7 @@
                                 </div>
                             </div>
                             <div style="float:left">
-                                <div style="clear:both; width:150px; text-align: left"><%=docService.findLabelHTML("invariant", "PRIORITY", "Priority")%></div>
+                                <div style="clear:both; width:150px; text-align: left"><%=docService.findLabelHTML("invariant", "PRIORITY", "Priority", myLang)%></div>
                                 <div style="clear:both">
                                     <%
                                         options.clear();
@@ -143,7 +145,7 @@
                                 </div>
                             </div>
                             <div style="float:left">
-                                <div style="clear:both; width:150px; text-align: left"><%=docService.findLabelHTML("testcase", "Status", "Status")%></div>
+                                <div style="clear:both; width:150px; text-align: left"><%=docService.findLabelHTML("testcase", "Status", "Status", myLang)%></div>
                                 <div style="clear:both">
                                     <%
                                         options.clear();
@@ -156,7 +158,7 @@
                                 </div>
                             </div>
                             <div style="float:left">
-                                <div style="clear:both; width:150px; text-align: left"><%=docService.findLabelHTML("invariant", "GROUP", "Group")%></div>
+                                <div style="clear:both; width:150px; text-align: left"><%=docService.findLabelHTML("invariant", "GROUP", "Group", myLang)%></div>
                                 <div style="clear:both">
                                     <%
                                         options.clear();
@@ -171,7 +173,7 @@
                                 </div>
                             </div>
                             <div style="float:left">
-                                <div style="clear:both; width:150px; text-align: left"><%=docService.findLabelHTML("testcase", "targetBuild", "targetBuild")%></div>
+                                <div style="clear:both; width:150px; text-align: left"><%=docService.findLabelHTML("testcase", "targetBuild", "targetBuild", myLang)%></div>
                                 <div style="clear:both">
                                     <%
                                         options.clear();
@@ -187,7 +189,7 @@
                                 </div>
                             </div>
                             <div style="float:left">
-                                <div style="clear:both; width:150px; text-align: left"><%=docService.findLabelHTML("testcase", "targetRev", "targetRev")%></div>
+                                <div style="clear:both; width:150px; text-align: left"><%=docService.findLabelHTML("testcase", "targetRev", "targetRev", myLang)%></div>
                                 <div style="clear:both">
                                     <%
                                         options.clear();
@@ -203,7 +205,7 @@
                                 </div>
                             </div>
                             <div style="float:left">
-                                <div style="clear:both; width:150px; text-align: left"><%=docService.findLabelHTML("testcase", "creator", "Creator")%></div>
+                                <div style="clear:both; width:150px; text-align: left"><%=docService.findLabelHTML("testcase", "creator", "Creator", myLang)%></div>
                                 <div style="clear:both">
                                     <%
                                         options.clear();
@@ -218,7 +220,7 @@
                                 </div>
                             </div>
                             <div style="float:left">
-                                <div style="clear:both; width:150px; text-align: left"><%=docService.findLabelHTML("testcase", "implementer", "implementer")%></div>
+                                <div style="clear:both; width:150px; text-align: left"><%=docService.findLabelHTML("testcase", "implementer", "implementer", myLang)%></div>
                                 <div style="clear:both">
                                     <%=generateMultiSelect("Implementer", request.getParameterValues("Implementer"), options,
                                             "Select an Implementer", "Select Implementer", "# of # Implementer selected", 1, true)%> 

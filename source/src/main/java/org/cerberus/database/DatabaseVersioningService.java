@@ -4145,6 +4145,14 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLS.append("INSERT INTO usergroup SELECT distinct Login, 'TestDataManager' FROM usergroup where GroupName in ('Test');");
         SQLInstruction.add(SQLS.toString());
 
+// Adding Language code to documentation table in order to support multi language GUI.
+// -- ------------------------ 586
+        SQLS = new StringBuilder();
+        SQLS.append("ALTER TABLE `documentation` ADD COLUMN `Lang` VARCHAR(45) NOT NULL DEFAULT 'en' AFTER `DocValue`, DROP PRIMARY KEY, ADD PRIMARY KEY (`DocTable`, `DocField`, `DocValue`, `Lang`);");
+        SQLInstruction.add(SQLS.toString());
+       
+        
+        
         return SQLInstruction;
     }
 

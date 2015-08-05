@@ -419,6 +419,7 @@
 %>
 
 <%
+    String myLang = request.getAttribute("MyLang").toString();
     String ip = getParam(request.getParameter("Ip"));
     String port = getParam(request.getParameter("Port"));
     String tag = getParam(request.getParameter("Tag"));
@@ -467,7 +468,7 @@
         <div style="float: left">
             <div>
                 <div>
-                    <%=docService.findLabelHTML("test", "Test", "Test")%>
+                    <%=docService.findLabelHTML("test", "Test", "Test", myLang)%>
                 </div>
                 <div>
                     <%
@@ -484,7 +485,7 @@
         <div style="float: left">
             <div>
                 <div>
-                    <%=docService.findLabelHTML("project", "idproject", "Project")%>
+                    <%=docService.findLabelHTML("project", "idproject", "Project", myLang)%>
                 </div>
                 <div>
                     <%
@@ -503,7 +504,7 @@
         <div style="float: left">
             <div>
                 <div>
-                    <%=docService.findLabelHTML("application", "System", "System")%>
+                    <%=docService.findLabelHTML("application", "System", "System", myLang)%>
                 </div>
                 <div>
                     <%
@@ -520,7 +521,7 @@
         <div style="float: left">
             <div>
                 <div>
-                    <%=docService.findLabelHTML("application", "Application", "Application")%>
+                    <%=docService.findLabelHTML("application", "Application", "Application", myLang)%>
                 </div>
                 <div>
                     <%
@@ -537,7 +538,7 @@
         <div style="float: left">
             <div>
                 <div>
-                    <%=docService.findLabelHTML("testcase", "tcactive", "TestCase Active")%>
+                    <%=docService.findLabelHTML("testcase", "tcactive", "TestCase Active", myLang)%>
                 </div>
                 <div>
                     <%
@@ -553,7 +554,7 @@
         <div style="float: left">
             <div>
                 <div>
-                    <%=docService.findLabelHTML("invariant", "PRIORITY", "Priority")%>
+                    <%=docService.findLabelHTML("invariant", "PRIORITY", "Priority", myLang)%>
                 </div>
                 <div>
                     <%
@@ -570,7 +571,7 @@
         <div style="float: left">
             <div>
                 <div>
-                    <%=docService.findLabelHTML("testcase", "Status", "Status")%>
+                    <%=docService.findLabelHTML("testcase", "Status", "Status", myLang)%>
                 </div>
                 <div>
                     <%
@@ -588,7 +589,7 @@
         <div style="float: left">
             <div>
                 <div>
-                    <%=docService.findLabelHTML("invariant", "GROUP", "Group")%>
+                    <%=docService.findLabelHTML("invariant", "GROUP", "Group", myLang)%>
                 </div>
                 <div>
                     <%
@@ -609,7 +610,7 @@
         <div style="float: left">
             <div>
                 <div>
-                    <%=docService.findLabelHTML("testcase", "targetBuild", "targetBuild")%>
+                    <%=docService.findLabelHTML("testcase", "targetBuild", "targetBuild", myLang)%>
                 </div>
                 <div>
                     <%
@@ -627,7 +628,7 @@
         <div style="float: left">
             <div>
                 <div>
-                    <%=docService.findLabelHTML("testcase", "targetRev", "targetRev")%>
+                    <%=docService.findLabelHTML("testcase", "targetRev", "targetRev", myLang)%>
                 </div>
                 <div>
                     <%
@@ -645,7 +646,7 @@
         <div style="float: left">
             <div>
                 <div>
-                    <%=docService.findLabelHTML("testcase", "creator", "Creator")%>
+                    <%=docService.findLabelHTML("testcase", "creator", "Creator", myLang)%>
                 </div>
                 <div>
                     <%
@@ -662,7 +663,7 @@
         <div style="float: left">
             <div>
                 <div>
-                    <%=docService.findLabelHTML("testcase", "implementer", "implementer")%>
+                    <%=docService.findLabelHTML("testcase", "implementer", "implementer", myLang)%>
                 </div>
                 <div>
                     <%=generateMultiSelect("Implementer", request.getParameterValues("Implementer"), options,
@@ -673,7 +674,7 @@
         <div style="float: left">
             <div>
                 <div>
-                    <%=docService.findLabelHTML("testcase", "comment", "comment")%>
+                    <%=docService.findLabelHTML("testcase", "comment", "comment", myLang)%>
                 </div>
                 <div>
                     <input style="font-weight: bold; width: 130px; height:16px" id="Comment" name="Comment" value="<%=comment%>"/>
@@ -687,7 +688,7 @@
 
         <div style="float: left">
             <div>
-                <%=docService.findLabelHTML("invariant", "Environment", "Environment")%>
+                <%=docService.findLabelHTML("invariant", "Environment", "Environment", myLang)%>
             </div>
             <div>
                 <%
@@ -702,7 +703,7 @@
         </div>
         <div style="float: left">
             <div>
-                <%=docService.findLabelHTML("buildrevisioninvariant", "versionname01", "Build")%>
+                <%=docService.findLabelHTML("buildrevisioninvariant", "versionname01", "Build", myLang)%>
             </div>
             <div>
                 <%
@@ -717,7 +718,7 @@
         </div>
         <div style="float: left">
             <div>
-                <%=docService.findLabelHTML("buildrevisioninvariant", "versionname02", "Revision")%>
+                <%=docService.findLabelHTML("buildrevisioninvariant", "versionname02", "Revision", myLang)%>
             </div>
             <div>
                 <%
@@ -732,7 +733,7 @@
         </div>
         <div style="float: left">
             <div>
-                <%=docService.findLabelHTML("testcaseexecution", "IP", "Ip")%>
+                <%=docService.findLabelHTML("testcaseexecution", "IP", "Ip", myLang)%>
             </div>
             <div>
                 <input style="font-weight: bold; width: 130px; height:16px" name="Ip" id="Ip" value="<%=ip%>"/>
@@ -740,7 +741,7 @@
         </div>
         <div style="float: left">
             <div>
-                <%=docService.findLabelHTML("testcaseexecution", "Port", "Port")%>
+                <%=docService.findLabelHTML("testcaseexecution", "Port", "Port", myLang)%>
             </div>
             <div>
                 <input style="font-weight: bold; width: 130px; height:16px" name="Port" id="Port" value="<%=port%>"/>
@@ -748,7 +749,7 @@
         </div>
         <div style="float: left">
             <div>
-                <%=docService.findLabelHTML("testcaseexecution", "tag", "Tag")%>
+                <%=docService.findLabelHTML("testcaseexecution", "tag", "Tag", myLang)%>
             </div>
             <div>
                 <input style="font-weight: bold; width: 130px; height:16px" name="Tag" id="Tag" value="<%=StringEscapeUtils.escapeHtml4(tag)%>"/>
@@ -756,7 +757,7 @@
         </div>
         <div style="float: left">
             <div>
-                <%=docService.findLabelHTML("testcaseexecution", "browserfullversion", "")%>
+                <%=docService.findLabelHTML("testcaseexecution", "browserfullversion", "", myLang)%>
             </div>
             <div>
                 <input style="font-weight: bold; width: 130px; height:16px" name="BrowserFullVersion"
@@ -785,7 +786,7 @@
         </div>
         <div style="float: left">
             <div>
-                <%=docService.findLabelHTML("testcaseexecution", "Browser", "browser")%> <span
+                <%=docService.findLabelHTML("testcaseexecution", "Browser", "browser", myLang)%> <span
                     class="error-message required">*</span>
             </div>
             <div>

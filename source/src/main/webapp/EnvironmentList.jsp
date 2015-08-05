@@ -57,6 +57,7 @@
                         /* Parameter Setup */
 
                         String MySystem = request.getAttribute("MySystem").toString();
+                        String myLang = request.getAttribute("MyLang").toString();
                         if (request.getParameter("system") != null && request.getParameter("system").compareTo("") != 0) {
                             MySystem = request.getParameter("system");
                         }
@@ -140,7 +141,7 @@
                         Statement stmtType = conn.createStatement();
         %><table class="tablef"> <tr> <td> 
                     <form method="GET" name="environment" id="environment">
-                        <ftxt><%=docService.findLabelHTML("invariant", "country", "")%></ftxt> <select id="country" name="country" style="width: 100px" OnChange ="document.environment.submit()">
+                        <ftxt><%=docService.findLabelHTML("invariant", "country", "", myLang)%></ftxt> <select id="country" name="country" style="width: 100px" OnChange ="document.environment.submit()">
                             <option style="width: 400px" value="ALL">-- ALL --</option>
                             <%
                             	ResultSet rsCountry = stmtCountry.executeQuery("SELECT value, description "
@@ -152,7 +153,7 @@
                             <%
                             	}
                             %></select>
-                        <ftxt><%=docService.findLabelHTML("invariant", "environment", "")%></ftxt> <select id="env" name="env" style="width: 100px" OnChange ="document.environment.submit()">
+                        <ftxt><%=docService.findLabelHTML("invariant", "environment", "", myLang)%></ftxt> <select id="env" name="env" style="width: 100px" OnChange ="document.environment.submit()">
                             <option style="width: 500px" value="ALL">-- ALL --</option>
                             <%
                             	ResultSet rsEnv = stmtEnv.executeQuery("SELECT value, description "
@@ -164,7 +165,7 @@
                             <%
                             	}
                             %></select>
-                        <ftxt><%=docService.findLabelHTML("invariant", "environmentgp", "")%></ftxt> <select id="envgp" name="envgp" style="width: 80px" OnChange ="document.environment.submit()">
+                        <ftxt><%=docService.findLabelHTML("invariant", "environmentgp", "", myLang)%></ftxt> <select id="envgp" name="envgp" style="width: 80px" OnChange ="document.environment.submit()">
                             <option style="width: 200px" value="ALL">-- ALL --</option>
                             <%
                             	ResultSet rsEnvgp = stmtEnvgp.executeQuery("SELECT distinct gp1 "
@@ -176,7 +177,7 @@
                             <%
                             	}
                             %></select>
-                        <ftxt><%=docService.findLabelHTML("buildrevisioninvariant", "versionname01", "")%></ftxt> <select id="build" name="build" style="width: 80px" OnChange ="document.environment.submit()">
+                        <ftxt><%=docService.findLabelHTML("buildrevisioninvariant", "versionname01", "", myLang)%></ftxt> <select id="build" name="build" style="width: 80px" OnChange ="document.environment.submit()">
                             <option style="width: 200px" value="ALL">-- ALL --</option>
                             <%
                             	List<BuildRevisionInvariant> listBuildRev = buildRevisionInvariantService.findAllBuildRevisionInvariantBySystemLevel(MySystem, 1);
@@ -185,7 +186,7 @@
                             <%
                             	}
                             %></select>
-                        <ftxt><%=docService.findLabelHTML("buildrevisioninvariant", "versionname02", "")%></ftxt> <select id="revision" name="revision" style="width: 80px" OnChange ="document.environment.submit()">
+                        <ftxt><%=docService.findLabelHTML("buildrevisioninvariant", "versionname02", "", myLang)%></ftxt> <select id="revision" name="revision" style="width: 80px" OnChange ="document.environment.submit()">
                             <option style="width: 200px" value="ALL">-- ALL --</option>
                             <%
                             	listBuildRev = buildRevisionInvariantService.findAllBuildRevisionInvariantBySystemLevel(MySystem, 2);
@@ -194,8 +195,8 @@
                             <%
                             	}
                             %></select>
-                        <ftxt><%=docService.findLabelHTML("countryenvparam", "chain", "")%></ftxt> <input id="chain" name="chain" style="width: 50px" value="<%=chain%>"/>
-                        <ftxt><%=docService.findLabelHTML("countryenvparam", "active", "")%></ftxt> <select id="active" name="active" style="width: 80px" OnChange ="document.environment.submit()">
+                        <ftxt><%=docService.findLabelHTML("countryenvparam", "chain", "", myLang)%></ftxt> <input id="chain" name="chain" style="width: 50px" value="<%=chain%>"/>
+                        <ftxt><%=docService.findLabelHTML("countryenvparam", "active", "", myLang)%></ftxt> <select id="active" name="active" style="width: 80px" OnChange ="document.environment.submit()">
                             <option style="width: 200px" value="ALL">-- ALL --</option>
                             <%
                             	ResultSet rsActive = stmtActive.executeQuery("SELECT value, description "
@@ -207,7 +208,7 @@
                             <%
                             	}
                             %></select>
-                        <ftxt><%=docService.findLabelHTML("countryenvparam", "type", "")%></ftxt> <select id="type" name="type" style="width: 100px" OnChange ="document.environment.submit()">
+                        <ftxt><%=docService.findLabelHTML("countryenvparam", "type", "", myLang)%></ftxt> <select id="type" name="type" style="width: 100px" OnChange ="document.environment.submit()">
                             <option style="width: 200px" value="ALL">-- ALL --</option>
                             <%
                             	ResultSet rsType = stmtType.executeQuery("SELECT value, description "
@@ -329,14 +330,14 @@
 
                     <table style="text-align: left; border-collapse: collapse">
                         <tr id="header">
-                            <td><%=docService.findLabelHTML("application", "system", "")%></td>
-                            <td><%=docService.findLabelHTML("invariant", "country", "")%></td>
-                            <td><%=docService.findLabelHTML("invariant", "environment", "")%></td>
-                            <td><%=docService.findLabelHTML("buildrevisioninvariant", "versionname01", "")%></td>
-                            <td><%=docService.findLabelHTML("buildrevisioninvariant", "versionname02", "")%></td>
-                            <td><%=docService.findLabelHTML("countryenvparam", "chain", "")%></td>
-                            <td><%=docService.findLabelHTML("countryenvparam", "active", "")%></td>
-                            <td><%=docService.findLabelHTML("countryenvparam", "type", "")%></td>
+                            <td><%=docService.findLabelHTML("application", "system", "", myLang)%></td>
+                            <td><%=docService.findLabelHTML("invariant", "country", "", myLang)%></td>
+                            <td><%=docService.findLabelHTML("invariant", "environment", "", myLang)%></td>
+                            <td><%=docService.findLabelHTML("buildrevisioninvariant", "versionname01", "", myLang)%></td>
+                            <td><%=docService.findLabelHTML("buildrevisioninvariant", "versionname02", "", myLang)%></td>
+                            <td><%=docService.findLabelHTML("countryenvparam", "chain", "", myLang)%></td>
+                            <td><%=docService.findLabelHTML("countryenvparam", "active", "", myLang)%></td>
+                            <td><%=docService.findLabelHTML("countryenvparam", "type", "", myLang)%></td>
                             <td> </td>
                         </tr>
                         <%

@@ -34,6 +34,7 @@
         String DocTable = ParameterParserUtil.parseStringParam(request.getParameter("DocTable"), "empty");
         String DocField = ParameterParserUtil.parseStringParam(request.getParameter("DocField"), "empty");
         String DocValue = ParameterParserUtil.parseStringParam(request.getParameter("DocValue"), "empty");
+        String LangValue = ParameterParserUtil.parseStringParam(request.getParameter("LangValue"), "en");
         boolean DocValue_isdefined = true;
         if (DocValue.equalsIgnoreCase("empty")) {
             DocValue_isdefined = false;
@@ -65,7 +66,7 @@
                             Title = documentation.getDocLabel();
                         }
 
-                        List<Documentation> documentations = documentationService.findDocumentationsWithNotEmptyValueAndDescription(documentation.getDocTable(), documentation.getDocField());
+                        List<Documentation> documentations = documentationService.findDocumentationsWithNotEmptyValueAndDescription(documentation.getDocTable(), documentation.getDocField(), LangValue);
                         Doc = Doc + "<table>";
                         for(int i=0; i<documentations.size();i++) {
                                 Doc = Doc + "<tr><td><a href=\"?DocTable=" + documentation.getDocTable();
@@ -85,12 +86,12 @@
                     DocList.add(Doc);
                 }
             } else { // Documentation of a normal field. The field could potencially have occurences at Value level that will be displayed.
-                List<Documentation> documentations = documentationService.findDocumentationsWithEmptyValueAndNotEmptyDescription(DocTable, DocField);
+                List<Documentation> documentations = documentationService.findDocumentationsWithEmptyValueAndNotEmptyDescription(DocTable, DocField, LangValue);
                 if (documentations != null && documentations.size() > 0) {
                     Title = documentations.get(0).getDocLabel();
                     Doc = documentations.get(0).getDocDesc();
 
-                    documentations = documentationService.findDocumentationsWithNotEmptyValueAndDescription(DocTable, DocField);
+                    documentations = documentationService.findDocumentationsWithNotEmptyValueAndDescription(DocTable, DocField, LangValue);
                     Doc = Doc + "<table>";
                     for(int i=0; i<documentations.size();i++) {
                             Doc = Doc + "<tr><td><a href=\"?DocTable=" + DocTable;
@@ -112,14 +113,14 @@
         } else { // Documentation of the detail of a field + value.
 
 
-            String docLabel = documentationService.findLabelFromTableAndField(DocTable, DocField);
+            String docLabel = documentationService.findLabelFromTableAndField(DocTable, DocField, LangValue);
 
             String nav = "";
             if (docLabel != null) {
                 nav = "<a href=\"?DocTable=" + DocTable + "&amp;DocField=" + DocField + "\">" + docLabel + "</a>";
             }
 
-            String docDesc = documentationService.findDescriptionFromTableFieldAndValue(DocTable, DocField, DocValue);
+            String docDesc = documentationService.findDescriptionFromTableFieldAndValue(DocTable, DocField, DocValue, LangValue);
             if (docDesc != null) {
                 Title = nav + " >> " + DocValue;
                 Doc = docDesc;
@@ -171,7 +172,7 @@
         <br>
         <span class="close"><a href="javascript:self.close()">Close</a> the popup.</span>
         <br>
-        <span class="footer">DocTable:<%= DocTable%> | DocField:<%= DocField%> | DocValue:<%= DocValue%></span>
+        <span class="footer">DocTable:<%= DocTable%> | DocField:<%= DocField%> | DocValue:<%= DocValue%>  | Lang:<%= LangValue%> </span>
     </body>
 </html>
 

@@ -78,7 +78,7 @@
         <script type="text/javascript" src="js/jquery.jeditable.mini.js"></script>
         <script type="text/javascript" src="js/jquery.dataTables.editable.js"></script>
         <script type="text/javascript" src="js/dataTables.colVis.js"></script>
-         <script type="text/javascript" src="js/jquery.blockUI.js"></script>
+        <script type="text/javascript" src="js/jquery.blockUI.js"></script>
         <script type="text/javascript" src="js/pages/TestCaseViewModel.js"></script>
         <link type="text/css" rel="stylesheet" href="css/dataTables.colVis.css"> 
         <link rel="stylesheet" type="text/css" href="css/elrte.min.css">
@@ -403,6 +403,8 @@
                     }
                     List<String> systems = new ArrayList();
                     systems.add(MySystem);
+                    
+                    String myLang = ParameterParserUtil.parseStringParam(request.getAttribute("MyLang").toString(), "en");
 
                     List<Test> tests = new ArrayList();
 
@@ -419,7 +421,7 @@
                         <p class="dttTitle">Filters
                         </p>
                     </div>
-                    <div style="float:left; width:100px;font-weight: bold;"><%out.print(docService.findLabelHTML("test", "test", "Test"));%>
+                    <div style="float:left; width:100px;font-weight: bold;"><%out.print(docService.findLabelHTML("test", "test", "Test", myLang));%>
                     </div>
                     <div style="float:left">
                         <select id="filtertest" name="Test" style="width: 200px" OnChange="document.selectTestCase.submit()">
@@ -440,7 +442,7 @@
                             %>
                         </select>
                     </div>
-                    <div style="float:left"><%out.print(docService.findLabelHTML("testcase", "testcase", "TestCase"));%>
+                    <div style="float:left"><%out.print(docService.findLabelHTML("testcase", "testcase", "TestCase", myLang));%>
                     </div>
                     <div style="float:left">
                         <select id="filtertestcase" name="TestCase" style="width: 750px" OnChange="document.selectTestCase.submit()">
@@ -580,11 +582,11 @@
                                     </td>
                                 </tr>    
                                 <tr id="header"> 
-                                    <td class="wob" style="width: 100px"><%out.print(docService.findLabelHTML("test", "test", "Test"));%>
+                                    <td class="wob" style="width: 100px"><%out.print(docService.findLabelHTML("test", "test", "Test", myLang));%>
                                     </td>
-                                    <td class="wob" style="width: 100px"><%out.print(docService.findLabelHTML("testcase", "testcase", "TestCase"));%>
+                                    <td class="wob" style="width: 100px"><%out.print(docService.findLabelHTML("testcase", "testcase", "TestCase", myLang));%>
                                     </td>
-                                    <td class="wob" style="width: 500px"><%out.print(docService.findLabelHTML("test", "description", "Description"));%>
+                                    <td class="wob" style="width: 500px"><%out.print(docService.findLabelHTML("test", "description", "Description", myLang));%>
                                     </td>
                                 </tr>
                                 <tr>
@@ -656,15 +658,15 @@
                                                 <td class="wob" colspan="2"><h4 style="color : blue">TestCase Information</h4></td>
                                             </tr>
                                             <tr id="header">  
-                                                <td class="wob" style="width: 100px"><%out.print(docService.findLabelHTML("testcase", "origine", "Origin"));%></td>
-                                                <td class="wob" style="width: 100px"><%out.print(docService.findLabelHTML("testcase", "RefOrigine", "RefOrigine"));%></td>
-                                                <td class="wob" style="width: 150px"><%out.print(docService.findLabelHTML("testcase", "TCDateCrea", "Creation date"));%></td>
-                                                <td class="wob" style="width: 100px"><%out.print(docService.findLabelHTML("testcase", "Creator", "creator"));%></td>
-                                                <td class="wob" style="width: 100px"><%out.print(docService.findLabelHTML("testcase", "Implementer", "implementer"));%></td>
-                                                <td class="wob" style="width: 100px"><%out.print(docService.findLabelHTML("testcase", "LastModifier", "lastModifier"));%></td>
-                                                <td class="wob" style="width: 100px"><%out.print(docService.findLabelHTML("project", "idproject", "Project"));%></td>
-                                                <td class="wob" style="width: 100px"><%out.print(docService.findLabelHTML("testcase", "ticket", "Ticket"));%></td>
-                                                <td class="wob" style="width: 400px"><%out.print(docService.findLabelHTML("testcase", "Function", "Function"));%></td>
+                                                <td class="wob" style="width: 100px"><%out.print(docService.findLabelHTML("testcase", "origine", "Origin", myLang));%></td>
+                                                <td class="wob" style="width: 100px"><%out.print(docService.findLabelHTML("testcase", "RefOrigine", "RefOrigine", myLang));%></td>
+                                                <td class="wob" style="width: 150px"><%out.print(docService.findLabelHTML("testcase", "TCDateCrea", "Creation date", myLang));%></td>
+                                                <td class="wob" style="width: 100px"><%out.print(docService.findLabelHTML("testcase", "Creator", "creator", myLang));%></td>
+                                                <td class="wob" style="width: 100px"><%out.print(docService.findLabelHTML("testcase", "Implementer", "implementer", myLang));%></td>
+                                                <td class="wob" style="width: 100px"><%out.print(docService.findLabelHTML("testcase", "LastModifier", "lastModifier", myLang));%></td>
+                                                <td class="wob" style="width: 100px"><%out.print(docService.findLabelHTML("project", "idproject", "Project", myLang));%></td>
+                                                <td class="wob" style="width: 100px"><%out.print(docService.findLabelHTML("testcase", "ticket", "Ticket", myLang));%></td>
+                                                <td class="wob" style="width: 400px"><%out.print(docService.findLabelHTML("testcase", "Function", "Function", myLang));%></td>
                                             </tr>
                                             <tr>
                                                 <td class="wob"><input id="editOrigin" style="width: 90px;" name="editOrigin" value="<%=tcase.getOrigin()%>"></td>
@@ -694,13 +696,13 @@
                                         <table class="wob" style="text-align: left; border-collapse: collapse" border="0px" cellpadding="0px" cellspacing="0px">
                                             <tr><td class="wob"><h4 style="color : blue">TestCase Parameters</h4></td></tr>
                                             <tr id="header">
-                                                <td class="wob" style="width: 150px"><%out.print(docService.findLabelHTML("application", "application", "Application"));%></td>
-                                                <td class="wob" style="width: 90px"><%out.print(docService.findLabelHTML("testcase", "ActiveQA", "RunQA"));%></td>
-                                                <td class="wob" style="width: 90px"><%out.print(docService.findLabelHTML("testcase", "ActiveUAT", "RunUAT"));%></td>
-                                                <td class="wob" style="width: 90px"><%out.print(docService.findLabelHTML("testcase", "ActivePROD", "RunPROD"));%></td>
-                                                <td class="wob" style="width: 90px"><%out.print(docService.findLabelHTML("invariant", "PRIORITY", "Priority"));%></td>
-                                                <td class="wob" style="width: 150px"><%out.print(docService.findLabelHTML("invariant", "GROUP", "Group"));%></td>
-                                                <td class="wob" style="width: 150px"><%out.print(docService.findLabelHTML("testcase", "status", "Status"));%></td>
+                                                <td class="wob" style="width: 150px"><%out.print(docService.findLabelHTML("application", "application", "Application", myLang));%></td>
+                                                <td class="wob" style="width: 90px"><%out.print(docService.findLabelHTML("testcase", "ActiveQA", "RunQA", myLang));%></td>
+                                                <td class="wob" style="width: 90px"><%out.print(docService.findLabelHTML("testcase", "ActiveUAT", "RunUAT", myLang));%></td>
+                                                <td class="wob" style="width: 90px"><%out.print(docService.findLabelHTML("testcase", "ActivePROD", "RunPROD", myLang));%></td>
+                                                <td class="wob" style="width: 90px"><%out.print(docService.findLabelHTML("invariant", "PRIORITY", "Priority", myLang));%></td>
+                                                <td class="wob" style="width: 150px"><%out.print(docService.findLabelHTML("invariant", "GROUP", "Group", myLang));%></td>
+                                                <td class="wob" style="width: 150px"><%out.print(docService.findLabelHTML("testcase", "status", "Status", myLang));%></td>
                                                 <% for (Invariant country : countryListInvariant) {%>
                                                 <td class="wob" style="font-size : x-small ; width: 260px;"><%=country.getValue()%> <input type="hidden" name="testcase_country_all" value="<%=country.getValue()%>"></td>
                                                     <% } %>
@@ -745,7 +747,7 @@
                                     <td class="wob" style="text-align: left; vertical-align : top ; border-collapse: collapse">
                                         <table class="wob"  style="text-align: left; border-collapse: collapse" border="0px" cellpadding="0px" cellspacing="0px">
                                             <tr id="header">
-                                                <td class="wob" style="width: 1200px"><%out.print(docService.findLabelHTML("testcase", "description", "Description"));%></td>
+                                                <td class="wob" style="width: 1200px"><%out.print(docService.findLabelHTML("testcase", "description", "Description", myLang));%></td>
                                             </tr><tr>
                                                 <td class="wob"><input id="editDescription" style="width: 1200px;" name="editDescription"
                                                                        value="<%=tcase.getShortDescription()%>"></td>
@@ -756,8 +758,8 @@
                                     <td class="wob" style="text-align: left; vertical-align : top ; border-collapse: collapse">
                                         <table>   
                                             <tr id="header">
-                                                <td class="wob" style="width: 600px"><%out.print(docService.findLabelHTML("testcase", "BehaviorOrValueExpected", "Value Expected"));%></td>
-                                                <td class="wob" style="width: 600px"><%out.print(docService.findLabelHTML("testcase", "HowTo", "HowTo"));%></td>
+                                                <td class="wob" style="width: 600px"><%out.print(docService.findLabelHTML("testcase", "BehaviorOrValueExpected", "Value Expected", myLang));%></td>
+                                                <td class="wob" style="width: 600px"><%out.print(docService.findLabelHTML("testcase", "HowTo", "HowTo", myLang));%></td>
                                             </tr>
                                             <tr>
                                                 <td class="wob" style="text-align: left; border-collapse: collapse">
@@ -808,16 +810,16 @@
                                     <td colspan="9" class="wob">
                                         <h4 style="color : blue">Activation Criterias</h4>
                                 <tr id="header">
-                                    <td class="wob" style="width: 50px"><%out.print(docService.findLabelHTML("testcase", "tcactive", "Active"));%></td>
-                                    <td class="wob" style="width: 90px"><%out.print(docService.findLabelHTML("testcase", "FromBuild", ""));%></td>
-                                    <td class="wob" style="width: 100px"><%out.print(docService.findLabelHTML("testcase", "FromRev", ""));%></td>
-                                    <td class="wob" style="width: 90px"><%out.print(docService.findLabelHTML("testcase", "ToBuild", ""));%></td>
-                                    <td class="wob" style="width: 100px"><%out.print(docService.findLabelHTML("testcase", "ToRev", ""));%></td>
-                                    <td class="wob" style="width: 390px"><%out.print(docService.findLabelHTML("page_testcase", "laststatus", ""));%></td>
-                                    <td class="wob" style="width: 70px"><%out.print(docService.findLabelHTML("testcase", "BugID", ""));%></td>
-                                    <td class="wob" style="width: 50px"><%out.print(docService.findLabelHTML("page_testcase", "BugIDLink", ""));%></td>
-                                    <td class="wob" style="width: 80px"><%out.print(docService.findLabelHTML("testcase", "TargetBuild", ""));%></td>
-                                    <td class="wob" style="width: 80px"><%out.print(docService.findLabelHTML("testcase", "TargetRev", ""));%></td>
+                                    <td class="wob" style="width: 50px"><%out.print(docService.findLabelHTML("testcase", "tcactive", "Active", myLang));%></td>
+                                    <td class="wob" style="width: 90px"><%out.print(docService.findLabelHTML("testcase", "FromBuild", "", myLang));%></td>
+                                    <td class="wob" style="width: 100px"><%out.print(docService.findLabelHTML("testcase", "FromRev", "", myLang));%></td>
+                                    <td class="wob" style="width: 90px"><%out.print(docService.findLabelHTML("testcase", "ToBuild", "", myLang));%></td>
+                                    <td class="wob" style="width: 100px"><%out.print(docService.findLabelHTML("testcase", "ToRev", "", myLang));%></td>
+                                    <td class="wob" style="width: 390px"><%out.print(docService.findLabelHTML("page_testcase", "laststatus", "", myLang));%></td>
+                                    <td class="wob" style="width: 70px"><%out.print(docService.findLabelHTML("testcase", "BugID", "", myLang));%></td>
+                                    <td class="wob" style="width: 50px"><%out.print(docService.findLabelHTML("page_testcase", "BugIDLink", "", myLang));%></td>
+                                    <td class="wob" style="width: 80px"><%out.print(docService.findLabelHTML("testcase", "TargetBuild", "", myLang));%></td>
+                                    <td class="wob" style="width: 80px"><%out.print(docService.findLabelHTML("testcase", "TargetRev", "", myLang));%></td>
                                 </tr>
                                 <tr>
                                     <td class="wob"><%=ComboInvariant(appContext, "editTcActive", "width: 50px", "editTcActive", "active", "TCACTIVE", tcase.getActive(), "", null)%></td>
@@ -893,7 +895,7 @@
                             </table>
                             <table>
                                 <tr id ="header">
-                                    <td class="wob" style="width: 650px"><%out.print(docService.findLabelHTML("testcase", "comment", "Comment"));%></td>
+                                    <td class="wob" style="width: 650px"><%out.print(docService.findLabelHTML("testcase", "comment", "Comment", myLang));%></td>
                                 </tr>
                                 <tr> 
                                     <td class="wob"><input id="comment" style="width: 1200px;" name="editComment" 
@@ -1248,7 +1250,7 @@
                                                             <div class="functional_description" style="height:20px;display:inline-block;clear:both;width:100%; background-color: transparent">
 
                                                                 <div style="float:left; width:80%">
-                                                                    <div style="float:left;width:80px; "><p style="float:right;font-weight:bold;" link="white" ><%out.print(docService.findLabelHTML("testcasestepaction", "description", "Description"));%></p>
+                                                                    <div style="float:left;width:80px; "><p style="float:right;font-weight:bold;" link="white" ><%out.print(docService.findLabelHTML("testcasestepaction", "description", "Description", myLang));%></p>
                                                                     </div>
                                                                     <input class="wob" class="functional_description" data-fieldtype="Description" style="border-style:groove;border-width:thin;border-color:white;border: 1px solid white; color:#333333; width: 80%; font-weight:bold;font-size:12px ;font-family: Trebuchet MS; "
                                                                            value="<%=tcsa.getDescription()%>" placeholder="Description"
@@ -1261,19 +1263,19 @@
                                                             </div>
                                                             <div style="display:inline-block;clear:both; height:15px;width:100%;background-color:transparent">
                                                                 <div class="technical_part" style="width: 30%; float:left; background-color: transparent">
-                                                                    <div style="float:left;width:80px; "><p style="float:right;font-weight:bold;" link="white" ><%out.print(docService.findLabelHTML("testcasestepaction", "action", "Action"));%></p>
+                                                                    <div style="float:left;width:80px; "><p style="float:right;font-weight:bold;" link="white" ><%out.print(docService.findLabelHTML("testcasestepaction", "action", "Action", myLang));%></p>
                                                                     </div>
                                                                     <%=ComboInvariant(appContext, "action_action_" + incrementStep + "_" + incrementAction, "width:50%;border: 1px solid white; color:#888888", "action_action_" + incrementStep + "_" + incrementAction, "wob", "ACTION", tcsa.getAction(), "showChangedRow(this.parentNode.parentNode.parentNode.parentNode)", null)%>
                                                                 </div>
                                                                 <div class="technical_part" style="width: 40%; float:left; background-color: transparent">
-                                                                    <div style="float:left;"><p style="float:right;font-weight:bold;" link="white" ><%out.print(docService.findLabelHTML("testcasestepaction", "object", "Object"));%></p>
+                                                                    <div style="float:left;"><p style="float:right;font-weight:bold;" link="white" ><%out.print(docService.findLabelHTML("testcasestepaction", "object", "Object", myLang));%></p>
                                                                      </div>
                                                                     <input style="float:left;border-style:groove;border-width:thin;border-color:white;border: 1px solid white; height:100%;width:75%; color:#999999"
                                                                            value="<%=tcsa.getObject()%>"
                                                                            onchange="showChangedRow(this.parentNode.parentNode.parentNode.parentNode)" name="action_object_<%=incrementStep%>_<%=incrementAction%>" <%=isReadonly%>>
                                                                 </div>
                                                                 <div class="technical_part" style="width: 30%; float:left; background-color:transparent">
-                                                                    <div style="float:left;"><p style="float:right;font-weight:bold;" link="white" ><%out.print(docService.findLabelHTML("testcasestepaction", "property", "Property"));%></p>
+                                                                    <div style="float:left;"><p style="float:right;font-weight:bold;" link="white" ><%out.print(docService.findLabelHTML("testcasestepaction", "property", "Property", myLang));%></p>
                                                                     </div>
                                                                     <input  class="wob property_value" style="width:75%;border-style:groove;border-width:thin;border-color:white;border: 1px solid white; color:#888888"
                                                                             value="<%=tcsa.getProperty()%>"
@@ -1377,7 +1379,7 @@
                                                         <div style="height:100%;width:80%;float:left;display:inline-block">
                                                             <div class="functional_description" style="clear:both;width:100%;height:20px">
                                                                 <div style="float:left; width:80%">
-                                                                    <div style="float:left;width:80px; "><p style="float:right;font-weight:bold;" link="white" ><%out.print(docService.findLabelHTML("testcasestepaction", "description", "Description"));%></p>
+                                                                    <div style="float:left;width:80px; "><p style="float:right;font-weight:bold;" link="white" ><%out.print(docService.findLabelHTML("testcasestepaction", "description", "Description", myLang));%></p>
                                                                     </div>
                                                                     <input class="wob" placeholder="Description" class="functional_description" style="border-style:groove;border-width:thin;border-color:white;border: 2px solid white; color:#333333; width: 80%; font-weight:bold;font-size:12px ;font-family: Trebuchet MS; "
                                                                            data-fieldtype="Description" value="<%=tcsac.getDescription()%>" name="control_description_<%=incrementStep%>_<%=incrementAction%>_<%=incrementControl%>" maxlength="1000">
@@ -1385,23 +1387,23 @@
                                                             </div>
                                                             <div style="clear:both;display:inline-block; width:100%; height:15px">
                                                                 <div style="width:30%; float:left;">
-                                                                    <div style="float:left;width:80px; "><p style="float:right;font-weight:bold;" link="white" ><%out.print(docService.findLabelHTML("testcasestepactioncontrol", "type", "ControlType"));%></p>
+                                                                    <div style="float:left;width:80px; "><p style="float:right;font-weight:bold;" link="white" ><%out.print(docService.findLabelHTML("testcasestepactioncontrol", "type", "ControlType", myLang));%></p>
                                                                     </div>
                                                                     <%=ComboInvariant(appContext, "control_type_" + incrementStep + "_" + incrementAction + "_" + incrementControl, "width:50%;font-size:10px ;border: 1px solid white;color:" + actionFontColor, "control_type_" + incrementStep + "_" + incrementAction + "_" + incrementControl, "technical_part", "CONTROL", tcsac.getType(), "", null)%>
                                                                 </div>
                                                                 <div class="technical_part" style="width:30%;float:left;">
-                                                                    <div style="float:left;"><p style="float:right;font-weight:bold;" link="white" ><%out.print(docService.findLabelHTML("testcasestepactioncontrol", "controleproperty", "controleproperty"));%></p>
+                                                                    <div style="float:left;"><p style="float:right;font-weight:bold;" link="white" ><%out.print(docService.findLabelHTML("testcasestepactioncontrol", "controleproperty", "controleproperty", myLang));%></p>
                                                                     </div>
                                                                     <input class="wob" style="width: 70%;border: 1px solid white;  color:<%=actionFontColor%>"
                                                                            value="<%=tcsac.getControlProperty()%>" name="control_property_<%=incrementStep%>_<%=incrementAction%>_<%=incrementControl%>">
                                                                 </div>
                                                                 <div class="technical_part" style="width:30%;float:left; ">
-                                                                    <div style="float:left;"><p style="float:right;font-weight:bold;" link="white" ><%out.print(docService.findLabelHTML("testcasestepactioncontrol", "controlevalue", "controlevalue"));%></p>
+                                                                    <div style="float:left;"><p style="float:right;font-weight:bold;" link="white" ><%out.print(docService.findLabelHTML("testcasestepactioncontrol", "controlevalue", "controlevalue", myLang));%></p>
                                                                     </div><input class="wob" style="width: 70%;border: 1px solid white; color:<%=actionFontColor%>"
                                                                                  value="<%=tcsac.getControlValue()%>" name="control_value_<%=incrementStep%>_<%=incrementAction%>_<%=incrementControl%>">
                                                                 </div>
                                                                 <div class="technical_part" style="width:8%;float:left; ">
-                                                                    <div style="float:left;"><p style="float:right;font-weight:bold;" link="white" ><%out.print(docService.findLabelHTML("testcasestepactioncontrol", "fatal", "fatal"));%></p>
+                                                                    <div style="float:left;"><p style="float:right;font-weight:bold;" link="white" ><%out.print(docService.findLabelHTML("testcasestepactioncontrol", "fatal", "fatal", myLang));%></p>
                                                                     </div>
                                                                     <%=ComboInvariant(appContext, "control_fatal_" + incrementStep + "_" + incrementAction + "_" + incrementControl, "width: 40%;border: 1px solid white;color:" + actionFontColor, "control_fatal_" + incrementStep + "_" + incrementAction + "_" + incrementControl, "wob", "CTRLFATAL", tcsac.getFatal(), "trackChanges(this.value, '" + tcsac.getFatal() + "', 'submitButtonChanges')", null)%>
                                                                 </div>
@@ -1515,23 +1517,23 @@
                                     %>
                                     <div id="testcaseproperties_table" style="text-align: left;">
                                         <div class="StepHeaderDiv">
-                                            <div style="width: 3%; float:left"><%out.print(docService.findLabelHTML("page_testcase", "delete", "Delete"));%>
+                                            <div style="width: 3%; float:left"><%out.print(docService.findLabelHTML("page_testcase", "delete", "Delete", myLang));%>
                                             </div>
-                                            <div style="width: 10%; float:left"><%out.print(docService.findLabelHTML("testcasecountryproperties", "property", "Property"));%>
+                                            <div style="width: 10%; float:left"><%out.print(docService.findLabelHTML("testcasecountryproperties", "property", "Property", myLang));%>
                                             </div>
-                                            <div style="width: <%=1.5 * countryListTestcase.size()%>%; float:left"><%out.print(docService.findLabelHTML("invariant", "country", "Country"));%>
+                                            <div style="width: <%=1.5 * countryListTestcase.size()%>%; float:left"><%out.print(docService.findLabelHTML("invariant", "country", "Country", myLang));%>
                                             </div>
-                                            <div style="width: 10%; float:left"><%out.print(docService.findLabelHTML("testcasecountryproperties", "type", "Type"));%>
+                                            <div style="width: 10%; float:left"><%out.print(docService.findLabelHTML("testcasecountryproperties", "type", "Type", myLang));%>
                                             </div>
-                                            <div style="width: 5%; float:left"><%out.print(docService.findLabelHTML("testcasecountryproperties", "database", "Database"));%>
+                                            <div style="width: 5%; float:left"><%out.print(docService.findLabelHTML("testcasecountryproperties", "database", "Database", myLang));%>
                                             </div>
-                                            <div style="width: <%=55 - (1.5 * countryListTestcase.size())%>%; float:left"><%out.print(docService.findLabelHTML("testcasecountryproperties", "value", "Value"));%>
+                                            <div style="width: <%=55 - (1.5 * countryListTestcase.size())%>%; float:left"><%out.print(docService.findLabelHTML("testcasecountryproperties", "value", "Value", myLang));%>
                                             </div>
-                                            <div style="width: 3%; float:left"><%out.print(docService.findLabelHTML("testcasecountryproperties", "length", "Length"));%>
+                                            <div style="width: 3%; float:left"><%out.print(docService.findLabelHTML("testcasecountryproperties", "length", "Length", myLang));%>
                                             </div>
-                                            <div style="width: 3%; float:left"><%out.print(docService.findLabelHTML("testcasecountryproperties", "rowlimit", "RowLimit"));%>
+                                            <div style="width: 3%; float:left"><%out.print(docService.findLabelHTML("testcasecountryproperties", "rowlimit", "RowLimit", myLang));%>
                                             </div>
-                                            <div style="width: 8%; float:left"><%out.print(docService.findLabelHTML("testcasecountryproperties", "nature", "Nature"));%>
+                                            <div style="width: 8%; float:left"><%out.print(docService.findLabelHTML("testcasecountryproperties", "nature", "Nature", myLang));%>
                                             </div>
                                         </div>
                                         <div id="cache_properties">
@@ -1863,7 +1865,7 @@
                 <div style="height:100%;width:89%;float:left; display:inline-block">
                     <div class="functional_description" style="height:20px;display:inline-block;clear:both;width:100%; background-color: transparent">
                         <div style="float:left; width:80%">
-                            <div style="float:left;width:80px; "><p style="float:right;font-weight:bold;color:white;" link="white" ><%out.print(docService.findLabelHTML("testcasestepaction", "description", "Description"));%></p>
+                            <div style="float:left;width:80px; "><p style="float:right;font-weight:bold;color:white;" link="white" ><%out.print(docService.findLabelHTML("testcasestepaction", "description", "Description", myLang));%></p>
                             </div>
                             <input data-id="action_description_template" class="wob" class="functional_description" style="border-style:groove;border-width:thin;border-color:white;border: 1px solid white; color:#333333; width: 80%; background-color: transparent; font-weight:bold;font-size:14px ;font-family: Trebuchet MS; "
                                    data-fieldtype="Description" placeholder="Description">
@@ -1871,18 +1873,18 @@
                     </div>
                     <div style="display:inline-block;clear:both; height:15px;width:99%;background-color:transparent">
                         <div class="technical_part" style="width: 30%; float:left; background-color: transparent">
-                            <div style="float:left;width:80px; "><p style="float:right;font-weight:bold;color:white;" link="white" ><%out.print(docService.findLabelHTML("testcasestepaction", "action", "Action"));%></p>
+                            <div style="float:left;width:80px; "><p style="float:right;font-weight:bold;color:white;" link="white" ><%out.print(docService.findLabelHTML("testcasestepaction", "action", "Action", myLang));%></p>
                             </div>
                             <%=ComboInvariant(appContext, "", "width: 70%;border: 1px solid white; background-color:transparent;", "action_action_template", "wob", "ACTION", "", "", null)%>
                         </div>
                         <div class="technical_part" style="width: 40%; float:left; background-color: transparent">
-                            <div style="float:left;"><p style="float:right;font-weight:bold;color:white;" link="white" ><%out.print(docService.findLabelHTML("testcasestepaction", "object", "Object"));%></p>
+                            <div style="float:left;"><p style="float:right;font-weight:bold;color:white;" link="white" ><%out.print(docService.findLabelHTML("testcasestepaction", "object", "Object", myLang));%></p>
                             </div>
                             <input style="float:left;border-style:groove;border-width:thin;border-color:white;border: 1px solid white; height:100%;width:75%; background-color: transparent;"
                                    data-id="action_object_template">
                         </div>
                         <div class="technical_part" style="width: 30%; float:left; background-color:transparent">
-                            <div style="float:left; "><p style="float:right;font-weight:bold;color:white;" link="white" ><%out.print(docService.findLabelHTML("testcasestepaction", "property", "Property"));%></p>
+                            <div style="float:left; "><p style="float:right;font-weight:bold;color:white;" link="white" ><%out.print(docService.findLabelHTML("testcasestepaction", "property", "Property", myLang));%></p>
                             </div>
                             <input  class="wob property_value" style="width:75%;border-style:groove;border-width:thin;border-color:white;border: 1px solid white; background-color: transparent;"
                                     data-id="action_property_template">
@@ -1920,7 +1922,7 @@
                 <div style="height:100%;width:89%;float:left;display:inline-block">
                     <div class="functional_description_control" style="clear:both;width:100%;height:20px">
                         <div style="float:left; width:80%">
-                            <div style="float:left;width:80px; "><p style="float:right;font-weight:bold;color:white;" link="white" ><%out.print(docService.findLabelHTML("testcasestepaction", "description", "Description"));%></p>
+                            <div style="float:left;width:80px; "><p style="float:right;font-weight:bold;color:white;" link="white" ><%out.print(docService.findLabelHTML("testcasestepaction", "description", "Description", myLang));%></p>
                             </div>
                             <input class="wob" placeholder="Description" class="functional_description_control" style="border-style:groove;border-width:thin;border-color:white;border: 1px solid white; color:#333333; width: 80%; background-color: transparent; font-weight:bold;font-size:14px ;font-family: Trebuchet MS; "
                                    data-id="control_description_template" data-fieldtype="Description">
@@ -1928,23 +1930,23 @@
                     </div>
                     <div style="clear:both; width:100%; height:15px">
                         <div style="width:30%; float:left;">
-                            <div style="float:left;width:80px; "><p style="float:right;font-weight:bold;color:white;" link="white" ><%out.print(docService.findLabelHTML("testcasestepactioncontrol", "Type", "ControlType"));%></p>
+                            <div style="float:left;width:80px; "><p style="float:right;font-weight:bold;color:white;" link="white" ><%out.print(docService.findLabelHTML("testcasestepactioncontrol", "Type", "ControlType", myLang));%></p>
                             </div>
                             <%=ComboInvariant(appContext, "", "width: 70%;border: 1px solid white; background-color:transparent;", "control_type_template", "wob", "CONTROL", "", "", null)%>
                         </div>
                         <div class="technical_part" style="width:30%;float:left;">
-                            <div style="float:left;"><p style="float:right;font-weight:bold;color:white;" link="white" ><%out.print(docService.findLabelHTML("testcasestepactioncontrol", "controleproperty", "controleproperty"));%></p>
+                            <div style="float:left;"><p style="float:right;font-weight:bold;color:white;" link="white" ><%out.print(docService.findLabelHTML("testcasestepactioncontrol", "controleproperty", "controleproperty", myLang));%></p>
                             </div>
                             <input class="wob" style="width: 75%;border: 1px solid white; background-color:transparent; "
                                    data-id="control_property_template">
                         </div>
                         <div class="technical_part" style="width:30%;float:left; ">
-                            <div style="float:left;"><p style="float:right;font-weight:bold;color:white;" link="white" ><%out.print(docService.findLabelHTML("testcasestepactioncontrol", "controlevalue", "controlevalue"));%></p>
+                            <div style="float:left;"><p style="float:right;font-weight:bold;color:white;" link="white" ><%out.print(docService.findLabelHTML("testcasestepactioncontrol", "controlevalue", "controlevalue", myLang));%></p>
                             </div><input class="wob" style="width: 70%;border: 1px solid white; background-color:transparent;"
                                          data-id="control_value_template">
                         </div>
                         <div class="technical_part" style="width:8%;float:left; ">
-                            <div style="float:left;"><p style="float:right;font-weight:bold;color:white;" link="white" ><%out.print(docService.findLabelHTML("testcasestepactioncontrol", "fatal", "fatal"));%></p>
+                            <div style="float:left;"><p style="float:right;font-weight:bold;color:white;" link="white" ><%out.print(docService.findLabelHTML("testcasestepactioncontrol", "fatal", "fatal", myLang));%></p>
                             </div>
                             <%=ComboInvariant(appContext, "", "width: 40%;border: 1px solid white; background-color:transparent;", "control_fatal_template", "wob", "CTRLFATAL", "", "", null)%>
                         </div>

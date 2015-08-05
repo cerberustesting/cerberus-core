@@ -49,6 +49,7 @@
         <%
         	Connection conn = db.connect();
                     IDocumentationService docService = appContext.getBean(IDocumentationService.class);
+                    String myLang = request.getAttribute("MyLang").toString();
 
                     try {
 
@@ -147,14 +148,14 @@
                 <td>
                     <table border>
                         <tr id="header">
-                            <td><%=docService.findLabelHTML("application", "system", "")%></td>
-                            <td><%=docService.findLabelHTML("invariant", "country", "")%></td>
-                            <td><%=docService.findLabelHTML("invariant", "environment", "")%></td>
-                            <td><%=docService.findLabelHTML("buildrevisioninvariant", "versionname01", "")%></td>
-                            <td><%=docService.findLabelHTML("buildrevisioninvariant", "versionname02", "")%></td>
-                            <td><%=docService.findLabelHTML("countryenvparam", "chain", "")%></td>
-                            <td><%=docService.findLabelHTML("countryenvparam", "active", "")%></td>
-                            <td><%=docService.findLabelHTML("countryenvparam", "Type", "")%></td>
+                            <td><%=docService.findLabelHTML("application", "system", "", myLang)%></td>
+                            <td><%=docService.findLabelHTML("invariant", "country", "", myLang)%></td>
+                            <td><%=docService.findLabelHTML("invariant", "environment", "", myLang)%></td>
+                            <td><%=docService.findLabelHTML("buildrevisioninvariant", "versionname01", "", myLang)%></td>
+                            <td><%=docService.findLabelHTML("buildrevisioninvariant", "versionname02", "", myLang)%></td>
+                            <td><%=docService.findLabelHTML("countryenvparam", "chain", "", myLang)%></td>
+                            <td><%=docService.findLabelHTML("countryenvparam", "active", "", myLang)%></td>
+                            <td><%=docService.findLabelHTML("countryenvparam", "Type", "", myLang)%></td>
                             <td> </td>
                         </tr>
                         <tr>
@@ -183,14 +184,14 @@
                         <tr><td colspan="9" style="background-color:lightgrey">Environment dependency.</td>
                         </tr>
                         <tr id="header">
-                            <td><%=docService.findLabelHTML("application", "system", "")%></td>
-                            <td><%=docService.findLabelHTML("invariant", "country", "")%></td>
-                            <td><%=docService.findLabelHTML("invariant", "environment", "")%></td>
-                            <td><%=docService.findLabelHTML("buildrevisioninvariant", "versionname01", "")%></td>
-                            <td><%=docService.findLabelHTML("buildrevisioninvariant", "versionname02", "")%></td>
-                            <td><%=docService.findLabelHTML("countryenvparam", "chain", "")%></td>
-                            <td><%=docService.findLabelHTML("countryenvparam", "active", "")%></td>
-                            <td><%=docService.findLabelHTML("countryenvparam", "Type", "")%></td>
+                            <td><%=docService.findLabelHTML("application", "system", "", myLang)%></td>
+                            <td><%=docService.findLabelHTML("invariant", "country", "", myLang)%></td>
+                            <td><%=docService.findLabelHTML("invariant", "environment", "", myLang)%></td>
+                            <td><%=docService.findLabelHTML("buildrevisioninvariant", "versionname01", "", myLang)%></td>
+                            <td><%=docService.findLabelHTML("buildrevisioninvariant", "versionname02", "", myLang)%></td>
+                            <td><%=docService.findLabelHTML("countryenvparam", "chain", "", myLang)%></td>
+                            <td><%=docService.findLabelHTML("countryenvparam", "active", "", myLang)%></td>
+                            <td><%=docService.findLabelHTML("countryenvparam", "Type", "", myLang)%></td>
                         </tr>
                         <%
                         	for (CountryEnvLink myLinkBuild : countryEnvLinks) {
@@ -227,11 +228,11 @@
 
                     <table border>
                         <tr id="header">
-                            <td><%=docService.findLabelHTML("application", "Application", "")%></td>
-                            <td><%=docService.findLabelHTML("countryenvironmentparameters", "IP", "")%></td>
-                            <td><%=docService.findLabelHTML("countryenvironmentparameters", "Domain", "")%></td>
-                            <td><%=docService.findLabelHTML("countryenvironmentparameters", "URL", "")%></td>
-                            <td><%=docService.findLabelHTML("countryenvironmentparameters", "URLLOGIN", "")%></td>
+                            <td><%=docService.findLabelHTML("application", "Application", "", myLang)%></td>
+                            <td><%=docService.findLabelHTML("countryenvironmentparameters", "IP", "", myLang)%></td>
+                            <td><%=docService.findLabelHTML("countryenvironmentparameters", "Domain", "", myLang)%></td>
+                            <td><%=docService.findLabelHTML("countryenvironmentparameters", "URL", "", myLang)%></td>
+                            <td><%=docService.findLabelHTML("countryenvironmentparameters", "URLLOGIN", "", myLang)%></td>
                         </tr>
                         <%
                         	Statement stmtCEP = conn.createStatement();
@@ -266,12 +267,12 @@
 
                     <table border>
                         <tr id="header">
-                            <td><%=docService.findLabelHTML("host", "Server", "")%></td>
-                            <td><%=docService.findLabelHTML("host", "Session", "")%></td>
-                            <td><%=docService.findLabelHTML("host", "host", "")%></td>
-                            <td><%=docService.findLabelHTML("host", "port", "")%></td>
-                            <td><%=docService.findLabelHTML("host", "secure", "")%></td>
-                            <td><%=docService.findLabelHTML("host", "active", "")%></td>
+                            <td><%=docService.findLabelHTML("host", "Server", "", myLang)%></td>
+                            <td><%=docService.findLabelHTML("host", "Session", "", myLang)%></td>
+                            <td><%=docService.findLabelHTML("host", "host", "", myLang)%></td>
+                            <td><%=docService.findLabelHTML("host", "port", "", myLang)%></td>
+                            <td><%=docService.findLabelHTML("host", "secure", "", myLang)%></td>
+                            <td><%=docService.findLabelHTML("host", "active", "", myLang)%></td>
                             <td> </td>
                         </tr>
                         <%
@@ -305,8 +306,8 @@
 
                     <table border>
                         <tr id="header">
-                            <td><%=docService.findLabelHTML("countryenvironmentdatabase", "Database", "")%></td>
-                            <td><%=docService.findLabelHTML("countryenvironmentdatabase", "ConnectionPoolName", "")%></td>
+                            <td><%=docService.findLabelHTML("countryenvironmentdatabase", "Database", "", myLang)%></td>
+                            <td><%=docService.findLabelHTML("countryenvironmentdatabase", "ConnectionPoolName", "", myLang)%></td>
                         </tr>
                         <%
                         	Statement stmtD = conn.createStatement();
@@ -459,10 +460,10 @@
                             <td style="vertical-align: top">
                                 <table border style="height:240px">
                                     <tr id="header" style="height:15px">
-                                        <td><%=docService.findLabelHTML("countryenvparam_log", "datecre", "")%></td>
-                                        <td><%=docService.findLabelHTML("countryenvparam_log", "Description", "")%></td>
-                                        <td><%=docService.findLabelHTML("buildrevisioninvariant", "versionname01", "")%></td>
-                                        <td><%=docService.findLabelHTML("buildrevisioninvariant", "versionname02", "")%></td>
+                                        <td><%=docService.findLabelHTML("countryenvparam_log", "datecre", "", myLang)%></td>
+                                        <td><%=docService.findLabelHTML("countryenvparam_log", "Description", "", myLang)%></td>
+                                        <td><%=docService.findLabelHTML("buildrevisioninvariant", "versionname01", "", myLang)%></td>
+                                        <td><%=docService.findLabelHTML("buildrevisioninvariant", "versionname02", "", myLang)%></td>
                                     </tr>
                                     <%
                                     	Statement stmtCEL = conn.createStatement();
@@ -489,8 +490,8 @@
                                 </table></td><td style="vertical-align: top">
                                 <table border>
                                     <tr id="header" style="height:15px" valign="top">
-                                        <td><%=docService.findLabelHTML("countryenvparam_log", "datecre", "")%></td>
-                                        <td><%=docService.findLabelHTML("countryenvparam", "chain", "")%></td>
+                                        <td><%=docService.findLabelHTML("countryenvparam_log", "datecre", "", myLang)%></td>
+                                        <td><%=docService.findLabelHTML("countryenvparam", "chain", "", myLang)%></td>
                                     </tr>
                                     <%
                                     	Statement stmtBAT = conn.createStatement();
@@ -533,7 +534,7 @@
                 </tr>
                 <tr>
                     <td>
-                <ftxt><%=docService.findLabelHTML("countryenvparam", "type", "")%></ftxt> 
+                <ftxt><%=docService.findLabelHTML("countryenvparam", "type", "", myLang)%></ftxt> 
                 </td>
                 <td>
                     <select id="type" name="type" style="width: 200px">
@@ -552,7 +553,7 @@
                 </tr>
                 <tr>
                     <td>
-                <ftxt><%=docService.findLabelHTML("countryenvparam", "DistribList", "")%></ftxt> 
+                <ftxt><%=docService.findLabelHTML("countryenvparam", "DistribList", "", myLang)%></ftxt> 
                 </td>
                 <td>
                     <textarea id="distriblist" name="distriblist" cols="80" rows="10"><%=rsPCE.getString("c.DistribList") == null ? "" : rsPCE.getString("c.DistribList")%></textarea><br>
@@ -560,7 +561,7 @@
                 </tr>
                 <tr>
                     <td>
-                <ftxt><%=docService.findLabelHTML("countryenvparam", "EMailBodyDisableEnvironment", "")%></ftxt> 
+                <ftxt><%=docService.findLabelHTML("countryenvparam", "EMailBodyDisableEnvironment", "", myLang)%></ftxt> 
                 </td>
                 <td>
                     <textarea id="bodydisenv" name="bodydisenv" cols="80" rows="10"><%=rsPCE.getString("c.EMailBodyDisableEnvironment") == null ? "" : rsPCE.getString("c.EMailBodyDisableEnvironment")%></textarea><br>
@@ -568,7 +569,7 @@
                 </tr>
                 <tr>
                     <td>
-                <ftxt><%=docService.findLabelHTML("countryenvparam", "EMailBodyRevision", "")%></ftxt> 
+                <ftxt><%=docService.findLabelHTML("countryenvparam", "EMailBodyRevision", "", myLang)%></ftxt> 
                 </td>
                 <td>
                     <textarea id="bodyrev" name="bodyrev" cols="80" rows="10"><%=rsPCE.getString("c.EMailBodyRevision") == null ? "" : rsPCE.getString("c.EMailBodyRevision")%></textarea><br>
@@ -576,7 +577,7 @@
                 </tr>
                 <tr>
                     <td>
-                <ftxt><%=docService.findLabelHTML("countryenvparam", "EMailBodyChain", "")%></ftxt> 
+                <ftxt><%=docService.findLabelHTML("countryenvparam", "EMailBodyChain", "", myLang)%></ftxt> 
                 </td>
                 <td>
                     <textarea id="bodychain" name="bodychain" cols="80" rows="10"><%=rsPCE.getString("c.EMailBodyChain") == null ? "" : rsPCE.getString("c.EMailBodyChain")%></textarea><br>
@@ -584,7 +585,7 @@
                 </tr>
                 <tr>
                     <td>
-                <ftxt><%=docService.findLabelHTML("countryenvparam", "maintenanceact", "")%></ftxt> 
+                <ftxt><%=docService.findLabelHTML("countryenvparam", "maintenanceact", "", myLang)%></ftxt> 
                 </td>
                 <td>
                     <%=rsPCE.getString("c.maintenanceact") == null ? "" : rsPCE.getString("c.maintenanceact")%>
@@ -592,7 +593,7 @@
                 </tr>
                 <tr>
                     <td>
-                <ftxt><%=docService.findLabelHTML("countryenvparam", "maintenancestr", "")%></ftxt> 
+                <ftxt><%=docService.findLabelHTML("countryenvparam", "maintenancestr", "", myLang)%></ftxt> 
                 </td>
                 <td>
                     <%=rsPCE.getString("c.maintenancestr") == null ? "" : rsPCE.getString("c.maintenancestr")%>
@@ -600,7 +601,7 @@
                 </tr>
                 <tr>
                     <td>
-                <ftxt><%=docService.findLabelHTML("countryenvparam", "maintenanceend", "")%></ftxt> 
+                <ftxt><%=docService.findLabelHTML("countryenvparam", "maintenanceend", "", myLang)%></ftxt> 
                 </td>
                 <td>
                     <%=rsPCE.getString("c.maintenanceend") == null ? "" : rsPCE.getString("c.maintenanceend")%>

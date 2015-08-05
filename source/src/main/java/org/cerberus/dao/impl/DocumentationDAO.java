@@ -45,9 +45,9 @@ public class DocumentationDAO implements IDocumentationDAO {
     private IFactoryDocumentation factoryDocumentation;
 
     @Override
-    public Documentation findDocumentationByKey(String docTable, String docField, String docValue) {
+    public Documentation findDocumentationByKey(String docTable, String docField, String docValue, String lang) {
         Documentation result = null;
-        final String query = "SELECT * FROM documentation d WHERE d.doctable = ? AND d.docfield = ? AND d.DocValue = ? ";
+        final String query = "SELECT * FROM documentation d WHERE d.doctable = ? AND d.docfield = ? AND d.DocValue = ? AND Lang = ? ";
 
         Connection connection = this.databaseSpring.connect();
         try {
@@ -56,6 +56,7 @@ public class DocumentationDAO implements IDocumentationDAO {
                 preStat.setString(1, docTable);
                 preStat.setString(2, docField);
                 preStat.setString(3, docValue);
+                preStat.setString(4, lang);
 
                 ResultSet resultSet = preStat.executeQuery();
                 try {
@@ -91,9 +92,9 @@ public class DocumentationDAO implements IDocumentationDAO {
     }
 
     @Override
-    public List<Documentation> findDocumentationsWithNotEmptyValueAndDescription(String docTable, String docField) {
+    public List<Documentation> findDocumentationsWithNotEmptyValueAndDescription(String docTable, String docField, String lang) {
         List<Documentation> result = new ArrayList<Documentation>();
-        final String query = "SELECT DocValue, DocDesc, DocLabel FROM documentation where DocTable = ? and docfield = ? and docValue IS NOT NULL and length(docValue) > 1 AND length(docdesc) > 1";
+        final String query = "SELECT DocValue, DocDesc, DocLabel FROM documentation where DocTable = ? and docfield = ? and Lang = ? and docValue IS NOT NULL and length(docValue) > 1 AND length(docdesc) > 1";
 
         Connection connection = this.databaseSpring.connect();
         try {
@@ -101,6 +102,7 @@ public class DocumentationDAO implements IDocumentationDAO {
             try {
                 preStat.setString(1, docTable);
                 preStat.setString(2, docField);
+                preStat.setString(3, lang);
 
                 ResultSet resultSet = preStat.executeQuery();
                 try {
@@ -137,9 +139,9 @@ public class DocumentationDAO implements IDocumentationDAO {
     }
 
     @Override
-    public List<Documentation> findDocumentationsWithEmptyValueAndNotEmptyDescription(String docTable, String docField) {
+    public List<Documentation> findDocumentationsWithEmptyValueAndNotEmptyDescription(String docTable, String docField, String lang) {
         List<Documentation> result = new ArrayList<Documentation>();
-        final String query = "SELECT DocDesc, DocLabel FROM documentation where DocTable = ? and docfield = ? and length(docvalue)=0 and length(docdesc) > 1";
+        final String query = "SELECT DocDesc, DocLabel FROM documentation where DocTable = ? and docfield = ? and Lang = ? and length(docvalue)=0 and length(docdesc) > 1";
 
         Connection connection = this.databaseSpring.connect();
         try {
@@ -147,6 +149,7 @@ public class DocumentationDAO implements IDocumentationDAO {
             try {
                 preStat.setString(1, docTable);
                 preStat.setString(2, docField);
+                preStat.setString(3, lang);
 
                 ResultSet resultSet = preStat.executeQuery();
                 try {
@@ -182,8 +185,8 @@ public class DocumentationDAO implements IDocumentationDAO {
     }
 
     @Override
-    public String findLabelFromTableAndField(String docTable, String docField) {
-        final String query = "SELECT DocLabel FROM documentation where DocTable = ? and docfield = ? and length(docvalue)=0 and length(docdesc) > 1";
+    public String findLabelFromTableAndField(String docTable, String docField, String lang) {
+        final String query = "SELECT DocLabel FROM documentation where DocTable = ? and docfield = ? and Lang = ? and length(docvalue)=0 and length(docdesc) > 1";
 
         Connection connection = this.databaseSpring.connect();
         try {
@@ -192,6 +195,7 @@ public class DocumentationDAO implements IDocumentationDAO {
             try {
                 preStat.setString(1, docTable);
                 preStat.setString(2, docField);
+                preStat.setString(3, lang);
 
                 ResultSet resultSet = preStat.executeQuery();
                 try {
@@ -227,7 +231,7 @@ public class DocumentationDAO implements IDocumentationDAO {
     
     
     @Override
-    public String findDescriptionFromTableFieldAndValue(String docTable, String docField, String docValue) {
+    public String findDescriptionFromTableFieldAndValue(String docTable, String docField, String docValue, String lang) {
         final String query = "SELECT DocDesc FROM documentation where DocTable = ? and DocField = ? and DocValue = ? and length(docdesc) > 1";
 
         Connection connection = this.databaseSpring.connect();
@@ -238,6 +242,7 @@ public class DocumentationDAO implements IDocumentationDAO {
                 preStat.setString(1, docTable);
                 preStat.setString(2, docField);
                 preStat.setString(3, docValue);
+                preStat.setString(4, lang);
 
                 ResultSet resultSet = preStat.executeQuery();
                 try {

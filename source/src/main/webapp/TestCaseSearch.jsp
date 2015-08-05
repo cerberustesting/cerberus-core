@@ -44,6 +44,7 @@
                 Connection conn = db.connect();
                 IDocumentationService docService = appContext.getBean(IDocumentationService.class);
 
+                String myLang = ParameterParserUtil.parseStringParam(request.getAttribute("MyLang").toString(), "en");
                 
                     IParameterService paramService = appContext.getBean(IParameterService.class);
                     String solr_url = paramService.findParameterByKey("solr_url", "").getValue();
@@ -318,17 +319,17 @@
                                                 <td id="wob">
                                                     <table>
                                                         <tr id="header">
-                                                            <td class="wob" style="width: 100px"><%out.print(docService.findLabelHTML( "test", "test", "Test"));%></td>
-                                                            <td class="wob" style="width: 60px"><%out.print(docService.findLabelHTML( "testcase", "testcase", "Testcase"));%></td>
-                                                            <td class="wob" style="width: 100px"><%out.print(docService.findLabelHTML( "project", "idproject", "Project"));%></td>
-                                                            <td class="wob" style="width: 100px"><%out.print(docService.findLabelHTML( "testcase", "ticket", "Ticket"));%></td>
-                                                            <td class="wob" style="width: 70px"><%out.print(docService.findLabelHTML( "testcase", "BugID", ""));%></td>
-                                                            <td class="wob" style="width: 100px"><%out.print(docService.findLabelHTML( "testcase", "origine", "Origine"));%></td>
-                                                            <td class="wob" style="width: 100px"><%out.print(docService.findLabelHTML( "testcase", "creator", "Creator"));%></td>
-                                                            <td class="wob" style="width: 150px"><%out.print(docService.findLabelHTML( "application", "system", "System"));%></td>
-                                                            <td class="wob" style="width: 150px"><%out.print(docService.findLabelHTML( "application", "application", "Application"));%></td>
-                                                            <td class="wob" style="width: 150px"><%out.print(docService.findLabelHTML( "invariant", "PRIORITY", ""));%></td>
-                                                            <td class="wob" style="width: 150px"><%out.print(docService.findLabelHTML( "testcase", "status", ""));%></td>
+                                                            <td class="wob" style="width: 100px"><%out.print(docService.findLabelHTML( "test", "test", "Test", myLang));%></td>
+                                                            <td class="wob" style="width: 60px"><%out.print(docService.findLabelHTML( "testcase", "testcase", "Testcase", myLang));%></td>
+                                                            <td class="wob" style="width: 100px"><%out.print(docService.findLabelHTML( "project", "idproject", "Project", myLang));%></td>
+                                                            <td class="wob" style="width: 100px"><%out.print(docService.findLabelHTML( "testcase", "ticket", "Ticket", myLang));%></td>
+                                                            <td class="wob" style="width: 70px"><%out.print(docService.findLabelHTML( "testcase", "BugID", "", myLang));%></td>
+                                                            <td class="wob" style="width: 100px"><%out.print(docService.findLabelHTML( "testcase", "origine", "Origine", myLang));%></td>
+                                                            <td class="wob" style="width: 100px"><%out.print(docService.findLabelHTML( "testcase", "creator", "Creator", myLang));%></td>
+                                                            <td class="wob" style="width: 150px"><%out.print(docService.findLabelHTML( "application", "system", "System", myLang));%></td>
+                                                            <td class="wob" style="width: 150px"><%out.print(docService.findLabelHTML( "application", "application", "Application", myLang));%></td>
+                                                            <td class="wob" style="width: 150px"><%out.print(docService.findLabelHTML( "invariant", "PRIORITY", "", myLang));%></td>
+                                                            <td class="wob" style="width: 150px"><%out.print(docService.findLabelHTML( "testcase", "status", "", myLang));%></td>
                                                         </tr>
                                                         <tr>
                                                             <td class="wob">
@@ -416,11 +417,11 @@
                                                     </table>
                                                     <table>
                                                         <tr id="header">
-                                                            <td class="wob" style="width: 150px"><%out.print(docService.findLabelHTML( "invariant", "GROUP", ""));%></td>
-                                                            <td class="wob" style="width: 150px"><%out.print(docService.findLabelHTML( "testcase", "activePROD", ""));%></td>
-                                                            <td class="wob" style="width: 150px"><%out.print(docService.findLabelHTML( "testcase", "activeQA", ""));%></td>
-                                                            <td class="wob" style="width: 150px"><%out.print(docService.findLabelHTML( "testcase", "activeUAT", ""));%></td>
-                                                            <td class="wob" style="width: 150px"><%out.print(docService.findLabelHTML( "page_testcasesearch", "text", ""));%></td>
+                                                            <td class="wob" style="width: 150px"><%out.print(docService.findLabelHTML( "invariant", "GROUP", "", myLang));%></td>
+                                                            <td class="wob" style="width: 150px"><%out.print(docService.findLabelHTML( "testcase", "activePROD", "", myLang));%></td>
+                                                            <td class="wob" style="width: 150px"><%out.print(docService.findLabelHTML( "testcase", "activeQA", "", myLang));%></td>
+                                                            <td class="wob" style="width: 150px"><%out.print(docService.findLabelHTML( "testcase", "activeUAT", "", myLang));%></td>
+                                                            <td class="wob" style="width: 150px"><%out.print(docService.findLabelHTML( "page_testcasesearch", "text", "", myLang));%></td>
                                                         </tr> 
                                                         <tr>
                                                             <td class="wob"><select id="ScGroup" name="ScGroup" style="width: 140px">
@@ -457,13 +458,13 @@
                                                         </tr>
                                                     </table>
                                                     <table><tr id="header">
-                                                            <td class="wob" style="width: 150px"><%out.print(docService.findLabelHTML( "testcase", "tcactive", ""));%></td>
-                                                            <td class="wob" style="width: 150px"><%out.print(docService.findLabelHTML( "testcase", "FromBuild", ""));%></td>
-                                                            <td class="wob" style="width: 150px"><%out.print(docService.findLabelHTML( "testcase", "FromRev", ""));%></td>
-                                                            <td class="wob" style="width: 150px"><%out.print(docService.findLabelHTML( "testcase", "ToBuild", ""));%></td>
-                                                            <td class="wob" style="width: 150px"><%out.print(docService.findLabelHTML( "testcase", "ToRev", ""));%></td>
-                                                            <td class="wob" style="width: 150px"><%out.print(docService.findLabelHTML( "testcase", "TargetBuild", ""));%></td>
-                                                            <td class="wob" style="width: 150px"><%out.print(docService.findLabelHTML( "testcase", "TargetRev", ""));%></td>
+                                                            <td class="wob" style="width: 150px"><%out.print(docService.findLabelHTML( "testcase", "tcactive", "", myLang));%></td>
+                                                            <td class="wob" style="width: 150px"><%out.print(docService.findLabelHTML( "testcase", "FromBuild", "", myLang));%></td>
+                                                            <td class="wob" style="width: 150px"><%out.print(docService.findLabelHTML( "testcase", "FromRev", "", myLang));%></td>
+                                                            <td class="wob" style="width: 150px"><%out.print(docService.findLabelHTML( "testcase", "ToBuild", "", myLang));%></td>
+                                                            <td class="wob" style="width: 150px"><%out.print(docService.findLabelHTML( "testcase", "ToRev", "", myLang));%></td>
+                                                            <td class="wob" style="width: 150px"><%out.print(docService.findLabelHTML( "testcase", "TargetBuild", "", myLang));%></td>
+                                                            <td class="wob" style="width: 150px"><%out.print(docService.findLabelHTML( "testcase", "TargetRev", "", myLang));%></td>
                                                         </tr> 
                                                         <tr>
                                                             <td class="wob"><select id="ScActive" name="ScActive" style="width: 140px">

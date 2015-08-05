@@ -37,12 +37,12 @@ public class DocumentationService implements IDocumentationService {
     private IDocumentationDAO documentationDAO;
 
     @Override
-    public String findLabel(String docTable, String docField, String defaultLabel) {
+    public String findLabel(String docTable, String docField, String defaultLabel, String lang) {
         String result = null;
         StringBuilder label = new StringBuilder();
 
         String labelFromDB = "";
-        Documentation myDoc = this.documentationDAO.findDocumentationByKey(docTable, docField, "");
+        Documentation myDoc = this.documentationDAO.findDocumentationByKey(docTable, docField, "", lang);
 
         if (myDoc == null) {
             label.append("!!NoDoc!! ");
@@ -59,12 +59,12 @@ public class DocumentationService implements IDocumentationService {
     }
 
     @Override
-    public String findLabelHTML(String docTable, String docField, String defaultLabel) {
+    public String findLabelHTML(String docTable, String docField, String defaultLabel, String lang) {
         String result = null;
         StringBuilder label = new StringBuilder();
 
         String labelFromDB = "";
-        Documentation myDoc = this.documentationDAO.findDocumentationByKey(docTable, docField, "");
+        Documentation myDoc = this.documentationDAO.findDocumentationByKey(docTable, docField, "", lang);
 
         if (myDoc == null) {
             label.append("!!NoDoc!! ");
@@ -88,23 +88,23 @@ public class DocumentationService implements IDocumentationService {
     }
 
     @Override
-    public List<Documentation> findDocumentationsWithNotEmptyValueAndDescription(String docTable, String docField) {
-        return this.documentationDAO.findDocumentationsWithNotEmptyValueAndDescription(docTable, docField);
+    public List<Documentation> findDocumentationsWithNotEmptyValueAndDescription(String docTable, String docField, String lang) {
+        return this.documentationDAO.findDocumentationsWithNotEmptyValueAndDescription(docTable, docField, lang);
     }
 
     @Override
-    public List<Documentation> findDocumentationsWithEmptyValueAndNotEmptyDescription(String docTable, String docField) {
-        return this.documentationDAO.findDocumentationsWithEmptyValueAndNotEmptyDescription(docTable, docField);
+    public List<Documentation> findDocumentationsWithEmptyValueAndNotEmptyDescription(String docTable, String docField, String lang) {
+        return this.documentationDAO.findDocumentationsWithEmptyValueAndNotEmptyDescription(docTable, docField, lang);
     }
 
     @Override
-    public String findLabelFromTableAndField(String docTable, String docField) {
-        return this.documentationDAO.findLabelFromTableAndField(docTable, docField);
+    public String findLabelFromTableAndField(String docTable, String docField, String lang) {
+        return this.documentationDAO.findLabelFromTableAndField(docTable, docField, lang);
     }
 
     @Override
-    public String findDescriptionFromTableFieldAndValue(String docTable, String docField, String docValue) {
-        return this.documentationDAO.findDescriptionFromTableFieldAndValue(docTable, docField, docValue);
+    public String findDescriptionFromTableFieldAndValue(String docTable, String docField, String docValue, String lang) {
+        return this.documentationDAO.findDescriptionFromTableFieldAndValue(docTable, docField, docValue, lang);
     }
 
     @Override

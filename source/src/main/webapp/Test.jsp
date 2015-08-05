@@ -27,6 +27,8 @@
 <%@page import="org.cerberus.service.ITestCaseCountryService"%>
 <%@page import="org.cerberus.service.impl.TestService"%>
 <%@page import="org.cerberus.dao.ITestDAO"%>
+<%@ page import="org.cerberus.util.ParameterParserUtil" %>
+
 <% Date DatePageStart = new Date();%>
 
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
@@ -58,6 +60,7 @@
                 ITestService testService;
                 ITestCaseService testcaseService;
                 ITestCaseCountryService testcaseCountryService;
+                String myLang = ParameterParserUtil.parseStringParam(request.getAttribute("MyLang").toString(), "en");
 
                 /*
                  * Database connexion
@@ -84,7 +87,7 @@
             <!-- Select List -->
             <div class="filters" style="float:left; width:100%; height:30px">
                 <div style="float:left; width:100px"><p class="dttTitle">Filters</p></div>
-                <div style="float:left; width:100px;font-weight: bold;"><%out.print(docService.findLabelHTML("test", "test", "Test"));%></div>
+                <div style="float:left; width:100px;font-weight: bold;"><%out.print(docService.findLabelHTML("test", "test", "Test", myLang));%></div>
                 <div id="selectboxtestpage" style="float:left">
                     <form action="Test.jsp" method="post" name="selectTest">
                         <select id="stestbox" name="stestbox" style="width: 500px">
@@ -135,19 +138,19 @@
                 <div  id="testParameterDetail" style="display:none; clear:both; width:100%">
                     <form method="post" name="DeleteTest">
                         <div style="clear:both">
-                            <div style="float:left; width:150px; text-align: left"><%out.print(docService.findLabelHTML("test", "test", "Test"));%></div>
+                            <div style="float:left; width:150px; text-align: left"><%out.print(docService.findLabelHTML("test", "test", "Test", myLang));%></div>
                             <div style="float:left"><input style="font-weight: bold; width: 200px" name="test_test" id="test_test"
                                                            readonly="readonly" value="<%=testSelect.getTest()%>">
                             </div>
                         </div>
                         <div style="clear:both">
-                            <div style="float:left; width:150px; text-align: left"><%out.print(docService.findLabelHTML("test", "description", "Description"));%></div>
+                            <div style="float:left; width:150px; text-align: left"><%out.print(docService.findLabelHTML("test", "description", "Description", myLang));%></div>
                             <div style="float:left"><input id="test_description" style="width: 800px" name="test_description" value="<%=testSelect.getDescription()%>"
                                                            maxlength="300">
                             </div>
                         </div>
                         <div style="clear:both">
-                            <div style="float:left; width:150px; text-align: left"><%out.print(docService.findLabelHTML("test", "active", "Active"));%></div>
+                            <div style="float:left; width:150px; text-align: left"><%out.print(docService.findLabelHTML("test", "active", "Active", myLang));%></div>
                             <div style="float:left">
                                 <select id="test_active" style="width: 40px;" name="test_active">
                                     <option value="N">No</option>
@@ -156,7 +159,7 @@
                             </div>
                         </div>
                         <div style="clear:both">
-                            <div style="float:left; width:150px; text-align: left"><%out.print(docService.findLabelHTML("test", "automated", "Automated"));%></div>
+                            <div style="float:left; width:150px; text-align: left"><%out.print(docService.findLabelHTML("test", "automated", "Automated", myLang));%></div>
                             <div style="float:left"><select id="test_automated" style="width: 40px;" name="test_automated">
                                     <option value="N">No</option>
                                     <option <%="Y".equalsIgnoreCase(testSelect.getAutomated()) ? "selected='selected'" : "" %> value="Y">Yes</option>
@@ -189,7 +192,7 @@
                         <table id="testcasetable" style="clear:both; text-align: left; border-collapse: collapse" border="0px" cellpadding="0px" cellspacing="0px">
                             <!--					<tr id="header" style="position:relative;top:expression(this.offsetParent.scrollTop-2);">-->
                             <tr class="backDiv" style="height:30px">   
-                                <td style="width: 1%"><%out.print(docService.findLabelHTML("page_test", "delete", "Delete"));%></td>
+                                <td style="width: 1%"><%out.print(docService.findLabelHTML("page_test", "delete", "Delete", myLang));%></td>
                                 <td style="width: 20%" colspan="2">Testcase Information</td>
                                 <td style="width: 69%" colspan="2">Testcase Parameters</td>
                                 <td style="width: 10%">Activation Criterias</td>

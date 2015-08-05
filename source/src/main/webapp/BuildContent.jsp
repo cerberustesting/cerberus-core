@@ -68,6 +68,7 @@
 <%
     try {
         String MySystem = request.getAttribute("MySystem").toString();
+        String myLang = request.getAttribute("MyLang").toString();
         String maxBuild = buildRevisionParametersService.getMaxBuildBySystem(MySystem);
         String maxRevision = buildRevisionParametersService.getMaxRevisionBySystemAndBuild(MySystem, maxBuild);
 
@@ -330,13 +331,13 @@
             <a id="last" href="#">Latest Release</a>
         </div>
         <div style="float: left; padding-left: 10px">
-            <%=docService.findLabelHTML("buildrevisioninvariant", "versionname01", "")%>
+            <%=docService.findLabelHTML("buildrevisioninvariant", "versionname01", "", myLang)%>
             <select id="selectedBuild" name="build">
                 <%=buildOptions%>
             </select>
         </div>
         <div style="float: left; padding-left: 10px">
-            <%=docService.findLabelHTML("buildrevisioninvariant", "versionname02", "")%>
+            <%=docService.findLabelHTML("buildrevisioninvariant", "versionname02", "", myLang)%>
             <select id="selectedRevision" name="revision">
                 <%=revisionOptions%>
             </select>

@@ -76,6 +76,9 @@
                     IParameterService myParameterService = appContext.getBean(IParameterService.class);
                     ITestCaseExecutionInQueueService tceiqService = appContext.getBean(ITestCaseExecutionInQueueService.class);
                     ITestCaseService tcService = appContext.getBean(ITestCaseService.class);
+                    
+                    String myLang = request.getAttribute("MyLang").toString();
+
                     try {
                         User usr = userService.findUserByKey(request.getUserPrincipal().getName());
 
@@ -399,7 +402,7 @@
                     </div>
                     <div  id="testParameterDetail" style="clear:both; width:100%">
                         <div style="float:left">
-                            <div style="clear:both; width:150px; text-align: left"><% out.print(docService.findLabelHTML("test", "Test", "Test"));%>
+                            <div style="clear:both; width:150px; text-align: left"><% out.print(docService.findLabelHTML("test", "Test", "Test", myLang));%>
                             </div>
                             <div style="clear:both">
                                 <select size="16" id="test" name="Test"
@@ -408,7 +411,7 @@
                             </div>
                         </div>
                         <div style="float:left">
-                            <div style="clear:both; width:150px; text-align: left"><% out.print(docService.findLabelHTML("testcase", "TestCase", "Test Case"));%></div>
+                            <div style="clear:both; width:150px; text-align: left"><% out.print(docService.findLabelHTML("testcase", "TestCase", "Test Case", myLang));%></div>
                             <div style="clear:both">
                                 <select size="16" id="testcase" name="TestCase" style="width: 600px"
                                         onchange="getCountryList()">
@@ -416,7 +419,7 @@
                             </div>
                         </div>
                         <div style="float:left">
-                            <div style="clear:both; width:80px; text-align: left"><% out.print(docService.findLabelHTML("invariant", "Country", "Country"));%></div>
+                            <div style="clear:both; width:80px; text-align: left"><% out.print(docService.findLabelHTML("invariant", "Country", "Country", myLang));%></div>
                             <div style="clear:both">
                                 <select size="16" id="country" name="Country" style="width: 80px"
                                         onchange="getApplicationList()">
@@ -446,7 +449,7 @@
                             <div style="clear:both">
                                 <div id="automatedEnvironmentDiv" style="float:left">
                                     <div style="float:left; width:60px; text-align: left">
-                                        <span style="font-weight: normal;font-size: smaller"><% out.print(docService.findLabelHTML("invariant", "Environment", "Environment"));%>
+                                        <span style="font-weight: normal;font-size: smaller"><% out.print(docService.findLabelHTML("invariant", "Environment", "Environment", myLang));%>
                                         </span>
                                     </div>
                                     <div style="float:left">
@@ -489,21 +492,21 @@
                     <div>
                         <div id="manualRobotDiv">
                             <div style="clear:both">
-                                <div style="float:left; width:150px; text-align:left"><% out.print(docService.findLabelHTML("page_runtests", "SeleniumServerIP", "Selenium Server IP "));%>
+                                <div style="float:left; width:150px; text-align:left"><% out.print(docService.findLabelHTML("page_runtests", "SeleniumServerIP", "Selenium Server IP", myLang));%>
                                 </div>
                                 <div style="float:left">
                                     <input type="text" name="ss_ip" id="ss_ip" value="<%= ssIP%>" style="float:left; width:150px;" />
                                 </div>
                             </div>
                             <div style="clear:both">
-                                <div style="float:left; width:150px; text-align:left"><% out.print(docService.findLabelHTML("page_runtests", "SeleniumServerPort", "Selenium Server Port "));%>
+                                <div style="float:left; width:150px; text-align:left"><% out.print(docService.findLabelHTML("page_runtests", "SeleniumServerPort", "Selenium Server Port", myLang));%>
                                 </div>
                                 <div style="float:left">
                                     <input type="text" name="ss_p" id="ss_p" value="<%= ssPort%>" style="float:left; width:150px;"/>
                                 </div>
                             </div>
                             <div style="clear:both">
-                                <div style="float:left; width:150px; text-align:left"><% out.print(docService.findLabelHTML("page_runtests", "Browser", "Browser"));%>
+                                <div style="float:left; width:150px; text-align:left"><% out.print(docService.findLabelHTML("page_runtests", "Browser", "Browser", myLang));%>
                                 </div>
                                 <div style="float:left">
                                     <select id="browser" name="browser" style="width: 150px;" class="<%=browserClass%>">
@@ -564,14 +567,14 @@
                     <p style="float:left" class="dttTitle">Set Execution Parameter
                     </p>
                     <div style="clear:both">
-                        <div style="float:left; width:150px; text-align:left"><% out.print(docService.findLabelHTML("testcaseexecution", "tag", "Tag"));%>
+                        <div style="float:left; width:150px; text-align:left"><% out.print(docService.findLabelHTML("testcaseexecution", "tag", "Tag", myLang));%>
                         </div>
                         <div style="float:left">
                             <input id="tag" name="Tag" style="width: 200px">
                         </div>
                     </div>
                     <div style="clear:both">
-                        <div style="float:left;width:150px; text-align:left"><% out.print(docService.findLabelHTML("page_runtests", "outputformat", ""));%>
+                        <div style="float:left;width:150px; text-align:left"><% out.print(docService.findLabelHTML("page_runtests", "outputformat", "", myLang));%>
                         </div>
                         <div style="float:left">
                             <select id="outputformat" name="outputformat" style="width: 200px">
@@ -579,7 +582,7 @@
                         </div>
                     </div>
                     <div style="clear:both">
-                        <div style="float:left;width:150px;text-align:left "><% out.print(docService.findLabelHTML("testcaseexecution", "verbose", ""));%>
+                        <div style="float:left;width:150px;text-align:left "><% out.print(docService.findLabelHTML("testcaseexecution", "verbose", "", myLang));%>
                         </div>
                         <div style="float:left">
                             <select id="verbose" name="verbose" style="width: 200px">
@@ -587,7 +590,7 @@
                         </div>
                     </div>
                     <div style="clear:both">
-                        <div style="float:left;width:150px; text-align:left"><% out.print(docService.findLabelHTML("page_runtests", "screenshot", ""));%>
+                        <div style="float:left;width:150px; text-align:left"><% out.print(docService.findLabelHTML("page_runtests", "screenshot", "", myLang));%>
                         </div>
                         <div style="float:left">
                             <select id="screenshot" name="screenshot" style="width: 200px">
@@ -595,7 +598,7 @@
                         </div>
                     </div>
                     <div style="clear:both">
-                        <div style="float:left;width:150px; text-align:left"><% out.print(docService.findLabelHTML("page_runtests", "pageSource", ""));%>
+                        <div style="float:left;width:150px; text-align:left"><% out.print(docService.findLabelHTML("page_runtests", "pageSource", "", myLang));%>
                         </div>
                         <div style="float:left">
                             <select id="pageSource" name="pageSource" style="width: 200px">
@@ -603,7 +606,7 @@
                         </div>
                     </div>
                     <div style="clear:both">
-                        <div style="float:left;width:150px; text-align:left"><% out.print(docService.findLabelHTML("page_runtests", "seleniumLog", ""));%>
+                        <div style="float:left;width:150px; text-align:left"><% out.print(docService.findLabelHTML("page_runtests", "seleniumLog", "", myLang));%>
                         </div>
                         <div style="float:left">
                             <select id="seleniumLog" name="seleniumLog" style="width: 200px">
@@ -611,7 +614,7 @@
                         </div>
                     </div>
                     <div style="clear:both">
-                        <div style="float:left;width:150px; text-align:left"><% out.print(docService.findLabelHTML("page_runtests", "synchroneous", ""));%>
+                        <div style="float:left;width:150px; text-align:left"><% out.print(docService.findLabelHTML("page_runtests", "synchroneous", "", myLang));%>
                         </div>
                         <div style="float:left">
                             <select id="synchroneous" name="synchroneous" style="width: 200px">
@@ -619,14 +622,14 @@
                         </div>
                     </div>
                     <div style="clear:both">
-                        <div style="float:left;width:150px; text-align:left"><% out.print(docService.findLabelHTML("page_runtests", "timeout", ""));%>
+                        <div style="float:left;width:150px; text-align:left"><% out.print(docService.findLabelHTML("page_runtests", "timeout", "", myLang));%>
                         </div>
                         <div style="float:left">
                             <input id="timeout" name="timeout" style="width: 200px">
                         </div>
                     </div>
                     <div style="clear:both">
-                        <div style="float:left;width:150px; text-align:left"><% out.print(docService.findLabelHTML("page_runtests", "retries", ""));%>
+                        <div style="float:left;width:150px; text-align:left"><% out.print(docService.findLabelHTML("page_runtests", "retries", "", myLang));%>
                         </div>
                         <div style="float:left">
                             <select id="retries" name="retries" style="width: 200px">
@@ -634,7 +637,7 @@
                         </div>
                     </div>
                     <div style="clear:both">
-                        <div style="float:left;width:150px; text-align:left"><% out.print(docService.findLabelHTML("page_runtests", "manualExecution", ""));%>
+                        <div style="float:left;width:150px; text-align:left"><% out.print(docService.findLabelHTML("page_runtests", "manualExecution", "", myLang));%>
                         </div>
                         <div style="float:left">
                             <select id="manualExecution" name="manualExecution" style="width: 200px"></select>

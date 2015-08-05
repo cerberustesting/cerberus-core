@@ -94,6 +94,7 @@
                     if (request.getParameter("system") != null && request.getParameter("system").compareTo("") != 0) {
                         MySystem = request.getParameter("system");
                     }
+                    String myLang = request.getAttribute("MyLang").toString();
 
                     String test = "";
                     if (request.getParameter("test") != null) {

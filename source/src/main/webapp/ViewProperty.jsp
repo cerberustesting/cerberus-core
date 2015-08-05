@@ -17,6 +17,7 @@
   ~ You should have received a copy of the GNU General Public License
   ~ along with Cerberus.  If not, see <http://www.gnu.org/licenses/>.
 --%>
+<%@page import="org.cerberus.util.ParameterParserUtil"%>
 <%@page import="org.cerberus.service.IDocumentationService"%>
 
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
@@ -29,6 +30,7 @@
     String type = request.getParameter("type");
 
     IDocumentationService docService = appContext.getBean(IDocumentationService.class);
+    String myLang = ParameterParserUtil.parseStringParam(request.getParameterValues("MyLang").toString(), "en");
 
     if(test != null && !"".equals(test.trim()) 
         && testcase != null && !"".equals(testcase.trim())) {
@@ -39,10 +41,10 @@
             <input type="hidden" id="type" name="type" value="<%=type%>">
         <%if(!"executeSoapFromLib".equals(type) && !"getFromTestData".equals(type)) {%>
             <input type="hidden" id="db" name="db" value="<%=database%>">
-            <label for="country"><% out.print(docService.findLabelHTML("invariant", "Country", "Country"));%></label>
+            <label for="country"><% out.print(docService.findLabelHTML("invariant", "Country", "Country", myLang));%></label>
             <select id="country" name="country" onchange="getEnvironmentSelectBox()"></select>
             &nbsp;&nbsp;
-            <label for="environment"><% out.print(docService.findLabelHTML( "invariant", "Environment", "Environment"));%></label>
+            <label for="environment"><% out.print(docService.findLabelHTML( "invariant", "Environment", "Environment", myLang));%></label>
             <select id="environment" name="environment"></select>
             <br>
             <script>

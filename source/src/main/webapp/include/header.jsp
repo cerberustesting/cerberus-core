@@ -199,6 +199,7 @@
                       }
 
                       request.setAttribute("MySystem", MySystem);
+                      request.setAttribute("MyLang", "en");
                 %>                
                 <select id="MySystem" style="" name="MySystem" onchange="document.SysFilter.submit()">
                     <%

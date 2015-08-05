@@ -110,17 +110,19 @@
         <%@ include file="include/header.jsp" %>
             <%
                 IDocumentationService docService = appContext.getBean(IDocumentationService.class);
+                String myLang = request.getAttribute("MyLang").toString();
+
             %>
         <p class="dttTitle">Project</p>
         <div style="width: 100%;  font: 90% sans-serif">
             <table id="projectsTable" class="display">
                 <thead>
                     <tr>
-                        <th><%=docService.findLabel("Project","idProject","")%></th>
-                        <th><%=docService.findLabel("Project","code","")%></th>
-                        <th><%=docService.findLabel("Project","Description","")%></th>
-                        <th><%=docService.findLabel("Project","Active","")%></th>
-                        <th><%=docService.findLabel("Project","dateCreation","")%></th>
+                        <th><%=docService.findLabel("Project","idProject","", myLang)%></th>
+                        <th><%=docService.findLabel("Project","code","", myLang)%></th>
+                        <th><%=docService.findLabel("Project","Description","", myLang)%></th>
+                        <th><%=docService.findLabel("Project","Active","", myLang)%></th>
+                        <th><%=docService.findLabel("Project","dateCreation","", myLang)%></th>
                     </tr>
                 </thead>
                 <tbody>
@@ -129,22 +131,22 @@
         </div>
     <div>
             <form id="formAddNewRow" action="#" title="Add Project" style="width:600px" method="post">
-                <label for="IDProject" style="font-weight:bold"><%=docService.findLabelHTML("Project","idProject","")%></label>
+                <label for="IDProject" style="font-weight:bold"><%=docService.findLabelHTML("Project","idProject","", myLang)%></label>
                     <input id="IDProject" name="idProject" style="width:150px;" 
                            class="ncdetailstext" rel="0" >
                 <br><br>
-                    <label for="Code" style="font-weight:bold"><%=docService.findLabelHTML("Project","code","")%></label>
+                    <label for="Code" style="font-weight:bold"><%=docService.findLabelHTML("Project","code","", myLang)%></label>
                     <input id="Code" name="VCCode" style="width:100px;" 
                            class="ncdetailstext" rel="1" >
                 <br>
-                    <label for="Description" style="font-weight:bold"><%=docService.findLabelHTML("Project","Description","")%></label>
+                    <label for="Description" style="font-weight:bold"><%=docService.findLabelHTML("Project","Description","", myLang)%></label>
                     <input id="Description" name="Description" style="width:400px;" 
                            class="ncdetailstext" rel="2" >
                 <br>
-                    <label for="Active" style="font-weight:bold"><%=docService.findLabelHTML("Project","Active","")%></label>
+                    <label for="Active" style="font-weight:bold"><%=docService.findLabelHTML("Project","Active","", myLang)%></label>
                     <%=ComboInvariantAjax(appContext, "Active", "", "Active", "3", "PROJECTACTIVE", "", "", false)%>
                 <div style="width: 200px; float:left; display: none">
-                    <label for="dateCreation" style="font-weight:bold"><%=docService.findLabelHTML("Project","dateCreation","")%></label>
+                    <label for="dateCreation" style="font-weight:bold"><%=docService.findLabelHTML("Project","dateCreation","", myLang)%></label>
                     <input id="dateCreation" name="dateCre" style="width:100px;" 
                            class="ncdetailstext" rel="4" >
                 </div>

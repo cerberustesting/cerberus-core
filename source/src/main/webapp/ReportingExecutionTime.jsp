@@ -62,6 +62,8 @@
                 if (request.getParameter("system") != null && request.getParameter("system").compareTo("") != 0) {
                     MySystem = request.getParameter("system");
                 }
+                String myLang = request.getAttribute("MyLang").toString();
+
 
                 String tag, tagEncoded = "";
                 if (request.getParameter("Tag") != null && request.getParameter("Tag").compareTo("") != 0) {
@@ -315,13 +317,13 @@
                                         <table border="0px">
                                             <tr><td class="wob" COLSPAN="8"><h4 style="color:black">TestCase Parameters</h4></td></tr>              
                                             <tr>
-                                                <td id="wob" style="width: 110px"><%out.print(docService.findLabelHTML("test", "Test", "Test"));%></td>
-                                                <td id="wob" style="width: 110px"><%out.print(docService.findLabelHTML("project", "idproject", "Project"));%></td>
-                                                <td id="wob" style="width: 110px"><%out.print(docService.findLabelHTML("application", "Application", "Application"));%></td>
-                                                <td id="wob" style="width: 110px"><%out.print(docService.findLabelHTML("testcase", "tcactive", "TestCase Active"));%></td>
-                                                <td id="wob" style="width: 70px"><%out.print(docService.findLabelHTML("invariant", "PRIORITY", "Priority"));%></td>
-                                                <td id="wob" style="width: 110px"><%out.print(docService.findLabelHTML("testcase", "Status", "Status"));%></td>
-                                                <td id="wob" style="width: 110px"><%out.print(docService.findLabelHTML("invariant", "GROUP", "Group"));%></td>
+                                                <td id="wob" style="width: 110px"><%out.print(docService.findLabelHTML("test", "Test", "Test", myLang));%></td>
+                                                <td id="wob" style="width: 110px"><%out.print(docService.findLabelHTML("project", "idproject", "Project", myLang));%></td>
+                                                <td id="wob" style="width: 110px"><%out.print(docService.findLabelHTML("application", "Application", "Application", myLang));%></td>
+                                                <td id="wob" style="width: 110px"><%out.print(docService.findLabelHTML("testcase", "tcactive", "TestCase Active", myLang));%></td>
+                                                <td id="wob" style="width: 70px"><%out.print(docService.findLabelHTML("invariant", "PRIORITY", "Priority", myLang));%></td>
+                                                <td id="wob" style="width: 110px"><%out.print(docService.findLabelHTML("testcase", "Status", "Status", myLang));%></td>
+                                                <td id="wob" style="width: 110px"><%out.print(docService.findLabelHTML("invariant", "GROUP", "Group", myLang));%></td>
                                             </tr>
                                             <tr>                        
                                                 <td id="wob">
@@ -422,12 +424,12 @@
                                         <table border="0px">
                                             <tr><td class="wob" colspan="7"></td></tr>
                                             <tr>
-                                                <td id="wob" style="width: 90px"><%out.print(docService.findLabelHTML("invariant", "Environment", "Environment"));%></td>
-                                                <td id="wob" style="width: 90px"><%out.print(docService.findLabelHTML("buildrevisioninvariant", "versionname01", "Build"));%></td>
-                                                <td id="wob" style="width: 90px"><%out.print(docService.findLabelHTML("buildrevisioninvariant", "versionname02", "Revision"));%></td>
-                                                <td id="wob" style="width: 90px"><%out.print(docService.findLabelHTML("testcaseexecution", "IP", "Ip"));%></td>
-                                                <td id="wob" style="width: 90px"><%out.print(docService.findLabelHTML("testcaseexecution", "Port", "Port"));%></td>
-                                                <td id="wob" style="width: 90px"><%out.print(docService.findLabelHTML("testcaseexecution", "tag", "Tag"));%></td>
+                                                <td id="wob" style="width: 90px"><%out.print(docService.findLabelHTML("invariant", "Environment", "Environment", myLang));%></td>
+                                                <td id="wob" style="width: 90px"><%out.print(docService.findLabelHTML("buildrevisioninvariant", "versionname01", "Build", myLang));%></td>
+                                                <td id="wob" style="width: 90px"><%out.print(docService.findLabelHTML("buildrevisioninvariant", "versionname02", "Revision", myLang));%></td>
+                                                <td id="wob" style="width: 90px"><%out.print(docService.findLabelHTML("testcaseexecution", "IP", "Ip", myLang));%></td>
+                                                <td id="wob" style="width: 90px"><%out.print(docService.findLabelHTML("testcaseexecution", "Port", "Port", myLang));%></td>
+                                                <td id="wob" style="width: 90px"><%out.print(docService.findLabelHTML("testcaseexecution", "tag", "Tag", myLang));%></td>
                                             </tr>
 
                                             <tr>
@@ -469,12 +471,12 @@
                                         <table border="0px">
                                             <tr><td class="wob" colspan="7"></td></tr>
                                             <tr>
-                                                <td id="wob" style="width: 90px"><%out.print(docService.findLabelHTML("invariant", "Environment", "Environment"));%></td>
-                                                <td id="wob" style="width: 90px"><%out.print(docService.findLabelHTML("buildrevisioninvariant", "versionname01", "Build"));%></td>
-                                                <td id="wob" style="width: 90px"><%out.print(docService.findLabelHTML("buildrevisioninvariant", "versionname02", "Revision"));%></td>
-                                                <td id="wob" style="width: 90px"><%out.print(docService.findLabelHTML("testcaseexecution", "IP", "Ip"));%></td>
-                                                <td id="wob" style="width: 90px"><%out.print(docService.findLabelHTML("testcaseexecution", "Port", "Port"));%></td>
-                                                <td id="wob" style="width: 90px"><%out.print(docService.findLabelHTML("testcaseexecution", "tag", "Tag"));%></td>
+                                                <td id="wob" style="width: 90px"><%out.print(docService.findLabelHTML("invariant", "Environment", "Environment", myLang));%></td>
+                                                <td id="wob" style="width: 90px"><%out.print(docService.findLabelHTML("buildrevisioninvariant", "versionname01", "Build", myLang));%></td>
+                                                <td id="wob" style="width: 90px"><%out.print(docService.findLabelHTML("buildrevisioninvariant", "versionname02", "Revision", myLang));%></td>
+                                                <td id="wob" style="width: 90px"><%out.print(docService.findLabelHTML("testcaseexecution", "IP", "Ip", myLang));%></td>
+                                                <td id="wob" style="width: 90px"><%out.print(docService.findLabelHTML("testcaseexecution", "Port", "Port", myLang));%></td>
+                                                <td id="wob" style="width: 90px"><%out.print(docService.findLabelHTML("testcaseexecution", "tag", "Tag", myLang));%></td>
                                             </tr>
 
                                             <tr>
@@ -537,11 +539,11 @@
                     <td>
                         <table style="text-align: left;border-collapse:collapse;" border="1px" cellpadding="0" cellspacing="1">
                             <tr id="header">
-                                <td style="width: 30px"><%out.print(docService.findLabelHTML("testcase", "test", "Test"));%></td>
-                                <td style="width: 30px"><%out.print(docService.findLabelHTML("testcase", "testcase", "TestCase"));%></td>
-                                <td style="width: 30px"><%out.print(docService.findLabelHTML("application", "application", "Aplication"));%></td>
-                                <td style="width: 30px"><%out.print(docService.findLabelHTML("testcase", "description", "Description"));%></td>
-                                <td style="width: 30px"><%out.print(docService.findLabelHTML("invariant", "PRIORITY", "Priority"));%></td>
+                                <td style="width: 30px"><%out.print(docService.findLabelHTML("testcase", "test", "Test", myLang));%></td>
+                                <td style="width: 30px"><%out.print(docService.findLabelHTML("testcase", "testcase", "TestCase", myLang));%></td>
+                                <td style="width: 30px"><%out.print(docService.findLabelHTML("application", "application", "Aplication", myLang));%></td>
+                                <td style="width: 30px"><%out.print(docService.findLabelHTML("testcase", "description", "Description", myLang));%></td>
+                                <td style="width: 30px"><%out.print(docService.findLabelHTML("invariant", "PRIORITY", "Priority", myLang));%></td>
                                 <%
                                     //rs_testcasecountrygeneral.first();								
                                     //do {

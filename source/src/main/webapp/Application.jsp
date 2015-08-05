@@ -44,6 +44,7 @@
         <%@ include file="include/header.jsp" %>
         <%
             IDocumentationService docService = appContext.getBean(IDocumentationService.class);
+            String myLang = request.getAttribute("MyLang").toString();
         %>
         <script type="text/javascript">      
             $(document).ready(function(){
@@ -155,17 +156,17 @@
             <table id="applicationsTable" class="display">
                 <thead>
                     <tr>
-                        <th><%=docService.findLabel("Application", "Application", "")%></th>
-                        <th><%=docService.findLabel("Application", "System", "")%></th>
-                        <th><%=docService.findLabel("Application", "subsystem", "")%></th>
-                        <th><%=docService.findLabel("Application", "description", "")%></th>
-                        <th><%=docService.findLabel("Application", "type", "")%></th>
-                        <th><%=docService.findLabel("Application", "mavengroupid", "")%></th>
-                        <th><%=docService.findLabel("Application", "deploytype", "")%></th>
-                        <th><%=docService.findLabel("Application", "sort", "")%></th>
-                        <th><%=docService.findLabel("Application", "svnurl", "")%></th>
-                        <th><%=docService.findLabel("Application", "bugtrackerurl", "")%></th>
-                        <th><%=docService.findLabel("Application", "bugtrackernewurl", "")%></th>
+                        <th><%=docService.findLabel("Application", "Application", "", myLang)%></th>
+                        <th><%=docService.findLabel("Application", "System", "", myLang)%></th>
+                        <th><%=docService.findLabel("Application", "subsystem", "", myLang)%></th>
+                        <th><%=docService.findLabel("Application", "description", "", myLang)%></th>
+                        <th><%=docService.findLabel("Application", "type", "", myLang)%></th>
+                        <th><%=docService.findLabel("Application", "mavengroupid", "", myLang)%></th>
+                        <th><%=docService.findLabel("Application", "deploytype", "", myLang)%></th>
+                        <th><%=docService.findLabel("Application", "sort", "", myLang)%></th>
+                        <th><%=docService.findLabel("Application", "svnurl", "", myLang)%></th>
+                        <th><%=docService.findLabel("Application", "bugtrackerurl", "", myLang)%></th>
+                        <th><%=docService.findLabel("Application", "bugtrackernewurl", "", myLang)%></th>
                     </tr>
                 </thead>
                 <tbody>
@@ -174,44 +175,44 @@
         </div>
         <div>
             <form id="formAddNewRow" action="#" title="Add Application" style="width:600px" method="post">
-                <label for="Application" style="font-weight:bold"><%=docService.findLabelHTML("Application", "Application", "")%></label>
+                <label for="Application" style="font-weight:bold"><%=docService.findLabelHTML("Application", "Application", "", myLang)%></label>
                 <input id="Application" name="Application" style="width:150px;" 
                        class="ncdetailstext" rel="0" >
                 <br><br>
-                <label for="System" style="font-weight:bold"><%=docService.findLabelHTML("Application", "System", "")%></label>
+                <label for="System" style="font-weight:bold"><%=docService.findLabelHTML("Application", "System", "", myLang)%></label>
                 <input id="System" name="System" style="width:150px;" 
                        class="System" rel="1" value="<%=request.getAttribute("MySystem")%>" readonly>
-                <label for="SubSystem" style="font-weight:bold"><%=docService.findLabelHTML("Application", "subsystem", "")%></label>
+                <label for="SubSystem" style="font-weight:bold"><%=docService.findLabelHTML("Application", "subsystem", "", myLang)%></label>
                 <input id="SubSystem" name="SubSystem" style="width:100px;" 
                        class="ncdetailstext" rel="2" >
-                <label for="Type" style="font-weight:bold"><%=docService.findLabelHTML("Application", "type", "")%></label>
+                <label for="Type" style="font-weight:bold"><%=docService.findLabelHTML("Application", "type", "", myLang)%></label>
                 <%=ComboInvariantAjax(appContext, "Type", "", "Type", "4", "APPLITYPE", "", "", false)%>
                 <br>
                 <br>
-                <label for="Description" style="font-weight:bold"><%=docService.findLabelHTML("Application", "description", "")%></label>
+                <label for="Description" style="font-weight:bold"><%=docService.findLabelHTML("Application", "description", "", myLang)%></label>
                 <input id="Description" name="Description" style="width:400px;" 
                        class="ncdetailstext" rel="3" >
                 <br>
-                <label for="Sort" style="font-weight:bold"><%=docService.findLabelHTML("Application", "sort", "")%></label>
+                <label for="Sort" style="font-weight:bold"><%=docService.findLabelHTML("Application", "sort", "", myLang)%></label>
                 <input id="Sort" name="Sort" style="width:100px;" 
                        class="ncdetailstext" rel="7" >
                 <br><br>
-                <label for="MavenGroupID" style="font-weight:bold"><%=docService.findLabelHTML("Application", "mavengroupid", "")%></label>
+                <label for="MavenGroupID" style="font-weight:bold"><%=docService.findLabelHTML("Application", "mavengroupid", "", myLang)%></label>
                 <input id="MavenGroupID" name="MavenGroupID" style="width:400px;" 
                        class="ncdetailstext" rel="5" >
                 <br>
-                <label for="DeployType" style="font-weight:bold"><%=docService.findLabelHTML("Application", "deploytype", "")%></label>
+                <label for="DeployType" style="font-weight:bold"><%=docService.findLabelHTML("Application", "deploytype", "", myLang)%></label>
                 <%=ComboDeployTypeAjax(appContext, "DeployType", "", "DeployType", "6", "", "")%>
                 <br><br>
-                <label for="SVNURL" style="font-weight:bold"><%=docService.findLabelHTML("Application", "svnurl", "")%></label>
+                <label for="SVNURL" style="font-weight:bold"><%=docService.findLabelHTML("Application", "svnurl", "", myLang)%></label>
                 <input id="SVNURL" name="SVNURL" style="width:600px;" 
                        class="ncdetailstext" rel="8" >
                 <br><br>
-                <label for="BugTrackerURL" style="font-weight:bold"><%=docService.findLabelHTML("Application", "bugtrackerurl", "")%></label>
+                <label for="BugTrackerURL" style="font-weight:bold"><%=docService.findLabelHTML("Application", "bugtrackerurl", "", myLang)%></label>
                 <input id="BugTrackerURL" name="BugTrackerURL" style="width:600px;" 
                        class="ncdetailstext" rel="9" >
                 <br><br>
-                <label for="NewBugURL" style="font-weight:bold"><%=docService.findLabelHTML("Application", "bugtrackernewurl", "")%></label>
+                <label for="NewBugURL" style="font-weight:bold"><%=docService.findLabelHTML("Application", "bugtrackernewurl", "", myLang)%></label>
                 <input id="NewBugURL" name="NewBugURL" style="width:600px;" 
                        class="ncdetailstext" rel="10" >
                 <br><br>
