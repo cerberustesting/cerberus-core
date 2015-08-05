@@ -30,6 +30,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.log4j.Level;
 import org.cerberus.log.MyLogger;
 import org.cerberus.service.IDocumentationService;
+import org.cerberus.util.ParameterParserUtil;
 import org.owasp.html.PolicyFactory;
 import org.owasp.html.Sanitizers;
 import org.springframework.context.ApplicationContext;
@@ -56,7 +57,7 @@ public class DocumentationField extends HttpServlet {
         String docTable = policy.sanitize(httpServletRequest.getParameter("docTable"));
         String docField = policy.sanitize(httpServletRequest.getParameter("docField"));
         String docLabel = policy.sanitize(httpServletRequest.getParameter("docLabel"));
-        String lang = policy.sanitize(httpServletRequest.getParameter("lang"));
+        String lang = ParameterParserUtil.parseStringParam(policy.sanitize(httpServletRequest.getParameter("lang")), "en");
 
         result = docService.findLabelHTML(docTable, docField, docLabel, lang);
 
