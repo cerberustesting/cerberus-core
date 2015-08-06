@@ -214,7 +214,7 @@
             out.print(display_footer(DatePageStart));
         %>
     <script type="text/javascript">
-            (document).ready($.getJSON('FindInvariantByID?idName=browser', function(data) {
+            (document).ready($.getJSON('FindInvariantByID?idName=BROWSER', function(data) {
                 $("#Browser").empty();
 
                 for (var i = 0; i < data.length; i++) {
@@ -227,7 +227,7 @@
 
         </script>
         <script type="text/javascript">
-            (document).ready($.getJSON('FindInvariantByID?idName=platform', function(data) {
+            (document).ready($.getJSON('FindInvariantByID?idName=PLATFORM', function(data) {
                 $("#Platform").empty();
 
                     
@@ -241,7 +241,7 @@
 
         </script>
         <script type="text/javascript">
-            (document).ready($.getJSON('FindInvariantByID?idName=robotactive', function(data) {
+            (document).ready($.getJSON('FindInvariantByID?idName=ROBOTACTIVE', function(data) {
                 $("#Active").empty();
 
                     
