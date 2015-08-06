@@ -41,6 +41,8 @@ import org.cerberus.util.answer.AnswerList;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.owasp.html.PolicyFactory;
+import org.owasp.html.Sanitizers;
 import org.springframework.context.ApplicationContext;
 import org.springframework.web.context.support.WebApplicationContextUtils;
 
@@ -67,6 +69,7 @@ public class ReadProject extends HttpServlet {
             throws ServletException, IOException, CerberusException {
         String echo = request.getParameter("sEcho");
         ApplicationContext appContext = WebApplicationContextUtils.getWebApplicationContext(this.getServletContext());
+        PolicyFactory policy = Sanitizers.FORMATTING.and(Sanitizers.LINKS);
 
         AnswerItem answer = new AnswerItem(new MessageEvent(MessageEventEnum.DATA_OPERATION_OK));
         try {
@@ -74,11 +77,10 @@ public class ReadProject extends HttpServlet {
             if (request.getParameter("action") == null) {
                 answer = findProjectList(appContext, request, response);
                 jsonResponse = (JSONObject) answer.getItem();
-            } 
-            else {
+            } else {
                 int actionParameter = Integer.parseInt(request.getParameter("action"));
                 if (actionParameter == 1) {
-                    String idProject = request.getParameter("idProject");
+                    String idProject = policy.sanitize(request.getParameter("idProject"));
                     answer = findProjectByID(appContext, idProject);
                     jsonResponse = (JSONObject) answer.getItem();
                 }
@@ -181,7 +183,6 @@ public class ReadProject extends HttpServlet {
         jsonResponse.put("contentTable", jsonArray);
         jsonResponse.put("iTotalRecords", resp.getTotalRows());
         jsonResponse.put("iTotalDisplayRecords", resp.getTotalRows());
-
 
         item.setItem(jsonResponse);
         item.setResultMessage(resp.getResultMessage());

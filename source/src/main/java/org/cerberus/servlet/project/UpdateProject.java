@@ -34,6 +34,8 @@ import org.cerberus.service.impl.LogEventService;
 import org.cerberus.util.answer.Answer;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.owasp.html.PolicyFactory;
+import org.owasp.html.Sanitizers;
 import org.springframework.context.ApplicationContext;
 import org.springframework.web.context.support.WebApplicationContextUtils;
 
@@ -56,10 +58,11 @@ public class UpdateProject extends HttpServlet {
             throws ServletException, IOException, CerberusException, JSONException {
         Answer ans = new Answer();
         JSONObject jsonResponse = new JSONObject();
-        String idProject = request.getParameter("idProject");
-        String code = request.getParameter("VCCode");
-        String description = request.getParameter("Description");
-        String active = request.getParameter("Active");
+        PolicyFactory policy = Sanitizers.FORMATTING.and(Sanitizers.LINKS);
+        String idProject = policy.sanitize(request.getParameter("idProject"));
+        String code = policy.sanitize(request.getParameter("VCCode"));
+        String description = policy.sanitize(request.getParameter("Description"));
+        String active = policy.sanitize(request.getParameter("Active"));
 
         ApplicationContext appContext = WebApplicationContextUtils.getWebApplicationContext(this.getServletContext());
         IProjectService projectService = appContext.getBean(IProjectService.class);

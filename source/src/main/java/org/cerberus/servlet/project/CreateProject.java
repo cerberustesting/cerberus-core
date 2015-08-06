@@ -25,6 +25,8 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import org.cerberus.entity.MessageEvent;
+import org.cerberus.entity.MessageEventEnum;
 import org.cerberus.entity.Project;
 import org.cerberus.exception.CerberusException;
 import org.cerberus.factory.IFactoryLogEvent;
@@ -39,6 +41,8 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import org.springframework.context.ApplicationContext;
 import org.springframework.web.context.support.WebApplicationContextUtils;
+import org.owasp.html.PolicyFactory;
+import org.owasp.html.Sanitizers;
 
 /**
  *
@@ -61,31 +65,39 @@ public class CreateProject extends HttpServlet {
             throws ServletException, IOException, CerberusException, JSONException {
         JSONObject jsonResponse = new JSONObject();
         Answer ans = new Answer();
+        PolicyFactory policy = Sanitizers.FORMATTING.and(Sanitizers.LINKS);
 
         response.setContentType("text/html;charset=UTF-8");
         PrintWriter out = response.getWriter();
         try {
-            String idProject = request.getParameter("idProject");
-            String code = request.getParameter("VCCode");
-            String description = request.getParameter("Description");
-            String active = request.getParameter("Active");
+            String idProject = policy.sanitize(request.getParameter("idProject"));
+            String code = policy.sanitize(request.getParameter("VCCode"));
+            String description = policy.sanitize(request.getParameter("Description"));
+            String active = policy.sanitize(request.getParameter("Active"));
 
-            ApplicationContext appContext = WebApplicationContextUtils.getWebApplicationContext(this.getServletContext());
-            IProjectService projectService = appContext.getBean(IProjectService.class);
-            IFactoryProject factoryProject = appContext.getBean(IFactoryProject.class);
+            if (idProject.isEmpty()) {
+                MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_UNEXPECTED_ERROR);
+                msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", "Unable to create data!"));
+                ans.setResultMessage(msg);
+            } else {
+                ApplicationContext appContext = WebApplicationContextUtils.getWebApplicationContext(this.getServletContext());
+                IProjectService projectService = appContext.getBean(IProjectService.class);
+                IFactoryProject factoryProject = appContext.getBean(IFactoryProject.class);
 
-            Project projectData = factoryProject.create(idProject, code, description, active, "");
-            ans = projectService.createProject(projectData);
+                Project projectData = factoryProject.create(idProject, code, description, active, "");
+                ans = projectService.createProject(projectData);
 
-            /**
-             * Adding Log entry.
-             */
-            ILogEventService logEventService = appContext.getBean(LogEventService.class);
-            IFactoryLogEvent factoryLogEvent = appContext.getBean(FactoryLogEvent.class);
-            try {
-                logEventService.insertLogEvent(factoryLogEvent.create(0, 0, request.getUserPrincipal().getName(), null, "/CreateProject", "CREATE", "Create Project : ['" + idProject + "']", "", ""));
-            } catch (CerberusException ex) {
-                org.apache.log4j.Logger.getLogger(UserService.class.getName()).log(org.apache.log4j.Level.ERROR, null, ex);
+                /**
+                 * Adding Log entry.
+                 */
+                ILogEventService logEventService = appContext.getBean(LogEventService.class);
+                IFactoryLogEvent factoryLogEvent = appContext.getBean(FactoryLogEvent.class);
+
+                try {
+                    logEventService.insertLogEvent(factoryLogEvent.create(0, 0, request.getUserPrincipal().getName(), null, "/CreateProject", "CREATE", "Create Project : ['" + idProject + "']", "", ""));
+                } catch (CerberusException ex) {
+                    org.apache.log4j.Logger.getLogger(UserService.class.getName()).log(org.apache.log4j.Level.ERROR, null, ex);
+                }
             }
 
             jsonResponse.put("messageType", ans.getResultMessage().getMessage().getCodeString());

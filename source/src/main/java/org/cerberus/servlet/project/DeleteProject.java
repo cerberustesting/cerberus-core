@@ -40,6 +40,8 @@ import org.cerberus.util.answer.Answer;
 import org.cerberus.util.answer.AnswerItem;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.owasp.html.PolicyFactory;
+import org.owasp.html.Sanitizers;
 import org.springframework.context.ApplicationContext;
 import org.springframework.web.context.support.WebApplicationContextUtils;
 
@@ -63,10 +65,11 @@ public class DeleteProject extends HttpServlet {
         response.setContentType("text/html;charset=UTF-8");
         JSONObject jsonResponse = new JSONObject();
         Answer ans = new Answer();
-        
+        PolicyFactory policy = Sanitizers.FORMATTING.and(Sanitizers.LINKS);
+
 //        PrintWriter out = response.getWriter();
         try {
-            String key = request.getParameter("id");
+            String key = policy.sanitize(request.getParameter("id"));
 
             MyLogger.log(DeleteProject.class.getName(), org.apache.log4j.Level.DEBUG, "key : " + key);
 
@@ -89,7 +92,7 @@ public class DeleteProject extends HttpServlet {
         } finally {
 //            out.close();
         }
-        
+
         jsonResponse.put("messageType", ans.getResultMessage().getMessage().getCodeString());
         jsonResponse.put("message", ans.getResultMessage().getDescription());
 
