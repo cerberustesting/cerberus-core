@@ -62,7 +62,7 @@ public class DeleteProject extends HttpServlet {
             throws ServletException, IOException, CerberusException, JSONException {
         response.setContentType("text/html;charset=UTF-8");
         JSONObject jsonResponse = new JSONObject();
-        Answer ans = null;
+        Answer ans = new Answer();
         
 //        PrintWriter out = response.getWriter();
         try {

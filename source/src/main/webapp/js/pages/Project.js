@@ -193,7 +193,8 @@ function initColumnsName() {
         if (i === 0) {
             return;
         } else {
-            var jqxhr = $.get("DocumentationField", "docTable=project&docField=" + elem.id + "&docLabel=table");
+            var jqxhr = $.get("DocumentationField", "docTable=project&docField=" + elem.id + 
+                    "&docLabel=table&lang=" + getCookie("lang"));
             $.when(jqxhr).then(function (data) {
                 elem.innerHTML = data;
             });
