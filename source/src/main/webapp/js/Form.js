@@ -21,6 +21,62 @@ function loadReporting(reportingFavorite) {
     document.location = reportingFavorite;
 }
 
+/*LANG COOKIE HANDLING*/
+
+$(document).ready(function () {
+    InitLanguage();
+});
+
+function InitLanguage() {
+    var langCookie = getCookie("lang");
+    if (langCookie === null) {
+        //replace "en" by GetBrowserLanguage() when the other languages are supported
+        setCookie("lang", "en");
+    }
+    $("#MyLang option[value=" + langCookie + "]").attr("selected", "selected");
+}
+
+function ChangeLanguage() {
+    var select = document.getElementById("MyLang");
+    var selectValue = select.options[select.selectedIndex].value;
+    //replace "en" by selectValue when the other languages are supported
+    setCookie("lang", "en");
+    location.reload();
+}
+
+function GetBrowserLanguage() {
+    var userLang = navigator.language || navigator.userLanguage;
+    if (userLang === "en-US" || userLang === "en_GB") {
+        userLang = "en";
+    }
+    return userLang;
+}
+
+function setCookie(name, value) {
+    var today = new Date();
+    var expires = new Date();
+    expires.setTime(today.getTime() + (365 * 24 * 60 * 60 * 1000));
+    document.cookie = name + "=" + encodeURIComponent(value) + ";expires=" + expires.toGMTString();
+}
+
+function getCookie(sName) {
+    var cookContent = document.cookie;
+    var cookEnd;
+    var i, j, c;
+
+    sName = sName + "=";
+    for (i = 0, c = cookContent.length; i < c; i++) {
+        j = i + sName.length;
+        if (cookContent.substring(i, j) === sName) {
+            cookEnd = cookContent.indexOf(";", j);
+            if (cookEnd === -1) {
+                cookEnd = cookContent.length;
+            }
+            return decodeURIComponent(cookContent.substring(j, cookEnd));
+        }
+    }
+    return null;
+} 
 
 function popup(mylink) {
     window.open(mylink, 'popup',
