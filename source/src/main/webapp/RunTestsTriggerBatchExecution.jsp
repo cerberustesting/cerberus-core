@@ -760,7 +760,7 @@
     </script>
     <script type="text/javascript">
         $(document).ready(function() {
-            $.getJSON('FindInvariantByID?idName=retries', function(data) {
+            $.getJSON('FindInvariantByID?idName=RETRIES', function(data) {
                 $("#retries").empty();
                 var pl = document.getElementById("defRetries").value;
 
@@ -793,7 +793,7 @@
     </script>
     <script type="text/javascript">
         $(document).ready(function() {
-            $.getJSON('FindInvariantByID?idName=outputformat', function(data) {
+            $.getJSON('FindInvariantByID?idName=OUTPUTFORMAT', function(data) {
                 $("#outputformat").empty();
 
                 for (var i = 0; i < data.length; i++) {
@@ -810,7 +810,7 @@
     </script>
     <script type="text/javascript">
         $(document).ready(function() {
-            $.getJSON('FindInvariantByID?idName=verbose', function(data) {
+            $.getJSON('FindInvariantByID?idName=VERBOSE', function(data) {
                 $("#verbose").empty();
                 var pl = document.getElementById("defVerbose").value;
 
@@ -836,7 +836,7 @@
     </script>
     <script type="text/javascript">
         $(document).ready(function() {
-            $.getJSON('FindInvariantByID?idName=synchroneous', function(data) {
+            $.getJSON('FindInvariantByID?idName=SYNCHRONEOUS', function(data) {
                 $("#synchroneous").empty();
                 var pl = document.getElementById("defSynchroneous").value;
 
@@ -862,7 +862,7 @@
     </script>
     <script type="text/javascript">
         $(document).ready(function() {
-            $.getJSON('FindInvariantByID?idName=manualExecution', function(data) {
+            $.getJSON('FindInvariantByID?idName=MANUALEXECUTION', function(data) {
                 $("#manualExecution").empty();
 
                 var pl = document.getElementById("defManualExecution").value;
@@ -889,7 +889,7 @@
     </script>
     <script type="text/javascript">
         $(document).ready(function() {
-            $.getJSON('FindInvariantByID?idName=screenshot', function(data) {
+            $.getJSON('FindInvariantByID?idName=SCREENSHOT', function(data) {
                 $("#screenshot").empty();
                 var pl = document.getElementById("defScreenshot").value;
 
@@ -922,7 +922,7 @@
     </script>
     <script type="text/javascript">
         $(document).ready(function() {
-            $.getJSON('FindInvariantByID?idName=pageSource', function(data) {
+            $.getJSON('FindInvariantByID?idName=PAGESOURCE', function(data) {
                 $("#pageSource").empty();
                 var pl = document.getElementById("defPageSource").value;
 
@@ -955,7 +955,7 @@
     </script>
     <script type="text/javascript">
         $(document).ready(function() {
-            $.getJSON('FindInvariantByID?idName=seleniumLog', function(data) {
+            $.getJSON('FindInvariantByID?idName=SELENIUMLOG', function(data) {
                 $("#seleniumLog").empty();
                 var pl = document.getElementById("defSeleniumLog").value;
 
@@ -988,7 +988,7 @@
     </script>
     <script type="text/javascript">
         $(document).ready(function() {
-            $.getJSON('FindInvariantByID?idName=browser', function(data) {
+            $.getJSON('FindInvariantByID?idName=BROWSER', function(data) {
                 $("#Browser").empty();
                 var pl = document.getElementById("defBrowser").value;
 
@@ -1010,7 +1010,7 @@
     </script>
     <script type="text/javascript">
         $(document).ready(function() {
-            $.getJSON('FindInvariantByID?idName=platform', function(data) {
+            $.getJSON('FindInvariantByID?idName=PLATFORM', function(data) {
                 $("#platform").empty();
                 var pl = document.getElementById("defPlatform").value;
 

@@ -4151,7 +4151,15 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLS.append("ALTER TABLE `documentation` ADD COLUMN `Lang` VARCHAR(45) NOT NULL DEFAULT 'en' AFTER `DocValue`, DROP PRIMARY KEY, ADD PRIMARY KEY (`DocTable`, `DocField`, `DocValue`, `Lang`);");
         SQLInstruction.add(SQLS.toString());
        
-        
+// Adding FUNCTION as Public invariant.
+// -- ------------------------ 587
+        SQLS = new StringBuilder();
+        SQLS.append("INSERT INTO `invariant` (`idname`, `value`, `sort`, `description`) ");
+        SQLS.append(" VALUES ('INVARIANTPUBLIC', 'FUNCTION', '400', '');");
+        SQLInstruction.add(SQLS.toString());
+       
+ 
+
         
         return SQLInstruction;
     }
