@@ -44,15 +44,15 @@
 
             <h1 class="page-title-line">Project</h1>
             <div id="project" class="well">
-                <table id="projectsTable" class="table table-hover display responsive nowrap" name="projectsTable">
+                <table id="projectsTable" class="table table-hover display" name="projectsTable">
                     <thead>
                         <tr>
                             <th id="action">Actions</th>
-                            <th id="idproject">Project</th>
-                            <th id="code">Code</th>
-                            <th id="description">Description</th>
-                            <th id="active">Active</th>
-                            <th id="dateCreation">Created</th>
+                            <th id="idproject"><%=docService.findLabelHTML("Project","idProject","table", "en")%></th>
+                            <th id="code"><%=docService.findLabelHTML("Project","code","table", "en")%></th>
+                            <th id="description"><%=docService.findLabelHTML("Project","Description","table", "en")%></th>
+                            <th id="active"><%=docService.findLabelHTML("Project","active","table", "en")%></th>
+                            <th id="dateCreation"><%=docService.findLabelHTML("Project","dateCreation","table", "en")%></th>
                         </tr>
                     </thead>
                 </table>
