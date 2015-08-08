@@ -34,7 +34,7 @@
         String DocTable = ParameterParserUtil.parseStringParam(request.getParameter("DocTable"), "empty");
         String DocField = ParameterParserUtil.parseStringParam(request.getParameter("DocField"), "empty");
         String DocValue = ParameterParserUtil.parseStringParam(request.getParameter("DocValue"), "empty");
-        String LangValue = ParameterParserUtil.parseStringParam(request.getParameter("LangValue"), "en");
+        String LangValue = ParameterParserUtil.parseStringParam(request.getParameter("Lang"), "en");
         boolean DocValue_isdefined = true;
         if (DocValue.equalsIgnoreCase("empty")) {
             DocValue_isdefined = false;
@@ -96,7 +96,7 @@
                     for(int i=0; i<documentations.size();i++) {
                             Doc = Doc + "<tr><td><a href=\"?DocTable=" + DocTable;
                             Doc = Doc + "&amp;DocField=" + DocField + "&amp;DocValue=" + documentations.get(i).getDocValue() + "\">";
-                            Doc = Doc + documentations.get(i).getDocValue() + "</a></td><td>" + documentations.get(i).getDocLabel() + "</td></tr>";
+                            Doc = Doc + documentations.get(i).getDocValue() + "&amp;Lang=" + LangValue + "</a></td><td>" + documentations.get(i).getDocLabel() + "</td></tr>";
                     }
                     Doc = Doc + "</table>";
 

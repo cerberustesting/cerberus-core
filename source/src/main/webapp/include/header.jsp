@@ -151,11 +151,16 @@
             <form action="" method="post" name="SysFilter" id="SysFilter">
                 <%
                     String MySystem = ParameterParserUtil.parseStringParam(request.getParameter("MySystem"), "");
+                    String MyLang = ParameterParserUtil.parseStringParam(request.getParameter("MyLang"), "");
+//                    MyLang = request.getCookies().toString();
 
                     String MyUser = ParameterParserUtil.parseStringParam(request.getUserPrincipal().getName(), "");
                     ApplicationContext context = WebApplicationContextUtils.getWebApplicationContext(this.getServletConfig().getServletContext());
+                    
                     IUserService myUserService = context.getBean(IUserService.class);
                     IDatabaseVersioningService DatabaseVersioningService = context.getBean(IDatabaseVersioningService.class);
+                    IInvariantService myInvariantService = context.getBean(IInvariantService.class);
+                    
                     // We access and update the user object only if database is uptodate. This is to prenvent 500 error 
                     //   when adding new column on user table and trying to access this column even if it does not exist yet.
                     //   Than means that system cannot be saved until database has been updated by administrator.
@@ -195,15 +200,22 @@
                                   }
                               }
 
+                            // Update Language if different from user.
+                            if (MyLang.equals("")) {
+                                MyLang = MyUserobj.getLanguage();
+                            } else {
+                                MyUserobj.setLanguage(MyLang);
+                                myUserService.updateUser(MyUserobj);
+                            }
+                            
                           }
                       }
 
                       request.setAttribute("MySystem", MySystem);
-                      request.setAttribute("MyLang", "en");
+                      request.setAttribute("MyLang", MyLang);
                 %>                
                 <select id="MySystem" style="" name="MySystem" onchange="document.SysFilter.submit()">
                     <%
-                        IInvariantService myInvariantService = context.getBean(IInvariantService.class);
                         List<Invariant> MyInvariantList = myInvariantService.findListOfInvariantById("SYSTEM");
                         for (Invariant myInvariant : MyInvariantList) {
                     %>
@@ -213,9 +225,16 @@
                             }
                     %>
                 </select>
-                <select id="MyLang" name="MyLang" onchange="ChangeLanguage()">
-                    <option value="en">English</option>
-<!--                    <option value="fr">Français</option>-->
+                <select id="MyLang" name="MyLang" onchange="ChangeLanguage(); document.SysFilter.submit()">
+                    <%
+                        List<Invariant> MyInvariantListLang = myInvariantService.findListOfInvariantById("LANGUAGE");
+                        for (Invariant myInvariantLang : MyInvariantListLang) {
+                    %>
+                    <option value="<%=myInvariantLang.getValue()%>"<% if (MyLang.equalsIgnoreCase(myInvariantLang.getValue())) {
+                            out.print(" SELECTED");
+                        }%>><%=myInvariantLang.getDescription()%></option><%
+                            }
+                    %>
                 </select>
             </form>
         </div>

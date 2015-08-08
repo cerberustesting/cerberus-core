@@ -136,7 +136,7 @@ public class UserDAO implements IUserDAO {
     @Override
     public boolean insertUser(User user) {
         boolean bool = false;
-        final String query = "INSERT INTO user (Login, Password, Name, Request, ReportingFavorite, RobotHost, DefaultSystem, Team, Email) VALUES (?, SHA(?), ?, ?, ?, ?, ?, ?, ?)";
+        final String query = "INSERT INTO user (Login, Password, Name, Request, ReportingFavorite, RobotHost, DefaultSystem, Team, Language, Email) VALUES (?, SHA(?), ?, ?, ?, ?, ?, ?, ?, ?)";
 
         Connection connection = this.databaseSpring.connect();
         try {
@@ -150,7 +150,8 @@ public class UserDAO implements IUserDAO {
                 preStat.setString(6, user.getRobotHost());
                 preStat.setString(7, user.getDefaultSystem());
                 preStat.setString(8, user.getTeam());
-                preStat.setString(9, user.getEmail());
+                preStat.setString(9, user.getLanguage());
+                preStat.setString(10, user.getEmail());
 
                 preStat.executeUpdate();
                 ResultSet resultSet = preStat.getGeneratedKeys();
@@ -219,7 +220,7 @@ public class UserDAO implements IUserDAO {
         boolean bool = false;
         StringBuilder query = new StringBuilder();
         query.append("UPDATE user SET Login = ?, Name = ?, Request = ?, ReportingFavorite = ?, RobotHost = ?,");
-        query.append("Team = ?, DefaultSystem = ?, Email= ? , robotPort = ?, ");
+        query.append("Team = ?, Language = ?, DefaultSystem = ?, Email= ? , robotPort = ?, ");
         query.append("robotPlatform = ?, ");
         query.append("robotBrowser = ?, robotVersion = ? , robot = ?   WHERE userid = ?");
 
@@ -233,14 +234,15 @@ public class UserDAO implements IUserDAO {
                 preStat.setString(4, user.getReportingFavorite());
                 preStat.setString(5, user.getRobotHost());
                 preStat.setString(6, user.getTeam());
-                preStat.setString(7, user.getDefaultSystem());
-                preStat.setString(8, user.getEmail());
-                preStat.setString(9, String.valueOf(user.getRobotPort()));
-                preStat.setString(10, user.getRobotPlatform());
-                preStat.setString(11, user.getRobotBrowser());
-                preStat.setString(12, user.getRobotVersion());
-                preStat.setString(13, user.getRobot());
-                preStat.setInt(14, user.getUserID());
+                preStat.setString(7, user.getLanguage());
+                preStat.setString(8, user.getDefaultSystem());
+                preStat.setString(9, user.getEmail());
+                preStat.setString(10, String.valueOf(user.getRobotPort()));
+                preStat.setString(11, user.getRobotPlatform());
+                preStat.setString(12, user.getRobotBrowser());
+                preStat.setString(13, user.getRobotVersion());
+                preStat.setString(14, user.getRobot());
+                preStat.setInt(15, user.getUserID());
 
                 bool = preStat.executeUpdate() > 0;
             } catch (SQLException exception) {
@@ -349,6 +351,7 @@ public class UserDAO implements IUserDAO {
         String request = ParameterParserUtil.parseStringParam(rs.getString("request"), "");
         String name = ParameterParserUtil.parseStringParam(rs.getString("name"), "");
         String team = ParameterParserUtil.parseStringParam(rs.getString("team"), "");
+        String language = ParameterParserUtil.parseStringParam(rs.getString("language"), "");
         String reportingFavorite = ParameterParserUtil.parseStringParam(rs.getString("reportingFavorite"), "");
         String robotHost = ParameterParserUtil.parseStringParam(rs.getString("robotHost"), "");
         String defaultSystem = ParameterParserUtil.parseStringParam(rs.getString("defaultSystem"), "");
@@ -360,7 +363,7 @@ public class UserDAO implements IUserDAO {
         String robot = ParameterParserUtil.parseStringParam(rs.getString("robot"), "");
         //TODO remove when working in test with mockito and autowired
         factoryUser = new FactoryUser();
-        return factoryUser.create(userID, login, password, request, name, team, reportingFavorite, robotHost, robotPort, robotPlatform, robotBrowser, robotVersion, robot, defaultSystem, email, null, null);
+        return factoryUser.create(userID, login, password, request, name, team, language, reportingFavorite, robotHost, robotPort, robotPlatform, robotBrowser, robotVersion, robot, defaultSystem, email, null, null);
     }
 
     @Override

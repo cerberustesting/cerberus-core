@@ -22,17 +22,17 @@
                         </div>
                         <div class="row">
                             <div class="form-group col-xs-12">
-                                <label for="idProject"><%=docService.findLabelHTML("Project","idProject","", "en")%></label>
+                                <label for="idProject"><%=docService.findLabelHTML("Project","idProject","", myLang)%></label>
                                 <input type="text" class="form-control" name="idProject" id="idProject" placeholder="Project Name" aria-describedby="basic-addon1" maxlength="45">
                             </div>
                         </div>
                         <div class="row">
                             <div class="form-group col-xs-6">
-                                <label for="VCCode"><%=docService.findLabelHTML("Project","code","", "en")%></label>
+                                <label for="VCCode"><%=docService.findLabelHTML("Project","code","", myLang)%></label>
                                 <input type="text" class="form-control" name="VCCode" id="VCCode" placeholder="Code" aria-describedby="basic-addon1" maxlength="20">
                             </div>
                             <div class="form-group col-xs-6">
-                                <label for="active"><%=docService.findLabelHTML("Project","Active","", "en")%></label>
+                                <label for="active"><%=docService.findLabelHTML("Project","Active","", myLang)%></label>
                                 <select class="form-control"  id="Active" name="Active">
                                     <option>Y</option>
                                     <option>N</option>
@@ -41,7 +41,7 @@
                         </div>
                         <div class="row">
                             <div class="form-group col-xs-12">
-                                <label for="Description"><%=docService.findLabelHTML("Project","Description","", "en")%></label>
+                                <label for="Description"><%=docService.findLabelHTML("Project","Description","", myLang)%></label>
                                 <textarea id="Description" name="Description"   
                                           class="form-control" maxlength="45"></textarea> 
                             </div>

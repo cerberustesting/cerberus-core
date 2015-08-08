@@ -35,6 +35,7 @@
         <%@ include file="include/header.jsp" %>
         <%
             IDocumentationService docService = appContext.getBean(IDocumentationService.class);
+            String myLang = request.getAttribute("MyLang").toString();
         %>
         <div class="container center" id="page-layout">
             <%@ include file="include/messagesArea.html"%>
@@ -48,11 +49,11 @@
                     <thead>
                         <tr>
                             <th id="action">Actions</th>
-                            <th id="idproject"><%=docService.findLabelHTML("Project","idProject","table", "en")%></th>
-                            <th id="code"><%=docService.findLabelHTML("Project","code","table", "en")%></th>
-                            <th id="description"><%=docService.findLabelHTML("Project","Description","table", "en")%></th>
-                            <th id="active"><%=docService.findLabelHTML("Project","active","table", "en")%></th>
-                            <th id="dateCreation"><%=docService.findLabelHTML("Project","dateCreation","table", "en")%></th>
+                            <th id="idproject"><%=docService.findLabelHTML("Project","idProject","table", myLang)%></th>
+                            <th id="code"><%=docService.findLabelHTML("Project","code","table", myLang)%></th>
+                            <th id="description"><%=docService.findLabelHTML("Project","Description","table", myLang)%></th>
+                            <th id="active"><%=docService.findLabelHTML("Project","active","table", myLang)%></th>
+                            <th id="dateCreation"><%=docService.findLabelHTML("Project","dateCreation","table", myLang)%></th>
                         </tr>
                     </thead>
                 </table>

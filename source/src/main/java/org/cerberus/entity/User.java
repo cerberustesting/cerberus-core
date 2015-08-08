@@ -30,6 +30,7 @@ public class User {
     private String request;
     private String name;
     private String team;
+    private String language;
     private String reportingFavorite;
     private String robotHost;
     private String robotPort;
@@ -152,6 +153,14 @@ public class User {
 
     public void setTeam(String team) {
         this.team = team;
+    }
+
+    public String getLanguage() {
+        return language;
+    }
+
+    public void setLanguage(String language) {
+        this.language = language;
     }
 
     public String getReportingFavorite() {

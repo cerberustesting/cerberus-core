@@ -21,35 +21,12 @@ function loadReporting(reportingFavorite) {
     document.location = reportingFavorite;
 }
 
-/*LANG COOKIE HANDLING*/
-
-$(document).ready(function () {
-    InitLanguage();
-});
-
-function InitLanguage() {
-    var langCookie = getCookie("lang");
-    if (langCookie === null) {
-        //replace "en" by GetBrowserLanguage() when the other languages are supported
-        setCookie("lang", "en");
-    }
-    $("#MyLang option[value=" + langCookie + "]").attr("selected", "selected");
-}
+/*LANG COOKIE HANDLING - START*/
 
 function ChangeLanguage() {
     var select = document.getElementById("MyLang");
     var selectValue = select.options[select.selectedIndex].value;
-    //replace "en" by selectValue when the other languages are supported
-    setCookie("lang", "en");
-    location.reload();
-}
-
-function GetBrowserLanguage() {
-    var userLang = navigator.language || navigator.userLanguage;
-    if (userLang === "en-US" || userLang === "en_GB") {
-        userLang = "en";
-    }
-    return userLang;
+    setCookie("lang", selectValue);
 }
 
 function setCookie(name, value) {
@@ -77,6 +54,8 @@ function getCookie(sName) {
     }
     return null;
 } 
+
+/*LANG COOKIE HANDLING - END*/
 
 function popup(mylink) {
     window.open(mylink, 'popup',

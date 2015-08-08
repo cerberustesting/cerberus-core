@@ -4158,7 +4158,20 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLS.append(" VALUES ('INVARIANTPUBLIC', 'FUNCTION', '400', '');");
         SQLInstruction.add(SQLS.toString());
        
- 
+// Adding LANGUAGE invariant.
+// -- ------------------------ 588
+        SQLS = new StringBuilder();
+        SQLS.append("INSERT INTO `invariant` (`idname`, `value`, `sort`, `description`, `VeryShortDesc`) ");
+        SQLS.append(" VALUES ('INVARIANTPRIVATE', 'LANGUAGE', '500', '', ''),");
+        SQLS.append("        ('LANGUAGE', 'en', '100', 'English', 'English');");
+        SQLInstruction.add(SQLS.toString());
+
+// Adding Language column to the user table.
+// -- ------------------------ 589
+        SQLS = new StringBuilder();
+        SQLS.append("ALTER TABLE `user` ADD COLUMN `Language` VARCHAR(45) NULL DEFAULT 'en' AFTER `Team`;  ");
+        SQLInstruction.add(SQLS.toString());
+
 
         
         return SQLInstruction;
