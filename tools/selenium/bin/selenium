@@ -1,0 +1,87 @@
+#!/bin/bash
+#
+# Selenium starter
+#
+# Usage:
+#   selenium [start|stop]
+
+################################################################
+# User defined variables (to configure if necessary            #
+################################################################
+
+# Selenium server installation path
+SELENIUM_SERVER_PATH=$( cd "$( dirname "${BASH_SOURCE[0]}" )/../" && pwd )
+SELENIUM_SERVER_LIB_PATH=$SELENIUM_SERVER_PATH/lib
+SELENIUM_SERVER_DRIVERS_PATH=$SELENIUM_SERVER_PATH/drivers
+
+# Selenium server JAR location
+SELENIUM_SERVER_JAR=$SELENIUM_SERVER_LIB_PATH/current.jar
+
+# Selenium server port
+SELENIUM_SERVER_PORT=5555
+
+# Selenium server options
+#SELENIUM_SERVER_OPTION_CHROME_DRIVER="-Dwebdriver.chrome.driver=$SELENIUM_SERVER_DRIVERS_PATH/chromedriver"
+#SELENIUM_SERVER_OPTION_SSL_UNSECURE="-trustAllSSLCertificates"
+SELENIUM_SERVER_OPTIONS="$SELENIUM_SERVER_OPTION_CHROME_DRIVER $SELENIUM_SERVER_OPTION_SSL_UNSECURE"
+
+#################################################
+# Internal variables                            #
+#################################################
+
+# Application name
+APP=`basename $0`
+
+#################################################
+# Function definitions                          #
+#################################################
+
+selenium() {
+    case $1 in
+        start)
+            startSelenium;;
+        stop)
+            stopSelenium;;
+        *)
+            usage;; 
+    esac
+}
+
+startSelenium() {
+    nohup java -jar $SELENIUM_SERVER_JAR -port $SELENIUM_SERVER_PORT $SELENIUM_SERVER_OPTIONS &>/dev/null &
+    if [ $? -eq 0 ]; then
+        echo "Selenium server started."
+    else 
+        echo "Unable to start Selenium server."
+    fi
+}
+
+stopSelenium() {
+    pids=`ps --no-headers -eo pid,command | grep selenium | grep java | cut -d' ' -f1`
+    if [ -z "$pids" ]; then
+        echo "No selenium pid found"
+        return
+    fi
+    
+    for pid in $pids; do
+        echo "Killing pid ${pid}..."
+        kill -9 $pid
+    done
+
+    echo "Done."
+}
+
+usage() {
+    echo "Usage: ${APP} [start|stop]"
+}
+
+
+#################################################
+# Main entry point                              #
+#################################################
+
+main() {
+    selenium "$*"
+}
+
+main "$*"
