@@ -178,7 +178,7 @@ public class CreateTest extends HttpServlet {
                                 stmt2.setString(4, automated);
                                 stmt2.executeUpdate();
                             } catch (SQLException ex) {
-                                response.sendError(403, MessageGeneralEnum.GUI_TEST_CREATION_ISSUE.getDescription() + ".Detail : " + ex.toString());
+                                response.sendError(MessageGeneralEnum.GUI_TEST_CREATION_ISSUE.getCode()  , MessageGeneralEnum.GUI_TEST_CREATION_ISSUE.getDescription() + ".Detail : " + ex.toString());
                                 return;
                             }finally {
                                 stmt2.close();
