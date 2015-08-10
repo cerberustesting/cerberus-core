@@ -48,7 +48,7 @@
                             <table>
                                 <tr>
                                     <td class="wob" style="font-weight: bold; width: 110px"><%out.print(docService.findLabelHTML("test", "test", "Test", myLang));%></td>
-                                    <td class="wob"><input style="font-weight: bold; width: 200px" name="createTest" id="createTest"</td>
+                                    <td class="wob"><input style="font-weight: bold; width: 200px" name="createTest" id="createTest" maxlength="45"></td>
                                 </tr>
                                 <tr>
                                     <td id="wob" style="font-weight: bold; width: 110px"><%out.print(docService.findLabelHTML("test", "description", "Description", myLang));%></td>

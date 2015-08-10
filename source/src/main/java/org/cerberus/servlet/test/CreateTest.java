@@ -36,6 +36,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.cerberus.database.DatabaseSpring;
+import org.cerberus.entity.MessageGeneralEnum;
 import org.cerberus.exception.CerberusException;
 import org.cerberus.factory.IFactoryLogEvent;
 import org.cerberus.factory.impl.FactoryLogEvent;
@@ -176,7 +177,10 @@ public class CreateTest extends HttpServlet {
                                 stmt2.setString(3, active);
                                 stmt2.setString(4, automated);
                                 stmt2.executeUpdate();
-                            } finally {
+                            } catch (SQLException ex) {
+                                response.sendError(403, MessageGeneralEnum.GUI_TEST_CREATION_ISSUE.getDescription() + ".Detail : " + ex.toString());
+                                return;
+                            }finally {
                                 stmt2.close();
                             }
 
