@@ -4199,7 +4199,28 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLS.append("INSERT INTO `invariant` (`idname`, `value`, `sort`, `description`, `VeryShortDesc`) ");
         SQLS.append(" VALUES ('PROPERTYTYPE', 'getFromJS', '37', 'Getting data from javascript variable', '');");
         SQLInstruction.add(SQLS.toString());
-
+        
+// Adding Invariant sizeScreen.
+// -- ------------------------ 593
+        SQLS = new StringBuilder();
+        SQLS.append("INSERT INTO `invariant` (`idname`, `value`, `sort`, `description`, `VeryShortDesc`) ");
+        SQLS.append(" VALUES ('INVARIANTPUBLIC', 'SCREENSIZE', '400', '', ''),");
+        SQLS.append("('SCREENSIZE', '320*480', '10', '320 px /  480 px', ''),");
+        SQLS.append("('SCREENSIZE', '360*640', '20', '360 px /  640 px', ''),");
+        SQLS.append("('SCREENSIZE', '1024*768', '30', '1024 px /  768 px', ''),");
+        SQLS.append("('SCREENSIZE', '1280*600', '40', '1280 px /  600 px', ''),");
+        SQLS.append("('SCREENSIZE', '1280*800', '50', '1280 px /  800 px', ''),");
+        SQLS.append("('SCREENSIZE', '1280*980', '60', '1280 px /  980 px', ''),");
+        SQLS.append("('SCREENSIZE', '1920*900', '70', '1920 px /  900 px', '');");
+        SQLInstruction.add(SQLS.toString());
+        
+// Adding Invariant sizeScreen.
+// -- ------------------------ 594
+        SQLS = new StringBuilder();
+        SQLS.append("INSERT INTO `documentation` ");
+        SQLS.append("VALUES ('page_runtests','screensize','','en','Screen Size','This is the size of the browser screen that will be set for the execution.<br><br>Default Values are set inside the InvariantPublic Table.<br>Value must be two Integer splitted by a <b>*</b> mark.<br><i>For Exemple : 1024*768</i><br><br>If you need to add other Values, please contact your Cerberus Administrator.')");
+        SQLInstruction.add(SQLS.toString());
+        
         return SQLInstruction;
     }
 

@@ -85,6 +85,7 @@ public class TestCaseExecution {
     private long idFromQueue;
     private Integer numberOfRetries;
     private String userAgent;
+    private String screenSize;
 
     public String getUserAgent() {
         return userAgent;
@@ -539,5 +540,12 @@ public class TestCaseExecution {
 
     public void setExecutor(String executor) {
         this.executor = executor;
+    }
+
+    public String getScreenSize() {
+        return screenSize;
+    }
+    public void setScreenSize(String screenSize) {
+        this.screenSize = screenSize;
     }
 }
