@@ -76,7 +76,7 @@
                     IParameterService myParameterService = appContext.getBean(IParameterService.class);
                     ITestCaseExecutionInQueueService tceiqService = appContext.getBean(ITestCaseExecutionInQueueService.class);
                     ITestCaseService tcService = appContext.getBean(ITestCaseService.class);
-                    
+
                     String myLang = request.getAttribute("MyLang").toString();
 
                     try {
@@ -152,13 +152,13 @@
                                         || sName.compareTo("seleniumLog") == 0 || sName.compareTo("pageSource") == 0
                                         || sName.compareTo("platform") == 0 || sName.compareTo("os") == 0
                                         || sName.compareTo("robot") == 0 || sName.compareTo("IdFromQueue") == 0
-                                        || sName.compareTo("retries") == 0) {
+                                        || sName.compareTo("retries") == 0 || sName.compareTo("screenSize") == 0) {
                                     String[] sMultiple = request.getParameterValues(sName);
 
                                     for (int i = 0; i < sMultiple.length; i++) {
-                                        if(sName.equalsIgnoreCase("Tag")){
+                                        if (sName.equalsIgnoreCase("Tag")) {
                                             params.append("&" + sName + "=" + StringUtil.encodeAsJavaScriptURIComponent(sMultiple[i]) + "");
-                                        }else{
+                                        } else {
                                             params.append("&" + sName + "=" + sMultiple[i] + "");
                                         }
                                     }
@@ -212,6 +212,25 @@
                         }
                         if (!platform.equals("")) {
                             platformClass = "selectRobotSelected";
+                        }
+
+                        String screenSize = "";
+                        String screenSizeClass = "selectRobot";
+                        if (request.getParameter("screenSize") != null && request.getParameter("screenSize").compareTo("") != 0) {
+                            screenSize = request.getParameter("screenSize");;
+                        } else {
+                            Cookie[] cookies = request.getCookies();
+
+                            if (cookies != null) {
+                                for (Cookie cookie : cookies) {
+                                    if (cookie.getName().equals("ExecutionScreenSize")) {
+                                        screenSize = cookie.getValue();
+                                    }
+                                }
+                            }
+                        }
+                        if (!screenSize.equals("")) {
+                            screenSizeClass = "selectRobotSelected";
                         }
 
                         String version = "";
@@ -386,6 +405,7 @@
                 <input hidden="hidden" id="IdFromQueue" name="IdFromQueue" value="<%=idFromQueue%>">
                 <input hidden="hidden" id="defRetries" value="<%=retries%>">
                 <input hidden="hidden" id="defAutoRun" value="<%=autoRun%>">
+                <input hidden="hidden" id="defScreenSize" value="<%=screenSize%>">
                 <div class="filters" style="clear:both; width:100%">
                     <p style="float:left" class="dttTitle">Choose Test</p>
                     <div id="dropDownDownArrow" style="float:left">
@@ -525,6 +545,14 @@
                                 </div>
                                 <div style="float:left">
                                     <select id="platform" name="platform" class="<%=platformClass%>" style="width: 150px;" onchange="changeStyleWhenSelected('platform')">
+                                    </select>
+                                </div>
+                            </div>
+                            <div style="clear:both">
+                                <div style="float:left; width:150px; text-align:left"><% out.print(docService.findLabelHTML("page_runtests", "ScreenSize", "ScreenSize", myLang));%>
+                                </div>
+                                <div style="float:left">
+                                    <select id="screenSize" name="screenSize" class="<%=screenSizeClass%>" style="width: 200px;" onchange="changeStyleWhenSelected('screenSize')">
                                     </select>
                                 </div>
                             </div>
@@ -850,380 +878,423 @@
         ;
     </script>
     <script type="text/javascript">
-            $(document).ready(function() {
-                $.getJSON('FindInvariantByID?idName=OUTPUTFORMAT', function(data) {
-                    $("#outputformat").empty();
+        $(document).ready(function() {
+            $.getJSON('FindInvariantByID?idName=OUTPUTFORMAT', function(data) {
+                $("#outputformat").empty();
 
-                    for (var i = 0; i < data.length; i++) {
-                        $("#outputformat").append($("<option></option>")
-                                .attr("value", data[i].value)
-                                .text(data[i].value + " ( " + data[i].description + " )"));
-                    }
-
-
-                    setCookie('OutputFormatPreference', 'outputformat');
-                })
-            });
-
-    </script>
-    <script type="text/javascript">
-            $(document).ready(function() {
-                $.getJSON('FindInvariantByID?idName=VERBOSE', function(data) {
-                    $("#verbose").empty();
-                    var pl = document.getElementById("defVerbose").value;
-
-                    for (var i = 0; i < data.length; i++) {
-                        $("#verbose").append($("<option></option>")
-                                .attr("value", data[i].value)
-                                .text(data[i].value + " ( " + data[i].description + " )"));
-                    }
-
-                    setCookie('VerbosePreference', 'verbose');
-
-                    $("#verbose").find('option').each(function(i, opt) {
-                        if (opt.value === pl) {
-                            $(opt).attr('selected', 'selected');
-                        }
+                for (var i = 0; i < data.length; i++) {
+                    $("#outputformat").append($("<option></option>")
+                            .attr("value", data[i].value)
+                            .text(data[i].value + " ( " + data[i].description + " )"));
+                }
 
 
-                    });
-
-                })
-            });
+                setCookie('OutputFormatPreference', 'outputformat');
+            })
+        });
 
     </script>
     <script type="text/javascript">
-            $(document).ready(function() {
-                $.getJSON('FindInvariantByID?idName=SYNCHRONEOUS', function(data) {
-                    $("#synchroneous").empty();
-                    var pl = document.getElementById("defSynchroneous").value;
+        $(document).ready(function() {
+            $.getJSON('FindInvariantByID?idName=VERBOSE', function(data) {
+                $("#verbose").empty();
+                var pl = document.getElementById("defVerbose").value;
 
-                    for (var i = 0; i < data.length; i++) {
-                        $("#synchroneous").append($("<option></option>")
-                                .attr("value", data[i].value)
-                                .text(data[i].value + " ( " + data[i].description + " )"));
+                for (var i = 0; i < data.length; i++) {
+                    $("#verbose").append($("<option></option>")
+                            .attr("value", data[i].value)
+                            .text(data[i].value + " ( " + data[i].description + " )"));
+                }
+
+                setCookie('VerbosePreference', 'verbose');
+
+                $("#verbose").find('option').each(function(i, opt) {
+                    if (opt.value === pl) {
+                        $(opt).attr('selected', 'selected');
                     }
 
-                    setCookie('SynchroneousPreference', 'synchroneous');
 
-                    $("#synchroneous").find('option').each(function(i, opt) {
-                        if (opt.value === pl) {
-                            $(opt).attr('selected', 'selected');
-                        }
+                });
 
-
-                    });
-
-                })
-            });
+            })
+        });
 
     </script>
     <script type="text/javascript">
-            $(document).ready(function() {
-                $.getJSON('FindInvariantByID?idName=MANUALEXECUTION', function(data) {
-                    $("#manualExecution").empty();
+        $(document).ready(function() {
+            $.getJSON('FindInvariantByID?idName=SYNCHRONEOUS', function(data) {
+                $("#synchroneous").empty();
+                var pl = document.getElementById("defSynchroneous").value;
 
-                    var pl = document.getElementById("defManualExecution").value;
+                for (var i = 0; i < data.length; i++) {
+                    $("#synchroneous").append($("<option></option>")
+                            .attr("value", data[i].value)
+                            .text(data[i].value + " ( " + data[i].description + " )"));
+                }
 
-                    for (var i = 0; i < data.length; i++) {
-                        $("#manualExecution").append($("<option></option>")
-                                .attr("value", data[i].value)
-                                .text(data[i].value + " ( " + data[i].description + " )"));
+                setCookie('SynchroneousPreference', 'synchroneous');
+
+                $("#synchroneous").find('option').each(function(i, opt) {
+                    if (opt.value === pl) {
+                        $(opt).attr('selected', 'selected');
                     }
 
-                    setCookie('ManualExecutionPreference', 'manualExecution');
 
-                    $("#manualExecution").find('option').each(function(i, opt) {
-                        if (opt.value === pl) {
-                            $(opt).attr('selected', 'selected');
-                        }
+                });
 
-
-                    });
-
-                })
-            });
+            })
+        });
 
     </script>
     <script type="text/javascript">
-            $(document).ready(function() {
-                $.getJSON('FindInvariantByID?idName=SCREENSHOT', function(data) {
-                    $("#screenshot").empty();
-                    var pl = document.getElementById("defScreenshot").value;
+        $(document).ready(function() {
+            $.getJSON('FindInvariantByID?idName=MANUALEXECUTION', function(data) {
+                $("#manualExecution").empty();
 
-                    for (var i = 0; i < data.length; i++) {
-                        $("#screenshot").append($("<option></option>")
-                                .attr("value", data[i].value)
-                                .text(data[i].value + " ( " + data[i].description + " )"));
+                var pl = document.getElementById("defManualExecution").value;
+
+                for (var i = 0; i < data.length; i++) {
+                    $("#manualExecution").append($("<option></option>")
+                            .attr("value", data[i].value)
+                            .text(data[i].value + " ( " + data[i].description + " )"));
+                }
+
+                setCookie('ManualExecutionPreference', 'manualExecution');
+
+                $("#manualExecution").find('option').each(function(i, opt) {
+                    if (opt.value === pl) {
+                        $(opt).attr('selected', 'selected');
                     }
 
-                    setCookie('ScreenshotPreference', 'screenshot');
 
-                    var screenCookie = getCookie('ScreenshotPreference');
+                });
 
-                    if (screenCookie === "" && pl === "") {
-                        pl = "1";
-                    }
-
-
-
-                    $("#screenshot").find('option').each(function(i, opt) {
-                        if (opt.value === pl) {
-                            $(opt).attr('selected', 'selected');
-                        }
-
-
-                    });
-                })
-            });
+            })
+        });
 
     </script>
     <script type="text/javascript">
-            $(document).ready(function() {
-                $.getJSON('FindInvariantByID?idName=PAGESOURCE', function(data) {
-                    $("#pageSource").empty();
-                    var pl = document.getElementById("defPageSource").value;
+        $(document).ready(function() {
+            $.getJSON('FindInvariantByID?idName=SCREENSHOT', function(data) {
+                $("#screenshot").empty();
+                var pl = document.getElementById("defScreenshot").value;
 
-                    for (var i = 0; i < data.length; i++) {
-                        $("#pageSource").append($("<option></option>")
-                                .attr("value", data[i].value)
-                                .text(data[i].value + " ( " + data[i].description + " )"));
+                for (var i = 0; i < data.length; i++) {
+                    $("#screenshot").append($("<option></option>")
+                            .attr("value", data[i].value)
+                            .text(data[i].value + " ( " + data[i].description + " )"));
+                }
+
+                setCookie('ScreenshotPreference', 'screenshot');
+
+                var screenCookie = getCookie('ScreenshotPreference');
+
+                if (screenCookie === "" && pl === "") {
+                    pl = "1";
+                }
+
+
+
+                $("#screenshot").find('option').each(function(i, opt) {
+                    if (opt.value === pl) {
+                        $(opt).attr('selected', 'selected');
                     }
 
-                    setCookie('PageSourcePreference', 'pageSource');
 
-                    var pageCookie = getCookie('PageSourcePreference');
-
-                    if (pageCookie === "" && pl === "") {
-                        pl = "1";
-                    }
-
-
-
-                    $("#pageSource").find('option').each(function(i, opt) {
-                        if (opt.value === pl) {
-                            $(opt).attr('selected', 'selected');
-                        }
-
-
-                    });
-                })
-            });
+                });
+            })
+        });
 
     </script>
     <script type="text/javascript">
-            $(document).ready(function() {
-                $.getJSON('FindInvariantByID?idName=SELENIUMLOG', function(data) {
-                    $("#seleniumLog").empty();
-                    var pl = document.getElementById("defSeleniumLog").value;
+        $(document).ready(function() {
+            $.getJSON('FindInvariantByID?idName=PAGESOURCE', function(data) {
+                $("#pageSource").empty();
+                var pl = document.getElementById("defPageSource").value;
 
-                    for (var i = 0; i < data.length; i++) {
-                        $("#seleniumLog").append($("<option></option>")
-                                .attr("value", data[i].value)
-                                .text(data[i].value + " ( " + data[i].description + " )"));
+                for (var i = 0; i < data.length; i++) {
+                    $("#pageSource").append($("<option></option>")
+                            .attr("value", data[i].value)
+                            .text(data[i].value + " ( " + data[i].description + " )"));
+                }
+
+                setCookie('PageSourcePreference', 'pageSource');
+
+                var pageCookie = getCookie('PageSourcePreference');
+
+                if (pageCookie === "" && pl === "") {
+                    pl = "1";
+                }
+
+
+
+                $("#pageSource").find('option').each(function(i, opt) {
+                    if (opt.value === pl) {
+                        $(opt).attr('selected', 'selected');
                     }
 
-                    setCookie('SeleniumLogPreference', 'seleniumLog');
 
-                    var seleniumLogCookie = getCookie('SeleniumLogPreference');
-
-                    if (seleniumLogCookie === "" && pl === "") {
-                        pl = "1";
-                    }
-
-
-
-                    $("#seleniumLog").find('option').each(function(i, opt) {
-                        if (opt.value === pl) {
-                            $(opt).attr('selected', 'selected');
-                        }
-
-
-                    });
-                })
-            });
+                });
+            })
+        });
 
     </script>
     <script type="text/javascript">
-            $(document).ready(function() {
-                $.getJSON('FindInvariantByID?idName=BROWSER', function(data) {
-                    $("#browser").empty();
-                    var pl = document.getElementById("defBrowser").value;
+        $(document).ready(function() {
+            $.getJSON('FindInvariantByID?idName=SELENIUMLOG', function(data) {
+                $("#seleniumLog").empty();
+                var pl = document.getElementById("defSeleniumLog").value;
 
-                    for (var i = 0; i < data.length; i++) {
-                        $("#browser").append($("<option></option>")
-                                .attr("value", data[i].value)
-                                .text(data[i].value + " ( " + data[i].description + " )"));
+                for (var i = 0; i < data.length; i++) {
+                    $("#seleniumLog").append($("<option></option>")
+                            .attr("value", data[i].value)
+                            .text(data[i].value + " ( " + data[i].description + " )"));
+                }
+
+                setCookie('SeleniumLogPreference', 'seleniumLog');
+
+                var seleniumLogCookie = getCookie('SeleniumLogPreference');
+
+                if (seleniumLogCookie === "" && pl === "") {
+                    pl = "1";
+                }
+
+
+
+                $("#seleniumLog").find('option').each(function(i, opt) {
+                    if (opt.value === pl) {
+                        $(opt).attr('selected', 'selected');
                     }
-                    $("#browser").find('option').each(function(i, opt) {
-                        if (opt.value === pl) {
-                            $(opt).attr('selected', 'selected');
-                        }
 
 
-                    });
-                })
-            });
+                });
+            })
+        });
 
     </script>
     <script type="text/javascript">
-            $(document).ready(function() {
-                $.getJSON('FindInvariantByID?idName=PLATFORM', function(data) {
-                    $("#platform").empty();
-                    var pl = document.getElementById("defPlatform").value;
+        $(document).ready(function() {
+            $.getJSON('FindInvariantByID?idName=BROWSER', function(data) {
+                $("#browser").empty();
+                var pl = document.getElementById("defBrowser").value;
 
+                for (var i = 0; i < data.length; i++) {
+                    $("#browser").append($("<option></option>")
+                            .attr("value", data[i].value)
+                            .text(data[i].value + " ( " + data[i].description + " )"));
+                }
+                $("#browser").find('option').each(function(i, opt) {
+                    if (opt.value === pl) {
+                        $(opt).attr('selected', 'selected');
+                    }
+
+
+                });
+            })
+        });
+
+    </script>
+    <script type="text/javascript">
+        $(document).ready(function() {
+            $.getJSON('FindInvariantByID?idName=PLATFORM', function(data) {
+                $("#platform").empty();
+                var pl = document.getElementById("defPlatform").value;
+
+                $("#platform").append($("<option></option>")
+                        .attr("value", "")
+                        .text("Optional"));
+
+                for (var i = 0; i < data.length; i++) {
                     $("#platform").append($("<option></option>")
-                            .attr("value", "")
-                            .text("Optional"));
+                            .attr("value", data[i].value)
+                            .text(data[i].value + " ( " + data[i].description + " )"));
+                }
 
-                    for (var i = 0; i < data.length; i++) {
-                        $("#platform").append($("<option></option>")
-                                .attr("value", data[i].value)
-                                .text(data[i].value + " ( " + data[i].description + " )"));
+                $("#platform").find('option').each(function(i, opt) {
+                    if (opt.value === pl) {
+                        $(opt).attr('selected', 'selected');
                     }
 
-                    $("#platform").find('option').each(function(i, opt) {
-                        if (opt.value === pl) {
-                            $(opt).attr('selected', 'selected');
-                        }
 
-
-                    });
-                })
-            });
+                });
+            })
+        });
 
     </script>
     <script type="text/javascript">
-            $(document).ready(function() {
-                $.getJSON('FindInvariantByID?idName=RETRIES', function(data) {
-                    $("#retries").empty();
-                    var pl = document.getElementById("defRetries").value;
+        $(document).ready(function() {
+            $.getJSON('FindInvariantByID?idName=screensize', function(data) {
+                $("#screenSize").empty();
+                var pl = document.getElementById("defScreenSize").value;
 
-                    for (var i = 0; i < data.length; i++) {
-                        $("#retries").append($("<option></option>")
-                                .attr("value", data[i].value)
-                                .text(data[i].value + " ( " + data[i].description + " )"));
+                $("#screenSize").append($("<option></option>")
+                        .attr("value", "")
+                        .text("Default (Client Full Screen)"));
+
+                for (var i = 0; i < data.length; i++) {
+                    $("#screenSize").append($("<option></option>")
+                            .attr("value", data[i].value)
+                            .text(data[i].value + " ( " + data[i].description + " )"));
+                }
+
+                setCookie('ExecutionScreenSize', 'screenSize');
+
+                var screenSize = getCookie('ExecutionScreenSize');
+
+                if (screenSize === "" && pl === "") {
+                    pl = "0";
+                }
+
+
+
+                $("#screenSize").find('option').each(function(i, opt) {
+                    if (opt.value === pl) {
+                        $(opt).attr('selected', 'selected');
                     }
 
-                    setCookie('ExecutionRetries', 'retries');
 
-                    var ExecutionRetries = getCookie('ExecutionRetries');
-
-                    if (ExecutionRetries === "" && pl === "") {
-                        pl = "0";
-                    }
-
-
-
-                    $("#retries").find('option').each(function(i, opt) {
-                        if (opt.value === pl) {
-                            $(opt).attr('selected', 'selected');
-                        }
-
-
-                    });
-                })
-            });
+                });
+            })
+        });
 
     </script>
     <script type="text/javascript">
-            $(document).ready(function() {
-                $("#tag").empty();
-                var tag = document.getElementById("defTag").value;
-                if (tag !== "None") {
-                    document.getElementById("tag").value = tag;
-                } else {
-                    setCookie('TagPreference', 'tag');
+        $(document).ready(function() {
+            $.getJSON('FindInvariantByID?idName=RETRIES', function(data) {
+                $("#retries").empty();
+                var pl = document.getElementById("defRetries").value;
+
+                for (var i = 0; i < data.length; i++) {
+                    $("#retries").append($("<option></option>")
+                            .attr("value", data[i].value)
+                            .text(data[i].value + " ( " + data[i].description + " )"));
                 }
-            });
+
+                setCookie('ExecutionRetries', 'retries');
+
+                var ExecutionRetries = getCookie('ExecutionRetries');
+
+                if (ExecutionRetries === "" && pl === "") {
+                    pl = "0";
+                }
+
+
+
+                $("#retries").find('option').each(function(i, opt) {
+                    if (opt.value === pl) {
+                        $(opt).attr('selected', 'selected');
+                    }
+
+
+                });
+            })
+        });
 
     </script>
     <script type="text/javascript">
-            $(document).ready(function() {
-                $("#timeout").empty();
-                setCookie('TimeoutPreference', 'timeout');
-            });
+        $(document).ready(function() {
+            $("#tag").empty();
+            var tag = document.getElementById("defTag").value;
+            if (tag !== "None") {
+                document.getElementById("tag").value = tag;
+            } else {
+                setCookie('TagPreference', 'tag');
+            }
+        });
+
+    </script>
+    <script type="text/javascript">
+        $(document).ready(function() {
+            $("#timeout").empty();
+            setCookie('TimeoutPreference', 'timeout');
+        });
 
     </script>
     <script>
-            function changeStyleWhenSelected(field) {
-                var b = document.getElementById(field);
-                var c = b.options[b.selectedIndex].value;
+        function changeStyleWhenSelected(field) {
+            var b = document.getElementById(field);
+            var c = b.options[b.selectedIndex].value;
 
-                if (c !== '') {
-                    document.getElementById(field).setAttribute('class', 'selectRobotSelected');
-                } else {
-                    document.getElementById(field).setAttribute('class', 'selectRobot');
-                }
+            if (c !== '') {
+                document.getElementById(field).setAttribute('class', 'selectRobotSelected');
+            } else {
+                document.getElementById(field).setAttribute('class', 'selectRobot');
             }
+        }
     </script>
     <script>
-            function recordRobotPreference() {
-                var ip = document.getElementById("ss_ip").value;
-                var p = document.getElementById("ss_p").value;
-                var br = document.getElementById("browser");
-                var b = br.options[br.selectedIndex].value;
-                var v = document.getElementById("version").value;
-                var pla = document.getElementById("platform");
-                var pl = pla.options[pla.selectedIndex].value;
-                $("#recordButtonDiv").append('<img id="loader" src="images/loading.gif">');
-                var xhttp = new XMLHttpRequest();
-                xhttp.open("GET", "UpdateUserRobotPreference?ss_ip=" + ip + "&ss_p=" + p + "&browser=" + b + "&version=" + v + "&platform=" + pl, false);
-                xhttp.send();
-                var xmlDoc = xhttp.responseText;
-                $("#loader").remove();
-            }
-    </script>
-    <script>
-            function recordExecutionParam() {
-                var expiration_date = new Date();
-                expiration_date.setFullYear(expiration_date.getFullYear() + 1);
+        function recordRobotPreference() {
+            var ip = document.getElementById("ss_ip").value;
+            var p = document.getElementById("ss_p").value;
+            var br = document.getElementById("browser");
+            var b = br.options[br.selectedIndex].value;
+            var v = document.getElementById("version").value;
+            var pla = document.getElementById("platform");
+            var pl = pla.options[pla.selectedIndex].value;
+            $("#recordButtonDiv").append('<img id="loader" src="images/loading.gif">');
+            var xhttp = new XMLHttpRequest();
+            xhttp.open("GET", "UpdateUserRobotPreference?ss_ip=" + ip + "&ss_p=" + p + "&browser=" + b + "&version=" + v + "&platform=" + pl, false);
+            xhttp.send();
+            var xmlDoc = xhttp.responseText;
 
-                var prefTag = $("#tag").val();
-                var prefOf = $("#outputformat").val();
-                var prefVerb = $("#verbose").val();
-                var prefScreen = $("#screenshot").val();
-                var prefSynch = $("#synchroneous").val();
-                var prefTimeOut = $("#timeout").val();
-                var prefPS = $("#pageSource").val();
-                var prefSL = $("#seleniumLog").val();
-                var prefME = $("#manualExecution").val();
-                var prefRt = $("#retries").val();
-                document.cookie = "TagPreference=" + prefTag + ";expires=" + expiration_date.toGMTString();
-                document.cookie = "OutputFormatPreference=" + prefOf + ";expires=" + expiration_date.toGMTString();
-                document.cookie = "VerbosePreference=" + prefVerb + ";expires=" + expiration_date.toGMTString();
-                document.cookie = "ScreenshotPreference=" + prefScreen + ";expires=" + expiration_date.toGMTString();
-                document.cookie = "SynchroneousPreference=" + prefSynch + ";expires=" + expiration_date.toGMTString();
-                document.cookie = "TimeoutPreference=" + prefTimeOut + ";expires=" + expiration_date.toGMTString();
-                document.cookie = "PageSourcePreference=" + prefPS + ";expires=" + expiration_date.toGMTString();
-                document.cookie = "SeleniumLogPreference=" + prefSL + ";expires=" + expiration_date.toGMTString();
-                document.cookie = "ManualExecutionPreference=" + prefME + ";expires=" + expiration_date.toGMTString();
-                document.cookie = "ExecutionRetries=" + prefRt + ";expires=" + expiration_date.toGMTString();
-            }
+            var expiration_date = new Date();
+            expiration_date.setFullYear(expiration_date.getFullYear() + 1);
+            var prefSs = $("#screenSize").val();
+            document.cookie = "ExecutionScreenSize=" + prefSs + ";expires=" + expiration_date.toGMTString();
+
+            $("#loader").remove();
+        }
     </script>
     <script>
-            function setCookie(cookieName, element) {
-                var name = cookieName + "=";
-                var ca = document.cookie.split(';');
-                for (var i = 0; i < ca.length; i++) {
-                    var c = ca[i].trim();
-                    var val = c.split('=')[1];
-                    if (c.indexOf(name) === 0) {
-                        document.getElementById(element).value = val;
-                    }
-                }
-            }
+        function recordExecutionParam() {
+            var expiration_date = new Date();
+            expiration_date.setFullYear(expiration_date.getFullYear() + 1);
+
+            var prefTag = $("#tag").val();
+            var prefOf = $("#outputformat").val();
+            var prefVerb = $("#verbose").val();
+            var prefScreen = $("#screenshot").val();
+            var prefSynch = $("#synchroneous").val();
+            var prefTimeOut = $("#timeout").val();
+            var prefPS = $("#pageSource").val();
+            var prefSL = $("#seleniumLog").val();
+            var prefME = $("#manualExecution").val();
+            var prefRt = $("#retries").val();
+            document.cookie = "TagPreference=" + prefTag + ";expires=" + expiration_date.toGMTString();
+            document.cookie = "OutputFormatPreference=" + prefOf + ";expires=" + expiration_date.toGMTString();
+            document.cookie = "VerbosePreference=" + prefVerb + ";expires=" + expiration_date.toGMTString();
+            document.cookie = "ScreenshotPreference=" + prefScreen + ";expires=" + expiration_date.toGMTString();
+            document.cookie = "SynchroneousPreference=" + prefSynch + ";expires=" + expiration_date.toGMTString();
+            document.cookie = "TimeoutPreference=" + prefTimeOut + ";expires=" + expiration_date.toGMTString();
+            document.cookie = "PageSourcePreference=" + prefPS + ";expires=" + expiration_date.toGMTString();
+            document.cookie = "SeleniumLogPreference=" + prefSL + ";expires=" + expiration_date.toGMTString();
+            document.cookie = "ManualExecutionPreference=" + prefME + ";expires=" + expiration_date.toGMTString();
+            document.cookie = "ExecutionRetries=" + prefRt + ";expires=" + expiration_date.toGMTString();
+        }
     </script>
     <script>
-            function getCookie(cname) {
-                var name = cname + "=";
-                var ca = document.cookie.split(';');
-                for (var i = 0; i < ca.length; i++) {
-                    var c = ca[i].trim();
-                    if (c.indexOf(name) === 0)
-                        return c.substring(name.length, c.length);
+        function setCookie(cookieName, element) {
+            var name = cookieName + "=";
+            var ca = document.cookie.split(';');
+            for (var i = 0; i < ca.length; i++) {
+                var c = ca[i].trim();
+                var val = c.split('=')[1];
+                if (c.indexOf(name) === 0) {
+                    document.getElementById(element).value = val;
                 }
-                return "";
+            }
+        }
+    </script>
+    <script>
+        function getCookie(cname) {
+            var name = cname + "=";
+            var ca = document.cookie.split(';');
+            for (var i = 0; i < ca.length; i++) {
+                var c = ca[i].trim();
+                if (c.indexOf(name) === 0)
+                    return c.substring(name.length, c.length);
+            }
+            return "";
         }
     </script>
 </body>

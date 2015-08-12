@@ -20,6 +20,7 @@
 package org.cerberus.servlet.testCase;
 
 import java.io.IOException;
+import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -344,7 +345,9 @@ public class UpdateTestCaseWithDependencies extends HttpServlet {
             Logger.getLogger(UserService.class.getName()).log(Level.ERROR, null, ex);
         }
 
-        response.sendRedirect(response.encodeRedirectURL("TestCase.jsp?Load=Load&Test=" + tc.getTest() + "&TestCase=" + tc.getTestCase()));
+        String encodedTest = URLEncoder.encode(tc.getTest(), "UTF-8");
+        String encodedTestCase = URLEncoder.encode(tc.getTestCase(), "UTF-8");
+        response.sendRedirect(response.encodeRedirectURL("TestCase.jsp?Load=Load&Test=" + encodedTest + "&TestCase=" + encodedTestCase));
 
     }
 

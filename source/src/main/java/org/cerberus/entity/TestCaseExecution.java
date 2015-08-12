@@ -52,6 +52,7 @@ public class TestCaseExecution {
     private boolean synchroneous;
     private String timeout;
     private String executor;
+    private String screenSize;
 
     /**
      * From here are data outside database model.
@@ -539,5 +540,12 @@ public class TestCaseExecution {
 
     public void setExecutor(String executor) {
         this.executor = executor;
+    }
+
+    public String getScreenSize() {
+        return screenSize;
+    }
+    public void setScreenSize(String screenSize) {
+        this.screenSize = screenSize;
     }
 }

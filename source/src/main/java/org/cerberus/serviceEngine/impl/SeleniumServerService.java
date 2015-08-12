@@ -49,6 +49,8 @@ import org.cerberus.util.StringUtil;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.openqa.selenium.Capabilities;
+import org.openqa.selenium.Dimension;
+import org.openqa.selenium.Point;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.firefox.FirefoxDriver;
 import org.openqa.selenium.firefox.FirefoxProfile;
@@ -83,14 +85,14 @@ public class SeleniumServerService implements ISeleniumServerService {
              */
             MyLogger.log(SeleniumServerService.class.getName(), Level.DEBUG, "Set Capabilities");
             DesiredCapabilities caps = this.setCapabilities(tCExecution);
-            
+
             /**
              * SetUp Driver
              */
             MyLogger.log(SeleniumServerService.class.getName(), Level.DEBUG, "Set Driver");
             WebDriver driver = new RemoteWebDriver(new URL("http://" + tCExecution.getSession().getHost() + ":" + tCExecution.getSession().getPort() + "/wd/hub"), caps);
             tCExecution.getSession().setDriver(driver);
-            
+
             /**
              * If Gui application, maximize window Get IP of Node in case of
              * remote Server
@@ -98,6 +100,16 @@ public class SeleniumServerService implements ISeleniumServerService {
             if (tCExecution.getApplication().getType().equalsIgnoreCase("GUI")) {
                 driver.manage().window().maximize();
                 getIPOfNode(tCExecution);
+
+                /**
+                 * If screenSize is defined, set the size of the screen.
+                 */
+                if (!tCExecution.getScreenSize().equals("")) {
+                    Integer screenWidth = Integer.valueOf(tCExecution.getScreenSize().split("\\*")[0]);
+                    Integer screenLength = Integer.valueOf(tCExecution.getScreenSize().split("\\*")[1]);
+                    setScreenSize(driver, screenWidth, screenLength);
+                }
+                tCExecution.setScreenSize(getScreenSize(driver));
             }
             tCExecution.getSession().setStarted(true);
 
@@ -107,7 +119,7 @@ public class SeleniumServerService implements ISeleniumServerService {
         } catch (MalformedURLException exception) {
             MyLogger.log(Selenium.class.getName(), Level.ERROR, exception.toString());
             MessageGeneral mes = new MessageGeneral(MessageGeneralEnum.VALIDATION_FAILED_URL_MALFORMED);
-            mes.setDescription(mes.getDescription().replace("%URL%", tCExecution.getSession().getHost()+":"+tCExecution.getSession().getPort()));
+            mes.setDescription(mes.getDescription().replace("%URL%", tCExecution.getSession().getHost() + ":" + tCExecution.getSession().getPort()));
             throw new CerberusException(mes);
         } catch (UnreachableBrowserException exception) {
             MyLogger.log(Selenium.class.getName(), Level.ERROR, exception.toString());
@@ -218,12 +230,12 @@ public class SeleniumServerService implements ISeleniumServerService {
             profile.setPreference("extensions.firebug.netexport.showPreview", false);
 
         }
-        
+
         //if userAgent
-        if (!("").equals(tCExecution.getUserAgent())){
-        profile.setPreference("general.useragent.override", tCExecution.getUserAgent()); 
+        if (!("").equals(tCExecution.getUserAgent())) {
+            profile.setPreference("general.useragent.override", tCExecution.getUserAgent());
         }
-        
+
         DesiredCapabilities dc = DesiredCapabilities.firefox();
         dc.setCapability(FirefoxDriver.PROFILE, profile);
 
@@ -352,4 +364,12 @@ public class SeleniumServerService implements ISeleniumServerService {
         return caps;
     }
 
+    private void setScreenSize(WebDriver driver, Integer width, Integer length) {
+        driver.manage().window().setPosition(new Point(0, 0));
+        driver.manage().window().setSize(new Dimension(width, length));
+    }
+
+    private String getScreenSize(WebDriver driver){
+        return driver.manage().window().getSize().toString();
+    }
 }

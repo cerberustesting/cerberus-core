@@ -1581,7 +1581,6 @@ ie User management, parameter management, log viewer, database management.</desc
             <web-resource-name>jsp</web-resource-name>
             <description>jsp</description>
             <url-pattern>/RunManualTestCase.jsp</url-pattern>
-            <url-pattern>/ResumeTests.jsp</url-pattern>
             <url-pattern>/RunTests.jsp</url-pattern>
             <url-pattern>/RunTestsSearchFilters.jsp</url-pattern>
             <url-pattern>/RunTestsSearchResult.jsp</url-pattern>

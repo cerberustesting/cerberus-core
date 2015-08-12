@@ -21,6 +21,7 @@ package org.cerberus.servlet.testCase;
 
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.net.URLEncoder;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -132,7 +133,6 @@ public class CreateTestCase extends HttpServlet {
                 group = "";
             }
 
-
             String country[] = request.getParameterValues("createTestcase_country_general");
 
             PreparedStatement stmt = connection.prepareStatement("SELECT * FROM testcase WHERE test = ? AND testcase = ?");
@@ -212,8 +212,9 @@ public class CreateTestCase extends HttpServlet {
                             Logger.getLogger(UserService.class.getName()).log(Level.ERROR, null, ex);
                         }
 
-                        response.sendRedirect("TestCase.jsp?Test=" + test + "&TestCase="
-                                + testcase + "&Load=Load");
+                        String encodedTest = URLEncoder.encode(test, "UTF-8");
+                        String encodedTestCase = URLEncoder.encode(testcase, "UTF-8");
+                        response.sendRedirect(response.encodeRedirectURL("TestCase.jsp?Load=Load&Test=" + encodedTest + "&TestCase=" + encodedTestCase));
 
                     }
                 } finally {
@@ -238,8 +239,7 @@ public class CreateTestCase extends HttpServlet {
 
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
     /**
-     * Handles the HTTP
-     * <code>GET</code> method.
+     * Handles the HTTP <code>GET</code> method.
      *
      * @param request servlet request
      * @param response servlet response
@@ -253,8 +253,7 @@ public class CreateTestCase extends HttpServlet {
     }
 
     /**
-     * Handles the HTTP
-     * <code>POST</code> method.
+     * Handles the HTTP <code>POST</code> method.
      *
      * @param request servlet request
      * @param response servlet response

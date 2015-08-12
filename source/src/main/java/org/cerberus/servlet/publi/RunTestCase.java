@@ -106,6 +106,7 @@ public class RunTestCase extends HttpServlet {
     public static final String PARAMETER_SYSTEM = "MySystem";
     public static final String PARAMETER_NUMBER_OF_RETRIES = "retries";
     public static final String AUTOMATIC_RUN = "autoRun";
+    public static final String SCREEN_SIZE = "screenSize";
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
@@ -131,6 +132,7 @@ public class RunTestCase extends HttpServlet {
         String active = "";
         String timeout = "";
         String userAgent = "";
+        String screenSize = "";
         boolean synchroneous = true;
         int getPageSource = 0;
         int getSeleniumLog = 0;
@@ -189,6 +191,7 @@ public class RunTestCase extends HttpServlet {
         manualExecution = ParameterParserUtil.parseStringParam(policy.sanitize(request.getParameter("manualExecution")), "N");
         long idFromQueue = ParameterParserUtil.parseIntegerParam(policy.sanitize(request.getParameter("IdFromQueue")), 0);
         int numberOfRetries = ParameterParserUtil.parseIntegerParam(policy.sanitize(request.getParameter("retries")), 0);
+        screenSize = ParameterParserUtil.parseStringParam(policy.sanitize(request.getParameter("screenSize")), "");
 
         String helpMessage = "\nThis servlet is used to start the execution of a test case.\n"
                 + "Parameter list :\n"
@@ -202,6 +205,7 @@ public class RunTestCase extends HttpServlet {
                 + "- browser : Browser to use for the execution. [" + browser + "]\n"
                 + "- version : Version to use for the execution. [" + version + "]\n"
                 + "- platform : Platform to use for the execution. [" + platform + "]\n"
+                + "- screenSize : Size of the screen to set for the execution. [" + screenSize + "]\n"
                 + "- manualURL : Activate or not the Manual URL of the application to execute. If activated the 4 parameters after (myhost, mycontextroot, myloginrelativeurl, myenvdata) are necessary. [" + manualURL + "]\n"
                 + "- myhost : Host of the application to test. [" + myHost + "]\n"
                 + "- mycontextroot : Context root of the application to test. [" + myContextRoot + "]\n"
@@ -242,6 +246,23 @@ public class RunTestCase extends HttpServlet {
             error = true;
         }
 
+        //verify the format of the ScreenSize. It must be 2 integer separated by a *. For example : 1024*768
+        if (!"".equals(screenSize)) {
+            if (!screenSize.contains("*")) {
+                out.println("Error - ScreenSize format is not Correct. It must be 2 Integer separated by a *");
+                error = true;
+            } else {
+                try {
+                    String screenWidth = screenSize.split("\\*")[0];
+                    String screenLength = screenSize.split("\\*")[1];
+                    Integer.parseInt(screenWidth);
+                    Integer.parseInt(screenLength);
+                } catch (Exception e) {
+                    out.println("Error - ScreenSize format is not Correct. It must be 2 Integer separated by a *");
+                    error = true;
+                }
+            }
+        }
         if (!error) {
 
             IRunTestCaseService runTestCaseService = appContext.getBean(RunTestCaseService.class);
@@ -252,7 +273,7 @@ public class RunTestCase extends HttpServlet {
 
             TestCaseExecution tCExecution = factoryTCExecution.create(0, test, testCase, null, null, environment, country, browser, version, platform, "",
                     0, 0, "", "", null, robotHost, null, robotPort, tag, "N", verbose, screenshot, getPageSource, getSeleniumLog, synchroneous, timeout, outputFormat, null,
-                    Infos.getInstance().getProjectNameAndVersion(), tCase, null, null, manualURL, myHost, myContextRoot, myLoginRelativeURL, myEnvData, robotHost, robotPort, null, new MessageGeneral(MessageGeneralEnum.EXECUTION_PE_TESTSTARTED), "Selenium", numberOfRetries);
+                    Infos.getInstance().getProjectNameAndVersion(), tCase, null, null, manualURL, myHost, myContextRoot, myLoginRelativeURL, myEnvData, robotHost, robotPort, null, new MessageGeneral(MessageGeneralEnum.EXECUTION_PE_TESTSTARTED), "Selenium", numberOfRetries, screenSize);
 
             /**
              * Set UserAgent
@@ -319,18 +340,19 @@ public class RunTestCase extends HttpServlet {
             }
 
             /**
-             * If execution from queue, remove it from the queue or update information in Queue
-             * 
-             * IdFromQueue must be different of 0
-             * ReturnCode of Testcase should be
+             * If execution from queue, remove it from the queue or update
+             * information in Queue
+             *
+             * IdFromQueue must be different of 0 ReturnCode of Testcase should
+             * be
              */
             try {
                 if (tCExecution.getIdFromQueue() != 0) {
                     ITestCaseExecutionInQueueService testCaseExecutionInQueueService = appContext.getBean(ITestCaseExecutionInQueueService.class);
-                    if (tCExecution.getResultMessage().getCode() == 63){
-                    testCaseExecutionInQueueService.updateComment(tCExecution.getIdFromQueue(),tCExecution.getResultMessage().getDescription());
-                    }else{
-                    testCaseExecutionInQueueService.remove(tCExecution.getIdFromQueue());
+                    if (tCExecution.getResultMessage().getCode() == 63) {
+                        testCaseExecutionInQueueService.updateComment(tCExecution.getIdFromQueue(), tCExecution.getResultMessage().getDescription());
+                    } else {
+                        testCaseExecutionInQueueService.remove(tCExecution.getIdFromQueue());
                     }
                 }
             } catch (CerberusException ex) {
@@ -338,13 +360,14 @@ public class RunTestCase extends HttpServlet {
             }
 
             /**
-             * Clean memory in case testcase has not been launched(Remove all object put in memory)
+             * Clean memory in case testcase has not been launched(Remove all
+             * object put in memory)
              */
             try {
-                if (tCExecution.getId()==0) {
-                        executionUUIDObject.removeExecutionUUID(tCExecution.getExecutionUUID());
-                        MyLogger.log(RunTestCase.class.getName(), Level.DEBUG, "Clean ExecutionUUID");
-                    
+                if (tCExecution.getId() == 0) {
+                    executionUUIDObject.removeExecutionUUID(tCExecution.getExecutionUUID());
+                    MyLogger.log(RunTestCase.class.getName(), Level.DEBUG, "Clean ExecutionUUID");
+
                     if (eSResponse.getExecutionSOAPResponse(tCExecution.getExecutionUUID()) != null) {
                         eSResponse.removeExecutionSOAPResponse(tCExecution.getExecutionUUID());
                         MyLogger.log(RunTestCase.class.getName(), Level.DEBUG, "Clean ExecutionSOAPResponse");
@@ -427,7 +450,7 @@ public class RunTestCase extends HttpServlet {
                 out.println("ControlStatus" + separator + tCExecution.getResultMessage().getCodeString());
             } else if (outputFormat.equalsIgnoreCase("redirectToReport")) {
                 response.sendRedirect("./ReportingExecutionByTag.jsp?Tag=" + StringUtil.encodeAsJavaScriptURIComponent(tag));
-            }else {
+            } else {
                 DateFormat df = new SimpleDateFormat(DateUtil.DATE_FORMAT_DISPLAY);
                 out.println(df.format(tCExecution.getStart()) + " - " + runID
                         + " [" + test
