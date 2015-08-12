@@ -391,6 +391,15 @@ ul.nav li.dropdown:hover > ul.dropdown-menu {
     font-size: 10px;
 }
 
+.navbar-inverse .navbar-nav > li > a {
+    color: #AAAAAA;
+}
+
+.navbar-inverse {
+    background-color: #333;
+    border-color: #333;
+}
+
 /*
 #navlist li a {
     background: url("../images/background.png") repeat-x scroll 0 -45px rgba(0, 0, 0, 0);

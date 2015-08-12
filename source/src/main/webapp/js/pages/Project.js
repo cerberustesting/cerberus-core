@@ -21,6 +21,7 @@
 $.when($.getScript("js/pages/global.js")).then(function () {
     $(document).ready(function () {
 
+        displayPageLabel();
         // handle the click for specific action buttons
         $("#addProjectButton").click(saveNewProjectHandler);
         $("#editProjectButton").click(saveUpdateProjectHandler);
@@ -37,6 +38,30 @@ $.when($.getScript("js/pages/global.js")).then(function () {
         oTable.fnSort([1, 'asc']);
     });
 });
+
+function displayPageLabel() {
+    var docPage = getDocByPage("project");
+    var docProject = getDocByPage("page_project");
+    var docGlobal = getDocByPage("page_global");
+
+    $("#title").html(displayDocLink(docProject[3]));
+    $("[name='createProjectField']").html(docProject[0].docLabel);
+    $("[name='confirmationField']").html(docProject[1].docLabel);
+    $("[name='editProjectField']").html(docProject[2].docLabel);
+    $("[name='idProjectField']").each(function () {
+        $(this).html(displayDocLink(docPage[4]));
+    });
+    $("[name='activeField']").each(function () {
+        $(this).html(displayDocLink(docPage[0]));
+    });
+    $("[name='codeField']").each(function () {
+        $(this).html(displayDocLink(docPage[1]));
+    });
+    $("[name='descriptionField']").each(function () {
+        $(this).html(displayDocLink(docPage[3]));
+    });
+    displayFooter(docGlobal);
+}
 
 function deleteProjectHandlerClick() {
     var idProject = $('#confirmationModal').find('#hiddenField').prop("value");
@@ -64,7 +89,8 @@ function deleteProjectHandlerClick() {
 function deleteProject(idProject) {
     clearResponseMessageMainPage();
     var messageComplete = "Do you want to delete " + idProject + " project ?";
-    showModalConfirmation(deleteProjectHandlerClick, "Delete - Project", messageComplete, idProject);
+    var docProject = getDocByPage("page_project");
+    showModalConfirmation(deleteProjectHandlerClick, docProject[1].docLabel, messageComplete, idProject);
 }
 
 function saveNewProjectHandler() {
@@ -173,12 +199,12 @@ function editProject(id) {
 }
 
 function renderOptionsForProject(data) {
-
+    var docProjet = getDocByPage("page_project");
     //check if user has permissions to perform the add and import operations
     if (data["hasPermissions"]) {
         if ($("#createProjectButton").length === 0) {
             var contentToAdd = "<div class='marginBottom10'><button id='createProjectButton' type='button' class='btn btn-default'>\n\
-            Create new project</button></div>";
+            " + docProjet[0].docLabel + "</button></div>";
 
             $("#projectsTable_wrapper div.ColVis").before(contentToAdd);
             $('#project #createProjectButton').click(CreateProjectClick);
@@ -187,34 +213,43 @@ function renderOptionsForProject(data) {
 }
 
 function aoColumnsFunc() {
+    var docPage = getDocByPage("project");
+    var docPproject = getDocByPage("page_project");
+    var docGlobal = getDocByPage("page_global");
     var aoColumns = [
         {"data": "button",
-            "sName": "button",
+            "sName": "Actions",
+            "title": docGlobal[0].docLabel,
             "bSortable": false,
             "bSearchable": false,
             "mRender": function (data, type, obj) {
                 var editProject = '<button id="editProject" onclick="editProject(\'' + obj["idProject"] + '\');"\n\
                                 class="editProject btn btn-default btn-xs margin-right5" \n\
-                                name="editProject" title="Edit project" type="button">\n\
+                                name="editProject" title="\''+ docPproject[2].docLabel +'\'" type="button">\n\
                                 <span class="glyphicon glyphicon-pencil"></span></button>';
                 var deleteProject = '<button id="deleteProject" onclick="deleteProject(\'' + obj["idProject"] + '\');" \n\
                                 class="deleteProject btn btn-default btn-xs margin-right5" \n\
-                                name="deleteProject" title="Delete project" type="button">\n\
+                                name="deleteProject" title="\''+ docPproject[1].docLabel +'\'" type="button">\n\
                                 <span class="glyphicon glyphicon-trash"></span></button>';
 
                 return '<div class="center btn-group width150">' + editProject + deleteProject + '</div>';
             }
         },
         {"data": "idProject",
-            "sName": "idProject"},
+            "sName": "idProject",
+            "title": displayDocLink(docPage[4])},
         {"data": "code",
-            "sName": "VCCode"},
+            "sName": "VCCode",
+            "title": displayDocLink(docPage[1])},
         {"data": "description",
-            "sName": "description"},
+            "sName": "description",
+            "title": displayDocLink(docPage[3])},
         {"data": "active",
-            "sName": "active"},
+            "sName": "active",
+            "title": displayDocLink(docPage[0])},
         {"data": "dateCreation",
-            "sName": "dateCre"}
+            "sName": "dateCre",
+            "title": displayDocLink(docPage[2])}
     ];
     return aoColumns;
 }

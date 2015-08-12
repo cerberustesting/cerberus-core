@@ -43,25 +43,15 @@
             <%@ include file="include/project/addProject.html"%> 
             <%@ include file="include/project/editProject.html"%> 
 
-            <h1 class="page-title-line"><%=docService.findLabelHTML("page_project","title","", myLang)%></h1>
+            <h1 class="page-title-line" id="title">Project</h1>
             <div id="project" class="well">
-                <table id="projectsTable" class="table table-hover display" name="projectsTable">
-                    <thead>
-                        <tr>
-                            <th id="action"><%=docService.findLabelHTML("page_global","columnAction","", myLang)%></th>
-                            <th id="idproject"><%=docService.findLabelHTML("Project","idProject","", myLang)%></th>
-                            <th id="code"><%=docService.findLabelHTML("Project","code","", myLang)%></th>
-                            <th id="description"><%=docService.findLabelHTML("Project","Description","", myLang)%></th>
-                            <th id="active"><%=docService.findLabelHTML("Project","active","", myLang)%></th>
-                            <th id="dateCreation"><%=docService.findLabelHTML("Project","dateCreation","", myLang)%></th>
-                        </tr>
-                    </thead>
-                </table>
+                <table id="projectsTable" class="table table-hover display" name="projectsTable"></table>
                 <div class="marginBottom20"></div>
             </div>
-            <br><%
-                out.print(display_footer(DatePageStart));
-            %>
+            <footer class="footer">
+                <div class="container" id="footer">
+                </div>
+            </footer>
         </div>
     </body>
 </html>

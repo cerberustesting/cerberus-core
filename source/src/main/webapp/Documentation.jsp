@@ -54,7 +54,7 @@
 
             if (DocTable.equalsIgnoreCase("all")) { // All the documentation displayed inside a single page.
                 Documentation documentation;
-                Iterator<Documentation> iterAllDoc = documentationService.findAll().iterator();
+                Iterator<Documentation> iterAllDoc = documentationService.findAll(LangValue).iterator();
 
                 while (iterAllDoc.hasNext()) {
                     documentation = iterAllDoc.next();

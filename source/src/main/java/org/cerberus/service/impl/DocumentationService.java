@@ -115,7 +115,7 @@ public class DocumentationService implements IDocumentationService {
     }
 
     @Override
-    public List<Documentation> findAll() {
-        return this.documentationDAO.findAll();
+    public List<Documentation> findAll(String lang) {
+        return this.documentationDAO.findAll(lang);
     }
 }

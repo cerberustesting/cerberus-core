@@ -36,5 +36,5 @@ public interface IDocumentationDAO {
 
     String findDescriptionFromTableFieldAndValue(String docTable, String docField, String docValue, String lang);
 
-    List<Documentation> findAll();
+    List<Documentation> findAll(String lang);
 }

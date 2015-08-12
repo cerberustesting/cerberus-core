@@ -225,16 +225,9 @@
                             }
                     %>
                 </select>
-                <select id="MyLang" name="MyLang" onchange="ChangeLanguage(); document.SysFilter.submit()">
-                    <%
-                        List<Invariant> MyInvariantListLang = myInvariantService.findListOfInvariantById("LANGUAGE");
-                        for (Invariant myInvariantLang : MyInvariantListLang) {
-                    %>
-                    <option value="<%=myInvariantLang.getValue()%>"<% if (MyLang.equalsIgnoreCase(myInvariantLang.getValue())) {
-                            out.print(" SELECTED");
-                        }%>><%=myInvariantLang.getDescription()%></option><%
-                            }
-                    %>
+                <select id="MyLang" name="MyLang" onchange="ChangeLanguage();">
+                    <option value="en">English</option>
+                    <option value="fr">Français</option>
                 </select>
             </form>
         </div>

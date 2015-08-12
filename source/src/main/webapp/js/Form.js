@@ -21,42 +21,6 @@ function loadReporting(reportingFavorite) {
     document.location = reportingFavorite;
 }
 
-/*LANG COOKIE HANDLING - START*/
-
-function ChangeLanguage() {
-    var select = document.getElementById("MyLang");
-    var selectValue = select.options[select.selectedIndex].value;
-    setCookie("lang", selectValue);
-}
-
-function setCookie(name, value) {
-    var today = new Date();
-    var expires = new Date();
-    expires.setTime(today.getTime() + (365 * 24 * 60 * 60 * 1000));
-    document.cookie = name + "=" + encodeURIComponent(value) + ";expires=" + expires.toGMTString();
-}
-
-function getCookie(sName) {
-    var cookContent = document.cookie;
-    var cookEnd;
-    var i, j, c;
-
-    sName = sName + "=";
-    for (i = 0, c = cookContent.length; i < c; i++) {
-        j = i + sName.length;
-        if (cookContent.substring(i, j) === sName) {
-            cookEnd = cookContent.indexOf(";", j);
-            if (cookEnd === -1) {
-                cookEnd = cookContent.length;
-            }
-            return decodeURIComponent(cookContent.substring(j, cookEnd));
-        }
-    }
-    return null;
-} 
-
-/*LANG COOKIE HANDLING - END*/
-
 function popup(mylink) {
     window.open(mylink, 'popup',
             'width=500,height=400,scrollbars=yes,menubar=false,location=false');
@@ -1133,7 +1097,7 @@ function activateDatabaseBox(value, fieldOneId, fieldTwoId) {
 }
 
 function activateValue2(value, fieldOneId, fieldTwoId, fieldThreeId, size2) {
-    if (value === "getAttributeFromHtml" || value === "getFromXml" || value === "getFromCookie" || 
+    if (value === "getAttributeFromHtml" || value === "getFromXml" || value === "getFromCookie" ||
             value === "getFromJson" || value === "getDifferencesFromXml" || value === "getFromDataLib") {
         var size3 = 1 * size2 / 3;
         var size4 = (2 * size2 / 3) - 5;
@@ -1409,7 +1373,7 @@ function getTestCasesForImportStep() {
         URL += '&TestCase=' + encodeURI(getImportUseTestCase);
     }
 
-    $('#trImportTestCase').load(URL, function() {
+    $('#trImportTestCase').load(URL, function () {
         $('#trImportTestCase').fadeIn(250);
     });
 }
@@ -1526,7 +1490,7 @@ function submitTestCaseModification(anchor) {
 
 function openViewPropertyPopin(propertyID, test, testcase) {
     loadPropertyPopin(propertyID, test, testcase);
-    $('#popin').dialog({hide: {duration: 300}, height: 300, width: 700, buttons: [{text: "Ok", click: function() {
+    $('#popin').dialog({hide: {duration: 300}, height: 300, width: 700, buttons: [{text: "Ok", click: function () {
                     $(this).dialog("close");
                 }}]});
 }
@@ -1554,9 +1518,9 @@ function openTestData(value) {
 function showPicture(url, id, div) {
     $('#popin').empty();
     $('#popin').prepend("<img src='" + url + "'/>");
-    $('#popin').dialog({hide: {duration: 300}, height: 600, width: 800, buttons: [{text: "Ok", click: function() {
+    $('#popin').dialog({hide: {duration: 300}, height: 600, width: 800, buttons: [{text: "Ok", click: function () {
                     $(this).dialog("close");
-                }}, {text: "Remove", click: function() {
+                }}, {text: "Remove", click: function () {
                     $("#" + div).empty();
                     $("#" + id).val("").trigger("change");
                     $(this).dialog("close");
@@ -1566,7 +1530,7 @@ function showPicture(url, id, div) {
 function attachPicture(id, pictureToRemove) {
     $('#popin').empty();
     $('#popin').append("<p>Feed Picture URL</p><input style='width:600px' id='attachNewScreenshot'></input>");
-    $('#popin').dialog({hide: {duration: 300}, height: 200, width: 700, buttons: [{text: "Ok", click: function() {
+    $('#popin').dialog({hide: {duration: 300}, height: 200, width: 700, buttons: [{text: "Ok", click: function () {
                     var newUrl = $("#attachNewScreenshot").val();
                     $("#" + id).val(newUrl).trigger("change");
                     $("#" + pictureToRemove).empty().prepend("<img width='45' height='35' src='" + newUrl + "'/>");
@@ -1577,7 +1541,7 @@ function attachPicture(id, pictureToRemove) {
 
 function openSqlLibraryPopin(value) {
     loadSqlLibraryPopin(value);
-    $('#popin').dialog({hide: {duration: 300}, height: 600, width: 800, buttons: [{text: "Ok", click: function() {
+    $('#popin').dialog({hide: {duration: 300}, height: 600, width: 800, buttons: [{text: "Ok", click: function () {
                     $(this).dialog("close");
                 }}]});
 }
@@ -1590,7 +1554,7 @@ function loadSqlLibraryPopin(value) {
 
 
 function getCountrySelectBox() {
-    $.get('GetCountryForTestCase', {test: $('#test').val(), testCase: $('#testCase').val()}, function(data) {
+    $.get('GetCountryForTestCase', {test: $('#test').val(), testCase: $('#testCase').val()}, function (data) {
         $('#country').empty().append($("<option></option>"));
         for (var i = 0; i < data.countriesList.length; i++) {
             $('#country').append($("<option></option>")
@@ -1602,7 +1566,7 @@ function getCountrySelectBox() {
 ;
 
 function getEnvironmentSelectBox() {
-    $.get('GetEnvironmentAvailable', {test: $('#test').val(), testCase: $('#testCase').val(), country: $('#country').val()}, function(data) {
+    $.get('GetEnvironmentAvailable', {test: $('#test').val(), testCase: $('#testCase').val(), country: $('#country').val()}, function (data) {
         $('#environment').empty().append($("<option></option>"));
         for (var i = 0; i < data.envList.length; i++) {
             $('#environment').append($("<option></option>")
@@ -1626,7 +1590,7 @@ function calculateProperty() {
         query.database = $("#db").val();
     }
 
-    $.get('CalculatePropertyForTestCase', query, function(data) {
+    $.get('CalculatePropertyForTestCase', query, function (data) {
 
         if (data !== null && data.resultList !== null) {
             $("#result").empty().text("Value: '" + data.resultList + "'");
@@ -1675,7 +1639,7 @@ function checkUndefinedProperties() {
     return true;
 }
 function checkForm() {
-    
+
     // Check all properties to be sure PK of each is OK
     var numberOfProperties = $("input[name='property_increment']").length;
     for (var index = 1; index <= numberOfProperties; index++) {
@@ -1688,19 +1652,19 @@ function checkForm() {
                 return alertOnProperties();
             }
         }
-        
-    } 
-    var emptyGetFromDataLib = $("textarea[class*='getFromDataLib']:empty").filter(function() {
+
+    }
+    var emptyGetFromDataLib = $("textarea[class*='getFromDataLib']:empty").filter(function () {
         return this.value.length === 0;
     }).length;
-    if (emptyGetFromDataLib > 0 ) {
+    if (emptyGetFromDataLib > 0) {
         // some are empty
         return alertOnMissingPropertyValues(emptyGetFromDataLib);
     }
     /*if($("textarea[class*='getFromDataLib']:empty").length > 0) {
-        return alertOnMissingPropertyValues($("textarea[class*='getFromDataLib']:empty").length);
-    }*/
-    
+     return alertOnMissingPropertyValues($("textarea[class*='getFromDataLib']:empty").length);
+     }*/
+
     return true;
 }
 
@@ -2333,75 +2297,75 @@ function addTCSCNew(rowID, obj) {
 
 function newActivateValue2(value, fieldValue1Id, fieldValue2Id, size) {
     var hideElements = false;
-    
+
     var parents = $("#" + fieldValue1Id).parents("div[id*='propertyRow']");
     var textArea1 = $("#" + fieldValue1Id).find("textarea");
     var textArea2 = $("#" + fieldValue2Id).find("textarea");
-    
+
     if (value === "getAttributeFromHtml" || value === "getFromXml" || value === "getFromCookie" ||
             value === "getFromJson" || value === "getDifferencesFromXml" || value === "getFromDataLib") {
         document.getElementById(fieldValue2Id).style.display = "inline-block";
         document.getElementById(fieldValue2Id).style.width = size / 2 + "%";
         document.getElementById(fieldValue1Id).style.width = size / 2 + "%";
-        if(value ==="getFromDataLib"){  
-            
+        if (value === "getFromDataLib") {
+
             //temporary fix. TODO:FN this should be refactored in the future after the update of the list of nature types
             //var natureElement = $("#" + fieldValue2Id).parents("div[id*='propertyRow']").find("select[id*='properties_nature_']");                         
-            var natureElement = $(parents).find("select[id*='properties_nature_']");                         
+            var natureElement = $(parents).find("select[id*='properties_nature_']");
             $(natureElement).find("option[value='RANDOMNEW']").addClass("hideElement");
             $(natureElement).find("option[value='NOTINUSE']").addClass("hideElement");
             //var valueElement = $("#" + fieldValue2Id).parents("div[id*='propertyRow']").find("div[id*='selectEntry_']");
             var valueElement = $(parents).find("div[id*='selectEntry_']");
             $(valueElement).removeClass("hideElement");
             $(valueElement).addClass("showElementInline");
-            
-            $(textArea1).addClass("getFromDataLib");            
-            $(textArea2).addClass("getFromDataLib");              
+
+            $(textArea1).addClass("getFromDataLib");
+            $(textArea2).addClass("getFromDataLib");
             $(valueElement).siblings("div").css("width", "90%");
-            
+
 //          //TODO:FN refactor after the improvement of the TestCase.jsp page
 //          //add autocomplete for the first textarea
-              
-            if($(textArea1).hasClass("ui-autocomplete-input")){
-                if($(textArea1).autocomplete("option", "disabled")){
-                    $(textArea1).autocomplete("enable"); 
-                }                
-            }else{ //adds the events on the the textarea
+
+            if ($(textArea1).hasClass("ui-autocomplete-input")) {
+                if ($(textArea1).autocomplete("option", "disabled")) {
+                    $(textArea1).autocomplete("enable");
+                }
+            } else { //adds the events on the the textarea
                 $(textArea1).on("change keyup paste", textArea1ChangeCallback);
-                setPropertyValuesAutoComplete($(textArea1), callbackAutoCompleteTestDataLibName)               
-            } 
-      
-            
-            
-        }else{            
+                setPropertyValuesAutoComplete($(textArea1), callbackAutoCompleteTestDataLibName)
+            }
+
+
+
+        } else {
             hideElements = true;
         }
-    }else{
+    } else {
         document.getElementById(fieldValue2Id).style.display = "none";
         document.getElementById(fieldValue1Id).style.width = size + "%";
         hideElements = true;
     }
-    if(hideElements){
+    if (hideElements) {
         console.log("deactivate 2");
         //var natureElement = $("#" + fieldValue1Id).parents("div[id*='propertyRow']").find("select[id*='properties_nature_']");                         
-        var natureElement = $(parents).find("select[id*='properties_nature_']");                         
+        var natureElement = $(parents).find("select[id*='properties_nature_']");
         $(natureElement).find("option[value='RANDOMNEW']").removeClass("hideElement");
         $(natureElement).find("option[value='NOTINUSE']").removeClass("hideElement");
         //var valueElement = $("#" + fieldValue1Id).parents("div[id*='propertyRow']").find("div[id*='selectEntry_']");
         var valueElement = $(parents).find("div[id*='selectEntry_']");
         $(valueElement).removeClass("showElementInline");
         $(valueElement).addClass("hideElement");
-        $(valueElement).siblings("div").css("width", "100%"); 
-        
+        $(valueElement).siblings("div").css("width", "100%");
+
         //remove autocomplete
-        $(textArea1).removeClass("getFromDataLib");            
-        $(textArea2).removeClass("getFromDataLib");            
+        $(textArea1).removeClass("getFromDataLib");
+        $(textArea2).removeClass("getFromDataLib");
         //disables the autocomplete if exists
-        if($(textArea1).hasClass("ui-autocomplete-input")){
-            $(textArea1).autocomplete("disable");  
+        if ($(textArea1).hasClass("ui-autocomplete-input")) {
+            $(textArea1).autocomplete("disable");
         }
-        if($(textArea2).hasClass("ui-autocomplete-input")){
-            $(textArea2).autocomplete("disable");  
+        if ($(textArea2).hasClass("ui-autocomplete-input")) {
+            $(textArea2).autocomplete("disable");
         }
     }
 }
@@ -2450,26 +2414,26 @@ function addPropertyNew(widthValue) {
     //new divs
     console.log("add template configurations");
     $('#propertyRow' + nextIncrementValue).find('div[data-id="selectEntry_Data_template"]')
-           .attr('id', 'selectEntry_Data_' + nextIncrementValue);
-   
+            .attr('id', 'selectEntry_Data_' + nextIncrementValue);
+
     $('#propertyRow' + nextIncrementValue).find('button[data-id="entryButton_template"]')
-           .attr('id', 'entryButton_' + nextIncrementValue);
+            .attr('id', 'entryButton_' + nextIncrementValue);
     //adds the handler for the button
-    
-    $('button[id="entryButton_' + nextIncrementValue+'"]').click(setEntrybuttonClickHandler);   
-   
-   
+
+    $('button[id="entryButton_' + nextIncrementValue + '"]').click(setEntrybuttonClickHandler);
+
+
     $('#propertyRow' + nextIncrementValue).find('div[data-id="selectEntry_SubData_template"]')
-           .attr('id', 'selectEntry_SubData_' + nextIncrementValue);
+            .attr('id', 'selectEntry_SubData_' + nextIncrementValue);
     $('#propertyRow' + nextIncrementValue).find('button[data-id="SubDataButton_template"]')
-           .attr('id', 'SubDataButton_' + nextIncrementValue);
-    $('button[id="SubDataButton_' + nextIncrementValue+'"]').click(setSubDataButtonClickHandler);   
-    
-    
+            .attr('id', 'SubDataButton_' + nextIncrementValue);
+    $('button[id="SubDataButton_' + nextIncrementValue + '"]').click(setSubDataButtonClickHandler);
+
+
     $('#propertyRow' + nextIncrementValue).find('div[data-id="divProperties_value2_template"]')
             .attr('name', 'divProperties_value2_' + nextIncrementValue)
             .attr('id', 'divProperties_value2_' + nextIncrementValue);
-    
+
     $('#propertyRow' + nextIncrementValue).find('textarea[data-id="properties_value1_template"]')
             .attr('name', 'properties_value1_' + nextIncrementValue);
     $('#propertyRow' + nextIncrementValue).find('textarea[data-id="properties_value2_template"]')
@@ -2486,10 +2450,10 @@ function addPropertyNew(widthValue) {
 function openRunManualPopin(test, testcase, env, country, idFromQueue, tag, browser) {
     loadRunManualPopin(test, testcase, env, country, idFromQueue, tag, browser);
     $('#popin').dialog({hide: {duration: 300}, height: $(window).height(), width: $(window).width() - 20, buttons: [
-            {text: "Validate", click: function() {
+            {text: "Validate", click: function () {
                     submitExecution();
                 }},
-            {text: "Cancel", click: function() {
+            {text: "Cancel", click: function () {
                     $("#isCancelExecution").val("Y");
                     submitExecution();
                 }}
@@ -2506,22 +2470,22 @@ function loadRunManualPopin(test, testcase, env, country, idFromQueue, tag, brow
 function openChangeTagPopin(value) {
     loadChangeTagPopin(value);
     $('#setTagToExecution').dialog({hide: {duration: 300}, height: 200, width: 200, buttons: [{
-                text: "Validate", click: function() {
+                text: "Validate", click: function () {
 //                    $('#SetTagToExecution').submit(function(event) {
 //                        event.preventDefault();
-                        var id = $("#setTagToExecution").find('input[name="executionId"]').val();
-                        var tag = $("#setTagToExecution").find('input[name="newTag"]').val();
-                        console.log(id+tag);
-                        var deferred = $.get("./SetTagToExecution", {executionId: id, newTag: tag});
+                    var id = $("#setTagToExecution").find('input[name="executionId"]').val();
+                    var tag = $("#setTagToExecution").find('input[name="newTag"]').val();
+                    console.log(id + tag);
+                    var deferred = $.get("./SetTagToExecution", {executionId: id, newTag: tag});
 
-                        deferred.success(function() {
-                            $(location).attr('href', "./ExecutionDetail.jsp?id_tc=" + value);
-                        });
+                    deferred.success(function () {
+                        $(location).attr('href', "./ExecutionDetail.jsp?id_tc=" + value);
+                    });
 
 //
 //                    });
                 }},
-            {text: "Cancel", click: function() {
+            {text: "Cancel", click: function () {
                     $(this).dialog("close");
                 }}
         ]});
@@ -2538,10 +2502,10 @@ function loadChangeTagPopin(value) {
 
 
 
-    //assigns ids to the text textareas - used by the definition of autocomplete
-    $('#propertyRow' + nextIncrementValue).find('textarea[data-id="properties_value1_template"]')
-            .attr('id', 'properties_value1_' + nextIncrementValue);
-    $('#propertyRow' + nextIncrementValue).find('textarea[data-id="properties_value2_template"]')
-            .attr('id', 'properties_value2_' + nextIncrementValue);
-    
-    
+//assigns ids to the text textareas - used by the definition of autocomplete
+$('#propertyRow' + nextIncrementValue).find('textarea[data-id="properties_value1_template"]')
+        .attr('id', 'properties_value1_' + nextIncrementValue);
+$('#propertyRow' + nextIncrementValue).find('textarea[data-id="properties_value2_template"]')
+        .attr('id', 'properties_value2_' + nextIncrementValue);
+
+

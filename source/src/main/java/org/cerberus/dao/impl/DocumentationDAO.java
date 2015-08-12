@@ -275,15 +275,16 @@ public class DocumentationDAO implements IDocumentationDAO {
     }
 
     @Override
-    public List<Documentation> findAll() {
+    public List<Documentation> findAll(String lang) {
 
         List<Documentation> result = new ArrayList<Documentation>();
-        final String query = "SELECT DocTable, DocField, DocValue, DocLabel, DocDesc FROM documentation";
+        final String query = "SELECT DocTable, DocField, DocValue, DocLabel, DocDesc FROM documentation where Lang = ?";
 
         Connection connection = this.databaseSpring.connect();
         try {
             PreparedStatement preStat = connection.prepareStatement(query);
             try {
+                preStat.setString(1, lang);
                 ResultSet resultSet = preStat.executeQuery();
                 try {
                     while (resultSet.next()) {

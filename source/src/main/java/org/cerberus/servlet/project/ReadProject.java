@@ -193,7 +193,7 @@ public class ReadProject extends HttpServlet {
 
         Gson gson = new Gson();
         JSONObject result = new JSONObject(gson.toJson(project));
-        result.put("button", "");
+        result.put("Actions", "");
         return result;
     }
 

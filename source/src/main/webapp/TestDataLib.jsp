@@ -43,7 +43,7 @@
         <script type="text/javascript" src="js/dataTables.colVis.js"></script>
         
         <script type="text/javascript" src="js/jquery.blockUI.js"></script>
-        
+        <script type="text/javascript" src="js/doc.js"></script>
         <script type="text/javascript" src="js/pages/TestDataLibViewModel.js"></script>
         
         <script type="text/javascript" src="js/bootstrap.min.js"></script>         

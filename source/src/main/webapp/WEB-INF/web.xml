@@ -44,6 +44,10 @@
         <servlet-class>org.cerberus.servlet.documentation.DocumentationField</servlet-class>
     </servlet>
     <servlet>
+        <servlet-name>ReadDocumentation</servlet-name>
+        <servlet-class>org.cerberus.servlet.documentation.ReadDocumentation</servlet-class>
+    </servlet>
+    <servlet>
         <servlet-name>GetApplicationList</servlet-name>
         <servlet-class>org.cerberus.servlet.application.GetApplicationList</servlet-class>
     </servlet>
@@ -711,6 +715,10 @@
     <servlet-mapping>
         <servlet-name>DocumentationField</servlet-name>
         <url-pattern>/DocumentationField</url-pattern>
+    </servlet-mapping>
+       <servlet-mapping>
+        <servlet-name>ReadDocumentation</servlet-name>
+        <url-pattern>/ReadDocumentation</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
         <servlet-name>SaveStatistic</servlet-name>
@@ -1789,6 +1797,7 @@ ie User management, parameter management, log viewer, database management.</desc
             <url-pattern>/GetConnectionPoolName</url-pattern>
             <url-pattern>/SaveManualExecution</url-pattern>
             <url-pattern>/SaveManualExecutionPicture</url-pattern>
+            <url-pattern>/DocumentationField</url-pattern>
             <url-pattern>/DocumentationField</url-pattern>
             <url-pattern>/GetInvariantList</url-pattern>
             <url-pattern>/GetCampaign</url-pattern>
