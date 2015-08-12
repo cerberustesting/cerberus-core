@@ -21,6 +21,7 @@ package org.cerberus.service;
 
 import java.util.List;
 import org.cerberus.entity.Documentation;
+import org.json.JSONObject;
 
 /**
  * @author bcivel
@@ -40,4 +41,6 @@ public interface IDocumentationService {
     String findDescriptionFromTableFieldAndValue(String docTable, String docField, String docValue, String lang);
 
     List<Documentation> findAll(String lang);
+    
+    JSONObject formatGroupByDocTable(List<Documentation> docList);
 }

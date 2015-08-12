@@ -24,66 +24,6 @@ $(document).ready(function () {
     InitLanguage();
 });
 
-var frDt = {
-    "table": {
-        "sProcessing": "Traitement en cours...",
-        "sSearch": "",
-        "sLengthMenu": "_MENU_",
-        "sInfo": "Affichage de l'&eacute;l&eacute;ment _START_ &agrave; _END_ sur _TOTAL_ &eacute;l&eacute;ments",
-        "sInfoEmpty": "Affichage de l'&eacute;l&eacute;ment 0 &agrave; 0 sur 0 &eacute;l&eacute;ments",
-        "sInfoFiltered": "(filtr&eacute; de _MAX_ &eacute;l&eacute;ments au total)",
-        "sInfoPostFix": "",
-        "sLoadingRecords": "Chargement en cours...",
-        "sZeroRecords": "Aucun &eacute;l&eacute;ment &agrave; afficher",
-        "sEmptyTable": "Aucune donn&eacute;e disponible dans le tableau",
-        "sSearchPlaceholder": "Rechercher...",
-        "oPaginate": {
-            "sFirst": "Premier",
-            "sPrevious": "Pr&eacute;c&eacute;dent",
-            "sNext": "Suivant",
-            "sLast": "Dernier"
-        },
-        "oAria": {
-            "sSortAscending": ": activer pour trier la colonne par ordre croissant",
-            "sSortDescending": ": activer pour trier la colonne par ordre d&eacute;croissant"
-        }
-    },
-    "colVis": {"buttonText": "Afficher/Cacher les colonnes"}
-};
-
-var enDt = {
-    "table": {
-        "sEmptyTable": "No data available in table",
-        "sInfo": "Showing _START_ to _END_ of _TOTAL_ entries",
-        "sInfoEmpty": "Showing 0 to 0 of 0 entries",
-        "sInfoFiltered": "(filtered from _MAX_ total entries)",
-        "sInfoPostFix": "",
-        "sInfoThousands": ",",
-        "sLengthMenu": "_MENU_",
-        "sLoadingRecords": "Loading...",
-        "sProcessing": "Processing...",
-        "sSearch": "_INPUT_",
-        "sSearchPlaceholder": "Search...",
-        "sZeroRecords": "No matching records found",
-        "oPaginate": {
-            "sFirst": "First",
-            "sLast": "Last",
-            "sNext": "Next",
-            "sPrevious": "Previous"
-        },
-        "oAria": {
-            "sSortAscending": ": activate to sort column ascending",
-            "sSortDescending": ": activate to sort column descending"
-        }
-    },
-    "colVis": {"buttonText": "Show/Hide columns"}
-};
-
-var langDt = {
-    "fr": frDt,
-    "en": enDt
-};
-
 function InitLanguage() {
     var langCookie = getCookie("lang");
     if (langCookie === null) {
@@ -97,7 +37,7 @@ function ChangeLanguage() {
     var select = document.getElementById("MyLang");
     var selectValue = select.options[select.selectedIndex].value;
     setCookie("lang", selectValue);
-    localStorage.clear();
+    sessionStorage.clear();
     location.reload();
 }
 
@@ -129,42 +69,80 @@ function getCookie(sName) {
 
 /*LANG COOKIE HANDLING - END*/
 
-function setDoc(lang) {
+/**
+ * get language configuration for dataTable creation
+ * @returns {JSONObject} 
+ */
+function getDataTableLanguage(){
+  var doc = getDoc();
+  var docTable = doc.dataTable;
+  var res = {
+          "table": {
+        "sEmptyTable": docTable.sEmptyTable.docLabel,
+        "sInfo": docTable.sInfo.docLabel,
+        "sInfoEmpty": docTable.sInfoEmpty.docLabel,
+        "sInfoFiltered": docTable.sInfoFiltered.docLabel,
+        "sInfoPostFix": docTable.sInfoPostFix.docLabel,
+        "sInfoThousands": docTable.sInfoThousands.docLabel,
+        "sLengthMenu": docTable.sLengthMenu.docLabel,
+        "sLoadingRecords": docTable.sLoadingRecords.docLabel,
+        "sProcessing": docTable.sProcessing.docLabel,
+        "sSearch": docTable.sSearch.docLabel,
+        "sSearchPlaceholder": docTable.sSearchPlaceholder.docLabel,
+        "sZeroRecords": docTable.sZeroRecords.docLabel,
+        "oPaginate": {
+            "sFirst": docTable.sFirst.docLabel,
+            "sLast": docTable.sLast.docLabel,
+            "sNext": docTable.sNext.docLabel,
+            "sPrevious": docTable.sPrevious.docLabel 
+        },
+        "oAria": {
+            "sSortAscending": docTable.sSortAscending.docLabel,
+            "sSortDescending": docTable.sSortDescending.docLabel
+        }
+    },
+    "colVis": {"buttonText": docTable.colVis.docLabel}
+  };
+  return res;
+};
+
+/**
+ * Load the documentation from the database in sessionStorage
+ * @param {String} lang
+ * @returns {void}
+ */
+function readDocFromDatabase(lang) {
     $.ajax({url: "ReadDocumentation",
         data: {lang: lang},
         async: false,
         dataType: 'json',
         success: function (data) {
             var doc = data["labelTable"];
-            localStorage.setItem("doc", JSON.stringify(doc));
+            sessionStorage.setItem("doc", JSON.stringify(doc));
         }
     });
 }
-
+/**
+ * Get the documentation from sessionStorage
+ * @returns {JSONObject} Full documentation in defined language from sessionStorage
+ */
 function getDoc() {
     var lang = getCookie("lang");
     var doc;
 
-    if (localStorage.getItem("doc") === null) {
-        setDoc(lang);
+    if (sessionStorage.getItem("doc") === null) {
+        readDocFromDatabase(lang);
     }
-    doc = localStorage.getItem("doc");
+    doc = sessionStorage.getItem("doc");
     doc = JSON.parse(doc);
     return doc;
 }
 
-function getDocByPage(pageName) {
-    var doc = getDoc();
-    var res = [];
-
-    for (var i = 0; i < doc.length; i++) {
-        if (doc[i].docTable === pageName) {
-            res.push(doc[i]);
-        }
-    }
-    return res;
-}
-
+/**
+ * generate the string with a link to online documentation
+ * @param {JSONObject} docObj
+ * @returns {String} A String which contains the Label and the link to online doc
+ */
 function displayDocLink(docObj) {
     var res;
 

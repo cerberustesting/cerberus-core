@@ -19,11 +19,16 @@
  */
 package org.cerberus.service.impl;
 
+import com.google.gson.Gson;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import org.cerberus.dao.IDocumentationDAO;
 import org.cerberus.entity.Documentation;
 import org.cerberus.service.IDocumentationService;
 import org.cerberus.util.StringUtil;
+import org.json.JSONException;
+import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -117,5 +122,36 @@ public class DocumentationService implements IDocumentationService {
     @Override
     public List<Documentation> findAll(String lang) {
         return this.documentationDAO.findAll(lang);
+    }
+
+    @Override
+    public JSONObject formatGroupByDocTable(List<Documentation> docList) {
+        JSONObject result = new JSONObject();
+
+        for (Documentation doc : docList) {
+            String docTable = doc.getDocTable();
+            if (result.has(docTable)) {
+                try {
+                    result.getJSONObject(docTable).put(doc.getDocField(), convertDocToJSONObject(doc));
+                } catch (JSONException ex) {
+                    Logger.getLogger(DocumentationService.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            } else {
+                try {
+                    result.put(docTable, new JSONObject());
+                    result.getJSONObject(docTable).put(doc.getDocField(), convertDocToJSONObject(doc));
+                } catch (JSONException ex) {
+                    Logger.getLogger(DocumentationService.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            }
+        }
+        return result;
+    }
+
+    private JSONObject convertDocToJSONObject(Documentation doc) throws JSONException {
+
+        Gson gson = new Gson();
+        JSONObject result = new JSONObject(gson.toJson(doc));
+        return result;
     }
 }

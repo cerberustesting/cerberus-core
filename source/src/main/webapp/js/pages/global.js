@@ -416,6 +416,7 @@ function createDataTableWithPermissions(tableConfigurations, callbackfunction) {
     if (!tableConfigurations.showColvis) {
         domConf = 'l<"showInlineElement pull-left marginLeft5"f>rti<"marginTop5"p>';
     }
+    var lang = getDataTableLanguage();
 
     var configs = {};
     configs["dom"] = domConf;
@@ -432,9 +433,9 @@ function createDataTableWithPermissions(tableConfigurations, callbackfunction) {
     configs["scrollY"] = tableConfigurations.scrollY;
     configs["scrollCollapse"] = tableConfigurations.scrollCollapse;
     configs["stateSave"] = tableConfigurations.stateSave;
-    configs["language"] = langDt[getCookie("lang")].table;
+    configs["language"] = lang.table;
     configs["columns"] = tableConfigurations.aoColumnsFunction;
-    configs["colVis"] = langDt[getCookie("lang")].colVis;
+    configs["colVis"] = lang.colVis;
     configs["lengthChange"] = true;
 
 
@@ -457,7 +458,7 @@ function createDataTableWithPermissions(tableConfigurations, callbackfunction) {
                 //updates the table with basis on the permissions that the current user has
                 callbackfunction(data);
             });
-        }
+        };
     } else {
         configs["data"] = tableConfigurations.aaData;
     }
@@ -626,8 +627,13 @@ function setAutoCompleteServerSide(selector, source) {
 
 }
 
-function    displayFooter(globalDoc) {
-    var footerString = globalDoc[1].docLabel;
+/**
+ * generate and display the footer
+ * @param {JSONObject} doc
+ * @returns {void}
+ */
+function    displayFooter(doc) {
+    var footerString = doc.page_global.footer_text.docLabel;
     var date = new Date();
     var loadTime = window.performance.timing.domContentLoadedEventEnd - window.performance.timing.navigationStart;
 

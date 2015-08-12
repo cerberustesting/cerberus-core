@@ -54,21 +54,14 @@ public class ReadDocumentation extends HttpServlet {
         PolicyFactory policy = Sanitizers.FORMATTING.and(Sanitizers.LINKS);
         JSONObject jsonResponse = new JSONObject();
         List<Documentation> result = new ArrayList<Documentation>();
-        JSONArray jsonArray = new JSONArray();
+        JSONObject format = new JSONObject();
 
         String lang = ParameterParserUtil.parseStringParam(policy.sanitize(httpServletRequest.getParameter("lang")), "en");
 
         result = docService.findAll(lang);
-        for (Documentation doc : (List<Documentation>) result) {
-            try {
-                jsonArray.put(convertDocToJSONObject(doc));
-            } catch (JSONException ex) {
-                Logger.getLogger(ReadDocumentation.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-            }
-        }
-        
+        format = docService.formatGroupByDocTable(result);  
         try {
-            jsonResponse.put("labelTable", jsonArray);
+            jsonResponse.put("labelTable", format);
         } catch (JSONException ex) {
             Logger.getLogger(ReadDocumentation.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         }
