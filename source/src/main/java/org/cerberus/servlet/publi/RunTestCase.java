@@ -247,18 +247,20 @@ public class RunTestCase extends HttpServlet {
         }
 
         //verify the format of the ScreenSize. It must be 2 integer separated by a *. For example : 1024*768
-        if (!screenSize.contains("*")) {
-            out.println("Error - ScreenSize format is not Correct. It must be 2 Integer separated by a *");
-            error = true;
-        } else {
-            try {
-                String screenWidth = screenSize.split("\\*")[0];
-                String screenLength = screenSize.split("\\*")[1];
-                Integer.parseInt(screenWidth);
-                Integer.parseInt(screenLength);
-            } catch (Exception e) {
+        if (!"".equals(screenSize)) {
+            if (!screenSize.contains("*")) {
                 out.println("Error - ScreenSize format is not Correct. It must be 2 Integer separated by a *");
                 error = true;
+            } else {
+                try {
+                    String screenWidth = screenSize.split("\\*")[0];
+                    String screenLength = screenSize.split("\\*")[1];
+                    Integer.parseInt(screenWidth);
+                    Integer.parseInt(screenLength);
+                } catch (Exception e) {
+                    out.println("Error - ScreenSize format is not Correct. It must be 2 Integer separated by a *");
+                    error = true;
+                }
             }
         }
         if (!error) {

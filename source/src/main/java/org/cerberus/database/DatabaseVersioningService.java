@@ -4221,6 +4221,13 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLS.append("VALUES ('page_runtests','screensize','','en','Screen Size','This is the size of the browser screen that will be set for the execution.<br><br>Default Values are set inside the InvariantPublic Table.<br>Value must be two Integer splitted by a <b>*</b> mark.<br><i>For Exemple : 1024*768</i><br><br>If you need to add other Values, please contact your Cerberus Administrator.')");
         SQLInstruction.add(SQLS.toString());
         
+// Adding sizeScreen into testcaseexecution table.
+// -- ------------------------ 595
+        SQLS = new StringBuilder();
+        SQLS.append("ALTER TABLE `testcaseexecution`  ");
+        SQLS.append("ADD COLUMN `screensize` VARCHAR(45) NULL DEFAULT NULL AFTER `Executor`;");
+        SQLInstruction.add(SQLS.toString());
+        
         return SQLInstruction;
     }
 

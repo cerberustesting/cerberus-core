@@ -109,6 +109,7 @@ public class SeleniumServerService implements ISeleniumServerService {
                     Integer screenLength = Integer.valueOf(tCExecution.getScreenSize().split("\\*")[1]);
                     setScreenSize(driver, screenWidth, screenLength);
                 }
+                tCExecution.setScreenSize(getScreenSize(driver));
             }
             tCExecution.getSession().setStarted(true);
 
@@ -368,4 +369,7 @@ public class SeleniumServerService implements ISeleniumServerService {
         driver.manage().window().setSize(new Dimension(width, length));
     }
 
+    private String getScreenSize(WebDriver driver){
+        return driver.manage().window().getSize().toString();
+    }
 }

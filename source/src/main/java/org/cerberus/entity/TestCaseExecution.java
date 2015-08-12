@@ -52,6 +52,7 @@ public class TestCaseExecution {
     private boolean synchroneous;
     private String timeout;
     private String executor;
+    private String screenSize;
 
     /**
      * From here are data outside database model.
@@ -85,7 +86,6 @@ public class TestCaseExecution {
     private long idFromQueue;
     private Integer numberOfRetries;
     private String userAgent;
-    private String screenSize;
 
     public String getUserAgent() {
         return userAgent;
