@@ -45,7 +45,7 @@ function initProjectPage() {
 
 function displayPageLabel() {
     var doc = getDoc();
-
+    
     $("#title").html(displayDocLink(doc.page_project.title));
     $("[name='createProjectField']").html(doc.page_project.button_create.docLabel);
     $("[name='confirmationField']").html(doc.page_project.button_delete.docLabel);

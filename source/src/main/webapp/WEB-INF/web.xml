@@ -1510,8 +1510,6 @@ ie User management, parameter management, log viewer, database management.</desc
             <url-pattern>/GetPropertiesForTestCase</url-pattern>
             <url-pattern>/GetReport</url-pattern>
             <url-pattern>/GetStepInLibrary</url-pattern>
-        
-            ReadUser
         </web-resource-collection>
         <auth-constraint>
             <description>TestRO</description>

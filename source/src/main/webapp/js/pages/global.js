@@ -61,7 +61,7 @@ function getSubDataLabel(type) {
  * @param {handleData} handleData method that handles the data retrieved
  */
 function getInvariantList(idName, handleData) {
-    $.when($.getJSON("GetInvariantList", "idName=" + idName)).then(function (data) {
+    $.when($.getJSON("GetInvariantList", "idName=" + idName)).then(function(data) {
         handleData(data);
     });
 }
@@ -71,7 +71,7 @@ function getInvariantList(idName, handleData) {
  * @param {handleData} handleData method that handles the data retrieved 
  */
 function getInvariantListN(list, handleData) {
-    $.when($.post("GetInvariantList", {action: "getNInvariant", idName: JSON.stringify(list)}, "json")).then(function (data) {
+    $.when($.post("GetInvariantList", {action: "getNInvariant", idName: JSON.stringify(list)}, "json")).then(function(data) {
         handleData(data);
     });
 }
@@ -173,7 +173,7 @@ function showMessageMainPage(type, message) {
     $("#mainAlert").fadeIn();
 }
 /*****************************************************************************/
-$(function () {
+$(function() {
 
 
     /*****************************************************************************/
@@ -182,7 +182,7 @@ $(function () {
      */
     /*****************************************************************************/
 
-    $("#buttonMainAlert").click(function () {
+    $("#buttonMainAlert").click(function() {
         var elementToClose = $(this).closest("." + $(this).attr("data-hide"));
         $(elementToClose).siblings("strong span[class='alert-description']").text("");
         $("#mainAlert").removeClass("alert-success");
@@ -197,7 +197,7 @@ $(function () {
      /*Closes the alert page that is visible in the dialogs
      */
     /*****************************************************************************/
-    $("[data-hide]").on("click", function () {
+    $("[data-hide]").on("click", function() {
         var elementToClose = $(this).closest("." + $(this).attr("data-hide"));
         $(elementToClose).siblings("strong span[class='alert-description']").text("");
         $(elementToClose).parents("#mainAlert").removeClass("alert-success");
@@ -212,11 +212,11 @@ $(function () {
      */
     /*****************************************************************************/
     //resets the modal that allows the upload of files
-    $('#modalUpload').on('hidden.bs.modal', function () {
+    $('#modalUpload').on('hidden.bs.modal', function() {
         resetModalUpload();
     });
     //resets the confirmation modal data
-    $('#confirmationModal').on('hidden.bs.modal', function () {
+    $('#confirmationModal').on('hidden.bs.modal', function() {
         resetConfirmationModal();
     });
 });
@@ -297,7 +297,7 @@ function showModalUpload(handlerClickOk, fileExtension) {
     clearResponseMessageMainPage();
     $('#modalUpload').modal('show');
     $('#modalUpload').find('#uploadOk').click(handlerClickOk);
-    $('#modalUpload').find("#fileInput").change(function () {
+    $('#modalUpload').find("#fileInput").change(function() {
         validatesFileExtension(this.value, fileExtension);
     });
 }
@@ -340,7 +340,7 @@ function resetModalUpload() {
  * @param {type} oSettings settings 
  * @param {type} sNewSource new source
  */
-$.fn.dataTableExt.oApi.fnNewAjax = function (oSettings, sNewSource) {
+$.fn.dataTableExt.oApi.fnNewAjax = function(oSettings, sNewSource) {
     if (typeof sNewSource !== 'undefined' && sNewSource !== null) {
         oSettings.sAjaxSource = sNewSource;
     }
@@ -442,19 +442,19 @@ function createDataTableWithPermissions(tableConfigurations, callbackfunction) {
     if (tableConfigurations.serverSide) {
         configs["sAjaxSource"] = tableConfigurations.ajaxSource;
         configs["sAjaxDataProp"] = tableConfigurations.ajaxProp;
-        configs["fnServerData"] = function (sSource, aoData, fnCallback, oSettings) {
+        configs["fnServerData"] = function(sSource, aoData, fnCallback, oSettings) {
             oSettings.jqXHR = $.ajax({
                 "dataType": 'json',
                 "type": "GET",
                 "url": sSource,
                 "data": aoData,
                 "success": fnCallback,
-                "error": function (e) {
+                "error": function(e) {
                     $(location).prop("pathname", $(location).prop("pathname"));
                     $(location).prop("search", $(location).prop("search"));
                 }
             });
-            $.when(oSettings.jqXHR).then(function (data) {
+            $.when(oSettings.jqXHR).then(function(data) {
                 //updates the table with basis on the permissions that the current user has
                 callbackfunction(data);
             });
@@ -471,9 +471,9 @@ function createDataTableWithPermissions(tableConfigurations, callbackfunction) {
     if (tableConfigurations.showColvis) {
         $("#" + tableConfigurations.divId + "_wrapper div.ColVis .ColVis_MasterButton").addClass("btn btn-default");
     }
-       $("#" + tableConfigurations.divId + "_length select[name='" + tableConfigurations.divId + "_length']").addClass("form-control input-sm");
+    $("#" + tableConfigurations.divId + "_length select[name='" + tableConfigurations.divId + "_length']").addClass("form-control input-sm");
     $("#" + tableConfigurations.divId + "_length select[name='" + tableConfigurations.divId + "_length']").css("display", "inline");
-    
+
     $("#" + tableConfigurations.divId + "_filter input[type='search']").addClass("form-control form-control input-sm");
 
     $("#" + tableConfigurations.divId + "_length").addClass("marginBottom10").addClass("width80");
@@ -484,9 +484,9 @@ function createDataTableWithPermissions(tableConfigurations, callbackfunction) {
  * Creates a datatable that is server-side processed.
  * @param {type} tableConfigurations set of configurations that define how data is retrieved and presented
  */
-function createDataTable(tableConfigurations){
+function createDataTable(tableConfigurations) {
     var domConf = 'Cl<"showInlineElement pull-left marginLeft5"f>rti<"marginTop5"p>';
-    if(!tableConfigurations.showColvis){
+    if (!tableConfigurations.showColvis) {
         domConf = 'l<"showInlineElement pull-left marginLeft5"f>rti<"marginTop5"p>';
     }
 
@@ -505,22 +505,22 @@ function createDataTable(tableConfigurations){
     configs["scrollY"] = tableConfigurations.scrollY;
     configs["scrollCollapse"] = tableConfigurations.scrollCollapse;
     configs["bStateSave"] = tableConfigurations.stateSave;
-    configs["oLanguage"] = { "sSearch": tableConfigurations.searchText , 
-                    "sLengthMenu": tableConfigurations.searchMenu};
+    configs["oLanguage"] = {"sSearch": tableConfigurations.searchText,
+        "sLengthMenu": tableConfigurations.searchMenu};
     configs["aoColumns"] = tableConfigurations.aoColumnsFunction;
 
 
-    if(tableConfigurations.serverSide){
+    if (tableConfigurations.serverSide) {
         configs["sAjaxSource"] = tableConfigurations.ajaxSource;
         configs["sAjaxDataProp"] = tableConfigurations.ajaxProp;
-        configs["fnServerData"] = function ( sSource, aoData, fnCallback, oSettings ) {
-            oSettings.jqXHR = $.ajax( {
+        configs["fnServerData"] = function(sSource, aoData, fnCallback, oSettings) {
+            oSettings.jqXHR = $.ajax({
                 "dataType": 'json',
                 "type": "GET",
                 "url": sSource,
                 "data": aoData,
                 "success": fnCallback,
-                "error": function (e) {
+                "error": function(e) {
                     $(location).prop("pathname", $(location).prop("pathname"));
                     $(location).prop("search", $(location).prop("search"));
                 }
@@ -571,14 +571,14 @@ function stopPropagation(event) {
  * @param {type} iDelay time to delay
  * @returns {jQuery.fn.dataTableExt.oApi}
  */
-jQuery.fn.dataTableExt.oApi.fnSetFilteringDelay = function (oSettings, iDelay) {
+jQuery.fn.dataTableExt.oApi.fnSetFilteringDelay = function(oSettings, iDelay) {
     var _that = this;
 
     if (iDelay === undefined) {
         iDelay = 250;
     }
 
-    this.each(function (i) {
+    this.each(function(i) {
         $.fn.dataTableExt.iApiIndex = i;
         var
                 $this = this,
@@ -586,13 +586,13 @@ jQuery.fn.dataTableExt.oApi.fnSetFilteringDelay = function (oSettings, iDelay) {
                 sPreviousSearch = null,
                 anControl = $('input', _that.fnSettings().aanFeatures.f);
 
-        anControl.unbind('keyup search input').bind('keyup search input', function () {
+        anControl.unbind('keyup search input').bind('keyup search input', function() {
             var $$this = $this;
 
             if (sPreviousSearch === null || sPreviousSearch != anControl.val()) {
                 window.clearTimeout(oTimerId);
                 sPreviousSearch = anControl.val();
-                oTimerId = window.setTimeout(function () {
+                oTimerId = window.setTimeout(function() {
                     $.fn.dataTableExt.iApiIndex = i;
                     _that.fnFilter(anControl.val());
                 }, iDelay);
@@ -617,7 +617,7 @@ function setAutoCompleteServerSide(selector, source) {
     //does not display the summary text
     configurations["messages"] = {
         noResults: '',
-        results: function () {
+        results: function() {
         }
     };
     //specifies a delay to avoid excessive requests to the server
@@ -633,10 +633,14 @@ function setAutoCompleteServerSide(selector, source) {
  * @returns {void}
  */
 function    displayFooter(doc) {
+    var projectInformation = getProjectInformation();
+
     var footerString = doc.page_global.footer_text.docLabel;
     var date = new Date();
     var loadTime = window.performance.timing.domContentLoadedEventEnd - window.performance.timing.navigationStart;
 
+    footerString = footerString.replace("%VERSION%", projectInformation.projectName+projectInformation.projectVersion);
+    footerString = footerString.replace("%ENV%", projectInformation.environment);
     footerString = footerString.replace("%DATE%", date.toDateString());
     footerString = footerString.replace("%TIMING%", loadTime);
     $("#footer").html(footerString);

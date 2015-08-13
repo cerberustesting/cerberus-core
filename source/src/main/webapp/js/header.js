@@ -27,6 +27,11 @@ function displayHeaderLabel() {
     for (var s in systems) {
         $("#MySystem").append($('<option></option>').text(systems[s].value).val(systems[s].value));
     }
+    var languages = getLanguageFromSessionStorage();
+    for (var l in languages) {
+        $("#MyLang").append($('<option></option>').text(languages[l].description).val(languages[l].value));
+    }
+    
     $("#MyLang option[value=" + user.language + "]").attr("selected", "selected");
     $("#MySystem option[value=" + user.defaultSystem + "]").attr("selected", "selected");
 }
@@ -95,4 +100,31 @@ function getSystem() {
     sys = sessionStorage.getItem("systems");
     sys = JSON.parse(sys);
     return sys;
+}
+
+function readLanguage() {
+    $.ajax({url: "FindInvariantByID",
+        data: {idName: "LANGUAGE"},
+        async: false,
+        dataType: 'json',
+        success: function (data) {
+            var lang = data;
+            sessionStorage.setItem("language", JSON.stringify(lang));
+        }
+    });
+}
+
+/**
+ * Get the documentation from sessionStorage
+ * @returns {JSONObject} Full documentation in defined language from sessionStorage
+ */
+function getLanguageFromSessionStorage() {
+    var lang;
+
+    if (sessionStorage.getItem("language") === null) {
+        readLanguage();
+    }
+    lang = sessionStorage.getItem("language");
+    lang = JSON.parse(lang);
+    return lang;
 }
