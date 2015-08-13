@@ -55,7 +55,7 @@
     <div style="float:left;">
         <ul id="navlist">
             <% if (request.getUserPrincipal() != null && (request.isUserInRole("TestRO"))) {%>
-            <li id="active"><a id="menu-Test" name="menu" href="#" style="width:100px">Test
+            <li id="active"><a id="menuTest" name="menu" href="#" style="width:100px">Test
                     <img src="images/dropdown.gif"/></a>
                 <ul class="subnav" id="subnavlist">
                     <li id="subactive"><a name="menu" id="menuEditTest" href="Test.jsp" style="width:160px">Edit Test</a></li>
@@ -66,7 +66,7 @@
                     <li id="subactive"><a name="menu" id="menuTestCampaign" href="TestCampaign.jsp" style="width:160px">Test Campaign</a></li>
                 </ul>
             </li>
-            <li id="active"><a id="menu-TestCase" name="menu" href="#" style="width:100px">TestCase
+            <li id="active"><a id="menuTestCase" name="menu" href="#" style="width:100px">TestCase
                     <img src="images/dropdown.gif"/></a>
                 <ul class="subnav" id="subnavlist">
                     <li id="subactive"><a name="menu" id="menuEditTestCase" href="TestCase.jsp" style="width:130px">Edit TestCase</a></li>
@@ -79,7 +79,7 @@
             </li>
             <% }%>
             <% if (request.getUserPrincipal() != null && (request.isUserInRole("Test"))) {%>
-            <li id="active"><a id="menu-Data" name="menu" href="#" style="width:100px">Data
+            <li id="active"><a id="menuData" name="menu" href="#" style="width:100px">Data
                     <img src="images/dropdown.gif"/></a>
                 <ul class="subnav" id="subnavlist">
                     <li id="subactive"><a name="menu" id="menuSqlLibrary" href="SqlLibrary.jsp" style="width:130px">SQL Library</a></li>
@@ -90,19 +90,17 @@
             </li>
             <% }%>
             <%  if (request.getUserPrincipal() != null && (request.isUserInRole("RunTest"))) {%>
-            <li id="active"><a id="menu-Run" name="menu" href="#" style="width:100px">Run
+            <li id="active"><a id="menuRun" name="menu" href="#" style="width:100px">Run
                     <img src="images/dropdown.gif"/></a>
                 <ul class="subnav" id="subnavlist">
                     <li id="subactive"><a name="menu" id="menuRunTestCase" href="RunTests.jsp" style="width:200px">Run Tests</a></li>
-                    <%--  <li><a name="menu" id="menuResumeTestCase" href="ResumeTests.jsp" style="width:130px">Resume Tests</a></li> --%>
-                    <li id="subactive"><a name="menu" id="menuRunManualTestCase" href="RunManualTestCase.jsp" style="width:200px">Run Manual Tests</a></li>
                     <li id="subactive"><a name="menu" id="menuRunTestTriggerBatchExecution" href="RunTestsTriggerBatchExecution.jsp" style="width:200px">Run Multiple Tests</a></li>
                     <li id="subactive"><a name="menu" id="menuRunTestSeePendingExecution" href="ExecutionPending.jsp" style="width:200px">See Execution In Queue</a></li>
                 </ul>
             </li>
             <% }%>
             <% if (request.getUserPrincipal() != null && (request.isUserInRole("TestRO"))) {%>
-            <li id="active"><a id="menu-Execution-Reporting" name="menu" href="#" style="width:170px">Execution Reporting
+            <li id="active"><a id="menuExecutionReporting" name="menu" href="#" style="width:170px">Execution Reporting
                     <img src="images/dropdown.gif"/></a>
                 <ul class="subnav" id="subnavlist">
                     <li id="subactive"><a name="menu" id="menuExecutionPerBuildRevision" href="ExecutionPerBuildRevision" style="width:200px">Execution Per Build/Rev</a></li>
@@ -114,7 +112,7 @@
             </li>
             <% }%>
             <% if (request.getUserPrincipal() != null && request.isUserInRole("IntegratorRO")) {%>
-            <li id="active"><a id="menu-Integration" name="menu" href="#" style="width:100px">Integration
+            <li id="active"><a id="menuIntegration" name="menu" href="#" style="width:100px">Integration
                     <img src="images/dropdown.gif"/></a>
                 <ul class="subnav" id="subnavlist">
                     <li id="subactive"><a name="menu" id="menuIntegrationStatus" href="IntegrationStatus.jsp" style="width:200px">Integration Status</a></li>
@@ -129,7 +127,7 @@
             </li>
             <% }%>
             <% if (request.getUserPrincipal() != null && request.isUserInRole("Administrator")) {%>
-            <li id="active"><a id="menu-Admin" name="menuAdmin" href="#" style="width:100px">Admin
+            <li id="active"><a id="menuAdmin" name="menuAdmin" href="#" style="width:100px">Admin
                     <img src="images/dropdown.gif"/></a>
                 <ul class="subnav" id="subnavlist">
                     <li id="subactive"><a name="menu" id="menuUsersManager" href="UserManager.jsp" style="width:200px">Users Manager</a></li>

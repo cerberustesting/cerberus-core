@@ -1806,7 +1806,7 @@ ie User management, parameter management, log viewer, database management.</desc
             <url-pattern>/SaveManualExecution</url-pattern>
             <url-pattern>/SaveManualExecutionPicture</url-pattern>
             <url-pattern>/DocumentationField</url-pattern>
-            <url-pattern>/DocumentationField</url-pattern>
+            <url-pattern>/ReadDocumentation</url-pattern>
             <url-pattern>/GetInvariantList</url-pattern>
             <url-pattern>/GetCampaign</url-pattern>
             <url-pattern>/GetTagExecutions</url-pattern>
