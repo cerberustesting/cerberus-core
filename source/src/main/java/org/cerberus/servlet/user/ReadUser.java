@@ -80,6 +80,7 @@ public class ReadUser extends HttpServlet {
             data.put("defaultSystem", myUser.getDefaultSystem());
             data.put("request", myUser.getRequest());
             data.put("email", myUser.getEmail());
+            data.put("language", myUser.getLanguage());
 
             JSONArray groups = new JSONArray();
             for (Group group : userGroupService.findGroupByKey(myUser.getLogin())) {

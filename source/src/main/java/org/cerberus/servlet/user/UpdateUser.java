@@ -113,6 +113,9 @@ public class UpdateUser extends HttpServlet {
                 case 7:
                     myUser.setEmail(value);
                     break;
+                case 8:
+                    myUser.setLanguage(value);
+                    break;
             }
             try {
                 if (newGroups != null) {

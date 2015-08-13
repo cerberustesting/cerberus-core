@@ -18,27 +18,30 @@
  * along with Cerberus.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-//$.when($.getScript("js/pages/global.js")).then(function () {
-//    $(document).ready(function () {
-function initProjectPage(){
-        displayPageLabel();
-        // handle the click for specific action buttons
-        $("#addProjectButton").click(saveNewProjectHandler);
-        $("#editProjectButton").click(saveUpdateProjectHandler);
+$.when($.getScript("js/pages/global.js")).then(function () {
+    $(document).ready(function () {
+        initProjectPage();
+    });
+});
 
-        //clear the modals fields when closed
-        $('#addProjectModal').on('hidden.bs.modal', addProjectModalCloseHandler);
-        $('#editProjectModal').on('hidden.bs.modal', editProjectModalCloseHandler);
+function initProjectPage() {
+    displayHeaderLabel();
+    displayPageLabel();
+    // handle the click for specific action buttons
+    $("#addProjectButton").click(saveNewProjectHandler);
+    $("#editProjectButton").click(saveUpdateProjectHandler);
 
-        //configure and create the dataTable
-        var configurations = new TableConfigurationsServerSide("projectsTable", "ReadProject", "contentTable", aoColumnsFunc());
+    //clear the modals fields when closed
+    $('#addProjectModal').on('hidden.bs.modal', addProjectModalCloseHandler);
+    $('#editProjectModal').on('hidden.bs.modal', editProjectModalCloseHandler);
 
-        createDataTableWithPermissions(configurations, renderOptionsForProject);
-        var oTable = $("#projectsTable").dataTable();
-        oTable.fnSort([1, 'asc']);
-        };
-//    });
-//});
+    //configure and create the dataTable
+    var configurations = new TableConfigurationsServerSide("projectsTable", "ReadProject", "contentTable", aoColumnsFunc());
+
+    createDataTableWithPermissions(configurations, renderOptionsForProject);
+    var oTable = $("#projectsTable").dataTable();
+    oTable.fnSort([1, 'asc']);
+};
 
 function displayPageLabel() {
     var doc = getDoc();

@@ -17,10 +17,6 @@
   ~ You should have received a copy of the GNU General Public License
   ~ along with Cerberus.  If not, see <http://www.gnu.org/licenses/>.
 --%>
-<%@page import="org.cerberus.service.IDocumentationService"%>
-<% Date DatePageStart = new Date();
-%>
-
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <!DOCTYPE html>
 <html>
@@ -33,10 +29,6 @@
     <body>
         <%@ include file="include/function.jsp" %>
         <%@ include file="include/header.jsp" %>
-        <%
-            IDocumentationService docService = appContext.getBean(IDocumentationService.class);
-            String myLang = request.getAttribute("MyLang").toString();
-        %>
         <div class="container center" id="page-layout">
             <%@ include file="include/messagesArea.html"%>
             <%@ include file="include/utils/modal-confirmation.html"%>
@@ -49,8 +41,7 @@
                 <div class="marginBottom20"></div>
             </div>
             <footer class="footer">
-                <div class="container" id="footer">
-                </div>
+                <div class="container" id="footer"></div>
             </footer>
         </div>
     </body>
