@@ -113,6 +113,9 @@ public class UpdateUser extends HttpServlet {
                 case 7:
                     myUser.setEmail(value);
                     break;
+                case 8:
+                    myUser.setLanguage(value);
+                    break;
             }
             try {
                 if (newGroups != null) {
@@ -145,6 +148,17 @@ public class UpdateUser extends HttpServlet {
 
                 } else {
                     userService.updateUser(myUser);
+                    
+                    /**
+                     * Adding Log entry.
+                     */
+                    ILogEventService logEventService = appContext.getBean(LogEventService.class);
+                    IFactoryLogEvent factoryLogEvent = appContext.getBean(FactoryLogEvent.class);
+                    try {
+                        logEventService.insertLogEvent(factoryLogEvent.create(0, 0, request.getUserPrincipal().getName(), null, "/UpdateUserAjax", "UPDATE", "Updated userSystem of : " + login, "", ""));
+                    } catch (CerberusException ex) {
+                        Logger.getLogger(UpdateUser.class.getName()).log(Level.ERROR, null, ex);
+                    }
                 }
                 response.getWriter().print(value);
             } catch (CerberusException ex) {

@@ -18,7 +18,7 @@
   ~ along with Cerberus.  If not, see <http://www.gnu.org/licenses/>.
 -->
 <nav role="navigation" class="navbar navbar-inverse navbar-static-top">
-    <div class="container-fluid">
+    <div class="container-fluid" id="page-layout">
         <div class="navbar-header navbar-left">
             <a class="navbar-brand" href="Homepage.jsp">
                 <img id="logo" alt="Cerberus" src="images/logo1.png"/>
@@ -33,15 +33,15 @@
         </button>
         <div id="navbar" class="navbar-nav">
             <ul class="nav navbar-nav" id="navlist">
-                <li class="dropdown TestRO"><a id ="menuTest" class="dropdown-toggle" aria-expanded="true" aria-haspopup="true" role="button" data-toggle="dropdown" href="#">Test <span class="caret"></span></a>
+                <li class="dropdown TestRO"><a name="menu" id ="menuTest" class="dropdown-toggle" aria-expanded="true" aria-haspopup="true" role="button" data-toggle="dropdown" href="#">Test <span class="caret"></span></a>
                     <ul class="dropdown-menu" id="subnavlist">
                         <li id="subactive"><a name="menu" id="menuEditTest" href="Test.jsp">Edit Test</a></li>
-                        <li id="subactive TestAdmin"><a name="menu" id="menuCreateTest" href="TestCreate.jsp">Create Test</a></li>
+                        <li id="subactive"><a name="menu" id="menuCreateTest" href="TestCreate.jsp">Create Test</a></li>
                         <li id="subactive"><a name="menu" id="menuTestPerApplication" href="TestPerApplication.jsp">Test Per Application</a></li>
                         <li id="subactive"><a name="menu" id="menuTestCampaign" href="TestCampaign.jsp">Test Campaign</a></li>
                     </ul>
                 </li>
-                <li class="dropdown TestRO"><a id="menuTestCase" class="dropdown-toggle" aria-expanded="true" aria-haspopup="true" role="button" data-toggle="dropdown" href="#">TestCase <span class="caret"></span></a>
+                <li class="dropdown TestRO"><a name="menu" id="menuTestCase" class="dropdown-toggle" aria-expanded="true" aria-haspopup="true" role="button" data-toggle="dropdown" href="#">TestCase <span class="caret"></span></a>
                     <ul class="dropdown-menu" id="subnavlist">
                         <li id="subactive"><a name="menu" id="menuEditTestCase" href="TestCase.jsp">Edit TestCase</a></li>
                         <li id="subactive"><a name="menu" id="menuCreateTestCase" href="TestCaseCreate.jsp">Create TestCase</a></li>
@@ -49,7 +49,7 @@
                         <li id="subactive"><a name="menu" id="menuTestBattery" href="TestBattery.jsp">Test Battery</a></li>
                     </ul>
                 </li>
-                <li class="dropdown Test"><a id="menuData" class="dropdown-toggle" aria-expanded="true" aria-haspopup="true" role="button" data-toggle="dropdown" href="#">Data <span class="caret"></span></a>
+                <li class="dropdown Test"><a name="menu" id="menuData" class="dropdown-toggle" aria-expanded="true" aria-haspopup="true" role="button" data-toggle="dropdown" href="#">Data <span class="caret"></span></a>
                     <ul class="dropdown-menu" id="subnavlist">
                         <li id="subactive"><a name="menu" id="menuSqlLibrary" href="SqlLibrary.jsp">SQL Library</a></li>
                         <li id="subactive"><a name="menu" id="menuSoapLibrary" href="SoapLibrary.jsp">SOAP Library</a></li>
@@ -57,14 +57,14 @@
                         <li id="subactive"><a name="menu" id="menuTestDataLib" href="TestDataLib.jsp">Library</a></li>
                     </ul>
                 </li>
-                <li class="dropdown RunTest"><a id="menuRun" class="dropdown-toggle" aria-expanded="true" aria-haspopup="true" role="button" data-toggle="dropdown" href="#">Run <span class="caret"></span></a>
+                <li class="dropdown RunTest"><a name="menu" id="menuRun" class="dropdown-toggle" aria-expanded="true" aria-haspopup="true" role="button" data-toggle="dropdown" href="#">Run <span class="caret"></span></a>
                     <ul class="dropdown-menu" id="subnavlist">
                         <li id="subactive"><a name="menu" id="menuRunTestCase" href="RunTests.jsp">Run Tests</a></li>
                         <li id="subactive"><a name="menu" id="menuRunTestTriggerBatchExecution" href="RunTestsTriggerBatchExecution.jsp">Run Multiple Tests</a></li>
                         <li id="subactive"><a name="menu" id="menuRunTestSeePendingExecution" href="ExecutionPending.jsp">See Execution In Queue</a></li>
                     </ul>
                 </li>
-                <li class="dropdown TestRO"><a id="menuExecutionReport" class="dropdown-toggle" aria-expanded="true" aria-haspopup="true" role="button" data-toggle="dropdown" href="#">Execution Reporting <span class="caret"></span></a>
+                <li class="dropdown TestRO"><a name="menu" id="menuExecutionReporting" class="dropdown-toggle" aria-expanded="true" aria-haspopup="true" role="button" data-toggle="dropdown" href="#">Execution Reporting <span class="caret"></span></a>
                     <ul class="dropdown-menu" id="subnavlist">
                         <li id="subactive"><a name="menu" id="menuExecutionPerBuildRevision" href="ExecutionPerBuildRevision">Execution Per Build/Rev</a></li>
                         <li id="subactive"><a name="menu" id="menuReportingExecutionStatus" href="ReportingExecution.jsp">Execution Status</a></li>
@@ -73,7 +73,7 @@
                         <li id="subactive"><a name="menu" id="menuReportingExecutionByTag" href="ReportingExecutionByTag.jsp">Execution Report By Tag</a></li>
                     </ul>
                 </li>
-                <li class="dropdown IntegratorRO"><a id="menuIntegration" class="dropdown-toggle" aria-expanded="true" aria-haspopup="true" role="button" data-toggle="dropdown" href="#">Integration <span class="caret"></span></a>
+                <li class="dropdown IntegratorRO"><a name="menu" id="menuIntegration" class="dropdown-toggle" aria-expanded="true" aria-haspopup="true" role="button" data-toggle="dropdown" href="#">Integration <span class="caret"></span></a>
                     <ul class="dropdown-menu" id="subnavlist">
                         <li id="subactive"><a name="menu" id="menuIntegrationStatus" href="IntegrationStatus.jsp">Integration Status</a></li>
                         <li id="subactive"><a name="menu" id="menuApplications" href="Application.jsp">Applications</a></li>
@@ -85,7 +85,7 @@
                         <li id="subactive"><a name="menu" id="menuProject" href="Project.jsp">Project</a></li>
                     </ul>
                 </li>
-                <li class="dropdown Administrator"><a id="menuAdmin" class="dropdown-toggle" aria-expanded="true" aria-haspopup="true" role="button" data-toggle="dropdown" href="#">Admin <span class="caret"></span></a>
+                <li class="dropdown Administrator"><a name="menu" id="menuAdmin" class="dropdown-toggle" aria-expanded="true" aria-haspopup="true" role="button" data-toggle="dropdown" href="#">Admin <span class="caret"></span></a>
                     <ul class="dropdown-menu" id="subnavlist">
                         <li id="subactive"><a name="menu" id="menuUsersManager" href="UserManager.jsp">Users Manager</a></li>
                         <li id="subactive"><a name="menu" id="menuLogViewer" href="LogViewer.jsp">Log Viewer</a></li>
@@ -104,7 +104,7 @@
                     <a id="formSystem">
                         <span class=" glyphicon glyphicon-folder-open" style="color: white; margin-right: 5px;"></span>
                         <form style="display: inline-block; margin-left: 5px;" action="" method="post" name="SysFilter" id="SysFilter">
-                            <select class="form-control header-dropdown" id="MySystem" style="" name="MySystem" onchange="document.SysFilter.submit()">
+                            <select class="form-control header-dropdown" id="MySystem" style="" name="MySystem" onchange="ChangeSystem()">
                             </select>
                         </form>
                     </a>
@@ -134,14 +134,6 @@
                         </li>
                     </ul>
                 </li>
-<!--                <li id="userInfo" style="float:right; width:100px" class="userNotConnected">
-                    <a href="Homepage.jsp">
-                        <div id="login" style="width: 75px;">
-                            <img src="images/LoginIcon1.png" />
-                            <span>Login</span>
-                        </div>
-                    </a>
-                </li>-->
             </ul>  
         </div>
     </div>

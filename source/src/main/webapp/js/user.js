@@ -18,9 +18,9 @@
  * along with Cerberus.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-$(document).ready(function () {
-    getUser();
-});
+//$(document).ready(function () {
+//    getUser();
+//});
 
 /**
  * Load the User from the database in sessionStorage

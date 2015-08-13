@@ -21,24 +21,53 @@
 function displayHeaderLabel() {
     var user = getUser();
     var doc = getDoc();
+    displayMenuItem(doc);
     $("#headerUserName").html(user.login);
-    $("#menuEditTest").html("Test Edition");
-    $("#menu-TestCase").html("Cas de Test"+"<span class=\"caret\">");
-    $("#menuProject").html(doc.page_project.title.docLabel);
     var systems = getSystem();
-    for (var s in systems){
-            $("#MySystem").append($('<option></option>').text(systems[s].value).val(systems[s].value));
+    for (var s in systems) {
+        $("#MySystem").append($('<option></option>').text(systems[s].value).val(systems[s].value));
     }
-    InitLanguage();
-    }
-    
-    function InitLanguage() {
-    var langCookie = getCookie("lang");
-    if (langCookie === null) {
-        //replace "en" by GetBrowserLanguage() when the other languages are supported
-        setCookie("lang", "en");
-    }
-    $("#MyLang option[value=" + langCookie + "]").attr("selected", "selected");
+    $("#MyLang option[value=" + user.language + "]").attr("selected", "selected");
+    $("#MySystem option[value=" + user.defaultSystem + "]").attr("selected", "selected");
+}
+
+function ChangeLanguage() {
+    var select = document.getElementById("MyLang");
+    var selectValue = select.options[select.selectedIndex].value;
+    var user = getUser();
+
+    $.ajax({url: "UpdateUser",
+        data: {id: user.login, columnPosition: "8", value: selectValue},
+        async: false,
+        success: function () {
+            sessionStorage.clear();
+            location.reload();
+        }
+    });
+}
+
+function ChangeSystem() {
+    var select = document.getElementById("MySystem");
+    var selectValue = select.options[select.selectedIndex].value;
+    var user = getUser();
+
+    $.ajax({url: "UpdateUser",
+        data: {id: user.login, columnPosition: "5", value: selectValue},
+        async: false,
+        success: function () {
+            sessionStorage.removeItem("user");
+            location.reload();
+        }
+    });
+}
+
+function displayMenuItem(doc) {
+    var menuItems = document.getElementsByName('menu');
+
+    $(menuItems).each(function () {
+        var id = $(this).attr('id');
+        $(this).html(doc.page_header[id].docLabel);
+    });
 }
 
 function readSystem() {

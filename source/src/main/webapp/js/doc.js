@@ -18,57 +18,6 @@
  * along with Cerberus.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/*LANG COOKIE HANDLING - START*/
-
-$(document).ready(function () {
-    InitLanguage();
-});
-
-function InitLanguage() {
-    var langCookie = getCookie("lang");
-    if (langCookie === null) {
-        //replace "en" by GetBrowserLanguage() when the other languages are supported
-        setCookie("lang", "en");
-    }
-    $("#MyLang option[value=" + langCookie + "]").attr("selected", "selected");
-}
-
-function ChangeLanguage() {
-    var select = document.getElementById("MyLang");
-    var selectValue = select.options[select.selectedIndex].value;
-    setCookie("lang", selectValue);
-    sessionStorage.clear();
-    location.reload();
-}
-
-function setCookie(name, value) {
-    var today = new Date();
-    var expires = new Date();
-    expires.setTime(today.getTime() + (365 * 24 * 60 * 60 * 1000));
-    document.cookie = name + "=" + encodeURIComponent(value) + ";expires=" + expires.toGMTString();
-}
-
-function getCookie(sName) {
-    var cookContent = document.cookie;
-    var cookEnd;
-    var i, j, c;
-
-    sName = sName + "=";
-    for (i = 0, c = cookContent.length; i < c; i++) {
-        j = i + sName.length;
-        if (cookContent.substring(i, j) === sName) {
-            cookEnd = cookContent.indexOf(";", j);
-            if (cookEnd === -1) {
-                cookEnd = cookContent.length;
-            }
-            return decodeURIComponent(cookContent.substring(j, cookEnd));
-        }
-    }
-    return null;
-}
-
-/*LANG COOKIE HANDLING - END*/
-
 /**
  * get language configuration for dataTable creation
  * @returns {JSONObject} 
@@ -127,11 +76,11 @@ function readDocFromDatabase(lang) {
  * @returns {JSONObject} Full documentation in defined language from sessionStorage
  */
 function getDoc() {
-    var lang = getCookie("lang");
+    var user = getUser();
     var doc;
 
     if (sessionStorage.getItem("doc") === null) {
-        readDocFromDatabase(lang);
+        readDocFromDatabase(user.language);
     }
     doc = sessionStorage.getItem("doc");
     doc = JSON.parse(doc);
@@ -145,8 +94,9 @@ function getDoc() {
  */
 function displayDocLink(docObj) {
     var res;
+    var user = getUser();
 
     res = docObj.docLabel + " <a class=\"docOnline\" href=\'javascript:popup(\"Documentation.jsp?DocTable=" + docObj.docTable +
-            "&DocField=" + docObj.docField + "&Lang=" + getCookie("lang") + "\")\' onclick=\"stopPropagation(event)\"><span class=\"glyphicon glyphicon-question-sign\"></span></a>";
+            "&DocField=" + docObj.docField + "&Lang=" + user.language + "\")\' onclick=\"stopPropagation(event)\"><span class=\"glyphicon glyphicon-question-sign\"></span></a>";
     return res;
 }
