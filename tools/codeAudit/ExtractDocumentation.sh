@@ -54,7 +54,7 @@ fi
 #-------------------------------------------------------------------------------
 
 echo // New updated Documentation. > $TMP_DOCUMENTATION_OUTPUT
-echo //-- ------------------------ 000 >> $TMP_DOCUMENTATION_OUTPUT
+echo //-- ------------------------ 000-000 >> $TMP_DOCUMENTATION_OUTPUT
 echo SQLS = new StringBuilder\(\)\; >> $TMP_DOCUMENTATION_OUTPUT
 echo SQLS.append\(\"DELETE FROM \`documentation\`\;\"\)\; >> $TMP_DOCUMENTATION_OUTPUT
 echo SQLInstruction.add\(SQLS.toString\(\)\)\; >> $TMP_DOCUMENTATION_OUTPUT
@@ -62,11 +62,16 @@ echo SQLS = new StringBuilder\(\)\; >> $TMP_DOCUMENTATION_OUTPUT
 echo -n SQLS.append\(\" >> $TMP_DOCUMENTATION_OUTPUT
 
 
-# Static code before the table.
+# Insert instructions from the table dump.
+# 
+#   ,(' is replaced by ");\nSQLS.append(",('
+#   \' is replaced by \\'
+#   on the last line we replace '); by ')");
+# 
 #-------------------------------------------------------------------------------
 mysqldump -u $DATABASE_USER -q $DATABASE_NAME documentation | grep INSERT | sed s/,\(\'/\"\)\;\\nSQLS.append\(\"\,\(\'/g | sed s/\\\\\'/\\\\\\\\\'/g > $TMP_DOCUMENTATION_OUTPUT.tmp
 
-cat $TMP_DOCUMENTATION_OUTPUT.tmp | sed -r s/\'\\\)\;$/\"\)\;/ >> $TMP_DOCUMENTATION_OUTPUT
+cat $TMP_DOCUMENTATION_OUTPUT.tmp | sed -r s/\'\\\)\;$/\'\\\)\"\)\;/ >> $TMP_DOCUMENTATION_OUTPUT
 
 # Static code after the table.
 #-------------------------------------------------------------------------------
