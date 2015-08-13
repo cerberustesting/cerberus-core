@@ -21,15 +21,24 @@ package org.cerberus.servlet.information;
 
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.util.logging.Logger;
 import javax.servlet.ServletException;
+import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import org.cerberus.exception.CerberusException;
+import org.cerberus.version.Infos;
+import org.json.JSONException;
+import org.json.JSONObject;
+import org.springframework.context.ApplicationContext;
+import org.springframework.web.context.support.WebApplicationContextUtils;
 
 /**
  *
  * @author bcivel
  */
+@WebServlet(name = "ReadProjectInformation", urlPatterns = {"/ReadProjectInformation"})
 public class ReadProjectInformation extends HttpServlet {
 
     /**
@@ -43,22 +52,19 @@ public class ReadProjectInformation extends HttpServlet {
      */
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        response.setContentType("text/html;charset=UTF-8");
-        PrintWriter out = response.getWriter();
+        ApplicationContext appContext = WebApplicationContextUtils.getWebApplicationContext(this.getServletContext());
+        Infos infos = new Infos();
+        JSONObject data = new JSONObject();
+
         try {
-            /* TODO output your page here. You may use following sample code. */
-            out.println("<!DOCTYPE html>");
-            out.println("<html>");
-            out.println("<head>");
-            out.println("<title>Servlet ReadProjectInformation</title>");            
-            out.println("</head>");
-            out.println("<body>");
-            out.println("<h1>Servlet ReadProjectInformation at " + request.getContextPath() + "</h1>");
-            out.println("</body>");
-            out.println("</html>");
-        } finally {
-            out.close();
-        }
+            data.put("projectName", infos.getProjectName());
+            data.put("projectVersion", infos.getProjectVersion());
+            data.put("environment", System.getProperty("org.cerberus.environment"));
+        } catch (JSONException ex) {
+            Logger.getLogger(ReadProjectInformation.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+        } 
+        response.setContentType("application/json");
+        response.getWriter().print(data.toString());
     }
 
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">

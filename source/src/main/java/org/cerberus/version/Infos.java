@@ -91,7 +91,7 @@ public final class Infos {
 	/**
 	 * Private constructor as singleton class
 	 */
-	private Infos() {
+	public Infos() {
 		init();
 	}
 
