@@ -155,7 +155,7 @@
 }
 
 #page-layout{
-    width: 1488px;       
+    max-width: 1488px;       
     margin-left: auto;
     margin-right: auto;                
 }

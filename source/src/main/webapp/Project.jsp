@@ -28,8 +28,8 @@
     </head>
     <body>
         <%@ include file="include/function.jsp" %>
-        <%@ include file="include/header.jsp" %>
-        <div class="container center" id="page-layout">
+        <%@ include file="include/header.html" %>
+        <div class="container-fluid center" id="page-layout">
             <%@ include file="include/messagesArea.html"%>
             <%@ include file="include/utils/modal-confirmation.html"%>
             <%@ include file="include/project/addProject.html"%> 

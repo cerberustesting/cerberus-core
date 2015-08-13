@@ -4304,7 +4304,7 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLS.append("('page_header', 'menuEditTest', '', 'fr', 'Editer un Test', ''),");
         SQLS.append("('page_header', 'menuCreateTest', '', 'en', 'Create Test', ''),");
         SQLS.append("('page_header', 'menuCreateTest', '', 'fr', 'Créér un Test', ''),");
-        SQLS.append("('page_header', 'menuTestPerApplication', '', 'en', 'Test¨Per Application', ''),");
+        SQLS.append("('page_header', 'menuTestPerApplication', '', 'en', 'Test Per Application', ''),");
         SQLS.append("('page_header', 'menuTestPerApplication', '', 'fr', 'Liste de Tests par Application', ''),");
         SQLS.append("('page_header', 'menuTestCampaign', '', 'en', 'Test Campaign', ''),");
         SQLS.append("('page_header', 'menuTestCampaign', '', 'fr', 'Campagne de Test', ''),");
@@ -4369,6 +4369,16 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLS.append("('page_header', 'menuReportingExecutionThreadMonitoring', '', 'en', 'Cerberus Monitoring', ''),");
         SQLS.append("('page_header', 'menuReportingExecutionThreadMonitoring', '', 'fr', 'Monitoring Cerberus', '');");
         SQLInstruction.add(SQLS.toString());
+        
+        // Adding global documentation for Header.
+        // -- ------------------------ 598
+        SQLS = new StringBuilder();
+        SQLS.append("INSERT INTO `documentation` (`DocTable`, `DocField`, `DocValue`, `Lang`, `DocLabel`, `DocDesc`) VALUES ");
+        SQLS.append("('page_header', 'menuDatabaseMaintenance', '', 'en', 'Database Maintenance', ''),");
+        SQLS.append("('page_header', 'menuDatabaseMaintenance', '', 'fr', 'Maintenance de la base de données', ''),");
+        SQLS.append("('page_header', 'logout', '', 'en', 'Logout', ''),");
+        SQLS.append("('page_header', 'logout', '', 'fr', 'Déconnexion', '');");
+        SQLInstruction.add(SQLS.toString());        
         
         return SQLInstruction;
     }

@@ -21,13 +21,14 @@
 function displayHeaderLabel() {
     var user = getUser();
     var doc = getDoc();
-//    displayMenuItem(doc);
+    displayMenuItem(doc);
     $("#headerUserName").html(user.login);
     var systems = getSystem();
     for (var s in systems) {
         $("#MySystem").append($('<option></option>').text(systems[s].value).val(systems[s].value));
     }
-    InitLanguage();
+    $("#MyLang option[value=" + user.language + "]").attr("selected", "selected");
+    $("#MySystem option[value=" + user.defaultSystem + "]").attr("selected", "selected");
 }
 
 function ChangeLanguage() {
@@ -38,9 +39,7 @@ function ChangeLanguage() {
     $.ajax({url: "UpdateUser",
         data: {id: user.login, columnPosition: "8", value: selectValue},
         async: false,
-        dataType: 'json',
-        success: function (data) {
-            console.log("SUCCESS");
+        success: function () {
             sessionStorage.clear();
             location.reload();
         }
@@ -55,7 +54,6 @@ function ChangeSystem() {
     $.ajax({url: "UpdateUser",
         data: {id: user.login, columnPosition: "5", value: selectValue},
         async: false,
-        dataType: 'json',
         success: function () {
             sessionStorage.removeItem("user");
             location.reload();
@@ -68,13 +66,8 @@ function displayMenuItem(doc) {
 
     $(menuItems).each(function () {
         var id = $(this).attr('id');
-        $(this).html(doc.header[id].docLabel);
+        $(this).html(doc.page_header[id].docLabel);
     });
-}
-
-function InitLanguage() {
-    var user = getUser();
-    $("#MyLang option[value=" + user.language + "]").attr("selected", "selected");
 }
 
 function readSystem() {
