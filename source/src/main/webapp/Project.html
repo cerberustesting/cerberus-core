@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<!--/*
+* Cerberus  Copyright (C) 2013  vertigo17
+* DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
+*
+* This file is part of Cerberus.
+*
+* Cerberus is free software: you can redistribute it and/or modify
+* it under the terms of the GNU General Public License as published by
+* the Free Software Foundation, either version 3 of the License, or
+* (at your option) any later version.
+*
+* Cerberus is distributed in the hope that it will be useful,
+* but WITHOUT ANY WARRANTY; without even the implied warranty of
+* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+* GNU General Public License for more details.
+*
+* You should have received a copy of the GNU General Public License
+* along with Cerberus.  If not, see <http://www.gnu.org/licenses/>.
+    */-->
+<html>
+    <head>
+        <title>Projects</title>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+        <script type="text/javascript" src="js/jquery-1.9.1.min.js"></script>
+        <link rel="stylesheet" type="text/css" href="css/bootstrap.css">
+        <link type="text/css" rel="stylesheet" href="css/dataTables.colVis.css">
+        <link rel="stylesheet" type="text/css" href="css/jquery.dataTables.css">
+        <!--<link rel="stylesheet" type="text/css" href="css/jquery-ui.css">-->
+        <link rel="stylesheet" href="css/bootstrap-multiselect.css" type="text/css">
+        <!--Custom styles inclusions-->
+        <link rel="shortcut icon" type="image/x-icon" href="images/favicon.ico">
+        <link rel="stylesheet" type="text/css" href="css/crb_style2.css">
+        <link rel="stylesheet" type="text/css" href="css/default.css">
+        <!--Scripts inclusions-->
+        
+        <script type="text/javascript" src="js/Form.js"></script>
+        <script type="text/javascript" src="js/jquery-ui-1.10.2.js"></script>
+        <script type="text/javascript" src="js/bootstrap.min.js"></script>
+        <script type="text/javascript" src="js/jquery.dataTables-2.js"></script>
+        <script type="text/javascript" src="js/dataTables.colVis.js"></script>
+        <script type="text/javascript" src="js/jquery.blockUI.js"></script>
+        <script type="text/javascript" src="js/bootstrap-multiselect.js"></script>
+        <!--Custom scripts inclusions-->
+        <script type='text/javascript' src='js/doc.js'></script>
+        <script type="text/javascript" src="js/pages/global.js"></script>
+        <script type="text/javascript" src="js/user.js"></script>
+        <script type="text/javascript" src="js/header.js"></script>
+        <script type="text/javascript" src="js/pages/Project.js"></script>
+    </head>
+    <body>
+        <div id="headerBar"></div>
+        <div class="container center" id="page-layout">
+            <div id="messageArea"></div>
+            <div id="modalConfirmation"></div>
+            <div id="addProject"></div>
+            <div id="editProject"></div>
+            <h1 class="page-title-line" id="title">Project</h1>
+            <div id="project" class="well">
+                <table id="projectsTable" class="table table-hover display" name="projectsTable"></table>
+                <div class="marginBottom20"></div>
+            </div>
+            <footer class="footer">
+                <div class="container" id="footer">
+                </div>
+            </footer>
+        </div>
+    </body>
+    <script>
+        $(document).ready(function() {
+            $("#headerBar").load("include/header.html", function(){
+                displayHeaderLabel();
+                $("#messageArea").load("include/messagesArea.html");
+            $("#modalConfirmation").load("include/utils/modal-confirmation.html");
+            $("#addProject").load("include/project/addProject.html");
+            $("#editProject").load("include/project/editProject.html");
+            initProjectPage();
+            });
+            
+        });
+        
+    </script> 
+</html>

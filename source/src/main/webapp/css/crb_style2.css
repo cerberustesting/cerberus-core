@@ -9,7 +9,7 @@
 *
 */
 body {
-    /*font-size: 70%;*/
+    font-size: 70%;
     font-family: helvetica;
 }
 /*div{
@@ -383,7 +383,7 @@ ul.nav li.dropdown:hover > ul.dropdown-menu {
     background-color: #222222;
 }
 
-#MySystem {
+.header-dropdown {
     color: white;
     background-color: #222222;
     max-height: 25px;
@@ -396,8 +396,15 @@ ul.nav li.dropdown:hover > ul.dropdown-menu {
 }
 
 .navbar-inverse {
-    background-color: #333;
+    /*background-color: #333;*/
     border-color: #333;
+/*    background: url("../images/background.png") repeat-x scroll 0 -45px rgba(0, 0, 0, 0);
+    display: inline-block;
+    height: 35px;
+    margin: 0;
+    padding-left: 1px;
+    text-align:center;
+    vertical-align: middle;*/
 }
 
 /*

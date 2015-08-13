@@ -700,6 +700,10 @@
         <servlet-name>GetTestDataLibData</servlet-name>
         <servlet-class>org.cerberus.servlet.testdatalib.GetTestDataLibData</servlet-class>
     </servlet>
+    <servlet>
+        <servlet-name>ReadUser</servlet-name>
+        <servlet-class>org.cerberus.servlet.user.ReadUser</servlet-class>
+    </servlet>
     <servlet-mapping>
         <servlet-name>ExecutionThreadMonitoring</servlet-name>
         <url-pattern>/ExecutionThreadMonitoring</url-pattern>
@@ -716,7 +720,7 @@
         <servlet-name>DocumentationField</servlet-name>
         <url-pattern>/DocumentationField</url-pattern>
     </servlet-mapping>
-       <servlet-mapping>
+    <servlet-mapping>
         <servlet-name>ReadDocumentation</servlet-name>
         <url-pattern>/ReadDocumentation</url-pattern>
     </servlet-mapping>
@@ -1380,6 +1384,10 @@
         <servlet-name>GetTestDataLibData</servlet-name>
         <url-pattern>/GetTestDataLibData</url-pattern>
     </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>ReadUser</servlet-name>
+        <url-pattern>/ReadUser</url-pattern>
+    </servlet-mapping>
     <session-config>
         <session-timeout>
             60
@@ -1599,7 +1607,7 @@ ie User management, parameter management, log viewer, database management.</desc
             <url-pattern>/DeleteExecutionInQueue</url-pattern>
             <url-pattern>/UpdateExecutionInQueue</url-pattern>
             <url-pattern>/AddToExecutionQueue</url-pattern>
-            </web-resource-collection>
+        </web-resource-collection>
         <auth-constraint>
             <description>RunTest</description>
             <role-name>RunTest</role-name>
@@ -1829,6 +1837,7 @@ ie User management, parameter management, log viewer, database management.</desc
             <url-pattern>/ExecuteNextInQueue</url-pattern>
             <url-pattern>/ExecutionThreadReset</url-pattern>
             <url-pattern>/virtualproxy</url-pattern>
+            <url-pattern>/ReadUser</url-pattern>
         </web-resource-collection>
     </security-constraint>
     <security-constraint>

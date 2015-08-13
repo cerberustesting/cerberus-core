@@ -37,6 +37,7 @@
         <script type="text/javascript" src="js/jquery.dataTables.min.js"></script>
         <script type="text/javascript" src="js/jquery.dataTables.editable.js"></script>
         <script type="text/javascript" src="js/jquery.validate.min.js"></script>
+        <script type="text/javascript" src="js/user.js"></script>
         <style>
             .divBorder{
                 background-color: #f3f6fa;

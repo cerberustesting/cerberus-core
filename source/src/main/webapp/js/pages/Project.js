@@ -18,9 +18,9 @@
  * along with Cerberus.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-$.when($.getScript("js/pages/global.js")).then(function () {
-    $(document).ready(function () {
-
+//$.when($.getScript("js/pages/global.js")).then(function () {
+//    $(document).ready(function () {
+function initProjectPage(){
         displayPageLabel();
         // handle the click for specific action buttons
         $("#addProjectButton").click(saveNewProjectHandler);
@@ -36,8 +36,9 @@ $.when($.getScript("js/pages/global.js")).then(function () {
         createDataTableWithPermissions(configurations, renderOptionsForProject);
         var oTable = $("#projectsTable").dataTable();
         oTable.fnSort([1, 'asc']);
-    });
-});
+        };
+//    });
+//});
 
 function displayPageLabel() {
     var doc = getDoc();
