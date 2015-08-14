@@ -632,7 +632,7 @@ function setAutoCompleteServerSide(selector, source) {
  * @param {JSONObject} doc
  * @returns {void}
  */
-function    displayFooter(doc) {
+function displayFooter(doc) {
     var projectInformation = getProjectInformation();
 
     var footerString = doc.page_global.footer_text.docLabel;

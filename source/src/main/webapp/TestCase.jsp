@@ -68,42 +68,24 @@
 <!DOCTYPE html>
 <html>
     <head>
-        <meta content="text/html; charset=UTF-8" http-equiv="content-type">
         <title>TestCase</title>
-
+        <meta content="text/html; charset=UTF-8" http-equiv="content-type">
+        <%@ include file="include/dependenciesInclusions.html" %>
         <script type='text/javascript' src='js/Form_1.js'></script>
-        <script type="text/javascript" src="js/jquery-1.9.1.min.js"></script>
-        <script type="text/javascript" src="js/bootstrap.min.js"></script>
         <script type="text/javascript" src="js/jquery-migrate-1.2.1.min.js"></script>
         <script type="text/javascript" src="js/jquery-ui-1.10.2.js"></script>
         <script type="text/javascript" src="js/elrte.min.js"></script>
         <script type="text/javascript" src="js/i18n/elrte.en.js"></script>
         <script type="text/javascript" src="js/elfinder.min.js"></script>
         <script type="text/javascript" src="js/elFinderSupportVer1.js"></script>
-        <script type="text/javascript" src="js/jquery.dataTables.js"></script>
+        <!--<script type="text/javascript" src="js/jquery.dataTables.js"></script>-->
         <script type="text/javascript" src="js/jquery.jeditable.mini.js"></script>
         <script type="text/javascript" src="js/jquery.dataTables.editable.js"></script>
-        <script type="text/javascript" src="js/dataTables.colVis.js"></script>
-        <script type="text/javascript" src="js/jquery.blockUI.js"></script>
-        <script type='text/javascript' src='js/doc.js'></script>
-        <script type="text/javascript" src="js/projectInformation.js"></script>
-        <!--<script type='text/javascript' src='js/Form.js'></script>-->
-        <script type="text/javascript" src="js/pages/global.js"></script>
-        <script type="text/javascript" src="js/user.js"></script>
-        <script type="text/javascript" src="js/header.js"></script>
         <script type="text/javascript" src="js/pages/TestCaseViewModel.js"></script>
-        <link type="text/css" rel="stylesheet" href="css/dataTables.colVis.css"> 
         <link rel="stylesheet" type="text/css" href="css/elrte.min.css">
-       
         <link rel="stylesheet" type="text/css" href="css/elfinder.min.css">
         <link rel="stylesheet" type="text/css" href="css/theme.css">
-        <link rel="shortcut icon" type="image/x-icon" href="images/favicon.ico" />
 
-        <link rel="stylesheet" type="text/css" href="css/jquery.dataTables.css"> 
-
-        <link type="text/css" rel="stylesheet" href="css/bootstrap.css">
-         <link rel="stylesheet" type="text/css" href="css/crb_style2.css">
-        <link type="text/css" rel="stylesheet" href="css/default.css"> 
 
         <script type="text/javascript">
             var displayOnlyFunctional = false;
@@ -414,20 +396,21 @@
                     String appSystem = "";
                     String proplist = "";
 
-                    request.setAttribute("MySystem", "VCCRM");
-                    request.setAttribute("MyLang", "en");
                     /*
                      * Get Parameters
                      */
-                    String MySystem = request.getAttribute("MySystem").toString();
+                    HttpSession httpSession = request.getSession();
+                    System.out.print(httpSession.getId());
+                    String MySystem = httpSession.getAttribute("MySystem").toString();
                     if (request.getParameter("system") != null && request.getParameter("system").compareTo("") != 0) {
                         MySystem = request.getParameter("system");
-                    }
-                    List<String> systems = new ArrayList();
-                    systems.add(MySystem);
+                   }
+                   List<String> systems = new ArrayList();
+                   systems.add(MySystem);
 
-                    String myLang = ParameterParserUtil.parseStringParam(request.getAttribute("MyLang").toString(), "en");
+                    String myLang = ParameterParserUtil.parseStringParam(httpSession.getAttribute("MyLang").toString(), "en");
 
+                    
                     List<Test> tests = new ArrayList();
 
                     String group = getRequestParameterWildcardIfEmpty(request, "group");
@@ -1305,7 +1288,7 @@
                                                                                     //if is the step was imported, then adds the propertu to the list
                                                                                     listOfImportedProperties.add(tcsa.getProperty());
                                                                                     //defines each attribute related to the test case step that was imported
-                                                                            %>
+%>
                                                                             data-usestep-test="<%=testForQuery%>"
                                                                             data-usestep-testcase="<%=testcaseForQuery%>"
                                                                             data-usestep-step="<%=stepForQuery%>"
@@ -2535,5 +2518,6 @@
         </script>-->
 
         <div id="popin"></div>
+        <br><% out.print(display_footer(DatePageStart));%>
     </body>
 </html>

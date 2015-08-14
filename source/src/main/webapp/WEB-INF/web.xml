@@ -708,6 +708,10 @@
         <servlet-name>ReadProjectInformation</servlet-name>
         <servlet-class>org.cerberus.servlet.information.ReadProjectInformation</servlet-class>
     </servlet>
+    <servlet>
+        <servlet-name>ReadTest</servlet-name>
+        <servlet-class>org.cerberus.servlet.test.ReadTest</servlet-class>
+    </servlet>
     <servlet-mapping>
         <servlet-name>ExecutionThreadMonitoring</servlet-name>
         <url-pattern>/ExecutionThreadMonitoring</url-pattern>
@@ -1395,6 +1399,10 @@
     <servlet-mapping>
         <servlet-name>ReadProjectInformation</servlet-name>
         <url-pattern>/ReadProjectInformation</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>ReadTest</servlet-name>
+        <url-pattern>/ReadTest</url-pattern>
     </servlet-mapping>
     <session-config>
         <session-timeout>
