@@ -4380,6 +4380,20 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLS.append("('page_header', 'logout', '', 'fr', 'Déconnexion', '');");
         SQLInstruction.add(SQLS.toString());        
         
+        // Adding documentation for Footer.
+        // -- ------------------------ 599 -- 601
+        SQLS = new StringBuilder();
+        SQLS.append("INSERT INTO `documentation` (`DocTable`, `DocField`, `DocValue`, `Lang`, `DocLabel`) VALUES ");
+        SQLS.append("('page_global', 'footer_bug', '', 'en', 'Open a bug or ask for any new feature <a target=\"_blank\"  href=\"%LINK%\">here</a>.'),");
+        SQLS.append("('page_global', 'footer_bug', '', 'fr', 'Ouvrir un bug ou envoyer une demande d\\\'évolution <a target=\"_blank\"  href=\"%LINK%\">ici</a>.')");
+        SQLInstruction.add(SQLS.toString());   
+        SQLS = new StringBuilder();
+        SQLS.append("UPDATE `documentation` SET `DocLabel`='Page started generating on %DATE% by %VERSION% in %ENV% and took %TIMING%ms' WHERE `DocTable`='page_global' and`DocField`='footer_text' and`DocValue`='' and`Lang`='en';");
+        SQLInstruction.add(SQLS.toString());   
+        SQLS = new StringBuilder();
+        SQLS.append("UPDATE `documentation` SET `DocLabel`='Page générée le %DATE% par %VERSION% en environment : %ENV% et a pris %TIMING%ms' WHERE `DocTable`='page_global' and`DocField`='footer_text' and`DocValue`='' and`Lang`='fr';");
+        SQLInstruction.add(SQLS.toString());   
+
         return SQLInstruction;
     }
 

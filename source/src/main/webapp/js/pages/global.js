@@ -636,6 +636,7 @@ function    displayFooter(doc) {
     var projectInformation = getProjectInformation();
 
     var footerString = doc.page_global.footer_text.docLabel;
+    var footerBugString = doc.page_global.footer_bug.docLabel;
     var date = new Date();
     var loadTime = window.performance.timing.domContentLoadedEventEnd - window.performance.timing.navigationStart;
 
@@ -643,5 +644,6 @@ function    displayFooter(doc) {
     footerString = footerString.replace("%ENV%", projectInformation.environment);
     footerString = footerString.replace("%DATE%", date.toDateString());
     footerString = footerString.replace("%TIMING%", loadTime);
-    $("#footer").html(footerString);
+    footerBugString = footerBugString.replace("%LINK%", "https://github.com/vertigo17/Cerberus/issues/new?body=Cerberus%20Version%20:%20" + projectInformation.projectVersion );
+    $("#footer").html(footerString + " - " +footerBugString);
 }
