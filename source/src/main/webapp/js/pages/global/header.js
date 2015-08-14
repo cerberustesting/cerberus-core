@@ -31,7 +31,7 @@ function displayHeaderLabel() {
     for (var l in languages) {
         $("#MyLang").append($('<option></option>').text(languages[l].description).val(languages[l].value));
     }
-    
+
     $("#MyLang option[value=" + user.language + "]").attr("selected", "selected");
     $("#MySystem option[value=" + user.defaultSystem + "]").attr("selected", "selected");
 }
@@ -71,7 +71,11 @@ function displayMenuItem(doc) {
 
     $(menuItems).each(function () {
         var id = $(this).attr('id');
-        $(this).html(doc.page_header[id].docLabel);
+        if ($(this).attr('class') === "dropdown-toggle") {
+            $(this).html(doc.page_header[id].docLabel + " <span class=\"caret\"></span>");
+        } else {
+            $(this).html(doc.page_header[id].docLabel);
+        }
     });
 }
 
