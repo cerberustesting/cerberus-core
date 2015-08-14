@@ -27,7 +27,6 @@
         <script type="text/javascript" src="js/pages/Project.js"></script>
     </head>
     <body>
-        <%@ include file="include/function.jsp" %>
         <%@ include file="include/header.html" %>
         <div class="container-fluid center" id="page-layout">
             <%@ include file="include/messagesArea.html"%>

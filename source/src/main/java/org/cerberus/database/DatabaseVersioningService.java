@@ -4369,7 +4369,7 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLS.append("('page_header', 'menuReportingExecutionThreadMonitoring', '', 'en', 'Cerberus Monitoring', ''),");
         SQLS.append("('page_header', 'menuReportingExecutionThreadMonitoring', '', 'fr', 'Monitoring Cerberus', '');");
         SQLInstruction.add(SQLS.toString());
-        
+
         // Adding global documentation for Header.
         // -- ------------------------ 598
         SQLS = new StringBuilder();
@@ -4378,22 +4378,40 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLS.append("('page_header', 'menuDatabaseMaintenance', '', 'fr', 'Maintenance de la base de données', ''),");
         SQLS.append("('page_header', 'logout', '', 'en', 'Logout', ''),");
         SQLS.append("('page_header', 'logout', '', 'fr', 'Déconnexion', '');");
-        SQLInstruction.add(SQLS.toString());        
-        
+        SQLInstruction.add(SQLS.toString());
+
         // Adding documentation for Footer.
         // -- ------------------------ 599 -- 601
         SQLS = new StringBuilder();
         SQLS.append("INSERT INTO `documentation` (`DocTable`, `DocField`, `DocValue`, `Lang`, `DocLabel`) VALUES ");
         SQLS.append("('page_global', 'footer_bug', '', 'en', 'Open a bug or ask for any new feature <a target=\"_blank\"  href=\"%LINK%\">here</a>.'),");
         SQLS.append("('page_global', 'footer_bug', '', 'fr', 'Ouvrir un bug ou envoyer une demande d\\\'évolution <a target=\"_blank\"  href=\"%LINK%\">ici</a>.')");
-        SQLInstruction.add(SQLS.toString());   
+        SQLInstruction.add(SQLS.toString());
         SQLS = new StringBuilder();
         SQLS.append("UPDATE `documentation` SET `DocLabel`='Page started generating on %DATE% by %VERSION% in %ENV% and took %TIMING%ms' WHERE `DocTable`='page_global' and`DocField`='footer_text' and`DocValue`='' and`Lang`='en';");
-        SQLInstruction.add(SQLS.toString());   
+        SQLInstruction.add(SQLS.toString());
         SQLS = new StringBuilder();
         SQLS.append("UPDATE `documentation` SET `DocLabel`='Page générée le %DATE% par %VERSION% en environment : %ENV% et a pris %TIMING%ms' WHERE `DocTable`='page_global' and`DocField`='footer_text' and`DocValue`='' and`Lang`='fr';");
-        SQLInstruction.add(SQLS.toString());   
+        SQLInstruction.add(SQLS.toString());
 
+        // Adding documentation for Footer.
+        // -- ------------------------ 602
+        SQLS = new StringBuilder();
+        SQLS.append("INSERT INTO `documentation` (`DocTable`, `DocField`, `DocValue`, `Lang`, `DocLabel`, `DocDesc`) VALUES ");
+        SQLS.append("('page_logviewer', 'title', '', 'en', 'LOG VIEWER', 'This page displays all the log messages from the server'),");
+        SQLS.append("('page_logviewer', 'title', '', 'fr', 'JOURNAL DE MODIFICATIONS', 'Cette page affiche tout les messages de log du serveur'),");
+        SQLS.append("('page_logviewer', 'time', '', 'en', 'Time', 'Timestamp of the log message'),");
+        SQLS.append("('page_logviewer', 'time', '', 'fr', 'Date', 'Date à laquelle l\\\'action a été efectuée'),");
+        SQLS.append("('page_logviewer', 'login', '', 'en', 'Login', 'Login of the user who performed the action'),");
+        SQLS.append("('page_logviewer', 'login', '', 'fr', 'Utilisateur', 'Nom de l\\\'utilisateur qui a effectué l\\\'action'),");
+        SQLS.append("('page_logviewer', 'page', '', 'en', 'Page', 'Name of the page where the action was performed'),");
+        SQLS.append("('page_logviewer', 'page', '', 'fr', 'Page', 'Nom de la page où l\\\'action a été effectuée'),");
+        SQLS.append("('page_logviewer', 'action', '', 'en', 'Action', 'Type of the action performed'),");
+        SQLS.append("('page_logviewer', 'action', '', 'fr', 'Action', 'Type de l\\\'action effetué'),");
+        SQLS.append("('page_logviewer', 'log', '', 'en', 'Log', 'Log message of the action'),");
+        SQLS.append("('page_logviewer', 'log', '', 'fr', 'Message', 'Message lié à l\\\'action');");
+        SQLInstruction.add(SQLS.toString());
+        
         return SQLInstruction;
     }
 
