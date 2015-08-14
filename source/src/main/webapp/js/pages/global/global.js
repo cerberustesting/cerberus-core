@@ -490,24 +490,27 @@ function createDataTable(tableConfigurations) {
         domConf = 'l<"showInlineElement pull-left marginLeft5"f>rti<"marginTop5"p>';
     }
 
+    var lang = getDataTableLanguage();
+
     var configs = {};
     configs["dom"] = domConf;
-    configs["bServerSide"] = tableConfigurations.serverSide;
-    configs["bProcessing"] = tableConfigurations.processig;
+    configs["serverSide"] = tableConfigurations.serverSide;
+    configs["processing"] = tableConfigurations.processig;
     configs["bJQueryUI"] = tableConfigurations.bJQueryUI;
-    configs["bPaginate"] = tableConfigurations.paginate;
-    configs["bAutoWidth"] = tableConfigurations.autoWidth;
-    configs["sPaginationType"] = tableConfigurations.paginationType;
-    configs["bSearchable"] = false;
-    configs["aTargets"] = [0];
-    configs["iDisplayLength"] = tableConfigurations.displayLength;
+    configs["paging"] = tableConfigurations.paginate;
+    configs["autoWidth"] = tableConfigurations.autoWidth;
+    configs["pagingType"] = tableConfigurations.paginationType;
+    configs["columns.searchable"] = false;
+    configs["columnDefs.targets"] = [0];
+    configs["pageLength"] = tableConfigurations.displayLength;
     configs["scrollX"] = tableConfigurations.tableWidth;
     configs["scrollY"] = tableConfigurations.scrollY;
     configs["scrollCollapse"] = tableConfigurations.scrollCollapse;
-    configs["bStateSave"] = tableConfigurations.stateSave;
-    configs["oLanguage"] = {"sSearch": tableConfigurations.searchText,
-        "sLengthMenu": tableConfigurations.searchMenu};
-    configs["aoColumns"] = tableConfigurations.aoColumnsFunction;
+    configs["stateSave"] = tableConfigurations.stateSave;
+    configs["language"] = lang.table;
+    configs["columns"] = tableConfigurations.aoColumnsFunction;
+    configs["colVis"] = lang.colVis;
+    configs["lengthChange"] = true;
 
 
     if (tableConfigurations.serverSide) {
@@ -543,7 +546,6 @@ function createDataTable(tableConfigurations) {
     $("#" + tableConfigurations.divId + "_length select[name='" + tableConfigurations.divId + "_length']").css("display", "inline");
 
     $("#" + tableConfigurations.divId + "_filter input[type='search']").addClass("form-control form-control input-sm");
-    $("#" + tableConfigurations.divId + "_filter input[type='search']").prop("placeholder", "enter search value");
 
     $("#" + tableConfigurations.divId + "_length").addClass("marginBottom10").addClass("width80");
     $("#" + tableConfigurations.divId + "_filter").addClass("marginBottom10").addClass("width150");

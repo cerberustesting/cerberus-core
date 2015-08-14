@@ -54,18 +54,10 @@ function displayPageLabel() {
     $("[name='buttonClose']").html(doc.page_global.buttonClose.docLabel);
     $("[name='buttonConfirm']").html(doc.page_global.buttonConfirm.docLabel);
     $("[name='buttonDismiss']").html(doc.page_global.buttonDismiss.docLabel);
-    $("[name='idProjectField']").each(function () {
-        $(this).html(displayDocLink(doc.project.idproject));
-    });
-    $("[name='activeField']").each(function () {
-        $(this).html(displayDocLink(doc.project.active));
-    });
-    $("[name='codeField']").each(function () {
-        $(this).html(displayDocLink(doc.project.code));
-    });
-    $("[name='descriptionField']").each(function () {
-        $(this).html(displayDocLink(doc.project.description));
-    });
+    $("[name='idProjectField']").html(displayDocLink(doc.project.idproject));
+    $("[name='activeField']").html(displayDocLink(doc.project.active));
+    $("[name='codeField']").html(displayDocLink(doc.project.code));
+    $("[name='descriptionField']").html(displayDocLink(doc.project.description));
     displayFooter(doc);
 }
 

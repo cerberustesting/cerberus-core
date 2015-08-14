@@ -17,28 +17,17 @@
   ~ You should have received a copy of the GNU General Public License
   ~ along with Cerberus.  If not, see <http://www.gnu.org/licenses/>.
 --%>
-<% Date DatePageStart = new Date();%>
 
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <!DOCTYPE html>
 <html>
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-        <link rel="stylesheet" type="text/css" href="css/crb_style.css">
-        <link rel="stylesheet" type="text/css" href="css/jquery.dataTables.css">
-        <link rel="stylesheet" type="text/css" href="css/jquery-ui.css">
-        <link rel="stylesheet" type="text/css" href="css/dataTables_jui.css">
-        <link rel="shortcut icon" type="image/x-icon" href="images/favicon.ico">
-        <script type="text/javascript" src="js/jquery-1.9.1.min.js"></script>
-        <script type="text/javascript" src="js/jquery-ui-1.10.2.js"></script>
-        <script type="text/javascript" src="js/jquery.jeditable.mini.js"></script>
-        <script type="text/javascript" src="js/jquery.dataTables.min.js"></script>
-        <script type="text/javascript" src="js/jquery.dataTables.editable.js"></script>
-        <script type="text/javascript" src="js/jquery.validate.min.js"></script>
-        <script type="text/javascript" src="js/jquery.dataTables.min.js"></script>
+        <%@ include file="include/dependenciesInclusions.html" %>
+        <script type="text/javascript" src="js/pages/LogViewer.js"></script>
         <title>Log Viewer</title>
 
-        <script type="text/javascript">      
+<!--        <script type="text/javascript">      
             $(document).ready(function(){
                 $('#logsTable').dataTable({
                     "aLengthMenu": [
@@ -71,27 +60,20 @@
                         
                 
             });
-        </script>
+        </script>-->
     </head>
-    <body>
-        <%@ include file="include/function.jsp" %>
-        <%@ include file="include/header.jsp" %>
-        <p class="dttTitle">Log Viewer</p>
-        <div style="width: 100%; font: 90% sans-serif">
-            <table id="logsTable" class="display">
-                <thead>
-                    <tr>
-                        <th>Time</th>
-                        <th>Login</th>
-                        <th>Page</th>
-                        <th>Action</th>
-                        <th>Log</th>
-                    </tr>
-                </thead>
-                <tbody>
-                </tbody>
-            </table>
+     <body>
+        <%@ include file="include/header.html" %>
+        <div class="container-fluid center" id="page-layout">
+
+            <h1 class="page-title-line" id="title">Log Viewer</h1>
+            <div id="logViewer" class="well">
+                <table id="logViewerTable" class="table table-hover display" name="logViewerTable"></table>
+                <div class="marginBottom20"></div>
+            </div>
+            <footer class="footer">
+                <div class="container-fluid" id="footer"></div>
+            </footer>
         </div>
-        <br><% out.print(display_footer(DatePageStart));%>
     </body>
 </html>
