@@ -17,6 +17,11 @@
   ~ You should have received a copy of the GNU General Public License
   ~ along with Cerberus.  If not, see <http://www.gnu.org/licenses/>.
 --%>
+<%@page import="org.cerberus.util.ParameterParserUtil"%>
+<%@page import="org.cerberus.entity.User"%>
+<%@page import="org.cerberus.entity.UserSystem"%>
+<%@page import="org.cerberus.service.IUserService"%>
+<%@page import="java.util.Set"%>
 <%@page import="java.util.HashMap"%>
 <%@page import="java.util.HashSet"%>
 <%@page import="org.json.JSONArray"%>
@@ -56,6 +61,7 @@
 <%@page import="org.cerberus.service.IParameterService"%>
 <%@page import="org.cerberus.util.StringUtil"%>
 <%@page import="org.apache.commons.lang3.StringUtils"%>
+<%@page import="org.cerberus.util.ParameterParserUtil"%>
 <% Date DatePageStart = new Date();%>
 
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
@@ -79,17 +85,24 @@
         <script type="text/javascript" src="js/jquery.dataTables.editable.js"></script>
         <script type="text/javascript" src="js/dataTables.colVis.js"></script>
         <script type="text/javascript" src="js/jquery.blockUI.js"></script>
+        <script type='text/javascript' src='js/doc.js'></script>
+        <script type="text/javascript" src="js/projectInformation.js"></script>
+        <!--<script type='text/javascript' src='js/Form.js'></script>-->
+        <script type="text/javascript" src="js/pages/global.js"></script>
+        <script type="text/javascript" src="js/user.js"></script>
+        <script type="text/javascript" src="js/header.js"></script>
         <script type="text/javascript" src="js/pages/TestCaseViewModel.js"></script>
         <link type="text/css" rel="stylesheet" href="css/dataTables.colVis.css"> 
         <link rel="stylesheet" type="text/css" href="css/elrte.min.css">
-        <link rel="stylesheet" type="text/css" href="css/crb_style.css">
+       
         <link rel="stylesheet" type="text/css" href="css/elfinder.min.css">
         <link rel="stylesheet" type="text/css" href="css/theme.css">
         <link rel="shortcut icon" type="image/x-icon" href="images/favicon.ico" />
-        
+
         <link rel="stylesheet" type="text/css" href="css/jquery.dataTables.css"> 
 
         <link type="text/css" rel="stylesheet" href="css/bootstrap.css">
+         <link rel="stylesheet" type="text/css" href="css/crb_style2.css">
         <link type="text/css" rel="stylesheet" href="css/default.css"> 
 
         <script type="text/javascript">
@@ -281,6 +294,12 @@
             .RowActionDiv select{
                 background-color:white;
             }
+            .RowActionDiv span{
+                color:white;
+            }
+            .RowActionDiv:hover span{
+                color : #008cda;
+            }
             .RowActionDiv:focus{
                 background-color: #EEEEEE;
                 color:black;
@@ -323,7 +342,7 @@
             }
 
             a.docOnline{
-                color:white;
+                /*color:white;*/
             }
 
             .RowToDelete{
@@ -349,11 +368,12 @@
     </head>
     <body>
         <%@ include file="include/function.jsp" %>
-        <%@ include file="include/header.jsp" %>
+        <%@ include file="include/header.html" %>
         <%@ include file="include/testcase/entryList.html"%>
         <%@ include file="include/testcase/subDataList.html"%>
         <div id="body">
             <%
+
                 boolean booleanFunction = false;
                 try {
                     /*
@@ -394,6 +414,8 @@
                     String appSystem = "";
                     String proplist = "";
 
+                    request.setAttribute("MySystem", "VCCRM");
+                    request.setAttribute("MyLang", "en");
                     /*
                      * Get Parameters
                      */
@@ -403,7 +425,7 @@
                     }
                     List<String> systems = new ArrayList();
                     systems.add(MySystem);
-                    
+
                     String myLang = ParameterParserUtil.parseStringParam(request.getAttribute("MyLang").toString(), "en");
 
                     List<Test> tests = new ArrayList();
@@ -421,7 +443,7 @@
                         <p class="dttTitle">Filters
                         </p>
                     </div>
-                    <div style="float:left; width:100px;font-weight: bold;"><%out.print(docService.findLabelHTML("test", "test", "Test", myLang));%>
+                    <div name="labelTest" style="float:left; width:100px;font-weight: bold;">Test
                     </div>
                     <div style="float:left">
                         <select id="filtertest" name="Test" style="width: 200px" OnChange="document.selectTestCase.submit()">
@@ -442,7 +464,7 @@
                             %>
                         </select>
                     </div>
-                    <div style="float:left"><%out.print(docService.findLabelHTML("testcase", "testcase", "TestCase", myLang));%>
+                    <div name="labelTestCase" style="float:left">TestCase
                     </div>
                     <div style="float:left">
                         <select id="filtertestcase" name="TestCase" style="width: 750px" OnChange="document.selectTestCase.submit()">
@@ -582,9 +604,9 @@
                                     </td>
                                 </tr>    
                                 <tr id="header"> 
-                                    <td class="wob" style="width: 100px"><%out.print(docService.findLabelHTML("test", "test", "Test", myLang));%>
+                                    <td name="labelTest"  class="wob" style="width: 100px">Test
                                     </td>
-                                    <td class="wob" style="width: 100px"><%out.print(docService.findLabelHTML("testcase", "testcase", "TestCase", myLang));%>
+                                    <td name="labelTestCase" class="wob" style="width: 100px">TestCase
                                     </td>
                                     <td class="wob" style="width: 500px"><%out.print(docService.findLabelHTML("test", "description", "Description", myLang));%>
                                     </td>
@@ -1250,7 +1272,7 @@
                                                             <div class="functional_description" style="height:20px;display:inline-block;clear:both;width:100%; background-color: transparent">
 
                                                                 <div style="float:left; width:80%">
-                                                                    <div style="float:left;width:80px; "><p style="float:right;font-weight:bold;" link="white" ><%out.print(docService.findLabelHTML("testcasestepaction", "description", "Description", myLang));%></p>
+                                                                    <div style="float:left;width:80px; "><p name="labelTestCaseStepActionDescription" style="float:right;font-weight:bold;" link="white" >Description</p>
                                                                     </div>
                                                                     <input class="wob" class="functional_description" data-fieldtype="Description" style="border-style:groove;border-width:thin;border-color:white;border: 1px solid white; color:#333333; width: 80%; font-weight:bold;font-size:12px ;font-family: Trebuchet MS; "
                                                                            value="<%=tcsa.getDescription()%>" placeholder="Description"
@@ -1263,41 +1285,40 @@
                                                             </div>
                                                             <div style="display:inline-block;clear:both; height:15px;width:100%;background-color:transparent">
                                                                 <div class="technical_part" style="width: 30%; float:left; background-color: transparent">
-                                                                    <div style="float:left;width:80px; "><p style="float:right;font-weight:bold;" link="white" ><%out.print(docService.findLabelHTML("testcasestepaction", "action", "Action", myLang));%></p>
+                                                                    <div style="float:left;width:80px; "><p name="labelTestCaseStepActionAction" style="float:right;font-weight:bold;" link="white" >Action</p>
                                                                     </div>
                                                                     <%=ComboInvariant(appContext, "action_action_" + incrementStep + "_" + incrementAction, "width:50%;border: 1px solid white; color:#888888", "action_action_" + incrementStep + "_" + incrementAction, "wob", "ACTION", tcsa.getAction(), "showChangedRow(this.parentNode.parentNode.parentNode.parentNode)", null)%>
                                                                 </div>
                                                                 <div class="technical_part" style="width: 40%; float:left; background-color: transparent">
-                                                                    <div style="float:left;"><p style="float:right;font-weight:bold;" link="white" ><%out.print(docService.findLabelHTML("testcasestepaction", "object", "Object", myLang));%></p>
-                                                                     </div>
+                                                                    <div style="float:left;"><p name="labelTestCaseStepActionObject" style="float:right;font-weight:bold;" link="white" >Object</p>
+                                                                    </div>
                                                                     <input style="float:left;border-style:groove;border-width:thin;border-color:white;border: 1px solid white; height:100%;width:75%; color:#999999"
                                                                            value="<%=tcsa.getObject()%>"
                                                                            onchange="showChangedRow(this.parentNode.parentNode.parentNode.parentNode)" name="action_object_<%=incrementStep%>_<%=incrementAction%>" <%=isReadonly%>>
                                                                 </div>
                                                                 <div class="technical_part" style="width: 30%; float:left; background-color:transparent">
-                                                                    <div style="float:left;"><p style="float:right;font-weight:bold;" link="white" ><%out.print(docService.findLabelHTML("testcasestepaction", "property", "Property", myLang));%></p>
+                                                                    <div style="float:left;"><p name="labelTestCaseStepActionProperty" style="float:right;font-weight:bold;" link="white" >Property</p>
                                                                     </div>
                                                                     <input  class="wob property_value" style="width:75%;border-style:groove;border-width:thin;border-color:white;border: 1px solid white; color:#888888"
                                                                             value="<%=tcsa.getProperty()%>"
                                                                             <%if (useStep) {
-                                                                                //if is the step was imported, then adds the propertu to the list
-                                                                                listOfImportedProperties.add(tcsa.getProperty());
-                                                                                //defines each attribute related to the test case step that was imported
+                                                                                    //if is the step was imported, then adds the propertu to the list
+                                                                                    listOfImportedProperties.add(tcsa.getProperty());
+                                                                                    //defines each attribute related to the test case step that was imported
                                                                             %>
                                                                             data-usestep-test="<%=testForQuery%>"
                                                                             data-usestep-testcase="<%=testcaseForQuery%>"
                                                                             data-usestep-step="<%=stepForQuery%>"
-                                                                            <%}
-                                                                            else{
+                                                                            <%} else {
                                                                                 //verify if the property is currently in the list of imported properties
-                                                                                if(listOfImportedProperties.contains(tcsa.getProperty())){
+                                                                                if (listOfImportedProperties.contains(tcsa.getProperty())) {
                                                                                 //defines one attribute that will distinguish if the imported property
-                                                                                //from the undefined property
-                                                                                %>              
-                                                                                    data-imported-property = "true"
-                                                                                <%                                                                              
+                                                                                    //from the undefined property
+                                                                            %>              
+                                                                            data-imported-property = "true"
+                                                                            <%
+                                                                                    }
                                                                                 }
-                                                                            }                                                                            
                                                                             %>
                                                                             onchange="showChangedRow(this.parentNode.parentNode.parentNode.parentNode)" name="action_property_<%=incrementStep%>_<%=incrementAction%>" <%=isReadonly%>>
                                                                 </div>
@@ -1379,7 +1400,7 @@
                                                         <div style="height:100%;width:80%;float:left;display:inline-block">
                                                             <div class="functional_description" style="clear:both;width:100%;height:20px">
                                                                 <div style="float:left; width:80%">
-                                                                    <div style="float:left;width:80px; "><p style="float:right;font-weight:bold;" link="white" ><%out.print(docService.findLabelHTML("testcasestepaction", "description", "Description", myLang));%></p>
+                                                                    <div style="float:left;width:80px; "><p name="labelTestCaseStepActionControlDescription" style="float:right;font-weight:bold;" link="white" >Description</p>
                                                                     </div>
                                                                     <input class="wob" placeholder="Description" class="functional_description" style="border-style:groove;border-width:thin;border-color:white;border: 2px solid white; color:#333333; width: 80%; font-weight:bold;font-size:12px ;font-family: Trebuchet MS; "
                                                                            data-fieldtype="Description" value="<%=tcsac.getDescription()%>" name="control_description_<%=incrementStep%>_<%=incrementAction%>_<%=incrementControl%>" maxlength="1000">
@@ -1387,23 +1408,23 @@
                                                             </div>
                                                             <div style="clear:both;display:inline-block; width:100%; height:15px">
                                                                 <div style="width:30%; float:left;">
-                                                                    <div style="float:left;width:80px; "><p style="float:right;font-weight:bold;" link="white" ><%out.print(docService.findLabelHTML("testcasestepactioncontrol", "type", "ControlType", myLang));%></p>
+                                                                    <div style="float:left;width:80px; "><p name="labelTestCaseStepActionControlType" style="float:right;font-weight:bold;" link="white" >Type</p>
                                                                     </div>
                                                                     <%=ComboInvariant(appContext, "control_type_" + incrementStep + "_" + incrementAction + "_" + incrementControl, "width:50%;font-size:10px ;border: 1px solid white;color:" + actionFontColor, "control_type_" + incrementStep + "_" + incrementAction + "_" + incrementControl, "technical_part", "CONTROL", tcsac.getType(), "", null)%>
                                                                 </div>
                                                                 <div class="technical_part" style="width:30%;float:left;">
-                                                                    <div style="float:left;"><p style="float:right;font-weight:bold;" link="white" ><%out.print(docService.findLabelHTML("testcasestepactioncontrol", "controleproperty", "controleproperty", myLang));%></p>
+                                                                    <div style="float:left;"><p name="labelTestCaseStepActionControlProperty" style="float:right;font-weight:bold;" link="white" >Property</p>
                                                                     </div>
                                                                     <input class="wob" style="width: 70%;border: 1px solid white;  color:<%=actionFontColor%>"
                                                                            value="<%=tcsac.getControlProperty()%>" name="control_property_<%=incrementStep%>_<%=incrementAction%>_<%=incrementControl%>">
                                                                 </div>
                                                                 <div class="technical_part" style="width:30%;float:left; ">
-                                                                    <div style="float:left;"><p style="float:right;font-weight:bold;" link="white" ><%out.print(docService.findLabelHTML("testcasestepactioncontrol", "controlevalue", "controlevalue", myLang));%></p>
+                                                                    <div style="float:left;"><p name="labelTestCaseStepActionControlValue" style="float:right;font-weight:bold;" link="white" >Value</p>
                                                                     </div><input class="wob" style="width: 70%;border: 1px solid white; color:<%=actionFontColor%>"
                                                                                  value="<%=tcsac.getControlValue()%>" name="control_value_<%=incrementStep%>_<%=incrementAction%>_<%=incrementControl%>">
                                                                 </div>
                                                                 <div class="technical_part" style="width:8%;float:left; ">
-                                                                    <div style="float:left;"><p style="float:right;font-weight:bold;" link="white" ><%out.print(docService.findLabelHTML("testcasestepactioncontrol", "fatal", "fatal", myLang));%></p>
+                                                                    <div style="float:left;"><p name="labelTestCaseStepActionControlFatal" style="float:right;font-weight:bold;" link="white" >Fatal</p>
                                                                     </div>
                                                                     <%=ComboInvariant(appContext, "control_fatal_" + incrementStep + "_" + incrementAction + "_" + incrementControl, "width: 40%;border: 1px solid white;color:" + actionFontColor, "control_fatal_" + incrementStep + "_" + incrementAction + "_" + incrementControl, "wob", "CTRLFATAL", tcsac.getFatal(), "trackChanges(this.value, '" + tcsac.getFatal() + "', 'submitButtonChanges')", null)%>
                                                                 </div>
@@ -1638,68 +1659,68 @@
                                             </div>
                                             <div id="divProperties_value1_<%=incrementProperty%>" style="background-color:transparent;float:left;border-right-width:thin;border-right-style:solid;border-right-color:#CCCCCC;width:<%=widthValue1%>%;display:inline-block;">
                                                 <div class="pull-left showInlineElement"                                                    
-                                                    <% if (tccp.getType().equals("getFromDataLib")) {%>     
-                                                        style="width: 90%;" 
-                                                    <%}else{%>
-                                                        style="width: 100%;" 
-                                                    <%}%>        
-                                                   >
+                                                     <% if (tccp.getType().equals("getFromDataLib")) {%>     
+                                                     style="width: 90%;" 
+                                                     <%} else {%>
+                                                     style="width: 100%;" 
+                                                     <%}%>        
+                                                     >
                                                     <textarea id="properties_value1_<%=incrementProperty%>" rows="2"  
-                                                                <% if (tccp.getType().equals("getFromDataLib")) {%>     
-                                                                    class ="wob getFromDataLib" 
-                                                                <%}else{%>
-                                                                    class ="wob"
-                                                                <%}%>      
-                                                              
-                                                              
+                                                              <% if (tccp.getType().equals("getFromDataLib")) {%>     
+                                                              class ="wob getFromDataLib" 
+                                                              <%} else {%>
+                                                              class ="wob"
+                                                              <%}%>      
+
+
                                                               style="background-color:transparent;width: 100%;height:50px" 
                                                               name="properties_value1_<%=incrementProperty%>"><%=tccp.getValue1()%></textarea>
                                                 </div>
-                                                
-                                                   <div id="selectEntry_Data_<%=incrementProperty%>"  
-                                                   <% if (!tccp.getType().equals("getFromDataLib")) {%>     
-                                                        class="hideElement"
-                                                   <%}else{%>
-                                                        class="showInlineElement" 
-                                                    <%}%>  
-                                                        ><button title="Select an entry from the library" id="entryButton_<%=incrementProperty%>" type="button" class="btn btn-default btn-xs pull-right">
+
+                                                <div id="selectEntry_Data_<%=incrementProperty%>"  
+                                                     <% if (!tccp.getType().equals("getFromDataLib")) {%>     
+                                                     class="hideElement"
+                                                     <%} else {%>
+                                                     class="showInlineElement" 
+                                                     <%}%>  
+                                                     ><button title="Select an entry from the library" id="entryButton_<%=incrementProperty%>" type="button" class="btn btn-default btn-xs pull-right">
                                                         <span class="glyphicon glyphicon-search"></span> </button>
-                                                   </div>    
-                                                   
+                                                </div>    
+
                                             </div>
                                             <div id="divProperties_value2_<%=incrementProperty%>" style="background-color:transparent;float:left;border-right-width:thin;border-right-style:solid;border-right-color:#CCCCCC;display:<%=displayValue2%>;width:<%=widthValue2%>%;height:50px">
                                                 <div class="pull-left showInlineElement" 
-                                                    <% if (tccp.getType().equals("getFromDataLib")) {%>     
-                                                        style="width: 90%;" 
-                                                    <%}else{%>
-                                                        style="width: 100%;" 
-                                                    <%}%>  
-                                                     
-                                                    >
+                                                     <% if (tccp.getType().equals("getFromDataLib")) {%>     
+                                                     style="width: 90%;" 
+                                                     <%} else {%>
+                                                     style="width: 100%;" 
+                                                     <%}%>  
+
+                                                     >
                                                     <textarea id="properties_value2_<%=incrementProperty%>" rows="2" 
-                                                            <% if (tccp.getType().equals("getFromDataLib")) {%>     
-                                                                    class ="wob getFromDataLib" 
-                                                            <%}else{%>
-                                                                    class ="wob"
-                                                            <%}%>  
-                                                            style="background-color:transparent;width: 100%;height:50px"
-                                                          name="properties_value2_<%=incrementProperty%>"><%=tccp.getValue2()%></textarea>
+                                                              <% if (tccp.getType().equals("getFromDataLib")) {%>     
+                                                              class ="wob getFromDataLib" 
+                                                              <%} else {%>
+                                                              class ="wob"
+                                                              <%}%>  
+                                                              style="background-color:transparent;width: 100%;height:50px"
+                                                              name="properties_value2_<%=incrementProperty%>"><%=tccp.getValue2()%></textarea>
                                                 </div>
-                                                        
-                                                
+
+
                                                 <div id="selectEntry_SubData_<%=incrementProperty%>" 
-                                                  <% if (!tccp.getType().equals("getFromDataLib")) {%>     
-                                                        class="hideElement"
-                                                   <%}else{%>
-                                                        class="showInlineElement" 
-                                                    <%}%>         
-                                                    ><button id="SubDataButton_<%=incrementProperty%>" title="Select a sub data entry from the library" type="button" class="btn btn-default btn-xs pull-right" 
-                                                         <% if(tccp.getValue1().isEmpty()){%>
-                                                            disabled="disabled"
-                                                         <% } %>
+                                                     <% if (!tccp.getType().equals("getFromDataLib")) {%>     
+                                                     class="hideElement"
+                                                     <%} else {%>
+                                                     class="showInlineElement" 
+                                                     <%}%>         
+                                                     ><button id="SubDataButton_<%=incrementProperty%>" title="Select a sub data entry from the library" type="button" class="btn btn-default btn-xs pull-right" 
+                                                         <% if (tccp.getValue1().isEmpty()) {%>
+                                                         disabled="disabled"
+                                                         <% }%>
                                                          >
                                                         <span class="glyphicon glyphicon-search"></span></button>
-                                                        <input id="testDataLibID_<%=incrementProperty%>" type="hidden"/>    
+                                                    <input id="testDataLibID_<%=incrementProperty%>" type="hidden"/>    
                                                 </div>                                                         
                                             </div>
                                             <div style="border-right-width:thin;border-right-style:solid;background-color:transparent;border-right-color:#CCCCCC;float:left;width:3%;display:inline-block;height:50px">
@@ -1710,9 +1731,9 @@
                                                 <input class="wob" style="background-color:transparent;width: 100%;margin-top:20px;" name="properties_rowlimit_<%=incrementProperty%>"
                                                        value="<%=tccp.getRowLimit()%>">
                                             </div>
-                                            <div style="float:left;width:8%;display:inline-block;height:50px"><%=ComboInvariant(appContext, "properties_nature_" + incrementProperty, 
-                                                    "background-color:transparent;margin-top:20px;width: 100%;", "properties_nature_" + incrementProperty, "wob", "PROPERTYNATURE", tccp.getNature(), 
-                                                               "trackChanges(0, this.selectedIndex, 'submitButtonChanges')", null)%>
+                                            <div style="float:left;width:8%;display:inline-block;height:50px"><%=ComboInvariant(appContext, "properties_nature_" + incrementProperty,
+                                                    "background-color:transparent;margin-top:20px;width: 100%;", "properties_nature_" + incrementProperty, "wob", "PROPERTYNATURE", tccp.getNature(),
+                                                    "trackChanges(0, this.selectedIndex, 'submitButtonChanges')", null)%>
                                             </div>
                                             <div style="background-color:yellow; width:3px;height:50px;display:inline-block;float:right">
                                             </div>
@@ -2081,7 +2102,7 @@
                     </div>
                     <div data-id="selectEntry_Data_template"  class="hideElement">
                         <button title="Select an entry from the library" data-id="entryButton_template" type="button" class="btn btn-default btn-xs pull-right">
-                        <span class="glyphicon glyphicon-search"></span> </button>
+                            <span class="glyphicon glyphicon-search"></span> </button>
                     </div>    
                 </div>
                 <div data-id="divProperties_value2_template" style="float:left;border-right-width:thin;border-right-style:solid;border-right-color:#CCCCCC;display:none;width:0%;height:100%">
@@ -2095,7 +2116,7 @@
                         </button>
                         <input id="testDataLibID_template" type="hidden"/>    
                     </div>          
-                
+
                 </div>
                 <div style="border-right-width:thin;border-right-style:solid;border-right-color:#CCCCCC;float:left;width:3%;display:inline-block;height:100%">
                     <input class="wob" style="background-color:transparent;width:  100%;margin-top:20px;" 
@@ -2118,66 +2139,66 @@
                 //for each property adds the icon corresponding to its state
                 $("input.property_value").each(function() {
                     var propertyValue = this.value;
-                    
-                    if(propertyValue && propertyValue !== "" && isNaN(propertyValue)){
+
+                    if (propertyValue && propertyValue !== "" && isNaN(propertyValue)) {
                         //var jinput = $(this);
                         this.style.width = '60%';
                         var toolTipMessage = "";
                         var imageUrl = "";
-                        var classForImage=''; //this class is used by the click function to get the image that was clicked
+                        var classForImage = ''; //this class is used by the click function to get the image that was clicked
                         var testDesc = $(this).attr('data-usestep-test');
-                        
-                        if (!Boolean(testDesc) && $("input.property_name[value='" + this.value + "']").length === 0){ 
+
+                        if (!Boolean(testDesc) && $("input.property_name[value='" + this.value + "']").length === 0) {
                             //Missing - property is not defined anywhere
                             imageUrl = "./images/problem.png";
-                            toolTipMessage = "Property " + propertyValue +" is missing! Click to create a property! ";
-                            classForImage='class = "property_missing"'; 
-                            
-                        }else if (Boolean(testDesc)){ //verify if it is defined
+                            toolTipMessage = "Property " + propertyValue + " is missing! Click to create a property! ";
+                            classForImage = 'class = "property_missing"';
+
+                        } else if (Boolean(testDesc)) { //verify if it is defined
                             var testCaseDesc = $(this).attr('data-usestep-testcase');
                             var testStepDesc = $(this).attr('data-usestep-step');
-                            
-                            if( $("input.property_name[value='" + propertyValue + "']").length !== 0) { 
+
+                            if ($("input.property_name[value='" + propertyValue + "']").length !== 0) {
                                 //Overridden - the property was defined in the imported step and redefined in the current test case                            
-                                toolTipMessage = "The property " + propertyValue + " was overridden in the current test case. It was originally defined in the test: "+
-                                           testDesc + " - " + testCaseDesc + " [step: " + testStepDesc  +"]" ;
+                                toolTipMessage = "The property " + propertyValue + " was overridden in the current test case. It was originally defined in the test: " +
+                                        testDesc + " - " + testCaseDesc + " [step: " + testStepDesc + "]";
                                 imageUrl = "./images/overridden.png";
-                            }else {
+                            } else {
                                 ////Imported - the property is only defined in the import test step
                                 toolTipMessage = "The property " + propertyValue + " is defined in the test: " +
-                                        testDesc + " - " + testCaseDesc + " [step: " +  testStepDesc  +"]. Click to override property!" ; 
-                                imageUrl = "./images/pen.png";                           
-                                classForImage='class = "property_toovorride"';
+                                        testDesc + " - " + testCaseDesc + " [step: " + testStepDesc + "]. Click to override property!";
+                                imageUrl = "./images/pen.png";
+                                classForImage = 'class = "property_toovorride"';
                             }
                         }
-                    
+
                         //if the property is not related to an imported step and if there is an image defined     
                         //then the image is added into the page
                         //the default scenario does not add any image to the property definition
-                        if(!Boolean($(this).attr('data-imported-property')) && imageUrl !== ""){
-                            $(this).before("<img " + classForImage + " data-property-name='" + propertyValue + 
-                                    "' src='" + imageUrl + "' title='" + toolTipMessage +"' style='float:left;display:inline;' width='16px' height='16px' />");                            
+                        if (!Boolean($(this).attr('data-imported-property')) && imageUrl !== "") {
+                            $(this).before("<img " + classForImage + " data-property-name='" + propertyValue +
+                                    "' src='" + imageUrl + "' title='" + toolTipMessage + "' style='float:left;display:inline;' width='16px' height='16px' />");
                         }
-                    
+
                     }
                 });
-                
+
                 //click to add property that is missing
-                $("img.property_missing").on("click", function() {  
+                $("img.property_missing").on("click", function() {
                     var propertyName = $(this).attr("data-property-name"); //gets the name of the property    
                     $.get("./CreateNotDefinedProperty", {"totest": "<%=test%>", "totestcase": "<%=testcase%>",
-                            "property": propertyName}
-                        , function(data) {
-                            $("#selectTestCase").submit();
-                        });
-                }); 
+                        "property": propertyName}
+                    , function(data) {
+                        $("#selectTestCase").submit();
+                    });
+                });
                 //click to override property
-                $("img.property_toovorride").on("click", function() {                                    
+                $("img.property_toovorride").on("click", function() {
                     //var propertyName = $(event.target).data("property-name"); //does not work when he have two imported properties with the same name
                     //var property = $("input.property_value[value='" + propertyName + "']");
                     var property = $(this).next("input.property_value");//gets the input tag next to the img tag
                     var propertyName = $(this).attr("data-property-name"); //gets the name of the property
-                    
+
                     if (property.data("usestep-step") !== null && property.data("usestep-step") !== "") {
                         var useTest = property.data("usestep-test");
                         var useTestcase = property.data("usestep-testcase");
@@ -2188,7 +2209,7 @@
                             $("#selectTestCase").submit();
                         }
                         );
-                    } 
+                    }
                 });</script>
                 <%
                             }
@@ -2436,9 +2457,9 @@
 
             }</script>
         <script>function showLib() {
-    var expiration_date = new Date();
+                var expiration_date = new Date();
                 expiration_date.setFullYear(expiration_date.getFullYear() + 1);
-                
+
                 if (document.getElementById("StepLibDiv").style.display === "none") {
                     document.getElementById("StepLibDiv").style.display = "block";
                     document.getElementById("StepLibDiv").style.width = "13%";
@@ -2490,15 +2511,15 @@
 
             }</script>
         <script type="text/javascript">
-    $(document).ready(function() {
-        var cookies = GetCookie('TestCaseDisplayStepLibrary');
-        if (cookies === "true"){
-            showLib();
-        }
-        
-    });
+            $(document).ready(function() {
+                var cookies = GetCookie('TestCaseDisplayStepLibrary');
+                if (cookies === "true") {
+                    showLib();
+                }
 
-</script>
+            });
+
+        </script>
         <!--<script>
         $(document).ready(function() {
                        
@@ -2514,6 +2535,5 @@
         </script>-->
 
         <div id="popin"></div>
-        <br><% out.print(display_footer(DatePageStart));%>
     </body>
 </html>

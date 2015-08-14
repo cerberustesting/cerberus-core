@@ -58,7 +58,7 @@ public class ReadDocumentation extends HttpServlet {
 
         String lang = ParameterParserUtil.parseStringParam(policy.sanitize(httpServletRequest.getParameter("lang")), "en");
 
-        result = docService.findAll(lang);
+        result = docService.findAllWithEmptyDocLabel(lang);
         format = docService.formatGroupByDocTable(result);  
         try {
             jsonResponse.put("labelTable", format);

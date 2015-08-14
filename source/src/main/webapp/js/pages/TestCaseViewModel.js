@@ -28,7 +28,8 @@ $.when($.getScript("js/pages/global.js")).then(function(){
  * Document ready methods
  */
 $(function() {
-    
+    displayHeaderLabel();
+    displayPageLabel();
     /**
      * Removes all rows when the modal window is hidden and clears the message
      */
@@ -449,4 +450,26 @@ function aoColumnsFuncSubData(){
         }
     });
     return aoColumns;
+}
+
+function displayPageLabel() {
+    var doc = getDoc();
+    
+    $("[name='labelTest']").html(displayDocLink(doc.test.Test));
+    $("[name='labelTestCase']").html(displayDocLink(doc.testcase.TestCase));
+    $("[name='labelTestCaseStepActionDescription']").html(displayDocLink(doc.testcasestepaction.description));
+    $("[name='labelTestCaseStepActionAction']").html(displayDocLink(doc.testcasestepaction.Action));
+    $("[name='labelTestCaseStepActionObject']").html(displayDocLink(doc.testcasestepaction.Object));
+    $("[name='labelTestCaseStepActionProperty']").html(displayDocLink(doc.testcasestepaction.Property));
+    $("[name='labelTestCaseStepActionControlDescription']").html(displayDocLink(doc.testcasestepactioncontrol.ControleDescription));
+    $("[name='labelTestCaseStepActionControlType']").html(displayDocLink(doc.testcasestepactioncontrol.Type));
+    $("[name='labelTestCaseStepActionControlProperty']").html(displayDocLink(doc.testcasestepactioncontrol.ControleProperty));
+    $("[name='labelTestCaseStepActionControlValue']").html(displayDocLink(doc.testcasestepactioncontrol.ControleValue));
+    $("[name='labelTestCaseStepActionControlFatal']").html(displayDocLink(doc.testcasestepactioncontrol.Fatal));
+//    $("[name='labelTest']").html(doc.test.test.docLabel);
+    
+//    $("[name='descriptionField']").each(function () {
+//        $(this).html(displayDocLink(doc.project.description));
+//    });
+//    displayFooter(doc);
 }

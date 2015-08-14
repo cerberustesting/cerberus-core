@@ -154,4 +154,9 @@ public class DocumentationService implements IDocumentationService {
         JSONObject result = new JSONObject(gson.toJson(doc));
         return result;
     }
+
+    @Override
+    public List<Documentation> findAllWithEmptyDocLabel(String lang) {
+        return this.documentationDAO.findAllWithEmptyDocValue(lang);
+    }
 }

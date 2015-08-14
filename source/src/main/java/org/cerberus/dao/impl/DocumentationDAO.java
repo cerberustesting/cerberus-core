@@ -321,4 +321,50 @@ public class DocumentationDAO implements IDocumentationDAO {
         return result;
     }
 
+    @Override
+    public List<Documentation> findAllWithEmptyDocValue(String lang) {
+        List<Documentation> result = new ArrayList<Documentation>();
+        final String query = "SELECT DocTable, DocField, DocValue, DocLabel, DocDesc FROM documentation where Lang = ? and docValue=''";
+
+        Connection connection = this.databaseSpring.connect();
+        try {
+            PreparedStatement preStat = connection.prepareStatement(query);
+            try {
+                preStat.setString(1, lang);
+                ResultSet resultSet = preStat.executeQuery();
+                try {
+                    while (resultSet.next()) {
+                        String table = resultSet.getString("DocTable");
+                        String field = resultSet.getString("DocField");
+                        String value = resultSet.getString("DocValue");
+                        String label = resultSet.getString("DocLabel");
+                        String description = "";
+
+                        result.add(factoryDocumentation.create(table, field, value, label, description));
+                    }
+                } catch (SQLException exception) {
+                    MyLogger.log(DocumentationDAO.class.getName(), Level.ERROR, "Unable to execute query : "+exception.toString());
+                } finally {
+                    resultSet.close();
+                }
+            } catch (SQLException exception) {
+                MyLogger.log(DocumentationDAO.class.getName(), Level.ERROR, "Unable to execute query : "+exception.toString());
+            } finally {
+                preStat.close();
+            }
+        } catch (SQLException exception) {
+            MyLogger.log(DocumentationDAO.class.getName(), Level.ERROR, "Unable to execute query : "+exception.toString());
+        } finally {
+            try {
+                if (connection != null) {
+                    connection.close();
+                }
+            } catch (SQLException e) {
+                MyLogger.log(DocumentationDAO.class.getName(), Level.WARN, e.toString());
+            }
+        }
+
+        return result;
+    }
+
 }
