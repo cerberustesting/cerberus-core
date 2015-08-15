@@ -705,8 +705,8 @@
         <servlet-class>org.cerberus.servlet.user.ReadUser</servlet-class>
     </servlet>
     <servlet>
-        <servlet-name>ReadProjectInformation</servlet-name>
-        <servlet-class>org.cerberus.servlet.information.ReadProjectInformation</servlet-class>
+        <servlet-name>ReadCerberusInformation</servlet-name>
+        <servlet-class>org.cerberus.servlet.information.ReadCerberustInformation</servlet-class>
     </servlet>
     <servlet-mapping>
         <servlet-name>ExecutionThreadMonitoring</servlet-name>
@@ -1393,8 +1393,8 @@
         <url-pattern>/ReadUser</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
-        <servlet-name>ReadProjectInformation</servlet-name>
-        <url-pattern>/ReadProjectInformation</url-pattern>
+        <servlet-name>ReadCerberusInformation</servlet-name>
+        <url-pattern>/ReadCerberusInformation</url-pattern>
     </servlet-mapping>
     <session-config>
         <session-timeout>
@@ -1847,7 +1847,7 @@ ie User management, parameter management, log viewer, database management.</desc
             <url-pattern>/virtualproxy</url-pattern>
             <url-pattern>/ReadUser</url-pattern>
             <url-pattern>/ReadDocumentation</url-pattern>
-            <url-pattern>/ReadProjectInformation</url-pattern>
+            <url-pattern>/ReadCerberusInformation</url-pattern>
         </web-resource-collection>
     </security-constraint>
     <security-constraint>

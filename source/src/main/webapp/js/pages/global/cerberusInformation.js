@@ -18,30 +18,34 @@
  * along with Cerberus.  If not, see <http://www.gnu.org/licenses/>.
  */
 /**
- * Load the ProjectInformation in sessionStorage
+ * Load the CerberusInformation in sessionStorage
+ * CerberusInformation contains various trace infrmation that are displayed 
+ * inside the footer of every page.
+ * Those are information such as the project name, its version or environment 
+ * where it is executed.
  * @returns {void}
  */
-function readProjectInformation() {
-    $.ajax({url: "ReadProjectInformation",
+function readCerberusInformation() {
+    $.ajax({url: "ReadCerberusInformation",
         async: false,
         dataType: 'json',
         success: function(data) {
             var pi = data;
-            sessionStorage.setItem("projectInformation", JSON.stringify(pi));
+            sessionStorage.setItem("cerberusInformation", JSON.stringify(pi));
         }
     });
 }
 /**
- * Get the ProjectInformation from sessionStorage
- * @returns {JSONObject} ProjectInformation from sessionStorage
+ * Get the CerberusInformation from sessionStorage
+ * @returns {JSONObject} cerberusInformation from sessionStorage
  */
-function getProjectInformation() {
+function getCerberusInformation() {
     var pi;
 
-    if (sessionStorage.getItem("projectInformation") === null) {
-        readProjectInformation();
+    if (sessionStorage.getItem("cerberusInformation") === null) {
+        readCerberusInformation();
     }
-    pi = sessionStorage.getItem("projectInformation");
+    pi = sessionStorage.getItem("cerberusInformation");
     pi = JSON.parse(pi);
     return pi;
 }

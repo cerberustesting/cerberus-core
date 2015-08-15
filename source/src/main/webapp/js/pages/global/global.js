@@ -635,17 +635,17 @@ function setAutoCompleteServerSide(selector, source) {
  * @returns {void}
  */
 function displayFooter(doc) {
-    var projectInformation = getProjectInformation();
+    var cerberusInformation = getCerberusInformation();
 
     var footerString = doc.page_global.footer_text.docLabel;
     var footerBugString = doc.page_global.footer_bug.docLabel;
     var date = new Date();
     var loadTime = window.performance.timing.domContentLoadedEventEnd - window.performance.timing.navigationStart;
 
-    footerString = footerString.replace("%VERSION%", projectInformation.projectName+projectInformation.projectVersion);
-    footerString = footerString.replace("%ENV%", projectInformation.environment);
+    footerString = footerString.replace("%VERSION%", cerberusInformation.projectName+cerberusInformation.projectVersion);
+    footerString = footerString.replace("%ENV%", cerberusInformation.environment);
     footerString = footerString.replace("%DATE%", date.toDateString());
     footerString = footerString.replace("%TIMING%", loadTime);
-    footerBugString = footerBugString.replace("%LINK%", "https://github.com/vertigo17/Cerberus/issues/new?body=Cerberus%20Version%20:%20" + projectInformation.projectVersion );
+    footerBugString = footerBugString.replace("%LINK%", "https://github.com/vertigo17/Cerberus/issues/new?body=Cerberus%20Version%20:%20" + cerberusInformation.projectVersion );
     $("#footer").html(footerString + " - " +footerBugString);
 }

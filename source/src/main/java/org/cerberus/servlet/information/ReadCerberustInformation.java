@@ -38,8 +38,8 @@ import org.springframework.web.context.support.WebApplicationContextUtils;
  *
  * @author bcivel
  */
-@WebServlet(name = "ReadProjectInformation", urlPatterns = {"/ReadProjectInformation"})
-public class ReadProjectInformation extends HttpServlet {
+@WebServlet(name = "ReadCerberusInformation", urlPatterns = {"/ReadCerberusInformation"})
+public class ReadCerberustInformation extends HttpServlet {
 
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
@@ -61,7 +61,7 @@ public class ReadProjectInformation extends HttpServlet {
             data.put("projectVersion", infos.getProjectVersion());
             data.put("environment", System.getProperty("org.cerberus.environment"));
         } catch (JSONException ex) {
-            Logger.getLogger(ReadProjectInformation.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            Logger.getLogger(ReadCerberustInformation.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } 
         response.setContentType("application/json");
         response.getWriter().print(data.toString());
