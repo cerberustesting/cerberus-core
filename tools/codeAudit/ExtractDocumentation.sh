@@ -76,4 +76,8 @@ cat $TMP_DOCUMENTATION_OUTPUT.tmp | sed -r s/\'\\\)\;$/\'\\\)\"\)\;/ >> $TMP_DOC
 # Static code after the table.
 #-------------------------------------------------------------------------------
 echo SQLInstruction.add\(SQLS.toString\(\)\)\; >> $TMP_DOCUMENTATION_OUTPUT
-        
+
+
+# Clean temporary files after execution.
+#-------------------------------------------------------------------------------
+rm -f $TMP_DOCUMENTATION_OUTPUT.tmp
