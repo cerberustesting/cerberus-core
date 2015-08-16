@@ -1,0 +1,92 @@
+<!--Add an application -->
+<div data-backdrop="static" class="modal fade center" id="addApplicationModal" tabindex="-1" role="dialog" aria-labelledby="addApplicationModalLabel" aria-hidden="true">
+    <div class="modal-dialog nomargintop nomarginbottom">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title" id="addApplicationModalLabel" name="createApplicationField">Create Application</h4>
+            </div>
+            <div class="modal-body">
+
+                <!--add form-->
+                <form id="addApplicationModalForm" name="addApplicationModalForm"  title="Add Aplication" role="form">
+                    <div class="container-fluid center">
+                         <!-- messages area-->
+                         <div id="DialogMessagesArea">
+                            <div class="alert" id="DialogMessagesAlert"  style="display:none;">
+                                <strong><span class="alert-description" id="DialogAlertDescription"></span></strong>
+                                <button type="button" class="close" data-hide="alert"  aria-hidden="true">
+                                    <span class="glyphicon glyphicon-remove alert-right alert-close pull-right"></span>
+                                </button>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="form-group col-xs-12">
+                                <label for="application" name="applicationField">Application</label>
+                                <input type="text" class="form-control" name="application" id="application" placeholder="Application Id" aria-describedby="basic-addon1" maxlength="45">
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="form-group col-xs-12">
+                                <label for="description" name="descriptionField">Description</label>
+                                <input type="text" class="form-control" name="description" id="description" placeholder="Description" aria-describedby="basic-addon1" maxlength="200">
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="form-group col-xs-6">
+                                <label for="sort" name="sortField">Sort</label>
+                                <input type="text" class="form-control" name="sort" id="type" placeholder="Sort" aria-describedby="basic-addon1" maxlength="3">
+                            </div>
+                            <div class="form-group col-xs-6">
+                                <label for="type" name="typeField">Type</label>
+                                <input type="text" class="form-control" name="type" id="type" placeholder="Type" aria-describedby="basic-addon1" maxlength="10">
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="form-group col-xs-6">
+                                <label for="System" name="systemField">System</label>
+                                <input type="text" class="form-control" name="system" id="system" placeholder="System" aria-describedby="basic-addon1" maxlength="200">
+                            </div>
+                            <div class="form-group col-xs-6">
+                                <label for="SubSystem" name="subsystemField">Sub System</label>
+                                <input type="text" class="form-control" name="subsystem" id="subsystem" placeholder="Sub System" aria-describedby="basic-addon1" maxlength="200">
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="form-group col-xs-12">
+                                <label for="svnurl" name="svnurlField">Description</label>
+                                <input type="text" class="form-control" name="svnurl" id="svnurl" placeholder="SVN URL" aria-describedby="basic-addon1" maxlength="150">
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="form-group col-xs-12">
+                                <label for="BugTrackerUrl" name="bugtrackerurlField">Bug Tracker URL</label>
+                                <input type="text" class="form-control" name="BugTrackerUrl" id="BugTrackerUrl" placeholder="Bug Tracker URL" aria-describedby="basic-addon1" maxlength="5000">
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="form-group col-xs-12">
+                                <label for="BugTrackerNewUrl" name="bugtrackernewurlField">Bug Tracker New URL</label>
+                                <input type="text" class="form-control" name="BugTrackerNewUrl" id="BugTrackerNewUrl" placeholder="Bug Tracker New URL" aria-describedby="basic-addon1" maxlength="5000">
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="form-group col-xs-6">
+                                <label for="DeployType" name="deploytypeField">Deploy Type</label>
+                                <input type="text" class="form-control" name="DeployType" id="system" placeholder="DeployType" aria-describedby="basic-addon1" maxlength="50">
+                            </div>
+                            <div class="form-group col-xs-6">
+                                <label for="MavenGroupId" name="mavengroupidField">Maven Group Id</label>
+                                <input type="text" class="form-control" name="MavenGroupId" id="MavenGroupId" placeholder="Maven Group Id" aria-describedby="basic-addon1" maxlength="50">
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal" name="buttonClose">Close</button>
+                <button type="button" id="addApplicationButton" class="btn btn-primary" name="buttonAdd">Save</button>
+            </div>
+        </div>
+    </div>
+</div>

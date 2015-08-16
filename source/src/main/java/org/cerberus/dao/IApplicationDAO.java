@@ -23,6 +23,8 @@ import java.util.List;
 
 import org.cerberus.entity.Application;
 import org.cerberus.exception.CerberusException;
+import org.cerberus.util.answer.AnswerItem;
+import org.cerberus.util.answer.AnswerList;
 
 /**
  * Interface that defines the public methods to manage Application data on table
@@ -63,6 +65,10 @@ public interface IApplicationDAO {
      */
     List<Application> findApplicationBySystem(String system) throws CerberusException;
 
+    public AnswerList findApplicationListByCriteria(int startPosition, int length, String columnName, String sort, String searchParameter, String string);
+    
+    public AnswerItem findApplicationByString(String application);
+    
     /**
      *
      * @return @throws CerberusException

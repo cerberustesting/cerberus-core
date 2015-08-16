@@ -28,6 +28,8 @@ import org.apache.log4j.Level;
 import org.cerberus.dao.IApplicationDAO;
 import org.cerberus.database.DatabaseSpring;
 import org.cerberus.entity.Application;
+import org.cerberus.entity.MessageEvent;
+import org.cerberus.entity.MessageEventEnum;
 import org.cerberus.entity.MessageGeneral;
 import org.cerberus.entity.MessageGeneralEnum;
 import org.cerberus.exception.CerberusException;
@@ -35,6 +37,8 @@ import org.cerberus.factory.IFactoryApplication;
 import org.cerberus.factory.impl.FactoryApplication;
 import org.cerberus.log.MyLogger;
 import org.cerberus.util.ParameterParserUtil;
+import org.cerberus.util.answer.AnswerItem;
+import org.cerberus.util.answer.AnswerList;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
@@ -221,6 +225,200 @@ public class ApplicationDAO implements IApplicationDAO {
         return list;
     }
 
+    
+    @Override
+    public AnswerList findApplicationListByCriteria(int start, int amount, String column, String dir, String searchTerm, String individualSearch) {
+        AnswerList response = new AnswerList();
+        MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
+        List<Application> applicationList = new ArrayList<Application>();
+        StringBuilder gSearch = new StringBuilder();
+        StringBuilder searchSQL = new StringBuilder();
+
+        StringBuilder query = new StringBuilder();
+        //SQL_CALC_FOUND_ROWS allows to retrieve the total number of columns by disrearding the limit clauses that 
+        //were applied -- used for pagination p
+        query.append("SELECT SQL_CALC_FOUND_ROWS * FROM application ");
+
+        gSearch.append(" where (`application` like '%");
+        gSearch.append(searchTerm);
+        gSearch.append("%'");
+        gSearch.append(" or `description` like '%");
+        gSearch.append(searchTerm);
+        gSearch.append("%'");
+        gSearch.append(" or `sort` like '%");
+        gSearch.append(searchTerm);
+        gSearch.append("%'");
+        gSearch.append(" or `type` like '%");
+        gSearch.append(searchTerm);
+        gSearch.append("%'");
+        gSearch.append(" or `System` like '%");
+        gSearch.append(searchTerm);
+        gSearch.append("%'");
+        gSearch.append(" or `Subsystem` like '%");
+        gSearch.append(searchTerm);
+        gSearch.append("%'");
+        gSearch.append(" or `svnURL` like '%");
+        gSearch.append(searchTerm);
+        gSearch.append("%'");
+        gSearch.append(" or `bugtrackerurl` like '%");
+        gSearch.append(searchTerm);
+        gSearch.append("%'");
+        gSearch.append(" or `bugtrackernewurl` like '%");
+        gSearch.append(searchTerm);
+        gSearch.append("%'");
+        gSearch.append(" or `deploytype` like '%");
+        gSearch.append(searchTerm);
+        gSearch.append("%'");
+        gSearch.append(" or `mavengroupid` like '%");
+        gSearch.append(searchTerm);
+        gSearch.append("%')");
+
+        if (!searchTerm.equals("") && !individualSearch.equals("")) {
+            searchSQL.append(gSearch.toString());
+            searchSQL.append(" and ");
+            searchSQL.append(individualSearch);
+        } else if (!individualSearch.equals("")) {
+            searchSQL.append(" where `");
+            searchSQL.append(individualSearch);
+            searchSQL.append("`");
+        } else if (!searchTerm.equals("")) {
+            searchSQL.append(gSearch.toString());
+        }
+
+        query.append(searchSQL);
+        query.append("order by `");
+        query.append(column);
+        query.append("` ");
+        query.append(dir);
+        query.append(" limit ");
+        query.append(start);
+        query.append(" , ");
+        query.append(amount);
+
+        Connection connection = this.databaseSpring.connect();
+        try {
+            PreparedStatement preStat = connection.prepareStatement(query.toString());
+            try {
+                ResultSet resultSet = preStat.executeQuery();
+                try {
+                    //gets the data
+                    while (resultSet.next()) {
+                        applicationList.add(this.loadApplicationFromResultSet(resultSet));
+                    }
+
+                    //get the total number of rows
+                    resultSet = preStat.executeQuery("SELECT FOUND_ROWS()");
+                    int nrTotalRows = 0;
+
+                    if (resultSet != null && resultSet.next()) {
+                        nrTotalRows = resultSet.getInt(1);
+                    }
+                    
+                    msg.setDescription(msg.getDescription().replace("%ITEM%", "Application Lib").replace("%OPERATION%", "SELECT"));
+                    response = new AnswerList(applicationList, nrTotalRows);
+
+                } catch (SQLException exception) {
+                    MyLogger.log(ProjectDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
+                    msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_UNEXPECTED_ERROR);
+                    msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", exception.toString()));
+
+                } finally {
+                    if (resultSet != null) {
+                        resultSet.close();
+                    }
+                }
+
+            } catch (SQLException exception) {
+                MyLogger.log(ProjectDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
+                msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_UNEXPECTED_ERROR);
+                msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", exception.toString()));
+            } finally {
+                if (preStat != null) {
+                    preStat.close();
+                }
+            }
+
+        } catch (SQLException exception) {
+            MyLogger.log(ProjectDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
+            msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_UNEXPECTED_ERROR);
+            msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", exception.toString()));
+        } finally {
+            try {
+                if (!this.databaseSpring.isOnTransaction()) {
+                    if (connection != null) {
+                        connection.close();
+                    }
+                }
+            } catch (SQLException ex) {
+                MyLogger.log(ProjectDAO.class.getName(), Level.ERROR, "Unable to execute query : " + ex.toString());
+            }
+        }
+        response.setResultMessage(msg);
+        response.setDataList(applicationList);
+        return response;
+    }
+    
+    
+    /**
+     *
+     * @param application - idProject
+     * @return ans - AnswerIterm
+     */
+    @Override
+    public AnswerItem findApplicationByString(String application) {
+        AnswerItem ans = new AnswerItem();
+        Application result = null;
+        String applicationStr;
+        String vcCode;
+        String description;
+        final String query = "SELECT * FROM `application` WHERE `application` = ?";
+        MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
+
+        Connection connection = this.databaseSpring.connect();
+        try {
+            PreparedStatement preStat = connection.prepareStatement(query);
+            try {
+                preStat.setString(1, application);
+                ResultSet resultSet = preStat.executeQuery();
+                try {
+                    if (resultSet.first()) {
+                        result = loadApplicationFromResultSet(resultSet);
+                        msg.setDescription(msg.getDescription().replace("%ITEM%", "Application Lib").replace("%OPERATION%", "SELECT"));
+                        ans.setItem(result);
+                    }
+                } catch (SQLException exception) {
+                    MyLogger.log(ProjectDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
+                    msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_UNEXPECTED_ERROR);
+                    msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", exception.toString()));
+                } finally {
+                    resultSet.close();
+                }
+            } catch (SQLException exception) {
+                MyLogger.log(ProjectDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
+                msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_UNEXPECTED_ERROR);
+                msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", exception.toString()));
+            } finally {
+                preStat.close();
+            }
+        } catch (SQLException exception) {
+            MyLogger.log(ProjectDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
+            msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_UNEXPECTED_ERROR);
+            msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", exception.toString()));
+        } finally {
+            try {
+                if (connection != null) {
+                    connection.close();
+                }
+            } catch (SQLException e) {
+                MyLogger.log(ProjectDAO.class.getName(), Level.WARN, e.toString());
+            }
+        }
+
+        //sets the message
+        ans.setResultMessage(msg);
+        return ans;
+    }
+    
     /**
      * Updates the information based on the object application. </p> Access to
      * database to update application information given by the object

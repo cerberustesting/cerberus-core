@@ -3999,25 +3999,44 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLS = new StringBuilder();
         SQLS.append("SELECT 1 FROM dual;");
         SQLInstruction.add(SQLS.toString());
-        
-        
+
 // New updated Documentation.
 //-- ------------------------ 605-606
+        SQLS = new StringBuilder();
+        SQLS.append("SELECT 1 FROM dual;");
+        SQLInstruction.add(SQLS.toString());
+        SQLS = new StringBuilder();
+        SQLS.append("SELECT 1 FROM dual;");
+        SQLInstruction.add(SQLS.toString());
+
+// New updated Documentation.
+//-- ------------------------ 607-608
         SQLS = new StringBuilder();
         SQLS.append("DELETE FROM `documentation`;");
         SQLInstruction.add(SQLS.toString());
         SQLS = new StringBuilder();
         SQLS.append("INSERT INTO `documentation` VALUES ('application','Application','','en','Application','')");
+        SQLS.append(",('application','Application','','fr','Application','')");
         SQLS.append(",('application','bugtrackernewurl','','en','New Bug URL','This correspond to the URL that points to the page where a new bug can be created on the Bug system of the <code class=\\'doc-crbvvoca\\'>application</code>.<br><br><table cellspacing=0 cellpadding=3><th class=\\'ex\\' colspan=\\'2\\'>The following variables can be used inside the URL</th><tr><td class=\\'ex\\'><code class=\\'doc-variable\\'>%TEST%</code></td><td class=\\'ex\\'>Test</td></tr><tr><td class=\\'ex\\'><code class=\\'doc-variable\\'>%TESTCASE%</code></td><td class=\\'ex\\'>Test case reference</td></tr><tr><td class=\\'ex\\'><code class=\\'doc-variable\\'>%TESTCASEDESC%</code></td><td class=\\'ex\\'>Description of the test case</td></tr><tr><td class=\\'ex\\'><code class=\\'doc-variable\\'>%EXEID%</code></td><td class=\\'ex\\'>Execution ID</td></tr><tr><td class=\\'ex\\'><code class=\\'doc-variable\\'>%EXEDATE%</code></td><td class=\\'ex\\'>Start date and time of the execution.</td></tr><tr><td class=\\'ex\\'><code class=\\'doc-variable\\'>%ENV%</code></td><td class=\\'ex\\'>Environment</td></tr><tr><td class=\\'ex\\'><code class=\\'doc-variable\\'>%COUNTRY%</code></td><td class=\\'ex\\'>Country</td></tr><tr><td class=\\'ex\\'><code class=\\'doc-variable\\'>%BUILD%</code></td><td class=\\'ex\\'>Build</td></tr><tr><td class=\\'ex\\'><code class=\\'doc-variable\\'>%REV%</code></td><td class=\\'ex\\'>Revision</td></tr></table>')");
+        SQLS.append(",('application','bugtrackernewurl','','fr','URL pour nouveau Bug','Correspond à l\\'URL qui pointe vers la page de création de bug du Bug Tracker de l\\'<code class=\\'doc-crbvvoca\\'>application</code>.<br><br><table cellspacing=0 cellpadding=3><th class=\\'ex\\' colspan=\\'2\\'>Les variables suivantes peuvent être utilisées dans l\\'URL</th><tr><td class=\\'ex\\'><code class=\\'doc-variable\\'>%TEST%</code></td><td class=\\'ex\\'>Test</td></tr><tr><td class=\\'ex\\'><code class=\\'doc-variable\\'>%TESTCASE%</code></td><td class=\\'ex\\'>Reference du cas de test</td></tr><tr><td class=\\'ex\\'><code class=\\'doc-variable\\'>%TESTCASEDESC%</code></td><td class=\\'ex\\'>Description du cas de test</td></tr><tr><td class=\\'ex\\'><code class=\\'doc-variable\\'>%EXEID%</code></td><td class=\\'ex\\'>ID de l\\'execution</td></tr><tr><td class=\\'ex\\'><code class=\\'doc-variable\\'>%EXEDATE%</code></td><td class=\\'ex\\'>Date et heure du debut de l\\'execution.</td></tr><tr><td class=\\'ex\\'><code class=\\'doc-variable\\'>%ENV%</code></td><td class=\\'ex\\'>Environnement</td></tr><tr><td class=\\'ex\\'><code class=\\'doc-variable\\'>%COUNTRY%</code></td><td class=\\'ex\\'>Pays</td></tr><tr><td class=\\'ex\\'><code class=\\'doc-variable\\'>%BUILD%</code></td><td class=\\'ex\\'>Build</td></tr><tr><td class=\\'ex\\'><code class=\\'doc-variable\\'>%REV%</code></td><td class=\\'ex\\'>Revision</td></tr></table>')");
         SQLS.append(",('application','bugtrackerurl','','en','Bug Tracker URL','This correspond to the URL of the Bug reporting system of the <code class=\\'doc-crbvvoca\\'>application</code>.<br><br><table cellspacing=0 cellpadding=3><th class=\\'ex\\' colspan=\\'2\\'>The following variables can be used inside the URL</th><tr><td class=\\'ex\\'><code class=\\'doc-variable\\'>%BUGID%</code></td><td class=\\'ex\\'>ID of the Bug</td></tr></table>')");
+        SQLS.append(",('application','bugtrackerurl','','fr','URL du Bug Tracker','Correspond à l\\'URL du Bug Tracker de l\\'<code class=\\'doc-crbvvoca\\'>application</code>.<br><br><table cellspacing=0 cellpadding=3><th class=\\'ex\\' colspan=\\'2\\'>Les variables suivantes peuvent être utilisées dans l\\'URL</th><tr><td class=\\'ex\\'><code class=\\'doc-variable\\'>%BUGID%</code></td><td class=\\'ex\\'>ID du Bug</td></tr></table>')");
         SQLS.append(",('application','deploytype','','en','Deploy Type','This information groups the <code class=\\'doc-crbvvoca\\'>application</code> by typology of deployement process.<br>It can be used as a variable in the parameter <code class=\\'doc-parameter\\'>jenkins_deploy_url</code> that correspond to the URL that calls a continious integration system such as Jenkins.')");
+        SQLS.append(",('application','deploytype','','fr','Type de deploiement','Cette information groupe les <code class=\\'doc-crbvvoca\\'>applications</code> par typologie de deploiement.<br>Peut être utilisé comme variable dans le parametre <code class=\\'doc-parameter\\'>jenkins_deploy_url</code> qui correspond à l\\'URL appelée vers un systeme d\\'intégration continue de type Jenkins.')");
         SQLS.append(",('application','Description','','en','Description','This is the short Description of the <code class=\\'doc-crbvvoca\\'>application</code>.')");
+        SQLS.append(",('application','Description','','fr','Description','Description courte de l\\'<code class=\\'doc-crbvvoca\\'>application</code>.')");
         SQLS.append(",('application','mavengroupid','','en','Maven Group ID','')");
+        SQLS.append(",('application','mavengroupid','','fr','Identifiant du group Maven','')");
         SQLS.append(",('application','sort','','en','Sort','This correspond to an integer value that is used as a sorting criteria for various combo box within Cerberus GUI.')");
+        SQLS.append(",('application','sort','','fr','identifiant de Tri','Correspond à une valeur entière et utilisée pour trier les differentes valeurs dans l\\'interface graphique.')");
         SQLS.append(",('application','subsystem','','en','Subsystem','A <code class=\\'doc-crbvvoca\\'>Subsystem</code> define a group of <code class=\\'doc-crbvvoca\\'>application</code> inside a <code class=\\'doc-crbvvoca\\'>system</code>.')");
+        SQLS.append(",('application','subsystem','','fr','Sous Système','Le <code class=\\'doc-crbvvoca\\'>Sous système</code> regroupe un ensemble d\\'<code class=\\'doc-crbvvoca\\'>application</code> au sein d\\'un même <code class=\\'doc-crbvvoca\\'>système</code>.')");
         SQLS.append(",('application','svnurl','','en','SVN URL','This correspond to the URL of the svn repository of the <code class=\\'doc-crbvvoca\\'>application</code>.')");
+        SQLS.append(",('application','svnurl','','fr','URL du SVN','Correspond à l\\'URL du SVN de l\\'<code class=\\'doc-crbvvoca\\'>application</code>.')");
         SQLS.append(",('application','system','','en','System','A <code class=\\'doc-crbvvoca\\'>system</code> is a group of <code class=\\'doc-crbvvoca\\'>application</code> for which all changes sometimes require to be done all together.<br> Most of the time those <code class=\\'doc-crbvvoca\\'>applications</code> all connect to a single database and share the same data structure.')");
+        SQLS.append(",('application','system','','fr','Système','Un <code class=\\'doc-crbvvoca\\'>système</code> est un groupe d\\'<code class=\\'doc-crbvvoca\\'>applications</code> pour lesquels il y a de temps en temps necessité de faire les changements en même temps.<br> La plupart du temps ces <code class=\\'doc-crbvvoca\\'>applications</code> partagent une même base de donnée et donc une structure de donnée unique.')");
         SQLS.append(",('application','type','','en','Type','The Type of the <code class=\\'doc-crbvvoca\\'>application</code> define whether the <code class=\\'doc-crbvvoca\\'>application</code> is a GUI, a Service or a Batch Treatment.<br>An automated <code class=\\'doc-crbvvoca\\'>testcase</code> based on a GUI <code class=\\'doc-crbvvoca\\'>application</code> will require a selenium server to execute.')");
+        SQLS.append(",('application','type','','fr','Type','Le type de l\\'<code class=\\'doc-crbvvoca\\'>application</code> defini si l\\'<code class=\\'doc-crbvvoca\\'>application</code> est une interface graphique (GUI), un fournisseur de Service ou un traitement batch.<br>Un <code class=\\'doc-crbvvoca\\'>cas de test</code> automatisé basé sur une <code class=\\'doc-crbvvoca\\'>application</code> de type GUI necessitera un serveur Selenium pour s\\'executer.')");
         SQLS.append(",('buildrevisioninvariant','versionname01','','en','Build','')");
         SQLS.append(",('buildrevisioninvariant','versionname02','','en','Revision','')");
         SQLS.append(",('buildrevisionparameters','BugIDFixed','','en','BugID','This is the bug ID which has been solved with the <code class=\\'doc-crbvvoca\\'>release</code>.')");
@@ -4093,8 +4112,26 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLS.append(",('invariant','FILTERNBDAYS','','en','Nb Days','Number of days to Filter the history table in the integration status.')");
         SQLS.append(",('invariant','GROUP','','en','Group','The group is a property of a <code class=\\'doc-crbvvoca\\'>test case</code> that can take the following values : <br><br><b>AUTOMATED</b> : The <code class=\\'doc-crbvvoca\\'>test case</code> is fully automated and does not require any manual action.<br><b>MANUAL</b> : The <code class=\\'doc-crbvvoca\\'>test case</code> has to be manually executed.<br><b>PRIVATE</b> : The <code class=\\'doc-crbvvoca\\'>test case</code> exist for technical reason and will never appear on the reporting area. For example : <code class=\\'doc-fixed\\'>Pre Testing</code> test cases that are used for login purpose should all be PRIVATE.<br><b>PROCESS</b> : The <code class=\\'doc-crbvvoca\\'>test case</code> is related to specific process and needs some intermediate batch treatment to be fully executed.<br><b>COMPARATIVE</b> : <code class=\\'doc-crbvvoca\\'>Test cases</code> that compare the results of 2 batch executions inside the database by SQL requests.')");
         SQLS.append(",('invariant','PRIORITY','','en','Priority','It is the priority level of the functionnality which is tested.')");
+        SQLS.append(",('logevent','action','','en','Action','Type of the action performed')");
+        SQLS.append(",('logevent','action','','fr','Action','Type de l\\'action effetué')");
+        SQLS.append(",('logevent','log','','en','Log','Log message of the action.')");
+        SQLS.append(",('logevent','log','','fr','Message','Message lié à l\\'action.')");
+        SQLS.append(",('logevent','login','','en','Login','Login of the user who performed the action.')");
+        SQLS.append(",('logevent','login','','fr','Utilisateur','Nom de l\\'utilisateur qui a effectué l\\'action.')");
+        SQLS.append(",('logevent','page','','en','Page','Name of the page where the action was performed.')");
+        SQLS.append(",('logevent','page','','fr','Page','Nom de la page où l\\'action a été effectuée.')");
+        SQLS.append(",('logevent','time','','en','Time','Timestamp of the log message.')");
+        SQLS.append(",('logevent','time','','fr','Date','Date à laquelle l\\'action a été effectuée.')");
         SQLS.append(",('myversion','key','','en','Key','This is the reference of the component inside Cerberus that we want to keep track of the version.')");
         SQLS.append(",('myversion','value','','en','Value','This is the version that correspond to the key.')");
+        SQLS.append(",('page_application','button_create','','en','Create new Application','')");
+        SQLS.append(",('page_application','button_create','','fr','Créer une nouvelle Application','')");
+        SQLS.append(",('page_application','button_delete','','en','Delete Application','')");
+        SQLS.append(",('page_application','button_delete','','fr','Supprimer l\\'Application','')");
+        SQLS.append(",('page_application','button_edit','','en','Edit Application','')");
+        SQLS.append(",('page_application','button_edit','','fr','Modifier l\\'Application','')");
+        SQLS.append(",('page_application','title','','en','APPLICATION','This page can be used to manage the applications.')");
+        SQLS.append(",('page_application','title','','fr','APPLICATION','Cette page permet de gérer et créer des applications.')");
         SQLS.append(",('page_buildcontent','delete','','en','Dlt','Select this checkbox and then save changes in order to delete the row.')");
         SQLS.append(",('page_executiondetail','buildrevision','','en','BuildRev','Build and Revision of the <code class=\\'doc-crbvvoca\\'>environment</code> of the <code class=\\'doc-crbvvoca\\'>system</code> of the <code class=\\'doc-crbvvoca\\'>application</code> that has been tested.')");
         SQLS.append(",('page_executiondetail','buildrevisionlink','','en','BuildRev Linked','Build and Revision of the <code class=\\'doc-crbvvoca\\'>environment</code> of the linked <code class=\\'doc-crbvvoca\\'>system</code>. The linked systems are defined in the \\'Environment Dependancy\\' section of the <code class=\\'doc-crbvvoca\\'>environment</code> page.')");
@@ -4215,24 +4252,14 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLS.append(",('page_Integrationstatus','PROD','','en','PROD','Nb of PROD active <code class=\\'doc-crbvvoca\\'>environments</code> on that Specific Version.')");
         SQLS.append(",('page_Integrationstatus','QA','','en','QA','Nb of QA active <code class=\\'doc-crbvvoca\\'>environments</code> on that Specific Version.')");
         SQLS.append(",('page_Integrationstatus','UAT','','en','UAT','Nb of UAT active <code class=\\'doc-crbvvoca\\'>environments</code> on that Specific Version.')");
-        SQLS.append(",('logevent','action','','en','Action','Type of the action performed')");
-        SQLS.append(",('logevent','action','','fr','Action','Type de l\\'action effetué')");
-        SQLS.append(",('logevent','log','','en','Log','Log message of the action.')");
-        SQLS.append(",('logevent','log','','fr','Message','Message lié à l\\'action.')");
-        SQLS.append(",('logevent','login','','en','Login','Login of the user who performed the action.')");
-        SQLS.append(",('logevent','login','','fr','Utilisateur','Nom de l\\'utilisateur qui a effectué l\\'action.')");
-        SQLS.append(",('logevent','page','','en','Page','Name of the page where the action was performed.')");
-        SQLS.append(",('logevent','page','','fr','Page','Nom de la page où l\\'action a été effectuée.')");
-        SQLS.append(",('logevent','time','','en','Time','Timestamp of the log message.')");
-        SQLS.append(",('logevent','time','','fr','Date','Date à laquelle l\\'action a été effectuée.')");
         SQLS.append(",('page_logviewer','title','','en','LOG VIEWER','This page displays all the log messages from Cerberus.')");
         SQLS.append(",('page_logviewer','title','','fr','JOURNAL DE MODIFICATIONS','Cette page affiche tout les messages de log de Cerberus.')");
         SQLS.append(",('page_notification','Body','','en','Body','')");
         SQLS.append(",('page_notification','Cc','','en','Copy','')");
         SQLS.append(",('page_notification','Subject','','en','Subject','')");
         SQLS.append(",('page_notification','To','','en','To','')");
-        SQLS.append(",('page_project','button_create','','en','Create new project','')");
-        SQLS.append(",('page_project','button_create','','fr','Créer un nouveau projet','')");
+        SQLS.append(",('page_project','button_create','','en','Create new Project','')");
+        SQLS.append(",('page_project','button_create','','fr','Créer un nouveau Projet','')");
         SQLS.append(",('page_project','button_delete','','en','Delete Project','')");
         SQLS.append(",('page_project','button_delete','','fr','Supprimer le Projet','')");
         SQLS.append(",('page_project','button_edit','','en','Edit Project','')");
@@ -4329,12 +4356,12 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLS.append(",('testcaseexecution','IP','','en','IP','This is the ip of the machine of the Selenium Server where the <code class=\\'doc-crbvvoca\\'>test case</code> executed.')");
         SQLS.append(",('testcaseexecution','Port','','en','Port','This is the port used to contact the Selenium Server where the <code class=\\'doc-crbvvoca\\'>test case</code> executed.')");
         SQLS.append(",('testcaseexecution','Revision','','en','Revision','Number of the Revision')");
+        SQLS.append(",('testcaseexecution','screensize','','en','Screen Size','This is the real size of the browser screen that performed the execution of the <code class=\\'doc-crbvvoca\\'>test case</code>.')");
         SQLS.append(",('testcaseexecution','start','','en','Start',' ')");
         SQLS.append(",('testcaseexecution','status','','en','TC Status','This correspond to the status of the <code class=\\'doc-crbvvoca\\'>test case</code> when it was executed.<br>This is used to identify executions done on stable <code class=\\'doc-crbvvoca\\'>test case</code> compared to the ones done on draft version. ')");
         SQLS.append(",('testcaseexecution','tag','','en','Tag','The Tag is just a string defined by the user that will be recorded with the execution. Its purpose is to help to find back some specific executions.')");
         SQLS.append(",('testcaseexecution','URL','','en','URL','Full URL used to connect to the application.')");
         SQLS.append(",('testcaseexecution','verbose','','en','Verbose','This correspond to the level if information that Cerberus will keep when performing the execution. It can take the following values :<br><br><b>0</b> : The test will keep minimum login information in order to preserve the response times. This is to be used when a massive amout of tests are performed. No details on action will be saved.<br><b>1</b> : This is the standard level of log. Detailed action execution information will also be stored.<br><b>2</b> : This is the highest level of detailed information that can be chosen. Detailed web traffic information will be stored. This is to be used only on very specific cases where all hits information of an execution are required.<br><br>NB : Verbose level higher that 0 rely on Network traffic (only available on firefox browser).')");
-        SQLS.append(",('testcaseexecution','screensize','','en','Screen Size','This is the real size of the browser screen that performed the execution of the <code class=\\'doc-crbvvoca\\'>test case</code>.')");
         SQLS.append(",('testcaseexecutiondata','Value','','en','Property Value','This is the Value of the calculated Property.')");
         SQLS.append(",('testcaseexecutionwwwsum','css_nb','','en','Css_nb','Number of css downloaded for all the scenario')");
         SQLS.append(",('testcaseexecutionwwwsum','css_size_max','','en','Css_size_max','Size of the biggest css dowloaded during the scenario')");

@@ -25,6 +25,8 @@ import org.cerberus.dao.IApplicationDAO;
 import org.cerberus.entity.Application;
 import org.cerberus.exception.CerberusException;
 import org.cerberus.service.IApplicationService;
+import org.cerberus.util.answer.AnswerItem;
+import org.cerberus.util.answer.AnswerList;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -51,6 +53,16 @@ public class ApplicationService implements IApplicationService {
     @Override
     public List<Application> findApplicationBySystem(String System) throws CerberusException {
         return ApplicationDAO.findApplicationBySystem(System);
+    }
+
+    @Override
+    public AnswerList findApplicationListByCriteria(int startPosition, int length, String columnName, String sort, String searchParameter, String string) {
+        return ApplicationDAO.findApplicationListByCriteria(startPosition, length, columnName, sort, searchParameter, string);
+    }
+    
+    @Override
+    public AnswerItem findApplicationByString(String id) {
+        return ApplicationDAO.findApplicationByString(id);
     }
 
     @Override
