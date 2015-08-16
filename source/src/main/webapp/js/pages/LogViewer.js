@@ -44,11 +44,11 @@ function aoColumnsFunc() {
     var doc = getDoc();
     
     var aoColumns = [
-        {"data": "time", "sName": "Time", "title": displayDocLink(doc.page_logviewer.time)},
-        {"data": "login", "sName": "Login", "title": displayDocLink(doc.page_logviewer.login)},
-        {"data": "page", "sName": "Page", "title": displayDocLink(doc.page_logviewer.page)},
-        {"data": "action", "sName": "Action", "title": displayDocLink(doc.page_logviewer.action)},
-        {"data": "log", "sName": "Log", "title": displayDocLink(doc.page_logviewer.log)}
+        {"data": "time", "sName": "Time", "title": displayDocLink(doc.logevent.time)},
+        {"data": "login", "sName": "Login", "title": displayDocLink(doc.logevent.login)},
+        {"data": "page", "sName": "Page", "title": displayDocLink(doc.logevent.page)},
+        {"data": "action", "sName": "Action", "title": displayDocLink(doc.logevent.action)},
+        {"data": "log", "sName": "Log", "title": displayDocLink(doc.logevent.log)}
     ];
     return aoColumns;
 }

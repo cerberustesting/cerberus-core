@@ -3994,6 +3994,16 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
 // New updated Documentation.
 //-- ------------------------ 603-604
         SQLS = new StringBuilder();
+        SQLS.append("SELECT 1 FROM dual;");
+        SQLInstruction.add(SQLS.toString());
+        SQLS = new StringBuilder();
+        SQLS.append("SELECT 1 FROM dual;");
+        SQLInstruction.add(SQLS.toString());
+        
+        
+// New updated Documentation.
+//-- ------------------------ 605-606
+        SQLS = new StringBuilder();
         SQLS.append("DELETE FROM `documentation`;");
         SQLInstruction.add(SQLS.toString());
         SQLS = new StringBuilder();
@@ -4205,8 +4215,8 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLS.append(",('page_Integrationstatus','PROD','','en','PROD','Nb of PROD active <code class=\\'doc-crbvvoca\\'>environments</code> on that Specific Version.')");
         SQLS.append(",('page_Integrationstatus','QA','','en','QA','Nb of QA active <code class=\\'doc-crbvvoca\\'>environments</code> on that Specific Version.')");
         SQLS.append(",('page_Integrationstatus','UAT','','en','UAT','Nb of UAT active <code class=\\'doc-crbvvoca\\'>environments</code> on that Specific Version.')");
-        SQLS.append(",('page_logviewer','action','','en','Action','Type of the action performed')");
-        SQLS.append(",('page_logviewer','action','','fr','Action','Type de l\\'action effetué')");
+        SQLS.append(",('logevent','action','','en','Action','Type of the action performed')");
+        SQLS.append(",('logevent','action','','fr','Action','Type de l\\'action effetué')");
         SQLS.append(",('logevent','log','','en','Log','Log message of the action.')");
         SQLS.append(",('logevent','log','','fr','Message','Message lié à l\\'action.')");
         SQLS.append(",('logevent','login','','en','Login','Login of the user who performed the action.')");
