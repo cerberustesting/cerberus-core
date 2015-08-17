@@ -31,6 +31,7 @@ import org.cerberus.factory.IFactoryLogEvent;
 import org.cerberus.service.ILogEventService;
 import org.cerberus.service.IParameterService;
 import org.cerberus.util.ParameterParserUtil;
+import org.cerberus.util.answer.AnswerList;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -54,7 +55,7 @@ public class LogEventService implements ILogEventService {
     }
 
     @Override
-    public List<LogEvent> findAllLogEvent(int start, int amount, String colName, String dir, String searchTerm) throws CerberusException {
+    public AnswerList findAllLogEvent(int start, int amount, String colName, String dir, String searchTerm) throws CerberusException {
         return logEventDAO.findAllLogEvent(start, amount, colName, dir, searchTerm);
     }
 

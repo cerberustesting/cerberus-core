@@ -25,7 +25,7 @@
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
         <%@ include file="include/dependenciesInclusions.html" %>
         <script type="text/javascript" src="js/pages/LogViewer.js"></script>
-        <title>Log Viewer</title>
+        <title id="pageTitle">Log Viewer</title>
         <script>
             <%
                 if (request.getParameter("Test") != null && request.getParameter("TestCase") != null) {

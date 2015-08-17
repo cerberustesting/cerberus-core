@@ -19,6 +19,7 @@
  */
 package org.cerberus.servlet.log;
 
+import com.google.gson.Gson;
 import java.io.IOException;
 import java.util.List;
 
@@ -30,6 +31,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.log4j.Level;
 import org.cerberus.entity.LogEvent;
+import org.cerberus.entity.MessageEventEnum;
 import org.cerberus.exception.CerberusException;
 import org.cerberus.log.MyLogger;
 import org.cerberus.service.ILogEventService;
@@ -37,6 +39,8 @@ import org.cerberus.service.impl.LogEventService;
 import org.cerberus.servlet.user.GetUsers;
 import org.cerberus.util.ParameterParserUtil;
 import org.cerberus.util.StringUtil;
+import org.cerberus.util.answer.AnswerItem;
+import org.cerberus.util.answer.AnswerList;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -47,8 +51,8 @@ import org.springframework.web.context.support.WebApplicationContextUtils;
  *
  * @author vertigo
  */
-@WebServlet(name = "GetLogEvent", urlPatterns = {"/GetLogEvent"})
-public class GetLogEvent extends HttpServlet {
+@WebServlet(name = "ReadLogEvent", urlPatterns = {"/ReadLogEvent"})
+public class ReadLogEvent extends HttpServlet {
 
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
@@ -61,6 +65,7 @@ public class GetLogEvent extends HttpServlet {
      */
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
+        AnswerItem ans = new AnswerItem();
         String echo = request.getParameter("sEcho");
         String sStart = request.getParameter("iDisplayStart");
         String sAmount = request.getParameter("iDisplayLength");
@@ -112,20 +117,18 @@ public class GetLogEvent extends HttpServlet {
             Integer iTotalDisplayRecords = 0;
 
             try {
-                List<LogEvent> logEventList = logEventService.findAllLogEvent(start, amount, colName, dir, searchTerm);
-
-                for (LogEvent myLogEvent : logEventList) {
-                    JSONObject u = new JSONObject();
-                    u.put("login", myLogEvent.getLogin());
-                    u.put("time", myLogEvent.getTime());
-                    u.put("page", myLogEvent.getPage());
-                    u.put("action", myLogEvent.getAction());
-                    u.put("log", myLogEvent.getLog());
-                    data.put(u);
+                AnswerList resp = logEventService.findAllLogEvent(start, amount, colName, dir, searchTerm);
+                if (resp.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
+                    for (LogEvent myLogEvent : (List<LogEvent>) resp.getDataList()) {
+                        Gson gson = new Gson();
+                        JSONObject result = new JSONObject(gson.toJson(myLogEvent));
+                        data.put(result);
+                    }
                 }
 
-                iTotalRecords = logEventService.getNumberOfLogEvent("");
-                iTotalDisplayRecords = logEventService.getNumberOfLogEvent(searchTerm);
+                iTotalRecords = resp.getTotalRows();
+                iTotalDisplayRecords = resp.getTotalRows();
+                ans.setResultMessage(resp.getResultMessage());
 
             } catch (CerberusException ex) {
                 MyLogger.log(GetUsers.class.getName(), Level.FATAL, "" + ex);
@@ -135,6 +138,8 @@ public class GetLogEvent extends HttpServlet {
             jsonResponse.put("sEcho", echo);
             jsonResponse.put("iTotalRecords", iTotalRecords);
             jsonResponse.put("iTotalDisplayRecords", iTotalDisplayRecords);
+            jsonResponse.put("messageType", ans.getResultMessage().getMessage().getCodeString());
+            jsonResponse.put("message", ans.getResultMessage().getDescription());
 
             response.setContentType("application/json");
             response.getWriter().print(jsonResponse.toString());

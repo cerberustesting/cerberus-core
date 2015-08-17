@@ -167,7 +167,7 @@ public class ReadProject extends HttpServlet {
 
         String searchParameter = ParameterParserUtil.parseStringParam(request.getParameter("sSearch"), "");
         int columnToSortParameter = Integer.parseInt(ParameterParserUtil.parseStringParam(request.getParameter("iSortCol_0"),"1"));
-        String sColumns = ParameterParserUtil.parseStringParam(request.getParameter("sColumns"), "Actions,idProject,VCCode,description,active,dateCre");
+        String sColumns = ParameterParserUtil.parseStringParam(request.getParameter("sColumns"), "idProject,VCCode,description,active,dateCre");
         String columnToSort[] = sColumns.split(",");
         String columnName = columnToSort[columnToSortParameter];
         String sort = ParameterParserUtil.parseStringParam(request.getParameter("sSortDir_0"),"asc");

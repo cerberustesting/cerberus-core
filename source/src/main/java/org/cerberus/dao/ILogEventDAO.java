@@ -21,6 +21,7 @@ import java.util.List;
 
 import org.cerberus.entity.LogEvent;
 import org.cerberus.exception.CerberusException;
+import org.cerberus.util.answer.AnswerList;
 
 /**
  *
@@ -38,7 +39,7 @@ public interface ILogEventDAO {
      * @return a list of all LogEvent.
      * @throws CerberusException in case no LogEvent can be found.
      */
-    List<LogEvent> findAllLogEvent(int start, int amount, String colName, String dir, String searchTerm) throws CerberusException;
+    AnswerList findAllLogEvent(int start, int amount, String colName, String dir, String searchTerm) throws CerberusException;
 
     /**
      *

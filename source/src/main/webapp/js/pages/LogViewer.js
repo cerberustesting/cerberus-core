@@ -24,7 +24,7 @@ $.when($.getScript("js/pages/global/global.js")).then(function () {
         displayPageLabel();
         displayFooter(getDoc());
         //configure and create the dataTable
-        var configurations = new TableConfigurationsServerSide("logViewerTable", "GetLogEvent", "aaData", aoColumnsFunc());
+        var configurations = new TableConfigurationsServerSide("logViewerTable", "ReadLogEvent", "aaData", aoColumnsFunc());
 
         createDataTable(configurations);
         //By default, sort the log messages from newest to oldest
@@ -36,6 +36,7 @@ $.when($.getScript("js/pages/global/global.js")).then(function () {
 function displayPageLabel() {
     var doc = getDoc();
     
+    $("#pageTitle").html(doc.page_logviewer.title.docLabel);
     $("#title").html(displayDocLink(doc.page_logviewer.title));
     displayFooter(doc);
 }

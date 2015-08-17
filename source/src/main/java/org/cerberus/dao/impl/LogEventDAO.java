@@ -30,12 +30,15 @@ import org.apache.log4j.Level;
 import org.cerberus.dao.ILogEventDAO;
 import org.cerberus.database.DatabaseSpring;
 import org.cerberus.entity.LogEvent;
+import org.cerberus.entity.MessageEvent;
+import org.cerberus.entity.MessageEventEnum;
 import org.cerberus.entity.MessageGeneral;
 import org.cerberus.entity.MessageGeneralEnum;
 import org.cerberus.exception.CerberusException;
 import org.cerberus.factory.IFactoryLogEvent;
 import org.cerberus.log.MyLogger;
 import org.cerberus.util.StringUtil;
+import org.cerberus.util.answer.AnswerList;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
@@ -81,17 +84,17 @@ public class LogEventDAO implements ILogEventDAO {
                         list.add(myLogEvent);
                     }
                 } catch (SQLException exception) {
-                    MyLogger.log(UserDAO.class.getName(), Level.ERROR, "Unable to execute query : "+exception.toString());
+                    MyLogger.log(UserDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
                 } finally {
                     resultSet.close();
                 }
             } catch (SQLException exception) {
-                MyLogger.log(UserDAO.class.getName(), Level.ERROR, "Unable to execute query : "+exception.toString());
+                MyLogger.log(UserDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
             } finally {
                 preStat.close();
             }
         } catch (SQLException exception) {
-            MyLogger.log(UserDAO.class.getName(), Level.ERROR, "Unable to execute query : "+exception.toString());
+            MyLogger.log(UserDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
         } finally {
             try {
                 if (connection != null) {
@@ -108,7 +111,9 @@ public class LogEventDAO implements ILogEventDAO {
     }
 
     @Override
-    public List<LogEvent> findAllLogEvent(int start, int amount, String colName, String dir, String searchTerm) throws CerberusException {
+    public AnswerList findAllLogEvent(int start, int amount, String colName, String dir, String searchTerm) throws CerberusException {
+        AnswerList response = new AnswerList();
+        MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
         List<LogEvent> list = null;
         boolean throwExe = true;
 
@@ -119,7 +124,7 @@ public class LogEventDAO implements ILogEventDAO {
         }
 
         StringBuilder gOrder = new StringBuilder();
-        if (!(colName.equalsIgnoreCase(""))){
+        if (!(colName.equalsIgnoreCase(""))) {
             gOrder.append(" ORDER BY ");
             gOrder.append(colName);
             gOrder.append(" ");
@@ -153,18 +158,33 @@ public class LogEventDAO implements ILogEventDAO {
                         LogEvent myLogEvent = factoryLogEvent.create(logEventId, userID, login, time, page, action, log, remoteIP, localIP);
                         list.add(myLogEvent);
                     }
+
+                    resultSet = preStat.executeQuery("SELECT FOUND_ROWS()");
+                    int nrTotalRows = 0;
+
+                    if (resultSet != null && resultSet.next()) {
+                        nrTotalRows = resultSet.getInt(1);
+                    }
+                    msg.setDescription(msg.getDescription().replace("%ITEM%", "LogEventList").replace("%OPERATION%", "SELECT"));
+                    response = new AnswerList(list, nrTotalRows);
                 } catch (SQLException exception) {
-                    MyLogger.log(UserDAO.class.getName(), Level.ERROR, "Unable to execute query : "+exception.toString());
+                    MyLogger.log(UserDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
+                    msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_UNEXPECTED_ERROR);
+                    msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", "Unable to retrieve the list of entries!"));
                 } finally {
                     resultSet.close();
                 }
             } catch (SQLException exception) {
-                MyLogger.log(UserDAO.class.getName(), Level.ERROR, "Unable to execute query : "+exception.toString());
+                MyLogger.log(UserDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
+                msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_UNEXPECTED_ERROR);
+                msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", "Unable to retrieve the list of entries!"));
             } finally {
                 preStat.close();
             }
         } catch (SQLException exception) {
-            MyLogger.log(UserDAO.class.getName(), Level.ERROR, "Unable to execute query : "+exception.toString());
+            MyLogger.log(UserDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
+            msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_UNEXPECTED_ERROR);
+            msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", "Unable to retrieve the list of entries!"));
         } finally {
             try {
                 if (connection != null) {
@@ -177,13 +197,15 @@ public class LogEventDAO implements ILogEventDAO {
         if (throwExe) {
             throw new CerberusException(new MessageGeneral(MessageGeneralEnum.NO_DATA_FOUND));
         }
-        return list;
+        response.setResultMessage(msg);
+        response.setDataList(list);
+        return response;
     }
 
     @Override
     public Integer getNumberOfLogEvent(String searchTerm) throws CerberusException {
         boolean throwExe = true;
-        
+
         StringBuilder gSearch = new StringBuilder();
         if (!(searchTerm.equalsIgnoreCase(""))) {
             gSearch.append(" WHERE ");
@@ -203,17 +225,17 @@ public class LogEventDAO implements ILogEventDAO {
                         return resultSet.getInt("c");
                     }
                 } catch (SQLException exception) {
-                    MyLogger.log(UserDAO.class.getName(), Level.ERROR, "Unable to execute query : "+exception.toString());
+                    MyLogger.log(UserDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
                 } finally {
                     resultSet.close();
                 }
             } catch (SQLException exception) {
-                MyLogger.log(UserDAO.class.getName(), Level.ERROR, "Unable to execute query : "+exception.toString());
+                MyLogger.log(UserDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
             } finally {
                 preStat.close();
             }
         } catch (SQLException exception) {
-            MyLogger.log(UserDAO.class.getName(), Level.ERROR, "Unable to execute query : "+exception.toString());
+            MyLogger.log(UserDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
         } finally {
             try {
                 if (connection != null) {
@@ -253,17 +275,17 @@ public class LogEventDAO implements ILogEventDAO {
                         bool = true;
                     }
                 } catch (SQLException exception) {
-                    MyLogger.log(UserDAO.class.getName(), Level.ERROR, "Unable to execute query : "+exception.toString());
+                    MyLogger.log(UserDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
                 } finally {
                     resultSet.close();
                 }
             } catch (SQLException exception) {
-                MyLogger.log(UserDAO.class.getName(), Level.ERROR, "Unable to execute query : "+exception.toString());
+                MyLogger.log(UserDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
             } finally {
                 preStat.close();
             }
         } catch (SQLException exception) {
-            MyLogger.log(UserDAO.class.getName(), Level.ERROR, "Unable to execute query : "+exception.toString());
+            MyLogger.log(UserDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
         } finally {
             try {
                 if (connection != null) {
@@ -275,10 +297,9 @@ public class LogEventDAO implements ILogEventDAO {
         }
         return bool;
     }
-    
-    
+
     private String getSearchString(String searchTerm) {
-        if (StringUtil.isNullOrEmpty(searchTerm))  {
+        if (StringUtil.isNullOrEmpty(searchTerm)) {
             return "";
         } else {
             StringBuilder gSearch = new StringBuilder();
@@ -297,5 +318,5 @@ public class LogEventDAO implements ILogEventDAO {
             return gSearch.toString();
         }
     }
-    
+
 }
