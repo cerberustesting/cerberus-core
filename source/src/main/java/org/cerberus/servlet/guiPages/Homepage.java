@@ -158,19 +158,19 @@ public class Homepage extends HttpServlet {
 
                 try {
                     while (rs_teststatus.next()) {
-                        JSONArray row = new JSONArray();
+                        JSONObject row = new JSONObject();
                         StringBuilder testLink = new StringBuilder();
                         testLink.append("<a href=\"TestPerApplication.jsp?Application=");
                         testLink.append(rs_teststatus.getString("t.application"));
                         testLink.append("\">");
                         testLink.append(rs_teststatus.getString("t.application"));
                         testLink.append("</a>");
-                        row.put(testLink.toString());
+                        row.put("Application",testLink.toString());
 //                        row.put(rs_teststatus.getString("t.application"));
-                        row.put(rs_teststatus.getString("TOTAL"));
+                        row.put("Total",rs_teststatus.getString("TOTAL"));
                         for (Invariant i : myInvariants) {
                             i.getSort();
-                            row.put(rs_teststatus.getString("Col" + String.valueOf(i.getSort())));
+                            row.put(i.getValue(), rs_teststatus.getString("Col" + String.valueOf(i.getSort()))==null?"":rs_teststatus.getString("Col" + String.valueOf(i.getSort())));
                         }
                         data.put(row);
                     }

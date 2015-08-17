@@ -642,10 +642,10 @@ function displayFooter(doc) {
     var date = new Date();
     var loadTime = window.performance.timing.domContentLoadedEventEnd - window.performance.timing.navigationStart;
 
-    footerString = footerString.replace("%VERSION%", projectInformation.projectName+projectInformation.projectVersion);
-    footerString = footerString.replace("%ENV%", projectInformation.environment);
-    footerString = footerString.replace("%DATE%", date.toDateString());
-    footerString = footerString.replace("%TIMING%", loadTime);
+    footerString = footerString.replace("%VERSION%", "<b>"+projectInformation.projectName+projectInformation.projectVersion+"</b>");
+    footerString = footerString.replace("%ENV%", "<b>"+projectInformation.environment+"</b>");
+    footerString = footerString.replace("%DATE%", "<b>"+date.toDateString()+"</b>");
+    footerString = footerString.replace("%TIMING%", "<b>"+loadTime+"</b>");
     footerBugString = footerBugString.replace("%LINK%", "https://github.com/vertigo17/Cerberus/issues/new?body=Cerberus%20Version%20:%20" + projectInformation.projectVersion );
     $("#footer").html(footerString + " - " +footerBugString);
 }
