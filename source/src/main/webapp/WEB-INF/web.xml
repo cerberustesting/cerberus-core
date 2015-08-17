@@ -410,10 +410,6 @@
         <servlet-class>org.cerberus.servlet.invariant.DeleteInvariant</servlet-class>
     </servlet>
     <servlet>
-        <servlet-name>GetProject</servlet-name>
-        <servlet-class>org.cerberus.servlet.project.GetProject</servlet-class>
-    </servlet>
-    <servlet>
         <servlet-name>ReadProject</servlet-name>
         <servlet-class>org.cerberus.servlet.project.ReadProject</servlet-class>
     </servlet>
@@ -1105,10 +1101,6 @@
         <url-pattern>/DeleteInvariant</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
-        <servlet-name>GetProject</servlet-name>
-        <url-pattern>/GetProject</url-pattern>
-    </servlet-mapping>
-    <servlet-mapping>
         <servlet-name>ReadProject</servlet-name>
         <url-pattern>/ReadProject</url-pattern>
     </servlet-mapping>
@@ -1662,7 +1654,6 @@ ie User management, parameter management, log viewer, database management.</desc
             <url-pattern>/IntegrationStatus.jsp</url-pattern>
             <url-pattern>/Notification.jsp</url-pattern>
             <url-pattern>/Project.jsp</url-pattern>
-            <url-pattern>/Project2.jsp</url-pattern>
             <url-pattern>/Robot.jsp</url-pattern>
             <url-pattern>/EnvironmentManagement.jsp</url-pattern>
         </web-resource-collection>
@@ -1675,7 +1666,6 @@ ie User management, parameter management, log viewer, database management.</desc
             <url-pattern>/GetEnvironmentAvailable</url-pattern>
             <url-pattern>/GetDeployTypeList</url-pattern>
             <url-pattern>/GetBuildRevisionInvariant</url-pattern>
-            <url-pattern>/GetProject</url-pattern>
             <url-pattern>/ReadProject</url-pattern>
             <url-pattern>/FindBuildContent</url-pattern>
             <url-pattern>/FindCountryEnvironmentDatabase</url-pattern>

@@ -46,6 +46,7 @@ function initProjectPage() {
 function displayPageLabel() {
     var doc = getDoc();
     
+    $("#pageTitle").html(doc.page_project.title.docLabel);
     $("#title").html(displayDocLink(doc.page_project.title));
     $("[name='createProjectField']").html(doc.page_project.button_create.docLabel);
     $("[name='confirmationField']").html(doc.page_project.button_delete.docLabel);
@@ -58,6 +59,7 @@ function displayPageLabel() {
     $("[name='activeField']").html(displayDocLink(doc.project.active));
     $("[name='codeField']").html(displayDocLink(doc.project.code));
     $("[name='descriptionField']").html(displayDocLink(doc.project.description));
+    displayInvariantList("PROJECTACTIVE", "Active");
     displayFooter(doc);
 }
 
@@ -88,6 +90,8 @@ function deleteProject(idProject) {
     clearResponseMessageMainPage();
     var doc = getDoc();
     var messageComplete = doc.page_global.deleteMessage.docLabel;
+    messageComplete = messageComplete.replace("%TABLE%", doc.project.idproject.docLabel);
+    messageComplete = messageComplete.replace("%ENTRY%", idProject);
     showModalConfirmation(deleteProjectHandlerClick, doc.page_project.button_delete.docLabel, messageComplete, idProject);
 }
 

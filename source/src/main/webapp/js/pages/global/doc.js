@@ -22,37 +22,37 @@
  * get language configuration for dataTable creation
  * @returns {JSONObject} 
  */
-function getDataTableLanguage(){
-  var doc = getDoc();
-  var docTable = doc.dataTable;
-  var res = {
-          "table": {
-        "sEmptyTable": docTable.sEmptyTable.docLabel,
-        "sInfo": docTable.sInfo.docLabel,
-        "sInfoEmpty": docTable.sInfoEmpty.docLabel,
-        "sInfoFiltered": docTable.sInfoFiltered.docLabel,
-        "sInfoPostFix": docTable.sInfoPostFix.docLabel,
-        "sInfoThousands": docTable.sInfoThousands.docLabel,
-        "sLengthMenu": docTable.sLengthMenu.docLabel,
-        "sLoadingRecords": docTable.sLoadingRecords.docLabel,
-        "sProcessing": docTable.sProcessing.docLabel,
-        "sSearch": docTable.sSearch.docLabel,
-        "sSearchPlaceholder": docTable.sSearchPlaceholder.docLabel,
-        "sZeroRecords": docTable.sZeroRecords.docLabel,
-        "oPaginate": {
-            "sFirst": docTable.sFirst.docLabel,
-            "sLast": docTable.sLast.docLabel,
-            "sNext": docTable.sNext.docLabel,
-            "sPrevious": docTable.sPrevious.docLabel 
+function getDataTableLanguage() {
+    var doc = getDoc();
+    var docTable = doc.dataTable;
+    var res = {
+        "table": {
+            "sEmptyTable": docTable.sEmptyTable.docLabel,
+            "sInfo": docTable.sInfo.docLabel,
+            "sInfoEmpty": docTable.sInfoEmpty.docLabel,
+            "sInfoFiltered": docTable.sInfoFiltered.docLabel,
+            "sInfoPostFix": docTable.sInfoPostFix.docLabel,
+            "sInfoThousands": docTable.sInfoThousands.docLabel,
+            "sLengthMenu": docTable.sLengthMenu.docLabel,
+            "sLoadingRecords": docTable.sLoadingRecords.docLabel,
+            "sProcessing": docTable.sProcessing.docLabel,
+            "sSearch": docTable.sSearch.docLabel,
+            "sSearchPlaceholder": docTable.sSearchPlaceholder.docLabel,
+            "sZeroRecords": docTable.sZeroRecords.docLabel,
+            "oPaginate": {
+                "sFirst": docTable.sFirst.docLabel,
+                "sLast": docTable.sLast.docLabel,
+                "sNext": docTable.sNext.docLabel,
+                "sPrevious": docTable.sPrevious.docLabel
+            },
+            "oAria": {
+                "sSortAscending": docTable.sSortAscending.docLabel,
+                "sSortDescending": docTable.sSortDescending.docLabel
+            }
         },
-        "oAria": {
-            "sSortAscending": docTable.sSortAscending.docLabel,
-            "sSortDescending": docTable.sSortDescending.docLabel
-        }
-    },
-    "colVis": {"buttonText": docTable.colVis.docLabel}
-  };
-  return res;
+        "colVis": {"buttonText": docTable.colVis.docLabel}
+    };
+    return res;
 };
 
 /**
@@ -76,10 +76,10 @@ function readDocFromDatabase(lang) {
  * @returns {JSONObject} Full documentation in defined language from sessionStorage
  */
 function getDoc() {
-    var user = getUser();
     var doc;
 
     if (sessionStorage.getItem("doc") === null) {
+        var user = getUser();
         readDocFromDatabase(user.language);
     }
     doc = sessionStorage.getItem("doc");

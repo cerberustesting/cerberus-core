@@ -21,10 +21,10 @@
 <!DOCTYPE html>
 <html>
     <head>
-        <title>Projects</title>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
         <%@ include file="include/dependenciesInclusions.html" %>
         <script type="text/javascript" src="js/pages/Project.js"></script>
+        <title id="pageTitle">Projects</title>
     </head>
     <body>
         <%@ include file="include/header.html" %>

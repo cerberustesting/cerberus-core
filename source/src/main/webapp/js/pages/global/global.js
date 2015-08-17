@@ -54,6 +54,20 @@ function getSubDataLabel(type) {
 }
 
 /*****INVARIANT LIST **********************************/
+/**
+ * Method that display a combo box in all the selectName tags with the value retrieved from the invariant list
+ * @param {String} idName value that filters the invariants that will be retrieved
+ * @param {String} selectName value name of the select tag in the html
+ * @returns {void}
+ */
+function displayInvariantList(idName, selectName) {
+    $.when($.getJSON("FindInvariantByID", "idName=" + idName)).then(function(data) {
+        console.log(data);
+       for (var option in data) {
+           $("[name='"+ selectName +"']").append($('<option></option>').text(data[option].value).val(data[option].value));
+       }
+    });
+}
 
 /**
  * Auxiliary method that retrieves a list containing the values that belong to the invariant that matches the provided idname.
@@ -408,7 +422,7 @@ function TableConfigurationsServerSide(divId, ajaxSource, ajaxProp, aoColumnsFun
     this.showColvis = true;
     this.scrollY = false;
     this.scrollCollapse = false;
-
+    this.lang = getDataTableLanguage();
 }
 
 function createDataTableWithPermissions(tableConfigurations, callbackfunction) {
@@ -416,7 +430,6 @@ function createDataTableWithPermissions(tableConfigurations, callbackfunction) {
     if (!tableConfigurations.showColvis) {
         domConf = 'l<"showInlineElement pull-left marginLeft5"f>rti<"marginTop5"p>';
     }
-    var lang = getDataTableLanguage();
 
     var configs = {};
     configs["dom"] = domConf;
@@ -433,9 +446,9 @@ function createDataTableWithPermissions(tableConfigurations, callbackfunction) {
     configs["scrollY"] = tableConfigurations.scrollY;
     configs["scrollCollapse"] = tableConfigurations.scrollCollapse;
     configs["stateSave"] = tableConfigurations.stateSave;
-    configs["language"] = lang.table;
+    configs["language"] = tableConfigurations.lang.table;
     configs["columns"] = tableConfigurations.aoColumnsFunction;
-    configs["colVis"] = lang.colVis;
+    configs["colVis"] = tableConfigurations.lang.colVis;
     configs["lengthChange"] = true;
 
 
@@ -490,8 +503,6 @@ function createDataTable(tableConfigurations) {
         domConf = 'l<"showInlineElement pull-left marginLeft5"f>rti<"marginTop5"p>';
     }
 
-    var lang = getDataTableLanguage();
-
     var configs = {};
     configs["dom"] = domConf;
     configs["serverSide"] = tableConfigurations.serverSide;
@@ -507,9 +518,9 @@ function createDataTable(tableConfigurations) {
     configs["scrollY"] = tableConfigurations.scrollY;
     configs["scrollCollapse"] = tableConfigurations.scrollCollapse;
     configs["stateSave"] = tableConfigurations.stateSave;
-    configs["language"] = lang.table;
+    configs["language"] = tableConfigurations.lang.table;
     configs["columns"] = tableConfigurations.aoColumnsFunction;
-    configs["colVis"] = lang.colVis;
+    configs["colVis"] = tableConfigurations.lang.colVis;
     configs["lengthChange"] = true;
 
 
