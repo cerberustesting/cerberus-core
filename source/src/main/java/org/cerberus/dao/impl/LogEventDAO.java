@@ -341,7 +341,7 @@ public class LogEventDAO implements ILogEventDAO {
         long logEventID = resultSet.getLong("logEventID") == 0 ? 0 : resultSet.getLong("logEventID");
         long userID = resultSet.getLong("userID") == 0 ? 0 : resultSet.getLong("userID");
         String login = resultSet.getString("login") == null ? "" : resultSet.getString("login");
-        Timestamp time = (Timestamp) (resultSet.getTimestamp("time") == null ? "" : resultSet.getTimestamp("time"));
+        Timestamp time = resultSet.getTimestamp("time");
         String page = resultSet.getString("page") == null ? "" : resultSet.getString("page");
         String action = resultSet.getString("action") == null ? "" : resultSet.getString("action");
         String log = resultSet.getString("log") == null ? "" : resultSet.getString("log");
