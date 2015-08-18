@@ -40,8 +40,7 @@ function initPage() {
     createDataTableWithPermissions(configurations, renderOptionsForProject);
     var oTable = $("#projectsTable").dataTable();
     oTable.fnSort([1, 'asc']);
-}
-;
+};
 
 function displayPageLabel() {
     var doc = getDoc();
@@ -86,13 +85,13 @@ function deleteEntryHandlerClick() {
     }).fail(handleErrorAjaxAfterTimeout);
 }
 
-function deleteEntry(idProject) {
+function deleteEntry(entry) {
     clearResponseMessageMainPage();
     var doc = getDoc();
     var messageComplete = doc.page_global.deleteMessage.docLabel;
     messageComplete = messageComplete.replace("%TABLE%", doc.project.idproject.docLabel);
-    messageComplete = messageComplete.replace("%ENTRY%", idProject);
-    showModalConfirmation(deleteEntryHandlerClick, doc.page_project.button_delete.docLabel, messageComplete, idProject);
+    messageComplete = messageComplete.replace("%ENTRY%", entry);
+    showModalConfirmation(deleteEntryHandlerClick, doc.page_project.button_delete.docLabel, messageComplete, entry);
 }
 
 function saveEntry(servletName, modalID, form) {
@@ -199,6 +198,8 @@ function renderOptionsForProject(data) {
 
 function aoColumnsFunc() {
     var doc = getDoc();
+    var docPage = doc.page_project;
+    var docObj = doc.project;
     var aoColumns = [
         {"data": "button",
             "sName": "Actions",
@@ -208,11 +209,11 @@ function aoColumnsFunc() {
             "mRender": function (data, type, obj) {
                 var editEntry = '<button id="editEntry" onclick="editEntry(\'' + obj["idProject"] + '\');"\n\
                                 class="editEntry btn btn-default btn-xs margin-right5" \n\
-                                name="editEntry" title="' + doc.page_project.button_edit.docLabel + '" type="button">\n\
+                                name="editEntry" title="' + docPage.button_edit.docLabel + '" type="button">\n\
                                 <span class="glyphicon glyphicon-pencil"></span></button>';
                 var deleteEntry = '<button id="deleteEntry" onclick="deleteEntry(\'' + obj["idProject"] + '\');" \n\
                                 class="deleteEntry btn btn-default btn-xs margin-right5" \n\
-                                name="deleteEntry" title="' + doc.page_project.button_delete.docLabel + '" type="button">\n\
+                                name="deleteEntry" title="' + docPage.button_delete.docLabel + '" type="button">\n\
                                 <span class="glyphicon glyphicon-trash"></span></button>';
 
                 return '<div class="center btn-group width150">' + editEntry + deleteEntry + '</div>';
@@ -220,19 +221,19 @@ function aoColumnsFunc() {
         },
         {"data": "idProject",
             "sName": "idProject",
-            "title": displayDocLink(doc.project.idproject)},
+            "title": displayDocLink(docObj.idproject)},
         {"data": "code",
             "sName": "VCCode",
-            "title": displayDocLink(doc.project.code)},
+            "title": displayDocLink(docObj.code)},
         {"data": "description",
             "sName": "description",
-            "title": displayDocLink(doc.project.description)},
+            "title": displayDocLink(docObj.description)},
         {"data": "active",
             "sName": "active",
-            "title": displayDocLink(doc.project.active)},
+            "title": displayDocLink(docObj.active)},
         {"data": "dateCreation",
             "sName": "dateCre",
-            "title": displayDocLink(doc.project.dateCreation)}
+            "title": displayDocLink(docObj.dateCreation)}
     ];
     return aoColumns;
 }
