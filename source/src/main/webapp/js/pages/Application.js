@@ -25,7 +25,6 @@ $.when($.getScript("js/pages/global/global.js")).then(function () {
 });
 
 function initApplicationPage() {
-    displayHeaderLabel();
     displayPageLabel();
     // handle the click for specific action buttons
     $("#addApplicationButton").click(saveNewApplicationHandler);
