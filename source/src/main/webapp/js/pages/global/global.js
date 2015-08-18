@@ -62,7 +62,6 @@ function getSubDataLabel(type) {
  */
 function displayInvariantList(idName, selectName) {
     $.when($.getJSON("FindInvariantByID", "idName=" + idName)).then(function(data) {
-        console.log(data);
        for (var option in data) {
            $("[name='"+ selectName +"']").append($('<option></option>').text(data[option].value).val(data[option].value));
        }
@@ -638,6 +637,17 @@ function setAutoCompleteServerSide(selector, source) {
     //sets the autocomplete in the element
     $(selector).autocomplete(configurations);
 
+}
+
+/**
+ * display global label
+ * @returns {void}
+ */
+function displayGlobalLabel(doc) {
+    $("[name='buttonAdd']").html(doc.page_global.buttonAdd.docLabel);
+    $("[name='buttonClose']").html(doc.page_global.buttonClose.docLabel);
+    $("[name='buttonConfirm']").html(doc.page_global.buttonConfirm.docLabel);
+    $("[name='buttonDismiss']").html(doc.page_global.buttonDismiss.docLabel);
 }
 
 /**
