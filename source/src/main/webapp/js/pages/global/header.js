@@ -18,9 +18,8 @@
  * along with Cerberus.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-function displayHeaderLabel() {
+function displayHeaderLabel(doc) {
     var user = getUser();
-    var doc = getDoc();
     displayMenuItem(doc);
     $("#headerUserName").html(user.login);
     var systems = getSystem();
@@ -30,8 +29,12 @@ function displayHeaderLabel() {
     var languages = getLanguageFromSessionStorage();
     for (var l in languages) {
         $("#MyLang").append($('<option></option>').text(languages[l].description).val(languages[l].value));
+        if (languages[l].value === "en") {
+            $("option[value=" + languages[l].value + "]").prepend($('<span class="flag gb"></span>'));
+        } else {
+            $("option[value=" + languages[l].value + "]").prepend($('<span class="flag ' + languages[l].value + '"></span>'));
+        }
     }
-
     $("#MyLang option[value=" + user.language + "]").attr("selected", "selected");
     $("#MySystem option[value=" + user.defaultSystem + "]").attr("selected", "selected");
 }

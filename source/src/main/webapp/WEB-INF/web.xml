@@ -262,8 +262,8 @@
         <servlet-class>org.cerberus.servlet.test.GetShortTests</servlet-class>
     </servlet>
     <servlet>
-        <servlet-name>GetLogEvent</servlet-name>
-        <servlet-class>org.cerberus.servlet.log.GetLogEvent</servlet-class>
+        <servlet-name>ReadLogEvent</servlet-name>
+        <servlet-class>org.cerberus.servlet.log.ReadLogEvent</servlet-class>
     </servlet>
     <servlet>
         <servlet-name>GetDeployTypeList</servlet-name>
@@ -969,8 +969,8 @@
         <url-pattern>/GetCountryForTestCase</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
-        <servlet-name>GetLogEvent</servlet-name>
-        <url-pattern>/GetLogEvent</url-pattern>
+        <servlet-name>ReadLogEvent</servlet-name>
+        <url-pattern>/ReadLogEvent</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
         <servlet-name>UpdateBuildRevisionParameter</servlet-name>
@@ -1668,7 +1668,6 @@ ie User management, parameter management, log viewer, database management.</desc
             <web-resource-name>jsp</web-resource-name>
             <description>jsp</description>
             <url-pattern>/Application.jsp</url-pattern>
-            <url-pattern>/Application1.jsp</url-pattern>
             <url-pattern>/BuildContent.jsp</url-pattern>
             <url-pattern>/BuildContent_old.jsp</url-pattern>
             <url-pattern>/BuildRevDefinition.jsp</url-pattern>
@@ -1680,6 +1679,7 @@ ie User management, parameter management, log viewer, database management.</desc
             <url-pattern>/Project.jsp</url-pattern>
             <url-pattern>/Robot.jsp</url-pattern>
             <url-pattern>/EnvironmentManagement.jsp</url-pattern>
+            <url-pattern>/Application1.jsp</url-pattern>
         </web-resource-collection>
         <web-resource-collection>
             <web-resource-name>servlet</web-resource-name>
@@ -1789,7 +1789,7 @@ ie User management, parameter management, log viewer, database management.</desc
             <url-pattern>/AddUser</url-pattern>
             <url-pattern>/UpdateUser</url-pattern>
             <url-pattern>/DeleteUser</url-pattern>
-            <url-pattern>/GetLogEvent</url-pattern>
+            <url-pattern>/ReadLogEvent</url-pattern>
             <url-pattern>/FindAllInvariantPublic</url-pattern>
             <url-pattern>/FindAllInvariantPrivate</url-pattern>
             <url-pattern>/CreateInvariant</url-pattern>

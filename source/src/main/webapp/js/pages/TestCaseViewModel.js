@@ -22,7 +22,7 @@
 * Loads the common functions from a global javascript file
 * @param {type} param1 - filename
 */
-$.when($.getScript("js/pages/global.js")).then(function(){
+$.when($.getScript("js/pages/global/global.js")).then(function(){
 
 /**
  * Document ready methods
