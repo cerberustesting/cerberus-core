@@ -34,7 +34,7 @@ public interface ILogEventService {
 
     public List<LogEvent> findAllLogEvent() throws CerberusException;
 
-    public AnswerList findAllLogEvent(int start, int amount, String colName, String dir, String searchTerm) throws CerberusException;
+    public AnswerList findAllLogEvent(int start, int amount, String colName, String dir, String searchTerm, String individualSearch) throws CerberusException;
 
     public Integer getNumberOfLogEvent(String searchTerm) throws CerberusException;
 

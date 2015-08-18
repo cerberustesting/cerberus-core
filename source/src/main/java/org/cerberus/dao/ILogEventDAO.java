@@ -39,7 +39,7 @@ public interface ILogEventDAO {
      * @return a list of all LogEvent.
      * @throws CerberusException in case no LogEvent can be found.
      */
-    AnswerList findAllLogEvent(int start, int amount, String colName, String dir, String searchTerm) throws CerberusException;
+    AnswerList findAllLogEvent(int start, int amount, String colName, String dir, String searchTerm, String individualSearch) throws CerberusException;
 
     /**
      *

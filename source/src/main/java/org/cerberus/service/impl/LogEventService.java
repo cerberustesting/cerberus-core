@@ -55,8 +55,8 @@ public class LogEventService implements ILogEventService {
     }
 
     @Override
-    public AnswerList findAllLogEvent(int start, int amount, String colName, String dir, String searchTerm) throws CerberusException {
-        return logEventDAO.findAllLogEvent(start, amount, colName, dir, searchTerm);
+    public AnswerList findAllLogEvent(int start, int amount, String colName, String dir, String searchTerm, String individualSearch) throws CerberusException {
+        return logEventDAO.findAllLogEvent(start, amount, colName, dir, searchTerm, individualSearch);
     }
 
     @Override

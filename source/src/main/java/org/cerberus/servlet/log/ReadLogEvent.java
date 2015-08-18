@@ -117,7 +117,7 @@ public class ReadLogEvent extends HttpServlet {
             Integer iTotalDisplayRecords = 0;
 
             try {
-                AnswerList resp = logEventService.findAllLogEvent(start, amount, colName, dir, searchTerm);
+                AnswerList resp = logEventService.findAllLogEvent(start, amount, colName, dir, searchTerm, "");
                 if (resp.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
                     for (LogEvent myLogEvent : (List<LogEvent>) resp.getDataList()) {
                         Gson gson = new Gson();
