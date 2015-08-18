@@ -25,6 +25,7 @@ import org.cerberus.dao.IApplicationDAO;
 import org.cerberus.entity.Application;
 import org.cerberus.exception.CerberusException;
 import org.cerberus.service.IApplicationService;
+import org.cerberus.util.answer.Answer;
 import org.cerberus.util.answer.AnswerItem;
 import org.cerberus.util.answer.AnswerList;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -57,17 +58,17 @@ public class ApplicationService implements IApplicationService {
 
     @Override
     public AnswerList findApplicationListByCriteria(int startPosition, int length, String columnName, String sort, String searchParameter, String string) {
-        return ApplicationDAO.findApplicationListByCriteria(startPosition, length, columnName, sort, searchParameter, string);
+        return ApplicationDAO.findApplicationListBySystemByCriteria(null, startPosition, length, columnName, sort, searchParameter, string);
+    }
+    
+    @Override
+    public AnswerList findApplicationListBySystemByCriteria(String system, int startPosition, int length, String columnName, String sort, String searchParameter, String string) {
+        return ApplicationDAO.findApplicationListBySystemByCriteria(system, startPosition, length, columnName, sort, searchParameter, string);
     }
     
     @Override
     public AnswerItem findApplicationByString(String id) {
         return ApplicationDAO.findApplicationByString(id);
-    }
-
-    @Override
-    public boolean updateApplication(Application application) throws CerberusException {
-        return ApplicationDAO.updateApplication(application);
     }
 
     @Override
@@ -78,6 +79,26 @@ public class ApplicationService implements IApplicationService {
     @Override
     public void deleteApplication(Application application) throws CerberusException {
         ApplicationDAO.deleteApplication(application);
+    }
+
+    @Override
+    public boolean updateApplication(Application application) throws CerberusException {
+        return ApplicationDAO.updateApplication(application);
+    }
+
+    @Override
+    public Answer createApplication1(Application application)  {
+         return ApplicationDAO.createApplication1(application);
+    }
+
+    @Override
+    public Answer deleteApplication1(Application application)  {
+        return ApplicationDAO.deleteApplication1(application);
+    }
+
+    @Override
+    public Answer updateApplication1(Application application)  {
+        return ApplicationDAO.updateApplication1(application);
     }
 
     @Override

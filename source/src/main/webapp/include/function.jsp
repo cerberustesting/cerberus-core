@@ -17,6 +17,8 @@
   ~ You should have received a copy of the GNU General Public License
   ~ along with Cerberus.  If not, see <http://www.gnu.org/licenses/>.
 --%>
+<%@page import="org.cerberus.entity.MessageEventEnum"%>
+<%@page import="org.cerberus.util.answer.AnswerList"%>
 <%@page import="org.cerberus.entity.SessionCounter"%>
 <%@page import="org.cerberus.entity.Project"%>
 <%@page import="org.cerberus.service.IProjectService"%>
@@ -171,14 +173,23 @@
                 ret += " onchange=\"" + HTMLOnChange + "\"";
             }
             ret += ">";
-            for (DeployType deployType : deployTypeService.findAllDeployType()) {
-                ret += "<option value=\"" + deployType.getDeploytype() + "\"";
-                if ((value != null) && (value.compareTo(deployType.getDeploytype()) == 0)) {
-                    ret += " SELECTED ";
+            
+            
+            AnswerList resp = deployTypeService.findAllDeployType();
+
+            if (resp.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {//the service was able to perform the query, then we should get all values
+                for (DeployType deployType : (List<DeployType>) resp.getDataList()) {
+                    ret += "<option value=\"" + deployType.getDeploytype() + "\"";
+                    if ((value != null) && (value.compareTo(deployType.getDeploytype()) == 0)) {
+                        ret += " SELECTED ";
+                    }
+                    ret += ">" + deployType.getDeploytype();
+                    ret += "</option>";
                 }
-                ret += ">" + deployType.getDeploytype();
-                ret += "</option>";
-            }
+                
+                
+            } 
+            
             ret += "</select>";
             return ret;
 

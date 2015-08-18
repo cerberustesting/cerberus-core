@@ -25,9 +25,10 @@ import org.cerberus.dao.IDeployTypeDAO;
 import org.cerberus.entity.DeployType;
 import org.cerberus.exception.CerberusException;
 import org.cerberus.service.IDeployTypeService;
+import org.cerberus.util.answer.AnswerItem;
+import org.cerberus.util.answer.AnswerList;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
 
 @Service
 public class DeployTypeService implements IDeployTypeService {
@@ -36,13 +37,18 @@ public class DeployTypeService implements IDeployTypeService {
     private IDeployTypeDAO deployTypeDAO;
 
     @Override
-    public DeployType findDeployTypeByKey(String deploytype) throws CerberusException {
-        return deployTypeDAO.findDeployTypeByKey(deploytype);
+    public AnswerItem findDeployTypeByKey(String deployType) {
+        return deployTypeDAO.findDeployTypeByKey(deployType);
     }
 
     @Override
-    public List<DeployType> findAllDeployType() throws CerberusException {
+    public AnswerList findAllDeployType() {
         return deployTypeDAO.findAllDeployType();
     }
-    
+
+    @Override
+    public AnswerList findDeployTypeByCriteria(int startPosition, int length, String columnName, String sort, String searchParameter, String string) {
+        return deployTypeDAO.findDeployTypeByCriteria(startPosition, length, columnName, sort, searchParameter, string);
+    }
+
 }

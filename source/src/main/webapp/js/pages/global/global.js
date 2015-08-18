@@ -64,7 +64,22 @@ function displayInvariantList(idName, selectName) {
     $.when($.getJSON("FindInvariantByID", "idName=" + idName)).then(function(data) {
         console.log(data);
        for (var option in data) {
-           $("[name='"+ selectName +"']").append($('<option></option>').text(data[option].value).val(data[option].value));
+           $("[name='"+ selectName +"']").append($('<option></option>').text(data[option].description).val(data[option].value));
+       }
+    });
+}
+
+/*****DEPLOYTYPE LIST **********************************/
+/**
+ * Method that display a combo box in all the selectName tags with the value retrieved from the DeployType list
+ * @param {String} selectName value name of the select tag in the html
+ * @returns {void}
+ */
+function displayDeployTypeList(selectName) {
+    $.when($.getJSON("ReadDeployType", "" )).then(function(data) {
+        console.log(data);
+       for (var option in data.contentTable) {
+           $("[name='"+ selectName +"']").append($('<option></option>').text(data.contentTable[option].description).val(data.contentTable[option].deploytype));
        }
     });
 }

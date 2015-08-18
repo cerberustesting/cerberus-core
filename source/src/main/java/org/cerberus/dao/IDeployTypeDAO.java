@@ -20,14 +20,18 @@ package org.cerberus.dao;
 import java.util.List;
 
 import org.cerberus.entity.DeployType;
-import org.cerberus.exception.CerberusException;
+import org.cerberus.util.answer.AnswerItem;
+import org.cerberus.util.answer.AnswerList;
 
 /**
  * @author bdumont
  */
 public interface IDeployTypeDAO {
 
-    DeployType findDeployTypeByKey(String deploytype) throws CerberusException;
+    public AnswerItem findDeployTypeByKey(String deployType);
 
-    List<DeployType> findAllDeployType();
+    public AnswerList findAllDeployType();
+
+    public AnswerList findDeployTypeByCriteria(int startPosition, int length, String columnName, String sort, String searchParameter, String string);
+
 }

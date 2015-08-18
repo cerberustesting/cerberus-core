@@ -29,14 +29,14 @@ function initApplicationPage() {
     displayPageLabel();
     // handle the click for specific action buttons
     $("#addApplicationButton").click(saveNewApplicationHandler);
-    $("#editAplicationButton").click(saveUpdateApplicationHandler);
+    $("#editApplicationButton").click(saveUpdateApplicationHandler);
 
     //clear the modals fields when closed
     $('#addApplicationModal').on('hidden.bs.modal', addApplicationModalCloseHandler);
     $('#editApplicationModal').on('hidden.bs.modal', editApplicationModalCloseHandler);
 
     //configure and create the dataTable
-    var configurations = new TableConfigurationsServerSide("applicationsTable", "ReadApplication", "contentTable", aoColumnsFunc());
+    var configurations = new TableConfigurationsServerSide("applicationsTable", "ReadApplication?action=2&system=" + getUser().defaultSystem, "contentTable", aoColumnsFunc());
 
     createDataTableWithPermissions(configurations, renderOptionsForApplication);
     var oTable = $("#applicationsTable").dataTable();
@@ -46,6 +46,7 @@ function initApplicationPage() {
 function displayPageLabel() {
     var doc = getDoc();
     
+    $("#pageTitle").html(doc.page_application.title.docLabel);
     $("#title").html(displayDocLink(doc.page_application.title));
     $("[name='createApplicationField']").html(doc.page_application.button_create.docLabel);
     $("[name='confirmationField']").html(doc.page_application.button_delete.docLabel);
@@ -65,12 +66,15 @@ function displayPageLabel() {
     $("[name='bugtrackernewurlField']").html(displayDocLink(doc.application.bugtrackernewurl));
     $("[name='deploytypeField']").html(displayDocLink(doc.application.deploytype));
     $("[name='mavengroupidField']").html(displayDocLink(doc.application.mavengroupid));
+    displayInvariantList("SYSTEM", "system");
+    displayInvariantList("APPLITYPE", "type");
+    displayDeployTypeList("deploytype");
     displayFooter(doc);
 }
 
 function deleteApplicationHandlerClick() {
     var idApplication = $('#confirmationModal').find('#hiddenField').prop("value");
-    var jqxhr = $.post("DeleteApplication", {id: idApplication}, "json");
+    var jqxhr = $.post("DeleteApplication1", {application: idApplication}, "json");
     $.when(jqxhr).then(function (data) {
         var messageType = getAlertType(data.messageType);
         if (messageType === "success") {
@@ -91,10 +95,12 @@ function deleteApplicationHandlerClick() {
     }).fail(handleErrorAjaxAfterTimeout);
 }
 
-function deleteProject(idApplication) {
+function deleteApplication(idApplication) {
     clearResponseMessageMainPage();
     var doc = getDoc();
     var messageComplete = doc.page_global.deleteMessage.docLabel;
+    messageComplete = messageComplete.replace("%TABLE%", doc.application.Application.docLabel);
+    messageComplete = messageComplete.replace("%ENTRY%", idApplication);
     showModalConfirmation(deleteApplicationHandlerClick, doc.page_application.button_delete.docLabel, messageComplete, idApplication);
 }
 
@@ -112,13 +118,12 @@ function saveNewApplicationHandler() {
         nameElement.parents("div.form-group").removeClass("has-error");
     }
 
-
     // verif if all mendatory fields are not empty
     if (nameElementEmpty)
         return;
 
     showLoaderInModal('#addApplicationModal');
-    var jqxhr = $.post("CreateApplication", formAdd.serialize());
+    var jqxhr = $.post("CreateApplication1", formAdd.serialize());
     $.when(jqxhr).then(function (data) {
         hideLoaderInModal('#addApplicationModal');
         console.log(data.messageType);
@@ -138,7 +143,7 @@ function saveUpdateApplicationHandler() {
     var formEdit = $('#editApplicationModal #editApplicationModalForm');
     showLoaderInModal('#editApplicationModal');
 
-    var jqxhr = $.post("UpdateApplication", formEdit.serialize(), "json");
+    var jqxhr = $.post("UpdateApplication1", formEdit.serialize(), "json");
     $.when(jqxhr).then(function (data) {
         // unblock when remote call returns 
         hideLoaderInModal('#editApplicationModal');
@@ -174,6 +179,10 @@ function editApplicationModalCloseHandler() {
 
 function CreateApplicationClick() {
     clearResponseMessageMainPage();
+    // When creating a new application, System takes the default value of the 
+    // system already selected in header.
+    var formAdd = $('#addApplicationModal');
+    formAdd.find("#system").prop("value", getUser().defaultSystem);
     $('#addApplicationModal').modal('show');
 }
 
@@ -196,6 +205,7 @@ function editApplication(id) {
         formEdit.find("#bugtrackernewurl").prop("value", obj["bugTrackerNewUrl"]);
         formEdit.find("#deploytype").prop("value", obj["deploytype"]);
         formEdit.find("#mavengroupid").prop("value", obj["mavengroupid"]);
+        
         formEdit.modal('show');
     });
 }

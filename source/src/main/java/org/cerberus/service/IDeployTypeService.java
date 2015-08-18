@@ -23,14 +23,20 @@ import java.util.List;
 
 import org.cerberus.entity.DeployType;
 import org.cerberus.exception.CerberusException;
+import org.cerberus.util.answer.AnswerItem;
+import org.cerberus.util.answer.AnswerList;
 
 /**
  *
- * @author bcivel
+ * @author bdumont
  */
 public interface IDeployTypeService {
 
-    DeployType findDeployTypeByKey(String deploytype) throws CerberusException;
+    public AnswerItem findDeployTypeByKey(String deploytype);
+
+    public AnswerList findAllDeployType();
     
-    List<DeployType> findAllDeployType() throws CerberusException;
+    public AnswerList findDeployTypeByCriteria(int startPosition, int length, String columnName, String sort, String searchParameter, String string);
+    
+        
 }

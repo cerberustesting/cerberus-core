@@ -23,6 +23,7 @@ import java.util.List;
 
 import org.cerberus.entity.Application;
 import org.cerberus.exception.CerberusException;
+import org.cerberus.util.answer.Answer;
 import org.cerberus.util.answer.AnswerItem;
 import org.cerberus.util.answer.AnswerList;
 
@@ -65,16 +66,13 @@ public interface IApplicationDAO {
      */
     List<Application> findApplicationBySystem(String system) throws CerberusException;
 
-    public AnswerList findApplicationListByCriteria(int startPosition, int length, String columnName, String sort, String searchParameter, String string);
-    
+    public AnswerList findApplicationListBySystemByCriteria(String system, int startPosition, int length, String columnName, String sort, String searchParameter, String string);
+
     public AnswerItem findApplicationByString(String application);
-    
-    /**
-     *
-     * @return @throws CerberusException
-     * @since 0.9.1
-     */
-    List<String> findDistinctSystem();
+
+    public void createApplication(Application application) throws CerberusException;
+
+    public void deleteApplication(Application application) throws CerberusException;
 
     /**
      * Updates the information based on the object application
@@ -86,10 +84,19 @@ public interface IApplicationDAO {
      * @since 0.9.0
      */
     boolean updateApplication(Application application) throws CerberusException;
-    
-    public void createApplication(Application application) throws CerberusException;
 
-    public void deleteApplication(Application application) throws CerberusException;
+    public Answer createApplication1(Application application);
+
+    public Answer deleteApplication1(Application application);
+
+    public Answer updateApplication1(Application application);
+
+    /**
+     *
+     * @return @throws CerberusException
+     * @since 0.9.1
+     */
+    List<String> findDistinctSystem();
 
     /**
      * Uses data of ResultSet to create object {@link Application}

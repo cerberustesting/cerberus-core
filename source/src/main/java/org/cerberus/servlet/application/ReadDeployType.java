@@ -29,13 +29,13 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import org.cerberus.entity.Application;
+import org.cerberus.entity.DeployType;
 
 import org.cerberus.entity.MessageEvent;
 import org.cerberus.entity.MessageEventEnum;
 import org.cerberus.exception.CerberusException;
-import org.cerberus.service.IApplicationService;
-import org.cerberus.service.impl.ApplicationService;
+import org.cerberus.service.IDeployTypeService;
+import org.cerberus.service.impl.DeployTypeService;
 import org.cerberus.util.ParameterParserUtil;
 import org.cerberus.util.answer.AnswerItem;
 import org.cerberus.util.answer.AnswerList;
@@ -51,10 +51,10 @@ import org.springframework.web.context.support.WebApplicationContextUtils;
  *
  * @author vertigo
  */
-@WebServlet(name = "ReadApplication", urlPatterns = {"/ReadApplication"})
-public class ReadApplication extends HttpServlet {
+@WebServlet(name = "ReadDeployType", urlPatterns = {"/ReadDeployType"})
+public class ReadDeployType extends HttpServlet {
 
-    private IApplicationService applicationService;
+    private IDeployTypeService deployTypeService;
 
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
@@ -76,20 +76,16 @@ public class ReadApplication extends HttpServlet {
         try {
             JSONObject jsonResponse = new JSONObject();
             if (request.getParameter("action") == null) {
-                answer = findApplicationList(null, appContext, request, response);
+//                answer = findApplicationList(appContext, request, response);
+                answer = findDeployTypeList(appContext, request, response);
                 jsonResponse = (JSONObject) answer.getItem();
             } else {
                 int actionParameter = Integer.parseInt(request.getParameter("action"));
                 if (actionParameter == 1) {
-                    String application = policy.sanitize(request.getParameter("application"));
-                    answer = findApplicationByKey(appContext, application);
-                    jsonResponse = (JSONObject) answer.getItem();
-                } else if (actionParameter == 2) {
-                    String system = policy.sanitize(request.getParameter("system"));
-                    answer = findApplicationList(system, appContext, request, response);
+                    String deployType = policy.sanitize(request.getParameter("deployType"));
+                    answer = findDeployTypeByID(appContext, deployType);
                     jsonResponse = (JSONObject) answer.getItem();
                 }
-
             }
 
             jsonResponse.put("messageType", answer.getResultMessage().getMessage().getCodeString());
@@ -99,7 +95,7 @@ public class ReadApplication extends HttpServlet {
             response.setContentType("application/json");
             response.getWriter().print(jsonResponse.toString());
         } catch (JSONException e) {
-            org.apache.log4j.Logger.getLogger(ReadApplication.class.getName()).log(org.apache.log4j.Level.ERROR, null, e);
+            org.apache.log4j.Logger.getLogger(ReadDeployType.class.getName()).log(org.apache.log4j.Level.ERROR, null, e);
             //returns a default error message with the json format that is able to be parsed by the client-side
             response.setContentType("application/json");
             MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_UNEXPECTED_ERROR);
@@ -128,7 +124,7 @@ public class ReadApplication extends HttpServlet {
         try {
             processRequest(request, response);
         } catch (CerberusException ex) {
-            Logger.getLogger(ReadApplication.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            Logger.getLogger(ReadDeployType.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         }
     }
 
@@ -146,7 +142,7 @@ public class ReadApplication extends HttpServlet {
         try {
             processRequest(request, response);
         } catch (CerberusException ex) {
-            Logger.getLogger(ReadApplication.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            Logger.getLogger(ReadDeployType.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         }
     }
 
@@ -160,11 +156,11 @@ public class ReadApplication extends HttpServlet {
         return "Short description";
     }// </editor-fold>
 
-    private AnswerItem findApplicationList(String system, ApplicationContext appContext, HttpServletRequest request, HttpServletResponse response) throws JSONException {
+    private AnswerItem findDeployTypeList(ApplicationContext appContext, HttpServletRequest request, HttpServletResponse response) throws JSONException {
 
         AnswerItem item = new AnswerItem();
         JSONObject jsonResponse = new JSONObject();
-        applicationService = appContext.getBean(ApplicationService.class);
+        deployTypeService = appContext.getBean(DeployTypeService.class);
 
         int startPosition = Integer.valueOf(ParameterParserUtil.parseStringParam(request.getParameter("iDisplayStart"), "0"));
         int length = Integer.valueOf(ParameterParserUtil.parseStringParam(request.getParameter("iDisplayLength"), "100000"));
@@ -172,17 +168,17 @@ public class ReadApplication extends HttpServlet {
 
         String searchParameter = ParameterParserUtil.parseStringParam(request.getParameter("sSearch"), "");
         int columnToSortParameter = Integer.parseInt(ParameterParserUtil.parseStringParam(request.getParameter("iSortCol_0"), "0"));
-        String sColumns = ParameterParserUtil.parseStringParam(request.getParameter("sColumns"), "Application,Description,sort,type,system,subsystem,svnurl,bugtrackerurl,bugtrackernewurl,deploytype,mavengroupid");
+        String sColumns = ParameterParserUtil.parseStringParam(request.getParameter("sColumns"), "deploytype,description");
         String columnToSort[] = sColumns.split(",");
         String columnName = columnToSort[columnToSortParameter];
         String sort = ParameterParserUtil.parseStringParam(request.getParameter("sSortDir_0"), "asc");
-        AnswerList resp = applicationService.findApplicationListBySystemByCriteria(system, startPosition, length, columnName, sort, searchParameter, "");
+        AnswerList resp = deployTypeService.findDeployTypeByCriteria(startPosition, length, columnName, sort, searchParameter, "");
 
         JSONArray jsonArray = new JSONArray();
         boolean userHasPermissions = request.isUserInRole("IntegratorRO");
-        if (resp.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {//the service was able to perform the query, then we should get all values
-            for (Application application : (List<Application>) resp.getDataList()) {
-                jsonArray.put(convertApplicationToJSONObject(application));
+        if (resp.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {  //the service was able to perform the query, then we should get all values
+            for (DeployType deploytype : (List<DeployType>) resp.getDataList()) {
+                jsonArray.put(convertDeployTypeToJSONObject(deploytype));
             }
         }
 
@@ -196,26 +192,26 @@ public class ReadApplication extends HttpServlet {
         return item;
     }
 
-    private JSONObject convertApplicationToJSONObject(Application application) throws JSONException {
+    private JSONObject convertDeployTypeToJSONObject(DeployType deployType) throws JSONException {
 
         Gson gson = new Gson();
-        JSONObject result = new JSONObject(gson.toJson(application));
+        JSONObject result = new JSONObject(gson.toJson(deployType));
         return result;
     }
 
-    private AnswerItem findApplicationByKey(ApplicationContext appContext, String id) throws JSONException, CerberusException {
+    private AnswerItem findDeployTypeByID(ApplicationContext appContext, String id) throws JSONException, CerberusException {
         AnswerItem item = new AnswerItem();
         JSONObject object = new JSONObject();
 
-        IApplicationService libService = appContext.getBean(IApplicationService.class);
+        IDeployTypeService libService = appContext.getBean(IDeployTypeService.class);
 
-        //finds the project     
-        AnswerItem answer = libService.findApplicationByString(id);
+        //finds the project
+        AnswerItem answer = libService.findDeployTypeByKey(id);
 
         if (answer.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
             //if the service returns an OK message then we can get the item and convert it to JSONformat
-            Application lib = (Application) answer.getItem();
-            JSONObject response = convertApplicationToJSONObject(lib);
+            DeployType lib = (DeployType) answer.getItem();
+            JSONObject response = convertDeployTypeToJSONObject(lib);
             object.put("contentTable", response);
         }
 
@@ -224,5 +220,4 @@ public class ReadApplication extends HttpServlet {
 
         return item;
     }
-
 }

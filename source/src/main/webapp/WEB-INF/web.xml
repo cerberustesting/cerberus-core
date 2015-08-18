@@ -282,6 +282,10 @@
         <servlet-class>org.cerberus.servlet.application.UpdateApplication</servlet-class>
     </servlet>
     <servlet>
+        <servlet-name>UpdateApplication1</servlet-name>
+        <servlet-class>org.cerberus.servlet.application.UpdateApplication1</servlet-class>
+    </servlet>
+    <servlet>
         <servlet-name>NewBuildRev</servlet-name>
         <servlet-class>org.cerberus.servlet.environment.NewBuildRev</servlet-class>
     </servlet>
@@ -432,6 +436,14 @@
     <servlet>
         <servlet-name>DeleteApplication</servlet-name>
         <servlet-class>org.cerberus.servlet.application.DeleteApplication</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>CreateApplication1</servlet-name>
+        <servlet-class>org.cerberus.servlet.application.CreateApplication1</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>DeleteApplication1</servlet-name>
+        <servlet-class>org.cerberus.servlet.application.DeleteApplication1</servlet-class>
     </servlet>
     <servlet>
         <servlet-name>UpdateBuildRevisionInvariant</servlet-name>
@@ -973,6 +985,10 @@
         <url-pattern>/UpdateApplication</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
+        <servlet-name>UpdateApplication1</servlet-name>
+        <url-pattern>/UpdateApplication1</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
         <servlet-name>NewBuildRev</servlet-name>
         <url-pattern>/NewBuildRev</url-pattern>
     </servlet-mapping>
@@ -1123,6 +1139,14 @@
     <servlet-mapping>
         <servlet-name>DeleteApplication</servlet-name>
         <url-pattern>/DeleteApplication</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>CreateApplication1</servlet-name>
+        <url-pattern>/CreateApplication1</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>DeleteApplication1</servlet-name>
+        <url-pattern>/DeleteApplication1</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
         <servlet-name>UpdateBuildRevisionInvariant</servlet-name>
@@ -1684,6 +1708,8 @@ ie User management, parameter management, log viewer, database management.</desc
             <description>servlet</description>
             <url-pattern>/CreateApplication</url-pattern>
             <url-pattern>/UpdateApplication</url-pattern>
+            <url-pattern>/CreateApplication1</url-pattern>
+            <url-pattern>/UpdateApplication1</url-pattern>
             <url-pattern>/UpdateBuildRevisionParameter</url-pattern>
             <url-pattern>/UpdateCountryEnv</url-pattern>
             <url-pattern>/CreateProject</url-pattern>
@@ -1770,6 +1796,7 @@ ie User management, parameter management, log viewer, database management.</desc
             <url-pattern>/UpdateInvariant</url-pattern>
             <url-pattern>/DeleteInvariant</url-pattern>
             <url-pattern>/DeleteApplication</url-pattern>
+            <url-pattern>/DeleteApplication1</url-pattern>
             <url-pattern>/ExecutionThreadMonitoring</url-pattern>
         </web-resource-collection>
         <auth-constraint>

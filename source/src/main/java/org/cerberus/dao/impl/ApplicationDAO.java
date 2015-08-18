@@ -37,6 +37,8 @@ import org.cerberus.factory.IFactoryApplication;
 import org.cerberus.factory.impl.FactoryApplication;
 import org.cerberus.log.MyLogger;
 import org.cerberus.util.ParameterParserUtil;
+import org.cerberus.util.StringUtil;
+import org.cerberus.util.answer.Answer;
 import org.cerberus.util.answer.AnswerItem;
 import org.cerberus.util.answer.AnswerList;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -65,6 +67,8 @@ public class ApplicationDAO implements IApplicationDAO {
      */
     @Autowired
     private IFactoryApplication factoryApplication;
+
+    private final String SQL_DUPLICATED_CODE = "23000";
 
     /**
      * Finds the Application by the name. </p> Access to database to return the
@@ -97,17 +101,17 @@ public class ApplicationDAO implements IApplicationDAO {
                         throw new CerberusException(new MessageGeneral(MessageGeneralEnum.NO_DATA_FOUND));
                     }
                 } catch (SQLException exception) {
-                    MyLogger.log(ApplicationDAO.class.getName(), Level.ERROR, "Unable to execute query : "+exception.toString());
+                    MyLogger.log(ApplicationDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
                 } finally {
                     resultSet.close();
                 }
             } catch (SQLException exception) {
-                MyLogger.log(ApplicationDAO.class.getName(), Level.ERROR, "Unable to execute query : "+exception.toString());
+                MyLogger.log(ApplicationDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
             } finally {
                 preStat.close();
             }
         } catch (SQLException exception) {
-            MyLogger.log(ApplicationDAO.class.getName(), Level.ERROR, "Unable to execute query : "+exception.toString());
+            MyLogger.log(ApplicationDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
         } finally {
             try {
                 if (connection != null) {
@@ -148,17 +152,17 @@ public class ApplicationDAO implements IApplicationDAO {
                         list.add(app);
                     }
                 } catch (SQLException exception) {
-                    MyLogger.log(ApplicationDAO.class.getName(), Level.ERROR, "Unable to execute query : "+exception.toString());
+                    MyLogger.log(ApplicationDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
                 } finally {
                     resultSet.close();
                 }
             } catch (SQLException exception) {
-                MyLogger.log(ApplicationDAO.class.getName(), Level.ERROR, "Unable to execute query : "+exception.toString());
+                MyLogger.log(ApplicationDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
             } finally {
                 preStat.close();
             }
         } catch (SQLException exception) {
-            MyLogger.log(ApplicationDAO.class.getName(), Level.ERROR, "Unable to execute query : "+exception.toString());
+            MyLogger.log(ApplicationDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
         } finally {
             try {
                 if (connection != null) {
@@ -202,17 +206,17 @@ public class ApplicationDAO implements IApplicationDAO {
                         list.add(app);
                     }
                 } catch (SQLException exception) {
-                    MyLogger.log(ApplicationDAO.class.getName(), Level.ERROR, "Unable to execute query : "+exception.toString());
+                    MyLogger.log(ApplicationDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
                 } finally {
                     resultSet.close();
                 }
             } catch (SQLException exception) {
-                MyLogger.log(ApplicationDAO.class.getName(), Level.ERROR, "Unable to execute query : "+exception.toString());
+                MyLogger.log(ApplicationDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
             } finally {
                 preStat.close();
             }
         } catch (SQLException exception) {
-            MyLogger.log(ApplicationDAO.class.getName(), Level.ERROR, "Unable to execute query : "+exception.toString());
+            MyLogger.log(ApplicationDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
         } finally {
             try {
                 if (connection != null) {
@@ -225,13 +229,11 @@ public class ApplicationDAO implements IApplicationDAO {
         return list;
     }
 
-    
     @Override
-    public AnswerList findApplicationListByCriteria(int start, int amount, String column, String dir, String searchTerm, String individualSearch) {
+    public AnswerList findApplicationListBySystemByCriteria(String system, int start, int amount, String column, String dir, String searchTerm, String individualSearch) {
         AnswerList response = new AnswerList();
         MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
         List<Application> applicationList = new ArrayList<Application>();
-        StringBuilder gSearch = new StringBuilder();
         StringBuilder searchSQL = new StringBuilder();
 
         StringBuilder query = new StringBuilder();
@@ -239,61 +241,35 @@ public class ApplicationDAO implements IApplicationDAO {
         //were applied -- used for pagination p
         query.append("SELECT SQL_CALC_FOUND_ROWS * FROM application ");
 
-        gSearch.append(" where (`application` like '%");
-        gSearch.append(searchTerm);
-        gSearch.append("%'");
-        gSearch.append(" or `description` like '%");
-        gSearch.append(searchTerm);
-        gSearch.append("%'");
-        gSearch.append(" or `sort` like '%");
-        gSearch.append(searchTerm);
-        gSearch.append("%'");
-        gSearch.append(" or `type` like '%");
-        gSearch.append(searchTerm);
-        gSearch.append("%'");
-        gSearch.append(" or `System` like '%");
-        gSearch.append(searchTerm);
-        gSearch.append("%'");
-        gSearch.append(" or `Subsystem` like '%");
-        gSearch.append(searchTerm);
-        gSearch.append("%'");
-        gSearch.append(" or `svnURL` like '%");
-        gSearch.append(searchTerm);
-        gSearch.append("%'");
-        gSearch.append(" or `bugtrackerurl` like '%");
-        gSearch.append(searchTerm);
-        gSearch.append("%'");
-        gSearch.append(" or `bugtrackernewurl` like '%");
-        gSearch.append(searchTerm);
-        gSearch.append("%'");
-        gSearch.append(" or `deploytype` like '%");
-        gSearch.append(searchTerm);
-        gSearch.append("%'");
-        gSearch.append(" or `mavengroupid` like '%");
-        gSearch.append(searchTerm);
-        gSearch.append("%')");
+        searchSQL.append(" where 1=1 ");
 
-        if (!searchTerm.equals("") && !individualSearch.equals("")) {
-            searchSQL.append(gSearch.toString());
-            searchSQL.append(" and ");
-            searchSQL.append(individualSearch);
-        } else if (!individualSearch.equals("")) {
-            searchSQL.append(" where `");
-            searchSQL.append(individualSearch);
-            searchSQL.append("`");
-        } else if (!searchTerm.equals("")) {
-            searchSQL.append(gSearch.toString());
+        if (!searchTerm.equals("")) {
+            searchSQL.append(" and (`application` like '%").append(searchTerm).append("%'");
+            searchSQL.append(" or `description` like '%").append(searchTerm).append("%'");
+            searchSQL.append(" or `sort` like '%").append(searchTerm).append("%'");
+            searchSQL.append(" or `type` like '%").append(searchTerm).append("%'");
+            searchSQL.append(" or `System` like '%").append(searchTerm).append("%'");
+            searchSQL.append(" or `Subsystem` like '%").append(searchTerm).append("%'");
+            searchSQL.append(" or `svnURL` like '%").append(searchTerm).append("%'");
+            searchSQL.append(" or `bugtrackerurl` like '%").append(searchTerm).append("%'");
+            searchSQL.append(" or `bugtrackernewurl` like '%").append(searchTerm).append("%'");
+            searchSQL.append(" or `deploytype` like '%").append(searchTerm).append("%'");
+            searchSQL.append(" or `mavengroupid` like '%").append(searchTerm).append("%')");
+        }
+        if (!individualSearch.equals("")) {
+            searchSQL.append(" and (`").append(individualSearch).append("`)");
+        }
+        if (!StringUtil.isNullOrEmpty(system)) {
+            searchSQL.append(" and (`System`='").append(system).append("' )");
         }
 
+        MyLogger.log(ApplicationDAO.class.getName(), Level.ERROR, "Search Term : " + searchSQL.toString());
+
         query.append(searchSQL);
-        query.append("order by `");
-        query.append(column);
-        query.append("` ");
-        query.append(dir);
-        query.append(" limit ");
-        query.append(start);
-        query.append(" , ");
-        query.append(amount);
+        query.append(" order by `").append(column).append("` ").append(dir);
+        query.append(" limit ").append(start).append(" , ").append(amount);
+
+        MyLogger.log(ApplicationDAO.class.getName(), Level.ERROR, "Execute query : " + query.toString());
 
         Connection connection = this.databaseSpring.connect();
         try {
@@ -313,12 +289,12 @@ public class ApplicationDAO implements IApplicationDAO {
                     if (resultSet != null && resultSet.next()) {
                         nrTotalRows = resultSet.getInt(1);
                     }
-                    
-                    msg.setDescription(msg.getDescription().replace("%ITEM%", "Application Lib").replace("%OPERATION%", "SELECT"));
+
+                    msg.setDescription(msg.getDescription().replace("%ITEM%", "Application").replace("%OPERATION%", "SELECT"));
                     response = new AnswerList(applicationList, nrTotalRows);
 
                 } catch (SQLException exception) {
-                    MyLogger.log(ProjectDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
+                    MyLogger.log(ApplicationDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
                     msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_UNEXPECTED_ERROR);
                     msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", exception.toString()));
 
@@ -329,7 +305,7 @@ public class ApplicationDAO implements IApplicationDAO {
                 }
 
             } catch (SQLException exception) {
-                MyLogger.log(ProjectDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
+                MyLogger.log(ApplicationDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
                 msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_UNEXPECTED_ERROR);
                 msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", exception.toString()));
             } finally {
@@ -339,7 +315,7 @@ public class ApplicationDAO implements IApplicationDAO {
             }
 
         } catch (SQLException exception) {
-            MyLogger.log(ProjectDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
+            MyLogger.log(ApplicationDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
             msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_UNEXPECTED_ERROR);
             msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", exception.toString()));
         } finally {
@@ -350,27 +326,23 @@ public class ApplicationDAO implements IApplicationDAO {
                     }
                 }
             } catch (SQLException ex) {
-                MyLogger.log(ProjectDAO.class.getName(), Level.ERROR, "Unable to execute query : " + ex.toString());
+                MyLogger.log(ApplicationDAO.class.getName(), Level.ERROR, "Unable to execute query : " + ex.toString());
             }
         }
         response.setResultMessage(msg);
         response.setDataList(applicationList);
         return response;
     }
-    
-    
+
     /**
      *
-     * @param application - idProject
+     * @param application - idApplication
      * @return ans - AnswerIterm
      */
     @Override
     public AnswerItem findApplicationByString(String application) {
         AnswerItem ans = new AnswerItem();
         Application result = null;
-        String applicationStr;
-        String vcCode;
-        String description;
         final String query = "SELECT * FROM `application` WHERE `application` = ?";
         MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
 
@@ -383,25 +355,25 @@ public class ApplicationDAO implements IApplicationDAO {
                 try {
                     if (resultSet.first()) {
                         result = loadApplicationFromResultSet(resultSet);
-                        msg.setDescription(msg.getDescription().replace("%ITEM%", "Application Lib").replace("%OPERATION%", "SELECT"));
+                        msg.setDescription(msg.getDescription().replace("%ITEM%", "Application").replace("%OPERATION%", "SELECT"));
                         ans.setItem(result);
                     }
                 } catch (SQLException exception) {
-                    MyLogger.log(ProjectDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
+                    MyLogger.log(ApplicationDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
                     msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_UNEXPECTED_ERROR);
                     msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", exception.toString()));
                 } finally {
                     resultSet.close();
                 }
             } catch (SQLException exception) {
-                MyLogger.log(ProjectDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
+                MyLogger.log(ApplicationDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
                 msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_UNEXPECTED_ERROR);
                 msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", exception.toString()));
             } finally {
                 preStat.close();
             }
         } catch (SQLException exception) {
-            MyLogger.log(ProjectDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
+            MyLogger.log(ApplicationDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
             msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_UNEXPECTED_ERROR);
             msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", exception.toString()));
         } finally {
@@ -410,7 +382,7 @@ public class ApplicationDAO implements IApplicationDAO {
                     connection.close();
                 }
             } catch (SQLException e) {
-                MyLogger.log(ProjectDAO.class.getName(), Level.WARN, e.toString());
+                MyLogger.log(ApplicationDAO.class.getName(), Level.WARN, e.toString());
             }
         }
 
@@ -418,7 +390,87 @@ public class ApplicationDAO implements IApplicationDAO {
         ans.setResultMessage(msg);
         return ans;
     }
-    
+
+    @Override
+    public void createApplication(Application application) throws CerberusException {
+        boolean throwExcep = false;
+        StringBuilder query = new StringBuilder();
+        query.append("INSERT INTO application (`application`, `description`, `sort`, `type`, `system`, `SubSystem`, `svnurl`, `BugTrackerUrl`, `BugTrackerNewUrl`, `deploytype`, `mavengroupid` ) ");
+        query.append("VALUES (?,?,?,?,?,?,?,?,?,?,?)");
+
+        Connection connection = this.databaseSpring.connect();
+        try {
+            PreparedStatement preStat = connection.prepareStatement(query.toString());
+            try {
+                preStat.setString(1, application.getApplication());
+                preStat.setString(2, application.getDescription());
+                preStat.setInt(3, application.getSort());
+                preStat.setString(4, application.getType());
+                preStat.setString(5, application.getSystem());
+                preStat.setString(6, application.getSubsystem());
+                preStat.setString(7, application.getSvnurl());
+                preStat.setString(8, application.getBugTrackerUrl());
+                preStat.setString(9, application.getBugTrackerNewUrl());
+                preStat.setString(10, application.getDeploytype());
+                preStat.setString(11, application.getMavengroupid());
+
+                preStat.executeUpdate();
+                throwExcep = false;
+
+            } catch (SQLException exception) {
+                MyLogger.log(ApplicationDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
+            } finally {
+                preStat.close();
+            }
+        } catch (SQLException exception) {
+            MyLogger.log(ApplicationDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
+        } finally {
+            try {
+                if (connection != null) {
+                    connection.close();
+                }
+            } catch (SQLException e) {
+                MyLogger.log(ApplicationDAO.class.getName(), Level.WARN, e.toString());
+            }
+        }
+        if (throwExcep) {
+            throw new CerberusException(new MessageGeneral(MessageGeneralEnum.CANNOT_UPDATE_TABLE));
+        }
+    }
+
+    @Override
+    public void deleteApplication(Application application) throws CerberusException {
+        boolean throwExcep = false;
+        final String query = "DELETE FROM application WHERE application = ? ";
+
+        Connection connection = this.databaseSpring.connect();
+        try {
+            PreparedStatement preStat = connection.prepareStatement(query);
+            try {
+                preStat.setString(1, application.getApplication());
+
+                throwExcep = preStat.executeUpdate() == 0;
+            } catch (SQLException exception) {
+                MyLogger.log(ApplicationDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
+            } finally {
+                preStat.close();
+            }
+        } catch (SQLException exception) {
+            MyLogger.log(ApplicationDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
+        } finally {
+            try {
+                if (connection != null) {
+                    connection.close();
+                }
+            } catch (SQLException e) {
+                MyLogger.log(ApplicationDAO.class.getName(), Level.WARN, e.toString());
+            }
+        }
+        if (throwExcep) {
+            throw new CerberusException(new MessageGeneral(MessageGeneralEnum.CANNOT_UPDATE_TABLE));
+        }
+    }
+
     /**
      * Updates the information based on the object application. </p> Access to
      * database to update application information given by the object
@@ -455,12 +507,12 @@ public class ApplicationDAO implements IApplicationDAO {
                 int res = preStat.executeUpdate();
                 bool = res > 0;
             } catch (SQLException exception) {
-                MyLogger.log(UserDAO.class.getName(), Level.ERROR, "Unable to execute query : "+exception.toString());
+                MyLogger.log(ApplicationDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
             } finally {
                 preStat.close();
             }
         } catch (SQLException exception) {
-            MyLogger.log(UserDAO.class.getName(), Level.ERROR, "Unable to execute query : "+exception.toString());
+            MyLogger.log(ApplicationDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
         } finally {
             try {
                 if (connection != null) {
@@ -471,6 +523,146 @@ public class ApplicationDAO implements IApplicationDAO {
             }
         }
         return bool;
+    }
+
+    @Override
+    public Answer createApplication1(Application application) {
+        MessageEvent msg = null;
+        StringBuilder query = new StringBuilder();
+        query.append("INSERT INTO application (`application`, `description`, `sort`, `type`, `system`, `SubSystem`, `svnurl`, `BugTrackerUrl`, `BugTrackerNewUrl`, `deploytype`, `mavengroupid` ) ");
+        query.append("VALUES (?,?,?,?,?,?,?,?,?,?,?)");
+
+        Connection connection = this.databaseSpring.connect();
+        try {
+            PreparedStatement preStat = connection.prepareStatement(query.toString());
+            try {
+                preStat.setString(1, application.getApplication());
+                preStat.setString(2, application.getDescription());
+                preStat.setInt(3, application.getSort());
+                preStat.setString(4, application.getType());
+                preStat.setString(5, application.getSystem());
+                preStat.setString(6, application.getSubsystem());
+                preStat.setString(7, application.getSvnurl());
+                preStat.setString(8, application.getBugTrackerUrl());
+                preStat.setString(9, application.getBugTrackerNewUrl());
+                preStat.setString(10, application.getDeploytype());
+                preStat.setString(11, application.getMavengroupid());
+
+                preStat.executeUpdate();
+                msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
+                msg.setDescription(msg.getDescription().replace("%ITEM%", "Application").replace("%OPERATION%", "INSERT"));
+
+            } catch (SQLException exception) {
+                MyLogger.log(ApplicationDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
+
+                if (exception.getSQLState().equals(SQL_DUPLICATED_CODE)) { //23000 is the sql state for duplicate entries
+                    msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_DUPLICATE_ERROR);
+                    msg.setDescription(msg.getDescription().replace("%ITEM%", "Application").replace("%OPERATION%", "INSERT"));
+                } else {
+                    msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_UNEXPECTED_ERROR);
+                    msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", exception.toString()));
+                }
+            } finally {
+                preStat.close();
+            }
+        } catch (SQLException exception) {
+            MyLogger.log(ApplicationDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
+            msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_UNEXPECTED_ERROR);
+            msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", exception.toString()));
+        } finally {
+            try {
+                if (connection != null) {
+                    connection.close();
+                }
+            } catch (SQLException e) {
+                MyLogger.log(ApplicationDAO.class.getName(), Level.WARN, e.toString());
+            }
+        }
+        return new Answer(msg);
+    }
+
+    @Override
+    public Answer deleteApplication1(Application application) {
+        MessageEvent msg = null;
+        final String query = "DELETE FROM application WHERE application = ? ";
+
+        Connection connection = this.databaseSpring.connect();
+        try {
+            PreparedStatement preStat = connection.prepareStatement(query);
+            try {
+                preStat.setString(1, application.getApplication());
+
+                preStat.executeUpdate();
+                msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
+                msg.setDescription(msg.getDescription().replace("%ITEM%", "Application").replace("%OPERATION%", "DELETE"));
+            } catch (SQLException exception) {
+                MyLogger.log(ApplicationDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
+                msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_UNEXPECTED_ERROR);
+                msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", exception.toString()));
+            } finally {
+                preStat.close();
+            }
+        } catch (SQLException exception) {
+            MyLogger.log(ApplicationDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
+            msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_UNEXPECTED_ERROR);
+            msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", exception.toString()));
+        } finally {
+            try {
+                if (connection != null) {
+                    connection.close();
+                }
+            } catch (SQLException e) {
+                MyLogger.log(ApplicationDAO.class.getName(), Level.WARN, e.toString());
+            }
+        }
+        return new Answer(msg);
+    }
+
+    @Override
+    public Answer updateApplication1(Application application) {
+        MessageEvent msg = null;
+        final String query = "UPDATE application SET description = ?, sort = ?, `type` = ?, `system` = ?, SubSystem = ?, svnurl = ?, BugTrackerUrl = ?, BugTrackerNewUrl = ?, deploytype = ?, mavengroupid = ?  WHERE Application = ?";
+
+        Connection connection = this.databaseSpring.connect();
+        try {
+            PreparedStatement preStat = connection.prepareStatement(query);
+            try {
+                preStat.setString(1, application.getDescription());
+                preStat.setInt(2, application.getSort());
+                preStat.setString(3, application.getType());
+                preStat.setString(4, application.getSystem());
+                preStat.setString(5, application.getSubsystem());
+                preStat.setString(6, application.getSvnurl());
+                preStat.setString(7, application.getBugTrackerUrl());
+                preStat.setString(8, application.getBugTrackerNewUrl());
+                preStat.setString(9, application.getDeploytype());
+                preStat.setString(10, application.getMavengroupid());
+                preStat.setString(11, application.getApplication());
+
+                preStat.executeUpdate();
+                msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
+                msg.setDescription(msg.getDescription().replace("%ITEM%", "Application").replace("%OPERATION%", "UPDATE"));
+            } catch (SQLException exception) {
+                MyLogger.log(ApplicationDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
+                msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_UNEXPECTED_ERROR);
+                msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", exception.toString()));
+            } finally {
+                preStat.close();
+            }
+        } catch (SQLException exception) {
+            MyLogger.log(ApplicationDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
+            msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_UNEXPECTED_ERROR);
+            msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", exception.toString()));
+        } finally {
+            try {
+                if (connection != null) {
+                    connection.close();
+                }
+            } catch (SQLException e) {
+                MyLogger.log(ApplicationDAO.class.getName(), Level.WARN, e.toString());
+            }
+        }
+        return new Answer(msg);
     }
 
     /**
@@ -495,17 +687,17 @@ public class ApplicationDAO implements IApplicationDAO {
                         list.add(resultSet.getString("system"));
                     }
                 } catch (SQLException exception) {
-                    MyLogger.log(ApplicationDAO.class.getName(), Level.ERROR, "Unable to execute query : "+exception.toString());
+                    MyLogger.log(ApplicationDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
                 } finally {
                     resultSet.close();
                 }
             } catch (SQLException exception) {
-                MyLogger.log(ApplicationDAO.class.getName(), Level.ERROR, "Unable to execute query : "+exception.toString());
+                MyLogger.log(ApplicationDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
             } finally {
                 preStat.close();
             }
         } catch (SQLException exception) {
-            MyLogger.log(ApplicationDAO.class.getName(), Level.ERROR, "Unable to execute query : "+exception.toString());
+            MyLogger.log(ApplicationDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
         } finally {
             try {
                 if (connection != null) {
@@ -516,86 +708,6 @@ public class ApplicationDAO implements IApplicationDAO {
             }
         }
         return list;
-    }
-
-    @Override
-    public void createApplication(Application application) throws CerberusException {
-        boolean throwExcep = false;
-        StringBuilder query = new StringBuilder();
-        query.append("INSERT INTO application (`application`, `description`, `sort`, `type`, `system`, `SubSystem`, `svnurl`, `BugTrackerUrl`, `BugTrackerNewUrl`, `deploytype`, `mavengroupid` ) ");
-        query.append("VALUES (?,?,?,?,?,?,?,?,?,?,?)");
-
-        Connection connection = this.databaseSpring.connect();
-        try {
-            PreparedStatement preStat = connection.prepareStatement(query.toString());
-            try {
-                preStat.setString(1, application.getApplication());
-                preStat.setString(2, application.getDescription());
-                preStat.setInt(3, application.getSort());
-                preStat.setString(4, application.getType());
-                preStat.setString(5, application.getSystem());
-                preStat.setString(6, application.getSubsystem());
-                preStat.setString(7, application.getSvnurl());
-                preStat.setString(8, application.getBugTrackerUrl());
-                preStat.setString(9, application.getBugTrackerNewUrl());
-                preStat.setString(10, application.getDeploytype());
-                preStat.setString(11, application.getMavengroupid());
-
-                preStat.executeUpdate();
-                throwExcep = false;
-
-            } catch (SQLException exception) {
-                MyLogger.log(ApplicationDAO.class.getName(), Level.ERROR, "Unable to execute query : "+exception.toString());
-            } finally {
-                preStat.close();
-            }
-        } catch (SQLException exception) {
-            MyLogger.log(ApplicationDAO.class.getName(), Level.ERROR, "Unable to execute query : "+exception.toString());
-        } finally {
-            try {
-                if (connection != null) {
-                    connection.close();
-                }
-            } catch (SQLException e) {
-                MyLogger.log(ApplicationDAO.class.getName(), Level.WARN, e.toString());
-            }
-        }
-        if (throwExcep) {
-            throw new CerberusException(new MessageGeneral(MessageGeneralEnum.CANNOT_UPDATE_TABLE));
-        }
-    }
-
-    @Override
-    public void deleteApplication(Application application) throws CerberusException {
-        boolean throwExcep = false;
-        final String query = "DELETE FROM application WHERE application = ? ";
-
-        Connection connection = this.databaseSpring.connect();
-        try {
-            PreparedStatement preStat = connection.prepareStatement(query);
-            try {
-                preStat.setString(1, application.getApplication());
-
-                throwExcep = preStat.executeUpdate() == 0;
-            } catch (SQLException exception) {
-                MyLogger.log(ApplicationDAO.class.getName(), Level.ERROR, "Unable to execute query : "+exception.toString());
-            } finally {
-                preStat.close();
-            }
-        } catch (SQLException exception) {
-            MyLogger.log(ApplicationDAO.class.getName(), Level.ERROR, "Unable to execute query : "+exception.toString());
-        } finally {
-            try {
-                if (connection != null) {
-                    connection.close();
-                }
-            } catch (SQLException e) {
-                MyLogger.log(ApplicationDAO.class.getName(), Level.WARN, e.toString());
-            }
-        }
-        if (throwExcep) {
-            throw new CerberusException(new MessageGeneral(MessageGeneralEnum.CANNOT_UPDATE_TABLE));
-        }
     }
 
     @Override
