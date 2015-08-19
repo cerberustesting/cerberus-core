@@ -336,15 +336,15 @@ function showModalUpload(handlerClickOk, fileExtension) {
  * @param {type} fileExtension extension against with the name is validated
  */
 function validatesFileExtension(fileName, fileExtension) {
-    var ext = fileName.match(/\.(.+)$/);
+    var ext = fileName.match(/^([^\\]*)\.(\w+)$/);
 
-    if (ext === null || ext[1].toUpperCase() === "." + fileExtension) {
+    if(ext !== null && ext[ext.length-1].toUpperCase() === fileExtension.toUpperCase() ){  
         clearResponseMessage($('#modalUpload'));
         $("#upload-file-info").html(fileName);
         $('#uploadOk').removeProp("disabled");
     } else {
         resetModalUpload();
-        var localMessage = new Message("danger", "Please select a " + fileExtension + " file!");
+        var localMessage = new Message("danger", "Please select a file with the extension "+ fileExtension +"!");
         showMessage(localMessage, $('#modalUpload'));
     }
 }
