@@ -22,6 +22,7 @@ package org.cerberus.servlet.log;
 import com.google.gson.Gson;
 import java.io.IOException;
 import java.util.List;
+import java.util.logging.Logger;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -29,16 +30,13 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.log4j.Level;
 import org.cerberus.entity.LogEvent;
+import org.cerberus.entity.MessageEvent;
 import org.cerberus.entity.MessageEventEnum;
 import org.cerberus.exception.CerberusException;
-import org.cerberus.log.MyLogger;
 import org.cerberus.service.ILogEventService;
 import org.cerberus.service.impl.LogEventService;
-import org.cerberus.servlet.user.GetUsers;
 import org.cerberus.util.ParameterParserUtil;
-import org.cerberus.util.StringUtil;
 import org.cerberus.util.answer.AnswerItem;
 import org.cerberus.util.answer.AnswerList;
 import org.json.JSONArray;
@@ -54,6 +52,8 @@ import org.springframework.web.context.support.WebApplicationContextUtils;
 @WebServlet(name = "ReadLogEvent", urlPatterns = {"/ReadLogEvent"})
 public class ReadLogEvent extends HttpServlet {
 
+    
+        private ILogEventService logEventService;
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
      * methods.
@@ -64,90 +64,34 @@ public class ReadLogEvent extends HttpServlet {
      * @throws IOException if an I/O error occurs
      */
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException {
-        AnswerItem ans = new AnswerItem();
+            throws ServletException, IOException, CerberusException {
         String echo = request.getParameter("sEcho");
-        String sStart = request.getParameter("iDisplayStart");
-        String sAmount = request.getParameter("iDisplayLength");
-        String sCol = request.getParameter("iSortCol_0");
-        String sdir = request.getParameter("sSortDir_0");
-        String dir = "asc";
-        String[] cols = {"Time", "login", "Page", "Action", "log"};
-
-        int start = 0;
-        int amount = 0;
-        int col = 0;
-
-        if (!StringUtil.isNullOrEmpty(sStart)) {
-            start = Integer.parseInt(sStart);
-            if (start < 0) {
-                start = 0;
-            }
-        }
-        if (!StringUtil.isNullOrEmpty(sAmount)) {
-            amount = Integer.parseInt(sAmount);
-            if (amount < 5 || amount > 10000) {
-                amount = 10;
-            }
-        }
-        if (!StringUtil.isNullOrEmpty(sCol)) {
-            col = Integer.parseInt(sCol);
-            if (col < 0 || col > 5) {
-                col = 0;
-            }
-        }
-        if (!StringUtil.isNullOrEmpty(sdir)) {
-            if (!sdir.equals("asc")) {
-                dir = "desc";
-            }
-        }
-        String colName = cols[col];
-
-        String searchTerm;
-        searchTerm = ParameterParserUtil.parseStringParam(request.getParameter("sSearch"), "");
-
-        JSONArray data = new JSONArray(); //data that will be shown in the table
-
         ApplicationContext appContext = WebApplicationContextUtils.getWebApplicationContext(this.getServletContext());
-        ILogEventService logEventService = appContext.getBean(LogEventService.class);
+        AnswerItem answer = new AnswerItem();
+        JSONObject jsonResponse = new JSONObject();
+        JSONArray data = new JSONArray();
+
         try {
+            answer = findLogEventList(appContext, request);
+            jsonResponse = (JSONObject) answer.getItem();
 
-            JSONObject jsonResponse = new JSONObject();
-            Integer iTotalRecords = 0;
-            Integer iTotalDisplayRecords = 0;
-
-            try {
-                AnswerList resp = logEventService.findAllLogEvent(start, amount, colName, dir, searchTerm, "");
-                if (resp.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
-                    for (LogEvent myLogEvent : (List<LogEvent>) resp.getDataList()) {
-                        Gson gson = new Gson();
-                        JSONObject result = new JSONObject(gson.toJson(myLogEvent));
-                        data.put(result);
-                    }
-                }
-
-                iTotalRecords = resp.getTotalRows();
-                iTotalDisplayRecords = resp.getTotalRows();
-                ans.setResultMessage(resp.getResultMessage());
-
-            } catch (CerberusException ex) {
-                MyLogger.log(GetUsers.class.getName(), Level.FATAL, "" + ex);
-            }
-
-            jsonResponse.put("aaData", data);
+            jsonResponse.put("messageType", answer.getResultMessage().getMessage().getCodeString());
+            jsonResponse.put("message", answer.getResultMessage().getDescription());
             jsonResponse.put("sEcho", echo);
-            jsonResponse.put("iTotalRecords", iTotalRecords);
-            jsonResponse.put("iTotalDisplayRecords", iTotalDisplayRecords);
-            jsonResponse.put("messageType", ans.getResultMessage().getMessage().getCodeString());
-            jsonResponse.put("message", ans.getResultMessage().getDescription());
-
             response.setContentType("application/json");
             response.getWriter().print(jsonResponse.toString());
-
         } catch (JSONException e) {
-            MyLogger.log(GetUsers.class.getName(), Level.FATAL, "" + e);
+            org.apache.log4j.Logger.getLogger(ReadLogEvent.class.getName()).log(org.apache.log4j.Level.ERROR, null, e);
+            //returns a default error message with the json format that is able to be parsed by the client-side
             response.setContentType("application/json");
-            response.getWriter().print(e.getMessage());
+            MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_UNEXPECTED_ERROR);
+            StringBuilder errorMessage = new StringBuilder();
+            errorMessage.append("{'messageType':'").append(msg.getCode()).append("', ");
+            errorMessage.append(" 'message': '");
+            errorMessage.append(msg.getDescription().replace("%DESCRIPTION%", "Unable to check the status of your request! Try later or - Open a bug or ask for any new feature \n"
+                    + "<a href=\"https://github.com/vertigo17/Cerberus/issues/\" target=\"_blank\">here</a>"));
+            errorMessage.append("'}");
+            response.getWriter().print(errorMessage.toString());
         }
 
     }
@@ -164,7 +108,11 @@ public class ReadLogEvent extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        processRequest(request, response);
+            try {
+                processRequest(request, response);
+            } catch (CerberusException ex) {
+                Logger.getLogger(ReadLogEvent.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            }
     }
 
     /**
@@ -178,7 +126,11 @@ public class ReadLogEvent extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        processRequest(request, response);
+            try {
+                processRequest(request, response);
+            } catch (CerberusException ex) {
+                Logger.getLogger(ReadLogEvent.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            }
     }
 
     /**
@@ -190,4 +142,39 @@ public class ReadLogEvent extends HttpServlet {
     public String getServletInfo() {
         return "Short description";
     }// </editor-fold>
+    
+        private AnswerItem findLogEventList(ApplicationContext appContext, HttpServletRequest request) throws CerberusException, JSONException {
+        AnswerItem item = new AnswerItem();
+        JSONObject jsonResponse = new JSONObject();
+        logEventService = appContext.getBean(LogEventService.class);
+        JSONArray data = new JSONArray();
+
+        int startPosition = Integer.valueOf(ParameterParserUtil.parseStringParam(request.getParameter("iDisplayStart"), "0"));
+        int length = Integer.valueOf(ParameterParserUtil.parseStringParam(request.getParameter("iDisplayLength"), "100000"));
+        String searchParameter = ParameterParserUtil.parseStringParam(request.getParameter("sSearch"), "");
+        int columnToSortParameter = Integer.parseInt(ParameterParserUtil.parseStringParam(request.getParameter("iSortCol_0"), "0"));
+        String sColumns = ParameterParserUtil.parseStringParam(request.getParameter("sColumns"), "Time,login,Page,Action,log");
+        String columnToSort[] = sColumns.split(",");
+        String columnName = columnToSort[columnToSortParameter];
+        String sort = ParameterParserUtil.parseStringParam(request.getParameter("sSortDir_0"), "desc");
+
+        AnswerList resp = logEventService.findAllLogEvent(startPosition, length, columnName, sort, searchParameter, "");
+        if (resp.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
+            for (LogEvent myLogEvent : (List<LogEvent>) resp.getDataList()) {
+                Gson gson = new Gson();
+                JSONObject result = new JSONObject(gson.toJson(myLogEvent));
+                data.put(result);
+            }
+        }
+
+        jsonResponse.put("aaData", data);
+        jsonResponse.put("iTotalRecords", resp.getTotalRows());
+        jsonResponse.put("iTotalDisplayRecords", resp.getTotalRows());
+
+        item.setItem(jsonResponse);
+        item.setResultMessage(resp.getResultMessage());
+
+        return item;
+    }
+
 }
