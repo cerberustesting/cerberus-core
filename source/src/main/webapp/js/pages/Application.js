@@ -45,6 +45,7 @@ function initApplicationPage() {
 function displayPageLabel() {
     var doc = getDoc();
     
+    displayHeaderLabel(doc);
     $("#pageTitle").html(doc.page_application.title.docLabel);
     $("#title").html(displayDocLink(doc.page_application.title));
     $("[name='createApplicationField']").html(doc.page_application.button_create.docLabel);
