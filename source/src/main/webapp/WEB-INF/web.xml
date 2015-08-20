@@ -298,8 +298,8 @@
         <servlet-class>org.cerberus.servlet.application.UpdateApplication</servlet-class>
     </servlet>
     <servlet>
-        <servlet-name>UpdateApplication1</servlet-name>
-        <servlet-class>org.cerberus.servlet.application.UpdateApplication1</servlet-class>
+        <servlet-name>ReadApplication</servlet-name>
+        <servlet-class>org.cerberus.servlet.application.ReadApplication</servlet-class>
     </servlet>
     <servlet>
         <servlet-name>NewBuildRev</servlet-name>
@@ -452,14 +452,6 @@
     <servlet>
         <servlet-name>DeleteApplication</servlet-name>
         <servlet-class>org.cerberus.servlet.application.DeleteApplication</servlet-class>
-    </servlet>
-    <servlet>
-        <servlet-name>CreateApplication1</servlet-name>
-        <servlet-class>org.cerberus.servlet.application.CreateApplication1</servlet-class>
-    </servlet>
-    <servlet>
-        <servlet-name>DeleteApplication1</servlet-name>
-        <servlet-class>org.cerberus.servlet.application.DeleteApplication1</servlet-class>
     </servlet>
     <servlet>
         <servlet-name>UpdateBuildRevisionInvariant</servlet-name>
@@ -1001,8 +993,24 @@
         <url-pattern>/UpdateApplication</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
-        <servlet-name>UpdateApplication1</servlet-name>
-        <url-pattern>/UpdateApplication1</url-pattern>
+        <servlet-name>ReadApplication</servlet-name>
+        <url-pattern>/ReadApplication</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>CreateDeployType</servlet-name>
+        <url-pattern>/CreateDeployType</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>DeleteDeployType</servlet-name>
+        <url-pattern>/DeleteDeployType</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>UpdateDeployType</servlet-name>
+        <url-pattern>/UpdateDeployType</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>ReadDeployType</servlet-name>
+        <url-pattern>/ReadDeployType</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
         <servlet-name>NewBuildRev</servlet-name>
@@ -1155,14 +1163,6 @@
     <servlet-mapping>
         <servlet-name>DeleteApplication</servlet-name>
         <url-pattern>/DeleteApplication</url-pattern>
-    </servlet-mapping>
-    <servlet-mapping>
-        <servlet-name>CreateApplication1</servlet-name>
-        <url-pattern>/CreateApplication1</url-pattern>
-    </servlet-mapping>
-    <servlet-mapping>
-        <servlet-name>DeleteApplication1</servlet-name>
-        <url-pattern>/DeleteApplication1</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
         <servlet-name>UpdateBuildRevisionInvariant</servlet-name>
@@ -1695,7 +1695,7 @@ ie User management, parameter management, log viewer, database management.</desc
             <url-pattern>/Project.jsp</url-pattern>
             <url-pattern>/Robot.jsp</url-pattern>
             <url-pattern>/EnvironmentManagement.jsp</url-pattern>
-            <url-pattern>/Application1.jsp</url-pattern>
+            <url-pattern>/DeployType.jsp</url-pattern>
         </web-resource-collection>
         <web-resource-collection>
             <web-resource-name>servlet</web-resource-name>
@@ -1723,10 +1723,9 @@ ie User management, parameter management, log viewer, database management.</desc
         <web-resource-collection>
             <web-resource-name>servlet</web-resource-name>
             <description>servlet</description>
+            <url-pattern>/ReadApplication</url-pattern>
             <url-pattern>/CreateApplication</url-pattern>
             <url-pattern>/UpdateApplication</url-pattern>
-            <url-pattern>/CreateApplication1</url-pattern>
-            <url-pattern>/UpdateApplication1</url-pattern>
             <url-pattern>/UpdateBuildRevisionParameter</url-pattern>
             <url-pattern>/UpdateCountryEnv</url-pattern>
             <url-pattern>/CreateProject</url-pattern>
@@ -1816,7 +1815,6 @@ ie User management, parameter management, log viewer, database management.</desc
             <url-pattern>/UpdateInvariant</url-pattern>
             <url-pattern>/DeleteInvariant</url-pattern>
             <url-pattern>/DeleteApplication</url-pattern>
-            <url-pattern>/DeleteApplication1</url-pattern>
             <url-pattern>/ExecutionThreadMonitoring</url-pattern>
         </web-resource-collection>
         <auth-constraint>
@@ -1836,7 +1834,6 @@ ie User management, parameter management, log viewer, database management.</desc
             <url-pattern>/Error.jsp</url-pattern>
             <url-pattern>/header.jsp</url-pattern>
             <url-pattern>/function.jsp</url-pattern>
-            <url-pattern>/header2.jsp</url-pattern>
             <url-pattern>/index2.jsp</url-pattern>
             <url-pattern>/index1.jsp</url-pattern>
         </web-resource-collection>

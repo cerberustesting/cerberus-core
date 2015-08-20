@@ -20,38 +20,38 @@
 package org.cerberus.servlet.application;
 
 import java.io.IOException;
-
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-
-import org.apache.log4j.Level;
-import org.apache.log4j.Logger;
 import org.cerberus.entity.Application;
 import org.cerberus.exception.CerberusException;
 import org.cerberus.factory.IFactoryLogEvent;
 import org.cerberus.factory.impl.FactoryLogEvent;
-import org.cerberus.log.MyLogger;
 import org.cerberus.service.IApplicationService;
 import org.cerberus.service.ILogEventService;
-import org.cerberus.service.impl.ApplicationService;
 import org.cerberus.service.impl.LogEventService;
+import org.cerberus.util.answer.Answer;
+import org.json.JSONException;
+import org.json.JSONObject;
+import org.owasp.html.PolicyFactory;
+import org.owasp.html.Sanitizers;
 import org.springframework.context.ApplicationContext;
 import org.springframework.web.context.support.WebApplicationContextUtils;
 
 /**
  *
- * @author vertigo
+ * @author bcivel
  */
-@WebServlet(name = "UpdateApplication", urlPatterns = {"/UpdateApplication"})
+@WebServlet(name = "UpdateApplication1", urlPatterns = {"/UpdateApplication1"})
 public class UpdateApplication extends HttpServlet {
 
     /**
-     * Processes requests for both HTTP
-     * <code>GET</code> and
-     * <code>POST</code> methods.
+     * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
+     * methods.
      *
      * @param request servlet request
      * @param response servlet response
@@ -59,79 +59,68 @@ public class UpdateApplication extends HttpServlet {
      * @throws IOException if an I/O error occurs
      */
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException {
-        String application = request.getParameter("id");
-        int columnPosition = Integer.parseInt(request.getParameter("columnPosition"));
-        String value = request.getParameter("value").replaceAll("'", "");
-
-        MyLogger.log(UpdateApplication.class.getName(), Level.INFO, "value : " + value + " columnPosition : " + columnPosition + " application : " + application);
-
-        ApplicationContext appContext = WebApplicationContextUtils.getWebApplicationContext(this.getServletContext());
-        IApplicationService applicationService = appContext.getBean(ApplicationService.class);
-
-        Application myApplication;
+            throws ServletException, IOException, CerberusException, JSONException {
+        Answer ans = new Answer();
+        JSONObject jsonResponse = new JSONObject();
+        PolicyFactory policy = Sanitizers.FORMATTING.and(Sanitizers.LINKS);
+        String application = request.getParameter("application");
+        String system = request.getParameter("system");
+        String subSystem = request.getParameter("subsystem");
+        String type = request.getParameter("type");
+        String mavenGpID = request.getParameter("mavengroupid");
+        String deployType = request.getParameter("deploytype");
+        String svnURL = request.getParameter("svnurl");
+        String bugTrackerURL = request.getParameter("bugtrackerurl");
+        String newBugURL = request.getParameter("bugtrackernewurl");
+        String description = request.getParameter("description");
+        Integer sort = 10;
         try {
-            myApplication = applicationService.findApplicationByKey(application);
-            switch (columnPosition) {
-                case 1:
-                    myApplication.setSystem(value);
-                    break;
-                case 2:
-                    myApplication.setSubsystem(value);
-                    break;
-                case 3:
-                    myApplication.setDescription(value);
-                    break;
-                case 4:
-                    myApplication.setType(value);
-                    break;
-                case 5:
-                    myApplication.setMavengroupid(value);
-                    break;
-                case 6:
-                    myApplication.setDeploytype(value);
-                    break;
-                case 7:
-                    try {
-                        myApplication.setSort(Integer.valueOf(value));
-                    } catch (Exception ex) {
-                        response.getWriter().print(ex.getMessage());
-                    }
-                    break;
-                case 8:
-                    myApplication.setSvnurl(value);
-                    break;
-                case 9:
-                    myApplication.setBugTrackerUrl(value);
-                    break;
-                case 10:
-                    myApplication.setBugTrackerNewUrl(value);
-                    break;
+            if (request.getParameter("sort") != null && !request.getParameter("sort").equals("")) {
+                sort = Integer.valueOf(request.getParameter("sort"));
             }
-
-            applicationService.updateApplication(myApplication);
-
-            /**
-             * Adding Log entry.
-             */
-            ILogEventService logEventService = appContext.getBean(LogEventService.class);
-            IFactoryLogEvent factoryLogEvent = appContext.getBean(FactoryLogEvent.class);
-            try {
-                logEventService.insertLogEvent(factoryLogEvent.create(0, 0, request.getUserPrincipal().getName(), null, "/UpdateApplication", "UPDATE", "Update application : " + application, "", ""));
-            } catch (CerberusException ex) {
-                Logger.getLogger(UpdateApplication.class.getName()).log(Level.ERROR, null, ex);
-            }
-            response.getWriter().print(value);
-
-        } catch (CerberusException ex) {
-            java.util.logging.Logger.getLogger(UpdateApplication.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+        } catch (Exception ex) {
+            Logger.getLogger(UpdateApplication.class.getName()).log(Level.SEVERE, null, ex);
         }
+        
+        ApplicationContext appContext = WebApplicationContextUtils.getWebApplicationContext(this.getServletContext());
+        IApplicationService applicationService = appContext.getBean(IApplicationService.class);
+        
+        Application applicationData = applicationService.findApplicationByKey(application);
+        applicationData.setSystem(system);
+        applicationData.setSubsystem(subSystem);
+        applicationData.setType(type);
+        applicationData.setMavengroupid(mavenGpID);
+        applicationData.setDeploytype(deployType);
+        applicationData.setSvnurl(svnURL);
+        applicationData.setBugTrackerUrl(bugTrackerURL);
+        applicationData.setBugTrackerNewUrl(newBugURL);
+        applicationData.setDescription(description);
+        applicationData.setSort(sort);
+        
+        ans = applicationService.updateApplication(applicationData);
+
+        /**
+         * Adding Log entry.
+         */
+        ILogEventService logEventService = appContext.getBean(LogEventService.class);
+        IFactoryLogEvent factoryLogEvent = appContext.getBean(FactoryLogEvent.class);
+        
+        try {
+            logEventService.insertLogEvent(factoryLogEvent.create(0, 0, request.getUserPrincipal().getName(), null, "/UpdateApplication", "UPDATE", "Updated Application : ['" + application + "']", "", ""));
+        } catch (CerberusException ex) {
+            Logger.getLogger(UpdateApplication.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        
+        jsonResponse.put("messageType", ans.getResultMessage().getMessage().getCodeString());
+        jsonResponse.put("message", ans.getResultMessage().getDescription());
+        response.setContentType("application/json");
+        response.getWriter().print(jsonResponse);
+        response.getWriter().flush();
     }
 
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
     /**
-     * Handles the HTTP
-     * <code>GET</code> method.
+     * Handles the HTTP <code>GET</code> method.
      *
      * @param request servlet request
      * @param response servlet response
@@ -141,12 +130,19 @@ public class UpdateApplication extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        processRequest(request, response);
+        try {
+            processRequest(request, response);
+            
+        } catch (CerberusException ex) {
+            Logger.getLogger(UpdateApplication.class
+                    .getName()).log(Level.SEVERE, null, ex);
+        } catch (JSONException ex) {
+            Logger.getLogger(UpdateApplication.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
 
     /**
-     * Handles the HTTP
-     * <code>POST</code> method.
+     * Handles the HTTP <code>POST</code> method.
      *
      * @param request servlet request
      * @param response servlet response
@@ -156,7 +152,15 @@ public class UpdateApplication extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        processRequest(request, response);
+        try {
+            processRequest(request, response);
+            
+        } catch (CerberusException ex) {
+            Logger.getLogger(UpdateApplication.class
+                    .getName()).log(Level.SEVERE, null, ex);
+        } catch (JSONException ex) {
+            Logger.getLogger(UpdateApplication.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
 
     /**

@@ -17,6 +17,8 @@
  */
 package org.cerberus.dao;
 
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import org.cerberus.entity.DeployType;
 import org.cerberus.util.answer.Answer;
 import org.cerberus.util.answer.AnswerItem;
@@ -39,4 +41,5 @@ public interface IDeployTypeDAO {
 
     public Answer updateDeployType(DeployType deployType);
 
+    public DeployType loadDeployTypeFromResultSet(ResultSet rs) throws SQLException;
 }

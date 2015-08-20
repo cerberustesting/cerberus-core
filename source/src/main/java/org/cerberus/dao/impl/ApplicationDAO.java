@@ -391,142 +391,9 @@ public class ApplicationDAO implements IApplicationDAO {
         return ans;
     }
 
-    @Override
-    public void createApplication(Application application) throws CerberusException {
-        boolean throwExcep = false;
-        StringBuilder query = new StringBuilder();
-        query.append("INSERT INTO application (`application`, `description`, `sort`, `type`, `system`, `SubSystem`, `svnurl`, `BugTrackerUrl`, `BugTrackerNewUrl`, `deploytype`, `mavengroupid` ) ");
-        query.append("VALUES (?,?,?,?,?,?,?,?,?,?,?)");
-
-        Connection connection = this.databaseSpring.connect();
-        try {
-            PreparedStatement preStat = connection.prepareStatement(query.toString());
-            try {
-                preStat.setString(1, application.getApplication());
-                preStat.setString(2, application.getDescription());
-                preStat.setInt(3, application.getSort());
-                preStat.setString(4, application.getType());
-                preStat.setString(5, application.getSystem());
-                preStat.setString(6, application.getSubsystem());
-                preStat.setString(7, application.getSvnurl());
-                preStat.setString(8, application.getBugTrackerUrl());
-                preStat.setString(9, application.getBugTrackerNewUrl());
-                preStat.setString(10, application.getDeploytype());
-                preStat.setString(11, application.getMavengroupid());
-
-                preStat.executeUpdate();
-                throwExcep = false;
-
-            } catch (SQLException exception) {
-                MyLogger.log(ApplicationDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
-            } finally {
-                preStat.close();
-            }
-        } catch (SQLException exception) {
-            MyLogger.log(ApplicationDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
-        } finally {
-            try {
-                if (connection != null) {
-                    connection.close();
-                }
-            } catch (SQLException e) {
-                MyLogger.log(ApplicationDAO.class.getName(), Level.WARN, e.toString());
-            }
-        }
-        if (throwExcep) {
-            throw new CerberusException(new MessageGeneral(MessageGeneralEnum.CANNOT_UPDATE_TABLE));
-        }
-    }
 
     @Override
-    public void deleteApplication(Application application) throws CerberusException {
-        boolean throwExcep = false;
-        final String query = "DELETE FROM application WHERE application = ? ";
-
-        Connection connection = this.databaseSpring.connect();
-        try {
-            PreparedStatement preStat = connection.prepareStatement(query);
-            try {
-                preStat.setString(1, application.getApplication());
-
-                throwExcep = preStat.executeUpdate() == 0;
-            } catch (SQLException exception) {
-                MyLogger.log(ApplicationDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
-            } finally {
-                preStat.close();
-            }
-        } catch (SQLException exception) {
-            MyLogger.log(ApplicationDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
-        } finally {
-            try {
-                if (connection != null) {
-                    connection.close();
-                }
-            } catch (SQLException e) {
-                MyLogger.log(ApplicationDAO.class.getName(), Level.WARN, e.toString());
-            }
-        }
-        if (throwExcep) {
-            throw new CerberusException(new MessageGeneral(MessageGeneralEnum.CANNOT_UPDATE_TABLE));
-        }
-    }
-
-    /**
-     * Updates the information based on the object application. </p> Access to
-     * database to update application information given by the object
-     * Application and returns boolean of PreparedStatement.executeUpdate() > 0.
-     * <br/> If an SQLException occur, returns false and writes the error on the
-     * logs.
-     *
-     * @param application object Application to update
-     * @return true if updated successfully and false if no row updated or error
-     * @throws CerberusException
-     * @since 0.9.0
-     */
-    @Override
-    public boolean updateApplication(Application application) throws CerberusException {
-        boolean bool = false;
-        final String query = "UPDATE application SET description = ?, sort = ?, `type` = ?, `system` = ?, SubSystem = ?, svnurl = ?, BugTrackerUrl = ?, BugTrackerNewUrl = ?, deploytype = ?, mavengroupid = ?  WHERE Application = ?";
-
-        Connection connection = this.databaseSpring.connect();
-        try {
-            PreparedStatement preStat = connection.prepareStatement(query);
-            try {
-                preStat.setString(1, application.getDescription());
-                preStat.setInt(2, application.getSort());
-                preStat.setString(3, application.getType());
-                preStat.setString(4, application.getSystem());
-                preStat.setString(5, application.getSubsystem());
-                preStat.setString(6, application.getSvnurl());
-                preStat.setString(7, application.getBugTrackerUrl());
-                preStat.setString(8, application.getBugTrackerNewUrl());
-                preStat.setString(9, application.getDeploytype());
-                preStat.setString(10, application.getMavengroupid());
-                preStat.setString(11, application.getApplication());
-
-                int res = preStat.executeUpdate();
-                bool = res > 0;
-            } catch (SQLException exception) {
-                MyLogger.log(ApplicationDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
-            } finally {
-                preStat.close();
-            }
-        } catch (SQLException exception) {
-            MyLogger.log(ApplicationDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
-        } finally {
-            try {
-                if (connection != null) {
-                    connection.close();
-                }
-            } catch (SQLException e) {
-                MyLogger.log(ApplicationDAO.class.getName(), Level.WARN, e.toString());
-            }
-        }
-        return bool;
-    }
-
-    @Override
-    public Answer createApplication1(Application application) {
+    public Answer createApplication(Application application) {
         MessageEvent msg = null;
         StringBuilder query = new StringBuilder();
         query.append("INSERT INTO application (`application`, `description`, `sort`, `type`, `system`, `SubSystem`, `svnurl`, `BugTrackerUrl`, `BugTrackerNewUrl`, `deploytype`, `mavengroupid` ) ");
@@ -582,7 +449,7 @@ public class ApplicationDAO implements IApplicationDAO {
     }
 
     @Override
-    public Answer deleteApplication1(Application application) {
+    public Answer deleteApplication(Application application) {
         MessageEvent msg = null;
         final String query = "DELETE FROM application WHERE application = ? ";
 
@@ -619,7 +486,7 @@ public class ApplicationDAO implements IApplicationDAO {
     }
 
     @Override
-    public Answer updateApplication1(Application application) {
+    public Answer updateApplication(Application application) {
         MessageEvent msg = null;
         final String query = "UPDATE application SET description = ?, sort = ?, `type` = ?, `system` = ?, SubSystem = ?, svnurl = ?, BugTrackerUrl = ?, BugTrackerNewUrl = ?, deploytype = ?, mavengroupid = ?  WHERE Application = ?";
 

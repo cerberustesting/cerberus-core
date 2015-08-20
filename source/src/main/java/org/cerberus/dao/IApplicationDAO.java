@@ -70,26 +70,11 @@ public interface IApplicationDAO {
 
     public AnswerItem findApplicationByString(String application);
 
-    public void createApplication(Application application) throws CerberusException;
+    public Answer createApplication(Application application);
 
-    public void deleteApplication(Application application) throws CerberusException;
+    public Answer deleteApplication(Application application);
 
-    /**
-     * Updates the information based on the object application
-     *
-     * @param application Object Application to update.
-     * @return true if updated successfully and false if no row updated
-     * @throws CerberusException When occur a error on
-     * Connection/Statement/Update
-     * @since 0.9.0
-     */
-    boolean updateApplication(Application application) throws CerberusException;
-
-    public Answer createApplication1(Application application);
-
-    public Answer deleteApplication1(Application application);
-
-    public Answer updateApplication1(Application application);
+    public Answer updateApplication(Application application);
 
     /**
      *

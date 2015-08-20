@@ -17,23 +17,29 @@
  */
 package org.cerberus.servlet.application;
 
-import org.cerberus.servlet.invariant.*;
 import java.io.IOException;
-import java.io.PrintWriter;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.servlet.ServletException;
+import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import org.cerberus.entity.Application;
+import org.cerberus.entity.MessageEvent;
+import org.cerberus.entity.MessageEventEnum;
 import org.cerberus.exception.CerberusException;
 import org.cerberus.factory.IFactoryLogEvent;
 import org.cerberus.factory.impl.FactoryLogEvent;
+import org.cerberus.log.MyLogger;
 import org.cerberus.service.IApplicationService;
 import org.cerberus.service.ILogEventService;
 import org.cerberus.service.impl.LogEventService;
-import org.cerberus.service.impl.UserService;
+import org.cerberus.util.answer.Answer;
+import org.json.JSONException;
+import org.json.JSONObject;
+import org.owasp.html.PolicyFactory;
+import org.owasp.html.Sanitizers;
 import org.springframework.context.ApplicationContext;
 import org.springframework.web.context.support.WebApplicationContextUtils;
 
@@ -41,12 +47,12 @@ import org.springframework.web.context.support.WebApplicationContextUtils;
  *
  * @author bcivel
  */
+@WebServlet(name = "DeleteApplication1", urlPatterns = {"/DeleteApplication1"})
 public class DeleteApplication extends HttpServlet {
 
     /**
-     * Processes requests for both HTTP
-     * <code>GET</code> and
-     * <code>POST</code> methods.
+     * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
+     * methods.
      *
      * @param request servlet request
      * @param response servlet response
@@ -54,39 +60,54 @@ public class DeleteApplication extends HttpServlet {
      * @throws IOException if an I/O error occurs
      */
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException, CerberusException {
-        response.setContentType("text/html;charset=UTF-8");
-        PrintWriter out = response.getWriter();
+            throws ServletException, IOException, CerberusException, JSONException {
+        JSONObject jsonResponse = new JSONObject();
+        Answer ans = new Answer();
+        MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_UNEXPECTED_ERROR);
+        msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", ""));
+        ans.setResultMessage(msg);
+        PolicyFactory policy = Sanitizers.FORMATTING.and(Sanitizers.LINKS);
+
+        response.setContentType("application/json");
+
+        String key = policy.sanitize(request.getParameter("application"));
+
+        MyLogger.log(DeleteApplication.class.getName(), org.apache.log4j.Level.DEBUG, "key : " + key);
+
+        ApplicationContext appContext = WebApplicationContextUtils.getWebApplicationContext(this.getServletContext());
+        IApplicationService applicationService = appContext.getBean(IApplicationService.class);
+
+        Application applicationData = applicationService.findApplicationByKey(key);
+        ans = applicationService.deleteApplication(applicationData);
+
+        /**
+         * Adding Log entry.
+         */
+        ILogEventService logEventService = appContext.getBean(LogEventService.class);
+        IFactoryLogEvent factoryLogEvent = appContext.getBean(FactoryLogEvent.class);
         try {
-            String application = request.getParameter("id");
-
-            ApplicationContext appContext = WebApplicationContextUtils.getWebApplicationContext(this.getServletContext());
-            IApplicationService applicationService = appContext.getBean(IApplicationService.class);
-
-            Application applicationData = applicationService.findApplicationByKey(application);
-            applicationService.deleteApplication(applicationData);
-
-            /**
-             * Adding Log entry.
-             */
-            ILogEventService logEventService = appContext.getBean(LogEventService.class);
-            IFactoryLogEvent factoryLogEvent = appContext.getBean(FactoryLogEvent.class);
-            try {
-                logEventService.insertLogEvent(factoryLogEvent.create(0, 0, request.getUserPrincipal().getName(), null, "/DeleteApplication", "DELETE", "Delete Application : " + application , "", ""));
-            } catch (CerberusException ex) {
-                org.apache.log4j.Logger.getLogger(UserService.class.getName()).log(org.apache.log4j.Level.ERROR, null, ex);
-            }
-
-
-        } finally {
-            out.close();
+            logEventService.insertLogEvent(factoryLogEvent.create(0, 0, request.getUserPrincipal().getName(), null, "/DeleteApplication", "DELETE", "Delete Application : ['" + key + "']", "", ""));
+        } catch (CerberusException ex) {
+            org.apache.log4j.Logger.getLogger(DeleteApplication.class.getName()).log(org.apache.log4j.Level.ERROR, null, ex);
         }
+
+        jsonResponse.put("messageType", ans.getResultMessage().getMessage().getCodeString());
+        jsonResponse.put("message", ans.getResultMessage().getDescription());
+
+        response.getWriter().print(jsonResponse.toString());
+        response.getWriter().flush();
+
+        jsonResponse.put("messageType", ans.getResultMessage().getMessage().getCodeString());
+        jsonResponse.put("message", ans.getResultMessage().getDescription());
+
+        response.getWriter().print(jsonResponse.toString());
+        response.getWriter().flush();
+
     }
 
-    // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
+// <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
     /**
-     * Handles the HTTP
-     * <code>GET</code> method.
+     * Handles the HTTP <code>GET</code> method.
      *
      * @param request servlet request
      * @param response servlet response
@@ -98,14 +119,18 @@ public class DeleteApplication extends HttpServlet {
             throws ServletException, IOException {
         try {
             processRequest(request, response);
+
         } catch (CerberusException ex) {
-            Logger.getLogger(DeleteInvariant.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(DeleteApplication.class
+                    .getName()).log(Level.SEVERE, null, ex);
+        } catch (JSONException ex) {
+            Logger.getLogger(DeleteApplication.class
+                    .getName()).log(Level.SEVERE, null, ex);
         }
     }
 
     /**
-     * Handles the HTTP
-     * <code>POST</code> method.
+     * Handles the HTTP <code>POST</code> method.
      *
      * @param request servlet request
      * @param response servlet response
@@ -117,8 +142,13 @@ public class DeleteApplication extends HttpServlet {
             throws ServletException, IOException {
         try {
             processRequest(request, response);
+
         } catch (CerberusException ex) {
-            Logger.getLogger(DeleteInvariant.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(DeleteApplication.class
+                    .getName()).log(Level.SEVERE, null, ex);
+        } catch (JSONException ex) {
+            Logger.getLogger(DeleteApplication.class
+                    .getName()).log(Level.SEVERE, null, ex);
         }
     }
 

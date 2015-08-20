@@ -396,7 +396,8 @@ public class DeployTypeDAO implements IDeployTypeDAO {
         return new Answer(msg);
     }
 
-    private DeployType loadDeployTypeFromResultSet(ResultSet rs) throws SQLException {
+    @Override
+    public DeployType loadDeployTypeFromResultSet(ResultSet rs) throws SQLException {
         String deployType = ParameterParserUtil.parseStringParam(rs.getString("deployType"), "");
         String description = ParameterParserUtil.parseStringParam(rs.getString("description"), "");
 

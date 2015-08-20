@@ -88,17 +88,11 @@ public interface IApplicationService {
      */
     public AnswerItem findApplicationByString(String id);
 
-    public void createApplication(Application application) throws CerberusException;
+    public Answer createApplication(Application application);
 
-    public void deleteApplication(Application application) throws CerberusException;
+    public Answer deleteApplication(Application application);
 
-    boolean updateApplication(Application application) throws CerberusException;
-
-    public Answer createApplication1(Application application);
-
-    public Answer deleteApplication1(Application application);
-
-    public Answer updateApplication1(Application application);
+    public Answer updateApplication(Application application);
 
     /**
      *
