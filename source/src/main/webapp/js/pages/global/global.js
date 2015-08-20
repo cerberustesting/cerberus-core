@@ -320,16 +320,25 @@ function setDataConfirmationModal(title, message, hiddenField) {
  * Auxiliary function that shows a modal dialog that allows the upload of files
  * @param {type} handlerClickOk / function that will be executed when the user clicks in the upload button
  * @param {type} fileExtension / extension of files that are allowed
+ * @param {type} translations - the user can specify a function that translates the labels in the upload dialog.
  */
-function showModalUpload(handlerClickOk, fileExtension) {
+function showModalUpload(handlerClickOk, fileExtension, translations) {
     clearResponseMessageMainPage();
+    //if translations are defined, then the title and buttons will be modified
+    if(Boolean(translations)){
+        //update translations        
+        $.each(translations, function( index) {
+            $("#"+index).text(translations[index]);
+        });
+    }
+    
     $('#modalUpload').modal('show');
     $('#modalUpload').find('#uploadOk').click(handlerClickOk);
     $('#modalUpload').find("#fileInput").change(function() {
         validatesFileExtension(this.value, fileExtension);
     });
 }
-
+ 
 /**
  * Auxiliary function that validates if a fileName has a valid extension
  * @param {type} fileName name to be validated

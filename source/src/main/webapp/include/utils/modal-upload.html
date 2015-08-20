@@ -19,7 +19,7 @@
                         <div class="form-group">
                             
                             <div class="fileUpload btn btn-primary">
-                                <span>Choose File</span>
+                                <span id="choseFileLabel">Choose File</span>
                                 <input type="file" id="fileInput" name="fileInput" accept="text/xml" class="upload width100" />                                             
                             </div>
                             <label id="upload-file-info"></label>                            
@@ -28,7 +28,7 @@
                 </div>                
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                <button type="button" id="cancelButton" class="btn btn-default" data-dismiss="modal">Cancel</button>
                 <button type="button" id="uploadOk" class="btn btn-primary" disabled="disabled">Upload</button>
             </div>
         </div>
