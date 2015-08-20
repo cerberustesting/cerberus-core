@@ -21,6 +21,7 @@ import java.util.List;
 
 import org.cerberus.entity.TestCaseExecution;
 import org.cerberus.exception.CerberusException;
+import org.cerberus.util.answer.AnswerList;
 
 /**
  * {Insert class description here}
@@ -125,5 +126,7 @@ public interface ITestCaseExecutionDAO {
      * @param tag : Tag to set to the execution
      */
     public void setTagToExecution(long id, String tag) throws CerberusException ;
+    
+    AnswerList findTagList(boolean withUUIDTag) throws CerberusException;
 
     }

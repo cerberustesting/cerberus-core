@@ -28,6 +28,7 @@ import org.cerberus.exception.CerberusException;
 import org.cerberus.log.MyLogger;
 import org.cerberus.service.ITestCaseExecutionService;
 import org.cerberus.util.ParameterParserUtil;
+import org.cerberus.util.answer.AnswerList;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -122,5 +123,9 @@ public class TestCaseExecutionService implements ITestCaseExecutionService {
     @Override
     public void setTagToExecution(long id, String tag) throws CerberusException {
         testCaseExecutionDao.setTagToExecution(id, tag);
+    }
+    
+    public AnswerList findTagList(boolean withUUIDTag) throws CerberusException {
+        return testCaseExecutionDao.findTagList(withUUIDTag);
     }
 }

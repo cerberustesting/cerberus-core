@@ -182,6 +182,10 @@
         <servlet-class>org.cerberus.servlet.publi.GetTagExecutions</servlet-class>
     </servlet>
     <servlet>
+        <servlet-name>ReadTagExecution</servlet-name>
+        <servlet-class>org.cerberus.servlet.publi.ReadTagExecution</servlet-class>
+    </servlet>
+    <servlet>
         <servlet-name>GetCampaignExecutionsCommand</servlet-name>
         <servlet-class>org.cerberus.servlet.publi.GetCampaignExecutionsCommand</servlet-class>
     </servlet>
@@ -889,6 +893,10 @@
         <url-pattern>/GetTagExecutions</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
+        <servlet-name>ReadTagExecution</servlet-name>
+        <url-pattern>/ReadTagExecution</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
         <servlet-name>GetCampaignExecutionsCommand</servlet-name>
         <url-pattern>/GetCampaignExecutionsCommand</url-pattern>
     </servlet-mapping>
@@ -1502,7 +1510,6 @@ ie User management, parameter management, log viewer, database management.</desc
             <url-pattern>/ViewProperty.jsp</url-pattern>
             <url-pattern>/TestPerApplication.jsp</url-pattern>
             <url-pattern>/CampaignReportByTag.jsp</url-pattern>
-            <url-pattern>/Project.html</url-pattern>
         </web-resource-collection>
         <web-resource-collection>
             <web-resource-name>servlet</web-resource-name>
@@ -1835,6 +1842,7 @@ ie User management, parameter management, log viewer, database management.</desc
             <url-pattern>/GetInvariantList</url-pattern>
             <url-pattern>/GetCampaign</url-pattern>
             <url-pattern>/GetTagExecutions</url-pattern>
+            <url-pattern>/ReadTagExecution</url-pattern>
             <url-pattern>/GetCampaignExecutionsCommand</url-pattern>
             <url-pattern>/ListCampaignParameter</url-pattern>
             <url-pattern>/UpdateCampaign</url-pattern>
