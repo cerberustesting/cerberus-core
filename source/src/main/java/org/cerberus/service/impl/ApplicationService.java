@@ -72,33 +72,18 @@ public class ApplicationService implements IApplicationService {
     }
 
     @Override
-    public void createApplication(Application application) throws CerberusException {
-        ApplicationDAO.createApplication(application);
+    public Answer createApplication(Application application)  {
+         return ApplicationDAO.createApplication(application);
     }
 
     @Override
-    public void deleteApplication(Application application) throws CerberusException {
-        ApplicationDAO.deleteApplication(application);
+    public Answer deleteApplication(Application application)  {
+        return ApplicationDAO.deleteApplication(application);
     }
 
     @Override
-    public boolean updateApplication(Application application) throws CerberusException {
+    public Answer updateApplication(Application application)  {
         return ApplicationDAO.updateApplication(application);
-    }
-
-    @Override
-    public Answer createApplication1(Application application)  {
-         return ApplicationDAO.createApplication1(application);
-    }
-
-    @Override
-    public Answer deleteApplication1(Application application)  {
-        return ApplicationDAO.deleteApplication1(application);
-    }
-
-    @Override
-    public Answer updateApplication1(Application application)  {
-        return ApplicationDAO.updateApplication1(application);
     }
 
     @Override

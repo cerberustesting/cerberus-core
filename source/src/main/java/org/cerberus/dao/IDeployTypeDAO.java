@@ -17,9 +17,10 @@
  */
 package org.cerberus.dao;
 
-import java.util.List;
-
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import org.cerberus.entity.DeployType;
+import org.cerberus.util.answer.Answer;
 import org.cerberus.util.answer.AnswerItem;
 import org.cerberus.util.answer.AnswerList;
 
@@ -34,4 +35,11 @@ public interface IDeployTypeDAO {
 
     public AnswerList findDeployTypeByCriteria(int startPosition, int length, String columnName, String sort, String searchParameter, String string);
 
+    public Answer createDeployType(DeployType deployType);
+
+    public Answer deleteDeployType(DeployType deployType);
+
+    public Answer updateDeployType(DeployType deployType);
+
+    public DeployType loadDeployTypeFromResultSet(ResultSet rs) throws SQLException;
 }

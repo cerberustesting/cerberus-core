@@ -25,16 +25,17 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import org.cerberus.entity.Application;
-import org.cerberus.entity.Project;
+import org.cerberus.entity.DeployType;
+import org.cerberus.entity.MessageEvent;
+import org.cerberus.entity.MessageEventEnum;
 import org.cerberus.exception.CerberusException;
 import org.cerberus.factory.IFactoryLogEvent;
 import org.cerberus.factory.impl.FactoryLogEvent;
-import org.cerberus.service.IApplicationService;
+import org.cerberus.service.IDeployTypeService;
 import org.cerberus.service.ILogEventService;
-import org.cerberus.service.IProjectService;
 import org.cerberus.service.impl.LogEventService;
 import org.cerberus.util.answer.Answer;
+import org.cerberus.util.answer.AnswerItem;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.owasp.html.PolicyFactory;
@@ -46,8 +47,8 @@ import org.springframework.web.context.support.WebApplicationContextUtils;
  *
  * @author bcivel
  */
-@WebServlet(name = "UpdateApplication1", urlPatterns = {"/UpdateApplication1"})
-public class UpdateApplication1 extends HttpServlet {
+@WebServlet(name = "UpdateDeployType", urlPatterns = {"/UpdateDeployType"})
+public class UpdateDeployType extends HttpServlet {
 
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
@@ -60,60 +61,50 @@ public class UpdateApplication1 extends HttpServlet {
      */
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException, CerberusException, JSONException {
-        Answer ans = new Answer();
         JSONObject jsonResponse = new JSONObject();
+        Answer ans = new Answer();
+        MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_UNEXPECTED_ERROR);
+        msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", ""));
+        ans.setResultMessage(msg);
         PolicyFactory policy = Sanitizers.FORMATTING.and(Sanitizers.LINKS);
-        String application = request.getParameter("application");
-        String system = request.getParameter("system");
-        String subSystem = request.getParameter("subsystem");
-        String type = request.getParameter("type");
-        String mavenGpID = request.getParameter("mavengroupid");
-        String deployType = request.getParameter("deploytype");
-        String svnURL = request.getParameter("svnurl");
-        String bugTrackerURL = request.getParameter("bugtrackerurl");
-        String newBugURL = request.getParameter("bugtrackernewurl");
-        String description = request.getParameter("description");
-        Integer sort = 10;
-        try {
-            if (request.getParameter("sort") != null && !request.getParameter("sort").equals("")) {
-                sort = Integer.valueOf(request.getParameter("sort"));
-            }
-        } catch (Exception ex) {
-            Logger.getLogger(UpdateApplication1.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        
-        ApplicationContext appContext = WebApplicationContextUtils.getWebApplicationContext(this.getServletContext());
-        IApplicationService applicationService = appContext.getBean(IApplicationService.class);
-        
-        Application applicationData = applicationService.findApplicationByKey(application);
-        applicationData.setSystem(system);
-        applicationData.setSubsystem(subSystem);
-        applicationData.setType(type);
-        applicationData.setMavengroupid(mavenGpID);
-        applicationData.setDeploytype(deployType);
-        applicationData.setSvnurl(svnURL);
-        applicationData.setBugTrackerUrl(bugTrackerURL);
-        applicationData.setBugTrackerNewUrl(newBugURL);
-        applicationData.setDescription(description);
-        applicationData.setSort(sort);
-        
-        ans = applicationService.updateApplication1(applicationData);
 
-        /**
-         * Adding Log entry.
-         */
-        ILogEventService logEventService = appContext.getBean(LogEventService.class);
-        IFactoryLogEvent factoryLogEvent = appContext.getBean(FactoryLogEvent.class);
-        
-        try {
-            logEventService.insertLogEvent(factoryLogEvent.create(0, 0, request.getUserPrincipal().getName(), null, "/UpdateApplication", "UPDATE", "Updated Application : ['" + application + "']", "", ""));
-        } catch (CerberusException ex) {
-            Logger.getLogger(UpdateApplication1.class.getName()).log(Level.SEVERE, null, ex);
+        response.setContentType("application/json");
+
+        String deployType = policy.sanitize(request.getParameter("deploytype"));
+        String description = policy.sanitize(request.getParameter("description"));
+
+        ApplicationContext appContext = WebApplicationContextUtils.getWebApplicationContext(this.getServletContext());
+        IDeployTypeService deployTypeService = appContext.getBean(IDeployTypeService.class);
+
+        AnswerItem resp = deployTypeService.findDeployTypeByKey(deployType);
+        if (resp.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {  //the service was able to perform the query, then we can delete.
+            DeployType deployTypeData = (DeployType) resp.getItem();
+            deployTypeData.setDescription(description);
+            ans = deployTypeService.updateDeployType(deployTypeData);
+
+            /**
+             * Adding Log entry.
+             */
+            ILogEventService logEventService = appContext.getBean(LogEventService.class);
+            IFactoryLogEvent factoryLogEvent = appContext.getBean(FactoryLogEvent.class);
+
+            try {
+                logEventService.insertLogEvent(factoryLogEvent.create(0, 0, request.getUserPrincipal().getName(), null, "/UpdateDeployType", "UPDATE", "Updated Deploy Type : ['" + deployType + "']", "", ""));
+            } catch (CerberusException ex) {
+                Logger.getLogger(UpdateDeployType.class.getName()).log(Level.SEVERE, null, ex);
+            }
+
+        } else { // DeployType does not exist.
+            msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_EXPECTED_ERROR);
+            msg.setDescription(msg.getDescription().replace("%ITEM%", "Deploy Type")
+                    .replace("%OPERATION%", "Update")
+                    .replace("%REASON%", "Deploy Type does not exist!"));
+            ans.setResultMessage(msg);
         }
-        
+
         jsonResponse.put("messageType", ans.getResultMessage().getMessage().getCodeString());
         jsonResponse.put("message", ans.getResultMessage().getDescription());
-        response.setContentType("application/json");
+
         response.getWriter().print(jsonResponse);
         response.getWriter().flush();
     }
@@ -132,12 +123,12 @@ public class UpdateApplication1 extends HttpServlet {
             throws ServletException, IOException {
         try {
             processRequest(request, response);
-            
+
         } catch (CerberusException ex) {
-            Logger.getLogger(UpdateApplication1.class
+            Logger.getLogger(UpdateDeployType.class
                     .getName()).log(Level.SEVERE, null, ex);
         } catch (JSONException ex) {
-            Logger.getLogger(UpdateApplication1.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(UpdateDeployType.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
 
@@ -154,12 +145,12 @@ public class UpdateApplication1 extends HttpServlet {
             throws ServletException, IOException {
         try {
             processRequest(request, response);
-            
+
         } catch (CerberusException ex) {
-            Logger.getLogger(UpdateApplication1.class
+            Logger.getLogger(UpdateDeployType.class
                     .getName()).log(Level.SEVERE, null, ex);
         } catch (JSONException ex) {
-            Logger.getLogger(UpdateApplication1.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(UpdateDeployType.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
 

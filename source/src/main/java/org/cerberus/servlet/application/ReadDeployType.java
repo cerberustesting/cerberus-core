@@ -37,6 +37,7 @@ import org.cerberus.exception.CerberusException;
 import org.cerberus.service.IDeployTypeService;
 import org.cerberus.service.impl.DeployTypeService;
 import org.cerberus.util.ParameterParserUtil;
+import org.cerberus.util.answer.Answer;
 import org.cerberus.util.answer.AnswerItem;
 import org.cerberus.util.answer.AnswerList;
 import org.json.JSONArray;
@@ -72,17 +73,19 @@ public class ReadDeployType extends HttpServlet {
         ApplicationContext appContext = WebApplicationContextUtils.getWebApplicationContext(this.getServletContext());
         PolicyFactory policy = Sanitizers.FORMATTING.and(Sanitizers.LINKS);
 
-        AnswerItem answer = new AnswerItem(new MessageEvent(MessageEventEnum.DATA_OPERATION_OK));
+        MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_UNEXPECTED_ERROR);
+        msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", ""));
+        AnswerItem answer = new AnswerItem(msg);
+        
         try {
             JSONObject jsonResponse = new JSONObject();
             if (request.getParameter("action") == null) {
-//                answer = findApplicationList(appContext, request, response);
                 answer = findDeployTypeList(appContext, request, response);
                 jsonResponse = (JSONObject) answer.getItem();
             } else {
                 int actionParameter = Integer.parseInt(request.getParameter("action"));
                 if (actionParameter == 1) {
-                    String deployType = policy.sanitize(request.getParameter("deployType"));
+                    String deployType = policy.sanitize(request.getParameter("deploytype"));
                     answer = findDeployTypeByID(appContext, deployType);
                     jsonResponse = (JSONObject) answer.getItem();
                 }
@@ -94,11 +97,12 @@ public class ReadDeployType extends HttpServlet {
 
             response.setContentType("application/json");
             response.getWriter().print(jsonResponse.toString());
+            
         } catch (JSONException e) {
             org.apache.log4j.Logger.getLogger(ReadDeployType.class.getName()).log(org.apache.log4j.Level.ERROR, null, e);
             //returns a default error message with the json format that is able to be parsed by the client-side
             response.setContentType("application/json");
-            MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_UNEXPECTED_ERROR);
+            msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_UNEXPECTED_ERROR);
             StringBuilder errorMessage = new StringBuilder();
             errorMessage.append("{'messageType':'").append(msg.getCode()).append("', ");
             errorMessage.append(" 'message': '");

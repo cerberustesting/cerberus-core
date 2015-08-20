@@ -3944,8 +3944,7 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
 // Adding Invariant sizeScreen.
 // -- ------------------------ 594
         SQLS = new StringBuilder();
-        SQLS.append("INSERT INTO `documentation` ");
-        SQLS.append("VALUES ('page_runtests','screensize','','en','Screen Size','This is the size of the browser screen that will be set for the execution.<br><br>Default Values are set inside the InvariantPublic Table.<br>Value must be two Integer splitted by a <b>*</b> mark.<br><i>For Exemple : 1024*768</i><br><br>If you need to add other Values, please contact your Cerberus Administrator.')");
+        SQLS.append("SELECT 1 FROM dual;");
         SQLInstruction.add(SQLS.toString());
 
 // Adding sizeScreen into testcaseexecution table.
@@ -4011,6 +4010,15 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
 
 // New updated Documentation.
 //-- ------------------------ 607-608
+        SQLS = new StringBuilder();
+        SQLS.append("SELECT 1 FROM dual;");
+        SQLInstruction.add(SQLS.toString());
+        SQLS = new StringBuilder();
+        SQLS.append("SELECT 1 FROM dual;");
+        SQLInstruction.add(SQLS.toString());
+
+// New updated Documentation.
+//-- ------------------------ 609-610
         SQLS = new StringBuilder();
         SQLS.append("DELETE FROM `documentation`;");
         SQLInstruction.add(SQLS.toString());
@@ -4100,6 +4108,10 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLS.append(",('dataTable','sSortDescending','','fr',': activer pour trier la colonne par ordre d&eacute;croissant','')");
         SQLS.append(",('dataTable','sZeroRecords','','en','No matching records found','')");
         SQLS.append(",('dataTable','sZeroRecords','','fr','Aucun &eacute;l&eacute;ment &agrave; afficher','')");
+        SQLS.append(",('deploytype','deploytype','','en','Deployment Type','')");
+        SQLS.append(",('deploytype','deploytype','','fr','Type de deploiement','')");
+        SQLS.append(",('deploytype','description','','en','Description','')");
+        SQLS.append(",('deploytype','description','','fr','Description','')");
         SQLS.append(",('host','active','','en','Active','')");
         SQLS.append(",('host','host','','en','Host','')");
         SQLS.append(",('host','port','','en','port','')");
@@ -4133,6 +4145,14 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLS.append(",('page_application','title','','en','APPLICATION','This page can be used to manage the applications.')");
         SQLS.append(",('page_application','title','','fr','APPLICATION','Cette page permet de gérer et créer des applications.')");
         SQLS.append(",('page_buildcontent','delete','','en','Dlt','Select this checkbox and then save changes in order to delete the row.')");
+        SQLS.append(",('page_deploytype','button_create','','en','Create new Deployment Type','')");
+        SQLS.append(",('page_deploytype','button_create','','fr','Créer un nouveau Type de Deploiement','')");
+        SQLS.append(",('page_deploytype','button_delete','','en','Delete Deployment Type','')");
+        SQLS.append(",('page_deploytype','button_delete','','fr','Supprimer le Type de Deploiement','')");
+        SQLS.append(",('page_deploytype','button_edit','','en','Edit Deployment Type','')");
+        SQLS.append(",('page_deploytype','button_edit','','fr','Modifier le Type de Deploiement','')");
+        SQLS.append(",('page_deploytype','title','','en','DEPLOYMENT TYPE','This page can be used in order to manage the deployment types.')");
+        SQLS.append(",('page_deploytype','title','','fr','TYPE DE DEPLOIEMENT','Cette page permet de gérer et créer des types de deploiements.')");
         SQLS.append(",('page_executiondetail','buildrevision','','en','BuildRev','Build and Revision of the <code class=\\'doc-crbvvoca\\'>environment</code> of the <code class=\\'doc-crbvvoca\\'>system</code> of the <code class=\\'doc-crbvvoca\\'>application</code> that has been tested.')");
         SQLS.append(",('page_executiondetail','buildrevisionlink','','en','BuildRev Linked','Build and Revision of the <code class=\\'doc-crbvvoca\\'>environment</code> of the linked <code class=\\'doc-crbvvoca\\'>system</code>. The linked systems are defined in the \\'Environment Dependancy\\' section of the <code class=\\'doc-crbvvoca\\'>environment</code> page.')");
         SQLS.append(",('page_executiondetail','SeleniumLog','','en','Selenium Log','Link to the selenium log file')");
@@ -4180,6 +4200,8 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLS.append(",('page_header','menuData','','fr','Données','')");
         SQLS.append(",('page_header','menuDatabaseMaintenance','','en','Database Maintenance','')");
         SQLS.append(",('page_header','menuDatabaseMaintenance','','fr','Maintenance de la base de données','')");
+        SQLS.append(",('page_header','menuDeployType','','en','Deploiement Type','')");
+        SQLS.append(",('page_header','menuDeployType','','fr','Type de Deploiement','')");
         SQLS.append(",('page_header','menuEditTest','','en','Edit Test','')");
         SQLS.append(",('page_header','menuEditTest','','fr','Editer un Test','')");
         SQLS.append(",('page_header','menuEditTestCase','','en','Edit TestCase','')");
