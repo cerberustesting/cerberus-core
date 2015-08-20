@@ -11,6 +11,8 @@
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
         <%@ include file="include/dependenciesInclusions.html" %>
         <link rel="stylesheet" href="css/ReportingExecutionByTag.css" type="text/css"/>
+        <link rel="stylesheet" href="css/select2.css" type="text/css"/>
+        <script type="text/javascript" src="js/d3.min.js"></script>
         <script type="text/javascript" src="js/pages/ReportingExecutionByTag.js"></script>
         <title id="pageTitle">Campaign Reporting</title>
     </head>
@@ -47,15 +49,18 @@
                             <h3 class="panel-title" name="reportByStatus">Report by Status</h3>
                         </div>
                         <div class="panel-body">
-                            <table class="table" id="ReportByStatusTable" style="width: 50%;">
-                                <thead>
-                                    <tr>
-                                        <th>Execution status</th>
-                                        <th>TestCase Number</th>
-                                    </tr>
-                                </thead>
-                                <tbody></tbody>
-                            </table>
+                            <div class="row">
+                                <table class="table col-xs-6" id="ReportByStatusTable" style="width: 50%;">
+                                    <thead>
+                                        <tr>
+                                            <th>Execution status</th>
+                                            <th>TestCase Number</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody></tbody>
+                                </table>
+                                <div class="col-xs-6" id="chart"></div>
+                            </div>
                         </div>
                     </div>
                 </div>
