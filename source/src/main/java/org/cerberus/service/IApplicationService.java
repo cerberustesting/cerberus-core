@@ -22,7 +22,6 @@ package org.cerberus.service;
 import java.util.List;
 
 import org.cerberus.entity.Application;
-import org.cerberus.entity.Project;
 import org.cerberus.exception.CerberusException;
 import org.cerberus.util.answer.Answer;
 import org.cerberus.util.answer.AnswerItem;

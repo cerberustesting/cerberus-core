@@ -18,7 +18,6 @@
 package org.cerberus.servlet.application;
 
 import java.io.IOException;
-import java.io.PrintWriter;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.servlet.ServletException;
@@ -26,14 +25,15 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import org.cerberus.entity.Application;
+import org.cerberus.entity.DeployType;
 import org.cerberus.entity.MessageEvent;
 import org.cerberus.entity.MessageEventEnum;
 import org.cerberus.exception.CerberusException;
-import org.cerberus.factory.IFactoryApplication;
+import org.cerberus.factory.IFactoryDeployType;
 import org.cerberus.factory.IFactoryLogEvent;
 import org.cerberus.factory.impl.FactoryLogEvent;
-import org.cerberus.service.IApplicationService;
+import org.cerberus.log.MyLogger;
+import org.cerberus.service.IDeployTypeService;
 import org.cerberus.service.ILogEventService;
 import org.cerberus.service.impl.LogEventService;
 import org.cerberus.util.StringUtil;
@@ -49,8 +49,8 @@ import org.owasp.html.Sanitizers;
  *
  * @author bcivel
  */
-@WebServlet(name = "CreateApplication1", urlPatterns = {"/CreateApplication1"})
-public class CreateApplication1 extends HttpServlet {
+@WebServlet(name = "CreateDeployType", urlPatterns = {"/CreateDeployType"})
+public class CreateDeployType extends HttpServlet {
 
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
@@ -74,46 +74,24 @@ public class CreateApplication1 extends HttpServlet {
 
         response.setContentType("application/json");
 
-        String application = policy.sanitize(request.getParameter("application"));
-        String system = policy.sanitize(request.getParameter("system"));
-        String subSystem = policy.sanitize(request.getParameter("subsystem"));
-        String type = policy.sanitize(request.getParameter("type"));
-        String mavenGpID = policy.sanitize(request.getParameter("mavengroupid"));
-        String deployType = policy.sanitize(request.getParameter("deploytype"));
-        String svnURL = policy.sanitize(request.getParameter("svnurl"));
-        String bugTrackerURL = policy.sanitize(request.getParameter("bugtrackerurl"));
-        String newBugURL = policy.sanitize(request.getParameter("bugtrackernewurl"));
+        String deploytype = policy.sanitize(request.getParameter("deploytype"));
         String description = policy.sanitize(request.getParameter("description"));
-        Integer sort = 10;
-        try {
-            if (request.getParameter("sort") != null && !request.getParameter("sort").equals("")) {
-                sort = Integer.valueOf(policy.sanitize(request.getParameter("sort")));
-            }
-        } catch (Exception ex) {
-            msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_EXPECTED_ERROR);
-            msg.setDescription(msg.getDescription().replace("%ITEM%", "Application")
-                    .replace("%OPERATION%", "Create")
-                    .replace("%REASON%", "could not manage to convert sort to an integer value!"));
-            ans.setResultMessage(msg);
-            jsonResponse.put("messageType", ans.getResultMessage().getMessage().getCodeString());
-            jsonResponse.put("message", ans.getResultMessage().getDescription());
-            response.getWriter().print(jsonResponse);
-            response.getWriter().flush();
-        }
 
-        if (StringUtil.isNullOrEmpty(application)) {
+        MyLogger.log(DeleteDeployType.class.getName(), org.apache.log4j.Level.DEBUG, "key : " + deploytype);
+
+        if (StringUtil.isNullOrEmpty(deploytype)) {
             msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_EXPECTED_ERROR);
-            msg.setDescription(msg.getDescription().replace("%ITEM%", "Application")
+            msg.setDescription(msg.getDescription().replace("%ITEM%", "Deploy Type")
                     .replace("%OPERATION%", "Create")
-                    .replace("%REASON%", "application name is missing!"));
+                    .replace("%REASON%", "Deploy Type name is missing!"));
             ans.setResultMessage(msg);
         } else {
             ApplicationContext appContext = WebApplicationContextUtils.getWebApplicationContext(this.getServletContext());
-            IApplicationService applicationService = appContext.getBean(IApplicationService.class);
-            IFactoryApplication factoryApplication = appContext.getBean(IFactoryApplication.class);
+            IDeployTypeService deployTypeService = appContext.getBean(IDeployTypeService.class);
+            IFactoryDeployType factoryDeployType = appContext.getBean(IFactoryDeployType.class);
 
-            Application applicationData = factoryApplication.create(application, description, sort, type, system, subSystem, svnURL, deployType, mavenGpID, bugTrackerURL, newBugURL);
-            ans = applicationService.createApplication1(applicationData);
+            DeployType deployTypeData = factoryDeployType.create(deploytype, description);
+            ans = deployTypeService.createDeployType(deployTypeData);
 
             /**
              * Adding Log entry.
@@ -122,9 +100,9 @@ public class CreateApplication1 extends HttpServlet {
             IFactoryLogEvent factoryLogEvent = appContext.getBean(FactoryLogEvent.class);
 
             try {
-                logEventService.insertLogEvent(factoryLogEvent.create(0, 0, request.getUserPrincipal().getName(), null, "/CreateApplication", "CREATE", "Create Application : ['" + application + "']", "", ""));
+                logEventService.insertLogEvent(factoryLogEvent.create(0, 0, request.getUserPrincipal().getName(), null, "/CreateDeployType", "CREATE", "Create DeployType : ['" + deploytype + "']", "", ""));
             } catch (CerberusException ex) {
-                org.apache.log4j.Logger.getLogger(CreateApplication1.class.getName()).log(org.apache.log4j.Level.ERROR, null, ex);
+                org.apache.log4j.Logger.getLogger(CreateDeployType.class.getName()).log(org.apache.log4j.Level.ERROR, null, ex);
             }
         }
 
@@ -151,9 +129,9 @@ public class CreateApplication1 extends HttpServlet {
         try {
             processRequest(request, response);
         } catch (CerberusException ex) {
-            Logger.getLogger(CreateApplication1.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(CreateDeployType.class.getName()).log(Level.SEVERE, null, ex);
         } catch (JSONException ex) {
-            Logger.getLogger(CreateApplication1.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(CreateDeployType.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
 
@@ -171,9 +149,9 @@ public class CreateApplication1 extends HttpServlet {
         try {
             processRequest(request, response);
         } catch (CerberusException ex) {
-            Logger.getLogger(CreateApplication1.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(CreateDeployType.class.getName()).log(Level.SEVERE, null, ex);
         } catch (JSONException ex) {
-            Logger.getLogger(CreateApplication1.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(CreateDeployType.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
 

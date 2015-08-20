@@ -17,9 +17,8 @@
  */
 package org.cerberus.dao;
 
-import java.util.List;
-
 import org.cerberus.entity.DeployType;
+import org.cerberus.util.answer.Answer;
 import org.cerberus.util.answer.AnswerItem;
 import org.cerberus.util.answer.AnswerList;
 
@@ -33,5 +32,11 @@ public interface IDeployTypeDAO {
     public AnswerList findAllDeployType();
 
     public AnswerList findDeployTypeByCriteria(int startPosition, int length, String columnName, String sort, String searchParameter, String string);
+
+    public Answer createDeployType(DeployType deployType);
+
+    public Answer deleteDeployType(DeployType deployType);
+
+    public Answer updateDeployType(DeployType deployType);
 
 }

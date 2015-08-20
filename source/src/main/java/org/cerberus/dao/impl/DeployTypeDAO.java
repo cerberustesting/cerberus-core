@@ -34,6 +34,7 @@ import org.cerberus.factory.IFactoryDeployType;
 import org.cerberus.factory.impl.FactoryDeployType;
 import org.cerberus.log.MyLogger;
 import org.cerberus.util.ParameterParserUtil;
+import org.cerberus.util.answer.Answer;
 import org.cerberus.util.answer.AnswerItem;
 import org.cerberus.util.answer.AnswerList;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -46,6 +47,8 @@ public class DeployTypeDAO implements IDeployTypeDAO {
     private DatabaseSpring databaseSpring;
     @Autowired
     private IFactoryDeployType factoryDeployType;
+
+    private final String SQL_DUPLICATED_CODE = "23000";
 
     /**
      *
@@ -103,7 +106,6 @@ public class DeployTypeDAO implements IDeployTypeDAO {
         ans.setResultMessage(msg);
         return ans;
     }
-    
 
     @Override
     public AnswerList findAllDeployType() {
@@ -272,8 +274,128 @@ public class DeployTypeDAO implements IDeployTypeDAO {
         return response;
     }
 
-    
-    
+    @Override
+    public Answer createDeployType(DeployType deployType) {
+        MessageEvent msg = null;
+        StringBuilder query = new StringBuilder();
+        query.append("INSERT INTO deploytype (`deploytype`, `description`) ");
+        query.append("VALUES (?,?)");
+
+        Connection connection = this.databaseSpring.connect();
+        try {
+            PreparedStatement preStat = connection.prepareStatement(query.toString());
+            try {
+                preStat.setString(1, deployType.getDeploytype());
+                preStat.setString(2, deployType.getDescription());
+
+                preStat.executeUpdate();
+                msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
+                msg.setDescription(msg.getDescription().replace("%ITEM%", "Deploy Type").replace("%OPERATION%", "INSERT"));
+
+            } catch (SQLException exception) {
+                MyLogger.log(DeployTypeDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
+
+                if (exception.getSQLState().equals(SQL_DUPLICATED_CODE)) { //23000 is the sql state for duplicate entries
+                    msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_DUPLICATE_ERROR);
+                    msg.setDescription(msg.getDescription().replace("%ITEM%", "Deploy Type").replace("%OPERATION%", "INSERT"));
+                } else {
+                    msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_UNEXPECTED_ERROR);
+                    msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", exception.toString()));
+                }
+            } finally {
+                preStat.close();
+            }
+        } catch (SQLException exception) {
+            MyLogger.log(DeployTypeDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
+            msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_UNEXPECTED_ERROR);
+            msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", exception.toString()));
+        } finally {
+            try {
+                if (connection != null) {
+                    connection.close();
+                }
+            } catch (SQLException e) {
+                MyLogger.log(DeployTypeDAO.class.getName(), Level.WARN, e.toString());
+            }
+        }
+        return new Answer(msg);
+    }
+
+    @Override
+    public Answer deleteDeployType(DeployType deployType) {
+        MessageEvent msg = null;
+        final String query = "DELETE FROM deploytype WHERE deploytype = ? ";
+
+        Connection connection = this.databaseSpring.connect();
+        try {
+            PreparedStatement preStat = connection.prepareStatement(query);
+            try {
+                preStat.setString(1, deployType.getDeploytype());
+
+                preStat.executeUpdate();
+                msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
+                msg.setDescription(msg.getDescription().replace("%ITEM%", "Deploy Type").replace("%OPERATION%", "DELETE"));
+            } catch (SQLException exception) {
+                MyLogger.log(DeployTypeDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
+                msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_UNEXPECTED_ERROR);
+                msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", exception.toString()));
+            } finally {
+                preStat.close();
+            }
+        } catch (SQLException exception) {
+            MyLogger.log(DeployTypeDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
+            msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_UNEXPECTED_ERROR);
+            msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", exception.toString()));
+        } finally {
+            try {
+                if (connection != null) {
+                    connection.close();
+                }
+            } catch (SQLException e) {
+                MyLogger.log(DeployTypeDAO.class.getName(), Level.WARN, e.toString());
+            }
+        }
+        return new Answer(msg);
+    }
+
+    @Override
+    public Answer updateDeployType(DeployType deployType) {
+        MessageEvent msg = null;
+        final String query = "UPDATE deploytype SET description = ? WHERE deploytype = ? ";
+
+        Connection connection = this.databaseSpring.connect();
+        try {
+            PreparedStatement preStat = connection.prepareStatement(query);
+            try {
+                preStat.setString(1, deployType.getDescription());
+                preStat.setString(2, deployType.getDeploytype());
+
+                preStat.executeUpdate();
+                msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
+                msg.setDescription(msg.getDescription().replace("%ITEM%", "Deploy Tpe").replace("%OPERATION%", "UPDATE"));
+            } catch (SQLException exception) {
+                MyLogger.log(DeployTypeDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
+                msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_UNEXPECTED_ERROR);
+                msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", exception.toString()));
+            } finally {
+                preStat.close();
+            }
+        } catch (SQLException exception) {
+            MyLogger.log(DeployTypeDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
+            msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_UNEXPECTED_ERROR);
+            msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", exception.toString()));
+        } finally {
+            try {
+                if (connection != null) {
+                    connection.close();
+                }
+            } catch (SQLException e) {
+                MyLogger.log(DeployTypeDAO.class.getName(), Level.WARN, e.toString());
+            }
+        }
+        return new Answer(msg);
+    }
+
     private DeployType loadDeployTypeFromResultSet(ResultSet rs) throws SQLException {
         String deployType = ParameterParserUtil.parseStringParam(rs.getString("deployType"), "");
         String description = ParameterParserUtil.parseStringParam(rs.getString("description"), "");

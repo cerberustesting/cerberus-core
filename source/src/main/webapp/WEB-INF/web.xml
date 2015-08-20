@@ -270,6 +270,22 @@
         <servlet-class>org.cerberus.servlet.application.GetDeployTypeList</servlet-class>
     </servlet>
     <servlet>
+        <servlet-name>ReadDeployType</servlet-name>
+        <servlet-class>org.cerberus.servlet.application.ReadDeployType</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>CreateDeployType</servlet-name>
+        <servlet-class>org.cerberus.servlet.application.CreateDeployType</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>DeleteDeployType</servlet-name>
+        <servlet-class>org.cerberus.servlet.application.DeleteDeployType</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>UpdateDeployType</servlet-name>
+        <servlet-class>org.cerberus.servlet.application.UpdateDeployType</servlet-class>
+    </servlet>
+    <servlet>
         <servlet-name>UpdateBuildRevisionParameter</servlet-name>
         <servlet-class>org.cerberus.servlet.environment.UpdateBuildRevisionParameter</servlet-class>
     </servlet>
@@ -1689,6 +1705,7 @@ ie User management, parameter management, log viewer, database management.</desc
             <url-pattern>/GetInvariantsForTest</url-pattern>
             <url-pattern>/GetEnvironmentAvailable</url-pattern>
             <url-pattern>/GetDeployTypeList</url-pattern>
+            <url-pattern>/ReadDeployType</url-pattern>
             <url-pattern>/GetBuildRevisionInvariant</url-pattern>
             <url-pattern>/ReadProject</url-pattern>
             <url-pattern>/FindBuildContent</url-pattern>
@@ -1721,6 +1738,9 @@ ie User management, parameter management, log viewer, database management.</desc
             <url-pattern>/CreateRobot</url-pattern>
             <url-pattern>/DeleteRobot</url-pattern>
             <url-pattern>/UpdateRobot</url-pattern>
+            <url-pattern>/CreateDeployType</url-pattern>
+            <url-pattern>/DeleteDeployType</url-pattern>
+            <url-pattern>/UpdateDeployType</url-pattern>
             <url-pattern>/FindAllRobot</url-pattern>
             <url-pattern>/AddBuildContent</url-pattern>
             <url-pattern>/DeleteBuildContent</url-pattern>
