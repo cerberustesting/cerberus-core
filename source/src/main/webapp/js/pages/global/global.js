@@ -326,10 +326,18 @@ function showModalUpload(handlerClickOk, fileExtension, translations) {
     clearResponseMessageMainPage();
     //if translations are defined, then the title and buttons will be modified
     if(Boolean(translations)){
-        //update translations        
+        //update translations if a specific page secifies it     
         $.each(translations, function( index) {
             $("#"+index).text(translations[index]);
         });
+    }else{
+       //use the default translations (for the specific language)
+       var doc = getDoc();
+       var docModalDefault = doc.modal_upload;
+       $("#modalUploadLabel").text(docModalDefault.title.docLabel);
+       $("#choseFileLabel").text(docModalDefault.btn_choose.docLabel);
+       $("#cancelButton").text(docModalDefault.btn_cancel.docLabel);
+       $("#uploadOk").text(docModalDefault.btn_upload.docLabel);       
     }
     
     $('#modalUpload').modal('show');
