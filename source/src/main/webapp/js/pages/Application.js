@@ -74,7 +74,7 @@ function displayPageLabel() {
 
 function deleteApplicationHandlerClick() {
     var idApplication = $('#confirmationModal').find('#hiddenField').prop("value");
-    var jqxhr = $.post("DeleteApplication1", {application: idApplication}, "json");
+    var jqxhr = $.post("DeleteApplication", {application: idApplication}, "json");
     $.when(jqxhr).then(function (data) {
         var messageType = getAlertType(data.messageType);
         if (messageType === "success") {
@@ -123,7 +123,7 @@ function saveNewApplicationHandler() {
         return;
 
     showLoaderInModal('#addApplicationModal');
-    var jqxhr = $.post("CreateApplication1", formAdd.serialize());
+    var jqxhr = $.post("CreateApplication", formAdd.serialize());
     $.when(jqxhr).then(function (data) {
         hideLoaderInModal('#addApplicationModal');
         console.log(data.messageType);
@@ -143,7 +143,7 @@ function saveUpdateApplicationHandler() {
     var formEdit = $('#editApplicationModal #editApplicationModalForm');
     showLoaderInModal('#editApplicationModal');
 
-    var jqxhr = $.post("UpdateApplication1", formEdit.serialize(), "json");
+    var jqxhr = $.post("UpdateApplication", formEdit.serialize(), "json");
     $.when(jqxhr).then(function (data) {
         // unblock when remote call returns 
         hideLoaderInModal('#editApplicationModal');

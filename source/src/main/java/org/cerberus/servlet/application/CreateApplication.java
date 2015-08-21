@@ -48,7 +48,7 @@ import org.owasp.html.Sanitizers;
  *
  * @author bcivel
  */
-@WebServlet(name = "CreateApplication1", urlPatterns = {"/CreateApplication1"})
+@WebServlet(name = "CreateApplication", urlPatterns = {"/CreateApplication"})
 public class CreateApplication extends HttpServlet {
 
     /**
@@ -84,20 +84,13 @@ public class CreateApplication extends HttpServlet {
         String newBugURL = policy.sanitize(request.getParameter("bugtrackernewurl"));
         String description = policy.sanitize(request.getParameter("description"));
         Integer sort = 10;
+        boolean sort_error = false;
         try {
             if (request.getParameter("sort") != null && !request.getParameter("sort").equals("")) {
                 sort = Integer.valueOf(policy.sanitize(request.getParameter("sort")));
             }
         } catch (Exception ex) {
-            msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_EXPECTED_ERROR);
-            msg.setDescription(msg.getDescription().replace("%ITEM%", "Application")
-                    .replace("%OPERATION%", "Create")
-                    .replace("%REASON%", "could not manage to convert sort to an integer value!"));
-            ans.setResultMessage(msg);
-            jsonResponse.put("messageType", ans.getResultMessage().getMessage().getCodeString());
-            jsonResponse.put("message", ans.getResultMessage().getDescription());
-            response.getWriter().print(jsonResponse);
-            response.getWriter().flush();
+            sort_error = true;
         }
 
         if (StringUtil.isNullOrEmpty(application)) {
@@ -105,6 +98,12 @@ public class CreateApplication extends HttpServlet {
             msg.setDescription(msg.getDescription().replace("%ITEM%", "Application")
                     .replace("%OPERATION%", "Create")
                     .replace("%REASON%", "application name is missing!"));
+            ans.setResultMessage(msg);
+        } else if (sort_error) {
+            msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_EXPECTED_ERROR);
+            msg.setDescription(msg.getDescription().replace("%ITEM%", "Application")
+                    .replace("%OPERATION%", "Create")
+                    .replace("%REASON%", "Could not manage to convert sort to an integer value!"));
             ans.setResultMessage(msg);
         } else {
             ApplicationContext appContext = WebApplicationContextUtils.getWebApplicationContext(this.getServletContext());
