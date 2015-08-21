@@ -182,8 +182,8 @@
         <servlet-class>org.cerberus.servlet.publi.GetTagExecutions</servlet-class>
     </servlet>
     <servlet>
-        <servlet-name>ReadTagExecution</servlet-name>
-        <servlet-class>org.cerberus.servlet.publi.ReadTagExecution</servlet-class>
+        <servlet-name>ReadTestCaseExecution</servlet-name>
+        <servlet-class>org.cerberus.servlet.testCaseExecution.ReadTestCaseExecution</servlet-class>
     </servlet>
     <servlet>
         <servlet-name>GetCampaignExecutionsCommand</servlet-name>
@@ -901,8 +901,8 @@
         <url-pattern>/GetTagExecutions</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
-        <servlet-name>ReadTagExecution</servlet-name>
-        <url-pattern>/ReadTagExecution</url-pattern>
+        <servlet-name>ReadTestCaseExecution</servlet-name>
+        <url-pattern>/ReadTestCaseExecution</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
         <servlet-name>GetCampaignExecutionsCommand</servlet-name>
@@ -1492,12 +1492,12 @@
     </security-role>
     <security-role>
         <description>Can deploy a new Chain in an environment.
-ie : Can modify the build and revision for an environment.</description>
+            ie : Can modify the build and revision for an environment.</description>
         <role-name>IntegratorDeploy</role-name>
     </security-role>
     <security-role>
         <description>Access to administration tools
-ie User management, parameter management, log viewer, database management.</description>
+            ie User management, parameter management, log viewer, database management.</description>
         <role-name>Administrator</role-name>
     </security-role>
     <security-constraint>
@@ -1712,13 +1712,13 @@ ie User management, parameter management, log viewer, database management.</desc
             <url-pattern>/GetInvariantsForTest</url-pattern>
             <url-pattern>/GetEnvironmentAvailable</url-pattern>
             <url-pattern>/GetDeployTypeList</url-pattern>
-            <url-pattern>/ReadDeployType</url-pattern>
             <url-pattern>/GetBuildRevisionInvariant</url-pattern>
             <url-pattern>/ReadProject</url-pattern>
             <url-pattern>/FindBuildContent</url-pattern>
             <url-pattern>/FindCountryEnvironmentDatabase</url-pattern>
             <url-pattern>/GetCountryEnvParamList</url-pattern>
             <url-pattern>/GetCountryEnvironmentParameterList</url-pattern>
+            <url-pattern>/ReadDeployType</url-pattern>
         </web-resource-collection>
         <auth-constraint>
             <description>IntegratorRO</description>
@@ -1730,7 +1730,6 @@ ie User management, parameter management, log viewer, database management.</desc
         <web-resource-collection>
             <web-resource-name>servlet</web-resource-name>
             <description>servlet</description>
-            <url-pattern>/ReadApplication</url-pattern>
             <url-pattern>/CreateApplication</url-pattern>
             <url-pattern>/UpdateApplication</url-pattern>
             <url-pattern>/UpdateBuildRevisionParameter</url-pattern>
@@ -1744,9 +1743,6 @@ ie User management, parameter management, log viewer, database management.</desc
             <url-pattern>/CreateRobot</url-pattern>
             <url-pattern>/DeleteRobot</url-pattern>
             <url-pattern>/UpdateRobot</url-pattern>
-            <url-pattern>/CreateDeployType</url-pattern>
-            <url-pattern>/DeleteDeployType</url-pattern>
-            <url-pattern>/UpdateDeployType</url-pattern>
             <url-pattern>/FindAllRobot</url-pattern>
             <url-pattern>/AddBuildContent</url-pattern>
             <url-pattern>/DeleteBuildContent</url-pattern>
@@ -1760,6 +1756,10 @@ ie User management, parameter management, log viewer, database management.</desc
             <url-pattern>/CreateCountryEnvironmentDatabase</url-pattern>
             <url-pattern>/DeleteCountryEnvironmentDatabase</url-pattern>
             <url-pattern>/UpdateCountryEnvironmentDatabase</url-pattern>
+            <url-pattern>/ReadApplication</url-pattern>
+            <url-pattern>/CreateDeployType</url-pattern>
+            <url-pattern>/DeleteDeployType</url-pattern>
+            <url-pattern>/UpdateDeployType</url-pattern>
         </web-resource-collection>
         <auth-constraint>
             <description>Integrator</description>
@@ -1859,7 +1859,6 @@ ie User management, parameter management, log viewer, database management.</desc
             <url-pattern>/GetInvariantList</url-pattern>
             <url-pattern>/GetCampaign</url-pattern>
             <url-pattern>/GetTagExecutions</url-pattern>
-            <url-pattern>/ReadTagExecution</url-pattern>
             <url-pattern>/GetCampaignExecutionsCommand</url-pattern>
             <url-pattern>/ListCampaignParameter</url-pattern>
             <url-pattern>/UpdateCampaign</url-pattern>
@@ -1891,6 +1890,7 @@ ie User management, parameter management, log viewer, database management.</desc
             <url-pattern>/ReadUser</url-pattern>
             <url-pattern>/ReadDocumentation</url-pattern>
             <url-pattern>/ReadCerberusInformation</url-pattern>
+            <url-pattern>/ReadTestCaseExecution</url-pattern>
         </web-resource-collection>
     </security-constraint>
     <security-constraint>

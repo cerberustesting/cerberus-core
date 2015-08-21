@@ -125,7 +125,7 @@ public class TestCaseExecutionService implements ITestCaseExecutionService {
         testCaseExecutionDao.setTagToExecution(id, tag);
     }
     
-    public AnswerList findTagList(boolean withUUIDTag) throws CerberusException {
-        return testCaseExecutionDao.findTagList(withUUIDTag);
+    public AnswerList findTagList() throws CerberusException {
+        return testCaseExecutionDao.findTagList();
     }
 }

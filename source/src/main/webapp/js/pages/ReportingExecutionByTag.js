@@ -33,7 +33,7 @@ function initPage() {
 }
 
 function loadTagFilters() {
-    var jqxhr = $.get("ReadTagExecution", "withUUID", "json");
+    var jqxhr = $.get("ReadTestCaseExecution", "action=1", "json");
     $.when(jqxhr).then(function (data) {
         var messageType = getAlertType(data.messageType);
         if (messageType === "success") {

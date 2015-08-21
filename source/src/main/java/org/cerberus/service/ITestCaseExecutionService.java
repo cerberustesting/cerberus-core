@@ -120,6 +120,6 @@ public interface ITestCaseExecutionService {
      */
     void setTagToExecution(long id, String tag) throws CerberusException;
     
-    AnswerList findTagList(boolean withUUIDTag) throws CerberusException;
+    AnswerList findTagList() throws CerberusException;
     
 }
