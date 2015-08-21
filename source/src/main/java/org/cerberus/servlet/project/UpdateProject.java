@@ -24,6 +24,7 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import org.cerberus.entity.MessageEventEnum;
 import org.cerberus.entity.Project;
 import org.cerberus.exception.CerberusException;
 import org.cerberus.factory.IFactoryLogEvent;
@@ -32,6 +33,7 @@ import org.cerberus.service.ILogEventService;
 import org.cerberus.service.IProjectService;
 import org.cerberus.service.impl.LogEventService;
 import org.cerberus.util.answer.Answer;
+import org.cerberus.util.answer.AnswerItem;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.owasp.html.PolicyFactory;
@@ -53,6 +55,8 @@ public class UpdateProject extends HttpServlet {
      * @param response servlet response
      * @throws ServletException if a servlet-specific error occurs
      * @throws IOException if an I/O error occurs
+     * @throws org.cerberus.exception.CerberusException
+     * @throws org.json.JSONException
      */
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException, CerberusException, JSONException {
@@ -67,12 +71,17 @@ public class UpdateProject extends HttpServlet {
         ApplicationContext appContext = WebApplicationContextUtils.getWebApplicationContext(this.getServletContext());
         IProjectService projectService = appContext.getBean(IProjectService.class);
 
-        Project projectData = projectService.findProjectByKey(idProject);
-        projectData.setCode(code);
-        projectData.setDescription(description);
-        projectData.setActive(active);
+        AnswerItem project = projectService.findProjectByString(idProject);
 
-        ans = projectService.updateProject(projectData);
+        if (project.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
+            Project projectData = (Project) project.getItem();
+            projectData.setCode(code);
+            projectData.setDescription(description);
+            projectData.setActive(active);
+            ans = projectService.updateProject(projectData);
+        } else {
+            ans.setResultMessage(project.getResultMessage());
+        }
 
         /**
          * Adding Log entry.

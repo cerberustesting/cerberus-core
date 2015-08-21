@@ -48,3 +48,7 @@
 .statusCA {
     background-color: #FDB45C; 
 }
+
+svg {
+    margin-left: 50px;
+}

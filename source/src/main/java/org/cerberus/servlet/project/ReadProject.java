@@ -177,7 +177,7 @@ public class ReadProject extends HttpServlet {
         boolean userHasPermissions = request.isUserInRole("IntegratorRO");
         if (resp.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {//the service was able to perform the query, then we should get all values
             for (Project project : (List<Project>) resp.getDataList()) {
-                jsonArray.put(convertProjectToJSONObject(project));
+                jsonArray.put(convertProjectToJSONObject(project).put("hasPermissions", userHasPermissions));
             }
         }
 

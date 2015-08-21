@@ -18,14 +18,12 @@
 package org.cerberus.servlet.project;
 
 import java.io.IOException;
-import java.io.PrintWriter;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import org.cerberus.entity.MessageEvent;
 import org.cerberus.entity.MessageEventEnum;
 import org.cerberus.entity.Project;
 import org.cerberus.exception.CerberusException;
@@ -67,30 +65,30 @@ public class DeleteProject extends HttpServlet {
         Answer ans = new Answer();
         PolicyFactory policy = Sanitizers.FORMATTING.and(Sanitizers.LINKS);
 
-//        PrintWriter out = response.getWriter();
+        String key = policy.sanitize(request.getParameter("id"));
+
+        MyLogger.log(DeleteProject.class.getName(), org.apache.log4j.Level.DEBUG, "key : " + key);
+
+        ApplicationContext appContext = WebApplicationContextUtils.getWebApplicationContext(this.getServletContext());
+        IProjectService projectService = appContext.getBean(IProjectService.class);
+
+        AnswerItem project = projectService.findProjectByString(key);
+
+        if (project.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
+            ans = projectService.deleteProject((Project) project.getItem());
+        } else {
+            ans.setResultMessage(project.getResultMessage());
+        }
+
+        /**
+         * Adding Log entry.
+         */
+        ILogEventService logEventService = appContext.getBean(LogEventService.class);
+        IFactoryLogEvent factoryLogEvent = appContext.getBean(FactoryLogEvent.class);
         try {
-            String key = policy.sanitize(request.getParameter("id"));
-
-            MyLogger.log(DeleteProject.class.getName(), org.apache.log4j.Level.DEBUG, "key : " + key);
-
-            ApplicationContext appContext = WebApplicationContextUtils.getWebApplicationContext(this.getServletContext());
-            IProjectService projectService = appContext.getBean(IProjectService.class);
-
-            Project projectData = projectService.findProjectByKey(key);
-            ans = projectService.deleteProject(projectData);
-
-            /**
-             * Adding Log entry.
-             */
-            ILogEventService logEventService = appContext.getBean(LogEventService.class);
-            IFactoryLogEvent factoryLogEvent = appContext.getBean(FactoryLogEvent.class);
-            try {
-                logEventService.insertLogEvent(factoryLogEvent.create(0, 0, request.getUserPrincipal().getName(), null, "/DeleteProject", "DELETE", "Delete Project : ['" + key + "']", "", ""));
-            } catch (CerberusException ex) {
-                org.apache.log4j.Logger.getLogger(UserService.class.getName()).log(org.apache.log4j.Level.ERROR, null, ex);
-            }
-        } finally {
-//            out.close();
+            logEventService.insertLogEvent(factoryLogEvent.create(0, 0, request.getUserPrincipal().getName(), null, "/DeleteProject", "DELETE", "Delete Project : ['" + key + "']", "", ""));
+        } catch (CerberusException ex) {
+            org.apache.log4j.Logger.getLogger(UserService.class.getName()).log(org.apache.log4j.Level.ERROR, null, ex);
         }
 
         jsonResponse.put("messageType", ans.getResultMessage().getMessage().getCodeString());
