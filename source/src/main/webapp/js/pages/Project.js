@@ -64,7 +64,7 @@ function displayPageLabel() {
 
 function deleteEntryHandlerClick() {
     var idProject = $('#confirmationModal').find('#hiddenField').prop("value");
-    var jqxhr = $.post("DeleteProject", {id: idProject}, "json");
+    var jqxhr = $.post("DeleteProject", {idproject: idProject}, "json");
     $.when(jqxhr).then(function (data) {
         var messageType = getAlertType(data.messageType);
         if (messageType === "success") {

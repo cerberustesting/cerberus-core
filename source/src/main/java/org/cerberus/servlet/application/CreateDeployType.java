@@ -32,7 +32,6 @@ import org.cerberus.exception.CerberusException;
 import org.cerberus.factory.IFactoryDeployType;
 import org.cerberus.factory.IFactoryLogEvent;
 import org.cerberus.factory.impl.FactoryLogEvent;
-import org.cerberus.log.MyLogger;
 import org.cerberus.service.IDeployTypeService;
 import org.cerberus.service.ILogEventService;
 import org.cerberus.service.impl.LogEventService;
@@ -74,11 +73,15 @@ public class CreateDeployType extends HttpServlet {
 
         response.setContentType("application/json");
 
+        /**
+         * Parsing and securing all required parameters.
+         */
         String deploytype = policy.sanitize(request.getParameter("deploytype"));
         String description = policy.sanitize(request.getParameter("description"));
 
-        MyLogger.log(DeleteDeployType.class.getName(), org.apache.log4j.Level.DEBUG, "key : " + deploytype);
-
+        /**
+         * Checking all constrains before calling the services.
+         */
         if (StringUtil.isNullOrEmpty(deploytype)) {
             msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_EXPECTED_ERROR);
             msg.setDescription(msg.getDescription().replace("%ITEM%", "Deploy Type")
@@ -86,6 +89,9 @@ public class CreateDeployType extends HttpServlet {
                     .replace("%REASON%", "Deploy Type name is missing!"));
             ans.setResultMessage(msg);
         } else {
+            /**
+             * All data seems cleans so we can call the services.
+             */
             ApplicationContext appContext = WebApplicationContextUtils.getWebApplicationContext(this.getServletContext());
             IDeployTypeService deployTypeService = appContext.getBean(IDeployTypeService.class);
             IFactoryDeployType factoryDeployType = appContext.getBean(IFactoryDeployType.class);
@@ -93,19 +99,24 @@ public class CreateDeployType extends HttpServlet {
             DeployType deployTypeData = factoryDeployType.create(deploytype, description);
             ans = deployTypeService.createDeployType(deployTypeData);
 
-            /**
-             * Adding Log entry.
-             */
-            ILogEventService logEventService = appContext.getBean(LogEventService.class);
-            IFactoryLogEvent factoryLogEvent = appContext.getBean(FactoryLogEvent.class);
+            if (ans.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
+                /**
+                 * Object created. Adding Log entry.
+                 */
+                ILogEventService logEventService = appContext.getBean(LogEventService.class);
+                IFactoryLogEvent factoryLogEvent = appContext.getBean(FactoryLogEvent.class);
 
-            try {
-                logEventService.insertLogEvent(factoryLogEvent.create(0, 0, request.getUserPrincipal().getName(), null, "/CreateDeployType", "CREATE", "Create DeployType : ['" + deploytype + "']", "", ""));
-            } catch (CerberusException ex) {
-                org.apache.log4j.Logger.getLogger(CreateDeployType.class.getName()).log(org.apache.log4j.Level.ERROR, null, ex);
+                try {
+                    logEventService.insertLogEvent(factoryLogEvent.create(0, 0, request.getUserPrincipal().getName(), null, "/CreateDeployType", "CREATE", "Create DeployType : ['" + deploytype + "']", "", ""));
+                } catch (CerberusException ex) {
+                    org.apache.log4j.Logger.getLogger(CreateDeployType.class.getName()).log(org.apache.log4j.Level.ERROR, null, ex);
+                }
             }
         }
 
+        /**
+         * Formating and returning the json result.
+         */
         jsonResponse.put("messageType", ans.getResultMessage().getMessage().getCodeString());
         jsonResponse.put("message", ans.getResultMessage().getDescription());
 

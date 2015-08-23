@@ -24,16 +24,17 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import org.cerberus.entity.MessageEvent;
 import org.cerberus.entity.MessageEventEnum;
 import org.cerberus.entity.Project;
 import org.cerberus.exception.CerberusException;
 import org.cerberus.factory.IFactoryLogEvent;
 import org.cerberus.factory.impl.FactoryLogEvent;
-import org.cerberus.log.MyLogger;
 import org.cerberus.service.ILogEventService;
 import org.cerberus.service.IProjectService;
 import org.cerberus.service.impl.LogEventService;
 import org.cerberus.service.impl.UserService;
+import org.cerberus.util.StringUtil;
 import org.cerberus.util.answer.Answer;
 import org.cerberus.util.answer.AnswerItem;
 import org.json.JSONException;
@@ -60,42 +61,79 @@ public class DeleteProject extends HttpServlet {
      */
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException, CerberusException, JSONException {
-        response.setContentType("text/html;charset=UTF-8");
         JSONObject jsonResponse = new JSONObject();
         Answer ans = new Answer();
+        MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_UNEXPECTED_ERROR);
+        msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", ""));
+        ans.setResultMessage(msg);
         PolicyFactory policy = Sanitizers.FORMATTING.and(Sanitizers.LINKS);
 
-        String key = policy.sanitize(request.getParameter("id"));
-
-        MyLogger.log(DeleteProject.class.getName(), org.apache.log4j.Level.DEBUG, "key : " + key);
-
-        ApplicationContext appContext = WebApplicationContextUtils.getWebApplicationContext(this.getServletContext());
-        IProjectService projectService = appContext.getBean(IProjectService.class);
-
-        AnswerItem project = projectService.findProjectByString(key);
-
-        if (project.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
-            ans = projectService.deleteProject((Project) project.getItem());
-        } else {
-            ans.setResultMessage(project.getResultMessage());
-        }
+        response.setContentType("application/json");
 
         /**
-         * Adding Log entry.
+         * Parsing and securing all required parameters.
          */
-        ILogEventService logEventService = appContext.getBean(LogEventService.class);
-        IFactoryLogEvent factoryLogEvent = appContext.getBean(FactoryLogEvent.class);
-        try {
-            logEventService.insertLogEvent(factoryLogEvent.create(0, 0, request.getUserPrincipal().getName(), null, "/DeleteProject", "DELETE", "Delete Project : ['" + key + "']", "", ""));
-        } catch (CerberusException ex) {
-            org.apache.log4j.Logger.getLogger(UserService.class.getName()).log(org.apache.log4j.Level.ERROR, null, ex);
-        }
+        String key = policy.sanitize(request.getParameter("idproject"));
 
+        /**
+         * Checking all constrains before calling the services.
+         */
+        if (StringUtil.isNullOrEmpty(key)) {
+            msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_EXPECTED_ERROR);
+            msg.setDescription(msg.getDescription().replace("%ITEM%", "Project")
+                    .replace("%OPERATION%", "Delete")
+                    .replace("%REASON%", "Project ID (idproject) is missing."));
+            ans.setResultMessage(msg);
+        } else {
+            /**
+             * All data seems cleans so we can call the services.
+             */
+            ApplicationContext appContext = WebApplicationContextUtils.getWebApplicationContext(this.getServletContext());
+            IProjectService projectService = appContext.getBean(IProjectService.class);
+
+            AnswerItem resp = projectService.findProjectByString(key);
+
+            if (!(resp.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode()))) {
+                /**
+                 * Object could not be found. We stop here and report the error.
+                 */
+                msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_EXPECTED_ERROR);
+                msg.setDescription(msg.getDescription().replace("%ITEM%", "Project")
+                        .replace("%OPERATION%", "Delete")
+                        .replace("%REASON%", "Project does not exist."));
+                ans.setResultMessage(msg);
+
+            } else {
+                /**
+                 * The service was able to perform the query and confirm the
+                 * object exist, then we can delete it.
+                 */
+                Project projectData = (Project) resp.getItem();
+                ans = projectService.deleteProject(projectData);
+
+                if (ans.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
+                    /**
+                     * Delete was succesfull. Adding Log entry.
+                     */
+                    ILogEventService logEventService = appContext.getBean(LogEventService.class);
+                    IFactoryLogEvent factoryLogEvent = appContext.getBean(FactoryLogEvent.class);
+                    try {
+                        logEventService.insertLogEvent(factoryLogEvent.create(0, 0, request.getUserPrincipal().getName(), null, "/DeleteProject", "DELETE", "Delete Project : ['" + key + "']", "", ""));
+                    } catch (CerberusException ex) {
+                        org.apache.log4j.Logger.getLogger(UserService.class.getName()).log(org.apache.log4j.Level.ERROR, null, ex);
+                    }
+                }
+            }
+        }
+        
+        /**
+         * Formating and returning the json result.
+         */
         jsonResponse.put("messageType", ans.getResultMessage().getMessage().getCodeString());
         jsonResponse.put("message", ans.getResultMessage().getDescription());
 
-        response.setContentType("application/json");
         response.getWriter().print(jsonResponse.toString());
+        response.getWriter().flush();
     }
 
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">

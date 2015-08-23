@@ -36,7 +36,9 @@ import org.cerberus.factory.impl.FactoryLogEvent;
 import org.cerberus.service.IApplicationService;
 import org.cerberus.service.ILogEventService;
 import org.cerberus.service.impl.LogEventService;
+import org.cerberus.util.StringUtil;
 import org.cerberus.util.answer.Answer;
+import org.cerberus.util.answer.AnswerItem;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.owasp.html.PolicyFactory;
@@ -48,7 +50,7 @@ import org.springframework.web.context.support.WebApplicationContextUtils;
  *
  * @author bcivel
  */
-@WebServlet(name = "UpdateApplication1", urlPatterns = {"/UpdateApplication1"})
+@WebServlet(name = "UpdateApplication", urlPatterns = {"/UpdateApplication"})
 public class UpdateApplication extends HttpServlet {
 
     /**
@@ -62,15 +64,18 @@ public class UpdateApplication extends HttpServlet {
      */
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException, CerberusException, JSONException {
+        JSONObject jsonResponse = new JSONObject();
         Answer ans = new Answer();
         MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_UNEXPECTED_ERROR);
         msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", ""));
         ans.setResultMessage(msg);
-        JSONObject jsonResponse = new JSONObject();
         PolicyFactory policy = Sanitizers.FORMATTING.and(Sanitizers.LINKS);
-        
+
         response.setContentType("application/json");
-        
+
+        /**
+         * Parsing and securing all required parameters.
+         */
         String application = policy.sanitize(request.getParameter("application"));
         String system = policy.sanitize(request.getParameter("system"));
         String subSystem = policy.sanitize(request.getParameter("subsystem"));
@@ -85,49 +90,82 @@ public class UpdateApplication extends HttpServlet {
         boolean sort_error = false;
         try {
             if (request.getParameter("sort") != null && !request.getParameter("sort").equals("")) {
-                sort = Integer.valueOf(request.getParameter("sort"));
+                sort = Integer.valueOf(policy.sanitize(request.getParameter("sort")));
             }
         } catch (Exception ex) {
             sort_error = true;
         }
 
-        if (sort_error) {
+        /**
+         * Checking all constrains before calling the services.
+         */
+        if (StringUtil.isNullOrEmpty(application)) {
             msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_EXPECTED_ERROR);
             msg.setDescription(msg.getDescription().replace("%ITEM%", "Application")
-                    .replace("%OPERATION%", "Create")
-                    .replace("%REASON%", "Could not manage to convert sort to an integer value!"));
+                    .replace("%OPERATION%", "Update")
+                    .replace("%REASON%", "Application ID (application) is missing."));
+            ans.setResultMessage(msg);
+        } else if (sort_error) {
+            msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_EXPECTED_ERROR);
+            msg.setDescription(msg.getDescription().replace("%ITEM%", "Application")
+                    .replace("%OPERATION%", "Update")
+                    .replace("%REASON%", "Could not manage to convert sort to an integer value."));
             ans.setResultMessage(msg);
         } else {
+            /**
+             * All data seems cleans so we can call the services.
+             */
             ApplicationContext appContext = WebApplicationContextUtils.getWebApplicationContext(this.getServletContext());
             IApplicationService applicationService = appContext.getBean(IApplicationService.class);
 
-            Application applicationData = applicationService.findApplicationByKey(application);
-            applicationData.setSystem(system);
-            applicationData.setSubsystem(subSystem);
-            applicationData.setType(type);
-            applicationData.setMavengroupid(mavenGpID);
-            applicationData.setDeploytype(deployType);
-            applicationData.setSvnurl(svnURL);
-            applicationData.setBugTrackerUrl(bugTrackerURL);
-            applicationData.setBugTrackerNewUrl(newBugURL);
-            applicationData.setDescription(description);
-            applicationData.setSort(sort);
+            AnswerItem resp = applicationService.findApplicationByString(application);
+            if (!(resp.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode()))) {
+                /**
+                 * Object could not be found. We stop here and report the error.
+                 */
+                msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_EXPECTED_ERROR);
+                msg.setDescription(msg.getDescription().replace("%ITEM%", "Application")
+                        .replace("%OPERATION%", "Update")
+                        .replace("%REASON%", "Application does not exist."));
+                ans.setResultMessage(msg);
 
-            ans = applicationService.updateApplication(applicationData);
+            } else {
+                /**
+                 * The service was able to perform the query and confirm the
+                 * object exist, then we can update it.
+                 */
+                Application applicationData = (Application) resp.getItem();
+                applicationData.setSystem(system);
+                applicationData.setSubsystem(subSystem);
+                applicationData.setType(type);
+                applicationData.setMavengroupid(mavenGpID);
+                applicationData.setDeploytype(deployType);
+                applicationData.setSvnurl(svnURL);
+                applicationData.setBugTrackerUrl(bugTrackerURL);
+                applicationData.setBugTrackerNewUrl(newBugURL);
+                applicationData.setDescription(description);
+                applicationData.setSort(sort);
+                ans = applicationService.updateApplication(applicationData);
 
-            /**
-             * Adding Log entry.
-             */
-            ILogEventService logEventService = appContext.getBean(LogEventService.class);
-            IFactoryLogEvent factoryLogEvent = appContext.getBean(FactoryLogEvent.class);
+                if (ans.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
+                    /**
+                     * Update was succesfull. Adding Log entry.
+                     */
+                    ILogEventService logEventService = appContext.getBean(LogEventService.class);
+                    IFactoryLogEvent factoryLogEvent = appContext.getBean(FactoryLogEvent.class);
 
-            try {
-                logEventService.insertLogEvent(factoryLogEvent.create(0, 0, request.getUserPrincipal().getName(), null, "/UpdateApplication", "UPDATE", "Updated Application : ['" + application + "']", "", ""));
-            } catch (CerberusException ex) {
-                Logger.getLogger(UpdateApplication.class.getName()).log(Level.SEVERE, null, ex);
+                    try {
+                        logEventService.insertLogEvent(factoryLogEvent.create(0, 0, request.getUserPrincipal().getName(), null, "/UpdateApplication", "UPDATE", "Updated Application : ['" + application + "']", "", ""));
+                    } catch (CerberusException ex) {
+                        Logger.getLogger(UpdateApplication.class.getName()).log(Level.SEVERE, null, ex);
+                    }
+                }
             }
         }
 
+        /**
+         * Formating and returning the json result.
+         */
         jsonResponse.put("messageType", ans.getResultMessage().getMessage().getCodeString());
         jsonResponse.put("message", ans.getResultMessage().getDescription());
 

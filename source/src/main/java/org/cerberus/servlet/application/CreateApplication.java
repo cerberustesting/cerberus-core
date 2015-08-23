@@ -73,6 +73,9 @@ public class CreateApplication extends HttpServlet {
 
         response.setContentType("application/json");
 
+        /**
+         * Parsing and securing all required parameters.
+         */
         String application = policy.sanitize(request.getParameter("application"));
         String system = policy.sanitize(request.getParameter("system"));
         String subSystem = policy.sanitize(request.getParameter("subsystem"));
@@ -93,11 +96,14 @@ public class CreateApplication extends HttpServlet {
             sort_error = true;
         }
 
+        /**
+         * Checking all constrains before calling the services.
+         */
         if (StringUtil.isNullOrEmpty(application)) {
             msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_EXPECTED_ERROR);
             msg.setDescription(msg.getDescription().replace("%ITEM%", "Application")
                     .replace("%OPERATION%", "Create")
-                    .replace("%REASON%", "application name is missing!"));
+                    .replace("%REASON%", "Application name is missing!"));
             ans.setResultMessage(msg);
         } else if (sort_error) {
             msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_EXPECTED_ERROR);
@@ -106,6 +112,9 @@ public class CreateApplication extends HttpServlet {
                     .replace("%REASON%", "Could not manage to convert sort to an integer value!"));
             ans.setResultMessage(msg);
         } else {
+            /**
+             * All data seems cleans so we can call the services.
+             */
             ApplicationContext appContext = WebApplicationContextUtils.getWebApplicationContext(this.getServletContext());
             IApplicationService applicationService = appContext.getBean(IApplicationService.class);
             IFactoryApplication factoryApplication = appContext.getBean(IFactoryApplication.class);
@@ -113,19 +122,24 @@ public class CreateApplication extends HttpServlet {
             Application applicationData = factoryApplication.create(application, description, sort, type, system, subSystem, svnURL, deployType, mavenGpID, bugTrackerURL, newBugURL);
             ans = applicationService.createApplication(applicationData);
 
-            /**
-             * Adding Log entry.
-             */
-            ILogEventService logEventService = appContext.getBean(LogEventService.class);
-            IFactoryLogEvent factoryLogEvent = appContext.getBean(FactoryLogEvent.class);
+            if (ans.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
+                /**
+                 * Object created. Adding Log entry.
+                 */
+                ILogEventService logEventService = appContext.getBean(LogEventService.class);
+                IFactoryLogEvent factoryLogEvent = appContext.getBean(FactoryLogEvent.class);
 
-            try {
-                logEventService.insertLogEvent(factoryLogEvent.create(0, 0, request.getUserPrincipal().getName(), null, "/CreateApplication", "CREATE", "Create Application : ['" + application + "']", "", ""));
-            } catch (CerberusException ex) {
-                org.apache.log4j.Logger.getLogger(CreateApplication.class.getName()).log(org.apache.log4j.Level.ERROR, null, ex);
+                try {
+                    logEventService.insertLogEvent(factoryLogEvent.create(0, 0, request.getUserPrincipal().getName(), null, "/CreateApplication", "CREATE", "Create Application : ['" + application + "']", "", ""));
+                } catch (CerberusException ex) {
+                    org.apache.log4j.Logger.getLogger(CreateApplication.class.getName()).log(org.apache.log4j.Level.ERROR, null, ex);
+                }
             }
         }
 
+        /**
+         * Formating and returning the json result.
+         */
         jsonResponse.put("messageType", ans.getResultMessage().getMessage().getCodeString());
         jsonResponse.put("message", ans.getResultMessage().getDescription());
 

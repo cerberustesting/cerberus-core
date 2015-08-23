@@ -31,11 +31,12 @@ import org.cerberus.entity.MessageEventEnum;
 import org.cerberus.exception.CerberusException;
 import org.cerberus.factory.IFactoryLogEvent;
 import org.cerberus.factory.impl.FactoryLogEvent;
-import org.cerberus.log.MyLogger;
 import org.cerberus.service.IApplicationService;
 import org.cerberus.service.ILogEventService;
 import org.cerberus.service.impl.LogEventService;
+import org.cerberus.util.StringUtil;
 import org.cerberus.util.answer.Answer;
+import org.cerberus.util.answer.AnswerItem;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.owasp.html.PolicyFactory;
@@ -47,7 +48,7 @@ import org.springframework.web.context.support.WebApplicationContextUtils;
  *
  * @author bcivel
  */
-@WebServlet(name = "DeleteApplication1", urlPatterns = {"/DeleteApplication1"})
+@WebServlet(name = "DeleteApplication", urlPatterns = {"/DeleteApplication"})
 public class DeleteApplication extends HttpServlet {
 
     /**
@@ -70,33 +71,64 @@ public class DeleteApplication extends HttpServlet {
 
         response.setContentType("application/json");
 
+        /**
+         * Parsing and securing all required parameters.
+         */
         String key = policy.sanitize(request.getParameter("application"));
 
-        MyLogger.log(DeleteApplication.class.getName(), org.apache.log4j.Level.DEBUG, "key : " + key);
-
-        ApplicationContext appContext = WebApplicationContextUtils.getWebApplicationContext(this.getServletContext());
-        IApplicationService applicationService = appContext.getBean(IApplicationService.class);
-
-        Application applicationData = applicationService.findApplicationByKey(key);
-        ans = applicationService.deleteApplication(applicationData);
-
         /**
-         * Adding Log entry.
+         * Checking all constrains before calling the services.
          */
-        ILogEventService logEventService = appContext.getBean(LogEventService.class);
-        IFactoryLogEvent factoryLogEvent = appContext.getBean(FactoryLogEvent.class);
-        try {
-            logEventService.insertLogEvent(factoryLogEvent.create(0, 0, request.getUserPrincipal().getName(), null, "/DeleteApplication", "DELETE", "Delete Application : ['" + key + "']", "", ""));
-        } catch (CerberusException ex) {
-            org.apache.log4j.Logger.getLogger(DeleteApplication.class.getName()).log(org.apache.log4j.Level.ERROR, null, ex);
+        if (StringUtil.isNullOrEmpty(key)) {
+            msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_EXPECTED_ERROR);
+            msg.setDescription(msg.getDescription().replace("%ITEM%", "Application")
+                    .replace("%OPERATION%", "Delete")
+                    .replace("%REASON%", "Application ID (application) is missing!"));
+            ans.setResultMessage(msg);
+        } else {
+            /**
+             * All data seems cleans so we can call the services.
+             */
+            ApplicationContext appContext = WebApplicationContextUtils.getWebApplicationContext(this.getServletContext());
+            IApplicationService applicationService = appContext.getBean(IApplicationService.class);
+
+            AnswerItem resp = applicationService.findApplicationByString(key);
+            if (!(resp.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode()))) {
+                /**
+                 * Object could not be found. We stop here and report the error.
+                 */
+                msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_EXPECTED_ERROR);
+                msg.setDescription(msg.getDescription().replace("%ITEM%", "Application")
+                        .replace("%OPERATION%", "Delete")
+                        .replace("%REASON%", "Application does not exist."));
+                ans.setResultMessage(msg);
+                
+            } else {
+                /**
+                 * The service was able to perform the query and confirm the
+                 * object exist, then we can delete it.
+                 */
+                Application applicationData = (Application) resp.getItem();
+                ans = applicationService.deleteApplication(applicationData);
+                
+                if (ans.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
+                    /**
+                     * Delete was succesfull. Adding Log entry.
+                     */
+                    ILogEventService logEventService = appContext.getBean(LogEventService.class);
+                    IFactoryLogEvent factoryLogEvent = appContext.getBean(FactoryLogEvent.class);
+                    try {
+                        logEventService.insertLogEvent(factoryLogEvent.create(0, 0, request.getUserPrincipal().getName(), null, "/DeleteApplication", "DELETE", "Delete Application : ['" + key + "']", "", ""));
+                    } catch (CerberusException ex) {
+                        org.apache.log4j.Logger.getLogger(DeleteApplication.class.getName()).log(org.apache.log4j.Level.ERROR, null, ex);
+                    }
+                }
+            }
         }
 
-        jsonResponse.put("messageType", ans.getResultMessage().getMessage().getCodeString());
-        jsonResponse.put("message", ans.getResultMessage().getDescription());
-
-        response.getWriter().print(jsonResponse.toString());
-        response.getWriter().flush();
-
+        /**
+         * Formating and returning the json result.
+         */
         jsonResponse.put("messageType", ans.getResultMessage().getMessage().getCodeString());
         jsonResponse.put("message", ans.getResultMessage().getDescription());
 

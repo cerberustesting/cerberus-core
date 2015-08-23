@@ -31,10 +31,10 @@ import org.cerberus.entity.MessageEventEnum;
 import org.cerberus.exception.CerberusException;
 import org.cerberus.factory.IFactoryLogEvent;
 import org.cerberus.factory.impl.FactoryLogEvent;
-import org.cerberus.log.MyLogger;
 import org.cerberus.service.IDeployTypeService;
 import org.cerberus.service.ILogEventService;
 import org.cerberus.service.impl.LogEventService;
+import org.cerberus.util.StringUtil;
 import org.cerberus.util.answer.Answer;
 import org.cerberus.util.answer.AnswerItem;
 import org.json.JSONException;
@@ -71,37 +71,64 @@ public class DeleteDeployType extends HttpServlet {
 
         response.setContentType("application/json");
 
+        /**
+         * Parsing and securing all required parameters.
+         */
         String key = policy.sanitize(request.getParameter("deploytype"));
 
-        MyLogger.log(DeleteDeployType.class.getName(), org.apache.log4j.Level.DEBUG, "key : " + key);
-
-        ApplicationContext appContext = WebApplicationContextUtils.getWebApplicationContext(this.getServletContext());
-        IDeployTypeService deployTypeService = appContext.getBean(IDeployTypeService.class);
-
-        AnswerItem resp = deployTypeService.findDeployTypeByKey(key);
-        if (resp.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {  //the service was able to perform the query, then we can delete.
-            DeployType deployTypeData = (DeployType) resp.getItem();
-            ans = deployTypeService.deleteDeployType(deployTypeData);
-
-            /**
-             * Adding Log entry.
-             */
-            ILogEventService logEventService = appContext.getBean(LogEventService.class);
-            IFactoryLogEvent factoryLogEvent = appContext.getBean(FactoryLogEvent.class);
-            try {
-                logEventService.insertLogEvent(factoryLogEvent.create(0, 0, request.getUserPrincipal().getName(), null, "/DeleteDeployType", "DELETE", "Delete Deploy Type : ['" + key + "']", "", ""));
-            } catch (CerberusException ex) {
-                org.apache.log4j.Logger.getLogger(DeleteDeployType.class.getName()).log(org.apache.log4j.Level.ERROR, null, ex);
-            }
-
-        } else { // DeployType does not exist.
+        /**
+         * Checking all constrains before calling the services.
+         */
+        if (StringUtil.isNullOrEmpty(key)) {
             msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_EXPECTED_ERROR);
             msg.setDescription(msg.getDescription().replace("%ITEM%", "Deploy Type")
                     .replace("%OPERATION%", "Delete")
-                    .replace("%REASON%", "Deploy Type does not exist!"));
+                    .replace("%REASON%", "Deployement Type ID (deploytype) is missing."));
             ans.setResultMessage(msg);
+        } else {
+            /**
+             * All data seems cleans so we can call the services.
+             */
+            ApplicationContext appContext = WebApplicationContextUtils.getWebApplicationContext(this.getServletContext());
+            IDeployTypeService deployTypeService = appContext.getBean(IDeployTypeService.class);
+
+            AnswerItem resp = deployTypeService.findDeployTypeByKey(key);
+            if (!(resp.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode()))) {
+                /**
+                 * Object could not be found. We stop here and report the error.
+                 */
+                msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_EXPECTED_ERROR);
+                msg.setDescription(msg.getDescription().replace("%ITEM%", "Deploy Type")
+                        .replace("%OPERATION%", "Delete")
+                        .replace("%REASON%", "Deploy Type does not exist."));
+                ans.setResultMessage(msg);
+
+            } else {
+                /**
+                 * The service was able to perform the query and confirm the
+                 * object exist, then we can delete it.
+                 */
+                DeployType deployTypeData = (DeployType) resp.getItem();
+                ans = deployTypeService.deleteDeployType(deployTypeData);
+
+                if (ans.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
+                    /**
+                     * Delete was succesfull. Adding Log entry.
+                     */
+                    ILogEventService logEventService = appContext.getBean(LogEventService.class);
+                    IFactoryLogEvent factoryLogEvent = appContext.getBean(FactoryLogEvent.class);
+                    try {
+                        logEventService.insertLogEvent(factoryLogEvent.create(0, 0, request.getUserPrincipal().getName(), null, "/DeleteDeployType", "DELETE", "Delete Deploy Type : ['" + key + "']", "", ""));
+                    } catch (CerberusException ex) {
+                        org.apache.log4j.Logger.getLogger(DeleteDeployType.class.getName()).log(org.apache.log4j.Level.ERROR, null, ex);
+                    }
+                }
+            }
         }
 
+        /**
+         * Formating and returning the json result.
+         */
         jsonResponse.put("messageType", ans.getResultMessage().getMessage().getCodeString());
         jsonResponse.put("message", ans.getResultMessage().getDescription());
 

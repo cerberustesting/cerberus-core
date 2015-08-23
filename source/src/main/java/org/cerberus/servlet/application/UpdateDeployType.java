@@ -34,6 +34,7 @@ import org.cerberus.factory.impl.FactoryLogEvent;
 import org.cerberus.service.IDeployTypeService;
 import org.cerberus.service.ILogEventService;
 import org.cerberus.service.impl.LogEventService;
+import org.cerberus.util.StringUtil;
 import org.cerberus.util.answer.Answer;
 import org.cerberus.util.answer.AnswerItem;
 import org.json.JSONException;
@@ -70,38 +71,67 @@ public class UpdateDeployType extends HttpServlet {
 
         response.setContentType("application/json");
 
+        /**
+         * Parsing and securing all required parameters.
+         */
         String deployType = policy.sanitize(request.getParameter("deploytype"));
         String description = policy.sanitize(request.getParameter("description"));
 
-        ApplicationContext appContext = WebApplicationContextUtils.getWebApplicationContext(this.getServletContext());
-        IDeployTypeService deployTypeService = appContext.getBean(IDeployTypeService.class);
-
-        AnswerItem resp = deployTypeService.findDeployTypeByKey(deployType);
-        if (resp.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {  //the service was able to perform the query, then we can delete.
-            DeployType deployTypeData = (DeployType) resp.getItem();
-            deployTypeData.setDescription(description);
-            ans = deployTypeService.updateDeployType(deployTypeData);
-
-            /**
-             * Adding Log entry.
-             */
-            ILogEventService logEventService = appContext.getBean(LogEventService.class);
-            IFactoryLogEvent factoryLogEvent = appContext.getBean(FactoryLogEvent.class);
-
-            try {
-                logEventService.insertLogEvent(factoryLogEvent.create(0, 0, request.getUserPrincipal().getName(), null, "/UpdateDeployType", "UPDATE", "Updated Deploy Type : ['" + deployType + "']", "", ""));
-            } catch (CerberusException ex) {
-                Logger.getLogger(UpdateDeployType.class.getName()).log(Level.SEVERE, null, ex);
-            }
-
-        } else { // DeployType does not exist.
+        /**
+         * Checking all constrains before calling the services.
+         */
+        if (StringUtil.isNullOrEmpty(deployType)) {
             msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_EXPECTED_ERROR);
             msg.setDescription(msg.getDescription().replace("%ITEM%", "Deploy Type")
                     .replace("%OPERATION%", "Update")
-                    .replace("%REASON%", "Deploy Type does not exist!"));
+                    .replace("%REASON%", "Deploy Type (deploytype) is missing"));
             ans.setResultMessage(msg);
+        } else {
+            /**
+             * All data seems cleans so we can call the services.
+             */
+            ApplicationContext appContext = WebApplicationContextUtils.getWebApplicationContext(this.getServletContext());
+            IDeployTypeService deployTypeService = appContext.getBean(IDeployTypeService.class);
+
+            AnswerItem resp = deployTypeService.findDeployTypeByKey(deployType);
+            if (!(resp.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode()))) {
+                /**
+                 * Object could not be found. We stop here and report the error.
+                 */
+                msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_EXPECTED_ERROR);
+                msg.setDescription(msg.getDescription().replace("%ITEM%", "Deploy Type")
+                        .replace("%OPERATION%", "Update")
+                        .replace("%REASON%", "Deploy Type does not exist."));
+                ans.setResultMessage(msg);
+
+            } else {
+                /**
+                 * The service was able to perform the query and confirm the
+                 * object exist, then we can update it.
+                 */
+                DeployType deployTypeData = (DeployType) resp.getItem();
+                deployTypeData.setDescription(description);
+                ans = deployTypeService.updateDeployType(deployTypeData);
+
+                if (ans.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
+                    /**
+                     * Update was succesfull. Adding Log entry.
+                     */
+                    ILogEventService logEventService = appContext.getBean(LogEventService.class);
+                    IFactoryLogEvent factoryLogEvent = appContext.getBean(FactoryLogEvent.class);
+
+                    try {
+                        logEventService.insertLogEvent(factoryLogEvent.create(0, 0, request.getUserPrincipal().getName(), null, "/UpdateDeployType", "UPDATE", "Updated Deploy Type : ['" + deployType + "']", "", ""));
+                    } catch (CerberusException ex) {
+                        Logger.getLogger(UpdateDeployType.class.getName()).log(Level.SEVERE, null, ex);
+                    }
+                }
+            }
         }
 
+        /**
+         * Formating and returning the json result.
+         */
         jsonResponse.put("messageType", ans.getResultMessage().getMessage().getCodeString());
         jsonResponse.put("message", ans.getResultMessage().getDescription());
 
