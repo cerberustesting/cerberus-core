@@ -13,6 +13,7 @@
         <link rel="stylesheet" href="css/ReportingExecutionByTag.css" type="text/css"/>
         <link rel="stylesheet" href="css/select2.css" type="text/css"/>
         <script type="text/javascript" src="js/d3.min.js"></script>
+        <script type="text/javascript" src="js/d3tip.js"></script>
         <script type="text/javascript" src="js/pages/ReportingExecutionByTag.js"></script>
         <title id="pageTitle">Campaign Reporting</title>
     </head>
@@ -71,7 +72,7 @@
                         <div class="panel-heading">
                             <h3 class="panel-title">Report by Function</h3>
                         </div>
-                        <div class="panel-body"></div>
+                        <div class="panel-body" id="functionChart"></div>
                     </div>
                 </div>
             </div>

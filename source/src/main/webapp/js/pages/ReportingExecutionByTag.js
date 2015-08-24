@@ -40,7 +40,7 @@ function loadTagFilters() {
             var index;
             $('#selectTag').append($('<option></option>').attr("value", "")).attr("placeholder", "Select a Tag");
             for (index = 0; index < data.tags.length; index++) {
-                //the character " needs a special encoding in order to avoid breaking the string that creates the html element   
+//the character " needs a special encoding in order to avoid breaking the string that creates the html element   
                 var encodedString = data.tags[index].replace(/\"/g, "%22");
                 var option = $('<option></option>').attr("value", encodedString).text(data.tags[index]);
                 $('#selectTag').append(option);
@@ -55,6 +55,115 @@ function getRowClass(status) {
     var rowClass = "status" + status;
     return rowClass;
 }
+
+function loadReportByFunctionChart() {
+    var data = [{State: "Toto", OK: {value: 10, color: "#30EE30"}, KO: {value: 2, color: "#FF3030"}},
+        {State: "Titi", OK: {value: 12, color: "#30EE30"}, KO: {value: 2, color: "#FF3030"}},
+        {State: "Tata", OK: {value: 10, color: "#30EE30"}, KO: {value: 2, color: "#FF3030"}},
+        {State: "Tutu", OK: {value: 3, color: "#30EE30"}, KO: {value: 2, color: "#FF3030"}},
+        {State: "Foo", OK: {value: 1, color: "#30EE30"}, KO: {value: 18, color: "#FF3030"}}];
+
+    var margin = {top: 20, right: 20, bottom: 30, left: 40},
+    width = 1200 - margin.left - margin.right,
+            height = 500 - margin.top - margin.bottom;
+
+    var x = d3.scale.ordinal()
+            .rangeRoundBands([0, width], .1);
+
+    var y = d3.scale.linear()
+            .rangeRound([height, 0]);
+
+    var color = d3.scale.ordinal();
+
+    var xAxis = d3.svg.axis()
+            .scale(x)
+            .orient("bottom");
+
+    var yAxis = d3.svg.axis()
+            .scale(y)
+            .orient("left");
+
+    var tip = d3.tip()
+            .attr('class', 'd3-tip')
+            .offset([-10, 0])
+            .html(function (d) {
+                console.log(d);
+                return "<strong>Status:</strong> <span style='color:red'>" + d.State + "</span>\n\
+                        <div>OK : "+ d.OK.value +"</div>\n\
+                        <div>KO : "+ d.KO.value +"</div>";
+            });
+
+    var svg = d3.select("#functionChart").append("svg")
+            .attr("width", width + margin.left + margin.right)
+            .attr("height", height + margin.top + margin.bottom)
+            .append("g")
+            .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
+    svg.call(tip);
+
+    color.domain(d3.keys(data[0]).filter(function (key) {
+        return key !== "State";
+    }));
+
+    data.forEach(function (d) {
+        var y0 = 0;
+        d.ages = color.domain().map(function (name) {
+            return {name: name, y0: y0, y1: y0 += +d[name].value, color: d[name].color};
+        });
+        d.total = d.ages[d.ages.length - 1].y1;
+    });
+
+    x.domain(data.map(function (d) {
+        return d.State;
+    }));
+    y.domain([0, d3.max(data, function (d) {
+            return d.total;
+        })]);
+
+    svg.append("g")
+            .attr("class", "x axis")
+            .attr("transform", "translate(0," + height + ")")
+            .call(xAxis);
+
+    svg.append("g")
+            .attr("class", "y axis")
+            .call(yAxis)
+            .append("text")
+            .attr("transform", "rotate(-90)")
+            .attr("y", 6)
+            .attr("dy", ".71em")
+            .style("text-anchor", "end")
+            .text("TestCase Number");
+
+    var state = svg.selectAll(".state")
+            .data(data)
+            .enter().append("g")
+            .attr("class", "g")
+            .attr("transform", function (d) {
+                return "translate(" + x(d.State) + ",0)";
+            });
+
+    svg.selectAll(".g")
+            .on('mouseover', tip.show)
+            .on('mouseout', tip.hide);
+
+    state.selectAll("rect")
+            .data(function (d) {
+                return d.ages;
+            })
+            .enter().append("rect")
+            .attr("width", x.rangeBand())
+            .attr("y", function (d) {
+                return y(d.y1);
+            })
+            .attr("height", function (d) {
+                return y(d.y0) - y(d.y1);
+            })
+            .style("fill", function (d) {
+                return d.color;
+            });
+}
+;
 
 function loadReportByStatusChart(data) {
     var dataset = data.axis;
@@ -95,7 +204,7 @@ function loadReportByStatusTable() {
     //clear the table content before reloading it
     $("#ReportByStatusTable tbody").empty();
     $("#chart").empty();
-
+    $("#functionChart").empty();
     var jqxhr = $.get("CampaignExecutionGraphByStatus", {CampaignName: "null", Tag: selectTag}, "json");
     $.when(jqxhr).then(function (data) {
         var total = 0;
@@ -110,12 +219,13 @@ function loadReportByStatusTable() {
             // increase the total execution
             total = total + data.axis[index].value;
         }
-        // add a line for the total
+// add a line for the total
         $("#ReportByStatusTable tbody").append(
                 $("<tr></tr>").append(
                 $("<th>Total</th>"))
                 .append($("<th></th>").text(total))
                 );
         loadReportByStatusChart(data);
+        loadReportByFunctionChart();
     }).fail(handleErrorAjaxAfterTimeout);
 }
