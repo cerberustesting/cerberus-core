@@ -74,10 +74,12 @@ function displayMenuItem(doc) {
 
     $(menuItems).each(function () {
         var id = $(this).attr('id');
-        if ($(this).attr('class') === "dropdown-toggle") {
-            $(this).html(doc.page_header[id].docLabel + " <span class=\"caret\"></span>");
-        } else {
-            $(this).html(doc.page_header[id].docLabel);
+        if (doc.page_header.hasOwnProperty(id)) {
+            if ($(this).attr('class') === "dropdown-toggle") {
+                $(this).html(doc.page_header[id].docLabel + " <span class=\"caret\"></span>");
+            } else {
+                $(this).html(doc.page_header[id].docLabel);
+            }
         }
     });
 }

@@ -22,7 +22,7 @@ $.when($.getScript("js/pages/global/global.js")).then(function () {
     /**
      * Document ready methods
      */
-    displayHeaderLabel();
+    displayHeaderLabel(getDoc());
     displayFooter(getDoc());
     $(function () {
 
