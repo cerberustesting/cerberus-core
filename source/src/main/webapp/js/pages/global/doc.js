@@ -91,22 +91,38 @@ function Doc() {
 }
 
 Doc.prototype.getDocLabel = function (docTable, docField) {
-    if (this.table.hasOwnProperty(docTable)) {
-        if (this.table[docTable].hasOwnProperty(docField)) {
-            return this.table[docTable][docField].docLabel;
-        }
+    try {
+        if (!(this.table.hasOwnProperty(docTable)))
+            throw "docTable " + docTable + " not found";
+        if (!(this.table[docTable].hasOwnProperty(docField)))
+            throw "docField " + docField + " not found";
+        return this.table[docTable][docField].docLabel;
+    } catch (err) {
+        var res;
+        var user = getUser();
+        
+        res = "!!NoDoc!! " + err + " <a class=\"nodoc\" href=\'javascript:popup(\"Documentation.jsp?DocTable=" + docTable +
+                "&DocField=" + docField + "&Lang=" + user.language + "\")\' onclick=\"stopPropagation(event)\"><span class=\"glyphicon glyphicon-question-sign\"></span></a>";
+        return res;
     }
 };
 
 Doc.prototype.getDocOnline = function (docTable, docField) {
-   if (this.table.hasOwnProperty(docTable)) {
-        if (this.table[docTable].hasOwnProperty(docField)) {
-            var res;
-            var user = getUser();
-            res = this.table[docTable][docField].docLabel + " <a class=\"docOnline\" href=\'javascript:popup(\"Documentation.jsp?DocTable=" + this.table[docTable][docField].docTable +
-                    "&DocField=" + this.table[docTable][docField].docField + "&Lang=" + user.language + "\")\' onclick=\"stopPropagation(event)\"><span class=\"glyphicon glyphicon-question-sign\"></span></a>";
-            return res;
-        }
+    var res;
+    var user = getUser();
+
+    try {
+        if (!(this.table.hasOwnProperty(docTable)))
+            throw "docTable " + docTable + " not found";
+        if (!(this.table[docTable].hasOwnProperty(docField)))
+            throw "docField " + docField + " not found";
+        res = this.table[docTable][docField].docLabel + " <a class=\"docOnline\" href=\'javascript:popup(\"Documentation.jsp?DocTable=" + this.table[docTable][docField].docTable +
+                "&DocField=" + this.table[docTable][docField].docField + "&Lang=" + user.language + "\")\' onclick=\"stopPropagation(event)\"><span class=\"glyphicon glyphicon-question-sign\"></span></a>";
+    } catch (err) {
+        res = "!!NoDoc!! " + err + " <a class=\"nodoc\" href=\'javascript:popup(\"Documentation.jsp?DocTable=" + docTable +
+                "&DocField=" + docField + "&Lang=" + user.language + "\")\' onclick=\"stopPropagation(event)\"><span class=\"glyphicon glyphicon-question-sign\"></span></a>";
+    } finally {
+        return res;
     }
 };
 
