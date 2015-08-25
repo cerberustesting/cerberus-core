@@ -18,10 +18,10 @@
 package org.cerberus.servlet.project;
 
 import java.io.IOException;
-import java.io.PrintWriter;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.servlet.ServletException;
+import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -48,6 +48,7 @@ import org.owasp.html.Sanitizers;
  *
  * @author bcivel
  */
+@WebServlet(name = "CreateProject", urlPatterns = {"/CreateProject"})
 public class CreateProject extends HttpServlet {
 
     /**
@@ -65,30 +66,44 @@ public class CreateProject extends HttpServlet {
             throws ServletException, IOException, CerberusException, JSONException {
         JSONObject jsonResponse = new JSONObject();
         Answer ans = new Answer();
+        MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_UNEXPECTED_ERROR);
+        msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", ""));
+        ans.setResultMessage(msg);
         PolicyFactory policy = Sanitizers.FORMATTING.and(Sanitizers.LINKS);
 
-        response.setContentType("text/html;charset=UTF-8");
-        PrintWriter out = response.getWriter();
-        try {
-            String idProject = policy.sanitize(request.getParameter("idProject"));
-            String code = policy.sanitize(request.getParameter("VCCode"));
-            String description = policy.sanitize(request.getParameter("Description"));
-            String active = policy.sanitize(request.getParameter("Active"));
+        response.setContentType("application/json");
 
-            if (idProject.isEmpty()) {
-                MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_UNEXPECTED_ERROR);
-                msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", "Unable to create data!"));
-                ans.setResultMessage(msg);
-            } else {
-                ApplicationContext appContext = WebApplicationContextUtils.getWebApplicationContext(this.getServletContext());
-                IProjectService projectService = appContext.getBean(IProjectService.class);
-                IFactoryProject factoryProject = appContext.getBean(IFactoryProject.class);
+        /**
+         * Parsing and securing all required parameters.
+         */
+        String idProject = policy.sanitize(request.getParameter("idProject"));
+        String code = policy.sanitize(request.getParameter("VCCode"));
+        String description = policy.sanitize(request.getParameter("Description"));
+        String active = policy.sanitize(request.getParameter("Active"));
 
-                Project projectData = factoryProject.create(idProject, code, description, active, "");
-                ans = projectService.createProject(projectData);
+        /**
+         * Checking all constrains before calling the services.
+         */
+        if (idProject.isEmpty()) {
+            msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_EXPECTED_ERROR);
+            msg.setDescription(msg.getDescription().replace("%ITEM%", "Project")
+                    .replace("%OPERATION%", "Create")
+                    .replace("%REASON%", "Project ID is missing!"));
+            ans.setResultMessage(msg);
+        } else {
+            /**
+             * All data seems cleans so we can call the services.
+             */
+            ApplicationContext appContext = WebApplicationContextUtils.getWebApplicationContext(this.getServletContext());
+            IProjectService projectService = appContext.getBean(IProjectService.class);
+            IFactoryProject factoryProject = appContext.getBean(IFactoryProject.class);
 
+            Project projectData = factoryProject.create(idProject, code, description, active, "");
+            ans = projectService.createProject(projectData);
+
+            if (ans.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
                 /**
-                 * Adding Log entry.
+                 * Object created. Adding Log entry.
                  */
                 ILogEventService logEventService = appContext.getBean(LogEventService.class);
                 IFactoryLogEvent factoryLogEvent = appContext.getBean(FactoryLogEvent.class);
@@ -99,17 +114,17 @@ public class CreateProject extends HttpServlet {
                     org.apache.log4j.Logger.getLogger(UserService.class.getName()).log(org.apache.log4j.Level.ERROR, null, ex);
                 }
             }
-
-            jsonResponse.put("messageType", ans.getResultMessage().getMessage().getCodeString());
-            jsonResponse.put("message", ans.getResultMessage().getDescription());
-            response.setContentType("application/json");
-            response.getWriter().print(jsonResponse);
-            response.getWriter().flush();
-        } finally {
-            out.close();
         }
-    }
 
+        /**
+         * Formating and returning the json result.
+         */
+        jsonResponse.put("messageType", ans.getResultMessage().getMessage().getCodeString());
+        jsonResponse.put("message", ans.getResultMessage().getDescription());
+
+        response.getWriter().print(jsonResponse);
+        response.getWriter().flush();
+    }
 
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
     /**

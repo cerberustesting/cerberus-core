@@ -123,6 +123,7 @@
                     <li id="subactive"><a name="menu" id="menuBuildContent" href="BuildContent.jsp" style="width:200px">Build Content</a></li>
                     <li id="subactive"><a name="menu" id="menuRobot" href="Robot.jsp" style="width:200px">Robot</a></li>
                     <li id="subactive"><a name="menu" id="menuProject" href="Project.jsp" style="width:200px">Project</a></li>
+                    <li id="subactive"><a name="menu" id="menuDeployType" href="DeployType.jsp" style="width:200px">Deploy Type</a></li>
                 </ul>
             </li>
             <% }%>

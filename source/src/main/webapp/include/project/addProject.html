@@ -1,15 +1,15 @@
 <!--Add a project-->
-<div data-backdrop="static" class="modal fade center" id="addProjectModal" tabindex="-1" role="dialog" aria-labelledby="addProjectModalLabel" aria-hidden="true">
+<div data-backdrop="static" class="modal fade center" id="addEntryModal" tabindex="-1" role="dialog" aria-labelledby="addEntryModalLabel" aria-hidden="true">
     <div class="modal-dialog nomargintop nomarginbottom">
         <div class="modal-content">
             <div class="modal-header">
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                <h4 class="modal-title" id="addProjectModalLabel" name="createProjectField">Create Project</h4>
+                <h4 class="modal-title" id="addEntryModalLabel" name="addEntryField">Create Project</h4>
             </div>
             <div class="modal-body">
 
                 <!--add form-->
-                <form id="addProjectModalForm" name="addProjectModalForm"  title="Add Project" role="form">
+                <form id="addEntryModalForm" name="addEntryModalForm"  title="Add Project" role="form">
                     <div class="container-fluid center">
                          <!-- messages area-->
                          <div id="DialogMessagesArea">
@@ -23,19 +23,17 @@
                         <div class="row">
                             <div class="form-group col-xs-12">
                                 <label for="idProject" name="idProjectField">Project</label>
-                                <input type="text" class="form-control" name="idProject" id="idProject" placeholder="Project Name" aria-describedby="basic-addon1" maxlength="45">
+                                <input type="text" class="form-control" name="idProject" id="idProject" aria-describedby="basic-addon1" maxlength="45">
                             </div>
                         </div>
                         <div class="row">
                             <div class="form-group col-xs-6">
                                 <label for="VCCode" name="codeField">Code</label>
-                                <input type="text" class="form-control" name="VCCode" id="VCCode" placeholder="Code" aria-describedby="basic-addon1" maxlength="20">
+                                <input type="text" class="form-control" name="VCCode" id="VCCode" aria-describedby="basic-addon1" maxlength="20">
                             </div>
                             <div class="form-group col-xs-6">
                                 <label for="active" name="activeField">Active</label>
                                 <select class="form-control"  id="Active" name="Active">
-                                    <option>Y</option>
-                                    <option>N</option>
                                 </select>
                             </div>
                         </div>
@@ -51,7 +49,7 @@
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-default" data-dismiss="modal" name="buttonClose">Close</button>
-                <button type="button" id="addProjectButton" class="btn btn-primary" name="buttonAdd">Save</button>
+                <button type="button" id="addEntryButton" class="btn btn-primary" name="buttonAdd">Save</button>
             </div>
         </div>
     </div>

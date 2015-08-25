@@ -17,24 +17,18 @@
  * You should have received a copy of the GNU General Public License
  * along with Cerberus.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.cerberus.servlet.project;
+package org.cerberus.servlet.information;
 
 import java.io.IOException;
-
+import java.io.PrintWriter;
+import java.util.logging.Logger;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-
-import org.apache.log4j.Level;
-import org.cerberus.entity.Project;
 import org.cerberus.exception.CerberusException;
-import org.cerberus.log.MyLogger;
-import org.cerberus.service.IProjectService;
-import org.cerberus.service.impl.ProjectService;
-import org.cerberus.servlet.user.GetUsers;
-import org.json.JSONArray;
+import org.cerberus.version.Infos;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.springframework.context.ApplicationContext;
@@ -42,15 +36,14 @@ import org.springframework.web.context.support.WebApplicationContextUtils;
 
 /**
  *
- * @author vertigo
+ * @author bcivel
  */
-@WebServlet(name = "GetProject", urlPatterns = {"/GetProject"})
-public class GetProject extends HttpServlet {
+@WebServlet(name = "ReadCerberusInformation", urlPatterns = {"/ReadCerberusInformation"})
+public class ReadCerberustInformation extends HttpServlet {
 
     /**
-     * Processes requests for both HTTP
-     * <code>GET</code> and
-     * <code>POST</code> methods.
+     * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
+     * methods.
      *
      * @param request servlet request
      * @param response servlet response
@@ -59,46 +52,24 @@ public class GetProject extends HttpServlet {
      */
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        String echo = request.getParameter("sEcho");
-
-        JSONArray data = new JSONArray(); //data that will be shown in the table
-
         ApplicationContext appContext = WebApplicationContextUtils.getWebApplicationContext(this.getServletContext());
-        IProjectService projectService = appContext.getBean(ProjectService.class);
-        try {
-            JSONObject jsonResponse = new JSONObject();
-            try {
-                for (Project myProject : projectService.findAllProject()) {
-                    JSONArray row = new JSONArray();
-                    row.put(myProject.getIdProject());
-                    row.put(myProject.getCode());
-                    row.put(myProject.getDescription());
-                    row.put(myProject.getActive());
-                    row.put(myProject.getDateCreation());
-                    data.put(row);
-                }
-            } catch (CerberusException ex) {
-                response.setContentType("text/html");
-                response.getWriter().print(ex.getMessageError().getDescription());
+        Infos infos = new Infos();
+        JSONObject data = new JSONObject();
 
-            }
-            jsonResponse.put("aaData", data);
-            jsonResponse.put("sEcho", echo);
-            jsonResponse.put("iTotalRecords", data.length());
-            jsonResponse.put("iTotalDisplayRecords", data.length());
-            response.setContentType("application/json");
-            response.getWriter().print(jsonResponse.toString());
-        } catch (JSONException e) {
-            MyLogger.log(GetUsers.class.getName(), Level.FATAL, "" + e);
-            response.setContentType("text/html");
-            response.getWriter().print(e.getMessage());
-        }
+        try {
+            data.put("projectName", infos.getProjectName());
+            data.put("projectVersion", infos.getProjectVersion());
+            data.put("environment", System.getProperty("org.cerberus.environment"));
+        } catch (JSONException ex) {
+            Logger.getLogger(ReadCerberustInformation.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+        } 
+        response.setContentType("application/json");
+        response.getWriter().print(data.toString());
     }
 
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
     /**
-     * Handles the HTTP
-     * <code>GET</code> method.
+     * Handles the HTTP <code>GET</code> method.
      *
      * @param request servlet request
      * @param response servlet response
@@ -112,8 +83,7 @@ public class GetProject extends HttpServlet {
     }
 
     /**
-     * Handles the HTTP
-     * <code>POST</code> method.
+     * Handles the HTTP <code>POST</code> method.
      *
      * @param request servlet request
      * @param response servlet response
@@ -135,4 +105,5 @@ public class GetProject extends HttpServlet {
     public String getServletInfo() {
         return "Short description";
     }// </editor-fold>
+
 }

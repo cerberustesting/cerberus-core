@@ -56,6 +56,11 @@ a {
     color: #008CDA;
     text-decoration: none;
 }
+
+.nodoc{
+    color:#FF0000;
+}
+
 a img {
     border: 0;
 }

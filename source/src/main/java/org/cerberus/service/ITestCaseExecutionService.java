@@ -23,6 +23,7 @@ import java.util.List;
 
 import org.cerberus.entity.TestCaseExecution;
 import org.cerberus.exception.CerberusException;
+import org.cerberus.util.answer.AnswerList;
 
 /**
  * @author bcivel
@@ -118,5 +119,7 @@ public interface ITestCaseExecutionService {
      * @throws CerberusException when exception occur during the update.
      */
     void setTagToExecution(long id, String tag) throws CerberusException;
+    
+    AnswerList findTagList() throws CerberusException;
     
 }

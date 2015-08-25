@@ -24,6 +24,7 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.cerberus.entity.LogEvent;
 import org.cerberus.exception.CerberusException;
+import org.cerberus.util.answer.AnswerList;
 
 /**
  *
@@ -33,7 +34,7 @@ public interface ILogEventService {
 
     public List<LogEvent> findAllLogEvent() throws CerberusException;
 
-    public List<LogEvent> findAllLogEvent(int start, int amount, String colName, String dir, String searchTerm) throws CerberusException;
+    public AnswerList findAllLogEvent(int start, int amount, String colName, String dir, String searchTerm, String individualSearch) throws CerberusException;
 
     public Integer getNumberOfLogEvent(String searchTerm) throws CerberusException;
 

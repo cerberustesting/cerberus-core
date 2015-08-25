@@ -20,11 +20,9 @@
 
 $.when($.getScript("js/pages/global/global.js")).then(function () {
     $(document).ready(function () {
-        displayHeaderLabel();
         displayPageLabel();
-        displayFooter(getDoc());
         //configure and create the dataTable
-        var configurations = new TableConfigurationsServerSide("logViewerTable", "GetLogEvent", "aaData", aoColumnsFunc());
+        var configurations = new TableConfigurationsServerSide("logViewerTable", "ReadLogEvent", "aaData", aoColumnsFunc());
 
         createDataTable(configurations);
         //By default, sort the log messages from newest to oldest
@@ -35,20 +33,22 @@ $.when($.getScript("js/pages/global/global.js")).then(function () {
 
 function displayPageLabel() {
     var doc = getDoc();
-    
+
+    displayHeaderLabel(doc);
+    $("#pageTitle").html(doc.page_logviewer.title.docLabel);
     $("#title").html(displayDocLink(doc.page_logviewer.title));
     displayFooter(doc);
 }
 
 function aoColumnsFunc() {
     var doc = getDoc();
-    
+
     var aoColumns = [
-        {"data": "time", "sName": "Time", "title": displayDocLink(doc.page_logviewer.time)},
-        {"data": "login", "sName": "Login", "title": displayDocLink(doc.page_logviewer.login)},
-        {"data": "page", "sName": "Page", "title": displayDocLink(doc.page_logviewer.page)},
-        {"data": "action", "sName": "Action", "title": displayDocLink(doc.page_logviewer.action)},
-        {"data": "log", "sName": "Log", "title": displayDocLink(doc.page_logviewer.log)}
+        {"data": "time", "sName": "Time", "title": displayDocLink(doc.logevent.time)},
+        {"data": "login", "sName": "Login", "title": displayDocLink(doc.logevent.login)},
+        {"data": "page", "sName": "Page", "title": displayDocLink(doc.logevent.page)},
+        {"data": "action", "sName": "Action", "title": displayDocLink(doc.logevent.action)},
+        {"data": "log", "sName": "Log", "title": displayDocLink(doc.logevent.log)}
     ];
     return aoColumns;
 }

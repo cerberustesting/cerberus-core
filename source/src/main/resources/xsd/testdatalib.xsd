@@ -4,8 +4,8 @@
       <xs:sequence>
         <xs:element name="testdatalib" maxOccurs="unbounded" minOccurs="0">
           <xs:complexType>
-            <xs:sequence>
-              <xs:element type="xs:string" name="name" minOccurs="0" maxOccurs="1" />
+            <xs:sequence>                
+              <xs:element type="xs:string" name="name"/>
               <xs:element type="xs:string" name="system" minOccurs="0" maxOccurs="1" />
               <xs:element type="xs:string" name="environment" minOccurs="0" maxOccurs="1" />
               <xs:element type="xs:string" name="country" minOccurs="0" maxOccurs="1" />

@@ -31,6 +31,8 @@ import org.cerberus.dao.IApplicationDAO;
 import org.cerberus.dao.ITestCaseExecutionDAO;
 import org.cerberus.database.DatabaseSpring;
 import org.cerberus.entity.Application;
+import org.cerberus.entity.MessageEvent;
+import org.cerberus.entity.MessageEventEnum;
 import org.cerberus.entity.MessageGeneral;
 import org.cerberus.entity.MessageGeneralEnum;
 import org.cerberus.entity.TestCaseExecution;
@@ -38,6 +40,7 @@ import org.cerberus.exception.CerberusException;
 import org.cerberus.factory.IFactoryTestCaseExecution;
 import org.cerberus.util.ParameterParserUtil;
 import org.cerberus.util.StringUtil;
+import org.cerberus.util.answer.AnswerList;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
@@ -258,7 +261,7 @@ public class TestCaseExecutionDAO implements ITestCaseExecutionDAO {
 
     @Override
     public TestCaseExecution findLastTCExecutionByCriteria(String test, String testcase, String environment, String country,
-                                                           String build, String revision) throws CerberusException {
+            String build, String revision) throws CerberusException {
         TestCaseExecution result = null;
         final String query = new StringBuffer("SELECT * FROM testcaseexecution tce, application app ")
                 .append("WHERE tce.application = app.application ")
@@ -310,8 +313,8 @@ public class TestCaseExecutionDAO implements ITestCaseExecutionDAO {
 
     @Override
     public TestCaseExecution findLastTCExecutionByCriteria(String test, String testCase, String environment, String country,
-                                                           String build, String revision, String browser, String browserVersion,
-                                                           String ip, String port, String tag) {
+            String build, String revision, String browser, String browserVersion,
+            String ip, String port, String tag) {
         TestCaseExecution result = null;
         final String query = new StringBuffer("SELECT * FROM testcaseexecution tce, application app ")
                 .append("WHERE tce.application = app.application AND test = ? AND testcase = ? ")
@@ -477,7 +480,7 @@ public class TestCaseExecutionDAO implements ITestCaseExecutionDAO {
         return factoryTCExecution.create(id, test, testcase, build, revision, environment,
                 country, browser, version, platform, browserFullVersion, start, end, controlStatus, controlMessage, application, ip, url,
                 port, tag, finished, verbose, 0, 0, 0, true, "", "", status, crbVersion, null, null, null,
-                false, null, null, null, null, null, null, null, null, executor, 0,  screenSize);
+                false, null, null, null, null, null, null, null, null, executor, 0, screenSize);
     }
 
     @Override
@@ -652,8 +655,8 @@ public class TestCaseExecutionDAO implements ITestCaseExecutionDAO {
 
     @Override
     public TestCaseExecution findLastTCExecutionInGroup(String test, String testCase, String environment, String country,
-                                                        String build, String revision, String browser, String browserVersion,
-                                                        String ip, String port, String tag) {
+            String build, String revision, String browser, String browserVersion,
+            String ip, String port, String tag) {
 
         TestCaseExecution result = null;
         StringBuilder query = new StringBuilder();
@@ -746,12 +749,12 @@ public class TestCaseExecutionDAO implements ITestCaseExecutionDAO {
     public List<String> findDistinctTag(boolean withUUIDTag) throws CerberusException {
         List<String> list = null;
         StringBuilder query = new StringBuilder();
-            query.append("select distinct tag from testcaseexecution tce ")
-            .append("where tag != '' ");
-                if (!withUUIDTag){
+        query.append("select distinct tag from testcaseexecution tce ")
+                .append("where tag != '' ");
+        if (!withUUIDTag) {
             query.append(" and length(tag) != length('c3888898-c65a-11e3-9b3e-0000004047e0')");
-                    }
-            query.append(" UNION select distinct tag from testcaseexecutionqueue where tag !='' ");
+        }
+        query.append(" UNION select distinct tag from testcaseexecutionqueue where tag !='' ");
 
         Connection connection = this.databaseSpring.connect();
         try {
@@ -790,6 +793,61 @@ public class TestCaseExecutionDAO implements ITestCaseExecutionDAO {
     }
 
     @Override
+    public AnswerList findTagList() throws CerberusException {
+        AnswerList response = new AnswerList();
+        MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
+        List<String> list = null;
+        StringBuilder query = new StringBuilder();
+        query.append("select distinct tag from testcaseexecution tce ")
+                .append("where tag != '' ");
+        query.append(" UNION select distinct tag from testcaseexecutionqueue where tag !='' ");
+
+        Connection connection = this.databaseSpring.connect();
+        try {
+            PreparedStatement preStat = connection.prepareStatement(query.toString());
+            try {
+                ResultSet resultSet = preStat.executeQuery();
+                try {
+                    list = new ArrayList<String>();
+
+                    while (resultSet.next()) {
+                        list.add(resultSet.getString("tag"));
+                    }
+                    msg.setDescription(msg.getDescription().replace("%ITEM%", "TagList").replace("%OPERATION%", "SELECT"));
+                } catch (SQLException exception) {
+                    LOG.error("Unable to execute query : " + exception.toString());
+                    msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_UNEXPECTED_ERROR);
+                    msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", "Unable to retrieve the list of entries!"));
+                } finally {
+                    resultSet.close();
+                }
+            } catch (SQLException exception) {
+                LOG.error("Unable to execute query : " + exception.toString());
+                msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_UNEXPECTED_ERROR);
+                msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", "Unable to retrieve the list of entries!"));
+            } finally {
+                preStat.close();
+            }
+        } catch (SQLException exception) {
+            LOG.error("Unable to execute query : " + exception.toString());
+            msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_UNEXPECTED_ERROR);
+            msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", "Unable to retrieve the list of entries!"));
+        } finally {
+            try {
+                if (connection != null) {
+                    connection.close();
+                }
+            } catch (SQLException e) {
+                LOG.warn(e.toString());
+            }
+        }
+
+        response.setResultMessage(msg);
+        response.setDataList(list);
+        return response;
+    }
+
+    @Override
     public void setTagToExecution(long id, String tag) throws CerberusException {
         boolean throwEx = false;
         final String query = "UPDATE testcaseexecution SET tag = ? WHERE id = ?";
@@ -800,7 +858,7 @@ public class TestCaseExecutionDAO implements ITestCaseExecutionDAO {
             try {
                 preStat.setString(1, tag);
                 preStat.setLong(2, id);
-                
+
                 preStat.executeUpdate();
             } catch (SQLException exception) {
                 LOG.error("Unable to execute query : " + exception.toString());

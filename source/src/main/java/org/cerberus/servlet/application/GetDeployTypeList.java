@@ -20,6 +20,7 @@
 package org.cerberus.servlet.application;
 
 import java.io.IOException;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -30,8 +31,10 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.cerberus.entity.DeployType;
+import org.cerberus.entity.MessageEventEnum;
 import org.cerberus.exception.CerberusException;
 import org.cerberus.service.IDeployTypeService;
+import org.cerberus.util.answer.AnswerList;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.springframework.context.ApplicationContext;
@@ -45,9 +48,8 @@ import org.springframework.web.context.support.WebApplicationContextUtils;
 public class GetDeployTypeList extends HttpServlet {
 
     /**
-     * Processes requests for both HTTP
-     * <code>GET</code> and
-     * <code>POST</code> methods.
+     * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
+     * methods.
      *
      * @param request servlet request
      * @param response servlet response
@@ -59,27 +61,29 @@ public class GetDeployTypeList extends HttpServlet {
         ApplicationContext appContext = WebApplicationContextUtils.getWebApplicationContext(this.getServletContext());
         IDeployTypeService deployTypeService = appContext.getBean(IDeployTypeService.class);
 
+        JSONObject jsonObject = new JSONObject();
         try {
-            JSONObject jsonObject = new JSONObject();
-            try {
-                for (DeployType myDeployType : deployTypeService.findAllDeployType()) {
+
+            AnswerList resp = deployTypeService.findAllDeployType();
+
+            if (resp.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {//the service was able to perform the query, then we should get all values
+                for (DeployType myDeployType : (List<DeployType>) resp.getDataList()) {
                     jsonObject.put(myDeployType.getDeploytype(), myDeployType.getDeploytype());
                 }
-
-                response.setContentType("application/json");
-                response.getWriter().print(jsonObject.toString());
-            } catch (JSONException e) {
-                e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+            } else {
+                jsonObject.put("messageType", resp.getResultMessage().getMessage().getCodeString());
             }
-        } catch (CerberusException ex) {
-            Logger.getLogger(GetApplicationList.class.getName()).log(Level.SEVERE, null, ex);
+
+            response.setContentType("application/json");
+            response.getWriter().print(jsonObject.toString());
+        } catch (JSONException e) {
+            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
         }
     }
 
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
     /**
-     * Handles the HTTP
-     * <code>GET</code> method.
+     * Handles the HTTP <code>GET</code> method.
      *
      * @param request servlet request
      * @param response servlet response
@@ -93,8 +97,7 @@ public class GetDeployTypeList extends HttpServlet {
     }
 
     /**
-     * Handles the HTTP
-     * <code>POST</code> method.
+     * Handles the HTTP <code>POST</code> method.
      *
      * @param request servlet request
      * @param response servlet response

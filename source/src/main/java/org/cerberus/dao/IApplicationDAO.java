@@ -23,6 +23,9 @@ import java.util.List;
 
 import org.cerberus.entity.Application;
 import org.cerberus.exception.CerberusException;
+import org.cerberus.util.answer.Answer;
+import org.cerberus.util.answer.AnswerItem;
+import org.cerberus.util.answer.AnswerList;
 
 /**
  * Interface that defines the public methods to manage Application data on table
@@ -63,27 +66,22 @@ public interface IApplicationDAO {
      */
     List<Application> findApplicationBySystem(String system) throws CerberusException;
 
+    public AnswerList findApplicationListBySystemByCriteria(String system, int startPosition, int length, String columnName, String sort, String searchParameter, String string);
+
+    public AnswerItem findApplicationByString(String application);
+
+    public Answer createApplication(Application application);
+
+    public Answer deleteApplication(Application application);
+
+    public Answer updateApplication(Application application);
+
     /**
      *
      * @return @throws CerberusException
      * @since 0.9.1
      */
     List<String> findDistinctSystem();
-
-    /**
-     * Updates the information based on the object application
-     *
-     * @param application Object Application to update.
-     * @return true if updated successfully and false if no row updated
-     * @throws CerberusException When occur a error on
-     * Connection/Statement/Update
-     * @since 0.9.0
-     */
-    boolean updateApplication(Application application) throws CerberusException;
-    
-    public void createApplication(Application application) throws CerberusException;
-
-    public void deleteApplication(Application application) throws CerberusException;
 
     /**
      * Uses data of ResultSet to create object {@link Application}

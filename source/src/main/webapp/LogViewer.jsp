@@ -25,44 +25,17 @@
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
         <%@ include file="include/dependenciesInclusions.html" %>
         <script type="text/javascript" src="js/pages/LogViewer.js"></script>
-        <title>Log Viewer</title>
-
-<!--        <script type="text/javascript">      
-            $(document).ready(function(){
-                $('#logsTable').dataTable({
-                    "aLengthMenu": [
-                        [20, 50, 100, 200],
-                        [20, 50, 100, 200]
-                    ], 
-                    "aaSorting": [[ 0, "desc" ]],
-                    "iDisplayLength" : 50,
-                    "bServerSide": true,
-                    "sAjaxSource": "GetLogEvent",
-                    "bJQueryUI": true,
-                    "bProcessing": false,
-                    "sPaginationType": "full_numbers",
-                    "bSearchable": false, "aTargets": [ 0 ],
-                    "aoColumns": [
-                        {"mDataProp": "time", "sName": "Time", "sWidth": "15%"},
-                        {"mDataProp": "login", "sName": "Login", "sWidth": "10%"},
-                        {"mDataProp": "page", "sName": "Page", "sWidth": "15%"},
-                        {"mDataProp": "action", "sName": "Action", "sWidth": "10%"},
-                        {"mDataProp": "log", "sName": "Log", "sWidth": "50%"}
-                    ]
-                });
-                
-                <%
-                if(request.getParameter("Test") != null && request.getParameter("TestCase") != null) {
-                    String search = request.getParameter("Test") + "'|'"+request.getParameter("TestCase");
-                    %>$("#logsTable_filter input[type='search']").delay(1000).val("<%=search%>").trigger( "change" );<%
+        <title id="pageTitle">Log Viewer</title>
+        <script>
+            <%
+                if (request.getParameter("Test") != null && request.getParameter("TestCase") != null) {
+                    String search = request.getParameter("Test") + "'|'" + request.getParameter("TestCase");
+            %>$("#logViewerTable_filter input[type='search']").delay(1000).val("<%=search%>").trigger("change");<%
                 }
-                %>
-                        
-                
-            });
-        </script>-->
+            %>
+        </script>
     </head>
-     <body>
+    <body>
         <%@ include file="include/header.html" %>
         <div class="container-fluid center" id="page-layout">
 

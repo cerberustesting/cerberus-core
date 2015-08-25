@@ -182,6 +182,10 @@
         <servlet-class>org.cerberus.servlet.publi.GetTagExecutions</servlet-class>
     </servlet>
     <servlet>
+        <servlet-name>ReadTestCaseExecution</servlet-name>
+        <servlet-class>org.cerberus.servlet.testCaseExecution.ReadTestCaseExecution</servlet-class>
+    </servlet>
+    <servlet>
         <servlet-name>GetCampaignExecutionsCommand</servlet-name>
         <servlet-class>org.cerberus.servlet.publi.GetCampaignExecutionsCommand</servlet-class>
     </servlet>
@@ -262,12 +266,28 @@
         <servlet-class>org.cerberus.servlet.test.GetShortTests</servlet-class>
     </servlet>
     <servlet>
-        <servlet-name>GetLogEvent</servlet-name>
-        <servlet-class>org.cerberus.servlet.log.GetLogEvent</servlet-class>
+        <servlet-name>ReadLogEvent</servlet-name>
+        <servlet-class>org.cerberus.servlet.log.ReadLogEvent</servlet-class>
     </servlet>
     <servlet>
         <servlet-name>GetDeployTypeList</servlet-name>
         <servlet-class>org.cerberus.servlet.application.GetDeployTypeList</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>ReadDeployType</servlet-name>
+        <servlet-class>org.cerberus.servlet.application.ReadDeployType</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>CreateDeployType</servlet-name>
+        <servlet-class>org.cerberus.servlet.application.CreateDeployType</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>DeleteDeployType</servlet-name>
+        <servlet-class>org.cerberus.servlet.application.DeleteDeployType</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>UpdateDeployType</servlet-name>
+        <servlet-class>org.cerberus.servlet.application.UpdateDeployType</servlet-class>
     </servlet>
     <servlet>
         <servlet-name>UpdateBuildRevisionParameter</servlet-name>
@@ -280,6 +300,10 @@
     <servlet>
         <servlet-name>UpdateApplication</servlet-name>
         <servlet-class>org.cerberus.servlet.application.UpdateApplication</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>ReadApplication</servlet-name>
+        <servlet-class>org.cerberus.servlet.application.ReadApplication</servlet-class>
     </servlet>
     <servlet>
         <servlet-name>NewBuildRev</servlet-name>
@@ -408,10 +432,6 @@
     <servlet>
         <servlet-name>DeleteInvariant</servlet-name>
         <servlet-class>org.cerberus.servlet.invariant.DeleteInvariant</servlet-class>
-    </servlet>
-    <servlet>
-        <servlet-name>GetProject</servlet-name>
-        <servlet-class>org.cerberus.servlet.project.GetProject</servlet-class>
     </servlet>
     <servlet>
         <servlet-name>ReadProject</servlet-name>
@@ -705,8 +725,8 @@
         <servlet-class>org.cerberus.servlet.user.ReadUser</servlet-class>
     </servlet>
     <servlet>
-        <servlet-name>ReadProjectInformation</servlet-name>
-        <servlet-class>org.cerberus.servlet.information.ReadProjectInformation</servlet-class>
+        <servlet-name>ReadCerberusInformation</servlet-name>
+        <servlet-class>org.cerberus.servlet.information.ReadCerberustInformation</servlet-class>
     </servlet>
     <servlet>
         <servlet-name>ReadTest</servlet-name>
@@ -885,6 +905,10 @@
         <url-pattern>/GetTagExecutions</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
+        <servlet-name>ReadTestCaseExecution</servlet-name>
+        <url-pattern>/ReadTestCaseExecution</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
         <servlet-name>GetCampaignExecutionsCommand</servlet-name>
         <url-pattern>/GetCampaignExecutionsCommand</url-pattern>
     </servlet-mapping>
@@ -965,8 +989,8 @@
         <url-pattern>/GetCountryForTestCase</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
-        <servlet-name>GetLogEvent</servlet-name>
-        <url-pattern>/GetLogEvent</url-pattern>
+        <servlet-name>ReadLogEvent</servlet-name>
+        <url-pattern>/ReadLogEvent</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
         <servlet-name>UpdateBuildRevisionParameter</servlet-name>
@@ -979,6 +1003,26 @@
     <servlet-mapping>
         <servlet-name>UpdateApplication</servlet-name>
         <url-pattern>/UpdateApplication</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>ReadApplication</servlet-name>
+        <url-pattern>/ReadApplication</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>CreateDeployType</servlet-name>
+        <url-pattern>/CreateDeployType</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>DeleteDeployType</servlet-name>
+        <url-pattern>/DeleteDeployType</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>UpdateDeployType</servlet-name>
+        <url-pattern>/UpdateDeployType</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>ReadDeployType</servlet-name>
+        <url-pattern>/ReadDeployType</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
         <servlet-name>NewBuildRev</servlet-name>
@@ -1107,10 +1151,6 @@
     <servlet-mapping>
         <servlet-name>DeleteInvariant</servlet-name>
         <url-pattern>/DeleteInvariant</url-pattern>
-    </servlet-mapping>
-    <servlet-mapping>
-        <servlet-name>GetProject</servlet-name>
-        <url-pattern>/GetProject</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
         <servlet-name>ReadProject</servlet-name>
@@ -1397,8 +1437,8 @@
         <url-pattern>/ReadUser</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
-        <servlet-name>ReadProjectInformation</servlet-name>
-        <url-pattern>/ReadProjectInformation</url-pattern>
+        <servlet-name>ReadCerberusInformation</servlet-name>
+        <url-pattern>/ReadCerberusInformation</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
         <servlet-name>ReadTest</servlet-name>
@@ -1460,12 +1500,12 @@
     </security-role>
     <security-role>
         <description>Can deploy a new Chain in an environment.
-ie : Can modify the build and revision for an environment.</description>
+            ie : Can modify the build and revision for an environment.</description>
         <role-name>IntegratorDeploy</role-name>
     </security-role>
     <security-role>
         <description>Access to administration tools
-ie User management, parameter management, log viewer, database management.</description>
+            ie User management, parameter management, log viewer, database management.</description>
         <role-name>Administrator</role-name>
     </security-role>
     <security-constraint>
@@ -1494,7 +1534,6 @@ ie User management, parameter management, log viewer, database management.</desc
             <url-pattern>/ViewProperty.jsp</url-pattern>
             <url-pattern>/TestPerApplication.jsp</url-pattern>
             <url-pattern>/CampaignReportByTag.jsp</url-pattern>
-            <url-pattern>/Project.html</url-pattern>
         </web-resource-collection>
         <web-resource-collection>
             <web-resource-name>servlet</web-resource-name>
@@ -1669,9 +1708,9 @@ ie User management, parameter management, log viewer, database management.</desc
             <url-pattern>/IntegrationStatus.jsp</url-pattern>
             <url-pattern>/Notification.jsp</url-pattern>
             <url-pattern>/Project.jsp</url-pattern>
-            <url-pattern>/Project2.jsp</url-pattern>
             <url-pattern>/Robot.jsp</url-pattern>
             <url-pattern>/EnvironmentManagement.jsp</url-pattern>
+            <url-pattern>/DeployType.jsp</url-pattern>
         </web-resource-collection>
         <web-resource-collection>
             <web-resource-name>servlet</web-resource-name>
@@ -1682,12 +1721,12 @@ ie User management, parameter management, log viewer, database management.</desc
             <url-pattern>/GetEnvironmentAvailable</url-pattern>
             <url-pattern>/GetDeployTypeList</url-pattern>
             <url-pattern>/GetBuildRevisionInvariant</url-pattern>
-            <url-pattern>/GetProject</url-pattern>
             <url-pattern>/ReadProject</url-pattern>
             <url-pattern>/FindBuildContent</url-pattern>
             <url-pattern>/FindCountryEnvironmentDatabase</url-pattern>
             <url-pattern>/GetCountryEnvParamList</url-pattern>
             <url-pattern>/GetCountryEnvironmentParameterList</url-pattern>
+            <url-pattern>/ReadDeployType</url-pattern>
         </web-resource-collection>
         <auth-constraint>
             <description>IntegratorRO</description>
@@ -1725,6 +1764,10 @@ ie User management, parameter management, log viewer, database management.</desc
             <url-pattern>/CreateCountryEnvironmentDatabase</url-pattern>
             <url-pattern>/DeleteCountryEnvironmentDatabase</url-pattern>
             <url-pattern>/UpdateCountryEnvironmentDatabase</url-pattern>
+            <url-pattern>/ReadApplication</url-pattern>
+            <url-pattern>/CreateDeployType</url-pattern>
+            <url-pattern>/DeleteDeployType</url-pattern>
+            <url-pattern>/UpdateDeployType</url-pattern>
         </web-resource-collection>
         <auth-constraint>
             <description>Integrator</description>
@@ -1780,7 +1823,7 @@ ie User management, parameter management, log viewer, database management.</desc
             <url-pattern>/AddUser</url-pattern>
             <url-pattern>/UpdateUser</url-pattern>
             <url-pattern>/DeleteUser</url-pattern>
-            <url-pattern>/GetLogEvent</url-pattern>
+            <url-pattern>/ReadLogEvent</url-pattern>
             <url-pattern>/FindAllInvariantPublic</url-pattern>
             <url-pattern>/FindAllInvariantPrivate</url-pattern>
             <url-pattern>/CreateInvariant</url-pattern>
@@ -1806,7 +1849,6 @@ ie User management, parameter management, log viewer, database management.</desc
             <url-pattern>/Error.jsp</url-pattern>
             <url-pattern>/header.jsp</url-pattern>
             <url-pattern>/function.jsp</url-pattern>
-            <url-pattern>/header2.jsp</url-pattern>
             <url-pattern>/index2.jsp</url-pattern>
             <url-pattern>/index1.jsp</url-pattern>
         </web-resource-collection>
@@ -1855,7 +1897,8 @@ ie User management, parameter management, log viewer, database management.</desc
             <url-pattern>/virtualproxy</url-pattern>
             <url-pattern>/ReadUser</url-pattern>
             <url-pattern>/ReadDocumentation</url-pattern>
-            <url-pattern>/ReadProjectInformation</url-pattern>
+            <url-pattern>/ReadCerberusInformation</url-pattern>
+            <url-pattern>/ReadTestCaseExecution</url-pattern>
         </web-resource-collection>
     </security-constraint>
     <security-constraint>

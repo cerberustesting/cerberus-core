@@ -28,7 +28,7 @@ $.when($.getScript("js/pages/global/global.js")).then(function(){
  * Document ready methods
  */
 $(function() {
-    displayHeaderLabel();
+    displayHeaderLabel(getDoc());
     displayPageLabel();
     /**
      * Removes all rows when the modal window is hidden and clears the message

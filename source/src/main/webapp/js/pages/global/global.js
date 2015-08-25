@@ -54,6 +54,34 @@ function getSubDataLabel(type) {
 }
 
 /*****INVARIANT LIST **********************************/
+/**
+ * Method that display a combo box in all the selectName tags with the value retrieved from the invariant list
+ * @param {String} idName value that filters the invariants that will be retrieved
+ * @param {String} selectName value name of the select tag in the html
+ * @returns {void}
+ */
+function displayInvariantList(idName, selectName) {
+    $.when($.getJSON("FindInvariantByID", "idName=" + idName)).then(function(data) {
+       for (var option in data) {
+           $("[name='"+ selectName +"']").append($('<option></option>').text(data[option].description).val(data[option].value));
+       }
+    });
+}
+
+/*****DEPLOYTYPE LIST **********************************/
+/**
+ * Method that display a combo box in all the selectName tags with the value retrieved from the DeployType list
+ * @param {String} selectName value name of the select tag in the html
+ * @returns {void}
+ */
+function displayDeployTypeList(selectName) {
+    $.when($.getJSON("ReadDeployType", "" )).then(function(data) {
+        console.log(data);
+       for (var option in data.contentTable) {
+           $("[name='"+ selectName +"']").append($('<option></option>').text(data.contentTable[option].description).val(data.contentTable[option].deploytype));
+       }
+    });
+}
 
 /**
  * Auxiliary method that retrieves a list containing the values that belong to the invariant that matches the provided idname.
@@ -292,31 +320,48 @@ function setDataConfirmationModal(title, message, hiddenField) {
  * Auxiliary function that shows a modal dialog that allows the upload of files
  * @param {type} handlerClickOk / function that will be executed when the user clicks in the upload button
  * @param {type} fileExtension / extension of files that are allowed
+ * @param {type} translations - the user can specify a function that translates the labels in the upload dialog.
  */
-function showModalUpload(handlerClickOk, fileExtension) {
+function showModalUpload(handlerClickOk, fileExtension, translations) {
     clearResponseMessageMainPage();
+    //if translations are defined, then the title and buttons will be modified
+    if(Boolean(translations)){
+        //update translations if a specific page secifies it     
+        $.each(translations, function( index) {
+            $("#"+index).text(translations[index]);
+        });
+    }else{
+       //use the default translations (for the specific language)
+       var doc = getDoc();
+       var docModalDefault = doc.modal_upload;
+       $("#modalUploadLabel").text(docModalDefault.title.docLabel);
+       $("#choseFileLabel").text(docModalDefault.btn_choose.docLabel);
+       $("#cancelButton").text(docModalDefault.btn_cancel.docLabel);
+       $("#uploadOk").text(docModalDefault.btn_upload.docLabel);       
+    }
+    
     $('#modalUpload').modal('show');
     $('#modalUpload').find('#uploadOk').click(handlerClickOk);
     $('#modalUpload').find("#fileInput").change(function() {
         validatesFileExtension(this.value, fileExtension);
     });
 }
-
+ 
 /**
  * Auxiliary function that validates if a fileName has a valid extension
  * @param {type} fileName name to be validated
  * @param {type} fileExtension extension against with the name is validated
  */
 function validatesFileExtension(fileName, fileExtension) {
-    var ext = fileName.match(/\.(.+)$/);
+    var ext = fileName.match(/^([^\\]*)\.(\w+)$/);
 
-    if (ext === null || ext[1].toUpperCase() === "." + fileExtension) {
+    if(ext !== null && ext[ext.length-1].toUpperCase() === fileExtension.toUpperCase() ){  
         clearResponseMessage($('#modalUpload'));
         $("#upload-file-info").html(fileName);
         $('#uploadOk').removeProp("disabled");
     } else {
         resetModalUpload();
-        var localMessage = new Message("danger", "Please select a " + fileExtension + " file!");
+        var localMessage = new Message("danger", "Please select a file with the extension "+ fileExtension +"!");
         showMessage(localMessage, $('#modalUpload'));
     }
 }
@@ -408,7 +453,7 @@ function TableConfigurationsServerSide(divId, ajaxSource, ajaxProp, aoColumnsFun
     this.showColvis = true;
     this.scrollY = false;
     this.scrollCollapse = false;
-
+    this.lang = getDataTableLanguage();
 }
 
 function createDataTableWithPermissions(tableConfigurations, callbackfunction) {
@@ -416,7 +461,6 @@ function createDataTableWithPermissions(tableConfigurations, callbackfunction) {
     if (!tableConfigurations.showColvis) {
         domConf = 'l<"showInlineElement pull-left marginLeft5"f>rti<"marginTop5"p>';
     }
-    var lang = getDataTableLanguage();
 
     var configs = {};
     configs["dom"] = domConf;
@@ -433,9 +477,9 @@ function createDataTableWithPermissions(tableConfigurations, callbackfunction) {
     configs["scrollY"] = tableConfigurations.scrollY;
     configs["scrollCollapse"] = tableConfigurations.scrollCollapse;
     configs["stateSave"] = tableConfigurations.stateSave;
-    configs["language"] = lang.table;
+    configs["language"] = tableConfigurations.lang.table;
     configs["columns"] = tableConfigurations.aoColumnsFunction;
-    configs["colVis"] = lang.colVis;
+    configs["colVis"] = tableConfigurations.lang.colVis;
     configs["lengthChange"] = true;
 
 
@@ -630,22 +674,33 @@ function setAutoCompleteServerSide(selector, source) {
 }
 
 /**
+ * display global label
+ * @returns {void}
+ */
+function displayGlobalLabel(doc) {
+    $("[name='buttonAdd']").html(doc.page_global.buttonAdd.docLabel);
+    $("[name='buttonClose']").html(doc.page_global.buttonClose.docLabel);
+    $("[name='buttonConfirm']").html(doc.page_global.buttonConfirm.docLabel);
+    $("[name='buttonDismiss']").html(doc.page_global.buttonDismiss.docLabel);
+}
+
+/**
  * generate and display the footer
  * @param {JSONObject} doc
  * @returns {void}
  */
 function displayFooter(doc) {
-    var projectInformation = getProjectInformation();
+    var cerberusInformation = getCerberusInformation();
 
     var footerString = doc.page_global.footer_text.docLabel;
     var footerBugString = doc.page_global.footer_bug.docLabel;
     var date = new Date();
     var loadTime = window.performance.timing.domContentLoadedEventEnd - window.performance.timing.navigationStart;
 
-    footerString = footerString.replace("%VERSION%", "<b>"+projectInformation.projectName+projectInformation.projectVersion+"</b>");
-    footerString = footerString.replace("%ENV%", "<b>"+projectInformation.environment+"</b>");
-    footerString = footerString.replace("%DATE%", "<b>"+date.toDateString()+"</b>");
-    footerString = footerString.replace("%TIMING%", "<b>"+loadTime+"</b>");
-    footerBugString = footerBugString.replace("%LINK%", "https://github.com/vertigo17/Cerberus/issues/new?body=Cerberus%20Version%20:%20" + projectInformation.projectVersion );
+    footerString = footerString.replace("%VERSION%", cerberusInformation.projectName+cerberusInformation.projectVersion);
+    footerString = footerString.replace("%ENV%", cerberusInformation.environment);
+    footerString = footerString.replace("%DATE%", date.toDateString());
+    footerString = footerString.replace("%TIMING%", loadTime);
+    footerBugString = footerBugString.replace("%LINK%", "https://github.com/vertigo17/Cerberus/issues/new?body=Cerberus%20Version%20:%20" + cerberusInformation.projectVersion );
     $("#footer").html(footerString + " - " +footerBugString);
 }

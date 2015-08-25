@@ -49,7 +49,7 @@
         <script type="text/javascript" src="js/bootstrap.min.js"></script>         
         <script type="text/javascript" src="js/bootstrap-multiselect.js"></script>
         <script type='text/javascript' src='js/pages/global/doc.js'></script>
-        <script type="text/javascript" src="js/pages/global/projectInformation.js"></script>
+        <script type="text/javascript" src="js/pages/global/cerberusInformation.js"></script>
         <script type='text/javascript' src='js/Form.js'></script>
         <script type="text/javascript" src="js/pages/global/global.js"></script>
         <script type="text/javascript" src="js/pages/global/user.js"></script>

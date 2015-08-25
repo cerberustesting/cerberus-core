@@ -20,7 +20,7 @@
 
 $.when($.getScript("js/pages/global/global.js")).then(function() {
     $(document).ready(function() {
-        displayHeaderLabel();
+        displayHeaderLabel(getDoc());
         displayFooter(getDoc());
         //configure and create the dataTable
         var configurations = new TableConfigurationsServerSide("homePageTable", "Homepage?MySystem="+getSys(), "aaData", aoColumnsFunc());

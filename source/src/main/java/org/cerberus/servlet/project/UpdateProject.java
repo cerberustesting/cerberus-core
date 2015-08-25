@@ -24,6 +24,8 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import org.cerberus.entity.MessageEvent;
+import org.cerberus.entity.MessageEventEnum;
 import org.cerberus.entity.Project;
 import org.cerberus.exception.CerberusException;
 import org.cerberus.factory.IFactoryLogEvent;
@@ -31,7 +33,9 @@ import org.cerberus.factory.impl.FactoryLogEvent;
 import org.cerberus.service.ILogEventService;
 import org.cerberus.service.IProjectService;
 import org.cerberus.service.impl.LogEventService;
+import org.cerberus.util.StringUtil;
 import org.cerberus.util.answer.Answer;
+import org.cerberus.util.answer.AnswerItem;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.owasp.html.PolicyFactory;
@@ -53,42 +57,89 @@ public class UpdateProject extends HttpServlet {
      * @param response servlet response
      * @throws ServletException if a servlet-specific error occurs
      * @throws IOException if an I/O error occurs
+     * @throws org.cerberus.exception.CerberusException
+     * @throws org.json.JSONException
      */
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException, CerberusException, JSONException {
-        Answer ans = new Answer();
         JSONObject jsonResponse = new JSONObject();
+        Answer ans = new Answer();
+        MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_UNEXPECTED_ERROR);
+        msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", ""));
+        ans.setResultMessage(msg);
         PolicyFactory policy = Sanitizers.FORMATTING.and(Sanitizers.LINKS);
+
+        response.setContentType("application/json");
+
+        /**
+         * Parsing and securing all required parameters.
+         */
         String idProject = policy.sanitize(request.getParameter("idProject"));
         String code = policy.sanitize(request.getParameter("VCCode"));
         String description = policy.sanitize(request.getParameter("Description"));
         String active = policy.sanitize(request.getParameter("Active"));
 
-        ApplicationContext appContext = WebApplicationContextUtils.getWebApplicationContext(this.getServletContext());
-        IProjectService projectService = appContext.getBean(IProjectService.class);
-
-        Project projectData = projectService.findProjectByKey(idProject);
-        projectData.setCode(code);
-        projectData.setDescription(description);
-        projectData.setActive(active);
-
-        ans = projectService.updateProject(projectData);
-
         /**
-         * Adding Log entry.
+         * Checking all constrains before calling the services.
          */
-        ILogEventService logEventService = appContext.getBean(LogEventService.class);
-        IFactoryLogEvent factoryLogEvent = appContext.getBean(FactoryLogEvent.class);
+        if (StringUtil.isNullOrEmpty(idProject)) {
+            msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_EXPECTED_ERROR);
+            msg.setDescription(msg.getDescription().replace("%ITEM%", "Project")
+                    .replace("%OPERATION%", "Update")
+                    .replace("%REASON%", "Project ID (id Project) is missing"));
+            ans.setResultMessage(msg);
+        } else {
+            /**
+             * All data seems cleans so we can call the services.
+             */
+            ApplicationContext appContext = WebApplicationContextUtils.getWebApplicationContext(this.getServletContext());
+            IProjectService projectService = appContext.getBean(IProjectService.class);
 
-        try {
-            logEventService.insertLogEvent(factoryLogEvent.create(0, 0, request.getUserPrincipal().getName(), null, "/UpdateProject", "UPDATE", "Updated Project : ['" + idProject + "']", "", ""));
-        } catch (CerberusException ex) {
-            Logger.getLogger(UpdateProject.class.getName()).log(Level.SEVERE, null, ex);
+            AnswerItem resp = projectService.findProjectByString(idProject);
+
+            if (!(resp.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode()))) {
+                /**
+                 * Object could not be found. We stop here and report the error.
+                 */
+                msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_EXPECTED_ERROR);
+                msg.setDescription(msg.getDescription().replace("%ITEM%", "Project")
+                        .replace("%OPERATION%", "Update")
+                        .replace("%REASON%", "Project does not exist."));
+                ans.setResultMessage(msg);
+
+            } else {
+                /**
+                 * The service was able to perform the query and confirm the
+                 * object exist, then we can update it.
+                 */
+                Project projectData = (Project) resp.getItem();
+                projectData.setCode(code);
+                projectData.setDescription(description);
+                projectData.setActive(active);
+                ans = projectService.updateProject(projectData);
+
+                if (ans.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
+                    /**
+                     * Update was succesfull. Adding Log entry.
+                     */
+                    ILogEventService logEventService = appContext.getBean(LogEventService.class);
+                    IFactoryLogEvent factoryLogEvent = appContext.getBean(FactoryLogEvent.class);
+
+                    try {
+                        logEventService.insertLogEvent(factoryLogEvent.create(0, 0, request.getUserPrincipal().getName(), null, "/UpdateProject", "UPDATE", "Updated Project : ['" + idProject + "']", "", ""));
+                    } catch (CerberusException ex) {
+                        Logger.getLogger(UpdateProject.class.getName()).log(Level.SEVERE, null, ex);
+                    }
+                }
+            }
         }
 
+        /**
+         * Formating and returning the json result.
+         */
         jsonResponse.put("messageType", ans.getResultMessage().getMessage().getCodeString());
         jsonResponse.put("message", ans.getResultMessage().getDescription());
-        response.setContentType("application/json");
+
         response.getWriter().print(jsonResponse);
         response.getWriter().flush();
     }

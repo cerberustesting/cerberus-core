@@ -20,20 +20,19 @@
 
 $.when($.getScript("js/pages/global/global.js")).then(function () {
     $(document).ready(function () {
-        initProjectPage();
+        initPage();
     });
 });
 
-function initProjectPage() {
-    displayHeaderLabel();
+function initPage() {
     displayPageLabel();
     // handle the click for specific action buttons
-    $("#addProjectButton").click(saveNewProjectHandler);
-    $("#editProjectButton").click(saveUpdateProjectHandler);
+    $("#addEntryButton").click(saveNewEntryHandler);
+    $("#editEntryButton").click(saveUpdateEntryHandler);
 
     //clear the modals fields when closed
-    $('#addProjectModal').on('hidden.bs.modal', addProjectModalCloseHandler);
-    $('#editProjectModal').on('hidden.bs.modal', editProjectModalCloseHandler);
+    $('#addEntryModal').on('hidden.bs.modal', {extra: "#addEntryModal"}, buttonCloseHandler);
+    $('#editEntryModal').on('hidden.bs.modal', {extra: "#editEntryModal"}, buttonCloseHandler);
 
     //configure and create the dataTable
     var configurations = new TableConfigurationsServerSide("projectsTable", "ReadProject", "contentTable", aoColumnsFunc());
@@ -44,26 +43,26 @@ function initProjectPage() {
 };
 
 function displayPageLabel() {
-    var doc = getDoc();
-    
-    $("#title").html(displayDocLink(doc.page_project.title));
-    $("[name='createProjectField']").html(doc.page_project.button_create.docLabel);
-    $("[name='confirmationField']").html(doc.page_project.button_delete.docLabel);
-    $("[name='editProjectField']").html(doc.page_project.button_edit.docLabel);
-    $("[name='buttonAdd']").html(doc.page_global.buttonAdd.docLabel);
-    $("[name='buttonClose']").html(doc.page_global.buttonClose.docLabel);
-    $("[name='buttonConfirm']").html(doc.page_global.buttonConfirm.docLabel);
-    $("[name='buttonDismiss']").html(doc.page_global.buttonDismiss.docLabel);
-    $("[name='idProjectField']").html(displayDocLink(doc.project.idproject));
-    $("[name='activeField']").html(displayDocLink(doc.project.active));
-    $("[name='codeField']").html(displayDocLink(doc.project.code));
-    $("[name='descriptionField']").html(displayDocLink(doc.project.description));
-    displayFooter(doc);
+    var doc = new Doc();
+
+    displayHeaderLabel(doc.table);
+    displayGlobalLabel(doc.table);
+    $("#pageTitle").html(doc.getDocLabel("page_project", "title"));
+    $("#title").html(doc.getDocOnline("page_project", "title"));
+    $("[name='addEntryField']").html(doc.getDocLabel("page_project", "button_create"));
+    $("[name='confirmationField']").html(doc.getDocLabel("page_project", "button_delete"));
+    $("[name='editEntryField']").html(doc.getDocLabel("page_project", "button_edit"));
+    $("[name='idProjectField']").html(doc.getDocOnline("project", "idproject"));
+    $("[name='activeField']").html(doc.getDocOnline("project", "active"));
+    $("[name='codeField']").html(doc.getDocOnline("project", "code"));
+    $("[name='descriptionField']").html(doc.getDocOnline("project", "description"));
+    displayInvariantList("PROJECTACTIVE", "Active");
+    displayFooter(doc.table);
 }
 
-function deleteProjectHandlerClick() {
+function deleteEntryHandlerClick() {
     var idProject = $('#confirmationModal').find('#hiddenField').prop("value");
-    var jqxhr = $.post("DeleteProject", {id: idProject}, "json");
+    var jqxhr = $.post("DeleteProject", {idproject: idProject}, "json");
     $.when(jqxhr).then(function (data) {
         var messageType = getAlertType(data.messageType);
         if (messageType === "success") {
@@ -84,23 +83,40 @@ function deleteProjectHandlerClick() {
     }).fail(handleErrorAjaxAfterTimeout);
 }
 
-function deleteProject(idProject) {
+function deleteEntry(entry) {
     clearResponseMessageMainPage();
-    var doc = getDoc();
-    var messageComplete = doc.page_global.deleteMessage.docLabel;
-    showModalConfirmation(deleteProjectHandlerClick, doc.page_project.button_delete.docLabel, messageComplete, idProject);
+    var doc = new Doc();
+    var messageComplete = doc.getDocLabel("page_global", "deleteMessage");
+    messageComplete = messageComplete.replace("%TABLE%", doc.getDocLabel("project", "idproject"));
+    messageComplete = messageComplete.replace("%ENTRY%", entry);
+    showModalConfirmation(deleteEntryHandlerClick, doc.getDocLabel("page_project", "button_delete"), messageComplete, entry);
 }
 
-function saveNewProjectHandler() {
-    clearResponseMessage($('#addProjectModal'));
-    var formAdd = $("#addProjectModal #addProjectModalForm");
+function saveEntry(servletName, modalID, form) {
+    var jqxhr = $.post(servletName, form.serialize());
+    $.when(jqxhr).then(function (data) {
+        hideLoaderInModal(modalID);
+        if (getAlertType(data.messageType) === 'success') {
+            var oTable = $("#projectsTable").dataTable();
+            oTable.fnDraw(true);
+            showMessage(data);
+            $(modalID).modal('hide');
+        } else {
+            showMessage(data, $(modalID));
+        }
+    }).fail(handleErrorAjaxAfterTimeout);
+}
+
+function saveNewEntryHandler() {
+    clearResponseMessage($('#addEntryModal'));
+    var formAdd = $("#addEntryModal #addEntryModalForm");
 
     var nameElement = formAdd.find("#idProject");
     var nameElementEmpty = nameElement.prop("value") === '';
     if (nameElementEmpty) {
         var localMessage = new Message("danger", "Please specify the name of the project!");
         nameElement.parents("div.form-group").addClass("has-error");
-        showMessage(localMessage, $('#addProjectModal'));
+        showMessage(localMessage, $('#addEntryModal'));
     } else {
         nameElement.parents("div.form-group").removeClass("has-error");
     }
@@ -110,7 +126,7 @@ function saveNewProjectHandler() {
     if (codeElementEmpty) {
         var localMessage = new Message("danger", "Please specify the code of the project!");
         codeElement.parents("div.form-group").addClass("has-error");
-        showMessage(localMessage, $('#addProjectModal'));
+        showMessage(localMessage, $('#addEntryModal'));
     } else {
         codeElement.parents("div.form-group").removeClass("has-error");
     }
@@ -119,73 +135,41 @@ function saveNewProjectHandler() {
     if (nameElementEmpty || codeElementEmpty)
         return;
 
-    showLoaderInModal('#addProjectModal');
-    var jqxhr = $.post("CreateProject", formAdd.serialize());
-    $.when(jqxhr).then(function (data) {
-        hideLoaderInModal('#addProjectModal');
-        console.log(data.messageType);
-        if (getAlertType(data.messageType) === 'success') {
-            var oTable = $("#projectsTable").dataTable();
-            oTable.fnDraw(true);
-            showMessage(data);
-            $('#addProjectModal').modal('hide');
-        } else {
-            showMessage(data, $('#addProjectModal'));
-        }
-    }).fail(handleErrorAjaxAfterTimeout);
+    showLoaderInModal('#addEntryModal');
+    saveEntry("CreateProject", "#addEntryModal", formAdd);
+
 }
 
-function saveUpdateProjectHandler() {
-    clearResponseMessage($('#editProjectModal'));
-    var formEdit = $('#editProjectModal #editProjectModalForm');
-    showLoaderInModal('#editProjectModal');
+function saveUpdateEntryHandler() {
+    clearResponseMessage($('#editEntryModal'));
+    var formEdit = $('#editEntryModal #editEntryModalForm');
 
-    var jqxhr = $.post("UpdateProject", formEdit.serialize(), "json");
-    $.when(jqxhr).then(function (data) {
-        // unblock when remote call returns 
-        hideLoaderInModal('#editProjectModal');
-        if (getAlertType(data.messageType) === "success") {
-            var oTable = $("#projectsTable").dataTable();
-            oTable.fnDraw(true);
-            $('#editProjectModal').modal('hide');
-            showMessage(data);
-
-        } else {
-            showMessage(data, $('#editProjectModal'));
-        }
-    }).fail(handleErrorAjaxAfterTimeout);
+    showLoaderInModal('#editEntryModal');
+    saveEntry("UpdateProject", "#editEntryModal", formEdit);
 }
 
-function addProjectModalCloseHandler() {
+function buttonCloseHandler(event) {
+    var modalID = event.data.extra;
     // reset form values
-    $('#addProjectModal #addProjectModalForm')[0].reset();
+    $(modalID + " " + modalID + "Form")[0].reset();
     // remove all errors on the form fields
     $(this).find('div.has-error').removeClass("has-error");
     // clear the response messages of the modal
-    clearResponseMessage($('#addProjectModal'));
-}
-
-function editProjectModalCloseHandler() {
-    // reset form values
-    $('#editProjectModal #editProjectModalForm')[0].reset();
-    // remove all errors on the form fields
-    $(this).find('div.has-error').removeClass("has-error");
-    // clear the response messages of the modal
-    clearResponseMessage($('#editProjectModal'));
+    clearResponseMessage($(modalID));
 }
 
 function CreateProjectClick() {
     clearResponseMessageMainPage();
-    $('#addProjectModal').modal('show');
+    $('#addEntryModal').modal('show');
 }
 
-function editProject(id) {
+function editEntry(id) {
     clearResponseMessageMainPage();
     var jqxhr = $.getJSON("ReadProject", "action=1&idProject=" + id);
     $.when(jqxhr).then(function (data) {
         var obj = data["contentTable"];
 
-        var formEdit = $('#editProjectModal');
+        var formEdit = $('#editEntryModal');
 
         formEdit.find("#idProject").prop("value", id);
         formEdit.find("#VCCode").prop("value", obj["code"]);
@@ -197,12 +181,12 @@ function editProject(id) {
 }
 
 function renderOptionsForProject(data) {
-    var doc = getDoc();
+    var doc = new Doc();
     //check if user has permissions to perform the add and import operations
     if (data["hasPermissions"]) {
         if ($("#createProjectButton").length === 0) {
             var contentToAdd = "<div class='marginBottom10'><button id='createProjectButton' type='button' class='btn btn-default'>\n\
-            " + doc.page_project.button_create.docLabel + "</button></div>";
+            " + doc.getDocLabel("page_project", "button_create") + "</button></div>";
 
             $("#projectsTable_wrapper div.ColVis").before(contentToAdd);
             $('#project #createProjectButton').click(CreateProjectClick);
@@ -211,41 +195,41 @@ function renderOptionsForProject(data) {
 }
 
 function aoColumnsFunc() {
-    var doc = getDoc();
+    var doc = new Doc();
     var aoColumns = [
         {"data": "button",
             "sName": "Actions",
-            "title": doc.page_global.columnAction.docLabel,
+            "title": doc.getDocLabel("page_global", "columnAction"),
             "bSortable": false,
             "bSearchable": false,
             "mRender": function (data, type, obj) {
-                var editProject = '<button id="editProject" onclick="editProject(\'' + obj["idProject"] + '\');"\n\
-                                class="editProject btn btn-default btn-xs margin-right5" \n\
-                                name="editProject" title="\'' + doc.page_project.button_edit.docLabel + '\'" type="button">\n\
+                var editEntry = '<button id="editEntry" onclick="editEntry(\'' + obj["idProject"] + '\');"\n\
+                                class="editEntry btn btn-default btn-xs margin-right5" \n\
+                                name="editEntry" title="' + doc.getDocLabel("page_project", "button_edit") + '" type="button">\n\
                                 <span class="glyphicon glyphicon-pencil"></span></button>';
-                var deleteProject = '<button id="deleteProject" onclick="deleteProject(\'' + obj["idProject"] + '\');" \n\
-                                class="deleteProject btn btn-default btn-xs margin-right5" \n\
-                                name="deleteProject" title="\'' + doc.page_project.button_delete.docLabel + '\'" type="button">\n\
+                var deleteEntry = '<button id="deleteEntry" onclick="deleteEntry(\'' + obj["idProject"] + '\');" \n\
+                                class="deleteEntry btn btn-default btn-xs margin-right5" \n\
+                                name="deleteEntry" title="' + doc.getDocLabel("page_project", "button_delete") + '" type="button">\n\
                                 <span class="glyphicon glyphicon-trash"></span></button>';
 
-                return '<div class="center btn-group width150">' + editProject + deleteProject + '</div>';
+                return '<div class="center btn-group width150">' + editEntry + deleteEntry + '</div>';
             }
         },
         {"data": "idProject",
             "sName": "idProject",
-            "title": displayDocLink(doc.project.idproject)},
+            "title": doc.getDocOnline("project", "idproject")},
         {"data": "code",
             "sName": "VCCode",
-            "title": displayDocLink(doc.project.code)},
+            "title": doc.getDocOnline("project", "code")},
         {"data": "description",
             "sName": "description",
-            "title": displayDocLink(doc.project.description)},
+            "title": doc.getDocOnline("project", "description")},
         {"data": "active",
             "sName": "active",
-            "title": displayDocLink(doc.project.active)},
+            "title": doc.getDocOnline("project", "active")},
         {"data": "dateCreation",
             "sName": "dateCre",
-            "title": displayDocLink(doc.project.dateCreation)}
+            "title": doc.getDocOnline("project", "dateCreation")}
     ];
     return aoColumns;
 }

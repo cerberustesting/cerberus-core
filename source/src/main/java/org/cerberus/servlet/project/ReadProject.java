@@ -36,6 +36,7 @@ import org.cerberus.entity.Project;
 import org.cerberus.exception.CerberusException;
 import org.cerberus.service.IProjectService;
 import org.cerberus.service.impl.ProjectService;
+import org.cerberus.util.ParameterParserUtil;
 import org.cerberus.util.answer.AnswerItem;
 import org.cerberus.util.answer.AnswerList;
 import org.json.JSONArray;
@@ -160,22 +161,23 @@ public class ReadProject extends HttpServlet {
         JSONObject jsonResponse = new JSONObject();
         projectService = appContext.getBean(ProjectService.class);
 
-        int startPosition = Integer.valueOf(request.getParameter("iDisplayStart"));
-        int length = Integer.valueOf(request.getParameter("iDisplayLength"));
+        int startPosition = Integer.valueOf(ParameterParserUtil.parseStringParam(request.getParameter("iDisplayStart"),"0"));
+        int length = Integer.valueOf(ParameterParserUtil.parseStringParam(request.getParameter("iDisplayLength"),"100000"));
         /*int sEcho  = Integer.valueOf(request.getParameter("sEcho"));*/
 
-        String searchParameter = request.getParameter("sSearch");
-        int columnToSortParameter = Integer.parseInt(request.getParameter("iSortCol_0"));
-        String columnToSort[] = request.getParameter("sColumns").split(",");
+        String searchParameter = ParameterParserUtil.parseStringParam(request.getParameter("sSearch"), "");
+        int columnToSortParameter = Integer.parseInt(ParameterParserUtil.parseStringParam(request.getParameter("iSortCol_0"),"1"));
+        String sColumns = ParameterParserUtil.parseStringParam(request.getParameter("sColumns"), "idProject,VCCode,description,active,dateCre");
+        String columnToSort[] = sColumns.split(",");
         String columnName = columnToSort[columnToSortParameter];
-        String sort = request.getParameter("sSortDir_0");
+        String sort = ParameterParserUtil.parseStringParam(request.getParameter("sSortDir_0"),"asc");
         AnswerList resp = projectService.findProjectListByCriteria(startPosition, length, columnName, sort, searchParameter, "");
 
         JSONArray jsonArray = new JSONArray();
         boolean userHasPermissions = request.isUserInRole("IntegratorRO");
         if (resp.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {//the service was able to perform the query, then we should get all values
             for (Project project : (List<Project>) resp.getDataList()) {
-                jsonArray.put(convertProjectToJSONObject(project));
+                jsonArray.put(convertProjectToJSONObject(project).put("hasPermissions", userHasPermissions));
             }
         }
 
