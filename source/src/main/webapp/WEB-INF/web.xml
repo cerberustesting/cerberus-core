@@ -728,10 +728,6 @@
         <servlet-name>ReadCerberusInformation</servlet-name>
         <servlet-class>org.cerberus.servlet.information.ReadCerberustInformation</servlet-class>
     </servlet>
-    <servlet>
-        <servlet-name>ReadTest</servlet-name>
-        <servlet-class>org.cerberus.servlet.test.ReadTest</servlet-class>
-    </servlet>
     <servlet-mapping>
         <servlet-name>ExecutionThreadMonitoring</servlet-name>
         <url-pattern>/ExecutionThreadMonitoring</url-pattern>
@@ -1439,10 +1435,6 @@
     <servlet-mapping>
         <servlet-name>ReadCerberusInformation</servlet-name>
         <url-pattern>/ReadCerberusInformation</url-pattern>
-    </servlet-mapping>
-    <servlet-mapping>
-        <servlet-name>ReadTest</servlet-name>
-        <url-pattern>/ReadTest</url-pattern>
     </servlet-mapping>
     <session-config>
         <session-timeout>

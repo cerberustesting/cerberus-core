@@ -551,9 +551,9 @@ function createDataTable(tableConfigurations) {
     configs["scrollY"] = tableConfigurations.scrollY;
     configs["scrollCollapse"] = tableConfigurations.scrollCollapse;
     configs["stateSave"] = tableConfigurations.stateSave;
-    configs["language"] = lang.table;
+    configs["language"] = tableConfigurations.lang.table;
     configs["columns"] = tableConfigurations.aoColumnsFunction;
-    configs["colVis"] = lang.colVis;
+    configs["colVis"] = tableConfigurations.lang.colVis;
     configs["lengthChange"] = true;
 
 
