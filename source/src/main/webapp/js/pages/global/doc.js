@@ -53,8 +53,8 @@ function getDataTableLanguage() {
         "colVis": {"buttonText": docTable.colVis.docLabel}
     };
     return res;
-};
-
+}
+;
 /**
  * Load the documentation from the database in sessionStorage
  * @param {String} lang
@@ -77,7 +77,6 @@ function readDocFromDatabase(lang) {
  */
 function getDoc() {
     var doc;
-
     if (sessionStorage.getItem("doc") === null) {
         var user = getUser();
         readDocFromDatabase(user.language);
@@ -87,6 +86,30 @@ function getDoc() {
     return doc;
 }
 
+function Doc() {
+    this.table = getDoc();
+}
+
+Doc.prototype.getDocLabel = function (docTable, docField) {
+    if (this.table.hasOwnProperty(docTable)) {
+        if (this.table[docTable].hasOwnProperty(docField)) {
+            return this.table[docTable][docField].docLabel;
+        }
+    }
+};
+
+Doc.prototype.getDocOnline = function (docTable, docField) {
+   if (this.table.hasOwnProperty(docTable)) {
+        if (this.table[docTable].hasOwnProperty(docField)) {
+            var res;
+            var user = getUser();
+            res = this.table[docTable][docField].docLabel + " <a class=\"docOnline\" href=\'javascript:popup(\"Documentation.jsp?DocTable=" + this.table[docTable][docField].docTable +
+                    "&DocField=" + this.table[docTable][docField].docField + "&Lang=" + user.language + "\")\' onclick=\"stopPropagation(event)\"><span class=\"glyphicon glyphicon-question-sign\"></span></a>";
+            return res;
+        }
+    }
+};
+
 /**
  * generate the string with a link to online documentation
  * @param {JSONObject} docObj
@@ -95,7 +118,6 @@ function getDoc() {
 function displayDocLink(docObj) {
     var res;
     var user = getUser();
-
     res = docObj.docLabel + " <a class=\"docOnline\" href=\'javascript:popup(\"Documentation.jsp?DocTable=" + docObj.docTable +
             "&DocField=" + docObj.docField + "&Lang=" + user.language + "\")\' onclick=\"stopPropagation(event)\"><span class=\"glyphicon glyphicon-question-sign\"></span></a>";
     return res;

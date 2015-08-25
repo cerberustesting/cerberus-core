@@ -43,23 +43,21 @@ function initPage() {
 };
 
 function displayPageLabel() {
-    var doc = getDoc();
-    var docPage = doc.page_project;
-    var docObj = doc.project;
+    var doc = new Doc();
 
-    displayHeaderLabel(doc);
-    displayGlobalLabel(doc);
-    $("#pageTitle").html(docPage.title.docLabel);
-    $("#title").html(displayDocLink(docPage.title));
-    $("[name='addEntryField']").html(docPage.button_create.docLabel);
-    $("[name='confirmationField']").html(docPage.button_delete.docLabel);
-    $("[name='editEntryField']").html(docPage.button_edit.docLabel);
-    $("[name='idProjectField']").html(displayDocLink(docObj.idproject));
-    $("[name='activeField']").html(displayDocLink(docObj.active));
-    $("[name='codeField']").html(displayDocLink(docObj.code));
-    $("[name='descriptionField']").html(displayDocLink(docObj.description));
+    displayHeaderLabel(doc.table);
+    displayGlobalLabel(doc.table);
+    $("#pageTitle").html(doc.getDocLabel("page_project", "title"));
+    $("#title").html(doc.getDocOnline("page_project", "title"));
+    $("[name='addEntryField']").html(doc.getDocLabel("page_project", "button_create"));
+    $("[name='confirmationField']").html(doc.getDocLabel("page_project", "button_delete"));
+    $("[name='editEntryField']").html(doc.getDocLabel("page_project", "button_edit"));
+    $("[name='idProjectField']").html(doc.getDocOnline("project", "idproject"));
+    $("[name='activeField']").html(doc.getDocOnline("project", "active"));
+    $("[name='codeField']").html(doc.getDocOnline("project", "code"));
+    $("[name='descriptionField']").html(doc.getDocOnline("project", "description"));
     displayInvariantList("PROJECTACTIVE", "Active");
-    displayFooter(doc);
+    displayFooter(doc.table);
 }
 
 function deleteEntryHandlerClick() {
