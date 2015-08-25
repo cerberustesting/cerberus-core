@@ -85,11 +85,11 @@ function deleteEntryHandlerClick() {
 
 function deleteEntry(entry) {
     clearResponseMessageMainPage();
-    var doc = getDoc();
-    var messageComplete = doc.page_global.deleteMessage.docLabel;
-    messageComplete = messageComplete.replace("%TABLE%", doc.project.idproject.docLabel);
+    var doc = new Doc();
+    var messageComplete = doc.getDocLabel("page_global", "deleteMessage");
+    messageComplete = messageComplete.replace("%TABLE%", doc.getDocLabel("project", "idproject"));
     messageComplete = messageComplete.replace("%ENTRY%", entry);
-    showModalConfirmation(deleteEntryHandlerClick, doc.page_project.button_delete.docLabel, messageComplete, entry);
+    showModalConfirmation(deleteEntryHandlerClick, doc.getDocLabel("page_project", "button_delete"), messageComplete, entry);
 }
 
 function saveEntry(servletName, modalID, form) {
@@ -181,12 +181,12 @@ function editEntry(id) {
 }
 
 function renderOptionsForProject(data) {
-    var doc = getDoc();
+    var doc = new Doc();
     //check if user has permissions to perform the add and import operations
     if (data["hasPermissions"]) {
         if ($("#createProjectButton").length === 0) {
             var contentToAdd = "<div class='marginBottom10'><button id='createProjectButton' type='button' class='btn btn-default'>\n\
-            " + doc.page_project.button_create.docLabel + "</button></div>";
+            " + doc.getDocLabel("page_project", "button_create") + "</button></div>";
 
             $("#projectsTable_wrapper div.ColVis").before(contentToAdd);
             $('#project #createProjectButton').click(CreateProjectClick);
@@ -195,23 +195,21 @@ function renderOptionsForProject(data) {
 }
 
 function aoColumnsFunc() {
-    var doc = getDoc();
-    var docPage = doc.page_project;
-    var docObj = doc.project;
+    var doc = new Doc();
     var aoColumns = [
         {"data": "button",
             "sName": "Actions",
-            "title": doc.page_global.columnAction.docLabel,
+            "title": doc.getDocLabel("page_global", "columnAction"),
             "bSortable": false,
             "bSearchable": false,
             "mRender": function (data, type, obj) {
                 var editEntry = '<button id="editEntry" onclick="editEntry(\'' + obj["idProject"] + '\');"\n\
                                 class="editEntry btn btn-default btn-xs margin-right5" \n\
-                                name="editEntry" title="' + docPage.button_edit.docLabel + '" type="button">\n\
+                                name="editEntry" title="' + doc.getDocLabel("page_project", "button_edit") + '" type="button">\n\
                                 <span class="glyphicon glyphicon-pencil"></span></button>';
                 var deleteEntry = '<button id="deleteEntry" onclick="deleteEntry(\'' + obj["idProject"] + '\');" \n\
                                 class="deleteEntry btn btn-default btn-xs margin-right5" \n\
-                                name="deleteEntry" title="' + docPage.button_delete.docLabel + '" type="button">\n\
+                                name="deleteEntry" title="' + doc.getDocLabel("page_project", "button_delete") + '" type="button">\n\
                                 <span class="glyphicon glyphicon-trash"></span></button>';
 
                 return '<div class="center btn-group width150">' + editEntry + deleteEntry + '</div>';
@@ -219,19 +217,19 @@ function aoColumnsFunc() {
         },
         {"data": "idProject",
             "sName": "idProject",
-            "title": displayDocLink(docObj.idproject)},
+            "title": doc.getDocOnline("project", "idproject")},
         {"data": "code",
             "sName": "VCCode",
-            "title": displayDocLink(docObj.code)},
+            "title": doc.getDocOnline("project", "code")},
         {"data": "description",
             "sName": "description",
-            "title": displayDocLink(docObj.description)},
+            "title": doc.getDocOnline("project", "description")},
         {"data": "active",
             "sName": "active",
-            "title": displayDocLink(docObj.active)},
+            "title": doc.getDocOnline("project", "active")},
         {"data": "dateCreation",
             "sName": "dateCre",
-            "title": displayDocLink(docObj.dateCreation)}
+            "title": doc.getDocOnline("project", "dateCreation")}
     ];
     return aoColumns;
 }

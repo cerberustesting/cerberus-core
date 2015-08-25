@@ -17,6 +17,8 @@
  * You should have received a copy of the GNU General Public License
  * along with Cerberus.  If not, see <http://www.gnu.org/licenses/>.
  */
+/* global handleErrorAjaxAfterTimeout */
+
 $.when($.getScript("js/pages/global/global.js")).then(function () {
     $(document).ready(function () {
         initPage();
@@ -56,12 +58,35 @@ function getRowClass(status) {
     return rowClass;
 }
 
-function loadReportByFunctionChart() {
-    var data = [{State: "Toto", OK: {value: 10, color: "#30EE30"}, KO: {value: 2, color: "#FF3030"}},
-        {State: "Titi", OK: {value: 12, color: "#30EE30"}, KO: {value: 2, color: "#FF3030"}},
-        {State: "Tata", OK: {value: 10, color: "#30EE30"}, KO: {value: 2, color: "#FF3030"}},
-        {State: "Tutu", OK: {value: 3, color: "#30EE30"}, KO: {value: 2, color: "#FF3030"}},
-        {State: "Foo", OK: {value: 1, color: "#30EE30"}, KO: {value: 18, color: "#FF3030"}}];
+function loadReport() {
+    var selectTag = $("#selectTag option:selected").text();
+
+    //clear the old report content before reloading it
+    $("#ReportByStatusTable tbody").empty();
+    $("#chart").empty();
+    $("#functionChart").empty();
+    loadReportByStatusTable(selectTag);
+    
+    var jqxhr = $.get("CampaignExecutionStatusBarGraphByFunction", {CampaignName: "null", Tag: selectTag}, "json");
+    $.when(jqxhr).then(function (data) {
+        loadReportByFunctionChart(data);
+    });
+}
+
+function convertData(dataset) {
+    var data = [];
+    for (var i = 0; i < dataset.labels.length; i++) {
+        data.push({name: dataset.labels[i]});
+        dataset.axis.forEach(function (column) {
+            var columnName = column.label;
+            data[i][columnName] = {value: column.data[i], color: column.fillColor};
+        });
+    }
+    return data;
+}
+
+function loadReportByFunctionChart(dataset) {
+    var data = convertData(dataset);
 
     var margin = {top: 20, right: 20, bottom: 30, left: 40},
     width = 1200 - margin.left - margin.right,
@@ -87,10 +112,14 @@ function loadReportByFunctionChart() {
             .attr('class', 'd3-tip')
             .offset([-10, 0])
             .html(function (d) {
-                console.log(d);
-                return "<strong>Status:</strong> <span style='color:red'>" + d.State + "</span>\n\
-                        <div>OK : "+ d.OK.value +"</div>\n\
-                        <div>KO : "+ d.KO.value +"</div>";
+                return "<strong>Function :</strong> <span style='color:red'>" + d.name + "</span>\n\
+                        <div><div class='color-box' style='background-color:" + d.OK.color + " ;'></div>OK : " + d.OK.value + "</div>\n\
+                        <div><div class='color-box' style='background-color:" + d.KO.color + " ;'></div>KO : " + d.KO.value + "</div>\n\
+                        <div><div class='color-box' style='background-color:" + d.CA.color + " ;'></div>CA : " + d.CA.value + "</div>\n\
+                        <div><div class='color-box' style='background-color:" + d.FA.color + " ;'></div>FA : " + d.FA.value + "</div>\n\
+                        <div><div class='color-box' style='background-color:" + d.NA.color + " ;'></div>NA : " + d.NA.value + "</div>\n\
+                        <div><div class='color-box' style='background-color:" + d.NE.color + " ;'></div>NE : " + d.NE.value + "</div>\n\
+                        <div><div class='color-box' style='background-color:" + d.PE.color + " ;'></div>PE : " + d.PE.value + "</div>";
             });
 
     var svg = d3.select("#functionChart").append("svg")
@@ -102,19 +131,19 @@ function loadReportByFunctionChart() {
     svg.call(tip);
 
     color.domain(d3.keys(data[0]).filter(function (key) {
-        return key !== "State";
+        return key !== "name";
     }));
 
     data.forEach(function (d) {
         var y0 = 0;
-        d.ages = color.domain().map(function (name) {
+        d.test = color.domain().map(function (name) {
             return {name: name, y0: y0, y1: y0 += +d[name].value, color: d[name].color};
         });
-        d.total = d.ages[d.ages.length - 1].y1;
+        d.total = d.test[d.test.length - 1].y1;
     });
 
     x.domain(data.map(function (d) {
-        return d.State;
+        return d.name;
     }));
     y.domain([0, d3.max(data, function (d) {
             return d.total;
@@ -135,21 +164,21 @@ function loadReportByFunctionChart() {
             .style("text-anchor", "end")
             .text("TestCase Number");
 
-    var state = svg.selectAll(".state")
+    var name = svg.selectAll(".name")
             .data(data)
             .enter().append("g")
             .attr("class", "g")
             .attr("transform", function (d) {
-                return "translate(" + x(d.State) + ",0)";
+                return "translate(" + x(d.name) + ",0)";
             });
 
     svg.selectAll(".g")
             .on('mouseover', tip.show)
             .on('mouseout', tip.hide);
 
-    state.selectAll("rect")
+    name.selectAll("rect")
             .data(function (d) {
-                return d.ages;
+                return d.test;
             })
             .enter().append("rect")
             .attr("width", x.rangeBand())
@@ -198,13 +227,7 @@ function loadReportByStatusChart(data) {
             });
 }
 
-function loadReportByStatusTable() {
-    var selectTag = $("#selectTag option:selected").text();
-
-    //clear the table content before reloading it
-    $("#ReportByStatusTable tbody").empty();
-    $("#chart").empty();
-    $("#functionChart").empty();
+function loadReportByStatusTable(selectTag) {
     var jqxhr = $.get("CampaignExecutionGraphByStatus", {CampaignName: "null", Tag: selectTag}, "json");
     $.when(jqxhr).then(function (data) {
         var total = 0;
@@ -226,6 +249,5 @@ function loadReportByStatusTable() {
                 .append($("<th></th>").text(total))
                 );
         loadReportByStatusChart(data);
-        loadReportByFunctionChart();
     }).fail(handleErrorAjaxAfterTimeout);
 }

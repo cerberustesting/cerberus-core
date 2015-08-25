@@ -22,7 +22,7 @@
 */
 
 .statusOK {
-    background-color: #00EE00; 
+    background-color: #30EE30; 
 }
 
 .statusKO {
@@ -51,6 +51,15 @@
 
 svg {
     margin-left: 50px;
+}
+
+.color-box {   
+    float: left;
+    width: 10px;
+    height: 10px;
+    border-width: 1px;
+    border-style: solid;
+    border-color: rgba(0,0,0,.2);
 }
 
 .d3-tip {

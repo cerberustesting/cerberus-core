@@ -35,7 +35,7 @@
                                         <div class="input-group">
                                             <select class="form-control col-lg-7" name="Tag" id="selectTag"></select>
                                             <div class="input-group-btn">
-                                                <button type="button" class="btn btn-default" style="margin-left: 10px;" id="loadbutton" onclick="loadReportByStatusTable()">Load</button>
+                                                <button type="button" class="btn btn-default" style="margin-left: 10px;" id="loadbutton" onclick="loadReport()">Load</button>
                                             </div>
                                         </div>
                                     </div>
