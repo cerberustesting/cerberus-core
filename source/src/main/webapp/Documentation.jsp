@@ -146,7 +146,8 @@
     <head>
         <title><%= Title%></title>
         <link rel="stylesheet" href="css/crb_style_doc.css">
-        <link rel="shortcut icon" type="image/x-icon" href="images/favicon.ico" />
+        <link rel="shortcut icon" type="image/x-icon" href="images/favicon.ico" />        
+        <link type="text/css" rel="stylesheet" href="css/bootstrap.css">
     </head>
 
     <body>

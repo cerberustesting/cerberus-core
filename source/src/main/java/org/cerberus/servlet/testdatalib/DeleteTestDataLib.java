@@ -81,7 +81,7 @@ public class DeleteTestDataLib extends HttpServlet {
                 logEventService.insertLogEvent(factoryLogEvent.create(0, 0, request.getUserPrincipal().getName(), null, "/DeleteTestDataLib",
                         "DELETE", "Delete TestDataLib  By ID: " + testDataLibID, "", ""));
             } catch (CerberusException ex) {
-                org.apache.log4j.Logger.getLogger(AddTestDataLib.class.getName()).log(org.apache.log4j.Level.ERROR, null, ex);
+                org.apache.log4j.Logger.getLogger(CreateTestDataLib.class.getName()).log(org.apache.log4j.Level.ERROR, null, ex);
             }
             
             response.setContentType("application/json");

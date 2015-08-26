@@ -51,7 +51,7 @@ public class ImportFileService implements IImportFileService{
     @Override
     public AnswerItem importAndValidateXMLFromInputStream(InputStream filecontent, InputStream schemaContent, XMLHandlerEnumType handlerType) {
         AnswerItem answer = new AnswerItem();
-        MessageEvent msg = null;
+        MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
         if(schemaContent != null){
             try {
                 

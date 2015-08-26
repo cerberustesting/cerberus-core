@@ -27,7 +27,6 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import netscape.javascript.JSObject;
 import org.apache.commons.lang3.StringEscapeUtils;
 import org.cerberus.dto.TestCaseListDTO;
 import org.cerberus.dto.TestListDTO;
@@ -56,8 +55,8 @@ import org.springframework.web.context.support.WebApplicationContextUtils;
  * @author memiks
  * @author FNogueira
  */
-@WebServlet(name = "GetTestDataLib", urlPatterns = {"/GetTestDataLib"})
-public class GetTestDataLib extends HttpServlet {
+@WebServlet(name = "ReadTestDataLib", urlPatterns = {"/ReadTestDataLib"})
+public class ReadTestDataLib extends HttpServlet {
 
     private ITestDataLibService testDataLibService;
     private final int  ACTION_ADDTESTDATALIB = 0;
@@ -86,7 +85,7 @@ public class GetTestDataLib extends HttpServlet {
             AnswerItem answer = new AnswerItem(new MessageEvent(MessageEventEnum.DATA_OPERATION_OK));
             if(request.getParameter("action") == null){ //retrieves all data for testdatalib
                 //select all entries for the testdatalib
-                answer = findTestDataLibList(appContext, request, response);
+                answer = findTestDataLibList(appContext, request);
                 jsonResponse = (JSONObject)answer.getItem();                
             }else{
                 int actionParameter = Integer.parseInt(request.getParameter("action"));
@@ -124,7 +123,8 @@ public class GetTestDataLib extends HttpServlet {
                             JSONObject dbList = findInvariantListByIdName(appContext, "PROPERTYDATABASE");
                             jsonResponse.put("PROPERTYDATABASE", dbList);
                         }
-                       
+                        //loadst the testdata types
+                        jsonResponse.put("TESTDATATYPE", findInvariantListByIdName(appContext, "TESTDATATYPE"));
                         //include systems                        
                         jsonResponse.put("SYSTEM", findInvariantListByIdName(appContext, "SYSTEM"));
                         //include environments
@@ -162,8 +162,6 @@ public class GetTestDataLib extends HttpServlet {
                         
             }
             
-
-            
             jsonResponse.put("messageType", answer.getResultMessage().getMessage().getCodeString());
             jsonResponse.put("message", answer.getResultMessage().getDescription());         
             
@@ -171,7 +169,7 @@ public class GetTestDataLib extends HttpServlet {
             response.getWriter().print(jsonResponse.toString()); 
             
         } catch (JSONException e) {
-            org.apache.log4j.Logger.getLogger(GetTestDataLib.class.getName()).log(org.apache.log4j.Level.ERROR, null, e); 
+            org.apache.log4j.Logger.getLogger(ReadTestDataLib.class.getName()).log(org.apache.log4j.Level.ERROR, null, e); 
             //returns a default error message with the json format that is able to be parsed by the client-side
             response.setContentType("application/json"); 
             MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_UNEXPECTED_ERROR);
@@ -186,8 +184,17 @@ public class GetTestDataLib extends HttpServlet {
         
         
     }
-
-    private AnswerItem findTestDataLibList(ApplicationContext appContext, HttpServletRequest request, HttpServletResponse response) throws IOException, BeansException, NumberFormatException, JSONException {
+    /**
+     * Auxiliary method that retrieves a list of test data library entries with basis on the GUI information (datatable)
+     * @param appContext - context object used to get the required beans
+     * @param request - object that contains the search and sort filters used to retrieve the information to be displayed in the GUI.
+     * @return object containing the info to be displayed in the GUI
+     * @throws IOException
+     * @throws BeansException
+     * @throws NumberFormatException
+     * @throws JSONException 
+     */
+    private AnswerItem findTestDataLibList(ApplicationContext appContext, HttpServletRequest request) throws IOException, BeansException, NumberFormatException, JSONException {
         AnswerItem item = new AnswerItem();
         JSONObject jsonResponse = new JSONObject();    
         testDataLibService = appContext.getBean(ITestDataLibService.class);
@@ -213,7 +220,7 @@ public class GetTestDataLib extends HttpServlet {
         }
         
         
-        //recordsFilterd do lado do servidor    
+        //recordsFiltered do lado do servidor    
         jsonResponse.put("hasPermissions", userHasPermissions);
         jsonResponse.put("TestDataLib", jsonArray);
         jsonResponse.put("iTotalRecords", resp.getTotalRows());
@@ -225,7 +232,13 @@ public class GetTestDataLib extends HttpServlet {
         return item;
     }
 
- 
+    /**
+     * Auxiliary method that converts a test data library object to a JSON object.
+     * @param testDataLib test data library
+     * @param escapeXML indicates whether the XML retrieved in the Envelope should be escaped or not.
+     * @return JSON object
+     * @throws JSONException 
+     */
     private JSONArray convertTestDataLibToJSONObject(TestDataLib testDataLib, boolean escapeXML) throws JSONException {
        
         JSONArray result = new JSONArray();
@@ -250,7 +263,13 @@ public class GetTestDataLib extends HttpServlet {
         return result;
     }
 
-    
+    /**
+     * Auxiliary method that retrieves the list of groups that are currently defined for a type of testdatalib entries.
+     * @param appContext - context object used to get the required beans
+     * @param type - type that filters the list of groups that should be retrieved
+     * @return an object containing all the groups that belong to that type
+     * @throws JSONException 
+     */
     private AnswerItem getListOfGroupsPerType(ApplicationContext appContext, String type) throws JSONException{
         AnswerItem answerItem = new AnswerItem();
         
@@ -268,7 +287,13 @@ public class GetTestDataLib extends HttpServlet {
            
         return answerItem;
     }
-
+    /**
+     * Auxiliary method that finds a test data library entry with basis on an identifier
+     * @param appContext - context object used to get the required beans
+     * @param testDatalib - identifier used to perform the search
+     * @return an object containing the information about the test data library that matches the identifier
+     * @throws JSONException 
+     */
     private AnswerItem findTestDataLibByID(ApplicationContext appContext, int testDatalib) throws JSONException {
         AnswerItem item = new AnswerItem();        
         JSONObject object = new JSONObject();        
@@ -292,10 +317,10 @@ public class GetTestDataLib extends HttpServlet {
     }
     /**
      * Handles the auto-complete requests and retrieves a limited list of strings that match (totally or partially) the name entered by the user.
-     * @param appContext
-     * @param nameToSearch
-     * @param limit
-     * @return
+     * @param appContext - context object used to get the required beans
+     * @param nameToSearch - value used to perform the auto complete
+     * @param limit - limit number of the records that should be retrieved
+     * @return object containing values that match the name 
      * @throws JSONException 
      */
     private AnswerItem findTestDataLibNameList(ApplicationContext appContext, String nameToSearch,  int limit) throws JSONException {
@@ -315,7 +340,13 @@ public class GetTestDataLib extends HttpServlet {
         return ansItem;
         
     }
-
+    /**
+     * Auxiliary method that search for the values for an invariant with basis in its name.
+     * @param appContext - context object used to get the required beans
+     * @param idName name of the invariant that is to be retrieved
+     * @return an object containing the invariant information
+     * @throws JSONException 
+     */
     private JSONObject findInvariantListByIdName(ApplicationContext appContext, String idName) throws JSONException {
         JSONObject object = new JSONObject();
         try {
@@ -329,11 +360,19 @@ public class GetTestDataLib extends HttpServlet {
             }
             
         } catch (CerberusException ex) {
-            Logger.getLogger(GetTestDataLib.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            Logger.getLogger(ReadTestDataLib.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         }
         return object;
     }
-
+    /**
+     * Auxiliary method that extracts the list of test cases that are currently using one test lib.
+     * @param appContext - context object used to get the required beans
+     * @param testDataLibId - identifier of the library entry
+     * @param name - name of the library entry
+     * @param country - country of the library entry
+     * @return an answer item containing the information about the test cases that use the entry 
+     * @throws JSONException 
+     */
     private AnswerItem getTestCasesUsingTestDataLib(ApplicationContext appContext, int testDataLibId, String name, String country) throws JSONException {
         JSONObject response = new JSONObject();
         JSONArray object = new JSONArray();

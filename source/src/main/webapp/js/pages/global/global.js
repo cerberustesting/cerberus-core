@@ -24,14 +24,13 @@
 //$.getScript("js/jquery.blockUI.js");
 
 function handleErrorAjaxAfterTimeout(result) {
+    var doc = getDoc();
+    var docGlobal = doc.page_global;
     if (result.readyState === 4 && result.status === 200) {
         $(location).prop("pathname", $(location).prop("pathname"));
         $(location).prop("search", $(location).prop("search"));
-        //$(location).prop("pathname", "/Cerberus/TestDataLib.jsp");
-        //$(location).prop("url", $(location).prop("origin") + "/TestDataLib.jsp");
-        //$(location).reload(false);
     } else {
-        var localMessage = new Message("danger", "Unable to perform the task. An unexpected error has happened!");
+        var localMessage = new Message("danger", docGlobal.unexpected_error_message.docLabel);
         showMessageMainPage(localMessage);
     }
 
@@ -42,13 +41,15 @@ function handleErrorAjaxAfterTimeout(result) {
  * @returns {String} - label associated with the type
  */
 function getSubDataLabel(type) {
+    var doc = getDoc();
+    var docTestdatalibdata = doc.testdatalibdata;
     var labelEntry = "Entry";
     if (type === "STATIC") {
-        labelEntry = "Value";
+        labelEntry = displayDocLink(docTestdatalibdata.value);
     } else if (type === "SQL") {
-        labelEntry = "Column";
+        labelEntry = displayDocLink(docTestdatalibdata.column);
     } else if (type === "SOAP") {
-        labelEntry = "Parsing Answer";
+        labelEntry = displayDocLink(docTestdatalibdata.parsingAnswer);
     }
     return labelEntry;
 }
@@ -256,7 +257,10 @@ $(function() {
  * @param {type} element 
  */
 function showLoader(element) {
-    $(element).block({message: "Processing..."});
+    var doc = getDoc();
+    var docGlobal = doc.page_global;
+    var processing = docGlobal.processing.docLabel;
+    $(element).block({message: processing});
 }
 /**
  * Method that hides a loader that was specified in a modal dialog
@@ -270,7 +274,10 @@ function hideLoader(element) {
  * @param {type} element dialog
  */
 function showLoaderInModal(element) {
-    $(element).find(".modal-content").block({message: "Processing..."});
+    var doc = getDoc();
+    var docGlobal = doc.page_global;
+    var processing = docGlobal.processing.docLabel;
+    $(element).find(".modal-content").block({message: processing});
 }
 /**
  * Method that hides a loader that was specified in a modal dialog
@@ -320,7 +327,7 @@ function setDataConfirmationModal(title, message, hiddenField) {
  * Auxiliary function that shows a modal dialog that allows the upload of files
  * @param {type} handlerClickOk / function that will be executed when the user clicks in the upload button
  * @param {type} fileExtension / extension of files that are allowed
- * @param {type} translations - the user can specify a function that translates the labels in the upload dialog.
+ * @param {type} translations - the user can specify a new translations for the upload dialog.
  */
 function showModalUpload(handlerClickOk, fileExtension, translations) {
     clearResponseMessageMainPage();
@@ -361,7 +368,9 @@ function validatesFileExtension(fileName, fileExtension) {
         $('#uploadOk').removeProp("disabled");
     } else {
         resetModalUpload();
-        var localMessage = new Message("danger", "Please select a file with the extension "+ fileExtension +"!");
+        var doc = getDoc();
+        var docGlobal = doc.page_global;        
+        var localMessage = new Message("danger", + docGlobal.invalid_extension_message.docLabel +fileExtension +"!");
         showMessage(localMessage, $('#modalUpload'));
     }
 }
@@ -419,7 +428,7 @@ function TableConfigurationsClientSide(divId, data, aoColumnsFunction) {
     this.showColvis = true;
     this.scrollY = false;
     this.scrollCollapse = false;
-
+    this.lang = getDataTableLanguage();
 }
 
 /**

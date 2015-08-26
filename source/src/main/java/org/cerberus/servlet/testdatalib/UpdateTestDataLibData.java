@@ -129,7 +129,7 @@ public class UpdateTestDataLibData extends HttpServlet {
                 IFactoryLogEvent factoryLogEvent = appContext.getBean(FactoryLogEvent.class);
                 try {
                     logEventService.insertLogEvent(factoryLogEvent.create(0, 0, request.getUserPrincipal().getName(), null, "/UpdateTestDataLibData", "UPDATE", 
-                            "Update TestDataLib  : " + request.getParameter("Name"), "", ""));
+                            "Update TestDataLibData entries for id: " + testDataLibID, "", ""));
                 } catch (CerberusException ex) {
                     org.apache.log4j.Logger.getLogger(UpdateTestDataLibData.class.getName()).log(org.apache.log4j.Level.ERROR, null, ex); 
                 }

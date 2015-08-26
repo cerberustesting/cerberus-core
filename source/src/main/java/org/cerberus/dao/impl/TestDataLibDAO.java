@@ -139,25 +139,26 @@ public class TestDataLibDAO implements ITestDataLibDAO {
     public Answer updateTestDataLib(TestDataLib testDataLib){
         
         MessageEvent rs = null; 
-        String query = "update testdatalib set `group`= ?, `system`=?, `environment`=?, `country`=?, `database`= ? , `script`= ? , "
+        String query = "update testdatalib set `type`=?, `group`= ?, `system`=?, `environment`=?, `country`=?, `database`= ? , `script`= ? , "
                 + "`servicepath`= ? , `method`= ? , `envelope`= ? , `description`= ? where "
                 + "`TestDataLibID`= ?"; 
         Connection connection = this.databaseSpring.connect();
         try {
             PreparedStatement preStat = connection.prepareStatement(query);
             try {
-                //name and type are not editable
-                preStat.setString(1, testDataLib.getGroup());
-                preStat.setString(2, testDataLib.getSystem());
-                preStat.setString(3, testDataLib.getEnvironment());
-                preStat.setString(4, testDataLib.getCountry());
-                preStat.setString(5, testDataLib.getDatabase());
-                preStat.setString(6, testDataLib.getScript());
-                preStat.setString(7, testDataLib.getServicePath());
-                preStat.setString(8, testDataLib.getMethod());
-                preStat.setString(9, testDataLib.getEnvelope());
-                preStat.setString(10, testDataLib.getDescription());
-                preStat.setInt(11, testDataLib.getTestDataLibID());
+               //name is not editable
+                preStat.setString(1, testDataLib.getType());
+                preStat.setString(2, testDataLib.getGroup());
+                preStat.setString(3, testDataLib.getSystem());
+                preStat.setString(4, testDataLib.getEnvironment());
+                preStat.setString(5, testDataLib.getCountry());
+                preStat.setString(6, testDataLib.getDatabase());
+                preStat.setString(7, testDataLib.getScript());
+                preStat.setString(8, testDataLib.getServicePath());
+                preStat.setString(9, testDataLib.getMethod());
+                preStat.setString(10, testDataLib.getEnvelope());
+                preStat.setString(11, testDataLib.getDescription());
+                preStat.setInt(12, testDataLib.getTestDataLibID());
 
                 int rowsUpdated= preStat.executeUpdate();
                 
@@ -168,7 +169,7 @@ public class TestDataLibDAO implements ITestDataLibDAO {
                     rs = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);                    
                 }
                 
-                rs.setDescription(rs.getDescription().replace("%ITEM%", "Test data lib entry").replace("%OPERATION%", "UPDATED"));
+                rs.setDescription(rs.getDescription().replace("%ITEM%", "Test data lib entry with name: " + testDataLib.getName()).replace("%OPERATION%", "UPDATED"));
  
             } catch (SQLException exception) {
                 MyLogger.log(TestDataLibDAO.class.getName(), Level.ERROR, "Unable to execute query : "+exception.toString());
@@ -264,19 +265,20 @@ public class TestDataLibDAO implements ITestDataLibDAO {
             query.append("SELECT  "); 
             query.append("CASE tdl.country  "); 
             query.append("WHEN '' THEN   "); 
-            query.append(" case (select count(*) from testcasecountryproperties tccp where tccp.value1 like tdl.`Name`)  "); 
+            query.append(" case (select count(*) from testcasecountryproperties tccp where tccp.value1 like tdl.`Name` and tccp.`type` LIKE 'getFromDataLib')  "); 
             query.append(" when 0 then (select count(*) from testcasecountryproperties tccp where tccp.country not in (select distinct(country)  "); 
-            query.append(" from testdatalib where `name` like tdl.`Name`) and tccp.value1 = tdl.`Name`) "); 
-            query.append(" else (select count(distinct(country)) from testcasecountryproperties tccp where tccp.value1 like tdl.`Name`)  "); 
+            query.append(" from testdatalib where `name` like tdl.`Name`) and tccp.value1 = tdl.`Name` and tccp.`type` LIKE 'getFromDataLib') "); 
+            query.append(" else (select count(distinct(country)) from testcasecountryproperties tccp where tccp.value1 like tdl.`Name` and tccp.`type` LIKE 'getFromDataLib')  "); 
             query.append("    end "); 
             query.append(" ELSE  "); 
             query.append(" case (select count(*) from testdatalib tdl2 where tdl2.`Name` = tdl.`Name` and tdl2.country like '')  "); 
-            query.append(" when 0 then (select count(*) from testcasecountryproperties tccp where tccp.value1 like tdl.`Name` and tccp.country = tdl.country) "); 
+            query.append(" when 0 then (select count(*) from testcasecountryproperties tccp where tccp.value1 like tdl.`Name` and tccp.country = tdl.country"
+                    + " and tccp.`type` LIKE 'getFromDataLib') "); 
             query.append(" else 0 "); 
             query.append(" end  "); 
             query.append(" END as canDelete  "); 
             query.append(" FROM TestDataLib tdl "); 
-            query.append(" where tdl.TestDataLibID=? "); 
+            query.append(" where tdl.TestDataLibID=?"); 
 
             preStat = connection.prepareStatement(query.toString());
             //deletes the testdatalib

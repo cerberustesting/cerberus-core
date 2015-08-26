@@ -285,12 +285,13 @@
         <resources>
         	<!-- Filter the lang property files -->
         	<resource>
-        		<directory>src/main/resources</directory>
-        		<includes>
-          			<include>lang/**/*.properties</include>
-        		</includes>
-        		<filtering>true</filtering>
-			</resource>
+                    <directory>src/main/resources</directory>
+                    <includes>
+                            <include>lang/**/*.properties</include>
+                            <include>xsd/**/*.xsd</include>
+                    </includes>
+                    <filtering>true</filtering>
+                </resource>
         </resources>
         
         <plugins>

@@ -25,14 +25,12 @@ import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import org.apache.log4j.Level;
+import javax.servlet.http.HttpServletResponse; 
 import org.cerberus.dto.TestDataLibDataDTO;
 import org.cerberus.entity.MessageEvent;
 import org.cerberus.entity.MessageEventEnum;
 import org.cerberus.entity.TestDataLibData;
-import org.cerberus.entity.TestDataLibTypeEnum;
-import org.cerberus.log.MyLogger;
+import org.cerberus.entity.TestDataLibTypeEnum; 
 import org.cerberus.service.ITestDataLibDataService; 
 import org.cerberus.util.answer.AnswerItem;
 import org.cerberus.util.answer.AnswerList;
@@ -46,8 +44,8 @@ import org.springframework.web.context.support.WebApplicationContextUtils;
  * Servlet responsible for getting information from the subdata entries
  * @author FNogueira
  */
-@WebServlet(name = "GetTestDataLibData", urlPatterns = {"/GetTestDataLibData"})
-public class GetTestDataLibData extends HttpServlet {
+@WebServlet(name = "ReadTestDataLibData", urlPatterns = {"/ReadTestDataLibData"})
+public class ReadTestDataLibData extends HttpServlet {
     private final int ACTION_GETALL_BYID = 0;
     private final int ACTION_GETALL_BYNAME = 1;
     private final int ACTION_AUTOCOMPLETE = 2;
@@ -106,7 +104,7 @@ public class GetTestDataLibData extends HttpServlet {
             response.getWriter().print(jsonResponse.toString()); 
             
         } catch (JSONException e) { 
-            org.apache.log4j.Logger.getLogger(GetTestDataLibData.class.getName()).log(org.apache.log4j.Level.ERROR, null, e); 
+            org.apache.log4j.Logger.getLogger(ReadTestDataLibData.class.getName()).log(org.apache.log4j.Level.ERROR, null, e); 
             //returns a default error message with the json format that is able to be parsed by the client-side
             response.setContentType("application/json"); 
             MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_UNEXPECTED_ERROR);

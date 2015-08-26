@@ -55,8 +55,8 @@ import org.springframework.web.context.support.WebApplicationContextUtils;
  *
  * @author FNogueira
  */
-@WebServlet(name = "AddTestDataLib", urlPatterns = {"/AddTestDataLib"})
-public class AddTestDataLib extends HttpServlet {
+@WebServlet(name = "CreateTestDataLib", urlPatterns = {"/CreateTestDataLib"})
+public class CreateTestDataLib extends HttpServlet {
 
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
@@ -106,14 +106,14 @@ public class AddTestDataLib extends HttpServlet {
                     ILogEventService logEventService = appContext.getBean(LogEventService.class);
                     IFactoryLogEvent factoryLogEvent = appContext.getBean(FactoryLogEvent.class);
                     try {
-                        logEventService.insertLogEvent(factoryLogEvent.create(0, 0, request.getUserPrincipal().getName(), null, "/AddTestDataLib", "CREATE", 
+                        logEventService.insertLogEvent(factoryLogEvent.create(0, 0, request.getUserPrincipal().getName(), null, "/CreateTestDataLib", "CREATE", 
                                 "Create TestDataLib  : " + request.getParameter("Name"), "", ""));
                     } catch (CerberusException ex) {
-                        org.apache.log4j.Logger.getLogger(AddTestDataLib.class.getName()).log(org.apache.log4j.Level.ERROR, null, ex);                         
+                        org.apache.log4j.Logger.getLogger(CreateTestDataLib.class.getName()).log(org.apache.log4j.Level.ERROR, null, ex);                         
                     }
                 } 
             } catch (CerberusException ex) { 
-                MyLogger.log(AddTestDataLib.class.getName(), Level.FATAL, "" + ex);
+                MyLogger.log(CreateTestDataLib.class.getName(), Level.FATAL, "" + ex);
                 rs = new MessageEvent(MessageEventEnum.DATA_OPERATION_UNEXPECTED_ERROR);
                 rs.setDescription(rs.getDescription().replace("%DESCRIPTION%", ex.toString()));                 
             }
@@ -127,7 +127,7 @@ public class AddTestDataLib extends HttpServlet {
             response.getWriter().flush();
         } catch (JSONException ex) {
             
-            org.apache.log4j.Logger.getLogger(AddTestDataLib.class.getName()).log(org.apache.log4j.Level.ERROR, null, ex); 
+            org.apache.log4j.Logger.getLogger(CreateTestDataLib.class.getName()).log(org.apache.log4j.Level.ERROR, null, ex); 
             //returns a default error message with the json format that is able to be parsed by the client-side
             response.setContentType("application/json"); 
             MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_UNEXPECTED_ERROR);

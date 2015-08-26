@@ -64,7 +64,8 @@
     <head>
         <meta content="text/html; charset=UTF-8" http-equiv="content-type">
         <title>TestCase</title>
-
+        
+        
         <script type='text/javascript' src='js/Form_1.js'></script>
         <script type="text/javascript" src="js/jquery-1.9.1.min.js"></script>
         <script type="text/javascript" src="js/bootstrap.min.js"></script>
@@ -79,6 +80,11 @@
         <script type="text/javascript" src="js/jquery.dataTables.editable.js"></script>
         <script type="text/javascript" src="js/dataTables.colVis.js"></script>
         <script type="text/javascript" src="js/jquery.blockUI.js"></script>
+        <script type='text/javascript' src='js/pages/global/doc.js'></script>
+        <script type="text/javascript" src="js/pages/global/cerberusInformation.js"></script>
+        <script type="text/javascript" src="js/pages/global/global.js"></script>
+        <script type="text/javascript" src="js/pages/global/user.js"></script>
+        <script type="text/javascript" src="js/pages/global/header.js"></script>
         <script type="text/javascript" src="js/pages/TestCaseViewModel.js"></script>
         <link type="text/css" rel="stylesheet" href="css/dataTables.colVis.css"> 
         <link rel="stylesheet" type="text/css" href="css/elrte.min.css">
@@ -350,8 +356,7 @@
     <body>
         <%@ include file="include/function.jsp" %>
         <%@ include file="include/header.jsp" %>
-        <%@ include file="include/testcase/entryList.html"%>
-        <%@ include file="include/testcase/subDataList.html"%>
+        <%@ include file="include/testcase/listTestDataLib.html"%> 
         <div id="body">
             <%
                 boolean booleanFunction = false;
@@ -1562,8 +1567,7 @@
                                                         || tccp.getType().equals("getFromXml")
                                                         || tccp.getType().equals("getFromCookie")
                                                         || tccp.getType().equals("getFromJson")
-                                                        || tccp.getType().equals("getDifferencesFromXml")
-                                                        || tccp.getType().equals("getFromDataLib")) {
+                                                        || tccp.getType().equals("getDifferencesFromXml")){
                                                     widthValue1 = widthValue / 2;
                                                     widthValue2 = widthValue / 2;
                                                     displayValue2 = "inline-block";
@@ -1667,40 +1671,12 @@
                                                    </div>    
                                                    
                                             </div>
-                                            <div id="divProperties_value2_<%=incrementProperty%>" style="background-color:transparent;float:left;border-right-width:thin;border-right-style:solid;border-right-color:#CCCCCC;display:<%=displayValue2%>;width:<%=widthValue2%>%;height:50px">
-                                                <div class="pull-left showInlineElement" 
-                                                    <% if (tccp.getType().equals("getFromDataLib")) {%>     
-                                                        style="width: 90%;" 
-                                                    <%}else{%>
-                                                        style="width: 100%;" 
-                                                    <%}%>  
-                                                     
-                                                    >
-                                                    <textarea id="properties_value2_<%=incrementProperty%>" rows="2" 
-                                                            <% if (tccp.getType().equals("getFromDataLib")) {%>     
-                                                                    class ="wob getFromDataLib" 
-                                                            <%}else{%>
-                                                                    class ="wob"
-                                                            <%}%>  
-                                                            style="background-color:transparent;width: 100%;height:50px"
+                                             <div id="divProperties_value2_<%=incrementProperty%>" style="background-color:transparent;float:left;border-right-width:thin;border-right-style:solid;border-right-color:#CCCCCC;display:<%=displayValue2%>;width:<%=widthValue2%>%;height:50px">
+                                                <div class="pull-left showInlineElement"  style="width: 100%;">
+                                                    <textarea id="properties_value2_<%=incrementProperty%>" rows="2" class ="wob"
+                                                          style="background-color:transparent;width: 100%;height:50px"
                                                           name="properties_value2_<%=incrementProperty%>"><%=tccp.getValue2()%></textarea>
                                                 </div>
-                                                        
-                                                
-                                                <div id="selectEntry_SubData_<%=incrementProperty%>" 
-                                                  <% if (!tccp.getType().equals("getFromDataLib")) {%>     
-                                                        class="hideElement"
-                                                   <%}else{%>
-                                                        class="showInlineElement" 
-                                                    <%}%>         
-                                                    ><button id="SubDataButton_<%=incrementProperty%>" title="Select a sub data entry from the library" type="button" class="btn btn-default btn-xs pull-right" 
-                                                         <% if(tccp.getValue1().isEmpty()){%>
-                                                            disabled="disabled"
-                                                         <% } %>
-                                                         >
-                                                        <span class="glyphicon glyphicon-search"></span></button>
-                                                        <input id="testDataLibID_<%=incrementProperty%>" type="hidden"/>    
-                                                </div>                                                         
                                             </div>
                                             <div style="border-right-width:thin;border-right-style:solid;background-color:transparent;border-right-color:#CCCCCC;float:left;width:3%;display:inline-block;height:50px">
                                                 <input class="wob" style="background-color:transparent;width:  100%;margin-top:20px;" name="properties_length_<%=incrementProperty%>"
@@ -2088,14 +2064,6 @@
                     <div class="pull-left showInlineElement" style="width:100%;">
                         <textarea data-id="properties_value2_template" rows="2" class="wob" style="background-color:transparent;width: 100%;height:50px"></textarea>
                     </div>
-                    <div data-id="selectEntry_SubData_template" class="hideElement">
-                        <button data-id="SubDataButton_template" title="Select a sub data entry from the library" type="button" 
-                                class="btn btn-default btn-xs pull-right" disabled="disabled">
-                            <span class="glyphicon glyphicon-search"></span>
-                        </button>
-                        <input id="testDataLibID_template" type="hidden"/>    
-                    </div>          
-                
                 </div>
                 <div style="border-right-width:thin;border-right-style:solid;border-right-color:#CCCCCC;float:left;width:3%;display:inline-block;height:100%">
                     <input class="wob" style="background-color:transparent;width:  100%;margin-top:20px;" 
