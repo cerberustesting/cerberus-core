@@ -21,8 +21,91 @@
     Author     : cerberus
 */
 
+.card {
+    font-size: 14px;
+}
+
+.panelOK {
+    border-color: #5CB85C;
+}
+
+.panelOK .panel-heading {
+    border-color: #5CB85C;
+    color: #FFF;
+    background-color: #5CB85C;
+}
+
+.panelKO {
+    border-color: #D9534F;
+}
+
+.panelKO .panel-heading {
+    border-color: #D9534F;
+    color: #FFF;
+    background-color: #D9534F;
+}
+
+.panelFA {
+    border-color: #F0AD4E;
+}
+
+.panelFA .panel-heading {
+    border-color: #F0AD4E;
+    color: #FFF;
+    background-color: #F0AD4E;
+}
+
+.panelCA {
+    border-color: #F0AD4E;
+}
+
+.panelCA .panel-heading {
+    border-color: #F0AD4E;
+    color: #FFF;
+    background-color: #F0AD4E;
+}
+
+.panelNA {
+    border-color: #F1C40F;
+}
+
+.panelNA .panel-heading {
+    border-color: #F1C40F;
+    color: #FFF;
+    background-color: #F1C40F;
+}
+
+.panelNE {
+    border-color: #34495E;
+}
+
+.panelNE .panel-heading {
+    border-color: #34495E;
+    color: #FFF;
+    background-color: #34495E;
+}
+
+.panelPE {
+    border-color: #3498DB;
+}
+
+.panelPE .panel-heading {
+    border-color: #3498DB;
+    color: #FFF;
+    background-color: #3498DB;
+}
+
+.status {
+    font-weight: 900;
+    font-size: 30px;
+}
+
+.total {
+    font-size: 30px;
+}
+
 .statusOK {
-    background-color: #30EE30; 
+    background-color: #30EE30;
 }
 
 .statusKO {
@@ -53,6 +136,15 @@ svg {
     margin-left: 50px;
 }
 
+#ReportByStatusTable {
+    width: 40%; 
+    margin-left: 10px;
+}
+
+#tagFilter {
+    margin: 5px;
+}
+
 .color-box {   
     float: left;
     width: 10px;
@@ -63,30 +155,30 @@ svg {
 }
 
 .d3-tip {
-  line-height: 1;
-  font-weight: bold;
-  padding: 12px;
-  background: rgba(0, 0, 0, 0.8);
-  color: #fff;
-  border-radius: 2px;
+    line-height: 1;
+    font-weight: bold;
+    padding: 12px;
+    background: rgba(0, 0, 0, 0.8);
+    color: #fff;
+    border-radius: 2px;
 }
 
 /* Creates a small triangle extender for the tooltip */
 .d3-tip:after {
-  box-sizing: border-box;
-  display: inline;
-  font-size: 10px;
-  width: 100%;
-  line-height: 1;
-  color: rgba(0, 0, 0, 0.8);
-  content: "\25BC";
-  position: absolute;
-  text-align: center;
+    box-sizing: border-box;
+    display: inline;
+    font-size: 10px;
+    width: 100%;
+    line-height: 1;
+    color: rgba(0, 0, 0, 0.8);
+    content: "\25BC";
+    position: absolute;
+    text-align: center;
 }
 
 /* Style northward tooltips differently */
 .d3-tip.n:after {
-  margin: -1px 0 0 0;
-  top: 100%;
-  left: 0;
+    margin: -1px 0 0 0;
+    top: 100%;
+    left: 0;
 }
