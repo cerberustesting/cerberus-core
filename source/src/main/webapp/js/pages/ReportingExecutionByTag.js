@@ -80,10 +80,10 @@ function loadReport() {
     $("#ReportByStatusTable").empty();
     $("#statusChart").empty();
     $("#functionChart").empty();
-    loadReportByStatusTable(selectTag);
 
     var jqxhr = $.get("GetReportData", {CampaignName: "null", Tag: selectTag}, "json");
     $.when(jqxhr).then(function (data) {
+        loadReportByStatusTable(data);
         loadReportByFunctionChart(data);
     });
 }
@@ -99,9 +99,8 @@ function convertData(dataset) {
 
 function loadReportByFunctionChart(dataset) {
     var data = convertData(dataset.axis);
-    console.log(data);
 
-    var margin = {top: 20, right: 20, bottom: 30, left: 40},
+    var margin = {top: 20, right: 20, bottom: 100, left: 40},
     width = 1200 - margin.left - margin.right,
             height = 500 - margin.top - margin.bottom;
 
@@ -110,8 +109,6 @@ function loadReportByFunctionChart(dataset) {
 
     var y = d3.scale.linear()
             .rangeRound([height, 0]);
-
-    var color = d3.scale.ordinal();
 
     var xAxis = d3.svg.axis()
             .scale(x)
@@ -128,7 +125,7 @@ function loadReportByFunctionChart(dataset) {
                 var res = "<strong>Function :</strong> <span style='color:red'>" + d.name + "</span>";
                 for (var index = 0; index < d.chartData.length; index++) {
                     res = res + "<div><div class='color-box' style='background-color:" + d.chartData[index].color + " ;'>\n\
-                    </div>"+ d.chartData[index].name +" : " + d[d.chartData[index].name].value + "</div>";
+                    </div>" + d.chartData[index].name + " : " + d[d.chartData[index].name].value + "</div>";
                 }
                 return res;
             });
@@ -163,7 +160,12 @@ function loadReportByFunctionChart(dataset) {
     svg.append("g")
             .attr("class", "x axis")
             .attr("transform", "translate(0," + height + ")")
-            .call(xAxis);
+            .call(xAxis)
+            .selectAll("text")
+            .style("text-anchor", "end")
+            .attr("dx", "-.8em")
+            .attr("dy", "-.55em")
+            .attr("transform", "rotate(-75)");
 
     svg.append("g")
             .attr("class", "y axis")
@@ -206,8 +208,6 @@ function loadReportByFunctionChart(dataset) {
 ;
 
 function loadReportByStatusChart(data) {
-    var dataset = data.axis;
-
     var width = 250;
     var height = 150;
     var radius = Math.min(width, height) / 2;
@@ -229,51 +229,69 @@ function loadReportByStatusChart(data) {
             .sort(null);
 
     var path = svg.selectAll('path')
-            .data(pie(dataset))
+            .data(pie(data))
             .enter()
             .append('path')
             .attr('d', arc)
             .attr('fill', function (d, i) {
+                console.log(d);
                 return d.data.color;
             });
 }
 
-function appendPanelStatus(axis, totalTest) {
-    var rowClass = getRowClass(axis.label);
+function appendPanelStatus(axis, status, total) {
+    var rowClass = getRowClass(status);
     $("#ReportByStatusTable").append(
             $("<div class='panel " + rowClass.panel + "'></div>").append(
             $('<div class="panel-heading"></div>').append(
             $('<div class="row"></div>').append(
-            $('<div class="col-xs-6 status"></div>').text(axis.label).prepend(
+            $('<div class="col-xs-6 status"></div>').text(status).prepend(
             $('<span class="' + rowClass.glyph + '" style="margin-right: 5px;"></span>'))).append(
             $('<div class="col-xs-6 text-right"></div>').append(
-            $('<div class="total"></div>').text(axis.value)).append(
-            $('<div></div>').text('Percentage : ' + Math.round(((axis.value / totalTest) * 100) * 100) / 100 + '%'))))));
+            $('<div class="total"></div>').text(total[status].value)).append(
+            $('<div></div>').text('Percentage : ' + Math.round(((total[status].value / total.test) * 100) * 100) / 100 + '%'))))));
 }
 
-function loadReportByStatusTable(selectTag) {
-    var jqxhr = $.get("CampaignExecutionGraphByStatus", {CampaignName: "null", Tag: selectTag}, "json");
-    $.when(jqxhr).then(function (data) {
-        var total = 0;
-        //calculate total test nb
-        for (var index = 0; index < data.labels.length; index++) {
-            // increase the total execution
-            total = total + data.axis[index].value;
+function loadReportByStatusTable(data) {
+    var total = {};
+    //calculate totaltest nb
+    total["test"] = 0;
+    for (var index = 0; index < data.axis.length; index++) {
+        // increase the total execution
+        for (var key in data.axis[index]) {
+            if (key !== "name") {
+                if (total.hasOwnProperty(key)) {
+                    total[key].value += data.axis[index][key].value;
+                } else {
+                    total[key] = {"value": data.axis[index][key].value,
+                        "color": data.axis[index][key].color};
+                }
+                total.test += data.axis[index][key].value;
+            }
         }
-        // create each line of the table
-        for (var index = 0; index < data.labels.length; index++) {
-            appendPanelStatus(data.axis[index], total);
+    }
+
+    // create each line of the table
+    for (var label in total) {
+        if (label !== "test") {
+            appendPanelStatus(data.axis[index], label, total);
         }
+    }
 // add a line for the total
-        $("#ReportByStatusTable").append(
-                $("<div class='panel panel-primary'></div>").append(
-                $('<div class="panel-heading"></div>').append(
-                $('<div class="row"></div>').append(
-                $('<div class="col-xs-6 status"></div>').text("Total").prepend(
-                $('<span class="" style="margin-right: 5px;"></span>'))).append(
-                $('<div class="col-xs-6 text-right"></div>').append(
-                $('<div class="total"></div>').text(total))
-                ))));
-        loadReportByStatusChart(data);
-    }).fail(handleErrorAjaxAfterTimeout);
+    $("#ReportByStatusTable").append(
+            $("<div class='panel panel-primary'></div>").append(
+            $('<div class="panel-heading"></div>').append(
+            $('<div class="row"></div>').append(
+            $('<div class="col-xs-6 status"></div>').text("Total").prepend(
+            $('<span class="" style="margin-right: 5px;"></span>'))).append(
+            $('<div class="col-xs-6 text-right"></div>').append(
+            $('<div class="total"></div>').text(total.test))
+            ))));
+    var dataset = [];
+    for (var label in total) {
+        if (label !== "test") {
+            dataset.push(total[label]);
+        }
+    }
+    loadReportByStatusChart(dataset);
 }

@@ -118,7 +118,7 @@ public class GetReportData extends HttpServlet {
         }
         testCaseWithExecutions = new ArrayList<TestCaseWithExecution>(testCaseWithExecutionsList.values());
 
-        JSONObject axis = new JSONObject();
+        JSONArray axis = new JSONArray();
         for (TestCaseWithExecution testCaseWithExecution : testCaseWithExecutions) {
             String key;
             String controlStatus;
@@ -133,16 +133,25 @@ public class GetReportData extends HttpServlet {
 
             control.put("value", 1);
             control.put("color", getColor(controlStatus));
-            if (axis.has(key)) {
-                if (axis.getJSONObject(key).has(controlStatus)) {
-                    int prec = axis.getJSONObject(key).getJSONObject(controlStatus).getInt("value");
-                    control.put("value", prec + 1);
+            JSONObject tmp = new JSONObject();
+            tmp.put("name", key);
+            boolean isKey = false;
+            for (int i = 0; i < axis.length(); i++) {
+                tmp = axis.getJSONObject(i);
+                if (tmp.has("name") && tmp.getString("name").equals(key)) {
+                    isKey = true;
+                    if (tmp.has(controlStatus)) {
+                        int prec = tmp.getJSONObject(controlStatus).getInt("value");
+                        control.put("value", prec + 1);
+                    }
+                    axis.getJSONObject(i).put(controlStatus, control);
                 }
-                axis.getJSONObject(key).put(controlStatus, control);
-            } else {
-                axis.put(key, new JSONObject());
-                axis.getJSONObject(key).put("name", key);
-                axis.getJSONObject(key).put(controlStatus, control);
+            }
+            if (isKey == false) {
+                tmp = new JSONObject();
+                tmp.put("name", key);
+                tmp.put(controlStatus, control);
+                axis.put(tmp);
             }
         }
         JSONObject jsonResult = new JSONObject();

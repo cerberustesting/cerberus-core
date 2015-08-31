@@ -40,7 +40,8 @@ function initPage() {
     createDataTableWithPermissions(configurations, renderOptionsForProject);
     var oTable = $("#projectsTable").dataTable();
     oTable.fnSort([1, 'asc']);
-};
+}
+;
 
 function displayPageLabel() {
     var doc = new Doc();
@@ -197,8 +198,7 @@ function renderOptionsForProject(data) {
 function aoColumnsFunc() {
     var doc = new Doc();
     var aoColumns = [
-        {"data": "button",
-            "sName": "Actions",
+        {"data": null,
             "title": doc.getDocLabel("page_global", "columnAction"),
             "bSortable": false,
             "bSearchable": false,
