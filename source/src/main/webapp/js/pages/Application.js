@@ -43,29 +43,29 @@ function initApplicationPage() {
 };
 
 function displayPageLabel() {
-    var doc = getDoc();
+    var doc = new Doc();
     
     displayHeaderLabel(doc);
-    $("#pageTitle").html(doc.page_application.title.docLabel);
-    $("#title").html(displayDocLink(doc.page_application.title));
-    $("[name='createApplicationField']").html(doc.page_application.button_create.docLabel);
-    $("[name='confirmationField']").html(doc.page_application.button_delete.docLabel);
-    $("[name='editApplicationField']").html(doc.page_application.button_edit.docLabel);
-    $("[name='buttonAdd']").html(doc.page_global.buttonAdd.docLabel);
-    $("[name='buttonClose']").html(doc.page_global.buttonClose.docLabel);
-    $("[name='buttonConfirm']").html(doc.page_global.buttonConfirm.docLabel);
-    $("[name='buttonDismiss']").html(doc.page_global.buttonDismiss.docLabel);
-    $("[name='applicationField']").html(displayDocLink(doc.application.Application));
-    $("[name='descriptionField']").html(displayDocLink(doc.application.Description));
-    $("[name='sortField']").html(displayDocLink(doc.application.sort));
-    $("[name='typeField']").html(displayDocLink(doc.application.type));
-    $("[name='systemField']").html(displayDocLink(doc.application.system));
-    $("[name='subsystemField']").html(displayDocLink(doc.application.subsystem));
-    $("[name='svnurlField']").html(displayDocLink(doc.application.svnurl));
-    $("[name='bugtrackerurlField']").html(displayDocLink(doc.application.bugtrackerurl));
-    $("[name='bugtrackernewurlField']").html(displayDocLink(doc.application.bugtrackernewurl));
-    $("[name='deploytypeField']").html(displayDocLink(doc.application.deploytype));
-    $("[name='mavengroupidField']").html(displayDocLink(doc.application.mavengroupid));
+    $("#pageTitle").html(doc.getDocLabel("page_application","title"));
+    $("#title").html(doc.getDocOnline("page_application", "title"));
+    $("[name='createApplicationField']").html(doc.getDocLabel("page_application", "button_create"));
+    $("[name='confirmationField']").html(doc.getDocLabel("page_application", "button_delete"));
+    $("[name='editApplicationField']").html(doc.getDocLabel("page_application", "button_edit"));
+    $("[name='buttonAdd']").html(doc.getDocLabel("page_global","buttonAdd"));
+    $("[name='buttonClose']").html(doc.getDocLabel("page_global", "buttonClose"));
+    $("[name='buttonConfirm']").html(doc.getDocLabel("page_global", "buttonConfirm"));
+    $("[name='buttonDismiss']").html(doc.getDocLabel("page_global", "buttonDismiss"));
+    $("[name='applicationField']").html(doc.getDocOnline("application", "Application"));
+    $("[name='descriptionField']").html(doc.getDocOnline("application", "Description"));
+    $("[name='sortField']").html(doc.getDocOnline("application", "sort"));
+    $("[name='typeField']").html(doc.getDocOnline("application", "type"));
+    $("[name='systemField']").html(doc.getDocOnline("application", "system"));
+    $("[name='subsystemField']").html(doc.getDocOnline("application", "subsystem"));
+    $("[name='svnurlField']").html(doc.getDocOnline("application", "svnurl"));
+    $("[name='bugtrackerurlField']").html(doc.getDocOnline("application", "bugtrackerurl"));
+    $("[name='bugtrackernewurlField']").html(doc.getDocOnline("application", "bugtrackernewurl"));
+    $("[name='deploytypeField']").html(doc.getDocOnline("application", "deploytype"));
+    $("[name='mavengroupidField']").html(doc.getDocOnline("application", "mavengroupid"));
     displayInvariantList("SYSTEM", "system");
     displayInvariantList("APPLITYPE", "type");
     displayDeployTypeList("deploytype");
@@ -97,11 +97,11 @@ function deleteApplicationHandlerClick() {
 
 function deleteApplication(idApplication) {
     clearResponseMessageMainPage();
-    var doc = getDoc();
-    var messageComplete = doc.page_global.deleteMessage.docLabel;
-    messageComplete = messageComplete.replace("%TABLE%", doc.application.Application.docLabel);
+    var doc = new Doc();
+    var messageComplete = doc.getDocLabel("page_global", "deleteMessage");
+    messageComplete = messageComplete.replace("%TABLE%", doc.getDocLabel("application", "Application"));
     messageComplete = messageComplete.replace("%ENTRY%", idApplication);
-    showModalConfirmation(deleteApplicationHandlerClick, doc.page_application.button_delete.docLabel, messageComplete, idApplication);
+    showModalConfirmation(deleteApplicationHandlerClick, doc.getDocLabel("page_application", "button_delete"), messageComplete, idApplication);
 }
 
 function saveNewApplicationHandler() {
@@ -211,12 +211,12 @@ function editApplication(id) {
 }
 
 function renderOptionsForApplication(data) {
-    var doc = getDoc();
+    var doc = new Doc();
     //check if user has permissions to perform the add and import operations
     if (data["hasPermissions"]) {
         if ($("#createApplicationButton").length === 0) {
             var contentToAdd = "<div class='marginBottom10'><button id='createApplicationButton' type='button' class='btn btn-default'>\n\
-            " + doc.page_application.button_create.docLabel + "</button></div>";
+            " + doc.getDocLabel("page_application", "button_create") + "</button></div>";
 
             $("#applicationsTable_wrapper div.ColVis").before(contentToAdd);
             $('#application #createApplicationButton').click(CreateApplicationClick);
@@ -225,21 +225,21 @@ function renderOptionsForApplication(data) {
 }
 
 function aoColumnsFunc() {
-    var doc = getDoc();
+    var doc = new Doc();
     var aoColumns = [
         {"data": "button",
             "sName": "Actions",
-            "title": doc.page_global.columnAction.docLabel,
+            "title": doc.getDocLabel("page_global", "columnAction"),
             "bSortable": false,
             "bSearchable": false,
             "mRender": function (data, type, obj) {
                 var editApplication = '<button id="editApplication" onclick="editApplication(\'' + obj["application"] + '\');"\n\
                                 class="editApplication btn btn-default btn-xs margin-right5" \n\
-                                name="editApplication" title="\'' + doc.page_application.button_edit.docLabel + '\'" type="button">\n\
+                                name="editApplication" title="\'' + doc.getDocLabel("page_application", "button_edit") + '\'" type="button">\n\
                                 <span class="glyphicon glyphicon-pencil"></span></button>';
                 var deleteApplication = '<button id="deleteApplication" onclick="deleteApplication(\'' + obj["application"] + '\');" \n\
                                 class="deleteApplication btn btn-default btn-xs margin-right5" \n\
-                                name="deleteApplication" title="\'' + doc.page_application.button_delete.docLabel + '\'" type="button">\n\
+                                name="deleteApplication" title="\'' + doc.getDocLabel("page_application", "button_delete") + '\'" type="button">\n\
                                 <span class="glyphicon glyphicon-trash"></span></button>';
 
                 return '<div class="center btn-group width150">' + editApplication + deleteApplication + '</div>';
@@ -247,37 +247,37 @@ function aoColumnsFunc() {
         },
         {"data": "application",
             "sName": "application",
-            "title": displayDocLink(doc.application.Application)},
+            "title": doc.getDocOnline("application", "Application")},
         {"data": "description",
             "sName": "description",
-            "title": displayDocLink(doc.application.Description)},
+            "title": doc.getDocOnline("application", "Description")},
         {"data": "sort",
             "sName": "sort",
-            "title": displayDocLink(doc.application.sort)},
+            "title": doc.getDocOnline("application", "sort")},
         {"data": "type",
             "sName": "type",
-            "title": displayDocLink(doc.application.type)},
+            "title": doc.getDocOnline("application", "type")},
         {"data": "system",
             "sName": "system",
-            "title": displayDocLink(doc.application.system)},
+            "title": doc.getDocOnline("application", "system")},
         {"data": "subsystem",
             "sName": "subsystem",
-            "title": displayDocLink(doc.application.subsystem)},
+            "title": doc.getDocOnline("application", "subsystem")},
         {"data": "svnurl",
             "sName": "svnurl",
-            "title": displayDocLink(doc.application.svnurl)},
+            "title": doc.getDocOnline("application", "svnurl")},
         {"data": "bugTrackerUrl",
             "sName": "bugTrackerUrl",
-            "title": displayDocLink(doc.application.bugtrackerurl)},
+            "title": doc.getDocOnline("application", "bugtrackerurl")},
         {"data": "bugTrackerNewUrl",
             "sName": "bugTrackerNewUrl",
-            "title": displayDocLink(doc.application.bugtrackernewurl)},
+            "title": doc.getDocOnline("application", "bugtrackernewurl")},
         {"data": "deploytype",
             "sName": "deploytype",
-            "title": displayDocLink(doc.application.deploytype)},
+            "title": doc.getDocOnline("application" , "deploytype")},
         {"data": "mavengroupid",
             "sName": "mavengroupid",
-            "title": displayDocLink(doc.application.mavengroupid)}
+            "title": doc.getDocOnline("application", "mavengroupid")}
     ];
     return aoColumns;
 }

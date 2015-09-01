@@ -43,19 +43,17 @@ function initPage() {
 };
 
 function displayPageLabel() {
-    var doc = getDoc();
-    var docPage = doc.page_deploytype;
-    var docObj = doc.deploytype;
+    var doc = new Doc();
 
     displayHeaderLabel(doc);
     displayGlobalLabel(doc);
-    $("#pageTitle").html(docPage.title.docLabel);
-    $("#title").html(displayDocLink(docPage.title));
-    $("[name='addEntryField']").html(docPage.button_create.docLabel);
-    $("[name='confirmationField']").html(docPage.button_delete.docLabel);
-    $("[name='editEntryField']").html(docPage.button_edit.docLabel);
-    $("[name='deployTypeField']").html(displayDocLink(docObj.deploytype));
-    $("[name='descriptionField']").html(displayDocLink(docObj.description));
+    $("#pageTitle").html(doc.getDocLabel("page_deploytype" ,"title"));
+    $("#title").html(doc.getDocOnline("page_deploytype", "title"));
+    $("[name='addEntryField']").html(doc.getDocLabel("page_deploytype", "button_create"));
+    $("[name='confirmationField']").html(doc.getDocLabel("page_deploytype", "button_delete"));
+    $("[name='editEntryField']").html(doc.getDocLabel("page_deploytype", "button_edit"));
+    $("[name='deployTypeField']").html(doc.getDocOnline("deploytype", "deploytype"));
+    $("[name='descriptionField']").html(doc.getDocOnline("deploytype", "description"));
     displayFooter(doc);
 }
 
@@ -84,11 +82,11 @@ function deleteEntryHandlerClick() {
 
 function deleteEntry(entry) {
     clearResponseMessageMainPage();
-    var doc = getDoc();
-    var messageComplete = doc.page_global.deleteMessage.docLabel;
-    messageComplete = messageComplete.replace("%TABLE%", doc.deploytype.deploytype.docLabel);
+    var doc = new Doc();
+    var messageComplete = doc.getDocLabel("page_global", "deleteMessage");
+    messageComplete = messageComplete.replace("%TABLE%", doc.getDocLabel("deploytype", "deploytype"));
     messageComplete = messageComplete.replace("%ENTRY%", entry);
-    showModalConfirmation(deleteEntryHandlerClick, doc.page_deploytype.button_delete.docLabel, messageComplete, entry);
+    showModalConfirmation(deleteEntryHandlerClick, doc.getDocLabel("page_deploytype", "button_delete"), messageComplete, entry);
 }
 
 function saveEntry(servletName, modalID, form) {
@@ -168,12 +166,12 @@ function editEntry(id) {
 }
 
 function renderOptionsForDeployType(data) {
-    var doc = getDoc();
+    var doc = new Doc();
     //check if user has permissions to perform the add and import operations
     if (data["hasPermissions"]) {
         if ($("#createDeployTypeButton").length === 0) {
             var contentToAdd = "<div class='marginBottom10'><button id='createDeployTypeButton' type='button' class='btn btn-default'>\n\
-            " + doc.page_deploytype.button_create.docLabel + "</button></div>";
+            " + doc.getDocLabel("page_deploytype", "button_create") + "</button></div>";
 
             $("#deploytypesTable_wrapper div.ColVis").before(contentToAdd);
             $('#deploytype #createDeployTypeButton').click(CreateDeployTypeClick);
@@ -182,23 +180,22 @@ function renderOptionsForDeployType(data) {
 }
 
 function aoColumnsFunc() {
-    var doc = getDoc();
-    var docPage = doc.page_deploytype;
-    var docObj = doc.deploytype;
+    var doc = new Doc();
+    
     var aoColumns = [
         {"data": "button",
             "sName": "Actions",
-            "title": doc.page_global.columnAction.docLabel,
+            "title": doc.getDocLabel("page_global", "columnAction"),
             "bSortable": false,
             "bSearchable": false,
             "mRender": function (data, type, obj) {
                 var editEntry = '<button id="editEntry" onclick="editEntry(\'' + obj["deploytype"] + '\');"\n\
                                 class="editEntry btn btn-default btn-xs margin-right5" \n\
-                                name="editEntry" title="' + docPage.button_edit.docLabel + '" type="button">\n\
+                                name="editEntry" title="' + doc.getDocLabel("page_deploytype", "button_edit") + '" type="button">\n\
                                 <span class="glyphicon glyphicon-pencil"></span></button>';
                 var deleteEntry = '<button id="deleteEntry" onclick="deleteEntry(\'' + obj["deploytype"] + '\');" \n\
                                 class="deleteEntry btn btn-default btn-xs margin-right5" \n\
-                                name="deleteEntry" title="' + docPage.button_delete.docLabel + '" type="button">\n\
+                                name="deleteEntry" title="' + doc.getDocLabel("page_deploytype", "button_delete") + '" type="button">\n\
                                 <span class="glyphicon glyphicon-trash"></span></button>';
 
                 return '<div class="center btn-group width150">' + editEntry + deleteEntry + '</div>';
@@ -206,10 +203,10 @@ function aoColumnsFunc() {
         },
         {"data": "deploytype",
             "sName": "deployType",
-            "title": displayDocLink(docObj.deploytype)},
+            "title": doc.getDocOnline("deploytype", "deploytype")},
         {"data": "description",
             "sName": "description",
-            "title": displayDocLink(docObj.description)}
+            "title": doc.getDocOnline("deploytype", "description")}
     ];
     return aoColumns;
 }

@@ -32,23 +32,23 @@ $.when($.getScript("js/pages/global/global.js")).then(function () {
 });
 
 function displayPageLabel() {
-    var doc = getDoc();
+    var doc = new Doc();
 
     displayHeaderLabel(doc);
-    $("#pageTitle").html(doc.page_logviewer.title.docLabel);
-    $("#title").html(displayDocLink(doc.page_logviewer.title));
+    $("#pageTitle").html(doc.getDocLabel("page_logviewer", "title"));
+    $("#title").html(doc.getDocOnline("page_logviewer", "title"));
     displayFooter(doc);
 }
 
 function aoColumnsFunc() {
-    var doc = getDoc();
+    var doc = new Doc();
 
     var aoColumns = [
-        {"data": "time", "sName": "Time", "title": displayDocLink(doc.logevent.time)},
-        {"data": "login", "sName": "Login", "title": displayDocLink(doc.logevent.login)},
-        {"data": "page", "sName": "Page", "title": displayDocLink(doc.logevent.page)},
-        {"data": "action", "sName": "Action", "title": displayDocLink(doc.logevent.action)},
-        {"data": "log", "sName": "Log", "title": displayDocLink(doc.logevent.log)}
+        {"data": "time", "sName": "Time", "title": doc.getDocOnline("logevent", "time")},
+        {"data": "login", "sName": "Login", "title": doc.getDocOnline("logevent", "login")},
+        {"data": "page", "sName": "Page", "title": doc.getDocOnline("logevent", "page")},
+        {"data": "action", "sName": "Action", "title": doc.getDocOnline("logevent", "action")},
+        {"data": "log", "sName": "Log", "title": doc.getDocOnline("logevent", "log")}
     ];
     return aoColumns;
 }

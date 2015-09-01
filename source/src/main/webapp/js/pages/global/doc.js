@@ -101,8 +101,8 @@ Doc.prototype.getDocLabel = function (docTable, docField) {
         var res;
         var user = getUser();
         
-        res = "!!NoDoc!! " + err + " <a class=\"nodoc\" href=\'javascript:popup(\"Documentation.jsp?DocTable=" + docTable +
-                "&DocField=" + docField + "&Lang=" + user.language + "\")\' onclick=\"stopPropagation(event)\"><span class=\"glyphicon glyphicon-question-sign\"></span></a>";
+        res = docField + " <a class=\"nodoc\" href=\'javascript:popup(\"Documentation.jsp?DocTable=" + docTable +
+                "&DocField=" + docField + "&Lang=" + user.language + "\")\' onclick=\"stopPropagation(event)\"><span class=\"glyphicon glyphicon-exclamation-sign\"></span></a>";
         return res;
     }
 };
@@ -119,8 +119,8 @@ Doc.prototype.getDocOnline = function (docTable, docField) {
         res = this.table[docTable][docField].docLabel + " <a class=\"docOnline\" href=\'javascript:popup(\"Documentation.jsp?DocTable=" + this.table[docTable][docField].docTable +
                 "&DocField=" + this.table[docTable][docField].docField + "&Lang=" + user.language + "\")\' onclick=\"stopPropagation(event)\"><span class=\"glyphicon glyphicon-question-sign\"></span></a>";
     } catch (err) {
-        res = "!!NoDoc!! " + err + " <a class=\"nodoc\" href=\'javascript:popup(\"Documentation.jsp?DocTable=" + docTable +
-                "&DocField=" + docField + "&Lang=" + user.language + "\")\' onclick=\"stopPropagation(event)\"><span class=\"glyphicon glyphicon-question-sign\"></span></a>";
+        res = docField + " <a class=\"nodoc\" href=\'javascript:popup(\"Documentation.jsp?DocTable=" + docTable +
+                "&DocField=" + docField + "&Lang=" + user.language + "\")\' onclick=\"stopPropagation(event)\"><span class=\"glyphicon glyphicon-exclamation-sign\"></span></a>";
     } finally {
         return res;
     }

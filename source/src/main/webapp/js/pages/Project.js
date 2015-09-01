@@ -46,8 +46,8 @@ function initPage() {
 function displayPageLabel() {
     var doc = new Doc();
 
-    displayHeaderLabel(doc.table);
-    displayGlobalLabel(doc.table);
+    displayHeaderLabel(doc);
+    displayGlobalLabel(doc);
     $("#pageTitle").html(doc.getDocLabel("page_project", "title"));
     $("#title").html(doc.getDocOnline("page_project", "title"));
     $("[name='addEntryField']").html(doc.getDocLabel("page_project", "button_create"));
@@ -58,7 +58,7 @@ function displayPageLabel() {
     $("[name='codeField']").html(doc.getDocOnline("project", "code"));
     $("[name='descriptionField']").html(doc.getDocOnline("project", "description"));
     displayInvariantList("PROJECTACTIVE", "Active");
-    displayFooter(doc.table);
+    displayFooter(doc);
 }
 
 function deleteEntryHandlerClick() {
