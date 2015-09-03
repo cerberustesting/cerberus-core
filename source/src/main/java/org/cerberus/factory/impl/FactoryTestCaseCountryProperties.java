@@ -18,13 +18,16 @@
  * along with Cerberus.  If not, see <http://www.gnu.org/licenses/>.
  */
 package org.cerberus.factory.impl;
-
+ 
 import org.cerberus.entity.TestCaseCountryProperties;
+import org.cerberus.entity.TestCaseSubDataAccessProperty;
 import org.cerberus.factory.IFactoryTestCaseCountryProperties;
+import org.cerberus.serviceEngine.impl.PropertyTypeEnum;
 import org.springframework.stereotype.Service;
 
 /**
  * @author bcivel
+ * @author FNogueira
  */
 @Service
 public class FactoryTestCaseCountryProperties implements IFactoryTestCaseCountryProperties {
@@ -45,4 +48,24 @@ public class FactoryTestCaseCountryProperties implements IFactoryTestCaseCountry
         testCaseCountryProperties.setNature(nature);
         return testCaseCountryProperties;
     }
+    @Override
+    public TestCaseSubDataAccessProperty create(TestCaseCountryProperties tccp, String property, String libName, String subdataName) {
+        
+        TestCaseSubDataAccessProperty prop = new TestCaseSubDataAccessProperty();
+        prop.setTest(tccp.getTest());
+        prop.setTestCase(tccp.getTestCase());
+        prop.setCountry(tccp.getCountry());
+        prop.setProperty(property);
+        prop.setType(PropertyTypeEnum.ACCESS_SUBDATA.getPropertyName());
+        prop.setDatabase("");
+        prop.setValue1(""); //stores the testdatalib id
+        prop.setValue2(subdataName); //stores the name of the subdata entry
+        prop.setAccessName(property);
+        prop.setLibraryValue(libName); 
+        prop.setSubDataValue(subdataName);
+        prop.setPropertyLibEntry(tccp);
+        
+        
+        return prop;                
+    }    
 }

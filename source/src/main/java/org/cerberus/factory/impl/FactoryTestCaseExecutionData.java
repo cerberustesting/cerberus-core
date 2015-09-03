@@ -19,6 +19,7 @@
  */
 package org.cerberus.factory.impl;
 
+import java.util.Date;
 import org.cerberus.entity.MessageEvent;
 import org.cerberus.entity.TestCaseExecutionData;
 import org.cerberus.factory.IFactoryTestCaseExecutionData;
@@ -26,6 +27,7 @@ import org.springframework.stereotype.Service;
 
 /**
  * @author bcivel
+ * @author FNogueira
  */
 @Service
 public class FactoryTestCaseExecutionData implements IFactoryTestCaseExecutionData {
@@ -49,5 +51,23 @@ public class FactoryTestCaseExecutionData implements IFactoryTestCaseExecutionDa
         testCaseExecutionData.setPropertyResultMessage(message);
         return testCaseExecutionData;
 
+    }
+
+    @Override
+    public TestCaseExecutionData create(long id, String property, String type, String value1, String value2, MessageEvent message) {
+        TestCaseExecutionData testCaseExecutionData = new TestCaseExecutionData();
+        testCaseExecutionData.setId(id);
+        testCaseExecutionData.setProperty(property);
+        testCaseExecutionData.setType(type);
+        testCaseExecutionData.setValue1(value1);
+        testCaseExecutionData.setValue2(value2);
+        testCaseExecutionData.setPropertyResultMessage(message);
+        
+        long now = new Date().getTime();
+        testCaseExecutionData.setStart(now);
+        testCaseExecutionData.setEnd(now);
+        testCaseExecutionData.setStartLong(now);
+        testCaseExecutionData.setEndLong(now);
+        return testCaseExecutionData;
     }
 }
