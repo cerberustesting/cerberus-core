@@ -840,9 +840,9 @@ public class ActionService implements IActionService {
     }
 
     private String getElementToUse(String object, String property, String action) throws CerberusEventException {
-        if (!StringUtil.isNull(object)) {
+        if (!StringUtil.isNullOrEmpty(object)) {
             return object;
-        } else if (!StringUtil.isNull(property)) {
+        } else if (!StringUtil.isNullOrEmpty(property)) {
             return property;
         }
         if (action != null) {
