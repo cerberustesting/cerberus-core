@@ -19,299 +19,194 @@
  */
 
 /**
-* Loads the common functions from a global javascript file
-* @param {type} param1 - filename
-*/
-$.when($.getScript("js/pages/global/global.js")).then(function(){
-
-/**
- * Document ready methods
+ * Loads the common functions from a global javascript file
+ * @param {type} param1 - filename
  */
-$(function() {
-    displayHeaderLabel(getDoc());
+$.when($.getScript("js/pages/global/global.js")).then(function() {
     displayPageLabel();
     /**
-     * Removes all rows when the modal window is hidden and clears the message
+     * Document ready methods
      */
-    $('#myModal').on('hidden.bs.modal', function() {
-        $('#editSubDataTableBody tr').remove();
-        clearResponseMessage($('#myModal'));
-    });
+    $(function() {
+    displayHeaderLabel(getDoc());
+    displayPageLabel();
+        /**
+         * Removes all rows when the modal window is hidden and clears the message
+         */
+        $('#myModal').on('hidden.bs.modal', function() {
+            $('#editSubDataTableBody tr').remove();
+            clearResponseMessage($('#myModal'));
+        });
 
-    /*****************************************************************************/
-    /**
-     * Handles the click on the entry button for properties getFromDataLib
-     */
-    $('button[id*="entryButton_"]').click(setEntrybuttonClickHandler);
-    /*****************************************************************************/
-     /**
-     * Handles the click on the subdata button for properties getFromDataLib
-     */
-    $('button[id*="SubDataButton_"]').click(setSubDataButtonClickHandler);
-    /*****************************************************************************/
-    /***
-     * Disables the button that allows the selection of subdata entries, when there is no entry specified.
-     */
-     $("textarea[name*='properties_value1_'][class*='getFromDataLib']").on("change keyup paste", textArea1ChangeCallback);
-     
-    /*****************************************************************************/
-    /**
-     * Clears all rows inserted for subdata
-     */
-    $('#selectSubDataFromListModal').on('hidden.bs.modal', function () {
-       $('#subDataTableBody tr').remove();    
-    });
-    
-    
-             
+        /*****************************************************************************/
+        /**
+         * Handles the click on the entry button for properties getFromDataLib
+         */
+        $('button[id*="entryButton_"]').click(setEntrybuttonClickHandler);
+        /*****************************************************************************/
+        /**
+         * Clears all rows inserted for subdata
+         */
+        $('#selectSubDataFromListModal').on('hidden.bs.modal', function() {
+            $('#subDataTableBody tr').remove();
+        });
 
-    //temporary fix. TODO:FN refactoring in the next iteration -  should be refactored in the future after the update of the list of nature types
-    /**
-     * Changes the property nature when we change the property type. If we select the get from datalib, two options are hidden and therefore another should
-     * be selected.
-     * */
-    $("div[id*='propertyRow'] select[id*='properties_nature_']").each(function(){
-        var parents = $(this).parents("div[id*='propertyRow']");
-        var natureElement = parents.find("select[id*='properties_type_']"); 
-        var propertyType = $(natureElement).find("option:selected").prop("value");
-        if(propertyType === "getFromDataLib"){
-           $(this).find("option:first").prop("selected", true);
-           $(this).find("option[value='RANDOMNEW']").addClass("hideElement");
-           $(this).find("option[value='NOTINUSE']").addClass("hideElement");
-        }else{
-           $(this).find("option[value='RANDOMNEW']").removeClass("hideElement");
-           $(this).find("option[value='NOTINUSE']").removeClass("hideElement");            
-        }
-    });
- 
-    
-    //TODO: this needs to be redefined when the refactor of this page is performed
-    $("div[id*='propertyRow'] select[id*='properties_type_']").change(function(){
-        //check if the autocomplete was defined, //if it is not then define it
-        var parents = $(this).parents("[id*='propertyRow']");
-        var textArea1 = $(parents).find("textarea[id*='properties_value1']");
-        
-        //var textArea1 = $(parents).find("textarea[id*='properties_value1']");
-        
-        if($(this).prop("value") === "getFromDataLib"){
-            console.log("is getfromdatalib");
-            //gets the second textbox                
-           
-            //var textArea2 = $(parents).find("textarea[id*='properties_value2']");
-            
-            if($(textArea1).hasClass("getFromDataLib")){
-                if(!$(textArea1).hasClass("ui-autocomplete-input")){
-                    addAutoComplete($(textArea1), callbackAutoCompleteTestDataLibName, 1, true);                        
+
+
+
+        //temporary fix. TODO:FN refactoring in the next iteration -  should be refactored in the future after the update of the list of nature types
+        /**
+         * Changes the property nature when we change the property type. If we select the get from datalib, two options are hidden and therefore another should
+         * be selected.
+         * */
+        $("div[id*='propertyRow'] select[id*='properties_nature_']").each(function() {
+            var parents = $(this).parents("div[id*='propertyRow']");
+            var natureElement = parents.find("select[id*='properties_type_']");
+            var propertyType = $(natureElement).find("option:selected").prop("value");
+            if (propertyType === "getFromDataLib") {
+                $(this).find("option:first").prop("selected", true);
+                $(this).find("option[value='RANDOMNEW']").addClass("hideElement");
+                $(this).find("option[value='NOTINUSE']").addClass("hideElement");
+            } else {
+                $(this).find("option[value='RANDOMNEW']").removeClass("hideElement");
+                $(this).find("option[value='NOTINUSE']").removeClass("hideElement");
+            }
+        });
+
+
+        //TODO: this needs to be redefined when the refactor of this page is performed
+        $("div[id*='propertyRow'] select[id*='properties_type_']").change(function() {
+            //check if the autocomplete was defined, //if it is not then define it
+            var parents = $(this).parents("[id*='propertyRow']");
+            var textArea1 = $(parents).find("textarea[id*='properties_value1']");
+
+            //var textArea1 = $(parents).find("textarea[id*='properties_value1']");
+
+            if ($(this).prop("value") === "getFromDataLib") {
+                console.log("is getfromdatalib");
+                //gets the second textbox                
+
+                //var textArea2 = $(parents).find("textarea[id*='properties_value2']");
+
+                if ($(textArea1).hasClass("getFromDataLib")) {
+                    if (!$(textArea1).hasClass("ui-autocomplete-input")) {
+                        addAutoComplete($(textArea1), callbackAutoCompleteTestDataLibName, 1, true);
+                    }
+                }
+                //gets the first textbox
+            } else {
+                if ($(textArea1).hasClass("ui-autocomplete-input")) {
+                    $(textArea1).autocomplete("disable");
                 }
             }
-            //gets the first textbox
-        }else{
-            if($(textArea1).hasClass("ui-autocomplete-input")){
-                $(textArea1).autocomplete("disable");  
-            }
-        }
-    });
+        });
 
-    //adds auto complete for all text areas with the class "getFromDataLib" that are rendered in the page when the pages loads
-    //setPropertyValuesAutoComplete($("textarea[id*='properties_value1'][class*='getFromDataLib']"), callbackAutoCompleteTestDataLibName);
-    
-    $("textarea[id*='properties_value1'][class*='getFromDataLib']").each(function(){
-        setPropertyValuesAutoComplete($(this), callbackAutoCompleteTestDataLibName);
+        //adds auto complete for all text areas with the class "getFromDataLib" that are rendered in the page when the pages loads
+        //setPropertyValuesAutoComplete($("textarea[id*='properties_value1'][class*='getFromDataLib']"), callbackAutoCompleteTestDataLibName);
+
+        $("textarea[id*='properties_value1'][class*='getFromDataLib']").each(function() {
+            setPropertyValuesAutoComplete($(this), callbackAutoCompleteTestDataLibName);
+        });
     });
-});
 });
 /**
- * Handles the click on the button that selects a subdata entry
- * @param {type} element - html element that was clicked
-*/
-function selectSubDataEntry(element){
-    //select the subdata entry name in order to put it into the Value2 textarea
-    var texto = $(element).parents("td").siblings(":first").text();    
-    $('#selectSubDataFromListModal').modal("hide");            
-    //updates the data stored in the testcase.jsp page
-    var propertyValue = $('#selectSubDataFromListModal').find("#propertyValueSubDataID").prop("value");
-    $("textarea#properties_value2_" + propertyValue).prop("value", texto);
+ * Method that translates the content of the pages with base on the user language.
+ */
+function displayPageLabel() {
+    var doc = getDoc();
+    var docPageTestCase = doc.page_testcase;
+    //tooltips of the buttons for the property type getFromDataLib
+    $("button[id*='entryButton']").prop("title", docPageTestCase.tooltip_select_entry.docLabel);
+    $("button[data-id='entryButton_template']").prop("title", docPageTestCase.tooltip_select_entry.docLabel);
+    
 }
+/**
+ * Applies the translations for the get list of test cases modal.
+ * @param {type} doc object that contains Cerberus' documentation 
+ */
+function displayListTestDataLib(doc){
+    //title
+    $("#selectEntryFromListModalLabel").html(doc.page_testcase_m_listtestdatalib.title.docLabel);
+    //close button
+    $("#closeTCListTestDataLib").text(doc.page_global.buttonClose.docLabel);    
+}
+
 /*****************************************************************************/
 /**
  * Set the entry name selected in the textarea "Value1"
  * @param {type} button -- button selected 
  * @returns {undefined}
  */
-function selectEntry(button){
+function selectEntry(button) {
     //select the entry name in order to put it into the Value1 textarea, and uses it to get the subdata list entries
-    var texto = $(button).parents("td").siblings(":first").text();
+    var text = $(button).parents("td").siblings(":first").text();
     var propertyValue = $('#selectEntryFromListModal').find("#propertyValueID").prop("value");
-    
+
     //hides de modal dialog
     $('#selectEntryFromListModal').modal("hide");
-    
-    
+
+
     //updates the data stored in the testcase.jsp page
     //triggers the change event if the current value is different from the new value
-    
-    if($("#properties_value1_" + propertyValue).prop("value") !== texto){
-        $("#properties_value1_" + propertyValue).prop("value", texto); 
+
+    if ($("#properties_value1_" + propertyValue).prop("value") !== text) {
+        $("#properties_value1_" + propertyValue).prop("value", text);
         //we need to trigger the change event in order to handle the required actions
         $("#properties_value1_" + propertyValue).trigger("change");
         //we need to invoke the blur() method to activate the changes on the autocomplete plugin
-        $("#properties_value1_" + propertyValue).blur();        
+        $("#properties_value1_" + propertyValue).blur();
     }
-    
-    //disables the subdata button if needed
-    $("#SubDataButton_" + propertyValue).removeProp("disabled");
+
+
 }
 
-/**
- * Callback function that handles the click on the button that allows the user to select a subdata entry.
- */
-function setSubDataButtonClickHandler(){
-    var id = $(this).prop("id");
-    var propertyValue = id.replace("SubDataButton_", "");  
-    //gets the information for the entry id and the type in order to retrieve the subdatalist
-    var textValue1 = $(this).parents("div[id*='propertyRow']").find("textarea#properties_value1_" + propertyValue).val(); 
-    $('#selectSubDataFromListModal').find("#propertyValueSubDataID").prop("value", propertyValue);
-    createSubEntriesTable(textValue1);
-    $('#selectSubDataFromListModal').modal("show");
-    
-}
 
 /**
  * Callback function that handles the click on the button that allows the user to select a entry.
  */
-function setEntrybuttonClickHandler(){        
+function setEntrybuttonClickHandler() {
     var id = $(this).prop("id");
-    var propertyValue = id.replace("entryButton_", ""); 
+    var propertyValue = id.replace("entryButton_", "");
     createEntriesTable(propertyValue);
     $('#selectEntryFromListModal').find("#propertyValueID").prop("value", propertyValue);
     $('#selectEntryFromListModal').modal("show");
 }
-
-function setPropertyValuesAutoComplete(selector, source) {
-    var taValue1Config = {};
-    
-    taValue1Config["source"] = source;
-    
-    //does not display the summary text
-    taValue1Config["messages"] = {
-            noResults: '',
-            results: function() {}
-    };       
-    taValue1Config["delay"] = 500;         
-    //on change allows us to refresh the autocomplete of the text area for value 2
-    taValue1Config["change"] =  taValue1Config["create"] = function(event,ui){ 
-        var taCurrentValue1 = $(this).prop("value");
-        var propertyNumber = $(this).prop("id").replace("properties_value1_", "");
-        var taValue2 = $("textarea[id*='properties_value2_" + propertyNumber + "']");
-        
-        if(taCurrentValue1 !== ''){
-            //check if it was deactivated and activates the textarea2
-            if($(taValue2).hasClass("ui-autocomplete-input")){
-                $(taValue2).autocomplete("enable");
-            }
-            setAutoCompleteServerSide(taValue2, function(request, response){
-                    $.ajax({
-                    url: "GetTestDataLibData?action=2&subdata=" + request.term + "&limit=10&testDataLib="+ taCurrentValue1,
-                    dataType: "json",      
-                    success: function(data) {
-                      response(data["data"]);
-                    }
-                });
-            });
-        }else{
-            //deactivates the autocomplete from textarea 2 when textarea 1 has no data.
-            if($(this).hasClass("ui-autocomplete-input")){
-                if($(taValue2).hasClass("ui-autocomplete-input")){
-                    $(taValue2).autocomplete("disable");
-                }
-            }
-            
-        }
-    };
-
-    //handles the selection of an item from the auto complete
-    taValue1Config["select"]  = function(event,ui){ 
-        var propertyNumber = $(this).prop("id").replace("properties_value1_", "");
-        var taValue2 = $("textarea[id*='properties_value2_" + propertyNumber + "']");
-        
-        setAutoCompleteServerSide(taValue2, function(request, response){
-                $.ajax({
-                url: "GetTestDataLibData?action=2&subdata=" + request.term + "&limit=10&testDataLib="+ ui.item.label, //gets the label of the selected element
-                dataType: "json",      
-                success: function(data) {
-                  response(data["data"]);
-                }
-            });
-        });
-    };
-    
-    //for each textarea for value1 that has the property type getFromDataLib we will set the autocomplete
-    $(selector).autocomplete(taValue1Config);
-    
-}
-
-function callbackAutoCompleteTestDataLibName(request, response) {
-    $.ajax({
-        url: "GetTestDataLib?action=2&testDataLib=" + request.term + "&limit=10",
-        dataType: "json",      
-        success: function(data) {
-          response(data["data"]);
-        }
-    });
-}
-
 /**
- * Method that handles the change on the text area for value 1 when the type of property is getFromDataLib
- */
-function textArea1ChangeCallback(){    
-    
-    var propertyValue = $(this).prop("id").replace("properties_value1_", "");
-    var subDataButton = $("#SubDataButton_" + propertyValue);
-    var text = $(this).prop("value");
-     
-    //setPropertyValuesAutoComplete($(this), callbackAutoCompleteTestDataLibName);
-    //    $(this).trigger("change");
-    //setPropertyValuesAutoComplete($(this), callbackAutoCompleteTestDataLibName);
-    if(text === ''){ //if text is empty then disables the button for subdata list
-        $(subDataButton).prop("disabled", "disabled");
-        //disables the autocomplete
-        //$(this).prop("autocomplete", "off"); TODO:FN disable/enable autocomplete
-    }else{
-        $(subDataButton).removeProp("disabled");                
-    }    
-}
-
- 
-/**
- * Creates the list of sub data entries for the selected entry
- * @param {type} value1Text
+ * Auxiliary function that configures the autocomplete component
+ * @param {type} selector
+ * @param {type} source
  * @returns {undefined}
  */
-function createSubEntriesTable(value1Text){ 
-    
-    showLoaderInModal('#selectSubDataFromListModal');    
-    
-    //action=1 -> ACTION_GETALL_BYNAME
-    var url = "action=1&testDataLibName=" + value1Text;
-    var jqxhr = $.getJSON("GetTestDataLibData", url); 
-    $.when(jqxhr).then(function(data) {
-        var configurations = new TableConfigurationsClientSide("subDataTable", data["TestDataLibDatas"], aoColumnsFuncSubData());
-        configurations.scrollY = "270px";            
-    
-        if($('#subDataTable').hasClass('dataTable')  === false){    
-            createDataTable(configurations);
-        }else{            
-            var oTable = $("#subDataTable").dataTable();
-            oTable.fnClearTable();
-            if(data["TestDataLibDatas"].length > 0){
-                oTable.fnAddData(data["TestDataLibDatas"]);                
-            }
-            
-        } 
-        hideLoaderInModal('#selectSubDataFromListModal');   
-    }).fail(handleErrorAjaxAfterTimeout);;
-        
-    
+function setPropertyValuesAutoComplete(selector, source) {
+    var taValue1Config = {};
+
+    taValue1Config["source"] = source;
+
+    //does not display the summary text
+    taValue1Config["messages"] = {
+        noResults: '',
+        results: function() {
+        }
+    };
+    taValue1Config["delay"] = 500;
+    //for each textarea for value1 that has the property type getFromDataLib we will set the autocomplete
+    $(selector).autocomplete(taValue1Config);
+
+}
+/**
+ * Callback function used to perform autocomplete while user is typing
+ * @param {type} request 
+ * @param {type} response
+ * @returns {undefined}
+ */
+function callbackAutoCompleteTestDataLibName(request, response) {
+    $.ajax({
+        url: "ReadTestDataLib?action=2&testDataLib=" + request.term + "&limit=10",
+        dataType: "json",
+        success: function(data) {
+            response(data["data"]);
+        }
+    });
 }
 
 /**
@@ -320,156 +215,90 @@ function createSubEntriesTable(value1Text){
  */
 function createEntriesTable() {
 
-    var oTable = $('#listOfTestDataLib').hasClass('dataTable') ; 
-    
-    if(oTable === false){
-        
-        //var configurations = new TableConfigurationsServerSide("listOfTestDataLib", "GetTestDataLib", "TestDataLib", aoColumnsFunc(propertyValue));
-        var configurations = new TableConfigurationsServerSide("listOfTestDataLib", "GetTestDataLib", "TestDataLib", aoColumnsFunc());
-        configurations.scrollY = "460px"; 
-        showLoaderInModal('#selectEntryFromListModal');
-        $.when(createDataTable(configurations)).then(function(){
-            hideLoaderInModal('#selectEntryFromListModal');        
-        });
-        
-    } 
-}
+    var oTable = $('#listOfTestDataLib').hasClass('dataTable');
 
-//function aoColumnsFunc(propertyValue){
-function aoColumnsFunc(){
+    if (oTable === false) {
+
+        //var configurations = new TableConfigurationsServerSide("listOfTestDataLib", "GetTestDataLib", "TestDataLib", aoColumnsFunc(propertyValue));
+        var configurations = new TableConfigurationsServerSide("listOfTestDataLib", "ReadTestDataLib", "TestDataLib", aoColumnsFunc());
+        configurations.scrollY = "460px";
+        showLoaderInModal('#selectEntryFromListModal');
+        $.when(createDataTable(configurations)).then(function() {
+            hideLoaderInModal('#selectEntryFromListModal');
+        });
+
+    }
+}
+/***
+ * Auxiliary function used to customise the datatable aesthetics and translations
+ * @returns {aoColumnsFunc.aoColumns|Array}
+ */
+function aoColumnsFunc() {
+    var doc = getDoc();
+    var docTestDataLib = doc.testdatalib;
+    var docModal = doc.page_testcase_m_listtestdatalib;
     var aoColumns = [];
     $("#listOfTestDataLib th").each(function(i) {
         switch (i) {
-            case 0: 
+            case 0:
                 aoColumns.push({
-                    className:"width150  center", 
-                    "sName": "TestDataLibID", 
-                    "bSortable": false, 
-                    "mRender": function(data, type, oObj) { 
-                    var selectElement = '<button id="selectEntry' + data + '"  onclick="selectEntry(this);" \n\
+                    className: "width150  center",
+                    "sName": "TestDataLibID",
+                    "bSortable": false,
+                    "title":displayDocLink(docModal.actions),
+                    "mRender": function(data, type, oObj) {
+                        var selectElement = '<button id="selectEntry' + data + '"  onclick="selectEntry(this);" \n\
                                                 class="selectEntry btn btn-default btn-xs margin-right5" \n\
-                                            name="editTestDataLib" title="Select entry" type="button">\n\
-                                            <span class="glyphicon glyphicon-hand-up"></span></button>'; 
-                    return '<div class="btn-group center">' + selectElement + '</div>';
-                }});
-            break;
+                                            name="editTestDataLib" title="' + docModal.tooltip_choose_entry.docLabel + '" type="button">\n\
+                                            <span class="glyphicon glyphicon-hand-up"></span></button>';
+                        return '<div class="btn-group center">' + selectElement + '</div>';
+                    }});
+                break;
 
-            case 1 : 
-                aoColumns.push({className:"width250", "sName": "Name"});
-            break;
-            case 2 : 
-                aoColumns.push({className:"width80", "sName": "System"});
-            break;
-            case 3 : 
-                aoColumns.push({className:"width100", "sName": "Environment"});
-            break;
-            case 4 : 
-                aoColumns.push({className:"width80", "sName": "Country"});
-            break;
-            case 5 : 
-                aoColumns.push({className: "width100", "sName": "Group"});
-            break;
-            case 6 : 
-                aoColumns.push({className:"width80", "sName": "Type"});
-            break;
-            case 7 : 
-                aoColumns.push({className:"width100", "sName": "Database"});
-            break;
-            case 8 : 
-                aoColumns.push({className: "width500", "sName": "Script"});
-            break;
-            case 9 : 
-                aoColumns.push({className:"width250", "sName": "ServicePath"});
-            break;
-            case 10 : 
-                aoColumns.push({className:"width250", "sName": "Method"});
-            break;
-            case 11 : 
-                aoColumns.push({className:"width500", "sName": "Envelope"});
-            break;
-            case 12: 
-                aoColumns.push({className:"width150", "sName": "Description"});
-            break;
-            
+            case 1 :
+                aoColumns.push({className: "width250", "sName": "Name", "title": displayDocLink(docTestDataLib.name)});
+                break;
+            case 2 :
+                aoColumns.push({className: "width80", "sName": "System", "title": displayDocLink(docTestDataLib.system)});
+                break;
+            case 3 :
+                aoColumns.push({className: "width100", "sName": "Environment", "title": displayDocLink(docTestDataLib.environment)});
+                break;
+            case 4 :
+                aoColumns.push({className: "width80", "sName": "Country", "title": displayDocLink(docTestDataLib.country)});
+                break;
+            case 5 :
+                aoColumns.push({className: "width100", "sName": "Group", "title": displayDocLink(docTestDataLib.group)});
+                break;
+            case 6 :
+                aoColumns.push({className: "width80", "sName": "Type", "title": displayDocLink(docTestDataLib.type)});
+                break;
+            case 7 :
+                aoColumns.push({className: "width100", "sName": "Database", "title": displayDocLink(docTestDataLib.database)});
+                break;
+            case 8 :
+                aoColumns.push({className: "width500", "sName": "Script", "title": displayDocLink(docTestDataLib.script)});
+                break;
+            case 9 :
+                aoColumns.push({className: "width250", "sName": "ServicePath", "title": displayDocLink(docTestDataLib.servicepath)});
+                break;
+            case 10 :
+                aoColumns.push({className: "width250", "sName": "Method", "title": displayDocLink(docTestDataLib.method)});
+                break;
+            case 11 :
+                aoColumns.push({className: "width500", "sName": "Envelope", "title": displayDocLink(docTestDataLib.envelope)});
+                break;
+            case 12:
+                aoColumns.push({className: "width150", "sName": "Description", "title": displayDocLink(docTestDataLib.description)});
+                break;
+
             default :
                 aoColumns.push({"sWidth": "100px"});
-            break;
+                break;
         }
     });
     return aoColumns;
-    
-    
+
+
 }
 
-function aoColumnsFuncSubData(){
-    var aoColumns = [];
-    $("#subDataTable th").each(function(i) {
-        switch (i) {
-            case 0: 
-                aoColumns.push({
-                    className:"width50 center", 
-                    "sName": "TestDataLibID", 
-                    "bSortable": false,                 
-                    "mRender": function(data, type, oObj) {
-                    var selectElement = '<button id="selectEntry' + data + '"  onclick="selectSubDataEntry(this);" \n\
-                                                class="selectEntry btn btn-default btn-xs margin-right5" \n\
-                                            name="editTestDataLib" title="Select entry" type="button">\n\
-                                            <span class="glyphicon glyphicon-hand-up"></span></button>'; 
-
-                        return '<div class="btn-group center">' + selectElement + '</div>';
-                }});
-            break;
-
-            case 1 : 
-                aoColumns.push({className:"width80", "sName": "Subdata"});
-            break;
-            case 2 : 
-                aoColumns.push({className:"width80", "sName": "Data"});
-            break;
-            case 3 : 
-                aoColumns.push({className:"width80", "sName": "Description"});
-            break;
-            case 4 : 
-                aoColumns.push({className:"width50", "sName": "Type"});
-            break;
-            case 5 : 
-                aoColumns.push({className:"width50", "sName": "System"});
-            break;
-            case 6 : 
-                aoColumns.push({className:"width50", "sName": "Environment"});
-            break;
-            case 7 : 
-                aoColumns.push({className:"width50", "sName": "Country"});
-            break;
-            
-
-            
-            default :
-                aoColumns.push({"sWidth": "80px"});
-            break;
-        }
-    });
-    return aoColumns;
-}
-
-function displayPageLabel() {
-    var doc = getDoc();
-    
-    $("[name='labelTest']").html(displayDocLink(doc.test.Test));
-    $("[name='labelTestCase']").html(displayDocLink(doc.testcase.TestCase));
-    $("[name='labelTestCaseStepActionDescription']").html(displayDocLink(doc.testcasestepaction.description));
-    $("[name='labelTestCaseStepActionAction']").html(displayDocLink(doc.testcasestepaction.Action));
-    $("[name='labelTestCaseStepActionObject']").html(displayDocLink(doc.testcasestepaction.Object));
-    $("[name='labelTestCaseStepActionProperty']").html(displayDocLink(doc.testcasestepaction.Property));
-    $("[name='labelTestCaseStepActionControlDescription']").html(displayDocLink(doc.testcasestepactioncontrol.ControleDescription));
-    $("[name='labelTestCaseStepActionControlType']").html(displayDocLink(doc.testcasestepactioncontrol.Type));
-    $("[name='labelTestCaseStepActionControlProperty']").html(displayDocLink(doc.testcasestepactioncontrol.ControleProperty));
-    $("[name='labelTestCaseStepActionControlValue']").html(displayDocLink(doc.testcasestepactioncontrol.ControleValue));
-    $("[name='labelTestCaseStepActionControlFatal']").html(displayDocLink(doc.testcasestepactioncontrol.Fatal));
-//    $("[name='labelTest']").html(doc.test.test.docLabel);
-    
-//    $("[name='descriptionField']").each(function () {
-//        $(this).html(displayDocLink(doc.project.description));
-//    });
-//    displayFooter(doc);
-}

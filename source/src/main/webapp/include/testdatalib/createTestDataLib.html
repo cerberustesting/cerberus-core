@@ -4,10 +4,10 @@
         <div class="modal-content">
             <div class="modal-header">
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                <h4 class="modal-title" id="addTestDataLibModalLabel">Add New Sub Data Entry</h4>                
+                <h4 class="modal-title" id="addTestDataLibModalLabel">Create New Entry</h4>                
             </div>
             <div class="modal-body"> 
-                <form id="addTestDataLibModalForm" name="addTestDataLibModalForm"  title="Add TestDataLib Entry" role="form">
+                <form id="addTestDataLibModalForm" name="addTestDataLibModalForm"  role="form">
 
                     <!--  The form that will be parsed by jQuery before submit  -->
                     <div id="tabs" class="center container width800">
@@ -22,19 +22,19 @@
                         </div>
                         <!-- tabs definition-->
                         <ul id="tabs" class="nav nav-tabs" data-tabs="tabs">
-                            <li class="active"><a data-toggle="tab" href="#tabs-1">Entry</a></li>
+                            <li class="active"><a data-toggle="tab" id="tab1Text" href="#tabs-1">Entry</a></li>
                             <li><a data-toggle="tab" href="#tabs-2" id="tab2Text">Sub data (0 entries) </a></li>
                         </ul>
                         <div class="tab-content">   
                             <div class="center marginTop25 tab-pane fade in active" id="tabs-1">
                                 <input type="hidden" value="-1" id="ID" name="ID" class="ncdetailstext" />
                                 <div id="panelCommon" class="row">
-                                    <div id="" class="form-group col-xs-6">
-                                        <label for="Name">Name</label>
+                                    <div  class="form-group col-xs-6">
+                                        <label id="lbl_name" for="Name">Name</label>
                                         <input type="text" class="form-control" name="Name" id="Name" maxlength="200" />
                                     </div> 
                                     <div class="form-group col-xs-6">
-                                        <label for="Type">Select Type</label>
+                                        <label id="lbl_type" for="Type">Select Type</label>
                                         <select class="form-control"  id="Type" name="Type">
 
                                         </select>
@@ -44,28 +44,28 @@
                                 <!--group infomation -->
                                 <div class="row">
                                     <div class="form-group col-xs-6">
-                                        <label>Choose an existing group</label>
+                                        <label id="lbl_choose_group">Choose an existing group</label>
                                         <span>
                                             <select class="form-control"  id="Group" name="Group">                                                
                                             </select>
                                         </span>                                         
                                     </div> 
                                     <div class="form-group col-xs-6">
-                                        <label for="GroupInput">or enter new group</label>
+                                        <label id="lbl_enter_group" for="GroupInput">or enter new group</label>
                                         <input id="GroupInput" name="Group" class="form-control" type="text" maxlength="200"  />     
                                     </div>                  
                                 </div>
                                 
                                 <div class="row" style="margin-top:10px">
                                     <div class="form-group col-xs-4">
-                                            <label for="System">System</label>
+                                            <label id="lbl_system" for="System">System</label>
                                             <input type="hidden" id="systemAll" name="systemAll"  value="false" />
                                             <select class="multiselectelement form-control" multiple="multiple" id="System" >
                                             </select>                                            
                                       
                                     </div>        
                                     <div class="form-group col-xs-4">
-                                        <label for="Environment">Environment</label>
+                                        <label id="lbl_environment" for="Environment">Environment</label>
                                         <input type="hidden" id="environmentAll" name="environmentAll"  value="false" />
                                         <div>
                                             <select class="multiselectelement form-control" multiple="multiple" id="Environment">
@@ -73,7 +73,7 @@
                                         </div>
                                     </div>    
                                     <div class="form-group col-xs-4">
-                                        <label for="Country">Country</label>
+                                        <label id="lbl_country" for="Country">Country</label>
                                         <input type="hidden" id="countryAll" name="countryAll" value="false" />
                                         <div>
                                             <select class="multiselectelement form-control" multiple="multiple" id="Country">
@@ -85,7 +85,7 @@
                                 <!--description-->
                                 <div class="row">
                                     <div class="form-group col-xs-12">
-                                        <label for="Description">Description</label>
+                                        <label id="lbl_description" for="Description">Description</label>
                                         <textarea id="EntryDescription" name="EntryDescription"   
                                                   class="form-control"></textarea> 
                                     </div>
@@ -93,13 +93,13 @@
                                 <!--SQL-->
                                 <div id="panelSQL" name="panelData" style="display:none">
                                     <div class="row form-group  col-xs-6"> 
-                                        <label for="Database">Database</label> 
+                                        <label id="lbl_database" for="Database">Database</label> 
                                         <select class="form-control" id="Database" name="Database">
                                         </select> 
                                     </div>    
                                     <div class="row">
                                         <div class="form-group col-xs-12"> 
-                                            <label for="Script">Script</label> 
+                                            <label id="lbl_script" for="Script">Script</label> 
                                             <textarea id="Script" name="Script" 
                                                       class="form-control"></textarea>     
                                         </div>                       
@@ -110,16 +110,16 @@
                                 <div id="panelSOAP" name="panelData" style="display:none">
                                     <div class="row">
                                         <div class="form-group col-xs-6" >
-                                            <label for="ServicePath">Service Path</label>
+                                            <label id="lbl_service_path" for="ServicePath">Service Path</label>
                                             <input id="ServicePath" name="ServicePath"  class="form-control" maxlength="250"  />  
                                         </div>
                                         <div class="form-group col-xs-6">
-                                            <label for="Method">Method</label>
+                                            <label id="lbl_method" for="Method">Method</label>
                                             <input id="Method" name="Method" class="form-control" maxlength="45"  />
                                         </div>
                                     </div>    
                                     <div class="form-group">
-                                        <label for="Envelope">Envelope</label>                    
+                                        <label id="lbl_envelope" for="Envelope">Envelope</label>                    
                                         <textarea id="Envelope" name="Envelope" 
                                                       class="form-control"></textarea>     
                                     </div> 
@@ -134,9 +134,9 @@
                                                 <thead>
                                                     <tr>
                                                         <th></th>
-                                                        <th class="text-center">Sub data</th>
-                                                        <th class="text-center" id="labelSubdataEntry">Value</th>
-                                                        <th class="text-center">Description</th>
+                                                        <th id="subdataHeader" class="text-center">Sub-data</th>
+                                                        <th id="dataHeader" class="text-center">Value</th>
+                                                        <th id="descriptionHeader" class="text-center">Description</th>
                                                     </tr>
                                                 </thead>
                                                 <tbody id="addSubDataTableBody">
@@ -144,8 +144,8 @@
                                                 </tbody>
                                             </table>
                                             <div class="nomargintop">
-                                                <a id="newSubData_addRow" class="pull-left btn btn-link manageRowsFont">Add new</a>
-                                                <a id='newSubData_deleteAll' class="pull-right btn btn-link manageRowsFont">Delete All</a>
+                                                <a id="newSubData_addRow" class="pull-left btn btn-link manageRowsFont" title="Add a new row in the table for creating a new sub-data entry.">Add new</a>
+                                                <a id='newSubData_deleteAll' class="pull-right btn btn-link manageRowsFont" title="Deletes all sub-data entries in the table.">Delete All</a>
                                             </div>
                                         </div>
                                     </div>  
@@ -157,7 +157,7 @@
 
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                <button type="button" id="cancelTestDataLibButton" class="btn btn-default" data-dismiss="modal">Cancel</button>
                 <button type="button" id="addTestDataLibButton" class="btn btn-primary">Add</button>
             </div>
         </div>

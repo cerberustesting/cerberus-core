@@ -404,23 +404,23 @@ public class RecorderService implements IRecorderService {
                         String envelope = eSResponse.getExecutionSOAPResponse(responseKeyID + "_request"); 
                         //the XML execution is available in the entry
                         try {
-                            String path = parameterService.findParameterByKey("cerberus_picture_path", "").getValue();
+                            String path = parameterService.findParameterByKey("cerberus_picture_path", "").getValue() + executionId + File.separator;
                             String fileName = this.generateScreenshotFilename(test, testCase, step, sequence, controlString, null,  "xml") ;
                             String requestFileName = fileName.replace(".xml", "_request.xml");
                             
                             url.append(testCaseStepActionExecution.getActionResultMessage().getDescription());
                             url.append(" <a target='_blank' href='");
-                            url.append(requestFileName).append("'> SOAP request </a>");
+                            url.append(path).append(requestFileName).append("'> SOAP request </a>");
                             url.append(" | <a target='_blank' href='");
-                            url.append(fileName).append("'> SOAP response </a>");
+                            url.append(path).append(fileName).append("'> SOAP response </a>");
                             
                             testCaseStepActionExecution.getActionResultMessage().setDescription(url.toString());
                             testCaseStepActionExecution.setReturnMessage(url.toString());
                             
-                            recordFile(path, requestFileName, xml);
-                            recordFile(path, fileName, envelope);
+                            recordFile(path, requestFileName, envelope);
+                            recordFile(path, fileName, xml);
                         } catch (CerberusException ex) {
-                            MyLogger.log(RecorderService.class.getName(), Level.DEBUG, "XML file was not saved due to unexpected error.");
+                            MyLogger.log(RecorderService.class.getName(), Level.DEBUG, "XML file was not saved due to unexpected error." + ex.toString());
                         }
                                 
                         

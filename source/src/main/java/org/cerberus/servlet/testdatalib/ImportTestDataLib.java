@@ -81,26 +81,27 @@ public class ImportTestDataLib extends HttpServlet {
             InputStream  schemaLocation = getServletContext().getResourceAsStream("/WEB-INF/classes/xsd/testdatalib.xsd");
 
             AnswerItem dataFromService = importService.importAndValidateXMLFromInputStream(filePart.getInputStream(), schemaLocation, XMLHandlerEnumType.TESTDATALIB_HANDLER);
-
-            HashMap<TestDataLib, List<TestDataLibData>> map = (HashMap<TestDataLib, List<TestDataLibData>>)dataFromService.getItem();
-
-            //creates the testdatalib data that was imported from file
-            ITestDataLibService libService = appContext.getBean(ITestDataLibService.class);
-            answer = libService.createTestDataLibBatch(map);
+            MessageEvent msg = dataFromService.getResultMessage();
             
-            MessageEvent msg = null;
-            
-            if(answer.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())){
-                msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_IMPORT_OK);
-                msg.setDescription(msg.getDescription().replace("%ITEM%", "Test Data Lib"));
-            }else{
-                msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_IMPORT_ERROR);
-                msg.setDescription(msg.getDescription().replace("%ITEM%", "Test Data Lib").replace("%REASON%", answer.getMessageDescription()));
+            if(dataFromService.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())){
+                //if the import succeeds then we can insert the data
+                HashMap<TestDataLib, List<TestDataLibData>> map = (HashMap<TestDataLib, List<TestDataLibData>>)dataFromService.getItem();
+
+                //creates the testdatalib data that was imported from file
+                ITestDataLibService libService = appContext.getBean(ITestDataLibService.class);
+                answer = libService.createTestDataLibBatch(map);
+
+               
+                if(answer.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())){
+                    msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_IMPORT_OK);
+                    msg.setDescription(msg.getDescription().replace("%ITEM%", "Test Data Lib"));
+                }else{
+                    msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_IMPORT_ERROR);
+                    msg.setDescription(msg.getDescription().replace("%ITEM%", "Test Data Lib").replace("%REASON%", answer.getMessageDescription()));
+                }     
             }
-            answer.setResultMessage(msg);
-            
-            jsonResponse.put("messageType", answer.getResultMessage().getMessage().getCodeString());
-            jsonResponse.put("message", answer.getResultMessage().getDescription());
+            jsonResponse.put("messageType", msg.getMessage().getCodeString());
+            jsonResponse.put("message", msg.getDescription());
 
             ILogEventService logEventService = appContext.getBean(LogEventService.class);
             IFactoryLogEvent factoryLogEvent = appContext.getBean(FactoryLogEvent.class);

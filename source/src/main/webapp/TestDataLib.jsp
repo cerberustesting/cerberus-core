@@ -23,38 +23,9 @@
 <html>
     <head>
         <meta content="text/html; charset=UTF-8" http-equiv="content-type">
-        <title>Test Data Library</title>
-        <link rel="shortcut icon" type="image/x-icon" href="images/favicon.ico">
-
-
-        <link type="text/css" rel="stylesheet" href="css/dataTables.colVis.css">
-        <link rel="stylesheet" type="text/css" href="css/jquery.dataTables.css">
-
-        <link type="text/css" rel="stylesheet" href="css/bootstrap.css">
-        <link rel="stylesheet" href="css/bootstrap-multiselect.css" type="text/css">
-        <link rel="stylesheet" type="text/css" href="css/crb_style2.css">
-
-
-        <link type="text/css" rel="stylesheet" href="css/default.css"> 
-
-        <script type="text/javascript" src="js/jquery-1.9.1.min.js"></script>
-
-        <script type="text/javascript" src="js/jquery.dataTables-2.js"></script>
-        <script type="text/javascript" src="js/dataTables.colVis.js"></script>
-
-        <script type="text/javascript" src="js/jquery.blockUI.js"></script>
-
+        <%@ include file="include/dependenciesInclusions.html" %>
+        <title id="pageTitle">Test Data Library</title>        
         <script type="text/javascript" src="js/pages/TestDataLibViewModel.js"></script>
-
-        <script type="text/javascript" src="js/bootstrap.min.js"></script>         
-        <script type="text/javascript" src="js/bootstrap-multiselect.js"></script>
-        <script type='text/javascript' src='js/pages/global/doc.js'></script>
-        <script type="text/javascript" src="js/pages/global/cerberusInformation.js"></script>
-        <script type='text/javascript' src='js/Form.js'></script>
-        <script type="text/javascript" src="js/pages/global/global.js"></script>
-        <script type="text/javascript" src="js/pages/global/user.js"></script>
-        <script type="text/javascript" src="js/pages/global/header.js"></script>
-
     </head>
     <body>
         <%@ include file="include/header.html"%>
@@ -62,17 +33,18 @@
         <div id="page-layout" class="container-fluid center">
             <%@ include file="include/messagesArea.html"%>
             <%@ include file="include/utils/modal-confirmation.html"%>
-            <%@ include file="include/testdatalib/editTestDataLibData.html"%>
-            <!-- form that adds the new library -->
-            <%@ include file="include/testdatalib/addTestDataLib.jsp"%>       
-            <%@ include file="include/testdatalib/editTestDataLib.html"%>       
-            <%@ include file="include/testdatalib/viewTestDataLibData.html"%>       
-            <%@ include file="include/testdatalib/testCaseList.html"%>       
+            
+            <%@ include file="include/testdatalib/manageTestDataLibData.html"%>
+            <%@ include file="include/testdatalib/createTestDataLib.html"%>       
+            <%@ include file="include/testdatalib/updateTestDataLib.html"%>       
+            <%@ include file="include/testdatalib/listTestDataLibData.html"%>       
+            <%@ include file="include/testdatalib/listTestCase.html"%>       
             <%@ include file="include/utils/modal-upload.html"%>       
+            
 
 
 
-            <h1 class="page-title-line">Test Data Library</h1>
+            <h1 class="page-title-line" id="title">Test Data Library</h1>
             <div id="testdatalib" class="well">               
                 <table  class="table table-hover display" id="listOfTestDataLib" name="listOfTestDataLib">
                     <thead>

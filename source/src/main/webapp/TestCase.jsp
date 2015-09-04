@@ -351,8 +351,8 @@
     <body>
         <%@ include file="include/function.jsp" %>
         <%@ include file="include/header.html" %>
-        <%@ include file="include/testcase/entryList.html"%>
-        <%@ include file="include/testcase/subDataList.html"%>
+        <%@ include file="include/testcase/listTestDataLib.html"%>
+
         <div id="body">
             <%
 

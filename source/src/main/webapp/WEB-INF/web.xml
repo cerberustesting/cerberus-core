@@ -586,8 +586,8 @@
         <servlet-class>org.cerberus.servlet.testCase.DeleteTestCaseFromTestPage</servlet-class>
     </servlet>
     <servlet>
-        <servlet-name>GetTestDataLib</servlet-name>
-        <servlet-class>org.cerberus.servlet.testdatalib.GetTestDataLib</servlet-class>
+        <servlet-name>ReadTestDataLib</servlet-name>
+        <servlet-class>org.cerberus.servlet.testdatalib.ReadTestDataLib</servlet-class>
     </servlet>
     <servlet>
         <servlet-name>RunManualTest</servlet-name>
@@ -697,8 +697,8 @@
         <servlet-class>org.cerberus.servlet.execution.SetTagToExecution</servlet-class>
     </servlet>
     <servlet>
-        <servlet-name>AddTestDataLib</servlet-name>
-        <servlet-class>org.cerberus.servlet.testdatalib.AddTestDataLib</servlet-class>
+        <servlet-name>CreateTestDataLib</servlet-name>
+        <servlet-class>org.cerberus.servlet.testdatalib.CreateTestDataLib</servlet-class>
     </servlet>
     <servlet>
         <servlet-name>DeleteTestDataLib</servlet-name>
@@ -717,8 +717,8 @@
         <servlet-class>org.cerberus.servlet.testdatalib.ImportTestDataLib</servlet-class>
     </servlet>
     <servlet>
-        <servlet-name>GetTestDataLibData</servlet-name>
-        <servlet-class>org.cerberus.servlet.testdatalib.GetTestDataLibData</servlet-class>
+        <servlet-name>ReadTestDataLibData</servlet-name>
+        <servlet-class>org.cerberus.servlet.testdatalib.ReadTestDataLibData</servlet-class>
     </servlet>
     <servlet>
         <servlet-name>ReadUser</servlet-name>
@@ -1301,8 +1301,8 @@
         <url-pattern>/DeleteTestCaseFromTestPage</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
-        <servlet-name>GetTestDataLib</servlet-name>
-        <url-pattern>/GetTestDataLib</url-pattern>
+        <servlet-name>ReadTestDataLib</servlet-name>
+        <url-pattern>/ReadTestDataLib</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
         <servlet-name>RunManualTest</servlet-name>
@@ -1405,8 +1405,8 @@
         <url-pattern>/SetTagToExecution</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
-        <servlet-name>AddTestDataLib</servlet-name>
-        <url-pattern>/AddTestDataLib</url-pattern>
+        <servlet-name>CreateTestDataLib</servlet-name>
+        <url-pattern>/CreateTestDataLib</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
         <servlet-name>DeleteTestDataLib</servlet-name>
@@ -1425,8 +1425,8 @@
         <url-pattern>/ImportTestDataLib</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
-        <servlet-name>GetTestDataLibData</servlet-name>
-        <url-pattern>/GetTestDataLibData</url-pattern>
+        <servlet-name>ReadTestDataLibData</servlet-name>
+        <url-pattern>/ReadTestDataLibData</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
         <servlet-name>ReadUser</servlet-name>
@@ -1587,8 +1587,8 @@
             <url-pattern>/DeleteTestData</url-pattern>
             <url-pattern>/UpdateTestData</url-pattern>
             <url-pattern>/FindAllTestData</url-pattern>
-            <url-pattern>/GetTestDataLib</url-pattern>
-            <url-pattern>/GetTestDataLibData</url-pattern>
+            <url-pattern>/ReadTestDataLib</url-pattern>
+            <url-pattern>/ReadTestDataLibData</url-pattern>
             <url-pattern>/GetApplicationList</url-pattern>
             <url-pattern>/FindAllSqlLibrary</url-pattern>
             <url-pattern>/FindAllSoapLibrary</url-pattern>
@@ -1662,16 +1662,11 @@
         </auth-constraint>
     </security-constraint>
     <security-constraint>
-        <display-name>TestDataManager</display-name>
-        <web-resource-collection>
-            <web-resource-name>jsp</web-resource-name>
-            <description>jsp</description>
-            <url-pattern>/addTestDataLib.jsp</url-pattern>
-        </web-resource-collection>
+        <display-name>TestDataManager</display-name>        
         <web-resource-collection>
             <web-resource-name>servlet</web-resource-name>
             <description>servlet</description>
-            <url-pattern>/AddTestDataLib</url-pattern>
+            <url-pattern>/CreateTestDataLib</url-pattern>
             <url-pattern>/ImportTestDataLib</url-pattern>
             <url-pattern>/DeleteTestDataLib</url-pattern>
             <url-pattern>/UpdateTestDataLibData</url-pattern>
