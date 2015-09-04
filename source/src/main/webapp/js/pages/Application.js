@@ -40,18 +40,19 @@ function initApplicationPage() {
     createDataTableWithPermissions(configurations, renderOptionsForApplication);
     var oTable = $("#applicationsTable").dataTable();
     oTable.fnSort([1, 'asc']);
-};
+}
+;
 
 function displayPageLabel() {
     var doc = new Doc();
-    
+
     displayHeaderLabel(doc);
-    $("#pageTitle").html(doc.getDocLabel("page_application","title"));
+    $("#pageTitle").html(doc.getDocLabel("page_application", "title"));
     $("#title").html(doc.getDocOnline("page_application", "title"));
     $("[name='createApplicationField']").html(doc.getDocLabel("page_application", "button_create"));
     $("[name='confirmationField']").html(doc.getDocLabel("page_application", "button_delete"));
     $("[name='editApplicationField']").html(doc.getDocLabel("page_application", "button_edit"));
-    $("[name='buttonAdd']").html(doc.getDocLabel("page_global","buttonAdd"));
+    $("[name='buttonAdd']").html(doc.getDocLabel("page_global", "buttonAdd"));
     $("[name='buttonClose']").html(doc.getDocLabel("page_global", "buttonClose"));
     $("[name='buttonConfirm']").html(doc.getDocLabel("page_global", "buttonConfirm"));
     $("[name='buttonDismiss']").html(doc.getDocLabel("page_global", "buttonDismiss"));
@@ -205,7 +206,7 @@ function editApplication(id) {
         formEdit.find("#bugtrackernewurl").prop("value", obj["bugTrackerNewUrl"]);
         formEdit.find("#deploytype").prop("value", obj["deploytype"]);
         formEdit.find("#mavengroupid").prop("value", obj["mavengroupid"]);
-        
+
         formEdit.modal('show');
     });
 }
@@ -227,7 +228,7 @@ function renderOptionsForApplication(data) {
 function aoColumnsFunc() {
     var doc = new Doc();
     var aoColumns = [
-        {"data": "button",
+    {"data": "button",
             "sName": "Actions",
             "title": doc.getDocLabel("page_global", "columnAction"),
             "bSortable": false,
@@ -244,40 +245,41 @@ function aoColumnsFunc() {
 
                 return '<div class="center btn-group width150">' + editApplication + deleteApplication + '</div>';
             }
-        },
-        {"data": "application",
+    },
+    {"data": "application",
             "sName": "application",
             "title": doc.getDocOnline("application", "Application")},
-        {"data": "description",
+    {"data": "description",
             "sName": "description",
             "title": doc.getDocOnline("application", "Description")},
-        {"data": "sort",
+    {"data": "sort",
             "sName": "sort",
             "title": doc.getDocOnline("application", "sort")},
-        {"data": "type",
+    {"data": "type",
             "sName": "type",
             "title": doc.getDocOnline("application", "type")},
-        {"data": "system",
+    {"data": "system",
             "sName": "system",
             "title": doc.getDocOnline("application", "system")},
-        {"data": "subsystem",
+    {"data": "subsystem",
             "sName": "subsystem",
             "title": doc.getDocOnline("application", "subsystem")},
-        {"data": "svnurl",
+    {"data": "svnurl",
             "sName": "svnurl",
-            "title": doc.getDocOnline("application", "svnurl")},
-        {"data": "bugTrackerUrl",
+            "title": doc.getDocOnline("application", "svnurl")
+    },
+    {"data": "bugTrackerUrl",
             "sName": "bugTrackerUrl",
             "title": doc.getDocOnline("application", "bugtrackerurl")},
-        {"data": "bugTrackerNewUrl",
+    {"data": "bugTrackerNewUrl",
             "sName": "bugTrackerNewUrl",
             "title": doc.getDocOnline("application", "bugtrackernewurl")},
-        {"data": "deploytype",
+    {"data": "deploytype",
             "sName": "deploytype",
-            "title": doc.getDocOnline("application" , "deploytype")},
-        {"data": "mavengroupid",
+            "title": doc.getDocOnline("application", "deploytype")},
+    {"data": "mavengroupid",
             "sName": "mavengroupid",
             "title": doc.getDocOnline("application", "mavengroupid")}
     ];
-    return aoColumns;
+            return aoColumns;
 }

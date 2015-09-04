@@ -25,11 +25,13 @@ import java.sql.Statement;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
+import org.apache.log4j.Level;
 
 import org.apache.log4j.Logger;
 import org.cerberus.dao.IApplicationDAO;
 import org.cerberus.dao.ITestCaseExecutionDAO;
 import org.cerberus.database.DatabaseSpring;
+import org.cerberus.dto.TestCaseWithExecution;
 import org.cerberus.entity.Application;
 import org.cerberus.entity.MessageEvent;
 import org.cerberus.entity.MessageEventEnum;
@@ -38,6 +40,7 @@ import org.cerberus.entity.MessageGeneralEnum;
 import org.cerberus.entity.TestCaseExecution;
 import org.cerberus.exception.CerberusException;
 import org.cerberus.factory.IFactoryTestCaseExecution;
+import org.cerberus.log.MyLogger;
 import org.cerberus.util.ParameterParserUtil;
 import org.cerberus.util.StringUtil;
 import org.cerberus.util.answer.AnswerList;
@@ -882,4 +885,166 @@ public class TestCaseExecutionDAO implements ITestCaseExecutionDAO {
         }
     }
 
+    @Override
+    public AnswerList getTestCaseExecution(int start, int amount, String column, String dir, String searchTerm, String individualSearch, String tag) throws CerberusException {
+        StringBuilder gSearch = new StringBuilder();
+        MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
+        AnswerList answer = new AnswerList();
+        final StringBuffer query = new StringBuffer("SELECT SQL_CALC_FOUND_ROWS * FROM ( select tc.*, tce.Start, tce.End, tce.ID as statusExecutionID, tce.ControlStatus, tce.ControlMessage, tce.Environment, tce.Country, tce.Browser ")
+                .append("from testcase tc ")
+                .append("left join testcaseexecution tce ")
+                .append("on tce.Test = tc.Test ")
+                .append("and tce.TestCase = tc.TestCase ")
+                .append("where tce.tag = ? ");
+
+        query.append(" order by test, testcase, ID desc) as tce, application app ")
+                .append("where tce.application = app.application ");
+
+        gSearch.append("and (tce.`test` like '%");
+        gSearch.append(searchTerm);
+        gSearch.append("%'");
+        gSearch.append(" or tce.`testCase` like '%");
+        gSearch.append(searchTerm);
+        gSearch.append("%'");
+        gSearch.append(" or tce.`application` like '%");
+        gSearch.append(searchTerm);
+        gSearch.append("%'");
+        gSearch.append(" or tce.`status` like '%");
+        gSearch.append(searchTerm);
+        gSearch.append("%'");
+        gSearch.append(" or tce.`description` like '%");
+        gSearch.append(searchTerm);
+        gSearch.append("%'");
+        gSearch.append(" or tce.`bugId` like '%");
+        gSearch.append(searchTerm);
+        gSearch.append("%'");
+        gSearch.append(" or tce.`function` like '%");
+        gSearch.append(searchTerm);
+        gSearch.append("%')");
+
+        if (!searchTerm.equals("")) {
+            query.append(gSearch.toString());
+        }
+        query.append("group by tce.test, tce.testcase, tce.Environment, tce.Browser, tce.Country ");
+        query.append(" order by tce.`");
+        query.append(column);
+        query.append("` ");
+        query.append(dir);
+        query.append(" limit ");
+        query.append(start);
+        query.append(" , ");
+        query.append(amount);
+
+        List<TestCaseWithExecution> testCaseWithExecutionList = new ArrayList<TestCaseWithExecution>();
+        Connection connection = this.databaseSpring.connect();
+        try {
+            PreparedStatement preStat = connection.prepareStatement(query.toString());
+
+            preStat.setString(1, tag);
+            try {
+                ResultSet resultSet = preStat.executeQuery();
+                try {
+                    while (resultSet.next()) {
+                        testCaseWithExecutionList.add(this.loadTestCaseWithExecutionFromResultSet(resultSet));
+                    }
+
+                    resultSet = preStat.executeQuery("SELECT FOUND_ROWS()");
+                    int nrTotalRows = 0;
+
+                    if (resultSet != null && resultSet.next()) {
+                        nrTotalRows = resultSet.getInt(1);
+                    }
+
+                    msg.setDescription(msg.getDescription().replace("%ITEM%", "TestCaseExecution").replace("%OPERATION%", "SELECT"));
+                    answer = new AnswerList(testCaseWithExecutionList, nrTotalRows);
+                } catch (SQLException exception) {
+                    MyLogger.log(TestCaseExecutionDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
+                    msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_UNEXPECTED_ERROR);
+                    msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", "Unable to retrieve the list of entries!"));
+                    testCaseWithExecutionList = null;
+                } finally {
+                    resultSet.close();
+                }
+            } catch (SQLException exception) {
+                MyLogger.log(TestCaseExecutionDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
+                msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_UNEXPECTED_ERROR);
+                msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", "Unable to retrieve the list of entries!"));
+                testCaseWithExecutionList = null;
+            } finally {
+                preStat.close();
+            }
+        } catch (SQLException exception) {
+            MyLogger.log(TestCaseExecutionDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
+            msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_UNEXPECTED_ERROR);
+            msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", "Unable to retrieve the list of entries!"));
+            testCaseWithExecutionList = null;
+        } finally {
+            try {
+                if (connection != null) {
+                    connection.close();
+                }
+            } catch (SQLException e) {
+                MyLogger.log(TestCaseExecutionDAO.class.getName(), Level.WARN, e.toString());
+                msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_UNEXPECTED_ERROR);
+                msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", "Unable to retrieve the list of entries!"));
+            }
+        }
+
+        return answer;
+    }
+
+    public TestCaseWithExecution loadTestCaseWithExecutionFromResultSet(ResultSet resultSet) throws SQLException {
+        TestCaseWithExecution testCaseWithExecution = new TestCaseWithExecution();
+
+        testCaseWithExecution.setTest(resultSet.getString("Test"));
+        testCaseWithExecution.setTestCase(resultSet.getString("TestCase"));
+        testCaseWithExecution.setApplication(resultSet.getString("Application"));
+        testCaseWithExecution.setProject(resultSet.getString("Project"));
+        testCaseWithExecution.setTicket(resultSet.getString("Ticket"));
+        testCaseWithExecution.setShortDescription(resultSet.getString("Description"));
+        testCaseWithExecution.setDescription(resultSet.getString("BehaviorOrValueExpected"));
+        testCaseWithExecution.setPriority(resultSet.getInt("Priority"));
+        testCaseWithExecution.setStatus(resultSet.getString("Status"));
+        testCaseWithExecution.setActive(resultSet.getString("TcActive"));
+        testCaseWithExecution.setGroup(resultSet.getString("Group"));
+        testCaseWithExecution.setOrigin(resultSet.getString("Origine"));
+        testCaseWithExecution.setRefOrigin(resultSet.getString("RefOrigine"));
+        testCaseWithExecution.setHowTo(resultSet.getString("HowTo"));
+        testCaseWithExecution.setComment(resultSet.getString("Comment"));
+        testCaseWithExecution.setFromSprint(resultSet.getString("FromBuild"));
+        testCaseWithExecution.setFromRevision(resultSet.getString("FromRev"));
+        testCaseWithExecution.setToSprint(resultSet.getString("ToBuild"));
+        testCaseWithExecution.setToRevision(resultSet.getString("ToRev"));
+        testCaseWithExecution.setBugID(resultSet.getString("BugID"));
+        testCaseWithExecution.setTargetSprint(resultSet.getString("TargetBuild"));
+        testCaseWithExecution.setTargetRevision(resultSet.getString("TargetRev"));
+        testCaseWithExecution.setCreator(resultSet.getString("Creator"));
+        testCaseWithExecution.setImplementer(resultSet.getString("Implementer"));
+        testCaseWithExecution.setLastModifier(resultSet.getString("LastModifier"));
+        testCaseWithExecution.setRunQA(resultSet.getString("activeQA"));
+        testCaseWithExecution.setRunUAT(resultSet.getString("activeUAT"));
+        testCaseWithExecution.setRunPROD(resultSet.getString("activePROD"));
+        testCaseWithExecution.setFunction(resultSet.getString("function"));
+        String start = resultSet.getString("Start");
+        if (start.endsWith(".0")) {
+            testCaseWithExecution.setStart(start.replace(".0", ""));
+        } else {
+            testCaseWithExecution.setStart(start);
+        }
+        try { // Managing the case where the date is 0000-00-00 00:00:00 inside MySQL
+            testCaseWithExecution.setEnd(resultSet.getString("End"));
+        } catch (SQLException e) {
+            testCaseWithExecution.setEnd("0000-00-00 00:00:00");
+        }
+        testCaseWithExecution.setStatusExecutionID(resultSet.getLong("statusExecutionID"));
+        testCaseWithExecution.setControlStatus(resultSet.getString("ControlStatus"));
+        testCaseWithExecution.setControlMessage(resultSet.getString("ControlMessage"));
+        testCaseWithExecution.setEnvironment(resultSet.getString("Environment"));
+        testCaseWithExecution.setCountry(resultSet.getString("Country"));
+        testCaseWithExecution.setBrowser(resultSet.getString("Browser"));
+
+        testCaseWithExecution.setApplicationObject(applicationDAO.loadApplicationFromResultSet(resultSet));
+
+        return testCaseWithExecution;
+    }
 }

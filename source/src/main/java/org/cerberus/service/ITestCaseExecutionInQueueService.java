@@ -24,6 +24,7 @@ import org.cerberus.dto.TestCaseWithExecution;
 
 import org.cerberus.entity.TestCaseExecutionInQueue;
 import org.cerberus.exception.CerberusException;
+import org.cerberus.util.answer.AnswerList;
 
 /**
  * Service layer to handle {@link TestCaseExecutionInQueue} instances
@@ -126,4 +127,6 @@ public interface ITestCaseExecutionInQueueService {
     public void setProcessedTo(Long l, String changeTo) throws CerberusException;
     
     public void updateComment(Long queueId, String comment)throws CerberusException;
+    
+    public AnswerList findTestCaseExecutionInQueuebyTag(int start, int amount, String column, String dir, String searchTerm, String individualSearch, String tag) throws CerberusException;
 }

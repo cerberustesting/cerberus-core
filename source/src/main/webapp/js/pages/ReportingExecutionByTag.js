@@ -23,15 +23,77 @@ $.when($.getScript("js/pages/global/global.js")).then(function () {
     $(document).ready(function () {
         initPage();
 
+
         loadTagFilters();
     });
 });
 
 function initPage() {
-    var doc = getDoc();
+    var doc = new Doc();
 
     displayHeaderLabel(doc);
     displayFooter(doc);
+}
+
+function aoColumnsFunc(Columns) {
+    var aoColumns = [
+        {"data": "test",
+            "sName": "test",
+            "title": "test"},
+        {"data": "testCase",
+            "sName": "testCase",
+            "title": "testCase"
+        },
+        {"data": "application",
+            "sName": "application",
+            "title": "application"
+        },
+        {"data": "status",
+            "sName": "status",
+            "title": "status"
+        },
+        {"data": "shortDesc",
+            "sName": "description",
+            "title": "shortDesc"
+        },
+        {"data": "bugId",
+            "sName": "bugId",
+            "title": "bugId"
+        },
+        {"data": "function",
+            "sName": "function",
+            "title": "function"
+        }
+    ];
+    for (var i = 0; i < Columns.length; i++) {
+        var title = Columns[i].environment + " " + Columns[i].country + " " + Columns[i].browser;
+
+        var col = {"title": title,
+            "bSortable": false,
+            "bSearchable": false,
+            "data": function (row, type, val, meta) {
+                var dataTitle = meta.settings.aoColumns[meta.col].sTitle;
+                if (row.hasOwnProperty("execTab") && row["execTab"].hasOwnProperty(dataTitle)) {
+                    return row["execTab"][dataTitle].ControlStatus;
+                } else {
+                    return "";
+                }
+            },
+            "sClass": "center",
+            "mRender": function (data, type, obj) {
+                if (data !== "") {
+                    var glyphClass = getRowClass(data);
+                    var cell = '<div class="progress-bar status' + data + '" role="progressbar" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100" style="width: 100%;">\n\
+                            <span class="' + glyphClass.glyph + ' marginRight5"></span>' + data + '</div>';
+                    return cell;
+                } else {
+                    return data;
+                }
+            }
+        };
+        aoColumns.push(col);
+    }
+    return aoColumns;
 }
 
 function loadTagFilters() {
@@ -42,7 +104,7 @@ function loadTagFilters() {
             var index;
             $('#selectTag').append($('<option></option>').attr("value", "")).attr("placeholder", "Select a Tag");
             for (index = 0; index < data.tags.length; index++) {
-//the character " needs a special encoding in order to avoid breaking the string that creates the html element   
+                //the character " needs a special encoding in order to avoid breaking the string that creates the html element   
                 var encodedString = data.tags[index].replace(/\"/g, "%22");
                 var option = $('<option></option>').attr("value", encodedString).text(data.tags[index]);
                 $('#selectTag').append(option);
@@ -67,6 +129,8 @@ function getRowClass(status) {
         rowClass["glyph"] = "fa fa-life-ring";
     } else if (status === "PE") {
         rowClass["glyph"] = "fa fa-hourglass-half";
+    } else if (status === "NE") {
+        rowClass["glyph"] = "fa fa-clock-o";
     } else {
         rowClass["glyph"] = "";
     }
@@ -80,6 +144,20 @@ function loadReport() {
     $("#ReportByStatusTable").empty();
     $("#statusChart").empty();
     $("#functionChart").empty();
+    if ($("#listTable_wrapper").hasClass("initialized")) {
+        $("#ListPanel .panel-body").empty();
+        $("#ListPanel .panel-body").html('<table id="listTable" class="table table-hover display" name="listTable">\n\
+                                            </table><div class="marginBottom20"></div>')
+    }
+    //configure and create the dataTable
+    var jqxhr = $.getJSON("ReadTestCaseExecution", "action=0&Tag=" + selectTag);
+    $.when(jqxhr).then(function (data) {
+        var configurations = new TableConfigurationsServerSide("listTable", "ReadTestCaseExecution?Tag=" + selectTag, "testList", aoColumnsFunc(data.Columns));
+
+        createDataTable(configurations);
+        $('#listTable_wrapper').not('.initialized').addClass('initialized');
+    });
+
 
     var jqxhr = $.get("GetReportData", {CampaignName: "null", Tag: selectTag}, "json");
     $.when(jqxhr).then(function (data) {
@@ -93,14 +171,13 @@ function convertData(dataset) {
 
     for (var i in dataset)
         data.push(dataset[i]);
-
     return data;
 }
 
 function loadReportByFunctionChart(dataset) {
     var data = convertData(dataset.axis);
 
-    var margin = {top: 20, right: 20, bottom: 100, left: 40},
+    var margin = {top: 20, right: 20, bottom: 100, left: 150},
     width = 1200 - margin.left - margin.right,
             height = 500 - margin.top - margin.bottom;
 
@@ -208,16 +285,18 @@ function loadReportByFunctionChart(dataset) {
 ;
 
 function loadReportByStatusChart(data) {
-    var width = 250;
-    var height = 150;
+
+    var margin = {top: 20, right: 25, bottom: 20, left: 50};
+    var width = document.getElementById('statusChart').offsetWidth - margin.left - margin.right;
+    var height = document.getElementById('ReportByStatusTable').offsetHeight - margin.top - margin.bottom;
     var radius = Math.min(width, height) / 2;
 
     var svg = d3.select('#statusChart')
             .append('svg')
-            .attr('width', width)
-            .attr('height', height)
+            .attr('width', width + margin.left + margin.right)
+            .attr('height', height + margin.top + margin.bottom)
             .append('g')
-            .attr('transform', 'translate(' + (width / 2) + ',' + (height / 2) + ')');
+            .attr('transform', 'translate(' + (width / 2) + ',' + (height / 2) + ')')
 
     var arc = d3.svg.arc()
             .outerRadius(radius);
@@ -234,7 +313,6 @@ function loadReportByStatusChart(data) {
             .append('path')
             .attr('d', arc)
             .attr('fill', function (d, i) {
-                console.log(d);
                 return d.data.color;
             });
 }
