@@ -40,7 +40,7 @@ public enum MessageEventEnum {
      * Code standard is : All SUCCESS are x00 (same code for all). All FAILED
      * are from x50 to x99 (different code for each). Pending is x99.
      */
-    PROPERTY_SUCCESS(100, "OK", "Property caculated successfully.", false, false ,false , MessageGeneralEnum.EXECUTION_PE_TESTSTARTED),
+    PROPERTY_SUCCESS(100, "OK", "Property calculated successfully.", false, false ,false , MessageGeneralEnum.EXECUTION_PE_TESTSTARTED),
     PROPERTY_SUCCESS_SQL(100, "OK", "SQL executed against database '%DB%' and JDBCPOOL '%JDBCPOOLNAME%'. SQL : '%SQL%'", false, false ,false , MessageGeneralEnum.EXECUTION_PE_TESTSTARTED),
     PROPERTY_SUCCESS_SQL_RANDOM(100, "OK", "Random result fetch from SQL executed against database '%DB%' and JDBCPOOL '%JDBCPOOLNAME%'. SQL : '%SQL%'", false, false ,false , MessageGeneralEnum.EXECUTION_PE_TESTSTARTED),
     PROPERTY_SUCCESS_SQL_RANDOM_NEW(100, "OK", "Random new result fetch from SQL executed against database '%DB%' and JDBCPOOL '%JDBCPOOLNAME%'. SQL : '%SQL%'", false, false ,false , MessageGeneralEnum.EXECUTION_PE_TESTSTARTED),
@@ -57,7 +57,8 @@ public enum MessageEventEnum {
     PROPERTY_SUCCESS_GETFROMJSON(100, "OK", "Value '%PARAM%' from Json '%URL%' has been found and returned '%VALUE%'.", false, false ,false , MessageGeneralEnum.EXECUTION_PE_TESTSTARTED),
     PROPERTY_SUCCESS_TESTDATA(100, "OK", "TestData %PROPERTY% correctly returned '%VALUE%'.", false, false ,false , MessageGeneralEnum.EXECUTION_PE_TESTSTARTED),
     PROPERTY_SUCCESS_SOAP(100, "OK", "SOAP Request executed", false, false ,false , MessageGeneralEnum.EXECUTION_PE_TESTSTARTED),
-    PROPERTY_SUCCESS_GETFROMDATALIB(100, "OK", "Property retrieved from library and calculated with success." , false, false ,false , MessageGeneralEnum.EXECUTION_PE_TESTSTARTED), 
+    PROPERTY_SUCCESS_GETFROMDATALIB(100, "OK", "Property %VALUE1% retrieved from library and calculated with success." , false, false ,false , MessageGeneralEnum.EXECUTION_PE_TESTSTARTED), 
+    PROPERTY_SUCCESS_GETFROMDATALIBDATA(100, "OK", "Property %VALUE2% retrieved from library %VALUE1% and calculated with success." , false, false ,false , MessageGeneralEnum.EXECUTION_PE_TESTSTARTED), 
     PROPERTY_FAILED(150, "NA", "PROPERTY_ERROR Generic error on getting the property.", true, false, false, MessageGeneralEnum.EXECUTION_NA),
     PROPERTY_FAILED_NO_PROPERTY_DEFINITION(151, "NA", "Warning, Property not defined for %PROP% and country %COUNTRY%.", false, false, false, MessageGeneralEnum.EXECUTION_PE_TESTSTARTED),
     PROPERTY_FAILED_SQL(152, "FA", "An error occur when connecting to ?! Error detail: ?", true, false ,false , MessageGeneralEnum.EXECUTION_FA),
@@ -84,7 +85,10 @@ public enum MessageEventEnum {
     PROPERTY_FAILED_CALCULATE_OBJECTPROPERTYNULL(191, "FA", "Both object and property are null. Please specify one of them.", true, false, false, MessageGeneralEnum.EXECUTION_FA),
     PROPERTY_PENDING(199, "PE", "Calculating property...", false, false ,false , MessageGeneralEnum.EXECUTION_PE_TESTSTARTED),
     PROPERTY_FAILED_GETFROMDATALIB(192, "FA", "Failed to get Data from '%VALUE1%' because could not find the library entry!. ", true, false, false, MessageGeneralEnum.EXECUTION_FA),
-    PROPERTY_FAILED_GETFROMDATALIBDATA(193, "FA", "Failed to get Data from '%VALUE1%' because could not find '%VALUE2%'!.", true, false, false, MessageGeneralEnum.EXECUTION_FA),
+    PROPERTY_FAILED_GETFROMDATALIBDATA(193, "FA", "Failed to get Data from '%VALUE1%' because could not find '%VALUE2%'!", true, false, false, MessageGeneralEnum.EXECUTION_FA),
+    PROPERTY_FAILED_INNERPROPERTY_GETFROMDATALIB_NOTFOUND(194, "FA", "Failed to execute because inner property '%PROPERTY%' "
+            + " accesses invalid test data library entries: %ITEM%. ", true, false, false, MessageGeneralEnum.EXECUTION_FA),
+    PROPERTY_FAILED_SUBDATAACCESS(195, "FA", "Failed to calculate %SUBDATAACCCESS% because '%PROPERTY%' was not calculated!", true, false, false, MessageGeneralEnum.EXECUTION_FA),
     ACTION_SUCCESS(200, "OK", "", false, false ,false , MessageGeneralEnum.EXECUTION_PE_TESTSTARTED),
     ACTION_SUCCESS_CLICK(200, "OK", "Element '%ELEMENT%' clicked.", false, false ,false , MessageGeneralEnum.EXECUTION_PE_TESTSTARTED),
     ACTION_SUCCESS_CLICKANDWAIT(200, "OK", "Element '%ELEMENT%' clicked and waited %TIME% ms.", false, false ,false , MessageGeneralEnum.EXECUTION_PE_TESTSTARTED),
@@ -239,7 +243,7 @@ public enum MessageEventEnum {
     DATA_OPERATION_DUPLICATE_ERROR(902, MessageCodeEnum.DATA_OPERATION_CODE_ERROR.getCode(), "The %ITEM% that you are trying to %OPERATION% conflicts with an existing one! Please check for duplicates!", false, false ,false, MessageGeneralEnum.DATA_OPERATION_ERROR),
     DATA_OPERATION_UNEXPECTED_ERROR(903, MessageCodeEnum.DATA_OPERATION_CODE_ERROR.getCode(), "An unexpected problem occurred. %DESCRIPTION%", false, false ,false, 
             MessageGeneralEnum.DATA_OPERATION_ERROR),
-    TESTDATALIB_NOT_FOUND_ERROR(904, "FA", "The test data lib %ITEM% is not available for the selected system %SYSTEM%, environment %ENVIRONMENT% and country %COUNTRY%.", true, false ,false, 
+    TESTDATALIB_NOT_FOUND_ERROR(904, "FA", "The test data library entry %ITEM% is not available for the selected system %SYSTEM%, environment %ENVIRONMENT% and country %COUNTRY%.", true, false ,false, 
             MessageGeneralEnum.EXECUTION_FA),
     DATA_OPERATION_IMPORT_ERROR(905, MessageCodeEnum.DATA_OPERATION_CODE_ERROR.getCode(), "%ITEM% - Import failed! %REASON%", false, false ,false , MessageGeneralEnum.DATA_OPERATION_ERROR),
     DATA_OPERATION_IMPORT_ERROR_FORMAT(906, MessageCodeEnum.DATA_OPERATION_CODE_ERROR.getCode(), "%ITEM% Import failed! Format %FORMAT% is invalid!", false, false ,false , MessageGeneralEnum.DATA_OPERATION_ERROR),
@@ -297,4 +301,3 @@ public enum MessageEventEnum {
     }
     
 }
-

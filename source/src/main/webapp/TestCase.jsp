@@ -70,7 +70,7 @@
         <title>TestCase</title>
         <meta content="text/html; charset=UTF-8" http-equiv="content-type">
         <%@ include file="include/dependenciesInclusions.html" %>
-        <script type='text/javascript' src='js/Form_1.js'></script>
+        <!--<script type='text/javascript' src='js/Form_1.js'></script>-->
         <script type="text/javascript" src="js/jquery-migrate-1.2.1.min.js"></script>
         <script type="text/javascript" src="js/jquery-ui-1.10.2.js"></script>
         <script type="text/javascript" src="js/elrte.min.js"></script>

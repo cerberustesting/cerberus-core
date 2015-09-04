@@ -20,10 +20,12 @@
 
 $.when($.getScript("js/pages/global/global.js")).then(function() {
     $(document).ready(function() {
-        displayHeaderLabel(getDoc());
-        displayFooter(getDoc());
+        var doc = new Doc();
+
+        displayHeaderLabel(doc);
+        displayGlobalLabel(doc);
         //configure and create the dataTable
-        var configurations = new TableConfigurationsServerSide("homePageTable", "Homepage?MySystem="+getSys(), "aaData", aoColumnsFunc());
+        var configurations = new TableConfigurationsServerSide("homePageTable", "Homepage?MySystem=" + getSys(), "aaData", aoColumnsFunc());
 
         createDataTable(configurations);
         //By default, sort the log messages from newest to oldest
@@ -58,12 +60,12 @@ function aoColumnsFunc() {
     var status = readStatus();
     var t = "";
     var aoColumns = [
-        {"data": "Application","bSortable": false, "sName": "Application", "title": displayDocLink(doc.application.Application)},
-        {"data": "Total", "bSortable": false,"sName": "Total", "title": "Total"}
+        {"data": "Application", "bSortable": false, "sName": "Application", "title": displayDocLink(doc.application.Application)},
+        {"data": "Total", "bSortable": false, "sName": "Total", "title": "Total"}
     ];
-    for (var s = 0; s < status.length; s++){
-        var obj = '{"data": "'+ status[s].value +'","bSortable":false, "sName": "'+ status[s].value +'", "title": "'+ status[s].value +'"}';
-           aoColumns.push(eval('('+ obj + ')'));
-        }
+    for (var s = 0; s < status.length; s++) {
+        var obj = '{"data": "' + status[s].value + '","bSortable":false, "sName": "' + status[s].value + '", "title": "' + status[s].value + '"}';
+        aoColumns.push(eval('(' + obj + ')'));
+    }
     return aoColumns;
 }
