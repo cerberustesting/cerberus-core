@@ -23,6 +23,7 @@ import org.cerberus.entity.TestDataLibData;
 import org.cerberus.entity.TestDataLibResult;
 import org.cerberus.exception.CerberusException;
 import org.cerberus.util.answer.Answer;
+import org.cerberus.util.answer.AnswerItem;
 import org.cerberus.util.answer.AnswerList;
 
 /**
@@ -87,7 +88,7 @@ public interface ITestDataLibDataService {
      */
     public void createTestDataLibDataBatch(List<TestDataLibData> subdataSet) throws CerberusException;
 
-    public String fetchSubData(TestDataLibResult result, TestDataLibData subDataEntry);
+    public AnswerItem<String> fetchSubData(TestDataLibResult result, TestDataLibData subDataEntry);
 
     public void deleteByTestDataLibID(int testDataLibID) throws CerberusException;
 

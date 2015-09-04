@@ -105,36 +105,33 @@
 }
 
 .statusOK {
-    background-color: #30EE30;
+    background-color: #5CB85C;
 }
 
 .statusKO {
-    background-color: #F7464A; 
+    background-color: #D9534F; 
 }
 
 .statusNA {
-    background-color: #EEEE00; 
+    background-color: #F1C40F; 
 }
 
 .statusNE {
-    background-color: #000000; 
+    background-color: #34495E; 
 }
 
 .statusPE {
-    background-color: #5555EE; 
+    background-color: #3498DB; 
 }
 
 .statusFA {
-    background-color: #FDB45C; 
+    background-color: #F0AD4E; 
 }
 
 .statusCA {
-    background-color: #FDB45C; 
+    background-color: #F0AD4E; 
 }
 
-svg {
-    margin-left: 50px;
-}
 
 #ReportByStatusTable {
     width: 40%; 

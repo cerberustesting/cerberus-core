@@ -24,89 +24,88 @@ import org.cerberus.dto.TestCaseWithExecution;
 
 import org.cerberus.entity.TestCaseExecutionInQueue;
 import org.cerberus.exception.CerberusException;
+import org.cerberus.util.answer.AnswerList;
 
 /**
  * {@link TestCaseExecutionInQueue} DAO
- * 
+ *
  * @author abourdon
  */
 public interface ITestCaseExecutionInQueueDAO {
 
-	/**
-	 * Inserts the given {@link TestCaseExecutionInQueue} to the execution queue
-	 * 
-	 * @param inQueue
-	 *            the {@link TestCaseExecutionInQueue} to insert to the
-	 *            execution queue
-	 * @throws CerberusException
-	 *             if an exception occurs
-	 */
-	void insert(TestCaseExecutionInQueue inQueue) throws CerberusException;
+    /**
+     * Inserts the given {@link TestCaseExecutionInQueue} to the execution queue
+     *
+     * @param inQueue the {@link TestCaseExecutionInQueue} to insert to the
+     * execution queue
+     * @throws CerberusException if an exception occurs
+     */
+    void insert(TestCaseExecutionInQueue inQueue) throws CerberusException;
 
-	/**
-	 * Gets the next {@link TestCaseExecutionInQueue} to be executed and proceed
-	 * it.
-	 * 
-	 * <p>
-	 * A {@link TestCaseExecutionInQueue} is proceeded when its database
-	 * Proceeded field is set to <code>true</code>
-	 * </p>
-	 * 
-	 * @return the next {@link TestCaseExecutionInQueue} to be executed and
-	 *         which has just been proceeded
-	 * 
-	 * @throws CerberusException
-	 *             if an exception occurs
-	 */
-	TestCaseExecutionInQueue getNextAndProceed() throws CerberusException;
+    /**
+     * Gets the next {@link TestCaseExecutionInQueue} to be executed and proceed
+     * it.
+     *
+     * <p>
+     * A {@link TestCaseExecutionInQueue} is proceeded when its database
+     * Proceeded field is set to <code>true</code>
+     * </p>
+     *
+     * @return the next {@link TestCaseExecutionInQueue} to be executed and
+     * which has just been proceeded
+     *
+     * @throws CerberusException if an exception occurs
+     */
+    TestCaseExecutionInQueue getNextAndProceed() throws CerberusException;
 
-	/**
-	 * Gets the list of {@link TestCaseExecutionInQueue} which have been
-	 * proceeded (so which have its proceeded field marked as <code>true</code>)
-	 * and which have been marked with the given tag.
-	 * 
-	 * @param tag
-	 *            the tag to find proceeded {@link TestCaseExecutionInQueue}. If
-	 *            <code>null</code> then every proceeded
-	 *            {@link TestCaseExecutionInQueue} will be returned
-	 * @return a list of {@link TestCaseExecutionInQueue}
-	 * @throws CerberusException
-	 *             if an exception occurs
-	 */
-	List<TestCaseExecutionInQueue> getProceededByTag(String tag) throws CerberusException;
+    /**
+     * Gets the list of {@link TestCaseExecutionInQueue} which have been
+     * proceeded (so which have its proceeded field marked as <code>true</code>)
+     * and which have been marked with the given tag.
+     *
+     * @param tag the tag to find proceeded {@link TestCaseExecutionInQueue}. If
+     * <code>null</code> then every proceeded {@link TestCaseExecutionInQueue}
+     * will be returned
+     * @return a list of {@link TestCaseExecutionInQueue}
+     * @throws CerberusException if an exception occurs
+     */
+    List<TestCaseExecutionInQueue> getProceededByTag(String tag) throws CerberusException;
 
-	/**
-	 * Removes a {@link TestCaseExecutionInQueue} record from the database.
-	 * 
-	 * @param id
-	 *            the {@link TestCaseExecutionInQueue#getId()} to remove
-	 * @throws CerberusException
-	 *             if an exception occurs
-	 */
-	void remove(long id) throws CerberusException;
-        
-        /**
-         * Find a list of {@link TestCaseWithExecution} 
-         * @param tag
-         * @return list of object TestCaseWithExecution
-         * @throws CerberusException 
-         */
-        List<TestCaseWithExecution> findTestCaseWithExecutionInQueuebyTag(String tag) throws CerberusException;
-        
-        /**
-         * Fing a {@link TestCaseExecutionInQueue} record from the database knowing the key
-         * @param id
-         * @return
-         * @throws CerberusException 
-         */
-        TestCaseExecutionInQueue findByKey(long id) throws CerberusException;
-        
-        List<TestCaseExecutionInQueue> getNotProceededAndProceed() throws CerberusException;
+    /**
+     * Removes a {@link TestCaseExecutionInQueue} record from the database.
+     *
+     * @param id the {@link TestCaseExecutionInQueue#getId()} to remove
+     * @throws CerberusException if an exception occurs
+     */
+    void remove(long id) throws CerberusException;
 
-        public List<TestCaseExecutionInQueue> findAll() throws CerberusException;
+    /**
+     * Find a list of {@link TestCaseWithExecution}
+     *
+     * @param tag
+     * @return list of object TestCaseWithExecution
+     * @throws CerberusException
+     */
+    List<TestCaseWithExecution> findTestCaseWithExecutionInQueuebyTag(String tag) throws CerberusException;
 
-        public void setProcessedTo(Long l, String changeTo) throws CerberusException;
-        
-        public void updateComment(Long queueId, String comment) throws CerberusException;
+    /**
+     * Fing a {@link TestCaseExecutionInQueue} record from the database knowing
+     * the key
+     *
+     * @param id
+     * @return
+     * @throws CerberusException
+     */
+    TestCaseExecutionInQueue findByKey(long id) throws CerberusException;
+
+    List<TestCaseExecutionInQueue> getNotProceededAndProceed() throws CerberusException;
+
+    public List<TestCaseExecutionInQueue> findAll() throws CerberusException;
+
+    public void setProcessedTo(Long l, String changeTo) throws CerberusException;
+
+    public void updateComment(Long queueId, String comment) throws CerberusException;
+
+    public AnswerList findTestCaseExecutionInQueuebyTag(int start, int amount, String column, String dir, String searchTerm, String individualSearch, String tag) throws CerberusException;
 
 }

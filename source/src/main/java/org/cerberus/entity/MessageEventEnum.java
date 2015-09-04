@@ -38,7 +38,7 @@ public enum MessageEventEnum {
      * updated at the execution level.
      * <p/>
      * Code standard is : All SUCCESS are x00 (same code for all). All FAILED
-     * are from x50 to x99 (different code for each). Pending is x99.
+     * are from x50 to x99 (different code for each). Pending is x99.     
      */
     PROPERTY_SUCCESS(100, "OK", "Property calculated successfully.", false, false ,false , MessageGeneralEnum.EXECUTION_PE_TESTSTARTED),
     PROPERTY_SUCCESS_SQL(100, "OK", "SQL executed against database '%DB%' and JDBCPOOL '%JDBCPOOLNAME%'. SQL : '%SQL%'", false, false ,false , MessageGeneralEnum.EXECUTION_PE_TESTSTARTED),
@@ -85,10 +85,16 @@ public enum MessageEventEnum {
     PROPERTY_FAILED_CALCULATE_OBJECTPROPERTYNULL(191, "FA", "Both object and property are null. Please specify one of them.", true, false, false, MessageGeneralEnum.EXECUTION_FA),
     PROPERTY_PENDING(199, "PE", "Calculating property...", false, false ,false , MessageGeneralEnum.EXECUTION_PE_TESTSTARTED),
     PROPERTY_FAILED_GETFROMDATALIB(192, "FA", "Failed to get Data from '%VALUE1%' because could not find the library entry!. ", true, false, false, MessageGeneralEnum.EXECUTION_FA),
+    PROPERTY_FAILED_GETFROMDATALIB_NODATA(192, "FA", "No data found for SQL test data library entry '%ENTRY%'! Database: %DATABASE%, SQL %SQL%", true, false, false, MessageGeneralEnum.EXECUTION_FA),
+    PROPERTY_FAILED_GETFROMDATALIB_GENERIC(192, "FA", "An error occurred while calculating the SQL from test data library entry '%ENTRY%'! Database: %DATABASE%, SQL %SQL%", true, false, false, MessageGeneralEnum.EXECUTION_FA),
     PROPERTY_FAILED_GETFROMDATALIBDATA(193, "FA", "Failed to get Data from '%VALUE1%' because could not find '%VALUE2%'!", true, false, false, MessageGeneralEnum.EXECUTION_FA),
     PROPERTY_FAILED_INNERPROPERTY_GETFROMDATALIB_NOTFOUND(194, "FA", "Failed to execute because inner property '%PROPERTY%' "
             + " accesses invalid test data library entries: %ITEM%. ", true, false, false, MessageGeneralEnum.EXECUTION_FA),
     PROPERTY_FAILED_SUBDATAACCESS(195, "FA", "Failed to calculate %SUBDATAACCCESS% because '%PROPERTY%' was not calculated!", true, false, false, MessageGeneralEnum.EXECUTION_FA),
+    PROPERTY_FAILED_GETFROMDATALIBDATA_INVALID_COLUMN(196, "FA", "The column '%COLUMNNAME%' specified in the sub-data entry '%SUBDATA%' is not valid for the query specified in the library entry '%ENTRY%'!", true, false, false, MessageGeneralEnum.EXECUTION_FA),
+    PROPERTY_FAILED_GETFROMDATALIBDATA_XMLEXCEPTION(197, "FA", "The evaluation of the xpath expression '%XPATH%' specified in the sub-data entry '%SUBDATA%' for the library entry '%ENTRY%' has failed! '%REASON%'", true, false, false, MessageGeneralEnum.EXECUTION_FA),
+    PROPERTY_FAILED_GETFROMDATALIBDATA_XML_NOTFOUND(197, "FA", "No elements found! The evaluation of the xpath expression '%XPATH%' specified in the sub-data entry '%SUBDATA%' for the library entry '%ENTRY%' didn't match any XML elements!", true, false, false, MessageGeneralEnum.EXECUTION_FA),
+    PROPERTY_FAILED_GETFROMDATALIBDATA_CHECK_XPATH(197, "FA", "A XML element was found, but no data was retrieved! Please verify the xpath expression '%XPATH%' specified in the sub-data entry '%SUBDATA%' for the library entry '%ENTRY%' didn't match any XML elements!", true, false, false, MessageGeneralEnum.EXECUTION_FA),
     ACTION_SUCCESS(200, "OK", "", false, false ,false , MessageGeneralEnum.EXECUTION_PE_TESTSTARTED),
     ACTION_SUCCESS_CLICK(200, "OK", "Element '%ELEMENT%' clicked.", false, false ,false , MessageGeneralEnum.EXECUTION_PE_TESTSTARTED),
     ACTION_SUCCESS_CLICKANDWAIT(200, "OK", "Element '%ELEMENT%' clicked and waited %TIME% ms.", false, false ,false , MessageGeneralEnum.EXECUTION_PE_TESTSTARTED),

@@ -20,12 +20,9 @@
 package org.cerberus.servlet.reporting;
 
 import java.io.IOException;
-import java.io.PrintWriter;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.logging.Level;
@@ -133,6 +130,7 @@ public class GetReportData extends HttpServlet {
 
             control.put("value", 1);
             control.put("color", getColor(controlStatus));
+            control.put("label", controlStatus);
             JSONObject tmp = new JSONObject();
             tmp.put("name", key);
             boolean isKey = false;

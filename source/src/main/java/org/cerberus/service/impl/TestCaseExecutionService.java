@@ -23,6 +23,7 @@ import java.util.List;
 
 import org.apache.log4j.Level;
 import org.cerberus.dao.ITestCaseExecutionDAO;
+import org.cerberus.dto.TestCaseWithExecution;
 import org.cerberus.entity.TestCaseExecution;
 import org.cerberus.exception.CerberusException;
 import org.cerberus.log.MyLogger;
@@ -127,5 +128,11 @@ public class TestCaseExecutionService implements ITestCaseExecutionService {
     
     public AnswerList findTagList() throws CerberusException {
         return testCaseExecutionDao.findTagList();
+    }
+    
+    @Override
+    public AnswerList getTestCaseExecution(int start, int amount, String column, String dir, String searchTerm, String individualSearch
+            , String tag) throws CerberusException {
+        return testCaseExecutionDao.getTestCaseExecution(start, amount, column, dir, searchTerm, individualSearch, tag);
     }
 }

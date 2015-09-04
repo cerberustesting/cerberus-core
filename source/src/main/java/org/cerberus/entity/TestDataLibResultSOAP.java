@@ -19,10 +19,9 @@
  */
 package org.cerberus.entity;
 
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import org.cerberus.util.XmlUtil;
 import org.cerberus.util.XmlUtilException;
+import org.cerberus.util.answer.AnswerItem;
 import org.w3c.dom.Document;
 import org.w3c.dom.NodeList;
 
@@ -34,23 +33,6 @@ public class TestDataLibResultSOAP extends TestDataLibResult {
     public Document rawData;
     private String soapResponseKey;
 
-   
-    @Override
-    public String getValue(TestDataLibData entry) {
-        //gets the data from the xml document
-        String value = null;
-        try {
-            NodeList candidates = XmlUtil.evaluate(rawData, entry.getParsingAnswer());
-            if(candidates.getLength() > 0){
-                //TODO:FN check if we are trying to get the information from an attribute?
-                value = candidates.item(0).getNodeValue();
-            }            
-        } catch (XmlUtilException ex) {
-            Logger.getLogger(TestDataLibResultSOAP.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        return value;
-    }
-    
     public String getSoapResponseKey() {
         return soapResponseKey;
     }
@@ -62,7 +44,7 @@ public class TestDataLibResultSOAP extends TestDataLibResult {
     
     
     public TestDataLibResultSOAP(){
-        this.type = TestDataLibTypeEnum.SOAP.getCode();;
+        this.type = TestDataLibTypeEnum.SOAP.getCode();
     }
     public Document getData() {
         return rawData;
@@ -70,6 +52,54 @@ public class TestDataLibResultSOAP extends TestDataLibResult {
 
     public void setData(Document data) {
         this.rawData = data;
+    }
+
+    @Override
+    public AnswerItem<String> getValue(TestDataLibData entry) {
+        MessageEvent msg = new MessageEvent(MessageEventEnum.PROPERTY_SUCCESS_GETFROMDATALIBDATA);
+        AnswerItem ansGetValue = new AnswerItem(msg);
+        
+        if(!values.containsKey(entry.getSubData())){
+            try {
+                
+                NodeList candidates = XmlUtil.evaluate(rawData, entry.getParsingAnswer());
+                if(candidates.getLength() > 0){
+                    //if the map don't contain the entry that we want, we will get it
+                   String value = candidates.item(0).getNodeValue();        
+                    
+                    if(value == null){
+                        if(candidates.item(0) != null){
+                            msg = new MessageEvent(MessageEventEnum.PROPERTY_FAILED_GETFROMDATALIBDATA_CHECK_XPATH);
+                            msg.setDescription(msg.getDescription().replace("%XPATH%", entry.getParsingAnswer()).replace("%SUBDATA%", entry.getSubData()).
+                            replace("%ENTRY%", entry.getTestDataLibID().toString()));   
+                        }
+                    }else {
+                        //associates the subdata with the xpath expression data retrieved by the query
+                        values.put(entry.getSubData(), value);
+                    }
+
+
+                }else{
+                    //no elements were returned by the XPATH expression
+                    msg = new MessageEvent(MessageEventEnum.PROPERTY_FAILED_GETFROMDATALIBDATA_XML_NOTFOUND);                
+                    msg.setDescription(msg.getDescription().replace("%XPATH%", entry.getParsingAnswer()).replace("%SUBDATA%", entry.getSubData()).
+                        replace("%ENTRY%", entry.getTestDataLibID().toString()));    
+                }      
+            } catch (XmlUtilException ex) {
+                msg = new MessageEvent(MessageEventEnum.PROPERTY_FAILED_GETFROMDATALIBDATA_XMLEXCEPTION);            
+                msg.setDescription(msg.getDescription().replace("%XPATH%", entry.getParsingAnswer()).replace("%SUBDATA%", entry.getSubData()).
+                        replace("%ENTRY%", entry.getTestDataLibID().toString()).replace("%REASON%", ex.toString()));
+
+            }
+        }
+        
+        
+        
+    
+        ansGetValue.setResultMessage(msg);    
+        ansGetValue.setItem(values.get(entry.getSubData()));
+        
+        return ansGetValue;
     }
     
     

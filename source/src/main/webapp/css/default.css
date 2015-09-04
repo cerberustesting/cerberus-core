@@ -26,6 +26,13 @@
     margin-bottom:30px;  
 }
 
+td
+{
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
 .nomargintop{
     margin-top:0px;
 }
@@ -37,7 +44,7 @@
     font-size:12.3167px;
 }
 
- 
+
 #datas {
     margin: 3px;
     vertical-align: top;
@@ -113,6 +120,10 @@
     width: 1400px;
 }
 
+.marginRight5{
+    margin-right: 5px;
+}
+
 .marginLeft5{
     margin-left:5px;
 }
@@ -164,7 +175,7 @@
     vertical-align: top;
     min-height: 40%;
 }
- 
+
 div button.margin-right25{
     //margin-left: 5px;
     margin-right: 25px;
@@ -221,10 +232,10 @@ select option{
     padding-bottom: 10px;
     margin-top:10px;
     text-transform: uppercase;
- }
- 
- /************PAGINATION***************************/
- 
+}
+
+/************PAGINATION***************************/
+
 .paging_two_button .ui-button {
     float: left;
     cursor: pointer;
@@ -252,7 +263,7 @@ select option{
 
 table.display { table-layout:fixed;}
 table.display  th, #listOfTestDataLib td , #viewTestDataLibDataEntriesTable td{ word-wrap:break-word; overflow:hidden; 
-       text-overflow: ellipsis; }
+                                                                                text-overflow: ellipsis; }
 
 #viewTestDataLibDataEntriesTable.display{
     margin-left: 0px;    
@@ -265,7 +276,7 @@ table.display  th, #listOfTestDataLib td , #viewTestDataLibDataEntriesTable td{ 
 .dataTables_info {
     padding-top: 6px;
 }
-  
+
 
 /*
  * Sort arrow icon positioning
@@ -289,34 +300,34 @@ table.display thead th div.DataTables_sort_wrapper span {
 
 /**AUTOCOMPLETE FOR BOOTSTRAP**/
 .ui-autocomplete {
-  position: absolute;
-  top: 100%;
-  left: 0;
-  z-index: 1000;
-  float: left;
-  display: none;
-  min-width: 160px;
-  _width: 160px;
-  padding: 4px 0;
-  margin: 2px 0 0 0;
-  list-style: none;
-  background-color: #ffffff;
-  border-color: #ccc;
-  border-color: rgba(0, 0, 0, 0.2);
-  border-style: solid;
-  border-width: 1px;
-  -webkit-border-radius: 5px;
-  -moz-border-radius: 5px;
-  border-radius: 5px;
-  -webkit-box-shadow: 0 5px 10px rgba(0, 0, 0, 0.2);
-  -moz-box-shadow: 0 5px 10px rgba(0, 0, 0, 0.2);
-  box-shadow: 0 5px 10px rgba(0, 0, 0, 0.2);
-  -webkit-background-clip: padding-box;
-  -moz-background-clip: padding;
-  background-clip: padding-box;
-  *border-right-width: 2px;
-  *border-bottom-width: 2px;
-   
+    position: absolute;
+    top: 100%;
+    left: 0;
+    z-index: 1000;
+    float: left;
+    display: none;
+    min-width: 160px;
+    _width: 160px;
+    padding: 4px 0;
+    margin: 2px 0 0 0;
+    list-style: none;
+    background-color: #ffffff;
+    border-color: #ccc;
+    border-color: rgba(0, 0, 0, 0.2);
+    border-style: solid;
+    border-width: 1px;
+    -webkit-border-radius: 5px;
+    -moz-border-radius: 5px;
+    border-radius: 5px;
+    -webkit-box-shadow: 0 5px 10px rgba(0, 0, 0, 0.2);
+    -moz-box-shadow: 0 5px 10px rgba(0, 0, 0, 0.2);
+    box-shadow: 0 5px 10px rgba(0, 0, 0, 0.2);
+    -webkit-background-clip: padding-box;
+    -moz-background-clip: padding;
+    background-clip: padding-box;
+    *border-right-width: 2px;
+    *border-bottom-width: 2px;
+
 }
 .ui-menu-item > a.ui-corner-all {
     display: block;
@@ -328,35 +339,35 @@ table.display thead th div.DataTables_sort_wrapper span {
     white-space: nowrap;
 } 
 .ui-widget-content .ui-state-focus {
-   color: #ffffff;
-   text-decoration: none;
-   background-color: #c4e3f3;
-   border-radius: 0px;
-   -webkit-border-radius: 0px;
-   -moz-border-radius: 0px;
-   background-image: none;
- }
- 
- //from http://www.bootply.com/vitor-gapitec/AugjvLCRFt
+    color: #ffffff;
+    text-decoration: none;
+    background-color: #c4e3f3;
+    border-radius: 0px;
+    -webkit-border-radius: 0px;
+    -moz-border-radius: 0px;
+    background-image: none;
+}
+
+//from http://www.bootply.com/vitor-gapitec/AugjvLCRFt
 /* CSS used here will be applied after bootstrap.css */
 .menu-ico-collapse {
     margin-left: 4px;
 }
 
 .list-group-submenu .list-group-item:first-child {
-     border-top-right-radius: 0;
-     border-top-left-radius: 0;
+    border-top-right-radius: 0;
+    border-top-left-radius: 0;
 }
 
 .list-group-submenu .list-group-item:last-child {
-     margin-bottom: -1px;
-     border-bottom-right-radius: 0;
-     border-bottom-left-radius: 0;
+    margin-bottom: -1px;
+    border-bottom-right-radius: 0;
+    border-bottom-left-radius: 0;
 }
 
 #testCaseListModal .modal-body {
-max-height: 500px;
-overflow-y: scroll;
+    max-height: 500px;
+    overflow-y: scroll;
 }
 
 .ListItem{

@@ -20,6 +20,7 @@
 package org.cerberus.entity;
 
 import java.util.HashMap;
+import org.cerberus.util.answer.AnswerItem;
 
 /**
  * Stores the results associated with a certain testdatalib
@@ -57,5 +58,5 @@ public abstract class TestDataLibResult {
     public String getType() {
         return type;
     }
-    public abstract String getValue(TestDataLibData entry);
+    public abstract AnswerItem<String> getValue(TestDataLibData entry);
 }

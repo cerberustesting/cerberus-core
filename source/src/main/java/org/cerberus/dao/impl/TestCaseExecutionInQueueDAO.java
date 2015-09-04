@@ -31,12 +31,15 @@ import org.apache.log4j.Logger;
 import org.cerberus.dao.ITestCaseExecutionInQueueDAO;
 import org.cerberus.database.DatabaseSpring;
 import org.cerberus.dto.TestCaseWithExecution;
+import org.cerberus.entity.MessageEvent;
+import org.cerberus.entity.MessageEventEnum;
 import org.cerberus.entity.MessageGeneral;
 import org.cerberus.entity.MessageGeneralEnum;
 import org.cerberus.entity.TestCaseExecutionInQueue;
 import org.cerberus.exception.CerberusException;
 import org.cerberus.exception.FactoryCreationException;
 import org.cerberus.factory.IFactoryTestCaseExecutionInQueue;
+import org.cerberus.util.answer.AnswerList;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
@@ -89,7 +92,7 @@ public class TestCaseExecutionInQueueDAO implements ITestCaseExecutionInQueueDAO
     private static final String QUERY_PROCEED = "UPDATE `" + TABLE + "` SET `" + COLUMN_PROCEEDED + "` = '" + VALUE_PROCEEDED_TRUE + "' WHERE `" + COLUMN_ID + "` = ?";
     private static final String QUERY_GET_PROCEEDED = "SELECT * FROM `" + TABLE + "` WHERE `" + COLUMN_PROCEEDED + "` = '" + VALUE_PROCEEDED_TRUE + "' ORDER BY `" + COLUMN_ID + "` ASC";
     private static final String QUERY_GET_PROCEEDED_BY_TAG = "SELECT * FROM `" + TABLE + "` WHERE `" + COLUMN_PROCEEDED + "` = '" + VALUE_PROCEEDED_TRUE + "' AND `" + COLUMN_TAG + "` = ? ORDER BY `" + COLUMN_ID + "` ASC";
-    private static final String QUERY_GET_NOT_PROCEEDED = "SELECT * FROM `" + TABLE + "` WHERE `" + COLUMN_PROCEEDED + "` = '" + VALUE_PROCEEDED_FALSE + "' AND `"+ COLUMN_MANUAL_EXECUTION +"` = '"+ VALUE_MANUAL_EXECUTION_FALSE +"' ORDER BY `" + COLUMN_ID + "` ASC";
+    private static final String QUERY_GET_NOT_PROCEEDED = "SELECT * FROM `" + TABLE + "` WHERE `" + COLUMN_PROCEEDED + "` = '" + VALUE_PROCEEDED_FALSE + "' AND `" + COLUMN_MANUAL_EXECUTION + "` = '" + VALUE_MANUAL_EXECUTION_FALSE + "' ORDER BY `" + COLUMN_ID + "` ASC";
     private static final String QUERY_GET_NOT_PROCEEDED_BY_TAG = "SELECT * FROM `" + TABLE + "` WHERE `" + COLUMN_PROCEEDED + "` = '" + VALUE_PROCEEDED_FALSE + "' AND `" + COLUMN_TAG + "` = ? ORDER BY `" + COLUMN_ID + "` ASC";
     private static final String QUERY_REMOVE = "DELETE FROM `" + TABLE + "` WHERE `" + COLUMN_ID + "` = ?";
     private static final String QUERY_FIND_BY_KEY = "SELECT * FROM `" + TABLE + "` WHERE `" + COLUMN_ID + "` = ?";
@@ -174,7 +177,7 @@ public class TestCaseExecutionInQueueDAO implements ITestCaseExecutionInQueueDAO
             statementInsert.setInt(23, inQueue.getSeleniumLog());
             statementInsert.setTimestamp(24, new Timestamp(inQueue.getRequestDate().getTime()));
             statementInsert.setInt(25, inQueue.getRetries());
-            statementInsert.setString(26, inQueue.isManualExecution()?"Y":"N");
+            statementInsert.setString(26, inQueue.isManualExecution() ? "Y" : "N");
 
             statementInsert.executeUpdate();
         } catch (SQLException exception) {
@@ -383,61 +386,17 @@ public class TestCaseExecutionInQueueDAO implements ITestCaseExecutionInQueueDAO
                 .append("and tce.TestCase = tc.TestCase ")
                 .append("where tce.tag = ? ");
 
-//        query.append("and tce.Browser in (");
-//        for (int i = 0; i < browser.length; i++) {
-//            query.append("?");
-//            if(i<browser.length-1) {
-//                query.append(", ");
-//            }
-//        }
-//        
-//        query.append(") and tce.Environment in (");
-//        for (int i = 0; i < env.length; i++) {
-//            query.append("?");
-//            if(i<env.length-1) {
-//                query.append(", ");
-//            }
-//        }
-//
-//        
-//        query.append(") and tce.Country in (");
-//        for (int i = 0; i < country.length; i++) {
-//            query.append("?");
-//            if(i<country.length-1) {
-//                query.append(", ");
-//            }
-//        }
-//        query.append(") order by test, testcase, ID desc) as tce, application app ")
         query.append(" order by test, testcase, ID desc) as tce, application app ")
                 .append("where tce.application = app.application ")
-//                .append("group by tce.test, tce.testcase ").toString();
-          .append("group by tce.test, tce.testcase, tce.Environment, tce.Browser, tce.Country ").toString();
+                .append("group by tce.test, tce.testcase, tce.Environment, tce.Browser, tce.Country ").toString();
 
         List<TestCaseWithExecution> testCaseWithExecutionList = new ArrayList<TestCaseWithExecution>();
         Connection connection = this.databaseSpring.connect();
         try {
             PreparedStatement preStat = connection.prepareStatement(query.toString());
-            int index = 1;
-//            preStat.setString(index, campaignName);
-//            index++;
 
-            preStat.setString(index, tag);
-            index++;
+            preStat.setString(1, tag);
 
-//            for (String b : browser) {
-//                preStat.setString(index, b);
-//                index++;
-//            }
-//            
-//            for (String e : env) {
-//                preStat.setString(index, e);
-//                index++;
-//            }
-//            
-//            for (String c : country) {
-//                preStat.setString(index, c);
-//                index++;
-//            }
             try {
                 ResultSet resultSet = preStat.executeQuery();
                 try {
@@ -678,10 +637,10 @@ public class TestCaseExecutionInQueueDAO implements ITestCaseExecutionInQueueDAO
 
         try {
             // Make the actual record as proceeded
-            if (!changeTo.equals("0")){
-            statementProceed = connection.prepareStatement(QUERY_PROCEED);
+            if (!changeTo.equals("0")) {
+                statementProceed = connection.prepareStatement(QUERY_PROCEED);
             } else {
-            statementProceed = connection.prepareStatement(QUERY_NOT_PROCEEDED);
+                statementProceed = connection.prepareStatement(QUERY_NOT_PROCEEDED);
             }
             statementProceed.setLong(1, l);
             statementProceed.executeUpdate();
@@ -760,5 +719,114 @@ public class TestCaseExecutionInQueueDAO implements ITestCaseExecutionInQueueDAO
                 }
             }
         }
+    }
+
+    @Override
+    public AnswerList findTestCaseExecutionInQueuebyTag(int start, int amount, String column, String dir, String searchTerm, String individualSearch, String tag) throws CerberusException {
+        boolean throwEx = false;
+        MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
+        AnswerList answer = new AnswerList();
+        StringBuilder gSearch = new StringBuilder();
+        final StringBuffer query = new StringBuffer("SELECT SQL_CALC_FOUND_ROWS * FROM ( select tc.*, RequestDate as Start, '' as End, tce.ID as statusExecutionID, 'NE' as ControlStatus, 'Not Executed' as ControlMessage, tce.Environment, tce.Country, tce.Browser ")
+                .append("from testcase tc ")
+                .append("left join testcaseexecutionqueue tce ")
+                .append("on tce.Test = tc.Test ")
+                .append("and tce.TestCase = tc.TestCase ")
+                .append("where tce.tag = ? ");
+
+        query.append(" order by test, testcase, ID desc) as tce, application app ")
+                .append("where tce.application = app.application ");
+
+        gSearch.append("and (tce.`test` like '%");
+        gSearch.append(searchTerm);
+        gSearch.append("%'");
+        gSearch.append(" or tce.`testCase` like '%");
+        gSearch.append(searchTerm);
+        gSearch.append("%'");
+        gSearch.append(" or tce.`application` like '%");
+        gSearch.append(searchTerm);
+        gSearch.append("%'");
+        gSearch.append(" or tce.`status` like '%");
+        gSearch.append(searchTerm);
+        gSearch.append("%'");
+        gSearch.append(" or tce.`description` like '%");
+        gSearch.append(searchTerm);
+        gSearch.append("%'");
+        gSearch.append(" or tce.`bugId` like '%");
+        gSearch.append(searchTerm);
+        gSearch.append("%'");
+        gSearch.append(" or tce.`function` like '%");
+        gSearch.append(searchTerm);
+        gSearch.append("%')");
+
+        if (!searchTerm.equals("")) {
+            query.append(gSearch.toString());
+        }
+        query.append("group by tce.test, tce.testcase, tce.Environment, tce.Browser, tce.Country ");
+        query.append(" order by tce.`");
+        query.append(column);
+        query.append("` ");
+        query.append(dir);
+        query.append(" limit ");
+        query.append(start);
+        query.append(" , ");
+        query.append(amount);
+
+        List<TestCaseWithExecution> testCaseWithExecutionList = new ArrayList<TestCaseWithExecution>();
+        Connection connection = this.databaseSpring.connect();
+        try {
+            PreparedStatement preStat = connection.prepareStatement(query.toString());
+
+            preStat.setString(1, tag);
+
+            try {
+                ResultSet resultSet = preStat.executeQuery();
+                try {
+                    while (resultSet.next()) {
+                        testCaseWithExecutionList.add(campaignDAO.loadTestCaseWithExecutionFromResultSet(resultSet));
+                    }
+
+                    resultSet = preStat.executeQuery("SELECT FOUND_ROWS()");
+                    int nrTotalRows = 0;
+
+                    if (resultSet != null && resultSet.next()) {
+                        nrTotalRows = resultSet.getInt(1);
+                    }
+
+                    msg.setDescription(msg.getDescription().replace("%ITEM%", "TestCaseExecutionInQueue").replace("%OPERATION%", "SELECT"));
+                    answer = new AnswerList(testCaseWithExecutionList, nrTotalRows);
+                } catch (SQLException exception) {
+                    LOG.error("Unable to execute query : " + exception.toString());
+                    msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_UNEXPECTED_ERROR);
+                    msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", "Unable to retrieve the list of entries!"));
+                    testCaseWithExecutionList = null;
+                } finally {
+                    resultSet.close();
+                }
+            } catch (SQLException exception) {
+                LOG.error("Unable to execute query : " + exception.toString());
+                msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_UNEXPECTED_ERROR);
+                msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", "Unable to retrieve the list of entries!"));
+                testCaseWithExecutionList = null;
+            } finally {
+                preStat.close();
+            }
+        } catch (SQLException exception) {
+            LOG.error("Unable to execute query : " + exception.toString());
+            msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_UNEXPECTED_ERROR);
+            msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", "Unable to retrieve the list of entries!"));
+            testCaseWithExecutionList = null;
+        } finally {
+            try {
+                if (connection != null) {
+                    connection.close();
+                }
+            } catch (SQLException e) {
+                LOG.warn(e.toString());
+                msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_UNEXPECTED_ERROR);
+                msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", "Unable to retrieve the list of entries!"));
+            }
+        }
+        return answer;
     }
 }

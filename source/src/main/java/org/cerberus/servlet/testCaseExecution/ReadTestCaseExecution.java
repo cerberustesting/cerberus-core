@@ -20,6 +20,11 @@
 package org.cerberus.servlet.testCaseExecution;
 
 import java.io.IOException;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.servlet.ServletException;
@@ -27,21 +32,27 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import org.cerberus.dto.TestCaseWithExecution;
 import org.cerberus.entity.MessageEvent;
 import org.cerberus.entity.MessageEventEnum;
 import org.cerberus.exception.CerberusException;
+import org.cerberus.service.ICampaignService;
 import org.cerberus.service.ILogEventService;
+import org.cerberus.service.ITestCaseExecutionInQueueService;
 import org.cerberus.service.ITestCaseExecutionService;
 import org.cerberus.service.impl.LogEventService;
+import org.cerberus.servlet.campaign.CampaignExecutionReport;
 import org.cerberus.util.ParameterParserUtil;
 import org.cerberus.util.answer.AnswerItem;
 import org.cerberus.util.answer.AnswerList;
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.owasp.html.PolicyFactory;
 import org.owasp.html.Sanitizers;
 import org.springframework.context.ApplicationContext;
 import org.springframework.web.context.support.WebApplicationContextUtils;
+import org.springframework.web.util.JavaScriptUtils;
 
 /**
  *
@@ -64,7 +75,7 @@ public class ReadTestCaseExecution extends HttpServlet {
      * @throws org.cerberus.exception.CerberusException
      */
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException, CerberusException {
+            throws ServletException, IOException, CerberusException, ParseException {
         ApplicationContext appContext = WebApplicationContextUtils.getWebApplicationContext(this.getServletContext());
 
         /**
@@ -75,13 +86,15 @@ public class ReadTestCaseExecution extends HttpServlet {
 
         testCaseExecutionService = appContext.getBean(ITestCaseExecutionService.class);
 
-        
-        int actionParameter = Integer.valueOf(ParameterParserUtil.parseStringParam(request.getParameter("action"),"0"));
+        int actionParameter = Integer.valueOf(ParameterParserUtil.parseStringParam(request.getParameter("action"), "0"));
 
         try {
             JSONObject jsonResponse = new JSONObject();
             AnswerItem answer = new AnswerItem(new MessageEvent(MessageEventEnum.DATA_OPERATION_OK));
-
+            if (actionParameter == 0) {
+                answer = findExecutionList(appContext, request);
+                jsonResponse = (JSONObject) answer.getItem();
+            }
             if (actionParameter == 1) {
                 answer = findTagList(appContext, request, response);
                 jsonResponse = (JSONObject) answer.getItem();
@@ -92,7 +105,7 @@ public class ReadTestCaseExecution extends HttpServlet {
             response.setContentType("application/json");
             response.getWriter().print(jsonResponse.toString());
         } catch (JSONException ex) {
-           org.apache.log4j.Logger.getLogger(ReadTestCaseExecution.class.getName()).log(org.apache.log4j.Level.ERROR, null, ex);
+            org.apache.log4j.Logger.getLogger(ReadTestCaseExecution.class.getName()).log(org.apache.log4j.Level.ERROR, null, ex);
             //returns a default error message with the json format that is able to be parsed by the client-side
             response.setContentType("application/json");
             MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_UNEXPECTED_ERROR);
@@ -123,6 +136,8 @@ public class ReadTestCaseExecution extends HttpServlet {
             processRequest(request, response);
         } catch (CerberusException ex) {
             Logger.getLogger(ReadTestCaseExecution.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (ParseException ex) {
+            Logger.getLogger(ReadTestCaseExecution.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
 
@@ -140,6 +155,8 @@ public class ReadTestCaseExecution extends HttpServlet {
         try {
             processRequest(request, response);
         } catch (CerberusException ex) {
+            Logger.getLogger(ReadTestCaseExecution.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (ParseException ex) {
             Logger.getLogger(ReadTestCaseExecution.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
@@ -170,5 +187,171 @@ public class ReadTestCaseExecution extends HttpServlet {
         answer.setItem(jsonResponse);
         answer.setResultMessage(resp.getResultMessage());
         return answer;
+    }
+
+    private AnswerItem findExecutionList(ApplicationContext appContext, HttpServletRequest request) throws CerberusException, ParseException, JSONException {
+        AnswerItem answer = new AnswerItem(new MessageEvent(MessageEventEnum.DATA_OPERATION_OK));
+        AnswerList testCaseExecution = new AnswerList();
+        AnswerList testCaseExecutionInQueue = new AnswerList();
+
+        ITestCaseExecutionService testCaseExecService = appContext
+                .getBean(ITestCaseExecutionService.class);
+
+        ITestCaseExecutionInQueueService testCaseExecutionInQueueService = appContext
+                .getBean(ITestCaseExecutionInQueueService.class);
+
+        PolicyFactory sanitizer = Sanitizers.FORMATTING.and(Sanitizers.LINKS);
+        
+        String tag = request.getParameter("Tag");
+
+        JSONArray executionList = new JSONArray();
+
+        int startPosition = Integer.valueOf(ParameterParserUtil.parseStringParam(request.getParameter("iDisplayStart"), "0"));
+        int length = Integer.valueOf(ParameterParserUtil.parseStringParam(request.getParameter("iDisplayLength"), "100000"));
+        /*int sEcho  = Integer.valueOf(request.getParameter("sEcho"));*/
+
+        String searchParameter = ParameterParserUtil.parseStringParam(request.getParameter("sSearch"), "");
+        int columnToSortParameter = Integer.parseInt(ParameterParserUtil.parseStringParam(request.getParameter("iSortCol_0"), "0"));
+        String sColumns = ParameterParserUtil.parseStringParam(request.getParameter("sColumns"), "test,testCase,application,status,description,bugId,function");
+        String columnToSort[] = sColumns.split(",");
+        String columnName = columnToSort[columnToSortParameter];
+        String sort = ParameterParserUtil.parseStringParam(request.getParameter("sSortDir_0"), "asc");
+
+        /**
+         * Get list of execution by tag, env, country, browser
+         */
+        testCaseExecution = testCaseExecService.getTestCaseExecution(startPosition, length, columnName, sort, searchParameter, "", tag);
+        List<TestCaseWithExecution> testCaseWithExecutions = testCaseExecution.getDataList();
+
+        /**
+         * Get list of Execution in Queue by Tag
+         */
+        testCaseExecutionInQueue = testCaseExecutionInQueueService.findTestCaseExecutionInQueuebyTag(startPosition, length, columnName, sort, searchParameter, "", tag);
+        List<TestCaseWithExecution> testCaseWithExecutionsInQueue = testCaseExecutionInQueue.getDataList();
+
+        /**
+         * Feed hash map with execution from the two list (to get only one by
+         * test,testcase,country,env,browser)
+         */
+        LinkedHashMap<String, TestCaseWithExecution> testCaseWithExecutionsList = new LinkedHashMap();
+        SimpleDateFormat formater = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
+
+        for (TestCaseWithExecution testCaseWithExecution : testCaseWithExecutions) {
+            String key = testCaseWithExecution.getBrowser() + "_"
+                    + testCaseWithExecution.getCountry() + "_"
+                    + testCaseWithExecution.getEnvironment() + "_"
+                    + testCaseWithExecution.getTest() + "_"
+                    + testCaseWithExecution.getTestCase();
+            testCaseWithExecutionsList.put(key, testCaseWithExecution);
+        }
+        for (TestCaseWithExecution testCaseWithExecutionInQueue : testCaseWithExecutionsInQueue) {
+            String key = testCaseWithExecutionInQueue.getBrowser() + "_"
+                    + testCaseWithExecutionInQueue.getCountry() + "_"
+                    + testCaseWithExecutionInQueue.getEnvironment() + "_"
+                    + testCaseWithExecutionInQueue.getTest() + "_"
+                    + testCaseWithExecutionInQueue.getTestCase();
+            if ((testCaseWithExecutionsList.containsKey(key)
+                    && formater.parse(testCaseWithExecutionsList.get(key).getStart()).before(formater.parse(testCaseWithExecutionInQueue.getStart())))
+                    || !testCaseWithExecutionsList.containsKey(key)) {
+                testCaseWithExecutionsList.put(key, testCaseWithExecutionInQueue);
+            }
+        }
+        testCaseWithExecutions = new ArrayList<TestCaseWithExecution>(testCaseWithExecutionsList.values());
+
+        LinkedHashMap<String, JSONObject> ttc = new LinkedHashMap<String, JSONObject>();
+        LinkedHashMap<String, JSONObject> ceb = new LinkedHashMap<String, JSONObject>();
+        for (TestCaseWithExecution testCaseWithExecution : testCaseWithExecutions) {
+            try {
+                executionList.put(testCaseExecutionToJSONObject(testCaseWithExecution));
+                JSONObject ttcObject = new JSONObject();
+                ttcObject.put("test", testCaseWithExecution.getTest());
+                ttcObject.put("testCase", testCaseWithExecution.getTestCase());
+                ttcObject.put("function", testCaseWithExecution.getFunction());
+                ttcObject.put("shortDesc", testCaseWithExecution.getShortDescription());
+                ttcObject.put("status", testCaseWithExecution.getStatus());
+                ttcObject.put("application", testCaseWithExecution.getApplication());
+                ttcObject.put("bugId", testCaseWithExecution.getBugID());
+                ttcObject.put("comment", testCaseWithExecution.getComment());
+                JSONObject cebObject = new JSONObject();
+                cebObject.put("country", testCaseWithExecution.getCountry());
+                cebObject.put("environment", testCaseWithExecution.getEnvironment());
+                cebObject.put("browser", testCaseWithExecution.getBrowser());
+                ttc.put(testCaseWithExecution.getTest() + "_" + testCaseWithExecution.getTestCase(), ttcObject);
+                ceb.put(testCaseWithExecution.getBrowser() + "_" + testCaseWithExecution.getCountry() + "_" + testCaseWithExecution.getEnvironment(), cebObject);
+            } catch (JSONException ex) {
+                Logger.getLogger(CampaignExecutionReport.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
+        JSONArray columns = new JSONArray(ceb.values());
+        JSONArray lines = new JSONArray(ttc.values());
+
+        for (int indexValues = 0; indexValues < executionList.length(); indexValues++) {
+            JSONObject testExec = executionList.getJSONObject(indexValues);
+            
+            for (int indexLines = 0; indexLines < lines.length(); indexLines++) {
+                
+                if (testExec.getString("Test").equals(lines.getJSONObject(indexLines).getString("test"))
+                        && testExec.getString("TestCase").equals(lines.getJSONObject(indexLines).getString("testCase"))
+                        && testExec.getString("Application").equals(lines.getJSONObject(indexLines).getString("application"))) {
+                    StringBuilder key = new StringBuilder();
+                    key.append(testExec.getString("Environment")).append(" ")
+                            .append(testExec.getString("Country")).append(" ")
+                            .append(testExec.getString("Browser"));
+                    if (!lines.getJSONObject(indexLines).has("execTab")) {
+                        lines.getJSONObject(indexLines).put("execTab", new JSONObject());
+                    }
+                    
+                    lines.getJSONObject(indexLines).getJSONObject("execTab").put(key.toString(), testExec);
+                }
+            }
+        }
+
+        JSONObject jsonResponse = new JSONObject();
+        jsonResponse.put("testList", lines);
+        jsonResponse.put("Columns", columns);
+        jsonResponse.put("iTotalRecords", lines.length());
+        jsonResponse.put("iTotalDisplayRecords", lines.length());
+
+        answer.setItem(jsonResponse);
+        answer.setResultMessage(new MessageEvent(MessageEventEnum.DATA_OPERATION_OK));
+        return answer;
+    }
+
+    private JSONObject testCaseExecutionToJSONObject(
+            TestCaseWithExecution testCaseWithExecution) throws JSONException {
+        JSONObject result = new JSONObject();
+        result.put("ID", String.valueOf(testCaseWithExecution.getStatusExecutionID()));
+        result.put("Test", JavaScriptUtils.javaScriptEscape(testCaseWithExecution.getTest()));
+        result.put("TestCase", JavaScriptUtils.javaScriptEscape(testCaseWithExecution.getTestCase()));
+        result.put("Environment", JavaScriptUtils.javaScriptEscape(testCaseWithExecution.getEnvironment()));
+        result.put("Start", testCaseWithExecution.getStart());
+        result.put("End", testCaseWithExecution.getEnd());
+        result.put("Country", JavaScriptUtils.javaScriptEscape(testCaseWithExecution.getCountry()));
+        result.put("Browser", JavaScriptUtils.javaScriptEscape(testCaseWithExecution.getBrowser()));
+        result.put("ControlStatus", JavaScriptUtils.javaScriptEscape(testCaseWithExecution.getControlStatus()));
+        result.put("ControlMessage", JavaScriptUtils.javaScriptEscape(testCaseWithExecution.getControlMessage()));
+        result.put("Status", JavaScriptUtils.javaScriptEscape(testCaseWithExecution.getStatus()));
+
+        String bugId;
+        if (testCaseWithExecution.getApplicationObject() != null && testCaseWithExecution.getApplicationObject().getBugTrackerUrl() != null
+                && !"".equals(testCaseWithExecution.getApplicationObject().getBugTrackerUrl()) && testCaseWithExecution.getBugID() != null) {
+            bugId = testCaseWithExecution.getApplicationObject().getBugTrackerUrl().replaceAll("%BUGID%", testCaseWithExecution.getBugID());
+            bugId = new StringBuffer("<a href='")
+                    .append(bugId)
+                    .append("' target='reportBugID'>")
+                    .append(testCaseWithExecution.getBugID())
+                    .append("</a>")
+                    .toString();
+        } else {
+            bugId = testCaseWithExecution.getBugID();
+        }
+        result.put("BugID", bugId);
+
+        result.put("Comment", JavaScriptUtils.javaScriptEscape(testCaseWithExecution.getComment()));
+        result.put("Function", JavaScriptUtils.javaScriptEscape(testCaseWithExecution.getFunction()));
+        result.put("Application", JavaScriptUtils.javaScriptEscape(testCaseWithExecution.getApplication()));
+        result.put("ShortDescription", testCaseWithExecution.getShortDescription());
+
+        return result;
     }
 }

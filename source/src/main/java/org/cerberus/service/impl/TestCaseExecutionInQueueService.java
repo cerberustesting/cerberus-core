@@ -29,6 +29,7 @@ import org.cerberus.entity.MessageGeneralEnum;
 import org.cerberus.entity.TestCaseExecutionInQueue;
 import org.cerberus.exception.CerberusException;
 import org.cerberus.service.ITestCaseExecutionInQueueService;
+import org.cerberus.util.answer.AnswerList;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -109,5 +110,9 @@ public class TestCaseExecutionInQueueService implements ITestCaseExecutionInQueu
     public void updateComment(Long queueId, String comment) throws CerberusException {
         testCaseExecutionInQueueDAO.updateComment(queueId, comment);
     }
+    
+     public AnswerList findTestCaseExecutionInQueuebyTag(int start, int amount, String column, String dir, String searchTerm, String individualSearch, String tag) throws CerberusException {
+        return testCaseExecutionInQueueDAO.findTestCaseExecutionInQueuebyTag(start, amount, column, dir, searchTerm, individualSearch, tag);
+     }
 
 }
