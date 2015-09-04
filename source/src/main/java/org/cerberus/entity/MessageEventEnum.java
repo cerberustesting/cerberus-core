@@ -38,46 +38,7 @@ public enum MessageEventEnum {
      * updated at the execution level.
      * <p/>
      * Code standard is : All SUCCESS are x00 (same code for all). All FAILED
-     * are from x50 to x99 (different code for each). Pending is x99.
-     *//**
-     * Message is used to feedback the result of any Cerberus event. Events
-     * could by Property, Action, Control or even Step. For every event, we
-     * have: - a number - a 2 digit code that report the status of the event. -
-     * a clear message that will be reported to the user. describing what was
-     * done or the error that occured. - a boolean that define whether the
-     * complete test execution should stop or not. - a boolean that define
-     * whether a screenshot will be done in case of problem (only if screenshot
-     * option is set to 1). - the corresponding Execution message that will be
-     * updated at the execution level.
-     * <p/>
-     * Code standard is : All SUCCESS are x00 (same code for all). All FAILED
-     * are from x50 to x99 (different code for each). Pending is x99.
-     *//**
-     * Message is used to feedback the result of any Cerberus event. Events
-     * could by Property, Action, Control or even Step. For every event, we
-     * have: - a number - a 2 digit code that report the status of the event. -
-     * a clear message that will be reported to the user. describing what was
-     * done or the error that occured. - a boolean that define whether the
-     * complete test execution should stop or not. - a boolean that define
-     * whether a screenshot will be done in case of problem (only if screenshot
-     * option is set to 1). - the corresponding Execution message that will be
-     * updated at the execution level.
-     * <p/>
-     * Code standard is : All SUCCESS are x00 (same code for all). All FAILED
-     * are from x50 to x99 (different code for each). Pending is x99.
-     *//**
-     * Message is used to feedback the result of any Cerberus event. Events
-     * could by Property, Action, Control or even Step. For every event, we
-     * have: - a number - a 2 digit code that report the status of the event. -
-     * a clear message that will be reported to the user. describing what was
-     * done or the error that occured. - a boolean that define whether the
-     * complete test execution should stop or not. - a boolean that define
-     * whether a screenshot will be done in case of problem (only if screenshot
-     * option is set to 1). - the corresponding Execution message that will be
-     * updated at the execution level.
-     * <p/>
-     * Code standard is : All SUCCESS are x00 (same code for all). All FAILED
-     * are from x50 to x99 (different code for each). Pending is x99.
+     * are from x50 to x99 (different code for each). Pending is x99.     
      */
     PROPERTY_SUCCESS(100, "OK", "Property calculated successfully.", false, false ,false , MessageGeneralEnum.EXECUTION_PE_TESTSTARTED),
     PROPERTY_SUCCESS_SQL(100, "OK", "SQL executed against database '%DB%' and JDBCPOOL '%JDBCPOOLNAME%'. SQL : '%SQL%'", false, false ,false , MessageGeneralEnum.EXECUTION_PE_TESTSTARTED),
