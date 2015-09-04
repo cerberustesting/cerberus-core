@@ -224,10 +224,6 @@
                             }
                     %>
                 </select>
-                <select id="MyLang" name="MyLang" onchange="ChangeLanguage();">
-                    <option value="en">English</option>
-                    <option value="fr">Français</option>
-                </select>
             </form>
         </div>
         <div id="userInfo" style="float:right; width:100px">

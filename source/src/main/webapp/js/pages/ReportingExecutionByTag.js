@@ -54,7 +54,22 @@ function loadTagFilters() {
 }
 
 function getRowClass(status) {
-    var rowClass = "status" + status;
+    var rowClass = [];
+
+    rowClass["panel"] = "panel" + status;
+    if (status === "OK") {
+        rowClass["glyph"] = "glyphicon glyphicon-ok";
+    } else if (status === "KO") {
+        rowClass["glyph"] = "glyphicon glyphicon-remove";
+    } else if (status === "FA") {
+        rowClass["glyph"] = "fa fa-bug";
+    } else if (status === "CA") {
+        rowClass["glyph"] = "fa fa-life-ring";
+    } else if (status === "PE") {
+        rowClass["glyph"] = "fa fa-hourglass-half";
+    } else {
+        rowClass["glyph"] = "";
+    }
     return rowClass;
 }
 
@@ -62,33 +77,30 @@ function loadReport() {
     var selectTag = $("#selectTag option:selected").text();
 
     //clear the old report content before reloading it
-    $("#ReportByStatusTable tbody").empty();
-    $("#chart").empty();
+    $("#ReportByStatusTable").empty();
+    $("#statusChart").empty();
     $("#functionChart").empty();
-    loadReportByStatusTable(selectTag);
-    
-    var jqxhr = $.get("CampaignExecutionStatusBarGraphByFunction", {CampaignName: "null", Tag: selectTag}, "json");
+
+    var jqxhr = $.get("GetReportData", {CampaignName: "null", Tag: selectTag}, "json");
     $.when(jqxhr).then(function (data) {
+        loadReportByStatusTable(data);
         loadReportByFunctionChart(data);
     });
 }
 
 function convertData(dataset) {
     var data = [];
-    for (var i = 0; i < dataset.labels.length; i++) {
-        data.push({name: dataset.labels[i]});
-        dataset.axis.forEach(function (column) {
-            var columnName = column.label;
-            data[i][columnName] = {value: column.data[i], color: column.fillColor};
-        });
-    }
+
+    for (var i in dataset)
+        data.push(dataset[i]);
+
     return data;
 }
 
 function loadReportByFunctionChart(dataset) {
-    var data = convertData(dataset);
+    var data = convertData(dataset.axis);
 
-    var margin = {top: 20, right: 20, bottom: 30, left: 40},
+    var margin = {top: 20, right: 20, bottom: 100, left: 40},
     width = 1200 - margin.left - margin.right,
             height = 500 - margin.top - margin.bottom;
 
@@ -97,8 +109,6 @@ function loadReportByFunctionChart(dataset) {
 
     var y = d3.scale.linear()
             .rangeRound([height, 0]);
-
-    var color = d3.scale.ordinal();
 
     var xAxis = d3.svg.axis()
             .scale(x)
@@ -112,14 +122,12 @@ function loadReportByFunctionChart(dataset) {
             .attr('class', 'd3-tip')
             .offset([-10, 0])
             .html(function (d) {
-                return "<strong>Function :</strong> <span style='color:red'>" + d.name + "</span>\n\
-                        <div><div class='color-box' style='background-color:" + d.OK.color + " ;'></div>OK : " + d.OK.value + "</div>\n\
-                        <div><div class='color-box' style='background-color:" + d.KO.color + " ;'></div>KO : " + d.KO.value + "</div>\n\
-                        <div><div class='color-box' style='background-color:" + d.CA.color + " ;'></div>CA : " + d.CA.value + "</div>\n\
-                        <div><div class='color-box' style='background-color:" + d.FA.color + " ;'></div>FA : " + d.FA.value + "</div>\n\
-                        <div><div class='color-box' style='background-color:" + d.NA.color + " ;'></div>NA : " + d.NA.value + "</div>\n\
-                        <div><div class='color-box' style='background-color:" + d.NE.color + " ;'></div>NE : " + d.NE.value + "</div>\n\
-                        <div><div class='color-box' style='background-color:" + d.PE.color + " ;'></div>PE : " + d.PE.value + "</div>";
+                var res = "<strong>Function :</strong> <span style='color:red'>" + d.name + "</span>";
+                for (var index = 0; index < d.chartData.length; index++) {
+                    res = res + "<div><div class='color-box' style='background-color:" + d.chartData[index].color + " ;'>\n\
+                    </div>" + d.chartData[index].name + " : " + d[d.chartData[index].name].value + "</div>";
+                }
+                return res;
             });
 
     var svg = d3.select("#functionChart").append("svg")
@@ -130,29 +138,34 @@ function loadReportByFunctionChart(dataset) {
 
     svg.call(tip);
 
-    color.domain(d3.keys(data[0]).filter(function (key) {
-        return key !== "name";
-    }));
 
     data.forEach(function (d) {
         var y0 = 0;
-        d.test = color.domain().map(function (name) {
-            return {name: name, y0: y0, y1: y0 += +d[name].value, color: d[name].color};
-        });
-        d.total = d.test[d.test.length - 1].y1;
+        d.chartData = [];
+        for (var status in d) {
+            if (status !== "name" && status !== "chartData") {
+                d.chartData.push({name: status, y0: y0, y1: y0 += +d[status].value, color: d[status].color});
+            }
+        }
+        d.totalTests = d.chartData[d.chartData.length - 1].y1;
     });
 
     x.domain(data.map(function (d) {
         return d.name;
     }));
     y.domain([0, d3.max(data, function (d) {
-            return d.total;
+            return d.totalTests;
         })]);
 
     svg.append("g")
             .attr("class", "x axis")
             .attr("transform", "translate(0," + height + ")")
-            .call(xAxis);
+            .call(xAxis)
+            .selectAll("text")
+            .style("text-anchor", "end")
+            .attr("dx", "-.8em")
+            .attr("dy", "-.55em")
+            .attr("transform", "rotate(-75)");
 
     svg.append("g")
             .attr("class", "y axis")
@@ -178,7 +191,7 @@ function loadReportByFunctionChart(dataset) {
 
     name.selectAll("rect")
             .data(function (d) {
-                return d.test;
+                return d.chartData;
             })
             .enter().append("rect")
             .attr("width", x.rangeBand())
@@ -195,13 +208,11 @@ function loadReportByFunctionChart(dataset) {
 ;
 
 function loadReportByStatusChart(data) {
-    var dataset = data.axis;
-
     var width = 250;
     var height = 150;
     var radius = Math.min(width, height) / 2;
 
-    var svg = d3.select('#chart')
+    var svg = d3.select('#statusChart')
             .append('svg')
             .attr('width', width)
             .attr('height', height)
@@ -218,36 +229,69 @@ function loadReportByStatusChart(data) {
             .sort(null);
 
     var path = svg.selectAll('path')
-            .data(pie(dataset))
+            .data(pie(data))
             .enter()
             .append('path')
             .attr('d', arc)
             .attr('fill', function (d, i) {
+                console.log(d);
                 return d.data.color;
             });
 }
 
-function loadReportByStatusTable(selectTag) {
-    var jqxhr = $.get("CampaignExecutionGraphByStatus", {CampaignName: "null", Tag: selectTag}, "json");
-    $.when(jqxhr).then(function (data) {
-        var total = 0;
-        // create each line of the table
-        for (var index = 0; index < data.labels.length; index++) {
-            var rowClass = getRowClass(data.axis[index].label);
-            $("#ReportByStatusTable tbody").append(
-                    $("<tr></tr>").append(
-                    $('<td class=' + rowClass + '></td>').text(data.axis[index].label))
-                    .append($("<td></td>").text(data.axis[index].value))
-                    );
-            // increase the total execution
-            total = total + data.axis[index].value;
+function appendPanelStatus(axis, status, total) {
+    var rowClass = getRowClass(status);
+    $("#ReportByStatusTable").append(
+            $("<div class='panel " + rowClass.panel + "'></div>").append(
+            $('<div class="panel-heading"></div>').append(
+            $('<div class="row"></div>').append(
+            $('<div class="col-xs-6 status"></div>').text(status).prepend(
+            $('<span class="' + rowClass.glyph + '" style="margin-right: 5px;"></span>'))).append(
+            $('<div class="col-xs-6 text-right"></div>').append(
+            $('<div class="total"></div>').text(total[status].value)).append(
+            $('<div></div>').text('Percentage : ' + Math.round(((total[status].value / total.test) * 100) * 100) / 100 + '%'))))));
+}
+
+function loadReportByStatusTable(data) {
+    var total = {};
+    //calculate totaltest nb
+    total["test"] = 0;
+    for (var index = 0; index < data.axis.length; index++) {
+        // increase the total execution
+        for (var key in data.axis[index]) {
+            if (key !== "name") {
+                if (total.hasOwnProperty(key)) {
+                    total[key].value += data.axis[index][key].value;
+                } else {
+                    total[key] = {"value": data.axis[index][key].value,
+                        "color": data.axis[index][key].color};
+                }
+                total.test += data.axis[index][key].value;
+            }
         }
+    }
+
+    // create each line of the table
+    for (var label in total) {
+        if (label !== "test") {
+            appendPanelStatus(data.axis[index], label, total);
+        }
+    }
 // add a line for the total
-        $("#ReportByStatusTable tbody").append(
-                $("<tr></tr>").append(
-                $("<th>Total</th>"))
-                .append($("<th></th>").text(total))
-                );
-        loadReportByStatusChart(data);
-    }).fail(handleErrorAjaxAfterTimeout);
+    $("#ReportByStatusTable").append(
+            $("<div class='panel panel-primary'></div>").append(
+            $('<div class="panel-heading"></div>').append(
+            $('<div class="row"></div>').append(
+            $('<div class="col-xs-6 status"></div>').text("Total").prepend(
+            $('<span class="" style="margin-right: 5px;"></span>'))).append(
+            $('<div class="col-xs-6 text-right"></div>').append(
+            $('<div class="total"></div>').text(total.test))
+            ))));
+    var dataset = [];
+    for (var label in total) {
+        if (label !== "test") {
+            dataset.push(total[label]);
+        }
+    }
+    loadReportByStatusChart(dataset);
 }

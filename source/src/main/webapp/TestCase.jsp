@@ -17,11 +17,11 @@
   ~ You should have received a copy of the GNU General Public License
   ~ along with Cerberus.  If not, see <http://www.gnu.org/licenses/>.
 --%>
-<%@page import="org.cerberus.util.ParameterParserUtil"%>
-<%@page import="org.cerberus.entity.User"%>
-<%@page import="org.cerberus.entity.UserSystem"%>
-<%@page import="org.cerberus.service.IUserService"%>
 <%@page import="java.util.Set"%>
+<%@page import="org.cerberus.entity.UserSystem"%>
+<%@page import="org.cerberus.entity.User"%>
+<%@page import="org.cerberus.util.ParameterParserUtil"%>
+<%@page import="org.cerberus.service.IUserService"%>
 <%@page import="java.util.HashMap"%>
 <%@page import="java.util.HashSet"%>
 <%@page import="org.json.JSONArray"%>
@@ -61,7 +61,6 @@
 <%@page import="org.cerberus.service.IParameterService"%>
 <%@page import="org.cerberus.util.StringUtil"%>
 <%@page import="org.apache.commons.lang3.StringUtils"%>
-<%@page import="org.cerberus.util.ParameterParserUtil"%>
 <% Date DatePageStart = new Date();%>
 
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
@@ -85,7 +84,7 @@
         <link rel="stylesheet" type="text/css" href="css/elrte.min.css">
         <link rel="stylesheet" type="text/css" href="css/elfinder.min.css">
         <link rel="stylesheet" type="text/css" href="css/theme.css">
-
+        
 
         <script type="text/javascript">
             var displayOnlyFunctional = false;
@@ -351,11 +350,9 @@
     <body>
         <%@ include file="include/function.jsp" %>
         <%@ include file="include/header.html" %>
-        <%@ include file="include/testcase/listTestDataLib.html"%>
-
+        <%@ include file="include/testcase/listTestDataLib.html"%> 
         <div id="body">
             <%
-
                 boolean booleanFunction = false;
                 try {
                     /*
@@ -404,10 +401,10 @@
                     String MySystem = httpSession.getAttribute("MySystem").toString();
                     if (request.getParameter("system") != null && request.getParameter("system").compareTo("") != 0) {
                         MySystem = request.getParameter("system");
-                   }
-                   List<String> systems = new ArrayList();
-                   systems.add(MySystem);
-
+                    }
+                    List<String> systems = new ArrayList();
+                    systems.add(MySystem);
+                    
                     String myLang = ParameterParserUtil.parseStringParam(httpSession.getAttribute("MyLang").toString(), "en");
 
                     
@@ -1274,7 +1271,7 @@
                                                                 </div>
                                                                 <div class="technical_part" style="width: 40%; float:left; background-color: transparent">
                                                                     <div style="float:left;"><p name="labelTestCaseStepActionObject" style="float:right;font-weight:bold;" link="white" >Object</p>
-                                                                    </div>
+                                                                     </div>
                                                                     <input style="float:left;border-style:groove;border-width:thin;border-color:white;border: 1px solid white; height:100%;width:75%; color:#999999"
                                                                            value="<%=tcsa.getObject()%>"
                                                                            onchange="showChangedRow(this.parentNode.parentNode.parentNode.parentNode)" name="action_object_<%=incrementStep%>_<%=incrementAction%>" <%=isReadonly%>>
@@ -1285,23 +1282,24 @@
                                                                     <input  class="wob property_value" style="width:75%;border-style:groove;border-width:thin;border-color:white;border: 1px solid white; color:#888888"
                                                                             value="<%=tcsa.getProperty()%>"
                                                                             <%if (useStep) {
-                                                                                    //if is the step was imported, then adds the propertu to the list
-                                                                                    listOfImportedProperties.add(tcsa.getProperty());
-                                                                                    //defines each attribute related to the test case step that was imported
-%>
+                                                                                //if is the step was imported, then adds the propertu to the list
+                                                                                listOfImportedProperties.add(tcsa.getProperty());
+                                                                                //defines each attribute related to the test case step that was imported
+                                                                            %>
                                                                             data-usestep-test="<%=testForQuery%>"
                                                                             data-usestep-testcase="<%=testcaseForQuery%>"
                                                                             data-usestep-step="<%=stepForQuery%>"
-                                                                            <%} else {
+                                                                            <%}
+                                                                            else{
                                                                                 //verify if the property is currently in the list of imported properties
-                                                                                if (listOfImportedProperties.contains(tcsa.getProperty())) {
+                                                                                if(listOfImportedProperties.contains(tcsa.getProperty())){
                                                                                 //defines one attribute that will distinguish if the imported property
-                                                                                    //from the undefined property
-                                                                            %>              
-                                                                            data-imported-property = "true"
-                                                                            <%
-                                                                                    }
+                                                                                //from the undefined property
+                                                                                %>              
+                                                                                    data-imported-property = "true"
+                                                                                <%                                                                              
                                                                                 }
+                                                                            }                                                                            
                                                                             %>
                                                                             onchange="showChangedRow(this.parentNode.parentNode.parentNode.parentNode)" name="action_property_<%=incrementStep%>_<%=incrementAction%>" <%=isReadonly%>>
                                                                 </div>
@@ -1566,8 +1564,7 @@
                                                         || tccp.getType().equals("getFromXml")
                                                         || tccp.getType().equals("getFromCookie")
                                                         || tccp.getType().equals("getFromJson")
-                                                        || tccp.getType().equals("getDifferencesFromXml")
-                                                        || tccp.getType().equals("getFromDataLib")) {
+                                                        || tccp.getType().equals("getDifferencesFromXml")){
                                                     widthValue1 = widthValue / 2;
                                                     widthValue2 = widthValue / 2;
                                                     displayValue2 = "inline-block";
@@ -1642,69 +1639,41 @@
                                             </div>
                                             <div id="divProperties_value1_<%=incrementProperty%>" style="background-color:transparent;float:left;border-right-width:thin;border-right-style:solid;border-right-color:#CCCCCC;width:<%=widthValue1%>%;display:inline-block;">
                                                 <div class="pull-left showInlineElement"                                                    
-                                                     <% if (tccp.getType().equals("getFromDataLib")) {%>     
-                                                     style="width: 90%;" 
-                                                     <%} else {%>
-                                                     style="width: 100%;" 
-                                                     <%}%>        
-                                                     >
+                                                    <% if (tccp.getType().equals("getFromDataLib")) {%>     
+                                                        style="width: 90%;" 
+                                                    <%}else{%>
+                                                        style="width: 100%;" 
+                                                    <%}%>        
+                                                   >
                                                     <textarea id="properties_value1_<%=incrementProperty%>" rows="2"  
-                                                              <% if (tccp.getType().equals("getFromDataLib")) {%>     
-                                                              class ="wob getFromDataLib" 
-                                                              <%} else {%>
-                                                              class ="wob"
-                                                              <%}%>      
-
-
+                                                                <% if (tccp.getType().equals("getFromDataLib")) {%>     
+                                                                    class ="wob getFromDataLib" 
+                                                                <%}else{%>
+                                                                    class ="wob"
+                                                                <%}%>      
+                                                              
+                                                              
                                                               style="background-color:transparent;width: 100%;height:50px" 
                                                               name="properties_value1_<%=incrementProperty%>"><%=tccp.getValue1()%></textarea>
                                                 </div>
-
-                                                <div id="selectEntry_Data_<%=incrementProperty%>"  
-                                                     <% if (!tccp.getType().equals("getFromDataLib")) {%>     
-                                                     class="hideElement"
-                                                     <%} else {%>
-                                                     class="showInlineElement" 
-                                                     <%}%>  
-                                                     ><button title="Select an entry from the library" id="entryButton_<%=incrementProperty%>" type="button" class="btn btn-default btn-xs pull-right">
+                                                
+                                                   <div id="selectEntry_Data_<%=incrementProperty%>"  
+                                                   <% if (!tccp.getType().equals("getFromDataLib")) {%>     
+                                                        class="hideElement"
+                                                   <%}else{%>
+                                                        class="showInlineElement" 
+                                                    <%}%>  
+                                                        ><button title="Select an entry from the library" id="entryButton_<%=incrementProperty%>" type="button" class="btn btn-default btn-xs pull-right">
                                                         <span class="glyphicon glyphicon-search"></span> </button>
-                                                </div>    
-
+                                                   </div>    
+                                                   
                                             </div>
-                                            <div id="divProperties_value2_<%=incrementProperty%>" style="background-color:transparent;float:left;border-right-width:thin;border-right-style:solid;border-right-color:#CCCCCC;display:<%=displayValue2%>;width:<%=widthValue2%>%;height:50px">
-                                                <div class="pull-left showInlineElement" 
-                                                     <% if (tccp.getType().equals("getFromDataLib")) {%>     
-                                                     style="width: 90%;" 
-                                                     <%} else {%>
-                                                     style="width: 100%;" 
-                                                     <%}%>  
-
-                                                     >
-                                                    <textarea id="properties_value2_<%=incrementProperty%>" rows="2" 
-                                                              <% if (tccp.getType().equals("getFromDataLib")) {%>     
-                                                              class ="wob getFromDataLib" 
-                                                              <%} else {%>
-                                                              class ="wob"
-                                                              <%}%>  
-                                                              style="background-color:transparent;width: 100%;height:50px"
-                                                              name="properties_value2_<%=incrementProperty%>"><%=tccp.getValue2()%></textarea>
+                                             <div id="divProperties_value2_<%=incrementProperty%>" style="background-color:transparent;float:left;border-right-width:thin;border-right-style:solid;border-right-color:#CCCCCC;display:<%=displayValue2%>;width:<%=widthValue2%>%;height:50px">
+                                                <div class="pull-left showInlineElement"  style="width: 100%;">
+                                                    <textarea id="properties_value2_<%=incrementProperty%>" rows="2" class ="wob"
+                                                          style="background-color:transparent;width: 100%;height:50px"
+                                                          name="properties_value2_<%=incrementProperty%>"><%=tccp.getValue2()%></textarea>
                                                 </div>
-
-
-                                                <div id="selectEntry_SubData_<%=incrementProperty%>" 
-                                                     <% if (!tccp.getType().equals("getFromDataLib")) {%>     
-                                                     class="hideElement"
-                                                     <%} else {%>
-                                                     class="showInlineElement" 
-                                                     <%}%>         
-                                                     ><button id="SubDataButton_<%=incrementProperty%>" title="Select a sub data entry from the library" type="button" class="btn btn-default btn-xs pull-right" 
-                                                         <% if (tccp.getValue1().isEmpty()) {%>
-                                                         disabled="disabled"
-                                                         <% }%>
-                                                         >
-                                                        <span class="glyphicon glyphicon-search"></span></button>
-                                                    <input id="testDataLibID_<%=incrementProperty%>" type="hidden"/>    
-                                                </div>                                                         
                                             </div>
                                             <div style="border-right-width:thin;border-right-style:solid;background-color:transparent;border-right-color:#CCCCCC;float:left;width:3%;display:inline-block;height:50px">
                                                 <input class="wob" style="background-color:transparent;width:  100%;margin-top:20px;" name="properties_length_<%=incrementProperty%>"
@@ -1714,9 +1683,9 @@
                                                 <input class="wob" style="background-color:transparent;width: 100%;margin-top:20px;" name="properties_rowlimit_<%=incrementProperty%>"
                                                        value="<%=tccp.getRowLimit()%>">
                                             </div>
-                                            <div style="float:left;width:8%;display:inline-block;height:50px"><%=ComboInvariant(appContext, "properties_nature_" + incrementProperty,
-                                                    "background-color:transparent;margin-top:20px;width: 100%;", "properties_nature_" + incrementProperty, "wob", "PROPERTYNATURE", tccp.getNature(),
-                                                    "trackChanges(0, this.selectedIndex, 'submitButtonChanges')", null)%>
+                                            <div style="float:left;width:8%;display:inline-block;height:50px"><%=ComboInvariant(appContext, "properties_nature_" + incrementProperty, 
+                                                    "background-color:transparent;margin-top:20px;width: 100%;", "properties_nature_" + incrementProperty, "wob", "PROPERTYNATURE", tccp.getNature(), 
+                                                               "trackChanges(0, this.selectedIndex, 'submitButtonChanges')", null)%>
                                             </div>
                                             <div style="background-color:yellow; width:3px;height:50px;display:inline-block;float:right">
                                             </div>
@@ -2085,21 +2054,13 @@
                     </div>
                     <div data-id="selectEntry_Data_template"  class="hideElement">
                         <button title="Select an entry from the library" data-id="entryButton_template" type="button" class="btn btn-default btn-xs pull-right">
-                            <span class="glyphicon glyphicon-search"></span> </button>
+                        <span class="glyphicon glyphicon-search"></span> </button>
                     </div>    
                 </div>
                 <div data-id="divProperties_value2_template" style="float:left;border-right-width:thin;border-right-style:solid;border-right-color:#CCCCCC;display:none;width:0%;height:100%">
                     <div class="pull-left showInlineElement" style="width:100%;">
                         <textarea data-id="properties_value2_template" rows="2" class="wob" style="background-color:transparent;width: 100%;height:50px"></textarea>
                     </div>
-                    <div data-id="selectEntry_SubData_template" class="hideElement">
-                        <button data-id="SubDataButton_template" title="Select a sub data entry from the library" type="button" 
-                                class="btn btn-default btn-xs pull-right" disabled="disabled">
-                            <span class="glyphicon glyphicon-search"></span>
-                        </button>
-                        <input id="testDataLibID_template" type="hidden"/>    
-                    </div>          
-
                 </div>
                 <div style="border-right-width:thin;border-right-style:solid;border-right-color:#CCCCCC;float:left;width:3%;display:inline-block;height:100%">
                     <input class="wob" style="background-color:transparent;width:  100%;margin-top:20px;" 
@@ -2122,66 +2083,66 @@
                 //for each property adds the icon corresponding to its state
                 $("input.property_value").each(function() {
                     var propertyValue = this.value;
-
-                    if (propertyValue && propertyValue !== "" && isNaN(propertyValue)) {
+                    
+                    if(propertyValue && propertyValue !== "" && isNaN(propertyValue)){
                         //var jinput = $(this);
                         this.style.width = '60%';
                         var toolTipMessage = "";
                         var imageUrl = "";
-                        var classForImage = ''; //this class is used by the click function to get the image that was clicked
+                        var classForImage=''; //this class is used by the click function to get the image that was clicked
                         var testDesc = $(this).attr('data-usestep-test');
-
-                        if (!Boolean(testDesc) && $("input.property_name[value='" + this.value + "']").length === 0) {
+                        
+                        if (!Boolean(testDesc) && $("input.property_name[value='" + this.value + "']").length === 0){ 
                             //Missing - property is not defined anywhere
                             imageUrl = "./images/problem.png";
-                            toolTipMessage = "Property " + propertyValue + " is missing! Click to create a property! ";
-                            classForImage = 'class = "property_missing"';
-
-                        } else if (Boolean(testDesc)) { //verify if it is defined
+                            toolTipMessage = "Property " + propertyValue +" is missing! Click to create a property! ";
+                            classForImage='class = "property_missing"'; 
+                            
+                        }else if (Boolean(testDesc)){ //verify if it is defined
                             var testCaseDesc = $(this).attr('data-usestep-testcase');
                             var testStepDesc = $(this).attr('data-usestep-step');
-
-                            if ($("input.property_name[value='" + propertyValue + "']").length !== 0) {
+                            
+                            if( $("input.property_name[value='" + propertyValue + "']").length !== 0) { 
                                 //Overridden - the property was defined in the imported step and redefined in the current test case                            
-                                toolTipMessage = "The property " + propertyValue + " was overridden in the current test case. It was originally defined in the test: " +
-                                        testDesc + " - " + testCaseDesc + " [step: " + testStepDesc + "]";
+                                toolTipMessage = "The property " + propertyValue + " was overridden in the current test case. It was originally defined in the test: "+
+                                           testDesc + " - " + testCaseDesc + " [step: " + testStepDesc  +"]" ;
                                 imageUrl = "./images/overridden.png";
-                            } else {
+                            }else {
                                 ////Imported - the property is only defined in the import test step
                                 toolTipMessage = "The property " + propertyValue + " is defined in the test: " +
-                                        testDesc + " - " + testCaseDesc + " [step: " + testStepDesc + "]. Click to override property!";
-                                imageUrl = "./images/pen.png";
-                                classForImage = 'class = "property_toovorride"';
+                                        testDesc + " - " + testCaseDesc + " [step: " +  testStepDesc  +"]. Click to override property!" ; 
+                                imageUrl = "./images/pen.png";                           
+                                classForImage='class = "property_toovorride"';
                             }
                         }
-
+                    
                         //if the property is not related to an imported step and if there is an image defined     
                         //then the image is added into the page
                         //the default scenario does not add any image to the property definition
-                        if (!Boolean($(this).attr('data-imported-property')) && imageUrl !== "") {
-                            $(this).before("<img " + classForImage + " data-property-name='" + propertyValue +
-                                    "' src='" + imageUrl + "' title='" + toolTipMessage + "' style='float:left;display:inline;' width='16px' height='16px' />");
+                        if(!Boolean($(this).attr('data-imported-property')) && imageUrl !== ""){
+                            $(this).before("<img " + classForImage + " data-property-name='" + propertyValue + 
+                                    "' src='" + imageUrl + "' title='" + toolTipMessage +"' style='float:left;display:inline;' width='16px' height='16px' />");                            
                         }
-
+                    
                     }
                 });
-
+                
                 //click to add property that is missing
-                $("img.property_missing").on("click", function() {
+                $("img.property_missing").on("click", function() {  
                     var propertyName = $(this).attr("data-property-name"); //gets the name of the property    
                     $.get("./CreateNotDefinedProperty", {"totest": "<%=test%>", "totestcase": "<%=testcase%>",
-                        "property": propertyName}
-                    , function(data) {
-                        $("#selectTestCase").submit();
-                    });
-                });
+                            "property": propertyName}
+                        , function(data) {
+                            $("#selectTestCase").submit();
+                        });
+                }); 
                 //click to override property
-                $("img.property_toovorride").on("click", function() {
+                $("img.property_toovorride").on("click", function() {                                    
                     //var propertyName = $(event.target).data("property-name"); //does not work when he have two imported properties with the same name
                     //var property = $("input.property_value[value='" + propertyName + "']");
                     var property = $(this).next("input.property_value");//gets the input tag next to the img tag
                     var propertyName = $(this).attr("data-property-name"); //gets the name of the property
-
+                    
                     if (property.data("usestep-step") !== null && property.data("usestep-step") !== "") {
                         var useTest = property.data("usestep-test");
                         var useTestcase = property.data("usestep-testcase");
@@ -2192,7 +2153,7 @@
                             $("#selectTestCase").submit();
                         }
                         );
-                    }
+                    } 
                 });</script>
                 <%
                             }
@@ -2440,9 +2401,9 @@
 
             }</script>
         <script>function showLib() {
-                var expiration_date = new Date();
+    var expiration_date = new Date();
                 expiration_date.setFullYear(expiration_date.getFullYear() + 1);
-
+                
                 if (document.getElementById("StepLibDiv").style.display === "none") {
                     document.getElementById("StepLibDiv").style.display = "block";
                     document.getElementById("StepLibDiv").style.width = "13%";
@@ -2494,15 +2455,15 @@
 
             }</script>
         <script type="text/javascript">
-            $(document).ready(function() {
-                var cookies = GetCookie('TestCaseDisplayStepLibrary');
-                if (cookies === "true") {
-                    showLib();
-                }
+    $(document).ready(function() {
+        var cookies = GetCookie('TestCaseDisplayStepLibrary');
+        if (cookies === "true"){
+            showLib();
+        }
+        
+    });
 
-            });
-
-        </script>
+</script>
         <!--<script>
         $(document).ready(function() {
                        

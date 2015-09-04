@@ -40,13 +40,14 @@ function initPage() {
     createDataTableWithPermissions(configurations, renderOptionsForProject);
     var oTable = $("#projectsTable").dataTable();
     oTable.fnSort([1, 'asc']);
-};
+}
+;
 
 function displayPageLabel() {
     var doc = new Doc();
 
-    displayHeaderLabel(doc.table);
-    displayGlobalLabel(doc.table);
+    displayHeaderLabel(doc);
+    displayGlobalLabel(doc);
     $("#pageTitle").html(doc.getDocLabel("page_project", "title"));
     $("#title").html(doc.getDocOnline("page_project", "title"));
     $("[name='addEntryField']").html(doc.getDocLabel("page_project", "button_create"));
@@ -57,7 +58,7 @@ function displayPageLabel() {
     $("[name='codeField']").html(doc.getDocOnline("project", "code"));
     $("[name='descriptionField']").html(doc.getDocOnline("project", "description"));
     displayInvariantList("PROJECTACTIVE", "Active");
-    displayFooter(doc.table);
+    displayFooter(doc);
 }
 
 function deleteEntryHandlerClick() {
@@ -197,8 +198,7 @@ function renderOptionsForProject(data) {
 function aoColumnsFunc() {
     var doc = new Doc();
     var aoColumns = [
-        {"data": "button",
-            "sName": "Actions",
+        {"data": null,
             "title": doc.getDocLabel("page_global", "columnAction"),
             "bSortable": false,
             "bSearchable": false,

@@ -687,22 +687,22 @@ function setAutoCompleteServerSide(selector, source) {
  * @returns {void}
  */
 function displayGlobalLabel(doc) {
-    $("[name='buttonAdd']").html(doc.page_global.buttonAdd.docLabel);
-    $("[name='buttonClose']").html(doc.page_global.buttonClose.docLabel);
-    $("[name='buttonConfirm']").html(doc.page_global.buttonConfirm.docLabel);
-    $("[name='buttonDismiss']").html(doc.page_global.buttonDismiss.docLabel);
+    $("[name='buttonAdd']").html(doc.getDocLabel("page_global", "buttonAdd"));
+    $("[name='buttonClose']").html(doc.getDocLabel("page_global", "buttonClose"));
+    $("[name='buttonConfirm']").html(doc.getDocLabel("page_global", "buttonConfirm"));
+    $("[name='buttonDismiss']").html(doc.getDocLabel("page_global", "buttonDismiss"));
 }
 
 /**
  * generate and display the footer
- * @param {JSONObject} doc
+ * @param {JavaScript Object} doc
  * @returns {void}
  */
 function displayFooter(doc) {
     var cerberusInformation = getCerberusInformation();
 
-    var footerString = doc.page_global.footer_text.docLabel;
-    var footerBugString = doc.page_global.footer_bug.docLabel;
+    var footerString = doc.getDocLabel("page_global", "footer_text");
+    var footerBugString = doc.getDocLabel("page_global", "footer_bug");
     var date = new Date();
     var loadTime = window.performance.timing.domContentLoadedEventEnd - window.performance.timing.navigationStart;
 
