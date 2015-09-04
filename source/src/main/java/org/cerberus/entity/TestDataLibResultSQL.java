@@ -20,26 +20,42 @@
 package org.cerberus.entity;
 
 import java.util.HashMap; 
+import org.cerberus.util.answer.AnswerItem;
 
 /**
  *
  * @author FNogueira
  */
 public class TestDataLibResultSQL extends TestDataLibResult {
-    private HashMap<String, String> rawData;
+    private HashMap<String, String> rawData; //only saves a row each time - TODO:FN save a set of rows
     
     public TestDataLibResultSQL(){
-        this.type = TestDataLibTypeEnum.SQL.getCode();;
+        this.type = TestDataLibTypeEnum.SQL.getCode();
     }
     @Override
-    public String getValue(TestDataLibData entry) {       
+    public AnswerItem<String> getValue(TestDataLibData entry) {     
+        MessageEvent msg = new MessageEvent(MessageEventEnum.PROPERTY_SUCCESS_GETFROMDATALIBDATA);
+        AnswerItem ansGetValue = new AnswerItem();
+        
+        //checks if the column was already retrieved
         if(!values.containsKey(entry.getSubData())){
             //if the map don't contain the entry that we want, we will get it
             String value = rawData.get(entry.getColumn().toUpperCase()); //columns are store in UPPERCASE
             //associates the subdata with the column data retrieved by the query
-            values.put(entry.getSubData(), value);
+            
+            if(value == null){
+                msg = new MessageEvent(MessageEventEnum.PROPERTY_FAILED_GETFROMDATALIBDATA_INVALID_COLUMN);
+                msg.setDescription(msg.getDescription().replace("%COLUMNNAME%", entry.getColumn()).replace("%SUBDATA%", entry.getSubData()).
+                        replace("%ENTRY%", entry.getTestDataLibID().toString()));                      
+            }else{
+                values.put(entry.getSubData(), value);
+            }
         }
-        return values.get(entry.getSubData());
+        
+        ansGetValue.setResultMessage(msg);  
+        ansGetValue.setItem(values.get(entry.getSubData()));
+        
+        return ansGetValue;
     }
     
     public HashMap<String, String> getData() {

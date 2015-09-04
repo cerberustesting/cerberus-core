@@ -169,15 +169,16 @@ public class SQLService implements ISQLService {
                         } else if (testCaseProperties.getNature().equalsIgnoreCase(Property.NATURE_NOTINUSE)) {
                         }*/
                     } else {
-                        mes = new MessageEvent(MessageEventEnum.PROPERTY_FAILED_SQL_NODATA);
-                        mes.setDescription(mes.getDescription().replaceAll("%DB%", db));
-                        mes.setDescription(mes.getDescription().replaceAll("%SQL%", sql));
-                        mes.setDescription(mes.getDescription().replaceAll("%JDBCPOOLNAME%", connectionName));
+                        mes = new MessageEvent(MessageEventEnum.PROPERTY_FAILED_SQL_NODATA);                        
                     }
-                     
+                    
+                }else{
+                    mes = responseList.getResultMessage();
                 }  
         
-                answer.setResultMessage(mes);
+                mes.setDescription(mes.getDescription().replaceAll("%DB%", db));
+                mes.setDescription(mes.getDescription().replaceAll("%SQL%", sql));
+                mes.setDescription(mes.getDescription().replaceAll("%JDBCPOOLNAME%", connectionName));
 
             } else {
                 mes = new MessageEvent(MessageEventEnum.PROPERTY_FAILED_SQL_GENERIC);
@@ -189,7 +190,7 @@ public class SQLService implements ISQLService {
         }
         
         
-        
+        answer.setResultMessage(mes);
         return answer;
     }    
     /**
@@ -378,7 +379,7 @@ public class SQLService implements ISQLService {
         List<HashMap<String, String>> list = null; 
         int maxSecurityFetch = 100;
         int nbFetch = 0;
-        MessageEvent msg = new MessageEvent(MessageEventEnum.PROPERTY_FAILED_SQL_GENERIC);
+        MessageEvent msg = new MessageEvent(MessageEventEnum.PROPERTY_SUCCESS);
         msg.setDescription(msg.getDescription().replaceAll("%JDBC%", "jdbc/" + connectionName));
 
         Connection connection = this.databaseSpring.connect(connectionName);
@@ -422,13 +423,18 @@ public class SQLService implements ISQLService {
                     }
                     listResult.setDataList(list);
                     listResult.setTotalRows(list.size());
-                    listResult.setResultMessage(new MessageEvent(MessageEventEnum.PROPERTY_SUCCESS_SQL));
+
+                    if(list.isEmpty()){
+                        msg = new MessageEvent(MessageEventEnum.PROPERTY_FAILED_SQL_NODATA);
+                    } 
                     
                 } catch (SQLException exception) {
                     MyLogger.log(SQLService.class.getName(), Level.ERROR, "Unable to execute query : "+exception.toString());
 
                 } finally {
-                    resultSet.close();
+                    if(resultSet != null){
+                        resultSet.close();
+                    }
                 }
             } catch (SQLException exception) {
                 MyLogger.log(SQLService.class.getName(), Level.WARN, exception.toString());
@@ -436,7 +442,9 @@ public class SQLService implements ISQLService {
                 msg.setDescription(msg.getDescription().replaceAll("%SQL%", sql));
                 msg.setDescription(msg.getDescription().replaceAll("%EX%", exception.toString()));
             } finally {
-                preStat.close();
+                if(preStat != null){
+                    preStat.close();
+                }
             }
         } catch (SQLException exception) {
             MyLogger.log(SQLService.class.getName(), Level.FATAL, exception.toString());
@@ -458,7 +466,7 @@ public class SQLService implements ISQLService {
                 MyLogger.log(SQLService.class.getName(), Level.WARN, e.toString());
             }
         }
- 
+        listResult.setResultMessage(msg);
         return listResult;
     }
 }

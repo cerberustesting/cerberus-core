@@ -30,6 +30,7 @@ import org.cerberus.entity.TestDataLibResult;
 import org.cerberus.exception.CerberusException;
 import org.cerberus.service.ITestDataLibDataService;
 import org.cerberus.util.answer.Answer;
+import org.cerberus.util.answer.AnswerItem;
 import org.cerberus.util.answer.AnswerList;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -90,8 +91,7 @@ public class TestDataLibDataService implements ITestDataLibDataService {
  
 
     @Override
-    public String fetchSubData(TestDataLibResult result, TestDataLibData subDataEntry) {
-        
+    public AnswerItem<String> fetchSubData(TestDataLibResult result, TestDataLibData subDataEntry) {
         return result.getValue(subDataEntry);
     }
  
@@ -133,7 +133,7 @@ public class TestDataLibDataService implements ITestDataLibDataService {
         dbmanager.commitTransaction();
         //if everything succeeds, then a success message is sent back
         MessageEvent ms = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
-        ms.setDescription(ms.getDescription().replace("%ITEM%", "Test data lib data").replace("%OPERATION%", "Modification of the subdata set "));
+        ms.setDescription(ms.getDescription().replace("%ITEM%", "Test data lib data").replace("%OPERATION%", "Modification of the sub-data set "));
         
         answer.setResultMessage(ms);
         return answer;

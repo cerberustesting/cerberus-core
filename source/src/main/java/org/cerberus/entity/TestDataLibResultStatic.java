@@ -19,6 +19,8 @@
  */
 package org.cerberus.entity; 
 
+import org.cerberus.util.answer.AnswerItem;
+
 /**
  *
  * @author FNogueira
@@ -30,13 +32,18 @@ public class TestDataLibResultStatic extends TestDataLibResult {
     }   
     
     @Override
-    public String getValue(TestDataLibData entry) {        
+    public AnswerItem<String> getValue(TestDataLibData entry) {        
+        
+        AnswerItem ansGetValue = new AnswerItem(new MessageEvent(MessageEventEnum.PROPERTY_SUCCESS_GETFROMDATALIBDATA));
         String keytoRetrieve = entry.getSubData();
         
         if(!values.containsKey(keytoRetrieve)){
             values.put(keytoRetrieve, entry.getValue());
-        }
-        return this.getValue(keytoRetrieve);
+        }        
+               
+        ansGetValue.setItem(this.getValue(keytoRetrieve));
+                
+        return ansGetValue;
     }
     
 }
