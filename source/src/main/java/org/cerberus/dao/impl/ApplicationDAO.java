@@ -71,6 +71,63 @@ public class ApplicationDAO implements IApplicationDAO {
     private final String SQL_DUPLICATED_CODE = "23000";
 
     /**
+     *
+     * @param application - idApplication
+     * @return ans - AnswerIterm
+     */
+    @Override
+    public AnswerItem readByKey(String application) {
+        AnswerItem ans = new AnswerItem();
+        Application result = null;
+        final String query = "SELECT * FROM `application` WHERE `application` = ?";
+        MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
+
+        Connection connection = this.databaseSpring.connect();
+        try {
+            PreparedStatement preStat = connection.prepareStatement(query);
+            try {
+                preStat.setString(1, application);
+                ResultSet resultSet = preStat.executeQuery();
+                try {
+                    if (resultSet.first()) {
+                        result = loadFromResultSet(resultSet);
+                        msg.setDescription(msg.getDescription().replace("%ITEM%", "Application").replace("%OPERATION%", "SELECT"));
+                        ans.setItem(result);
+                    }
+                } catch (SQLException exception) {
+                    MyLogger.log(ApplicationDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
+                    msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_UNEXPECTED_ERROR);
+                    msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", exception.toString()));
+                } finally {
+                    resultSet.close();
+                }
+            } catch (SQLException exception) {
+                MyLogger.log(ApplicationDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
+                msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_UNEXPECTED_ERROR);
+                msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", exception.toString()));
+            } finally {
+                preStat.close();
+            }
+        } catch (SQLException exception) {
+            MyLogger.log(ApplicationDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
+            msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_UNEXPECTED_ERROR);
+            msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", exception.toString()));
+        } finally {
+            try {
+                if (connection != null) {
+                    connection.close();
+                }
+            } catch (SQLException e) {
+                MyLogger.log(ApplicationDAO.class.getName(), Level.WARN, e.toString());
+            }
+        }
+
+        //sets the message
+        ans.setResultMessage(msg);
+        return ans;
+    }
+
+    /**
      * Finds the Application by the name. </p> Access to database to return the
      * {@link Application} given by the unique name.<br/> If no application
      * found with the given name, returns CerberusException with
@@ -83,7 +140,7 @@ public class ApplicationDAO implements IApplicationDAO {
      * @since 0.9.0
      */
     @Override
-    public Application findApplicationByKey(String application) throws CerberusException {
+    public Application readByKey_Deprecated(String application) throws CerberusException {
         Application result = null;
         final String query = "SELECT * FROM application a WHERE a.application = ? ";
 
@@ -96,7 +153,7 @@ public class ApplicationDAO implements IApplicationDAO {
                 ResultSet resultSet = preStat.executeQuery();
                 try {
                     if (resultSet.first()) {
-                        result = this.loadApplicationFromResultSet(resultSet);
+                        result = this.loadFromResultSet(resultSet);
                     } else {
                         throw new CerberusException(new MessageGeneral(MessageGeneralEnum.NO_DATA_FOUND));
                     }
@@ -135,7 +192,7 @@ public class ApplicationDAO implements IApplicationDAO {
      * @since 0.9.0
      */
     @Override
-    public List<Application> findAllApplication() throws CerberusException {
+    public List<Application> readAll_Deprecated() throws CerberusException {
         List<Application> list = null;
         final String query = "SELECT * FROM application a ORDER BY a.Application asc, a.sort";
 
@@ -148,7 +205,7 @@ public class ApplicationDAO implements IApplicationDAO {
                 try {
                     list = new ArrayList<Application>();
                     while (resultSet.next()) {
-                        Application app = this.loadApplicationFromResultSet(resultSet);
+                        Application app = this.loadFromResultSet(resultSet);
                         list.add(app);
                     }
                 } catch (SQLException exception) {
@@ -188,7 +245,7 @@ public class ApplicationDAO implements IApplicationDAO {
      * @since 0.9.0
      */
     @Override
-    public List<Application> findApplicationBySystem(String system) throws CerberusException {
+    public List<Application> readBySystem_Deprecated(String system) throws CerberusException {
         List<Application> list = null;
         final String query = "SELECT * FROM application a WHERE `System` LIKE ? ORDER BY a.sort";
 
@@ -202,7 +259,7 @@ public class ApplicationDAO implements IApplicationDAO {
                 try {
                     list = new ArrayList<Application>();
                     while (resultSet.next()) {
-                        Application app = this.loadApplicationFromResultSet(resultSet);
+                        Application app = this.loadFromResultSet(resultSet);
                         list.add(app);
                     }
                 } catch (SQLException exception) {
@@ -230,7 +287,7 @@ public class ApplicationDAO implements IApplicationDAO {
     }
 
     @Override
-    public AnswerList findApplicationListBySystemByCriteria(String system, int start, int amount, String column, String dir, String searchTerm, String individualSearch) {
+    public AnswerList readBySystemByCriteria(String system, int start, int amount, String column, String dir, String searchTerm, String individualSearch) {
         AnswerList response = new AnswerList();
         MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
         List<Application> applicationList = new ArrayList<Application>();
@@ -279,7 +336,7 @@ public class ApplicationDAO implements IApplicationDAO {
                 try {
                     //gets the data
                     while (resultSet.next()) {
-                        applicationList.add(this.loadApplicationFromResultSet(resultSet));
+                        applicationList.add(this.loadFromResultSet(resultSet));
                     }
 
                     //get the total number of rows
@@ -334,66 +391,8 @@ public class ApplicationDAO implements IApplicationDAO {
         return response;
     }
 
-    /**
-     *
-     * @param application - idApplication
-     * @return ans - AnswerIterm
-     */
     @Override
-    public AnswerItem findApplicationByString(String application) {
-        AnswerItem ans = new AnswerItem();
-        Application result = null;
-        final String query = "SELECT * FROM `application` WHERE `application` = ?";
-        MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
-
-        Connection connection = this.databaseSpring.connect();
-        try {
-            PreparedStatement preStat = connection.prepareStatement(query);
-            try {
-                preStat.setString(1, application);
-                ResultSet resultSet = preStat.executeQuery();
-                try {
-                    if (resultSet.first()) {
-                        result = loadApplicationFromResultSet(resultSet);
-                        msg.setDescription(msg.getDescription().replace("%ITEM%", "Application").replace("%OPERATION%", "SELECT"));
-                        ans.setItem(result);
-                    }
-                } catch (SQLException exception) {
-                    MyLogger.log(ApplicationDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
-                    msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_UNEXPECTED_ERROR);
-                    msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", exception.toString()));
-                } finally {
-                    resultSet.close();
-                }
-            } catch (SQLException exception) {
-                MyLogger.log(ApplicationDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
-                msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_UNEXPECTED_ERROR);
-                msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", exception.toString()));
-            } finally {
-                preStat.close();
-            }
-        } catch (SQLException exception) {
-            MyLogger.log(ApplicationDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
-            msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_UNEXPECTED_ERROR);
-            msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", exception.toString()));
-        } finally {
-            try {
-                if (connection != null) {
-                    connection.close();
-                }
-            } catch (SQLException e) {
-                MyLogger.log(ApplicationDAO.class.getName(), Level.WARN, e.toString());
-            }
-        }
-
-        //sets the message
-        ans.setResultMessage(msg);
-        return ans;
-    }
-
-
-    @Override
-    public Answer createApplication(Application application) {
+    public Answer create(Application application) {
         MessageEvent msg = null;
         StringBuilder query = new StringBuilder();
         query.append("INSERT INTO application (`application`, `description`, `sort`, `type`, `system`, `SubSystem`, `svnurl`, `BugTrackerUrl`, `BugTrackerNewUrl`, `deploytype`, `mavengroupid` ) ");
@@ -449,7 +448,7 @@ public class ApplicationDAO implements IApplicationDAO {
     }
 
     @Override
-    public Answer deleteApplication(Application application) {
+    public Answer delete(Application application) {
         MessageEvent msg = null;
         final String query = "DELETE FROM application WHERE application = ? ";
 
@@ -486,7 +485,7 @@ public class ApplicationDAO implements IApplicationDAO {
     }
 
     @Override
-    public Answer updateApplication(Application application) {
+    public Answer update(Application application) {
         MessageEvent msg = null;
         final String query = "UPDATE application SET description = ?, sort = ?, `type` = ?, `system` = ?, SubSystem = ?, svnurl = ?, BugTrackerUrl = ?, BugTrackerNewUrl = ?, deploytype = ?, mavengroupid = ?  WHERE Application = ?";
 
@@ -538,7 +537,7 @@ public class ApplicationDAO implements IApplicationDAO {
      * @since 0.9.1
      */
     @Override
-    public List<String> findDistinctSystem() {
+    public List<String> readDistinctSystem() {
         List<String> list = null;
         final String query = "SELECT DISTINCT a.system FROM application a ORDER BY a.system ASC";
 
@@ -578,7 +577,7 @@ public class ApplicationDAO implements IApplicationDAO {
     }
 
     @Override
-    public Application loadApplicationFromResultSet(ResultSet rs) throws SQLException {
+    public Application loadFromResultSet(ResultSet rs) throws SQLException {
         String application = ParameterParserUtil.parseStringParam(rs.getString("application"), "");
         String description = ParameterParserUtil.parseStringParam(rs.getString("description"), "");
         int sort = ParameterParserUtil.parseIntegerParam(rs.getString("sort"), 0);

@@ -37,32 +37,32 @@ public interface IProjectService {
      * @return the project object
      * @throws CerberusException if not exist.
      */
-    Project findProjectByKey(String project) throws CerberusException;
+    Project readByKey_Deprecated(String project) throws CerberusException;
 
     /**
      * @param project
      * @return the project object
      * @throws CerberusException if not exist.
      */
-    List<Project> findAllProject() throws CerberusException;
+    List<Project> readAll_Deprecated() throws CerberusException;
 
-    List<String> findListOfProjectDescription();
+    List<String> readDescription_Deprecated();
 
     /**
      *
      * @param project
      * @return true if project exist. false if not.
      */
-    boolean isProjectExist(String project);
+    boolean exist(String project);
     
-    public Answer createProject(Project project) throws CerberusException;
+    public Answer create_Deprecated(Project project) throws CerberusException;
 
-    public Answer deleteProject(Project project) throws CerberusException;
+    public Answer delete_Deprecated(Project project) throws CerberusException;
 
-    public Answer updateProject(Project project) throws CerberusException;
+    public Answer update_Deprecated(Project project) throws CerberusException;
 
-    public AnswerList findProjectListByCriteria(int startPosition, int length, String columnName, String sort, String searchParameter, String string);
+    public AnswerList readByCriteria(int startPosition, int length, String columnName, String sort, String searchParameter, String string);
 
-    public AnswerItem findProjectByString(String id);
+    public AnswerItem readByKey(String id);
 
 }

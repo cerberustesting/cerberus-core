@@ -91,7 +91,7 @@ public class UpdateBuildRevisionInvariant extends HttpServlet {
         ILogEventService logEventService = appContext.getBean(LogEventService.class);
         IFactoryLogEvent factoryLogEvent = appContext.getBean(FactoryLogEvent.class);
         try {
-            logEventService.insertLogEvent(factoryLogEvent.create(0, 0, request.getUserPrincipal().getName(), null, "/UpdateBuildRevisionInvariant", "UPDATE", "Updated build revision invariant : ['" + system + "'|'" + level + "'|'" + seq + "']", "", ""));
+            logEventService.create_Deprecated(factoryLogEvent.create(0, 0, request.getUserPrincipal().getName(), null, "/UpdateBuildRevisionInvariant", "UPDATE", "Updated build revision invariant : ['" + system + "'|'" + level + "'|'" + seq + "']", "", ""));
         } catch (CerberusException ex) {
             Logger.getLogger(UpdateBuildRevisionInvariant.class.getName()).log(Level.SEVERE, null, ex);
         }

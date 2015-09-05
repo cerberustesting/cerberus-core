@@ -64,7 +64,7 @@ public class GetDeployTypeList extends HttpServlet {
         JSONObject jsonObject = new JSONObject();
         try {
 
-            AnswerList resp = deployTypeService.findAllDeployType();
+            AnswerList resp = deployTypeService.readAll();
 
             if (resp.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {//the service was able to perform the query, then we should get all values
                 for (DeployType myDeployType : (List<DeployType>) resp.getDataList()) {

@@ -85,7 +85,7 @@ public class CreateSoapLibrary extends HttpServlet {
             ILogEventService logEventService = appContext.getBean(LogEventService.class);
             IFactoryLogEvent factoryLogEvent = appContext.getBean(FactoryLogEvent.class);
             try {
-                logEventService.insertLogEvent(factoryLogEvent.create(0, 0, request.getUserPrincipal().getName(), null, "/CreateSoapLibrary", "CREATE", "Create SoapLibrary : " + name, "", ""));
+                logEventService.create_Deprecated(factoryLogEvent.create(0, 0, request.getUserPrincipal().getName(), null, "/CreateSoapLibrary", "CREATE", "Create SoapLibrary : " + name, "", ""));
             } catch (CerberusException ex) {
                 org.apache.log4j.Logger.getLogger(CreateSoapLibrary.class.getName()).log(org.apache.log4j.Level.ERROR, null, ex);
             }

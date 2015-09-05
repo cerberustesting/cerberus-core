@@ -44,9 +44,14 @@ public class ProjectService implements IProjectService {
     private IProjectDAO projectDao;
 
     @Override
-    public List<String> findListOfProjectDescription() {
+    public AnswerItem readByKey(String id) {
+        return projectDao.readByKey(id);
+    }
+
+    @Override
+    public List<String> readDescription_Deprecated() {
         List<String> result = new ArrayList<String>();
-        List<Project> listOfProject = this.projectDao.findAllProject();
+        List<Project> listOfProject = this.projectDao.readAll_Deprecated();
         for (Project project : listOfProject) {
             result.add(project.getIdProject().concat(project.getCode()).concat(project.getDescription()));
         }
@@ -55,8 +60,8 @@ public class ProjectService implements IProjectService {
     }
 
     @Override
-    public Project findProjectByKey(String project) throws CerberusException {
-        Project myProject = projectDao.findProjectByKey(project);
+    public Project readByKey_Deprecated(String project) throws CerberusException {
+        Project myProject = projectDao.readByKey_Deprecated(project);
         if (myProject == null) {
             //TODO define message => error occur trying to find user
             throw new CerberusException(new MessageGeneral(MessageGeneralEnum.NO_DATA_FOUND));
@@ -65,14 +70,19 @@ public class ProjectService implements IProjectService {
     }
 
     @Override
-    public List<Project> findAllProject() throws CerberusException {
-        return projectDao.findAllProject();
+    public List<Project> readAll_Deprecated() throws CerberusException {
+        return projectDao.readAll_Deprecated();
     }
 
     @Override
-    public boolean isProjectExist(String project) {
+    public AnswerList readByCriteria(int startPosition, int length, String columnName, String sort, String searchParameter, String string) {
+        return projectDao.readByCriteria(startPosition, length, columnName, sort, searchParameter, string);
+    }
+
+    @Override
+    public boolean exist(String project) {
         try {
-            findProjectByKey(project);
+            readByKey_Deprecated(project);
             return true;
         } catch (CerberusException e) {
             return false;
@@ -80,28 +90,18 @@ public class ProjectService implements IProjectService {
     }
 
     @Override
-    public Answer createProject(Project project) throws CerberusException {
-         return projectDao.createProject(project);
+    public Answer create_Deprecated(Project project) throws CerberusException {
+         return projectDao.create_Deprecated(project);
     }
 
     @Override
-    public Answer deleteProject(Project project) throws CerberusException {
-        return projectDao.deleteProject(project);
+    public Answer delete_Deprecated(Project project) throws CerberusException {
+        return projectDao.delete_Deprecated(project);
     }
 
     @Override
-    public Answer updateProject(Project project) throws CerberusException {
-        return projectDao.updateProject(project);
-    }
-
-    @Override
-    public AnswerList findProjectListByCriteria(int startPosition, int length, String columnName, String sort, String searchParameter, String string) {
-        return projectDao.findProjectListByCriteria(startPosition, length, columnName, sort, searchParameter, string);
-    }
-
-    @Override
-    public AnswerItem findProjectByString(String id) {
-        return projectDao.findProjectByString(id);
+    public Answer update_Deprecated(Project project) throws CerberusException {
+        return projectDao.update_Deprecated(project);
     }
 
 }

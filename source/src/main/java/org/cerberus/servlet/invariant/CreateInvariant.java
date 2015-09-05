@@ -80,7 +80,7 @@ public class CreateInvariant extends HttpServlet {
             ILogEventService logEventService = appContext.getBean(LogEventService.class);
             IFactoryLogEvent factoryLogEvent = appContext.getBean(FactoryLogEvent.class);
             try {
-                logEventService.insertLogEvent(factoryLogEvent.create(0, 0, request.getUserPrincipal().getName(), null, "/CreateInvariant", "CREATE", "Create Invariant : ['" + idname + "'|'" + value + "'] " + sort, "", ""));
+                logEventService.create_Deprecated(factoryLogEvent.create(0, 0, request.getUserPrincipal().getName(), null, "/CreateInvariant", "CREATE", "Create Invariant : ['" + idname + "'|'" + value + "'] " + sort, "", ""));
             } catch (CerberusException ex) {
                 org.apache.log4j.Logger.getLogger(UserService.class.getName()).log(org.apache.log4j.Level.ERROR, null, ex);
             }

@@ -90,7 +90,7 @@ public class CreateCountryEnvParam extends HttpServlet {
             ILogEventService logEventService = appContext.getBean(ILogEventService.class);
             IFactoryLogEvent factoryLogEvent = appContext.getBean(IFactoryLogEvent.class);
             try {
-                logEventService.insertLogEvent(factoryLogEvent.create(0, 0, request.getUserPrincipal().getName(), null, "/CreateCountryEnvParam", "CREATE", "Create CountryEnvParam : " + country + "_" + environment, "", ""));
+                logEventService.create_Deprecated(factoryLogEvent.create(0, 0, request.getUserPrincipal().getName(), null, "/CreateCountryEnvParam", "CREATE", "Create CountryEnvParam : " + country + "_" + environment, "", ""));
             } catch (CerberusException ex) {
                 LOG.error(ex);
             }

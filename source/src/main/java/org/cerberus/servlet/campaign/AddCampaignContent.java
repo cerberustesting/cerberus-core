@@ -74,7 +74,7 @@ public class AddCampaignContent extends HttpServlet {
 
             response.getWriter().append(newCampaignContentId).close();
 
-            logEventService.insertLogEvent(factoryLogEvent.create(0, 0, request.getUserPrincipal().getName(), null, "/AddCampaignContent", "CREATE", "Create Campaign Content : " + campaignId + "/" + testbattery, "", ""));
+            logEventService.create_Deprecated(factoryLogEvent.create(0, 0, request.getUserPrincipal().getName(), null, "/AddCampaignContent", "CREATE", "Create Campaign Content : " + campaignId + "/" + testbattery, "", ""));
         } catch (CerberusException ex) {
             response.setContentType("text/html");
             Logger.getLogger(AddCampaignContent.class.getName()).log(org.apache.log4j.Level.ERROR, null, ex);

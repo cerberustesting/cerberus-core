@@ -70,7 +70,7 @@ public class GetApplication extends HttpServlet {
         try {
             JSONObject jsonResponse = new JSONObject();
             try {
-                for (Application myApplication : applicationService.findApplicationBySystem(MySystem)) {
+                for (Application myApplication : applicationService.readBySystem_Deprecated(MySystem)) {
                     JSONArray row = new JSONArray();
                     row.put(myApplication.getApplication());
                     row.put(myApplication.getSystem());

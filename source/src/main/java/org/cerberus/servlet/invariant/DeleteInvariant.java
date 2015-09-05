@@ -74,7 +74,7 @@ public class DeleteInvariant extends HttpServlet {
             ILogEventService logEventService = appContext.getBean(LogEventService.class);
             IFactoryLogEvent factoryLogEvent = appContext.getBean(FactoryLogEvent.class);
             try {
-                logEventService.insertLogEvent(factoryLogEvent.create(0, 0, request.getUserPrincipal().getName(), null, "/DeleteInvariant", "DELETE", "Delete Invariant : ['" + idName + "'|'" + invVal + "']", "", ""));
+                logEventService.create_Deprecated(factoryLogEvent.create(0, 0, request.getUserPrincipal().getName(), null, "/DeleteInvariant", "DELETE", "Delete Invariant : ['" + idName + "'|'" + invVal + "']", "", ""));
             } catch (CerberusException ex) {
                 org.apache.log4j.Logger.getLogger(UserService.class.getName()).log(org.apache.log4j.Level.ERROR, null, ex);
             }

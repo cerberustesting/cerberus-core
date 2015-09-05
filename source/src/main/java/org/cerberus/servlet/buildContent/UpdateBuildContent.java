@@ -87,7 +87,7 @@ public class UpdateBuildContent extends HttpServlet{
         ILogEventService logEventService = appContext.getBean(LogEventService.class);
         IFactoryLogEvent factoryLogEvent = appContext.getBean(FactoryLogEvent.class);
         try {
-            logEventService.insertLogEvent(factoryLogEvent.create(0, 0, req.getUserPrincipal().getName(), null, "/UpdateBuildContent", "UPDATE", "Updated BuildContent : " + brp.getRelease(), "", ""));
+            logEventService.create_Deprecated(factoryLogEvent.create(0, 0, req.getUserPrincipal().getName(), null, "/UpdateBuildContent", "UPDATE", "Updated BuildContent : " + brp.getRelease(), "", ""));
         } catch (CerberusException ex) {
             LOG.warn("Unable to register log : " + ex.getMessageError().getDescription(), ex);
         }

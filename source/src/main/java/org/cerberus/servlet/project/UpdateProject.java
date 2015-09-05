@@ -95,7 +95,7 @@ public class UpdateProject extends HttpServlet {
             ApplicationContext appContext = WebApplicationContextUtils.getWebApplicationContext(this.getServletContext());
             IProjectService projectService = appContext.getBean(IProjectService.class);
 
-            AnswerItem resp = projectService.findProjectByString(idProject);
+            AnswerItem resp = projectService.readByKey(idProject);
 
             if (!(resp.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode()))) {
                 /**
@@ -116,7 +116,7 @@ public class UpdateProject extends HttpServlet {
                 projectData.setCode(code);
                 projectData.setDescription(description);
                 projectData.setActive(active);
-                ans = projectService.updateProject(projectData);
+                ans = projectService.update_Deprecated(projectData);
 
                 if (ans.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
                     /**
@@ -126,7 +126,7 @@ public class UpdateProject extends HttpServlet {
                     IFactoryLogEvent factoryLogEvent = appContext.getBean(FactoryLogEvent.class);
 
                     try {
-                        logEventService.insertLogEvent(factoryLogEvent.create(0, 0, request.getUserPrincipal().getName(), null, "/UpdateProject", "UPDATE", "Updated Project : ['" + idProject + "']", "", ""));
+                        logEventService.create_Deprecated(factoryLogEvent.create(0, 0, request.getUserPrincipal().getName(), null, "/UpdateProject", "UPDATE", "Updated Project : ['" + idProject + "']", "", ""));
                     } catch (CerberusException ex) {
                         Logger.getLogger(UpdateProject.class.getName()).log(Level.SEVERE, null, ex);
                     }

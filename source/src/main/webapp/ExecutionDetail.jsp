@@ -183,7 +183,7 @@
 
                     String tcGroup = tCase.getGroup();
 
-                    newBugURL = myApplicationService.findApplicationByKey(myApplication).getBugTrackerNewUrl();
+                    newBugURL = myApplicationService.readByKey_Deprecated(myApplication).getBugTrackerNewUrl();
                     if (!StringUtil.isNullOrEmpty(newBugURL)) {
                         newBugURL = newBugURL.replaceAll("%EXEID%", id_filter);
                         newBugURL = newBugURL.replaceAll("%EXEDATE%", exedate);
@@ -319,7 +319,7 @@
                                 %><a href="<%= newBugURL%>" target='_blank' title="title">Open a bug.</a><%
                                 } else {
 
-                                    String bugURL = myApplicationService.findApplicationByKey(myApplication).getBugTrackerUrl();
+                                    String bugURL = myApplicationService.readByKey_Deprecated(myApplication).getBugTrackerUrl();
                                     if (StringUtil.isNullOrEmpty(bugURL)) {
                                 %><%=bugid%><%
                                     } else {

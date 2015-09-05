@@ -886,7 +886,7 @@ public class UpdateTestCaseDetail extends HttpServlet {
                 ILogEventService logEventService = appContext.getBean(LogEventService.class);
                 IFactoryLogEvent factoryLogEvent = appContext.getBean(FactoryLogEvent.class);
                 try {
-                    logEventService.insertLogEvent(factoryLogEvent.create(0, 0, request.getUserPrincipal().getName(), null, "/UpdateTestCaseDetail", "UPDATE", "Update testcase detail : ['" + test_testcase_format_prop[0] + "'|'" + test_testcase_format_prop[1] + "']", "", ""));
+                    logEventService.create_Deprecated(factoryLogEvent.create(0, 0, request.getUserPrincipal().getName(), null, "/UpdateTestCaseDetail", "UPDATE", "Update testcase detail : ['" + test_testcase_format_prop[0] + "'|'" + test_testcase_format_prop[1] + "']", "", ""));
                 } catch (CerberusException ex) {
                     Logger.getLogger(UserService.class.getName()).log(Level.ERROR, null, ex);
                 }

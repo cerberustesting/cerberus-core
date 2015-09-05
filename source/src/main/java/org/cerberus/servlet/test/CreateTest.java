@@ -190,7 +190,7 @@ public class CreateTest extends HttpServlet {
                             ILogEventService logEventService = appContext.getBean(LogEventService.class);
                             IFactoryLogEvent factoryLogEvent = appContext.getBean(FactoryLogEvent.class);
                             try {
-                                logEventService.insertLogEvent(factoryLogEvent.create(0, 0, request.getUserPrincipal().getName(), null, "/CreateTest", "CREATE", "Create test : " + test, "", ""));
+                                logEventService.create_Deprecated(factoryLogEvent.create(0, 0, request.getUserPrincipal().getName(), null, "/CreateTest", "CREATE", "Create test : " + test, "", ""));
                             } catch (CerberusException ex) {
                                 Logger.getLogger(UserService.class.getName()).log(Level.ERROR, null, ex);
                             }

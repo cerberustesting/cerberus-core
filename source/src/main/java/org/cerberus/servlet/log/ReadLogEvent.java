@@ -158,7 +158,7 @@ public class ReadLogEvent extends HttpServlet {
         String columnName = columnToSort[columnToSortParameter];
         String sort = ParameterParserUtil.parseStringParam(request.getParameter("sSortDir_0"), "desc");
 
-        AnswerList resp = logEventService.findAllLogEvent(startPosition, length, columnName, sort, searchParameter, "");
+        AnswerList resp = logEventService.readByCriteria_Deprecated(startPosition, length, columnName, sort, searchParameter, "");
         if (resp.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
             for (LogEvent myLogEvent : (List<LogEvent>) resp.getDataList()) {
                 Gson gson = new Gson();

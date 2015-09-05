@@ -90,7 +90,7 @@ public class UpdateParameter extends HttpServlet {
                 ILogEventService logEventService = appContext.getBean(LogEventService.class);
                 IFactoryLogEvent factoryLogEvent = appContext.getBean(FactoryLogEvent.class);
                 try {
-                    logEventService.insertLogEvent(factoryLogEvent.create(0, 0, request.getUserPrincipal().getName(), null, "/UpdateParameterAjax", "UPDATE", "Update parameter : " + param, "", ""));
+                    logEventService.create_Deprecated(factoryLogEvent.create(0, 0, request.getUserPrincipal().getName(), null, "/UpdateParameterAjax", "UPDATE", "Update parameter : " + param, "", ""));
                 } catch (CerberusException ex) {
                     Logger.getLogger(UserService.class.getName()).log(Level.ERROR, null, ex);
                 }

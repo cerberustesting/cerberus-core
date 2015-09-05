@@ -42,54 +42,39 @@ public class ApplicationService implements IApplicationService {
     private IApplicationDAO ApplicationDAO;
 
     @Override
-    public Application findApplicationByKey(String Application) throws CerberusException {
-        return ApplicationDAO.findApplicationByKey(Application);
+    public AnswerItem readByKey(String id) {
+        return ApplicationDAO.readByKey(id);
     }
 
     @Override
-    public List<Application> findAllApplication() throws CerberusException {
-        return ApplicationDAO.findAllApplication();
+    public Application readByKey_Deprecated(String Application) throws CerberusException {
+        return ApplicationDAO.readByKey_Deprecated(Application);
     }
 
     @Override
-    public List<Application> findApplicationBySystem(String System) throws CerberusException {
-        return ApplicationDAO.findApplicationBySystem(System);
+    public List<Application> readAll_Deprecated() throws CerberusException {
+        return ApplicationDAO.readAll_Deprecated();
     }
 
     @Override
-    public AnswerList findApplicationListByCriteria(int startPosition, int length, String columnName, String sort, String searchParameter, String string) {
-        return ApplicationDAO.findApplicationListBySystemByCriteria(null, startPosition, length, columnName, sort, searchParameter, string);
-    }
-    
-    @Override
-    public AnswerList findApplicationListBySystemByCriteria(String system, int startPosition, int length, String columnName, String sort, String searchParameter, String string) {
-        return ApplicationDAO.findApplicationListBySystemByCriteria(system, startPosition, length, columnName, sort, searchParameter, string);
-    }
-    
-    @Override
-    public AnswerItem findApplicationByString(String id) {
-        return ApplicationDAO.findApplicationByString(id);
+    public List<Application> readBySystem_Deprecated(String System) throws CerberusException {
+        return ApplicationDAO.readBySystem_Deprecated(System);
     }
 
     @Override
-    public Answer createApplication(Application application)  {
-         return ApplicationDAO.createApplication(application);
+    public AnswerList readByCriteria(int startPosition, int length, String columnName, String sort, String searchParameter, String string) {
+        return ApplicationDAO.readBySystemByCriteria(null, startPosition, length, columnName, sort, searchParameter, string);
     }
 
     @Override
-    public Answer deleteApplication(Application application)  {
-        return ApplicationDAO.deleteApplication(application);
+    public AnswerList readBySystemByCriteria(String system, int startPosition, int length, String columnName, String sort, String searchParameter, String string) {
+        return ApplicationDAO.readBySystemByCriteria(system, startPosition, length, columnName, sort, searchParameter, string);
     }
 
     @Override
-    public Answer updateApplication(Application application)  {
-        return ApplicationDAO.updateApplication(application);
-    }
-
-    @Override
-    public boolean isApplicationExist(String Application) {
+    public boolean exist(String Application) {
         try {
-            findApplicationByKey(Application);
+            readByKey_Deprecated(Application);
             return true;
         } catch (CerberusException e) {
             return false;
@@ -97,7 +82,22 @@ public class ApplicationService implements IApplicationService {
     }
 
     @Override
-    public List<String> findDistinctSystem() {
-        return this.ApplicationDAO.findDistinctSystem();
+    public Answer create(Application application) {
+        return ApplicationDAO.create(application);
+    }
+
+    @Override
+    public Answer delete(Application application) {
+        return ApplicationDAO.delete(application);
+    }
+
+    @Override
+    public Answer update(Application application) {
+        return ApplicationDAO.update(application);
+    }
+
+    @Override
+    public List<String> readDistinctSystem() {
+        return this.ApplicationDAO.readDistinctSystem();
     }
 }

@@ -97,7 +97,7 @@
 
         StringBuilder projects = new StringBuilder("{");
         StringBuilder projectOptions = new StringBuilder();
-        for (Project project : projectService.findAllProject()) {
+        for (Project project : projectService.readAll_Deprecated()) {
             projects.append("'");
             projects.append(project.getIdProject());
             projects.append("':'");
@@ -122,7 +122,7 @@
 
         StringBuilder applications = new StringBuilder("{");
         StringBuilder applicationOptions = new StringBuilder();
-        for (Application app : applicationService.findApplicationBySystem(MySystem)) {
+        for (Application app : applicationService.readBySystem_Deprecated(MySystem)) {
             applications.append("'");
             applications.append(app.getApplication());
             applications.append("':'");

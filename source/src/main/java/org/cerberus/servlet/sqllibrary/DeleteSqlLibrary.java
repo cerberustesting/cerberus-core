@@ -75,7 +75,7 @@ public class DeleteSqlLibrary extends HttpServlet {
             ILogEventService logEventService = appContext.getBean(LogEventService.class);
             IFactoryLogEvent factoryLogEvent = appContext.getBean(FactoryLogEvent.class);
             try {
-                logEventService.insertLogEvent(factoryLogEvent.create(0, 0, request.getUserPrincipal().getName(), null, "/DeleteSqlLibrary", "DELETE", "Delete SQLLibrary : " + name, "", ""));
+                logEventService.create_Deprecated(factoryLogEvent.create(0, 0, request.getUserPrincipal().getName(), null, "/DeleteSqlLibrary", "DELETE", "Delete SQLLibrary : " + name, "", ""));
             } catch (CerberusException ex) {
                 org.apache.log4j.Logger.getLogger(DeleteSqlLibrary.class.getName()).log(org.apache.log4j.Level.ERROR, null, ex);
             }

@@ -384,7 +384,7 @@
                         ExeclistWhereSQL.append( " and tce.ControlStatus=? ");
                 }
                 if (systemFlt.equalsIgnoreCase("") == false) {
-                        List<Application> appliList = applicationService.findApplicationBySystem(systemFlt);
+                        List<Application> appliList = applicationService.readBySystem_Deprecated(systemFlt);
                         String inSQL = SqlUtil.getInSQLClause(appliList);
                         if (!(inSQL.equalsIgnoreCase(""))) {
                             ExeclistWhereSQL.append(" and tce.Application ");

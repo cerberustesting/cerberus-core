@@ -91,7 +91,7 @@ public class ApplicationDAOTest {
         when(resultSet.getString("deploytype")).thenReturn(deploytype);
         when(resultSet.getString("mavengroupid")).thenReturn(mavengroupid);
 
-        List<Application> list = applicationDAO.findAllApplication();
+        List<Application> list = applicationDAO.readAll_Deprecated();
         Assert.assertNotNull(list);
         Assert.assertEquals(1, list.size());
 

@@ -56,7 +56,7 @@ public class DeployTypeDAO implements IDeployTypeDAO {
      * @return ans - AnswerIterm
      */
     @Override
-    public AnswerItem findDeployTypeByKey(String deployType) {
+    public AnswerItem readByKey(String deployType) {
         AnswerItem ans = new AnswerItem();
         DeployType result = null;
         final String query = "SELECT * FROM `deploytype` WHERE `deploytype` = ?";
@@ -70,7 +70,7 @@ public class DeployTypeDAO implements IDeployTypeDAO {
                 ResultSet resultSet = preStat.executeQuery();
                 try {
                     if (resultSet.first()) {
-                        result = loadDeployTypeFromResultSet(resultSet);
+                        result = loadFromResultSet(resultSet);
                         msg.setDescription(msg.getDescription().replace("%ITEM%", "Deploy Type").replace("%OPERATION%", "SELECT"));
                         ans.setItem(result);
                     }
@@ -108,7 +108,7 @@ public class DeployTypeDAO implements IDeployTypeDAO {
     }
 
     @Override
-    public AnswerList findAllDeployType() {
+    public AnswerList readAll() {
         AnswerList response = new AnswerList();
         MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
         List<DeployType> deployTypeList = new ArrayList<DeployType>();
@@ -128,7 +128,7 @@ public class DeployTypeDAO implements IDeployTypeDAO {
                 try {
                     //gets the data
                     while (resultSet.next()) {
-                        deployTypeList.add(this.loadDeployTypeFromResultSet(resultSet));
+                        deployTypeList.add(this.loadFromResultSet(resultSet));
                     }
 
                     //get the total number of rows
@@ -184,7 +184,7 @@ public class DeployTypeDAO implements IDeployTypeDAO {
     }
 
     @Override
-    public AnswerList findDeployTypeByCriteria(int start, int amount, String column, String dir, String searchTerm, String individualSearch) {
+    public AnswerList readByCriteria(int start, int amount, String column, String dir, String searchTerm, String individualSearch) {
         AnswerList response = new AnswerList();
         MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
         List<DeployType> deployTypeList = new ArrayList<DeployType>();
@@ -219,7 +219,7 @@ public class DeployTypeDAO implements IDeployTypeDAO {
                 try {
                     //gets the data
                     while (resultSet.next()) {
-                        deployTypeList.add(this.loadDeployTypeFromResultSet(resultSet));
+                        deployTypeList.add(this.loadFromResultSet(resultSet));
                     }
 
                     //get the total number of rows
@@ -275,7 +275,7 @@ public class DeployTypeDAO implements IDeployTypeDAO {
     }
 
     @Override
-    public Answer createDeployType(DeployType deployType) {
+    public Answer create(DeployType deployType) {
         MessageEvent msg = null;
         StringBuilder query = new StringBuilder();
         query.append("INSERT INTO deploytype (`deploytype`, `description`) ");
@@ -322,7 +322,7 @@ public class DeployTypeDAO implements IDeployTypeDAO {
     }
 
     @Override
-    public Answer deleteDeployType(DeployType deployType) {
+    public Answer delete(DeployType deployType) {
         MessageEvent msg = null;
         final String query = "DELETE FROM deploytype WHERE deploytype = ? ";
 
@@ -359,7 +359,7 @@ public class DeployTypeDAO implements IDeployTypeDAO {
     }
 
     @Override
-    public Answer updateDeployType(DeployType deployType) {
+    public Answer update(DeployType deployType) {
         MessageEvent msg = null;
         final String query = "UPDATE deploytype SET description = ? WHERE deploytype = ? ";
 
@@ -397,7 +397,7 @@ public class DeployTypeDAO implements IDeployTypeDAO {
     }
 
     @Override
-    public DeployType loadDeployTypeFromResultSet(ResultSet rs) throws SQLException {
+    public DeployType loadFromResultSet(ResultSet rs) throws SQLException {
         String deployType = ParameterParserUtil.parseStringParam(rs.getString("deployType"), "");
         String description = ParameterParserUtil.parseStringParam(rs.getString("description"), "");
 
