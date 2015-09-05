@@ -62,10 +62,10 @@ function getSubDataLabel(type) {
  * @returns {void}
  */
 function displayInvariantList(idName, selectName) {
-    $.when($.getJSON("FindInvariantByID", "idName=" + idName)).then(function(data) {
-       for (var option in data) {
-           $("[name='"+ selectName +"']").append($('<option></option>').text(data[option].description).val(data[option].value));
-       }
+    $.when($.getJSON("FindInvariantByID", "idName=" + idName)).then(function (data) {
+        for (var option in data) {
+            $("[name='" + selectName + "']").append($('<option></option>').text(data[option].value + " - " + data[option].description).val(data[option].value));
+        }
     });
 }
 
@@ -76,11 +76,11 @@ function displayInvariantList(idName, selectName) {
  * @returns {void}
  */
 function displayDeployTypeList(selectName) {
-    $.when($.getJSON("ReadDeployType", "" )).then(function(data) {
+    $.when($.getJSON("ReadDeployType", "")).then(function (data) {
         console.log(data);
-       for (var option in data.contentTable) {
-           $("[name='"+ selectName +"']").append($('<option></option>').text(data.contentTable[option].description).val(data.contentTable[option].deploytype));
-       }
+        for (var option in data.contentTable) {
+            $("[name='" + selectName + "']").append($('<option></option>').text(data.contentTable[option].deploytype + " - " + data.contentTable[option].description).val(data.contentTable[option].deploytype));
+        }
     });
 }
 
@@ -90,7 +90,7 @@ function displayDeployTypeList(selectName) {
  * @param {handleData} handleData method that handles the data retrieved
  */
 function getInvariantList(idName, handleData) {
-    $.when($.getJSON("GetInvariantList", "idName=" + idName)).then(function(data) {
+    $.when($.getJSON("GetInvariantList", "idName=" + idName)).then(function (data) {
         handleData(data);
     });
 }
@@ -100,7 +100,7 @@ function getInvariantList(idName, handleData) {
  * @param {handleData} handleData method that handles the data retrieved 
  */
 function getInvariantListN(list, handleData) {
-    $.when($.post("GetInvariantList", {action: "getNInvariant", idName: JSON.stringify(list)}, "json")).then(function(data) {
+    $.when($.post("GetInvariantList", {action: "getNInvariant", idName: JSON.stringify(list)}, "json")).then(function (data) {
         handleData(data);
     });
 }
@@ -202,7 +202,7 @@ function showMessageMainPage(type, message) {
     $("#mainAlert").fadeIn();
 }
 /*****************************************************************************/
-$(function() {
+$(function () {
 
 
     /*****************************************************************************/
@@ -211,7 +211,7 @@ $(function() {
      */
     /*****************************************************************************/
 
-    $("#buttonMainAlert").click(function() {
+    $("#buttonMainAlert").click(function () {
         var elementToClose = $(this).closest("." + $(this).attr("data-hide"));
         $(elementToClose).siblings("strong span[class='alert-description']").text("");
         $("#mainAlert").removeClass("alert-success");
@@ -226,7 +226,7 @@ $(function() {
      /*Closes the alert page that is visible in the dialogs
      */
     /*****************************************************************************/
-    $("[data-hide]").on("click", function() {
+    $("[data-hide]").on("click", function () {
         var elementToClose = $(this).closest("." + $(this).attr("data-hide"));
         $(elementToClose).siblings("strong span[class='alert-description']").text("");
         $(elementToClose).parents("#mainAlert").removeClass("alert-success");
@@ -241,11 +241,11 @@ $(function() {
      */
     /*****************************************************************************/
     //resets the modal that allows the upload of files
-    $('#modalUpload').on('hidden.bs.modal', function() {
+    $('#modalUpload').on('hidden.bs.modal', function () {
         resetModalUpload();
     });
     //resets the confirmation modal data
-    $('#confirmationModal').on('hidden.bs.modal', function() {
+    $('#confirmationModal').on('hidden.bs.modal', function () {
         resetConfirmationModal();
     });
 });
@@ -332,28 +332,28 @@ function setDataConfirmationModal(title, message, hiddenField) {
 function showModalUpload(handlerClickOk, fileExtension, translations) {
     clearResponseMessageMainPage();
     //if translations are defined, then the title and buttons will be modified
-    if(Boolean(translations)){
+    if (Boolean(translations)) {
         //update translations if a specific page secifies it     
-        $.each(translations, function( index) {
-            $("#"+index).text(translations[index]);
+        $.each(translations, function (index) {
+            $("#" + index).text(translations[index]);
         });
-    }else{
-       //use the default translations (for the specific language)
-       var doc = getDoc();
-       var docModalDefault = doc.modal_upload;
-       $("#modalUploadLabel").text(docModalDefault.title.docLabel);
-       $("#choseFileLabel").text(docModalDefault.btn_choose.docLabel);
-       $("#cancelButton").text(docModalDefault.btn_cancel.docLabel);
-       $("#uploadOk").text(docModalDefault.btn_upload.docLabel);       
+    } else {
+        //use the default translations (for the specific language)
+        var doc = getDoc();
+        var docModalDefault = doc.modal_upload;
+        $("#modalUploadLabel").text(docModalDefault.title.docLabel);
+        $("#choseFileLabel").text(docModalDefault.btn_choose.docLabel);
+        $("#cancelButton").text(docModalDefault.btn_cancel.docLabel);
+        $("#uploadOk").text(docModalDefault.btn_upload.docLabel);
     }
-    
+
     $('#modalUpload').modal('show');
     $('#modalUpload').find('#uploadOk').click(handlerClickOk);
-    $('#modalUpload').find("#fileInput").change(function() {
+    $('#modalUpload').find("#fileInput").change(function () {
         validatesFileExtension(this.value, fileExtension);
     });
 }
- 
+
 /**
  * Auxiliary function that validates if a fileName has a valid extension
  * @param {type} fileName name to be validated
@@ -362,15 +362,15 @@ function showModalUpload(handlerClickOk, fileExtension, translations) {
 function validatesFileExtension(fileName, fileExtension) {
     var ext = fileName.match(/^([^\\]*)\.(\w+)$/);
 
-    if(ext !== null && ext[ext.length-1].toUpperCase() === fileExtension.toUpperCase() ){  
+    if (ext !== null && ext[ext.length - 1].toUpperCase() === fileExtension.toUpperCase()) {
         clearResponseMessage($('#modalUpload'));
         $("#upload-file-info").html(fileName);
         $('#uploadOk').removeProp("disabled");
     } else {
         resetModalUpload();
         var doc = getDoc();
-        var docGlobal = doc.page_global;        
-        var localMessage = new Message("danger", + docGlobal.invalid_extension_message.docLabel +fileExtension +"!");
+        var docGlobal = doc.page_global;
+        var localMessage = new Message("danger", +docGlobal.invalid_extension_message.docLabel + fileExtension + "!");
         showMessage(localMessage, $('#modalUpload'));
     }
 }
@@ -394,7 +394,7 @@ function resetModalUpload() {
  * @param {type} oSettings settings 
  * @param {type} sNewSource new source
  */
-$.fn.dataTableExt.oApi.fnNewAjax = function(oSettings, sNewSource) {
+$.fn.dataTableExt.oApi.fnNewAjax = function (oSettings, sNewSource) {
     if (typeof sNewSource !== 'undefined' && sNewSource !== null) {
         oSettings.sAjaxSource = sNewSource;
     }
@@ -495,19 +495,19 @@ function createDataTableWithPermissions(tableConfigurations, callbackfunction) {
     if (tableConfigurations.serverSide) {
         configs["sAjaxSource"] = tableConfigurations.ajaxSource;
         configs["sAjaxDataProp"] = tableConfigurations.ajaxProp;
-        configs["fnServerData"] = function(sSource, aoData, fnCallback, oSettings) {
+        configs["fnServerData"] = function (sSource, aoData, fnCallback, oSettings) {
             oSettings.jqXHR = $.ajax({
                 "dataType": 'json',
                 "type": "GET",
                 "url": sSource,
                 "data": aoData,
                 "success": fnCallback,
-                "error": function(e) {
+                "error": function (e) {
                     $(location).prop("pathname", $(location).prop("pathname"));
                     $(location).prop("search", $(location).prop("search"));
                 }
             });
-            $.when(oSettings.jqXHR).then(function(data) {
+            $.when(oSettings.jqXHR).then(function (data) {
                 //updates the table with basis on the permissions that the current user has
                 callbackfunction(data);
             });
@@ -567,14 +567,14 @@ function createDataTable(tableConfigurations) {
     if (tableConfigurations.serverSide) {
         configs["sAjaxSource"] = tableConfigurations.ajaxSource;
         configs["sAjaxDataProp"] = tableConfigurations.ajaxProp;
-        configs["fnServerData"] = function(sSource, aoData, fnCallback, oSettings) {
+        configs["fnServerData"] = function (sSource, aoData, fnCallback, oSettings) {
             oSettings.jqXHR = $.ajax({
                 "dataType": 'json',
                 "type": "GET",
                 "url": sSource,
                 "data": aoData,
                 "success": fnCallback,
-                "error": function(e) {
+                "error": function (e) {
                     $(location).prop("pathname", $(location).prop("pathname"));
                     $(location).prop("search", $(location).prop("search"));
                 }
@@ -624,14 +624,14 @@ function stopPropagation(event) {
  * @param {type} iDelay time to delay
  * @returns {jQuery.fn.dataTableExt.oApi}
  */
-jQuery.fn.dataTableExt.oApi.fnSetFilteringDelay = function(oSettings, iDelay) {
+jQuery.fn.dataTableExt.oApi.fnSetFilteringDelay = function (oSettings, iDelay) {
     var _that = this;
 
     if (iDelay === undefined) {
         iDelay = 250;
     }
 
-    this.each(function(i) {
+    this.each(function (i) {
         $.fn.dataTableExt.iApiIndex = i;
         var
                 $this = this,
@@ -639,13 +639,13 @@ jQuery.fn.dataTableExt.oApi.fnSetFilteringDelay = function(oSettings, iDelay) {
                 sPreviousSearch = null,
                 anControl = $('input', _that.fnSettings().aanFeatures.f);
 
-        anControl.unbind('keyup search input').bind('keyup search input', function() {
+        anControl.unbind('keyup search input').bind('keyup search input', function () {
             var $$this = $this;
 
             if (sPreviousSearch === null || sPreviousSearch != anControl.val()) {
                 window.clearTimeout(oTimerId);
                 sPreviousSearch = anControl.val();
-                oTimerId = window.setTimeout(function() {
+                oTimerId = window.setTimeout(function () {
                     $.fn.dataTableExt.iApiIndex = i;
                     _that.fnFilter(anControl.val());
                 }, iDelay);
@@ -670,7 +670,7 @@ function setAutoCompleteServerSide(selector, source) {
     //does not display the summary text
     configurations["messages"] = {
         noResults: '',
-        results: function() {
+        results: function () {
         }
     };
     //specifies a delay to avoid excessive requests to the server
@@ -704,10 +704,10 @@ function displayFooter(doc) {
     var date = new Date();
     var loadTime = window.performance.timing.domContentLoadedEventEnd - window.performance.timing.navigationStart;
 
-    footerString = footerString.replace("%VERSION%", cerberusInformation.projectName+cerberusInformation.projectVersion);
+    footerString = footerString.replace("%VERSION%", cerberusInformation.projectName + cerberusInformation.projectVersion);
     footerString = footerString.replace("%ENV%", cerberusInformation.environment);
     footerString = footerString.replace("%DATE%", date.toDateString());
     footerString = footerString.replace("%TIMING%", loadTime);
-    footerBugString = footerBugString.replace("%LINK%", "https://github.com/vertigo17/Cerberus/issues/new?body=Cerberus%20Version%20:%20" + cerberusInformation.projectVersion );
-    $("#footer").html(footerString + " - " +footerBugString);
+    footerBugString = footerBugString.replace("%LINK%", "https://github.com/vertigo17/Cerberus/issues/new?body=Cerberus%20Version%20:%20" + cerberusInformation.projectVersion);
+    $("#footer").html(footerString + " - " + footerBugString);
 }
