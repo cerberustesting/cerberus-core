@@ -106,7 +106,7 @@ public class CreateTestDataLib extends HttpServlet {
                     ILogEventService logEventService = appContext.getBean(LogEventService.class);
                     IFactoryLogEvent factoryLogEvent = appContext.getBean(FactoryLogEvent.class);
                     try {
-                        logEventService.insertLogEvent(factoryLogEvent.create(0, 0, request.getUserPrincipal().getName(), null, "/CreateTestDataLib", "CREATE", 
+                        logEventService.create_Deprecated(factoryLogEvent.create(0, 0, request.getUserPrincipal().getName(), null, "/CreateTestDataLib", "CREATE", 
                                 "Create TestDataLib  : " + request.getParameter("Name"), "", ""));
                     } catch (CerberusException ex) {
                         org.apache.log4j.Logger.getLogger(CreateTestDataLib.class.getName()).log(org.apache.log4j.Level.ERROR, null, ex);                         

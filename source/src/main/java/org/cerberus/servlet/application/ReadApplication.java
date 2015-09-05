@@ -176,7 +176,7 @@ public class ReadApplication extends HttpServlet {
         String columnToSort[] = sColumns.split(",");
         String columnName = columnToSort[columnToSortParameter];
         String sort = ParameterParserUtil.parseStringParam(request.getParameter("sSortDir_0"), "asc");
-        AnswerList resp = applicationService.findApplicationListBySystemByCriteria(system, startPosition, length, columnName, sort, searchParameter, "");
+        AnswerList resp = applicationService.readBySystemByCriteria(system, startPosition, length, columnName, sort, searchParameter, "");
 
         JSONArray jsonArray = new JSONArray();
         boolean userHasPermissions = request.isUserInRole("IntegratorRO");
@@ -210,7 +210,7 @@ public class ReadApplication extends HttpServlet {
         IApplicationService libService = appContext.getBean(IApplicationService.class);
 
         //finds the project     
-        AnswerItem answer = libService.findApplicationByString(id);
+        AnswerItem answer = libService.readByKey(id);
 
         if (answer.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
             //if the service returns an OK message then we can get the item and convert it to JSONformat

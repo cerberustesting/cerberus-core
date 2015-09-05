@@ -82,7 +82,7 @@ public class ReadTestCaseExecution extends HttpServlet {
          * Adding Log entry.
          */
         ILogEventService logEventService = appContext.getBean(LogEventService.class);
-        logEventService.insertLogEventPublicCalls("/GetCampaignExecutionsCommand", "CALL", "GetCampaignExecutionsCommandV0 called : " + request.getRequestURL(), request);
+        logEventService.createPublicCalls_Deprecated("/GetCampaignExecutionsCommand", "CALL", "GetCampaignExecutionsCommandV0 called : " + request.getRequestURL(), request);
 
         testCaseExecutionService = appContext.getBean(ITestCaseExecutionService.class);
 

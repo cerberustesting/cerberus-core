@@ -75,7 +75,7 @@ public class UpdateSoapLibrary extends HttpServlet {
             ILogEventService logEventService = appContext.getBean(LogEventService.class);
             IFactoryLogEvent factoryLogEvent = appContext.getBean(FactoryLogEvent.class);
             try {
-                logEventService.insertLogEvent(factoryLogEvent.create(0, 0, request.getUserPrincipal().getName(), null, "/UpdateSoapLibrary", "UPDATE", "Updated SoapLibrary : " + name, "", ""));
+                logEventService.create_Deprecated(factoryLogEvent.create(0, 0, request.getUserPrincipal().getName(), null, "/UpdateSoapLibrary", "UPDATE", "Updated SoapLibrary : " + name, "", ""));
             } catch (CerberusException ex) {
                 org.apache.log4j.Logger.getLogger(UpdateSoapLibrary.class.getName()).log(org.apache.log4j.Level.ERROR, null, ex);
             }

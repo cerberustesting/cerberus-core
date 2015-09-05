@@ -32,13 +32,13 @@ import org.cerberus.util.answer.AnswerList;
  */
 public interface ILogEventService {
 
-    public List<LogEvent> findAllLogEvent() throws CerberusException;
+    public List<LogEvent> readAll_Deprecated() throws CerberusException;
 
-    public AnswerList findAllLogEvent(int start, int amount, String colName, String dir, String searchTerm, String individualSearch) throws CerberusException;
+    public AnswerList readByCriteria_Deprecated(int start, int amount, String colName, String dir, String searchTerm, String individualSearch) throws CerberusException;
 
     public Integer getNumberOfLogEvent(String searchTerm) throws CerberusException;
 
-    public boolean insertLogEvent(LogEvent logevent) throws CerberusException;
+    public boolean create_Deprecated(LogEvent logevent) throws CerberusException;
 
     /**
      *
@@ -46,7 +46,7 @@ public interface ILogEventService {
      * @param request
      * @return
      */
-    public void insertLogEvent(String page, String action, String log, HttpServletRequest request);
+    public void create_Deprecated(String page, String action, String log, HttpServletRequest request);
 
     /**
      *
@@ -54,5 +54,5 @@ public interface ILogEventService {
      * @param request
      * @return
      */
-    public void insertLogEventPublicCalls(String page, String action, String log, HttpServletRequest request);
+    public void createPublicCalls_Deprecated(String page, String action, String log, HttpServletRequest request);
 }

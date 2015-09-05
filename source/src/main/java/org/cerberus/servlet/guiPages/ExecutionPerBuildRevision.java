@@ -97,7 +97,7 @@ public class ExecutionPerBuildRevision extends HttpServlet {
             } else {
 
                 IApplicationService applicationService = appContext.getBean(ApplicationService.class);
-                List<Application> appliList = applicationService.findApplicationBySystem(MySystem);
+                List<Application> appliList = applicationService.readBySystem_Deprecated(MySystem);
                 String inSQL = SqlUtil.getInSQLClause(appliList);
 
                 if (!(inSQL.equalsIgnoreCase(""))) {

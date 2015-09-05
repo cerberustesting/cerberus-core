@@ -97,7 +97,7 @@ public class CreateDeployType extends HttpServlet {
             IFactoryDeployType factoryDeployType = appContext.getBean(IFactoryDeployType.class);
 
             DeployType deployTypeData = factoryDeployType.create(deploytype, description);
-            ans = deployTypeService.createDeployType(deployTypeData);
+            ans = deployTypeService.create(deployTypeData);
 
             if (ans.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
                 /**
@@ -107,7 +107,7 @@ public class CreateDeployType extends HttpServlet {
                 IFactoryLogEvent factoryLogEvent = appContext.getBean(FactoryLogEvent.class);
 
                 try {
-                    logEventService.insertLogEvent(factoryLogEvent.create(0, 0, request.getUserPrincipal().getName(), null, "/CreateDeployType", "CREATE", "Create DeployType : ['" + deploytype + "']", "", ""));
+                    logEventService.create_Deprecated(factoryLogEvent.create(0, 0, request.getUserPrincipal().getName(), null, "/CreateDeployType", "CREATE", "Create DeployType : ['" + deploytype + "']", "", ""));
                 } catch (CerberusException ex) {
                     org.apache.log4j.Logger.getLogger(CreateDeployType.class.getName()).log(org.apache.log4j.Level.ERROR, null, ex);
                 }

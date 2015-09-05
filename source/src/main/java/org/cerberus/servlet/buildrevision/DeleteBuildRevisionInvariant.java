@@ -75,7 +75,7 @@ public class DeleteBuildRevisionInvariant extends HttpServlet {
             ILogEventService logEventService = appContext.getBean(LogEventService.class);
             IFactoryLogEvent factoryLogEvent = appContext.getBean(FactoryLogEvent.class);
             try {
-                logEventService.insertLogEvent(factoryLogEvent.create(0, 0, request.getUserPrincipal().getName(), null, "/DeleteBuildRevisionInvariant", "DELETE", "Delete buildRevisionInvariant : " + system + "-" + level + "-" + seq, "", ""));
+                logEventService.create_Deprecated(factoryLogEvent.create(0, 0, request.getUserPrincipal().getName(), null, "/DeleteBuildRevisionInvariant", "DELETE", "Delete buildRevisionInvariant : " + system + "-" + level + "-" + seq, "", ""));
             } catch (CerberusException ex) {
                 Logger.getLogger(UserService.class.getName()).log(Level.ERROR, null, ex);
             }

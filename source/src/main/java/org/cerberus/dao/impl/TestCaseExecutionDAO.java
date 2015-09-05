@@ -466,7 +466,7 @@ public class TestCaseExecutionDAO implements ITestCaseExecutionDAO {
         //TODO get Application
         Application application = null;
         try {
-            application = applicationDAO.loadApplicationFromResultSet(resultSet);
+            application = applicationDAO.loadFromResultSet(resultSet);
         } catch (Exception e) {
             LOG.warn("No Application found for theses testcaseexecution " + e.toString());
         }
@@ -1043,7 +1043,7 @@ public class TestCaseExecutionDAO implements ITestCaseExecutionDAO {
         testCaseWithExecution.setCountry(resultSet.getString("Country"));
         testCaseWithExecution.setBrowser(resultSet.getString("Browser"));
 
-        testCaseWithExecution.setApplicationObject(applicationDAO.loadApplicationFromResultSet(resultSet));
+        testCaseWithExecution.setApplicationObject(applicationDAO.loadFromResultSet(resultSet));
 
         return testCaseWithExecution;
     }

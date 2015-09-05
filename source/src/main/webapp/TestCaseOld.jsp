@@ -411,7 +411,7 @@
                     }
                     Application myApplication = null;
                     if (rs_testcase_general_info.getString("tc.Application") != null) {
-                        myApplication = myApplicationService.findApplicationByKey(rs_testcase_general_info.getString("tc.Application"));
+                        myApplication = myApplicationService.readByKey_Deprecated(rs_testcase_general_info.getString("tc.Application"));
                         appSystem = myApplication.getSystem();
                         SitdmossBugtrackingURL = myApplication.getBugTrackerUrl();
                     } else {

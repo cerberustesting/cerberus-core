@@ -17,6 +17,8 @@
  */
 package org.cerberus.dao;
 
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.List;
 
 import org.cerberus.entity.Project;
@@ -31,17 +33,19 @@ import org.cerberus.util.answer.AnswerList;
  */
 public interface IProjectDAO {
 
-    Project findProjectByKey(String project);
+    AnswerItem readByKey(String project);
 
-    List<Project> findAllProject();
+    Project readByKey_Deprecated(String project);
 
-    public Answer createProject(Project project) throws CerberusException;
+    List<Project> readAll_Deprecated();
 
-    public Answer deleteProject(Project project) throws CerberusException;
+    AnswerList readByCriteria(int startPosition, int length, String columnName, String sort, String searchParameter, String string);
 
-    public Answer updateProject(Project project) throws CerberusException;
+    Answer create_Deprecated(Project project) throws CerberusException;
 
-    public AnswerList findProjectListByCriteria(int startPosition, int length, String columnName, String sort, String searchParameter, String string);
-    
-    public AnswerItem findProjectByString(String project);
+    Answer delete_Deprecated(Project project) throws CerberusException;
+
+    Answer update_Deprecated(Project project) throws CerberusException;
+
+    Project loadFromResultSet(ResultSet resultSet) throws SQLException;
 }

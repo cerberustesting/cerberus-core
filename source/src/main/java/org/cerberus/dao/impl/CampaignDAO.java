@@ -512,7 +512,7 @@ public class CampaignDAO implements ICampaignDAO {
         testCaseWithExecution.setCountry(resultSet.getString("Country"));
         testCaseWithExecution.setBrowser(resultSet.getString("Browser"));
 
-        testCaseWithExecution.setApplicationObject(applicationDAO.loadApplicationFromResultSet(resultSet));
+        testCaseWithExecution.setApplicationObject(applicationDAO.loadFromResultSet(resultSet));
         
         return testCaseWithExecution;
     }

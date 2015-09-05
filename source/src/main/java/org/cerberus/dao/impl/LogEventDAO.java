@@ -57,7 +57,7 @@ public class LogEventDAO implements ILogEventDAO {
     private IFactoryLogEvent factoryLogEvent;
 
     @Override
-    public List<LogEvent> findAllLogEvent() throws CerberusException {
+    public List<LogEvent> readAll_Deprecated() throws CerberusException {
         List<LogEvent> list = null;
         boolean throwExe = true;
         final String query = "SELECT * FROM logevent ORDER BY logeventid ; ";
@@ -111,7 +111,7 @@ public class LogEventDAO implements ILogEventDAO {
     }
 
     @Override
-    public AnswerList findAllLogEvent(int start, int amount, String colName, String dir, String searchTerm, String individualSearch) throws CerberusException {
+    public AnswerList readByCriteria_Deprecated(int start, int amount, String colName, String dir, String searchTerm, String individualSearch) throws CerberusException {
         AnswerList response = new AnswerList();
         MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
         List<LogEvent> logEventList = new ArrayList<LogEvent>();
@@ -169,7 +169,7 @@ public class LogEventDAO implements ILogEventDAO {
                 try {
                     //gets the data
                     while (resultSet.next()) {
-                        logEventList.add(this.loadLogEventFromResultSet(resultSet));
+                        logEventList.add(this.loadFromResultSet(resultSet));
                     }
 
                     //get the total number of rows
@@ -221,6 +221,67 @@ public class LogEventDAO implements ILogEventDAO {
     }
 
     @Override
+    public boolean create_Deprecated(LogEvent logevent) throws CerberusException {
+        boolean bool = false;
+        final String query = "INSERT INTO logevent (userID, Login, Page, Action, Log, remoteIP, localIP) VALUES (?, ?, ?, ?, ?, ?, ?)";
+
+        Connection connection = this.databaseSpring.connect();
+        try {
+            PreparedStatement preStat = connection.prepareStatement(query, Statement.RETURN_GENERATED_KEYS);
+            try {
+                preStat.setLong(1, logevent.getUserID());
+                preStat.setString(2, logevent.getLogin());
+                preStat.setString(3, logevent.getPage());
+                preStat.setString(4, logevent.getAction());
+                preStat.setString(5, logevent.getLog());
+                preStat.setString(6, logevent.getremoteIP());
+                preStat.setString(7, logevent.getLocalIP());
+
+                preStat.executeUpdate();
+                ResultSet resultSet = preStat.getGeneratedKeys();
+                try {
+                    if (resultSet.first()) {
+                        bool = true;
+                    }
+                } catch (SQLException exception) {
+                    MyLogger.log(UserDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
+                } finally {
+                    resultSet.close();
+                }
+            } catch (SQLException exception) {
+                MyLogger.log(UserDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
+            } finally {
+                preStat.close();
+            }
+        } catch (SQLException exception) {
+            MyLogger.log(UserDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
+        } finally {
+            try {
+                if (connection != null) {
+                    connection.close();
+                }
+            } catch (SQLException e) {
+                MyLogger.log(UserDAO.class.getName(), Level.WARN, e.toString());
+            }
+        }
+        return bool;
+    }
+
+    @Override
+    public LogEvent loadFromResultSet(ResultSet resultSet) throws SQLException {
+        long logEventID = resultSet.getLong("logEventID") == 0 ? 0 : resultSet.getLong("logEventID");
+        long userID = resultSet.getLong("userID") == 0 ? 0 : resultSet.getLong("userID");
+        String login = resultSet.getString("login") == null ? "" : resultSet.getString("login");
+        Timestamp time = resultSet.getTimestamp("time");
+        String page = resultSet.getString("page") == null ? "" : resultSet.getString("page");
+        String action = resultSet.getString("action") == null ? "" : resultSet.getString("action");
+        String log = resultSet.getString("log") == null ? "" : resultSet.getString("log");
+        String remoteIP = resultSet.getString("remoteIP") == null ? "" : resultSet.getString("remoteIP");
+        String localIP = resultSet.getString("localIP") == null ? "" : resultSet.getString("localIP");
+        return factoryLogEvent.create(logEventID, userID, login, time, page, action, log, remoteIP, localIP);
+    }
+
+    @Override
     public Integer getNumberOfLogEvent(String searchTerm) throws CerberusException {
         boolean throwExe = true;
 
@@ -269,53 +330,6 @@ public class LogEventDAO implements ILogEventDAO {
         return 0;
     }
 
-    @Override
-    public boolean insertLogEvent(LogEvent logevent) throws CerberusException {
-        boolean bool = false;
-        final String query = "INSERT INTO logevent (userID, Login, Page, Action, Log, remoteIP, localIP) VALUES (?, ?, ?, ?, ?, ?, ?)";
-
-        Connection connection = this.databaseSpring.connect();
-        try {
-            PreparedStatement preStat = connection.prepareStatement(query, Statement.RETURN_GENERATED_KEYS);
-            try {
-                preStat.setLong(1, logevent.getUserID());
-                preStat.setString(2, logevent.getLogin());
-                preStat.setString(3, logevent.getPage());
-                preStat.setString(4, logevent.getAction());
-                preStat.setString(5, logevent.getLog());
-                preStat.setString(6, logevent.getremoteIP());
-                preStat.setString(7, logevent.getLocalIP());
-
-                preStat.executeUpdate();
-                ResultSet resultSet = preStat.getGeneratedKeys();
-                try {
-                    if (resultSet.first()) {
-                        bool = true;
-                    }
-                } catch (SQLException exception) {
-                    MyLogger.log(UserDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
-                } finally {
-                    resultSet.close();
-                }
-            } catch (SQLException exception) {
-                MyLogger.log(UserDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
-            } finally {
-                preStat.close();
-            }
-        } catch (SQLException exception) {
-            MyLogger.log(UserDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
-        } finally {
-            try {
-                if (connection != null) {
-                    connection.close();
-                }
-            } catch (SQLException e) {
-                MyLogger.log(UserDAO.class.getName(), Level.WARN, e.toString());
-            }
-        }
-        return bool;
-    }
-
     private String getSearchString(String searchTerm) {
         if (StringUtil.isNullOrEmpty(searchTerm)) {
             return "";
@@ -337,16 +351,4 @@ public class LogEventDAO implements ILogEventDAO {
         }
     }
 
-    private LogEvent loadLogEventFromResultSet(ResultSet resultSet) throws SQLException {
-        long logEventID = resultSet.getLong("logEventID") == 0 ? 0 : resultSet.getLong("logEventID");
-        long userID = resultSet.getLong("userID") == 0 ? 0 : resultSet.getLong("userID");
-        String login = resultSet.getString("login") == null ? "" : resultSet.getString("login");
-        Timestamp time = resultSet.getTimestamp("time");
-        String page = resultSet.getString("page") == null ? "" : resultSet.getString("page");
-        String action = resultSet.getString("action") == null ? "" : resultSet.getString("action");
-        String log = resultSet.getString("log") == null ? "" : resultSet.getString("log");
-        String remoteIP = resultSet.getString("remoteIP") == null ? "" : resultSet.getString("remoteIP");
-        String localIP = resultSet.getString("localIP") == null ? "" : resultSet.getString("localIP");
-        return factoryLogEvent.create(logEventID, userID, login, time, page, action, log, remoteIP, localIP);
-    }
 }

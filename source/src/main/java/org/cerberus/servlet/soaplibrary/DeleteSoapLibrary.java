@@ -75,7 +75,7 @@ public class DeleteSoapLibrary extends HttpServlet {
             ILogEventService logEventService = appContext.getBean(LogEventService.class);
             IFactoryLogEvent factoryLogEvent = appContext.getBean(FactoryLogEvent.class);
             try {
-                logEventService.insertLogEvent(factoryLogEvent.create(0, 0, request.getUserPrincipal().getName(), null, "/DeleteSoapLibrary", "DELETE", "Delete SoapLibrary : " + name, "", ""));
+                logEventService.create_Deprecated(factoryLogEvent.create(0, 0, request.getUserPrincipal().getName(), null, "/DeleteSoapLibrary", "DELETE", "Delete SoapLibrary : " + name, "", ""));
             } catch (CerberusException ex) {
                 org.apache.log4j.Logger.getLogger(DeleteSoapLibrary.class.getName()).log(org.apache.log4j.Level.ERROR, null, ex);
             }

@@ -128,7 +128,7 @@ public class ExecutionCheckService implements IExecutionCheckService {
             LOG.debug("Checking if application environment type is compatible with environment type");
         }
         try {
-            if (applicationService.findApplicationByKey(tCExecution.gettCase().getApplication()).getType().equalsIgnoreCase("COMPARISON")) {
+            if (applicationService.readByKey_Deprecated(tCExecution.gettCase().getApplication()).getType().equalsIgnoreCase("COMPARISON")) {
                 if (tCExecution.gettCase().getGroup().equalsIgnoreCase("COMPARATIVE")) {
                     message = new MessageGeneral(MessageGeneralEnum.VALIDATION_FAILED_TYPE_DIFFERENT);
                     return false;
