@@ -4598,6 +4598,18 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLS.append("CHANGE COLUMN `BrowserFullVersion` `BrowserFullVersion` VARCHAR(200) NULL DEFAULT '' ;");
         SQLInstruction.add(SQLS.toString());
 
+        // Change Deploy Type Action on delete to avoid cascade All Applications and TestCases.
+        //-- ------------------------ 616-617
+        SQLS = new StringBuilder();
+        SQLS.append("ALTER TABLE `application` ");
+        SQLS.append("DROP FOREIGN KEY `FK_application_01`;");
+        SQLInstruction.add(SQLS.toString());
+        SQLS = new StringBuilder();
+        SQLS.append("ALTER TABLE `application` ");
+        SQLS.append("ADD CONSTRAINT `FK_application_01`");
+        SQLS.append("  FOREIGN KEY (`deploytype`) REFERENCES `deploytype` (`deploytype`) ON DELETE SET NULL ON UPDATE CASCADE;");
+        SQLInstruction.add(SQLS.toString());
+
         return SQLInstruction;
     }
 
