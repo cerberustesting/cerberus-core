@@ -91,7 +91,6 @@ public class TCEwwwDetail extends HttpServlet {
 
             for (TestCaseExecutionwwwDet detail : detailList) {
                 JSONArray row = new JSONArray();
-                //"<a href=\'javascript:popup(\"qualitynonconformitydetails.jsp?ncid="+listofnonconformities.getIdqualitynonconformities()+"\")\'>"+listofnonconformities.getIdqualitynonconformities()+"</a>"
                 row.put(detail.getId())
                    .put(detail.getExecID()).put(detail.getStart())
                    .put(detail.getUrl()).put(detail.getEnd())
