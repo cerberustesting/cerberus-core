@@ -75,16 +75,15 @@ public class ReadApplication extends HttpServlet {
         AnswerItem answer = new AnswerItem(new MessageEvent(MessageEventEnum.DATA_OPERATION_OK));
         try {
             JSONObject jsonResponse = new JSONObject();
-            if (request.getParameter("action") == null) {
+            if ((request.getParameter("application") == null) && (request.getParameter("system") == null)) {
                 answer = findApplicationList(null, appContext, request, response);
                 jsonResponse = (JSONObject) answer.getItem();
             } else {
-                int actionParameter = Integer.parseInt(request.getParameter("action"));
-                if (actionParameter == 1) {
+                if (request.getParameter("application") != null) {
                     String application = policy.sanitize(request.getParameter("application"));
                     answer = findApplicationByKey(appContext, application);
                     jsonResponse = (JSONObject) answer.getItem();
-                } else if (actionParameter == 2) {
+                } else if (request.getParameter("system") != null) {
                     String system = policy.sanitize(request.getParameter("system"));
                     answer = findApplicationList(system, appContext, request, response);
                     jsonResponse = (JSONObject) answer.getItem();

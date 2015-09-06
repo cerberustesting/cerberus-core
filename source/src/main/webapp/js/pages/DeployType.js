@@ -152,7 +152,7 @@ function CreateDeployTypeClick() {
 
 function editEntry(id) {
     clearResponseMessageMainPage();
-    var jqxhr = $.getJSON("ReadDeployType", "action=1&deploytype=" + id);
+    var jqxhr = $.getJSON("ReadDeployType", "deploytype=" + id);
     $.when(jqxhr).then(function (data) {
         var obj = data["contentTable"];
 

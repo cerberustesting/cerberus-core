@@ -166,7 +166,7 @@ function CreateProjectClick() {
 
 function editEntry(id) {
     clearResponseMessageMainPage();
-    var jqxhr = $.getJSON("ReadProject", "action=1&idProject=" + id);
+    var jqxhr = $.getJSON("ReadProject", "idProject=" + id);
     $.when(jqxhr).then(function (data) {
         var obj = data["contentTable"];
 

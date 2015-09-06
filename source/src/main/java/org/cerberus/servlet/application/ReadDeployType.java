@@ -76,19 +76,16 @@ public class ReadDeployType extends HttpServlet {
         MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_UNEXPECTED_ERROR);
         msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", ""));
         AnswerItem answer = new AnswerItem(msg);
-        
+
         try {
             JSONObject jsonResponse = new JSONObject();
-            if (request.getParameter("action") == null) {
+            if (request.getParameter("deploytype") == null) {
                 answer = findDeployTypeList(appContext, request, response);
                 jsonResponse = (JSONObject) answer.getItem();
             } else {
-                int actionParameter = Integer.parseInt(request.getParameter("action"));
-                if (actionParameter == 1) {
-                    String deployType = policy.sanitize(request.getParameter("deploytype"));
-                    answer = findDeployTypeByID(appContext, deployType);
-                    jsonResponse = (JSONObject) answer.getItem();
-                }
+                String deployType = policy.sanitize(request.getParameter("deploytype"));
+                answer = findDeployTypeByID(appContext, deployType);
+                jsonResponse = (JSONObject) answer.getItem();
             }
 
             jsonResponse.put("messageType", answer.getResultMessage().getMessage().getCodeString());
@@ -97,7 +94,7 @@ public class ReadDeployType extends HttpServlet {
 
             response.setContentType("application/json");
             response.getWriter().print(jsonResponse.toString());
-            
+
         } catch (JSONException e) {
             org.apache.log4j.Logger.getLogger(ReadDeployType.class.getName()).log(org.apache.log4j.Level.ERROR, null, e);
             //returns a default error message with the json format that is able to be parsed by the client-side

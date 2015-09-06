@@ -75,16 +75,13 @@ public class ReadProject extends HttpServlet {
         AnswerItem answer = new AnswerItem(new MessageEvent(MessageEventEnum.DATA_OPERATION_OK));
         try {
             JSONObject jsonResponse = new JSONObject();
-            if (request.getParameter("action") == null) {
+            if (request.getParameter("idProject") == null) {
                 answer = findProjectList(appContext, request, response);
                 jsonResponse = (JSONObject) answer.getItem();
             } else {
-                int actionParameter = Integer.parseInt(request.getParameter("action"));
-                if (actionParameter == 1) {
-                    String idProject = policy.sanitize(request.getParameter("idProject"));
-                    answer = findProjectByID(appContext, idProject);
-                    jsonResponse = (JSONObject) answer.getItem();
-                }
+                String idProject = policy.sanitize(request.getParameter("idProject"));
+                answer = findProjectByID(appContext, idProject);
+                jsonResponse = (JSONObject) answer.getItem();
             }
 
             jsonResponse.put("messageType", answer.getResultMessage().getMessage().getCodeString());
@@ -161,16 +158,16 @@ public class ReadProject extends HttpServlet {
         JSONObject jsonResponse = new JSONObject();
         projectService = appContext.getBean(ProjectService.class);
 
-        int startPosition = Integer.valueOf(ParameterParserUtil.parseStringParam(request.getParameter("iDisplayStart"),"0"));
-        int length = Integer.valueOf(ParameterParserUtil.parseStringParam(request.getParameter("iDisplayLength"),"100000"));
+        int startPosition = Integer.valueOf(ParameterParserUtil.parseStringParam(request.getParameter("iDisplayStart"), "0"));
+        int length = Integer.valueOf(ParameterParserUtil.parseStringParam(request.getParameter("iDisplayLength"), "100000"));
         /*int sEcho  = Integer.valueOf(request.getParameter("sEcho"));*/
 
         String searchParameter = ParameterParserUtil.parseStringParam(request.getParameter("sSearch"), "");
-        int columnToSortParameter = Integer.parseInt(ParameterParserUtil.parseStringParam(request.getParameter("iSortCol_0"),"1"));
+        int columnToSortParameter = Integer.parseInt(ParameterParserUtil.parseStringParam(request.getParameter("iSortCol_0"), "1"));
         String sColumns = ParameterParserUtil.parseStringParam(request.getParameter("sColumns"), "idProject,VCCode,description,active,dateCre");
         String columnToSort[] = sColumns.split(",");
         String columnName = columnToSort[columnToSortParameter];
-        String sort = ParameterParserUtil.parseStringParam(request.getParameter("sSortDir_0"),"asc");
+        String sort = ParameterParserUtil.parseStringParam(request.getParameter("sSortDir_0"), "asc");
         AnswerList resp = projectService.readByCriteria(startPosition, length, columnName, sort, searchParameter, "");
 
         JSONArray jsonArray = new JSONArray();
