@@ -52,8 +52,8 @@ import org.springframework.web.context.support.WebApplicationContextUtils;
 @WebServlet(name = "ReadLogEvent", urlPatterns = {"/ReadLogEvent"})
 public class ReadLogEvent extends HttpServlet {
 
-    
-        private ILogEventService logEventService;
+    private ILogEventService logEventService;
+
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
      * methods.
@@ -108,11 +108,11 @@ public class ReadLogEvent extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-            try {
-                processRequest(request, response);
-            } catch (CerberusException ex) {
-                Logger.getLogger(ReadLogEvent.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-            }
+        try {
+            processRequest(request, response);
+        } catch (CerberusException ex) {
+            Logger.getLogger(ReadLogEvent.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+        }
     }
 
     /**
@@ -126,11 +126,11 @@ public class ReadLogEvent extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-            try {
-                processRequest(request, response);
-            } catch (CerberusException ex) {
-                Logger.getLogger(ReadLogEvent.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-            }
+        try {
+            processRequest(request, response);
+        } catch (CerberusException ex) {
+            Logger.getLogger(ReadLogEvent.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+        }
     }
 
     /**
@@ -142,8 +142,8 @@ public class ReadLogEvent extends HttpServlet {
     public String getServletInfo() {
         return "Short description";
     }// </editor-fold>
-    
-        private AnswerItem findLogEventList(ApplicationContext appContext, HttpServletRequest request) throws CerberusException, JSONException {
+
+    private AnswerItem findLogEventList(ApplicationContext appContext, HttpServletRequest request) throws CerberusException, JSONException {
         AnswerItem item = new AnswerItem();
         JSONObject jsonResponse = new JSONObject();
         logEventService = appContext.getBean(LogEventService.class);
@@ -158,7 +158,7 @@ public class ReadLogEvent extends HttpServlet {
         String columnName = columnToSort[columnToSortParameter];
         String sort = ParameterParserUtil.parseStringParam(request.getParameter("sSortDir_0"), "desc");
 
-        AnswerList resp = logEventService.readByCriteria_Deprecated(startPosition, length, columnName, sort, searchParameter, "");
+        AnswerList resp = logEventService.readByCriteria(startPosition, length, columnName, sort, searchParameter, "");
         if (resp.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
             for (LogEvent myLogEvent : (List<LogEvent>) resp.getDataList()) {
                 Gson gson = new Gson();

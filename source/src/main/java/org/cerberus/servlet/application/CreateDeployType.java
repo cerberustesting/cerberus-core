@@ -105,12 +105,7 @@ public class CreateDeployType extends HttpServlet {
                  */
                 ILogEventService logEventService = appContext.getBean(LogEventService.class);
                 IFactoryLogEvent factoryLogEvent = appContext.getBean(FactoryLogEvent.class);
-
-                try {
-                    logEventService.create_Deprecated(factoryLogEvent.create(0, 0, request.getUserPrincipal().getName(), null, "/CreateDeployType", "CREATE", "Create DeployType : ['" + deploytype + "']", "", ""));
-                } catch (CerberusException ex) {
-                    org.apache.log4j.Logger.getLogger(CreateDeployType.class.getName()).log(org.apache.log4j.Level.ERROR, null, ex);
-                }
+                logEventService.create(factoryLogEvent.create(0, 0, request.getUserPrincipal().getName(), null, "/CreateDeployType", "CREATE", "Create DeployType : ['" + deploytype + "']", "", ""));
             }
         }
 

@@ -102,7 +102,7 @@ public class DeleteApplication extends HttpServlet {
                         .replace("%OPERATION%", "Delete")
                         .replace("%REASON%", "Application does not exist."));
                 ans.setResultMessage(msg);
-                
+
             } else {
                 /**
                  * The service was able to perform the query and confirm the
@@ -110,18 +110,14 @@ public class DeleteApplication extends HttpServlet {
                  */
                 Application applicationData = (Application) resp.getItem();
                 ans = applicationService.delete(applicationData);
-                
+
                 if (ans.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
                     /**
                      * Delete was succesfull. Adding Log entry.
                      */
                     ILogEventService logEventService = appContext.getBean(LogEventService.class);
                     IFactoryLogEvent factoryLogEvent = appContext.getBean(FactoryLogEvent.class);
-                    try {
-                        logEventService.create_Deprecated(factoryLogEvent.create(0, 0, request.getUserPrincipal().getName(), null, "/DeleteApplication", "DELETE", "Delete Application : ['" + key + "']", "", ""));
-                    } catch (CerberusException ex) {
-                        org.apache.log4j.Logger.getLogger(DeleteApplication.class.getName()).log(org.apache.log4j.Level.ERROR, null, ex);
-                    }
+                    logEventService.create(factoryLogEvent.create(0, 0, request.getUserPrincipal().getName(), null, "/DeleteApplication", "DELETE", "Delete Application : ['" + key + "']", "", ""));
                 }
             }
         }

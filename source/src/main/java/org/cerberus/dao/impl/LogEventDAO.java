@@ -38,6 +38,7 @@ import org.cerberus.exception.CerberusException;
 import org.cerberus.factory.IFactoryLogEvent;
 import org.cerberus.log.MyLogger;
 import org.cerberus.util.StringUtil;
+import org.cerberus.util.answer.Answer;
 import org.cerberus.util.answer.AnswerList;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
@@ -56,62 +57,10 @@ public class LogEventDAO implements ILogEventDAO {
     @Autowired
     private IFactoryLogEvent factoryLogEvent;
 
-    @Override
-    public List<LogEvent> readAll_Deprecated() throws CerberusException {
-        List<LogEvent> list = null;
-        boolean throwExe = true;
-        final String query = "SELECT * FROM logevent ORDER BY logeventid ; ";
-
-        Connection connection = this.databaseSpring.connect();
-        try {
-            PreparedStatement preStat = connection.prepareStatement(query);
-            try {
-                ResultSet resultSet = preStat.executeQuery();
-                try {
-                    list = new ArrayList<LogEvent>();
-                    while (resultSet.next()) {
-                        throwExe = false;
-                        long logEventId = resultSet.getLong("logeventid");
-                        long userID = resultSet.getLong("userID");
-                        String login = resultSet.getString("login");
-                        Timestamp time = resultSet.getTimestamp("time");
-                        String page = resultSet.getString("page");
-                        String action = resultSet.getString("action");
-                        String log = resultSet.getString("log");
-                        String remoteIP = resultSet.getString("remoteIP");
-                        String localIP = resultSet.getString("localIP");
-                        LogEvent myLogEvent = factoryLogEvent.create(logEventId, userID, login, time, page, action, log, remoteIP, localIP);
-                        list.add(myLogEvent);
-                    }
-                } catch (SQLException exception) {
-                    MyLogger.log(UserDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
-                } finally {
-                    resultSet.close();
-                }
-            } catch (SQLException exception) {
-                MyLogger.log(UserDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
-            } finally {
-                preStat.close();
-            }
-        } catch (SQLException exception) {
-            MyLogger.log(UserDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
-        } finally {
-            try {
-                if (connection != null) {
-                    connection.close();
-                }
-            } catch (SQLException e) {
-                MyLogger.log(UserDAO.class.getName(), Level.WARN, e.toString());
-            }
-        }
-        if (throwExe) {
-            throw new CerberusException(new MessageGeneral(MessageGeneralEnum.NO_DATA_FOUND));
-        }
-        return list;
-    }
+    private final String SQL_DUPLICATED_CODE = "23000";
 
     @Override
-    public AnswerList readByCriteria_Deprecated(int start, int amount, String colName, String dir, String searchTerm, String individualSearch) throws CerberusException {
+    public AnswerList readByCriteria(int start, int amount, String colName, String dir, String searchTerm, String individualSearch) {
         AnswerList response = new AnswerList();
         MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
         List<LogEvent> logEventList = new ArrayList<LogEvent>();
@@ -221,13 +170,15 @@ public class LogEventDAO implements ILogEventDAO {
     }
 
     @Override
-    public boolean create_Deprecated(LogEvent logevent) throws CerberusException {
-        boolean bool = false;
-        final String query = "INSERT INTO logevent (userID, Login, Page, Action, Log, remoteIP, localIP) VALUES (?, ?, ?, ?, ?, ?, ?)";
+    public Answer create(LogEvent logevent) {
+        MessageEvent msg = null;
+        StringBuilder query = new StringBuilder();
+        query.append("INSERT INTO logevent (userID, Login, Page, Action, Log, remoteIP, localIP) ");
+        query.append("VALUES (?, ?, ?, ?, ?, ?, ?)");
 
         Connection connection = this.databaseSpring.connect();
         try {
-            PreparedStatement preStat = connection.prepareStatement(query, Statement.RETURN_GENERATED_KEYS);
+            PreparedStatement preStat = connection.prepareStatement(query.toString());
             try {
                 preStat.setLong(1, logevent.getUserID());
                 preStat.setString(2, logevent.getLogin());
@@ -238,33 +189,36 @@ public class LogEventDAO implements ILogEventDAO {
                 preStat.setString(7, logevent.getLocalIP());
 
                 preStat.executeUpdate();
-                ResultSet resultSet = preStat.getGeneratedKeys();
-                try {
-                    if (resultSet.first()) {
-                        bool = true;
-                    }
-                } catch (SQLException exception) {
-                    MyLogger.log(UserDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
-                } finally {
-                    resultSet.close();
-                }
+                msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
+                msg.setDescription(msg.getDescription().replace("%ITEM%", "LogEvent").replace("%OPERATION%", "INSERT"));
+
             } catch (SQLException exception) {
-                MyLogger.log(UserDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
+                MyLogger.log(LogEventDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
+
+                if (exception.getSQLState().equals(SQL_DUPLICATED_CODE)) { //23000 is the sql state for duplicate entries
+                    msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_DUPLICATE_ERROR);
+                    msg.setDescription(msg.getDescription().replace("%ITEM%", "LogEvent").replace("%OPERATION%", "INSERT"));
+                } else {
+                    msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_UNEXPECTED_ERROR);
+                    msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", exception.toString()));
+                }
             } finally {
                 preStat.close();
             }
         } catch (SQLException exception) {
-            MyLogger.log(UserDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
+            MyLogger.log(LogEventDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
+            msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_UNEXPECTED_ERROR);
+            msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", exception.toString()));
         } finally {
             try {
                 if (connection != null) {
                     connection.close();
                 }
             } catch (SQLException e) {
-                MyLogger.log(UserDAO.class.getName(), Level.WARN, e.toString());
+                MyLogger.log(LogEventDAO.class.getName(), Level.WARN, e.toString());
             }
         }
-        return bool;
+        return new Answer(msg);
     }
 
     @Override
@@ -279,76 +233,6 @@ public class LogEventDAO implements ILogEventDAO {
         String remoteIP = resultSet.getString("remoteIP") == null ? "" : resultSet.getString("remoteIP");
         String localIP = resultSet.getString("localIP") == null ? "" : resultSet.getString("localIP");
         return factoryLogEvent.create(logEventID, userID, login, time, page, action, log, remoteIP, localIP);
-    }
-
-    @Override
-    public Integer getNumberOfLogEvent(String searchTerm) throws CerberusException {
-        boolean throwExe = true;
-
-        StringBuilder gSearch = new StringBuilder();
-        if (!(searchTerm.equalsIgnoreCase(""))) {
-            gSearch.append(" WHERE ");
-            gSearch.append(getSearchString(searchTerm));
-        }
-
-        final String query = "SELECT count(*) c FROM logevent " + gSearch.toString();
-
-        Connection connection = this.databaseSpring.connect();
-        try {
-            PreparedStatement preStat = connection.prepareStatement(query);
-            try {
-                ResultSet resultSet = preStat.executeQuery();
-                try {
-                    if (resultSet.first()) {
-                        throwExe = false;
-                        return resultSet.getInt("c");
-                    }
-                } catch (SQLException exception) {
-                    MyLogger.log(UserDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
-                } finally {
-                    resultSet.close();
-                }
-            } catch (SQLException exception) {
-                MyLogger.log(UserDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
-            } finally {
-                preStat.close();
-            }
-        } catch (SQLException exception) {
-            MyLogger.log(UserDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
-        } finally {
-            try {
-                if (connection != null) {
-                    connection.close();
-                }
-            } catch (SQLException e) {
-                MyLogger.log(UserDAO.class.getName(), Level.WARN, e.toString());
-            }
-        }
-        if (throwExe) {
-            throw new CerberusException(new MessageGeneral(MessageGeneralEnum.NO_DATA_FOUND));
-        }
-        return 0;
-    }
-
-    private String getSearchString(String searchTerm) {
-        if (StringUtil.isNullOrEmpty(searchTerm)) {
-            return "";
-        } else {
-            StringBuilder gSearch = new StringBuilder();
-            gSearch.append(" (`login` like '%");
-            gSearch.append(searchTerm.replace("'", "\\'"));
-            gSearch.append("%'");
-            gSearch.append(" or `page` like '%");
-            gSearch.append(searchTerm.replace("'", "\\'"));
-            gSearch.append("%'");
-            gSearch.append(" or `action` like '%");
-            gSearch.append(searchTerm.replace("'", "\\'"));
-            gSearch.append("%'");
-            gSearch.append(" or `log` like '%");
-            gSearch.append(searchTerm.replace("'", "\\'"));
-            gSearch.append("%') ");
-            return gSearch.toString();
-        }
     }
 
 }

@@ -4577,7 +4577,7 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         // Increase log table limitation.
         //-- ------------------------ 613
         SQLS = new StringBuilder();
-        SQLS.append("ALTER TABLE `logevent` CHANGE COLUMN `LogEventID` `LogEventID` BIGINT UNSIGNED NOT NULL ;");
+        SQLS.append("ALTER TABLE `logevent` CHANGE COLUMN `LogEventID` `LogEventID` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT ;");
         SQLInstruction.add(SQLS.toString());
 
         // Homogenise column sizes.

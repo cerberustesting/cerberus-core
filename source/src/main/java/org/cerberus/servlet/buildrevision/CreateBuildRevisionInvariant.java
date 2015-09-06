@@ -43,9 +43,8 @@ import org.springframework.web.context.support.WebApplicationContextUtils;
 public class CreateBuildRevisionInvariant extends HttpServlet {
 
     /**
-     * Processes requests for both HTTP
-     * <code>GET</code> and
-     * <code>POST</code> methods.
+     * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
+     * methods.
      *
      * @param request servlet request
      * @param response servlet response
@@ -74,12 +73,7 @@ public class CreateBuildRevisionInvariant extends HttpServlet {
              */
             ILogEventService logEventService = appContext.getBean(LogEventService.class);
             IFactoryLogEvent factoryLogEvent = appContext.getBean(FactoryLogEvent.class);
-            try {
-                logEventService.create_Deprecated(factoryLogEvent.create(0, 0, request.getUserPrincipal().getName(), null, "/CreateBuildRevisionInvariant", "CREATE", "Create Build Revision Invariant : ['" + system + "'|'" + level + "'|'" + seq + "'] " + versionName, "", ""));
-            } catch (CerberusException ex) {
-                org.apache.log4j.Logger.getLogger(CreateBuildRevisionInvariant.class.getName()).log(org.apache.log4j.Level.ERROR, null, ex);
-            }
-
+            logEventService.create(factoryLogEvent.create(0, 0, request.getUserPrincipal().getName(), null, "/CreateBuildRevisionInvariant", "CREATE", "Create Build Revision Invariant : ['" + system + "'|'" + level + "'|'" + seq + "'] " + versionName, "", ""));
 
             response.sendRedirect("InvariantPublic.jsp");
         } finally {
@@ -89,8 +83,7 @@ public class CreateBuildRevisionInvariant extends HttpServlet {
 
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
     /**
-     * Handles the HTTP
-     * <code>GET</code> method.
+     * Handles the HTTP <code>GET</code> method.
      *
      * @param request servlet request
      * @param response servlet response
@@ -108,8 +101,7 @@ public class CreateBuildRevisionInvariant extends HttpServlet {
     }
 
     /**
-     * Handles the HTTP
-     * <code>POST</code> method.
+     * Handles the HTTP <code>POST</code> method.
      *
      * @param request servlet request
      * @param response servlet response

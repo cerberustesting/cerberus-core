@@ -57,7 +57,7 @@ public class GetTagExecutions extends HttpServlet {
          * Adding Log entry.
          */
         ILogEventService logEventService = appContext.getBean(LogEventService.class);
-        logEventService.createPublicCalls_Deprecated("/GetCampaignExecutionsCommand", "CALL", "GetCampaignExecutionsCommandV0 called : " + request.getRequestURL(), request);
+        logEventService.createPublicCalls("/GetCampaignExecutionsCommand", "CALL", "GetCampaignExecutionsCommandV0 called : " + request.getRequestURL(), request);
 
         testCaseExecutionService = appContext.getBean(ITestCaseExecutionService.class);
 

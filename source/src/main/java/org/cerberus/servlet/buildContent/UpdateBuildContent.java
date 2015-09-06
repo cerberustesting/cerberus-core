@@ -17,7 +17,6 @@
  * You should have received a copy of the GNU General Public License
  * along with Cerberus.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package org.cerberus.servlet.buildContent;
 
 import org.apache.log4j.Logger;
@@ -40,7 +39,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
 @WebServlet(name = "UpdateBuildContent", urlPatterns = {"/UpdateBuildContent"})
-public class UpdateBuildContent extends HttpServlet{
+public class UpdateBuildContent extends HttpServlet {
 
     private static final Logger LOG = Logger.getLogger(UpdateBuildContent.class);
 
@@ -57,25 +56,35 @@ public class UpdateBuildContent extends HttpServlet{
         BuildRevisionParameters brp = buildRevisionParametersService.findBuildRevisionParametersByKey(id);
 
         switch (columnPosition) {
-            case 0: brp.setBuild(value);
+            case 0:
+                brp.setBuild(value);
                 break;
-            case 1: brp.setRevision(value);
+            case 1:
+                brp.setRevision(value);
                 break;
-            case 2: brp.setApplication(value);
+            case 2:
+                brp.setApplication(value);
                 break;
-            case 3: brp.setRelease(value);
+            case 3:
+                brp.setRelease(value);
                 break;
-            case 4: brp.setProject(value);
+            case 4:
+                brp.setProject(value);
                 break;
-            case 5: brp.setTicketIdFixed(value);
+            case 5:
+                brp.setTicketIdFixed(value);
                 break;
-            case 6: brp.setBudIdFixed(value);
+            case 6:
+                brp.setBudIdFixed(value);
                 break;
-            case 7: brp.setSubject(value);
+            case 7:
+                brp.setSubject(value);
                 break;
-            case 8: brp.setReleaseOwner(value);
+            case 8:
+                brp.setReleaseOwner(value);
                 break;
-            case 9: brp.setLink(value);
+            case 9:
+                brp.setLink(value);
                 break;
         }
 
@@ -86,11 +95,7 @@ public class UpdateBuildContent extends HttpServlet{
          */
         ILogEventService logEventService = appContext.getBean(LogEventService.class);
         IFactoryLogEvent factoryLogEvent = appContext.getBean(FactoryLogEvent.class);
-        try {
-            logEventService.create_Deprecated(factoryLogEvent.create(0, 0, req.getUserPrincipal().getName(), null, "/UpdateBuildContent", "UPDATE", "Updated BuildContent : " + brp.getRelease(), "", ""));
-        } catch (CerberusException ex) {
-            LOG.warn("Unable to register log : " + ex.getMessageError().getDescription(), ex);
-        }
+        logEventService.create(factoryLogEvent.create(0, 0, req.getUserPrincipal().getName(), null, "/UpdateBuildContent", "UPDATE", "Updated BuildContent : " + brp.getRelease(), "", ""));
 
         resp.getWriter().print(value);
     }

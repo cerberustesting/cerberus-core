@@ -117,15 +117,11 @@ public class DeleteProject extends HttpServlet {
                      */
                     ILogEventService logEventService = appContext.getBean(LogEventService.class);
                     IFactoryLogEvent factoryLogEvent = appContext.getBean(FactoryLogEvent.class);
-                    try {
-                        logEventService.create_Deprecated(factoryLogEvent.create(0, 0, request.getUserPrincipal().getName(), null, "/DeleteProject", "DELETE", "Delete Project : ['" + key + "']", "", ""));
-                    } catch (CerberusException ex) {
-                        org.apache.log4j.Logger.getLogger(UserService.class.getName()).log(org.apache.log4j.Level.ERROR, null, ex);
-                    }
+                    logEventService.create(factoryLogEvent.create(0, 0, request.getUserPrincipal().getName(), null, "/DeleteProject", "DELETE", "Delete Project : ['" + key + "']", "", ""));
                 }
             }
         }
-        
+
         /**
          * Formating and returning the json result.
          */

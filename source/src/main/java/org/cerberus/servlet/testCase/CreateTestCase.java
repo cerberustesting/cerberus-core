@@ -34,15 +34,12 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.log4j.Level;
-import org.apache.log4j.Logger;
 import org.cerberus.database.DatabaseSpring;
-import org.cerberus.exception.CerberusException;
 import org.cerberus.factory.IFactoryLogEvent;
 import org.cerberus.factory.impl.FactoryLogEvent;
 import org.cerberus.log.MyLogger;
 import org.cerberus.service.ILogEventService;
 import org.cerberus.service.impl.LogEventService;
-import org.cerberus.service.impl.UserService;
 import org.cerberus.util.StringUtil;
 import org.springframework.context.ApplicationContext;
 import org.springframework.web.context.support.WebApplicationContextUtils;
@@ -206,11 +203,7 @@ public class CreateTestCase extends HttpServlet {
                          */
                         ILogEventService logEventService = appContext.getBean(LogEventService.class);
                         IFactoryLogEvent factoryLogEvent = appContext.getBean(FactoryLogEvent.class);
-                        try {
-                            logEventService.create_Deprecated(factoryLogEvent.create(0, 0, request.getUserPrincipal().getName(), null, "/CreateTestcase", "CREATE", "Create testcase : ['" + test + "'|'" + testcase + "'|'" + description + "']", "", ""));
-                        } catch (CerberusException ex) {
-                            Logger.getLogger(UserService.class.getName()).log(Level.ERROR, null, ex);
-                        }
+                        logEventService.create(factoryLogEvent.create(0, 0, request.getUserPrincipal().getName(), null, "/CreateTestCase", "CREATE", "Create testcase : ['" + test + "'|'" + testcase + "'|'" + description + "']", "", ""));
 
                         String encodedTest = URLEncoder.encode(test, "UTF-8");
                         String encodedTestCase = URLEncoder.encode(testcase, "UTF-8");

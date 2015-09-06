@@ -19,7 +19,7 @@
  */
 package org.cerberus.servlet.testdatalib;
 
-import java.io.IOException; 
+import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.servlet.ServletException;
@@ -29,11 +29,11 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import org.cerberus.entity.MessageEvent;
 import org.cerberus.entity.MessageEventEnum;
-import org.cerberus.entity.TestDataLib; 
+import org.cerberus.entity.TestDataLib;
 import org.cerberus.exception.CerberusException;
 import org.cerberus.factory.IFactoryLogEvent;
 import org.cerberus.factory.IFactoryTestDataLib;
-import org.cerberus.factory.impl.FactoryLogEvent; 
+import org.cerberus.factory.impl.FactoryLogEvent;
 import org.cerberus.service.ILogEventService;
 import org.cerberus.service.ITestDataLibService;
 import org.cerberus.service.impl.LogEventService;
@@ -45,7 +45,7 @@ import org.springframework.web.context.support.WebApplicationContextUtils;
 
 /**
  * Handles the UPDATE operation for test data lib entries.
- * 
+ *
  * @author FNogueira
  */
 @WebServlet(name = "UpdateTestDataLib", urlPatterns = {"/UpdateTestDataLib"})
@@ -68,65 +68,57 @@ public class UpdateTestDataLib extends HttpServlet {
             String name = request.getParameter("NameEdit");
             String type = request.getParameter("TypeEdit");
             String group = request.getParameter("GroupEdit");
-            
+
             String description = request.getParameter("EntryDescriptionEdit");
             String system = request.getParameter("System");
             String environment = request.getParameter("Environment");
             String country = request.getParameter("Country");
-            
+
             String database = request.getParameter("DatabaseEdit");
             String script = request.getParameter("ScriptEdit");
-            
+
             String servicePath = request.getParameter("ServicePathEdit");
             String method = request.getParameter("MethodEdit");
             String envelope = request.getParameter("EnvelopeEdit");
-            
-            
-            
+
             //specific attributes
             ApplicationContext appContext = WebApplicationContextUtils.getWebApplicationContext(this.getServletContext());
             IFactoryTestDataLib factoryLibService = appContext.getBean(IFactoryTestDataLib.class);
-            
+
             ITestDataLibService libService = appContext.getBean(ITestDataLibService.class);
 
-            TestDataLib lib = factoryLibService.create(testDataLibID, name, system, environment, country, group, type, database, 
+            TestDataLib lib = factoryLibService.create(testDataLibID, name, system, environment, country, group, type, database,
                     script, servicePath, method, envelope, description);
-            
+
             //updates the testdatalib
             Answer answer = libService.updateTestDataLib(lib);
-            
-            
+
             //  Adding Log entry.
             ILogEventService logEventService = appContext.getBean(LogEventService.class);
             IFactoryLogEvent factoryLogEvent = appContext.getBean(FactoryLogEvent.class);
-            try {
-                logEventService.create_Deprecated(factoryLogEvent.create(0, 0, request.getUserPrincipal().getName(), null, "/UpdateTestDataLib", "UPDATE", 
-                        "Update TestDataLib:  id: " + testDataLibID  +" name: " +name, "", ""));
-            } catch (CerberusException ex) { 
-                org.apache.log4j.Logger.getLogger(UpdateTestDataLib.class.getName()).log(org.apache.log4j.Level.ERROR, null, ex);      
-            }
-                        
+            logEventService.create(factoryLogEvent.create(0, 0, request.getUserPrincipal().getName(), null, "/UpdateTestDataLib", "UPDATE", "Update TestDataLib:  id: " + testDataLibID + " name: " + name, "", ""));
+
             jsonResponse.put("messageType", answer.getResultMessage().getMessage().getCodeString());
             jsonResponse.put("message", answer.getResultMessage().getDescription());
-            
+
             response.setContentType("application/json");
             response.getWriter().print(jsonResponse);
             response.getWriter().flush();
-            
+
         } catch (JSONException ex) {
             Logger.getLogger(UpdateTestDataLib.class.getName()).log(Level.SEVERE, null, ex);
             //returns a default error message with the json format that is able to be parsed by the client-side
-            response.setContentType("application/json"); 
+            response.setContentType("application/json");
             MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_UNEXPECTED_ERROR);
             StringBuilder errorMessage = new StringBuilder();
             errorMessage.append("{'messageType':'").append(msg.getCode()).append("', ");
             errorMessage.append(" 'message': '");
-            errorMessage.append(msg.getDescription().replace("%DESCRIPTION%", "Unable to check the status of your request! Try later or - Open a bug or ask for any new feature \n" +
-            "<a href=\"https://github.com/vertigo17/Cerberus/issues/\" target=\"_blank\">here</a>"));
+            errorMessage.append(msg.getDescription().replace("%DESCRIPTION%", "Unable to check the status of your request! Try later or - Open a bug or ask for any new feature \n"
+                    + "<a href=\"https://github.com/vertigo17/Cerberus/issues/\" target=\"_blank\">here</a>"));
             errorMessage.append("'}");
-            response.getWriter().print(errorMessage.toString());       
+            response.getWriter().print(errorMessage.toString());
         }
-        
+
     }
 
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">

@@ -53,14 +53,14 @@ public class UpdateTest extends HttpServlet {
 
     @Override
     protected void doGet(HttpServletRequest request,
-                         HttpServletResponse response) throws ServletException, IOException {
+            HttpServletResponse response) throws ServletException, IOException {
 
         this.processRequest(request, response);
     }
 
     @Override
     protected void doPost(HttpServletRequest request,
-                          HttpServletResponse response) throws ServletException, IOException {
+            HttpServletResponse response) throws ServletException, IOException {
 
         this.processRequest(request, response);
     }
@@ -75,7 +75,7 @@ public class UpdateTest extends HttpServlet {
      * the specified index
      */
     public boolean formIsFullFill(List<String[]> testcase_info, int index,
-                                  PrintWriter out) {
+            PrintWriter out) {
 
         for (String[] t : testcase_info) {
             if (t[index].isEmpty() || t[index].trim().equals("")
@@ -99,7 +99,7 @@ public class UpdateTest extends HttpServlet {
     }// </editor-fold>
 
     protected void processRequest(HttpServletRequest request,
-                                  HttpServletResponse response) throws ServletException, IOException {
+            HttpServletResponse response) throws ServletException, IOException {
 
         response.setContentType("text/html;charset=UTF-8");
         PrintWriter out = response.getWriter();
@@ -131,7 +131,6 @@ public class UpdateTest extends HttpServlet {
                 automated = "";
             }
 
-
             String sql = "UPDATE test SET Description = ?, Active = ?, Automated = ? WHERE Test = ?";
 
             PreparedStatement stmt = connection.prepareStatement(sql);
@@ -150,11 +149,7 @@ public class UpdateTest extends HttpServlet {
              */
             ILogEventService logEventService = appContext.getBean(LogEventService.class);
             IFactoryLogEvent factoryLogEvent = appContext.getBean(FactoryLogEvent.class);
-            try {
-                logEventService.create_Deprecated(factoryLogEvent.create(0, 0, request.getUserPrincipal().getName(), null, "/UpdateTest", "UPDATE", "Update test : " + test, "", ""));
-            } catch (CerberusException ex) {
-                Logger.getLogger(UserService.class.getName()).log(Level.ERROR, null, ex);
-            }
+            logEventService.create(factoryLogEvent.create(0, 0, request.getUserPrincipal().getName(), null, "/UpdateTest", "UPDATE", "Update test : " + test, "", ""));
 
             response.sendRedirect("Test.jsp?stestbox=" + test);
 

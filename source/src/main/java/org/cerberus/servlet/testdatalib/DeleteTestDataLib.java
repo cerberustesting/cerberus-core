@@ -19,7 +19,7 @@
  */
 package org.cerberus.servlet.testdatalib;
 
-import java.io.IOException; 
+import java.io.IOException;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -30,7 +30,7 @@ import org.cerberus.entity.MessageEventEnum;
 import org.cerberus.exception.CerberusException;
 import org.cerberus.factory.IFactoryLogEvent;
 import org.cerberus.factory.impl.FactoryLogEvent;
-import org.cerberus.service.ILogEventService; 
+import org.cerberus.service.ILogEventService;
 import org.cerberus.service.ITestDataLibService;
 import org.cerberus.service.impl.LogEventService;
 import org.cerberus.util.answer.Answer;
@@ -38,13 +38,14 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import org.springframework.context.ApplicationContext;
 import org.springframework.web.context.support.WebApplicationContextUtils;
+
 /**
  * Servlet responsible for handling the deletion of a test data lib
- * 
+ *
  * @author FNogueira
  */
 @WebServlet(name = "DeleteTestDataLib", urlPatterns = {"/DeleteTestDataLib"})
-public class DeleteTestDataLib extends HttpServlet { 
+public class DeleteTestDataLib extends HttpServlet {
 
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
@@ -69,35 +70,30 @@ public class DeleteTestDataLib extends HttpServlet {
             //removes the testdatalibentry
             ITestDataLibService libService = appContext.getBean(ITestDataLibService.class);
             Answer answer = libService.deleteTestDataLib(testDataLibID);
-            
+
             jsonResponse.put("messageType", answer.getResultMessage().getMessage().getCodeString());
             jsonResponse.put("message", answer.getResultMessage().getDescription());
 
             ILogEventService logEventService = appContext.getBean(LogEventService.class);
             IFactoryLogEvent factoryLogEvent = appContext.getBean(FactoryLogEvent.class);
-            try {
-                logEventService.create_Deprecated(factoryLogEvent.create(0, 0, request.getUserPrincipal().getName(), null, "/DeleteTestDataLib",
-                        "DELETE", "Delete TestDataLib  By ID: " + testDataLibID, "", ""));
-            } catch (CerberusException ex) {
-                org.apache.log4j.Logger.getLogger(CreateTestDataLib.class.getName()).log(org.apache.log4j.Level.ERROR, null, ex);
-            }
-            
+            logEventService.create(factoryLogEvent.create(0, 0, request.getUserPrincipal().getName(), null, "/DeleteTestDataLib", "DELETE", "Delete TestDataLib : " + testDataLibID, "", ""));
+
             response.setContentType("application/json");
-            response.getWriter().print(jsonResponse); 
+            response.getWriter().print(jsonResponse);
             response.getWriter().flush();
-            
-        } catch (JSONException ex) { 
-            org.apache.log4j.Logger.getLogger(DeleteTestDataLib.class.getName()).log(org.apache.log4j.Level.ERROR, null, ex); 
+
+        } catch (JSONException ex) {
+            org.apache.log4j.Logger.getLogger(DeleteTestDataLib.class.getName()).log(org.apache.log4j.Level.ERROR, null, ex);
             //returns a default error message with the json format that is able to be parsed by the client-side
-            response.setContentType("application/json"); 
+            response.setContentType("application/json");
             MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_UNEXPECTED_ERROR);
             StringBuilder errorMessage = new StringBuilder();
             errorMessage.append("{'messageType':'").append(msg.getCode()).append("', ");
             errorMessage.append(" 'message': '");
-            errorMessage.append(msg.getDescription().replace("%DESCRIPTION%", "Unable to check the status of your request! Try later or - Open a bug or ask for any new feature \n" +
-            "<a href=\"https://github.com/vertigo17/Cerberus/issues/\" target=\"_blank\">here</a>"));
+            errorMessage.append(msg.getDescription().replace("%DESCRIPTION%", "Unable to check the status of your request! Try later or - Open a bug or ask for any new feature \n"
+                    + "<a href=\"https://github.com/vertigo17/Cerberus/issues/\" target=\"_blank\">here</a>"));
             errorMessage.append("'}");
-            response.getWriter().print(errorMessage.toString());            
+            response.getWriter().print(errorMessage.toString());
         }
 
     }

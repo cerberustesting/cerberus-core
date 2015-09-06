@@ -65,12 +65,7 @@ public class DeleteUser extends HttpServlet {
              */
             ILogEventService logEventService = appContext.getBean(LogEventService.class);
             IFactoryLogEvent factoryLogEvent = appContext.getBean(FactoryLogEvent.class);
-            try {
-                logEventService.create_Deprecated(factoryLogEvent.create(0, 0, request.getUserPrincipal().getName(), null, "/DeleteUsersAjax", "DELETE", "Delete user : " + login, "", ""));
-            } catch (CerberusException ex) {
-                Logger.getLogger(UserService.class.getName()).log(Level.ERROR, null, ex);
-            }
-
+            logEventService.create(factoryLogEvent.create(0, 0, request.getUserPrincipal().getName(), null, "/DeleteUser", "DELETE", "Delete user : " + login, "", ""));
 
         } catch (CerberusException ex) {
             response.getWriter().print(ex.getMessageError().getDescription());

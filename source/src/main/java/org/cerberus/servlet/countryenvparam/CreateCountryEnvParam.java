@@ -45,6 +45,7 @@ import org.springframework.web.context.support.WebApplicationContextUtils;
 public class CreateCountryEnvParam extends HttpServlet {
 
     private static final org.apache.log4j.Logger LOG = org.apache.log4j.Logger.getLogger(CreateCountryEnvParam.class);
+
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
      * methods.
@@ -72,8 +73,8 @@ public class CreateCountryEnvParam extends HttpServlet {
             final String type = policy.sanitize(request.getParameter("Type"));
             final String emailBodyChain = policy.sanitize(request.getParameter("EmailBodyChain"));
             final String emailBodyDisableEnvironment = policy.sanitize(request.getParameter("EmailBodyDisableEnvironment"));
-            final boolean active = "Y".equals(policy.sanitize(request.getParameter("Active")))?true:false;
-            final boolean maintenanceAct = "Y".equals(policy.sanitize(request.getParameter("MaintenanceAct")))?true:false;
+            final boolean active = "Y".equals(policy.sanitize(request.getParameter("Active"))) ? true : false;
+            final boolean maintenanceAct = "Y".equals(policy.sanitize(request.getParameter("MaintenanceAct"))) ? true : false;
             final String maintenanceStr = policy.sanitize(request.getParameter("MaintenanceStr"));
             final String maintenanceEnd = policy.sanitize(request.getParameter("MaintenanceEnd"));
 
@@ -89,11 +90,7 @@ public class CreateCountryEnvParam extends HttpServlet {
              */
             ILogEventService logEventService = appContext.getBean(ILogEventService.class);
             IFactoryLogEvent factoryLogEvent = appContext.getBean(IFactoryLogEvent.class);
-            try {
-                logEventService.create_Deprecated(factoryLogEvent.create(0, 0, request.getUserPrincipal().getName(), null, "/CreateCountryEnvParam", "CREATE", "Create CountryEnvParam : " + country + "_" + environment, "", ""));
-            } catch (CerberusException ex) {
-                LOG.error(ex);
-            }
+            logEventService.create(factoryLogEvent.create(0, 0, request.getUserPrincipal().getName(), null, "/CreateCountryEnvParam", "CREATE", "Create CountryEnvParam : " + country + "_" + environment, "", ""));
 
             response.sendRedirect("/EnvironmentManagement.jsp");
         } catch (CerberusException ex) {

@@ -117,11 +117,7 @@ public class DeleteDeployType extends HttpServlet {
                      */
                     ILogEventService logEventService = appContext.getBean(LogEventService.class);
                     IFactoryLogEvent factoryLogEvent = appContext.getBean(FactoryLogEvent.class);
-                    try {
-                        logEventService.create_Deprecated(factoryLogEvent.create(0, 0, request.getUserPrincipal().getName(), null, "/DeleteDeployType", "DELETE", "Delete Deploy Type : ['" + key + "']", "", ""));
-                    } catch (CerberusException ex) {
-                        org.apache.log4j.Logger.getLogger(DeleteDeployType.class.getName()).log(org.apache.log4j.Level.ERROR, null, ex);
-                    }
+                    logEventService.create(factoryLogEvent.create(0, 0, request.getUserPrincipal().getName(), null, "/DeleteDeployType", "DELETE", "Delete Deploy Type : ['" + key + "']", "", ""));
                 }
             }
         }

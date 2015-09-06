@@ -23,6 +23,7 @@ import java.util.List;
 
 import org.cerberus.entity.LogEvent;
 import org.cerberus.exception.CerberusException;
+import org.cerberus.util.answer.Answer;
 import org.cerberus.util.answer.AnswerList;
 
 /**
@@ -32,16 +33,15 @@ import org.cerberus.util.answer.AnswerList;
 public interface ILogEventDAO {
 
     /**
+     * @param start
+     * @param amount
+     * @param colName
+     * @param dir
+     * @param searchTerm
+     * @param individualSearch
      * @return a list of all LogEvent.
-     * @throws CerberusException in case no LogEvent can be found.
      */
-    List<LogEvent> readAll_Deprecated() throws CerberusException;
-
-    /**
-     * @return a list of all LogEvent.
-     * @throws CerberusException in case no LogEvent can be found.
-     */
-    AnswerList readByCriteria_Deprecated(int start, int amount, String colName, String dir, String searchTerm, String individualSearch) throws CerberusException;
+    AnswerList readByCriteria(int start, int amount, String colName, String dir, String searchTerm, String individualSearch);
 
     /**
      * Insert user into the database.
@@ -50,15 +50,14 @@ public interface ILogEventDAO {
      * @return true is log was inserted
      * @throws CerberusException if we did not manage to insert the user.
      */
-    boolean create_Deprecated(LogEvent logevent) throws CerberusException;
-
-    LogEvent loadFromResultSet(ResultSet resultSet) throws SQLException;
+    Answer create(LogEvent logevent);
 
     /**
      *
-     * @return Total number of LogEvent inside the database.
-     * @throws CerberusException
+     * @param resultSet
+     * @return
+     * @throws SQLException
      */
-    Integer getNumberOfLogEvent(String searchTerm) throws CerberusException;
+    LogEvent loadFromResultSet(ResultSet resultSet) throws SQLException;
 
 }

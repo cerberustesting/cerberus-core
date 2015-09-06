@@ -17,6 +17,8 @@
   ~ You should have received a copy of the GNU General Public License
   ~ along with Cerberus.  If not, see <http://www.gnu.org/licenses/>.
 --%>
+<%@page import="org.cerberus.factory.impl.FactoryLogEvent"%>
+<%@page import="org.cerberus.factory.IFactoryLogEvent"%>
 <%@page import="org.cerberus.service.impl.LogEventService"%>
 <%@page import="org.cerberus.service.ILogEventService"%>
 <%@page import="org.cerberus.version.Infos"%>
@@ -49,7 +51,8 @@
              * Adding Log entry.
              */
             ILogEventService logEventService = appContext.getBean(LogEventService.class);
-            logEventService.create_Deprecated("/Login.jsp", "LOGINERROR", "Invalid Password for : " + request.getParameter("j_username"), request);
+            IFactoryLogEvent factoryLogEvent = appContext.getBean(FactoryLogEvent.class);
+            logEventService.create(factoryLogEvent.create(0, 0, request.getUserPrincipal().getName(), null, "/Login.jsp", "LOGINERROR", "Invalid Password for : " + request.getParameter("j_username"), request.getRemoteAddr(), request.getLocalAddr()));
         }
 %>
         <script type='text/javascript' src='js/Form.js'></script>

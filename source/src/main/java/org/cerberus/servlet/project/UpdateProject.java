@@ -125,11 +125,7 @@ public class UpdateProject extends HttpServlet {
                     ILogEventService logEventService = appContext.getBean(LogEventService.class);
                     IFactoryLogEvent factoryLogEvent = appContext.getBean(FactoryLogEvent.class);
 
-                    try {
-                        logEventService.create_Deprecated(factoryLogEvent.create(0, 0, request.getUserPrincipal().getName(), null, "/UpdateProject", "UPDATE", "Updated Project : ['" + idProject + "']", "", ""));
-                    } catch (CerberusException ex) {
-                        Logger.getLogger(UpdateProject.class.getName()).log(Level.SEVERE, null, ex);
-                    }
+                    logEventService.create(factoryLogEvent.create(0, 0, request.getUserPrincipal().getName(), null, "/UpdateProject", "UPDATE", "Updated Project : ['" + idProject + "']", "", ""));
                 }
             }
         }

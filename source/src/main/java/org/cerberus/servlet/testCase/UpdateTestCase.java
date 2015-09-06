@@ -54,13 +54,12 @@ import org.springframework.web.util.HtmlUtils;
 public class UpdateTestCase extends HttpServlet {
 
     /**
-     * Process the post request from UpdateTestCase form in TestCase
-     * page.
+     * Process the post request from UpdateTestCase form in TestCase page.
      * <p/>
      * Use {@link #updateTestCase(TestCase tc, int type)} to update the TestCase
      * information.
      *
-     * @param request  information from the request page
+     * @param request information from the request page
      * @param response information from the response page
      */
     @Override
@@ -69,19 +68,15 @@ public class UpdateTestCase extends HttpServlet {
 
         ApplicationContext appContext = WebApplicationContextUtils.getWebApplicationContext(this.getServletContext());
         ITestCaseService tcs = appContext.getBean(ITestCaseService.class);
-        
-        if (tcs.updateTestCaseInformation(tc) &&  tcs.updateTestCaseInformationCountries(tc)) {
+
+        if (tcs.updateTestCaseInformation(tc) && tcs.updateTestCaseInformationCountries(tc)) {
 
             /**
              * Adding Log entry.
              */
             ILogEventService logEventService = appContext.getBean(LogEventService.class);
             IFactoryLogEvent factoryLogEvent = appContext.getBean(FactoryLogEvent.class);
-            try {
-                logEventService.create_Deprecated(factoryLogEvent.create(0, 0, request.getUserPrincipal().getName(), null, "/UpdateTestCase", "UPDATE", "Update testcase : ['" + tc.getTest() + "'|'" + tc.getTestCase() + "']", "", ""));
-            } catch (CerberusException ex) {
-                Logger.getLogger(UserService.class.getName()).log(Level.ERROR, null, ex);
-            }
+            logEventService.create(factoryLogEvent.create(0, 0, request.getUserPrincipal().getName(), null, "/UpdateTestCase", "UPDATE", "Update testcase : ['" + tc.getTest() + "'|'" + tc.getTestCase() + "']", "", ""));
 
             response.sendRedirect(response.encodeRedirectURL("TestCase.jsp?Tinf=Y&Load=Load&Test=" + tc.getTest() + "&TestCase=" + tc.getTestCase()));
         } else {
@@ -92,21 +87,21 @@ public class UpdateTestCase extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         ApplicationContext appContext = WebApplicationContextUtils.getWebApplicationContext(this.getServletContext());
-        
+
         ITestCaseStepActionService testCaseStepActionService = appContext.getBean(ITestCaseStepActionService.class);
-        
-        testCaseStepActionService.changeTestCaseStepActionSequence(request.getParameter("test"), request.getParameter("testcase"), 
-                Integer.valueOf(request.getParameter("step")), Integer.valueOf(request.getParameter("fromPosition")), 
+
+        testCaseStepActionService.changeTestCaseStepActionSequence(request.getParameter("test"), request.getParameter("testcase"),
+                Integer.valueOf(request.getParameter("step")), Integer.valueOf(request.getParameter("fromPosition")),
                 Integer.valueOf(request.getParameter("toPosition")));
-/*
-id	2
-step8	
-test	Customer Identification
-testcase	5023A
-toPosition	161
-        */
+        /*
+         id	2
+         step8	
+         test	Customer Identification
+         testcase	5023A
+         toPosition	161
+         */
     }
-    
+
     /**
      * Create new TestCase object from the information of request form
      *

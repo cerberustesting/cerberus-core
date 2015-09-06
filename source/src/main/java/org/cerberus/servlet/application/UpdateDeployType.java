@@ -119,12 +119,7 @@ public class UpdateDeployType extends HttpServlet {
                      */
                     ILogEventService logEventService = appContext.getBean(LogEventService.class);
                     IFactoryLogEvent factoryLogEvent = appContext.getBean(FactoryLogEvent.class);
-
-                    try {
-                        logEventService.create_Deprecated(factoryLogEvent.create(0, 0, request.getUserPrincipal().getName(), null, "/UpdateDeployType", "UPDATE", "Updated Deploy Type : ['" + deployType + "']", "", ""));
-                    } catch (CerberusException ex) {
-                        Logger.getLogger(UpdateDeployType.class.getName()).log(Level.SEVERE, null, ex);
-                    }
+                    logEventService.create(factoryLogEvent.create(0, 0, request.getUserPrincipal().getName(), null, "/UpdateDeployType", "UPDATE", "Updated Deploy Type : ['" + deployType + "']", "", ""));
                 }
             }
         }

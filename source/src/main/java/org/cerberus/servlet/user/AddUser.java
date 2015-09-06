@@ -108,7 +108,7 @@ public class AddUser extends HttpServlet {
             for (String group : request.getParameterValues("groups")) {
                 groups.add(factoryGroup.create(group));
             }
-            
+
             IFactoryUserSystem factorySystem = new FactoryUserSystem();
             List<UserSystem> systems = new ArrayList<UserSystem>();
             for (String sys : request.getParameterValues("systems")) {
@@ -118,13 +118,13 @@ public class AddUser extends HttpServlet {
             /**
              * Creating user.
              */
-            User myUser = factory.create(0, login, password, newPassword, name, team, "en", "", "","","","","","", defaultSystem, email, null, null);
+            User myUser = factory.create(0, login, password, newPassword, name, team, "en", "", "", "", "", "", "", "", defaultSystem, email, null, null);
 
             userService.insertUser(myUser);
             userGroupService.updateUserGroups(myUser, groups);
-            
-            for (UserSystem us : systems){
-            userSystemService.insertUserSystem(us);
+
+            for (UserSystem us : systems) {
+                userSystemService.insertUserSystem(us);
             }
 
             /**
@@ -142,11 +142,7 @@ public class AddUser extends HttpServlet {
              */
             ILogEventService logEventService = appContext.getBean(LogEventService.class);
             IFactoryLogEvent factoryLogEvent = appContext.getBean(FactoryLogEvent.class);
-            try {
-                logEventService.create_Deprecated(factoryLogEvent.create(0, 0, request.getUserPrincipal().getName(), null, "/AddUserAjax", "CREATE", "Insert user : " + login, "", ""));
-            } catch (CerberusException ex) {
-                Logger.getLogger(UserService.class.getName()).log(Level.ERROR, null, ex);
-            }
+            logEventService.create(factoryLogEvent.create(0, 0, request.getUserPrincipal().getName(), null, "/AddUser", "CREATE", "Insert user : " + login, "", ""));
 
             response.getWriter().print(myUser.getLogin());
         } catch (CerberusException myexception) {

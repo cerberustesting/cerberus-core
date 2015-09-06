@@ -19,7 +19,7 @@
  */
 package org.cerberus.servlet.testdatalib;
 
-import java.io.IOException; 
+import java.io.IOException;
 import java.util.ArrayList;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -46,7 +46,7 @@ import org.springframework.web.context.support.WebApplicationContextUtils;
 
 /**
  * Handles the modification of subdata entries.
- * 
+ *
  * @author FNogueira
  */
 @WebServlet(name = "UpdateTestDataLibData", urlPatterns = {"/UpdateTestDataLibData"})
@@ -64,98 +64,92 @@ public class UpdateTestDataLibData extends HttpServlet {
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         JSONObject jsonResponse = new JSONObject();
-        try{
+        try {
             //try {
-                //removes all the subdata for the testdatalibentry
-                //common attributes
-                int testDataLibID = Integer.parseInt(request.getParameter("id"));
-                String type = request.getParameter("type");
-                String data = request.getParameter("data");
-                
-                JSONObject dataToEdit = new JSONObject(data);
-                JSONObject obj;
-                
-                ApplicationContext appContext = WebApplicationContextUtils.getWebApplicationContext(this.getServletContext());
-                IFactoryTestDataLibData factoryLibService = appContext.getBean(IFactoryTestDataLibData.class);
+            //removes all the subdata for the testdatalibentry
+            //common attributes
+            int testDataLibID = Integer.parseInt(request.getParameter("id"));
+            String type = request.getParameter("type");
+            String data = request.getParameter("data");
 
-                //checks if the subdataentry can be deleted
-                ITestDataLibDataService subDataService = appContext.getBean(ITestDataLibDataService.class);
-                
-                //removes the entries selected by the user
-                ArrayList<String> entriesToRemove = new ArrayList<String>();
-                if(dataToEdit.has("remove")){
-                    JSONArray arrayToRemove = (JSONArray) dataToEdit.get("remove"); 
-                    for(int i = 0; i < arrayToRemove.length(); i++){                    
-                        //removes the testdatalibentry
-                        obj =  arrayToRemove.getJSONObject(i);
-                        entriesToRemove.add(obj.get("Subdata").toString());                        
-                    }                    
-                }                
-                
-                //updates the selected entries
-                ArrayList<TestDataLibData> entriesToUpdate = new ArrayList<TestDataLibData>();
-                if(dataToEdit.has("update")){
-                    //subDataService.
-                    JSONArray arrayToeditInsert = (JSONArray) dataToEdit.get("update");
-                    for(int i = 0; i < arrayToeditInsert.length(); i++){
-                        //TestDataLibData subData = subDataService.createTestDataLibData();
-                        obj =  arrayToeditInsert.getJSONObject(i);
-                        TestDataLibData item = factoryLibService.create(testDataLibID, type, obj.get("Subdata").toString(),
-                                obj.get("Value").toString(), 
-                                obj.get("Description").toString());
-                        entriesToUpdate.add(item);
-                    }
+            JSONObject dataToEdit = new JSONObject(data);
+            JSONObject obj;
+
+            ApplicationContext appContext = WebApplicationContextUtils.getWebApplicationContext(this.getServletContext());
+            IFactoryTestDataLibData factoryLibService = appContext.getBean(IFactoryTestDataLibData.class);
+
+            //checks if the subdataentry can be deleted
+            ITestDataLibDataService subDataService = appContext.getBean(ITestDataLibDataService.class);
+
+            //removes the entries selected by the user
+            ArrayList<String> entriesToRemove = new ArrayList<String>();
+            if (dataToEdit.has("remove")) {
+                JSONArray arrayToRemove = (JSONArray) dataToEdit.get("remove");
+                for (int i = 0; i < arrayToRemove.length(); i++) {
+                    //removes the testdatalibentry
+                    obj = arrayToRemove.getJSONObject(i);
+                    entriesToRemove.add(obj.get("Subdata").toString());
                 }
-                //inserts new subdataentries
-                ArrayList<TestDataLibData> entriesToInsert = new ArrayList<TestDataLibData>();
-                if(dataToEdit.has("insert")){
-                    //subDataService.
-                    JSONArray arrayToeditInsert = (JSONArray) dataToEdit.get("insert");
-                    for(int i = 0; i < arrayToeditInsert.length(); i++){
-                        obj =  arrayToeditInsert.getJSONObject(i);
-                        TestDataLibData item = factoryLibService.create(testDataLibID, type, obj.get("Subdata").toString(),
-                                obj.get("Value").toString(), 
-                                obj.get("Description").toString());
-                        entriesToInsert.add(item);
-                    }
-                    
+            }
+
+            //updates the selected entries
+            ArrayList<TestDataLibData> entriesToUpdate = new ArrayList<TestDataLibData>();
+            if (dataToEdit.has("update")) {
+                //subDataService.
+                JSONArray arrayToeditInsert = (JSONArray) dataToEdit.get("update");
+                for (int i = 0; i < arrayToeditInsert.length(); i++) {
+                    //TestDataLibData subData = subDataService.createTestDataLibData();
+                    obj = arrayToeditInsert.getJSONObject(i);
+                    TestDataLibData item = factoryLibService.create(testDataLibID, type, obj.get("Subdata").toString(),
+                            obj.get("Value").toString(),
+                            obj.get("Description").toString());
+                    entriesToUpdate.add(item);
                 }
-                
-                //performs the operations selected by the user
-                Answer answer = subDataService.cudTestDataLibData(testDataLibID, entriesToInsert, entriesToUpdate, entriesToRemove);
-                
-                //  Adding Log entry.
-                ILogEventService logEventService = appContext.getBean(LogEventService.class);
-                IFactoryLogEvent factoryLogEvent = appContext.getBean(FactoryLogEvent.class);
-                try {
-                    logEventService.create_Deprecated(factoryLogEvent.create(0, 0, request.getUserPrincipal().getName(), null, "/UpdateTestDataLibData", "UPDATE", 
-                            "Update TestDataLibData entries for id: " + testDataLibID, "", ""));
-                } catch (CerberusException ex) {
-                    org.apache.log4j.Logger.getLogger(UpdateTestDataLibData.class.getName()).log(org.apache.log4j.Level.ERROR, null, ex); 
+            }
+            //inserts new subdataentries
+            ArrayList<TestDataLibData> entriesToInsert = new ArrayList<TestDataLibData>();
+            if (dataToEdit.has("insert")) {
+                //subDataService.
+                JSONArray arrayToeditInsert = (JSONArray) dataToEdit.get("insert");
+                for (int i = 0; i < arrayToeditInsert.length(); i++) {
+                    obj = arrayToeditInsert.getJSONObject(i);
+                    TestDataLibData item = factoryLibService.create(testDataLibID, type, obj.get("Subdata").toString(),
+                            obj.get("Value").toString(),
+                            obj.get("Description").toString());
+                    entriesToInsert.add(item);
                 }
-                
-                jsonResponse.put("messageType", answer.getResultMessage().getMessage().getCodeString());
-                jsonResponse.put("message", answer.getResultMessage().getDescription());
-            
-                response.setContentType("application/json");
-                response.getWriter().print(jsonResponse); 
-                response.getWriter().flush();
-                
+
+            }
+
+            //performs the operations selected by the user
+            Answer answer = subDataService.cudTestDataLibData(testDataLibID, entriesToInsert, entriesToUpdate, entriesToRemove);
+
+            //  Adding Log entry.
+            ILogEventService logEventService = appContext.getBean(LogEventService.class);
+            IFactoryLogEvent factoryLogEvent = appContext.getBean(FactoryLogEvent.class);
+            logEventService.create(factoryLogEvent.create(0, 0, request.getUserPrincipal().getName(), null, "/UpdateTestDataLibData", "UPDATE", "Update TestDataLibData entries for id: " + testDataLibID, "", ""));
+
+            jsonResponse.put("messageType", answer.getResultMessage().getMessage().getCodeString());
+            jsonResponse.put("message", answer.getResultMessage().getDescription());
+
+            response.setContentType("application/json");
+            response.getWriter().print(jsonResponse);
+            response.getWriter().flush();
+
         } catch (JSONException ex) {
             MyLogger.log(UpdateTestDataLibData.class.getName(), org.apache.log4j.Level.FATAL, "" + ex);
             //returns a default error message with the json format that is able to be parsed by the client-side
-            response.setContentType("application/json"); 
+            response.setContentType("application/json");
             MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_UNEXPECTED_ERROR);
             StringBuilder errorMessage = new StringBuilder();
             errorMessage.append("{'messageType':'").append(msg.getCode()).append("', ");
             errorMessage.append(" 'message': '");
-            errorMessage.append(msg.getDescription().replace("%DESCRIPTION%", "Unable to check the status of your request! Try later or - Open a bug or ask for any new feature \n" +
-            "<a href=\"https://github.com/vertigo17/Cerberus/issues/\" target=\"_blank\">here</a>"));
+            errorMessage.append(msg.getDescription().replace("%DESCRIPTION%", "Unable to check the status of your request! Try later or - Open a bug or ask for any new feature \n"
+                    + "<a href=\"https://github.com/vertigo17/Cerberus/issues/\" target=\"_blank\">here</a>"));
             errorMessage.append("'}");
-            response.getWriter().print(errorMessage.toString());            
-        } 
-       
-        
+            response.getWriter().print(errorMessage.toString());
+        }
+
     }
 
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">

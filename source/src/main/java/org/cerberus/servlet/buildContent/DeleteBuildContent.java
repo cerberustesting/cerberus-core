@@ -17,7 +17,6 @@
  * You should have received a copy of the GNU General Public License
  * along with Cerberus.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package org.cerberus.servlet.buildContent;
 
 import org.apache.log4j.Logger;
@@ -40,7 +39,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
 @WebServlet(name = "DeleteBuildContent", urlPatterns = {"/DeleteBuildContent"})
-public class DeleteBuildContent extends HttpServlet{
+public class DeleteBuildContent extends HttpServlet {
 
     private static final Logger LOG = Logger.getLogger(AddBuildContent.class);
 
@@ -58,11 +57,7 @@ public class DeleteBuildContent extends HttpServlet{
          */
         ILogEventService logEventService = appContext.getBean(LogEventService.class);
         IFactoryLogEvent factoryLogEvent = appContext.getBean(FactoryLogEvent.class);
-        try {
-            logEventService.create_Deprecated(factoryLogEvent.create(0, 0, req.getUserPrincipal().getName(), null, "/DeleteBuildContent", "DELETE", "Delete BuildContent : " + id, "", ""));
-        } catch (CerberusException ex) {
-            LOG.warn("Unable to register log : " + ex.getMessageError().getDescription(), ex);
-        }
+        logEventService.create(factoryLogEvent.create(0, 0, req.getUserPrincipal().getName(), null, "/DeleteBuildContent", "DELETE", "Delete BuildContent : " + id, "", ""));
     }
 
 }

@@ -81,11 +81,7 @@ public class CreateRobot extends HttpServlet {
              */
             ILogEventService logEventService = appContext.getBean(LogEventService.class);
             IFactoryLogEvent factoryLogEvent = appContext.getBean(FactoryLogEvent.class);
-            try {
-                logEventService.create_Deprecated(factoryLogEvent.create(0, 0, request.getUserPrincipal().getName(), null, "/CreateRobot", "CREATE", "Create Robot : " + platform + "/" + browser + "/" + version, "", ""));
-            } catch (CerberusException ex) {
-                MyLogger.log(CreateRobot.class.getName(), Level.ERROR, ex.toString());
-            }
+            logEventService.create(factoryLogEvent.create(0, 0, request.getUserPrincipal().getName(), null, "/CreateRobot", "CREATE", "Create Robot : " + platform + "/" + browser + "/" + version, "", ""));
 
             response.sendRedirect("Robot.jsp");
         } finally {
