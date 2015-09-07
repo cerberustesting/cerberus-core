@@ -23,9 +23,9 @@ import java.util.Date;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
-
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
+import org.cerberus.entity.Identifier;
 import org.cerberus.entity.MessageEvent;
 import org.cerberus.entity.MessageEventEnum;
 import org.cerberus.entity.MessageGeneral;
@@ -34,6 +34,7 @@ import org.cerberus.entity.TestCaseStepActionControlExecution;
 import org.cerberus.exception.CerberusEventException;
 import org.cerberus.log.MyLogger;
 import org.cerberus.serviceEngine.IControlService;
+import org.cerberus.serviceEngine.IIdentifierService;
 import org.cerberus.serviceEngine.IPropertyService;
 import org.cerberus.serviceEngine.IWebDriverService;
 import org.cerberus.serviceEngine.IXmlUnitService;
@@ -61,6 +62,8 @@ public class ControlService implements IControlService {
     private IPropertyService propertyService;
     @Autowired
     private IXmlUnitService xmlUnitService;
+    @Autowired
+    private IIdentifierService identifierService;
 
     @Override
     public TestCaseStepActionControlExecution doControl(TestCaseStepActionControlExecution testCaseStepActionControlExecution) {
@@ -366,7 +369,8 @@ public class ControlService implements IControlService {
             if (tCExecution.getApplication().getType().equalsIgnoreCase("GUI")||
                     tCExecution.getApplication().getType().equalsIgnoreCase("APK")) {
                 try {
-                    if (this.webdriverService.isElementPresent(tCExecution.getSession(), html)) {
+                    Identifier identifier = identifierService.convertStringToIdentifier(html);
+                    if (this.webdriverService.isElementPresent(tCExecution.getSession(), identifier)) {
                         mes = new MessageEvent(MessageEventEnum.CONTROL_SUCCESS_PRESENT);
                         mes.setDescription(mes.getDescription().replaceAll("%STRING1%", html));
                         return mes;
@@ -407,7 +411,9 @@ public class ControlService implements IControlService {
 		if (tCExecution.getApplication().getType().equalsIgnoreCase("GUI")|| tCExecution.getApplication().getType().equalsIgnoreCase("APK")) {
 			if (!StringUtil.isNull(element) && !StringUtil.isNull(childElement)) {
 				try {
-					if (this.webdriverService.isElementInElement(tCExecution.getSession(), element, childElement)) {
+                                    Identifier identifier = identifierService.convertStringToIdentifier(element);
+                                    Identifier childIdentifier = identifierService.convertStringToIdentifier(childElement);
+					if (this.webdriverService.isElementInElement(tCExecution.getSession(), identifier, childIdentifier)) {
 						mes = new MessageEvent(MessageEventEnum.CONTROL_SUCCESS_ELEMENTINELEMENT);
 						mes.setDescription(mes.getDescription().replaceAll("%STRING2%", element).replaceAll("%STRING1%", childElement));
 						return mes;
@@ -437,7 +443,8 @@ public class ControlService implements IControlService {
         MessageEvent mes;
         if (!StringUtil.isNull(html)) {
             try {
-                if (!this.webdriverService.isElementPresent(tCExecution.getSession(), html)) {
+                Identifier identifier = identifierService.convertStringToIdentifier(html);
+                if (!this.webdriverService.isElementPresent(tCExecution.getSession(), identifier)) {
                     mes = new MessageEvent(MessageEventEnum.CONTROL_SUCCESS_NOTPRESENT);
                     mes.setDescription(mes.getDescription().replaceAll("%STRING1%", html));
                     return mes;
@@ -459,7 +466,8 @@ public class ControlService implements IControlService {
         MessageEvent mes;
         if (!StringUtil.isNull(html)) {
             try {
-                if (this.webdriverService.isElementVisible(tCExecution.getSession(), html)) {
+                Identifier identifier = identifierService.convertStringToIdentifier(html);
+                if (this.webdriverService.isElementVisible(tCExecution.getSession(), identifier)) {
                     mes = new MessageEvent(MessageEventEnum.CONTROL_SUCCESS_VISIBLE);
                     mes.setDescription(mes.getDescription().replaceAll("%STRING1%", html));
                     return mes;
@@ -481,8 +489,9 @@ public class ControlService implements IControlService {
         MessageEvent mes;
         if (!StringUtil.isNull(html)) {
             try {
-                if (this.webdriverService.isElementPresent(tCExecution.getSession(), html)) {
-                    if (this.webdriverService.isElementNotVisible(tCExecution.getSession(), html)) {
+                Identifier identifier = identifierService.convertStringToIdentifier(html);
+                if (this.webdriverService.isElementPresent(tCExecution.getSession(), identifier)) {
+                    if (this.webdriverService.isElementNotVisible(tCExecution.getSession(), identifier)) {
                         mes = new MessageEvent(MessageEventEnum.CONTROL_SUCCESS_NOTVISIBLE);
                         mes.setDescription(mes.getDescription().replaceAll("%STRING1%", html));
                         return mes;
@@ -550,9 +559,10 @@ public class ControlService implements IControlService {
 		// Get value from the path element according to the application type
 		String actual = null;
 		try {
+                    Identifier identifier = identifierService.convertStringToIdentifier(path);
 			String applicationType = tCExecution.getApplication().getType();
 			if ("GUI".equalsIgnoreCase(applicationType) || "APK".equalsIgnoreCase(applicationType)) {
-				actual = webdriverService.getValueFromHTML(tCExecution.getSession(), path);
+				actual = webdriverService.getValueFromHTML(tCExecution.getSession(), identifier);
 			} else if ("WS".equalsIgnoreCase(applicationType)) {
 				if (!xmlUnitService.isElementPresent(tCExecution, path)) {
 					throw new NoSuchElementException("Unable to find element " + path);
@@ -595,9 +605,10 @@ public class ControlService implements IControlService {
 		// Get value from the path element according to the application type
 		String actual = null;
 		try {
+                    Identifier identifier = identifierService.convertStringToIdentifier(path);
 			String applicationType = tCExecution.getApplication().getType();
 			if ("GUI".equalsIgnoreCase(applicationType) || "APK".equalsIgnoreCase(applicationType)) {
-				actual = webdriverService.getValueFromHTML(tCExecution.getSession(), path);
+				actual = webdriverService.getValueFromHTML(tCExecution.getSession(), identifier);
 			} else if ("WS".equalsIgnoreCase(applicationType)) {
 				if (!xmlUnitService.isElementPresent(tCExecution, path)) {
 					throw new NoSuchElementException("Unable to find element " + path);
@@ -668,7 +679,8 @@ public class ControlService implements IControlService {
         MyLogger.log(ControlService.class.getName(), Level.DEBUG, "Control : verifyRegexInElement on : " + html + " element against value : " + regex);
         MessageEvent mes;
         try {
-            String str = this.webdriverService.getValueFromHTML(tCExecution.getSession(), html);
+            Identifier identifier = identifierService.convertStringToIdentifier(html);
+            String str = this.webdriverService.getValueFromHTML(tCExecution.getSession(), identifier);
             MyLogger.log(ControlService.class.getName(), Level.DEBUG, "Control : verifyRegexInElement element : " + html + " has value : " + StringUtil.sanitize(str));
             if (html != null) {
                 try {
@@ -854,10 +866,11 @@ public class ControlService implements IControlService {
         MyLogger.log(ControlService.class.getName(), Level.DEBUG, "Control : verifyElementClickable : " + html);
         MessageEvent mes;
         if (!StringUtil.isNull(html)) {
+            Identifier identifier = identifierService.convertStringToIdentifier(html);
             if (tCExecution.getApplication().getType().equalsIgnoreCase("GUI")||
                     tCExecution.getApplication().getType().equalsIgnoreCase("APK")) {
                 try {
-                    if (this.webdriverService.isElementClickable(tCExecution.getSession(), html)) {
+                    if (this.webdriverService.isElementClickable(tCExecution.getSession(), identifier)) {
                         mes = new MessageEvent(MessageEventEnum.CONTROL_SUCCESS_CLICKABLE);
                         mes.setDescription(mes.getDescription().replaceAll("%ELEMENT%", html));
                         return mes;
@@ -884,10 +897,11 @@ public class ControlService implements IControlService {
         MyLogger.log(ControlService.class.getName(), Level.DEBUG, "Control : verifyElementNotClickable on : " + html);
         MessageEvent mes;
         if (!StringUtil.isNull(html)) {
+            Identifier identifier = identifierService.convertStringToIdentifier(html);
             if (tCExecution.getApplication().getType().equalsIgnoreCase("GUI")||
                     tCExecution.getApplication().getType().equalsIgnoreCase("APK")) {
                 try {
-                    if (this.webdriverService.isElementNotClickable(tCExecution.getSession(), html)) {
+                    if (this.webdriverService.isElementNotClickable(tCExecution.getSession(), identifier)) {
                         mes = new MessageEvent(MessageEventEnum.CONTROL_SUCCESS_NOTCLICKABLE);
                         mes.setDescription(mes.getDescription().replaceAll("%ELEMENT%", html));
                         return mes;

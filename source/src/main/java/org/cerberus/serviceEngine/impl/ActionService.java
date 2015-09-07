@@ -20,10 +20,13 @@
 package org.cerberus.serviceEngine.impl;
 
 import java.util.Date;
+import java.util.logging.Logger;
 import org.apache.log4j.Level;
+import org.cerberus.entity.Identifier;
 import org.cerberus.entity.MessageEvent;
 import org.cerberus.entity.MessageEventEnum;
 import org.cerberus.entity.MessageGeneral;
+import org.cerberus.entity.MessageGeneralEnum;
 import org.cerberus.entity.SoapLibrary;
 import org.cerberus.entity.TestCaseExecution;
 import org.cerberus.entity.TestCaseExecutionData;
@@ -33,8 +36,10 @@ import org.cerberus.exception.CerberusException;
 import org.cerberus.log.MyLogger;
 import org.cerberus.service.ISoapLibraryService;
 import org.cerberus.serviceEngine.IActionService;
+import org.cerberus.serviceEngine.IIdentifierService;
 import org.cerberus.serviceEngine.IPropertyService;
 import org.cerberus.serviceEngine.IRecorderService;
+import org.cerberus.serviceEngine.ISikuliService;
 import org.cerberus.serviceEngine.ISoapService;
 import org.cerberus.serviceEngine.IWebDriverService;
 import org.cerberus.serviceEngine.IXmlUnitService;
@@ -61,11 +66,15 @@ public class ActionService implements IActionService {
     private IRecorderService recorderService;
     @Autowired
     private IXmlUnitService xmlUnitService;
+    @Autowired
+    private ISikuliService sikuliService;
+    @Autowired
+    private IIdentifierService identifierService;
 
     @Override
     public TestCaseStepActionExecution doAction(TestCaseStepActionExecution testCaseStepActionExecution) {
         MessageEvent res;
-     
+
         /**
          * Decode the object field before doing the action.
          */
@@ -79,9 +88,9 @@ public class ActionService implements IActionService {
                 //if the getvalue() indicates that the execution should stop then we stop it before the doAction 
                 //or if the property service was unable to decode the property that is specified in the object, 
                 //then the execution of this action should not performed
-                if(testCaseStepActionExecution.isStopExecution() || 
-                        (testCaseStepActionExecution.getActionResultMessage().getCode() == 
-                        MessageEventEnum.PROPERTY_FAILED_NO_PROPERTY_DEFINITION.getCode())) {                    
+                if (testCaseStepActionExecution.isStopExecution()
+                        || (testCaseStepActionExecution.getActionResultMessage().getCode()
+                        == MessageEventEnum.PROPERTY_FAILED_NO_PROPERTY_DEFINITION.getCode())) {
                     return testCaseStepActionExecution;
                 }
             } catch (CerberusEventException cex) {
@@ -126,10 +135,10 @@ public class ActionService implements IActionService {
             res = this.doActionMouseOverAndWait(tCExecution, object, property);
 
         } else if (testCaseStepActionExecution.getAction().equals("openUrlWithBase")) {
-            res = this.doActionOpenURLWithBase(tCExecution, object, property);
+            res = this.doActionOpenURL(tCExecution, object, property, true);
 
         } else if (testCaseStepActionExecution.getAction().equals("openUrl")) {
-            res = this.doActionOpenURL(tCExecution, object, property);
+            res = this.doActionOpenURL(tCExecution, object, property, false);
 
         } else if (testCaseStepActionExecution.getAction().equals("openUrlLogin")) {
             testCaseStepActionExecution.setObject(testCaseStepActionExecution.getTestCaseStepExecution().gettCExecution().getCountryEnvironmentApplication().getUrlLogin());
@@ -168,16 +177,16 @@ public class ActionService implements IActionService {
 
         } else if (testCaseStepActionExecution.getAction().equals("callSoapWithBase")) {
             res = this.doActionMakeSoapCall(testCaseStepActionExecution, object, property, true);
-     
+
         } else if (testCaseStepActionExecution.getAction().equals("callSoap")) {
             res = this.doActionMakeSoapCall(testCaseStepActionExecution, object, property, false);
-            
+
         } else if (testCaseStepActionExecution.getAction().equals("mouseDownMouseUp")) {
             res = this.doActionMouseDownMouseUp(tCExecution, object, property);
 
         } else if (testCaseStepActionExecution.getAction().equals("calculateProperty")) {
-            res = this.doActionCalculateProperty(object, property, propertyName);          
-            
+            res = this.doActionCalculateProperty(object, property, propertyName);
+
         } else if (testCaseStepActionExecution.getAction().equals("takeScreenshot")) {
             res = this.doActionTakeScreenshot(testCaseStepActionExecution);
             //res = new MessageEvent(MessageEventEnum.ACTION_SUCCESS_TAKESCREENSHOT);
@@ -208,67 +217,163 @@ public class ActionService implements IActionService {
         return testCaseStepActionExecution;
     }
 
-    private MessageEvent doActionClick(TestCaseExecution tCExecution, String string1, String string2) {
+    private MessageEvent doActionClick(TestCaseExecution tCExecution, String object, String property) {
         MessageEvent message;
-        if (tCExecution.getApplication().getType().equalsIgnoreCase("GUI")) {
-            return webdriverService.doSeleniumActionClick(tCExecution.getSession(), string1, string2, true, true);
-        } else if (tCExecution.getApplication().getType().equalsIgnoreCase("APK")) {
-            return webdriverService.doSeleniumActionClick(tCExecution.getSession(), string1, string2, true, false);
+        String element;
+        try {
+            /**
+             * Get element to use String object if not empty, String property if
+             * object empty, throws Exception if both empty)
+             */
+            element = getElementToUse(object, property, "click");
+            /**
+             * Get Identifier (identifier, locator)
+             */
+            Identifier identifier = identifierService.convertStringToIdentifier(element);
+
+            if (tCExecution.getApplication().getType().equalsIgnoreCase("GUI")) {
+                if (identifier.getIdentifier().equals("picture")) {
+                    return sikuliService.doSikuliActionClick(tCExecution.getSession(), identifier.getLocator());
+                } else {
+                    return webdriverService.doSeleniumActionClick(tCExecution.getSession(), identifier, true, true);
+                }
+            } else if (tCExecution.getApplication().getType().equalsIgnoreCase("APK")) {
+                return webdriverService.doSeleniumActionClick(tCExecution.getSession(), identifier, true, false);
+            }
+
+            message = new MessageEvent(MessageEventEnum.ACTION_NOTEXECUTED_NOTSUPPORTED_FOR_APPLICATION);
+            message.setDescription(message.getDescription().replaceAll("%ACTION%", "Click"));
+            message.setDescription(message.getDescription().replaceAll("%APPLICATIONTYPE%", tCExecution.getApplication().getType()));
+            return message;
+        } catch (CerberusEventException ex) {
+            Logger.getLogger(ActionService.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            return ex.getMessageError();
         }
-        message = new MessageEvent(MessageEventEnum.ACTION_NOTEXECUTED_NOTSUPPORTED_FOR_APPLICATION);
-        message.setDescription(message.getDescription().replaceAll("%ACTION%", "Click"));
-        message.setDescription(message.getDescription().replaceAll("%APPLICATIONTYPE%", string1));
-        return message;
     }
 
-    private MessageEvent doActionMouseDown(TestCaseExecution tCExecution, String string1, String string2) {
+    private MessageEvent doActionMouseDown(TestCaseExecution tCExecution, String object, String property) {
         MessageEvent message;
-        if (tCExecution.getApplication().getType().equalsIgnoreCase("GUI")) {
-            return webdriverService.doSeleniumActionMouseDown(tCExecution.getSession(), string1, string2);
+        String element;
+        try {
+            /**
+             * Get element to use String object if not empty, String property if
+             * object empty, throws Exception if both empty)
+             */
+            element = getElementToUse(object, property, "mouseDown");
+            /**
+             * Get Identifier (identifier, locator)
+             */
+            Identifier identifier = identifierService.convertStringToIdentifier(element);
+
+            if (tCExecution.getApplication().getType().equalsIgnoreCase("GUI")) {
+                if (identifier.getIdentifier().equals("picture")) {
+                    return sikuliService.doSikuliActionMouseDown(tCExecution.getSession(), identifier.getLocator());
+                } else {
+                    return webdriverService.doSeleniumActionMouseDown(tCExecution.getSession(), identifier);
+                }
+            }
+            message = new MessageEvent(MessageEventEnum.ACTION_NOTEXECUTED_NOTSUPPORTED_FOR_APPLICATION);
+            message.setDescription(message.getDescription().replaceAll("%ACTION%", "MouseDown"));
+            message.setDescription(message.getDescription().replaceAll("%APPLICATIONTYPE%", tCExecution.getApplication().getType()));
+            return message;
+        } catch (CerberusEventException ex) {
+            Logger.getLogger(ActionService.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            return ex.getMessageError();
         }
-        message = new MessageEvent(MessageEventEnum.ACTION_NOTEXECUTED_NOTSUPPORTED_FOR_APPLICATION);
-        message.setDescription(message.getDescription().replaceAll("%ACTION%", "MouseDown"));
-        message.setDescription(message.getDescription().replaceAll("%APPLICATIONTYPE%", string1));
-        return message;
     }
 
-    private MessageEvent doActionMouseUp(TestCaseExecution tCExecution, String string1, String string2) {
+    private MessageEvent doActionMouseUp(TestCaseExecution tCExecution, String object, String property) {
         MessageEvent message;
-        if (tCExecution.getApplication().getType().equalsIgnoreCase("GUI")) {
-            return webdriverService.doSeleniumActionMouseUp(tCExecution.getSession(), string1, string2);
+        String element;
+        try {
+            /**
+             * Get element to use String object if not empty, String property if
+             * object empty, throws Exception if both empty)
+             */
+            element = getElementToUse(object, property, "mouseUp");
+            /**
+             * Get Identifier (identifier, locator)
+             */
+            Identifier identifier = identifierService.convertStringToIdentifier(element);
+
+            if (tCExecution.getApplication().getType().equalsIgnoreCase("GUI")) {
+                if (identifier.getIdentifier().equals("picture")) {
+                    return sikuliService.doSikuliActionMouseUp(tCExecution.getSession(), identifier.getLocator());
+                } else {
+                    return webdriverService.doSeleniumActionMouseUp(tCExecution.getSession(), identifier);
+                }
+            }
+            message = new MessageEvent(MessageEventEnum.ACTION_NOTEXECUTED_NOTSUPPORTED_FOR_APPLICATION);
+            message.setDescription(message.getDescription().replaceAll("%ACTION%", "MouseUp"));
+            message.setDescription(message.getDescription().replaceAll("%APPLICATIONTYPE%", tCExecution.getApplication().getType()));
+            return message;
+        } catch (CerberusEventException ex) {
+            Logger.getLogger(ActionService.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            return ex.getMessageError();
         }
-        message = new MessageEvent(MessageEventEnum.ACTION_NOTEXECUTED_NOTSUPPORTED_FOR_APPLICATION);
-        message.setDescription(message.getDescription().replaceAll("%ACTION%", "MouseUp"));
-        message.setDescription(message.getDescription().replaceAll("%APPLICATIONTYPE%", string1));
-        return message;
     }
 
-    private MessageEvent doActionSwitchToWindow(TestCaseExecution tCExecution, String string1, String string2) {
+    private MessageEvent doActionSwitchToWindow(TestCaseExecution tCExecution, String object, String property) {
         MessageEvent message;
-        if (tCExecution.getApplication().getType().equalsIgnoreCase("GUI")) {
-            return webdriverService.doSeleniumActionSwitchToWindow(tCExecution.getSession(), string1, string2);
+        String element;
+        try {
+            /**
+             * Get element to use String object if not empty, String property if
+             * object empty, throws Exception if both empty)
+             */
+            element = getElementToUse(object, property, "switchToWindow");
+            /**
+             * Get Identifier (identifier, locator)
+             */
+            Identifier identifier = identifierService.convertStringToIdentifier(element);
+
+            if (tCExecution.getApplication().getType().equalsIgnoreCase("GUI")) {
+                return webdriverService.doSeleniumActionSwitchToWindow(tCExecution.getSession(), identifier);
+            }
+            message = new MessageEvent(MessageEventEnum.ACTION_NOTEXECUTED_NOTSUPPORTED_FOR_APPLICATION);
+            message.setDescription(message.getDescription().replaceAll("%ACTION%", "SwitchToWindow"));
+            message.setDescription(message.getDescription().replaceAll("%APPLICATIONTYPE%", tCExecution.getApplication().getType()));
+            return message;
+        } catch (CerberusEventException ex) {
+            Logger.getLogger(ActionService.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            return ex.getMessageError();
         }
-        message = new MessageEvent(MessageEventEnum.ACTION_NOTEXECUTED_NOTSUPPORTED_FOR_APPLICATION);
-        message.setDescription(message.getDescription().replaceAll("%ACTION%", "SwitchToWindow"));
-        message.setDescription(message.getDescription().replaceAll("%APPLICATIONTYPE%", string1));
-        return message;
     }
 
-    private MessageEvent doActionManageDialog(TestCaseExecution tCExecution, String string1, String string2) {
+    private MessageEvent doActionManageDialog(TestCaseExecution tCExecution, String object, String property) {
         MessageEvent message;
-        if (tCExecution.getApplication().getType().equalsIgnoreCase("GUI")) {
-            return webdriverService.doSeleniumActionManageDialog(tCExecution.getSession(), string1, string2);
+        String element;
+        try {
+            /**
+             * Get element to use String object if not empty, String property if
+             * object empty, throws Exception if both empty)
+             */
+            element = getElementToUse(object, property, "manageDialog");
+            /**
+             * Get Identifier (identifier, locator)
+             */
+            Identifier identifier = identifierService.convertStringToIdentifier(element);
+
+            if (tCExecution.getApplication().getType().equalsIgnoreCase("GUI")) {
+                return webdriverService.doSeleniumActionManageDialog(tCExecution.getSession(), identifier);
+            }
+            message = new MessageEvent(MessageEventEnum.ACTION_NOTEXECUTED_NOTSUPPORTED_FOR_APPLICATION);
+            message.setDescription(message.getDescription().replaceAll("%ACTION%", "ManageDialog"));
+            message.setDescription(message.getDescription().replaceAll("%APPLICATIONTYPE%", tCExecution.getApplication().getType()));
+            return message;
+        } catch (CerberusEventException ex) {
+            Logger.getLogger(ActionService.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            return ex.getMessageError();
         }
-        message = new MessageEvent(MessageEventEnum.ACTION_NOTEXECUTED_NOTSUPPORTED_FOR_APPLICATION);
-        message.setDescription(message.getDescription().replaceAll("%ACTION%", "ManageDialog"));
-        message.setDescription(message.getDescription().replaceAll("%APPLICATIONTYPE%", string1));
-        return message;
     }
 
     private MessageEvent doActionClickWait(TestCaseExecution tCExecution, String string1, String string2) {
         MessageEvent message;
+
+        Identifier identifier = identifierService.convertStringToIdentifier(string1);
+
         if (tCExecution.getApplication().getType().equalsIgnoreCase("GUI")) {
-            return webdriverService.doSeleniumActionClickWait(tCExecution.getSession(), string1, string2);
+            return webdriverService.doSeleniumActionClickWait(tCExecution.getSession(), identifier, string2);
         }
         message = new MessageEvent(MessageEventEnum.ACTION_NOTEXECUTED_NOTSUPPORTED_FOR_APPLICATION);
         message.setDescription(message.getDescription().replaceAll("%ACTION%", "ClickAndWait"));
@@ -276,96 +381,193 @@ public class ActionService implements IActionService {
         return message;
     }
 
-    private MessageEvent doActionDoubleClick(TestCaseExecution tCExecution, String string1, String string2) {
+    private MessageEvent doActionDoubleClick(TestCaseExecution tCExecution, String object, String property) {
         MessageEvent message;
-        if (tCExecution.getApplication().getType().equalsIgnoreCase("GUI")
-                || tCExecution.getApplication().getType().equalsIgnoreCase("APK")) {
-            return webdriverService.doSeleniumActionDoubleClick(tCExecution.getSession(), string1, string2);
+        String element;
+        try {
+            /**
+             * Get element to use String object if not empty, String property if
+             * object empty, throws Exception if both empty)
+             */
+            element = getElementToUse(object, property, "doubleClick");
+            /**
+             * Get Identifier (identifier, locator)
+             */
+            Identifier identifier = identifierService.convertStringToIdentifier(element);
+
+            if (tCExecution.getApplication().getType().equalsIgnoreCase("GUI")) {
+                if (identifier.getIdentifier().equals("picture")) {
+                    return sikuliService.doSikuliActionClick(tCExecution.getSession(), identifier.getLocator());
+                } else {
+                    return webdriverService.doSeleniumActionClick(tCExecution.getSession(), identifier, true, true);
+                }
+            } else if (tCExecution.getApplication().getType().equalsIgnoreCase("APK")) {
+                return webdriverService.doSeleniumActionClick(tCExecution.getSession(), identifier, true, false);
+            }
+
+            message = new MessageEvent(MessageEventEnum.ACTION_NOTEXECUTED_NOTSUPPORTED_FOR_APPLICATION);
+            message.setDescription(message.getDescription().replaceAll("%ACTION%", "Click"));
+            message.setDescription(message.getDescription().replaceAll("%APPLICATIONTYPE%", tCExecution.getApplication().getType()));
+            return message;
+        } catch (CerberusEventException ex) {
+            Logger.getLogger(ActionService.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            return ex.getMessageError();
         }
-        message = new MessageEvent(MessageEventEnum.ACTION_NOTEXECUTED_NOTSUPPORTED_FOR_APPLICATION);
-        message.setDescription(message.getDescription().replaceAll("%ACTION%", "ClickAndWait"));
-        message.setDescription(message.getDescription().replaceAll("%APPLICATIONTYPE%", string1));
-        return message;
     }
 
-    private MessageEvent doActionType(TestCaseExecution tCExecution, String html, String property, String propertyName) {
+    private MessageEvent doActionType(TestCaseExecution tCExecution, String object, String property, String propertyName) {
         MessageEvent message;
+
+        /**
+         * Check object and property are not null
+         */
+        if (object == null && property == null) {
+            return new MessageEvent(MessageEventEnum.ACTION_FAILED_TYPE);
+        }
+        /**
+         * Get Identifier (identifier, locator)
+         */
+        Identifier identifier = identifierService.convertStringToIdentifier(object);
+
         if (tCExecution.getApplication().getType().equalsIgnoreCase("GUI")
                 || tCExecution.getApplication().getType().equalsIgnoreCase("APK")) {
-            return webdriverService.doSeleniumActionType(tCExecution.getSession(), html, property, propertyName);
+            if (identifier.getIdentifier().equals("picture")) {
+                return sikuliService.doSikuliActionType(tCExecution.getSession(), identifier.getLocator());
+            } else {
+                return webdriverService.doSeleniumActionType(tCExecution.getSession(), identifier, property, propertyName);
+            }
         }
         message = new MessageEvent(MessageEventEnum.ACTION_NOTEXECUTED_NOTSUPPORTED_FOR_APPLICATION);
-        message.setDescription(message.getDescription().replaceAll("%ACTION%", "ClickAndWait"));
+        message.setDescription(message.getDescription().replaceAll("%ACTION%", "Type"));
         message.setDescription(message.getDescription().replaceAll("%APPLICATIONTYPE%", tCExecution.getApplication().getType()));
         return message;
     }
 
-    private MessageEvent doActionMouseOver(TestCaseExecution tCExecution, String html, String property) {
+    private MessageEvent doActionMouseOver(TestCaseExecution tCExecution, String object, String property) {
         MessageEvent message;
-        if (tCExecution.getApplication().getType().equalsIgnoreCase("GUI")) {
-            return webdriverService.doSeleniumActionMouseOver(tCExecution.getSession(), html, property);
+        String element;
+        try {
+            /**
+             * Get element to use String object if not empty, String property if
+             * object empty, throws Exception if both empty)
+             */
+            element = getElementToUse(object, property, "mouseOver");
+            /**
+             * Get Identifier (identifier, locator)
+             */
+            Identifier identifier = identifierService.convertStringToIdentifier(element);
+
+            if (tCExecution.getApplication().getType().equalsIgnoreCase("GUI")) {
+                if (identifier.getIdentifier().equals("picture")) {
+                    return sikuliService.doSikuliActionMouseOver(tCExecution.getSession(), identifier.getLocator());
+                } else {
+                    return webdriverService.doSeleniumActionMouseOver(tCExecution.getSession(), identifier);
+                }
+            }
+            message = new MessageEvent(MessageEventEnum.ACTION_NOTEXECUTED_NOTSUPPORTED_FOR_APPLICATION);
+            message.setDescription(message.getDescription().replaceAll("%ACTION%", "mouseOver"));
+            message.setDescription(message.getDescription().replaceAll("%APPLICATIONTYPE%", tCExecution.getApplication().getType()));
+            return message;
+        } catch (CerberusEventException ex) {
+            Logger.getLogger(ActionService.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            return ex.getMessageError();
         }
-        message = new MessageEvent(MessageEventEnum.ACTION_NOTEXECUTED_NOTSUPPORTED_FOR_APPLICATION);
-        message.setDescription(message.getDescription().replaceAll("%ACTION%", "ClickAndWait"));
-        message.setDescription(message.getDescription().replaceAll("%APPLICATIONTYPE%", tCExecution.getApplication().getType()));
-        return message;
     }
 
-    private MessageEvent doActionMouseOverAndWait(TestCaseExecution tCExecution, String actionObject, String actionProperty) {
+    private MessageEvent doActionMouseOverAndWait(TestCaseExecution tCExecution, String object, String property) {
         MessageEvent message;
+        /**
+         * Check object is not null
+         */
+        if (object == null) {
+            return new MessageEvent(MessageEventEnum.ACTION_FAILED_MOUSEOVERANDWAIT_GENERIC);
+        }
+        /**
+         * Get Identifier (identifier, locator)
+         */
+        Identifier identifier = identifierService.convertStringToIdentifier(object);
+
         if (tCExecution.getApplication().getType().equalsIgnoreCase("GUI")) {
-            return webdriverService.doSeleniumActionMouseOverAndWait(tCExecution.getSession(), actionObject, actionProperty);
+            if (identifier.getIdentifier().equals("picture")) {
+                return sikuliService.doSikuliActionMouseOver(tCExecution.getSession(), identifier.getLocator());
+            } else {
+                return webdriverService.doSeleniumActionMouseOverAndWait(tCExecution.getSession(), identifier, property);
+            }
+
         }
         message = new MessageEvent(MessageEventEnum.ACTION_NOTEXECUTED_NOTSUPPORTED_FOR_APPLICATION);
-        message.setDescription(message.getDescription().replaceAll("%ACTION%", "ClickAndWait"));
+        message.setDescription(message.getDescription().replaceAll("%ACTION%", "mouseOverAndWait"));
         message.setDescription(message.getDescription().replaceAll("%APPLICATIONTYPE%", tCExecution.getApplication().getType()));
         return message;
     }
 
     private MessageEvent doActionWait(TestCaseExecution tCExecution, String object, String property) {
         MessageEvent message;
-        if (tCExecution.getApplication().getType().equalsIgnoreCase("GUI")
-                || tCExecution.getApplication().getType().equalsIgnoreCase("APK")) {
-            return webdriverService.doSeleniumActionWait(tCExecution.getSession(), object, property);
-        }
-        if (tCExecution.getApplication().getType().equalsIgnoreCase("CMP")) {
-            try {
-                if (!StringUtil.isNull(object) && StringUtil.isNumeric(object)) {
-                    Thread.sleep(Integer.parseInt(object));
-                    message = new MessageEvent(MessageEventEnum.ACTION_SUCCESS_WAIT_TIME);
-                    message.setDescription(message.getDescription().replaceAll("%TIME%", object));
-                    return message;
-                } else if (!StringUtil.isNull(property) && StringUtil.isNumeric(property)) {
-                    Thread.sleep(Integer.parseInt(property));
-                    message = new MessageEvent(MessageEventEnum.ACTION_SUCCESS_WAIT_TIME);
-                    message.setDescription(message.getDescription().replaceAll("%TIME%", property));
-                    return message;
-                } else if (StringUtil.isNull(object) && StringUtil.isNull(property)) {
-                    Thread.sleep(1000 * tCExecution.getSession().getDefaultWait());
-                    message = new MessageEvent(MessageEventEnum.ACTION_SUCCESS_WAIT_TIME);
-                    message.setDescription(message.getDescription().replaceAll("%TIME%", String.valueOf(1000 * tCExecution.getSession().getDefaultWait())));
-                    return message;
-                } else {
-                    message = new MessageEvent(MessageEventEnum.ACTION_FAILED_WAIT_INVALID_FORMAT);
-                    return message;
-                }
-            } catch (InterruptedException exception) {
-                MyLogger.log(ActionService.class.getName(), Level.INFO, exception.toString());
-                message = new MessageEvent(MessageEventEnum.ACTION_FAILED_WAIT);
-                message.setDescription(message.getDescription().replaceAll("%TIME%", property));
-                return message;
+        String element;
+        long timeToWait = 0;
+        Identifier identifier = null;
+        try {
+            /**
+             * Get element to use String object if not empty, String property if
+             * object empty, null if both are empty
+             */
+            element = getElementToUse(object, property, null);
+            /**
+             * if element is integer, set time to that value else Get Identifier
+             * (identifier, locator)
+             */
+            if (element == null) {
+                timeToWait = 1000 * tCExecution.getSession().getDefaultWait();
             }
+            if (StringUtil.isNumeric(element)) {
+                timeToWait = Long.valueOf(element);
+            } else {
+                identifier = identifierService.convertStringToIdentifier(element);
+            }
+
+            if (tCExecution.getApplication().getType().equalsIgnoreCase("GUI")
+                    || tCExecution.getApplication().getType().equalsIgnoreCase("APK")) {
+                if (identifier != null && identifier.getIdentifier().equals("picture")) {
+                    return sikuliService.doSikuliActionWait(tCExecution.getSession(), identifier.getLocator());
+                } else if (identifier != null) {
+                    return webdriverService.doSeleniumActionWait(tCExecution.getSession(), identifier);
+                } else {
+                    return this.waitTime(timeToWait);
+                }
+            }
+            if (tCExecution.getApplication().getType().equalsIgnoreCase("CMP")) {
+                return this.waitTime(timeToWait);
+            }
+            message = new MessageEvent(MessageEventEnum.ACTION_NOTEXECUTED_NOTSUPPORTED_FOR_APPLICATION);
+            message.setDescription(message.getDescription().replaceAll("%ACTION%", "ClickAndWait"));
+            message.setDescription(message.getDescription().replaceAll("%APPLICATIONTYPE%", tCExecution.getApplication().getType()));
+            return message;
+        } catch (CerberusEventException ex) {
+            Logger.getLogger(ActionService.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            return ex.getMessageError();
         }
-        message = new MessageEvent(MessageEventEnum.ACTION_NOTEXECUTED_NOTSUPPORTED_FOR_APPLICATION);
-        message.setDescription(message.getDescription().replaceAll("%ACTION%", "ClickAndWait"));
-        message.setDescription(message.getDescription().replaceAll("%APPLICATIONTYPE%", tCExecution.getApplication().getType()));
-        return message;
     }
 
-    private MessageEvent doActionKeyPress(TestCaseExecution tCExecution, String html, String property) {
+    private MessageEvent doActionKeyPress(TestCaseExecution tCExecution, String object, String property) {
         MessageEvent message;
+
+        /**
+         * Check object and property are not null
+         */
+        if (object == null && property == null) {
+            return new MessageEvent(MessageEventEnum.ACTION_FAILED_KEYPRESS);
+        }
+        /**
+         * Get Identifier (identifier, locator)
+         */
+        Identifier identifier = identifierService.convertStringToIdentifier(object);
+
         if (tCExecution.getApplication().getType().equalsIgnoreCase("GUI")) {
-            return webdriverService.doSeleniumActionKeyPress(tCExecution.getSession(), html, property);
+            if (identifier.getIdentifier().equals("picture")) {
+                return sikuliService.doSikuliActionKeyPress(tCExecution.getSession(), identifier.getLocator());
+            } else {
+                return webdriverService.doSeleniumActionKeyPress(tCExecution.getSession(), identifier, property);
+            }
         }
         message = new MessageEvent(MessageEventEnum.ACTION_NOTEXECUTED_NOTSUPPORTED_FOR_APPLICATION);
         message.setDescription(message.getDescription().replaceAll("%ACTION%", "KeyPress"));
@@ -373,38 +575,63 @@ public class ActionService implements IActionService {
         return message;
     }
 
-    private MessageEvent doActionOpenURLWithBase(TestCaseExecution tCExecution, String value, String property) {
+    private MessageEvent doActionOpenURL(TestCaseExecution tCExecution, String object, String property, boolean withBase) {
         MessageEvent message;
-        if (tCExecution.getApplication().getType().equalsIgnoreCase("GUI")) {
-            return webdriverService.doSeleniumActionOpenURL(tCExecution.getSession(), tCExecution.getUrl(), value, property, true);
+        String element;
+        try {
+            /**
+             * Get element to use String object if not empty, String property if
+             * object empty, throws Exception if both empty)
+             */
+            element = getElementToUse(object, property, "openUrl[WithBase]");
+            /**
+             * Get Identifier (identifier, locator)
+             */
+            Identifier identifier = identifierService.convertStringToIdentifier(element);
+
+            if (tCExecution.getApplication().getType().equalsIgnoreCase("GUI")) {
+                return webdriverService.doSeleniumActionOpenURL(tCExecution.getSession(), tCExecution.getUrl(), identifier, withBase);
+            }
+            message = new MessageEvent(MessageEventEnum.ACTION_NOTEXECUTED_NOTSUPPORTED_FOR_APPLICATION);
+            message.setDescription(message.getDescription().replaceAll("%ACTION%", "OpenURL[WithBase]"));
+            message.setDescription(message.getDescription().replaceAll("%APPLICATIONTYPE%", tCExecution.getApplication().getType()));
+            return message;
+        } catch (CerberusEventException ex) {
+            Logger.getLogger(ActionService.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            return ex.getMessageError();
         }
-        message = new MessageEvent(MessageEventEnum.ACTION_NOTEXECUTED_NOTSUPPORTED_FOR_APPLICATION);
-        message.setDescription(message.getDescription().replaceAll("%ACTION%", "OpenURLWithBase"));
-        message.setDescription(message.getDescription().replaceAll("%APPLICATIONTYPE%", tCExecution.getApplication().getType()));
-        return message;
     }
 
-    private MessageEvent doActionOpenURL(TestCaseExecution tCExecution, String value, String property) {
+    private MessageEvent doActionSelect(TestCaseExecution tCExecution, String object, String property) {
         MessageEvent message;
-        if (tCExecution.getApplication().getType().equalsIgnoreCase("GUI")) {
-            return webdriverService.doSeleniumActionOpenURL(tCExecution.getSession(), tCExecution.getUrl(), value, property, false);
-        }
-        message = new MessageEvent(MessageEventEnum.ACTION_NOTEXECUTED_NOTSUPPORTED_FOR_APPLICATION);
-        message.setDescription(message.getDescription().replaceAll("%ACTION%", "OpenURL"));
-        message.setDescription(message.getDescription().replaceAll("%APPLICATIONTYPE%", tCExecution.getApplication().getType()));
-        return message;
-    }
+        try {
+            /**
+             * Check object and property are not null
+             */
+            if (object == null && property == null) {
+                return new MessageEvent(MessageEventEnum.ACTION_FAILED_KEYPRESS);
+            }
+            /**
+             * Get Identifier (identifier, locator)
+             */
+            Identifier identifierObject = identifierService.convertStringToIdentifier(object);
+            Identifier identifierProperty = identifierService.convertStringToIdentifier(property);
 
-    private MessageEvent doActionSelect(TestCaseExecution tCExecution, String html, String property) {
-        MessageEvent message;
-        if (tCExecution.getApplication().getType().equalsIgnoreCase("GUI")
-                || tCExecution.getApplication().getType().equalsIgnoreCase("APK")) {
-            return webdriverService.doSeleniumActionSelect(tCExecution.getSession(), html, property);
+            identifierService.checkSelectOptionsIdentifier(identifierProperty.getIdentifier());
+
+            if (tCExecution.getApplication().getType().equalsIgnoreCase("GUI")
+                    || tCExecution.getApplication().getType().equalsIgnoreCase("APK")) {
+                return webdriverService.doSeleniumActionSelect(tCExecution.getSession(), identifierObject, identifierProperty);
+            }
+            message = new MessageEvent(MessageEventEnum.ACTION_NOTEXECUTED_NOTSUPPORTED_FOR_APPLICATION);
+            message.setDescription(message.getDescription().replaceAll("%ACTION%", "Select"));
+            message.setDescription(message.getDescription().replaceAll("%APPLICATIONTYPE%", tCExecution.getApplication().getType()));
+            return message;
+        } catch (CerberusEventException ex) {
+            Logger.getLogger(ActionService.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            return ex.getMessageError();
         }
-        message = new MessageEvent(MessageEventEnum.ACTION_NOTEXECUTED_NOTSUPPORTED_FOR_APPLICATION);
-        message.setDescription(message.getDescription().replaceAll("%ACTION%", "Select"));
-        message.setDescription(message.getDescription().replaceAll("%APPLICATIONTYPE%", tCExecution.getApplication().getType()));
-        return message;
+
     }
 
     private MessageEvent doActionUrlLogin(TestCaseExecution tCExecution) {
@@ -420,13 +647,29 @@ public class ActionService implements IActionService {
 
     private MessageEvent doActionFocusToIframe(TestCaseExecution tCExecution, String object, String property) {
         MessageEvent message;
-        if (tCExecution.getApplication().getType().equalsIgnoreCase("GUI")) {
-            return webdriverService.doSeleniumActionFocusToIframe(tCExecution.getSession(), object, property);
+        String element;
+        try {
+            /**
+             * Get element to use String object if not empty, String property if
+             * object empty, throws Exception if both empty)
+             */
+            element = getElementToUse(object, property, "focusToIframe");
+            /**
+             * Get Identifier (identifier, locator)
+             */
+            Identifier identifier = identifierService.convertStringToIdentifier(element);
+
+            if (tCExecution.getApplication().getType().equalsIgnoreCase("GUI")) {
+                return webdriverService.doSeleniumActionFocusToIframe(tCExecution.getSession(), identifier);
+            }
+            message = new MessageEvent(MessageEventEnum.ACTION_NOTEXECUTED_NOTSUPPORTED_FOR_APPLICATION);
+            message.setDescription(message.getDescription().replaceAll("%ACTION%", "FocusToIframe"));
+            message.setDescription(message.getDescription().replaceAll("%APPLICATIONTYPE%", tCExecution.getApplication().getType()));
+            return message;
+        } catch (CerberusEventException ex) {
+            Logger.getLogger(ActionService.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            return ex.getMessageError();
         }
-        message = new MessageEvent(MessageEventEnum.ACTION_NOTEXECUTED_NOTSUPPORTED_FOR_APPLICATION);
-        message.setDescription(message.getDescription().replaceAll("%ACTION%", "FocusToIframe"));
-        message.setDescription(message.getDescription().replaceAll("%APPLICATIONTYPE%", tCExecution.getApplication().getType()));
-        return message;
     }
 
     private MessageEvent doActionFocusDefaultIframe(TestCaseExecution tCExecution) {
@@ -449,7 +692,7 @@ public class ActionService implements IActionService {
             SoapLibrary soapLibrary = soapLibraryService.findSoapLibraryByKey(object);
             String servicePath;
             if (withBase) {
-                servicePath = tCExecution.getCountryEnvironmentApplication().getIp() +  tCExecution.getCountryEnvironmentApplication().getUrl(); 
+                servicePath = tCExecution.getCountryEnvironmentApplication().getIp() + tCExecution.getCountryEnvironmentApplication().getUrl();
             } else {
                 servicePath = soapLibrary.getServicePath();
             }
@@ -461,9 +704,9 @@ public class ActionService implements IActionService {
                 try {
                     decodedEnveloppe = propertyService.getValue(soapLibrary.getEnvelope(), testCaseStepActionExecution, false);
                     //if the process of decoding originates a message that isStopExecution then we will stop the current action execution
-                    if(testCaseStepActionExecution.isStopExecution()){                        
+                    if (testCaseStepActionExecution.isStopExecution()) {
                         return testCaseStepActionExecution.getActionResultMessage();
-                    } 
+                    }
                 } catch (CerberusEventException cee) {
                     message = new MessageEvent(MessageEventEnum.ACTION_FAILED_CALLSOAP);
                     message.setDescription(message.getDescription().replaceAll("%SOAPNAME%", object));
@@ -478,10 +721,10 @@ public class ActionService implements IActionService {
             //TODO: the picture url should be used instead of the property value
             //the database does not include the attachmentURL field 
             /*if (!property.isEmpty()) {
-                attachement = property; 
-            } else {
-                attachement = soapLibrary.getAttachmentUrl();
-            }*/
+             attachement = property; 
+             } else {
+             attachement = soapLibrary.getAttachmentUrl();
+             }*/
             return soapService.callSOAPAndStoreResponseInMemory(tCExecution.getExecutionUUID(), decodedEnveloppe, servicePath, soapLibrary.getMethod(), attachement, false);
         } catch (CerberusException ex) {
             message = new MessageEvent(MessageEventEnum.ACTION_FAILED_CALLSOAP);
@@ -494,13 +737,34 @@ public class ActionService implements IActionService {
 
     private MessageEvent doActionMouseDownMouseUp(TestCaseExecution tCExecution, String object, String property) {
         MessageEvent message;
-        if (tCExecution.getApplication().getType().equalsIgnoreCase("GUI")) {
-            return webdriverService.doSeleniumActionMouseDownMouseUp(tCExecution.getSession(), object, property);
+        String element;
+        try {
+            /**
+             * Get element to use String object if not empty, String property if
+             * object empty, throws Exception if both empty)
+             */
+            element = getElementToUse(object, property, "mouseDownMouseUp");
+            /**
+             * Get Identifier (identifier, locator)
+             */
+            Identifier identifier = identifierService.convertStringToIdentifier(element);
+
+            if (tCExecution.getApplication().getType().equalsIgnoreCase("GUI")) {
+                if (identifier.getIdentifier().equals("picture")) {
+                    return sikuliService.doSikuliActionMouseDownMouseUp(tCExecution.getSession(), identifier.getLocator());
+                } else {
+                    return webdriverService.doSeleniumActionMouseDownMouseUp(tCExecution.getSession(), identifier);
+                }
+
+            }
+            message = new MessageEvent(MessageEventEnum.ACTION_NOTEXECUTED_NOTSUPPORTED_FOR_APPLICATION);
+            message.setDescription(message.getDescription().replaceAll("%ACTION%", "Click"));
+            message.setDescription(message.getDescription().replaceAll("%APPLICATIONTYPE%", tCExecution.getApplication().getType()));
+            return message;
+        } catch (CerberusEventException ex) {
+            Logger.getLogger(ActionService.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            return ex.getMessageError();
         }
-        message = new MessageEvent(MessageEventEnum.ACTION_NOTEXECUTED_NOTSUPPORTED_FOR_APPLICATION);
-        message.setDescription(message.getDescription().replaceAll("%ACTION%", "Click"));
-        message.setDescription(message.getDescription().replaceAll("%APPLICATIONTYPE%", tCExecution.getApplication().getType()));
-        return message;
     }
 
     private MessageEvent doActionTakeScreenshot(TestCaseStepActionExecution testCaseStepActionExecution) {
@@ -561,18 +825,53 @@ public class ActionService implements IActionService {
         message.setDescription(message.getDescription().replaceAll("%DIFFERENCES%", property));
         return message;
     }
-    
+
     private MessageEvent doActionCalculateProperty(String object, String property, String propertyName) {
-        MessageEvent message; 
+        MessageEvent message;
         //if the object and the property are not defined for the calculatePropery action then an exception should be raised and 
         //the execution stopped
 //        if(StringUtil.isNullOrEmpty(object) && StringUtil.isNullOrEmpty(property)){
 //            message = new MessageEvent(MessageEventEnum.PROPERTY_FAILED_CALCULATE_OBJECTPROPERTYNULL);                        
 //         }else{         
-            message = new MessageEvent(MessageEventEnum.ACTION_SUCCESS_PROPERTYCALCULATED);            
-            message.setDescription(message.getDescription().replaceAll("%PROP%", propertyName));
+        message = new MessageEvent(MessageEventEnum.ACTION_SUCCESS_PROPERTYCALCULATED);
+        message.setDescription(message.getDescription().replaceAll("%PROP%", propertyName));
 //        }
         return message;
+    }
+
+    private String getElementToUse(String object, String property, String action) throws CerberusEventException {
+        if (!StringUtil.isNullOrEmpty(object)) {
+            return object;
+        } else if (!StringUtil.isNullOrEmpty(property)) {
+            return property;
+        }
+        if (action != null) {
+            MessageEvent message = new MessageEvent(MessageEventEnum.ACTION_FAILED_NO_ELEMENT_TO_PERFORM_ACTION);
+            message.setDescription(message.getDescription().replaceAll("%ACTION%", action));
+            throw new CerberusEventException(message);
+        }
+        return null;
+    }
+
+    private MessageEvent waitTime(Long timeToWait) {
+        MessageEvent message;
+        /**
+         * if timeToWait is null, throw CerberusException
+         */
+        if (timeToWait == 0) {
+            message = new MessageEvent(MessageEventEnum.ACTION_FAILED_WAIT_INVALID_FORMAT);
+            return message;
+        }
+        try {
+            Thread.sleep(timeToWait);
+            message = new MessageEvent(MessageEventEnum.ACTION_SUCCESS_WAIT_TIME);
+            message.setDescription(message.getDescription().replaceAll("%TIME%", String.valueOf(timeToWait)));
+            return message;
+        } catch (InterruptedException exception) {
+            MyLogger.log(ActionService.class.getName(), Level.INFO, exception.toString());
+            message = new MessageEvent(MessageEventEnum.ACTION_FAILED_WAIT);
+            return message;
+        }
     }
 
 }

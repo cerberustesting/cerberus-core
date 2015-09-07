@@ -543,6 +543,8 @@ function createDataTable(tableConfigurations) {
         domConf = 'l<"showInlineElement pull-left marginLeft5"f>rti<"marginTop5"p>';
     }
 
+    var lang = getDataTableLanguage();
+
     var configs = {};
     configs["dom"] = domConf;
     configs["serverSide"] = tableConfigurations.serverSide;

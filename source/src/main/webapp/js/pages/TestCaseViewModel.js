@@ -112,12 +112,19 @@ $.when($.getScript("js/pages/global/global.js")).then(function() {
  * Method that translates the content of the pages with base on the user language.
  */
 function displayPageLabel() {
-    var doc = getDoc();
-    var docPageTestCase = doc.page_testcase;
+    var doc = new Doc();
+
+    displayHeaderLabel(doc);
+    displayGlobalLabel(doc);
     //tooltips of the buttons for the property type getFromDataLib
-    $("button[id*='entryButton']").prop("title", docPageTestCase.tooltip_select_entry.docLabel);
-    $("button[data-id='entryButton_template']").prop("title", docPageTestCase.tooltip_select_entry.docLabel);
-    
+    $("button[id='entryButton']").prop("title", doc.getDocLabel('page_testcase','tooltip_select_entry'));
+    $("button[data-id='entryButton_template']").prop("title", doc.getDocLabel('page_testcase','tooltip_select_entry'));
+    $("*[name='labelTest']").html(doc.getDocOnline("test", "Test"));
+    $("*[name='labelTestCase']").html(doc.getDocOnline("testcase", "TestCase"));
+    $("*[name='labelTestCaseStepActionDescription']").html(doc.getDocOnline("testcasestepaction", "description"));
+    $("*[name='labelTestCaseStepActionAction']").html(doc.getDocOnline("testcasestepaction", "Action"));
+    $("*[name='labelTestCaseStepActionObject']").html(doc.getDocOnline("testcasestepaction", "Object"));
+    $("*[name='labelTestCaseStepActionProperty']").html(doc.getDocOnline("testcasestepaction", "Property2"));
 }
 /**
  * Applies the translations for the get list of test cases modal.
@@ -300,4 +307,3 @@ function aoColumnsFunc() {
 
 
 }
-

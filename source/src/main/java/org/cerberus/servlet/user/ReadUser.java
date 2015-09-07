@@ -27,6 +27,7 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 import org.apache.log4j.Level;
 import org.cerberus.entity.Group;
 import org.cerberus.entity.User;
@@ -93,6 +94,10 @@ public class ReadUser extends HttpServlet {
                 systems.put(sys.getSystem());
             }
             data.put("system", systems);
+            HttpSession session = request.getSession();
+            System.out.print(session.getId());
+            session.setAttribute("MySystem", myUser.getDefaultSystem());
+            session.setAttribute("MyLang", myUser.getLanguage());
 
         } catch (CerberusException ex) {
             response.setContentType("text/html");

@@ -21,6 +21,7 @@ package org.cerberus.serviceEngine;
 
 import java.awt.image.BufferedImage;
 import java.util.List;
+import org.cerberus.entity.Identifier;
 import org.cerberus.entity.MessageEvent;
 import org.cerberus.entity.Session;
 import org.cerberus.exception.CerberusEventException;
@@ -32,25 +33,25 @@ import org.openqa.selenium.Capabilities;
  */
 public interface IWebDriverService {
 
-    String getValueFromHTMLVisible(Session session, String locator);
+    String getValueFromHTMLVisible(Session session, Identifier identifier);
 
-    String getValueFromHTML(Session session, String locator);
+    String getValueFromHTML(Session session, Identifier identifier);
 
     String getAlertText(Session session);
 
     String getValueFromJS(Session session, String script);
     
-    boolean isElementPresent(Session session, String locator);
+    boolean isElementPresent(Session session, Identifier identifier);
 
-    boolean isElementVisible(Session session, String locator);
+    boolean isElementVisible(Session session, Identifier identifier);
 
-    boolean isElementNotVisible(Session session, String locator);
+    boolean isElementNotVisible(Session session, Identifier identifier);
     
-    boolean isElementInElement(Session session, String element, String childElement);
+    boolean isElementInElement(Session session, Identifier identifier, Identifier childIdentifier);
     
-    boolean isElementNotClickable(Session session, String locator);
+    boolean isElementNotClickable(Session session, Identifier identifier);
     
-    boolean isElementClickable(Session session, String locator);
+    boolean isElementClickable(Session session, Identifier identifier);
 
     String getPageSource(Session session);
 
@@ -67,7 +68,7 @@ public interface IWebDriverService {
      */
     String getCurrentUrl(Session session, String url) throws CerberusEventException;
 
-    String getAttributeFromHtml(Session session, String locator, String attribute);
+    String getAttributeFromHtml(Session session, Identifier identifier, String attribute);
     
     String getFromCookie(Session session, String cookieName, String cookieParameter);
 
@@ -75,40 +76,40 @@ public interface IWebDriverService {
     
     List<String> getSeleniumLog(Session session);
     
-    MessageEvent doSeleniumActionClick(Session session, String string1, String string2, boolean waitForVisibility, boolean waitForClickability);
+    MessageEvent doSeleniumActionClick(Session session, Identifier identifier, boolean waitForVisibility, boolean waitForClickability);
     
-    MessageEvent doSeleniumActionMouseDown(Session session, String string1, String string2);
+    MessageEvent doSeleniumActionMouseDown(Session session, Identifier identifier);
 
-    MessageEvent doSeleniumActionMouseUp(Session session, String string1, String string2);
+    MessageEvent doSeleniumActionMouseUp(Session session, Identifier identifier);
 
-    MessageEvent doSeleniumActionSwitchToWindow(Session session, String string1, String string2);
+    MessageEvent doSeleniumActionSwitchToWindow(Session session, Identifier identifier);
 
-    MessageEvent doSeleniumActionManageDialog(Session session, String object, String property);
+    MessageEvent doSeleniumActionManageDialog(Session session, Identifier identifier);
     
-    MessageEvent doSeleniumActionClickWait(Session session, String actionObject, String actionProperty);
+    MessageEvent doSeleniumActionClickWait(Session session, Identifier identifier, String property);
     
-    MessageEvent doSeleniumActionDoubleClick(Session session, String html, String property);
+    MessageEvent doSeleniumActionDoubleClick(Session session, Identifier identifier);
 
-    MessageEvent doSeleniumActionType(Session session, String html, String property, String propertyName);
+    MessageEvent doSeleniumActionType(Session session, Identifier identifier, String property, String propertyName);
 
-    MessageEvent doSeleniumActionMouseOver(Session session, String html, String property);
+    MessageEvent doSeleniumActionMouseOver(Session session, Identifier identifier);
     
-    MessageEvent doSeleniumActionMouseOverAndWait(Session session, String actionObject, String actionProperty);
+    MessageEvent doSeleniumActionMouseOverAndWait(Session session, Identifier identifier, String property);
 
-    MessageEvent doSeleniumActionWait(Session session, String object, String property);
+    MessageEvent doSeleniumActionWait(Session session, Identifier identifier);
 
-    MessageEvent doSeleniumActionKeyPress(Session session, String html, String property);
+    MessageEvent doSeleniumActionKeyPress(Session session, Identifier identifier, String property);
     
-    MessageEvent doSeleniumActionOpenURL(Session session, String host, String value, String property, boolean withBase);
+    MessageEvent doSeleniumActionOpenURL(Session session, String host, Identifier identifier, boolean withBase);
 
-    MessageEvent doSeleniumActionSelect(Session session, String html, String property);
+    MessageEvent doSeleniumActionSelect(Session session, Identifier object, Identifier property);
     
     MessageEvent doSeleniumActionUrlLogin(Session session, String host, String uri);
 
-    MessageEvent doSeleniumActionFocusToIframe(Session session, String object, String property);
+    MessageEvent doSeleniumActionFocusToIframe(Session session, Identifier identifier);
 
     MessageEvent doSeleniumActionFocusDefaultIframe(Session session);
     
-    MessageEvent doSeleniumActionMouseDownMouseUp(Session session, String string1, String string2);
+    MessageEvent doSeleniumActionMouseDownMouseUp(Session session, Identifier identifier);
 }
     

@@ -20,11 +20,9 @@
 
 package org.cerberus.serviceEngine.impl;
 
-import static org.mockito.Matchers.anyString;
-import static org.mockito.Mockito.when;
 import junit.framework.Assert;
-
 import org.cerberus.entity.Application;
+import org.cerberus.entity.Identifier;
 import org.cerberus.entity.MessageEventEnum;
 import org.cerberus.entity.Session;
 import org.cerberus.entity.TestCaseExecution;
@@ -36,7 +34,9 @@ import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
+import static org.mockito.Matchers.anyString;
 import org.mockito.Mock;
+import static org.mockito.Mockito.when;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.openqa.selenium.WebDriverException;
 import org.springframework.test.context.ContextConfiguration;
@@ -66,6 +66,9 @@ public class ControlServiceTest {
     
     @Mock
     private PropertyService propertyService;
+    
+    @Mock
+    private IdentifierService identifierService;
     
     @InjectMocks
     private ControlService controlService;
@@ -553,6 +556,9 @@ public class ControlServiceTest {
         String property = "id=test";
         String value = "null";
         String msg = "Element '" + property + "' is present on the page.";
+        Identifier identifier = new Identifier();
+        identifier.setIdentifier("id");
+        identifier.setLocator("test");
 
         TestCaseStepActionControlExecution tcsace = new TestCaseStepActionControlExecution();
         tcsace.setControlType("verifyElementPresent");
@@ -564,7 +570,7 @@ public class ControlServiceTest {
         tcsae.setTestCaseStepExecution(tcse);
         tcsace.setTestCaseStepActionExecution(tcsae);
 
-        when(webdriverService.isElementPresent(session, anyString())).thenReturn(true);
+        when(webdriverService.isElementPresent(session, identifier)).thenReturn(true);
 
         this.controlService.doControl(tcsace);
 
@@ -578,6 +584,9 @@ public class ControlServiceTest {
         String property = "id=test";
         String value = "null";
         String msg = "Element '" + property + "' is not present on the page.";
+        Identifier identifier = new Identifier();
+        identifier.setIdentifier("id");
+        identifier.setLocator("test");
 
         TestCaseStepActionControlExecution tcsace = new TestCaseStepActionControlExecution();
         tcsace.setControlType("verifyElementPresent");
@@ -590,7 +599,7 @@ public class ControlServiceTest {
         tcsae.setTestCaseStepExecution(tcse);
         tcsace.setTestCaseStepActionExecution(tcsae);
 
-        when(webdriverService.isElementPresent(session, anyString())).thenReturn(false);
+        when(webdriverService.isElementPresent(session, identifier)).thenReturn(false);
 
         this.controlService.doControl(tcsace);
 
@@ -630,7 +639,10 @@ public class ControlServiceTest {
         String property = "id=test";
         String value = "null";
         String msg = "The test case is canceled due to lost connection to Selenium Server! Detailed error : .*";
-
+Identifier identifier = new Identifier();
+        identifier.setIdentifier("id");
+        identifier.setLocator("test");
+        
         TestCaseStepActionControlExecution tcsace = new TestCaseStepActionControlExecution();
         tcsace.setControlType("verifyElementPresent");
         tcsace.setControlProperty(property);
@@ -643,7 +655,7 @@ public class ControlServiceTest {
         tcsae.setTestCaseStepExecution(tcse);
         tcsace.setTestCaseStepActionExecution(tcsae);
         
-        when(webdriverService.isElementPresent(tCExecution.getSession(), anyString())).thenThrow(new WebDriverException());
+        when(webdriverService.isElementPresent(tCExecution.getSession(), identifier)).thenThrow(new WebDriverException());
 
         this.controlService.doControl(tcsace);
 
@@ -658,6 +670,9 @@ public class ControlServiceTest {
         String property = "id=test";
         String value = "null";
         String msg = "Element '" + property + "' is not present on the page.";
+        Identifier identifier = new Identifier();
+        identifier.setIdentifier("id");
+        identifier.setLocator("test");
 
         TestCaseStepActionControlExecution tcsace = new TestCaseStepActionControlExecution();
         tcsace.setControlType("verifyElementNotPresent");
@@ -669,7 +684,7 @@ public class ControlServiceTest {
         tcsae.setTestCaseStepExecution(tcse);
         tcsace.setTestCaseStepActionExecution(tcsae);
 
-        when(webdriverService.isElementPresent(session, anyString())).thenReturn(false);
+        when(webdriverService.isElementPresent(session, identifier)).thenReturn(false);
 
         this.controlService.doControl(tcsace);
 
@@ -683,7 +698,10 @@ public class ControlServiceTest {
         String property = "id=test";
         String value = "null";
         String msg = "Element '" + property + "' is present on the page.";
-
+Identifier identifier = new Identifier();
+        identifier.setIdentifier("id");
+        identifier.setLocator("test");
+        
         TestCaseStepActionControlExecution tcsace = new TestCaseStepActionControlExecution();
         tcsace.setControlType("verifyElementNotPresent");
         tcsace.setControlProperty(property);
@@ -695,7 +713,7 @@ public class ControlServiceTest {
         tcsae.setTestCaseStepExecution(tcse);
         tcsace.setTestCaseStepActionExecution(tcsae);
 
-        when(webdriverService.isElementPresent(session, anyString())).thenReturn(true);
+        when(webdriverService.isElementPresent(session, identifier)).thenReturn(true);
 
         this.controlService.doControl(tcsace);
 
@@ -735,7 +753,10 @@ public class ControlServiceTest {
         String property = "id=test";
         String value = "null";
         String msg = "The test case is canceled due to lost connection to Selenium Server! Detailed error : .*";
-
+Identifier identifier = new Identifier();
+        identifier.setIdentifier("id");
+        identifier.setLocator("test");
+        
         TestCaseStepActionControlExecution tcsace = new TestCaseStepActionControlExecution();
         tcsace.setControlType("verifyElementNotPresent");
         tcsace.setControlProperty(property);
@@ -747,7 +768,7 @@ public class ControlServiceTest {
         tcsae.setTestCaseStepExecution(tcse);
         tcsace.setTestCaseStepActionExecution(tcsae);
 
-        when(webdriverService.isElementPresent(session, anyString())).thenThrow(new WebDriverException());
+        when(webdriverService.isElementPresent(session, identifier)).thenThrow(new WebDriverException());
 
         this.controlService.doControl(tcsace);
 
@@ -763,7 +784,10 @@ public class ControlServiceTest {
         String property = "id=test";
         String value = "null";
         String msg = "Element '"+property+"' is present and not visible on the page.";
-
+Identifier identifier = new Identifier();
+        identifier.setIdentifier("id");
+        identifier.setLocator("test");
+        
         TestCaseStepActionControlExecution tcsace = new TestCaseStepActionControlExecution();
         tcsace.setControlType("verifyElementNotVisible");
         tcsace.setControlProperty(property);
@@ -775,8 +799,8 @@ public class ControlServiceTest {
         tcsae.setTestCaseStepExecution(tcse);
         tcsace.setTestCaseStepActionExecution(tcsae);
         
-        when(webdriverService.isElementPresent(session, anyString())).thenReturn(true);
-        when(webdriverService.isElementNotVisible(session, anyString())).thenReturn(true);
+        when(webdriverService.isElementPresent(session, identifier)).thenReturn(true);
+        when(webdriverService.isElementNotVisible(session, identifier)).thenReturn(true);
 
         this.controlService.doControl(tcsace);
 
@@ -790,6 +814,9 @@ public class ControlServiceTest {
         String property = "id=test";
         String value = "null";
         String msg = "Element '" + property + "' is visible on the page.";
+        Identifier identifier = new Identifier();
+        identifier.setIdentifier("id");
+        identifier.setLocator("test");
 
         TestCaseStepActionControlExecution tcsace = new TestCaseStepActionControlExecution();
         tcsace.setControlType("verifyElementNotVisible");
@@ -802,8 +829,8 @@ public class ControlServiceTest {
         tcsae.setTestCaseStepExecution(tcse);
         tcsace.setTestCaseStepActionExecution(tcsae);
 
-        when(webdriverService.isElementPresent(session, anyString())).thenReturn(true);
-        when(webdriverService.isElementNotVisible(session, anyString())).thenReturn(false);
+        when(webdriverService.isElementPresent(session, identifier)).thenReturn(true);
+        when(webdriverService.isElementNotVisible(session, identifier)).thenReturn(false);
 
         this.controlService.doControl(tcsace);
 
@@ -842,7 +869,10 @@ public class ControlServiceTest {
         String property = "id=test";
         String value = "null";
         String msg = "The test case is canceled due to lost connection to Selenium Server! Detailed error : .*";
-
+Identifier identifier = new Identifier();
+        identifier.setIdentifier("id");
+        identifier.setLocator("test");
+        
         TestCaseStepActionControlExecution tcsace = new TestCaseStepActionControlExecution();
         tcsace.setControlType("verifyElementNotVisible");
         tcsace.setControlProperty(property);
@@ -854,7 +884,7 @@ public class ControlServiceTest {
         tcsae.setTestCaseStepExecution(tcse);
         tcsace.setTestCaseStepActionExecution(tcsae);
 
-        when(webdriverService.isElementPresent(session, anyString())).thenThrow(new WebDriverException());
+        when(webdriverService.isElementPresent(session, identifier)).thenThrow(new WebDriverException());
 
         this.controlService.doControl(tcsace);
 
@@ -918,8 +948,14 @@ public class ControlServiceTest {
         String property = "id=parent";
         String value = "id=child";
         String msg = "Element '"+value+"' is not child of element '"+property+"'.";
+        Identifier identifier = new Identifier();
+        identifier.setIdentifier("id");
+        identifier.setLocator("test");
+        Identifier identifierValue = new Identifier();
+        identifier.setIdentifier("id");
+        identifier.setLocator("test2");
 
-        when(webdriverService.isElementInElement(session, property, value)).thenReturn(Boolean.FALSE);
+        when(webdriverService.isElementInElement(session, identifier, identifierValue)).thenReturn(Boolean.FALSE);
 
         TestCaseStepActionControlExecution tcsace = new TestCaseStepActionControlExecution();
         tcsace.setControlType("verifyElementInElement");
@@ -945,8 +981,14 @@ public class ControlServiceTest {
         String property = "id=parent";
         String value = "id=child";
         String msg = "Element '"+value+"' in child of element '"+property+"'.";
+        Identifier identifier = new Identifier();
+        identifier.setIdentifier("id");
+        identifier.setLocator("test");
+        Identifier identifierValue = new Identifier();
+        identifier.setIdentifier("id");
+        identifier.setLocator("test2");
 
-        when(webdriverService.isElementInElement(session, property, value)).thenReturn(Boolean.TRUE);
+        when(webdriverService.isElementInElement(session, identifier, identifierValue)).thenReturn(Boolean.TRUE);
 
         TestCaseStepActionControlExecution tcsace = new TestCaseStepActionControlExecution();
         tcsace.setControlType("verifyElementInElement");
