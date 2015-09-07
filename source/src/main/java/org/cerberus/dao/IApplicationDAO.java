@@ -37,6 +37,8 @@ import org.cerberus.util.answer.AnswerList;
  */
 public interface IApplicationDAO {
 
+    public AnswerItem readByKey(String application);
+
     /**
      * Finds the Application by the name
      *
@@ -45,7 +47,7 @@ public interface IApplicationDAO {
      * @throws CerberusException when Application does not exist.
      * @since 0.9.0
      */
-    Application findApplicationByKey(String application) throws CerberusException;
+    Application readByKey_Deprecated(String application) throws CerberusException;
 
     /**
      * Finds all Applications that exists
@@ -54,7 +56,7 @@ public interface IApplicationDAO {
      * @throws CerberusException when no application exist.
      * @since 0.9.0
      */
-    List<Application> findAllApplication() throws CerberusException;
+    List<Application> readAll_Deprecated() throws CerberusException;
 
     /**
      * Finds Applications of the given system
@@ -64,24 +66,22 @@ public interface IApplicationDAO {
      * @throws CerberusException
      * @since 0.9.0
      */
-    List<Application> findApplicationBySystem(String system) throws CerberusException;
+    List<Application> readBySystem_Deprecated(String system) throws CerberusException;
 
-    public AnswerList findApplicationListBySystemByCriteria(String system, int startPosition, int length, String columnName, String sort, String searchParameter, String string);
+    public AnswerList readBySystemByCriteria(String system, int startPosition, int length, String columnName, String sort, String searchParameter, String string);
 
-    public AnswerItem findApplicationByString(String application);
+    public Answer create(Application application);
 
-    public Answer createApplication(Application application);
+    public Answer delete(Application application);
 
-    public Answer deleteApplication(Application application);
-
-    public Answer updateApplication(Application application);
+    public Answer update(Application application);
 
     /**
      *
      * @return @throws CerberusException
      * @since 0.9.1
      */
-    List<String> findDistinctSystem();
+    List<String> readDistinctSystem();
 
     /**
      * Uses data of ResultSet to create object {@link Application}
@@ -92,6 +92,6 @@ public interface IApplicationDAO {
      * {@link java.sql.ResultSet#getString(String)}
      * @see FactoryApplication
      */
-    public Application loadApplicationFromResultSet(ResultSet rs) throws SQLException;
+    public Application loadFromResultSet(ResultSet rs) throws SQLException;
 
 }

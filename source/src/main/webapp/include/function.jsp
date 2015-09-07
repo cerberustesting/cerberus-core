@@ -134,7 +134,7 @@
     String ComboProject(ApplicationContext appContext, String HTMLComboName, String HTMLComboStyle, String HTMLId, String HTMLClass, String value, String HTMLOnChange, boolean emptyfirstoption, String FirstValue, String FirstDescription) {
         try {
             IProjectService invProjectService = appContext.getBean(IProjectService.class);
-            List<Project> invProjectList = invProjectService.findAllProject();
+            List<Project> invProjectList = invProjectService.readAll_Deprecated();
             String ret = "<select id=\"" + HTMLId + "\" class=\"" + HTMLClass + "\" style=\"" + HTMLComboStyle + "\" name=\"" + HTMLComboName + "\"";
             if (HTMLOnChange.compareToIgnoreCase("") != 0) {
                 ret = ret + " onchange=\"" + HTMLOnChange + "\"";
@@ -175,7 +175,7 @@
             ret += ">";
             
             
-            AnswerList resp = deployTypeService.findAllDeployType();
+            AnswerList resp = deployTypeService.readAll();
 
             if (resp.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {//the service was able to perform the query, then we should get all values
                 for (DeployType deployType : (List<DeployType>) resp.getDataList()) {

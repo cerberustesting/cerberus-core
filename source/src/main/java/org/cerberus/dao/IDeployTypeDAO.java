@@ -29,17 +29,17 @@ import org.cerberus.util.answer.AnswerList;
  */
 public interface IDeployTypeDAO {
 
-    public AnswerItem findDeployTypeByKey(String deployType);
+    public AnswerItem readByKey(String deployType);
 
-    public AnswerList findAllDeployType();
+    public AnswerList readAll();
 
-    public AnswerList findDeployTypeByCriteria(int startPosition, int length, String columnName, String sort, String searchParameter, String string);
+    public AnswerList readByCriteria(int startPosition, int length, String columnName, String sort, String searchParameter, String string);
 
-    public Answer createDeployType(DeployType deployType);
+    public Answer create(DeployType deployType);
 
-    public Answer deleteDeployType(DeployType deployType);
+    public Answer delete(DeployType deployType);
 
-    public Answer updateDeployType(DeployType deployType);
+    public Answer update(DeployType deployType);
 
-    public DeployType loadDeployTypeFromResultSet(ResultSet rs) throws SQLException;
+    public DeployType loadFromResultSet(ResultSet rs) throws SQLException;
 }

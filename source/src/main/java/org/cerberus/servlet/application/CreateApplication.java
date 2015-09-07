@@ -120,7 +120,7 @@ public class CreateApplication extends HttpServlet {
             IFactoryApplication factoryApplication = appContext.getBean(IFactoryApplication.class);
 
             Application applicationData = factoryApplication.create(application, description, sort, type, system, subSystem, svnURL, deployType, mavenGpID, bugTrackerURL, newBugURL);
-            ans = applicationService.createApplication(applicationData);
+            ans = applicationService.create(applicationData);
 
             if (ans.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
                 /**
@@ -128,12 +128,7 @@ public class CreateApplication extends HttpServlet {
                  */
                 ILogEventService logEventService = appContext.getBean(LogEventService.class);
                 IFactoryLogEvent factoryLogEvent = appContext.getBean(FactoryLogEvent.class);
-
-                try {
-                    logEventService.insertLogEvent(factoryLogEvent.create(0, 0, request.getUserPrincipal().getName(), null, "/CreateApplication", "CREATE", "Create Application : ['" + application + "']", "", ""));
-                } catch (CerberusException ex) {
-                    org.apache.log4j.Logger.getLogger(CreateApplication.class.getName()).log(org.apache.log4j.Level.ERROR, null, ex);
-                }
+                logEventService.create(factoryLogEvent.create(0, 0, request.getUserPrincipal().getName(), null, "/CreateApplication", "CREATE", "Create Application : ['" + application + "']", "", ""));
             }
         }
 

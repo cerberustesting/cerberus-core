@@ -54,15 +54,13 @@ import org.springframework.web.context.support.WebApplicationContextUtils;
 public class CreateTest extends HttpServlet {
 
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
-
     /**
-     * Handles the HTTP
-     * <code>GET</code> method.
+     * Handles the HTTP <code>GET</code> method.
      *
-     * @param request  servlet request
+     * @param request servlet request
      * @param response servlet response
      * @throws ServletException if a servlet-specific error occurs
-     * @throws IOException      if an I/O error occurs
+     * @throws IOException if an I/O error occurs
      */
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
@@ -71,13 +69,12 @@ public class CreateTest extends HttpServlet {
     }
 
     /**
-     * Handles the HTTP
-     * <code>POST</code> method.
+     * Handles the HTTP <code>POST</code> method.
      *
-     * @param request  servlet request
+     * @param request servlet request
      * @param response servlet response
      * @throws ServletException if a servlet-specific error occurs
-     * @throws IOException      if an I/O error occurs
+     * @throws IOException if an I/O error occurs
      */
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
@@ -117,14 +114,13 @@ public class CreateTest extends HttpServlet {
     }// </editor-fold>
 
     /**
-     * Processes requests for both HTTP
-     * <code>GET</code> and
-     * <code>POST</code> methods.
+     * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
+     * methods.
      *
-     * @param request  servlet request
+     * @param request servlet request
      * @param response servlet response
      * @throws ServletException if a servlet-specific error occurs
-     * @throws IOException      if an I/O error occurs
+     * @throws IOException if an I/O error occurs
      */
     protected void processRequest(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 
@@ -160,7 +156,6 @@ public class CreateTest extends HttpServlet {
              * Check that a real modification has been done and the test not
              * already exists
              */
-
             if (!test.equals("")) {
                 PreparedStatement stmt = connection.prepareStatement("SELECT Test FROM test WHERE Test = ?");
                 try {
@@ -178,9 +173,9 @@ public class CreateTest extends HttpServlet {
                                 stmt2.setString(4, automated);
                                 stmt2.executeUpdate();
                             } catch (SQLException ex) {
-                                response.sendError(MessageGeneralEnum.GUI_TEST_CREATION_ISSUE.getCode()  , MessageGeneralEnum.GUI_TEST_CREATION_ISSUE.getDescription() + ".Detail : " + ex.toString());
+                                response.sendError(MessageGeneralEnum.GUI_TEST_CREATION_ISSUE.getCode(), MessageGeneralEnum.GUI_TEST_CREATION_ISSUE.getDescription() + ".Detail : " + ex.toString());
                                 return;
-                            }finally {
+                            } finally {
                                 stmt2.close();
                             }
 
@@ -189,11 +184,7 @@ public class CreateTest extends HttpServlet {
                              */
                             ILogEventService logEventService = appContext.getBean(LogEventService.class);
                             IFactoryLogEvent factoryLogEvent = appContext.getBean(FactoryLogEvent.class);
-                            try {
-                                logEventService.insertLogEvent(factoryLogEvent.create(0, 0, request.getUserPrincipal().getName(), null, "/CreateTest", "CREATE", "Create test : " + test, "", ""));
-                            } catch (CerberusException ex) {
-                                Logger.getLogger(UserService.class.getName()).log(Level.ERROR, null, ex);
-                            }
+                            logEventService.create(factoryLogEvent.create(0, 0, request.getUserPrincipal().getName(), null, "/CreateTest", "CREATE", "Create test : " + test, "", ""));
                         } else {
                             out.print("The test already exists. Please, go back to the previous page and choose another test name");
                         }

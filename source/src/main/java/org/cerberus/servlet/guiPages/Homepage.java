@@ -105,7 +105,7 @@ public class Homepage extends HttpServlet {
             DatabaseSpring database = appContext.getBean(DatabaseSpring.class);
             connection = database.connect();
 
-            List<Application> appliList = applicationService.findApplicationBySystem(mySystem);
+            List<Application> appliList = applicationService.readBySystem_Deprecated(mySystem);
             String inSQL = SqlUtil.getInSQLClause(appliList);
 
             if (!(inSQL.equalsIgnoreCase(""))) {

@@ -81,45 +81,38 @@ public class UpdateTestData extends HttpServlet {
             } catch (ArrayIndexOutOfBoundsException e) {
                 country = "";
             }
-        
-        String name = policy.sanitize(request.getParameter("columnName"));
-        String value = policy.sanitize(request.getParameter("value").replaceAll("'", ""));
 
-        System.out.print(key + application + environment + country);
+            String name = policy.sanitize(request.getParameter("columnName"));
+            String value = policy.sanitize(request.getParameter("value").replaceAll("'", ""));
 
-        ApplicationContext appContext = WebApplicationContextUtils.getWebApplicationContext(this.getServletContext());
-        ITestDataService testDataService = appContext.getBean(ITestDataService.class);
+            System.out.print(key + application + environment + country);
 
-        TestData testData = testDataService.findTestDataByKey(key, application, environment, country);
-        if (name != null && "Value".equalsIgnoreCase(name.trim())) {
-            testData.setValue(value);
-        } else if (name != null && "Description".equalsIgnoreCase(name.trim())) {
-            testData.setDescription(value);
-        } else {
-            throw new CerberusException(new MessageGeneral(MessageGeneralEnum.NOT_IMPLEMEMTED));
-        }
+            ApplicationContext appContext = WebApplicationContextUtils.getWebApplicationContext(this.getServletContext());
+            ITestDataService testDataService = appContext.getBean(ITestDataService.class);
 
-        testDataService.updateTestData(testData);
+            TestData testData = testDataService.findTestDataByKey(key, application, environment, country);
+            if (name != null && "Value".equalsIgnoreCase(name.trim())) {
+                testData.setValue(value);
+            } else if (name != null && "Description".equalsIgnoreCase(name.trim())) {
+                testData.setDescription(value);
+            } else {
+                throw new CerberusException(new MessageGeneral(MessageGeneralEnum.NOT_IMPLEMEMTED));
+            }
 
-        /**
-         * Adding Log entry.
-         */
-        ILogEventService logEventService = appContext.getBean(LogEventService.class);
-        IFactoryLogEvent factoryLogEvent = appContext.getBean(FactoryLogEvent.class);
-        try {
-            logEventService.insertLogEvent(factoryLogEvent.create(0, 0, request.getUserPrincipal().getName(), null, "/UpdateTestData", "UPDATE", "Updated TestData : " + key, "", ""));
-        } catch (CerberusException ex) {
-            org.apache.log4j.Logger.getLogger(UserService.class.getName()).log(org.apache.log4j.Level.ERROR, null, ex);
-        }
+            testDataService.updateTestData(testData);
 
-        out.print(value);
-    }
+            /**
+             * Adding Log entry.
+             */
+            ILogEventService logEventService = appContext.getBean(LogEventService.class);
+            IFactoryLogEvent factoryLogEvent = appContext.getBean(FactoryLogEvent.class);
+            logEventService.create(factoryLogEvent.create(0, 0, request.getUserPrincipal().getName(), null, "/UpdateTestData", "UPDATE", "Updated TestData : " + key, "", ""));
 
-    
-        finally {
+            out.print(value);
+        } finally {
             out.close();
+        }
     }
-}
 
     /**
      * Handles the HTTP <code>POST</code> method.
@@ -130,16 +123,14 @@ public class UpdateTestData extends HttpServlet {
      * @throws IOException if an I/O error occurs
      */
     @Override
-        protected void doPost(HttpServletRequest request, HttpServletResponse response)
+    protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         try {
             processRequest(request, response);
-        
 
-} catch (CerberusException ex) {
-            Logger.getLogger(UpdateTestData.class  
-
-.getName()).log(Level.SEVERE, null, ex);
+        } catch (CerberusException ex) {
+            Logger.getLogger(UpdateTestData.class
+                    .getName()).log(Level.SEVERE, null, ex);
         }
     }
 
@@ -149,7 +140,7 @@ public class UpdateTestData extends HttpServlet {
      * @return a String containing servlet description
      */
     @Override
-        public String getServletInfo() {
+    public String getServletInfo() {
         return "Short description";
     }// </editor-fold>
 }

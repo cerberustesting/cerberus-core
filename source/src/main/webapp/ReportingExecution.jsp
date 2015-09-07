@@ -490,7 +490,7 @@
                 <div>
                     <%
                         options.clear();
-                        for (Project project : projectService.findAllProject()) {
+                        for (Project project : projectService.readAll_Deprecated()) {
                             if (project.getIdProject() != null && !"".equals(project.getIdProject().trim())) {
                                 options.put(project.getIdProject(), project.getIdProject() + " - " + project.getDescription());
                             }
@@ -526,7 +526,7 @@
                 <div>
                     <%
                         options.clear();
-                        for(Application app : applicationService.findAllApplication()){
+                        for(Application app : applicationService.readAll_Deprecated()){
                             options.put(app.getApplication(), app.getApplication()+" ["+app.getSystem()+"]");
                         }
                     %>

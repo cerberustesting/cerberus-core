@@ -92,7 +92,7 @@ public class DeleteDeployType extends HttpServlet {
             ApplicationContext appContext = WebApplicationContextUtils.getWebApplicationContext(this.getServletContext());
             IDeployTypeService deployTypeService = appContext.getBean(IDeployTypeService.class);
 
-            AnswerItem resp = deployTypeService.findDeployTypeByKey(key);
+            AnswerItem resp = deployTypeService.readByKey(key);
             if (!(resp.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode()))) {
                 /**
                  * Object could not be found. We stop here and report the error.
@@ -109,7 +109,7 @@ public class DeleteDeployType extends HttpServlet {
                  * object exist, then we can delete it.
                  */
                 DeployType deployTypeData = (DeployType) resp.getItem();
-                ans = deployTypeService.deleteDeployType(deployTypeData);
+                ans = deployTypeService.delete(deployTypeData);
 
                 if (ans.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
                     /**
@@ -117,11 +117,7 @@ public class DeleteDeployType extends HttpServlet {
                      */
                     ILogEventService logEventService = appContext.getBean(LogEventService.class);
                     IFactoryLogEvent factoryLogEvent = appContext.getBean(FactoryLogEvent.class);
-                    try {
-                        logEventService.insertLogEvent(factoryLogEvent.create(0, 0, request.getUserPrincipal().getName(), null, "/DeleteDeployType", "DELETE", "Delete Deploy Type : ['" + key + "']", "", ""));
-                    } catch (CerberusException ex) {
-                        org.apache.log4j.Logger.getLogger(DeleteDeployType.class.getName()).log(org.apache.log4j.Level.ERROR, null, ex);
-                    }
+                    logEventService.create(factoryLogEvent.create(0, 0, request.getUserPrincipal().getName(), null, "/DeleteDeployType", "DELETE", "Delete Deploy Type : ['" + key + "']", "", ""));
                 }
             }
         }

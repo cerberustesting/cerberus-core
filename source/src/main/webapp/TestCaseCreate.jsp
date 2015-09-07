@@ -227,7 +227,7 @@
                                                         <tr>
                                                             <td class="wob"><select id="createApplication" name="createApplication" style="width: 140px" onchange="SetCookie('TestPageCreateApplication', this.value)">
                                                                     <%
-                                                                        for (Application app : applicationService.findAllApplication()) {
+                                                                        for (Application app : applicationService.readAll_Deprecated()) {
                                                                     %>
                                                                     <option value="<%=app.getApplication()%>"><%=app.getApplication()%></option>
                                                                     <%

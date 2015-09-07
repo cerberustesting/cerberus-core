@@ -17,10 +17,13 @@
  */
 package org.cerberus.dao;
 
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.List;
 
 import org.cerberus.entity.LogEvent;
 import org.cerberus.exception.CerberusException;
+import org.cerberus.util.answer.Answer;
 import org.cerberus.util.answer.AnswerList;
 
 /**
@@ -30,23 +33,15 @@ import org.cerberus.util.answer.AnswerList;
 public interface ILogEventDAO {
 
     /**
+     * @param start
+     * @param amount
+     * @param colName
+     * @param dir
+     * @param searchTerm
+     * @param individualSearch
      * @return a list of all LogEvent.
-     * @throws CerberusException in case no LogEvent can be found.
      */
-    List<LogEvent> findAllLogEvent() throws CerberusException;
-
-    /**
-     * @return a list of all LogEvent.
-     * @throws CerberusException in case no LogEvent can be found.
-     */
-    AnswerList findAllLogEvent(int start, int amount, String colName, String dir, String searchTerm, String individualSearch) throws CerberusException;
-
-    /**
-     *
-     * @return Total number of LogEvent inside the database.
-     * @throws CerberusException
-     */
-    Integer getNumberOfLogEvent(String searchTerm) throws CerberusException;
+    AnswerList readByCriteria(int start, int amount, String colName, String dir, String searchTerm, String individualSearch);
 
     /**
      * Insert user into the database.
@@ -55,5 +50,14 @@ public interface ILogEventDAO {
      * @return true is log was inserted
      * @throws CerberusException if we did not manage to insert the user.
      */
-    boolean insertLogEvent(LogEvent logevent) throws CerberusException;
+    Answer create(LogEvent logevent);
+
+    /**
+     *
+     * @param resultSet
+     * @return
+     * @throws SQLException
+     */
+    LogEvent loadFromResultSet(ResultSet resultSet) throws SQLException;
+
 }

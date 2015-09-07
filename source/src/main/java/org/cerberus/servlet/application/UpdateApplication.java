@@ -118,7 +118,7 @@ public class UpdateApplication extends HttpServlet {
             ApplicationContext appContext = WebApplicationContextUtils.getWebApplicationContext(this.getServletContext());
             IApplicationService applicationService = appContext.getBean(IApplicationService.class);
 
-            AnswerItem resp = applicationService.findApplicationByString(application);
+            AnswerItem resp = applicationService.readByKey(application);
             if (!(resp.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode()))) {
                 /**
                  * Object could not be found. We stop here and report the error.
@@ -145,7 +145,7 @@ public class UpdateApplication extends HttpServlet {
                 applicationData.setBugTrackerNewUrl(newBugURL);
                 applicationData.setDescription(description);
                 applicationData.setSort(sort);
-                ans = applicationService.updateApplication(applicationData);
+                ans = applicationService.update(applicationData);
 
                 if (ans.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
                     /**
@@ -153,12 +153,7 @@ public class UpdateApplication extends HttpServlet {
                      */
                     ILogEventService logEventService = appContext.getBean(LogEventService.class);
                     IFactoryLogEvent factoryLogEvent = appContext.getBean(FactoryLogEvent.class);
-
-                    try {
-                        logEventService.insertLogEvent(factoryLogEvent.create(0, 0, request.getUserPrincipal().getName(), null, "/UpdateApplication", "UPDATE", "Updated Application : ['" + application + "']", "", ""));
-                    } catch (CerberusException ex) {
-                        Logger.getLogger(UpdateApplication.class.getName()).log(Level.SEVERE, null, ex);
-                    }
+                    logEventService.create(factoryLogEvent.create(0, 0, request.getUserPrincipal().getName(), null, "/UpdateApplication", "UPDATE", "Updated Application : ['" + application + "']", "", ""));
                 }
             }
         }

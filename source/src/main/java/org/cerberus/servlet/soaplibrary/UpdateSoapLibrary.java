@@ -45,9 +45,8 @@ import org.springframework.web.util.HtmlUtils;
 public class UpdateSoapLibrary extends HttpServlet {
 
     /**
-     * Processes requests for both HTTP
-     * <code>GET</code> and
-     * <code>POST</code> methods.
+     * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
+     * methods.
      *
      * @param request servlet request
      * @param response servlet response
@@ -74,11 +73,7 @@ public class UpdateSoapLibrary extends HttpServlet {
              */
             ILogEventService logEventService = appContext.getBean(LogEventService.class);
             IFactoryLogEvent factoryLogEvent = appContext.getBean(FactoryLogEvent.class);
-            try {
-                logEventService.insertLogEvent(factoryLogEvent.create(0, 0, request.getUserPrincipal().getName(), null, "/UpdateSoapLibrary", "UPDATE", "Updated SoapLibrary : " + name, "", ""));
-            } catch (CerberusException ex) {
-                org.apache.log4j.Logger.getLogger(UpdateSoapLibrary.class.getName()).log(org.apache.log4j.Level.ERROR, null, ex);
-            }
+            logEventService.create(factoryLogEvent.create(0, 0, request.getUserPrincipal().getName(), null, "/UpdateSoapLibrary", "UPDATE", "Updated SoapLibrary : " + name, "", ""));
 
         } finally {
             out.close();
@@ -87,8 +82,7 @@ public class UpdateSoapLibrary extends HttpServlet {
 
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
     /**
-     * Handles the HTTP
-     * <code>GET</code> method.
+     * Handles the HTTP <code>GET</code> method.
      *
      * @param request servlet request
      * @param response servlet response
@@ -106,8 +100,7 @@ public class UpdateSoapLibrary extends HttpServlet {
     }
 
     /**
-     * Handles the HTTP
-     * <code>POST</code> method.
+     * Handles the HTTP <code>POST</code> method.
      *
      * @param request servlet request
      * @param response servlet response

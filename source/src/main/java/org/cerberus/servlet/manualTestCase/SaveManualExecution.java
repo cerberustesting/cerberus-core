@@ -84,7 +84,7 @@ public class SaveManualExecution extends HttpServlet {
             Application application = null;
             TCase tCase = testService.findTestCaseByKey(test, testCase);
             if (tCase != null) {
-                application = applicationService.findApplicationByKey(tCase.getApplication());
+                application = applicationService.readByKey_Deprecated(tCase.getApplication());
             } else {
                 throw new CerberusException(new MessageGeneral(MessageGeneralEnum.NO_DATA_FOUND));
             }

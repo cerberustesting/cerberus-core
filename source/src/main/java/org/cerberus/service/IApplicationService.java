@@ -39,14 +39,14 @@ public interface IApplicationService {
      * @return Application object with all properties feeded.
      * @throws CerberusException if Application not found.
      */
-    Application findApplicationByKey(String application) throws CerberusException;
+    Application readByKey_Deprecated(String application) throws CerberusException;
 
     /**
      *
      * @return the list of all Applications.
      * @throws CerberusException when no application exist.
      */
-    List<Application> findAllApplication() throws CerberusException;
+    List<Application> readAll_Deprecated() throws CerberusException;
 
     /**
      *
@@ -54,7 +54,7 @@ public interface IApplicationService {
      * @return the list of all Applications.
      * @throws CerberusException when no application exist.
      */
-    List<Application> findApplicationBySystem(String system) throws CerberusException;
+    List<Application> readBySystem_Deprecated(String system) throws CerberusException;
 
     /**
      *
@@ -66,7 +66,7 @@ public interface IApplicationService {
      * @param string
      * @return
      */
-    public AnswerList findApplicationListByCriteria(int startPosition, int length, String columnName, String sort, String searchParameter, String string);
+    public AnswerList readByCriteria(int startPosition, int length, String columnName, String sort, String searchParameter, String string);
 
     /**
      *
@@ -79,20 +79,20 @@ public interface IApplicationService {
      * @param string
      * @return
      */
-    public AnswerList findApplicationListBySystemByCriteria(String system, int startPosition, int length, String columnName, String sort, String searchParameter, String string);
+    public AnswerList readBySystemByCriteria(String system, int startPosition, int length, String columnName, String sort, String searchParameter, String string);
 
     /**
      *
      * @param id
      * @return
      */
-    public AnswerItem findApplicationByString(String id);
+    public AnswerItem readByKey(String id);
 
-    public Answer createApplication(Application application);
+    public Answer create(Application application);
 
-    public Answer deleteApplication(Application application);
+    public Answer delete(Application application);
 
-    public Answer updateApplication(Application application);
+    public Answer update(Application application);
 
     /**
      *
@@ -100,12 +100,12 @@ public interface IApplicationService {
      * @return true is application exist or false is application does not exist
      * in database.
      */
-    boolean isApplicationExist(String application);
+    boolean exist(String application);
 
     /**
      *
      * @return @throws CerberusException
      * @since 0.9.1
      */
-    List<String> findDistinctSystem();
+    List<String> readDistinctSystem();
 }

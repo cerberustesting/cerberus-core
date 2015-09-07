@@ -22,7 +22,6 @@ package org.cerberus.servlet.testCase;
 import java.io.IOException;
 import java.net.URLEncoder;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -109,10 +108,10 @@ public class UpdateTestCaseWithDependencies extends HttpServlet {
         User user = userService.findUserByKey(request.getUserPrincipal().getName());
         List<Group> userGroupList = groupService.findGroupByUser(user);
         List<String> groupList = new ArrayList();
-        for (Group group : userGroupList){
-        groupList.add(group.getGroup());
+        for (Group group : userGroupList) {
+            groupList.add(group.getGroup());
         }
-        
+
         /**
          * Verify the Test is the same than initialTest If it is the same > Do
          * nothing If it is not the same > Verify if test already exists If not
@@ -120,13 +119,13 @@ public class UpdateTestCaseWithDependencies extends HttpServlet {
          */
         if (!tc.getTest().equals(initialTest)) {
             if (tService.findTestByKey(tc.getTest()) == null) {
-                if (groupList.contains("TestAdmin")){
-                Test newTest = tService.findTestByKey(initialTest);
-                newTest.setTest(tc.getTest());
-                tService.createTest(newTest);
+                if (groupList.contains("TestAdmin")) {
+                    Test newTest = tService.findTestByKey(initialTest);
+                    newTest.setTest(tc.getTest());
+                    tService.createTest(newTest);
                 } else {
-                response.sendError(403, MessageGeneralEnum.GUI_TEST_CREATION_NOT_HAVE_RIGHT.getDescription());
-                return;
+                    response.sendError(403, MessageGeneralEnum.GUI_TEST_CREATION_NOT_HAVE_RIGHT.getDescription());
+                    return;
                 }
             }
         }
@@ -143,15 +142,16 @@ public class UpdateTestCaseWithDependencies extends HttpServlet {
             tc.setCreator(user.getLogin());
             tc.setStatus(invariantService.findListOfInvariantById("TCSTATUS").get(0).getValue());
         }
-        
+
         /**
-         * If not duplicate and test in Working status and user with no admin right, raise an error
+         * If not duplicate and test in Working status and user with no admin
+         * right, raise an error
          */
-        if (!duplicate && "WORKING".equals(tc.getStatus()) && !groupList.contains("TestAdmin")){
-        response.sendError(403, MessageGeneralEnum.GUI_TESTCASE_NON_ADMIN_SAVE_WORKING_TESTCASE.getDescription());
-    return;
+        if (!duplicate && "WORKING".equals(tc.getStatus()) && !groupList.contains("TestAdmin")) {
+            response.sendError(403, MessageGeneralEnum.GUI_TESTCASE_NON_ADMIN_SAVE_WORKING_TESTCASE.getDescription());
+            return;
         }
-        
+
         /**
          * Verify testcase is the same than initialTestCase If it is the same >
          * update If it is not the same, > verify if testcase already exist If
@@ -285,7 +285,7 @@ public class UpdateTestCaseWithDependencies extends HttpServlet {
 
         List<TestCaseStepActionControl> tcsacFromDtb = new ArrayList(tcsacService.findControlByTestTestCase(initialTest, initialTestCase));
         tcsacService.compareListAndUpdateInsertDeleteElements(tcsacFromPage, tcsacFromDtb, duplicate);
-        
+
         List<TestCaseStep> tcsNewFromPage = new ArrayList();
         List<TestCaseStepAction> tcsaNewFromPage = new ArrayList();
         List<TestCaseStepActionControl> tcsacNewFromPage = new ArrayList();
@@ -296,9 +296,9 @@ public class UpdateTestCaseWithDependencies extends HttpServlet {
         tcsNewFromDtb = tcsService.getListOfSteps(test, testCase);
         int incrementStep = 0;
         for (TestCaseStep tcsNew : tcsNewFromDtb) {
-            if (tcsService.getTestCaseStepUsingStepInParamter(test, testCase, tcsNew.getStep()).isEmpty()){
+            if (tcsService.getTestCaseStepUsingStepInParamter(test, testCase, tcsNew.getStep()).isEmpty()) {
                 tcsNew.setIsStepInUseByOtherTestCase(false);
-            }else{
+            } else {
                 tcsNew.setIsStepInUseByOtherTestCase(true);
             }
             incrementStep++;
@@ -333,17 +333,12 @@ public class UpdateTestCaseWithDependencies extends HttpServlet {
         List<TestCaseStepActionControl> tcsacNewNewFromDtb = new ArrayList(tcsacService.findControlByTestTestCase(test, testCase));
         tcsacService.compareListAndUpdateInsertDeleteElements(tcsacNewFromPage, tcsacNewNewFromDtb, duplicate);
 
-        
         /**
          * Adding Log entry.
          */
         ILogEventService logEventService = appContext.getBean(LogEventService.class);
         IFactoryLogEvent factoryLogEvent = appContext.getBean(FactoryLogEvent.class);
-        try {
-            logEventService.insertLogEvent(factoryLogEvent.create(0, 0, request.getUserPrincipal().getName(), null, "/UpdateTestCase", "UPDATE", "Update testcase : ['" + tc.getTest() + "'|'" + tc.getTestCase() + "']", "", ""));
-        } catch (CerberusException ex) {
-            Logger.getLogger(UserService.class.getName()).log(Level.ERROR, null, ex);
-        }
+        logEventService.create(factoryLogEvent.create(0, 0, request.getUserPrincipal().getName(), null, "/UpdateTestCase", "UPDATE", "Update testcase : ['" + tc.getTest() + "'|'" + tc.getTestCase() + "']", "", ""));
 
         String encodedTest = URLEncoder.encode(tc.getTest(), "UTF-8");
         String encodedTestCase = URLEncoder.encode(tc.getTestCase(), "UTF-8");
@@ -476,7 +471,7 @@ public class UpdateTestCaseWithDependencies extends HttpServlet {
                 String inLibrary = getParameterIfExists(request, "step_inLibrary_" + inc);
                 /* If delete, don't add it to the list of steps */
                 if (delete == null) {
-                    TestCaseStep tcStep = testCaseStepFactory.create(test, testCase, step, desc, useStep==null?"N":useStep, useStepTest, useStepTestCase, useStepStep, inLibrary==null?"N":inLibrary);
+                    TestCaseStep tcStep = testCaseStepFactory.create(test, testCase, step, desc, useStep == null ? "N" : useStep, useStepTest, useStepTestCase, useStepStep, inLibrary == null ? "N" : inLibrary);
                     /* Take action and control only if not use step*/
                     if (useStep == null) {
                         tcStep.setTestCaseStepAction(getTestCaseStepActionFromParameter(request, appContext, test, testCase, inc));

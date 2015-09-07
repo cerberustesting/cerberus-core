@@ -128,11 +128,7 @@ public class UpdateUser extends HttpServlet {
                      */
                     ILogEventService logEventService = appContext.getBean(LogEventService.class);
                     IFactoryLogEvent factoryLogEvent = appContext.getBean(FactoryLogEvent.class);
-                    try {
-                        logEventService.insertLogEvent(factoryLogEvent.create(0, 0, request.getUserPrincipal().getName(), null, "/UpdateUserAjax", "UPDATE", "Updated user : " + login, "", ""));
-                    } catch (CerberusException ex) {
-                        Logger.getLogger(UpdateUser.class.getName()).log(Level.ERROR, null, ex);
-                    }
+                    logEventService.create(factoryLogEvent.create(0, 0, request.getUserPrincipal().getName(), null, "/UpdateUser", "UPDATE", "Updated user groups : " + login, "", ""));
 
                 } else if (newSystems != null) {
                     userSystemService.updateUserSystems(myUser, newSystems);
@@ -142,25 +138,17 @@ public class UpdateUser extends HttpServlet {
                      */
                     ILogEventService logEventService = appContext.getBean(LogEventService.class);
                     IFactoryLogEvent factoryLogEvent = appContext.getBean(FactoryLogEvent.class);
-                    try {
-                        logEventService.insertLogEvent(factoryLogEvent.create(0, 0, request.getUserPrincipal().getName(), null, "/UpdateUserAjax", "UPDATE", "Updated userSystem of : " + login, "", ""));
-                    } catch (CerberusException ex) {
-                        Logger.getLogger(UpdateUser.class.getName()).log(Level.ERROR, null, ex);
-                    }
+                    logEventService.create(factoryLogEvent.create(0, 0, request.getUserPrincipal().getName(), null, "/UpdateUser", "UPDATE", "Updated user system : " + login, "", ""));
 
                 } else {
                     userService.updateUser(myUser);
-                    
+
                     /**
                      * Adding Log entry.
                      */
                     ILogEventService logEventService = appContext.getBean(LogEventService.class);
                     IFactoryLogEvent factoryLogEvent = appContext.getBean(FactoryLogEvent.class);
-                    try {
-                        logEventService.insertLogEvent(factoryLogEvent.create(0, 0, request.getUserPrincipal().getName(), null, "/UpdateUserAjax", "UPDATE", "Updated userSystem of : " + login, "", ""));
-                    } catch (CerberusException ex) {
-                        Logger.getLogger(UpdateUser.class.getName()).log(Level.ERROR, null, ex);
-                    }
+                    logEventService.create(factoryLogEvent.create(0, 0, request.getUserPrincipal().getName(), null, "/UpdateUser", "UPDATE", "Updated user : " + login, "", ""));
                 }
                 response.getWriter().print(value);
             } catch (CerberusException ex) {

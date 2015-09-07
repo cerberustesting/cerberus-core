@@ -92,7 +92,7 @@ public class DeleteApplication extends HttpServlet {
             ApplicationContext appContext = WebApplicationContextUtils.getWebApplicationContext(this.getServletContext());
             IApplicationService applicationService = appContext.getBean(IApplicationService.class);
 
-            AnswerItem resp = applicationService.findApplicationByString(key);
+            AnswerItem resp = applicationService.readByKey(key);
             if (!(resp.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode()))) {
                 /**
                  * Object could not be found. We stop here and report the error.
@@ -102,26 +102,22 @@ public class DeleteApplication extends HttpServlet {
                         .replace("%OPERATION%", "Delete")
                         .replace("%REASON%", "Application does not exist."));
                 ans.setResultMessage(msg);
-                
+
             } else {
                 /**
                  * The service was able to perform the query and confirm the
                  * object exist, then we can delete it.
                  */
                 Application applicationData = (Application) resp.getItem();
-                ans = applicationService.deleteApplication(applicationData);
-                
+                ans = applicationService.delete(applicationData);
+
                 if (ans.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
                     /**
                      * Delete was succesfull. Adding Log entry.
                      */
                     ILogEventService logEventService = appContext.getBean(LogEventService.class);
                     IFactoryLogEvent factoryLogEvent = appContext.getBean(FactoryLogEvent.class);
-                    try {
-                        logEventService.insertLogEvent(factoryLogEvent.create(0, 0, request.getUserPrincipal().getName(), null, "/DeleteApplication", "DELETE", "Delete Application : ['" + key + "']", "", ""));
-                    } catch (CerberusException ex) {
-                        org.apache.log4j.Logger.getLogger(DeleteApplication.class.getName()).log(org.apache.log4j.Level.ERROR, null, ex);
-                    }
+                    logEventService.create(factoryLogEvent.create(0, 0, request.getUserPrincipal().getName(), null, "/DeleteApplication", "DELETE", "Delete Application : ['" + key + "']", "", ""));
                 }
             }
         }

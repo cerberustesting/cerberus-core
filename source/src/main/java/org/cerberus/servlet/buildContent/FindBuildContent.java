@@ -70,7 +70,7 @@ public class FindBuildContent extends HttpServlet {
                 array.put(brp.getRelease());
 
                 try {
-                    Project project = projectService.findProjectByKey(brp.getProject());
+                    Project project = projectService.readByKey_Deprecated(brp.getProject());
                     StringBuilder sb = new StringBuilder(project.getIdProject());
                     sb.append(" [");
                     sb.append(project.getCode());

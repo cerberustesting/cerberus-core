@@ -109,8 +109,8 @@ public class DuplicateTestCase extends HttpServlet {
                 if (testCaseService.findTestCaseByKey(newTest, newTestCase) != null) {
                     throw new CerberusException(new MessageGeneral(MessageGeneralEnum.GUI_TESTCASE_DUPLICATION_ALREADY_EXISTS));
                 }
-                if (testCaseService.findTestCaseByKey(test, testCase) == null){
-                throw new CerberusException(new MessageGeneral(MessageGeneralEnum.NO_DATA_FOUND));
+                if (testCaseService.findTestCaseByKey(test, testCase) == null) {
+                    throw new CerberusException(new MessageGeneral(MessageGeneralEnum.NO_DATA_FOUND));
                 }
                 TCase newTc = testCaseService.findTestCaseByKey(test, testCase);
                 newTc.setTest(newTest);
@@ -181,11 +181,7 @@ public class DuplicateTestCase extends HttpServlet {
                  */
                 ILogEventService logEventService = appContext.getBean(LogEventService.class);
                 IFactoryLogEvent factoryLogEvent = appContext.getBean(FactoryLogEvent.class);
-                try {
-                    logEventService.insertLogEvent(factoryLogEvent.create(0, 0, request.getUserPrincipal().getName(), null, "/DuplicateTestCase", "CREATE", "Duplicate testcase From : ['" + test + "'|'" + testCase + "'] To : ['" + newTest + "'|'" + newTestCase + "']", "", ""));
-                } catch (CerberusException ex) {
-                    Logger.getLogger(UserService.class.getName()).log(Level.ERROR, null, ex);
-                }
+                logEventService.create(factoryLogEvent.create(0, 0, request.getUserPrincipal().getName(), null, "/DuplicateTestCase", "CREATE", "Duplicate testcase From : ['" + test + "'|'" + testCase + "'] To : ['" + newTest + "'|'" + newTestCase + "']", "", ""));
 
                 response.sendRedirect("TestCase.jsp?Load=Load&Test="
                         + newTest + "&TestCase="

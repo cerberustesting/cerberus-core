@@ -35,7 +35,7 @@ function initApplicationPage() {
     $('#editApplicationModal').on('hidden.bs.modal', editApplicationModalCloseHandler);
 
     //configure and create the dataTable
-    var configurations = new TableConfigurationsServerSide("applicationsTable", "ReadApplication?action=2&system=" + getUser().defaultSystem, "contentTable", aoColumnsFunc());
+    var configurations = new TableConfigurationsServerSide("applicationsTable", "ReadApplication?system=" + getUser().defaultSystem, "contentTable", aoColumnsFunc());
 
     createDataTableWithPermissions(configurations, renderOptionsForApplication);
     var oTable = $("#applicationsTable").dataTable();
@@ -189,7 +189,7 @@ function CreateApplicationClick() {
 
 function editApplication(id) {
     clearResponseMessageMainPage();
-    var jqxhr = $.getJSON("ReadApplication", "action=1&application=" + id);
+    var jqxhr = $.getJSON("ReadApplication", "application=" + id);
     $.when(jqxhr).then(function (data) {
         var obj = data["contentTable"];
 

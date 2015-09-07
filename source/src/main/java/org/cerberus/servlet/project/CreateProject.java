@@ -99,7 +99,7 @@ public class CreateProject extends HttpServlet {
             IFactoryProject factoryProject = appContext.getBean(IFactoryProject.class);
 
             Project projectData = factoryProject.create(idProject, code, description, active, "");
-            ans = projectService.createProject(projectData);
+            ans = projectService.create_Deprecated(projectData);
 
             if (ans.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
                 /**
@@ -108,11 +108,7 @@ public class CreateProject extends HttpServlet {
                 ILogEventService logEventService = appContext.getBean(LogEventService.class);
                 IFactoryLogEvent factoryLogEvent = appContext.getBean(FactoryLogEvent.class);
 
-                try {
-                    logEventService.insertLogEvent(factoryLogEvent.create(0, 0, request.getUserPrincipal().getName(), null, "/CreateProject", "CREATE", "Create Project : ['" + idProject + "']", "", ""));
-                } catch (CerberusException ex) {
-                    org.apache.log4j.Logger.getLogger(UserService.class.getName()).log(org.apache.log4j.Level.ERROR, null, ex);
-                }
+                logEventService.create(factoryLogEvent.create(0, 0, request.getUserPrincipal().getName(), null, "/CreateProject", "CREATE", "Create Project : ['" + idProject + "']", "", ""));
             }
         }
 

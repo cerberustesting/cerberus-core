@@ -72,11 +72,7 @@ public class DeleteRobot extends HttpServlet {
              */
             ILogEventService logEventService = appContext.getBean(LogEventService.class);
             IFactoryLogEvent factoryLogEvent = appContext.getBean(FactoryLogEvent.class);
-            try {
-                logEventService.insertLogEvent(factoryLogEvent.create(0, 0, request.getUserPrincipal().getName(), null, "/DeleteRobot", "DELETE", "Delete Robot : " + robot.getPlatform() + "/" + robot.getBrowser() + "/" + robot.getVersion(), "", ""));
-            } catch (CerberusException ex) {
-                MyLogger.log(DeleteRobot.class.getName(), Level.ERROR, ex.toString());
-            }
+            logEventService.create(factoryLogEvent.create(0, 0, request.getUserPrincipal().getName(), null, "/DeleteRobot", "DELETE", "Delete Robot : " + robot.getPlatform() + "/" + robot.getBrowser() + "/" + robot.getVersion(), "", ""));
 
         } finally {
             out.close();

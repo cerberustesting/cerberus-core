@@ -89,7 +89,7 @@ public class GetNumberOfExecutions extends HttpServlet {
          * Adding Log entry.
          */
         ILogEventService logEventService = appContext.getBean(LogEventService.class);
-        logEventService.insertLogEventPublicCalls("/GetNumberOfExecutions", "CALL", "GetNumberOfExecutionsV0 called : " + request.getRequestURL(), request);
+        logEventService.createPublicCalls("/GetNumberOfExecutions", "CALL", "GetNumberOfExecutionsV0 called : " + request.getRequestURL(), request);
 
         IApplicationService myApplicationService = appContext.getBean(ApplicationService.class);
         IInvariantService myInvariantService = appContext.getBean(InvariantService.class);
@@ -120,7 +120,7 @@ public class GetNumberOfExecutions extends HttpServlet {
                 error = true;
             }
             // Checking the parameter validity. If application has been entered, does it exist ?
-            if (!application.equalsIgnoreCase("") && !myApplicationService.isApplicationExist(application)) {
+            if (!application.equalsIgnoreCase("") && !myApplicationService.exist(application)) {
                 out.println("Error - Application does not exist  : " + application);
                 error = true;
             }

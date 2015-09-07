@@ -93,7 +93,7 @@ public class UpdateDeployType extends HttpServlet {
             ApplicationContext appContext = WebApplicationContextUtils.getWebApplicationContext(this.getServletContext());
             IDeployTypeService deployTypeService = appContext.getBean(IDeployTypeService.class);
 
-            AnswerItem resp = deployTypeService.findDeployTypeByKey(deployType);
+            AnswerItem resp = deployTypeService.readByKey(deployType);
             if (!(resp.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode()))) {
                 /**
                  * Object could not be found. We stop here and report the error.
@@ -111,7 +111,7 @@ public class UpdateDeployType extends HttpServlet {
                  */
                 DeployType deployTypeData = (DeployType) resp.getItem();
                 deployTypeData.setDescription(description);
-                ans = deployTypeService.updateDeployType(deployTypeData);
+                ans = deployTypeService.update(deployTypeData);
 
                 if (ans.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
                     /**
@@ -119,12 +119,7 @@ public class UpdateDeployType extends HttpServlet {
                      */
                     ILogEventService logEventService = appContext.getBean(LogEventService.class);
                     IFactoryLogEvent factoryLogEvent = appContext.getBean(FactoryLogEvent.class);
-
-                    try {
-                        logEventService.insertLogEvent(factoryLogEvent.create(0, 0, request.getUserPrincipal().getName(), null, "/UpdateDeployType", "UPDATE", "Updated Deploy Type : ['" + deployType + "']", "", ""));
-                    } catch (CerberusException ex) {
-                        Logger.getLogger(UpdateDeployType.class.getName()).log(Level.SEVERE, null, ex);
-                    }
+                    logEventService.create(factoryLogEvent.create(0, 0, request.getUserPrincipal().getName(), null, "/UpdateDeployType", "UPDATE", "Updated Deploy Type : ['" + deployType + "']", "", ""));
                 }
             }
         }

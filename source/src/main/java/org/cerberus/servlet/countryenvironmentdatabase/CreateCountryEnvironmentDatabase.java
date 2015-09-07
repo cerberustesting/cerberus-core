@@ -43,6 +43,7 @@ import org.springframework.web.context.support.WebApplicationContextUtils;
 public class CreateCountryEnvironmentDatabase extends HttpServlet {
 
     private static final org.apache.log4j.Logger LOG = org.apache.log4j.Logger.getLogger(CreateCountryEnvironmentDatabase.class);
+
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
      * methods.
@@ -64,7 +65,7 @@ public class CreateCountryEnvironmentDatabase extends HttpServlet {
             String environment = policy.sanitize(request.getParameter("Environment"));
             String database = policy.sanitize(request.getParameter("Database"));
             String connectionPool = policy.sanitize(request.getParameter("ConnectionPoolName"));
-            
+
             ApplicationContext appContext = WebApplicationContextUtils.getWebApplicationContext(this.getServletContext());
             ICountryEnvironmentDatabaseService cedService = appContext.getBean(ICountryEnvironmentDatabaseService.class);
             IFactoryCountryEnvironmentDatabase factoryCed = appContext.getBean(IFactoryCountryEnvironmentDatabase.class);
@@ -75,19 +76,14 @@ public class CreateCountryEnvironmentDatabase extends HttpServlet {
             /**
              * Adding Log entry.
              */
-    
             ILogEventService logEventService = appContext.getBean(ILogEventService.class);
             IFactoryLogEvent factoryLogEvent = appContext.getBean(IFactoryLogEvent.class);
-            try {
-                logEventService.insertLogEvent(factoryLogEvent.create(0, 0, request.getUserPrincipal().getName(), null, "/CreateCEP", "CREATE", "Create CountryEnvironmentApplication : " + country+"_"+environment+"_"+database, "", ""));
-            } catch (CerberusException ex) {
-                LOG.error(ex);
-            }
+            logEventService.create(factoryLogEvent.create(0, 0, request.getUserPrincipal().getName(), null, "/CreateCountryEnvironmentDatabase", "CREATE", "Create CountryEnvironmentDatabase : " + country + "_" + environment + "_" + database, "", ""));
 
-            response.getWriter().append(country+"_"+environment+"_"+database).close();
-            } catch (CerberusException ex) {
+            response.getWriter().append(country + "_" + environment + "_" + database).close();
+        } catch (CerberusException ex) {
             LOG.error(ex);
-            response.getWriter().append("Unable to create CountryEnvironmentApplication").close();
+            response.getWriter().append("Unable to create CountryEnvironmentDatabase").close();
         } finally {
             out.close();
         }

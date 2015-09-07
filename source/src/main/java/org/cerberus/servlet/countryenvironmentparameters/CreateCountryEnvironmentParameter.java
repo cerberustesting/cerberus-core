@@ -21,8 +21,6 @@ package org.cerberus.servlet.countryenvironmentparameters;
 
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -45,6 +43,7 @@ import org.springframework.web.context.support.WebApplicationContextUtils;
 public class CreateCountryEnvironmentParameter extends HttpServlet {
 
     private static final org.apache.log4j.Logger LOG = org.apache.log4j.Logger.getLogger(CreateCountryEnvironmentParameter.class);
+
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
      * methods.
@@ -80,17 +79,12 @@ public class CreateCountryEnvironmentParameter extends HttpServlet {
             /**
              * Adding Log entry.
              */
-    
             ILogEventService logEventService = appContext.getBean(ILogEventService.class);
             IFactoryLogEvent factoryLogEvent = appContext.getBean(IFactoryLogEvent.class);
-            try {
-                logEventService.insertLogEvent(factoryLogEvent.create(0, 0, request.getUserPrincipal().getName(), null, "/CreateCEP", "CREATE", "Create CountryEnvironmentApplication : " + country+"_"+environment+"_"+application, "", ""));
-            } catch (CerberusException ex) {
-                LOG.error(ex);
-            }
+            logEventService.create(factoryLogEvent.create(0, 0, request.getUserPrincipal().getName(), null, "/CreateCountryEnvironmentParameter", "CREATE", "Create CountryEnvironmentApplication : " + country + "_" + environment + "_" + application, "", ""));
 
-            response.getWriter().append(country+"_"+environment+"_"+application).close();
-            } catch (CerberusException ex) {
+            response.getWriter().append(country + "_" + environment + "_" + application).close();
+        } catch (CerberusException ex) {
             LOG.error(ex);
             response.getWriter().append("Unable to create CountryEnvironmentApplication").close();
         } finally {

@@ -19,11 +19,10 @@
  */
 package org.cerberus.service;
 
-import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 
 import org.cerberus.entity.LogEvent;
-import org.cerberus.exception.CerberusException;
+import org.cerberus.util.answer.Answer;
 import org.cerberus.util.answer.AnswerList;
 
 /**
@@ -32,27 +31,34 @@ import org.cerberus.util.answer.AnswerList;
  */
 public interface ILogEventService {
 
-    public List<LogEvent> findAllLogEvent() throws CerberusException;
-
-    public AnswerList findAllLogEvent(int start, int amount, String colName, String dir, String searchTerm, String individualSearch) throws CerberusException;
-
-    public Integer getNumberOfLogEvent(String searchTerm) throws CerberusException;
-
-    public boolean insertLogEvent(LogEvent logevent) throws CerberusException;
+    /**
+     *
+     * @param start
+     * @param amount
+     * @param colName
+     * @param dir
+     * @param searchTerm
+     * @param individualSearch
+     * @return
+     */
+    public AnswerList readByCriteria(int start, int amount, String colName, String dir, String searchTerm, String individualSearch);
 
     /**
      *
-     * @param message
-     * @param request
+     * @param logevent
      * @return
      */
-    public void insertLogEvent(String page, String action, String log, HttpServletRequest request);
+    public Answer create(LogEvent logevent);
 
     /**
+     * This method is to be used when log is done from a public Servlet. It will
+     * automatically check if the log of Public API Calls is activated before
+     * recording the log
      *
-     * @param message
+     * @param page
+     * @param action
      * @param request
-     * @return
+     * @param log
      */
-    public void insertLogEventPublicCalls(String page, String action, String log, HttpServletRequest request);
+    public void createPublicCalls(String page, String action, String log, HttpServletRequest request);
 }

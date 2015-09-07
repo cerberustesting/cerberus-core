@@ -4481,7 +4481,7 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLS.append(",('user','Team','','en','Team','This is the team of the user.')");
         SQLS.append(",('usergroup','GroupName','','en','Group Name','Authorities are managed by group. In order to be granted to a set of feature, you must belong to the corresponding group.<br>Every user can of course belong to as many group as necessary in order to get access to as many feature as required.<br>In order to get the full access to the system you must belong to every group.<br>Some groups are linked together on the test perimeter and integration perimeter.<br><br><b>Test perimeter :</b><br><br><code class=\\'doc-fixed\\'>TestRO</code>: Has read only access to the information related to test cases and also has access to execution reporting options.<br><br><code class=\\'doc-fixed\\'>Test</code>: Can modify non WORKING test cases but cannot delete test cases.<br><br><code class=\\'doc-fixed\\'>TestAdmin</code>: Can modify or delete any test case (including Pre Testing test cases). Can also create or delete a test.<br><br>The minimum group you need to belong is <code class=\\'doc-fixed\\'>TestRO</code> that will give you access in read only to all test data (including its execution reporting page).<br>If you want to be able to modify the testcases (except the WORKING ones), you need <code class=\\'doc-fixed\\'>Test</code> group on top of <code class=\\'doc-fixed\\'>TestRO</code> group.<br>If you want the full access to all testcase (including beeing able to delete any testcase), you will need <code class=\\'doc-fixed\\'>TestAdmin</code> on top of <code class=\\'doc-fixed\\'>TestRO</code> and <code class=\\'doc-fixed\\'>Test</code> group.<br><br><b>Test Execution perimeter :</b><br><br><code class=\\'doc-fixed\\'>RunTest</code>: Can run both Manual and Automated test cases from GUI.<br><br><b>Integration perimeter :</b><br><br><code class=\\'doc-fixed\\'>IntegratorRO</code>: Has access to the integration status.<br><br><code class=\\'doc-fixed\\'>Integrator</code>: Can add an application. Can change parameters of the environments.<br><br><code class=\\'doc-fixed\\'>IntegratorNewChain</code>: Can register the end of the chain execution. Has read only access to the other informations on the same page.<br><br><code class=\\'doc-fixed\\'>IntegratorDeploy</code>: Can disable or enable environments and register new build / revision.<br><br>The minimum group you need to belong is <code class=\\'doc-fixed\\'>IntegratorRO</code> that will give you access in read only to all environment data.<br>If you want to be able to modify the environment data, you need <code class=\\'doc-fixed\\'>Integrator</code> group on top of <code class=\\'doc-fixed\\'>IntegratorRO</code> group.<br><code class=\\'doc-fixed\\'>IntegratorNewChain</code> and <code class=\\'doc-fixed\\'>IntegratorDeploy</code> are used on top of <code class=\\'doc-fixed\\'>Integrator</code> Group to be able to create a new chain on an environment or perform a deploy operation.<br><br><b>Administration perimeter :</b><br><br><code class=\\'doc-fixed\\'>Administrator</code>: Can create, modify or delete users. Has access to log Event and Database Maintenance. Can change Parameter values.')");
         SQLInstruction.add(SQLS.toString());
-        
+
         // New Documentation for upload dialog and for the multiselect component.
         //-- ------------------------ 611
         SQLS = new StringBuilder();
@@ -4493,87 +4493,123 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLS.append(",('page_testdatalib_m_upload','btn_choose','','en','Choose XML file','')");
         SQLS.append(",('page_testdatalib_m_upload','btn_cancel','','en','Cancel','')");
         SQLS.append(",('page_testdatalib_m_upload','btn_upload','','en','Upload XML','')");
-        SQLS.append(",('multiselect','none_selected','','en','None selected','')");         
-        SQLS.append(",('multiselect','select_all','','en','Select all','')"); 
-        SQLS.append(",('multiselect','all_selected','','en','All selected','')"); 
-        SQLS.append(",('multiselect','search','','en','Search','')"); 
-        SQLS.append(",('multiselect','nselected','','en','selected','')"); 
+        SQLS.append(",('multiselect','none_selected','','en','None selected','')");
+        SQLS.append(",('multiselect','select_all','','en','Select all','')");
+        SQLS.append(",('multiselect','all_selected','','en','All selected','')");
+        SQLS.append(",('multiselect','search','','en','Search','')");
+        SQLS.append(",('multiselect','nselected','','en','selected','')");
         SQLInstruction.add(SQLS.toString());
-        
+
         // New Documentation for the page Test Data Library - EN version
         //-- ------------------------ 612
-        SQLS = new StringBuilder();         
-        SQLS.append("INSERT INTO `documentation` VALUES ");         
-        SQLS.append("('page_global', 'btn_cancel','','en','Cancel', \"\") "); 
-        SQLS.append(", ('page_global', 'btn_add','','en','Add', \"\") "); 
-        SQLS.append(", ('page_global', 'unexpected_error_message','','en','Unable to perform the task. An unexpected error has happened!', \"\") "); 
-        SQLS.append(", ('page_global', 'processing','','en','Processing…', \"\") "); 
-        SQLS.append(", ('page_global', 'invalid_extension_message','','en','Please select a file with the extension ', \"\") "); 
-        SQLS.append(", ('page_global', 'tooltip_delete_item','','en','This item will be removed from the database', \"\") "); 
-        SQLS.append(", ('page_global', 'tooltip_mark_remove','','en','Mark item to be removed from the database', \"\") "); 
-        SQLS.append(", ('page_global', 'lbl_all','','en','All', \"\") "); 
-        SQLS.append(", ('page_testcase', 'tooltip_select_entry','','en','Select an entry from library', \"\") "); 
-        SQLS.append(", ('page_testcase_m_listtestdatalib', 'tooltip_choose_entry','','en','Choose entry', \"\") "); 
-        SQLS.append(", ('page_testcase_m_listtestdatalib', 'title','','en','Select Test Data Library Entry', \"\") "); 
-        SQLS.append(", ('page_testcase_m_listtestdatalib', 'actions','','en','Actions', \"<p> List of available actions for the current user: </p><p><table border=\'1\'><tr><th class=\'ex\'>Button</th><th class=\'ex\'>Function</th><th class=\'ex\'>Description</th></tr><tr><td><span class=\'glyphicon glyphicon-hand-up\'></span></td><td>Select entry</td><td>Allows the user to select an entry that will be set in the \'value\' textarea for the current property.</td></tr></table></p>  \") "); 
-        SQLS.append(", ('page_testdatalib', 'btn_create','','en','Create New Entry', \"\") "); 
-        SQLS.append(", ('page_testdatalib', 'btn_import','','en','Import from XML file', \"\") "); 
-        SQLS.append(", ('page_testdatalib', 'title','','en','Test Data Library', \"<p>The <u>Test Data Library</u> is a repository of test data that centralises and eases the Test Data Management process. Additionally, it eases the creation of test cases because it allows the reuse of data that is recurrently defined. </p> <p>Cerberus allows the definition of three types of entries: <b>STATIC</b>, <b>SQL</b> and <b>SOAP</b>.</p><p>The definition of each library entry comprises two steps: <ul><li>The definition of the library entry. </li><li>The definition of its sub-data entries.</li></ul></p>\") "); 
-        SQLS.append(", ('page_testdatalib', 'page_title','','en','Test Data Library', \"\") "); 
-        SQLS.append(", ('page_testdatalib', 'tooltip_gettestcases','','en','Get list of test cases that use this entry.', \"\") "); 
-        SQLS.append(", ('page_testdatalib', 'tooltip_editentry','','en','Edit entry.', \"\") "); 
-        SQLS.append(", ('page_testdatalib', 'tooltip_delete','','en','Delete entry.', \"\") "); 
-        SQLS.append(", ('page_testdatalib', 'tooltip_editsubdata','','en','Edit sub-data entries.', \"\") "); 
-        SQLS.append(", ('page_testdatalib', 'tooltip_viewsubdata','','en','View sub-data entries.', \"\") "); 
-        SQLS.append(", ('page_testdatalib', 'empty_name_message','','en','Please specify the name of the entry!', \"\") "); 
-        SQLS.append(", ('page_testdatalib', 'duplicated_message','','en','Please check the subdata entries. There are entries with duplicated names, a total of: ', \"\") "); 
-        SQLS.append(", ('page_testdatalib', 'empty_subdata_message','','en','Please check the subdata entries. There are entries without sub-data name, a total of: ', \"\") "); 
-        SQLS.append(", ('page_testdatalib_delete', 'title','','en','Delete Test Data Library Entry', \"\") "); 
-        SQLS.append(", ('page_testdatalib_delete', 'subdata_msg','','en','and its sub-data entries', \"\") "); 
-        SQLS.append(", ('page_testdatalib_m_createlib', 'title','','en','Create New Test Data Library Entry', \"\") "); 
-        SQLS.append(", ('page_testdatalib_m_createlib', 'm_tab1_text','','en','Entry', \"\") "); 
-        SQLS.append(", ('page_testdatalib_m_createlib', 'm_tab2_text','','en','Sub-data ', \"\") "); 
-        SQLS.append(", ('page_testdatalib_m_createlib', 'm_tab2_text_entries','','en','entries', \"\") "); 
-        SQLS.append(", ('page_testdatalib_m_createlib', 'lbl_dropdown_help','','en','-- select to enter manually new group --', \"\") "); 
-        SQLS.append(", ('page_testdatalib_m_createlib', 'link_add_new','','en','Add new', \"\") "); 
-        SQLS.append(", ('page_testdatalib_m_createlib', 'link_delete_all','','en','Delete all', \"\") "); 
-        SQLS.append(", ('page_testdatalib_m_createlib', 'link_add_new_title','','en','Add a new row in the table to create a new sub-data entry.', \"\") "); 
-        SQLS.append(", ('page_testdatalib_m_createlib', 'link_delete_all_title','','en','Deletes all sub-data entries in the table.', \"\") "); 
-        SQLS.append(", ('page_testdatalib_m_createupdatelib', 'lbl_choose_group','','en','Choose an existing group', \"<p>Group is a name that associates entries that are at some extent correlated. This options allows the user to select a name that was previously used to group other library entries from the selected type.</p> \") "); 
-        SQLS.append(", ('page_testdatalib_m_createupdatelib', 'lbl_enter_group','','en','or enter new group', \"<p>Group is a name that associates entries that are at some extent correlated. This options allows the user to enter a new name that can be used to group entries from the selected type.</p> \") "); 
-        SQLS.append(", ('page_testdatalib_m_gettestcases', 'title','','en','List of test cases affected by this entry', \"\") "); 
-        SQLS.append(", ('page_testdatalib_m_gettestcases', 'group_title','','en','Test cases affected by this entry', \"\") "); 
-        SQLS.append(", ('page_testdatalib_m_gettestcases', 'nrTests','','en','#tests: ', \"\") "); 
-        SQLS.append(", ('page_testdatalib_m_gettestcases', 'nrTestCases','','en','#test cases:', \"\") "); 
-        SQLS.append(", ('page_testdatalib_m_gettestcases', 'nrProperties','','en','#properties:', \"\") "); 
-        SQLS.append(", ('page_testdatalib_m_listtestdatalibdata', 'title','','en','List of sub-data entries', \"\") "); 
-        SQLS.append(", ('page_testdatalib_m_managetestdatalibdata', 'title','','en','Manage list of sub-data entries', \"\") "); 
-        SQLS.append(", ('page_testdatalib_m_managetestdatalibdata', 'link_add_new','','en','Add new sub-data', \"\") "); 
-        SQLS.append(", ('page_testdatalib_m_managetestdatalibdata', 'link_add_new_title','','en','Add a new row in the list of sub-data entries.', \"\") "); 
-        SQLS.append(", ('page_testdatalib_m_managetestdatalibdata', 'actions','','en','Actions', \"<p> List of available actions  for the current user: </p><p><table border=\'1\'><tr><th class=\'ex\'>Button</th><th class=\'ex\'>Function</th><th class=\'ex\'>Description</th></tr><tr><td><span class=\'glyphicon glyphicon-trash\'></span></span></td><td>Delete</td><td>Allows the user to delete the sub-data entry. If the sub-data entry is a new, then it will be removed from the GUI. If the sub-data entry was loaded from the database, then it will be marked as to be deleted from the database.</td></tr><tr><td><span class=\'glyphicon glyphicon-remove\'></span></td><td>Mark to be deleted</td><td>Marks the sub-data entry to be deleted from the database.</td></tr></table></p>\") "); 
-        SQLS.append(", ('page_testdatalib_m_updatelib', 'title','','en','Edit Test Data Library Entry', \"\") "); 
-        SQLS.append(", ('testdatalib', 'testdatalibid','','en','ID', \"<p>Unique identifier of the test data library entry</p>\") "); 
-        SQLS.append(", ('testdatalib', 'name','','en','Name', \"<p>Name of the entry. It is a <b>mandatory</b> attribute.</p><p><b><u>Note</u></b>: The combination of <u>Name</u>, <u>System</u>, <u>Environment</u> and <u>Country</u> must be unique.</p>\") "); 
-        SQLS.append(", ('testdatalib', 'system','','en','System', \"<p>System where the entry is available. If not specified, then the property applies to ALL systems.</p><p><b><u>Note</u></b>: The combination of <u>Name</u>, <u>System</u>, <u>Environment</u> and <u>Country</u> must be unique.</p>\") "); 
-        SQLS.append(", ('testdatalib', 'environment','','en','Environment', \"<p>Environment where the entry is available. If not specified, then the property applies to ALL environments.</p><p><b><u>Note</u></b>: The combination of <u>Name</u>, <u>System</u>, <u>Environment</u> and <u>Country</u> must be unique.</p>\") "); 
-        SQLS.append(", ('testdatalib', 'country','','en','Country', \"<p>Country where the entry is available. If not specified, then the property applies to ALL countries. </p><p><b><u>Note</u></b>:The combination of <u>Name</u>, <u>System</u>, <u>Environment</u> and <u>Country</u> must be unique.</p>\") "); 
-        SQLS.append(", ('testdatalib', 'group','','en','Group', \"<p>Name that groups entries that are at some extent correlated. It is an <b>optional</b> attribute.</p>\") "); 
-        SQLS.append(", ('testdatalib', 'type','','en','Type', \"<p>Entry Type - Cerberus allows the definition of three types: STATIC, SQL and SOAP.</p><table border=\'1\'> <tr><th class=\'ex\'>Type</th><th class=\'ex\'>Description</th></tr> <tr><td>STATIC</td><td>Static test data - in each execution the values used by the test cases do not vary.</td></tr> <tr><td>SQL</td><td> Test data obtained from a SQL execution – values depend on what is stored in the database.</td></tr> <tr><td>SOAP</td><td>Test data obtained from a SOAP call – values depend on the web service implementation.</td></tr> </table>\") "); 
-        SQLS.append(", ('testdatalib', 'database','','en','Database', \"<p>Specifies the database where the <i>script</i> attribute should be executed. </p><p><u>Property Type:</u> SQL</p>\") "); 
-        SQLS.append(", ('testdatalib', 'script','','en','Script', \"<p>SQL commands that should be executed to retrieve test data.</p><p><u>Property Type:</u> SQL</p><p><u>Allows the usage of other properties: </u>Yes</p><p>Examples:</p><table><tr><td>select * from table;</td></tr><tr><td>select * from table where column = %COLUMN%;</td></tr></table>\") "); 
-        SQLS.append(", ('testdatalib', 'servicepath','','en','Service Path', \"<p>Location of the service.</p><p><u>Property Type:</u> SOAP</p><p><u>Allows the usage of other properties: </u>Yes</p><p>Examples:</p><table><tr><td>http://mydomain/mywebservicelocation</td></tr><tr><td>http://%MY_DYNAMIC_IP%/mywebservicelocation</td></tr><tr><td>%LOCATION%</td></tr></table><p><b>Note:</b> Users must specify absolute paths.</p>\") "); 
-        SQLS.append(", ('testdatalib', 'method','','en','Method', \"<p>Method that is invoked by the SOAP request/call.</p><p><u>Property Type:</u> SOAP</p><p><u>Allows the usage of other properties: </u>Yes</p><p>Examples:</p><table><tr><td>MYMETHOD_REQUEST</td></tr><tr><td>%METHOD_NAME%</td></tr></table><p><b>Note: </b>SOAP Action.</p>\") "); 
-        SQLS.append(", ('testdatalib', 'envelope','','en','Envelope', \"<p>Envelope that should be sent in the SOAP request.</p><p><u>Property Type:</u> SOAP</p><p><u>Allows the usage of other properties: </u>Yes</p>\") "); 
-        SQLS.append(", ('testdatalib', 'description','','en','Description', \"<p>Textual description of the entry.</p>\") "); 
-        SQLS.append(", ('testdatalib', 'actions','','en','Actions', \"<p> List of available actions for the current user: </p><p><table border=\'1\'><tr><th class=\'ex\'>Button</th><th class=\'ex\'>Function</th><th class=\'ex\'>Description</th></tr><tr><td><span class=\'glyphicon glyphicon-pencil\'></span></td><td>Edit Entry</td><td>Allows the update of the library entry: system, environment, country, type, group, database, script, method, service path, envelope and description. The name is not editable.</td></tr><tr><td><span class=\'glyphicon glyphicon-trash\'></span></td><td>Delete Entry</td><td>Allows the deletion of a library entry (and its sub-data entries). Only the entries that are not being used are possible to be deleted. </td></tr> <tr><td><span class=\'glyphicon glyphicon-list-alt\'></span></td><td>Edit Sub-Data Entries</td><td>Allows the management of the sub-data set specified for the library entry. </td></tr><tr><td>TC</td><td>Get List of test cases that use this entry</td><td>Allows the visualisation of the test cases that are currently using the library entry.</td></tr></table></p>  \") "); 
-        SQLS.append(", ('testdatalib', 'actions_nopermissions','','en','Actions', \"<p> List of available actions for the current user: </p><p><table border=\'1\'><tr><th class=\'ex\'>Button</th><th class=\'ex\'>Function</th><th class=\'ex\'>Description</th></tr><tr><td><span class=\'glyphicon glyphicon-list-alt\'></span></td><td>Sub-Data Entries</td><td>Allows the visualisation of the sub-data set specified for the library entry. </td></tr><tr><td>TC</td><td>Get list of test cases that use this entry</td><td>Allows the visualisation of the test cases that are currently using the library entry.</td></tr></table></p>  \") "); 
-        SQLS.append(", ('testdatalibdata', 'subData','','en','Sub-data ', \"<p>Unique name for a sub-data entry. For a test data library entry, this value should be unique.</p>\") "); 
-        SQLS.append(", ('testdatalibdata', 'value','','en','Value', \"<p>STATIC value.</p>\") "); 
-        SQLS.append(", ('testdatalibdata', 'parsingAnswer','','en','Parsing Answer', \"<p>XPath expression that allows the user to parse data from the SOAP response.</p>\") "); 
-        SQLS.append(", ('testdatalibdata', 'column','','en','Column', \"<p>Column name representing the value that should be obtained after executing a SQL instruction (select).</p>\") "); 
-        SQLS.append(", ('testdatalibdata', 'description','','en','Description', \"<p>Textual description for the sub-data entry.</p>\") "); 
-
+        SQLS = new StringBuilder();
+        SQLS.append("INSERT INTO `documentation` VALUES ");
+        SQLS.append("('page_global', 'btn_cancel','','en','Cancel', \"\") ");
+        SQLS.append(", ('page_global', 'btn_add','','en','Add', \"\") ");
+        SQLS.append(", ('page_global', 'unexpected_error_message','','en','Unable to perform the task. An unexpected error has happened!', \"\") ");
+        SQLS.append(", ('page_global', 'processing','','en','Processing…', \"\") ");
+        SQLS.append(", ('page_global', 'invalid_extension_message','','en','Please select a file with the extension ', \"\") ");
+        SQLS.append(", ('page_global', 'tooltip_delete_item','','en','This item will be removed from the database', \"\") ");
+        SQLS.append(", ('page_global', 'tooltip_mark_remove','','en','Mark item to be removed from the database', \"\") ");
+        SQLS.append(", ('page_global', 'lbl_all','','en','All', \"\") ");
+        SQLS.append(", ('page_testcase', 'tooltip_select_entry','','en','Select an entry from library', \"\") ");
+        SQLS.append(", ('page_testcase_m_listtestdatalib', 'tooltip_choose_entry','','en','Choose entry', \"\") ");
+        SQLS.append(", ('page_testcase_m_listtestdatalib', 'title','','en','Select Test Data Library Entry', \"\") ");
+        SQLS.append(", ('page_testcase_m_listtestdatalib', 'actions','','en','Actions', \"<p> List of available actions for the current user: </p><p><table border=\'1\'><tr><th class=\'ex\'>Button</th><th class=\'ex\'>Function</th><th class=\'ex\'>Description</th></tr><tr><td><span class=\'glyphicon glyphicon-hand-up\'></span></td><td>Select entry</td><td>Allows the user to select an entry that will be set in the \'value\' textarea for the current property.</td></tr></table></p>  \") ");
+        SQLS.append(", ('page_testdatalib', 'btn_create','','en','Create New Entry', \"\") ");
+        SQLS.append(", ('page_testdatalib', 'btn_import','','en','Import from XML file', \"\") ");
+        SQLS.append(", ('page_testdatalib', 'title','','en','Test Data Library', \"<p>The <u>Test Data Library</u> is a repository of test data that centralises and eases the Test Data Management process. Additionally, it eases the creation of test cases because it allows the reuse of data that is recurrently defined. </p> <p>Cerberus allows the definition of three types of entries: <b>STATIC</b>, <b>SQL</b> and <b>SOAP</b>.</p><p>The definition of each library entry comprises two steps: <ul><li>The definition of the library entry. </li><li>The definition of its sub-data entries.</li></ul></p>\") ");
+        SQLS.append(", ('page_testdatalib', 'page_title','','en','Test Data Library', \"\") ");
+        SQLS.append(", ('page_testdatalib', 'tooltip_gettestcases','','en','Get list of test cases that use this entry.', \"\") ");
+        SQLS.append(", ('page_testdatalib', 'tooltip_editentry','','en','Edit entry.', \"\") ");
+        SQLS.append(", ('page_testdatalib', 'tooltip_delete','','en','Delete entry.', \"\") ");
+        SQLS.append(", ('page_testdatalib', 'tooltip_editsubdata','','en','Edit sub-data entries.', \"\") ");
+        SQLS.append(", ('page_testdatalib', 'tooltip_viewsubdata','','en','View sub-data entries.', \"\") ");
+        SQLS.append(", ('page_testdatalib', 'empty_name_message','','en','Please specify the name of the entry!', \"\") ");
+        SQLS.append(", ('page_testdatalib', 'duplicated_message','','en','Please check the subdata entries. There are entries with duplicated names, a total of: ', \"\") ");
+        SQLS.append(", ('page_testdatalib', 'empty_subdata_message','','en','Please check the subdata entries. There are entries without sub-data name, a total of: ', \"\") ");
+        SQLS.append(", ('page_testdatalib_delete', 'title','','en','Delete Test Data Library Entry', \"\") ");
+        SQLS.append(", ('page_testdatalib_delete', 'subdata_msg','','en','and its sub-data entries', \"\") ");
+        SQLS.append(", ('page_testdatalib_m_createlib', 'title','','en','Create New Test Data Library Entry', \"\") ");
+        SQLS.append(", ('page_testdatalib_m_createlib', 'm_tab1_text','','en','Entry', \"\") ");
+        SQLS.append(", ('page_testdatalib_m_createlib', 'm_tab2_text','','en','Sub-data ', \"\") ");
+        SQLS.append(", ('page_testdatalib_m_createlib', 'm_tab2_text_entries','','en','entries', \"\") ");
+        SQLS.append(", ('page_testdatalib_m_createlib', 'lbl_dropdown_help','','en','-- select to enter manually new group --', \"\") ");
+        SQLS.append(", ('page_testdatalib_m_createlib', 'link_add_new','','en','Add new', \"\") ");
+        SQLS.append(", ('page_testdatalib_m_createlib', 'link_delete_all','','en','Delete all', \"\") ");
+        SQLS.append(", ('page_testdatalib_m_createlib', 'link_add_new_title','','en','Add a new row in the table to create a new sub-data entry.', \"\") ");
+        SQLS.append(", ('page_testdatalib_m_createlib', 'link_delete_all_title','','en','Deletes all sub-data entries in the table.', \"\") ");
+        SQLS.append(", ('page_testdatalib_m_createupdatelib', 'lbl_choose_group','','en','Choose an existing group', \"<p>Group is a name that associates entries that are at some extent correlated. This options allows the user to select a name that was previously used to group other library entries from the selected type.</p> \") ");
+        SQLS.append(", ('page_testdatalib_m_createupdatelib', 'lbl_enter_group','','en','or enter new group', \"<p>Group is a name that associates entries that are at some extent correlated. This options allows the user to enter a new name that can be used to group entries from the selected type.</p> \") ");
+        SQLS.append(", ('page_testdatalib_m_gettestcases', 'title','','en','List of test cases affected by this entry', \"\") ");
+        SQLS.append(", ('page_testdatalib_m_gettestcases', 'group_title','','en','Test cases affected by this entry', \"\") ");
+        SQLS.append(", ('page_testdatalib_m_gettestcases', 'nrTests','','en','#tests: ', \"\") ");
+        SQLS.append(", ('page_testdatalib_m_gettestcases', 'nrTestCases','','en','#test cases:', \"\") ");
+        SQLS.append(", ('page_testdatalib_m_gettestcases', 'nrProperties','','en','#properties:', \"\") ");
+        SQLS.append(", ('page_testdatalib_m_listtestdatalibdata', 'title','','en','List of sub-data entries', \"\") ");
+        SQLS.append(", ('page_testdatalib_m_managetestdatalibdata', 'title','','en','Manage list of sub-data entries', \"\") ");
+        SQLS.append(", ('page_testdatalib_m_managetestdatalibdata', 'link_add_new','','en','Add new sub-data', \"\") ");
+        SQLS.append(", ('page_testdatalib_m_managetestdatalibdata', 'link_add_new_title','','en','Add a new row in the list of sub-data entries.', \"\") ");
+        SQLS.append(", ('page_testdatalib_m_managetestdatalibdata', 'actions','','en','Actions', \"<p> List of available actions  for the current user: </p><p><table border=\'1\'><tr><th class=\'ex\'>Button</th><th class=\'ex\'>Function</th><th class=\'ex\'>Description</th></tr><tr><td><span class=\'glyphicon glyphicon-trash\'></span></span></td><td>Delete</td><td>Allows the user to delete the sub-data entry. If the sub-data entry is a new, then it will be removed from the GUI. If the sub-data entry was loaded from the database, then it will be marked as to be deleted from the database.</td></tr><tr><td><span class=\'glyphicon glyphicon-remove\'></span></td><td>Mark to be deleted</td><td>Marks the sub-data entry to be deleted from the database.</td></tr></table></p>\") ");
+        SQLS.append(", ('page_testdatalib_m_updatelib', 'title','','en','Edit Test Data Library Entry', \"\") ");
+        SQLS.append(", ('testdatalib', 'testdatalibid','','en','ID', \"<p>Unique identifier of the test data library entry</p>\") ");
+        SQLS.append(", ('testdatalib', 'name','','en','Name', \"<p>Name of the entry. It is a <b>mandatory</b> attribute.</p><p><b><u>Note</u></b>: The combination of <u>Name</u>, <u>System</u>, <u>Environment</u> and <u>Country</u> must be unique.</p>\") ");
+        SQLS.append(", ('testdatalib', 'system','','en','System', \"<p>System where the entry is available. If not specified, then the property applies to ALL systems.</p><p><b><u>Note</u></b>: The combination of <u>Name</u>, <u>System</u>, <u>Environment</u> and <u>Country</u> must be unique.</p>\") ");
+        SQLS.append(", ('testdatalib', 'environment','','en','Environment', \"<p>Environment where the entry is available. If not specified, then the property applies to ALL environments.</p><p><b><u>Note</u></b>: The combination of <u>Name</u>, <u>System</u>, <u>Environment</u> and <u>Country</u> must be unique.</p>\") ");
+        SQLS.append(", ('testdatalib', 'country','','en','Country', \"<p>Country where the entry is available. If not specified, then the property applies to ALL countries. </p><p><b><u>Note</u></b>:The combination of <u>Name</u>, <u>System</u>, <u>Environment</u> and <u>Country</u> must be unique.</p>\") ");
+        SQLS.append(", ('testdatalib', 'group','','en','Group', \"<p>Name that groups entries that are at some extent correlated. It is an <b>optional</b> attribute.</p>\") ");
+        SQLS.append(", ('testdatalib', 'type','','en','Type', \"<p>Entry Type - Cerberus allows the definition of three types: STATIC, SQL and SOAP.</p><table border=\'1\'> <tr><th class=\'ex\'>Type</th><th class=\'ex\'>Description</th></tr> <tr><td>STATIC</td><td>Static test data - in each execution the values used by the test cases do not vary.</td></tr> <tr><td>SQL</td><td> Test data obtained from a SQL execution – values depend on what is stored in the database.</td></tr> <tr><td>SOAP</td><td>Test data obtained from a SOAP call – values depend on the web service implementation.</td></tr> </table>\") ");
+        SQLS.append(", ('testdatalib', 'database','','en','Database', \"<p>Specifies the database where the <i>script</i> attribute should be executed. </p><p><u>Property Type:</u> SQL</p>\") ");
+        SQLS.append(", ('testdatalib', 'script','','en','Script', \"<p>SQL commands that should be executed to retrieve test data.</p><p><u>Property Type:</u> SQL</p><p><u>Allows the usage of other properties: </u>Yes</p><p>Examples:</p><table><tr><td>select * from table;</td></tr><tr><td>select * from table where column = %COLUMN%;</td></tr></table>\") ");
+        SQLS.append(", ('testdatalib', 'servicepath','','en','Service Path', \"<p>Location of the service.</p><p><u>Property Type:</u> SOAP</p><p><u>Allows the usage of other properties: </u>Yes</p><p>Examples:</p><table><tr><td>http://mydomain/mywebservicelocation</td></tr><tr><td>http://%MY_DYNAMIC_IP%/mywebservicelocation</td></tr><tr><td>%LOCATION%</td></tr></table><p><b>Note:</b> Users must specify absolute paths.</p>\") ");
+        SQLS.append(", ('testdatalib', 'method','','en','Method', \"<p>Method that is invoked by the SOAP request/call.</p><p><u>Property Type:</u> SOAP</p><p><u>Allows the usage of other properties: </u>Yes</p><p>Examples:</p><table><tr><td>MYMETHOD_REQUEST</td></tr><tr><td>%METHOD_NAME%</td></tr></table><p><b>Note: </b>SOAP Action.</p>\") ");
+        SQLS.append(", ('testdatalib', 'envelope','','en','Envelope', \"<p>Envelope that should be sent in the SOAP request.</p><p><u>Property Type:</u> SOAP</p><p><u>Allows the usage of other properties: </u>Yes</p>\") ");
+        SQLS.append(", ('testdatalib', 'description','','en','Description', \"<p>Textual description of the entry.</p>\") ");
+        SQLS.append(", ('testdatalib', 'actions','','en','Actions', \"<p> List of available actions for the current user: </p><p><table border=\'1\'><tr><th class=\'ex\'>Button</th><th class=\'ex\'>Function</th><th class=\'ex\'>Description</th></tr><tr><td><span class=\'glyphicon glyphicon-pencil\'></span></td><td>Edit Entry</td><td>Allows the update of the library entry: system, environment, country, type, group, database, script, method, service path, envelope and description. The name is not editable.</td></tr><tr><td><span class=\'glyphicon glyphicon-trash\'></span></td><td>Delete Entry</td><td>Allows the deletion of a library entry (and its sub-data entries). Only the entries that are not being used are possible to be deleted. </td></tr> <tr><td><span class=\'glyphicon glyphicon-list-alt\'></span></td><td>Edit Sub-Data Entries</td><td>Allows the management of the sub-data set specified for the library entry. </td></tr><tr><td>TC</td><td>Get List of test cases that use this entry</td><td>Allows the visualisation of the test cases that are currently using the library entry.</td></tr></table></p>  \") ");
+        SQLS.append(", ('testdatalib', 'actions_nopermissions','','en','Actions', \"<p> List of available actions for the current user: </p><p><table border=\'1\'><tr><th class=\'ex\'>Button</th><th class=\'ex\'>Function</th><th class=\'ex\'>Description</th></tr><tr><td><span class=\'glyphicon glyphicon-list-alt\'></span></td><td>Sub-Data Entries</td><td>Allows the visualisation of the sub-data set specified for the library entry. </td></tr><tr><td>TC</td><td>Get list of test cases that use this entry</td><td>Allows the visualisation of the test cases that are currently using the library entry.</td></tr></table></p>  \") ");
+        SQLS.append(", ('testdatalibdata', 'subData','','en','Sub-data ', \"<p>Unique name for a sub-data entry. For a test data library entry, this value should be unique.</p>\") ");
+        SQLS.append(", ('testdatalibdata', 'value','','en','Value', \"<p>STATIC value.</p>\") ");
+        SQLS.append(", ('testdatalibdata', 'parsingAnswer','','en','Parsing Answer', \"<p>XPath expression that allows the user to parse data from the SOAP response.</p>\") ");
+        SQLS.append(", ('testdatalibdata', 'column','','en','Column', \"<p>Column name representing the value that should be obtained after executing a SQL instruction (select).</p>\") ");
+        SQLS.append(", ('testdatalibdata', 'description','','en','Description', \"<p>Textual description for the sub-data entry.</p>\") ");
         SQLInstruction.add(SQLS.toString());
+
+        // Increase log table limitation.
+        //-- ------------------------ 613
+        SQLS = new StringBuilder();
+        SQLS.append("ALTER TABLE `logevent` CHANGE COLUMN `LogEventID` `LogEventID` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT ;");
+        SQLInstruction.add(SQLS.toString());
+
+        // Homogenise column sizes.
+        //-- ------------------------ 614
+        SQLS = new StringBuilder();
+        SQLS.append("ALTER TABLE `testcaseexecutionqueue` ");
+        SQLS.append("CHANGE COLUMN `Robot` `Robot` VARCHAR(100) NULL DEFAULT NULL ,");
+        SQLS.append("CHANGE COLUMN `BrowserVersion` `BrowserVersion` VARCHAR(45) NULL DEFAULT NULL ;");
+        SQLInstruction.add(SQLS.toString());
+
+        // Homogenise column sizes.
+        //-- ------------------------ 615
+        SQLS = new StringBuilder();
+        SQLS.append("ALTER TABLE `testcaseexecution` ");
+        SQLS.append("CHANGE COLUMN `Browser` `Browser` VARCHAR(45) NULL DEFAULT NULL ,");
+        SQLS.append("CHANGE COLUMN `Version` `Version` VARCHAR(45) NOT NULL DEFAULT '' ,");
+        SQLS.append("CHANGE COLUMN `Platform` `Platform` VARCHAR(45) NOT NULL DEFAULT '' ,");
+        SQLS.append("CHANGE COLUMN `BrowserFullVersion` `BrowserFullVersion` VARCHAR(200) NULL DEFAULT '' ;");
+        SQLInstruction.add(SQLS.toString());
+
+        // Change Deploy Type Action on delete to avoid cascade All Applications and TestCases.
+        //-- ------------------------ 616-617
+        SQLS = new StringBuilder();
+        SQLS.append("ALTER TABLE `application` ");
+        SQLS.append("DROP FOREIGN KEY `FK_application_01`;");
+        SQLInstruction.add(SQLS.toString());
+        SQLS = new StringBuilder();
+        SQLS.append("ALTER TABLE `application` ");
+        SQLS.append("ADD CONSTRAINT `FK_application_01`");
+        SQLS.append("  FOREIGN KEY (`deploytype`) REFERENCES `deploytype` (`deploytype`) ON DELETE SET NULL ON UPDATE CASCADE;");
+        SQLInstruction.add(SQLS.toString());
+
         return SQLInstruction;
     }
 

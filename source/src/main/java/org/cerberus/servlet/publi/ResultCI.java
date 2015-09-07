@@ -62,7 +62,7 @@ public class ResultCI extends HttpServlet {
          * Adding Log entry.
          */
         ILogEventService logEventService = appContext.getBean(LogEventService.class);
-        logEventService.insertLogEventPublicCalls("/ResultCI", "CALL", "ResultCIV0 called : " + request.getRequestURL(), request);
+        logEventService.createPublicCalls("/ResultCI", "CALL", "ResultCIV0 called : " + request.getRequestURL(), request);
 
         String tag = policy.sanitize(request.getParameter("tag"));
 
@@ -200,7 +200,7 @@ public class ResultCI extends HttpServlet {
                 out.print(result);
 
                 // Log the result with calculation detail.
-                logEventService.insertLogEventPublicCalls("/ResultCI", "CALLRESULT", "ResultCI calculated with result [" + result + "] : " + nbkop1 + "*" + pond1 + " + " + nbkop2 + "*" + pond2 + " + " + nbkop3 + "*" + pond3 + " + " + nbkop4 + "*" + pond4 + " = " + resultCal, request);
+                logEventService.createPublicCalls("/ResultCI", "CALLRESULT", "ResultCI calculated with result [" + result + "] : " + nbkop1 + "*" + pond1 + " + " + nbkop2 + "*" + pond2 + " + " + nbkop3 + "*" + pond3 + " + " + nbkop4 + "*" + pond4 + " = " + resultCal, request);
 
             } else {
                 // In case of errors, we display the help message.

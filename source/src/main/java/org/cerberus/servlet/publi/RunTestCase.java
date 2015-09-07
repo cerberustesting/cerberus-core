@@ -118,7 +118,7 @@ public class RunTestCase extends HttpServlet {
          * Adding Log entry.
          */
         ILogEventService logEventService = appContext.getBean(LogEventService.class);
-        logEventService.insertLogEventPublicCalls("/RunTestCase", "CALL", "RunTestCaseV0 called : " + request.getRequestURL(), request);
+        logEventService.createPublicCalls("/RunTestCase", "CALL", "RunTestCaseV0 called : " + request.getRequestURL(), request);
 
         PolicyFactory policy = Sanitizers.FORMATTING.and(Sanitizers.LINKS);
 

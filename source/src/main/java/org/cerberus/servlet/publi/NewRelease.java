@@ -73,7 +73,7 @@ public class NewRelease extends HttpServlet {
          * Adding Log entry.
          */
         ILogEventService logEventService = appContext.getBean(LogEventService.class);
-        logEventService.insertLogEventPublicCalls("/NewRelease", "CALL", "NewReleaseV0 called : " + request.getRequestURL(), request);
+        logEventService.createPublicCalls("/NewRelease", "CALL", "NewReleaseV0 called : " + request.getRequestURL(), request);
 
         IApplicationService MyApplicationService = appContext.getBean(ApplicationService.class);
         IUserService MyUserService = appContext.getBean(UserService.class);
@@ -117,7 +117,7 @@ public class NewRelease extends HttpServlet {
             boolean error = false;
 
             // Checking the parameter validity. If application has been entered, does it exist ?
-            if (!application.equalsIgnoreCase("") && !MyApplicationService.isApplicationExist(application)) {
+            if (!application.equalsIgnoreCase("") && !MyApplicationService.exist(application)) {
                 out.println("Error - Application does not exist  : " + application);
                 error = true;
             }
@@ -132,7 +132,7 @@ public class NewRelease extends HttpServlet {
             }
 
             // Checking the parameter validity. If project has been entered, does it exist ?
-            if (!project.equalsIgnoreCase("") && !MyProjectService.isProjectExist(project)) {
+            if (!project.equalsIgnoreCase("") && !MyProjectService.exist(project)) {
                 out.println("Warning - Project does not exist : " + project);
             }
 

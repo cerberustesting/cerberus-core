@@ -35,33 +35,33 @@ public class DeployTypeService implements IDeployTypeService {
     private IDeployTypeDAO deployTypeDAO;
 
     @Override
-    public AnswerItem findDeployTypeByKey(String deployType) {
-        return deployTypeDAO.findDeployTypeByKey(deployType);
+    public AnswerItem readByKey(String deployType) {
+        return deployTypeDAO.readByKey(deployType);
     }
 
     @Override
-    public AnswerList findAllDeployType() {
-        return deployTypeDAO.findAllDeployType();
+    public AnswerList readAll() {
+        return deployTypeDAO.readAll();
     }
 
     @Override
-    public AnswerList findDeployTypeByCriteria(int startPosition, int length, String columnName, String sort, String searchParameter, String string) {
-        return deployTypeDAO.findDeployTypeByCriteria(startPosition, length, columnName, sort, searchParameter, string);
+    public AnswerList readByCriteria(int startPosition, int length, String columnName, String sort, String searchParameter, String string) {
+        return deployTypeDAO.readByCriteria(startPosition, length, columnName, sort, searchParameter, string);
     }
 
     @Override
-    public Answer createDeployType(DeployType deployType) {
-        return deployTypeDAO.createDeployType(deployType);
+    public Answer create(DeployType deployType) {
+        return deployTypeDAO.create(deployType);
     }
 
     @Override
-    public Answer deleteDeployType(DeployType deployType) {
-        return deployTypeDAO.deleteDeployType(deployType);
+    public Answer delete(DeployType deployType) {
+        return deployTypeDAO.delete(deployType);
     }
 
     @Override
-    public Answer updateDeployType(DeployType deployType) {
-        return deployTypeDAO.updateDeployType(deployType);
+    public Answer update(DeployType deployType) {
+        return deployTypeDAO.update(deployType);
     }
 
 }

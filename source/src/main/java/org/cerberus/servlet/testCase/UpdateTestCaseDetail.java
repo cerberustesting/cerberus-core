@@ -68,14 +68,13 @@ import org.springframework.web.util.HtmlUtils;
 public class UpdateTestCaseDetail extends HttpServlet {
 
     /**
-     * Processes requests for both HTTP
-     * <code>GET</code> and
-     * <code>POST</code> methods.
+     * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
+     * methods.
      *
-     * @param request  servlet request
+     * @param request servlet request
      * @param response servlet response
      * @throws ServletException if a servlet-specific error occurs
-     * @throws IOException      if an I/O error occurs
+     * @throws IOException if an I/O error occurs
      */
     public String changeStringDelimiter(String s) {
 
@@ -84,7 +83,7 @@ public class UpdateTestCaseDetail extends HttpServlet {
 
     @Override
     protected void doGet(HttpServletRequest request,
-                         HttpServletResponse response) throws ServletException, IOException {
+            HttpServletResponse response) throws ServletException, IOException {
         try {
             // response.setContentType("text/html;charset=UTF-8");
             this.processRequest(request, response);
@@ -95,7 +94,7 @@ public class UpdateTestCaseDetail extends HttpServlet {
 
     @Override
     protected void doPost(HttpServletRequest request,
-                          HttpServletResponse response) throws ServletException, IOException {
+            HttpServletResponse response) throws ServletException, IOException {
         try {
             // response.setContentType("text/html;charset=UTF-8");
             this.processRequest(request, response);
@@ -143,16 +142,16 @@ public class UpdateTestCaseDetail extends HttpServlet {
     }
 
     public String getStringParameter(String parameter,
-                                     HttpServletRequest request) {
+            HttpServletRequest request) {
 
         if (request.getParameter(parameter) != null) {
             return request.getParameter(parameter);
         }
         return "";
     }
-    
+
     public String[] getStringTable(String parameter, HttpServletRequest request) {
-    	return getStringTable(parameter, request, false);
+        return getStringTable(parameter, request, false);
     }
 
     public String[] getStringTable(String parameter, HttpServletRequest request, boolean toEscape) {
@@ -167,9 +166,9 @@ public class UpdateTestCaseDetail extends HttpServlet {
 //            System.out.println("Properties Values for : " + request.getParameter(parameter));
             String[] parameters = request.getParameterValues(parameter);
             if (toEscape) {
-            	for (int i = 0; i < parameters.length; i++) {
-            		parameters[i] = HtmlUtils.htmlEscape(parameters[i]);
-            	}
+                for (int i = 0; i < parameters.length; i++) {
+                    parameters[i] = HtmlUtils.htmlEscape(parameters[i]);
+                }
             }
             return parameters;
 
@@ -186,18 +185,18 @@ public class UpdateTestCaseDetail extends HttpServlet {
         DatabaseSpring database = appContext.getBean(DatabaseSpring.class);
         ITestCaseCountryPropertiesService propertiesService = appContext.getBean(ITestCaseCountryPropertiesService.class);
         IFactoryTestCaseCountryProperties propertiesFactory = appContext.getBean(IFactoryTestCaseCountryProperties.class);
-                
+
         Connection connection = database.connect();
         try {
             Statement stmt4 = connection.createStatement();
             try {
-                                                                                
-            /*
-             * PROPERTIES
-             */
-            /*
-             * Get Test, TestCase and Country to update
-             */
+
+                /*
+                 * PROPERTIES
+                 */
+                /*
+                 * Get Test, TestCase and Country to update
+                 */
                 String test_testcase_no_format_prop = this.getStringParameter(
                         "testcase_hidden", request);
                 this.getStringParameter("Test", request);
@@ -205,10 +204,9 @@ public class UpdateTestCaseDetail extends HttpServlet {
                 String country_list_no_format = this.getStringParameter(
                         "CountryList", request);
 
-            /*
-             * Properties Insert/Update
-             */
-
+                /*
+                 * Properties Insert/Update
+                 */
                 String[] testcase_properties_delete = request.getParameterValues("properties_delete");
                 // this.getStringTable("old_property_hidden", request);
                 // String[] testcase_properties_countr_list = this.getStringTable(
@@ -240,16 +238,16 @@ public class UpdateTestCaseDetail extends HttpServlet {
                 String[] testcase_properties_database = this.getStringTable(
                         "properties_dtb", request);
 
-            /*
-             * 0 : Test 1 : TestCase
-             */
+                /*
+                 * 0 : Test 1 : TestCase
+                 */
                 String[] test_testcase_format_prop = new String[]{"", ""};
                 test_testcase_format_prop = test_testcase_no_format_prop.split(" - ");
                 String[] country_list = country_list_no_format.split(" - ");
 
-            /*
-             * Properties
-             */
+                /*
+                 * Properties
+                 */
                 List<String[]> testcase_properties_propertycountry = new ArrayList<String[]>();
                 testcase_properties_propertycountry.add(testcase_properties_country);
 
@@ -266,7 +264,6 @@ public class UpdateTestCaseDetail extends HttpServlet {
 
                 List<String[]> countr_list = new ArrayList<String[]>();
                 countr_list.add(testcase_properties_countr_list);
-
 
                 // To Delete the country unselected
                 Collection<String> listOne = new ArrayList<String>();
@@ -395,7 +392,7 @@ public class UpdateTestCaseDetail extends HttpServlet {
                                                 String value2 = testcase_properties_value2[i];
                                                 String type = testcase_properties_type[i];
                                                 String dtb = testcase_properties_database[i];
-                                                
+
                                                 TestCaseCountryProperties tccp = propertiesFactory.create(test, testcase, country, property, type, dtb, value1, value2, length, rowlimit, nature);
 
                                                 propertiesService.updateTestCaseCountryProperties(tccp);
@@ -403,8 +400,8 @@ public class UpdateTestCaseDetail extends HttpServlet {
                                             } else // the country property does'nt extist, make an
                                             // insert :
                                             { /*
-                                                * Insert new rows
-                                                */
+                                                 * Insert new rows
+                                                 */
 
                                                 String test = test_testcase_format_prop[0];
                                                 String testcase = test_testcase_format_prop[1];
@@ -417,7 +414,7 @@ public class UpdateTestCaseDetail extends HttpServlet {
                                                 String value2 = testcase_properties_value2[i];
                                                 String type = testcase_properties_type[i];
                                                 String dtb = testcase_properties_database[i];
-                                                
+
                                                 TestCaseCountryProperties tccp = propertiesFactory.create(test, testcase, country, property, type, dtb, value1, value2, length, rowlimit, nature);
 
                                                 propertiesService.insertTestCaseCountryProperties(tccp);
@@ -447,20 +444,20 @@ public class UpdateTestCaseDetail extends HttpServlet {
                                 // and the property:
                                 if (testcase_properties_propertyrow[i].equals(testcase_country[0])) {
                                     String test = test_testcase_format_prop[0];
-                                                String testcase = test_testcase_format_prop[1];
-                                                String country = testcase_country[1];
-                                                String property = testcase_properties_property[i];
-                                                String nature = testcase_properties_nature[i];
-                                                int rowlimit = Integer.parseInt(testcase_properties_rowlimit[i]);
-                                                int length = Integer.parseInt(testcase_properties_length[i]);
-                                                String value1 = testcase_properties_value[i];
-                                                String value2 = testcase_properties_value2[i];
-                                                String type = testcase_properties_type[i];
-                                                String dtb = testcase_properties_database[i];
-                                                
-                                                TestCaseCountryProperties tccp = propertiesFactory.create(test, testcase, country, property, type, dtb, value1, value2, length, rowlimit, nature);
+                                    String testcase = test_testcase_format_prop[1];
+                                    String country = testcase_country[1];
+                                    String property = testcase_properties_property[i];
+                                    String nature = testcase_properties_nature[i];
+                                    int rowlimit = Integer.parseInt(testcase_properties_rowlimit[i]);
+                                    int length = Integer.parseInt(testcase_properties_length[i]);
+                                    String value1 = testcase_properties_value[i];
+                                    String value2 = testcase_properties_value2[i];
+                                    String type = testcase_properties_type[i];
+                                    String dtb = testcase_properties_database[i];
 
-                                                propertiesService.insertTestCaseCountryProperties(tccp);
+                                    TestCaseCountryProperties tccp = propertiesFactory.create(test, testcase, country, property, type, dtb, value1, value2, length, rowlimit, nature);
+
+                                    propertiesService.insertTestCaseCountryProperties(tccp);
                                 } // Close the condition on the row number
                             } // Close the loop for (country)
                         } // Close the else condition
@@ -469,10 +466,9 @@ public class UpdateTestCaseDetail extends HttpServlet {
                     rs_Properties.close();
                 }
 
-            /*
-             * Delete Properties
-             */
-
+                /*
+                 * Delete Properties
+                 */
                 if (testcase_properties_delete != null) { // If some properties
                     // check for delete
                     Statement stmt3 = connection.createStatement();
@@ -500,25 +496,23 @@ public class UpdateTestCaseDetail extends HttpServlet {
                         + "' AND TestCase = '" + test_testcase_format_prop[1] + "' ";
                 stmt4.execute(sqlupd);
 
-
-
-            /*
-             * END OF PROPERTIES
-             */
-            /*
-             * Get Test, TestCase and Country to update
-             */
+                /*
+                 * END OF PROPERTIES
+                 */
+                /*
+                 * Get Test, TestCase and Country to update
+                 */
                 String test_testcase_no_format = this.getStringParameter(
                         "testcase_hidden", request);
                 this.getStringParameter("Test", request);
                 this.getStringParameter("TestCase", request);
 
-            /*
-             * Get TestCase Step Informations
-             */
-            /*
-             * Step Number & Description
-             */
+                /*
+                 * Get TestCase Step Informations
+                 */
+                /*
+                 * Step Number & Description
+                 */
                 String step_delete[] = request.getParameterValues("testcasestep_delete");
                 String step_id[] = this.getStringTable("testcasestep_hidden",
                         request);
@@ -529,9 +523,9 @@ public class UpdateTestCaseDetail extends HttpServlet {
                 String step_desc_toadd[] = this.getStringTable(
                         "step_description_add", request, true);
 
-            /*
-             * Step actions
-             */
+                /*
+                 * Step actions
+                 */
                 String step_action_delete[] = request.getParameterValues("actions_delete");
                 String step_number_hide[] = this.getStringTable(
                         "stepnumber_hidden", request);
@@ -545,9 +539,9 @@ public class UpdateTestCaseDetail extends HttpServlet {
                         request);
                 String step_description[] = this.getStringTable("actions_description",
                         request, true);
-            /*
-             * Get TestCase Step Controls Informations
-             */
+                /*
+                 * Get TestCase Step Controls Informations
+                 */
                 String controls_delete[] = request.getParameterValues("controls_delete");
                 String controls_step[] = this.getStringTable("controls_step",
                         request);
@@ -566,19 +560,18 @@ public class UpdateTestCaseDetail extends HttpServlet {
                 String controls_fatal[] = this.getStringTable("controls_fatal",
                         request);
 
-            /*
-             * Properties Insert/Update
-             */
-
+                /*
+                 * Properties Insert/Update
+                 */
                 String[] test_testcase_format = test_testcase_no_format.split(" - ");
 
 
-            /*
-             * Properties
-             */
-            /*
-             * Actions
-             */
+                /*
+                 * Properties
+                 */
+                /*
+                 * Actions
+                 */
                 List<String[]> testcase_actions_info = new ArrayList<String[]>();
                 testcase_actions_info.add(step_number_hide);
                 testcase_actions_info.add(step_sequence);
@@ -587,9 +580,9 @@ public class UpdateTestCaseDetail extends HttpServlet {
                 testcase_actions_info.add(step_property);
                 testcase_actions_info.add(step_description);
 
-            /*
-             * Controls
-             */
+                /*
+                 * Controls
+                 */
                 List<String[]> testcase_controls_info = new ArrayList<String[]>();
                 testcase_controls_info.add(controls_control);
                 testcase_controls_info.add(controls_controldescription);
@@ -600,12 +593,12 @@ public class UpdateTestCaseDetail extends HttpServlet {
                 testcase_controls_info.add(controls_type);
                 testcase_controls_info.add(controls_fatal);
 
-            /*
-             * Test Case Step Description
-             */
-            /*
-             * Update Test Case Step
-             */
+                /*
+                 * Test Case Step Description
+                 */
+                /*
+                 * Update Test Case Step
+                 */
                 int numberOfSteps = 0;
                 Integer steps = 0;
                 ResultSet rs_step = stmt4.executeQuery("SELECT COUNT(*) "
@@ -667,9 +660,9 @@ public class UpdateTestCaseDetail extends HttpServlet {
                     }
                 }
 
-            /*
-             * Insert Test Case Step
-             */
+                /*
+                 * Insert Test Case Step
+                 */
                 for (int i = 0; i < step_number_toadd.length; i++) {
                     if (this.formIsFill(step_number_toadd[i])
                             && this.formIsFill(step_desc_toadd[i])) {
@@ -723,14 +716,14 @@ public class UpdateTestCaseDetail extends HttpServlet {
                     }
                 }
 
-            /*
-             * Test Case Step Actions
-             */
+                /*
+                 * Test Case Step Actions
+                 */
                 for (int i = 0; i < step_number_hide.length; i++) {
 
-                /*
-                 * Select to know if need to update or insert
-                 */
+                    /*
+                     * Select to know if need to update or insert
+                     */
                     if (this.formIsFill(step_sequence[i])
                             && (step_sequence[i].length() > 0)) {
                         String sql = ("SELECT * " + " FROM testcasestepaction"
@@ -745,17 +738,17 @@ public class UpdateTestCaseDetail extends HttpServlet {
                             ITestCaseStepActionService actionService = appContext.getBean(ITestCaseStepActionService.class);
                             TestCaseStepAction tcsa = actionFactory.create(test_testcase_format[0], test_testcase_format[1], Integer.parseInt(step_number_hide[i]), Integer.parseInt(step_sequence[i]),
                                     step_action[i], step_object[i], step_property[i], step_description[i]);
-                            
+
                             if (rs_stepaction.next()) { /*
-                         * Update
-                         */
+                                 * Update
+                                 */
 
                                 actionService.updateTestCaseStepAction(tcsa);
 
-
                             } else { /*
-                         * Insert
-                         */
+                                 * Insert
+                                 */
+
                                 if (this.formIsFullFill(testcase_actions_info, i)) {
                                     actionService.insertTestCaseStepAction(tcsa);
 
@@ -767,17 +760,17 @@ public class UpdateTestCaseDetail extends HttpServlet {
                     }
                 }
 
-            /*
-             * TestCase Step Controls
-             */
-            /*
-             * Get Number of actual testcase controls
-             */
+                /*
+                 * TestCase Step Controls
+                 */
+                /*
+                 * Get Number of actual testcase controls
+                 */
                 for (int i = 0; i < controls_control.length; i++) {
 
-                /*
-                 * Select to know if need to update or insert
-                 */
+                    /*
+                     * Select to know if need to update or insert
+                     */
                     if (this.formIsFill(controls_sequence[i])
                             && (controls_sequence[i].length() > 0)) {
                         String sql = ("SELECT * " + " FROM testcasestepactioncontrol"
@@ -789,39 +782,34 @@ public class UpdateTestCaseDetail extends HttpServlet {
                         // System.out.println ( "Step Key : " + sql ) ;
                         ResultSet rs_stepactioncontrol = stmt4.executeQuery(sql);
                         try {
-                        IFactoryTestCaseStepActionControl controlFactory = appContext.getBean(IFactoryTestCaseStepActionControl.class);
-                        ITestCaseStepActionControlService controlService = appContext.getBean(ITestCaseStepActionControlService.class);
-                        TestCaseStepActionControl control = controlFactory.create(test_testcase_format[0], test_testcase_format[1], Integer.parseInt(controls_step[i]),
-                                Integer.parseInt(controls_sequence[i]), Integer.parseInt(controls_control[i]), controls_type[i], (controls_controlvalue[i]),
-                                controls_controlproperty[i], controls_fatal[i], controls_controldescription[i]);
-                        
+                            IFactoryTestCaseStepActionControl controlFactory = appContext.getBean(IFactoryTestCaseStepActionControl.class);
+                            ITestCaseStepActionControlService controlService = appContext.getBean(ITestCaseStepActionControlService.class);
+                            TestCaseStepActionControl control = controlFactory.create(test_testcase_format[0], test_testcase_format[1], Integer.parseInt(controls_step[i]),
+                                    Integer.parseInt(controls_sequence[i]), Integer.parseInt(controls_control[i]), controls_type[i], (controls_controlvalue[i]),
+                                    controls_controlproperty[i], controls_fatal[i], controls_controldescription[i]);
 
-                        if (rs_stepactioncontrol.next()) {
+                            if (rs_stepactioncontrol.next()) {
 
-                            controlService.updateTestCaseStepActionControl(control);
+                                controlService.updateTestCaseStepActionControl(control);
 
-
-                        } else {
+                            } else {
 //                        if (this.formIsFullFill(testcase_controls_info, i)) {
 
-                            controlService.insertTestCaseStepActionControl(control);
-
+                                controlService.insertTestCaseStepActionControl(control);
 
 //                        }
-                        }
-                            
+                            }
+
                         } finally {
                             rs_stepactioncontrol.close();
                         }
                     }
                 }
-                
-
-            /*
-             * DELETE
-             */
 
 
+                /*
+                 * DELETE
+                 */
                 if (step_delete != null) {
                     for (String step_to_delete : step_delete) {
                         stmt4.execute("DELETE FROM testcasestep "
@@ -832,9 +820,9 @@ public class UpdateTestCaseDetail extends HttpServlet {
                     }
                 }
 
-            /*
-             * Delete Actions
-             */
+                /*
+                 * Delete Actions
+                 */
                 if (step_action_delete != null) { // If some actions to delete
                     for (String action_to_delete : step_action_delete) { // Delete
                         // with
@@ -851,9 +839,9 @@ public class UpdateTestCaseDetail extends HttpServlet {
                     }
                 }
 
-            /*
-             * Delete Controls
-             */
+                /*
+                 * Delete Controls
+                 */
                 if (controls_delete != null) { // If controls to delete
                     for (String keys_to_delete : controls_delete) {
 
@@ -879,22 +867,17 @@ public class UpdateTestCaseDetail extends HttpServlet {
                         + "WHERE Test = '" + test_testcase_format[0] + "' "
                         + " AND TestCase = '" + test_testcase_format[1] + "' ");
 
-
                 /**
                  * Adding Log entry.
                  */
                 ILogEventService logEventService = appContext.getBean(LogEventService.class);
                 IFactoryLogEvent factoryLogEvent = appContext.getBean(FactoryLogEvent.class);
-                try {
-                    logEventService.insertLogEvent(factoryLogEvent.create(0, 0, request.getUserPrincipal().getName(), null, "/UpdateTestCaseDetail", "UPDATE", "Update testcase detail : ['" + test_testcase_format_prop[0] + "'|'" + test_testcase_format_prop[1] + "']", "", ""));
-                } catch (CerberusException ex) {
-                    Logger.getLogger(UserService.class.getName()).log(Level.ERROR, null, ex);
-                }
+                logEventService.create(factoryLogEvent.create(0, 0, request.getUserPrincipal().getName(), null, "/UpdateTestCaseDetail", "UPDATE", "Update testcase detail : ['" + test_testcase_format_prop[0] + "'|'" + test_testcase_format_prop[1] + "']", "", ""));
 
 
-            /*
-             * Redirect
-             */
+                /*
+                 * Redirect
+                 */
                 response.sendRedirect("TestCase.jsp?Load=Load&Test="
                         + test_testcase_format[0] + "&TestCase="
                         + test_testcase_format[1]);

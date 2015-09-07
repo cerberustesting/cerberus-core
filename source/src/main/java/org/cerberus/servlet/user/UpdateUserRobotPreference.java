@@ -20,17 +20,14 @@
 package org.cerberus.servlet.user;
 
 import java.io.IOException;
-import java.io.PrintWriter;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import org.apache.log4j.Level;
 import org.cerberus.entity.User;
 import org.cerberus.exception.CerberusException;
 import org.cerberus.factory.IFactoryLogEvent;
 import org.cerberus.factory.impl.FactoryLogEvent;
-import org.cerberus.log.MyLogger;
 import org.cerberus.service.ILogEventService;
 import org.cerberus.service.IUserService;
 import org.cerberus.service.impl.LogEventService;
@@ -78,11 +75,7 @@ public class UpdateUserRobotPreference extends HttpServlet {
             
             ILogEventService logEventService = appContext.getBean(LogEventService.class);
             IFactoryLogEvent factoryLogEvent = appContext.getBean(FactoryLogEvent.class);
-            try {
-                logEventService.insertLogEvent(factoryLogEvent.create(0, 0, request.getUserPrincipal().getName(), null, "/UpdateUserRobot", "UPDATE", "Update user preference for user: " + usr.getLogin(), "", ""));
-            } catch (CerberusException ex) {
-                MyLogger.log(UserService.class.getName(), Level.ERROR , ex.toString());
-            }
+            logEventService.create(factoryLogEvent.create(0, 0, request.getUserPrincipal().getName(), null, "/UpdateUserRobotPreference", "UPDATE", "Update user preference for user: " + usr.getLogin(), "", ""));
 
             response.getWriter().print(usr.getLogin());
         } catch (CerberusException myexception) {

@@ -17,7 +17,6 @@
  * You should have received a copy of the GNU General Public License
  * along with Cerberus.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package org.cerberus.servlet.buildContent;
 
 import org.apache.log4j.Logger;
@@ -40,7 +39,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
 @WebServlet(name = "AddBuildContent", urlPatterns = {"/AddBuildContent"})
-public class AddBuildContent extends HttpServlet{
+public class AddBuildContent extends HttpServlet {
 
     private static final Logger LOG = Logger.getLogger(AddBuildContent.class);
 
@@ -69,11 +68,7 @@ public class AddBuildContent extends HttpServlet{
          */
         ILogEventService logEventService = appContext.getBean(LogEventService.class);
         IFactoryLogEvent factoryLogEvent = appContext.getBean(FactoryLogEvent.class);
-        try {
-            logEventService.insertLogEvent(factoryLogEvent.create(0, 0, req.getUserPrincipal().getName(), null, "/AddBuildContent", "CREATE", "Insert BuildContent : " + brp.getRelease(), "", ""));
-        } catch (CerberusException ex) {
-            LOG.warn("Unable to register log : " + ex.getMessageError().getDescription(), ex);
-        }
+        logEventService.create(factoryLogEvent.create(0, 0, req.getUserPrincipal().getName(), null, "/AddBuildContent", "CREATE", "Insert BuildContent : " + brp.getRelease(), "", ""));
 
         resp.getWriter().print(brp.getId());
     }

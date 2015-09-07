@@ -45,9 +45,8 @@ import org.springframework.web.context.support.WebApplicationContextUtils;
 public class UpdateBuildRevisionInvariant extends HttpServlet {
 
     /**
-     * Processes requests for both HTTP
-     * <code>GET</code> and
-     * <code>POST</code> methods.
+     * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
+     * methods.
      *
      * @param request servlet request
      * @param response servlet response
@@ -59,7 +58,6 @@ public class UpdateBuildRevisionInvariant extends HttpServlet {
         String key = request.getParameter("id");
         int columnPosition = Integer.parseInt(request.getParameter("columnPosition"));
         String value = request.getParameter("value").replaceAll("'", "");
-
 
         ApplicationContext appContext = WebApplicationContextUtils.getWebApplicationContext(this.getServletContext());
         IBuildRevisionInvariantService brinvariantService = appContext.getBean(IBuildRevisionInvariantService.class);
@@ -90,19 +88,14 @@ public class UpdateBuildRevisionInvariant extends HttpServlet {
          */
         ILogEventService logEventService = appContext.getBean(LogEventService.class);
         IFactoryLogEvent factoryLogEvent = appContext.getBean(FactoryLogEvent.class);
-        try {
-            logEventService.insertLogEvent(factoryLogEvent.create(0, 0, request.getUserPrincipal().getName(), null, "/UpdateBuildRevisionInvariant", "UPDATE", "Updated build revision invariant : ['" + system + "'|'" + level + "'|'" + seq + "']", "", ""));
-        } catch (CerberusException ex) {
-            Logger.getLogger(UpdateBuildRevisionInvariant.class.getName()).log(Level.SEVERE, null, ex);
-        }
+        logEventService.create(factoryLogEvent.create(0, 0, request.getUserPrincipal().getName(), null, "/UpdateBuildRevisionInvariant", "UPDATE", "Updated build revision invariant : ['" + system + "'|'" + level + "'|'" + seq + "']", "", ""));
 
         response.getWriter().print(value);
     }
 
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
     /**
-     * Handles the HTTP
-     * <code>GET</code> method.
+     * Handles the HTTP <code>GET</code> method.
      *
      * @param request servlet request
      * @param response servlet response
@@ -120,8 +113,7 @@ public class UpdateBuildRevisionInvariant extends HttpServlet {
     }
 
     /**
-     * Handles the HTTP
-     * <code>POST</code> method.
+     * Handles the HTTP <code>POST</code> method.
      *
      * @param request servlet request
      * @param response servlet response
