@@ -54,7 +54,7 @@ function aoColumnsFunc(Columns) {
         },
         {"data": "shortDesc",
             "sName": "description",
-            "title": "shortDesc"
+            "title": "description"
         },
         {"data": "bugId",
             "sName": "bugId",
@@ -80,6 +80,7 @@ function aoColumnsFunc(Columns) {
                 }
             },
             "sClass": "center",
+//            "sName": "Env=" + Columns[i].environment + "&Country="+ Columns[i].country + "&Browser=" + Columns[i].browser,
             "mRender": function (data, type, obj) {
                 if (data !== "") {
                     var glyphClass = getRowClass(data);
@@ -97,7 +98,7 @@ function aoColumnsFunc(Columns) {
 }
 
 function loadTagFilters() {
-    var jqxhr = $.get("ReadTestCaseExecution", "action=1", "json");
+    var jqxhr = $.get("ReadTestCaseExecution", "", "json");
     $.when(jqxhr).then(function (data) {
         var messageType = getAlertType(data.messageType);
         if (messageType === "success") {
@@ -139,7 +140,6 @@ function getRowClass(status) {
 
 function loadReport() {
     var selectTag = $("#selectTag option:selected").text();
-
     //clear the old report content before reloading it
     $("#ReportByStatusTable").empty();
     $("#statusChart").empty();
@@ -147,23 +147,25 @@ function loadReport() {
     if ($("#listTable_wrapper").hasClass("initialized")) {
         $("#ListPanel .panel-body").empty();
         $("#ListPanel .panel-body").html('<table id="listTable" class="table table-hover display" name="listTable">\n\
-                                            </table><div class="marginBottom20"></div>')
+                                            </table><div class="marginBottom20"></div>');
     }
-    //configure and create the dataTable
-    var jqxhr = $.getJSON("ReadTestCaseExecution", "action=0&Tag=" + selectTag);
-    $.when(jqxhr).then(function (data) {
-        var configurations = new TableConfigurationsServerSide("listTable", "ReadTestCaseExecution?Tag=" + selectTag, "testList", aoColumnsFunc(data.Columns));
+    if (selectTag !== "") {
+        //configure and create the dataTable
+        var jqxhr = $.getJSON("ReadTestCaseExecution", "Tag=" + selectTag);
+        $.when(jqxhr).then(function (data) {
+            var configurations = new TableConfigurationsServerSide("listTable", "ReadTestCaseExecution?Tag=" + selectTag, "testList", aoColumnsFunc(data.Columns));
 
-        createDataTable(configurations);
-        $('#listTable_wrapper').not('.initialized').addClass('initialized');
-    });
+            createDataTable(configurations);
+            $('#listTable_wrapper').not('.initialized').addClass('initialized');
+        });
 
 
-    var jqxhr = $.get("GetReportData", {CampaignName: "null", Tag: selectTag}, "json");
-    $.when(jqxhr).then(function (data) {
-        loadReportByStatusTable(data);
-        loadReportByFunctionChart(data);
-    });
+        var jqxhr = $.get("GetReportData", {CampaignName: "null", Tag: selectTag}, "json");
+        $.when(jqxhr).then(function (data) {
+            loadReportByStatusTable(data);
+            loadReportByFunctionChart(data);
+        });
+    }
 }
 
 function convertData(dataset) {
