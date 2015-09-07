@@ -30,6 +30,6 @@ public interface IIdentifierService {
     
      public Identifier convertStringToIdentifier(String input);
      
-     public void checkIdentifier(String identifier, String elementType, String applicationType) throws CerberusEventException;
+     public void checkSelectOptionsIdentifier(String identifier) throws CerberusEventException;
 
      }

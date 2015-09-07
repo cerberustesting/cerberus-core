@@ -19,6 +19,7 @@
  */
 package org.cerberus.serviceEngine.impl;
 
+import java.util.Arrays;
 import org.cerberus.entity.Identifier;
 import org.cerberus.entity.MessageEvent;
 import org.cerberus.entity.MessageEventEnum;
@@ -31,8 +32,8 @@ import org.springframework.stereotype.Service;
  * @author bcivel
  */
 @Service
-public class IdentifierService implements IIdentifierService{
-    
+public class IdentifierService implements IIdentifierService {
+
     @Override
     public Identifier convertStringToIdentifier(String input) {
         Identifier result = new Identifier();
@@ -52,10 +53,15 @@ public class IdentifierService implements IIdentifierService{
     }
 
     @Override
-    public void checkIdentifier(String identifier, String elementType, String applicationType) throws CerberusEventException {
-        MessageEvent message = new MessageEvent(MessageEventEnum.ACTION_FAILED_SELECT_NO_IDENTIFIER);
-        message.setDescription(message.getDescription().replaceAll("%IDENTIFIER%", "html"));
-        
+    public void checkSelectOptionsIdentifier(String identifier) throws CerberusEventException {
+        String[] selectOptionAttributes = {"label", "value", "index", "regexLabel", "regexValue", "regexIndex"};
+
+        if (!Arrays.asList(selectOptionAttributes).contains(identifier)) {
+            MessageEvent message = new MessageEvent(MessageEventEnum.ACTION_FAILED_SELECT_NO_IDENTIFIER);
+            message.setDescription(message.getDescription().replaceAll("%IDENTIFIER%", identifier));
+            throw new CerberusEventException(message);
+        }
+
     }
-    
+
 }

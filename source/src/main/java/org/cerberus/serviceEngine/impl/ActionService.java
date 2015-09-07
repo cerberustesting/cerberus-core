@@ -617,7 +617,7 @@ public class ActionService implements IActionService {
             Identifier identifierObject = identifierService.convertStringToIdentifier(object);
             Identifier identifierProperty = identifierService.convertStringToIdentifier(property);
 
-            identifierService.checkIdentifier(identifierObject.getIdentifier(), "HTMLFIELD", "GUI");
+            identifierService.checkSelectOptionsIdentifier(identifierProperty.getIdentifier());
 
             if (tCExecution.getApplication().getType().equalsIgnoreCase("GUI")
                     || tCExecution.getApplication().getType().equalsIgnoreCase("APK")) {
