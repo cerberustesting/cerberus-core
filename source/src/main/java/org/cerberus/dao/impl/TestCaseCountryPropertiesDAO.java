@@ -21,9 +21,11 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import org.apache.commons.lang3.ArrayUtils;
 import org.apache.log4j.Level;
 import org.cerberus.dao.ITestCaseCountryPropertiesDAO;
 import org.cerberus.database.DatabaseSpring;
@@ -38,6 +40,7 @@ import org.cerberus.entity.TestCaseCountryProperties;
 import org.cerberus.exception.CerberusException;
 import org.cerberus.factory.IFactoryTestCaseCountryProperties;
 import org.cerberus.log.MyLogger;
+import org.cerberus.util.answer.Answer;
 import org.cerberus.util.answer.AnswerList;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
@@ -46,6 +49,7 @@ import org.springframework.stereotype.Repository;
  * {Insert class description here}
  *
  * @author Tiago Bernardes
+ * @author FNogueira
  * @version 1.0, 28/Dez/2012
  * @since 2.0.0
  */
@@ -677,5 +681,82 @@ public class TestCaseCountryPropertiesDAO implements ITestCaseCountryPropertiesD
         ansList.setDataList(listOfTests); 
         
         return ansList;
+    }
+
+    @Override
+    public Answer createTestCaseCountryPropertiesBatch(List<TestCaseCountryProperties> listOfPropertiesToInsert) {
+        Answer answer = new Answer();
+        MessageEvent rs = null;
+        StringBuilder query = new StringBuilder();
+        query.append("INSERT INTO testcasecountryproperties (`Test`,`TestCase`,`Country`,`Property` ,`Type`");
+        query.append(",`Database`,`Value1`,`Value2`,`Length`,`RowLimit`,`Nature`) ");
+        query.append("VALUES (?,?,?,?,?,?,?,?,?,?,?)");
+         
+        
+        Connection connection = this.databaseSpring.connect();        
+        try {
+            PreparedStatement preStat = connection.prepareStatement(query.toString());
+            try {
+                for(TestCaseCountryProperties prop: listOfPropertiesToInsert){
+                    preStat.setString(1, prop.getTest());
+                    preStat.setString(2, prop.getTestCase());
+                    preStat.setString(3, prop.getCountry());
+                    preStat.setString(4, prop.getProperty());
+                    preStat.setString(5, prop.getType());
+                    preStat.setString(6, prop.getDatabase());
+                    preStat.setString(7, prop.getValue1());
+                    preStat.setString(8, prop.getValue2());
+                    preStat.setInt(9, prop.getLength());
+                    preStat.setInt(10, prop.getRowLimit());
+                    preStat.setString(11, prop.getNature());
+                    
+                    preStat.addBatch();
+                }
+                
+                 //executes the batch         
+                preStat.executeBatch();
+
+                int affectedRows[] = preStat.executeBatch(); 
+                
+                //verify if some of the statements failed
+                boolean someFailed = ArrayUtils.contains(affectedRows, 0) || ArrayUtils.contains(affectedRows, Statement.EXECUTE_FAILED);
+
+                if(someFailed == false){
+                    rs = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
+                    rs.setDescription(rs.getDescription().replace("%ITEM%", "Property").replace("%OPERATION%", "CREATE")); 
+                }else{
+                    rs = new MessageEvent(MessageEventEnum.DATA_OPERATION_EXPECTED_ERROR);
+                    rs.setDescription(rs.getDescription().replace("%ITEM%", "Property").replace("%OPERATION%", "CREATE").
+                            replace("%REASON%", "Some problem occurred while creating the new property! "));                     
+                }
+                
+                
+            } catch (SQLException exception) {
+                rs = new MessageEvent(MessageEventEnum.DATA_OPERATION_UNEXPECTED_ERROR);
+                rs.setDescription(rs.getDescription().replace("%DESCRIPTION%", "It was not possible to update table."));                
+                MyLogger.log(TestCaseCountryPropertiesDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
+            } finally {
+                if(preStat != null){
+                    preStat.close();
+                }
+            }
+        } catch (SQLException exception) {
+            rs = new MessageEvent(MessageEventEnum.DATA_OPERATION_UNEXPECTED_ERROR);
+            rs.setDescription(rs.getDescription().replace("%DESCRIPTION%", "It was not possible to update table."));
+            MyLogger.log(TestCaseCountryPropertiesDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
+        } finally {
+            try {
+                if(!this.databaseSpring.isOnTransaction()){
+                    if(connection != null){
+                        connection.close();
+                    }
+                }
+            } catch (SQLException e) {
+                MyLogger.log(TestCaseCountryPropertiesDAO.class.getName(), Level.WARN, e.toString());
+            }
+        }
+        
+        answer.setResultMessage(rs);
+        return answer;
     }
 }

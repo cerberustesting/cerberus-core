@@ -1381,7 +1381,13 @@ function aoColumnsFuncTestDataLib() {
                 aoColumns.push({className: "width500", "sName": "Script", "title": displayDocLink(docObj.script)});
                 break;
             case 9 :
-                aoColumns.push({className: "width250", "sName": "ServicePath", "title": displayDocLink(docObj.servicepath)});
+                aoColumns.push({className: "width250", "sName": "ServicePath", "title": displayDocLink(docObj.servicepath),
+                 "mRender": function (data, type, oObj) {
+                    if(data !== ''){
+                        return "<a target = '_blank' href='"+data+"'>"+data+"</a>";//TODO:FN ver se tem caracters que precisam de ser encapsulados
+                    }
+                    return '';
+                 }});
                 break;
             case 10 :
                 aoColumns.push({className: "width250", "sName": "Method", "title": displayDocLink(docObj.method)});
