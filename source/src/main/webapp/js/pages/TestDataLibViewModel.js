@@ -22,11 +22,11 @@ $.when($.getScript("js/pages/global/global.js")).then(function () {
     /**
      * Document ready methods
      */
- 
+
     displayPageLabel();
- 
+
     $(function () {
-        
+
 
         var i = 0;
         var j = 0;
@@ -155,10 +155,10 @@ $.when($.getScript("js/pages/global/global.js")).then(function () {
         /*
          * Handles the change of the type select  when editing a test data lib entry
          */
-        $('#editTestDataLibModal #TypeSelect').change(function (){
+        $('#editTestDataLibModal #TypeSelect').change(function () {
             refreshSpecificAreasEdit();
         });
-        
+
         /**
          * Method that saves new test data lib entry
          */
@@ -317,39 +317,40 @@ $.when($.getScript("js/pages/global/global.js")).then(function () {
  * Method that translates the content of the pages with base on the user language.
  */
 function displayPageLabel() {
-    var doc = getDoc();
-    
+    var doc = new Doc();
+    var old_doc = getDoc();
+
     displayHeaderLabel(doc);
     displayGlobalLabel(doc);
-    
-    var docPage = doc.page_testdatalib;
-    $("#pageTitle").html(docPage.page_title.docLabel);
-    $("#title").html(displayDocLink(docPage.title));    
-    
-    //set translations for create testdatalib modal
-    displayCreateTestDataLibLabels(doc);   
-    displayUpdateTestDataLibLabels(doc);
-    displayManageTestDataLibDataLabels(doc);
-    displayListTestCasesLabels(doc);    
-    displayListTestDataLibDataLabels(doc);
-    displayFooter(doc); 
+
+//    var docPage = doc.page_testdatalib;
+    $("#pageTitle").html(doc.getDocLabel("page_testdatalib", "page_title"));
+    $("#title").html(doc.getDocOnline("page_testdatalib", "title"));
+//    
+//    //set translations for create testdatalib modal
+    displayCreateTestDataLibLabels(old_doc);   
+    displayUpdateTestDataLibLabels(old_doc);
+    displayManageTestDataLibDataLabels(old_doc);
+    displayListTestCasesLabels(old_doc);    
+    displayListTestDataLibDataLabels(old_doc);
+    displayFooter(doc);
 }
 
 /**
  * Applies the translations for the get list of test cases modal.
  * @param {type} doc object that contains Cerberus' documentation 
  */
-function displayUpdateTestDataLibLabels(doc){
+function displayUpdateTestDataLibLabels(doc) {
     var docTestDataLib = doc.testdatalib;
     //title 
     $("#editTestDataLibTitle").text(doc.page_testdatalib_m_updatelib.title.docLabel);
     //content
-    
+
     $("#lbl_type_edit").html(displayDocLink(docTestDataLib.type));
     $("#lbl_system_edit").html(displayDocLink(docTestDataLib.system));
     $("#lbl_environment_edit").html(displayDocLink(docTestDataLib.environment));
     $("#lbl_country_edit").html(displayDocLink(docTestDataLib.country));
-    
+
     $("#lbl_description_edit").html(displayDocLink(docTestDataLib.description));
     $("#lbl_database_edit").html(displayDocLink(docTestDataLib.database));
     $("#lbl_script_edit").html(displayDocLink(docTestDataLib.script));
@@ -358,8 +359,8 @@ function displayUpdateTestDataLibLabels(doc){
     $("#lbl_envelope_edit").html(displayDocLink(docTestDataLib.envelope));
     //buttons    
     $("#cancelTestDataLib").text(doc.page_global.btn_cancel.docLabel);
-    $("#saveTestDataLib").text(doc.page_global.buttonAdd.docLabel); 
-    
+    $("#saveTestDataLib").text(doc.page_global.buttonAdd.docLabel);
+
     var groupDoc = doc.page_testdatalib_m_createupdatelib;
     //auxiliar for group edition
     $("#lbl_choose_group_edit").html(displayDocLink(groupDoc.lbl_choose_group));
@@ -370,25 +371,25 @@ function displayUpdateTestDataLibLabels(doc){
  * Applies the translations for the get list of test cases modal.
  * @param {type} doc object that contains Cerberus' documentation 
  */
-function displayManageTestDataLibDataLabels(doc){
+function displayManageTestDataLibDataLabels(doc) {
     var docManageSubData = doc.page_testdatalib_m_managetestdatalibdata;
     $("#manageTestDataLibDataModalLabel").html(docManageSubData.title.docLabel);
-    $("#subdataActionsHeader").html(displayDocLink(docManageSubData.actions)); 
-    $("#subdataHeaderManage").html(displayDocLink(doc.testdatalibdata.subData)); 
+    $("#subdataActionsHeader").html(displayDocLink(docManageSubData.actions));
+    $("#subdataHeaderManage").html(displayDocLink(doc.testdatalibdata.subData));
     $("#subdataDescriptionManage").html(displayDocLink(doc.testdatalibdata.description));
     //subdataLabelManage will be filled depending on the type of the library entry
     $("#editSubData_addRow").text(docManageSubData.link_add_new.docLabel);
     $("#editSubData_addRow").prop("title", docManageSubData.link_add_new_title.docLabel);
     //buttons    
     $("#cancelSubDataManage").text(doc.page_global.btn_cancel.docLabel);
-    $("#saveChangesSubData").text(doc.page_global.buttonAdd.docLabel); 
+    $("#saveChangesSubData").text(doc.page_global.buttonAdd.docLabel);
 }
 
 /**
  * Applies the translations for the get list of test cases modal.
  * @param {type} doc object that contains Cerberus' documentation 
  */
-function displayListTestDataLibDataLabels(doc){ 
+function displayListTestDataLibDataLabels(doc) {
     //title
     $("#viewTestDataLibDataModalLabel").html(doc.page_testdatalib_m_listtestdatalibdata.title.docLabel);
     //table headers
@@ -400,11 +401,11 @@ function displayListTestDataLibDataLabels(doc){
     $("#closeSubDataManage").text(doc.page_global.buttonClose.docLabel);
 }
 /**
-* Applies the translations for the get list of test cases modal.
-* @param {type} doc object that contains Cerberus' documentation 
-* 
-*/
-function displayListTestCasesLabels(doc){
+ * Applies the translations for the get list of test cases modal.
+ * @param {type} doc object that contains Cerberus' documentation 
+ * 
+ */
+function displayListTestCasesLabels(doc) {
     var docGetListTC = doc.page_testdatalib_m_gettestcases;
     var docGlobal = doc.page_global;
     //title
@@ -414,12 +415,12 @@ function displayListTestCasesLabels(doc){
 }
 
 /**
-* Applies the translations for the create new library modal.
-* @param {type} doc object that contains Cerberus' documentation 
-*/
-function displayCreateTestDataLibLabels(doc){
+ * Applies the translations for the create new library modal.
+ * @param {type} doc object that contains Cerberus' documentation 
+ */
+function displayCreateTestDataLibLabels(doc) {
     var docCreate = doc.page_testdatalib_m_createlib;
-    
+
     var docTestDataLib = doc.testdatalib;
     var docTestDataLibData = doc.testdatalibdata;
     //title
@@ -429,16 +430,16 @@ function displayCreateTestDataLibLabels(doc){
     $("#cancelTestDataLibButton").text(doc.page_global.btn_cancel.docLabel);
     //tabs, tab2 is updated when the entries are managed
     $("#tab1Text").text(docCreate.m_tab1_text.docLabel);
-    
-    
+
+
     //group information
     var groupDoc = doc.page_testdatalib_m_createupdatelib;
     $("#lbl_choose_group").html(displayDocLink(groupDoc.lbl_choose_group));
     $("#lbl_enter_group").html(displayDocLink(groupDoc.lbl_enter_group));
-    
+
     //common information
     $("#lbl_name").html(displayDocLink(docTestDataLib.name));
-    $("#lbl_type").html(displayDocLink(docTestDataLib.type));    
+    $("#lbl_type").html(displayDocLink(docTestDataLib.type));
     $("#lbl_system").html(displayDocLink(docTestDataLib.system));
     $("#lbl_environment").html(displayDocLink(docTestDataLib.environment));
     $("#lbl_country").html(displayDocLink(docTestDataLib.country));
@@ -448,26 +449,26 @@ function displayCreateTestDataLibLabels(doc){
     $("#lbl_service_path").html(displayDocLink(docTestDataLib.servicepath));
     $("#lbl_method").html(displayDocLink(docTestDataLib.method));
     $("#lbl_envelope").html(displayDocLink(docTestDataLib.envelope));
-    
+
     //documentation for sub-data entries
     $("#subdataHeader").html(displayDocLink(docTestDataLibData.subData));
     $("#dataHeader").html(displayDocLink(docTestDataLibData.value));
     $("#descriptionHeader").html(displayDocLink(docTestDataLibData.description));
-    
-    
+
+
     //links for managing the subdata information
     $("#link_add_new").html(displayDocLink(docCreate.link_add_new));
     $("#link_delete_all").html(displayDocLink(docCreate.link_delete_all));
     $("#link_add_new_title").html(displayDocLink(docCreate.link_add_new_title));
     $("#link_delete_all_title").html(displayDocLink(docCreate.link_delete_all_title));
-    
-    
-   //tab2 - links to edit table
+
+
+    //tab2 - links to edit table
     $("#newSubData_addRow").text(docCreate.link_add_new.docLabel);
     $("#newSubData_addRow").prop("title", docCreate.link_add_new_title.docLabel);
-    $("#newSubData_deleteAll").text(docCreate.link_delete_all.docLabel); 
+    $("#newSubData_deleteAll").text(docCreate.link_delete_all.docLabel);
     $("#newSubData_deleteAll").prop("title", docCreate.link_delete_all_title.docLabel);
-    
+
 }
 
 /**
@@ -477,10 +478,10 @@ function displayCreateTestDataLibLabels(doc){
 function renderOptionsForTestDataManager(data) {
     //check if user has permissions to perform the add and import operations
     var doc = getDoc();
-     
+
     if (data["hasPermissions"]) {
-        if ($("#createLibButton").length === 0) {            
-            var contentToAdd  = "<div class='marginBottom10'><button id='createLibButton' type='bytton' class='btn btn-default'>";
+        if ($("#createLibButton").length === 0) {
+            var contentToAdd = "<div class='marginBottom10'><button id='createLibButton' type='bytton' class='btn btn-default'>";
             contentToAdd += doc.page_testdatalib.btn_create.docLabel; //translation for the create button;
             contentToAdd += "</button><button id='importDataButton' type='bytton' class='btn btn-default marginLeft5'>";
             contentToAdd += doc.page_testdatalib.btn_import.docLabel; //translation for the create button;
@@ -497,12 +498,12 @@ function renderOptionsForTestDataManager(data) {
                 translations["choseFileLabel"] = docImportTestDataLib.btn_choose.docLabel;
                 translations["cancelButton"] = docImportTestDataLib.btn_cancel.docLabel;
                 translations["uploadOk"] = docImportTestDataLib.btn_upload.docLabel;
-            
+
                 showModalUpload(uploadTestDataLibFromXMLFile, "XML", translations);
             });
         }
     } else {
-       
+
         var actionsNoPermissions = doc.testdatalib.actions_nopermissions;
         $("#testdatalibFirstColumnHeader").html(displayDocLink(actionsNoPermissions));
     }
@@ -662,7 +663,7 @@ function uploadTestDataLibFromXMLFile() {
 function createLibButtonClick() {
     clearResponseMessageMainPage();
     showLoaderInModal("#addTestDataLibModal");
-    
+
     //action = 3 retrieves the groups and the if is sql type it also returns the list of databases
     var jqxhr = $.getJSON("ReadTestDataLib", "action=0&Type=STATIC");
     $.when(jqxhr).then(function (data) {
@@ -692,7 +693,7 @@ function createLibButtonClick() {
 function addTestDataLibModalCloseHandler() {
     var doc = getDoc();
     var docMultiSelect = doc.multiselect;
-    
+
     $('#addTestDataLibModal #addTestDataLibModalForm')[0].reset();
     $('#addSubDataTableBody tr').remove();
     updateSubDataTabLabel();
@@ -814,7 +815,7 @@ function validateSubDataEntriesEmpty(dialog, tableBody, append) {
  */
 function refreshPanelsByType() {
     var selectedType = $('#addTestDataLibModal #Type option:selected').val();
-    
+
     $('#addTestDataLibModal').find('[id = "panel' + selectedType + '"][name="panelData"]').css("display", "block");
     var panelsToHide = $('#addTestDataLibModal').find('[id != "panel' + selectedType + '"][name="panelData"]');
     //while inserting we will clean the values
@@ -829,36 +830,36 @@ function refreshPanelsByType() {
 /**
  * Auxiliary method that refreshes the panels in the edit form
  */
-function refreshPanelsByTypeEdit(){
-    
+function refreshPanelsByTypeEdit() {
+
     var selectedType = $('#editTestDataLibModal #TypeSelect option:selected').val();
-    
+
     $('#editTestDataLibModal').find('[id = "panel' + selectedType + 'Edit"][class*="panelData"]').css("display", "block");
-    
+
     var panelsToHide = $('#editTestDataLibModal').find('[id != "panel' + selectedType + 'Edit"][class*="panelData"]');
     panelsToHide.css("display", "none");
 }
 
 /**
  * Auxiliary method that refreshes the html elements according with the selected type - in the Edit test data lib modal
- */    
+ */
 function refreshSpecificAreasEdit() {
     //shows / hides the test data     
-    var selectedType = $('#editTestDataLibModal #TypeSelect option:selected').val();  
+    var selectedType = $('#editTestDataLibModal #TypeSelect option:selected').val();
     refreshListsByType(selectedType, "editTestDataLibModal", "GroupEdit", "DatabaseEdit", false);
-    refreshPanelsByTypeEdit();    
+    refreshPanelsByTypeEdit();
 }
 
 /**
  * Auxiliary method that refreshes the html elements according with the selected type
- */    
+ */
 function refreshSpecificAreas() {
     //shows / hides the test data lib
-    
-    var selectedType = $('#addTestDataLibModal #Type option:selected').val();  
+
+    var selectedType = $('#addTestDataLibModal #Type option:selected').val();
     refreshListsByType(selectedType, "addTestDataLibModal", "Group", "Database", true);
-    refreshPanelsByType();    
-    
+    refreshPanelsByType();
+
 }
 /**
  * Auxilary metho that refreshs the group list with basis on the selected type 
@@ -870,54 +871,54 @@ function refreshSpecificAreas() {
  * @param {type} isToAdd - indicates if the function is being used in the form to add a new record or in the form to edit
  * @returns {undefined}
  */
-function refreshListsByType(selectedType, formID, groupElementID, databaseElementID, isToAdd){
+function refreshListsByType(selectedType, formID, groupElementID, databaseElementID, isToAdd) {
     //action = 3 retrieves the groups and the if is sql type it also returns the list of databases
-    var jqxhr = $.getJSON("ReadTestDataLib", "action=3&Type="+selectedType)
-    $.when(jqxhr).then(function(data) {
-        var groupSelector = "#"+ formID + " #"+groupElementID;
-        var groupCurrentSelected = $(groupSelector + ' option:selected').prop("value"); 
+    var jqxhr = $.getJSON("ReadTestDataLib", "action=3&Type=" + selectedType)
+    $.when(jqxhr).then(function (data) {
+        var groupSelector = "#" + formID + " #" + groupElementID;
+        var groupCurrentSelected = $(groupSelector + ' option:selected').prop("value");
         var doc = getDoc();
-        loadSelectElement(data["GROUPS"], $(groupSelector), true,  doc.page_testdatalib_m_createlib.lbl_dropdown_help.docLabel);
-        
-        if(isToAdd){
+        loadSelectElement(data["GROUPS"], $(groupSelector), true, doc.page_testdatalib_m_createlib.lbl_dropdown_help.docLabel);
+
+        if (isToAdd) {
             //selects the first item and changes its style
-            $(groupSelector + ' option:first-child').attr("selected", "selected");  
+            $(groupSelector + ' option:first-child').attr("selected", "selected");
             $(groupSelector + ' option:first').addClass("emptySelectOption");
-            $(groupSelector).change();  
-        }else{
+            $(groupSelector).change();
+        } else {
             //selects the current 
-            
-            var elementToSelect =  $(groupSelector + ' option[value="'+groupCurrentSelected+'"]');
-            if(elementToSelect.size() === 0 ){
+
+            var elementToSelect = $(groupSelector + ' option[value="' + groupCurrentSelected + '"]');
+            if (elementToSelect.size() === 0) {
                 //adds a temporary group in the combobox
-                $(groupSelector).append("<option value='"+groupCurrentSelected+"'>" + groupCurrentSelected + "</option>"); 
+                $(groupSelector).append("<option value='" + groupCurrentSelected + "'>" + groupCurrentSelected + "</option>");
             }
-            
-            $(groupSelector + ' option[value="'+groupCurrentSelected+'"]').attr("selected", "selected");  
-            
+
+            $(groupSelector + ' option[value="' + groupCurrentSelected + '"]').attr("selected", "selected");
+
         }
-        if(selectedType === "SQL"){
+        if (selectedType === "SQL") {
             var currentSelected = $(databaseSelector + " option:selected").prop("value");
-            
-            if($("#" + formID).find("#DatabaseEditHidden").prop("value") !== ""){
+
+            if ($("#" + formID).find("#DatabaseEditHidden").prop("value") !== "") {
                 currentSelected = $("#" + formID).find("#DatabaseEditHidden").prop("value");
                 $("#" + formID).find("#DatabaseEditHidden").prop("value", "");
             }
-            var databaseSelector = "#" + formID + " #" +databaseElementID;
-            
-            loadSelectElement(data["PROPERTYDATABASE"], $(databaseSelector), true, '');             
-            if(isToAdd === true){
-                $(databaseSelector + ' option:first-child').attr("selected", "selected");  
-            }else{
-                $(databaseSelector + ' option[value="'+ currentSelected +'"]').attr("selected", "selected");  
+            var databaseSelector = "#" + formID + " #" + databaseElementID;
+
+            loadSelectElement(data["PROPERTYDATABASE"], $(databaseSelector), true, '');
+            if (isToAdd === true) {
+                $(databaseSelector + ' option:first-child').attr("selected", "selected");
+            } else {
+                $(databaseSelector + ' option[value="' + currentSelected + '"]').attr("selected", "selected");
             }
         }
         //updates the label, if exists
-        if(isToAdd){
+        if (isToAdd) {
             var labelEntry = getSubDataLabel(selectedType);
-            $('#'+formID).find("#dataHeader").html(labelEntry);
+            $('#' + formID).find("#dataHeader").html(labelEntry);
         }
-        
+
     }).fail(handleErrorAjaxAfterTimeout);
 }
 
@@ -937,7 +938,7 @@ function updateSubDataTabLabel() {
     var doc = getDoc();
     var docCreate = doc.page_testdatalib_m_createlib;
     $("#tab2Text").text(docCreate.m_tab2_text.docLabel);
-    $('#tab2Text').text(docCreate.m_tab2_text.docLabel + " (" + $('#addSubDataTable tr[class="trData"]').size() + " " + docCreate.m_tab2_text_entries.docLabel  +")");
+    $('#tab2Text').text(docCreate.m_tab2_text.docLabel + " (" + $('#addSubDataTable tr[class="trData"]').size() + " " + docCreate.m_tab2_text_entries.docLabel + ")");
 }
 function editDeleteRowTestDataLibData(element) {
     //if is a new record then we know that is to remove from the interface
@@ -993,13 +994,13 @@ function deleteTestDataLib(testDataLibID, name, system, environment, country, ty
     var systemLabel = system === '' ? docPageGlobal.lbl_all.docLabel : system;
     var environmentLabel = environment === '' ? docPageGlobal.lbl_all.docLabel : environment;
     var countryLabel = country === '' ? docPageGlobal.lbl_all.docLabel : country;
-    
-    var deleteMessage  = " TestDataLib: <ul><li>ID: " + 
+
+    var deleteMessage = " TestDataLib: <ul><li>ID: " +
             testDataLibID +
-            "</li><li>" + docTestDataLib.type.docLabel + ": " + name + 
-            "</li><li>" + docTestDataLib.type.docLabel + ": "+ type + 
-            " </li><li>" + docTestDataLib.system.docLabel + ": " + systemLabel + 
-            "</li><li> " + docTestDataLib.environment.docLabel + ": " + environmentLabel + 
+            "</li><li>" + docTestDataLib.type.docLabel + ": " + name +
+            "</li><li>" + docTestDataLib.type.docLabel + ": " + type +
+            " </li><li>" + docTestDataLib.system.docLabel + ": " + systemLabel +
+            "</li><li> " + docTestDataLib.environment.docLabel + ": " + environmentLabel +
             " </li><li>" + docTestDataLib.country.docLabel + ":" + countryLabel +
             "</li> </ul>" + docTestDataLibDelete.subdata_msg.docLabel;
     var messageComplete = baseMessage.replace("%ENTRY%", deleteMessage).replace("%TABLE%", "");
@@ -1028,9 +1029,9 @@ function editTestDataLib(testDataLibID, type) {
         var countryText = obj[4];
 
         //load TYPE
-        loadSelectElement(data["TESTDATATYPE"], $('#editTestDataLibModal').find("#TypeSelect"), false, ""); 
+        loadSelectElement(data["TESTDATATYPE"], $('#editTestDataLibModal').find("#TypeSelect"), false, "");
         //selects the type correspondent to the current library
-        $('#editTestDataLibModal #TypeSelect option[value="'+obj[6]+'"]').attr("selected", "selected"); 
+        $('#editTestDataLibModal #TypeSelect option[value="' + obj[6] + '"]').attr("selected", "selected");
 
         //SYSTEM
         //loadSystems($('#editTestDataLibModal'), data["SYSTEM"]);
@@ -1052,7 +1053,7 @@ function editTestDataLib(testDataLibID, type) {
         formEdit.find('[id != "panel' + obj[6] + 'Edit"][class="panelData"]').css("display", "none");
 
 
-        
+
         //loads the information for soap entries
         formEdit.find('#ServicePathEdit').prop("value", obj[9]);
         formEdit.find('#MethodEdit').prop("value", obj[10]);
@@ -1063,14 +1064,14 @@ function editTestDataLib(testDataLibID, type) {
             //getInvariantList("PROPERTYDATABASE", function(invariantData){
             loadSelectElement(data["PROPERTYDATABASE"], formEdit.find("#DatabaseEdit"), true, '');
             formEdit.find('#DatabaseEdit option[value="' + obj[7] + '"]:first').prop("selected", "selected");
-        }else{
+        } else {
             //append the value if it does not the SQL type
-            formEdit.find("#DatabaseEditHidden").prop("value", obj[7]);          
+            formEdit.find("#DatabaseEditHidden").prop("value", obj[7]);
         }
-        formEdit.find('#ScriptEdit').prop("value", obj[8]);        
+        formEdit.find('#ScriptEdit').prop("value", obj[8]);
         //load groups per type
-        var doc = getDoc();        
-        loadSelectElement(data["GROUPS"]["GROUPS"], $('#editTestDataLibModal').find("#GroupEdit"), true,  doc.page_testdatalib_m_createlib.lbl_dropdown_help.docLabel);
+        var doc = getDoc();
+        loadSelectElement(data["GROUPS"]["GROUPS"], $('#editTestDataLibModal').find("#GroupEdit"), true, doc.page_testdatalib_m_createlib.lbl_dropdown_help.docLabel);
         //selects the group entered by the user
 
         formEdit.find('#GroupEdit option[value="' + obj[5] + '"]:first').prop("selected", "selected");
@@ -1098,17 +1099,17 @@ function getTestCasesUsing(testDataLibID, name, country) {
     clearResponseMessageMainPage();
     showLoaderInModal('#testCaseListModal');
     var jqxhr = $.getJSON("ReadTestDataLib", "action=4&testDataLib=" + testDataLibID + "&name=" + name + "&country=" + country);
-    
+
     var doc = getDoc();
     var docGetTestCases = doc.page_testdatalib_m_gettestcases;
-    
+
     $.when(jqxhr).then(function (result) {
 
-        $('#testCaseListModal #totalTestCases').text(docGetTestCases.nrTests.docLabel+ " " + result["TestCasesList"].length);
+        $('#testCaseListModal #totalTestCases').text(docGetTestCases.nrTests.docLabel + " " + result["TestCasesList"].length);
         var htmlContent = "";
         var docTestCases = doc.testcase;
         $.each(result["TestCasesList"], function (idx, obj) {
-        
+
             var item = '<b><a class="list-group-item ListItem" data-remote="true" href="#sub_cat' + idx + '" id="cat' + idx + '" data-toggle="collapse" \n\
             data-parent="#sub_cat' + idx + '"><span class="pull-left">' + obj[0] + '</span>\n\
                                         <span style="margin-left: 25px;" class="pull-right">' + docGetTestCases.nrTestCases.docLabel + obj[2] + '</span>\n\
@@ -1116,15 +1117,15 @@ function getTestCasesUsing(testDataLibID, name, country) {
                                     </a></b>';
             htmlContent += item;
             htmlContent += '<div class="collapse list-group-submenu" id="sub_cat' + idx + '">';
-            
-            
+
+
             $.each(obj[3], function (idx2, obj2) {
                 var hrefTest = 'TestCase.jsp?Test=' + obj[0] + '&TestCase=' + obj2.TestCaseNumber;
                 htmlContent += '<span class="list-group-item sub-item ListItem" data-parent="#sub_cat' + idx + '" style="padding-left: 78px;">';
                 htmlContent += '<span class="pull-left"><a href="' + hrefTest + '">' + obj2.TestCaseNumber + '- ' + obj2.TestCaseDescription + '</a></span>';
-                htmlContent += '<span class="pull-right">' + docGetTestCases.nrTests.docLabel + " "  + obj2.NrProperties + '</span><br/>';
+                htmlContent += '<span class="pull-right">' + docGetTestCases.nrTests.docLabel + " " + obj2.NrProperties + '</span><br/>';
                 htmlContent += '<span class="pull-left"> ' + docTestCases.Creator.docLabel + ": " + obj2.Creator + ' | '
-                        + docTestCases.TcActive.docLabel +": " +obj2.Active + ' | ' + docTestCases.Status.docLabel + ": " + obj2.Status + ' | ' +
+                        + docTestCases.TcActive.docLabel + ": " + obj2.Active + ' | ' + docTestCases.Status.docLabel + ": " + obj2.Status + ' | ' +
                         doc.invariant.GROUP.docLabel + ": " + obj2.Group + ' | ' + doc.application.Application.docLabel + ": " + obj2.Application + '</span>';
                 htmlContent += '</span>';
             });
@@ -1144,11 +1145,11 @@ function getTestCasesUsing(testDataLibID, name, country) {
 
 function appendNewSubDataRow(rowId, subdata, data, description) {
     var doc = getDoc();
-    
+
     //for each subdata entry adds a new row
     $('#editSubDataTableBody').append('<tr id="' + rowId + '" data-operation="update"> \n\
         <td><div class="nomarginbottom marginTop5"> \n\
-        <button title="' + doc.page_global.tooltip_mark_remove.docLabel+'" onclick="editDeleteRowTestDataLibData(this)" \n\
+        <button title="' + doc.page_global.tooltip_mark_remove.docLabel + '" onclick="editDeleteRowTestDataLibData(this)" \n\
 class="delete_row pull-left btn btn-default btn-xs manageRowsFont"><span class="glyphicon glyphicon-trash"></span></button></div></td>\n\
         <td><div class="nomarginbottom form-group form-group-sm">\n\
         <input readonly="readonly" name="subdata" type="text" class="subDataClass form-control input-xs" value="' + subdata + '"/><span></span></div></td>\n\
@@ -1165,7 +1166,7 @@ function viewSubDataEntries(testDataLibID, type) {
     $.when(jqxhr).then(function (result) {
         var configurations = new TableConfigurationsClientSide("viewTestDataLibDataEntriesTable", result["TestDataLibDatas"], aoColumnsViewTestDataLibData());
         configurations.tableWidth = "550px";
-        
+
         if ($('#viewTestDataLibDataEntriesTable').hasClass('dataTable') === false) {
             createDataTable(configurations);
         } else {
@@ -1264,7 +1265,7 @@ function loadCountries(parent, data) {
 
 function loadTypes(data) {
     loadSelectElement(data, $('#addTestDataLibModal #Type'));
-    $('#addTestDataLibModal #Type option[value="STATIC"]').attr("selected", "selected");  
+    $('#addTestDataLibModal #Type option[value="STATIC"]').attr("selected", "selected");
     var labelEntry = getSubDataLabel("STATIC");
     $('#addTestDataLibModal').find("#labelSubdataEntry").html(labelEntry);
     refreshPanelsByType();
@@ -1310,7 +1311,7 @@ function aoColumnsFuncTestDataLib() {
     var doc = getDoc();
     var docPage = doc.page_testdatalib;
     var docObj = doc.testdatalib;
-    
+
     var aoColumns = [];
     $("#listOfTestDataLib th").each(function (i) {
         switch (i) {
@@ -1319,7 +1320,7 @@ function aoColumnsFuncTestDataLib() {
                     className: "width250",
                     "sName": "TestDataLibID",
                     "bSortable": false,
-                    "title": displayDocLink(docObj.actions), 
+                    "title": displayDocLink(docObj.actions),
                     "mRender": function (data, type, oObj) {
                         var viewTestCase = '<button  class="getTestCasesUsing btn  btn-default btn-xs margin-right5" \n\
                             name="getTestCasesUsing" title="' + docPage.tooltip_gettestcases.docLabel + '" type="button" \n\
@@ -1327,11 +1328,11 @@ function aoColumnsFuncTestDataLib() {
                             TC</button>';
                         //if the user have permissions to edit, then the following button will be displayed
                         if (oObj[13] !== false) {
-                           var editElement = '<button id="editTestDataLib' + data + '"  onclick="editTestDataLib(' + data + ', ' + '\'' + oObj[6] + '\');" \n\
+                            var editElement = '<button id="editTestDataLib' + data + '"  onclick="editTestDataLib(' + data + ', ' + '\'' + oObj[6] + '\');" \n\
                                 class="editTestDataLib btn btn-default btn-xs margin-right5" \n\
                             name="editTestDataLib" title="' + docPage.tooltip_editentry.docLabel + '" type="button">\n\
                             <span class="glyphicon glyphicon-pencil"></span></button>';
-                            
+
                             var deleteElement = '<button onclick="deleteTestDataLib(' + data + ',\'' + oObj[1]
                                     + '\', ' + '\'' + oObj[2] + '\', ' + '\'' + oObj[3] + '\', ' + '\'' + oObj[4] + '\', '
                                     + '\'' + oObj[5] + '\', ' + '\'' + oObj[7] + '\');" class="btn btn-default btn-xs margin-right25 " \n\
@@ -1382,12 +1383,12 @@ function aoColumnsFuncTestDataLib() {
                 break;
             case 9 :
                 aoColumns.push({className: "width250", "sName": "ServicePath", "title": displayDocLink(docObj.servicepath),
-                 "mRender": function (data, type, oObj) {
-                    if(data !== ''){
-                        return "<a target = '_blank' href='"+data+"'>"+data+"</a>";//TODO:FN ver se tem caracters que precisam de ser encapsulados
-                    }
-                    return '';
-                 }});
+                    "mRender": function (data, type, oObj) {
+                        if (data !== '') {
+                            return "<a target = '_blank' href='" + data + "'>" + data + "</a>";//TODO:FN ver se tem caracters que precisam de ser encapsulados
+                        }
+                        return '';
+                    }});
                 break;
             case 10 :
                 aoColumns.push({className: "width250", "sName": "Method", "title": displayDocLink(docObj.method)});
