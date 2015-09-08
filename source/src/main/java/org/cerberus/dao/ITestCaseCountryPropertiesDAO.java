@@ -21,6 +21,7 @@ import java.util.List;
 
 import org.cerberus.entity.TestCaseCountryProperties;
 import org.cerberus.exception.CerberusException;
+import org.cerberus.util.answer.Answer;
 import org.cerberus.util.answer.AnswerList;
 
 /**
@@ -51,4 +52,6 @@ public interface ITestCaseCountryPropertiesDAO {
     public void deleteTestCaseCountryProperties(TestCaseCountryProperties tccp) throws CerberusException;
 
     AnswerList findTestCaseCountryPropertiesByValue1(int testDataLib, String name, String country, String propertyType);
+
+    Answer createTestCaseCountryPropertiesBatch(List<TestCaseCountryProperties> listOfPropertiesToInsert);
 }

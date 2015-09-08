@@ -1626,18 +1626,6 @@ function alertOnMissingPropertyValues(total) {
 function alertOnProperties() {
     return confirm("At least one property has empty name or no country selected, would you like to save, these properties will be deleted !");
 }
-/**
- * Checks if there are undefined properties. If the false value is returned, then the user will be able to run 
- * the test case. 
- * @returns {Boolean} 
- */
-function checkUndefinedProperties() {
-    if ($("img[class='property_missing']").length) {
-        alert("There are properties that are undefined! Please check them before proceed.");
-        return false;
-    }
-    return true;
-}
 function checkForm() {
 
     // Check all properties to be sure PK of each is OK

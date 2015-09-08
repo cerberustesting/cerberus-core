@@ -192,9 +192,37 @@ div button.margin-right5{
     display:inline;
 }
 
-.colorRed{
-    color:#8B0404;
+
+button.property_missing, button.property_tooverride, button.property_overriden {
+    float:left;
+    display:inline;
+    width: 25px;
+    height: 18px;
+    margin-right: 2px; 
+    padding-right:2px;
+    margin-bottom: 2px
 }
+
+button.property_missing span.colorRed{
+    color:#8B0404;    
+}
+
+button.property_tooverride span.colorDarkBlue{
+    color: #483D8B;
+}
+
+button.property_overriden span.colorDarkYellow{
+    color: #DAA520;
+}
+
+ul.typesMenu{
+    overflow-y:scroll; 
+    height:200px; 
+    margin-top:24px; 
+    margin-left:64px;
+}
+
+
 /*default styles used by bootstrap*/
 select option{ 
     color: #555555; 
