@@ -29,6 +29,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.cerberus.entity.MessageEvent;
 import org.cerberus.entity.MessageEventEnum;
 import org.cerberus.entity.TestDataLibData;
+import org.cerberus.entity.TestDataLibDataUpdate;
 import org.cerberus.exception.CerberusException;
 import org.cerberus.factory.IFactoryLogEvent;
 import org.cerberus.factory.IFactoryTestDataLibData;
@@ -93,7 +94,7 @@ public class UpdateTestDataLibData extends HttpServlet {
             }
 
             //updates the selected entries
-            ArrayList<TestDataLibData> entriesToUpdate = new ArrayList<TestDataLibData>();
+            ArrayList<TestDataLibDataUpdate> entriesToUpdate = new ArrayList<TestDataLibDataUpdate>();
             if (dataToEdit.has("update")) {
                 //subDataService.
                 JSONArray arrayToeditInsert = (JSONArray) dataToEdit.get("update");
@@ -103,7 +104,8 @@ public class UpdateTestDataLibData extends HttpServlet {
                     TestDataLibData item = factoryLibService.create(testDataLibID, type, obj.get("Subdata").toString(),
                             obj.get("Value").toString(),
                             obj.get("Description").toString());
-                    entriesToUpdate.add(item);
+                    TestDataLibDataUpdate updateItem = new TestDataLibDataUpdate(item, obj.get("Subdata_original").toString());                            
+                    entriesToUpdate.add(updateItem);
                 }
             }
             //inserts new subdataentries

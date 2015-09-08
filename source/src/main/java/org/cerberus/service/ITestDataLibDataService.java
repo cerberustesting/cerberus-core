@@ -20,6 +20,7 @@ package org.cerberus.service;
 import java.util.ArrayList;
 import java.util.List; 
 import org.cerberus.entity.TestDataLibData;
+import org.cerberus.entity.TestDataLibDataUpdate;
 import org.cerberus.entity.TestDataLibResult;
 import org.cerberus.exception.CerberusException;
 import org.cerberus.util.answer.Answer;
@@ -101,7 +102,7 @@ public interface ITestDataLibDataService {
      * @param entriesToRemove
      * @return
      */
-    public Answer cudTestDataLibData(int testDataLibID, ArrayList<TestDataLibData> entriesToInsert, ArrayList<TestDataLibData> entriesToUpdate, ArrayList<String> entriesToRemove);
+    public Answer cudTestDataLibData(int testDataLibID, ArrayList<TestDataLibData> entriesToInsert, ArrayList<TestDataLibDataUpdate> entriesToUpdate, ArrayList<String> entriesToRemove);
 
     /**
      *
