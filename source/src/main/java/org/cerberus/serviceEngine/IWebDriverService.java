@@ -86,16 +86,12 @@ public interface IWebDriverService {
 
     MessageEvent doSeleniumActionManageDialog(Session session, Identifier identifier);
     
-    MessageEvent doSeleniumActionClickWait(Session session, Identifier identifier, String property);
-    
     MessageEvent doSeleniumActionDoubleClick(Session session, Identifier identifier);
 
     MessageEvent doSeleniumActionType(Session session, Identifier identifier, String property, String propertyName);
 
     MessageEvent doSeleniumActionMouseOver(Session session, Identifier identifier);
     
-    MessageEvent doSeleniumActionMouseOverAndWait(Session session, Identifier identifier, String property);
-
     MessageEvent doSeleniumActionWait(Session session, Identifier identifier);
 
     MessageEvent doSeleniumActionKeyPress(Session session, Identifier identifier, String property);

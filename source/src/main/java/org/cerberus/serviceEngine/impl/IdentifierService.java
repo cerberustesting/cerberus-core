@@ -64,4 +64,14 @@ public class IdentifierService implements IIdentifierService {
 
     }
 
+    @Override
+    public void checkWebElementIdentifier(String identifier) throws CerberusEventException {
+        String[] selectOptionAttributes = {"id", "name", "class", "css", "xpath", "link", "data-cerberus", "picture"};
+
+        if (!Arrays.asList(selectOptionAttributes).contains(identifier)) {
+            MessageEvent message = new MessageEvent(MessageEventEnum.ACTION_FAILED_NO_SUCH_ELEMENT);
+            message.setDescription(message.getDescription().replaceAll("%IDENTIFIER%", identifier));
+            throw new CerberusEventException(message);
+        }
+    }
 }
