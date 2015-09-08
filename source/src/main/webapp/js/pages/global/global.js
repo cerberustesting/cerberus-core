@@ -570,6 +570,8 @@ function createDataTable(tableConfigurations) {
         configs["sAjaxSource"] = tableConfigurations.ajaxSource;
         configs["sAjaxDataProp"] = tableConfigurations.ajaxProp;
         configs["fnServerData"] = function (sSource, aoData, fnCallback, oSettings) {
+            console.log(aoData);
+
             oSettings.jqXHR = $.ajax({
                 "dataType": 'json',
                 "type": "GET",

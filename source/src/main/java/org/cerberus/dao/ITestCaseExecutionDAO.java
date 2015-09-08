@@ -17,6 +17,7 @@
  */
 package org.cerberus.dao;
 
+import java.util.ArrayList;
 import java.util.List;
 import org.cerberus.dto.TestCaseWithExecution;
 
@@ -130,6 +131,6 @@ public interface ITestCaseExecutionDAO {
     
     AnswerList findTagList() throws CerberusException;
     
-    public AnswerList getTestCaseExecution(int start, int amount, String column, String dir, String searchTerm, String individualSearch, String tag) throws CerberusException;
+    public AnswerList getTestCaseExecution(int start, int amount, String column, String dir, String searchTerm, String individualSearch, String tag, List<String> statusList) throws CerberusException;
 
     }

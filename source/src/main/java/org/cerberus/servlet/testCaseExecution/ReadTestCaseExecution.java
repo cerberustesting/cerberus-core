@@ -25,6 +25,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map.Entry;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.servlet.ServletException;
@@ -212,11 +213,11 @@ public class ReadTestCaseExecution extends HttpServlet {
         String columnToSort[] = sColumns.split(",");
         String columnName = columnToSort[columnToSortParameter];
         String sort = ParameterParserUtil.parseStringParam(request.getParameter("sSortDir_0"), "asc");
-
+        List<String> statusList = getStatusList(request);
         /**
          * Get list of execution by tag, env, country, browser
          */
-        testCaseExecution = testCaseExecService.getTestCaseExecution(startPosition, length, columnName, sort, searchParameter, "", Tag);
+        testCaseExecution = testCaseExecService.getTestCaseExecution(startPosition, length, columnName, sort, searchParameter, "", Tag, statusList);
         List<TestCaseWithExecution> testCaseWithExecutions = testCaseExecution.getDataList();
 
         /**
@@ -293,11 +294,12 @@ public class ReadTestCaseExecution extends HttpServlet {
         String columnToSort[] = sColumns.split(",");
         String columnName = columnToSort[columnToSortParameter];
         String sort = ParameterParserUtil.parseStringParam(request.getParameter("sSortDir_0"), "asc");
+        List<String> statusList = getStatusList(request);
 
         /**
          * Get list of execution by tag, env, country, browser
          */
-        testCaseExecution = testCaseExecService.getTestCaseExecution(startPosition, length, columnName, sort, searchParameter, "", Tag);
+        testCaseExecution = testCaseExecService.getTestCaseExecution(startPosition, length, columnName, sort, searchParameter, "", Tag, statusList);
         List<TestCaseWithExecution> testCaseWithExecutions = testCaseExecution.getDataList();
 
         /**
@@ -336,7 +338,6 @@ public class ReadTestCaseExecution extends HttpServlet {
         testCaseWithExecutions = new ArrayList<TestCaseWithExecution>(testCaseWithExecutionsList.values());
 
         LinkedHashMap<String, JSONObject> ttc = new LinkedHashMap<String, JSONObject>();
-        LinkedHashMap<String, JSONObject> ceb = new LinkedHashMap<String, JSONObject>();
         for (TestCaseWithExecution testCaseWithExecution : testCaseWithExecutions) {
             try {
                 executionList.put(testCaseExecutionToJSONObject(testCaseWithExecution));
@@ -349,17 +350,11 @@ public class ReadTestCaseExecution extends HttpServlet {
                 ttcObject.put("application", testCaseWithExecution.getApplication());
                 ttcObject.put("bugId", testCaseWithExecution.getBugID());
                 ttcObject.put("comment", testCaseWithExecution.getComment());
-                JSONObject cebObject = new JSONObject();
-                cebObject.put("country", testCaseWithExecution.getCountry());
-                cebObject.put("environment", testCaseWithExecution.getEnvironment());
-                cebObject.put("browser", testCaseWithExecution.getBrowser());
                 ttc.put(testCaseWithExecution.getTest() + "_" + testCaseWithExecution.getTestCase(), ttcObject);
-                ceb.put(testCaseWithExecution.getBrowser() + "_" + testCaseWithExecution.getCountry() + "_" + testCaseWithExecution.getEnvironment(), cebObject);
             } catch (JSONException ex) {
                 Logger.getLogger(CampaignExecutionReport.class.getName()).log(Level.SEVERE, null, ex);
             }
         }
-        JSONArray columns = new JSONArray(ceb.values());
         JSONArray lines = new JSONArray(ttc.values());
 
         for (int indexValues = 0; indexValues < executionList.length(); indexValues++) {
@@ -391,6 +386,34 @@ public class ReadTestCaseExecution extends HttpServlet {
         answer.setItem(jsonResponse);
         answer.setResultMessage(new MessageEvent(MessageEventEnum.DATA_OPERATION_OK));
         return answer;
+    }
+
+    private List<String> getStatusList(HttpServletRequest request) {
+        List<String> statusList = new ArrayList<String>();
+
+        if (ParameterParserUtil.parseStringParam(request.getParameter("OK"), "off").equals("on")) {
+            statusList.add("OK");
+        }
+        if (ParameterParserUtil.parseStringParam(request.getParameter("KO"), "off").equals("on")) {
+            statusList.add("KO");
+        }
+        if (ParameterParserUtil.parseStringParam(request.getParameter("NA"), "off").equals("on")) {
+            statusList.add("NA");
+        }
+        if (ParameterParserUtil.parseStringParam(request.getParameter("NE"), "off").equals("on")) {
+            statusList.add("NE");
+        }
+        if (ParameterParserUtil.parseStringParam(request.getParameter("PE"), "off").equals("on")) {
+            statusList.add("PE");
+        }
+        if (ParameterParserUtil.parseStringParam(request.getParameter("FA"), "off").equals("on")) {
+            statusList.add("FA");
+        }
+        if (ParameterParserUtil.parseStringParam(request.getParameter("CA"), "off").equals("on")) {
+            statusList.add("CA");
+        }
+
+        return statusList;
     }
 
     private JSONObject testCaseExecutionToJSONObject(
