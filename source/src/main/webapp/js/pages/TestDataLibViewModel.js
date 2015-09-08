@@ -195,6 +195,7 @@ $.when($.getScript("js/pages/global/global.js")).then(function () {
             $("#editSubDataTableBody tr[data-operation='update']").each(function () {
                 var item = {};
                 item ["Subdata"] = $(this).find("td:nth-child(2) input").prop("value");
+                item ["Subdata_original"] = $(this).find("td:nth-child(2) input").attr("data-original-value"); //allows the modification of the key
                 item ["Value"] = $(this).find("td:nth-child(3) input").prop("value");
                 item ["Description"] = $(this).find("td:nth-child(4) input").prop("value");
                 updateObjects.push(item);
@@ -1152,7 +1153,7 @@ function appendNewSubDataRow(rowId, subdata, data, description) {
         <button title="' + doc.page_global.tooltip_mark_remove.docLabel + '" onclick="editDeleteRowTestDataLibData(this)" \n\
 class="delete_row pull-left btn btn-default btn-xs manageRowsFont"><span class="glyphicon glyphicon-trash"></span></button></div></td>\n\
         <td><div class="nomarginbottom form-group form-group-sm">\n\
-        <input readonly="readonly" name="subdata" type="text" class="subDataClass form-control input-xs" value="' + subdata + '"/><span></span></div></td>\n\
+        <input name="subdata" type="text" class="subDataClass form-control input-xs" data-original-value="' + subdata + '" value="' + subdata + '"/><span></span></div></td>\n\
         <td><div class="nomarginbottom form-group form-group-sm"><input name="data" type="text" class="dataClass form-control input-xs" value="' + data + '" /></div></td>\n\
         <td><div class="nomarginbottom form-group form-group-sm"><input name="description" type="text" class="descriptionClass form-control input-xs" value="' + description + '" /></div></td></tr>');
 

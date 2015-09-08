@@ -34,6 +34,7 @@ import org.cerberus.entity.MessageEventEnum;
 import org.cerberus.entity.MessageGeneral;
 import org.cerberus.entity.MessageGeneralEnum;
 import org.cerberus.entity.TestDataLibData;
+import org.cerberus.entity.TestDataLibDataUpdate;
 import org.cerberus.entity.TestDataLibTypeEnum;
 import org.cerberus.exception.CerberusException;
 import org.cerberus.factory.IFactoryTestDataLibData;
@@ -586,23 +587,25 @@ public class TestDataLibDataDAO implements ITestDataLibDataDAO{
     
 
     @Override
-    public Answer updateTestDataLibDataBatch(ArrayList<TestDataLibData> entriesToUpdate) {
+    public Answer updateTestDataLibDataBatch(ArrayList<TestDataLibDataUpdate> entriesToUpdate) {
         StringBuilder query = new StringBuilder();
-        query.append("update testdatalibdata set `value`= ?, `column`= ? , `parsinganswer`= ? , "
+        query.append("update testdatalibdata set `subdata` = ?, `value`= ?, `column`= ? , `parsinganswer`= ? , "
                 + "`description`= ? where `testdatalibID`= ? and `subdata` LIKE ?  ");
+        //TODO:FN for now it is not being verified if the testdatalib is used by tests
         MessageEvent rs = null;
         Connection connection = this.databaseSpring.connect();
         try {
             PreparedStatement preStat = connection.prepareStatement(query.toString());
             try {
-                for (TestDataLibData subdata : entriesToUpdate) { 
-                    
-                    preStat.setString(1, ParameterParserUtil.returnEmptyStringIfNull(subdata.getValue()));
-                    preStat.setString(2, ParameterParserUtil.returnEmptyStringIfNull(subdata.getColumn()));
-                    preStat.setString(3, ParameterParserUtil.returnEmptyStringIfNull(subdata.getParsingAnswer()));
-                    preStat.setString(4, ParameterParserUtil.returnEmptyStringIfNull(subdata.getDescription()));
-                    preStat.setInt(5, subdata.getTestDataLibID());
-                    preStat.setString(6, ParameterParserUtil.returnEmptyStringIfNull(subdata.getSubData()));
+                for (TestDataLibDataUpdate subdataUpdate : entriesToUpdate) { 
+                    TestDataLibData subdata = subdataUpdate.getModifiedObject();
+                    preStat.setString(1, ParameterParserUtil.returnEmptyStringIfNull(subdata.getSubData()));
+                    preStat.setString(2, ParameterParserUtil.returnEmptyStringIfNull(subdata.getValue()));
+                    preStat.setString(3, ParameterParserUtil.returnEmptyStringIfNull(subdata.getColumn()));
+                    preStat.setString(4, ParameterParserUtil.returnEmptyStringIfNull(subdata.getParsingAnswer()));
+                    preStat.setString(5, ParameterParserUtil.returnEmptyStringIfNull(subdata.getDescription()));
+                    preStat.setInt(6, subdata.getTestDataLibID());
+                    preStat.setString(7, ParameterParserUtil.returnEmptyStringIfNull(subdataUpdate.getSubDataOriginalKey()));
                     preStat.addBatch();
                 }
                 
@@ -657,7 +660,6 @@ public class TestDataLibDataDAO implements ITestDataLibDataDAO{
                 for (String subdata : entriesToRemove) {
                     preStat.setInt(1, testDataLibIdForData);
                     preStat.setString(2, ParameterParserUtil.returnEmptyStringIfNull(subdata));
-                    preStat.setInt(3, testDataLibIdForData);
                     preStat.addBatch();
                 }
                 //executes the query                

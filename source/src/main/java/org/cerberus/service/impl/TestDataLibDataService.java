@@ -26,6 +26,7 @@ import org.cerberus.database.DatabaseSpring;
 import org.cerberus.entity.MessageEvent;
 import org.cerberus.entity.MessageEventEnum;
 import org.cerberus.entity.TestDataLibData;
+import org.cerberus.entity.TestDataLibDataUpdate;
 import org.cerberus.entity.TestDataLibResult;
 import org.cerberus.exception.CerberusException;
 import org.cerberus.service.ITestDataLibDataService;
@@ -96,7 +97,9 @@ public class TestDataLibDataService implements ITestDataLibDataService {
     }
  
     @Override
-    public Answer cudTestDataLibData(int testDataLibID, ArrayList<TestDataLibData> entriesToInsert, ArrayList<TestDataLibData> entriesToUpdate, ArrayList<String> entriesToRemove) {
+    public Answer cudTestDataLibData(int testDataLibID, ArrayList<TestDataLibData> entriesToInsert, ArrayList<TestDataLibDataUpdate> entriesToUpdate, 
+            ArrayList<String> entriesToRemove) {
+        
         dbmanager.beginTransaction();        
         
         Answer answer = new Answer();

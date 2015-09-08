@@ -20,6 +20,7 @@ package org.cerberus.dao;
 import java.util.ArrayList;
 import java.util.List;
 import org.cerberus.entity.TestDataLibData;
+import org.cerberus.entity.TestDataLibDataUpdate;
 import org.cerberus.exception.CerberusException;
 import org.cerberus.util.answer.Answer;
 import org.cerberus.util.answer.AnswerList;
@@ -94,7 +95,7 @@ public interface ITestDataLibDataDAO {
      * @param entriesToUpdate - entries to update
      * @return  Answer indicating the status of the operation
      */
-    public Answer updateTestDataLibDataBatch(ArrayList<TestDataLibData> entriesToUpdate);
+    public Answer updateTestDataLibDataBatch(ArrayList<TestDataLibDataUpdate> entriesToUpdate);
     /**
      * Batch that deletes several records in the table TestDataLibData.
      * @param testDataLibIdForData - testdatalibID associated with the entries that will be removed. This is part of the PK.
