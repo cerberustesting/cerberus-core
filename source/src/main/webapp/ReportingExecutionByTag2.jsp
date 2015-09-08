@@ -109,6 +109,7 @@
                                         <input type="checkbox" name="CA" checked/>
                                         CA
                                     </label>
+                                    <button type="button" class="btn btn-default btn-xs" onclick="loadReportList()">Reload</button>
                                 </div>
                             </div>
                         </div>

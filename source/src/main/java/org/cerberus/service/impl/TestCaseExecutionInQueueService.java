@@ -111,8 +111,8 @@ public class TestCaseExecutionInQueueService implements ITestCaseExecutionInQueu
         testCaseExecutionInQueueDAO.updateComment(queueId, comment);
     }
     
-     public AnswerList findTestCaseExecutionInQueuebyTag(int start, int amount, String column, String dir, String searchTerm, String individualSearch, String tag) throws CerberusException {
-        return testCaseExecutionInQueueDAO.findTestCaseExecutionInQueuebyTag(start, amount, column, dir, searchTerm, individualSearch, tag);
+     public AnswerList readByStatusByCriteria(List<String> statusList, int start, int amount, String column, String dir, String searchTerm, String individualSearch, String tag) throws CerberusException {
+        return testCaseExecutionInQueueDAO.readByStatusByCriteria( statusList, start, amount, column, dir, searchTerm, individualSearch, tag);
      }
 
 }

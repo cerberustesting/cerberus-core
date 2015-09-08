@@ -69,8 +69,8 @@ function aoColumnsFunc(Columns) {
         var title = Columns[i].environment + " " + Columns[i].country + " " + Columns[i].browser;
 
         var col = {"title": title,
-//            "bSortable": false,
-//            "bSearchable": false,
+            "bSortable": false,
+            "bSearchable": false,
             "data": function (row, type, val, meta) {
                 var dataTitle = meta.settings.aoColumns[meta.col].sTitle;
                 if (row.hasOwnProperty("execTab") && row["execTab"].hasOwnProperty(dataTitle)) {
@@ -80,7 +80,6 @@ function aoColumnsFunc(Columns) {
                 }
             },
             "sClass": "center",
-            "sName": "testCase",
             "mRender": function (data, type, obj) {
                 if (data !== "") {
                     var glyphClass = getRowClass(data);
@@ -138,9 +137,31 @@ function getRowClass(status) {
     return rowClass;
 }
 
-function loadReport() {
+function loadReportList() {
     var selectTag = $("#selectTag option:selected").text();
     var statusFilter = $("#statusFilter input");
+
+    if ($("#listTable_wrapper").hasClass("initialized")) {
+        $("#ListPanel .panel-body").empty();
+        $("#ListPanel .panel-body").html('<table id="listTable" class="table table-hover display" name="listTable">\n\
+                                            </table><div class="marginBottom20"></div>');
+    }
+
+    if (selectTag !== "") {
+        //configure and create the dataTable
+        var jqxhr = $.getJSON("ReadTestCaseExecution", "Tag=" + selectTag + "&" + statusFilter.serialize());
+        $.when(jqxhr).then(function (data) {
+            var configurations = new TableConfigurationsServerSide("listTable", "ReadTestCaseExecution?Tag=" + selectTag + "&" + statusFilter.serialize(), "testList", aoColumnsFunc(data.Columns));
+
+            createDataTable(configurations);
+            $('#listTable_wrapper').not('.initialized').addClass('initialized');
+        });
+    }
+}
+
+function loadReport() {
+    var selectTag = $("#selectTag option:selected").text();
+
     //clear the old report content before reloading it
     $("#ReportByStatusTable").empty();
     $("#statusChart").empty();
@@ -152,14 +173,7 @@ function loadReport() {
     }
     if (selectTag !== "") {
         //configure and create the dataTable
-//        var jqxhr = $.getJSON("ReadTestCaseExecution", "Tag=" + selectTag + "&" + statusFilter.serialize());
-//        $.when(jqxhr).then(function (data) {
-//            var configurations = new TableConfigurationsServerSide("listTable", "ReadTestCaseExecution?Tag=" + selectTag + "&" + statusFilter.serialize(), "testList", aoColumnsFunc(data.Columns));
-//
-//            createDataTable(configurations);
-//            $('#listTable_wrapper').not('.initialized').addClass('initialized');
-//        });
-
+        loadReportList();
 
         var jqxhr = $.get("GetReportData", {CampaignName: "null", Tag: selectTag}, "json");
         $.when(jqxhr).then(function (data) {
@@ -342,7 +356,7 @@ function createStatusFilter(total) {
         if (label !== "test") {
             $("#statusFilter").append('<label class="checkbox-inline">\n\
                                         <input type="checkbox" name=' + label + ' checked/>'
-                                        + label + '</label>');
+                    + label + '</label>');
         }
     }
 }
@@ -383,7 +397,7 @@ function loadReportByStatusTable(data) {
             $('<div class="total"></div>').text(total.test))
             ))));
     //format data to be used by the chart
-    createStatusFilter(total);
+//    createStatusFilter(total);
     var dataset = [];
     for (var label in total) {
         if (label !== "test") {

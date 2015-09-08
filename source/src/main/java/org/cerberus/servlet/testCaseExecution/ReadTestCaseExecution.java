@@ -217,13 +217,13 @@ public class ReadTestCaseExecution extends HttpServlet {
         /**
          * Get list of execution by tag, env, country, browser
          */
-        testCaseExecution = testCaseExecService.getTestCaseExecution(startPosition, length, columnName, sort, searchParameter, "", Tag, statusList);
+        testCaseExecution = testCaseExecService.readByStatusByCriteria(startPosition, length, columnName, sort, searchParameter, "", Tag, statusList);
         List<TestCaseWithExecution> testCaseWithExecutions = testCaseExecution.getDataList();
 
         /**
          * Get list of Execution in Queue by Tag
          */
-        testCaseExecutionInQueue = testCaseExecutionInQueueService.findTestCaseExecutionInQueuebyTag(startPosition, length, columnName, sort, searchParameter, "", Tag);
+        testCaseExecutionInQueue = testCaseExecutionInQueueService.readByStatusByCriteria(statusList, startPosition, length, columnName, sort, searchParameter, "", Tag);
         List<TestCaseWithExecution> testCaseWithExecutionsInQueue = testCaseExecutionInQueue.getDataList();
 
         /**
@@ -299,15 +299,15 @@ public class ReadTestCaseExecution extends HttpServlet {
         /**
          * Get list of execution by tag, env, country, browser
          */
-        testCaseExecution = testCaseExecService.getTestCaseExecution(startPosition, length, columnName, sort, searchParameter, "", Tag, statusList);
+        testCaseExecution = testCaseExecService.readByStatusByCriteria(startPosition, length, columnName, sort, searchParameter, "", Tag, statusList);
         List<TestCaseWithExecution> testCaseWithExecutions = testCaseExecution.getDataList();
 
         /**
          * Get list of Execution in Queue by Tag
          */
-        testCaseExecutionInQueue = testCaseExecutionInQueueService.findTestCaseExecutionInQueuebyTag(startPosition, length, columnName, sort, searchParameter, "", Tag);
+        testCaseExecutionInQueue = testCaseExecutionInQueueService.readByStatusByCriteria(statusList ,startPosition, length, columnName, sort, searchParameter, "", Tag);
         List<TestCaseWithExecution> testCaseWithExecutionsInQueue = testCaseExecutionInQueue.getDataList();
-
+        
         /**
          * Feed hash map with execution from the two list (to get only one by
          * test,testcase,country,env,browser)
