@@ -99,7 +99,7 @@
 
 
             IApplicationService applicationService = appContext.getBean(IApplicationService.class);
-            List<Application> appList = applicationService.findApplicationBySystem(MySystem);
+            List<Application> appList = applicationService.readBySystem_Deprecated(MySystem);
             List<Invariant> myInvariants = invariantService.findInvariantByIdGp1("TCSTATUS", "Y");
             IDocumentationService docService = appContext.getBean(IDocumentationService.class);
         %>
@@ -133,7 +133,7 @@
         <%
             if (filterApp){
                 appList=new ArrayList<Application>();
-                appList.add(applicationService.findApplicationByKey(appSel));
+                appList.add(applicationService.readByKey_Deprecated(appSel));
             }
 
             for (Application applicationL : appList){
