@@ -543,7 +543,6 @@ function createDataTable(tableConfigurations) {
         domConf = 'l<"showInlineElement pull-left marginLeft5"f>rti<"marginTop5"p>';
     }
 
-    var lang = getDataTableLanguage();
 
     var configs = {};
     configs["dom"] = domConf;
@@ -570,7 +569,6 @@ function createDataTable(tableConfigurations) {
         configs["sAjaxSource"] = tableConfigurations.ajaxSource;
         configs["sAjaxDataProp"] = tableConfigurations.ajaxProp;
         configs["fnServerData"] = function (sSource, aoData, fnCallback, oSettings) {
-            console.log(aoData);
 
             oSettings.jqXHR = $.ajax({
                 "dataType": 'json',

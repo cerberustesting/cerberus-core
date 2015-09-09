@@ -48,7 +48,9 @@ function aoColumnsFunc(Columns) {
             "sName": "application",
             "title": "application"
         },
-        {"data": "status",
+        {
+            "bVisible": false,
+            "data": "status",
             "sName": "status",
             "title": "status"
         },
@@ -56,11 +58,13 @@ function aoColumnsFunc(Columns) {
             "sName": "description",
             "title": "description"
         },
-        {"data": "bugId",
+        {"bVisible": false,
+            "data": "bugId",
             "sName": "bugId",
             "title": "bugId"
         },
-        {"data": "function",
+        {"visible": false,
+            "data": "function",
             "sName": "function",
             "title": "function"
         }
@@ -85,7 +89,7 @@ function aoColumnsFunc(Columns) {
                     var executionLink = generateExecutionLink(data.ControlStatus, data.ID);
                     var glyphClass = getRowClass(data.ControlStatus);
                     var cell = '<div class="progress-bar status' + data.ControlStatus + '" href="./ExecutionDetail.jsp?id_tc=' + data.ID + '" role="progressbar" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100" style="width: 100%;">\n\
-                            <span class="' + glyphClass.glyph + ' marginRight5"></span>' + data.ControlStatus + '</div>';
+                            <span class="' + glyphClass.glyph + ' marginRight5"></span>' + data.ControlStatus + executionLink + '</div>';
                     return cell;
                 } else {
                     return data;
@@ -412,9 +416,9 @@ function loadReportByStatusTable(data) {
 function generateExecutionLink(status, id) {
     var result = "";
     if (status === "NE") {
-        result = "<a href='./RunTests.jsp?queuedExecution=" + id + "'>" + id + "</a>";
+        result = "<a class='test-link' href='./RunTests.jsp?queuedExecution=" + id + "'>" + id + "</a>";
     } else {
-        result = "<a href='./ExecutionDetail.jsp?id_tc=" + id + "'>" + id + "</a>";
+        result = "<a class='test-link' href='./ExecutionDetail.jsp?id_tc=" + id + "'>" + id + "</a>";
     }
     return result;
 }

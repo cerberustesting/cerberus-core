@@ -385,8 +385,8 @@ public class ReadTestCaseExecution extends HttpServlet {
 
         JSONObject jsonResponse = new JSONObject();
         jsonResponse.put("testList", lines);
-        jsonResponse.put("iTotalRecords", testCaseWithExecutionsList.size());
-        jsonResponse.put("iTotalDisplayRecords", testCaseWithExecutionsList.size());
+        jsonResponse.put("iTotalRecords", testCaseWithExecutions.size());
+        jsonResponse.put("iTotalDisplayRecords", testCaseWithExecutions.size());
 
         answer.setItem(jsonResponse);
         answer.setResultMessage(new MessageEvent(MessageEventEnum.DATA_OPERATION_OK));

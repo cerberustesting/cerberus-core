@@ -100,6 +100,20 @@
     font-size: 30px;
 }
 
+.progress-bar {
+    font-weight: bold;
+}
+
+.test-link {
+    font-weight: normal;
+    margin-left: 10px;
+    color: #FFF;
+}
+
+.test-link:hover {
+    text-decoration: underline;
+}
+
 .total {
     font-size: 30px;
 }
@@ -140,6 +154,10 @@
 
 #tagFilter {
     margin: 5px;
+}
+
+#statusFilter {
+    display: inline-block;
 }
 
 .color-box {   
