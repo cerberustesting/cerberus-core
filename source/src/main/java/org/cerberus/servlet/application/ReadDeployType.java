@@ -37,7 +37,6 @@ import org.cerberus.exception.CerberusException;
 import org.cerberus.service.IDeployTypeService;
 import org.cerberus.service.impl.DeployTypeService;
 import org.cerberus.util.ParameterParserUtil;
-import org.cerberus.util.answer.Answer;
 import org.cerberus.util.answer.AnswerItem;
 import org.cerberus.util.answer.AnswerList;
 import org.json.JSONArray;
@@ -165,7 +164,6 @@ public class ReadDeployType extends HttpServlet {
 
         int startPosition = Integer.valueOf(ParameterParserUtil.parseStringParam(request.getParameter("iDisplayStart"), "0"));
         int length = Integer.valueOf(ParameterParserUtil.parseStringParam(request.getParameter("iDisplayLength"), "100000"));
-        /*int sEcho  = Integer.valueOf(request.getParameter("sEcho"));*/
 
         String searchParameter = ParameterParserUtil.parseStringParam(request.getParameter("sSearch"), "");
         int columnToSortParameter = Integer.parseInt(ParameterParserUtil.parseStringParam(request.getParameter("iSortCol_0"), "0"));
@@ -206,7 +204,7 @@ public class ReadDeployType extends HttpServlet {
 
         IDeployTypeService libService = appContext.getBean(IDeployTypeService.class);
 
-        //finds the project
+        //finds the Deploy Type
         AnswerItem answer = libService.readByKey(id);
 
         if (answer.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {

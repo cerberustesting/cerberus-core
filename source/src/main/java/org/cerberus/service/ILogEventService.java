@@ -23,6 +23,7 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.cerberus.entity.LogEvent;
 import org.cerberus.util.answer.Answer;
+import org.cerberus.util.answer.AnswerItem;
 import org.cerberus.util.answer.AnswerList;
 
 /**
@@ -30,6 +31,13 @@ import org.cerberus.util.answer.AnswerList;
  * @author vertigo
  */
 public interface ILogEventService {
+
+    /**
+     *
+     * @param logEventID
+     * @return
+     */
+    AnswerItem readByKey(long logEventID);
 
     /**
      *
@@ -41,14 +49,14 @@ public interface ILogEventService {
      * @param individualSearch
      * @return
      */
-    public AnswerList readByCriteria(int start, int amount, String colName, String dir, String searchTerm, String individualSearch);
+    AnswerList readByCriteria(int start, int amount, String colName, String dir, String searchTerm, String individualSearch);
 
     /**
      *
      * @param logevent
      * @return
      */
-    public Answer create(LogEvent logevent);
+    Answer create(LogEvent logevent);
 
     /**
      * This method is to be used when log is done from a public Servlet. It will
@@ -60,5 +68,5 @@ public interface ILogEventService {
      * @param request
      * @param log
      */
-    public void createPublicCalls(String page, String action, String log, HttpServletRequest request);
+    void createPublicCalls(String page, String action, String log, HttpServletRequest request);
 }

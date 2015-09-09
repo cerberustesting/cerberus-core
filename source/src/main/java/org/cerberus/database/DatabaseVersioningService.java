@@ -4610,6 +4610,23 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLS.append("  FOREIGN KEY (`deploytype`) REFERENCES `deploytype` (`deploytype`) ON DELETE SET NULL ON UPDATE CASCADE;");
         SQLInstruction.add(SQLS.toString());
 
+        // Documentation entries for Log Viewer page.
+        //-- ------------------------ 618
+        SQLS = new StringBuilder();
+        SQLS.append("INSERT INTO `documentation` (`DocTable`, `DocField`, `DocValue`, `Lang`, `DocLabel`, `DocDesc`) VALUES ");
+        SQLS.append(" ('page_logviewer', 'button_view', '', 'en', 'Log entry detail', ''),");
+        SQLS.append(" ('page_logviewer', 'button_view', '', 'fr', 'Detail du log', ''),");
+        SQLS.append(" ('logevent', 'remoteip', '', 'en', 'Remote IP', 'IP from which the user connected to Cerberus to perform the action.'),");
+        SQLS.append(" ('logevent', 'remoteip', '', 'fr', 'IP Distante', 'IP à partir de laquelle l\\'utilisateur s\\'est connecté à Cerberus.'),");
+        SQLS.append(" ('logevent', 'localip', '', 'en', 'Local IP', 'IP of the Cerberus server that provided the service.'),");
+        SQLS.append(" ('logevent', 'localip', '', 'fr', 'IP Locale', 'IP du serveur Cerberus qui a répondu à la requette.'),");
+        SQLS.append(" ('logevent', 'logeventid', '', 'en', 'Log Entry ID', 'Unique identifier of the log entry.'),");
+        SQLS.append(" ('logevent', 'logeventid', '', 'fr', 'Identifiant du log', 'Identifiant unique de l\\'entrée de log.');");
+        SQLInstruction.add(SQLS.toString());
+        
+        
+        
+        
         return SQLInstruction;
     }
 

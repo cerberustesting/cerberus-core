@@ -38,7 +38,10 @@
     <body>
         <%@ include file="include/header.html" %>
         <div class="container-fluid center" id="page-layout">
-
+            <%@ include file="include/messagesArea.html"%>
+            <%@ include file="include/utils/modal-confirmation.html"%>
+            <%@ include file="include/logevent/editLogEvent.html"%> 
+            
             <h1 class="page-title-line" id="title">Log Viewer</h1>
             <div id="logViewer" class="well">
                 <table id="logViewerTable" class="table table-hover display" name="logViewerTable"></table>
