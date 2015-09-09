@@ -576,12 +576,13 @@ public class ActionService implements IActionService {
              */
             if (element == null) {
                 timeToWait = 1000 * tCExecution.getSession().getDefaultWait();
-            }
-            if (StringUtil.isNumeric(element)) {
-                timeToWait = Long.valueOf(element);
             } else {
-                identifier = identifierService.convertStringToIdentifier(element);
-                identifierService.checkWebElementIdentifier(identifier.getIdentifier());
+                if (StringUtil.isNumeric(element)) {
+                    timeToWait = Long.valueOf(element);
+                } else {
+                    identifier = identifierService.convertStringToIdentifier(element);
+                    identifierService.checkWebElementIdentifier(identifier.getIdentifier());
+                }
             }
 
             if (tCExecution.getApplication().getType().equalsIgnoreCase("GUI")
