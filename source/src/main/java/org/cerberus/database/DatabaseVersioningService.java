@@ -4610,19 +4610,19 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLS.append("  FOREIGN KEY (`deploytype`) REFERENCES `deploytype` (`deploytype`) ON DELETE SET NULL ON UPDATE CASCADE;");
         SQLInstruction.add(SQLS.toString());
 
-        
         // New Documentation for the page TestCase - EN version
         //-- ------------------------ 618
         SQLS = new StringBuilder();
         SQLS.append("INSERT INTO `documentation` VALUES ");
-        SQLS.append("('page_testcase', 'tooltip_clicktocreate','','en','Property %P% is missing! Click to create a property!', \"\") "); 
-        SQLS.append(", ('page_testcase', 'tooltip_clicktooverride','','en','Property %P% is defined in the test: %T% - %TC% [step: %S%]. Click to override property!', \"\") "); 
-        SQLS.append(", ('page_testcase', 'tooltip_infooverriden','','en','Property %P% was overridden in the current Test Case. Original test case: %T% - %TC% [step: %S%]', \"\") "); 
-        SQLS.append(", ('page_testcase', 'undefined_error_message','','en','There are undefined properties! Please check them before proceed.', \"\") "); 
-        SQLS.append(", ('page_testcase', 'txt_property_not_defined','','en','** Property not defined **', \"\") "); 
+        SQLS.append("('page_testcase', 'tooltip_clicktocreate','','en','Property %P% is missing! Click to create a property!', \"\") ");
+        SQLS.append(", ('page_testcase', 'tooltip_clicktooverride','','en','Property %P% is defined in the test: %T% - %TC% [step: %S%]. Click to override property!', \"\") ");
+        SQLS.append(", ('page_testcase', 'tooltip_infooverriden','','en','Property %P% was overridden in the current Test Case. Original test case: %T% - %TC% [step: %S%]', \"\") ");
+        SQLS.append(", ('page_testcase', 'undefined_error_message','','en','There are undefined properties! Please check them before proceed.', \"\") ");
+        SQLS.append(", ('page_testcase', 'txt_property_not_defined','','en','** Property not defined **', \"\") ");
         SQLInstruction.add(SQLS.toString());
+
         // Documentation entries for Log Viewer page.
-        //-- ------------------------ 618
+        //-- ------------------------ 619
         SQLS = new StringBuilder();
         SQLS.append("INSERT INTO `documentation` (`DocTable`, `DocField`, `DocValue`, `Lang`, `DocLabel`, `DocDesc`) VALUES ");
         SQLS.append(" ('page_logviewer', 'button_view', '', 'en', 'Log entry detail', ''),");
@@ -4634,8 +4634,7 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLS.append(" ('logevent', 'logeventid', '', 'en', 'Log Entry ID', 'Unique identifier of the log entry.'),");
         SQLS.append(" ('logevent', 'logeventid', '', 'fr', 'Identifiant du log', 'Identifiant unique de l\\'entrée de log.');");
         SQLInstruction.add(SQLS.toString());
-        
-        
+
         
         
         return SQLInstruction;
