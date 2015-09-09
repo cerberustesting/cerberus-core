@@ -131,6 +131,6 @@ public interface ITestCaseExecutionDAO {
     
     AnswerList findTagList() throws CerberusException;
     
-    public AnswerList readByStatusByCriteria(int start, int amount, String column, String dir, String searchTerm, String individualSearch, String tag, List<String> statusList) throws CerberusException;
+    public AnswerList readByCriteria(int start, int amount, String column, String dir, String searchTerm, String individualSearch, String tag) throws CerberusException;
 
     }

@@ -124,6 +124,6 @@ public interface ITestCaseExecutionService {
     
     AnswerList findTagList() throws CerberusException;
     
-    AnswerList readByStatusByCriteria(int start, int amount, String column, String dir, String searchTerm, String individualSearch, String tag, List<String> statusList) throws CerberusException;
+    AnswerList readByCriteria(int start, int amount, String column, String dir, String searchTerm, String individualSearch, String tag) throws CerberusException;
     
 }
