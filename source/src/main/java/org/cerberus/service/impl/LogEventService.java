@@ -31,6 +31,7 @@ import org.cerberus.service.ILogEventService;
 import org.cerberus.service.IParameterService;
 import org.cerberus.util.ParameterParserUtil;
 import org.cerberus.util.answer.Answer;
+import org.cerberus.util.answer.AnswerItem;
 import org.cerberus.util.answer.AnswerList;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -48,6 +49,11 @@ public class LogEventService implements ILogEventService {
     private IFactoryLogEvent factoryLogEvent;
     @Autowired
     private IParameterService parameterService;
+
+    @Override
+    public AnswerItem readByKey(long logEventID) {
+        return logEventDAO.readByKey(logEventID);
+    }
 
     @Override
     public AnswerList readByCriteria(int start, int amount, String colName, String dir, String searchTerm, String individualSearch) {

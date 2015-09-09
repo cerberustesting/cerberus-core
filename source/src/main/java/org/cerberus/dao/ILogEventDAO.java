@@ -19,11 +19,11 @@ package org.cerberus.dao;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.List;
 
 import org.cerberus.entity.LogEvent;
 import org.cerberus.exception.CerberusException;
 import org.cerberus.util.answer.Answer;
+import org.cerberus.util.answer.AnswerItem;
 import org.cerberus.util.answer.AnswerList;
 
 /**
@@ -31,6 +31,13 @@ import org.cerberus.util.answer.AnswerList;
  * @author vertigo
  */
 public interface ILogEventDAO {
+
+    /**
+     *
+     * @param logEventID
+     * @return
+     */
+    AnswerItem readByKey(long logEventID);
 
     /**
      * @param start
@@ -48,7 +55,6 @@ public interface ILogEventDAO {
      *
      * @param logevent
      * @return true is log was inserted
-     * @throws CerberusException if we did not manage to insert the user.
      */
     Answer create(LogEvent logevent);
 

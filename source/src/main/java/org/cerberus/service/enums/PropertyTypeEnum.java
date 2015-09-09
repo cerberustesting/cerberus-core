@@ -1,4 +1,4 @@
-package org.cerberus.serviceEngine.impl;
+package org.cerberus.service.enums;
 /**
  * Enumeration that defines all property types
  * @author FNogueira

@@ -368,9 +368,8 @@ function validatesFileExtension(fileName, fileExtension) {
         $('#uploadOk').removeProp("disabled");
     } else {
         resetModalUpload();
-        var doc = getDoc();
-        var docGlobal = doc.page_global;
-        var localMessage = new Message("danger", +docGlobal.invalid_extension_message.docLabel + fileExtension + "!");
+        var doc = new Doc(); 
+        var localMessage = new Message("danger", doc.getDocLabel("page_global", "invalid_extension_message") + fileExtension + "!");
         showMessage(localMessage, $('#modalUpload'));
     }
 }
@@ -543,7 +542,6 @@ function createDataTable(tableConfigurations) {
         domConf = 'l<"showInlineElement pull-left marginLeft5"f>rti<"marginTop5"p>';
     }
 
-    var lang = getDataTableLanguage();
 
     var configs = {};
     configs["dom"] = domConf;
@@ -570,7 +568,6 @@ function createDataTable(tableConfigurations) {
         configs["sAjaxSource"] = tableConfigurations.ajaxSource;
         configs["sAjaxDataProp"] = tableConfigurations.ajaxProp;
         configs["fnServerData"] = function (sSource, aoData, fnCallback, oSettings) {
-            console.log(aoData);
 
             oSettings.jqXHR = $.ajax({
                 "dataType": 'json',

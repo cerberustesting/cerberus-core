@@ -1,4 +1,4 @@
-package org.cerberus.serviceEngine.impl;
+package org.cerberus.service.enums;
 /**
  * Enum that defines all system properties
  * @author FN

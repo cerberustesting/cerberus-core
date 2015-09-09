@@ -48,7 +48,9 @@ function aoColumnsFunc(Columns) {
             "sName": "application",
             "title": "application"
         },
-        {"data": "status",
+        {
+            "bVisible": false,
+            "data": "status",
             "sName": "status",
             "title": "status"
         },
@@ -56,11 +58,13 @@ function aoColumnsFunc(Columns) {
             "sName": "description",
             "title": "description"
         },
-        {"data": "bugId",
+        {"bVisible": false,
+            "data": "bugId",
             "sName": "bugId",
             "title": "bugId"
         },
-        {"data": "function",
+        {"visible": false,
+            "data": "function",
             "sName": "function",
             "title": "function"
         }
@@ -74,17 +78,18 @@ function aoColumnsFunc(Columns) {
             "data": function (row, type, val, meta) {
                 var dataTitle = meta.settings.aoColumns[meta.col].sTitle;
                 if (row.hasOwnProperty("execTab") && row["execTab"].hasOwnProperty(dataTitle)) {
-                    return row["execTab"][dataTitle].ControlStatus;
+                    return row["execTab"][dataTitle];
                 } else {
                     return "";
                 }
             },
             "sClass": "center",
-            "mRender": function (data, type, obj) {
+            "mRender": function (data) {
                 if (data !== "") {
-                    var glyphClass = getRowClass(data);
-                    var cell = '<div class="progress-bar status' + data + '" role="progressbar" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100" style="width: 100%;">\n\
-                            <span class="' + glyphClass.glyph + ' marginRight5"></span>' + data + '</div>';
+                    var executionLink = generateExecutionLink(data.ControlStatus, data.ID);
+                    var glyphClass = getRowClass(data.ControlStatus);
+                    var cell = '<div class="progress-bar status' + data.ControlStatus + '" href="./ExecutionDetail.jsp?id_tc=' + data.ID + '" role="progressbar" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100" style="width: 100%;">\n\
+                            <span class="' + glyphClass.glyph + ' marginRight5"></span>' + data.ControlStatus + executionLink + '</div>';
                     return cell;
                 } else {
                     return data;
@@ -172,9 +177,10 @@ function loadReport() {
                                             </table><div class="marginBottom20"></div>');
     }
     if (selectTag !== "") {
-        //configure and create the dataTable
+        //handle the test case execution list display
         loadReportList();
 
+        //Retrieve data for charts and draw them
         var jqxhr = $.get("GetReportData", {CampaignName: "null", Tag: selectTag}, "json");
         $.when(jqxhr).then(function (data) {
             loadReportByStatusTable(data);
@@ -334,7 +340,7 @@ function loadReportByStatusChart(data) {
             });
 }
 
-function appendPanelStatus(axis, status, total) {
+function appendPanelStatus(status, total) {
     var rowClass = getRowClass(status);
     $("#ReportByStatusTable").append(
             $("<div class='panel " + rowClass.panel + "'></div>").append(
@@ -380,13 +386,13 @@ function loadReportByStatusTable(data) {
         }
     }
 
-    // create each line of the table
+    // create a panel for each control status
     for (var label in total) {
         if (label !== "test") {
-            appendPanelStatus(data.axis[index], label, total);
+            appendPanelStatus(label, total);
         }
     }
-// add a line for the total
+// add a panel for the total
     $("#ReportByStatusTable").append(
             $("<div class='panel panel-primary'></div>").append(
             $('<div class="panel-heading"></div>').append(
@@ -405,4 +411,14 @@ function loadReportByStatusTable(data) {
         }
     }
     loadReportByStatusChart(dataset);
+}
+
+function generateExecutionLink(status, id) {
+    var result = "";
+    if (status === "NE") {
+        result = "<a class='test-link' href='./RunTests.jsp?queuedExecution=" + id + "'>" + id + "</a>";
+    } else {
+        result = "<a class='test-link' href='./ExecutionDetail.jsp?id_tc=" + id + "'>" + id + "</a>";
+    }
+    return result;
 }

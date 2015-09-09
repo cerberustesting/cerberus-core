@@ -652,12 +652,12 @@
                             </td>
                         <%}%>    
                         <% if (tcGroup.equalsIgnoreCase("AUTOMATED")) {%>
-                            <td><a href="RunTests.jsp?Test=<%=test%>&TestCase=<%=testCase%>&MySystem=<%=appSystem%>&Country=<%=country%>&Environment=<%=environment%>&Tag=<%=testCaseExecution.getTag()==null?"" : tagEncoded%>"
+                            <td><a href="RunTests.jsp?Test=<%=test%>&TestCase=<%=testCase%>&MySystem=<%=appSystem%>&Country=<%=country%>&Environment=<%=environment%>&browser=<%=browser%>&Tag=<%=testCaseExecution.getTag()==null?"" : tagEncoded%>"
                                    title="Allows the user to execute the current test case. The user can modify the configurations associated with the execution: tag, environment, country... ">
                                     Run the same Test Case again</a></td>
                         <% } else if (tcGroup.equalsIgnoreCase("MANUAL")){%>
                         <td>
-                            <a href="RunTests.jsp?Test=<%=test%>&TestCase=<%=testCase%>&MySystem=<%=appSystem%>&Country=<%=country%>&Environment=<%=environment%>&Tag=<%=testCaseExecution.getTag()==null?"" : tagEncoded%>&manualExecution=Y"
+                            <a href="RunTests.jsp?Test=<%=test%>&TestCase=<%=testCase%>&MySystem=<%=appSystem%>&Country=<%=country%>&Environment=<%=environment%>&browser=<%=browser%>&Tag=<%=testCaseExecution.getTag()==null?"" : tagEncoded%>&manualExecution=Y"
                                 title="Allows the user to execute the current test case. The user can modify the configurations associated with the execution: tag, environment, country... ">
                                 Edit configurations and Run the same Test Case again</a>
                         </td>

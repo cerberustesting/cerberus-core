@@ -19,6 +19,8 @@
  */
 package org.cerberus.serviceEngine.impl;
  
+import org.cerberus.service.enums.PropertyTypeEnum;
+import org.cerberus.service.enums.SystemPropertyEnum;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;

@@ -886,7 +886,7 @@ public class TestCaseExecutionDAO implements ITestCaseExecutionDAO {
     }
 
     @Override
-    public AnswerList readByStatusByCriteria(int start, int amount, String column, String dir, String searchTerm, String individualSearch, String tag, List<String> statusList) throws CerberusException {
+    public AnswerList readByCriteria(int start, int amount, String column, String dir, String searchTerm, String individualSearch, String tag) throws CerberusException {
         StringBuilder gSearch = new StringBuilder();
         MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
         AnswerList answer = new AnswerList();
@@ -897,19 +897,6 @@ public class TestCaseExecutionDAO implements ITestCaseExecutionDAO {
                 .append("and tce.TestCase = tc.TestCase ")
                 .append("where tce.tag = ? ");
         
-        if (!statusList.isEmpty()) {
-            int i = 0;
-            query.append("and (");
-            while (i < statusList.size() - 1) {
-                query.append(" ControlStatus = '");
-                query.append(statusList.get(i));
-                query.append("' or ");
-                i++;
-            }
-            query.append(" ControlStatus = '");
-            query.append(statusList.get(i));
-            query.append("')");
-        }
 
         query.append(" order by test, testcase, ID desc) as tce, application app ")
                 .append("where tce.application = app.application ");

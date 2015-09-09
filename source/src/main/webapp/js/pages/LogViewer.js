@@ -22,12 +22,12 @@ $.when($.getScript("js/pages/global/global.js")).then(function () {
     $(document).ready(function () {
         displayPageLabel();
         //configure and create the dataTable
-        var configurations = new TableConfigurationsServerSide("logViewerTable", "ReadLogEvent", "aaData", aoColumnsFunc());
+        var configurations = new TableConfigurationsServerSide("logViewerTable", "ReadLogEvent", "contentTable", aoColumnsFunc());
 
         createDataTable(configurations);
         //By default, sort the log messages from newest to oldest
         var oTable = $("#logViewerTable").dataTable();
-        oTable.fnSort([0, 'desc']);
+        oTable.fnSort([1, 'desc']);
     });
 });
 
@@ -37,13 +37,58 @@ function displayPageLabel() {
     displayHeaderLabel(doc);
     $("#pageTitle").html(doc.getDocLabel("page_logviewer", "title"));
     $("#title").html(doc.getDocOnline("page_logviewer", "title"));
+    $("[name='editLogEventField']").html(doc.getDocOnline("page_logviewer", "button_view"));
+    $("[name='logeventidField']").html(doc.getDocOnline("logevent", "logeventid"));
+    $("[name='timeField']").html(doc.getDocOnline("logevent", "time"));
+    $("[name='pageField']").html(doc.getDocOnline("logevent", "page"));
+    $("[name='actionField']").html(doc.getDocOnline("logevent", "action"));
+    $("[name='loginField']").html(doc.getDocOnline("logevent", "login"));
+    $("[name='logField']").html(doc.getDocOnline("logevent", "log"));
+    $("[name='remoteipField']").html(doc.getDocOnline("logevent", "remoteip"));
+    $("[name='localipField']").html(doc.getDocOnline("logevent", "localip"));
     displayFooter(doc);
+    displayGlobalLabel(doc);
+}
+
+function editEntry(id) {
+    clearResponseMessageMainPage();
+    var jqxhr = $.getJSON("ReadLogEvent", "logeventid=" + id);
+    $.when(jqxhr).then(function (data) {
+        var obj = data["contentTable"];
+
+        var formEdit = $('#editEntryModal');
+
+        formEdit.find("#logeventid").prop("value", id);
+        formEdit.find("#time").prop("value", obj["time"]);
+        formEdit.find("#remoteip").prop("value", obj["remoteIP"]);
+        formEdit.find("#localip").prop("value", obj["localIP"]);
+        formEdit.find("#page").prop("value", obj["page"]);
+        formEdit.find("#action").prop("value", obj["action"]);
+        formEdit.find("#login").prop("value", obj["login"]);
+        formEdit.find("#log").prop("value", obj["log"]);
+
+        formEdit.modal('show');
+    });
 }
 
 function aoColumnsFunc() {
     var doc = new Doc();
 
     var aoColumns = [
+        {"data": "button",
+            "sName": "Actions",
+            "title": doc.getDocLabel("page_global", "columnAction"),
+            "bSortable": false,
+            "bSearchable": false,
+            "mRender": function (data, type, obj) {
+                var editEntry = '<button id="editEntry" onclick="editEntry(\'' + obj["LogEventID"] + '\');"\n\
+                                class="editEntry btn btn-default btn-xs margin-right5" \n\
+                                name="editEntry" title="' + doc.getDocLabel("page_logviewer", "button_view") + '" type="button">\n\
+                                <span class="glyphicon glyphicon-pencil"></span></button>';
+
+                return '<div class="center btn-group width150">' + editEntry + '</div>';
+            }
+        },
         {"data": "time", "sName": "Time", "title": doc.getDocOnline("logevent", "time")},
         {"data": "login", "sName": "Login", "title": doc.getDocOnline("logevent", "login")},
         {"data": "page", "sName": "Page", "title": doc.getDocOnline("logevent", "page")},

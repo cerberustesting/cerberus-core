@@ -21,7 +21,6 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Statement;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
@@ -32,13 +31,10 @@ import org.cerberus.database.DatabaseSpring;
 import org.cerberus.entity.LogEvent;
 import org.cerberus.entity.MessageEvent;
 import org.cerberus.entity.MessageEventEnum;
-import org.cerberus.entity.MessageGeneral;
-import org.cerberus.entity.MessageGeneralEnum;
-import org.cerberus.exception.CerberusException;
 import org.cerberus.factory.IFactoryLogEvent;
 import org.cerberus.log.MyLogger;
-import org.cerberus.util.StringUtil;
 import org.cerberus.util.answer.Answer;
+import org.cerberus.util.answer.AnswerItem;
 import org.cerberus.util.answer.AnswerList;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
@@ -60,6 +56,58 @@ public class LogEventDAO implements ILogEventDAO {
     private final String SQL_DUPLICATED_CODE = "23000";
 
     @Override
+    public AnswerItem readByKey(long logEventID) {
+        AnswerItem ans = new AnswerItem();
+        LogEvent result = null;
+        final String query = "SELECT * FROM logevent WHERE `logEventID` = ?";
+        MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
+
+        Connection connection = this.databaseSpring.connect();
+        try {
+            PreparedStatement preStat = connection.prepareStatement(query);
+            try {
+                preStat.setLong(1, logEventID);
+                ResultSet resultSet = preStat.executeQuery();
+                try {
+                    if (resultSet.first()) {
+                        result = loadFromResultSet(resultSet);
+                        msg.setDescription(msg.getDescription().replace("%ITEM%", "LogEvent").replace("%OPERATION%", "SELECT"));
+                        ans.setItem(result);
+                    }
+                } catch (SQLException exception) {
+                    MyLogger.log(LogEventDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
+                    msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_UNEXPECTED_ERROR);
+                    msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", exception.toString()));
+                } finally {
+                    resultSet.close();
+                }
+            } catch (SQLException exception) {
+                MyLogger.log(LogEventDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
+                msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_UNEXPECTED_ERROR);
+                msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", exception.toString()));
+            } finally {
+                preStat.close();
+            }
+        } catch (SQLException exception) {
+            MyLogger.log(LogEventDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
+            msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_UNEXPECTED_ERROR);
+            msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", exception.toString()));
+        } finally {
+            try {
+                if (connection != null) {
+                    connection.close();
+                }
+            } catch (SQLException e) {
+                MyLogger.log(LogEventDAO.class.getName(), Level.WARN, e.toString());
+            }
+        }
+
+        //sets the message
+        ans.setResultMessage(msg);
+        return ans;
+    }
+    
+    @Override
     public AnswerList readByCriteria(int start, int amount, String colName, String dir, String searchTerm, String individualSearch) {
         AnswerList response = new AnswerList();
         MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
@@ -72,21 +120,11 @@ public class LogEventDAO implements ILogEventDAO {
         //were applied -- used for pagination p
         query.append("SELECT SQL_CALC_FOUND_ROWS * FROM logevent ");
 
-        gSearch.append(" where (`time` like '%");
-        gSearch.append(searchTerm);
-        gSearch.append("%'");
-        gSearch.append(" or `login` like '%");
-        gSearch.append(searchTerm);
-        gSearch.append("%'");
-        gSearch.append(" or `page` like '%");
-        gSearch.append(searchTerm);
-        gSearch.append("%'");
-        gSearch.append(" or `action` like '%");
-        gSearch.append(searchTerm);
-        gSearch.append("%'");
-        gSearch.append(" or `log` like '%");
-        gSearch.append(searchTerm);
-        gSearch.append("%')");
+        gSearch.append(" where (`time` like '%").append(searchTerm).append("%'");
+        gSearch.append(" or `login` like '%").append(searchTerm).append("%'");
+        gSearch.append(" or `page` like '%").append(searchTerm).append("%'");
+        gSearch.append(" or `action` like '%").append(searchTerm).append("%'");
+        gSearch.append(" or `log` like '%").append(searchTerm).append("%')");
 
         if (!searchTerm.equals("") && !individualSearch.equals("")) {
             searchSQL.append(gSearch.toString());
@@ -101,14 +139,8 @@ public class LogEventDAO implements ILogEventDAO {
         }
 
         query.append(searchSQL);
-        query.append("order by `");
-        query.append(colName);
-        query.append("` ");
-        query.append(dir);
-        query.append(" limit ");
-        query.append(start);
-        query.append(" , ");
-        query.append(amount);
+        query.append("order by `").append(colName).append("` ").append(dir);
+        query.append(" limit ").append(start).append(" , ").append(amount);
 
         Connection connection = this.databaseSpring.connect();
         try {
