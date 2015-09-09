@@ -22,7 +22,7 @@ package org.cerberus.serviceEngine.impl;
 import java.util.Arrays;
 import org.cerberus.entity.Identifier;
 import org.cerberus.entity.MessageEvent;
-import org.cerberus.entity.MessageEventEnum;
+import org.cerberus.enums.MessageEventEnum;
 import org.cerberus.exception.CerberusEventException;
 import org.cerberus.serviceEngine.IIdentifierService;
 import org.springframework.stereotype.Service;

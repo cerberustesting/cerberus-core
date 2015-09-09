@@ -36,7 +36,7 @@ import javax.imageio.ImageIO;
 import org.apache.log4j.Level;
 import org.cerberus.entity.Identifier;
 import org.cerberus.entity.MessageEvent;
-import org.cerberus.entity.MessageEventEnum;
+import org.cerberus.enums.MessageEventEnum;
 import org.cerberus.entity.Session;
 import org.cerberus.exception.CerberusEventException;
 import org.cerberus.log.MyLogger;

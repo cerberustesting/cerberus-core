@@ -17,30 +17,24 @@
  * You should have received a copy of the GNU General Public License
  * along with Cerberus.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.cerberus.entity;
+package org.cerberus.enums;
 
 /**
- * Specifies the types of test data lib that are available in the library.
+ * Enumeration that saves the codes used by the messages.
  * @author FNogueira
  */
-public enum TestDataLibTypeEnum {
-    STATIC("STATIC", "STATIC"),
-    SQL("SQL", "SQL"),
-    SOAP("SOAP", "SOAP");
+public enum MessageCodeEnum {
+    
+    DATA_OPERATION_CODE_SUCCESS("OK"),
+    DATA_OPERATION_CODE_ERROR("KO");
     
     private final String code;
-    private final String description;
-    
-    private TestDataLibTypeEnum(String code, String description) {
-        this.code = code;
-        this.description = description; 
-    }
-     
+
     public String getCode() {
         return code;
     }
-
-    public String getDescription() {
-        return description;
-    } 
+    private MessageCodeEnum(String code){
+        this.code = code;
+    }
+    
 }

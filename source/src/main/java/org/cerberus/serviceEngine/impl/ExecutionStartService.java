@@ -27,7 +27,7 @@ import org.cerberus.entity.CountryEnvironmentApplication;
 import org.cerberus.entity.ExecutionUUID;
 import org.cerberus.entity.Invariant;
 import org.cerberus.entity.MessageGeneral;
-import org.cerberus.entity.MessageGeneralEnum;
+import org.cerberus.enums.MessageGeneralEnum;
 import org.cerberus.entity.TCase;
 import org.cerberus.entity.TestCaseExecution;
 import org.cerberus.exception.CerberusException;

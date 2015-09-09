@@ -30,7 +30,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.cerberus.entity.Group;
-import org.cerberus.entity.MessageGeneralEnum;
+import org.cerberus.enums.MessageGeneralEnum;
 import org.cerberus.entity.TCase;
 import org.cerberus.entity.Test;
 import org.cerberus.entity.TestCaseCountry;

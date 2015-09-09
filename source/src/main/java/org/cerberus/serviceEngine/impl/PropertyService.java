@@ -19,8 +19,8 @@
  */
 package org.cerberus.serviceEngine.impl;
  
-import org.cerberus.service.enums.PropertyTypeEnum;
-import org.cerberus.service.enums.SystemPropertyEnum;
+import org.cerberus.enums.PropertyTypeEnum;
+import org.cerberus.enums.SystemPropertyEnum;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -31,7 +31,7 @@ import org.apache.log4j.Level;
 import org.cerberus.entity.Identifier;
 import org.cerberus.entity.TestCaseSubDataAccessProperty;
 import org.cerberus.entity.MessageEvent;
-import org.cerberus.entity.MessageEventEnum;
+import org.cerberus.enums.MessageEventEnum;
 import org.cerberus.entity.MessageGeneral;  
 import org.cerberus.entity.Property;
 import org.cerberus.entity.SoapLibrary;
@@ -43,7 +43,7 @@ import org.cerberus.entity.TestCaseStepExecution;
 import org.cerberus.entity.TestDataLib;
 import org.cerberus.entity.TestDataLibData;
 import org.cerberus.entity.TestDataLibResult;
-import org.cerberus.entity.TestDataLibTypeEnum;
+import org.cerberus.enums.TestDataLibTypeEnum;
 import org.cerberus.exception.CerberusEventException;
 import org.cerberus.exception.CerberusException;
 import org.cerberus.factory.IFactoryTestCaseCountryProperties;

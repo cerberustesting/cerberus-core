@@ -24,7 +24,7 @@ import java.util.List;
 
 import org.cerberus.dao.IProjectDAO;
 import org.cerberus.entity.MessageGeneral;
-import org.cerberus.entity.MessageGeneralEnum;
+import org.cerberus.enums.MessageGeneralEnum;
 import org.cerberus.entity.Project;
 import org.cerberus.exception.CerberusException;
 import org.cerberus.service.IProjectService;

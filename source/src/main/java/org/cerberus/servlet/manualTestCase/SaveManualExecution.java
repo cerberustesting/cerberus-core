@@ -30,7 +30,7 @@ import org.apache.log4j.Level;
 import org.cerberus.entity.Application;
 import org.cerberus.entity.CountryEnvParam;
 import org.cerberus.entity.MessageGeneral;
-import org.cerberus.entity.MessageGeneralEnum;
+import org.cerberus.enums.MessageGeneralEnum;
 import org.cerberus.entity.TCase;
 import org.cerberus.entity.TestCaseExecution;
 import org.cerberus.entity.TestCaseExecutionSysVer;

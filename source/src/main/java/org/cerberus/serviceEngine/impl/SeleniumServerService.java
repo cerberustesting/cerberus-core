@@ -35,7 +35,7 @@ import org.apache.http.message.BasicHttpEntityEnclosingRequest;
 import org.apache.log4j.Level;
 import org.cerberus.entity.Invariant;
 import org.cerberus.entity.MessageGeneral;
-import org.cerberus.entity.MessageGeneralEnum;
+import org.cerberus.enums.MessageGeneralEnum;
 import org.cerberus.entity.Selenium;
 import org.cerberus.entity.Session;
 import org.cerberus.entity.SessionCapabilities;

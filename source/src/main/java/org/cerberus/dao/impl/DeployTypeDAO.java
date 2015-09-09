@@ -29,7 +29,7 @@ import org.cerberus.dao.IDeployTypeDAO;
 import org.cerberus.database.DatabaseSpring;
 import org.cerberus.entity.DeployType;
 import org.cerberus.entity.MessageEvent;
-import org.cerberus.entity.MessageEventEnum;
+import org.cerberus.enums.MessageEventEnum;
 import org.cerberus.factory.IFactoryDeployType;
 import org.cerberus.factory.impl.FactoryDeployType;
 import org.cerberus.log.MyLogger;

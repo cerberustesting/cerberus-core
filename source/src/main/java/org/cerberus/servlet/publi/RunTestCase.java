@@ -39,7 +39,7 @@ import org.apache.log4j.Level;
 import org.cerberus.entity.ExecutionSOAPResponse;
 import org.cerberus.entity.ExecutionUUID;
 import org.cerberus.entity.MessageGeneral;
-import org.cerberus.entity.MessageGeneralEnum;
+import org.cerberus.enums.MessageGeneralEnum;
 import org.cerberus.entity.Parameter;
 import org.cerberus.entity.Robot;
 import org.cerberus.entity.Session;

@@ -32,7 +32,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.cerberus.entity.LogEvent;
 import org.cerberus.entity.MessageEvent;
-import org.cerberus.entity.MessageEventEnum;
+import org.cerberus.enums.MessageEventEnum;
 import org.cerberus.exception.CerberusException;
 import org.cerberus.service.ILogEventService;
 import org.cerberus.service.impl.LogEventService;

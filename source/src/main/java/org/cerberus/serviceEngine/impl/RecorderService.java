@@ -38,7 +38,7 @@ import org.cerberus.entity.TestCaseStepActionControlExecution;
 import org.cerberus.entity.TestCaseStepActionExecution;
 import org.cerberus.entity.TestDataLibResult;
 import org.cerberus.entity.TestDataLibResultSOAP;
-import org.cerberus.entity.TestDataLibTypeEnum;
+import org.cerberus.enums.TestDataLibTypeEnum;
 import org.cerberus.exception.CerberusException;
 import org.cerberus.log.MyLogger;
 import org.cerberus.service.IParameterService;

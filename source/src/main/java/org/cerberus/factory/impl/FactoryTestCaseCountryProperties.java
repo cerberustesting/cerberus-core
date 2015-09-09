@@ -22,7 +22,7 @@ package org.cerberus.factory.impl;
 import org.cerberus.entity.TestCaseCountryProperties;
 import org.cerberus.entity.TestCaseSubDataAccessProperty;
 import org.cerberus.factory.IFactoryTestCaseCountryProperties;
-import org.cerberus.service.enums.PropertyTypeEnum;
+import org.cerberus.enums.PropertyTypeEnum;
 import org.springframework.stereotype.Service;
 
 /**

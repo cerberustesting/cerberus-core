@@ -30,7 +30,7 @@ import org.cerberus.dao.IBuildRevisionInvariantDAO;
 import org.cerberus.database.DatabaseSpring;
 import org.cerberus.entity.BuildRevisionInvariant;
 import org.cerberus.entity.MessageGeneral;
-import org.cerberus.entity.MessageGeneralEnum;
+import org.cerberus.enums.MessageGeneralEnum;
 import org.cerberus.exception.CerberusException;
 import org.cerberus.factory.IFactoryBuildRevisionInvariant;
 import org.cerberus.factory.impl.FactoryBuildRevisionInvariant;
