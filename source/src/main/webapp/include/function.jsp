@@ -17,7 +17,7 @@
   ~ You should have received a copy of the GNU General Public License
   ~ along with Cerberus.  If not, see <http://www.gnu.org/licenses/>.
 --%>
-<%@page import="org.cerberus.entity.MessageEventEnum"%>
+<%@page import="org.cerberus.enums.MessageEventEnum"%>
 <%@page import="org.cerberus.util.answer.AnswerList"%>
 <%@page import="org.cerberus.entity.SessionCounter"%>
 <%@page import="org.cerberus.entity.Project"%>
@@ -44,8 +44,8 @@
 <%@page import="java.text.SimpleDateFormat"%>
 <%@page import="org.cerberus.version.Infos"%>
 <%@page import="org.cerberus.database.DatabaseSpring" %>
-<%@ page import="org.cerberus.service.IDeployTypeService" %>
-<%@ page import="org.cerberus.entity.DeployType" %>
+<%@page import="org.cerberus.service.IDeployTypeService" %>
+<%@page import="org.cerberus.entity.DeployType" %>
 <%!String ComboInvariant(ApplicationContext appContext, String HTMLComboName, String HTMLComboStyle, String HTMLId, String HTMLClass, String combonumber, String value, String HTMLOnChange, String firstOption) {
         try {
             IInvariantService invFunctionService = appContext.getBean(IInvariantService.class);
