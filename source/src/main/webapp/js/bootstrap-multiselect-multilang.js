@@ -216,7 +216,6 @@
              */
             buttonText: function(options, select) {
                 if (options.length === 0) {
-                    console.log(this.nonSelectedText);
                     return this.nonSelectedText;
                 }
                 else if (this.allSelectedText 

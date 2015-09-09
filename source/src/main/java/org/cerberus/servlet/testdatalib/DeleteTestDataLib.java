@@ -26,8 +26,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import org.cerberus.entity.MessageEvent;
-import org.cerberus.entity.MessageEventEnum;
-import org.cerberus.exception.CerberusException;
+import org.cerberus.entity.MessageEventEnum; 
 import org.cerberus.factory.IFactoryLogEvent;
 import org.cerberus.factory.impl.FactoryLogEvent;
 import org.cerberus.service.ILogEventService;
@@ -64,7 +63,7 @@ public class DeleteTestDataLib extends HttpServlet {
         try {
             //common attributes
             int testDataLibID = Integer.parseInt(request.getParameter("id"));
-            String name = request.getParameter("name");
+            
             ApplicationContext appContext = WebApplicationContextUtils.getWebApplicationContext(this.getServletContext());
 
             //removes the testdatalibentry
@@ -74,10 +73,13 @@ public class DeleteTestDataLib extends HttpServlet {
             jsonResponse.put("messageType", answer.getResultMessage().getMessage().getCodeString());
             jsonResponse.put("message", answer.getResultMessage().getDescription());
 
-            ILogEventService logEventService = appContext.getBean(LogEventService.class);
-            IFactoryLogEvent factoryLogEvent = appContext.getBean(FactoryLogEvent.class);
-            logEventService.create(factoryLogEvent.create(0, 0, request.getUserPrincipal().getName(), null, "/DeleteTestDataLib", "DELETE", "Delete TestDataLib : " + testDataLibID, "", ""));
-
+            //  Adding Log entry.
+            if(answer.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())){
+                ILogEventService logEventService = appContext.getBean(LogEventService.class);
+                IFactoryLogEvent factoryLogEvent = appContext.getBean(FactoryLogEvent.class);
+                logEventService.create(factoryLogEvent.create(0, 0, request.getUserPrincipal().getName(), null, "/DeleteTestDataLib", 
+                        "DELETE", "Delete TestDataLib : " + testDataLibID, "", ""));
+            }
             response.setContentType("application/json");
             response.getWriter().print(jsonResponse);
             response.getWriter().flush();

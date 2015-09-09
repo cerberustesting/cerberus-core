@@ -103,9 +103,11 @@ public class CreateTestDataLib extends HttpServlet {
                     rs = ans.getResultMessage();
 
                     //  Adding Log entry.
-                    ILogEventService logEventService = appContext.getBean(LogEventService.class);
-                    IFactoryLogEvent factoryLogEvent = appContext.getBean(FactoryLogEvent.class);
-                    logEventService.create(factoryLogEvent.create(0, 0, request.getUserPrincipal().getName(), null, "/CreateTestDataLib", "CREATE", "Create TestDataLib  : " + request.getParameter("Name"), "", ""));
+                    if(ans.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())){
+                        ILogEventService logEventService = appContext.getBean(LogEventService.class);
+                        IFactoryLogEvent factoryLogEvent = appContext.getBean(FactoryLogEvent.class);
+                        logEventService.create(factoryLogEvent.create(0, 0, request.getUserPrincipal().getName(), null, "/CreateTestDataLib", "CREATE", "Create TestDataLib  : " + request.getParameter("Name"), "", ""));
+                    }
                 }
             } catch (CerberusException ex) {
                 MyLogger.log(CreateTestDataLib.class.getName(), Level.FATAL, "" + ex);
@@ -278,9 +280,6 @@ public class CreateTestDataLib extends HttpServlet {
             String subDataNames[] = request.getParameterValues("subdata");
             if (containsDuplicates(subDataNames, false)) {
                 errorMessage.append("You have entries with duplicated names. ");
-            }
-            if (containsEmptyValues(subDataNames)) {
-                errorMessage.append("You have entries without subdata name. Please check the subdata entries. ");
             }
         }
 

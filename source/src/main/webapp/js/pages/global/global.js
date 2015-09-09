@@ -368,9 +368,8 @@ function validatesFileExtension(fileName, fileExtension) {
         $('#uploadOk').removeProp("disabled");
     } else {
         resetModalUpload();
-        var doc = getDoc();
-        var docGlobal = doc.page_global;
-        var localMessage = new Message("danger", +docGlobal.invalid_extension_message.docLabel + fileExtension + "!");
+        var doc = new Doc(); 
+        var localMessage = new Message("danger", doc.getDocLabel("page_global", "invalid_extension_message") + fileExtension + "!");
         showMessage(localMessage, $('#modalUpload'));
     }
 }

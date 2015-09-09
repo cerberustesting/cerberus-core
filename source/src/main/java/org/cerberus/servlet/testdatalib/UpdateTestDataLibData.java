@@ -30,7 +30,6 @@ import org.cerberus.entity.MessageEvent;
 import org.cerberus.entity.MessageEventEnum;
 import org.cerberus.entity.TestDataLibData;
 import org.cerberus.entity.TestDataLibDataUpdate;
-import org.cerberus.exception.CerberusException;
 import org.cerberus.factory.IFactoryLogEvent;
 import org.cerberus.factory.IFactoryTestDataLibData;
 import org.cerberus.factory.impl.FactoryLogEvent;
@@ -127,10 +126,12 @@ public class UpdateTestDataLibData extends HttpServlet {
             Answer answer = subDataService.cudTestDataLibData(testDataLibID, entriesToInsert, entriesToUpdate, entriesToRemove);
 
             //  Adding Log entry.
-            ILogEventService logEventService = appContext.getBean(LogEventService.class);
-            IFactoryLogEvent factoryLogEvent = appContext.getBean(FactoryLogEvent.class);
-            logEventService.create(factoryLogEvent.create(0, 0, request.getUserPrincipal().getName(), null, "/UpdateTestDataLibData", "UPDATE", "Update TestDataLibData entries for id: " + testDataLibID, "", ""));
-
+            if(answer.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())){
+                ILogEventService logEventService = appContext.getBean(LogEventService.class);
+                IFactoryLogEvent factoryLogEvent = appContext.getBean(FactoryLogEvent.class);
+                logEventService.create(factoryLogEvent.create(0, 0, request.getUserPrincipal().getName(), null, "/UpdateTestDataLibData", "UPDATE",
+                        "Update TestDataLibData entries for id: " + testDataLibID, "", ""));
+            }
             jsonResponse.put("messageType", answer.getResultMessage().getMessage().getCodeString());
             jsonResponse.put("message", answer.getResultMessage().getDescription());
 

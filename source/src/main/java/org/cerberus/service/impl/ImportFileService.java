@@ -52,6 +52,7 @@ public class ImportFileService implements IImportFileService{
     public AnswerItem importAndValidateXMLFromInputStream(InputStream filecontent, InputStream schemaContent, XMLHandlerEnumType handlerType) {
         AnswerItem answer = new AnswerItem();
         MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
+        msg.setDescription(msg.getDescription().replace("%ITEM%", "Test Data Library").replace("%OPERATION%", "Import"));
         if(schemaContent != null){
             try {
                 
@@ -77,7 +78,7 @@ public class ImportFileService implements IImportFileService{
             } catch (SAXException ex) {
                 MyLogger.log(ImportFileService.class.getName(), Level.ERROR, "Unable to parse XML: " + ex.toString());
                 msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_IMPORT_ERROR_FORMAT);
-                msg.setDescription(msg.getDescription().replace("%ITEM%", "Test Data Lib").replace("%FORMAT%", "XML"));
+                msg.setDescription(msg.getDescription().replace("%ITEM%", "Test Data Library").replace("%FORMAT%", "XML"));
                 
             }catch (ParserConfigurationException ex) {
                 MyLogger.log(ImportFileService.class.getName(), Level.ERROR, "Unable to parse XML: " + ex.toString());
