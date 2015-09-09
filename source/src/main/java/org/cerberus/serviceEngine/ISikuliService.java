@@ -29,19 +29,5 @@ import org.cerberus.entity.Session;
  */
 public interface ISikuliService {
     
-    public MessageEvent doSikuliActionClick(Session session, String url);
-
-    public MessageEvent doSikuliActionMouseDown(Session session, String locator);
-
-    public MessageEvent doSikuliActionMouseUp(Session session, String locator);
-
-    public MessageEvent doSikuliActionType(Session session, String locator);
-
-    public MessageEvent doSikuliActionMouseOver(Session session, String locator);
-
-    public MessageEvent doSikuliActionMouseDownMouseUp(Session session, String locator);
-
-    public MessageEvent doSikuliActionWait(Session session, String locator);
-
-    public MessageEvent doSikuliActionKeyPress(Session session, String locator);
+    public MessageEvent doSikuliAction(Session session, String action, String locator, String text);
 }
