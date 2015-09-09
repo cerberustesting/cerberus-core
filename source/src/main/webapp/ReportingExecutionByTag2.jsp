@@ -11,6 +11,7 @@
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
         <%@ include file="include/dependenciesInclusions.html" %>
         <link rel="stylesheet" href="css/ReportingExecutionByTag.css" type="text/css"/>
+        <script type="text/javascript" src="js/dataTables.fixedHeader.min.js"></script>
         <script type="text/javascript" src="js/d3.min.js"></script>
         <script type="text/javascript" src="js/d3tip.js"></script>
         <script type="text/javascript" src="js/pages/ReportingExecutionByTag.js"></script>
@@ -30,7 +31,7 @@
                         </div>
                         <div class="panel-body">
                             <div class="row">
-                                <div class="col-lg-12">
+                                <div class="col-lg-12" id="filterContainer">
                                     <label for="selectTag">Tag :</label>
                                     <div class="row" id="tagFilter">
                                         <div class="input-group">
@@ -77,6 +78,40 @@
                         <div class="panel-heading card">
                             <span class="glyphicon glyphicon-list"></span>
                             List
+                            <div class="pull-right">
+                                <label><strong>Status :</strong></label>
+                                <div class="form-group" id="statusFilter" style="display: inline;">
+                                    <label class="checkbox-inline">
+                                        <input type="checkbox" name="OK" checked/>
+                                        OK
+                                    </label>
+                                    <label class="checkbox-inline">
+                                        <input type="checkbox" name="KO" checked/>
+                                        KO
+                                    </label>
+                                    <label class="checkbox-inline">
+                                        <input type="checkbox" name="FA" checked/>
+                                        FA
+                                    </label>
+                                    <label class="checkbox-inline">
+                                        <input type="checkbox" name="NA" checked/>
+                                        NA
+                                    </label>
+                                    <label class="checkbox-inline">
+                                        <input type="checkbox" name="NE" checked/>
+                                        NE
+                                    </label>
+                                    <label class="checkbox-inline">
+                                        <input type="checkbox" name="PE" checked/>
+                                        PE
+                                    </label>
+                                    <label class="checkbox-inline">
+                                        <input type="checkbox" name="CA" checked/>
+                                        CA
+                                    </label>
+                                    <button type="button" class="btn btn-default btn-xs" onclick="loadReportList()">Reload</button>
+                                </div>
+                            </div>
                         </div>
                         <div class="panel-body">
                             <table id="listTable" class="table table-hover display" name="listTable">

@@ -34,6 +34,7 @@ import org.cerberus.entity.MessageEventEnum;
 import org.cerberus.entity.MessageGeneral;
 import org.cerberus.entity.MessageGeneralEnum;
 import org.cerberus.entity.TestDataLibData;
+import org.cerberus.entity.TestDataLibDataUpdate;
 import org.cerberus.entity.TestDataLibTypeEnum;
 import org.cerberus.exception.CerberusException;
 import org.cerberus.factory.IFactoryTestDataLibData;
@@ -47,6 +48,7 @@ import org.springframework.stereotype.Repository;
 /**
  *
  * @author bcivel
+ * @author FNogueira
  */
 @Repository
 public class TestDataLibDataDAO implements ITestDataLibDataDAO{
@@ -165,10 +167,8 @@ public class TestDataLibDataDAO implements ITestDataLibDataDAO{
         query.append("inner join testdatalib tdl ");
         query.append("on tdl.`name` = tccp.value1 and tdl.testdataLibID = ? and ");
         query.append("tccp.`type` like 'getFromDataLib' and  ");
-        //query.append("tc.TcActive = 'Y' and ");
-        //query.append("(tc.status like 'WORKING'  OR tc.status like 'FULLY_IMPLEMENTED' )) ");
-
-        
+        //TODO:FN ver este delete
+            
         
         Connection connection = this.databaseSpring.connect();
         try {
@@ -553,9 +553,14 @@ public class TestDataLibDataDAO implements ITestDataLibDataDAO{
                             replace("%REASON%", "Some problem occurred while inserting the subdata entries - some failed to be inserted!"));
                 }
             } catch (SQLException exception) {
-                rs = new MessageEvent(MessageEventEnum.DATA_OPERATION_UNEXPECTED_ERROR);
-                rs.setDescription(rs.getDescription().replace("%DESCRIPTION%", "It was not possible to update table."));
                 MyLogger.log(TestDataLibDataDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
+                if(exception.getSQLState().equals("23000")){ //23000 is the sql state for duplicate entries
+                    rs = new MessageEvent(MessageEventEnum.DATA_OPERATION_DUPLICATE_ERROR);
+                    rs.setDescription(rs.getDescription().replace("%ITEM%", "Test data lib data ").replace("%OPERATION%", "INSERT"));                
+                }else{
+                    rs = new MessageEvent(MessageEventEnum.DATA_OPERATION_UNEXPECTED_ERROR);
+                    rs.setDescription(rs.getDescription().replace("%DESCRIPTION%", "It was not possible to update table."));
+                }
             } finally {
                 if(preStat != null){
                     preStat.close();
@@ -582,23 +587,25 @@ public class TestDataLibDataDAO implements ITestDataLibDataDAO{
     
 
     @Override
-    public Answer updateTestDataLibDataBatch(ArrayList<TestDataLibData> entriesToUpdate) {
+    public Answer updateTestDataLibDataBatch(ArrayList<TestDataLibDataUpdate> entriesToUpdate) {
         StringBuilder query = new StringBuilder();
-        query.append("update testdatalibdata set `value`= ?, `column`= ? , `parsinganswer`= ? , "
+        query.append("update testdatalibdata set `subdata` = ?, `value`= ?, `column`= ? , `parsinganswer`= ? , "
                 + "`description`= ? where `testdatalibID`= ? and `subdata` LIKE ?  ");
+        //TODO:FN for now it is not being verified if the testdatalib is used by tests
         MessageEvent rs = null;
         Connection connection = this.databaseSpring.connect();
         try {
             PreparedStatement preStat = connection.prepareStatement(query.toString());
             try {
-                for (TestDataLibData subdata : entriesToUpdate) {
-                    
-                    preStat.setString(1, ParameterParserUtil.returnEmptyStringIfNull(subdata.getValue()));
-                    preStat.setString(2, ParameterParserUtil.returnEmptyStringIfNull(subdata.getColumn()));
-                    preStat.setString(3, ParameterParserUtil.returnEmptyStringIfNull(subdata.getParsingAnswer()));
-                    preStat.setString(4, ParameterParserUtil.returnEmptyStringIfNull(subdata.getDescription()));
-                    preStat.setInt(5, subdata.getTestDataLibID());
-                    preStat.setString(6, ParameterParserUtil.returnEmptyStringIfNull(subdata.getSubData()));
+                for (TestDataLibDataUpdate subdataUpdate : entriesToUpdate) { 
+                    TestDataLibData subdata = subdataUpdate.getModifiedObject();
+                    preStat.setString(1, ParameterParserUtil.returnEmptyStringIfNull(subdata.getSubData()));
+                    preStat.setString(2, ParameterParserUtil.returnEmptyStringIfNull(subdata.getValue()));
+                    preStat.setString(3, ParameterParserUtil.returnEmptyStringIfNull(subdata.getColumn()));
+                    preStat.setString(4, ParameterParserUtil.returnEmptyStringIfNull(subdata.getParsingAnswer()));
+                    preStat.setString(5, ParameterParserUtil.returnEmptyStringIfNull(subdata.getDescription()));
+                    preStat.setInt(6, subdata.getTestDataLibID());
+                    preStat.setString(7, ParameterParserUtil.returnEmptyStringIfNull(subdataUpdate.getSubDataOriginalKey()));
                     preStat.addBatch();
                 }
                 
@@ -607,10 +614,10 @@ public class TestDataLibDataDAO implements ITestDataLibDataDAO{
                 
                 if(someFailed == false){
                     rs = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
-                    rs.setDescription(rs.getDescription().replace("%ITEM%", "Subdata entries ").replace("%OPERATION%", "UPDATE"));
+                    rs.setDescription(rs.getDescription().replace("%ITEM%", "Sub-data entries ").replace("%OPERATION%", "UPDATE"));
                 }else{
                     rs = new MessageEvent(MessageEventEnum.DATA_OPERATION_EXPECTED_ERROR);
-                    rs.setDescription(rs.getDescription().replace("%ITEM%", "Subdata entries ").replace("%OPERATION%", "UPDATE").
+                    rs.setDescription(rs.getDescription().replace("%ITEM%", "Sub-data entries ").replace("%OPERATION%", "UPDATE").
                             replace("%REASON%", "Some problem occurred while updating the subdata entries!"));
                 }
             } catch (SQLException exception) {
@@ -642,18 +649,8 @@ public class TestDataLibDataDAO implements ITestDataLibDataDAO{
     public Answer deleteTestDataLibDataBatch(int testDataLibIdForData, ArrayList<String> entriesToRemove) {
         StringBuilder query = new StringBuilder();
         
-        //query.append("delete from testdatalibdata where `testdatalibID`=? and `subdata` LIKE ? ");
-        //don't delete properties that are currently being used 
-        //by active test cases (working and full implemented)
         query.append("delete from testdatalibdata where testdataLibID = ? and ");
-        query.append("`subdata` LIKE ? and `subdata` ");
-        query.append("not in (select value2 from testcasecountryproperties tccp ");
-        query.append("inner join testcase tc ");
-        query.append("on tccp.Test = tc.Test and  ");
-        query.append("tccp.TestCase = tc.TestCase  ");
-        query.append("inner join testdatalib tdl ");
-        query.append("on tdl.`name` = tccp.value1 and tdl.testdataLibID = ? and ");
-        query.append("tccp.`type` like 'getFromDataLib' ");
+        query.append("`subdata` LIKE ? "); //TODO:FN for now it is not being verified if the testdatalib is used by tests
         
         MessageEvent rs = null;
         Connection connection = this.databaseSpring.connect();
@@ -663,7 +660,6 @@ public class TestDataLibDataDAO implements ITestDataLibDataDAO{
                 for (String subdata : entriesToRemove) {
                     preStat.setInt(1, testDataLibIdForData);
                     preStat.setString(2, ParameterParserUtil.returnEmptyStringIfNull(subdata));
-                    preStat.setInt(3, testDataLibIdForData);
                     preStat.addBatch();
                 }
                 //executes the query                
@@ -674,10 +670,10 @@ public class TestDataLibDataDAO implements ITestDataLibDataDAO{
 
                 if(someFailed == false){
                     rs = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
-                    rs.setDescription(rs.getDescription().replace("%ITEM%", "Test data lib").replace("%OPERATION%", "UPDATE"));
+                    rs.setDescription(rs.getDescription().replace("%ITEM%", "Test data library").replace("%OPERATION%", "UPDATE"));
                 }else{
                     rs = new MessageEvent(MessageEventEnum.DATA_OPERATION_EXPECTED_ERROR);
-                    rs.setDescription(rs.getDescription().replace("%ITEM%", "Test data lib").replace("%OPERATION%", "DELETE").
+                    rs.setDescription(rs.getDescription().replace("%ITEM%", "Test data library").replace("%OPERATION%", "DELETE").
                             replace("%REASON%", "Some problem occurred while deleting the subdata entries! Please check if there are active test cases that are using"
                             + " the subdata entries that you are trying to delete!"));                    
                 }

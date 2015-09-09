@@ -19,6 +19,7 @@
  */
 package org.cerberus.service;
 
+import java.util.ArrayList;
 import java.util.List;
 import org.cerberus.dto.TestCaseWithExecution;
 
@@ -123,6 +124,6 @@ public interface ITestCaseExecutionService {
     
     AnswerList findTagList() throws CerberusException;
     
-    AnswerList getTestCaseExecution(int start, int amount, String column, String dir, String searchTerm, String individualSearch, String tag) throws CerberusException;
+    AnswerList readByStatusByCriteria(int start, int amount, String column, String dir, String searchTerm, String individualSearch, String tag, List<String> statusList) throws CerberusException;
     
 }

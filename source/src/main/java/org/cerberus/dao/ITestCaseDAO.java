@@ -19,10 +19,10 @@
 package org.cerberus.dao;
 
 import java.util.List;
-
 import org.cerberus.entity.TCase;
 import org.cerberus.entity.TestCase;
 import org.cerberus.exception.CerberusException;
+import org.cerberus.util.answer.AnswerList;
 
 /**
  * {Insert class description here}
@@ -108,4 +108,6 @@ public interface ITestCaseDAO {
     List<TCase> findTestCaseByCriteria(String testClause, String projectClause, String appClause, String activeClause, String priorityClause, String statusClause, String groupClause, String targetBuildClause, String targetRevClause, String creatorClause, String implementerClause, String functionClause, String campaignClause, String batteryClause);
 
     public String findSystemOfTestCase(String test, String testcase) throws CerberusException;
+    
+    public AnswerList findNumberOfTestCasePerTCStatus(String system, int startPosition, int length, String columnName, String sort, String searchParameter, String individualSearch);
 }

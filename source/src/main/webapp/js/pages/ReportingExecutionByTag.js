@@ -54,7 +54,7 @@ function aoColumnsFunc(Columns) {
         },
         {"data": "shortDesc",
             "sName": "description",
-            "title": "shortDesc"
+            "title": "description"
         },
         {"data": "bugId",
             "sName": "bugId",
@@ -97,7 +97,7 @@ function aoColumnsFunc(Columns) {
 }
 
 function loadTagFilters() {
-    var jqxhr = $.get("ReadTestCaseExecution", "action=1", "json");
+    var jqxhr = $.get("ReadTestCaseExecution", "", "json");
     $.when(jqxhr).then(function (data) {
         var messageType = getAlertType(data.messageType);
         if (messageType === "success") {
@@ -137,6 +137,28 @@ function getRowClass(status) {
     return rowClass;
 }
 
+function loadReportList() {
+    var selectTag = $("#selectTag option:selected").text();
+    var statusFilter = $("#statusFilter input");
+
+    if ($("#listTable_wrapper").hasClass("initialized")) {
+        $("#ListPanel .panel-body").empty();
+        $("#ListPanel .panel-body").html('<table id="listTable" class="table table-hover display" name="listTable">\n\
+                                            </table><div class="marginBottom20"></div>');
+    }
+
+    if (selectTag !== "") {
+        //configure and create the dataTable
+        var jqxhr = $.getJSON("ReadTestCaseExecution", "Tag=" + selectTag + "&" + statusFilter.serialize());
+        $.when(jqxhr).then(function (data) {
+            var configurations = new TableConfigurationsServerSide("listTable", "ReadTestCaseExecution?Tag=" + selectTag + "&" + statusFilter.serialize(), "testList", aoColumnsFunc(data.Columns));
+
+            createDataTable(configurations);
+            $('#listTable_wrapper').not('.initialized').addClass('initialized');
+        });
+    }
+}
+
 function loadReport() {
     var selectTag = $("#selectTag option:selected").text();
 
@@ -147,23 +169,18 @@ function loadReport() {
     if ($("#listTable_wrapper").hasClass("initialized")) {
         $("#ListPanel .panel-body").empty();
         $("#ListPanel .panel-body").html('<table id="listTable" class="table table-hover display" name="listTable">\n\
-                                            </table><div class="marginBottom20"></div>')
+                                            </table><div class="marginBottom20"></div>');
     }
-    //configure and create the dataTable
-    var jqxhr = $.getJSON("ReadTestCaseExecution", "action=0&Tag=" + selectTag);
-    $.when(jqxhr).then(function (data) {
-        var configurations = new TableConfigurationsServerSide("listTable", "ReadTestCaseExecution?Tag=" + selectTag, "testList", aoColumnsFunc(data.Columns));
+    if (selectTag !== "") {
+        //configure and create the dataTable
+        loadReportList();
 
-        createDataTable(configurations);
-        $('#listTable_wrapper').not('.initialized').addClass('initialized');
-    });
-
-
-    var jqxhr = $.get("GetReportData", {CampaignName: "null", Tag: selectTag}, "json");
-    $.when(jqxhr).then(function (data) {
-        loadReportByStatusTable(data);
-        loadReportByFunctionChart(data);
-    });
+        var jqxhr = $.get("GetReportData", {CampaignName: "null", Tag: selectTag}, "json");
+        $.when(jqxhr).then(function (data) {
+            loadReportByStatusTable(data);
+            loadReportByFunctionChart(data);
+        });
+    }
 }
 
 function convertData(dataset) {
@@ -330,6 +347,20 @@ function appendPanelStatus(axis, status, total) {
             $('<div></div>').text('Percentage : ' + Math.round(((total[status].value / total.test) * 100) * 100) / 100 + '%'))))));
 }
 
+function createStatusFilter(total) {
+    var filterContainer = $("#filterContainer");
+
+    filterContainer.append($('<label>Status :</label>\n\
+                            <div class="form-group" id="statusFilter"></div>'));
+    for (var label in total) {
+        if (label !== "test") {
+            $("#statusFilter").append('<label class="checkbox-inline">\n\
+                                        <input type="checkbox" name=' + label + ' checked/>'
+                    + label + '</label>');
+        }
+    }
+}
+
 function loadReportByStatusTable(data) {
     var total = {};
     //calculate totaltest nb
@@ -365,6 +396,8 @@ function loadReportByStatusTable(data) {
             $('<div class="col-xs-6 text-right"></div>').append(
             $('<div class="total"></div>').text(total.test))
             ))));
+    //format data to be used by the chart
+//    createStatusFilter(total);
     var dataset = [];
     for (var label in total) {
         if (label !== "test") {

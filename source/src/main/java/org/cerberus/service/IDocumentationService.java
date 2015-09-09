@@ -42,5 +42,7 @@ public interface IDocumentationService {
 
     List<Documentation> findAll(String lang);
     
+    List<Documentation> findAllWithEmptyDocLabel(String lang);
+    
     JSONObject formatGroupByDocTable(List<Documentation> docList);
 }

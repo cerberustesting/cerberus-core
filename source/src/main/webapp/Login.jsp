@@ -83,7 +83,7 @@
                     <div class="login-box-error">
                         <%= errorMessage%>
                     </div>
-                    <input id="Login" name="Login" type="image" src="images/login-btn.png" value="Submit" alt="Submit" style="margin-left:90px;">
+                    <input id="Login" name="Login" type="image" src="images/login-btn.png" value="Submit" alt="Submit" style="margin-left:90px;" onclick=sessionStorage.clear();>
                 </form>
             </div>
         </div>

@@ -722,7 +722,7 @@ public class TestCaseExecutionInQueueDAO implements ITestCaseExecutionInQueueDAO
     }
 
     @Override
-    public AnswerList findTestCaseExecutionInQueuebyTag(int start, int amount, String column, String dir, String searchTerm, String individualSearch, String tag) throws CerberusException {
+    public AnswerList readByStatusByCriteria(List<String> statusList, int start, int amount, String column, String dir, String searchTerm, String individualSearch, String tag) throws CerberusException {
         boolean throwEx = false;
         MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
         AnswerList answer = new AnswerList();
@@ -736,6 +736,20 @@ public class TestCaseExecutionInQueueDAO implements ITestCaseExecutionInQueueDAO
 
         query.append(" order by test, testcase, ID desc) as tce, application app ")
                 .append("where tce.application = app.application ");
+
+        if (!statusList.isEmpty()) {
+            int i = 0;
+            query.append("and (");
+            while (i < statusList.size() - 1) {
+                query.append(" ControlStatus = '");
+                query.append(statusList.get(i));
+                query.append("' or ");
+                i++;
+            }
+            query.append(" ControlStatus = '");
+            query.append(statusList.get(i));
+            query.append("') ");
+        }
 
         gSearch.append("and (tce.`test` like '%");
         gSearch.append(searchTerm);

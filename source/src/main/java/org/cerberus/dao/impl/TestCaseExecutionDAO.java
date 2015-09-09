@@ -886,7 +886,7 @@ public class TestCaseExecutionDAO implements ITestCaseExecutionDAO {
     }
 
     @Override
-    public AnswerList getTestCaseExecution(int start, int amount, String column, String dir, String searchTerm, String individualSearch, String tag) throws CerberusException {
+    public AnswerList readByStatusByCriteria(int start, int amount, String column, String dir, String searchTerm, String individualSearch, String tag, List<String> statusList) throws CerberusException {
         StringBuilder gSearch = new StringBuilder();
         MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
         AnswerList answer = new AnswerList();
@@ -896,6 +896,20 @@ public class TestCaseExecutionDAO implements ITestCaseExecutionDAO {
                 .append("on tce.Test = tc.Test ")
                 .append("and tce.TestCase = tc.TestCase ")
                 .append("where tce.tag = ? ");
+        
+        if (!statusList.isEmpty()) {
+            int i = 0;
+            query.append("and (");
+            while (i < statusList.size() - 1) {
+                query.append(" ControlStatus = '");
+                query.append(statusList.get(i));
+                query.append("' or ");
+                i++;
+            }
+            query.append(" ControlStatus = '");
+            query.append(statusList.get(i));
+            query.append("')");
+        }
 
         query.append(" order by test, testcase, ID desc) as tce, application app ")
                 .append("where tce.application = app.application ");
@@ -934,7 +948,7 @@ public class TestCaseExecutionDAO implements ITestCaseExecutionDAO {
         query.append(start);
         query.append(" , ");
         query.append(amount);
-
+        
         List<TestCaseWithExecution> testCaseWithExecutionList = new ArrayList<TestCaseWithExecution>();
         Connection connection = this.databaseSpring.connect();
         try {

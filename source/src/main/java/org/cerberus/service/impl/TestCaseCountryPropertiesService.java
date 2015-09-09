@@ -25,12 +25,15 @@ import java.util.List;
 import org.apache.log4j.Level;
 import org.cerberus.dao.ITestCaseCountryPropertiesDAO;
 import org.cerberus.dao.ITestCaseStepActionDAO;
-import org.cerberus.entity.TCase;
-import org.cerberus.entity.TestCaseCountryProperties; 
+import org.cerberus.database.DatabaseSpring;
+import org.cerberus.entity.MessageEventEnum;
+import org.cerberus.entity.TCase; 
+import org.cerberus.entity.TestCaseCountryProperties;
 import org.cerberus.exception.CerberusException;
 import org.cerberus.log.MyLogger;
-import org.cerberus.service.ITestCaseCountryPropertiesService;
+import org.cerberus.service.ITestCaseCountryPropertiesService; 
 import org.cerberus.service.ITestCaseService; 
+import org.cerberus.util.answer.Answer;
 import org.cerberus.util.answer.AnswerList;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -38,6 +41,7 @@ import org.springframework.stereotype.Service;
 /**
  *
  * @author bcivel
+ * @author FNogueira
  */
 @Service
 public class TestCaseCountryPropertiesService implements ITestCaseCountryPropertiesService {
@@ -48,6 +52,8 @@ public class TestCaseCountryPropertiesService implements ITestCaseCountryPropert
     ITestCaseStepActionDAO testCaseStepActionDAO;
     @Autowired
     ITestCaseService testCaseService;
+    @Autowired
+    private DatabaseSpring dbmanager;
             
     @Override
     public List<TestCaseCountryProperties> findListOfPropertyPerTestTestCaseCountry(String test, String testCase, String country) {
@@ -164,6 +170,20 @@ public class TestCaseCountryPropertiesService implements ITestCaseCountryPropert
     @Override
     public AnswerList findTestCaseCountryPropertiesByValue1(int testDataLibID, String name, String country, String propertyType) {
         return testCaseCountryPropertiesDAO.findTestCaseCountryPropertiesByValue1(testDataLibID, name, country, propertyType);
+    }
+
+    @Override
+    public Answer createListTestCaseCountryPropertiesBatch(List<TestCaseCountryProperties> listOfPropertiesToInsert) {
+        
+        dbmanager.beginTransaction();
+        Answer answer = testCaseCountryPropertiesDAO.createTestCaseCountryPropertiesBatch(listOfPropertiesToInsert);
+        
+        if(!answer.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())){
+            dbmanager.abortTransaction();
+        }else{
+            dbmanager.commitTransaction();
+        }
+        return answer;
     }
 
 }

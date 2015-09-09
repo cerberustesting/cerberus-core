@@ -19,6 +19,7 @@
  */
 package org.cerberus.service.impl;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.log4j.Level;
@@ -131,8 +132,8 @@ public class TestCaseExecutionService implements ITestCaseExecutionService {
     }
     
     @Override
-    public AnswerList getTestCaseExecution(int start, int amount, String column, String dir, String searchTerm, String individualSearch
-            , String tag) throws CerberusException {
-        return testCaseExecutionDao.getTestCaseExecution(start, amount, column, dir, searchTerm, individualSearch, tag);
+    public AnswerList readByStatusByCriteria(int start, int amount, String column, String dir, String searchTerm, String individualSearch
+            , String tag, List<String> statusList) throws CerberusException {
+        return testCaseExecutionDao.readByStatusByCriteria(start, amount, column, dir, searchTerm, individualSearch, tag, statusList);
     }
 }

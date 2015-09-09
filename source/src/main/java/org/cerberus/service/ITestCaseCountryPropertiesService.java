@@ -20,9 +20,9 @@
 package org.cerberus.service;
 
 import java.util.List;
-
 import org.cerberus.entity.TestCaseCountryProperties;
 import org.cerberus.exception.CerberusException;
+import org.cerberus.util.answer.Answer;
 import org.cerberus.util.answer.AnswerList;
 
 /**
@@ -71,4 +71,6 @@ public interface ITestCaseCountryPropertiesService {
      * @return an answer with the test cases and a message indicating the status of the operation
      */
     AnswerList findTestCaseCountryPropertiesByValue1(int testDataLibID, String name, String country, String propertyType);
+
+    Answer createListTestCaseCountryPropertiesBatch(List<TestCaseCountryProperties> listOfPropertiesToInsert);
 }

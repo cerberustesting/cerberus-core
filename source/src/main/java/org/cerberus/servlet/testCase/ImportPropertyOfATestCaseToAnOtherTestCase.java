@@ -20,7 +20,6 @@
 package org.cerberus.servlet.testCase;
 
 import java.io.IOException;
-import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.List;
 import javax.servlet.ServletException;
@@ -28,19 +27,30 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import org.cerberus.entity.MessageEvent;
+import org.cerberus.entity.MessageEventEnum;
 import org.cerberus.entity.TestCaseCountryProperties;
 import org.cerberus.exception.CerberusException;
+import org.cerberus.factory.IFactoryLogEvent;
+import org.cerberus.factory.impl.FactoryLogEvent;
 import org.cerberus.log.MyLogger;
+import org.cerberus.service.ILogEventService;
 import org.cerberus.service.ITestCaseCountryPropertiesService;
 import org.cerberus.service.ITestCaseCountryService;
+import org.cerberus.service.impl.LogEventService;
 import org.cerberus.service.impl.TestCaseCountryPropertiesService;
 import org.cerberus.service.impl.TestCaseCountryService;
+import org.cerberus.servlet.testdatalib.CreateTestDataLib;
+import org.cerberus.util.answer.Answer;
+import org.json.JSONException;
+import org.json.JSONObject;
 import org.springframework.context.ApplicationContext;
 import org.springframework.web.context.support.WebApplicationContextUtils;
 
 /**
  *
  * @author memiks
+ * @author FNogueira
  */
 @WebServlet(name = "ImportPropertyOfATestCaseToAnOtherTestCase", urlPatterns = {"/ImportPropertyOfATestCaseToAnOtherTestCase"})
 public class ImportPropertyOfATestCaseToAnOtherTestCase extends HttpServlet {
@@ -56,9 +66,10 @@ public class ImportPropertyOfATestCaseToAnOtherTestCase extends HttpServlet {
      */
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        response.setContentType("text/html;charset=UTF-8");
-        PrintWriter out = response.getWriter();
-
+         
+        JSONObject jsonResponse = new JSONObject();
+        MessageEvent rs = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
+         
         ApplicationContext appContext = WebApplicationContextUtils.getWebApplicationContext(this.getServletContext());
 
         ITestCaseCountryPropertiesService testCaseCountryPropertiesService = appContext.getBean(TestCaseCountryPropertiesService.class);
@@ -68,7 +79,7 @@ public class ImportPropertyOfATestCaseToAnOtherTestCase extends HttpServlet {
 
             String fromTest = request.getParameter("fromtest");
             String fromTestCase = request.getParameter("fromtestcase");
-            String[] properties = request.getParameterValues("property");
+            String propertyName = request.getParameter("property");
             String toTest = request.getParameter("totest");
             String toTestCase = request.getParameter("totestcase");
 
@@ -83,50 +94,85 @@ public class ImportPropertyOfATestCaseToAnOtherTestCase extends HttpServlet {
 
                 // Variable for the countryProperty will be retrieve
                 TestCaseCountryProperties countryProperties;
-                for (String property : properties) {
+                
+                // List of all country of the destination test for the current property
+                List<String> toCountries = new ArrayList<String>();
+                toCountries.addAll(toCountriesAll);
 
-                    // List of all country of the destination test for the current property
-                    List<String> toCountries = new ArrayList<String>();
-                    toCountries.addAll(toCountriesAll);
+                // Retrieve the country of the destination TestCase for the property,
+                // if not empty remove it (property aleady exists for these countries)
+                toCountriesProp = testCaseCountryPropertiesService.findCountryByPropertyNameAndTestCase(toTest, toTestCase, propertyName);
+                if (toCountriesProp != null && toCountriesProp.size() > 0) {
+                    toCountries.removeAll(toCountriesProp);
+                }
 
-                    // Retrieve the country of the destination TestCase for the property,
-                    // if not empty remove it (property aleady exists for these countries)
-                    toCountriesProp = testCaseCountryPropertiesService.findCountryByPropertyNameAndTestCase(toTest, toTestCase, property);
-                    if (toCountriesProp != null && toCountriesProp.size() > 0) {
-                        toCountries.removeAll(toCountriesProp);
-                    }
-
-                    // Retrieve the country of the source TestCase for the property, if empty do nothing
-                    fromCountriesProp = testCaseCountryPropertiesService.findCountryByPropertyNameAndTestCase(fromTest, fromTestCase, property);
-                    if (fromCountriesProp != null && fromCountriesProp.size() > 0) {
-                        // Only retain country in the two TestCase for the property
-                        toCountries.retainAll(fromCountriesProp);
-
-                        // If countries list is empty do nothing
-                        if (toCountries.size() > 0) {
-                            for (String country : toCountries) {
-                                try {
-                                    // retrieve the source property for the current country
-                                    countryProperties = testCaseCountryPropertiesService.findTestCaseCountryPropertiesByKey(fromTest, fromTestCase, country, property);
-                                    if (countryProperties != null) {
-                                        // change the TestCase information to the destination TestCase
-                                        countryProperties.setTest(toTest);
-                                        countryProperties.setTestCase(toTestCase);
-
-                                        // Insert the new property
-                                        testCaseCountryPropertiesService.insertTestCaseCountryProperties(countryProperties);
-                                    }
-                                } catch (CerberusException ex) {
-                                    MyLogger.log(GetPropertiesForTestCase.class.getName(), org.apache.log4j.Level.DEBUG, ex.toString());
+                // Retrieve the country of the source TestCase for the property, if empty do nothing
+                fromCountriesProp = testCaseCountryPropertiesService.findCountryByPropertyNameAndTestCase(fromTest, fromTestCase, propertyName);
+                if (fromCountriesProp != null && fromCountriesProp.size() > 0) {
+                    // Only retain country in the two TestCase for the property
+                    toCountries.retainAll(fromCountriesProp);
+                    
+                    // If countries list is empty do nothing
+                    if (toCountries.size() > 0) {
+                        List<TestCaseCountryProperties> listOfPropertiesToInsert = new ArrayList<TestCaseCountryProperties>();
+                        for (String country : toCountries) {
+                            try {
+                                // retrieve the source property for the current country
+                                countryProperties = testCaseCountryPropertiesService.findTestCaseCountryPropertiesByKey(fromTest, fromTestCase, country, propertyName);
+                                if (countryProperties != null) {
+                                    // change the TestCase information to the destination TestCase
+                                    countryProperties.setTest(toTest);
+                                    countryProperties.setTestCase(toTestCase);
+                                    
+                                    listOfPropertiesToInsert.add(countryProperties);
+                                    // Insert the new property
+                                    //testCaseCountryPropertiesService.insertTestCaseCountryProperties(countryProperties);
                                 }
+                            } catch (CerberusException ex) {
+                                MyLogger.log(ImportPropertyOfATestCaseToAnOtherTestCase.class.getName(), org.apache.log4j.Level.DEBUG, ex.toString());
                             }
                         }
+                        //insert the new property for all countries specified
+                        Answer answer = testCaseCountryPropertiesService.createListTestCaseCountryPropertiesBatch(listOfPropertiesToInsert);
+                        rs = answer.getResultMessage();
+
+                        //if the operation retrieved success it means that we are able to create new records
+                        //then a new entry should be added by the log service
+                        if(answer.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())){
+                            //  Adding Log entry.
+                            ILogEventService logEventService = appContext.getBean(LogEventService.class);
+                            IFactoryLogEvent factoryLogEvent = appContext.getBean(FactoryLogEvent.class);
+                            logEventService.create(factoryLogEvent.create(0, 0, request.getUserPrincipal().getName(), null, "/ImportPropertyOfATestCaseToAnOtherTestCase", "CREATE", "Override from imported test step:"
+                                    + " " + propertyName, "", ""));
+                        }                        
                     }
                 }
+                
+            }else{
+                rs = new MessageEvent(MessageEventEnum.DATA_OPERATION_EXPECTED_ERROR);
+                rs.setDescription(rs.getDescription().replace("%ITEM%", "Property ").replace("%OPERATION%", "CREATE").replace("%REASON%", "No countries were defined for the test case."));
             }
-            
-        } finally {
-            out.close();
+            //sets the message returned by the operations 
+            jsonResponse.put("messageType", rs.getMessage().getCodeString());
+            jsonResponse.put("message", rs.getDescription());
+
+            response.setContentType("application/json");
+            response.getWriter().print(jsonResponse);
+            response.getWriter().flush();
+          
+        }  catch (JSONException ex) {
+
+            org.apache.log4j.Logger.getLogger(CreateTestDataLib.class.getName()).log(org.apache.log4j.Level.ERROR, null, ex);
+            //returns a default error message with the json format that is able to be parsed by the client-side
+            response.setContentType("application/json");
+            MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_UNEXPECTED_ERROR);
+            StringBuilder errorMessage = new StringBuilder();
+            errorMessage.append("{'messageType':'").append(msg.getCode()).append("', ");
+            errorMessage.append(" 'message': '");
+            errorMessage.append(msg.getDescription().replace("%DESCRIPTION%", "Unable to check the status of your request! Try later or - Open a bug or ask for any new feature \n"
+                    + "<a href=\"https://github.com/vertigo17/Cerberus/issues/\" target=\"_blank\">here</a>"));
+            errorMessage.append("'}");
+            response.getWriter().print(errorMessage.toString());
         }
     }
 

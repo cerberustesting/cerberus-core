@@ -17,6 +17,13 @@
   ~ You should have received a copy of the GNU General Public License
   ~ along with Cerberus. If not, see <http://www.gnu.org/licenses/>.
 --%>
+<%@page import="java.util.Date"%>
+<%@page import="org.springframework.web.context.support.WebApplicationContextUtils"%>
+<%@page import="org.springframework.context.ApplicationContext"%>
+<%@page import="org.springframework.web.context.WebApplicationContext"%>
+<%@page import="org.cerberus.entity.Invariant"%>
+<%@page import="java.util.List"%>
+<%@page import="org.cerberus.service.IInvariantService"%>
 <%@page import="org.cerberus.service.IDatabaseVersioningService"%>
 <% Date DatePageStart = new Date();%>
 
@@ -26,113 +33,19 @@
     <head>
         <meta content="text/html; charset=UTF-8" http-equiv="content-type">
         <title>Cerberus Homepage</title>
-        <link rel="stylesheet" type="text/css" href="css/crb_style.css">
-        <link rel="stylesheet" type="text/css" href="css/jquery.dataTables.css">
-        <link rel="stylesheet" type="text/css" href="css/jquery-ui.css">
-        <link rel="stylesheet" type="text/css" href="css/dataTables_jui.css">
-        <link rel="shortcut icon" type="image/x-icon" href="images/favicon.ico">
-        <script type="text/javascript" src="js/jquery-1.9.1.min.js"></script>
-        <script type="text/javascript" src="js/jquery-ui-1.10.2.js"></script>
-        <script type="text/javascript" src="js/jquery.jeditable.mini.js"></script>
-        <script type="text/javascript" src="js/jquery.dataTables.min.js"></script>
-        <script type="text/javascript" src="js/jquery.dataTables.editable.js"></script>
-        <script type="text/javascript" src="js/jquery.validate.min.js"></script>
-        <script type="text/javascript" src="js/user.js"></script>
-        <style>
-            .divBorder{
-                background-color: #f3f6fa;
-                border: solid;
-                border-width: 2px;
-                border-color: #8999c4;
-                border-radius: 5px 5px 5px 5px;
-                margin-top: 20px;
-                width : 1260px;
-            }
-
-            .verticalText{
-                width: 40px;
-                font-size: x-small;
-            }
-
-            td{
-                text-align: center;
-            }
-        </style>
-        <script>
-            function getSys()
-            {
-                var x = document.getElementById("systemSelected").value;
-                return x;
-            }
-        </script>
+        <%@ include file="include/dependenciesInclusions.html" %>
+        <script type="text/javascript" src="js/pages/Homepage.js"></script>
     </head>
     <body>
-        <%@ include file="include/function.jsp"%>
-        <%@ include file="include/header.jsp"%>
+        <%@ include file="include/header.html"%>
 
         <%
-            IInvariantService invariantService = appContext.getBean(IInvariantService.class);
-            String MySystem = request.getAttribute("MySystem").toString();
-        %>
-        <script type="text/javascript">
+            ApplicationContext appContext = WebApplicationContextUtils.getWebApplicationContext(this.getServletContext());
 
-            $(document).ready(function() {
-                var numberOfCol = [];
-            <%
-                List<Invariant> myInvariants = invariantService.findInvariantByIdGp1("TCSTATUS", "Y");
-                for (int i = 0; i < myInvariants.size(); i++) {
-            %>
-                numberOfCol.push("<%=i%>");
-            <% }%>
-                var mySys = getSys();
-                var oTable = $('#testTable').dataTable({
-                "aaSorting": [[0, "asc"]],
-                        "bServerSide": false,
-                        "sAjaxSource": "Homepage?MySystem=<%=MySystem%>",
-                        "bJQueryUI": true,
-                        "bProcessing": true,
-                        "bPaginate": true,
-                        "bAutoWidth": false,
-                        "sPaginationType": "full_numbers",
-                        "bSearchable": true,
-                        "aTargets": [0],
-                        "iDisplayLength": 25,
-                        "fnFooterCallback": function(nRow, aaData, iStart, iEnd, aiDisplay) {
-                            var nCells = nRow.getElementsByTagName('th');
-                            for (var j = 0; j < numberOfCol.length+1; j++) {
-                                var iTotalDebit = 0;
-                                for (var i = 0; i < aaData.length; i++) {
-                                    iTotalDebit += parseInt(aaData[i][j + 1] === null ? 0 : aaData[i][j + 1]);
-                                }
-                                nCells[j + 1].innerHTML = iTotalDebit;
-                            }
-                            $('#testTable tfoot th').css('text-align', 'center');
-                            $('#testTable tfoot th').css('padding', '3px 5px');
-                            $('#testTable tfoot th').css('font-weight', 'bold');
-                        },
-                        "aoColumns": [
-                        {"sName": "Application", "sWidth": "40%"},
-                        {"sName": "Total", "sWidth": "10%"}
-            <%
-                //List<Invariant> myInvariants = invariantService.findInvariantByIdGp1("TCSTATUS", "Y");
-                for (Invariant i : myInvariants) {
-
-            %>
-                        , {"sName": "<%=i.getValue()%>"}
-            <% } %>
-
-                        ]
-
-
-            }
-            );
-            });</script>
-            <%
-
-                IDatabaseVersioningService DatabaseVersioningService = appContext.getBean(IDatabaseVersioningService.class);
-                if (!(DatabaseVersioningService.isDatabaseUptodate()) && request.isUserInRole("Administrator")) {%>
+            IDatabaseVersioningService DatabaseVersioningService = appContext.getBean(IDatabaseVersioningService.class);
+            if (!(DatabaseVersioningService.isDatabaseUptodate()) && request.isUserInRole("Administrator")) {%>
         <script>
-                    var r = confirm("WARNING : Database Not Uptodate >> Redirect to the DatabaseMaintenance page ?");
+            var r = confirm("WARNING : Database Not Uptodate >> Redirect to the DatabaseMaintenance page ?");
             if (r == true)
             {
                 location.href = './DatabaseMaintenance.jsp';
@@ -141,42 +54,22 @@
 
         <% }
         %>
-        <input id="systemSelected" value="<%=MySystem%>" style="display:none">
-        <p class="dttTitle">TestCase per Application</p>
-        <div style="width: 100%; font: 90% sans-serif">
-            <table id="testTable" class="display">
-                <thead>
-                    <tr>
-                        <th>Application</th>
-                        <th>Total</th>
-                            <%
-                                for (Invariant i : myInvariants) {
+        <style>
+             
+             .DataTables_sort_wrapper { font-size:9px }
+             
+         </style>
+        <div class="container-fluid center" id="page-layout">
 
-                            %>
-                        <th><%=i.getValue()%></th>
-                            <%
-                                }
-                            %>
-                    </tr>
-                </thead>
-                <tbody>
-                </tbody>
-                <tfoot>
-                    <tr>
-                        <th>GRAND TOTAL</th>
-                        <th>Total</th>
-                            <%
-                                for (Invariant i : myInvariants) {
-
-                            %>
-                        <th><%=i.getValue()%></th>
-                            <%
-                                }
-                            %>
-                    </tr> 
-                </tfoot>
-            </table>
+            <h1 class="page-title-line" id="title">Welcome to Cerberus Application</h1>
+            <div id="homeTableDiv" class="well">
+                <table id="homePageTable" class="table table-hover display" name="homePageTable"></table>
+                <div class="marginBottom20"></div>
+            </div>
+            <footer class="footer">
+                <div class="container-fluid" id="footer"></div>
+            </footer>
         </div>
-        <br><% out.print(display_footer(DatePageStart));%>
+        <br>
     </body>
 </html>

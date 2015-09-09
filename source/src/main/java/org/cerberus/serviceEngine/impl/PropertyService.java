@@ -26,6 +26,7 @@ import java.util.List;
 import java.util.logging.Logger; 
 import java.util.regex.Pattern;
 import org.apache.log4j.Level;
+import org.cerberus.entity.Identifier;
 import org.cerberus.entity.TestCaseSubDataAccessProperty;
 import org.cerberus.entity.MessageEvent;
 import org.cerberus.entity.MessageEventEnum;
@@ -52,6 +53,7 @@ import org.cerberus.service.ITestCaseExecutionDataService;
 import org.cerberus.service.ITestDataLibDataService;
 import org.cerberus.service.ITestDataLibService;
 import org.cerberus.service.ITestDataService;
+import org.cerberus.serviceEngine.IIdentifierService;
 import org.cerberus.serviceEngine.IJsonService;
 import org.cerberus.serviceEngine.IPropertyService;
 import org.cerberus.serviceEngine.ISQLService;
@@ -103,6 +105,8 @@ public class PropertyService implements IPropertyService {
     private ITestCaseExecutionDataService testCaseExecutionDataService;
     @Autowired
     private IJsonService jsonService;
+    @Autowired
+    private IIdentifierService identifierService;
     
     private static final Pattern GETFROMDATALIB_PATTERN = Pattern.compile("^[_A-Za-z0-9]+\\([_A-Za-z0-9]+\\)$");
     private static final String GETFROMDATALIB_SPLIT = "\\s+|\\(\\s*|\\)";
@@ -720,7 +724,8 @@ public class PropertyService implements IPropertyService {
 
     private TestCaseExecutionData getFromHTML(TestCaseExecutionData testCaseExecutionData, TestCaseExecution tCExecution, TestCaseCountryProperties testCaseCountryProperty, boolean forceCalculation) {
         try {
-            String valueFromHTML = this.webdriverService.getValueFromHTML(tCExecution.getSession(), testCaseExecutionData.getValue1());
+            Identifier identifier = identifierService.convertStringToIdentifier(testCaseExecutionData.getValue1());
+            String valueFromHTML = this.webdriverService.getValueFromHTML(tCExecution.getSession(), identifier);
             if (valueFromHTML != null) {
                 testCaseExecutionData.setValue(valueFromHTML);
                 MessageEvent res = new MessageEvent(MessageEventEnum.PROPERTY_SUCCESS_HTML);
@@ -795,7 +800,8 @@ public class PropertyService implements IPropertyService {
     private TestCaseExecutionData getAttributeFromHtml(TestCaseExecutionData testCaseExecutionData, TestCaseExecution tCExecution, TestCaseCountryProperties testCaseCountryProperty, boolean forceCalculation) {
         MessageEvent res;
         try {
-            String valueFromHTML = this.webdriverService.getAttributeFromHtml(tCExecution.getSession(), testCaseExecutionData.getValue1(), testCaseExecutionData.getValue2());
+            Identifier identifier = identifierService.convertStringToIdentifier(testCaseExecutionData.getValue1());
+            String valueFromHTML = this.webdriverService.getAttributeFromHtml(tCExecution.getSession(), identifier, testCaseExecutionData.getValue2());
             if (valueFromHTML != null) {
                 testCaseExecutionData.setValue(valueFromHTML);
                 res = new MessageEvent(MessageEventEnum.PROPERTY_SUCCESS_GETATTRIBUTEFROMHTML);
@@ -848,7 +854,8 @@ public class PropertyService implements IPropertyService {
 
     private TestCaseExecutionData getFromHtmlVIsible(TestCaseExecutionData testCaseExecutionData, TestCaseExecution tCExecution, TestCaseCountryProperties testCaseCountryProperty, boolean forceCalculation) {
         try {
-            String valueFromHTML = this.webdriverService.getValueFromHTMLVisible(tCExecution.getSession(), testCaseExecutionData.getValue1());
+            Identifier identifier = identifierService.convertStringToIdentifier(testCaseExecutionData.getValue1());
+            String valueFromHTML = this.webdriverService.getValueFromHTMLVisible(tCExecution.getSession(), identifier);
             if (valueFromHTML != null) {
                 testCaseExecutionData.setValue(valueFromHTML);
                 MessageEvent res = new MessageEvent(MessageEventEnum.PROPERTY_SUCCESS_HTMLVISIBLE);

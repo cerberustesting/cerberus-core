@@ -91,6 +91,7 @@ public class SeleniumServerService implements ISeleniumServerService {
              */
             MyLogger.log(SeleniumServerService.class.getName(), Level.DEBUG, "Set Driver");
             WebDriver driver = new RemoteWebDriver(new URL("http://" + tCExecution.getSession().getHost() + ":" + tCExecution.getSession().getPort() + "/wd/hub"), caps);
+//            WebDriver driver = new FirefoxDriver(caps);
             tCExecution.getSession().setDriver(driver);
 
             /**
@@ -116,11 +117,11 @@ public class SeleniumServerService implements ISeleniumServerService {
         } catch (CerberusException exception) {
             MyLogger.log(Selenium.class.getName(), Level.ERROR, exception.toString());
             throw new CerberusException(exception.getMessageError());
-        } catch (MalformedURLException exception) {
-            MyLogger.log(Selenium.class.getName(), Level.ERROR, exception.toString());
-            MessageGeneral mes = new MessageGeneral(MessageGeneralEnum.VALIDATION_FAILED_URL_MALFORMED);
-            mes.setDescription(mes.getDescription().replace("%URL%", tCExecution.getSession().getHost() + ":" + tCExecution.getSession().getPort()));
-            throw new CerberusException(mes);
+//        } catch (MalformedURLException exception) {
+//            MyLogger.log(Selenium.class.getName(), Level.ERROR, exception.toString());
+//            MessageGeneral mes = new MessageGeneral(MessageGeneralEnum.VALIDATION_FAILED_URL_MALFORMED);
+//            mes.setDescription(mes.getDescription().replace("%URL%", tCExecution.getSession().getHost() + ":" + tCExecution.getSession().getPort()));
+//            throw new CerberusException(mes);
         } catch (UnreachableBrowserException exception) {
             MyLogger.log(Selenium.class.getName(), Level.ERROR, exception.toString());
             MessageGeneral mes = new MessageGeneral(MessageGeneralEnum.VALIDATION_FAILED_SELENIUM_COULDNOTCONNECT);
