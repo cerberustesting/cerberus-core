@@ -446,6 +446,7 @@ function TableConfigurationsServerSide(divId, ajaxSource, ajaxProp, aoColumnsFun
 
     this.processing = true;
     this.serverSide = true;
+    this.lengthMenu = [10, 25, 50, 100];
     //not mandatory properties, and default values
     this.searchText = "";
     this.searchMenu = "";
@@ -562,6 +563,7 @@ function createDataTable(tableConfigurations) {
     configs["columns"] = tableConfigurations.aoColumnsFunction;
     configs["colVis"] = tableConfigurations.lang.colVis;
     configs["lengthChange"] = true;
+    configs["lengthMenu"] = tableConfigurations.lengthMenu;
 
 
     if (tableConfigurations.serverSide) {

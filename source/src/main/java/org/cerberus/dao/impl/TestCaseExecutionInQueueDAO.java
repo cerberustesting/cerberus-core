@@ -768,10 +768,6 @@ public class TestCaseExecutionInQueueDAO implements ITestCaseExecutionInQueueDAO
         query.append(column);
         query.append("` ");
         query.append(dir);
-        query.append(" limit ");
-        query.append(start);
-        query.append(" , ");
-        query.append(amount);
 
         List<TestCaseWithExecution> testCaseWithExecutionList = new ArrayList<TestCaseWithExecution>();
         Connection connection = this.databaseSpring.connect();

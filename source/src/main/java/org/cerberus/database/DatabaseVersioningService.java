@@ -4635,7 +4635,37 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLS.append(" ('logevent', 'logeventid', '', 'fr', 'Identifiant du log', 'Identifiant unique de l\\'entrée de log.');");
         SQLInstruction.add(SQLS.toString());
 
-        
+        // Documentation entries for Reporting by tag page.
+        //-- ------------------------ 620
+        SQLS = new StringBuilder();
+        SQLS.append("INSERT INTO `documentation` (`DocTable`, `DocField`, `DocValue`, `Lang`, `DocLabel`, `DocDesc`) VALUES ");
+        SQLS.append(" ('page_reportbytag', 'title', '', 'en', 'Execution reporting by tag', 'This page generate a report of all the execution for a choosen tag'),");
+        SQLS.append(" ('page_reportbytag', 'filters', '', 'en', 'Filters', 'Filters for the report'),");
+        SQLS.append(" ('page_reportbytag', 'report_status', '', 'en', 'Report by Status', 'A report containing the number of execution for each status with their percentage and a chart associated'),");
+        SQLS.append(" ('page_reportbytag', 'report_function', '', 'en', 'Report by Function', 'A bar chart with the number of execution and their status for each function'),");
+        SQLS.append(" ('page_reportbytag', 'report_list', '', 'en', 'List', 'A list of all test case execution for each Environement, Country and Browser'),");
+        SQLS.append(" ('page_reportbytag', 'title', '', 'fr', 'Rapport d\\'execution par Tag', 'Cette page génère un rapport de toutes les executions pour un tag choisi'),");
+        SQLS.append(" ('page_reportbytag', 'filters', '', 'fr', 'Filtres', 'Filtres du rapport'),");
+        SQLS.append(" ('page_reportbytag', 'report_status', '', 'fr', 'Rapport par Status', 'Rapport contenant le nombre d\\'execution pour chaque status avec leur pourcentage et un graphique associé'),");
+        SQLS.append(" ('page_reportbytag', 'report_function', '', 'fr', 'Rapport par Fonction', 'diagramme en bâtons contenant le nombre d\\'execution par status pour chaque fonction'),");
+        SQLS.append(" ('page_reportbytag', 'report_list', '', 'fr', 'Liste', 'Une liste de toute les executions de cas de test par environnement, pays et navigateur');");
+        SQLInstruction.add(SQLS.toString());
+
+         // Documentation entries for Reporting by tag page.
+        //-- ------------------------ 621
+        SQLS = new StringBuilder();
+        SQLS.append("INSERT INTO `documentation` (`DocTable`, `DocField`, `DocValue`, `Lang`, `DocLabel`, `DocDesc`) VALUES ");
+        SQLS.append(" ('page_reportbytag', 'button_load', '', 'en', 'Load', ''),");
+        SQLS.append(" ('page_reportbytag', 'button_reload', '', 'en', 'Reload', ''),");
+        SQLS.append(" ('page_reportbytag', 'button_load', '', 'fr', 'Charger', ''),");
+        SQLS.append(" ('page_reportbytag', 'button_reload', '', 'fr', 'Recharger', ''),");
+        SQLS.append(" ('test', 'Test', '', 'fr', 'Test', ''),");
+        SQLS.append(" ('testcase', 'TestCase', '', 'fr', 'Cas de test', ''),");
+        SQLS.append(" ('testcase', 'Status', '', 'fr', 'Status', ''),");
+        SQLS.append(" ('testcase', 'Description', '', 'fr', 'Description', ''),");
+        SQLS.append(" ('testcase', 'BugID', '', 'fr', 'BugID', ''),");
+        SQLS.append(" ('testcase', 'Function', '', 'fr', 'Fonction', '');");
+        SQLInstruction.add(SQLS.toString());
         
         return SQLInstruction;
     }

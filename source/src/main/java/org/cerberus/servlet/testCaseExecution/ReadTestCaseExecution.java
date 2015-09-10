@@ -205,7 +205,8 @@ public class ReadTestCaseExecution extends HttpServlet {
                 .getBean(ITestCaseExecutionInQueueService.class);
 
         int startPosition = Integer.valueOf(ParameterParserUtil.parseStringParam(request.getParameter("iDisplayStart"), "0"));
-        int length = Integer.valueOf(ParameterParserUtil.parseStringParam(request.getParameter("iDisplayLength"), "100000"));
+//        int length = Integer.valueOf(ParameterParserUtil.parseStringParam(request.getParameter("iDisplayLength"), "100000"));
+        int length = 100000;
 
         String searchParameter = ParameterParserUtil.parseStringParam(request.getParameter("sSearch"), "");
         int columnToSortParameter = Integer.parseInt(ParameterParserUtil.parseStringParam(request.getParameter("iSortCol_0"), "0"));
@@ -256,6 +257,8 @@ public class ReadTestCaseExecution extends HttpServlet {
 
         JSONObject statusFilter = getStatusList(request);
         LinkedHashMap<String, JSONObject> ceb = new LinkedHashMap<String, JSONObject>();
+        LinkedHashMap<String, String> ttc = new LinkedHashMap<String, String>();
+
         for (TestCaseWithExecution testCaseWithExecution : testCaseWithExecutions) {
             String controlStatus = testCaseWithExecution.getControlStatus();
             if (statusFilter.get(controlStatus).equals("on")) {
@@ -264,10 +267,12 @@ public class ReadTestCaseExecution extends HttpServlet {
                 cebObject.put("environment", testCaseWithExecution.getEnvironment());
                 cebObject.put("browser", testCaseWithExecution.getBrowser());
                 ceb.put(testCaseWithExecution.getBrowser() + "_" + testCaseWithExecution.getCountry() + "_" + testCaseWithExecution.getEnvironment(), cebObject);
+                ttc.put(testCaseWithExecution.getTest() + "_" + testCaseWithExecution.getTestCase(), "");
             }
         }
 
         jsonResponse.put("Columns", ceb.values());
+        jsonResponse.put("DisplayLength", ttc.size());
         answer.setItem(jsonResponse);
         answer.setResultMessage(new MessageEvent(MessageEventEnum.DATA_OPERATION_OK));
         return answer;
@@ -285,10 +290,9 @@ public class ReadTestCaseExecution extends HttpServlet {
         ITestCaseExecutionInQueueService testCaseExecutionInQueueService = appContext
                 .getBean(ITestCaseExecutionInQueueService.class);
 
-        JSONArray executionList = new JSONArray();
-
         int startPosition = Integer.valueOf(ParameterParserUtil.parseStringParam(request.getParameter("iDisplayStart"), "0"));
         int length = Integer.valueOf(ParameterParserUtil.parseStringParam(request.getParameter("iDisplayLength"), "100000"));
+        int totalRecords = Integer.valueOf(request.getParameter("TotalRecords"));
 
         String searchParameter = ParameterParserUtil.parseStringParam(request.getParameter("sSearch"), "");
         int columnToSortParameter = Integer.parseInt(ParameterParserUtil.parseStringParam(request.getParameter("iSortCol_0"), "0"));
@@ -338,8 +342,10 @@ public class ReadTestCaseExecution extends HttpServlet {
         }
         testCaseWithExecutions = new ArrayList<TestCaseWithExecution>(testCaseWithExecutionsList.values());
 
+        JSONArray executionList = new JSONArray();
         JSONObject statusFilter = getStatusList(request);
         LinkedHashMap<String, JSONObject> ttc = new LinkedHashMap<String, JSONObject>();
+
         for (TestCaseWithExecution testCaseWithExecution : testCaseWithExecutions) {
             try {
                 String controlStatus = testCaseWithExecution.getControlStatus();
@@ -385,8 +391,8 @@ public class ReadTestCaseExecution extends HttpServlet {
 
         JSONObject jsonResponse = new JSONObject();
         jsonResponse.put("testList", lines);
-        jsonResponse.put("iTotalRecords", testCaseWithExecutions.size());
-        jsonResponse.put("iTotalDisplayRecords", testCaseWithExecutions.size());
+        jsonResponse.put("iTotalRecords", totalRecords);
+        jsonResponse.put("iTotalDisplayRecords", totalRecords);
 
         answer.setItem(jsonResponse);
         answer.setResultMessage(new MessageEvent(MessageEventEnum.DATA_OPERATION_OK));

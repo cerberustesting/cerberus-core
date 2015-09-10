@@ -25,80 +25,34 @@ $.when($.getScript("js/pages/global/global.js")).then(function () {
 
 
         loadTagFilters();
+        $('body').tooltip({
+            selector: '[data-toggle="tooltip"]'
+        });
     });
 });
+
+/*
+ * Loading functions
+ */
 
 function initPage() {
     var doc = new Doc();
 
     displayHeaderLabel(doc);
+    displayPageLabel(doc);
     displayFooter(doc);
 }
 
-function aoColumnsFunc(Columns) {
-    var aoColumns = [
-        {"data": "test",
-            "sName": "test",
-            "title": "test"},
-        {"data": "testCase",
-            "sName": "testCase",
-            "title": "testCase"
-        },
-        {"data": "application",
-            "sName": "application",
-            "title": "application"
-        },
-        {
-            "bVisible": false,
-            "data": "status",
-            "sName": "status",
-            "title": "status"
-        },
-        {"data": "shortDesc",
-            "sName": "description",
-            "title": "description"
-        },
-        {"bVisible": false,
-            "data": "bugId",
-            "sName": "bugId",
-            "title": "bugId"
-        },
-        {"visible": false,
-            "data": "function",
-            "sName": "function",
-            "title": "function"
-        }
-    ];
-    for (var i = 0; i < Columns.length; i++) {
-        var title = Columns[i].environment + " " + Columns[i].country + " " + Columns[i].browser;
-
-        var col = {"title": title,
-            "bSortable": false,
-            "bSearchable": false,
-            "data": function (row, type, val, meta) {
-                var dataTitle = meta.settings.aoColumns[meta.col].sTitle;
-                if (row.hasOwnProperty("execTab") && row["execTab"].hasOwnProperty(dataTitle)) {
-                    return row["execTab"][dataTitle];
-                } else {
-                    return "";
-                }
-            },
-            "sClass": "center",
-            "mRender": function (data) {
-                if (data !== "") {
-                    var executionLink = generateExecutionLink(data.ControlStatus, data.ID);
-                    var glyphClass = getRowClass(data.ControlStatus);
-                    var cell = '<div class="progress-bar status' + data.ControlStatus + '" href="./ExecutionDetail.jsp?id_tc=' + data.ID + '" role="progressbar" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100" style="width: 100%;">\n\
-                            <span class="' + glyphClass.glyph + ' marginRight5"></span>' + data.ControlStatus + executionLink + '</div>';
-                    return cell;
-                } else {
-                    return data;
-                }
-            }
-        };
-        aoColumns.push(col);
-    }
-    return aoColumns;
+function displayPageLabel(doc) {
+    $("#pageTitle").html(doc.getDocLabel("page_reportbytag", "title"));
+    $("#title").html(doc.getDocOnline("page_reportbytag", "title"));
+    $("#loadbutton").html(doc.getDocLabel("page_reportbytag", "button_load"));
+    $("#reloadbutton").html(doc.getDocLabel("page_reportbytag", "button_reload"));
+    $("#filters").html(doc.getDocOnline("page_reportbytag", "filters"));
+    $("#reportStatus").html(doc.getDocOnline("page_reportbytag", "report_status"));
+    $("#reportFunction").html(doc.getDocOnline("page_reportbytag", "report_function"));
+    $("#List").html(doc.getDocOnline("page_reportbytag", "report_list"));
+    $("#statusLabel").html(doc.getDocLabel("testcase", "Status") + " :");
 }
 
 function loadTagFilters() {
@@ -118,50 +72,6 @@ function loadTagFilters() {
             showMessageMainPage(messageType, data.message);
         }
     }).fail(handleErrorAjaxAfterTimeout);
-}
-
-function getRowClass(status) {
-    var rowClass = [];
-
-    rowClass["panel"] = "panel" + status;
-    if (status === "OK") {
-        rowClass["glyph"] = "glyphicon glyphicon-ok";
-    } else if (status === "KO") {
-        rowClass["glyph"] = "glyphicon glyphicon-remove";
-    } else if (status === "FA") {
-        rowClass["glyph"] = "fa fa-bug";
-    } else if (status === "CA") {
-        rowClass["glyph"] = "fa fa-life-ring";
-    } else if (status === "PE") {
-        rowClass["glyph"] = "fa fa-hourglass-half";
-    } else if (status === "NE") {
-        rowClass["glyph"] = "fa fa-clock-o";
-    } else {
-        rowClass["glyph"] = "";
-    }
-    return rowClass;
-}
-
-function loadReportList() {
-    var selectTag = $("#selectTag option:selected").text();
-    var statusFilter = $("#statusFilter input");
-
-    if ($("#listTable_wrapper").hasClass("initialized")) {
-        $("#ListPanel .panel-body").empty();
-        $("#ListPanel .panel-body").html('<table id="listTable" class="table table-hover display" name="listTable">\n\
-                                            </table><div class="marginBottom20"></div>');
-    }
-
-    if (selectTag !== "") {
-        //configure and create the dataTable
-        var jqxhr = $.getJSON("ReadTestCaseExecution", "Tag=" + selectTag + "&" + statusFilter.serialize());
-        $.when(jqxhr).then(function (data) {
-            var configurations = new TableConfigurationsServerSide("listTable", "ReadTestCaseExecution?Tag=" + selectTag + "&" + statusFilter.serialize(), "testList", aoColumnsFunc(data.Columns));
-
-            createDataTable(configurations);
-            $('#listTable_wrapper').not('.initialized').addClass('initialized');
-        });
-    }
 }
 
 function loadReport() {
@@ -187,6 +97,132 @@ function loadReport() {
             loadReportByFunctionChart(data);
         });
     }
+}
+
+function loadReportList() {
+    var selectTag = $("#selectTag option:selected").text();
+    var statusFilter = $("#statusFilter input");
+
+    if ($("#listTable_wrapper").hasClass("initialized")) {
+        $("#ListPanel .panel-body").empty();
+        $("#ListPanel .panel-body").html('<table id="listTable" class="table table-hover display" name="listTable">\n\
+                                            </table><div class="marginBottom20"></div>');
+    }
+
+    if (selectTag !== "") {
+        //configure and create the dataTable
+        var jqxhr = $.getJSON("ReadTestCaseExecution", "Tag=" + selectTag + "&" + statusFilter.serialize());
+        $.when(jqxhr).then(function (data) {
+            var request = "ReadTestCaseExecution?Tag=" + selectTag + "&" + statusFilter.serialize() + "&TotalRecords=" + data.DisplayLength;
+
+            var configurations = new TableConfigurationsServerSide("listTable", request, "testList", aoColumnsFunc(data.Columns));
+            configurations.paginate = false;
+
+            createDataTable(configurations);
+            $('#listTable_wrapper').not('.initialized').addClass('initialized');
+        });
+    }
+}
+
+/*
+ * Status panels
+ */
+
+function appendPanelStatus(status, total) {
+    var rowClass = getRowClass(status);
+    $("#ReportByStatusTable").append(
+            $("<div class='panel " + rowClass.panel + "'></div>").append(
+            $('<div class="panel-heading"></div>').append(
+            $('<div class="row"></div>').append(
+            $('<div class="col-xs-6 status"></div>').text(status).prepend(
+            $('<span class="' + rowClass.glyph + '" style="margin-right: 5px;"></span>'))).append(
+            $('<div class="col-xs-6 text-right"></div>').append(
+            $('<div class="total"></div>').text(total[status].value)))).append(
+            $('<div class="row"></div>').append(
+            $('<div class="percentage pull-right"></div>').text('Percentage : ' + Math.round(((total[status].value / total.test) * 100) * 100) / 100 + '%')))));
+}
+
+function loadReportByStatusTable(data) {
+    var total = {};
+    //calculate totaltest nb
+    total["test"] = 0;
+    for (var index = 0; index < data.axis.length; index++) {
+        // increase the total execution
+        for (var key in data.axis[index]) {
+            if (key !== "name") {
+                if (total.hasOwnProperty(key)) {
+                    total[key].value += data.axis[index][key].value;
+                } else {
+                    total[key] = {"value": data.axis[index][key].value,
+                        "color": data.axis[index][key].color};
+                }
+                total.test += data.axis[index][key].value;
+            }
+        }
+    }
+
+    // create a panel for each control status
+    for (var label in total) {
+        if (label !== "test") {
+            appendPanelStatus(label, total);
+        }
+    }
+// add a panel for the total
+    $("#ReportByStatusTable").append(
+            $("<div class='panel panel-primary'></div>").append(
+            $('<div class="panel-heading"></div>').append(
+            $('<div class="row"></div>').append(
+            $('<div class="col-xs-6 status"></div>').text("Total").prepend(
+            $('<span class="" style="margin-right: 5px;"></span>'))).append(
+            $('<div class="col-xs-6 text-right"></div>').append(
+            $('<div class="total"></div>').text(total.test))
+            ))));
+    //format data to be used by the chart
+
+    var dataset = [];
+    for (var label in total) {
+        if (label !== "test") {
+            dataset.push(total[label]);
+        }
+    }
+    loadReportByStatusChart(dataset);
+}
+
+/*
+ * Charts functions
+ */
+
+function loadReportByStatusChart(data) {
+
+    var margin = {top: 20, right: 25, bottom: 20, left: 50};
+    var width = document.getElementById('statusChart').offsetWidth - margin.left - margin.right;
+    var height = document.getElementById('ReportByStatusTable').offsetHeight - margin.top - margin.bottom;
+    var radius = Math.min(width, height) / 2;
+
+    var svg = d3.select('#statusChart')
+            .append('svg')
+            .attr('width', width + margin.left + margin.right)
+            .attr('height', height + margin.top + margin.bottom)
+            .append('g')
+            .attr('transform', 'translate(' + (width / 2) + ',' + (height / 2) + ')')
+
+    var arc = d3.svg.arc()
+            .outerRadius(radius);
+
+    var pie = d3.layout.pie()
+            .value(function (d) {
+                return d.value;
+            })
+            .sort(null);
+
+    var path = svg.selectAll('path')
+            .data(pie(data))
+            .enter()
+            .append('path')
+            .attr('d', arc)
+            .attr('fill', function (d, i) {
+                return d.data.color;
+            });
 }
 
 function convertData(dataset) {
@@ -307,118 +343,125 @@ function loadReportByFunctionChart(dataset) {
 }
 ;
 
-function loadReportByStatusChart(data) {
+/*
+ * Helper functions
+ */
 
-    var margin = {top: 20, right: 25, bottom: 20, left: 50};
-    var width = document.getElementById('statusChart').offsetWidth - margin.left - margin.right;
-    var height = document.getElementById('ReportByStatusTable').offsetHeight - margin.top - margin.bottom;
-    var radius = Math.min(width, height) / 2;
+function generateTooltip(data) {
+    var htmlRes;
 
-    var svg = d3.select('#statusChart')
-            .append('svg')
-            .attr('width', width + margin.left + margin.right)
-            .attr('height', height + margin.top + margin.bottom)
-            .append('g')
-            .attr('transform', 'translate(' + (width / 2) + ',' + (height / 2) + ')')
+    htmlRes = '<div>Test ID : ' + data.ID + '</div>' +
+            '<div>Start : ' + data.Start + '</div>' +
+            '<div>End : ' + data.End + '</div>' +
+            '<div>' + data.ControlMessage + '</div>';
 
-    var arc = d3.svg.arc()
-            .outerRadius(radius);
-
-    var pie = d3.layout.pie()
-            .value(function (d) {
-                return d.value;
-            })
-            .sort(null);
-
-    var path = svg.selectAll('path')
-            .data(pie(data))
-            .enter()
-            .append('path')
-            .attr('d', arc)
-            .attr('fill', function (d, i) {
-                return d.data.color;
-            });
+    return htmlRes;
 }
 
-function appendPanelStatus(status, total) {
-    var rowClass = getRowClass(status);
-    $("#ReportByStatusTable").append(
-            $("<div class='panel " + rowClass.panel + "'></div>").append(
-            $('<div class="panel-heading"></div>').append(
-            $('<div class="row"></div>').append(
-            $('<div class="col-xs-6 status"></div>').text(status).prepend(
-            $('<span class="' + rowClass.glyph + '" style="margin-right: 5px;"></span>'))).append(
-            $('<div class="col-xs-6 text-right"></div>').append(
-            $('<div class="total"></div>').text(total[status].value)).append(
-            $('<div></div>').text('Percentage : ' + Math.round(((total[status].value / total.test) * 100) * 100) / 100 + '%'))))));
-}
+function aoColumnsFunc(Columns) {
+    var doc = new Doc();
 
-function createStatusFilter(total) {
-    var filterContainer = $("#filterContainer");
-
-    filterContainer.append($('<label>Status :</label>\n\
-                            <div class="form-group" id="statusFilter"></div>'));
-    for (var label in total) {
-        if (label !== "test") {
-            $("#statusFilter").append('<label class="checkbox-inline">\n\
-                                        <input type="checkbox" name=' + label + ' checked/>'
-                    + label + '</label>');
+    var aoColumns = [
+        {"data": "test",
+            "sName": "test",
+            "title": doc.getDocOnline("test", "Test")
+        },
+        {"data": "testCase",
+            "sName": "testCase",
+            "title": doc.getDocOnline("testcase", "TestCase")
+        },
+        {"data": "application",
+            "sName": "application",
+            "title": doc.getDocOnline("application", "Application")
+        },
+        {
+            "bVisible": false,
+            "data": "status",
+            "sName": "status",
+            "title": doc.getDocOnline("testcase", "Status")
+        },
+        {"data": "shortDesc",
+            "sName": "description",
+            "title": doc.getDocOnline("testcase", "Description")
+        },
+        {"bVisible": false,
+            "data": "bugId",
+            "sName": "bugId",
+            "title": doc.getDocOnline("testcase", "BugID")
+        },
+        {"visible": false,
+            "data": "function",
+            "sName": "function",
+            "title": doc.getDocOnline("testcase", "Function")
         }
-    }
-}
+    ];
+    for (var i = 0; i < Columns.length; i++) {
+        var title = Columns[i].environment + " " + Columns[i].country + " " + Columns[i].browser;
 
-function loadReportByStatusTable(data) {
-    var total = {};
-    //calculate totaltest nb
-    total["test"] = 0;
-    for (var index = 0; index < data.axis.length; index++) {
-        // increase the total execution
-        for (var key in data.axis[index]) {
-            if (key !== "name") {
-                if (total.hasOwnProperty(key)) {
-                    total[key].value += data.axis[index][key].value;
+        var col = {"title": title,
+            "bSortable": false,
+            "bSearchable": false,
+            "data": function (row, type, val, meta) {
+                var dataTitle = meta.settings.aoColumns[meta.col].sTitle;
+                if (row.hasOwnProperty("execTab") && row["execTab"].hasOwnProperty(dataTitle)) {
+                    return row["execTab"][dataTitle];
                 } else {
-                    total[key] = {"value": data.axis[index][key].value,
-                        "color": data.axis[index][key].color};
+                    return "";
                 }
-                total.test += data.axis[index][key].value;
+            },
+            "sClass": "center",
+            "mRender": function (data) {
+                if (data !== "") {
+                    var executionLink = generateExecutionLink(data.ControlStatus, data.ID);
+                    var glyphClass = getRowClass(data.ControlStatus);
+                    var tooltip = generateTooltip(data);
+                    var cell = '<div class="progress-bar status' + data.ControlStatus + '" \n\
+                                role="progressbar" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100" style="width: 100%;cursor: pointer;" \n\
+                                data-toggle="tooltip" data-html="true" title="' + tooltip + '"\n\
+                                onclick="location.href=\'' + executionLink + '\'">\n\
+                                <span class="' + glyphClass.glyph + ' marginRight5"></span>\n\
+                                 ' + data.ControlStatus + '</div>';
+                    return cell;
+                } else {
+                    return data;
+                }
             }
-        }
+        };
+        aoColumns.push(col);
     }
+    return aoColumns;
+}
 
-    // create a panel for each control status
-    for (var label in total) {
-        if (label !== "test") {
-            appendPanelStatus(label, total);
-        }
+function getRowClass(status) {
+    var rowClass = [];
+
+    rowClass["panel"] = "panel" + status;
+    if (status === "OK") {
+        rowClass["glyph"] = "glyphicon glyphicon-ok";
+    } else if (status === "KO") {
+        rowClass["glyph"] = "glyphicon glyphicon-remove";
+    } else if (status === "FA") {
+        rowClass["glyph"] = "fa fa-bug";
+    } else if (status === "CA") {
+        rowClass["glyph"] = "fa fa-life-ring";
+    } else if (status === "PE") {
+        rowClass["glyph"] = "fa fa-hourglass-half";
+    } else if (status === "NE") {
+        rowClass["glyph"] = "fa fa-clock-o";
+    } else if (status === "NA") {
+        rowClass["glyph"] = "fa fa-question";
+    } else {
+        rowClass["glyph"] = "";
     }
-// add a panel for the total
-    $("#ReportByStatusTable").append(
-            $("<div class='panel panel-primary'></div>").append(
-            $('<div class="panel-heading"></div>').append(
-            $('<div class="row"></div>').append(
-            $('<div class="col-xs-6 status"></div>').text("Total").prepend(
-            $('<span class="" style="margin-right: 5px;"></span>'))).append(
-            $('<div class="col-xs-6 text-right"></div>').append(
-            $('<div class="total"></div>').text(total.test))
-            ))));
-    //format data to be used by the chart
-//    createStatusFilter(total);
-    var dataset = [];
-    for (var label in total) {
-        if (label !== "test") {
-            dataset.push(total[label]);
-        }
-    }
-    loadReportByStatusChart(dataset);
+    return rowClass;
 }
 
 function generateExecutionLink(status, id) {
     var result = "";
     if (status === "NE") {
-        result = "<a class='test-link' href='./RunTests.jsp?queuedExecution=" + id + "'>" + id + "</a>";
+        result = "./RunTests.jsp?queuedExecution=" + id;
     } else {
-        result = "<a class='test-link' href='./ExecutionDetail.jsp?id_tc=" + id + "'>" + id + "</a>";
+        result = "./ExecutionDetail.jsp?id_tc=" + id;
     }
     return result;
 }

@@ -97,7 +97,7 @@
 
 .status {
     font-weight: 900;
-    font-size: 30px;
+    font-size: 20px;
 }
 
 .progress-bar {
@@ -115,7 +115,7 @@
 }
 
 .total {
-    font-size: 30px;
+    font-size: 20px;
 }
 
 .statusOK {
@@ -160,6 +160,14 @@
     display: inline-block;
 }
 
+#statusLabel {
+    font-weight: bold;
+}
+
+.percentage {
+    margin-right: 5px;
+}
+
 .color-box {   
     float: left;
     width: 10px;
@@ -196,4 +204,9 @@
     margin: -1px 0 0 0;
     top: 100%;
     left: 0;
+}
+
+.tooltip-inner {
+    max-width: none;
+    white-space: nowrap;
 }

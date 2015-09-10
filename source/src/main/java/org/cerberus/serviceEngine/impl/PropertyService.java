@@ -489,7 +489,7 @@ public class PropertyService implements IPropertyService {
         for (TestCaseExecutionData item : dataList) {
             if (item.getProperty().equalsIgnoreCase(libName)) {
                 //id da library                 
-                tecd.setValue1(item.getValue()); //value1 is the value determined by the previous calculation (if it happened) 
+                tecd.setValue1(item.getValue1()); //value1 is the value determined by the previous calculation (if it happened) 
                 eachTccp.setValue1(item.getProperty()); //property name used to retrieve the data from the execution
                 
                 if (LOG.isDebugEnabled()) {
@@ -517,7 +517,7 @@ public class PropertyService implements IPropertyService {
         //the subdataentry specified
         HashMap<String, TestDataLibResult> currentListResults = tCExecution.getDataLibraryExecutionDataList();
         
-        TestDataLibResult result = currentListResults.get(keyDataList);//tCExecution.getDataLibraryExecutionDataList().get(tecd.getProperty());
+        TestDataLibResult result = currentListResults.get(keyDataList);
         String subDataValue = result.getValue(tecd.getValue2()); //temporary use of the value2
         
         String value = "";
@@ -526,8 +526,10 @@ public class PropertyService implements IPropertyService {
             //the entry does not exist yet so we need to calculate it
             //gets the entry that we want to collect 
             TestDataLibData subDataEntry;
-            try {
-                subDataEntry = testDataLibDataService.findTestDataLibDataByKey(Integer.parseInt(tecd.getValue1()), tecd.getValue2());
+            
+            AnswerItem ansSubDataEntry = testDataLibDataService.findTestDataLibDataByKey(Integer.parseInt(tecd.getValue1()), tecd.getValue2());
+            subDataEntry = (TestDataLibData) ansSubDataEntry.getItem();
+            if(subDataEntry != null){
                 //extract the subdata entry value
                 AnswerItem ansFetchData = testDataLibDataService.fetchSubData(result, subDataEntry);
                 value = (String) ansFetchData.getItem();
@@ -535,8 +537,8 @@ public class PropertyService implements IPropertyService {
                     //if value is null then the key was valid but 
                     res = ansFetchData.getResultMessage();
                 }
-            } catch (CerberusException ex) {
-                res = new MessageEvent(MessageEventEnum.PROPERTY_FAILED_GETFROMDATALIBDATA);                 
+            }else{
+                res = ansSubDataEntry.getResultMessage();
             }
         }
         res.setDescription(res.getDescription().replace("%VALUE1%", tecd.getValue1()).replace("%VALUE2%", tecd.getValue2()));
@@ -1070,11 +1072,29 @@ public class PropertyService implements IPropertyService {
                 }
                 
                 if(result != null){
-                    //retrieved the information
-                    //we add the entry value into the execution data 
-                    testCaseExecutionData.setValue(String.valueOf(lib.getTestDataLibID().toString()));                    
+                    //retrieves the information
+                    //fetches the empty value as the default  one                     
+                    AnswerItem ansSubDataEntry = testDataLibDataService.findTestDataLibDataByKey(result.getTestDataLibID(), "");
+                    TestDataLibData subDataEntry = (TestDataLibData)ansSubDataEntry.getItem();
+                    
+                    if(subDataEntry != null){                        
+                        AnswerItem ansFetchData = testDataLibDataService.fetchSubData(result, subDataEntry);
+                        String value = (String) ansFetchData.getItem();
+                        if(value == null){
+                            //if value is null then something happene while retrieving the sub-data entry value
+                            res = ansFetchData.getResultMessage();
+                        }else{
+                            testCaseExecutionData.setValue(value); //TODO:FN tem que ser outra coisa
+                            testCaseExecutionData.setValue1(String.valueOf(lib.getTestDataLibID().toString()));
+                        }
+                        
+                    }else{ //no empty value is defined
+                        //we add the entry value into the execution data 
+                        testCaseExecutionData.setValue(String.valueOf(lib.getTestDataLibID().toString())); 
+                        testCaseExecutionData.setValue1(String.valueOf(lib.getTestDataLibID().toString()));
+                    }
                     //updates the result data
-                    currentListResults.put(testCaseCountryProperty.getProperty(), result);//currentListResults.put(String.valueOf(lib.getTestDataLibID()), result);
+                    currentListResults.put(testCaseCountryProperty.getProperty(), result);
                     //updates the execution data list
                     tCExecution.setDataLibraryExecutionDataList(currentListResults);
                 }                
@@ -1126,8 +1146,8 @@ public class PropertyService implements IPropertyService {
      * Auxiliary method that verifies if a property is defined in the scope of the test case.
      * @param property - property name
      * @param country - country were the property was implemented
-     * @param propertieOfTestcase - list of properties defined for the testcase
-     * @return an answeritem that contains the property in case of success, and null otherwise. also it returns a message indicating error or success.
+     * @param propertieOfTestcase - list of properties defined for the test case
+     * @return an AnswerItem that contains the property in case of success, and null otherwise. also it returns a message indicating error or success.
      */
     private AnswerItem<TestCaseCountryProperties> findMatchingTestCaseCountryProperty(String property, String country, List<TestCaseCountryProperties> propertieOfTestcase) {
         
@@ -1172,7 +1192,6 @@ public class PropertyService implements IPropertyService {
                         propertyDefined = true;
                         if (tccp.getCountry().equals(country)) {
                             //if is a sub data access then we create a auxiliary property
-                            //TODO:FN precisa sempre de ser calculada?
                             testCaseCountryProperty = factoryTCCountryProperties.create(tccp, property, libName, subdataName);
                             //property needs to be calculated
                             testCaseCountryProperty.setResult(new  MessageEvent(MessageEventEnum.PROPERTY_PENDING));    

@@ -65,7 +65,7 @@ public class TestDataLibDataService implements ITestDataLibDataService {
     }
 
     @Override
-    public TestDataLibData findTestDataLibDataByKey(Integer testDataLibID, String subData) throws CerberusException {
+    public AnswerItem<TestDataLibData> findTestDataLibDataByKey(Integer testDataLibID, String subData){
         return testDataLibDataDAO.findTestDataLibDataByKey(testDataLibID, subData);
     }
 

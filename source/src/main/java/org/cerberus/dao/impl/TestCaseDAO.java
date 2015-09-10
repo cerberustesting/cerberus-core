@@ -1267,7 +1267,7 @@ public class TestCaseDAO implements ITestCaseDAO {
 //            StringBuilder gSearch = new StringBuilder();
 //            StringBuilder searchSQL = new StringBuilder();
 //            
-//            List<Application> appliList = applicationService.findApplicationBySystem(system);
+//            List<Application> appliList = applicationService.readBySystem_Deprecated(system);
 //            String inSQL = SqlUtil.getInSQLClause(appliList);
 //
 //            if (!(inSQL.equalsIgnoreCase(""))) {

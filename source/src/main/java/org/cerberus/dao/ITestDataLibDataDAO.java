@@ -23,6 +23,7 @@ import org.cerberus.entity.TestDataLibData;
 import org.cerberus.entity.TestDataLibDataUpdate;
 import org.cerberus.exception.CerberusException;
 import org.cerberus.util.answer.Answer;
+import org.cerberus.util.answer.AnswerItem;
 import org.cerberus.util.answer.AnswerList;
 
 /**
@@ -57,9 +58,8 @@ public interface ITestDataLibDataDAO {
      * @param testDataLibID
      * @param subData
      * @return
-     * @throws org.cerberus.exception.CerberusException
      */
-    TestDataLibData findTestDataLibDataByKey(Integer testDataLibID, String subData) throws CerberusException;
+    AnswerItem<TestDataLibData> findTestDataLibDataByKey(Integer testDataLibID, String subData);
 
     /**
      *
