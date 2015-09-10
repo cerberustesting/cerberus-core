@@ -116,7 +116,7 @@ function loadReportList() {
             var request = "ReadTestCaseExecution?Tag=" + selectTag + "&" + statusFilter.serialize() + "&TotalRecords=" + data.DisplayLength;
 
             var configurations = new TableConfigurationsServerSide("listTable", request, "testList", aoColumnsFunc(data.Columns));
-            configurations.lengthMenu = [100, 1000, 5000];
+            configurations.paginate = false;
 
             createDataTable(configurations);
             $('#listTable_wrapper').not('.initialized').addClass('initialized');
