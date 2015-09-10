@@ -19,6 +19,8 @@
  */
 package org.cerberus.entity;
 
+import org.cerberus.enums.TestDataLibTypeEnum;
+import org.cerberus.enums.MessageEventEnum;
 import org.cerberus.util.XmlUtil;
 import org.cerberus.util.XmlUtilException;
 import org.cerberus.util.answer.AnswerItem;

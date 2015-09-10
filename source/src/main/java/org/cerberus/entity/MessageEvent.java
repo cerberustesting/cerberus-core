@@ -17,6 +17,9 @@
  */
 package org.cerberus.entity;
 
+import org.cerberus.enums.MessageEventEnum;
+import org.cerberus.enums.MessageGeneralEnum;
+
 /**
  * {Insert class description here}
  *

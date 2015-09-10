@@ -31,9 +31,9 @@ import org.cerberus.database.DatabaseSpring;
 import org.cerberus.entity.Application;
 import org.cerberus.entity.Invariant;
 import org.cerberus.entity.MessageEvent;
-import org.cerberus.entity.MessageEventEnum;
+import org.cerberus.enums.MessageEventEnum;
 import org.cerberus.entity.MessageGeneral;
-import org.cerberus.entity.MessageGeneralEnum;
+import org.cerberus.enums.MessageGeneralEnum;
 import org.cerberus.entity.TCase;
 import org.cerberus.entity.TestCase;
 import org.cerberus.exception.CerberusException;
@@ -1267,7 +1267,7 @@ public class TestCaseDAO implements ITestCaseDAO {
 //            StringBuilder gSearch = new StringBuilder();
 //            StringBuilder searchSQL = new StringBuilder();
 //            
-//            List<Application> appliList = applicationService.findApplicationBySystem(system);
+//            List<Application> appliList = applicationService.readBySystem_Deprecated(system);
 //            String inSQL = SqlUtil.getInSQLClause(appliList);
 //
 //            if (!(inSQL.equalsIgnoreCase(""))) {

@@ -31,10 +31,9 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.Part;
 import org.cerberus.entity.MessageEvent;
-import org.cerberus.entity.MessageEventEnum;
+import org.cerberus.enums.MessageEventEnum;
 import org.cerberus.entity.TestDataLib;
-import org.cerberus.entity.TestDataLibData;
-import org.cerberus.exception.CerberusException;
+import org.cerberus.entity.TestDataLibData; 
 import org.cerberus.factory.IFactoryLogEvent;
 import org.cerberus.factory.impl.FactoryLogEvent;
 import org.cerberus.service.IImportFileService;
@@ -69,7 +68,7 @@ public class ImportTestDataLib extends HttpServlet {
      * @throws IOException if an I/O error occurs
      */
     protected void processRequest(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        Answer answer = null;
+        Answer answer = new Answer();
         JSONObject jsonResponse = new JSONObject();
         ApplicationContext appContext = WebApplicationContextUtils.getWebApplicationContext(this.getServletContext());
 
@@ -83,6 +82,7 @@ public class ImportTestDataLib extends HttpServlet {
 
             AnswerItem dataFromService = importService.importAndValidateXMLFromInputStream(filePart.getInputStream(), schemaLocation, XMLHandlerEnumType.TESTDATALIB_HANDLER);
             MessageEvent msg = dataFromService.getResultMessage();
+            answer.setResultMessage(msg);
 
             if (dataFromService.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
                 //if the import succeeds then we can insert the data
@@ -95,18 +95,19 @@ public class ImportTestDataLib extends HttpServlet {
                 if (answer.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
                     msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_IMPORT_OK);
                     msg.setDescription(msg.getDescription().replace("%ITEM%", "Test Data Lib"));
+                    //Adding log entry
+                    ILogEventService logEventService = appContext.getBean(LogEventService.class);
+                    IFactoryLogEvent factoryLogEvent = appContext.getBean(FactoryLogEvent.class);
+                    logEventService.create(factoryLogEvent.create(0, 0, request.getUserPrincipal().getName(), null, "/ImportTestDataLib", "IMPORT", "TestDataLib Imported.", "", ""));
                 } else {
                     msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_IMPORT_ERROR);
                     msg.setDescription(msg.getDescription().replace("%ITEM%", "Test Data Lib").replace("%REASON%", answer.getMessageDescription()));
                 }
             }
+            
             jsonResponse.put("messageType", msg.getMessage().getCodeString());
             jsonResponse.put("message", msg.getDescription());
-
-            ILogEventService logEventService = appContext.getBean(LogEventService.class);
-            IFactoryLogEvent factoryLogEvent = appContext.getBean(FactoryLogEvent.class);
-            logEventService.create(factoryLogEvent.create(0, 0, request.getUserPrincipal().getName(), null, "/ImportTestDataLib", "IMPORT", "TestDataLib Imported.", "", ""));
-
+           
             response.setContentType("application/json");
             response.getWriter().print(jsonResponse);
             response.getWriter().flush();

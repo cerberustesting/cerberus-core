@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU General Public License
  * along with Cerberus.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.cerberus.entity;
+package org.cerberus.enums;
 
 /**
  * {Insert class description here}
@@ -101,6 +101,7 @@ public enum MessageEventEnum {
     ACTION_SUCCESS_CLICKANDNOWAIT(200, "OK", "Element '%ELEMENT%' clicked and waited for page to load", false, false ,false , MessageGeneralEnum.EXECUTION_PE_TESTSTARTED),
     ACTION_SUCCESS_TYPE(200, "OK", "Element '%ELEMENT%' feeded with '%DATA%'.", false, false ,false , MessageGeneralEnum.EXECUTION_PE_TESTSTARTED),
     ACTION_SUCCESS_DOUBLECLICK(200, "OK", "Element '%ELEMENT%' double clicked.", false, false ,false , MessageGeneralEnum.EXECUTION_PE_TESTSTARTED),
+    ACTION_SUCCESS_RIGHTCLICK(200, "OK", "Right click has been done on Element '%ELEMENT%'.", false, false ,false , MessageGeneralEnum.EXECUTION_PE_TESTSTARTED),
     ACTION_SUCCESS_URLLOGIN(200, "OK", "Opened '%URL%'.", false, false ,false , MessageGeneralEnum.EXECUTION_PE_TESTSTARTED),
     ACTION_SUCCESS_MOUSEOVER(200, "OK", "Mouse moved over '%ELEMENT%'.", false, false ,false , MessageGeneralEnum.EXECUTION_PE_TESTSTARTED),
     ACTION_SUCCESS_MOUSEOVERANDWAIT(200, "OK", "Mouse moved over '%ELEMENT%' and waited %TIME% ms.", false, false ,false , MessageGeneralEnum.EXECUTION_PE_TESTSTARTED),
@@ -160,6 +161,8 @@ public enum MessageEventEnum {
     ACTION_FAILED_CLOSE_ALERT(280, "FA", "Failed to close to alert popup !", true, true ,true , MessageGeneralEnum.EXECUTION_FA_ACTION),
     ACTION_FAILED_CALLSOAP(286, "FA", "Failed to call the SOAP '%SOAPNAME%'! Caused by : %DESCRIPTION%", true, true ,false , MessageGeneralEnum.EXECUTION_FA_ACTION),
     ACTION_FAILED_REMOVEDIFFERENCE(287, "FA", "Failed to remove difference '%DIFFERENCE%' from '%DIFFERENCES%'", true, true ,false , MessageGeneralEnum.EXECUTION_FA_ACTION),
+    ACTION_FAILED_RIGHTCLICK_NO_SUCH_ELEMENT(288, "FA", "Failed to Right Click on element %ELEMENT% because could not find element '%ELEMENT%'!", true, true ,true , MessageGeneralEnum.EXECUTION_FA_ACTION),
+    ACTION_FAILED_SIKULI_SERVER_NOT_REACHABLE(289, "FA", "Sikuli Server is not reachable at %URL%. Please verify that the required dependencies are present.", true, true ,false , MessageGeneralEnum.EXECUTION_FA_ACTION),
     ACTION_NOTEXECUTED_NO_PROPERTY_DEFINITION(290, "NA", "Not executed because Property '%PROP%' is not defined for the country '%COUNTRY%'.", false, false ,false , MessageGeneralEnum.EXECUTION_PE_TESTSTARTED),
     ACTION_NOTEXECUTED_NOTSUPPORTED_FOR_APPLICATION(291, "FA", "Not executed because Action '%ACTION%' is not supported for application type '%APPLICATIONTYPE%'.", true, true ,false , MessageGeneralEnum.EXECUTION_FA_ACTION),
     ACTION_PENDING(299, "PE", "Doing Action...", false, false ,false , MessageGeneralEnum.EXECUTION_PE_TESTSTARTED),
@@ -257,8 +260,6 @@ public enum MessageEventEnum {
     DATA_OPERATION_OK(001, MessageCodeEnum.DATA_OPERATION_CODE_SUCCESS.getCode(), "%ITEM% - %OPERATION% was finished with success!", false, false ,false , MessageGeneralEnum.DATA_OPERATION_SUCCESS),    
     DATA_OPERATION_VALIDATIONS_OK(002, MessageCodeEnum.DATA_OPERATION_CODE_SUCCESS.getCode(), "Data is valid!", false, false ,false , MessageGeneralEnum.DATA_OPERATION_SUCCESS),
     DATA_OPERATION_IMPORT_OK(003, MessageCodeEnum.DATA_OPERATION_CODE_SUCCESS.getCode(), "%ITEM% was imported with success!", false, false ,false , MessageGeneralEnum.DATA_OPERATION_SUCCESS);
-
-    ;
     
     private final int code;
     private final String codeString;

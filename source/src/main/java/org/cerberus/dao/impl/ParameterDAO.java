@@ -28,7 +28,7 @@ import org.apache.log4j.Level;
 import org.cerberus.dao.IParameterDAO;
 import org.cerberus.database.DatabaseSpring;
 import org.cerberus.entity.MessageGeneral;
-import org.cerberus.entity.MessageGeneralEnum;
+import org.cerberus.enums.MessageGeneralEnum;
 import org.cerberus.entity.Parameter;
 import org.cerberus.exception.CerberusException;
 import org.cerberus.factory.IFactoryParameter;

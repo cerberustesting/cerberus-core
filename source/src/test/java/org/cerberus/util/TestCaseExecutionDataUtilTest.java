@@ -22,7 +22,7 @@ package org.cerberus.util;
 import junit.framework.Assert;
 
 import org.cerberus.entity.MessageEvent;
-import org.cerberus.entity.MessageEventEnum;
+import org.cerberus.enums.MessageEventEnum;
 import org.cerberus.entity.TestCaseExecutionData;
 import org.cerberus.factory.impl.FactoryTestCaseExecutionData;
 import org.junit.Before;

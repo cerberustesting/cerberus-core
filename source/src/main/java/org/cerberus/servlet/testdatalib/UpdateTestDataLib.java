@@ -28,9 +28,8 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import org.cerberus.entity.MessageEvent;
-import org.cerberus.entity.MessageEventEnum;
-import org.cerberus.entity.TestDataLib;
-import org.cerberus.exception.CerberusException;
+import org.cerberus.enums.MessageEventEnum;
+import org.cerberus.entity.TestDataLib; 
 import org.cerberus.factory.IFactoryLogEvent;
 import org.cerberus.factory.IFactoryTestDataLib;
 import org.cerberus.factory.impl.FactoryLogEvent;
@@ -94,10 +93,13 @@ public class UpdateTestDataLib extends HttpServlet {
             Answer answer = libService.updateTestDataLib(lib);
 
             //  Adding Log entry.
-            ILogEventService logEventService = appContext.getBean(LogEventService.class);
-            IFactoryLogEvent factoryLogEvent = appContext.getBean(FactoryLogEvent.class);
-            logEventService.create(factoryLogEvent.create(0, 0, request.getUserPrincipal().getName(), null, "/UpdateTestDataLib", "UPDATE", "Update TestDataLib:  id: " + testDataLibID + " name: " + name, "", ""));
-
+            if(answer.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())){
+                ILogEventService logEventService = appContext.getBean(LogEventService.class);
+                IFactoryLogEvent factoryLogEvent = appContext.getBean(FactoryLogEvent.class);
+                logEventService.create(factoryLogEvent.create(0, 0, request.getUserPrincipal().getName(), null, 
+                        "/UpdateTestDataLib", "UPDATE", "Update TestDataLib:  id: " + testDataLibID + " name: " + name, "", ""));
+            }
+            
             jsonResponse.put("messageType", answer.getResultMessage().getMessage().getCodeString());
             jsonResponse.put("message", answer.getResultMessage().getDescription());
 

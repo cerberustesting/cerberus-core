@@ -26,7 +26,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import org.cerberus.entity.MessageGeneral;
-import org.cerberus.entity.MessageGeneralEnum;
+import org.cerberus.enums.MessageGeneralEnum;
 import org.cerberus.entity.TestBattery;
 import org.cerberus.exception.CerberusException;
 import org.cerberus.service.ITestBatteryService;

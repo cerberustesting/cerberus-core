@@ -31,7 +31,7 @@ import org.apache.log4j.Level;
 import org.cerberus.entity.CountryEnvironmentDatabase;
 import org.cerberus.entity.ExecutionUUID;
 import org.cerberus.entity.MessageGeneral;
-import org.cerberus.entity.MessageGeneralEnum;
+import org.cerberus.enums.MessageGeneralEnum;
 import org.cerberus.entity.SoapLibrary;
 import org.cerberus.entity.SqlLibrary;
 import org.cerberus.entity.TCase;

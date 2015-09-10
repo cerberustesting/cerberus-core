@@ -19,6 +19,7 @@
  */
 package org.cerberus.serviceEngine.impl;
 
+import org.cerberus.enums.MessageGeneralEnum;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;

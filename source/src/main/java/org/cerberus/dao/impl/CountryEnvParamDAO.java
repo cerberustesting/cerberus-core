@@ -30,7 +30,7 @@ import org.cerberus.dao.ICountryEnvParamDAO;
 import org.cerberus.database.DatabaseSpring;
 import org.cerberus.entity.CountryEnvParam;
 import org.cerberus.entity.MessageGeneral;
-import org.cerberus.entity.MessageGeneralEnum;
+import org.cerberus.enums.MessageGeneralEnum;
 import org.cerberus.exception.CerberusException;
 import org.cerberus.factory.IFactoryCountryEnvParam;
 import org.cerberus.log.MyLogger;

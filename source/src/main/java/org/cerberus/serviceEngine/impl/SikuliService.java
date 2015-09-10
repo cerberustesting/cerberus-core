@@ -21,14 +21,18 @@ package org.cerberus.serviceEngine.impl;
 
 import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.PrintStream;
-import java.net.Socket;
-import java.net.UnknownHostException;
-import java.util.logging.Logger;
-import org.cerberus.entity.Identifier;
+import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
+import java.net.URL;
+import org.apache.commons.codec.binary.Base64;
+import org.apache.commons.io.IOUtils;
+import org.apache.log4j.Level;
+import org.apache.log4j.Logger;
 import org.cerberus.entity.MessageEvent;
-import org.cerberus.entity.MessageEventEnum;
+import org.cerberus.enums.MessageEventEnum;
 import org.cerberus.entity.Session;
 import org.cerberus.serviceEngine.ISikuliService;
 import org.json.JSONException;
@@ -40,179 +44,103 @@ import org.springframework.stereotype.Service;
  * @author bcivel
  */
 @Service
-public class SikuliService implements ISikuliService{
+public class SikuliService implements ISikuliService {
+
+    private JSONObject generatePostParameters(String action, String locator, String text) throws JSONException, IOException, MalformedURLException {
+        JSONObject result = new JSONObject();
+        String picture = "";
+        URL url = new URL(locator);
+        InputStream istream = url.openStream();
+        byte[] bytes = IOUtils.toByteArray(istream);
+        picture = Base64.encodeBase64URLSafeString(bytes);
+        result.put("action", action);
+        result.put("picture", picture);
+        result.put("text", text);
+        return result;
+    }
 
     @Override
-    public MessageEvent doSikuliActionClick(Session session, String url) {
-        MessageEvent message;
+    public MessageEvent doSikuliAction(Session session, String action, String locator, String text) {
+        URL url;
         try {
-            Socket clientSocket = new Socket("localhost", 9001);
-            BufferedReader is = new BufferedReader(new InputStreamReader(
-                    clientSocket.getInputStream()));
-            PrintStream os = new PrintStream(clientSocket.getOutputStream());
+            String urlToConnect = "http://" + session.getHost() + ":" + session.getPort() + "/extra/ExecuteSikuliAction";
+            /**
+             * Connect to ExecuteSikuliAction Servlet Through SeleniumServer
+             */
+            url = new URL(urlToConnect);
+            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
 
-            JSONObject obj = new JSONObject();
-            obj.put("action", "click");
-            obj.put("picture", url);
+            connection.setRequestMethod("POST");
+            connection.setRequestProperty("User-Agent", "Mozilla/5.0");
+            connection.setRequestProperty("Accept-Language", "en-US,en;q=0.5");
 
-            os.println(obj.toString());
+            JSONObject postParameters = generatePostParameters(action, locator, text);
+            connection.setDoOutput(true);
+
+            // Send post request
+            PrintStream os = new PrintStream(connection.getOutputStream());
+            os.println(postParameters.toString());
             os.println("|ENDS|");
 
-            String responseLine;
-            while (!(responseLine = is.readLine()).equals("|ENDR|")) {
-                System.out.println(responseLine);
+            int responseCode = connection.getResponseCode();
+            if (responseCode != 200) {
+                return new MessageEvent(MessageEventEnum.ACTION_FAILED_SIKULI_SERVER_NOT_REACHABLE);
             }
 
-            os.close();
-            is.close();
-            clientSocket.close();
-            message = new MessageEvent(MessageEventEnum.ACTION_SUCCESS_CLICK);
-            message.setDescription(message.getDescription().replaceAll("%ELEMENT%", url));
-            return message;
+            BufferedReader in = new BufferedReader(
+                    new InputStreamReader(connection.getInputStream()));
+            String inputLine;
+            StringBuilder response = new StringBuilder();
 
-        } catch (UnknownHostException e) {
-            System.out.println("Unknown host: kq6py");
-        } catch (IOException e) {
-            System.out.println("No I/O");
-        } catch (JSONException ex) {
-            Logger.getLogger(SikuliService.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        }
-        return new MessageEvent(MessageEventEnum.ACTION_FAILED);
-    }
-
-    @Override
-    public MessageEvent doSikuliActionWait(Session session, String url) {
-        MessageEvent message;
-        try {
-            Socket clientSocket = new Socket("localhost", 9001);
-            BufferedReader is = new BufferedReader(new InputStreamReader(
-                    clientSocket.getInputStream()));
-            PrintStream os = new PrintStream(clientSocket.getOutputStream());
-
-            JSONObject obj = new JSONObject();
-            obj.put("action", "wait");
-            obj.put("picture", url);
-
-            os.println(obj.toString());
-            os.println("|ENDS|");
-
-            String responseLine;
-            while (!(responseLine = is.readLine()).equals("|ENDR|")) {
-                System.out.println(responseLine);
+            while (!(inputLine = in.readLine()).equals("|ENDR|")) {
+                response.append(inputLine);
             }
-
+            in.close();
             os.close();
-            is.close();
-            clientSocket.close();
-            message = new MessageEvent(MessageEventEnum.ACTION_SUCCESS_CLICK);
-            message.setDescription(message.getDescription().replaceAll("%ELEMENT%", url));
-            return message;
 
-        } catch (UnknownHostException e) {
-            System.out.println("Unknown host: kq6py");
-        } catch (IOException e) {
-            System.out.println("No I/O");
+        } catch (MalformedURLException ex) {
+            Logger.getLogger(SikuliService.class.getName()).log(Level.FATAL, ex);
+            return new MessageEvent(MessageEventEnum.ACTION_FAILED_SIKULI_SERVER_NOT_REACHABLE);
+        } catch (IOException ex) {
+            Logger.getLogger(SikuliService.class.getName()).log(Level.FATAL, ex);
+            return new MessageEvent(MessageEventEnum.ACTION_FAILED);
         } catch (JSONException ex) {
-            Logger.getLogger(SikuliService.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            Logger.getLogger(SikuliService.class.getName()).log(Level.FATAL, ex);
+            return new MessageEvent(MessageEventEnum.ACTION_FAILED);
         }
-        return new MessageEvent(MessageEventEnum.ACTION_FAILED);
+        return getResultMessage(action, locator, text);
     }
 
-    @Override
-    public MessageEvent doSikuliActionType(Session session, String url) {
-        MessageEvent message;
-        try {
-            Socket clientSocket = new Socket("localhost", 9001);
-            BufferedReader is = new BufferedReader(new InputStreamReader(
-                    clientSocket.getInputStream()));
-            PrintStream os = new PrintStream(clientSocket.getOutputStream());
-
-            JSONObject obj = new JSONObject();
-            obj.put("action", "paste");
-            obj.put("picture", url);
-
-            os.println(obj.toString());
-            os.println("|ENDS|");
-
-            String responseLine;
-            while (!(responseLine = is.readLine()).equals("|ENDR|")) {
-                System.out.println(responseLine);
-            }
-
-            os.close();
-            is.close();
-            clientSocket.close();
+    private MessageEvent getResultMessage(String action, String locator, String text) {
+        MessageEvent message = null;
+        if (action.equals("click")) {
             message = new MessageEvent(MessageEventEnum.ACTION_SUCCESS_CLICK);
-            message.setDescription(message.getDescription().replaceAll("%ELEMENT%", url));
-            return message;
-
-        } catch (UnknownHostException e) {
-            System.out.println("Unknown host: kq6py");
-        } catch (IOException e) {
-            System.out.println("No I/O");
-        } catch (JSONException ex) {
-            Logger.getLogger(SikuliService.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            message.setDescription(message.getDescription().replaceAll("%ELEMENT%", locator));
+        } else if (action.equals("rightClick")) {
+            message = new MessageEvent(MessageEventEnum.ACTION_SUCCESS_RIGHTCLICK);
+            message.setDescription(message.getDescription().replaceAll("%ELEMENT%", locator));
+        } else if (action.equals("doubleClick")) {
+            message = new MessageEvent(MessageEventEnum.ACTION_SUCCESS_DOUBLECLICK);
+            message.setDescription(message.getDescription().replaceAll("%ELEMENT%", locator));
+        } else if (action.equals("type")) {
+            message = new MessageEvent(MessageEventEnum.ACTION_SUCCESS_TYPE);
+            message.setDescription(message.getDescription().replaceAll("%ELEMENT%", locator));
+            message.setDescription(message.getDescription().replaceAll("%DATA%", text));
+        } else if (action.equals("mouseOver")) {
+            message = new MessageEvent(MessageEventEnum.ACTION_SUCCESS_MOUSEOVER);
+            message.setDescription(message.getDescription().replaceAll("%ELEMENT%", locator));
+        } else if (action.equals("keyPress")) {
+            message = new MessageEvent(MessageEventEnum.ACTION_SUCCESS_KEYPRESS);
+            message.setDescription(message.getDescription().replaceAll("%ELEMENT%", locator));
+        } else if (action.equals("wait")) {
+            message = new MessageEvent(MessageEventEnum.ACTION_SUCCESS_WAIT_ELEMENT);
+            message.setDescription(message.getDescription().replaceAll("%ELEMENT%", locator));
+        } else if (action.equals("verifyElementPresent")) {
+            message = new MessageEvent(MessageEventEnum.CONTROL_SUCCESS_PRESENT);
+            message.setDescription(message.getDescription().replaceAll("%STRING1%", locator));
         }
-        return new MessageEvent(MessageEventEnum.ACTION_FAILED);
+        return message;
+
     }
 
-    @Override
-    public MessageEvent doSikuliActionKeyPress(Session session, String url) {
-        MessageEvent message;
-        try {
-            Socket clientSocket = new Socket("localhost", 9001);
-            BufferedReader is = new BufferedReader(new InputStreamReader(
-                    clientSocket.getInputStream()));
-            PrintStream os = new PrintStream(clientSocket.getOutputStream());
-
-            JSONObject obj = new JSONObject();
-            obj.put("action", "type");
-            obj.put("picture", url);
-
-            os.println(obj.toString());
-            os.println("|ENDS|");
-
-            String responseLine;
-            while (!(responseLine = is.readLine()).equals("|ENDR|")) {
-                System.out.println(responseLine);
-            }
-
-            os.close();
-            is.close();
-            clientSocket.close();
-            message = new MessageEvent(MessageEventEnum.ACTION_SUCCESS_CLICK);
-            message.setDescription(message.getDescription().replaceAll("%ELEMENT%", url));
-            return message;
-
-        } catch (UnknownHostException e) {
-            System.out.println("Unknown host: kq6py");
-        } catch (IOException e) {
-            System.out.println("No I/O");
-        } catch (JSONException ex) {
-            Logger.getLogger(SikuliService.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        }
-        return new MessageEvent(MessageEventEnum.ACTION_FAILED);
-    }
-
-    @Override
-    public MessageEvent doSikuliActionMouseDown(Session session, String locator) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-
-    @Override
-    public MessageEvent doSikuliActionMouseUp(Session session, String locator) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-
-    @Override
-    public MessageEvent doSikuliActionMouseOver(Session session, String locator) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-
-    @Override
-    public MessageEvent doSikuliActionMouseDownMouseUp(Session session, String locator) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-
-    
 }

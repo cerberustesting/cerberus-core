@@ -30,7 +30,7 @@ import org.cerberus.dao.ILogEventDAO;
 import org.cerberus.database.DatabaseSpring;
 import org.cerberus.entity.LogEvent;
 import org.cerberus.entity.MessageEvent;
-import org.cerberus.entity.MessageEventEnum;
+import org.cerberus.enums.MessageEventEnum;
 import org.cerberus.factory.IFactoryLogEvent;
 import org.cerberus.log.MyLogger;
 import org.cerberus.util.answer.Answer;

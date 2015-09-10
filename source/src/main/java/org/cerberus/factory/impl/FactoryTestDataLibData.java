@@ -20,7 +20,7 @@
 package org.cerberus.factory.impl;
 
 import org.cerberus.entity.TestDataLibData;
-import org.cerberus.entity.TestDataLibTypeEnum;
+import org.cerberus.enums.TestDataLibTypeEnum;
 import org.cerberus.factory.IFactoryTestDataLibData;
 import org.springframework.stereotype.Service;
 

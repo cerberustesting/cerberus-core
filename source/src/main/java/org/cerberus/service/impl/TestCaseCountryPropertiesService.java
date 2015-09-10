@@ -26,7 +26,7 @@ import org.apache.log4j.Level;
 import org.cerberus.dao.ITestCaseCountryPropertiesDAO;
 import org.cerberus.dao.ITestCaseStepActionDAO;
 import org.cerberus.database.DatabaseSpring;
-import org.cerberus.entity.MessageEventEnum;
+import org.cerberus.enums.MessageEventEnum;
 import org.cerberus.entity.TCase; 
 import org.cerberus.entity.TestCaseCountryProperties;
 import org.cerberus.exception.CerberusException;

@@ -23,7 +23,7 @@ package org.cerberus.serviceEngine.impl;
 import junit.framework.Assert;
 import org.cerberus.entity.Application;
 import org.cerberus.entity.Identifier;
-import org.cerberus.entity.MessageEventEnum;
+import org.cerberus.enums.MessageEventEnum;
 import org.cerberus.entity.Session;
 import org.cerberus.entity.TestCaseExecution;
 import org.cerberus.entity.TestCaseStepActionControlExecution;

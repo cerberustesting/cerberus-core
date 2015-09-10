@@ -36,7 +36,7 @@ import javax.imageio.ImageIO;
 import org.apache.log4j.Level;
 import org.cerberus.entity.Identifier;
 import org.cerberus.entity.MessageEvent;
-import org.cerberus.entity.MessageEventEnum;
+import org.cerberus.enums.MessageEventEnum;
 import org.cerberus.entity.Session;
 import org.cerberus.exception.CerberusEventException;
 import org.cerberus.log.MyLogger;
@@ -859,6 +859,28 @@ public class WebDriverService implements IWebDriverService {
         }
 
         return result;
+    }
+
+    @Override
+    public MessageEvent doSeleniumActionRightClick(Session session, Identifier identifier) {
+        MessageEvent message;
+        try {
+            Actions actions = new Actions(session.getDriver());
+            actions.contextClick(this.getSeleniumElement(session, identifier, true, true));
+            actions.build().perform();
+            message = new MessageEvent(MessageEventEnum.ACTION_SUCCESS_RIGHTCLICK);
+            message.setDescription(message.getDescription().replaceAll("%ELEMENT%", identifier.getIdentifier() + "=" + identifier.getLocator()));
+            return message;
+        } catch (NoSuchElementException exception) {
+            message = new MessageEvent(MessageEventEnum.ACTION_FAILED_RIGHTCLICK_NO_SUCH_ELEMENT);
+            message.setDescription(message.getDescription().replaceAll("%ELEMENT%", identifier.getIdentifier() + "=" + identifier.getLocator()));
+            MyLogger.log(WebDriverService.class.getName(), Level.DEBUG, exception.toString());
+            return message;
+        } catch (WebDriverException exception) {
+            message = new MessageEvent(MessageEventEnum.ACTION_FAILED_SELENIUM_CONNECTIVITY);
+            MyLogger.log(WebDriverService.class.getName(), Level.FATAL, exception.toString());
+            return message;
+        }
     }
 
 }

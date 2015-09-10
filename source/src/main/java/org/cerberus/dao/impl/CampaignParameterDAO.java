@@ -30,7 +30,7 @@ import org.cerberus.dao.ICampaignParameterDAO;
 import org.cerberus.database.DatabaseSpring;
 import org.cerberus.entity.CampaignParameter;
 import org.cerberus.entity.MessageGeneral;
-import org.cerberus.entity.MessageGeneralEnum;
+import org.cerberus.enums.MessageGeneralEnum;
 import org.cerberus.exception.CerberusException;
 import org.cerberus.factory.IFactoryCampaignParameter;
 import org.cerberus.log.MyLogger;

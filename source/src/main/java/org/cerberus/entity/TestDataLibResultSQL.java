@@ -19,6 +19,8 @@
  */
 package org.cerberus.entity;
 
+import org.cerberus.enums.MessageEventEnum;
+import org.cerberus.enums.TestDataLibTypeEnum;
 import java.util.HashMap; 
 import org.cerberus.util.answer.AnswerItem;
 

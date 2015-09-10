@@ -32,7 +32,7 @@ import org.cerberus.dao.ITestCaseExecutionDataDAO;
 import org.cerberus.database.DatabaseSpring;
 import org.cerberus.entity.CountryEnvironmentDatabase;
 import org.cerberus.entity.MessageEvent;
-import org.cerberus.entity.MessageEventEnum;
+import org.cerberus.enums.MessageEventEnum;
 import org.cerberus.entity.Property;
 import org.cerberus.entity.TestCaseCountryProperties;
 import org.cerberus.entity.TestCaseExecution;

@@ -107,5 +107,7 @@ public interface IWebDriverService {
     MessageEvent doSeleniumActionFocusDefaultIframe(Session session);
     
     MessageEvent doSeleniumActionMouseDownMouseUp(Session session, Identifier identifier);
+
+    public MessageEvent doSeleniumActionRightClick(Session session, Identifier identifier);
 }
     

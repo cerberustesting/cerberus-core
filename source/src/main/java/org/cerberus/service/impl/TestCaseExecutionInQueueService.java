@@ -25,7 +25,7 @@ import org.cerberus.dao.ITestCaseCountryDAO;
 import org.cerberus.dao.ITestCaseExecutionInQueueDAO;
 import org.cerberus.dto.TestCaseWithExecution;
 import org.cerberus.entity.MessageGeneral;
-import org.cerberus.entity.MessageGeneralEnum;
+import org.cerberus.enums.MessageGeneralEnum;
 import org.cerberus.entity.TestCaseExecutionInQueue;
 import org.cerberus.exception.CerberusException;
 import org.cerberus.service.ITestCaseExecutionInQueueService;

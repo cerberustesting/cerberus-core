@@ -177,10 +177,9 @@ $.when($.getScript("js/pages/global/global.js")).then(function () {
             var updateObjects = [];
             var insertObjects = [];
 
-            var isValid = validateSubDataEntriesEmpty($("#manageTestDataLibDataModal"), "editSubDataTableBody");
-            var hasRepeatedNames = validateSubDataEntriesRepeated($("#manageTestDataLibDataModal"), "editSubDataTableBody", isValid, true);
+            var hasRepeatedNames = validateSubDataEntriesRepeated($("#manageTestDataLibDataModal"), "editSubDataTableBody", true);
 
-            if (!isValid || !hasRepeatedNames) {
+            if (!hasRepeatedNames) {
                 return;
             }
 
@@ -262,7 +261,7 @@ $.when($.getScript("js/pages/global/global.js")).then(function () {
                 }
             });
 
-            if (!isValid || !resultInsert) {
+            if (!resultInsert) {
                 return;
             }
 
@@ -547,13 +546,10 @@ function saveNewTestDataLibHandler() {
         nameElement.parents("div.form-group").removeClass("has-error");
     }
 
-    //validates if there are sub data entries with no name defined
-    var isValid = validateSubDataEntriesEmpty($("#addTestDataLibModal"), "addSubDataTableBody", nameElement.prop("value") === '');
     //check if entries have repeated names
+    var noRepeated = validateSubDataEntriesRepeated($("#addTestDataLibModal"), "addSubDataTableBody", false);
 
-    var noRepeated = validateSubDataEntriesRepeated($("#addTestDataLibModal"), "addSubDataTableBody", isValid, false);
-
-    if (nameElementEmpty || !isValid || !noRepeated) {
+    if (nameElementEmpty || !noRepeated) {
         return;
     }
     //end client-side validation        
@@ -609,7 +605,7 @@ function editTestDataLibModalCloseHandler() {
  */
 function deleteTestDataLibHandlerClick() {
     var testDataLibID = $('#confirmationModal').find('#hiddenField').prop("value");
-    var jqxhr = $.post("DeleteTestDataLib", {action: "delete", id: testDataLibID, name: name}, "json");
+    var jqxhr = $.post("DeleteTestDataLib", {action: "delete", id: testDataLibID}, "json");
     $.when(jqxhr).then(function (data) {
         var messageType = getAlertType(data.messageType);
         if (messageType === "success") {
@@ -729,11 +725,10 @@ function addTestDataLibModalCloseHandler() {
  * Auxiliary method that validates if there are subdata entries that are repeated
  * @param {type} dialog
  * @param {type} tableBody
- * @param {type} isValid
  * @param {type} checkOnesMarkedToRemove
  * @returns {Boolean}
  */
-function validateSubDataEntriesRepeated(dialog, tableBody, isValid, checkOnesMarkedToRemove) {
+function validateSubDataEntriesRepeated(dialog, tableBody, checkOnesMarkedToRemove) {
     var arrayValues = [];
 
     //client-side validation 
@@ -741,27 +736,25 @@ function validateSubDataEntriesRepeated(dialog, tableBody, isValid, checkOnesMar
         var repeatedCount = 0;
         var parent = $(this).parents("div.form-group").addClass('has-error');
 
-        if (this.value.trim() !== "") {
-            //if empty we will check if there are any other row with the same value
-            if ($.inArray(this.value, arrayValues) > -1) {
-                $(parent).addClass('has-error');
-                repeatedCount++;
-            } else {
-                if (checkOnesMarkedToRemove) {
-                    //if the operation is to remove, then we can ignore that item
-                    var parentTrOperation = $(this).parents("tr").attr("data-operation");
-                    if (parentTrOperation !== 'remove') {
-                        arrayValues.push(this.value);
-                    }
-                } else {
+        //if empty we will check if there are any other row with the same value
+        if ($.inArray(this.value, arrayValues) > -1) {
+            $(parent).addClass('has-error');
+            repeatedCount++;
+        } else {
+            if (checkOnesMarkedToRemove) {
+                //if the operation is to remove, then we can ignore that item
+                var parentTrOperation = $(this).parents("tr").attr("data-operation");
+                if (parentTrOperation !== 'remove') {
                     arrayValues.push(this.value);
                 }
-                //removes the error class if for some reason has it
-                if ($(parent).hasClass('has-error')) {
-                    $(parent).removeClass('has-error');
-                }
-
+            } else {
+                arrayValues.push(this.value.trim());
             }
+            //removes the error class if for some reason has it
+            if ($(parent).hasClass('has-error')) {
+                $(parent).removeClass('has-error');
+            }
+
         }
         return repeatedCount !== 0;
     }).size();
@@ -770,46 +763,12 @@ function validateSubDataEntriesRepeated(dialog, tableBody, isValid, checkOnesMar
         var doc = getDoc();
         var docPageTestDataLib = doc.page_testdatalib;
         var localMessage = new Message("danger", docPageTestDataLib.duplicated_message.docLabel + elementsWithRepeatedSubdata);
-        if (!isValid) {
-            appendMessage(localMessage, dialog);
-        } else {
-            showMessage(localMessage, dialog);
-        }
+        showMessage(localMessage, dialog);
+        
         return false;
     }
     return true;
 
-}
-/**
- * Auxiliary table that verifies if the subdata entries are empty
- * @param {type} dialog -- dialog where the verifications are performed
- * @param {type} tableBody -- table where the css error styles are applied
- * @param {type} append -- is to append error message or to create a new message
- * @returns {Boolean} -- true if valid, false if not valid
- */
-function validateSubDataEntriesEmpty(dialog, tableBody, append) {
-    //client-side validation 
-    var elementsWithoutSubdata = $("#" + tableBody + " tr td:nth-child(2) input").filter(function () {
-        if (this.value === "") {
-            $(this).parents("div.form-group").addClass('has-error');
-        } else {
-            $(this).parents("div.form-group").removeClass('has-error');
-        }
-        return this.value === "";
-    }).size();
-
-    if (elementsWithoutSubdata > 0) {
-        var doc = getDoc();
-        var docPageTestDataLib = doc.page_testdatalib;
-        var localMessage = new Message("danger", docPageTestDataLib.empty_subdata_message.docLabel + elementsWithoutSubdata);
-        if (append) {
-            appendMessage(localMessage, dialog);
-        } else {
-            showMessage(localMessage, dialog);
-        }
-        return false;
-    }
-    return true;
 }
 /**
  * Auxiliary method that refreshes the panels in the add form

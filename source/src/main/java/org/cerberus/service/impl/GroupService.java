@@ -25,7 +25,7 @@ import org.apache.log4j.Level;
 import org.cerberus.dao.IGroupDAO;
 import org.cerberus.entity.Group;
 import org.cerberus.entity.MessageGeneral;
-import org.cerberus.entity.MessageGeneralEnum;
+import org.cerberus.enums.MessageGeneralEnum;
 import org.cerberus.entity.User;
 import org.cerberus.exception.CerberusException;
 import org.cerberus.log.MyLogger;

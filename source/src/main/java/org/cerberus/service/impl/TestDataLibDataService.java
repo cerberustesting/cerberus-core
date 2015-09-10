@@ -24,7 +24,7 @@ import java.util.List;
 import org.cerberus.dao.ITestDataLibDataDAO;
 import org.cerberus.database.DatabaseSpring;
 import org.cerberus.entity.MessageEvent;
-import org.cerberus.entity.MessageEventEnum;
+import org.cerberus.enums.MessageEventEnum;
 import org.cerberus.entity.TestDataLibData;
 import org.cerberus.entity.TestDataLibDataUpdate;
 import org.cerberus.entity.TestDataLibResult;

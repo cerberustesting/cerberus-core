@@ -31,7 +31,7 @@ import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.cerberus.database.DatabaseSpring;
 import org.cerberus.entity.MessageGeneral;
-import org.cerberus.entity.MessageGeneralEnum;
+import org.cerberus.enums.MessageGeneralEnum;
 import org.cerberus.entity.TCase;
 import org.cerberus.entity.Test;
 import org.cerberus.entity.TestCaseCountry;
