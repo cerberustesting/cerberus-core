@@ -205,7 +205,8 @@ public class ReadTestCaseExecution extends HttpServlet {
                 .getBean(ITestCaseExecutionInQueueService.class);
 
         int startPosition = Integer.valueOf(ParameterParserUtil.parseStringParam(request.getParameter("iDisplayStart"), "0"));
-        int length = Integer.valueOf(ParameterParserUtil.parseStringParam(request.getParameter("iDisplayLength"), "100000"));
+//        int length = Integer.valueOf(ParameterParserUtil.parseStringParam(request.getParameter("iDisplayLength"), "100000"));
+        int length = 100000;
 
         String searchParameter = ParameterParserUtil.parseStringParam(request.getParameter("sSearch"), "");
         int columnToSortParameter = Integer.parseInt(ParameterParserUtil.parseStringParam(request.getParameter("iSortCol_0"), "0"));
@@ -268,6 +269,7 @@ public class ReadTestCaseExecution extends HttpServlet {
         }
 
         jsonResponse.put("Columns", ceb.values());
+        jsonResponse.put("DisplayLength", testCaseWithExecutionsList.size());
         answer.setItem(jsonResponse);
         answer.setResultMessage(new MessageEvent(MessageEventEnum.DATA_OPERATION_OK));
         return answer;
@@ -285,10 +287,9 @@ public class ReadTestCaseExecution extends HttpServlet {
         ITestCaseExecutionInQueueService testCaseExecutionInQueueService = appContext
                 .getBean(ITestCaseExecutionInQueueService.class);
 
-        JSONArray executionList = new JSONArray();
-
         int startPosition = Integer.valueOf(ParameterParserUtil.parseStringParam(request.getParameter("iDisplayStart"), "0"));
         int length = Integer.valueOf(ParameterParserUtil.parseStringParam(request.getParameter("iDisplayLength"), "100000"));
+        int totalRecords = Integer.valueOf(request.getParameter("TotalRecords"));
 
         String searchParameter = ParameterParserUtil.parseStringParam(request.getParameter("sSearch"), "");
         int columnToSortParameter = Integer.parseInt(ParameterParserUtil.parseStringParam(request.getParameter("iSortCol_0"), "0"));
@@ -338,8 +339,10 @@ public class ReadTestCaseExecution extends HttpServlet {
         }
         testCaseWithExecutions = new ArrayList<TestCaseWithExecution>(testCaseWithExecutionsList.values());
 
+        JSONArray executionList = new JSONArray();
         JSONObject statusFilter = getStatusList(request);
         LinkedHashMap<String, JSONObject> ttc = new LinkedHashMap<String, JSONObject>();
+        
         for (TestCaseWithExecution testCaseWithExecution : testCaseWithExecutions) {
             try {
                 String controlStatus = testCaseWithExecution.getControlStatus();
@@ -385,8 +388,8 @@ public class ReadTestCaseExecution extends HttpServlet {
 
         JSONObject jsonResponse = new JSONObject();
         jsonResponse.put("testList", lines);
-        jsonResponse.put("iTotalRecords", testCaseWithExecutions.size());
-        jsonResponse.put("iTotalDisplayRecords", testCaseWithExecutions.size());
+        jsonResponse.put("iTotalRecords", totalRecords);
+        jsonResponse.put("iTotalDisplayRecords", totalRecords);
 
         answer.setItem(jsonResponse);
         answer.setResultMessage(new MessageEvent(MessageEventEnum.DATA_OPERATION_OK));

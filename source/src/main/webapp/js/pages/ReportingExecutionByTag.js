@@ -156,7 +156,9 @@ function loadReportList() {
         //configure and create the dataTable
         var jqxhr = $.getJSON("ReadTestCaseExecution", "Tag=" + selectTag + "&" + statusFilter.serialize());
         $.when(jqxhr).then(function (data) {
-            var configurations = new TableConfigurationsServerSide("listTable", "ReadTestCaseExecution?Tag=" + selectTag + "&" + statusFilter.serialize(), "testList", aoColumnsFunc(data.Columns));
+            var configurations = new TableConfigurationsServerSide("listTable", "ReadTestCaseExecution?Tag=" + selectTag + "&" + statusFilter.serialize() + "&TotalRecords=" + data.DisplayLength
+                                                                    , "testList", aoColumnsFunc(data.Columns));
+            configurations.lengthMenu = [3, 5, 10, 100, 1000];
 
             createDataTable(configurations);
             $('#listTable_wrapper').not('.initialized').addClass('initialized');
@@ -349,8 +351,9 @@ function appendPanelStatus(status, total) {
             $('<div class="col-xs-6 status"></div>').text(status).prepend(
             $('<span class="' + rowClass.glyph + '" style="margin-right: 5px;"></span>'))).append(
             $('<div class="col-xs-6 text-right"></div>').append(
-            $('<div class="total"></div>').text(total[status].value)).append(
-            $('<div></div>').text('Percentage : ' + Math.round(((total[status].value / total.test) * 100) * 100) / 100 + '%'))))));
+            $('<div class="total"></div>').text(total[status].value))
+            )).append($('<div class="row"></div>').append(
+            $('<div class="percentage pull-right"></div>').text('Percentage : ' + Math.round(((total[status].value / total.test) * 100) * 100) / 100 + '%')))));
 }
 
 function createStatusFilter(total) {

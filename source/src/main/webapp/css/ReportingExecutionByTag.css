@@ -97,7 +97,7 @@
 
 .status {
     font-weight: 900;
-    font-size: 30px;
+    font-size: 20px;
 }
 
 .progress-bar {
@@ -115,7 +115,7 @@
 }
 
 .total {
-    font-size: 30px;
+    font-size: 20px;
 }
 
 .statusOK {
@@ -158,6 +158,10 @@
 
 #statusFilter {
     display: inline-block;
+}
+
+.percentage {
+    margin-right: 5px;
 }
 
 .color-box {   
