@@ -257,6 +257,8 @@ public class ReadTestCaseExecution extends HttpServlet {
 
         JSONObject statusFilter = getStatusList(request);
         LinkedHashMap<String, JSONObject> ceb = new LinkedHashMap<String, JSONObject>();
+        LinkedHashMap<String, String> ttc = new LinkedHashMap<String, String>();
+
         for (TestCaseWithExecution testCaseWithExecution : testCaseWithExecutions) {
             String controlStatus = testCaseWithExecution.getControlStatus();
             if (statusFilter.get(controlStatus).equals("on")) {
@@ -265,11 +267,12 @@ public class ReadTestCaseExecution extends HttpServlet {
                 cebObject.put("environment", testCaseWithExecution.getEnvironment());
                 cebObject.put("browser", testCaseWithExecution.getBrowser());
                 ceb.put(testCaseWithExecution.getBrowser() + "_" + testCaseWithExecution.getCountry() + "_" + testCaseWithExecution.getEnvironment(), cebObject);
+                ttc.put(testCaseWithExecution.getTest() + "_" + testCaseWithExecution.getTestCase(), "");
             }
         }
 
         jsonResponse.put("Columns", ceb.values());
-        jsonResponse.put("DisplayLength", testCaseWithExecutionsList.size());
+        jsonResponse.put("DisplayLength", ttc.size());
         answer.setItem(jsonResponse);
         answer.setResultMessage(new MessageEvent(MessageEventEnum.DATA_OPERATION_OK));
         return answer;
@@ -342,7 +345,7 @@ public class ReadTestCaseExecution extends HttpServlet {
         JSONArray executionList = new JSONArray();
         JSONObject statusFilter = getStatusList(request);
         LinkedHashMap<String, JSONObject> ttc = new LinkedHashMap<String, JSONObject>();
-        
+
         for (TestCaseWithExecution testCaseWithExecution : testCaseWithExecutions) {
             try {
                 String controlStatus = testCaseWithExecution.getControlStatus();
