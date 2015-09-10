@@ -61,7 +61,7 @@ public interface ITestDataLibDataService {
      * @return
      * @throws org.cerberus.exception.CerberusException
      */
-    TestDataLibData findTestDataLibDataByKey(Integer testDataLibID, String subData) throws CerberusException;
+    AnswerItem<TestDataLibData> findTestDataLibDataByKey(Integer testDataLibID, String subData);
 
     /**
      *

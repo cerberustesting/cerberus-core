@@ -41,6 +41,7 @@ import org.cerberus.factory.IFactoryTestDataLibData;
 import org.cerberus.log.MyLogger;
 import org.cerberus.util.ParameterParserUtil;
 import org.cerberus.util.answer.Answer; 
+import org.cerberus.util.answer.AnswerItem;
 import org.cerberus.util.answer.AnswerList;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
@@ -155,19 +156,8 @@ public class TestDataLibDataDAO implements ITestDataLibDataDAO{
         boolean throwExcep = false;
         StringBuilder query = new StringBuilder();
         
-        //query.append("delete from testdatalibdata where `testdatalibID`=? and `subdata` LIKE ? ");
-        //don't delete properties that are currently being used 
-        //by active test cases (working and full implemented)
-        query.append("delete from testdatalibdata where testdataLibID = ? and ");
-        query.append("`subdata` LIKE ? and `subdata` ");
-        query.append("not in (select value2 from testcasecountryproperties tccp ");
-        query.append("inner join testcase tc ");
-        query.append("on tccp.Test = tc.Test and  ");
-        query.append("tccp.TestCase = tc.TestCase  ");
-        query.append("inner join testdatalib tdl ");
-        query.append("on tdl.`name` = tccp.value1 and tdl.testdataLibID = ? and ");
-        query.append("tccp.`type` like 'getFromDataLib' and  ");
-        //TODO:FN ver este delete
+        query.append("delete from testdatalibdata where `testdatalibID`=? and `subdata` LIKE ? ");
+        //TODO:FN this delete should be analysed in order to avaoid delete sub-data entries that are being used by test cases
             
         
         Connection connection = this.databaseSpring.connect();
@@ -250,10 +240,12 @@ public class TestDataLibDataDAO implements ITestDataLibDataDAO{
     }
 
     @Override
-    public TestDataLibData findTestDataLibDataByKey(Integer testDataLibID, String subData) throws CerberusException {
+    public AnswerItem<TestDataLibData> findTestDataLibDataByKey(Integer testDataLibID, String subData){
+        AnswerItem answer = new AnswerItem();
+        MessageEvent msg = new MessageEvent(MessageEventEnum.PROPERTY_SUCCESS_GETFROMDATALIBDATA);
+                
         TestDataLibData result = null;
-        final String query = new StringBuilder("SELECT * FROM testdatalibdata where `testdatalibID`=?")
-                .append(" and `subData` like ? ").toString();
+        final String query = "SELECT * FROM testdatalibdata where `testdatalibID`=? and `subData` like ? ";
 
         Connection connection = this.databaseSpring.connect();
         try {
@@ -265,11 +257,15 @@ public class TestDataLibDataDAO implements ITestDataLibDataDAO{
                 try {
                     if (resultSet.first()) {
                         result = this.loadTestDataLibDataFromResultSet(resultSet);
-                    } else {
-                        throw new CerberusException(new MessageGeneral(MessageGeneralEnum.NO_DATA_FOUND));
+                    } 
+                    else {
+                        msg = new MessageEvent(MessageEventEnum.PROPERTY_FAILED_GETFROMDATALIBDATA);
+                        msg.setDescription(msg.getDescription().replace("%VALUE1%", testDataLibID.toString()).replace("%VALUE2%",subData));
                     }
                 } catch (SQLException exception) {
                     MyLogger.log(TestDataLibDataDAO.class.getName(), Level.ERROR, "Unable to execute query : "+exception.toString());
+                    msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_UNEXPECTED_ERROR);
+                    msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", "It was not possible to select table."));
                 } finally {
                     if(resultSet != null){
                         resultSet.close();
@@ -284,6 +280,8 @@ public class TestDataLibDataDAO implements ITestDataLibDataDAO{
             }
         } catch (SQLException exception) {
             MyLogger.log(TestDataLibDataDAO.class.getName(), Level.ERROR, "Unable to execute query : "+exception.toString());
+            msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_UNEXPECTED_ERROR);
+            msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", "It was not possible to select table."));
         } finally {
            try {
                 if(!this.databaseSpring.isOnTransaction()){
@@ -295,7 +293,9 @@ public class TestDataLibDataDAO implements ITestDataLibDataDAO{
                 MyLogger.log(TestDataLibDataDAO.class.getName(), Level.ERROR, "Unable to execute query : " + ex.toString());
             }
         }
-        return result;
+        answer.setResultMessage(msg);
+        answer.setItem(result);
+        return answer;
     }
 
     @Override
