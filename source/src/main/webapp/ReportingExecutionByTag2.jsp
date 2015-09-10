@@ -26,7 +26,7 @@
                     <div class="panel panel-default">
                         <div class="panel-heading card">
                             <span class="fa fa-tag fa-fw"></span>
-                            Filters
+                            <label id="filters">Filters</label>
                         </div>
                         <div class="panel-body">
                             <div class="row">
@@ -49,7 +49,7 @@
                     <div class="panel panel-default">
                         <div class="panel-heading card">
                             <span class="fa fa-pie-chart fa-fw"></span>
-                            Report by Status
+                            <label id="reportStatus"> Report by Status</label>
                         </div>
                         <div class="panel-body">
                             <div class="row">
@@ -65,7 +65,7 @@
                     <div class="panel panel-default">
                         <div class="panel-heading card">
                             <span class="fa fa-bar-chart fa-fw"></span>
-                            Report by Function
+                            <label id="reportFunction">Report by Function</label>
                         </div>
                         <div class="panel-body" id="functionChart"></div>
                     </div>
@@ -76,9 +76,9 @@
                     <div class="panel panel-default">
                         <div class="panel-heading card">
                             <span class="glyphicon glyphicon-list"></span>
-                            List
+                            <label id="List">List</label>
                             <div class="pull-right">
-                                <label><strong>Status :</strong></label>
+                                <label id="statusLabel">Status :</label>
                                 <div class="form-group" id="statusFilter">
                                     <label class="checkbox-inline">
                                         <input type="checkbox" name="OK" checked/>
@@ -108,7 +108,7 @@
                                         <input type="checkbox" name="CA" checked/>
                                         CA
                                     </label>
-                                    <button type="button" class="btn btn-default btn-xs" onclick="loadReportList()">Reload</button>
+                                    <button type="button" class="btn btn-default btn-xs" onclick="loadReportList()" id="reloadbutton">Reload</button>
                                 </div>
                             </div>
                         </div>

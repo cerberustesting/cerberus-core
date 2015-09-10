@@ -39,7 +39,20 @@ function initPage() {
     var doc = new Doc();
 
     displayHeaderLabel(doc);
+    displayPageLabel(doc);
     displayFooter(doc);
+}
+
+function displayPageLabel(doc) {
+    $("#pageTitle").html(doc.getDocLabel("page_reportbytag", "title"));
+    $("#title").html(doc.getDocOnline("page_reportbytag", "title"));
+    $("#loadbutton").html(doc.getDocLabel("page_reportbytag", "button_load"));
+    $("#reloadbutton").html(doc.getDocLabel("page_reportbytag", "button_reload"));
+    $("#filters").html(doc.getDocOnline("page_reportbytag", "filters"));
+    $("#reportStatus").html(doc.getDocOnline("page_reportbytag", "report_status"));
+    $("#reportFunction").html(doc.getDocOnline("page_reportbytag", "report_function"));
+    $("#List").html(doc.getDocOnline("page_reportbytag", "report_list"));
+    $("#statusLabel").html(doc.getDocLabel("testcase", "Status") + " :");
 }
 
 function loadTagFilters() {
@@ -101,7 +114,7 @@ function loadReportList() {
         var jqxhr = $.getJSON("ReadTestCaseExecution", "Tag=" + selectTag + "&" + statusFilter.serialize());
         $.when(jqxhr).then(function (data) {
             var request = "ReadTestCaseExecution?Tag=" + selectTag + "&" + statusFilter.serialize() + "&TotalRecords=" + data.DisplayLength;
-            
+
             var configurations = new TableConfigurationsServerSide("listTable", request, "testList", aoColumnsFunc(data.Columns));
             configurations.lengthMenu = [100, 1000, 5000];
 
@@ -124,8 +137,8 @@ function appendPanelStatus(status, total) {
             $('<div class="col-xs-6 status"></div>').text(status).prepend(
             $('<span class="' + rowClass.glyph + '" style="margin-right: 5px;"></span>'))).append(
             $('<div class="col-xs-6 text-right"></div>').append(
-            $('<div class="total"></div>').text(total[status].value))
-            )).append($('<div class="row"></div>').append(
+            $('<div class="total"></div>').text(total[status].value)))).append(
+            $('<div class="row"></div>').append(
             $('<div class="percentage pull-right"></div>').text('Percentage : ' + Math.round(((total[status].value / total.test) * 100) * 100) / 100 + '%')))));
 }
 
@@ -336,7 +349,6 @@ function loadReportByFunctionChart(dataset) {
 
 function generateTooltip(data) {
     var htmlRes;
-    console.log(data);
 
     htmlRes = '<div>Test ID : ' + data.ID + '</div>' +
             '<div>Start : ' + data.Start + '</div>' +
@@ -347,37 +359,40 @@ function generateTooltip(data) {
 }
 
 function aoColumnsFunc(Columns) {
+    var doc = new Doc();
+
     var aoColumns = [
         {"data": "test",
             "sName": "test",
-            "title": "test"},
+            "title": doc.getDocOnline("test", "Test")
+        },
         {"data": "testCase",
             "sName": "testCase",
-            "title": "testCase"
+            "title": doc.getDocOnline("testcase", "TestCase")
         },
         {"data": "application",
             "sName": "application",
-            "title": "application"
+            "title": doc.getDocOnline("application", "Application")
         },
         {
             "bVisible": false,
             "data": "status",
             "sName": "status",
-            "title": "status"
+            "title": doc.getDocOnline("testcase", "Status")
         },
         {"data": "shortDesc",
             "sName": "description",
-            "title": "description"
+            "title": doc.getDocOnline("testcase", "Description")
         },
         {"bVisible": false,
             "data": "bugId",
             "sName": "bugId",
-            "title": "bugId"
+            "title": doc.getDocOnline("testcase", "BugID")
         },
         {"visible": false,
             "data": "function",
             "sName": "function",
-            "title": "function"
+            "title": doc.getDocOnline("testcase", "Function")
         }
     ];
     for (var i = 0; i < Columns.length; i++) {
