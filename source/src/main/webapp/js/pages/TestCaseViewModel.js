@@ -125,6 +125,9 @@ $.when($.getScript("js/pages/global/global.js")).then(function() {
        
         
     });
+    //Show save button when testcase page loaded
+    $("input[name='divButtonSaveChange']").removeAttr("style");
+    
 });
 /**
  * Method that overrides a property from the click on the button

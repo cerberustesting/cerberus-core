@@ -993,7 +993,7 @@
                             <div id="StepsRightDiv" style="width:100%;float:left; margin:1%;">
                                 <div class="saveButtonDiv" ondragover="insertTCS(event, '0')" ondrop="drop(event, null)" style="display:block;clear:both;">
                                     <div style="float:left;height:25px" id="wob">
-                                        <input value="Save Changes" onclick="submitTestCaseModificationNew('');"
+                                        <input name="divButtonSaveChange" style="display:none" value="Save Changes" onclick="submitTestCaseModificationNew('');"
                                                id="submitButtonAction" name="submitChanges" class="buttonSaveChanges"
                                                type="button" >
                                     </div>
@@ -1456,7 +1456,7 @@
                                         </div>
                                     </div>
                                     <div class="saveButtonDiv" ondragover="insertTCS(event, '<%=incrementStep%>')" ondrop="drop(event, '<%=incrementStep%>')" style="display:block;clear:both;margin-top:5px">
-                                        <input value="Save Changes" class="buttonSaveChanges" onclick="submitTestCaseModificationNew('stepAnchor_<%=incrementStep%>');" id="submitButtonAction" name="submitChanges"
+                                        <input name="divButtonSaveChange" style="display:none" value="Save Changes" class="buttonSaveChanges" onclick="submitTestCaseModificationNew('stepAnchor_<%=incrementStep%>');" id="submitButtonAction" name="submitChanges"
                                                type="button" >
                                         <input id="addStepButton<%=incrementStep%>" type="button" value="Add Step" title="Add Step" class="buttonSaveChanges"
                                                onclick="addTCSCNew('StepsEndDiv<%=incrementStep%>', this)">
