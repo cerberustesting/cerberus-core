@@ -117,6 +117,7 @@ function loadReportList() {
 
             var configurations = new TableConfigurationsServerSide("listTable", request, "testList", aoColumnsFunc(data.Columns));
             configurations.paginate = false;
+            configurations.scrollX = false;
 
             createDataTable(configurations);
             $('#listTable_wrapper').not('.initialized').addClass('initialized');
