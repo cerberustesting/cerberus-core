@@ -274,10 +274,6 @@
         <servlet-class>org.cerberus.servlet.log.ReadLogEvent</servlet-class>
     </servlet>
     <servlet>
-        <servlet-name>GetDeployTypeList</servlet-name>
-        <servlet-class>org.cerberus.servlet.application.GetDeployTypeList</servlet-class>
-    </servlet>
-    <servlet>
         <servlet-name>ReadDeployType</servlet-name>
         <servlet-class>org.cerberus.servlet.application.ReadDeployType</servlet-class>
     </servlet>
@@ -879,10 +875,6 @@
     <servlet-mapping>
         <servlet-name>UpdateTestCaseDetail</servlet-name>
         <url-pattern>/UpdateTestCaseDetail</url-pattern>
-    </servlet-mapping>
-    <servlet-mapping>
-        <servlet-name>GetDeployTypeList</servlet-name>
-        <url-pattern>/GetDeployTypeList</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
         <servlet-name>GetTestCaseList</servlet-name>
@@ -1715,7 +1707,6 @@
             <url-pattern>/GetShortTests</url-pattern>
             <url-pattern>/GetInvariantsForTest</url-pattern>
             <url-pattern>/GetEnvironmentAvailable</url-pattern>
-            <url-pattern>/GetDeployTypeList</url-pattern>
             <url-pattern>/GetBuildRevisionInvariant</url-pattern>
             <url-pattern>/ReadProject</url-pattern>
             <url-pattern>/FindBuildContent</url-pattern>
