@@ -61,7 +61,7 @@
                 if (request.getParameter("system") != null && request.getParameter("system").compareTo("") != 0) {
                     MySystem = request.getParameter("system");
                 }
-                List<Application> appliList = applicationService.readBySystem_Deprecated(MySystem);
+                List<Application> appliList = applicationService.convert(applicationService.readBySystem(MySystem));
                 String appliInSQL = SqlUtil.getInSQLClause(appliList);
 
                 Statement stmtBuild = conn.createStatement();

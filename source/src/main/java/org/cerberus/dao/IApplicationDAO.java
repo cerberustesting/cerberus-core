@@ -37,44 +37,15 @@ import org.cerberus.util.answer.AnswerList;
  */
 public interface IApplicationDAO {
 
-    public AnswerItem readByKey(String application);
+    AnswerItem readByKey(String application);
 
-    /**
-     * Finds the Application by the name
-     *
-     * @param application name of the Application to find.
-     * @return Object application if exist.
-     * @throws CerberusException when Application does not exist.
-     * @since 0.9.0
-     */
-    Application readByKey_Deprecated(String application) throws CerberusException;
+    AnswerList readBySystemByCriteria(String system, int startPosition, int length, String columnName, String sort, String searchParameter, String string);
 
-    /**
-     * Finds all Applications that exists
-     *
-     * @return List of applications.
-     * @throws CerberusException when no application exist.
-     * @since 0.9.0
-     */
-    List<Application> readAll_Deprecated() throws CerberusException;
+    Answer create(Application application);
 
-    /**
-     * Finds Applications of the given system
-     *
-     * @param system Name of the System to filter
-     * @return List of application.
-     * @throws CerberusException
-     * @since 0.9.0
-     */
-    List<Application> readBySystem_Deprecated(String system) throws CerberusException;
+    Answer delete(Application application);
 
-    public AnswerList readBySystemByCriteria(String system, int startPosition, int length, String columnName, String sort, String searchParameter, String string);
-
-    public Answer create(Application application);
-
-    public Answer delete(Application application);
-
-    public Answer update(Application application);
+    Answer update(Application application);
 
     /**
      *
@@ -92,6 +63,6 @@ public interface IApplicationDAO {
      * {@link java.sql.ResultSet#getString(String)}
      * @see FactoryApplication
      */
-    public Application loadFromResultSet(ResultSet rs) throws SQLException;
+    Application loadFromResultSet(ResultSet rs) throws SQLException;
 
 }

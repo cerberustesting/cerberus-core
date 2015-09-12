@@ -275,7 +275,7 @@
 
                     Application myApplication = null;
                     if (tcase.getApplication() != null) {
-                        myApplication = myApplicationService.readByKey_Deprecated(tcase.getApplication());
+                        myApplication = myApplicationService.convert(myApplicationService.readByKey(tcase.getApplication()));
                         appSystem = myApplication.getSystem();
                         SitdmossBugtrackingURL = myApplication.getBugTrackerUrl();
                     } else {
@@ -412,7 +412,7 @@
                                             </tr>
                                             <tr>
                                                 <td class="wob"><select id="editApplication" name="editApplication" style="width: 140px"><%
-                                                    for (Application app : myApplicationService.readAll_Deprecated()) {
+                                                    for (Application app : myApplicationService.convert(myApplicationService.readAll())) {
                                                         %><option value="<%=app.getApplication()%>"<%=tcase.getApplication().compareTo(app.getApplication()) == 0 ? " SELECTED " : ""%>><%=app.getApplication()%></option>
                                                         <% }%>
                                                     </select></td>

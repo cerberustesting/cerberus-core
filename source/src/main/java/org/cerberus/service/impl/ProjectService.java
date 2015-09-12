@@ -40,8 +40,6 @@ import org.springframework.stereotype.Service;
 @Service
 public class ProjectService implements IProjectService {
 
-    private final int MAX_ROW_SELECTED = 100000;
-
     @Autowired
     private IProjectDAO projectDao;
 
@@ -52,7 +50,7 @@ public class ProjectService implements IProjectService {
 
     @Override
     public AnswerList readAll() {
-        return readByCriteria(0, MAX_ROW_SELECTED, "ProjectID", "asc", null, null);
+        return readByCriteria(0, 0, "idproject", "asc", null, null);
     }
 
     @Override

@@ -33,6 +33,7 @@ import org.cerberus.entity.MessageEvent;
 import org.cerberus.enums.MessageEventEnum;
 import org.cerberus.factory.IFactoryLogEvent;
 import org.cerberus.log.MyLogger;
+import org.cerberus.util.StringUtil;
 import org.cerberus.util.answer.Answer;
 import org.cerberus.util.answer.AnswerItem;
 import org.cerberus.util.answer.AnswerList;
@@ -54,6 +55,7 @@ public class LogEventDAO implements ILogEventDAO {
     private IFactoryLogEvent factoryLogEvent;
 
     private final String SQL_DUPLICATED_CODE = "23000";
+    private final int MAX_ROW_SELECTED = 100000;
 
     @Override
     public AnswerItem readByKey(long logEventID) {
@@ -121,20 +123,27 @@ public class LogEventDAO implements ILogEventDAO {
 
         searchSQL.append(" where 1=1 ");
 
-        if (!searchTerm.equals("")) {
+        if (!StringUtil.isNullOrEmpty(searchTerm)) {
             searchSQL.append(" and (`time` like '%").append(searchTerm).append("%'");
             searchSQL.append(" or `login` like '%").append(searchTerm).append("%'");
             searchSQL.append(" or `page` like '%").append(searchTerm).append("%'");
             searchSQL.append(" or `action` like '%").append(searchTerm).append("%'");
             searchSQL.append(" or `log` like '%").append(searchTerm).append("%')");
         }
-        if (!individualSearch.equals("")) {
+        if (!StringUtil.isNullOrEmpty(individualSearch)) {
             searchSQL.append(" and (`").append(individualSearch).append("`)");
         }
-
         query.append(searchSQL);
-        query.append("order by `").append(colName).append("` ").append(dir);
-        query.append(" limit ").append(start).append(" , ").append(amount);
+        
+        if (!StringUtil.isNullOrEmpty(colName)) {
+            query.append("order by `").append(colName).append("` ").append(dir);
+        }
+        if (!(amount == 0)) {
+            query.append(" limit ").append(start).append(" , ").append(amount);
+        } else {
+            query.append(" limit ").append(start).append(" , ").append(MAX_ROW_SELECTED);
+        }
+
 
         Connection connection = this.databaseSpring.connect();
         try {

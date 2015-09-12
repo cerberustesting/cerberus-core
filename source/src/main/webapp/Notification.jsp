@@ -194,7 +194,7 @@
                 <td><%=brp.getRelease()%></td>
                 <td><%
                 	// Looping on all Jenkins Agent for the country environment and deploytype values.
-                                    Application app = applicationService.readByKey_Deprecated(brp.getApplication());
+                                    Application app = applicationService.convert(applicationService.readByKey(brp.getApplication()));
                                     for (String JenkinsAgent : countryEnvDeployTypeService.findJenkinsAgentByKey(system, country, env, app.getDeploytype())) {
                                         String DeployURL = "JenkinsDeploy?application=" + brp.getApplication() + "&jenkinsagent=" + JenkinsAgent + "&country=" + country + "&deploytype=" + app.getDeploytype() + "&release=" + brp.getRelease() + "&jenkinsbuildid=" + brp.getJenkinsBuildId();
                 %>

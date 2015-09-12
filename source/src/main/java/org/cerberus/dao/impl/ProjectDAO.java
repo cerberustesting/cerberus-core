@@ -35,6 +35,7 @@ import org.cerberus.entity.Project;
 import org.cerberus.exception.CerberusException;
 import org.cerberus.factory.IFactoryProject;
 import org.cerberus.log.MyLogger;
+import org.cerberus.util.StringUtil;
 import org.cerberus.util.answer.Answer;
 import org.cerberus.util.answer.AnswerItem;
 import org.cerberus.util.answer.AnswerList;
@@ -53,6 +54,7 @@ public class ProjectDAO implements IProjectDAO {
     private IFactoryProject factoryProject;
 
     private final String SQL_DUPLICATED_CODE = "23000";
+    private final int MAX_ROW_SELECTED = 100000;
 
     @Override
     public AnswerItem readByKey(String project) {
@@ -124,21 +126,27 @@ public class ProjectDAO implements IProjectDAO {
 
         searchSQL.append(" where 1=1 ");
 
-        if (!searchTerm.equals("")) {
+        if (!StringUtil.isNullOrEmpty(searchTerm)) {
             searchSQL.append(" and (`idproject` like '%").append(searchTerm).append("%'");
             searchSQL.append(" or `VCCode` like '%").append(searchTerm).append("%'");
             searchSQL.append(" or `Description` like '%").append(searchTerm).append("%'");
             searchSQL.append(" or `active` like '%").append(searchTerm).append("%'");
             searchSQL.append(" or `dateCre` like '%").append(searchTerm).append("%')");
         }
-        if (!individualSearch.equals("")) {
+        if (!StringUtil.isNullOrEmpty(individualSearch)) {
             searchSQL.append(" and (`").append(individualSearch).append("`)");
         }
-
         query.append(searchSQL);
-        query.append("order by `").append(column).append("` ").append(dir);
-        query.append(" limit ").append(start).append(" , ").append(amount);
 
+        if (!StringUtil.isNullOrEmpty(column)) {
+            query.append("order by `").append(column).append("` ").append(dir);
+        }
+        if (!(amount == 0)) {
+            query.append(" limit ").append(start).append(" , ").append(amount);
+        } else {
+            query.append(" limit ").append(start).append(" , ").append(MAX_ROW_SELECTED);
+        }
+        
         Connection connection = this.databaseSpring.connect();
         try {
             PreparedStatement preStat = connection.prepareStatement(query.toString());

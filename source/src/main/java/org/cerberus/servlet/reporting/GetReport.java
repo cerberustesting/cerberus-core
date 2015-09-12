@@ -383,7 +383,7 @@ public class GetReport extends HttpServlet {
             if (!StringUtil.isNull(tc.getBugID())) {
                 try {
                     //get the url from application service
-                    Application app = this.applicationService.readByKey_Deprecated(tc.getApplication());
+                    Application app = this.applicationService.convert(this.applicationService.readByKey(tc.getApplication()));
                     obj.put("bugURL", app.getBugTrackerUrl().replace("%BUGID%", tc.getBugID()));
                 } catch (CerberusException e) {
                     LOG.error("Unable to find Application", e);

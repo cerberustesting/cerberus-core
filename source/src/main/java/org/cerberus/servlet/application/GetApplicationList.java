@@ -54,7 +54,7 @@ public class GetApplicationList extends HttpServlet {
         JSONArray array = new JSONArray();
         JSONObject jsonObject = new JSONObject();
         try {
-            for (Application myAppli : applicationService.readAll_Deprecated()) {
+            for (Application myAppli : applicationService.convert(applicationService.readAll())) {
                 array.put(myAppli.getApplication());
             }
             try {

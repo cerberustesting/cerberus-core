@@ -34,6 +34,7 @@ import org.cerberus.factory.IFactoryDeployType;
 import org.cerberus.factory.impl.FactoryDeployType;
 import org.cerberus.log.MyLogger;
 import org.cerberus.util.ParameterParserUtil;
+import org.cerberus.util.StringUtil;
 import org.cerberus.util.answer.Answer;
 import org.cerberus.util.answer.AnswerItem;
 import org.cerberus.util.answer.AnswerList;
@@ -49,6 +50,7 @@ public class DeployTypeDAO implements IDeployTypeDAO {
     private IFactoryDeployType factoryDeployType;
 
     private final String SQL_DUPLICATED_CODE = "23000";
+    private final int MAX_ROW_SELECTED = 100000;
 
     /**
      *
@@ -196,20 +198,25 @@ public class DeployTypeDAO implements IDeployTypeDAO {
         //were applied -- used for pagination p
         query.append("SELECT SQL_CALC_FOUND_ROWS * FROM deploytype ");
 
-        gSearch.append(" where (`deploytype` like '%").append(searchTerm).append("%'");
-        gSearch.append(" or `description` like '%").append(searchTerm).append("%')");
+        searchSQL.append(" where 1=1 ");
 
-        if (!searchTerm.equals("") && !individualSearch.equals("")) {
-            searchSQL.append(gSearch.toString()).append(" and ").append(individualSearch);
-        } else if (!individualSearch.equals("")) {
-            searchSQL.append(" where `").append(individualSearch).append("`");
-        } else if (!searchTerm.equals("")) {
-            searchSQL.append(gSearch.toString());
+        if (!StringUtil.isNullOrEmpty(searchTerm)) {
+            searchSQL.append(" and (`deploytype` like '%").append(searchTerm).append("%'");
+            searchSQL.append(" or `description` like '%").append(searchTerm).append("%'");
         }
-
+        if (!StringUtil.isNullOrEmpty(individualSearch)) {
+            searchSQL.append(" and (`").append(individualSearch).append("`)");
+        }
         query.append(searchSQL);
-        query.append("order by `").append(column).append("` ").append(dir);
-        query.append(" limit ").append(start).append(" , ").append(amount);
+
+        if (!StringUtil.isNullOrEmpty(column)) {
+            query.append("order by `").append(column).append("` ").append(dir);
+        }
+        if (!(amount == 0)) {
+            query.append(" limit ").append(start).append(" , ").append(amount);
+        } else {
+            query.append(" limit ").append(start).append(" , ").append(MAX_ROW_SELECTED);
+        }
 
         Connection connection = this.databaseSpring.connect();
         try {

@@ -49,9 +49,8 @@ import org.springframework.web.context.support.WebApplicationContextUtils;
 public class GetApplication extends HttpServlet {
 
     /**
-     * Processes requests for both HTTP
-     * <code>GET</code> and
-     * <code>POST</code> methods.
+     * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
+     * methods.
      *
      * @param request servlet request
      * @param response servlet response
@@ -70,7 +69,7 @@ public class GetApplication extends HttpServlet {
         try {
             JSONObject jsonResponse = new JSONObject();
             try {
-                for (Application myApplication : applicationService.readBySystem_Deprecated(MySystem)) {
+                for (Application myApplication : applicationService.convert(applicationService.readBySystem(MySystem))) {
                     JSONArray row = new JSONArray();
                     row.put(myApplication.getApplication());
                     row.put(myApplication.getSystem());
@@ -105,8 +104,7 @@ public class GetApplication extends HttpServlet {
 
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
     /**
-     * Handles the HTTP
-     * <code>GET</code> method.
+     * Handles the HTTP <code>GET</code> method.
      *
      * @param request servlet request
      * @param response servlet response
@@ -120,8 +118,7 @@ public class GetApplication extends HttpServlet {
     }
 
     /**
-     * Handles the HTTP
-     * <code>POST</code> method.
+     * Handles the HTTP <code>POST</code> method.
      *
      * @param request servlet request
      * @param response servlet response
