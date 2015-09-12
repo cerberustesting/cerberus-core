@@ -368,7 +368,7 @@ function validatesFileExtension(fileName, fileExtension) {
         $('#uploadOk').removeProp("disabled");
     } else {
         resetModalUpload();
-        var doc = new Doc(); 
+        var doc = new Doc();
         var localMessage = new Message("danger", doc.getDocLabel("page_global", "invalid_extension_message") + fileExtension + "!");
         showMessage(localMessage, $('#modalUpload'));
     }
@@ -461,6 +461,7 @@ function TableConfigurationsServerSide(divId, ajaxSource, ajaxProp, aoColumnsFun
     this.stateSave = true;
     this.showColvis = true;
     this.scrollY = false;
+    this.scrollX = true;
     this.scrollCollapse = false;
     this.lang = getDataTableLanguage();
 }
@@ -489,6 +490,7 @@ function createDataTableWithPermissions(tableConfigurations, callbackfunction) {
     configs["language"] = tableConfigurations.lang.table;
     configs["columns"] = tableConfigurations.aoColumnsFunction;
     configs["colVis"] = tableConfigurations.lang.colVis;
+    configs["scrollX"] = tableConfigurations.scrollX;
     configs["lengthChange"] = true;
 
 
@@ -562,6 +564,7 @@ function createDataTable(tableConfigurations) {
     configs["language"] = tableConfigurations.lang.table;
     configs["columns"] = tableConfigurations.aoColumnsFunction;
     configs["colVis"] = tableConfigurations.lang.colVis;
+    configs["scrollX"] = tableConfigurations.scrollX;
     configs["lengthChange"] = true;
     configs["lengthMenu"] = tableConfigurations.lengthMenu;
 
