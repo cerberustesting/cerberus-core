@@ -19,13 +19,13 @@
  */
 package org.cerberus.service.impl;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import org.cerberus.dao.IProjectDAO;
 import org.cerberus.entity.MessageGeneral;
 import org.cerberus.enums.MessageGeneralEnum;
 import org.cerberus.entity.Project;
+import org.cerberus.enums.MessageEventEnum;
 import org.cerberus.exception.CerberusException;
 import org.cerberus.service.IProjectService;
 import org.cerberus.util.answer.Answer;
@@ -40,6 +40,8 @@ import org.springframework.stereotype.Service;
 @Service
 public class ProjectService implements IProjectService {
 
+    private final int MAX_ROW_SELECTED = 100000;
+
     @Autowired
     private IProjectDAO projectDao;
 
@@ -49,29 +51,8 @@ public class ProjectService implements IProjectService {
     }
 
     @Override
-    public List<String> readDescription_Deprecated() {
-        List<String> result = new ArrayList<String>();
-        List<Project> listOfProject = this.projectDao.readAll_Deprecated();
-        for (Project project : listOfProject) {
-            result.add(project.getIdProject().concat(project.getCode()).concat(project.getDescription()));
-        }
-
-        return result;
-    }
-
-    @Override
-    public Project readByKey_Deprecated(String project) throws CerberusException {
-        Project myProject = projectDao.readByKey_Deprecated(project);
-        if (myProject == null) {
-            //TODO define message => error occur trying to find user
-            throw new CerberusException(new MessageGeneral(MessageGeneralEnum.NO_DATA_FOUND));
-        }
-        return myProject;
-    }
-
-    @Override
-    public List<Project> readAll_Deprecated() throws CerberusException {
-        return projectDao.readAll_Deprecated();
+    public AnswerList readAll() {
+        return readByCriteria(0, MAX_ROW_SELECTED, "ProjectID", "asc", null, null);
     }
 
     @Override
@@ -82,7 +63,7 @@ public class ProjectService implements IProjectService {
     @Override
     public boolean exist(String project) {
         try {
-            readByKey_Deprecated(project);
+            convert(readByKey(project));
             return true;
         } catch (CerberusException e) {
             return false;
@@ -90,18 +71,45 @@ public class ProjectService implements IProjectService {
     }
 
     @Override
-    public Answer create_Deprecated(Project project) throws CerberusException {
-         return projectDao.create_Deprecated(project);
+    public Answer create(Project project) {
+        return projectDao.create(project);
     }
 
     @Override
-    public Answer delete_Deprecated(Project project) throws CerberusException {
-        return projectDao.delete_Deprecated(project);
+    public Answer delete(Project project) {
+        return projectDao.delete(project);
     }
 
     @Override
-    public Answer update_Deprecated(Project project) throws CerberusException {
-        return projectDao.update_Deprecated(project);
+    public Answer update(Project project) {
+        return projectDao.update(project);
+    }
+
+    @Override
+    public Project convert(AnswerItem answerItem) throws CerberusException {
+        if (answerItem.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
+            //if the service returns an OK message then we can get the item
+            return (Project) answerItem.getItem();
+        }
+        throw new CerberusException(new MessageGeneral(MessageGeneralEnum.DATA_OPERATION_ERROR));
+    }
+
+    @Override
+    public List<Project> convert(AnswerList answerList) throws CerberusException {
+        if (answerList.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
+            //if the service returns an OK message then we can get the item
+            return (List<Project>) answerList.getDataList();
+        }
+        throw new CerberusException(new MessageGeneral(MessageGeneralEnum.DATA_OPERATION_ERROR));
+    }
+
+    @Override
+    public void convert(Answer answer) throws CerberusException {
+        if (answer.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
+            //if the service returns an OK message then we can get the item
+            return;
+        }
+        throw new CerberusException(new MessageGeneral(MessageGeneralEnum.DATA_OPERATION_ERROR));
     }
 
 }

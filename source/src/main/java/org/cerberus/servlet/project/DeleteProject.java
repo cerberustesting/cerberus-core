@@ -28,12 +28,9 @@ import org.cerberus.entity.MessageEvent;
 import org.cerberus.enums.MessageEventEnum;
 import org.cerberus.entity.Project;
 import org.cerberus.exception.CerberusException;
-import org.cerberus.factory.IFactoryLogEvent;
-import org.cerberus.factory.impl.FactoryLogEvent;
 import org.cerberus.service.ILogEventService;
 import org.cerberus.service.IProjectService;
 import org.cerberus.service.impl.LogEventService;
-import org.cerberus.service.impl.UserService;
 import org.cerberus.util.StringUtil;
 import org.cerberus.util.answer.Answer;
 import org.cerberus.util.answer.AnswerItem;
@@ -109,15 +106,14 @@ public class DeleteProject extends HttpServlet {
                  * object exist, then we can delete it.
                  */
                 Project projectData = (Project) resp.getItem();
-                ans = projectService.delete_Deprecated(projectData);
+                ans = projectService.delete(projectData);
 
                 if (ans.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
                     /**
-                     * Delete was succesfull. Adding Log entry.
+                     * Delete was successful. Adding Log entry.
                      */
                     ILogEventService logEventService = appContext.getBean(LogEventService.class);
-                    IFactoryLogEvent factoryLogEvent = appContext.getBean(FactoryLogEvent.class);
-                    logEventService.create(factoryLogEvent.create(0, 0, request.getUserPrincipal().getName(), null, "/DeleteProject", "DELETE", "Delete Project : ['" + key + "']", "", ""));
+                    logEventService.createPrivateCalls("/DeleteProject", "DELETE", "Delete Project : ['" + key + "']", request);
                 }
             }
         }

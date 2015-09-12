@@ -22,30 +22,34 @@ package org.cerberus.util.answer;
 import org.cerberus.entity.MessageEvent;
 
 /**
- * Auxiliary class that is used to store an answer that contains a message and an item with the desired results.
+ * Auxiliary class that is used to store an answer that contains a message and
+ * an item with the desired results.
+ *
  * @author FNogueira
  * @param <T> / object that is sent in the answer
  */
-public class AnswerItem <T extends Object> extends Answer{
-    
+public class AnswerItem<T extends Object> extends Answer {
+
     private T item;
-    
+
     public AnswerItem() {
-    
+
     }
+
     public AnswerItem(T item) {
-         this.item = item;
+        this.item = item;
     }
-    
+
     public AnswerItem(MessageEvent resultMessage) {
-         this.item = null;
-         this.resultMessage = resultMessage;
+        this.item = null;
+        this.resultMessage = resultMessage;
     }
+
     public AnswerItem(T item, MessageEvent resultMessage) {
-         this.item = item;
-         this.resultMessage = resultMessage;
+        this.item = item;
+        this.resultMessage = resultMessage;
     }
-    
+
     public T getItem() {
         return item;
     }
@@ -53,5 +57,5 @@ public class AnswerItem <T extends Object> extends Answer{
     public void setItem(T item) {
         this.item = item;
     }
-     
+
 }

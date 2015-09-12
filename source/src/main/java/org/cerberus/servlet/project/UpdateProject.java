@@ -116,16 +116,14 @@ public class UpdateProject extends HttpServlet {
                 projectData.setCode(code);
                 projectData.setDescription(description);
                 projectData.setActive(active);
-                ans = projectService.update_Deprecated(projectData);
+                ans = projectService.update(projectData);
 
                 if (ans.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
                     /**
-                     * Update was succesfull. Adding Log entry.
+                     * Update was successful. Adding Log entry.
                      */
                     ILogEventService logEventService = appContext.getBean(LogEventService.class);
-                    IFactoryLogEvent factoryLogEvent = appContext.getBean(FactoryLogEvent.class);
-
-                    logEventService.create(factoryLogEvent.create(0, 0, request.getUserPrincipal().getName(), null, "/UpdateProject", "UPDATE", "Updated Project : ['" + idProject + "']", "", ""));
+                    logEventService.createPrivateCalls("/UpdateProject", "UPDATE", "Updated Project : ['" + idProject + "']", request);
                 }
             }
         }

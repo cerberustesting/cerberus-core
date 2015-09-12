@@ -77,8 +77,7 @@ public class CreateCountryEnvironmentDatabase extends HttpServlet {
              * Adding Log entry.
              */
             ILogEventService logEventService = appContext.getBean(ILogEventService.class);
-            IFactoryLogEvent factoryLogEvent = appContext.getBean(IFactoryLogEvent.class);
-            logEventService.create(factoryLogEvent.create(0, 0, request.getUserPrincipal().getName(), null, "/CreateCountryEnvironmentDatabase", "CREATE", "Create CountryEnvironmentDatabase : " + country + "_" + environment + "_" + database, "", ""));
+            logEventService.createPrivateCalls("/CreateCountryEnvironmentDatabase", "CREATE", "Create CountryEnvironmentDatabase : " + country + "_" + environment + "_" + database, request);
 
             response.getWriter().append(country + "_" + environment + "_" + database).close();
         } catch (CerberusException ex) {

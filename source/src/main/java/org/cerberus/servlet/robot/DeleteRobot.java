@@ -71,8 +71,7 @@ public class DeleteRobot extends HttpServlet {
              * Adding Log entry.
              */
             ILogEventService logEventService = appContext.getBean(LogEventService.class);
-            IFactoryLogEvent factoryLogEvent = appContext.getBean(FactoryLogEvent.class);
-            logEventService.create(factoryLogEvent.create(0, 0, request.getUserPrincipal().getName(), null, "/DeleteRobot", "DELETE", "Delete Robot : " + robot.getPlatform() + "/" + robot.getBrowser() + "/" + robot.getVersion(), "", ""));
+            logEventService.createPrivateCalls("/DeleteRobot", "DELETE", "Delete Robot : " + robot.getPlatform() + "/" + robot.getBrowser() + "/" + robot.getVersion(), request);
 
         } finally {
             out.close();

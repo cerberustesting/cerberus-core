@@ -105,8 +105,7 @@ public class UpdateTestData extends HttpServlet {
              * Adding Log entry.
              */
             ILogEventService logEventService = appContext.getBean(LogEventService.class);
-            IFactoryLogEvent factoryLogEvent = appContext.getBean(FactoryLogEvent.class);
-            logEventService.create(factoryLogEvent.create(0, 0, request.getUserPrincipal().getName(), null, "/UpdateTestData", "UPDATE", "Updated TestData : " + key, "", ""));
+            logEventService.createPrivateCalls("/UpdateTestData", "UPDATE", "Updated TestData : " + key, request);
 
             out.print(value);
         } finally {

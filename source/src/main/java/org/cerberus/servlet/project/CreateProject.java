@@ -99,7 +99,7 @@ public class CreateProject extends HttpServlet {
             IFactoryProject factoryProject = appContext.getBean(IFactoryProject.class);
 
             Project projectData = factoryProject.create(idProject, code, description, active, "");
-            ans = projectService.create_Deprecated(projectData);
+            ans = projectService.create(projectData);
 
             if (ans.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
                 /**
@@ -108,7 +108,7 @@ public class CreateProject extends HttpServlet {
                 ILogEventService logEventService = appContext.getBean(LogEventService.class);
                 IFactoryLogEvent factoryLogEvent = appContext.getBean(FactoryLogEvent.class);
 
-                logEventService.create(factoryLogEvent.create(0, 0, request.getUserPrincipal().getName(), null, "/CreateProject", "CREATE", "Create Project : ['" + idProject + "']", "", ""));
+                logEventService.createPrivateCalls("/CreateProject", "CREATE", "Create Project : ['" + idProject + "']", request);
             }
         }
 

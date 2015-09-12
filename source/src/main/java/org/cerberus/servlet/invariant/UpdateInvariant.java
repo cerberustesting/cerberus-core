@@ -99,8 +99,7 @@ public class UpdateInvariant extends HttpServlet {
          * Adding Log entry.
          */
         ILogEventService logEventService = appContext.getBean(LogEventService.class);
-        IFactoryLogEvent factoryLogEvent = appContext.getBean(FactoryLogEvent.class);
-        logEventService.create(factoryLogEvent.create(0, 0, request.getUserPrincipal().getName(), null, "/UpdateInvariant", "UPDATE", "Updated invariant : ['" + idName + "'|'" + invVal + "']", "", ""));
+        logEventService.createPrivateCalls("/UpdateInvariant", "UPDATE", "Updated invariant : ['" + idName + "'|'" + invVal + "']", request);
 
         response.getWriter().print(value);
     }

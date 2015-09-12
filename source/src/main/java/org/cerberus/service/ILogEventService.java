@@ -59,6 +59,17 @@ public interface ILogEventService {
     Answer create(LogEvent logevent);
 
     /**
+     * This method is to be used when log is done from a private Servlet. In
+     * that case, log entry will always be created.
+     *
+     * @param page
+     * @param action
+     * @param request
+     * @param log
+     */
+    void createPrivateCalls(String page, String action, String log, HttpServletRequest request);
+
+    /**
      * This method is to be used when log is done from a public Servlet. It will
      * automatically check if the log of Public API Calls is activated before
      * recording the log

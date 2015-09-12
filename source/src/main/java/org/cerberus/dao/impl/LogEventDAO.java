@@ -106,13 +106,12 @@ public class LogEventDAO implements ILogEventDAO {
         ans.setResultMessage(msg);
         return ans;
     }
-    
+
     @Override
     public AnswerList readByCriteria(int start, int amount, String colName, String dir, String searchTerm, String individualSearch) {
         AnswerList response = new AnswerList();
         MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
         List<LogEvent> logEventList = new ArrayList<LogEvent>();
-        StringBuilder gSearch = new StringBuilder();
         StringBuilder searchSQL = new StringBuilder();
 
         StringBuilder query = new StringBuilder();
@@ -120,22 +119,17 @@ public class LogEventDAO implements ILogEventDAO {
         //were applied -- used for pagination p
         query.append("SELECT SQL_CALC_FOUND_ROWS * FROM logevent ");
 
-        gSearch.append(" where (`time` like '%").append(searchTerm).append("%'");
-        gSearch.append(" or `login` like '%").append(searchTerm).append("%'");
-        gSearch.append(" or `page` like '%").append(searchTerm).append("%'");
-        gSearch.append(" or `action` like '%").append(searchTerm).append("%'");
-        gSearch.append(" or `log` like '%").append(searchTerm).append("%')");
+        searchSQL.append(" where 1=1 ");
 
-        if (!searchTerm.equals("") && !individualSearch.equals("")) {
-            searchSQL.append(gSearch.toString());
-            searchSQL.append(" and ");
-            searchSQL.append(individualSearch);
-        } else if (!individualSearch.equals("")) {
-            searchSQL.append(" where `");
-            searchSQL.append(individualSearch);
-            searchSQL.append("`");
-        } else if (!searchTerm.equals("")) {
-            searchSQL.append(gSearch.toString());
+        if (!searchTerm.equals("")) {
+            searchSQL.append(" and (`time` like '%").append(searchTerm).append("%'");
+            searchSQL.append(" or `login` like '%").append(searchTerm).append("%'");
+            searchSQL.append(" or `page` like '%").append(searchTerm).append("%'");
+            searchSQL.append(" or `action` like '%").append(searchTerm).append("%'");
+            searchSQL.append(" or `log` like '%").append(searchTerm).append("%')");
+        }
+        if (!individualSearch.equals("")) {
+            searchSQL.append(" and (`").append(individualSearch).append("`)");
         }
 
         query.append(searchSQL);

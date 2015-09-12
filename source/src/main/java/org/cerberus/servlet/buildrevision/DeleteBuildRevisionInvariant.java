@@ -73,8 +73,7 @@ public class DeleteBuildRevisionInvariant extends HttpServlet {
              * Adding Log entry.
              */
             ILogEventService logEventService = appContext.getBean(LogEventService.class);
-            IFactoryLogEvent factoryLogEvent = appContext.getBean(FactoryLogEvent.class);
-            logEventService.create(factoryLogEvent.create(0, 0, request.getUserPrincipal().getName(), null, "/DeleteBuildRevisionInvariant", "DELETE", "Delete buildRevisionInvariant : " + system + "-" + level + "-" + seq, "", ""));
+            logEventService.createPrivateCalls("/DeleteBuildRevisionInvariant", "DELETE", "Delete buildRevisionInvariant : " + system + "-" + level + "-" + seq, request);
 
         } else {
             response.getWriter().print("Could not Delete Build Revision : " + system + "-" + level + "-" + seq);

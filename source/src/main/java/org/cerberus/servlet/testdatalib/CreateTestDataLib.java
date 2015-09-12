@@ -105,8 +105,7 @@ public class CreateTestDataLib extends HttpServlet {
                     //  Adding Log entry.
                     if(ans.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())){
                         ILogEventService logEventService = appContext.getBean(LogEventService.class);
-                        IFactoryLogEvent factoryLogEvent = appContext.getBean(FactoryLogEvent.class);
-                        logEventService.create(factoryLogEvent.create(0, 0, request.getUserPrincipal().getName(), null, "/CreateTestDataLib", "CREATE", "Create TestDataLib  : " + request.getParameter("Name"), "", ""));
+                        logEventService.createPrivateCalls("/CreateTestDataLib", "CREATE", "Create TestDataLib  : " + request.getParameter("Name"), request);
                     }
                 }
             } catch (CerberusException ex) {

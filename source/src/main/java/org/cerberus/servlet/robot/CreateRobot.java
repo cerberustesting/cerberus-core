@@ -80,8 +80,7 @@ public class CreateRobot extends HttpServlet {
              * Adding Log entry.
              */
             ILogEventService logEventService = appContext.getBean(LogEventService.class);
-            IFactoryLogEvent factoryLogEvent = appContext.getBean(FactoryLogEvent.class);
-            logEventService.create(factoryLogEvent.create(0, 0, request.getUserPrincipal().getName(), null, "/CreateRobot", "CREATE", "Create Robot : " + platform + "/" + browser + "/" + version, "", ""));
+            logEventService.createPrivateCalls("/CreateRobot", "CREATE", "Create Robot : " + platform + "/" + browser + "/" + version, request);
 
             response.sendRedirect("Robot.jsp");
         } finally {

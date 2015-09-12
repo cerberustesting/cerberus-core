@@ -97,8 +97,7 @@ public class ImportTestDataLib extends HttpServlet {
                     msg.setDescription(msg.getDescription().replace("%ITEM%", "Test Data Lib"));
                     //Adding log entry
                     ILogEventService logEventService = appContext.getBean(LogEventService.class);
-                    IFactoryLogEvent factoryLogEvent = appContext.getBean(FactoryLogEvent.class);
-                    logEventService.create(factoryLogEvent.create(0, 0, request.getUserPrincipal().getName(), null, "/ImportTestDataLib", "IMPORT", "TestDataLib Imported.", "", ""));
+                    logEventService.createPrivateCalls("/ImportTestDataLib", "IMPORT", "TestDataLib Imported.", request);
                 } else {
                     msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_IMPORT_ERROR);
                     msg.setDescription(msg.getDescription().replace("%ITEM%", "Test Data Lib").replace("%REASON%", answer.getMessageDescription()));

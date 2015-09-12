@@ -93,8 +93,7 @@ public class UpdateRobot extends HttpServlet {
              * Adding Log entry.
              */
             ILogEventService logEventService = appContext.getBean(LogEventService.class);
-            IFactoryLogEvent factoryLogEvent = appContext.getBean(FactoryLogEvent.class);
-            logEventService.create(factoryLogEvent.create(0, 0, request.getUserPrincipal().getName(), null, "/UpdateRobot", "UPDATE", "Updated Robot : " + id, "", ""));
+            logEventService.createPrivateCalls("/UpdateRobot", "UPDATE", "Updated Robot : " + id, request);
 
             out.print(value);
         } finally {

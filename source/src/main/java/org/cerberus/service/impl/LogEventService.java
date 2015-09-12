@@ -66,6 +66,16 @@ public class LogEventService implements ILogEventService {
     }
 
     @Override
+    public void createPrivateCalls(String page, String action, String log, HttpServletRequest request) {
+        // Only log if cerberus_log_publiccalls parameter is equal to Y.
+        String myUser = "";
+        if (!(request.getUserPrincipal() == null)) {
+            myUser = ParameterParserUtil.parseStringParam(request.getUserPrincipal().getName(), "");
+        }
+        this.create(factoryLogEvent.create(0, 0, myUser, null, page, action, log, request.getRemoteAddr(), request.getLocalAddr()));
+    }
+
+    @Override
     public void createPublicCalls(String page, String action, String log, HttpServletRequest request) {
         // Only log if cerberus_log_publiccalls parameter is equal to Y.
         String doit = "";

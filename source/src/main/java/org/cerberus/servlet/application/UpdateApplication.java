@@ -152,8 +152,7 @@ public class UpdateApplication extends HttpServlet {
                      * Update was succesfull. Adding Log entry.
                      */
                     ILogEventService logEventService = appContext.getBean(LogEventService.class);
-                    IFactoryLogEvent factoryLogEvent = appContext.getBean(FactoryLogEvent.class);
-                    logEventService.create(factoryLogEvent.create(0, 0, request.getUserPrincipal().getName(), null, "/UpdateApplication", "UPDATE", "Updated Application : ['" + application + "']", "", ""));
+                    logEventService.createPrivateCalls("/UpdateApplication", "UPDATE", "Updated Application : ['" + application + "']", request);
                 }
             }
         }

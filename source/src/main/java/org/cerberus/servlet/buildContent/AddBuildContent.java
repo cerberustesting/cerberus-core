@@ -67,8 +67,7 @@ public class AddBuildContent extends HttpServlet {
          * Adding Log entry.
          */
         ILogEventService logEventService = appContext.getBean(LogEventService.class);
-        IFactoryLogEvent factoryLogEvent = appContext.getBean(FactoryLogEvent.class);
-        logEventService.create(factoryLogEvent.create(0, 0, req.getUserPrincipal().getName(), null, "/AddBuildContent", "CREATE", "Insert BuildContent : " + brp.getRelease(), "", ""));
+        logEventService.createPrivateCalls("/AddBuildContent", "CREATE", "Insert BuildContent : " + brp.getRelease(), req);
 
         resp.getWriter().print(brp.getId());
     }

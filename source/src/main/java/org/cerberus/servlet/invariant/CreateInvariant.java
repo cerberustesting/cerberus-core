@@ -77,8 +77,7 @@ public class CreateInvariant extends HttpServlet {
              * Adding Log entry.
              */
             ILogEventService logEventService = appContext.getBean(LogEventService.class);
-            IFactoryLogEvent factoryLogEvent = appContext.getBean(FactoryLogEvent.class);
-            logEventService.create(factoryLogEvent.create(0, 0, request.getUserPrincipal().getName(), null, "/CreateInvariant", "CREATE", "Create Invariant : ['" + idname + "'|'" + value + "'] " + sort, "", ""));
+            logEventService.createPrivateCalls("/CreateInvariant", "CREATE", "Create Invariant : ['" + idname + "'|'" + value + "'] " + sort, request);
 
             response.sendRedirect("InvariantPublic.jsp");
         } finally {

@@ -72,8 +72,7 @@ public class CreateBuildRevisionInvariant extends HttpServlet {
              * Adding Log entry.
              */
             ILogEventService logEventService = appContext.getBean(LogEventService.class);
-            IFactoryLogEvent factoryLogEvent = appContext.getBean(FactoryLogEvent.class);
-            logEventService.create(factoryLogEvent.create(0, 0, request.getUserPrincipal().getName(), null, "/CreateBuildRevisionInvariant", "CREATE", "Create Build Revision Invariant : ['" + system + "'|'" + level + "'|'" + seq + "'] " + versionName, "", ""));
+            logEventService.createPrivateCalls("/CreateBuildRevisionInvariant", "CREATE", "Create Build Revision Invariant : ['" + system + "'|'" + level + "'|'" + seq + "'] " + versionName, request);
 
             response.sendRedirect("InvariantPublic.jsp");
         } finally {

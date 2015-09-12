@@ -76,9 +76,7 @@ public class DeleteTestDataLib extends HttpServlet {
             //  Adding Log entry.
             if(answer.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())){
                 ILogEventService logEventService = appContext.getBean(LogEventService.class);
-                IFactoryLogEvent factoryLogEvent = appContext.getBean(FactoryLogEvent.class);
-                logEventService.create(factoryLogEvent.create(0, 0, request.getUserPrincipal().getName(), null, "/DeleteTestDataLib", 
-                        "DELETE", "Delete TestDataLib : " + testDataLibID, "", ""));
+                logEventService.createPrivateCalls("/DeleteTestDataLib", "DELETE", "Delete TestDataLib : " + testDataLibID, request);
             }
             response.setContentType("application/json");
             response.getWriter().print(jsonResponse);

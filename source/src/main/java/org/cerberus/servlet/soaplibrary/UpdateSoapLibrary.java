@@ -72,8 +72,7 @@ public class UpdateSoapLibrary extends HttpServlet {
              * Adding Log entry.
              */
             ILogEventService logEventService = appContext.getBean(LogEventService.class);
-            IFactoryLogEvent factoryLogEvent = appContext.getBean(FactoryLogEvent.class);
-            logEventService.create(factoryLogEvent.create(0, 0, request.getUserPrincipal().getName(), null, "/UpdateSoapLibrary", "UPDATE", "Updated SoapLibrary : " + name, "", ""));
+            logEventService.createPrivateCalls("/UpdateSoapLibrary", "UPDATE", "Updated SoapLibrary : " + name, request);
 
         } finally {
             out.close();

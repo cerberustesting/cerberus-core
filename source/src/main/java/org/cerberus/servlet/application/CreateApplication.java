@@ -127,8 +127,7 @@ public class CreateApplication extends HttpServlet {
                  * Object created. Adding Log entry.
                  */
                 ILogEventService logEventService = appContext.getBean(LogEventService.class);
-                IFactoryLogEvent factoryLogEvent = appContext.getBean(FactoryLogEvent.class);
-                logEventService.create(factoryLogEvent.create(0, 0, request.getUserPrincipal().getName(), null, "/CreateApplication", "CREATE", "Create Application : ['" + application + "']", "", ""));
+                logEventService.createPrivateCalls("/CreateApplication", "CREATE", "Create Application : ['" + application + "']", request);
             }
         }
 
