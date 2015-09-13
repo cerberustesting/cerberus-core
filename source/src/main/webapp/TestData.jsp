@@ -106,18 +106,11 @@
                 });
                 
                 
-                $.get('./GetApplicationList', '', function(data) {
-                    $("#Application").empty();
-                    for (index = 0; index < data.parameterList.length; index++) {
-                        $("#Application").append("<option value=\"" + data.parameterList[index] + "\">" + data.parameterList[index] + "</option>");
-                    }
-                });
-
-                $.get('./GetApplicationList', '', function(data) {
+                $.get('./ReadApplication', '', function(data) {
                     $("#Application").empty();
                     $("#Application").append("<option value=\"\"> </option>");
-                    for (index = 0; index < data.parameterList.length; index++) {
-                        $("#Application").append("<option value=\"" + data.parameterList[index] + "\">" + data.parameterList[index] + "</option>");
+                    for (index = 0; index < data.contentTable.length; index++) {
+                        $("#Application").append("<option value=\"" + data.contentTable[index].application + "\"><b>" + data.contentTable[index].application + "<b> - " + data.contentTable[index].description + "</option>");
                     }
                 });
 
