@@ -25,7 +25,7 @@ package org.cerberus.entity;
  */
 public class Robot {
 
-    Integer roborID;
+    Integer robotID;
     String robot;
     String host;
     String port;
@@ -52,12 +52,12 @@ public class Robot {
         this.port = port;
     }
 
-    public Integer getRoborID() {
-        return roborID;
+    public Integer getRobotID() {
+        return robotID;
     }
 
-    public void setRoborID(Integer roborID) {
-        this.roborID = roborID;
+    public void setRobotID(Integer robotID) {
+        this.robotID = robotID;
     }
 
     public String getRobot() {

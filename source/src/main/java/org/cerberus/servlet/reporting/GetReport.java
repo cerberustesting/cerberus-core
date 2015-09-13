@@ -8,7 +8,6 @@ import org.cerberus.entity.TestCaseExecution;
 import org.cerberus.exception.CerberusException;
 import org.cerberus.factory.IFactoryTCase;
 import org.cerberus.factory.impl.FactoryTCase;
-import org.cerberus.service.*;
 import org.cerberus.util.StringUtil;
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -26,6 +25,11 @@ import java.io.IOException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.*;
+import org.cerberus.service.IApplicationService;
+import org.cerberus.service.IInvariantService;
+import org.cerberus.service.ITestCaseCountryService;
+import org.cerberus.service.ITestCaseExecutionService;
+import org.cerberus.service.ITestCaseService;
 
 /**
  * Build data for detail table and calculate data dor statistics tables

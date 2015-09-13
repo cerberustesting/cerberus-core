@@ -30,8 +30,6 @@ import org.cerberus.database.DatabaseSpring;
 import org.cerberus.entity.Application;
 import org.cerberus.entity.MessageEvent;
 import org.cerberus.enums.MessageEventEnum;
-import org.cerberus.entity.MessageGeneral;
-import org.cerberus.enums.MessageGeneralEnum;
 import org.cerberus.exception.CerberusException;
 import org.cerberus.factory.IFactoryApplication;
 import org.cerberus.factory.impl.FactoryApplication;

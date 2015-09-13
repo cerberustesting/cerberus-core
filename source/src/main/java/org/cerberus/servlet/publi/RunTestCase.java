@@ -151,7 +151,7 @@ public class RunTestCase extends HttpServlet {
         } else {
             IRobotService robotService = appContext.getBean(IRobotService.class);
             try {
-                Robot robObj = robotService.findRobotByName(robot);
+                Robot robObj = robotService.convert(robotService.readByKey(robot));
                 robotHost = robObj.getHost();
                 robotPort = String.valueOf(robObj.getPort());
                 browser = robObj.getBrowser();

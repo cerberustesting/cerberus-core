@@ -1,5 +1,9 @@
-<%@ page import="org.cerberus.entity.*" %>
-<%@ page import="org.cerberus.service.*" %>
+<%@page import="org.cerberus.entity.BuildRevisionInvariant"%>
+<%@page import="org.cerberus.entity.Application"%>
+<%@page import="org.cerberus.service.IBuildRevisionParametersService"%>
+<%@page import="org.cerberus.service.IBuildRevisionInvariantService"%>
+<%@page import="org.cerberus.service.IApplicationService"%>
+<%@page import="org.cerberus.service.IDocumentationService"%>
 <%@ page import="org.apache.log4j.Logger" %>
 <%--
   ~ Cerberus  Copyright (C) 2013  vertigo17

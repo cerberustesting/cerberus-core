@@ -67,7 +67,7 @@ public class UpdateRobot extends HttpServlet {
 
             ApplicationContext appContext = WebApplicationContextUtils.getWebApplicationContext(this.getServletContext());
             IRobotService robotService = appContext.getBean(IRobotService.class);
-            Robot robot = robotService.findRobotByKey(Integer.valueOf(id));
+            Robot robot = robotService.convert(robotService.readByKeyTech(Integer.valueOf(id)));
 
             if (columnName != null && "Platform".equals(columnName.trim())) {
                 robot.setPlatform(value);
@@ -88,7 +88,7 @@ public class UpdateRobot extends HttpServlet {
             } else {
                 throw new CerberusException(new MessageGeneral(MessageGeneralEnum.NOT_IMPLEMEMTED));
             }
-            robotService.updateRobot(robot);
+            robotService.convert(robotService.update(robot));
             /**
              * Adding Log entry.
              */

@@ -28,14 +28,20 @@ import java.util.List;
 import org.apache.log4j.Level;
 import org.cerberus.dao.IRobotDAO;
 import org.cerberus.database.DatabaseSpring;
+import org.cerberus.entity.MessageEvent;
 import org.cerberus.entity.Robot;
 import org.cerberus.entity.MessageGeneral;
+import org.cerberus.enums.MessageEventEnum;
 import org.cerberus.enums.MessageGeneralEnum;
 import org.cerberus.exception.CerberusException;
 import org.cerberus.factory.IFactoryRobot;
 import org.cerberus.factory.impl.FactoryRobot;
 import org.cerberus.log.MyLogger;
 import org.cerberus.util.ParameterParserUtil;
+import org.cerberus.util.StringUtil;
+import org.cerberus.util.answer.Answer;
+import org.cerberus.util.answer.AnswerItem;
+import org.cerberus.util.answer.AnswerList;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
@@ -45,7 +51,7 @@ import org.springframework.stereotype.Repository;
  * @since 0.9.2
  */
 @Repository
-public class RobotDAO implements IRobotDAO{
+public class RobotDAO implements IRobotDAO {
 
     /**
      * Bean of the DatabaseSpring, Spring automatically links. Establishes
@@ -60,11 +66,391 @@ public class RobotDAO implements IRobotDAO{
      */
     @Autowired
     private IFactoryRobot factoryRobot;
+
+    private final String SQL_DUPLICATED_CODE = "23000";
+    private final int MAX_ROW_SELECTED = 100000;
+
+    @Override
+    public AnswerItem readByKeyTech(Integer robotid) {
+        AnswerItem ans = new AnswerItem();
+        Robot result = null;
+        final String query = "SELECT * FROM `robot` WHERE `robotID` = ?";
+        MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
+
+        Connection connection = this.databaseSpring.connect();
+        try {
+            PreparedStatement preStat = connection.prepareStatement(query);
+            try {
+                preStat.setInt(1, robotid);
+                ResultSet resultSet = preStat.executeQuery();
+                try {
+                    if (resultSet.first()) {
+                        result = loadFromResultSet(resultSet);
+                        msg.setDescription(msg.getDescription().replace("%ITEM%", "Robot").replace("%OPERATION%", "SELECT"));
+                        ans.setItem(result);
+                    }
+                } catch (SQLException exception) {
+                    MyLogger.log(RobotDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
+                    msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_UNEXPECTED_ERROR);
+                    msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", exception.toString()));
+                } finally {
+                    resultSet.close();
+                }
+            } catch (SQLException exception) {
+                MyLogger.log(RobotDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
+                msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_UNEXPECTED_ERROR);
+                msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", exception.toString()));
+            } finally {
+                preStat.close();
+            }
+        } catch (SQLException exception) {
+            MyLogger.log(RobotDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
+            msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_UNEXPECTED_ERROR);
+            msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", exception.toString()));
+        } finally {
+            try {
+                if (connection != null) {
+                    connection.close();
+                }
+            } catch (SQLException e) {
+                MyLogger.log(RobotDAO.class.getName(), Level.WARN, e.toString());
+            }
+        }
+
+        //sets the message
+        ans.setResultMessage(msg);
+        return ans;
+    }
+
+    @Override
+    public AnswerItem readByKey(String robot) {
+        AnswerItem ans = new AnswerItem();
+        Robot result = null;
+        final String query = "SELECT * FROM `robot` WHERE `robot` = ?";
+        MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
+
+        Connection connection = this.databaseSpring.connect();
+        try {
+            PreparedStatement preStat = connection.prepareStatement(query);
+            try {
+                preStat.setString(1, robot);
+                ResultSet resultSet = preStat.executeQuery();
+                try {
+                    if (resultSet.first()) {
+                        result = loadFromResultSet(resultSet);
+                        msg.setDescription(msg.getDescription().replace("%ITEM%", "Robot").replace("%OPERATION%", "SELECT"));
+                        ans.setItem(result);
+                    }
+                } catch (SQLException exception) {
+                    MyLogger.log(RobotDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
+                    msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_UNEXPECTED_ERROR);
+                    msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", exception.toString()));
+                } finally {
+                    resultSet.close();
+                }
+            } catch (SQLException exception) {
+                MyLogger.log(RobotDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
+                msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_UNEXPECTED_ERROR);
+                msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", exception.toString()));
+            } finally {
+                preStat.close();
+            }
+        } catch (SQLException exception) {
+            MyLogger.log(RobotDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
+            msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_UNEXPECTED_ERROR);
+            msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", exception.toString()));
+        } finally {
+            try {
+                if (connection != null) {
+                    connection.close();
+                }
+            } catch (SQLException e) {
+                MyLogger.log(RobotDAO.class.getName(), Level.WARN, e.toString());
+            }
+        }
+
+        //sets the message
+        ans.setResultMessage(msg);
+        return ans;
+    }
+    
+    @Override
+    public AnswerList readByCriteria(int start, int amount, String column, String dir, String searchTerm, String individualSearch) {
+        AnswerList response = new AnswerList();
+        MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
+        List<Robot> robotList = new ArrayList<Robot>();
+        StringBuilder searchSQL = new StringBuilder();
+
+        StringBuilder query = new StringBuilder();
+        //SQL_CALC_FOUND_ROWS allows to retrieve the total number of columns by disrearding the limit clauses that 
+        //were applied -- used for pagination p
+        query.append("SELECT SQL_CALC_FOUND_ROWS * FROM robot ");
+
+        searchSQL.append(" where 1=1 ");
+
+        if (!StringUtil.isNullOrEmpty(searchTerm)) {
+            searchSQL.append(" and (`platform` like '%").append(searchTerm).append("%'");
+            searchSQL.append(" or `host` like '%").append(searchTerm).append("%'");
+            searchSQL.append(" or `port` like '%").append(searchTerm).append("%'");
+            searchSQL.append(" or `description` like '%").append(searchTerm).append("%'");
+            searchSQL.append(" or `robot` like '%").append(searchTerm).append("%'");
+            searchSQL.append(" or `browser` like '%").append(searchTerm).append("%'");
+            searchSQL.append(" or `useragent` like '%").append(searchTerm).append("%'");
+            searchSQL.append(" or `version` like '%").append(searchTerm).append("%'");
+        }
+        if (!StringUtil.isNullOrEmpty(individualSearch)) {
+            searchSQL.append(" and (`").append(individualSearch).append("`)");
+        }
+        query.append(searchSQL);
+
+        if (!StringUtil.isNullOrEmpty(column)) {
+            query.append(" order by `").append(column).append("` ").append(dir);
+        }
+
+        if (!(amount == 0)) {
+            query.append(" limit ").append(start).append(" , ").append(amount);
+        } else {
+            query.append(" limit ").append(start).append(" , ").append(MAX_ROW_SELECTED);
+        }
+
+        MyLogger.log(RobotDAO.class.getName(), Level.ERROR, "Execute query : " + query.toString());
+
+        Connection connection = this.databaseSpring.connect();
+        try {
+            PreparedStatement preStat = connection.prepareStatement(query.toString());
+            try {
+                ResultSet resultSet = preStat.executeQuery();
+                try {
+                    //gets the data
+                    while (resultSet.next()) {
+                        robotList.add(this.loadFromResultSet(resultSet));
+                    }
+
+                    //get the total number of rows
+                    resultSet = preStat.executeQuery("SELECT FOUND_ROWS()");
+                    int nrTotalRows = 0;
+
+                    if (resultSet != null && resultSet.next()) {
+                        nrTotalRows = resultSet.getInt(1);
+                    }
+
+                    msg.setDescription(msg.getDescription().replace("%ITEM%", "Robot").replace("%OPERATION%", "SELECT"));
+                    response = new AnswerList(robotList, nrTotalRows);
+
+                } catch (SQLException exception) {
+                    MyLogger.log(RobotDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
+                    msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_UNEXPECTED_ERROR);
+                    msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", exception.toString()));
+
+                } finally {
+                    if (resultSet != null) {
+                        resultSet.close();
+                    }
+                }
+
+            } catch (SQLException exception) {
+                MyLogger.log(RobotDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
+                msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_UNEXPECTED_ERROR);
+                msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", exception.toString()));
+            } finally {
+                if (preStat != null) {
+                    preStat.close();
+                }
+            }
+
+        } catch (SQLException exception) {
+            MyLogger.log(RobotDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
+            msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_UNEXPECTED_ERROR);
+            msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", exception.toString()));
+        } finally {
+            try {
+                if (!this.databaseSpring.isOnTransaction()) {
+                    if (connection != null) {
+                        connection.close();
+                    }
+                }
+            } catch (SQLException ex) {
+                MyLogger.log(RobotDAO.class.getName(), Level.ERROR, "Unable to execute query : " + ex.toString());
+            }
+        }
+        response.setResultMessage(msg);
+        response.setDataList(robotList);
+        return response;
+    }
+
+    @Override
+    public Answer create(Robot robot) {
+        MessageEvent msg = null;
+        StringBuilder query = new StringBuilder();
+        query.append("INSERT INTO robot (`robot`, `host`, `port`, `platform`,`browser`, `version`,`active` , `description`) ");
+        query.append("VALUES (?,?,?,?,?,?,?,?)");
+
+
+                
+        Connection connection = this.databaseSpring.connect();
+        try {
+            PreparedStatement preStat = connection.prepareStatement(query.toString());
+            try {
+                preStat.setString(1, robot.getRobot());
+                preStat.setString(2, robot.getHost());
+                preStat.setString(3, robot.getPort());
+                preStat.setString(4, robot.getPlatform());
+                preStat.setString(5, robot.getBrowser());
+                preStat.setString(6, robot.getVersion());
+                preStat.setString(7, robot.getActive());
+                preStat.setString(8, robot.getDescription());
+                
+                preStat.executeUpdate();
+                msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
+                msg.setDescription(msg.getDescription().replace("%ITEM%", "Robot").replace("%OPERATION%", "INSERT"));
+
+            } catch (SQLException exception) {
+                MyLogger.log(RobotDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
+
+                if (exception.getSQLState().equals(SQL_DUPLICATED_CODE)) { //23000 is the sql state for duplicate entries
+                    msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_DUPLICATE_ERROR);
+                    msg.setDescription(msg.getDescription().replace("%ITEM%", "Robot").replace("%OPERATION%", "INSERT"));
+                } else {
+                    msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_UNEXPECTED_ERROR);
+                    msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", exception.toString()));
+                }
+            } finally {
+                preStat.close();
+            }
+        } catch (SQLException exception) {
+            MyLogger.log(RobotDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
+            msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_UNEXPECTED_ERROR);
+            msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", exception.toString()));
+        } finally {
+            try {
+                if (connection != null) {
+                    connection.close();
+                }
+            } catch (SQLException e) {
+                MyLogger.log(RobotDAO.class.getName(), Level.WARN, e.toString());
+            }
+        }
+        return new Answer(msg);
+    }
+
+    @Override
+    public Answer delete(Robot application) {
+        MessageEvent msg = null;
+        final String query = "DELETE FROM robot WHERE robotID = ? ";
+
+        Connection connection = this.databaseSpring.connect();
+        try {
+            PreparedStatement preStat = connection.prepareStatement(query);
+            try {
+                preStat.setInt(1, application.getRobotID());
+
+                preStat.executeUpdate();
+                msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
+                msg.setDescription(msg.getDescription().replace("%ITEM%", "Robot").replace("%OPERATION%", "DELETE"));
+            } catch (SQLException exception) {
+                MyLogger.log(RobotDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
+                msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_UNEXPECTED_ERROR);
+                msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", exception.toString()));
+            } finally {
+                preStat.close();
+            }
+        } catch (SQLException exception) {
+            MyLogger.log(RobotDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
+            msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_UNEXPECTED_ERROR);
+            msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", exception.toString()));
+        } finally {
+            try {
+                if (connection != null) {
+                    connection.close();
+                }
+            } catch (SQLException e) {
+                MyLogger.log(RobotDAO.class.getName(), Level.WARN, e.toString());
+            }
+        }
+        return new Answer(msg);
+    }
+
+    @Override
+    public Answer update(Robot robot) {
+        MessageEvent msg = null;
+        StringBuilder query = new StringBuilder();
+        query.append("UPDATE robot SET robot= ? , host = ? , port = ? ,");
+        query.append("platform = ?, browser = ? , version = ?, active=?, description = ?, useragent = ? WHERE robotID = ?");
+
+        Connection connection = this.databaseSpring.connect();
+        try {
+            PreparedStatement preStat = connection.prepareStatement(query.toString());
+            try {
+                preStat.setString(1, robot.getRobot());
+                preStat.setString(2, robot.getHost());
+                preStat.setString(3, robot.getPort());
+                preStat.setString(4, robot.getPlatform());
+                preStat.setString(5, robot.getBrowser());
+                preStat.setString(6, robot.getVersion());
+                preStat.setString(7, robot.getActive());
+                preStat.setString(8, robot.getDescription());
+                preStat.setString(9, robot.getUserAgent());
+                preStat.setInt(10, robot.getRobotID());
+
+                preStat.executeUpdate();
+                msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
+                msg.setDescription(msg.getDescription().replace("%ITEM%", "Robot").replace("%OPERATION%", "UPDATE"));
+            } catch (SQLException exception) {
+                MyLogger.log(RobotDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
+                msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_UNEXPECTED_ERROR);
+                msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", exception.toString()));
+            } finally {
+                preStat.close();
+            }
+        } catch (SQLException exception) {
+            MyLogger.log(RobotDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
+            msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_UNEXPECTED_ERROR);
+            msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", exception.toString()));
+        } finally {
+            try {
+                if (connection != null) {
+                    connection.close();
+                }
+            } catch (SQLException e) {
+                MyLogger.log(RobotDAO.class.getName(), Level.WARN, e.toString());
+            }
+        }
+        return new Answer(msg);
+    }
+
+    /**
+     * Uses data of ResultSet to create object {@link Robot}
+     *
+     * @param rs ResultSet relative to select from table Robot
+     * @return object {@link Robot}
+     * @throws SQLException when trying to get value from
+     * {@link java.sql.ResultSet#getString(String)}
+     * @see FactoryRobot
+     */
+    @Override
+    public Robot loadFromResultSet(ResultSet rs) throws SQLException {
+        Integer robotID = ParameterParserUtil.parseIntegerParam(rs.getString("robotID"), 0);
+        String robot = ParameterParserUtil.parseStringParam(rs.getString("robot"), "");
+        String host = ParameterParserUtil.parseStringParam(rs.getString("host"), "");
+        String port = ParameterParserUtil.parseStringParam(rs.getString("port"), "");
+        String platform = ParameterParserUtil.parseStringParam(rs.getString("platform"), "");
+        String browser = ParameterParserUtil.parseStringParam(rs.getString("browser"), "");
+        String version = ParameterParserUtil.parseStringParam(rs.getString("version"), "");
+        String active = ParameterParserUtil.parseStringParam(rs.getString("active"), "");
+        String description = ParameterParserUtil.parseStringParam(rs.getString("description"), "");
+        String userAgent = ParameterParserUtil.parseStringParam(rs.getString("useragent"), "");
+        //TODO remove when working in test with mockito and autowired
+        factoryRobot = new FactoryRobot();
+        return factoryRobot.create(robotID, robot, host, port, platform, browser, version, active, description, userAgent);
+    }
+
+    
+    
     
     /**
      * Finds the Robot by the name. </p> Access to database to return the
-     * {@link Robot} given by the unique name.<br/> If no Robot
-     * found with the given name, returns CerberusException with
+     * {@link Robot} given by the unique name.<br/> If no Robot found with the
+     * given name, returns CerberusException with
      * {@link MessageGeneralEnum#NO_DATA_FOUND}.<br/> If an SQLException occur,
      * returns null in the Robot object and writes the error on the logs.
      *
@@ -75,7 +461,7 @@ public class RobotDAO implements IRobotDAO{
      */
     @Override
     public Robot findRobotByKey(Integer id) throws CerberusException {
-       Robot result = null;
+        Robot result = null;
         final String query = "SELECT * FROM robot a WHERE a.robotID = ? ";
 
         Connection connection = this.databaseSpring.connect();
@@ -87,22 +473,22 @@ public class RobotDAO implements IRobotDAO{
                 ResultSet resultSet = preStat.executeQuery();
                 try {
                     if (resultSet.first()) {
-                        result = this.loadRobotFromResultSet(resultSet);
+                        result = this.loadFromResultSet(resultSet);
                     } else {
                         throw new CerberusException(new MessageGeneral(MessageGeneralEnum.NO_DATA_FOUND));
                     }
                 } catch (SQLException exception) {
-                    MyLogger.log(RobotDAO.class.getName(), Level.ERROR, "Unable to execute query : "+exception.toString());
+                    MyLogger.log(RobotDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
                 } finally {
                     resultSet.close();
                 }
             } catch (SQLException exception) {
-                MyLogger.log(RobotDAO.class.getName(), Level.ERROR, "Unable to execute query : "+exception.toString());
+                MyLogger.log(RobotDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
             } finally {
                 preStat.close();
             }
         } catch (SQLException exception) {
-            MyLogger.log(RobotDAO.class.getName(), Level.ERROR, "Unable to execute query : "+exception.toString());
+            MyLogger.log(RobotDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
         } finally {
             try {
                 if (connection != null) {
@@ -117,9 +503,9 @@ public class RobotDAO implements IRobotDAO{
 
     /**
      * Finds all Robot that exists. </p> Access to database to return all
-     * existing {@link Robot}.<br/> If no Robot found, returns a
-     * empty {@literal List<Robot>}.<br/> If an SQLException occur,
-     * returns null in the list object and writes the error on the logs.
+     * existing {@link Robot}.<br/> If no Robot found, returns a empty
+     * {@literal List<Robot>}.<br/> If an SQLException occur, returns null in
+     * the list object and writes the error on the logs.
      *
      * @return list of Robot
      * @throws CerberusException
@@ -139,21 +525,21 @@ public class RobotDAO implements IRobotDAO{
                 try {
                     list = new ArrayList<Robot>();
                     while (resultSet.next()) {
-                        Robot robot = this.loadRobotFromResultSet(resultSet);
+                        Robot robot = this.loadFromResultSet(resultSet);
                         list.add(robot);
                     }
                 } catch (SQLException exception) {
-                    MyLogger.log(RobotDAO.class.getName(), Level.ERROR, "Unable to execute query : "+exception.toString());
+                    MyLogger.log(RobotDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
                 } finally {
                     resultSet.close();
                 }
             } catch (SQLException exception) {
-                MyLogger.log(RobotDAO.class.getName(), Level.ERROR, "Unable to execute query : "+exception.toString());
+                MyLogger.log(RobotDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
             } finally {
                 preStat.close();
             }
         } catch (SQLException exception) {
-            MyLogger.log(RobotDAO.class.getName(), Level.ERROR, "Unable to execute query : "+exception.toString());
+            MyLogger.log(RobotDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
         } finally {
             try {
                 if (connection != null) {
@@ -168,8 +554,7 @@ public class RobotDAO implements IRobotDAO{
 
     /**
      * Updates the information based on the object Robot. </p> Access to
-     * database to update Robot information given by the object
-     * Robot.
+     * database to update Robot information given by the object Robot.
      * <br/> If an SQLException occur, throw CerberusException.
      *
      * @param robot object Robot to update
@@ -195,16 +580,16 @@ public class RobotDAO implements IRobotDAO{
                 preStat.setString(7, robot.getActive());
                 preStat.setString(8, robot.getDescription());
                 preStat.setString(9, robot.getUserAgent());
-                preStat.setInt(10, robot.getRoborID());
-                
+                preStat.setInt(10, robot.getRobotID());
+
                 preStat.executeUpdate();
-                } catch (SQLException exception) {
-                MyLogger.log(RobotDAO.class.getName(), Level.ERROR, "Unable to execute query : "+exception.toString());
+            } catch (SQLException exception) {
+                MyLogger.log(RobotDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
             } finally {
                 preStat.close();
             }
         } catch (SQLException exception) {
-            MyLogger.log(RobotDAO.class.getName(), Level.ERROR, "Unable to execute query : "+exception.toString());
+            MyLogger.log(RobotDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
         } finally {
             try {
                 if (connection != null) {
@@ -214,7 +599,7 @@ public class RobotDAO implements IRobotDAO{
                 MyLogger.log(RobotDAO.class.getName(), Level.WARN, e.toString());
             }
         }
-        
+
     }
 
     @Override
@@ -236,17 +621,17 @@ public class RobotDAO implements IRobotDAO{
                 preStat.setString(6, robot.getVersion());
                 preStat.setString(7, robot.getActive());
                 preStat.setString(8, robot.getDescription());
-                
+
                 preStat.executeUpdate();
                 throwExcep = false;
 
             } catch (SQLException exception) {
-                MyLogger.log(RobotDAO.class.getName(), Level.ERROR, "Unable to execute query : "+exception.toString());
+                MyLogger.log(RobotDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
             } finally {
                 preStat.close();
             }
         } catch (SQLException exception) {
-            MyLogger.log(RobotDAO.class.getName(), Level.ERROR, "Unable to execute query : "+exception.toString());
+            MyLogger.log(RobotDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
         } finally {
             try {
                 if (connection != null) {
@@ -270,16 +655,16 @@ public class RobotDAO implements IRobotDAO{
         try {
             PreparedStatement preStat = connection.prepareStatement(query);
             try {
-                preStat.setInt(1, robot.getRoborID());
+                preStat.setInt(1, robot.getRobotID());
 
                 throwExcep = preStat.executeUpdate() == 0;
             } catch (SQLException exception) {
-                MyLogger.log(RobotDAO.class.getName(), Level.ERROR, "Unable to execute query : "+exception.toString());
+                MyLogger.log(RobotDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
             } finally {
                 preStat.close();
             }
         } catch (SQLException exception) {
-            MyLogger.log(RobotDAO.class.getName(), Level.ERROR, "Unable to execute query : "+exception.toString());
+            MyLogger.log(RobotDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
         } finally {
             try {
                 if (connection != null) {
@@ -292,31 +677,6 @@ public class RobotDAO implements IRobotDAO{
         if (throwExcep) {
             throw new CerberusException(new MessageGeneral(MessageGeneralEnum.CANNOT_UPDATE_TABLE));
         }
-    }
-    
-    /**
-     * Uses data of ResultSet to create object {@link Robot}
-     *
-     * @param rs ResultSet relative to select from table Robot
-     * @return object {@link Robot}
-     * @throws SQLException when trying to get value from
-     * {@link java.sql.ResultSet#getString(String)}
-     * @see FactoryRobot
-     */
-    private Robot loadRobotFromResultSet(ResultSet rs) throws SQLException {
-        Integer robotID = ParameterParserUtil.parseIntegerParam(rs.getString("robotID"), 0);
-        String robot = ParameterParserUtil.parseStringParam(rs.getString("robot"), "");
-        String host = ParameterParserUtil.parseStringParam(rs.getString("host"), "");
-        String port = ParameterParserUtil.parseStringParam(rs.getString("port"), "");
-        String platform = ParameterParserUtil.parseStringParam(rs.getString("platform"), "");
-        String browser = ParameterParserUtil.parseStringParam(rs.getString("browser"), "");
-        String version = ParameterParserUtil.parseStringParam(rs.getString("version"), "");
-        String active = ParameterParserUtil.parseStringParam(rs.getString("active"), "");
-        String description = ParameterParserUtil.parseStringParam(rs.getString("description"), "");
-        String userAgent = ParameterParserUtil.parseStringParam(rs.getString("useragent"), "");
-        //TODO remove when working in test with mockito and autowired
-        factoryRobot = new FactoryRobot();
-        return factoryRobot.create(robotID, robot, host, port, platform, browser, version, active, description, userAgent);
     }
 
     @Override
@@ -386,7 +746,7 @@ public class RobotDAO implements IRobotDAO{
                 try {
 
                     while (resultSet.next()) {
-                        robotList.add(this.loadRobotFromResultSet(resultSet));
+                        robotList.add(this.loadFromResultSet(resultSet));
                     }
 
                 } catch (SQLException exception) {
@@ -452,7 +812,7 @@ public class RobotDAO implements IRobotDAO{
         gSearch.append(" or `version` like '%");
         gSearch.append(searchTerm);
         gSearch.append("%')");
-        
+
         if (!searchTerm.equals("") && !inds.equals("")) {
             searchSQL = gSearch.toString() + " and " + inds;
         } else if (!inds.equals("")) {
@@ -514,22 +874,22 @@ public class RobotDAO implements IRobotDAO{
                 ResultSet resultSet = preStat.executeQuery();
                 try {
                     if (resultSet.first()) {
-                        result = this.loadRobotFromResultSet(resultSet);
+                        result = this.loadFromResultSet(resultSet);
                     } else {
                         throw new CerberusException(new MessageGeneral(MessageGeneralEnum.NO_DATA_FOUND));
                     }
                 } catch (SQLException exception) {
-                    MyLogger.log(RobotDAO.class.getName(), Level.ERROR, "Unable to execute query : "+exception.toString());
+                    MyLogger.log(RobotDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
                 } finally {
                     resultSet.close();
                 }
             } catch (SQLException exception) {
-                MyLogger.log(RobotDAO.class.getName(), Level.ERROR, "Unable to execute query : "+exception.toString());
+                MyLogger.log(RobotDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
             } finally {
                 preStat.close();
             }
         } catch (SQLException exception) {
-            MyLogger.log(RobotDAO.class.getName(), Level.ERROR, "Unable to execute query : "+exception.toString());
+            MyLogger.log(RobotDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
         } finally {
             try {
                 if (connection != null) {
@@ -541,5 +901,5 @@ public class RobotDAO implements IRobotDAO{
         }
         return result;
     }
-    
+
 }

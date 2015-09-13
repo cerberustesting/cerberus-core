@@ -64,8 +64,8 @@ public class DeleteRobot extends HttpServlet {
             ApplicationContext appContext = WebApplicationContextUtils.getWebApplicationContext(this.getServletContext());
             IRobotService robotService = appContext.getBean(IRobotService.class);
 
-            Robot robot = robotService.findRobotByKey(Integer.valueOf(id));
-            robotService.deleteRobot(robot);
+            Robot robot = robotService.convert(robotService.readByKeyTech(Integer.valueOf(id)));
+            robotService.convert(robotService.delete(robot));
 
             /**
              * Adding Log entry.
