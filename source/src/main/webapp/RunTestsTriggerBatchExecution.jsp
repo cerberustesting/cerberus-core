@@ -267,7 +267,7 @@
                         MySystem = request.getParameter("system");
                     }
 
-                    List<Application> appliList = applicationService.readBySystem_Deprecated(MySystem);
+                    List<Application> appliList = applicationService.convert(applicationService.readBySystem(MySystem));
                     // Generate "in" where clause from List.
                     String appliInSQL = SqlUtil.getInSQLClause(appliList);
 

@@ -17,7 +17,6 @@
  * You should have received a copy of the GNU General Public License
  * along with Cerberus.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package org.cerberus.servlet.buildContent;
 
 import org.apache.log4j.Logger;
@@ -70,7 +69,7 @@ public class FindBuildContent extends HttpServlet {
                 array.put(brp.getRelease());
 
                 try {
-                    Project project = projectService.readByKey_Deprecated(brp.getProject());
+                    Project project = projectService.convert(projectService.readByKey(brp.getProject()));
                     StringBuilder sb = new StringBuilder(project.getIdProject());
                     sb.append(" [");
                     sb.append(project.getCode());
@@ -78,7 +77,7 @@ public class FindBuildContent extends HttpServlet {
                     sb.append(project.getDescription());
                     array.put(sb.toString());
                 } catch (CerberusException e) {
-                    LOG.info("Unable to find Project : "+e.getMessageError().getDescription());
+                    LOG.info("Unable to find Project : " + e.getMessageError().getDescription());
                     array.put(" [] NONE");
                 }
 
@@ -89,7 +88,7 @@ public class FindBuildContent extends HttpServlet {
                     User user = userService.findUserByKey(brp.getReleaseOwner());
                     array.put(user.getName());
                 } catch (CerberusException e) {
-                    LOG.info("Unable to find User : "+e.getMessageError().getDescription());
+                    LOG.info("Unable to find User : " + e.getMessageError().getDescription());
                     array.put("");
                 }
                 array.put(brp.getLink());
@@ -101,12 +100,12 @@ public class FindBuildContent extends HttpServlet {
             jsonResponse.put("sEcho", echo);
             jsonResponse.put("iTotalRecords", data.length());
             jsonResponse.put("iTotalDisplayRecords", data.length());
-            
+
             resp.setContentType("application/json");
             resp.getWriter().print(jsonResponse.toString());
-            
+
         } catch (JSONException e) {
-            LOG.error("Unable to convert data to JSON : "+e.getMessage());
+            LOG.error("Unable to convert data to JSON : " + e.getMessage());
             resp.setContentType("text/html");
             resp.getWriter().print(e.getMessage());
         }

@@ -499,7 +499,7 @@
                 for (UserSystem us : systemList) {
                     usList.add(us.getSystem());
                 }
-                String applicationSystem = myApplicationService.readByKey_Deprecated(tcase.getApplication()).getSystem();
+                String applicationSystem = myApplicationService.convert(myApplicationService.readByKey(tcase.getApplication())).getSystem();
                 if (!MySystem.equals(applicationSystem)) {%>
             <script>
                 <%
@@ -539,7 +539,7 @@
 
                 Application myApplication = null;
                 if (tcase.getApplication() != null) {
-                    myApplication = myApplicationService.readByKey_Deprecated(tcase.getApplication());
+                    myApplication = myApplicationService.convert(myApplicationService.readByKey(tcase.getApplication()));
                     appSystem = myApplication.getSystem();
                     SitdmossBugtrackingURL = myApplication.getBugTrackerUrl();
                 } else {
@@ -711,7 +711,7 @@
                                             </tr>
                                             <tr>
                                                 <td class="wob"><select id="editApplication" name="editApplication" style="width: 140px"><%
-                                                    for (Application app : myApplicationService.readBySystem_Deprecated(MySystem)) {
+                                                    for (Application app : myApplicationService.convert(myApplicationService.readBySystem(MySystem))) {
                                                         %><option value="<%=app.getApplication()%>"<%=tcase.getApplication().compareTo(app.getApplication()) == 0 ? " SELECTED " : ""%>><%=app.getApplication()%></option>
                                                         <% }%>
                                                     </select></td>

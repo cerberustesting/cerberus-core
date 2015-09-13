@@ -21,12 +21,14 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Logger;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import org.apache.log4j.Level;
 import org.cerberus.entity.Robot;
+import org.cerberus.exception.CerberusException;
 import org.cerberus.log.MyLogger;
 import org.cerberus.service.IRobotService;
 import org.cerberus.util.StringUtil;
@@ -180,13 +182,14 @@ public class FindAllRobot extends HttpServlet {
             ApplicationContext appContext = WebApplicationContextUtils.getWebApplicationContext(this.getServletContext());
             IRobotService robotService = appContext.getBean(IRobotService.class);
 
-            List<Robot> robotList = robotService.findRobotListByCriteria(start, amount, colName, dir, searchTerm, inds);
+//            List<Robot> robotList = robotService.findRobotListByCriteria(start, amount, colName, dir, searchTerm, inds);
+            List<Robot> robotList = robotService.convert(robotService.readByCriteria(start, amount, colName, dir, searchTerm, inds));
 
             JSONObject jsonResponse = new JSONObject();
 
             for (Robot robotInv : robotList) {
                 JSONArray row = new JSONArray();
-                row.put(robotInv.getRoborID())
+                row.put(robotInv.getRobotID())
                         .put(robotInv.getRobot())
                         .put(robotInv.getHost())
                         .put(robotInv.getPort())
@@ -213,6 +216,8 @@ public class FindAllRobot extends HttpServlet {
 
         } catch (JSONException ex) {
             MyLogger.log(FindAllRobot.class.getName(), Level.FATAL, ex.toString());
+        } catch (CerberusException ex) {
+            Logger.getLogger(FindAllRobot.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } finally {
             out.close();
         }

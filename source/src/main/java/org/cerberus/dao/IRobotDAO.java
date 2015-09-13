@@ -17,16 +17,81 @@
  */
 package org.cerberus.dao;
 
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.List;
 
 import org.cerberus.entity.Robot;
 import org.cerberus.exception.CerberusException;
+import org.cerberus.util.answer.Answer;
+import org.cerberus.util.answer.AnswerItem;
+import org.cerberus.util.answer.AnswerList;
 
 /**
  * @author bcivel
  */
 public interface IRobotDAO {
 
+    /**
+     *
+     * @param robotid
+     * @return
+     */
+    AnswerItem readByKeyTech(Integer robotid);
+
+    /**
+     *
+     * @param robot
+     * @return
+     */
+    AnswerItem readByKey(String robot);
+    
+    /**
+     *
+     * @param system
+     * @param startPosition
+     * @param length
+     * @param columnName
+     * @param sort
+     * @param searchParameter
+     * @param string
+     * @return
+     */
+    AnswerList readByCriteria(int startPosition, int length, String columnName, String sort, String searchParameter, String string);
+
+    /**
+     *
+     * @param robot
+     * @return
+     */
+    Answer create(Robot robot);
+
+    /**
+     *
+     * @param robot
+     * @return
+     */
+    Answer delete(Robot robot);
+
+    /**
+     *
+     * @param robot
+     * @return
+     */
+    Answer update(Robot robot);
+
+    /**
+     *
+     * @param rs
+     * @return
+     * @throws SQLException
+     */
+    Robot loadFromResultSet(ResultSet rs) throws SQLException;    
+    
+    
+    
+    
+    
     /**
      * Finds the Robot by Key
      *
@@ -70,7 +135,7 @@ public interface IRobotDAO {
      * @since 0.9.2
      */
     public void deleteRobot(Robot robot) throws CerberusException;
-    
+
     /**
      *
      * @param start first row of the resultSet
@@ -95,9 +160,9 @@ public interface IRobotDAO {
      * @since 0.9.2
      */
     Integer getNumberOfRobotPerCriteria(String searchTerm, String inds);
-    
+
     /**
-     * 
+     *
      * @param name Name of the robot
      * @return the first robot found
      * @throws org.cerberus.exception.CerberusException

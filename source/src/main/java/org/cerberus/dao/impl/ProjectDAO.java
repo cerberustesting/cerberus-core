@@ -35,6 +35,7 @@ import org.cerberus.entity.Project;
 import org.cerberus.exception.CerberusException;
 import org.cerberus.factory.IFactoryProject;
 import org.cerberus.log.MyLogger;
+import org.cerberus.util.StringUtil;
 import org.cerberus.util.answer.Answer;
 import org.cerberus.util.answer.AnswerItem;
 import org.cerberus.util.answer.AnswerList;
@@ -53,12 +54,8 @@ public class ProjectDAO implements IProjectDAO {
     private IFactoryProject factoryProject;
 
     private final String SQL_DUPLICATED_CODE = "23000";
+    private final int MAX_ROW_SELECTED = 100000;
 
-    /**
-     *
-     * @param project - idProject
-     * @return ans - AnswerIterm
-     */
     @Override
     public AnswerItem readByKey(String project) {
         AnswerItem ans = new AnswerItem();
@@ -116,108 +113,10 @@ public class ProjectDAO implements IProjectDAO {
     }
 
     @Override
-    public Project readByKey_Deprecated(String project) {
-        Project result = null;
-        String idProject;
-        String vcCode;
-        String description;
-        final String query = "SELECT * FROM project WHERE idproject = ?";
-
-        Connection connection = this.databaseSpring.connect();
-        try {
-            PreparedStatement preStat = connection.prepareStatement(query);
-            try {
-                preStat.setString(1, project);
-                ResultSet resultSet = preStat.executeQuery();
-                try {
-                    if (resultSet.first()) {
-                        idProject = resultSet.getString("idproject") == null ? "" : resultSet.getString("idproject");
-                        vcCode = resultSet.getString("VCCode") == null ? "" : resultSet.getString("VCCode");
-                        description = resultSet.getString("Description") == null ? "" : resultSet.getString("Description");
-                        String active = resultSet.getString("active") == null ? "" : resultSet.getString("active");
-                        String dateCreation = resultSet.getString("dateCre") == null ? "" : resultSet.getString("dateCre");
-                        result = factoryProject.create(idProject, vcCode, description, active, dateCreation);
-                    }
-                } catch (SQLException exception) {
-                    MyLogger.log(ProjectDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
-                } finally {
-                    resultSet.close();
-                }
-            } catch (SQLException exception) {
-                MyLogger.log(ProjectDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
-            } finally {
-                preStat.close();
-            }
-        } catch (SQLException exception) {
-            MyLogger.log(ProjectDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
-        } finally {
-            try {
-                if (connection != null) {
-                    connection.close();
-                }
-            } catch (SQLException e) {
-                MyLogger.log(ProjectDAO.class.getName(), Level.WARN, e.toString());
-            }
-        }
-
-        return result;
-    }
-
-    @Override
-    public List<Project> readAll_Deprecated() {
-        List<Project> result = null;
-        String idProject;
-        String code;
-        String description;
-        final String query = "SELECT * FROM project ORDER BY idproject";
-
-        Connection connection = this.databaseSpring.connect();
-        try {
-            PreparedStatement preStat = connection.prepareStatement(query);
-            try {
-                ResultSet resultSet = preStat.executeQuery();
-                try {
-                    result = new ArrayList<Project>();
-
-                    while (resultSet.next()) {
-                        idProject = resultSet.getString("idproject") == null ? "" : resultSet.getString("idproject");
-                        code = resultSet.getString("VCCode") == null ? "" : resultSet.getString("VCCode");
-                        description = resultSet.getString("Description") == null ? "" : resultSet.getString("Description");
-                        String active = resultSet.getString("active") == null ? "" : resultSet.getString("active");
-                        String dateCreation = resultSet.getString("datecre") == null ? "" : resultSet.getString("datecre");
-                        result.add(factoryProject.create(idProject, code, description, active, dateCreation));
-                    }
-                } catch (SQLException exception) {
-                    MyLogger.log(ProjectDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
-                } finally {
-                    resultSet.close();
-                }
-            } catch (SQLException exception) {
-                MyLogger.log(ProjectDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
-            } finally {
-                preStat.close();
-            }
-        } catch (SQLException exception) {
-            MyLogger.log(ProjectDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
-        } finally {
-            try {
-                if (connection != null) {
-                    connection.close();
-                }
-            } catch (SQLException e) {
-                MyLogger.log(ProjectDAO.class.getName(), Level.WARN, e.toString());
-            }
-        }
-
-        return result;
-    }
-
-    @Override
     public AnswerList readByCriteria(int start, int amount, String column, String dir, String searchTerm, String individualSearch) {
         AnswerList response = new AnswerList();
         MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
         List<Project> projectList = new ArrayList<Project>();
-        StringBuilder gSearch = new StringBuilder();
         StringBuilder searchSQL = new StringBuilder();
 
         StringBuilder query = new StringBuilder();
@@ -225,44 +124,29 @@ public class ProjectDAO implements IProjectDAO {
         //were applied -- used for pagination p
         query.append("SELECT SQL_CALC_FOUND_ROWS * FROM project ");
 
-        gSearch.append(" where (`idproject` like '%");
-        gSearch.append(searchTerm);
-        gSearch.append("%'");
-        gSearch.append(" or `VCCode` like '%");
-        gSearch.append(searchTerm);
-        gSearch.append("%'");
-        gSearch.append(" or `Description` like '%");
-        gSearch.append(searchTerm);
-        gSearch.append("%'");
-        gSearch.append(" or `active` like '%");
-        gSearch.append(searchTerm);
-        gSearch.append("%'");
-        gSearch.append(" or `dateCre` like '%");
-        gSearch.append(searchTerm);
-        gSearch.append("%')");
+        searchSQL.append(" where 1=1 ");
 
-        if (!searchTerm.equals("") && !individualSearch.equals("")) {
-            searchSQL.append(gSearch.toString());
-            searchSQL.append(" and ");
-            searchSQL.append(individualSearch);
-        } else if (!individualSearch.equals("")) {
-            searchSQL.append(" where `");
-            searchSQL.append(individualSearch);
-            searchSQL.append("`");
-        } else if (!searchTerm.equals("")) {
-            searchSQL.append(gSearch.toString());
+        if (!StringUtil.isNullOrEmpty(searchTerm)) {
+            searchSQL.append(" and (`idproject` like '%").append(searchTerm).append("%'");
+            searchSQL.append(" or `VCCode` like '%").append(searchTerm).append("%'");
+            searchSQL.append(" or `Description` like '%").append(searchTerm).append("%'");
+            searchSQL.append(" or `active` like '%").append(searchTerm).append("%'");
+            searchSQL.append(" or `dateCre` like '%").append(searchTerm).append("%')");
         }
-
+        if (!StringUtil.isNullOrEmpty(individualSearch)) {
+            searchSQL.append(" and (`").append(individualSearch).append("`)");
+        }
         query.append(searchSQL);
-        query.append("order by `");
-        query.append(column);
-        query.append("` ");
-        query.append(dir);
-        query.append(" limit ");
-        query.append(start);
-        query.append(" , ");
-        query.append(amount);
 
+        if (!StringUtil.isNullOrEmpty(column)) {
+            query.append("order by `").append(column).append("` ").append(dir);
+        }
+        if (!(amount == 0)) {
+            query.append(" limit ").append(start).append(" , ").append(amount);
+        } else {
+            query.append(" limit ").append(start).append(" , ").append(MAX_ROW_SELECTED);
+        }
+        
         Connection connection = this.databaseSpring.connect();
         try {
             PreparedStatement preStat = connection.prepareStatement(query.toString());
@@ -327,8 +211,7 @@ public class ProjectDAO implements IProjectDAO {
     }
 
     @Override
-    public Answer create_Deprecated(Project project) throws CerberusException {
-        boolean throwExcep = false;
+    public Answer create(Project project) {
         MessageEvent msg = null;
         StringBuilder query = new StringBuilder();
         query.append("INSERT INTO project (`idproject`, `VCCode`, `Description`, `active` ) ");
@@ -344,7 +227,6 @@ public class ProjectDAO implements IProjectDAO {
                 preStat.setString(4, project.getActive());
 
                 preStat.executeUpdate();
-                throwExcep = false;
                 msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
                 msg.setDescription(msg.getDescription().replace("%ITEM%", "Project").replace("%OPERATION%", "INSERT"));
 
@@ -374,15 +256,11 @@ public class ProjectDAO implements IProjectDAO {
                 MyLogger.log(ProjectDAO.class.getName(), Level.WARN, e.toString());
             }
         }
-        if (throwExcep) {
-            throw new CerberusException(new MessageGeneral(MessageGeneralEnum.CANNOT_UPDATE_TABLE));
-        }
         return new Answer(msg);
     }
 
     @Override
-    public Answer delete_Deprecated(Project project) throws CerberusException {
-        boolean throwExcep = false;
+    public Answer delete(Project project) {
         MessageEvent msg = null;
         final String query = "DELETE FROM project WHERE idproject = ? ";
 
@@ -392,7 +270,7 @@ public class ProjectDAO implements IProjectDAO {
             try {
                 preStat.setString(1, project.getIdProject());
 
-                throwExcep = preStat.executeUpdate() == 0;
+                preStat.executeUpdate();
                 msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
                 msg.setDescription(msg.getDescription().replace("%ITEM%", "Project").replace("%OPERATION%", "DELETE"));
             } catch (SQLException exception) {
@@ -415,15 +293,11 @@ public class ProjectDAO implements IProjectDAO {
                 MyLogger.log(ProjectDAO.class.getName(), Level.WARN, e.toString());
             }
         }
-        if (throwExcep) {
-            throw new CerberusException(new MessageGeneral(MessageGeneralEnum.CANNOT_UPDATE_TABLE));
-        }
         return new Answer(msg);
     }
 
     @Override
-    public Answer update_Deprecated(Project project) throws CerberusException {
-        boolean throwExcep = false;
+    public Answer update(Project project) {
         MessageEvent msg = null;
         final String query = "UPDATE project SET VCCode = ?, Description = ?, active = ?  WHERE idproject = ? ";
 
@@ -436,7 +310,7 @@ public class ProjectDAO implements IProjectDAO {
                 preStat.setString(3, project.getActive());
                 preStat.setString(4, project.getIdProject());
 
-                throwExcep = preStat.executeUpdate() == 0;
+                preStat.executeUpdate();
                 msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
                 msg.setDescription(msg.getDescription().replace("%ITEM%", "Project").replace("%OPERATION%", "UPDATE"));
             } catch (SQLException exception) {
@@ -458,9 +332,6 @@ public class ProjectDAO implements IProjectDAO {
             } catch (SQLException e) {
                 MyLogger.log(ProjectDAO.class.getName(), Level.WARN, e.toString());
             }
-        }
-        if (throwExcep) {
-            throw new CerberusException(new MessageGeneral(MessageGeneralEnum.CANNOT_UPDATE_TABLE));
         }
         return new Answer(msg);
     }

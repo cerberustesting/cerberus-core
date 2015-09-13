@@ -88,8 +88,7 @@ public class UpdateParameter extends HttpServlet {
                  * Adding Log entry.
                  */
                 ILogEventService logEventService = appContext.getBean(LogEventService.class);
-                IFactoryLogEvent factoryLogEvent = appContext.getBean(FactoryLogEvent.class);
-                logEventService.create(factoryLogEvent.create(0, 0, request.getUserPrincipal().getName(), null, "/UpdateParameter", "UPDATE", "Update parameter : " + param, "", ""));
+                logEventService.createPrivateCalls("/UpdateParameter", "UPDATE", "Update parameter : " + param, request);
 
                 response.getWriter().print(value);
             } catch (CerberusException ex) {

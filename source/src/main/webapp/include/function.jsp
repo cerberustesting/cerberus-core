@@ -134,7 +134,7 @@
     String ComboProject(ApplicationContext appContext, String HTMLComboName, String HTMLComboStyle, String HTMLId, String HTMLClass, String value, String HTMLOnChange, boolean emptyfirstoption, String FirstValue, String FirstDescription) {
         try {
             IProjectService invProjectService = appContext.getBean(IProjectService.class);
-            List<Project> invProjectList = invProjectService.readAll_Deprecated();
+            List<Project> invProjectList = invProjectService.convert(invProjectService.readAll());
             String ret = "<select id=\"" + HTMLId + "\" class=\"" + HTMLClass + "\" style=\"" + HTMLComboStyle + "\" name=\"" + HTMLComboName + "\"";
             if (HTMLOnChange.compareToIgnoreCase("") != 0) {
                 ret = ret + " onchange=\"" + HTMLOnChange + "\"";

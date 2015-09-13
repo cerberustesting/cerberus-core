@@ -30,8 +30,6 @@ import org.cerberus.database.DatabaseSpring;
 import org.cerberus.entity.Application;
 import org.cerberus.entity.MessageEvent;
 import org.cerberus.enums.MessageEventEnum;
-import org.cerberus.entity.MessageGeneral;
-import org.cerberus.enums.MessageGeneralEnum;
 import org.cerberus.exception.CerberusException;
 import org.cerberus.factory.IFactoryApplication;
 import org.cerberus.factory.impl.FactoryApplication;
@@ -69,6 +67,7 @@ public class ApplicationDAO implements IApplicationDAO {
     private IFactoryApplication factoryApplication;
 
     private final String SQL_DUPLICATED_CODE = "23000";
+    private final int MAX_ROW_SELECTED = 100000;
 
     /**
      *
@@ -127,165 +126,6 @@ public class ApplicationDAO implements IApplicationDAO {
         return ans;
     }
 
-    /**
-     * Finds the Application by the name. </p> Access to database to return the
-     * {@link Application} given by the unique name.<br/> If no application
-     * found with the given name, returns CerberusException with
-     * {@link MessageGeneralEnum#NO_DATA_FOUND}.<br/> If an SQLException occur,
-     * returns null in the application object and writes the error on the logs.
-     *
-     * @param application name of the Application to find
-     * @return object application if exist
-     * @throws CerberusException when Application does not exist
-     * @since 0.9.0
-     */
-    @Override
-    public Application readByKey_Deprecated(String application) throws CerberusException {
-        Application result = null;
-        final String query = "SELECT * FROM application a WHERE a.application = ? ";
-
-        Connection connection = this.databaseSpring.connect();
-        try {
-            PreparedStatement preStat = connection.prepareStatement(query);
-            try {
-                preStat.setString(1, application);
-
-                ResultSet resultSet = preStat.executeQuery();
-                try {
-                    if (resultSet.first()) {
-                        result = this.loadFromResultSet(resultSet);
-                    } else {
-                        throw new CerberusException(new MessageGeneral(MessageGeneralEnum.NO_DATA_FOUND));
-                    }
-                } catch (SQLException exception) {
-                    MyLogger.log(ApplicationDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
-                } finally {
-                    resultSet.close();
-                }
-            } catch (SQLException exception) {
-                MyLogger.log(ApplicationDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
-            } finally {
-                preStat.close();
-            }
-        } catch (SQLException exception) {
-            MyLogger.log(ApplicationDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
-        } finally {
-            try {
-                if (connection != null) {
-                    connection.close();
-                }
-            } catch (SQLException e) {
-                MyLogger.log(ApplicationDAO.class.getName(), Level.ERROR, e.toString());
-            }
-        }
-        return result;
-    }
-
-    /**
-     * Finds all Applications that exists. </p> Access to database to return all
-     * existing {@link Application}.<br/> If no application found, returns a
-     * empty {@literal List<Application>}.<br/> If an SQLException occur,
-     * returns null in the list object and writes the error on the logs.
-     *
-     * @return list of applications
-     * @throws CerberusException
-     * @since 0.9.0
-     */
-    @Override
-    public List<Application> readAll_Deprecated() throws CerberusException {
-        List<Application> list = null;
-        final String query = "SELECT * FROM application a ORDER BY a.Application asc, a.sort";
-
-        Connection connection = this.databaseSpring.connect();
-        try {
-            PreparedStatement preStat = connection.prepareStatement(query);
-
-            try {
-                ResultSet resultSet = preStat.executeQuery();
-                try {
-                    list = new ArrayList<Application>();
-                    while (resultSet.next()) {
-                        Application app = this.loadFromResultSet(resultSet);
-                        list.add(app);
-                    }
-                } catch (SQLException exception) {
-                    MyLogger.log(ApplicationDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
-                } finally {
-                    resultSet.close();
-                }
-            } catch (SQLException exception) {
-                MyLogger.log(ApplicationDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
-            } finally {
-                preStat.close();
-            }
-        } catch (SQLException exception) {
-            MyLogger.log(ApplicationDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
-        } finally {
-            try {
-                if (connection != null) {
-                    connection.close();
-                }
-            } catch (SQLException e) {
-                MyLogger.log(ApplicationDAO.class.getName(), Level.WARN, e.toString());
-            }
-        }
-        return list;
-    }
-
-    /**
-     * Finds Applications of the given system. </p> Access to database to return
-     * a list of {@link Application} filtering by system.<br/> If no application
-     * found, returns a empty {@literal List<Application>}.<br/> If an
-     * SQLException occur, returns null in the list object and writes the error
-     * on the logs.
-     *
-     * @param system name of the System to filter
-     * @return list of applications
-     * @throws CerberusException
-     * @since 0.9.0
-     */
-    @Override
-    public List<Application> readBySystem_Deprecated(String system) throws CerberusException {
-        List<Application> list = null;
-        final String query = "SELECT * FROM application a WHERE `System` LIKE ? ORDER BY a.sort";
-
-        Connection connection = this.databaseSpring.connect();
-        try {
-            PreparedStatement preStat = connection.prepareStatement(query);
-            try {
-                preStat.setString(1, system);
-
-                ResultSet resultSet = preStat.executeQuery();
-                try {
-                    list = new ArrayList<Application>();
-                    while (resultSet.next()) {
-                        Application app = this.loadFromResultSet(resultSet);
-                        list.add(app);
-                    }
-                } catch (SQLException exception) {
-                    MyLogger.log(ApplicationDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
-                } finally {
-                    resultSet.close();
-                }
-            } catch (SQLException exception) {
-                MyLogger.log(ApplicationDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
-            } finally {
-                preStat.close();
-            }
-        } catch (SQLException exception) {
-            MyLogger.log(ApplicationDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
-        } finally {
-            try {
-                if (connection != null) {
-                    connection.close();
-                }
-            } catch (SQLException e) {
-                MyLogger.log(ApplicationDAO.class.getName(), Level.WARN, e.toString());
-            }
-        }
-        return list;
-    }
-
     @Override
     public AnswerList readBySystemByCriteria(String system, int start, int amount, String column, String dir, String searchTerm, String individualSearch) {
         AnswerList response = new AnswerList();
@@ -300,7 +140,7 @@ public class ApplicationDAO implements IApplicationDAO {
 
         searchSQL.append(" where 1=1 ");
 
-        if (!searchTerm.equals("")) {
+        if (!StringUtil.isNullOrEmpty(searchTerm)) {
             searchSQL.append(" and (`application` like '%").append(searchTerm).append("%'");
             searchSQL.append(" or `description` like '%").append(searchTerm).append("%'");
             searchSQL.append(" or `sort` like '%").append(searchTerm).append("%'");
@@ -313,18 +153,23 @@ public class ApplicationDAO implements IApplicationDAO {
             searchSQL.append(" or `deploytype` like '%").append(searchTerm).append("%'");
             searchSQL.append(" or `mavengroupid` like '%").append(searchTerm).append("%')");
         }
-        if (!individualSearch.equals("")) {
+        if (!StringUtil.isNullOrEmpty(individualSearch)) {
             searchSQL.append(" and (`").append(individualSearch).append("`)");
         }
         if (!StringUtil.isNullOrEmpty(system)) {
             searchSQL.append(" and (`System`='").append(system).append("' )");
         }
-
-        MyLogger.log(ApplicationDAO.class.getName(), Level.ERROR, "Search Term : " + searchSQL.toString());
-
         query.append(searchSQL);
-        query.append(" order by `").append(column).append("` ").append(dir);
-        query.append(" limit ").append(start).append(" , ").append(amount);
+
+        if (!StringUtil.isNullOrEmpty(column)) {
+            query.append(" order by `").append(column).append("` ").append(dir);
+        }
+
+        if (!(amount == 0)) {
+            query.append(" limit ").append(start).append(" , ").append(amount);
+        }else{
+            query.append(" limit ").append(start).append(" , ").append(MAX_ROW_SELECTED);
+        }
 
         MyLogger.log(ApplicationDAO.class.getName(), Level.ERROR, "Execute query : " + query.toString());
 

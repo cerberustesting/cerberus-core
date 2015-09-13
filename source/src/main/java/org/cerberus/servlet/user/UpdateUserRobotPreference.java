@@ -74,8 +74,7 @@ public class UpdateUserRobotPreference extends HttpServlet {
             userService.updateUser(usr);
             
             ILogEventService logEventService = appContext.getBean(LogEventService.class);
-            IFactoryLogEvent factoryLogEvent = appContext.getBean(FactoryLogEvent.class);
-            logEventService.create(factoryLogEvent.create(0, 0, request.getUserPrincipal().getName(), null, "/UpdateUserRobotPreference", "UPDATE", "Update user preference for user: " + usr.getLogin(), "", ""));
+            logEventService.createPrivateCalls("/UpdateUserRobotPreference", "UPDATE", "Update user preference for user: " + usr.getLogin(), request);
 
             response.getWriter().print(usr.getLogin());
         } catch (CerberusException myexception) {

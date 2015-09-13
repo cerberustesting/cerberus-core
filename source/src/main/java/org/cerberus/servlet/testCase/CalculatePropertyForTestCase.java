@@ -98,7 +98,7 @@ public class CalculatePropertyForTestCase extends HttpServlet {
 
                     TCase testCase = testCaseService.findTestCaseByKey(testName, testCaseName);
                     if (testCase != null) {
-                        application = applicationService.readByKey_Deprecated(testCase.getApplication()).getApplication();
+                        application = applicationService.convert(applicationService.readByKey(testCase.getApplication())).getApplication();
                     } else {
                         throw new CerberusException(new MessageGeneral(MessageGeneralEnum.NO_DATA_FOUND));
                     }
@@ -134,7 +134,7 @@ public class CalculatePropertyForTestCase extends HttpServlet {
 
                     TCase testCase = testCaseService.findTestCaseByKey(testName, testCaseName);
                     if (testCase != null) {
-                        system = applicationService.readByKey_Deprecated(testCase.getApplication()).getSystem();
+                        system = applicationService.convert(applicationService.readByKey(testCase.getApplication())).getSystem();
                     } else {
                         throw new CerberusException(new MessageGeneral(MessageGeneralEnum.NO_DATA_FOUND));
                     }

@@ -134,9 +134,7 @@ public class CreateNotDefinedProperty extends HttpServlet {
                 if(answer.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())){
                     //  Adding Log entry.
                     ILogEventService logEventService = appContext.getBean(LogEventService.class);
-                    IFactoryLogEvent factoryLogEvent = appContext.getBean(FactoryLogEvent.class);
-                    logEventService.create(factoryLogEvent.create(0, 0, request.getUserPrincipal().getName(), null, "/CreateNotDefinedProperty", "CREATE", "Create NotDefinedProperty:"
-                            + " " + propertyName, "", ""));
+                    logEventService.createPrivateCalls("/CreateNotDefinedProperty", "CREATE", "Create NotDefinedProperty:" + " " + propertyName, request);
                 }
             }else{
                 rs = new MessageEvent(MessageEventEnum.DATA_OPERATION_EXPECTED_ERROR);

@@ -23,6 +23,9 @@ import java.util.List;
 
 import org.cerberus.dao.IApplicationDAO;
 import org.cerberus.entity.Application;
+import org.cerberus.entity.MessageGeneral;
+import org.cerberus.enums.MessageEventEnum;
+import org.cerberus.enums.MessageGeneralEnum;
 import org.cerberus.exception.CerberusException;
 import org.cerberus.service.IApplicationService;
 import org.cerberus.util.answer.Answer;
@@ -47,18 +50,13 @@ public class ApplicationService implements IApplicationService {
     }
 
     @Override
-    public Application readByKey_Deprecated(String Application) throws CerberusException {
-        return ApplicationDAO.readByKey_Deprecated(Application);
+    public AnswerList readAll() {
+        return readBySystemByCriteria(null, 0, 0, "sort", "asc", null, null);
     }
 
     @Override
-    public List<Application> readAll_Deprecated() throws CerberusException {
-        return ApplicationDAO.readAll_Deprecated();
-    }
-
-    @Override
-    public List<Application> readBySystem_Deprecated(String System) throws CerberusException {
-        return ApplicationDAO.readBySystem_Deprecated(System);
+    public AnswerList readBySystem(String System) {
+        return ApplicationDAO.readBySystemByCriteria(System, 0, 0, "sort", "asc", null, null);
     }
 
     @Override
@@ -74,7 +72,7 @@ public class ApplicationService implements IApplicationService {
     @Override
     public boolean exist(String Application) {
         try {
-            readByKey_Deprecated(Application);
+            convert(readByKey(Application));
             return true;
         } catch (CerberusException e) {
             return false;
@@ -100,4 +98,32 @@ public class ApplicationService implements IApplicationService {
     public List<String> readDistinctSystem() {
         return this.ApplicationDAO.readDistinctSystem();
     }
+
+    @Override
+    public Application convert(AnswerItem answerItem) throws CerberusException {
+        if (answerItem.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
+            //if the service returns an OK message then we can get the item
+            return (Application) answerItem.getItem();
+        }
+        throw new CerberusException(new MessageGeneral(MessageGeneralEnum.DATA_OPERATION_ERROR));
+    }
+
+    @Override
+    public List<Application> convert(AnswerList answerList) throws CerberusException {
+        if (answerList.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
+            //if the service returns an OK message then we can get the item
+            return (List<Application>) answerList.getDataList();
+        }
+        throw new CerberusException(new MessageGeneral(MessageGeneralEnum.DATA_OPERATION_ERROR));
+    }
+
+    @Override
+    public void convert(Answer answer) throws CerberusException {
+        if (answer.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
+            //if the service returns an OK message then we can get the item
+            return;
+        }
+        throw new CerberusException(new MessageGeneral(MessageGeneralEnum.DATA_OPERATION_ERROR));
+    }
+
 }

@@ -80,8 +80,7 @@ public class CreateCountryEnvironmentParameter extends HttpServlet {
              * Adding Log entry.
              */
             ILogEventService logEventService = appContext.getBean(ILogEventService.class);
-            IFactoryLogEvent factoryLogEvent = appContext.getBean(IFactoryLogEvent.class);
-            logEventService.create(factoryLogEvent.create(0, 0, request.getUserPrincipal().getName(), null, "/CreateCountryEnvironmentParameter", "CREATE", "Create CountryEnvironmentApplication : " + country + "_" + environment + "_" + application, "", ""));
+            logEventService.createPrivateCalls("/CreateCountryEnvironmentParameter", "CREATE", "Create CountryEnvironmentApplication : " + country + "_" + environment + "_" + application, request);
 
             response.getWriter().append(country + "_" + environment + "_" + application).close();
         } catch (CerberusException ex) {

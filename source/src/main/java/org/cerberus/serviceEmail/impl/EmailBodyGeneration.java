@@ -58,7 +58,7 @@ public class EmailBodyGeneration implements IEmailBodyGeneration {
 
             String bugURL = "";
 
-            List<Application> appliList = applicationService.readBySystem_Deprecated(system);
+            List<Application> appliList = applicationService.convert(applicationService.readBySystem(system));
             String inSQL = SqlUtil.getInSQLClause(appliList);
 
             buildContentTable = "Here are the last modifications since last change (" + lastBuild + "/" + lastRevision + ") :";
@@ -182,7 +182,7 @@ public class EmailBodyGeneration implements IEmailBodyGeneration {
             Statement stmtBuildContent = conn.createStatement();
             Statement stmtCountryList = conn.createStatement();
 
-            List<Application> appliList = applicationService.readBySystem_Deprecated(system);
+            List<Application> appliList = applicationService.convert(applicationService.readBySystem(system));
             String inSQL = SqlUtil.getInSQLClause(appliList);
 
             String contentSQL = "SELECT i.gp1, count(*) nb_exe, OK.c nb_exe_OK, format(OK.c/count(*)*100,0)  per_OK"

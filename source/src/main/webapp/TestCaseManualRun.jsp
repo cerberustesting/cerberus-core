@@ -182,7 +182,7 @@
                 Application myApp = null;
                 TCase tCase = testCaseService.findTestCaseByKey(test, testcase);
                 if (tCase != null) {
-                    myApp = myApplicationService.readByKey_Deprecated(tCase.getApplication());
+                    myApp = myApplicationService.convert(myApplicationService.readByKey(tCase.getApplication()));
                 } else {
                     throw new CerberusException(new MessageGeneral(MessageGeneralEnum.NO_DATA_FOUND));
                 }
@@ -238,7 +238,7 @@
 
             Application myApplication = null;
             if (tcase.getApplication() != null) {
-                myApplication = myApplicationService.readByKey_Deprecated(tcase.getApplication());
+                myApplication = myApplicationService.convert(myApplicationService.readByKey(tcase.getApplication()));
                 appSystem = myApplication.getSystem();
                 SitdmossBugtrackingURL = myApplication.getBugTrackerUrl();
             } else {

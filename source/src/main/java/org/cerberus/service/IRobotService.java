@@ -22,6 +22,9 @@ package org.cerberus.service;
 import java.util.List;
 import org.cerberus.entity.Robot;
 import org.cerberus.exception.CerberusException;
+import org.cerberus.util.answer.Answer;
+import org.cerberus.util.answer.AnswerItem;
+import org.cerberus.util.answer.AnswerList;
 
 /**
  *
@@ -29,6 +32,55 @@ import org.cerberus.exception.CerberusException;
  */
 public interface IRobotService {
 
+    /**
+     *
+     * @param robotid
+     * @return
+     */
+    AnswerItem readByKeyTech(Integer robotid);    
+
+    /**
+     *
+     * @param robot
+     * @return
+     */
+    AnswerItem readByKey(String robot);    
+    
+    /**
+     *
+     * @param startPosition
+     * @param length
+     * @param columnName
+     * @param sort
+     * @param searchParameter
+     * @param string
+     * @return
+     */
+    AnswerList readByCriteria(int startPosition, int length, String columnName, String sort, String searchParameter, String string);
+
+    /**
+     *
+     * @param robot
+     * @return
+     */
+    Answer create(Robot robot);
+
+    /**
+     *
+     * @param robot
+     * @return
+     */
+    Answer delete(Robot robot);
+
+    /**
+     *
+     * @param robot
+     * @return
+     */
+    Answer update(Robot robot);
+
+    
+    
     /**
      * Finds the Robot by Key
      *
@@ -105,4 +157,26 @@ public interface IRobotService {
      */
     Robot findRobotByName(String name) throws CerberusException ;
 
+    /**
+     *
+     * @param answerItem
+     * @return
+     * @throws CerberusException
+     */
+    Robot convert(AnswerItem answerItem) throws CerberusException;
+
+    /**
+     *
+     * @param answerList
+     * @return
+     * @throws CerberusException
+     */
+    List<Robot> convert(AnswerList answerList) throws CerberusException;
+
+    /**
+     *
+     * @param answer
+     * @throws CerberusException
+     */
+    void convert(Answer answer) throws CerberusException;
 }

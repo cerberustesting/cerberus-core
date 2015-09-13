@@ -33,20 +33,29 @@ import org.cerberus.util.answer.AnswerList;
 public interface IProjectService {
 
     /**
-     * @param project
-     * @return the project object
-     * @throws CerberusException if not exist.
+     *
+     * @param id
+     * @return
      */
-    Project readByKey_Deprecated(String project) throws CerberusException;
+    AnswerItem readByKey(String id);
 
     /**
-     * @param project
-     * @return the project object
-     * @throws CerberusException if not exist.
+     *
+     * @return
      */
-    List<Project> readAll_Deprecated() throws CerberusException;
+    AnswerList readAll();
 
-    List<String> readDescription_Deprecated();
+    /**
+     *
+     * @param startPosition
+     * @param length
+     * @param columnName
+     * @param sort
+     * @param searchParameter
+     * @param string
+     * @return
+     */
+    AnswerList readByCriteria(int startPosition, int length, String columnName, String sort, String searchParameter, String string);
 
     /**
      *
@@ -54,15 +63,48 @@ public interface IProjectService {
      * @return true if project exist. false if not.
      */
     boolean exist(String project);
-    
-    public Answer create_Deprecated(Project project) throws CerberusException;
 
-    public Answer delete_Deprecated(Project project) throws CerberusException;
+    /**
+     *
+     * @param project
+     * @return
+     */
+    Answer create(Project project);
 
-    public Answer update_Deprecated(Project project) throws CerberusException;
+    /**
+     *
+     * @param project
+     * @return
+     */
+    Answer delete(Project project);
 
-    public AnswerList readByCriteria(int startPosition, int length, String columnName, String sort, String searchParameter, String string);
+    /**
+     *
+     * @param project
+     * @return
+     */
+    Answer update(Project project);
 
-    public AnswerItem readByKey(String id);
+    /**
+     *
+     * @param answerItem
+     * @return
+     * @throws CerberusException
+     */
+    Project convert(AnswerItem answerItem) throws CerberusException;
 
+    /**
+     *
+     * @param answerList
+     * @return
+     * @throws CerberusException
+     */
+    List<Project> convert(AnswerList answerList) throws CerberusException;
+
+    /**
+     *
+     * @param answer
+     * @throws CerberusException
+     */
+    void convert(Answer answer) throws CerberusException;
 }

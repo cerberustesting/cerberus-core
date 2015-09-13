@@ -51,7 +51,7 @@ public interface ILogEventDAO {
     AnswerList readByCriteria(int start, int amount, String colName, String dir, String searchTerm, String individualSearch);
 
     /**
-     * Insert user into the database.
+     * Insert a logEvent into the database.
      *
      * @param logevent
      * @return true is log was inserted

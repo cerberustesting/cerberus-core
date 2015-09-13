@@ -141,8 +141,7 @@ public class AddUser extends HttpServlet {
              * Adding Log entry.
              */
             ILogEventService logEventService = appContext.getBean(LogEventService.class);
-            IFactoryLogEvent factoryLogEvent = appContext.getBean(FactoryLogEvent.class);
-            logEventService.create(factoryLogEvent.create(0, 0, request.getUserPrincipal().getName(), null, "/AddUser", "CREATE", "Insert user : " + login, "", ""));
+            logEventService.createPrivateCalls("/AddUser", "CREATE", "Insert user : " + login, request);
 
             response.getWriter().print(myUser.getLogin());
         } catch (CerberusException myexception) {

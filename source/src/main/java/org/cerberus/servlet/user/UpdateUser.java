@@ -127,8 +127,7 @@ public class UpdateUser extends HttpServlet {
                      * Adding Log entry.
                      */
                     ILogEventService logEventService = appContext.getBean(LogEventService.class);
-                    IFactoryLogEvent factoryLogEvent = appContext.getBean(FactoryLogEvent.class);
-                    logEventService.create(factoryLogEvent.create(0, 0, request.getUserPrincipal().getName(), null, "/UpdateUser", "UPDATE", "Updated user groups : " + login, "", ""));
+                    logEventService.createPrivateCalls("/UpdateUser", "UPDATE", "Updated user groups : " + login, request);
 
                 } else if (newSystems != null) {
                     userSystemService.updateUserSystems(myUser, newSystems);
@@ -137,8 +136,7 @@ public class UpdateUser extends HttpServlet {
                      * Adding Log entry.
                      */
                     ILogEventService logEventService = appContext.getBean(LogEventService.class);
-                    IFactoryLogEvent factoryLogEvent = appContext.getBean(FactoryLogEvent.class);
-                    logEventService.create(factoryLogEvent.create(0, 0, request.getUserPrincipal().getName(), null, "/UpdateUser", "UPDATE", "Updated user system : " + login, "", ""));
+                    logEventService.createPrivateCalls("/UpdateUser", "UPDATE", "Updated user system : " + login, request);
 
                 } else {
                     userService.updateUser(myUser);
@@ -147,8 +145,7 @@ public class UpdateUser extends HttpServlet {
                      * Adding Log entry.
                      */
                     ILogEventService logEventService = appContext.getBean(LogEventService.class);
-                    IFactoryLogEvent factoryLogEvent = appContext.getBean(FactoryLogEvent.class);
-                    logEventService.create(factoryLogEvent.create(0, 0, request.getUserPrincipal().getName(), null, "/UpdateUser", "UPDATE", "Updated user : " + login, "", ""));
+                    logEventService.createPrivateCalls("/UpdateUser", "UPDATE", "Updated user : " + login, request);
                 }
                 response.getWriter().print(value);
             } catch (CerberusException ex) {

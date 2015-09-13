@@ -157,7 +157,7 @@ if (freeText !== null) {
                     <div>
                         <%
                             options.clear();
-                            for (Project project : projectService.readAll_Deprecated()) {
+                            for (Project project : projectService.convert(projectService.readAll())) {
                                 if (project.getIdProject() != null && !"".equals(project.getIdProject().trim())) {
                                     options.put(project.getIdProject(), project.getIdProject() + " - " + project.getDescription());
                                 }
@@ -185,7 +185,7 @@ if (freeText !== null) {
                     <div style="clear:both">
                         <%
                             options.clear();
-                            for (Application app : applicationService.readAll_Deprecated()) {
+                            for (Application app : applicationService.convert(applicationService.readAll())) {
                                 options.put(app.getApplication(), app.getApplication() + " [" + app.getSystem() + "]");
                             }
                         %>

@@ -25,7 +25,11 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 
 import org.apache.log4j.Logger;
-import org.cerberus.entity.*;
+import org.cerberus.entity.BuildRevisionInvariant;
+import org.cerberus.entity.CountryEnvParam;
+import org.cerberus.entity.MessageGeneral;
+import org.cerberus.entity.TCase;
+import org.cerberus.entity.TestCaseExecution;
 import org.cerberus.exception.CerberusException;
 import org.cerberus.service.IApplicationService;
 import org.cerberus.service.IBuildRevisionInvariantService;
@@ -129,7 +133,7 @@ public class ExecutionCheckService implements IExecutionCheckService {
             LOG.debug("Checking if application environment type is compatible with environment type");
         }
         try {
-            if (applicationService.readByKey_Deprecated(tCExecution.gettCase().getApplication()).getType().equalsIgnoreCase("COMPARISON")) {
+            if (applicationService.convert(applicationService.readByKey(tCExecution.gettCase().getApplication())).getType().equalsIgnoreCase("COMPARISON")) {
                 if (tCExecution.gettCase().getGroup().equalsIgnoreCase("COMPARATIVE")) {
                     message = new MessageGeneral(MessageGeneralEnum.VALIDATION_FAILED_TYPE_DIFFERENT);
                     return false;

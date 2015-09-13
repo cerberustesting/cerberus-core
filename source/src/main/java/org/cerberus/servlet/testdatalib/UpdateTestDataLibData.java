@@ -129,8 +129,7 @@ public class UpdateTestDataLibData extends HttpServlet {
             if(answer.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())){
                 ILogEventService logEventService = appContext.getBean(LogEventService.class);
                 IFactoryLogEvent factoryLogEvent = appContext.getBean(FactoryLogEvent.class);
-                logEventService.create(factoryLogEvent.create(0, 0, request.getUserPrincipal().getName(), null, "/UpdateTestDataLibData", "UPDATE",
-                        "Update TestDataLibData entries for id: " + testDataLibID, "", ""));
+                logEventService.createPrivateCalls("/UpdateTestDataLibData", "UPDATE", "Update TestDataLibData entries for id: " + testDataLibID, request);
             }
             jsonResponse.put("messageType", answer.getResultMessage().getMessage().getCodeString());
             jsonResponse.put("message", answer.getResultMessage().getDescription());

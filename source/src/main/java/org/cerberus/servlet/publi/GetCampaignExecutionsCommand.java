@@ -119,7 +119,7 @@ public class GetCampaignExecutionsCommand extends HttpServlet {
         if (robotName != null && !"".equals(robotName.trim())) {
             try {
                 robotService = appContext.getBean(IRobotService.class);
-                Robot robot = robotService.findRobotByName(robotName);
+                Robot robot = robotService.convert(robotService.readByKey(robotName));
                 host = robot.getHost();
                 port = robot.getPort();
 

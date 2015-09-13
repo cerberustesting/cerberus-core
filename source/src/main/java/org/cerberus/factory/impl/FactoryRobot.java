@@ -33,7 +33,7 @@ public class FactoryRobot implements IFactoryRobot {
     public Robot create(Integer robotID, String robot, String host, String port, String platform ,
     String browser, String version, String active, String description, String userAgent) {
         Robot newRobot = new Robot();
-        newRobot.setRoborID(robotID);
+        newRobot.setRobotID(robotID);
         newRobot.setRobot(robot);
         newRobot.setHost(host);
         newRobot.setPort(port);

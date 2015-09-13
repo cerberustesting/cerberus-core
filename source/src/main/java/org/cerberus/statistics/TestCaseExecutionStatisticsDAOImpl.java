@@ -58,7 +58,7 @@ public class TestCaseExecutionStatisticsDAOImpl implements ITestCaseExecutionSta
         BuildRevisionStatistics statsOfExecutions = new BuildRevisionStatistics();
         String appliSQL = "";
         try {
-            List<Application> appliList = applicationService.readBySystem_Deprecated(MySystem);
+            List<Application> appliList = applicationService.convert(applicationService.readBySystem(MySystem));
             appliSQL = SqlUtil.getInSQLClause(appliList);
         } catch (CerberusException ex) {
             Logger.getLogger(TestCaseExecutionStatisticsDAOImpl.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
@@ -197,7 +197,7 @@ public class TestCaseExecutionStatisticsDAOImpl implements ITestCaseExecutionSta
         BuildRevisionStatistics statsOfExecutions = new BuildRevisionStatistics();
         String appliSQL = "";
         try {
-            List<Application> appliList = applicationService.readBySystem_Deprecated(MySystem);
+            List<Application> appliList = applicationService.convert(applicationService.readBySystem(MySystem));
             appliSQL = SqlUtil.getInSQLClause(appliList);
         } catch (CerberusException ex) {
             Logger.getLogger(TestCaseExecutionStatisticsDAOImpl.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
@@ -354,7 +354,7 @@ public class TestCaseExecutionStatisticsDAOImpl implements ITestCaseExecutionSta
         StringBuilder query = new StringBuilder();
         String appliSQL = "";
         try {
-            List<Application> appliList = applicationService.readBySystem_Deprecated(MySystem);
+            List<Application> appliList = applicationService.convert(applicationService.readBySystem(MySystem));
             appliSQL = SqlUtil.getInSQLClause(appliList);
         } catch (CerberusException ex) {
             Logger.getLogger(TestCaseExecutionStatisticsDAOImpl.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
@@ -415,7 +415,7 @@ public class TestCaseExecutionStatisticsDAOImpl implements ITestCaseExecutionSta
         StringBuilder query = new StringBuilder();
         String appliSQL = "";
         try {
-            List<Application> appliList = applicationService.readBySystem_Deprecated(MySystem);
+            List<Application> appliList = applicationService.convert(applicationService.readBySystem(MySystem));
             appliSQL = SqlUtil.getInSQLClause(appliList);
         } catch (CerberusException ex) {
             Logger.getLogger(TestCaseExecutionStatisticsDAOImpl.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);

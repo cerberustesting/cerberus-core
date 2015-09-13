@@ -82,8 +82,7 @@ public class CreateSoapLibrary extends HttpServlet {
              * Adding Log entry.
              */
             ILogEventService logEventService = appContext.getBean(LogEventService.class);
-            IFactoryLogEvent factoryLogEvent = appContext.getBean(FactoryLogEvent.class);
-            logEventService.create(factoryLogEvent.create(0, 0, request.getUserPrincipal().getName(), null, "/CreateSoapLibrary", "CREATE", "Create SoapLibrary : " + name, "", ""));
+            logEventService.createPrivateCalls("/CreateSoapLibrary", "CREATE", "Create SoapLibrary : " + name, request);
 
             response.sendRedirect("SoapLibrary.jsp");
         } finally {

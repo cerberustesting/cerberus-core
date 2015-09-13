@@ -116,8 +116,7 @@ public class DeleteApplication extends HttpServlet {
                      * Delete was succesfull. Adding Log entry.
                      */
                     ILogEventService logEventService = appContext.getBean(LogEventService.class);
-                    IFactoryLogEvent factoryLogEvent = appContext.getBean(FactoryLogEvent.class);
-                    logEventService.create(factoryLogEvent.create(0, 0, request.getUserPrincipal().getName(), null, "/DeleteApplication", "DELETE", "Delete Application : ['" + key + "']", "", ""));
+                    logEventService.createPrivateCalls("/DeleteApplication", "DELETE", "Delete Application : ['" + key + "']", request);
                 }
             }
         }

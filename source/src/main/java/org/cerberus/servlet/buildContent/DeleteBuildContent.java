@@ -56,8 +56,7 @@ public class DeleteBuildContent extends HttpServlet {
          * Adding Log entry.
          */
         ILogEventService logEventService = appContext.getBean(LogEventService.class);
-        IFactoryLogEvent factoryLogEvent = appContext.getBean(FactoryLogEvent.class);
-        logEventService.create(factoryLogEvent.create(0, 0, req.getUserPrincipal().getName(), null, "/DeleteBuildContent", "DELETE", "Delete BuildContent : " + id, "", ""));
+        logEventService.createPrivateCalls("/DeleteBuildContent", "DELETE", "Delete BuildContent : " + id, req);
     }
 
 }

@@ -95,9 +95,7 @@ public class UpdateTestDataLib extends HttpServlet {
             //  Adding Log entry.
             if(answer.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())){
                 ILogEventService logEventService = appContext.getBean(LogEventService.class);
-                IFactoryLogEvent factoryLogEvent = appContext.getBean(FactoryLogEvent.class);
-                logEventService.create(factoryLogEvent.create(0, 0, request.getUserPrincipal().getName(), null, 
-                        "/UpdateTestDataLib", "UPDATE", "Update TestDataLib:  id: " + testDataLibID + " name: " + name, "", ""));
+                logEventService.createPrivateCalls("/UpdateTestDataLib", "UPDATE", "Update TestDataLib:  id: " + testDataLibID + " name: " + name, request);
             }
             
             jsonResponse.put("messageType", answer.getResultMessage().getMessage().getCodeString());

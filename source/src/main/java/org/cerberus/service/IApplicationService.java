@@ -35,64 +35,48 @@ public interface IApplicationService {
 
     /**
      *
-     * @param application
-     * @return Application object with all properties feeded.
-     * @throws CerberusException if Application not found.
-     */
-    Application readByKey_Deprecated(String application) throws CerberusException;
-
-    /**
-     *
-     * @return the list of all Applications.
-     * @throws CerberusException when no application exist.
-     */
-    List<Application> readAll_Deprecated() throws CerberusException;
-
-    /**
-     *
-     * @param system
-     * @return the list of all Applications.
-     * @throws CerberusException when no application exist.
-     */
-    List<Application> readBySystem_Deprecated(String system) throws CerberusException;
-
-    /**
-     *
-     * @param startPosition
-     * @param length
-     * @param columnName
-     * @param sort
-     * @param searchParameter
-     * @param string
-     * @return
-     */
-    public AnswerList readByCriteria(int startPosition, int length, String columnName, String sort, String searchParameter, String string);
-
-    /**
-     *
-     * @param system
-     * @param startPosition
-     * @param length
-     * @param columnName
-     * @param sort
-     * @param searchParameter
-     * @param string
-     * @return
-     */
-    public AnswerList readBySystemByCriteria(String system, int startPosition, int length, String columnName, String sort, String searchParameter, String string);
-
-    /**
-     *
      * @param id
      * @return
      */
-    public AnswerItem readByKey(String id);
+    AnswerItem readByKey(String id);
 
-    public Answer create(Application application);
+    /**
+     *
+     * @return
+     */
+    AnswerList readAll();
 
-    public Answer delete(Application application);
+    /**
+     *
+     * @param System
+     * @return
+     */
+    AnswerList readBySystem(String System);
 
-    public Answer update(Application application);
+    /**
+     *
+     * @param startPosition
+     * @param length
+     * @param columnName
+     * @param sort
+     * @param searchParameter
+     * @param string
+     * @return
+     */
+    AnswerList readByCriteria(int startPosition, int length, String columnName, String sort, String searchParameter, String string);
+
+    /**
+     *
+     * @param system
+     * @param startPosition
+     * @param length
+     * @param columnName
+     * @param sort
+     * @param searchParameter
+     * @param string
+     * @return
+     */
+    AnswerList readBySystemByCriteria(String system, int startPosition, int length, String columnName, String sort, String searchParameter, String string);
 
     /**
      *
@@ -104,8 +88,51 @@ public interface IApplicationService {
 
     /**
      *
-     * @return @throws CerberusException
-     * @since 0.9.1
+     * @param application
+     * @return
+     */
+    Answer create(Application application);
+
+    /**
+     *
+     * @param application
+     * @return
+     */
+    Answer delete(Application application);
+
+    /**
+     *
+     * @param application
+     * @return
+     */
+    Answer update(Application application);
+
+    /**
+     *
+     * @return @since 0.9.1
      */
     List<String> readDistinctSystem();
+
+    /**
+     *
+     * @param answerItem
+     * @return
+     * @throws CerberusException
+     */
+    Application convert(AnswerItem answerItem) throws CerberusException;
+
+    /**
+     *
+     * @param answerList
+     * @return
+     * @throws CerberusException
+     */
+    List<Application> convert(AnswerList answerList) throws CerberusException;
+
+    /**
+     *
+     * @param answer
+     * @throws CerberusException
+     */
+    void convert(Answer answer) throws CerberusException;
 }

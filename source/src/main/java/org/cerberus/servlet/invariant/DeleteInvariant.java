@@ -71,8 +71,7 @@ public class DeleteInvariant extends HttpServlet {
              * Adding Log entry.
              */
             ILogEventService logEventService = appContext.getBean(LogEventService.class);
-            IFactoryLogEvent factoryLogEvent = appContext.getBean(FactoryLogEvent.class);
-            logEventService.create(factoryLogEvent.create(0, 0, request.getUserPrincipal().getName(), null, "/DeleteInvariant", "DELETE", "Delete Invariant : ['" + idName + "'|'" + invVal + "']", "", ""));
+            logEventService.createPrivateCalls("/DeleteInvariant", "DELETE", "Delete Invariant : ['" + idName + "'|'" + invVal + "']", request);
 
         } finally {
             out.close();

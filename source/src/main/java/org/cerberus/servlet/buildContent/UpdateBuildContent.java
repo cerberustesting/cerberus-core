@@ -94,8 +94,7 @@ public class UpdateBuildContent extends HttpServlet {
          * Adding Log entry.
          */
         ILogEventService logEventService = appContext.getBean(LogEventService.class);
-        IFactoryLogEvent factoryLogEvent = appContext.getBean(FactoryLogEvent.class);
-        logEventService.create(factoryLogEvent.create(0, 0, req.getUserPrincipal().getName(), null, "/UpdateBuildContent", "UPDATE", "Updated BuildContent : " + brp.getRelease(), "", ""));
+        logEventService.createPrivateCalls("/UpdateBuildContent", "UPDATE", "Updated BuildContent : " + brp.getRelease(), req);
 
         resp.getWriter().print(value);
     }

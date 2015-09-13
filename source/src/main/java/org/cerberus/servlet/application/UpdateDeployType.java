@@ -118,8 +118,7 @@ public class UpdateDeployType extends HttpServlet {
                      * Update was succesfull. Adding Log entry.
                      */
                     ILogEventService logEventService = appContext.getBean(LogEventService.class);
-                    IFactoryLogEvent factoryLogEvent = appContext.getBean(FactoryLogEvent.class);
-                    logEventService.create(factoryLogEvent.create(0, 0, request.getUserPrincipal().getName(), null, "/UpdateDeployType", "UPDATE", "Updated Deploy Type : ['" + deployType + "']", "", ""));
+                    logEventService.createPrivateCalls("/UpdateDeployType", "UPDATE", "Updated Deploy Type : ['" + deployType + "']", request);
                 }
             }
         }

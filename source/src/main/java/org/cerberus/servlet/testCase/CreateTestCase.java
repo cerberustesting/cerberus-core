@@ -202,8 +202,7 @@ public class CreateTestCase extends HttpServlet {
                          * Adding Log entry.
                          */
                         ILogEventService logEventService = appContext.getBean(LogEventService.class);
-                        IFactoryLogEvent factoryLogEvent = appContext.getBean(FactoryLogEvent.class);
-                        logEventService.create(factoryLogEvent.create(0, 0, request.getUserPrincipal().getName(), null, "/CreateTestCase", "CREATE", "Create testcase : ['" + test + "'|'" + testcase + "'|'" + description + "']", "", ""));
+                        logEventService.createPrivateCalls("/CreateTestCase", "CREATE", "Create testcase : ['" + test + "'|'" + testcase + "'|'" + description + "']", request);
 
                         String encodedTest = URLEncoder.encode(test, "UTF-8");
                         String encodedTestCase = URLEncoder.encode(testcase, "UTF-8");

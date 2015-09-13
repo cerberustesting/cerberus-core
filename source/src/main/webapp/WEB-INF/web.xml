@@ -48,10 +48,6 @@
         <servlet-class>org.cerberus.servlet.documentation.ReadDocumentation</servlet-class>
     </servlet>
     <servlet>
-        <servlet-name>GetApplicationList</servlet-name>
-        <servlet-class>org.cerberus.servlet.application.GetApplicationList</servlet-class>
-    </servlet>
-    <servlet>
         <servlet-name>importXML</servlet-name>
         <servlet-class>org.cerberus.servlet.testCase.ImportSeleniumIDE</servlet-class>
     </servlet>
@@ -254,10 +250,6 @@
         <servlet-class>org.cerberus.servlet.testBattery.UpdateTestBattery</servlet-class>
     </servlet>
     <servlet>
-        <servlet-name>GetApplication</servlet-name>
-        <servlet-class>org.cerberus.servlet.application.GetApplication</servlet-class>
-    </servlet>
-    <servlet>
         <servlet-name>GetInvariantsForTest</servlet-name>
         <servlet-class>org.cerberus.servlet.testCase.GetInvariantsForTest</servlet-class>
     </servlet>
@@ -272,10 +264,6 @@
     <servlet>
         <servlet-name>ReadLogEvent</servlet-name>
         <servlet-class>org.cerberus.servlet.log.ReadLogEvent</servlet-class>
-    </servlet>
-    <servlet>
-        <servlet-name>GetDeployTypeList</servlet-name>
-        <servlet-class>org.cerberus.servlet.application.GetDeployTypeList</servlet-class>
     </servlet>
     <servlet>
         <servlet-name>ReadDeployType</servlet-name>
@@ -757,10 +745,6 @@
         <url-pattern>/SaveStatistic</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
-        <servlet-name>GetApplicationList</servlet-name>
-        <url-pattern>/GetApplicationList</url-pattern>
-    </servlet-mapping>
-    <servlet-mapping>
         <servlet-name>importXML</servlet-name>
         <url-pattern>/importXML</url-pattern>
     </servlet-mapping>
@@ -881,10 +865,6 @@
         <url-pattern>/UpdateTestCaseDetail</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
-        <servlet-name>GetDeployTypeList</servlet-name>
-        <url-pattern>/GetDeployTypeList</url-pattern>
-    </servlet-mapping>
-    <servlet-mapping>
         <servlet-name>GetTestCaseList</servlet-name>
         <url-pattern>/GetTestCaseList</url-pattern>
     </servlet-mapping>
@@ -975,10 +955,6 @@
     <servlet-mapping>
         <servlet-name>UpdateTestBattery</servlet-name>
         <url-pattern>/UpdateTestBattery</url-pattern>
-    </servlet-mapping>
-    <servlet-mapping>
-        <servlet-name>GetApplication</servlet-name>
-        <url-pattern>/GetApplication</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
         <servlet-name>GetShortTests</servlet-name>
@@ -1598,7 +1574,6 @@
             <url-pattern>/FindAllTestData</url-pattern>
             <url-pattern>/ReadTestDataLib</url-pattern>
             <url-pattern>/ReadTestDataLibData</url-pattern>
-            <url-pattern>/GetApplicationList</url-pattern>
             <url-pattern>/FindAllSqlLibrary</url-pattern>
             <url-pattern>/FindAllSoapLibrary</url-pattern>
             <url-pattern>/PictureConnector</url-pattern>
@@ -1671,7 +1646,7 @@
         </auth-constraint>
     </security-constraint>
     <security-constraint>
-        <display-name>TestDataManager</display-name>        
+        <display-name>TestDataManager</display-name>
         <web-resource-collection>
             <web-resource-name>servlet</web-resource-name>
             <description>servlet</description>
@@ -1711,11 +1686,9 @@
         <web-resource-collection>
             <web-resource-name>servlet</web-resource-name>
             <description>servlet</description>
-            <url-pattern>/GetApplication</url-pattern>
             <url-pattern>/GetShortTests</url-pattern>
             <url-pattern>/GetInvariantsForTest</url-pattern>
             <url-pattern>/GetEnvironmentAvailable</url-pattern>
-            <url-pattern>/GetDeployTypeList</url-pattern>
             <url-pattern>/GetBuildRevisionInvariant</url-pattern>
             <url-pattern>/ReadProject</url-pattern>
             <url-pattern>/FindBuildContent</url-pattern>

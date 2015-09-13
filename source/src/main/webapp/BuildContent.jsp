@@ -1,5 +1,9 @@
-<%@ page import="org.cerberus.entity.*" %>
-<%@ page import="org.cerberus.service.*" %>
+<%@page import="org.cerberus.entity.BuildRevisionInvariant"%>
+<%@page import="org.cerberus.entity.Application"%>
+<%@page import="org.cerberus.service.IBuildRevisionParametersService"%>
+<%@page import="org.cerberus.service.IBuildRevisionInvariantService"%>
+<%@page import="org.cerberus.service.IApplicationService"%>
+<%@page import="org.cerberus.service.IDocumentationService"%>
 <%@ page import="org.apache.log4j.Logger" %>
 <%--
   ~ Cerberus  Copyright (C) 2013  vertigo17
@@ -97,7 +101,7 @@
 
         StringBuilder projects = new StringBuilder("{");
         StringBuilder projectOptions = new StringBuilder();
-        for (Project project : projectService.readAll_Deprecated()) {
+        for (Project project : projectService.convert(projectService.readAll())) {
             projects.append("'");
             projects.append(project.getIdProject());
             projects.append("':'");
@@ -122,7 +126,7 @@
 
         StringBuilder applications = new StringBuilder("{");
         StringBuilder applicationOptions = new StringBuilder();
-        for (Application app : applicationService.readBySystem_Deprecated(MySystem)) {
+        for (Application app : applicationService.convert(applicationService.readBySystem(MySystem))) {
             applications.append("'");
             applications.append(app.getApplication());
             applications.append("':'");

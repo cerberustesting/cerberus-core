@@ -72,8 +72,7 @@ public class UpdateSqlLibrary extends HttpServlet {
              * Adding Log entry.
              */
             ILogEventService logEventService = appContext.getBean(LogEventService.class);
-            IFactoryLogEvent factoryLogEvent = appContext.getBean(FactoryLogEvent.class);
-            logEventService.create(factoryLogEvent.create(0, 0, request.getUserPrincipal().getName(), null, "/UpdateSqlLibrary", "UPDATE", "Updated SQLLibrary : " + name, "", ""));
+            logEventService.createPrivateCalls("/UpdateSqlLibrary", "UPDATE", "Updated SQLLibrary : " + name, request);
 
             out.print(value);
         } finally {

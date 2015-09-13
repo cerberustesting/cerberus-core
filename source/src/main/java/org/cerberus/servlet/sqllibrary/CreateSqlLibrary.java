@@ -77,8 +77,7 @@ public class CreateSqlLibrary extends HttpServlet {
              * Adding Log entry.
              */
             ILogEventService logEventService = appContext.getBean(LogEventService.class);
-            IFactoryLogEvent factoryLogEvent = appContext.getBean(FactoryLogEvent.class);
-            logEventService.create(factoryLogEvent.create(0, 0, request.getUserPrincipal().getName(), null, "/CreateSqlLibrary", "CREATE", "Create SQLLibrary : " + name, "", ""));
+            logEventService.createPrivateCalls("/CreateSqlLibrary", "CREATE", "Create SQLLibrary : " + name, request);
 
             response.sendRedirect("SqlLibrary.jsp");
         } finally {
