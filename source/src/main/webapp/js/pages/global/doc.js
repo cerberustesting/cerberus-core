@@ -23,34 +23,34 @@
  * @returns {JSONObject} 
  */
 function getDataTableLanguage() {
-    var doc = getDoc();
-    var docTable = doc.dataTable;
+    var doc = new Doc();
+
     var res = {
         "table": {
-            "sEmptyTable": docTable.sEmptyTable.docLabel,
-            "sInfo": docTable.sInfo.docLabel,
-            "sInfoEmpty": docTable.sInfoEmpty.docLabel,
-            "sInfoFiltered": docTable.sInfoFiltered.docLabel,
-            "sInfoPostFix": docTable.sInfoPostFix.docLabel,
-            "sInfoThousands": docTable.sInfoThousands.docLabel,
-            "sLengthMenu": docTable.sLengthMenu.docLabel,
-            "sLoadingRecords": docTable.sLoadingRecords.docLabel,
-            "sProcessing": docTable.sProcessing.docLabel,
-            "sSearch": docTable.sSearch.docLabel,
-            "sSearchPlaceholder": docTable.sSearchPlaceholder.docLabel,
-            "sZeroRecords": docTable.sZeroRecords.docLabel,
+            "sEmptyTable": doc.getDocLabel("dataTable", "sEmptyTable"),
+            "sInfo": doc.getDocLabel("dataTable", "sInfo"),
+            "sInfoEmpty": doc.getDocLabel("dataTable", "sInfoEmpty"),
+            "sInfoFiltered": doc.getDocLabel("dataTable", "sInfoFiltered"),
+            "sInfoPostFix": doc.getDocLabel("dataTable", "sInfoPostFix"),
+            "sInfoThousands": doc.getDocLabel("dataTable", "sInfoThousands"),
+            "sLengthMenu": doc.getDocLabel("dataTable", "sLengthMenu"),
+            "sLoadingRecords": doc.getDocLabel("dataTable", "sLoadingRecords"),
+            "sProcessing": doc.getDocLabel("dataTable", "sProcessing"),
+            "sSearch": doc.getDocLabel("dataTable", "sSearch"),
+            "sSearchPlaceholder": doc.getDocLabel("dataTable", "sSearchPlaceholder"),
+            "sZeroRecords": doc.getDocLabel("dataTable", "sZeroRecords"),
             "oPaginate": {
-                "sFirst": docTable.sFirst.docLabel,
-                "sLast": docTable.sLast.docLabel,
-                "sNext": docTable.sNext.docLabel,
-                "sPrevious": docTable.sPrevious.docLabel
+                "sFirst": doc.getDocLabel("dataTable", "sFirst"),
+                "sLast": doc.getDocLabel("dataTable", "sLast"),
+                "sNext": doc.getDocLabel("dataTable", "sNext"),
+                "sPrevious": doc.getDocLabel("dataTable", "sPrevious")
             },
             "oAria": {
-                "sSortAscending": docTable.sSortAscending.docLabel,
-                "sSortDescending": docTable.sSortDescending.docLabel
+                "sSortAscending": doc.getDocLabel("dataTable", "sSortAscending"),
+                "sSortDescending": doc.getDocLabel("dataTable", "sSortDescending")
             }
         },
-        "colVis": {"buttonText": docTable.colVis.docLabel}
+        "colVis": {"buttonText": doc.getDocLabel("dataTable", "colVis")}
     };
     return res;
 }

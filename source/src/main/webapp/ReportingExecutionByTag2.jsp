@@ -113,8 +113,7 @@
                             </div>
                         </div>
                         <div class="panel-body">
-                            <table id="listTable" class="table table-hover" name="listTable">
-                            </table>
+                            <table id="listTable" class="table table-hover display" name="listTable"></table>
                             <div class="marginBottom20"></div>
                         </div>
                     </div>
