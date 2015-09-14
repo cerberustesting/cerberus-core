@@ -20,6 +20,7 @@
 package org.cerberus.serviceEngine.impl;
 
 import java.io.BufferedReader;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -27,13 +28,14 @@ import java.io.PrintStream;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.net.URLConnection;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.io.IOUtils;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.cerberus.entity.MessageEvent;
-import org.cerberus.enums.MessageEventEnum;
 import org.cerberus.entity.Session;
+import org.cerberus.enums.MessageEventEnum;
 import org.cerberus.serviceEngine.ISikuliService;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -46,24 +48,39 @@ import org.springframework.stereotype.Service;
 @Service
 public class SikuliService implements ISikuliService {
 
-    private JSONObject generatePostParameters(String action, String locator, String text) throws JSONException, IOException, MalformedURLException {
+    private JSONObject generatePostParameters(String action, String locator, String text, long defaultWait) throws JSONException, IOException, MalformedURLException {
         JSONObject result = new JSONObject();
         String picture = "";
+        /**
+         * Get Picture from URL and convert to Base64
+         */
         URL url = new URL(locator);
-        InputStream istream = url.openStream();
+        URLConnection connection = url.openConnection();
+        InputStream istream = connection.getInputStream();
+        String mimeType = locator.split("\\.")[(locator.split("\\.").length) - 1];
         byte[] bytes = IOUtils.toByteArray(istream);
         picture = Base64.encodeBase64URLSafeString(bytes);
+
+        /**
+         * Build JSONObject with parameters action : Action expected to be done
+         * by Sikuli picture : Picture in Base64 format text : Text to type
+         * defaultWait : Timeout for the action pictureExtension : Extension for
+         * Base64 decoding
+         */
         result.put("action", action);
         result.put("picture", picture);
         result.put("text", text);
+        result.put("defaultWait", defaultWait * 1000);
+        result.put("pictureExtension", mimeType);
         return result;
     }
 
     @Override
     public MessageEvent doSikuliAction(Session session, String action, String locator, String text) {
         URL url;
+        String urlToConnect = "";
         try {
-            String urlToConnect = "http://" + session.getHost() + ":" + session.getPort() + "/extra/ExecuteSikuliAction";
+            urlToConnect = "http://" + session.getHost() + ":" + session.getPort() + "/extra/ExecuteSikuliAction";
             /**
              * Connect to ExecuteSikuliAction Servlet Through SeleniumServer
              */
@@ -74,7 +91,7 @@ public class SikuliService implements ISikuliService {
             connection.setRequestProperty("User-Agent", "Mozilla/5.0");
             connection.setRequestProperty("Accept-Language", "en-US,en;q=0.5");
 
-            JSONObject postParameters = generatePostParameters(action, locator, text);
+            JSONObject postParameters = generatePostParameters(action, locator, text, session.getDefaultWait());
             connection.setDoOutput(true);
 
             // Send post request
@@ -82,8 +99,7 @@ public class SikuliService implements ISikuliService {
             os.println(postParameters.toString());
             os.println("|ENDS|");
 
-            int responseCode = connection.getResponseCode();
-            if (responseCode != 200) {
+            if (connection == null || connection.getResponseCode() != 200) {
                 return new MessageEvent(MessageEventEnum.ACTION_FAILED_SIKULI_SERVER_NOT_REACHABLE);
             }
 
@@ -92,21 +108,48 @@ public class SikuliService implements ISikuliService {
             String inputLine;
             StringBuilder response = new StringBuilder();
 
+            /**
+             * Wait here until receiving |ENDR| String
+             */
             while (!(inputLine = in.readLine()).equals("|ENDR|")) {
                 response.append(inputLine);
             }
+
+            /**
+             * If response contains Failed, return failed message
+             */
+            if (response.toString().contains("Failed")) {
+                if (!action.equals("verifyElementPresent")){
+                MessageEvent mes = new MessageEvent(MessageEventEnum.ACTION_FAILED_SIKULI_ELEMENT_NOT_FOUND);
+                mes.setDescription(mes.getDescription().replaceAll("%ACTION%", action));
+                mes.setDescription(mes.getDescription().replaceAll("%ELEMENT%", locator));
+                return mes;
+                } else {
+                MessageEvent mes = new MessageEvent(MessageEventEnum.CONTROL_FAILED_PRESENT);
+                mes.setDescription(mes.getDescription().replaceAll("%STRING1%", locator));
+                return mes;
+                }
+            }
             in.close();
             os.close();
-
         } catch (MalformedURLException ex) {
             Logger.getLogger(SikuliService.class.getName()).log(Level.FATAL, ex);
-            return new MessageEvent(MessageEventEnum.ACTION_FAILED_SIKULI_SERVER_NOT_REACHABLE);
+            MessageEvent mes = new MessageEvent(MessageEventEnum.ACTION_FAILED_SIKULI_SERVER_NOT_REACHABLE);
+            mes.setDescription(mes.getDescription().replaceAll("%URL%", urlToConnect));
+            return mes;
+        } catch (FileNotFoundException ex) {
+            Logger.getLogger(SikuliService.class.getName()).log(Level.FATAL, ex);
+            MessageEvent mes = new MessageEvent(MessageEventEnum.ACTION_FAILED_SIKULI_FILE_NOT_FOUND);
+            mes.setDescription(mes.getDescription().replaceAll("%FILE%", locator));
+            return mes;
         } catch (IOException ex) {
             Logger.getLogger(SikuliService.class.getName()).log(Level.FATAL, ex);
             return new MessageEvent(MessageEventEnum.ACTION_FAILED);
         } catch (JSONException ex) {
             Logger.getLogger(SikuliService.class.getName()).log(Level.FATAL, ex);
             return new MessageEvent(MessageEventEnum.ACTION_FAILED);
+        } finally {
+
         }
         return getResultMessage(action, locator, text);
     }
