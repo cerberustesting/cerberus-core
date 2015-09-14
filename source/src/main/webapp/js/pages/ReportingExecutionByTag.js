@@ -117,7 +117,6 @@ function loadReportList() {
 
             var configurations = new TableConfigurationsServerSide("listTable", request, "testList", aoColumnsFunc(data.Columns));
             configurations.paginate = false;
-            configurations.scrollX = false;
 
             createDataTable(configurations);
             $('#listTable_wrapper').not('.initialized').addClass('initialized');
@@ -369,14 +368,17 @@ function aoColumnsFunc(Columns) {
         },
         {"data": "testCase",
             "sName": "testCase",
-            "title": doc.getDocOnline("testcase", "TestCase")
+            "title": doc.getDocOnline("testcase", "TestCase"),
+            "mRender": function (data, type, obj, meta) {
+                var result = "<a href='./TestCase.jsp?Test=" + obj.test + "&TestCase=" + obj.testCase + "&Load=Load'>" + obj.testCase + "</a>";
+                return result;
+            }
         },
         {"data": "application",
             "sName": "application",
             "title": doc.getDocOnline("application", "Application")
         },
         {
-            "bVisible": false,
             "data": "status",
             "sName": "status",
             "title": doc.getDocOnline("testcase", "Status")
@@ -385,12 +387,12 @@ function aoColumnsFunc(Columns) {
             "sName": "description",
             "title": doc.getDocOnline("testcase", "Description")
         },
-        {"bVisible": false,
+        {
             "data": "bugId",
             "sName": "bugId",
             "title": doc.getDocOnline("testcase", "BugID")
         },
-        {"visible": false,
+        {
             "data": "function",
             "sName": "function",
             "title": doc.getDocOnline("testcase", "Function")
