@@ -37,9 +37,9 @@ function initApplicationPage() {
     //configure and create the dataTable
     var configurations = new TableConfigurationsServerSide("applicationsTable", "ReadApplication?system=" + getUser().defaultSystem, "contentTable", aoColumnsFunc());
 
-    createDataTableWithPermissions(configurations, renderOptionsForApplication);
-    var oTable = $("#applicationsTable").dataTable();
-    oTable.fnSort([1, 'asc']);
+    var table = createDataTableWithPermissions(configurations, renderOptionsForApplication);
+
+    table.fnSort([1, 'asc']);
 }
 ;
 

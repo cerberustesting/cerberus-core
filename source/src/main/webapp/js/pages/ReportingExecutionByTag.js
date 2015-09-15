@@ -115,11 +115,29 @@ function loadReportList() {
         $.when(jqxhr).then(function (data) {
             var request = "ReadTestCaseExecution?Tag=" + selectTag + "&" + statusFilter.serialize() + "&TotalRecords=" + data.DisplayLength;
 
+            var doc = new Doc();
+            var customColvisConfig = {"buttonText": doc.getDocLabel("dataTable", "colVis"),
+                "stateChange": function (iColumn, bVisible) {
+                    $('.shortDesc').each(function () {
+                        $(this).attr('colspan', '3');
+                    });
+                }
+            };
+
             var configurations = new TableConfigurationsServerSide("listTable", request, "testList", aoColumnsFunc(data.Columns));
             configurations.paginate = false;
+            configurations.lang.colVis = customColvisConfig;
 
-            createDataTable(configurations);
+            var table = createDataTable(configurations, createShortDescRow);
+            table.fnSort([1, 'asc']);
+
             $('#listTable_wrapper').not('.initialized').addClass('initialized');
+
+            $("#listTable").on("draw.dt", function () {
+                $('#listTable tbody td.center').each(function () {
+                    $(this).attr('rowspan', '2');
+                });
+            });
         });
     }
 }
@@ -298,7 +316,7 @@ function loadReportByFunctionChart(dataset) {
             .attr("transform", "translate(0," + height + ")")
             .call(xAxis)
             .selectAll("text")
-            .style("text-anchor", "end")
+            .style({"text-anchor": "end"})
             .attr("dx", "-.8em")
             .attr("dy", "-.55em")
             .attr("transform", "rotate(-75)");
@@ -347,6 +365,23 @@ function loadReportByFunctionChart(dataset) {
  * Helper functions
  */
 
+function createShortDescRow(row, data, index) {
+    var tableAPI = $("#listTable").DataTable();
+    var createdRow = tableAPI.row(row);
+    var rowClass = "";
+
+    if (index % 2 === 0) {
+        rowClass = "odd printBorder";
+    } else {
+        rowClass = "even printBorder";
+    }
+
+    createdRow.child(data.shortDesc);
+    $(createdRow.child()).attr('class', rowClass);
+    $(createdRow.child()).children('td').attr('colspan', '3').attr('class', 'shortDesc');
+    createdRow.child.show();
+}
+
 function generateTooltip(data) {
     var htmlRes;
 
@@ -360,42 +395,36 @@ function generateTooltip(data) {
 
 function aoColumnsFunc(Columns) {
     var doc = new Doc();
+    var nbColumn = Columns.length + 3;
+    var testCaseInfoWidth = (1 / 3) * 30;
+    var testExecWidth = (1 / nbColumn) * 70;
+
 
     var aoColumns = [
-        {"data": "test",
+        {
+            "data": "test",
             "sName": "test",
-            "title": doc.getDocOnline("test", "Test")
+            "sWidth": testCaseInfoWidth + "%",
+            "title": doc.getDocOnline("test", "Test"),
+            "mRender": function (data) {
+                return '<div class="bold">' + data + '</div>';
+            }
         },
-        {"data": "testCase",
+        {
+            "data": "testCase",
             "sName": "testCase",
+            "sWidth": testCaseInfoWidth + "%",
             "title": doc.getDocOnline("testcase", "TestCase"),
             "mRender": function (data, type, obj, meta) {
                 var result = "<a href='./TestCase.jsp?Test=" + obj.test + "&TestCase=" + obj.testCase + "&Load=Load'>" + obj.testCase + "</a>";
                 return result;
             }
         },
-        {"data": "application",
+        {
+            "data": "application",
             "sName": "application",
+            "sWidth": testCaseInfoWidth + "%",
             "title": doc.getDocOnline("application", "Application")
-        },
-        {
-            "data": "status",
-            "sName": "status",
-            "title": doc.getDocOnline("testcase", "Status")
-        },
-        {"data": "shortDesc",
-            "sName": "description",
-            "title": doc.getDocOnline("testcase", "Description")
-        },
-        {
-            "data": "bugId",
-            "sName": "bugId",
-            "title": doc.getDocOnline("testcase", "BugID")
-        },
-        {
-            "data": "function",
-            "sName": "function",
-            "title": doc.getDocOnline("testcase", "Function")
         }
     ];
     for (var i = 0; i < Columns.length; i++) {
@@ -404,6 +433,7 @@ function aoColumnsFunc(Columns) {
         var col = {"title": title,
             "bSortable": false,
             "bSearchable": false,
+            "sWidth": testExecWidth + "%",
             "data": function (row, type, val, meta) {
                 var dataTitle = meta.settings.aoColumns[meta.col].sTitle;
                 if (row.hasOwnProperty("execTab") && row["execTab"].hasOwnProperty(dataTitle)) {
@@ -419,11 +449,11 @@ function aoColumnsFunc(Columns) {
                     var glyphClass = getRowClass(data.ControlStatus);
                     var tooltip = generateTooltip(data);
                     var cell = '<div class="progress-bar status' + data.ControlStatus + '" \n\
-                                role="progressbar" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100" style="width: 100%;cursor: pointer;" \n\
+                                role="progressbar" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100" style="width: 100%;cursor: pointer; height: 40px;" \n\
                                 data-toggle="tooltip" data-html="true" title="' + tooltip + '"\n\
                                 onclick="location.href=\'' + executionLink + '\'">\n\
                                 <span class="' + glyphClass.glyph + ' marginRight5"></span>\n\
-                                 ' + data.ControlStatus + '</div>';
+                                 <span>' + data.ControlStatus + '<span></div>';
                     return cell;
                 } else {
                     return data;

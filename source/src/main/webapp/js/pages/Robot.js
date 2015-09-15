@@ -37,9 +37,9 @@ function initPage() {
     //configure and create the dataTable
     var configurations = new TableConfigurationsServerSide("robotsTable", "ReadRobot", "contentTable", aoColumnsFunc());
 
-    createDataTableWithPermissions(configurations, renderOptionsForRobot);
-    var oTable = $("#robotsTable").dataTable();
-    oTable.fnSort([1, 'asc']);
+    var table = createDataTableWithPermissions(configurations, renderOptionsForRobot);
+
+    table.fnSort([1, 'asc']);
 };
 
 function displayPageLabel() {

@@ -24,10 +24,9 @@ $.when($.getScript("js/pages/global/global.js")).then(function () {
         //configure and create the dataTable
         var configurations = new TableConfigurationsServerSide("logViewerTable", "ReadLogEvent", "contentTable", aoColumnsFunc());
 
-        createDataTable(configurations);
+        var table = createDataTable(configurations);
         //By default, sort the log messages from newest to oldest
-        var oTable = $("#logViewerTable").dataTable();
-        oTable.fnSort([1, 'desc']);
+        table.fnSort([1, 'desc']);
     });
 });
 

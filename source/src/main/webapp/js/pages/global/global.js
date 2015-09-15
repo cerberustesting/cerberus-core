@@ -533,13 +533,15 @@ function createDataTableWithPermissions(tableConfigurations, callbackfunction) {
 
     $("#" + tableConfigurations.divId + "_length").addClass("marginBottom10").addClass("width80");
     $("#" + tableConfigurations.divId + "_filter").addClass("marginBottom10").addClass("width150");
+
+    return oTable;
 }
 
 /***
  * Creates a datatable that is server-side processed.
  * @param {type} tableConfigurations set of configurations that define how data is retrieved and presented
  */
-function createDataTable(tableConfigurations) {
+function createDataTable(tableConfigurations, callback) {
     var domConf = 'Cl<"showInlineElement pull-left marginLeft5"f>rti<"marginTop5"p>';
     if (!tableConfigurations.showColvis) {
         domConf = 'l<"showInlineElement pull-left marginLeft5"f>rti<"marginTop5"p>';
@@ -567,13 +569,13 @@ function createDataTable(tableConfigurations) {
     configs["scrollX"] = tableConfigurations.scrollX;
     configs["lengthChange"] = true;
     configs["lengthMenu"] = tableConfigurations.lengthMenu;
+    configs["createdRow"] = callback;
 
 
     if (tableConfigurations.serverSide) {
         configs["sAjaxSource"] = tableConfigurations.ajaxSource;
         configs["sAjaxDataProp"] = tableConfigurations.ajaxProp;
         configs["fnServerData"] = function (sSource, aoData, fnCallback, oSettings) {
-
             oSettings.jqXHR = $.ajax({
                 "dataType": 'json',
                 "type": "GET",
@@ -585,7 +587,7 @@ function createDataTable(tableConfigurations) {
                     $(location).prop("search", $(location).prop("search"));
                 }
             });
-        }
+        };
     } else {
         configs["aaData"] = tableConfigurations.aaData;
     }
@@ -593,8 +595,6 @@ function createDataTable(tableConfigurations) {
     //if is a server side table then we use a delay to avoid too many calls to the server
     if (tableConfigurations.serverSide) {
         oTable.dataTable().fnSetFilteringDelay(500);
-
-
     }
     if (tableConfigurations.showColvis) {
         $("#" + tableConfigurations.divId + "_wrapper .ColVis_MasterButton").addClass("btn btn-default");
@@ -607,6 +607,7 @@ function createDataTable(tableConfigurations) {
     $("#" + tableConfigurations.divId + "_length").addClass("marginBottom10").addClass("width80");
     $("#" + tableConfigurations.divId + "_filter").addClass("marginBottom10").addClass("width150");
 
+    return oTable;
 }
 
 /**
