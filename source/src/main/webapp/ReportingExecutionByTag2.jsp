@@ -50,8 +50,11 @@
                         <div class="panel-heading card">
                             <span class="fa fa-pie-chart fa-fw"></span>
                             <label id="reportStatus"> Report by Status</label>
+                            <a data-toggle="collapse" data-target="#ReportByStatus">
+                                <span class="toggle glyphicon glyphicon-chevron-right pull-right"></span>
+                            </a>
                         </div>
-                        <div class="panel-body">
+                        <div class="panel-body collapse in" id="ReportByStatus">
                             <div class="row">
                                 <div class="col-xs-6" id="ReportByStatusTable"></div>
                                 <div class="col-xs-6" id="statusChart"></div>
@@ -66,8 +69,11 @@
                         <div class="panel-heading card">
                             <span class="fa fa-bar-chart fa-fw"></span>
                             <label id="reportFunction">Report by Function</label>
+                            <a data-toggle="collapse" data-target="#functionChart">
+                                <span class="toggle glyphicon glyphicon-chevron-right pull-right"></span>
+                            </a>
                         </div>
-                        <div class="panel-body" id="functionChart"></div>
+                        <div class="panel-body collapse in" id="functionChart"></div>
                     </div>
                 </div>
             </div>
@@ -77,6 +83,9 @@
                         <div class="panel-heading card">
                             <span class="glyphicon glyphicon-list"></span>
                             <label id="List">List</label>
+                            <a data-toggle="collapse" data-target="#listReport">
+                                <span class="toggle glyphicon glyphicon-chevron-right pull-right"></span>
+                            </a>
                             <div class="pull-right">
                                 <label id="statusLabel">Status :</label>
                                 <div class="form-group" id="statusFilter">
@@ -112,7 +121,7 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="panel-body">
+                        <div class="panel-body collapse in" id="listReport">
                             <table id="listTable" class="table table-hover display" name="listTable"></table>
                             <div class="marginBottom20"></div>
                         </div>

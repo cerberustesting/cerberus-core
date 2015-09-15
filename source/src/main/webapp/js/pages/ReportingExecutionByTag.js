@@ -23,6 +23,9 @@ $.when($.getScript("js/pages/global/global.js")).then(function () {
     $(document).ready(function () {
         initPage();
 
+        bindToggleCollapse("#ReportByStatus");
+        bindToggleCollapse("#functionChart");
+        bindToggleCollapse("#listReport");
 
         loadTagFilters();
         $('body').tooltip({
@@ -117,6 +120,7 @@ function loadReportList() {
 
             var doc = new Doc();
             var customColvisConfig = {"buttonText": doc.getDocLabel("dataTable", "colVis"),
+                "exclude": [0, 1, 2],
                 "stateChange": function (iColumn, bVisible) {
                     $('.shortDesc').each(function () {
                         $(this).attr('colspan', '3');
@@ -127,6 +131,7 @@ function loadReportList() {
             var configurations = new TableConfigurationsServerSide("listTable", request, "testList", aoColumnsFunc(data.Columns));
             configurations.paginate = false;
             configurations.lang.colVis = customColvisConfig;
+            configurations.orderClasses = false;
 
             var table = createDataTable(configurations, createShortDescRow);
             table.fnSort([1, 'asc']);
@@ -254,9 +259,9 @@ function convertData(dataset) {
 function loadReportByFunctionChart(dataset) {
     var data = convertData(dataset.axis);
 
-    var margin = {top: 20, right: 20, bottom: 100, left: 150},
+    var margin = {top: 20, right: 20, bottom: 200, left: 150},
     width = 1200 - margin.left - margin.right,
-            height = 500 - margin.top - margin.bottom;
+            height = 600 - margin.top - margin.bottom;
 
     var x = d3.scale.ordinal()
             .rangeRoundBands([0, width], .1);
@@ -316,6 +321,7 @@ function loadReportByFunctionChart(dataset) {
             .attr("transform", "translate(0," + height + ")")
             .call(xAxis)
             .selectAll("text")
+            .call(wrap, 200)
             .style({"text-anchor": "end"})
             .attr("dx", "-.8em")
             .attr("dy", "-.55em")
@@ -406,9 +412,7 @@ function aoColumnsFunc(Columns) {
             "sName": "test",
             "sWidth": testCaseInfoWidth + "%",
             "title": doc.getDocOnline("test", "Test"),
-            "mRender": function (data) {
-                return '<div class="bold">' + data + '</div>';
-            }
+            "sClass": "bold"
         },
         {
             "data": "testCase",
@@ -430,7 +434,8 @@ function aoColumnsFunc(Columns) {
     for (var i = 0; i < Columns.length; i++) {
         var title = Columns[i].environment + " " + Columns[i].country + " " + Columns[i].browser;
 
-        var col = {"title": title,
+        var col = {
+            "title": title,
             "bSortable": false,
             "bSearchable": false,
             "sWidth": testExecWidth + "%",
@@ -497,4 +502,38 @@ function generateExecutionLink(status, id) {
         result = "./ExecutionDetail.jsp?id_tc=" + id;
     }
     return result;
+}
+
+function bindToggleCollapse(id) {
+    $(id).on('shown.bs.collapse', function () {
+        $(this).prev().find(".toggle").removeClass("glyphicon-chevron-down").addClass("glyphicon-chevron-right");
+    });
+
+    $(id).on('hidden.bs.collapse', function () {
+        $(this).prev().find(".toggle").removeClass("glyphicon-chevron-right").addClass("glyphicon-chevron-down");
+    });
+}
+
+function wrap(text, width) {
+    text.each(function () {
+        var text = d3.select(this),
+                words = text.text().split(/\s+/).reverse(),
+                word,
+                line = [],
+                lineNumber = 0,
+                lineHeight = 1.1, // ems
+                y = text.attr("y"),
+                dy = parseFloat(text.attr("dy")),
+                tspan = text.text(null).append("tspan").attr("x", 0).attr("y", y).attr("dy", dy + "em");
+        while (word = words.pop()) {
+            line.push(word);
+            tspan.text(line.join(" "));
+            if (tspan.node().getComputedTextLength() > width) {
+                line.pop();
+                tspan.text(line.join(" "));
+                line = [word];
+                tspan = text.append("tspan").attr("x", 0).attr("y", y).attr("dy", ++lineNumber * lineHeight + dy + "em").text(word);
+            }
+        }
+    });
 }
