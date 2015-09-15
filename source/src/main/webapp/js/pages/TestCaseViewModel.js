@@ -24,9 +24,12 @@ var listOfPropertyTypes;
  * @param {type} param1 - filename
  */
 $.when($.getScript("js/pages/global/global.js")).then(function() {
-    displayPageLabel();
-    
-    
+
+    $(document).ready(function() {
+        displayPageLabel();
+    });
+
+
     /**
      * Document ready methods
      */
@@ -35,15 +38,15 @@ $.when($.getScript("js/pages/global/global.js")).then(function() {
          * Loads the list of property types used to create the dropdown tha twill create the property
          * @param {type} data
          */
-        getInvariantList("PROPERTYTYPE", function (data){
+        getInvariantList("PROPERTYTYPE", function(data) {
             listOfPropertyTypes = data;
-             /**
+            /**
              * For each property adds the icon corresponding to its state
              */
             $("input.property_value").each(drawPropertySymbolHandler);
-            
-        }); 
-         
+
+        });
+
         /**
          * Removes all rows when the modal window is hidden and clears the message
          */
@@ -121,44 +124,44 @@ $.when($.getScript("js/pages/global/global.js")).then(function() {
         $("textarea[id*='properties_value1'][class*='getFromDataLib']").each(function() {
             setPropertyValuesAutoComplete($(this), callbackAutoCompleteTestDataLibName);
         });
-        
-       
-        
+
+
+
     });
     //Show save button when testcase page loaded
     $("input[name='divButtonSaveChange']").removeAttr("style");
-    
+
 });
 /**
  * Method that overrides a property from the click on the button
  * @param {type} element - element clicked by tge yser
  * @returns {undefined}
  */
-function overrideProperty(element){
-        var property = $(element).next("input.property_value");//gets the input tag next to the img tag
-        var propertyName = $(property).attr("value"); //gets the name of the property
-        var testID = $("#hiddenInformationTest").attr("value");
-        var testCaseID = $("#hiddenInformationTestCase").attr("value");
+function overrideProperty(element) {
+    var property = $(element).next("input.property_value");//gets the input tag next to the img tag
+    var propertyName = $(property).attr("value"); //gets the name of the property
+    var testID = $("#hiddenInformationTest").attr("value");
+    var testCaseID = $("#hiddenInformationTestCase").attr("value");
 
-        if (property.data("usestep-step") !== null && property.data("usestep-step") !== "") {
-            var useTest = property.data("usestep-test");
-            var useTestcase = property.data("usestep-testcase");
-            $.get("./ImportPropertyOfATestCaseToAnOtherTestCase", {"fromtest": useTest, "fromtestcase": useTestcase,
-                "totest": testID, "totestcase": testCaseID,
-                "property": propertyName}
-            , function(data) {
-                if (getAlertType(data.messageType) === 'success') {
-                    $("#selectTestCase").submit();
-                }else{
-                    //TODO:FN refactor this when the page is converted to the new GUI standards
-                    //showMessageMainPage()                
-                    alert(data.message);
-                }
+    if (property.data("usestep-step") !== null && property.data("usestep-step") !== "") {
+        var useTest = property.data("usestep-test");
+        var useTestcase = property.data("usestep-testcase");
+        $.get("./ImportPropertyOfATestCaseToAnOtherTestCase", {"fromtest": useTest, "fromtestcase": useTestcase,
+            "totest": testID, "totestcase": testCaseID,
+            "property": propertyName}
+        , function(data) {
+            if (getAlertType(data.messageType) === 'success') {
+                $("#selectTestCase").submit();
+            } else {
+                //TODO:FN refactor this when the page is converted to the new GUI standards
+                //showMessageMainPage()                
+                alert(data.message);
             }
-            );
-        }  
+        }
+        );
+    }
 }
- 
+
 /**
  * Checks if there are undefined properties. If the false value is returned, then the user will be able to run 
  * the test case. 
@@ -166,47 +169,47 @@ function overrideProperty(element){
  */
 function checkUndefinedProperties() {
     var doc = getDoc();
-    if ($("div.dropdown button.property_missing span[class*='glyphicon-warning-sign']").size()) { 
+    if ($("div.dropdown button.property_missing span[class*='glyphicon-warning-sign']").size()) {
         alert(doc.page_testcase.undefined_error_message.docLabel);
         return false;
     }
     return true;
 }
- 
+
 
 /**
  * Auxiliary function that draws the icon near to the property name based on whether it is defined, imported or overridden.
  * @returns {undefined}
  */
-function drawPropertySymbolHandler(){ 
+function drawPropertySymbolHandler() {
     var doc = getDoc();
     var doPageTestCase = doc.page_testcase;
     var element = this;
     var propertyValue = element.value;
-    
-    
+
+
     //type:
     //0 - none
     //1 - create
     //2 - override
     //3 - overidden
     var type = 0;
-    if(propertyValue && propertyValue !== "" && isNaN(propertyValue)){
+    if (propertyValue && propertyValue !== "" && isNaN(propertyValue)) {
         //var jinput = $(this);
-        $(element).css({"width" :"60%"});
-        var toolTipMessage = ""; 
+        $(element).css({"width": "60%"});
+        var toolTipMessage = "";
         var testDesc = $(element).attr('data-usestep-test');
 
-        if (!Boolean(testDesc) && $("input.property_name[value='" + element.value + "']").length === 0){ 
+        if (!Boolean(testDesc) && $("input.property_name[value='" + element.value + "']").length === 0) {
             //check if is an access to a subdata entry
 
             var isSubDataAccess = element.value.match("^[_A-Za-z0-9]+\\([_A-Za-z0-9]+\\)$");
             //is a format of the subdataaccess
-            if(isSubDataAccess !== null){
+            if (isSubDataAccess !== null) {
                 //check if the property from getdatalibrary exists
                 //get the name for the property
                 var name = element.value.split(new RegExp("\\s+|\\(\\s*|\\)"));
-                if (($("input.property_name[value='" + name[0] + "'] ").length === 0)){ 
+                if (($("input.property_name[value='" + name[0] + "'] ").length === 0)) {
                     //Missing - property is not defined anywhere
                     toolTipMessage = doPageTestCase.tooltip_clicktocreate.docLabel.replace("%P%", propertyValue);
                     //"You are using the syntax to acces a GetFromDataLIB " + propertyValue +" is missing! Create the corresponding property! ";
@@ -214,38 +217,38 @@ function drawPropertySymbolHandler(){
                     type = 1;
                 }
 
-            }else{
+            } else {
                 //Missing - property is not defined anywhere
-                toolTipMessage = doPageTestCase.tooltip_clicktocreate.docLabel.replace("%P%", propertyValue); 
-                type = 1; 
+                toolTipMessage = doPageTestCase.tooltip_clicktocreate.docLabel.replace("%P%", propertyValue);
+                type = 1;
             }
 
-        }else if (Boolean(testDesc)){ //verify if it is defined
+        } else if (Boolean(testDesc)) { //verify if it is defined
             var testCaseDesc = $(element).attr('data-usestep-testcase');
             var testStepDesc = $(element).attr('data-usestep-step');
 
-            if( $("input.property_name[value='" + propertyValue + "']").length !== 0) { 
+            if ($("input.property_name[value='" + propertyValue + "']").length !== 0) {
                 //Overridden - the property was defined in the imported step and redefined in the current test case                            
                 toolTipMessage = doPageTestCase.tooltip_infooverriden.docLabel.replace("%P%", propertyValue).
-                        replace("%T%", testDesc).replace("%TC%", testCaseDesc).replace("%S%", testStepDesc); 
-                type = 3; 
-            }else {
+                        replace("%T%", testDesc).replace("%TC%", testCaseDesc).replace("%S%", testStepDesc);
+                type = 3;
+            } else {
                 ////Imported - the property is only defined in the import test step
-                
+
                 toolTipMessage = doPageTestCase.tooltip_clicktooverride.docLabel.replace("%P%", propertyValue).
-                        replace("%T%", testDesc).replace("%TC%", testCaseDesc).replace("%S%", testStepDesc); 
-                type = 2; 
+                        replace("%T%", testDesc).replace("%TC%", testCaseDesc).replace("%S%", testStepDesc);
+                type = 2;
             }
         }
 
         //if the property is not related to an imported step and if there is an image defined     
         //then the image is added into the page
         //the default scenario does not add any image to the property definition
-        if(!Boolean($(element).attr('data-imported-property')) && (type > 0)){
+        if (!Boolean($(element).attr('data-imported-property')) && (type > 0)) {
             /*$(element).before("<img " + classForImage + " data-property-name='" + propertyValue + 
-                    "' src='" + imageUrl + "' title='" + toolTipMessage +"' style='float:left;display:inline;' width='16px' height='16px' />");                          */
-            $(element).before(createCommandList(propertyValue, toolTipMessage, type, listOfPropertyTypes, $(element).attr('name')));        
-         }
+             "' src='" + imageUrl + "' title='" + toolTipMessage +"' style='float:left;display:inline;' width='16px' height='16px' />");                          */
+            $(element).before(createCommandList(propertyValue, toolTipMessage, type, listOfPropertyTypes, $(element).attr('name')));
+        }
     }
 
 }
@@ -255,41 +258,41 @@ function drawPropertySymbolHandler(){
  * @param {type} propertyType - type of the property
  * @returns {undefined}
  */
-function createNewPropertyFromCommandList(propertyName, propertyType){
-   //var propertyName = propertyValue;//(this).attr("data-property-name"); //gets the name of the property    
+function createNewPropertyFromCommandList(propertyName, propertyType) {
+    //var propertyName = propertyValue;//(this).attr("data-property-name"); //gets the name of the property    
     var testID = $("#hiddenInformationTest").attr("value");
     var testCaseID = $("#hiddenInformationTestCase").attr("value");
- 
-    var user = getUser();      
-    
+
+    var user = getUser();
+
     $.get("./CreateNotDefinedProperty", {"totest": testID, "totestcase": testCaseID,
-            "property": propertyName, "propertyType": propertyType, "userLanguage": user.language}
-        , function(data) {            
-            if (getAlertType(data.messageType) === 'success') {
-                $("#selectTestCase").submit();
-            }else{
-                //TODO:FN refactor this when the page is converted to the new GUI standards
-                //showMessageMainPage()                
-                alert(data.message);
-            }
+        "property": propertyName, "propertyType": propertyType, "userLanguage": user.language}
+    , function(data) {
+        if (getAlertType(data.messageType) === 'success') {
+            $("#selectTestCase").submit();
+        } else {
+            //TODO:FN refactor this when the page is converted to the new GUI standards
+            //showMessageMainPage()                
+            alert(data.message);
+        }
     });
 }
-function createCommandList(propertyValue, toolTipMessage, type, listOfPropertyTypes, inputName){
+function createCommandList(propertyValue, toolTipMessage, type, listOfPropertyTypes, inputName) {
     var htmlButton = '';
     var additionalContent = '';
-    if(type !== 0){
-        switch(type){ 
+    if (type !== 0) {
+        switch (type) {
             case 1: //click to create
-                htmlButton = '<div class="dropdown"><button title="' + toolTipMessage + 
-                        '" class="btn btn-xs dropdown-toggle property_missing" type="button" id="dropDownMenu' + inputName + 
+                htmlButton = '<div class="dropdown"><button title="' + toolTipMessage +
+                        '" class="btn btn-xs dropdown-toggle property_missing" type="button" id="dropDownMenu' + inputName +
                         '" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">\n\
                              <span class="glyphicon glyphicon-warning-sign colorRed"></span><span class="caret colorRed"></button>';
-                
+
                 //adds all types of properties
                 additionalContent = '<ul class="dropdown-menu typesMenu" aria-labelledby="dropDownMenu' + inputName + '">';
-                $.each(listOfPropertyTypes, function(index){
-                    additionalContent += '<li><a href="#" onclick="createNewPropertyFromCommandList(\''+ propertyValue +'\', \'' + 
-                            listOfPropertyTypes[index]  +'\');return false;" name="command_' + listOfPropertyTypes[index] +'">' +
+                $.each(listOfPropertyTypes, function(index) {
+                    additionalContent += '<li><a href="#" onclick="createNewPropertyFromCommandList(\'' + propertyValue + '\', \'' +
+                            listOfPropertyTypes[index] + '\');return false;" name="command_' + listOfPropertyTypes[index] + '">' +
                             listOfPropertyTypes[index] + '</a></li>';
                 })
                 additionalContent += '</ul>';
@@ -304,7 +307,7 @@ function createCommandList(propertyValue, toolTipMessage, type, listOfPropertyTy
                             <span class="glyphicon glyphicon-import colorDarkYellow"></span></button>';
                 break;
         }
-        
+
     }
     return htmlButton;
 }
@@ -318,8 +321,8 @@ function displayPageLabel() {
     displayHeaderLabel(doc);
     displayGlobalLabel(doc);
     //tooltips of the buttons for the property type getFromDataLib
-    $("button[id='entryButton']").prop("title", doc.getDocLabel('page_testcase','tooltip_select_entry'));
-    $("button[data-id='entryButton_template']").prop("title", doc.getDocLabel('page_testcase','tooltip_select_entry'));
+    $("button[id='entryButton']").prop("title", doc.getDocLabel('page_testcase', 'tooltip_select_entry'));
+    $("button[data-id='entryButton_template']").prop("title", doc.getDocLabel('page_testcase', 'tooltip_select_entry'));
     $("*[name='labelTest']").html(doc.getDocOnline("test", "Test"));
     $("*[name='labelTestCase']").html(doc.getDocOnline("testcase", "TestCase"));
     $("*[name='labelTestCaseStepActionDescription']").html(doc.getDocOnline("testcasestepaction", "description"));
@@ -331,11 +334,11 @@ function displayPageLabel() {
  * Applies the translations for the get list of test cases modal.
  * @param {type} doc object that contains Cerberus' documentation 
  */
-function displayListTestDataLib(doc){
+function displayListTestDataLib(doc) {
     //title
     $("#selectEntryFromListModalLabel").html(doc.page_testcase_m_listtestdatalib.title.docLabel);
     //close button
-    $("#closeTCListTestDataLib").text(doc.page_global.buttonClose.docLabel);    
+    $("#closeTCListTestDataLib").text(doc.page_global.buttonClose.docLabel);
 }
 
 /*****************************************************************************/
@@ -452,7 +455,7 @@ function aoColumnsFunc() {
                     className: "width150  center",
                     "sName": "TestDataLibID",
                     "bSortable": false,
-                    "title":displayDocLink(docModal.actions),
+                    "title": displayDocLink(docModal.actions),
                     "mRender": function(data, type, oObj) {
                         var selectElement = '<button id="selectEntry' + data + '"  onclick="selectEntry(this);" \n\
                                                 class="selectEntry btn btn-default btn-xs margin-right5" \n\
@@ -488,12 +491,12 @@ function aoColumnsFunc() {
                 break;
             case 9 :
                 aoColumns.push({className: "width250", "sName": "ServicePath", "title": displayDocLink(docTestDataLib.servicepath),
-                    "mRender": function (data, type, oObj) {
+                    "mRender": function(data, type, oObj) {
                         if (data !== '') {
                             return "<a target = '_blank' href='" + data + "'>" + data + "</a>";//TODO:FN check the special characters that may be encapsulated
                         }
                         return '';
-                }});
+                    }});
                 break;
             case 10 :
                 aoColumns.push({className: "width250", "sName": "Method", "title": displayDocLink(docTestDataLib.method)});

@@ -64,7 +64,7 @@ function ChangeSystem() {
         async: false,
         success: function () {
             sessionStorage.removeItem("user");
-            location.reload();
+            location.reload(true);
         }
     });
 }

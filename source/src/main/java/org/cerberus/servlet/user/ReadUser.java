@@ -95,7 +95,6 @@ public class ReadUser extends HttpServlet {
             }
             data.put("system", systems);
             HttpSession session = request.getSession();
-            System.out.print(session.getId());
             session.setAttribute("MySystem", myUser.getDefaultSystem());
             session.setAttribute("MyLang", myUser.getLanguage());
 

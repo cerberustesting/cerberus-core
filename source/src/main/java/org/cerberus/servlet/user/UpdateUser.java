@@ -106,7 +106,7 @@ public class UpdateUser extends HttpServlet {
                     break;
                 case 5:
                     myUser.setDefaultSystem(value);
-                    request.setAttribute("MySystem", value);
+                    request.getSession().setAttribute("MySystem", value);
                     break;
                 case 6:
                     myUser.setRequest(value);
@@ -116,7 +116,7 @@ public class UpdateUser extends HttpServlet {
                     break;
                 case 8:
                     myUser.setLanguage(value);
-                    request.setAttribute("MyLang", value);
+                    request.getSession().setAttribute("MyLang", value);
                     break;
             }
             try {
