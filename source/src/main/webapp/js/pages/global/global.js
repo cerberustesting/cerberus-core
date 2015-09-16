@@ -465,6 +465,7 @@ function TableConfigurationsServerSide(divId, ajaxSource, ajaxProp, aoColumnsFun
     this.scrollCollapse = false;
     this.lang = getDataTableLanguage();
     this.orderClasses = true;
+    this.bDeferRender = false;
 }
 
 function createDataTableWithPermissions(tableConfigurations, callbackfunction) {
@@ -494,6 +495,7 @@ function createDataTableWithPermissions(tableConfigurations, callbackfunction) {
     configs["scrollX"] = tableConfigurations.scrollX;
     configs["lengthChange"] = true;
     configs["orderClasses"] = tableConfigurations.orderClasses;
+    configs["bDeferRender"] = tableConfigurations.bDeferRender;
 
 
     if (tableConfigurations.serverSide) {
@@ -573,6 +575,7 @@ function createDataTable(tableConfigurations, callback) {
     configs["lengthMenu"] = tableConfigurations.lengthMenu;
     configs["createdRow"] = callback;
     configs["orderClasses"] = tableConfigurations.orderClasses;
+    configs["bDeferRender"] = tableConfigurations.bDeferRender;
 
 
     if (tableConfigurations.serverSide) {

@@ -183,7 +183,7 @@
     </servlet>
     <servlet>
         <servlet-name>ReadTestCaseExecution</servlet-name>
-        <servlet-class>org.cerberus.servlet.testCaseExecution.ReadTestCaseExecution</servlet-class>
+        <servlet-class>org.cerberus.servlet.execution.ReadTestCaseExecution</servlet-class>
     </servlet>
     <servlet>
         <servlet-name>GetCampaignExecutionsCommand</servlet-name>

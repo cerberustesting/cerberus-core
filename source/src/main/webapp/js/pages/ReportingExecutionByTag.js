@@ -118,23 +118,10 @@ function loadReportList() {
         $.when(jqxhr).then(function (data) {
             var request = "ReadTestCaseExecution?Tag=" + selectTag + "&" + statusFilter.serialize() + "&TotalRecords=" + data.DisplayLength;
 
-            var doc = new Doc();
-            var customColvisConfig = {"buttonText": doc.getDocLabel("dataTable", "colVis"),
-                "exclude": [0, 1, 2],
-                "stateChange": function (iColumn, bVisible) {
-                    $('.shortDesc').each(function () {
-                        $(this).attr('colspan', '3');
-                    });
-                }
-            };
+            var config = new TableConfigurationsServerSide("listTable", request, "testList", aoColumnsFunc(data.Columns));
+            customConfig(config);
 
-            var configurations = new TableConfigurationsServerSide("listTable", request, "testList", aoColumnsFunc(data.Columns));
-            configurations.paginate = false;
-            configurations.lang.colVis = customColvisConfig;
-            configurations.orderClasses = false;
-
-            var table = createDataTable(configurations, createShortDescRow);
-            table.fnSort([1, 'asc']);
+            var table = createDataTable(config, createShortDescRow);
 
             $('#listTable_wrapper').not('.initialized').addClass('initialized');
 
@@ -468,6 +455,23 @@ function aoColumnsFunc(Columns) {
         aoColumns.push(col);
     }
     return aoColumns;
+}
+
+function customConfig(config) {
+    var doc = new Doc();
+    var customColvisConfig = {"buttonText": doc.getDocLabel("dataTable", "colVis"),
+        "exclude": [0, 1, 2],
+        "stateChange": function (iColumn, bVisible) {
+            $('.shortDesc').each(function () {
+                $(this).attr('colspan', '3');
+            });
+        }
+    };
+
+    config.paginate = false;
+    config.lang.colVis = customColvisConfig;
+    config.orderClasses = false;
+    config.bDeferRender = true;
 }
 
 function getRowClass(status) {
