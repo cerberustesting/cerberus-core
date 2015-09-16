@@ -269,7 +269,7 @@ public class ExecutionRunService implements IExecutionRunService {
             mainExecutionTestCaseStepList.addAll(testCaseStepList);
 
             /**
-             * Initialise the global TestCaseExecution Data List.
+             * Initialize the global TestCaseExecution Data List.
              */
             // 
             tCExecution.setResultMessage(new MessageGeneral(MessageGeneralEnum.EXECUTION_PE_TESTEXECUTING));
