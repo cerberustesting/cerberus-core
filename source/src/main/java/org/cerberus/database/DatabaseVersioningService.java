@@ -4651,7 +4651,7 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLS.append(" ('page_reportbytag', 'report_list', '', 'fr', 'Liste', 'Une liste de toute les executions de cas de test par environnement, pays et navigateur');");
         SQLInstruction.add(SQLS.toString());
 
-         // Documentation entries for Reporting by tag page.
+        // Documentation entries for Reporting by tag page.
         //-- ------------------------ 621
         SQLS = new StringBuilder();
         SQLS.append("INSERT INTO `documentation` (`DocTable`, `DocField`, `DocValue`, `Lang`, `DocLabel`, `DocDesc`) VALUES ");
@@ -4666,6 +4666,41 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLS.append(" ('testcase', 'BugID', '', 'fr', 'BugID', ''),");
         SQLS.append(" ('testcase', 'Function', '', 'fr', 'Fonction', '');");
         SQLInstruction.add(SQLS.toString());
+
+        // Documentation entries for Robot page.
+        //-- ------------------------ 622
+        SQLS = new StringBuilder();
+        SQLS.append("INSERT INTO `documentation` (`DocTable`, `DocField`, `DocValue`, `Lang`, `DocLabel`, `DocDesc`) VALUES ");
+        SQLS.append(" ('page_robot', 'button_create', '', 'en', 'Create new Robot', ''),");
+        SQLS.append(" ('page_robot', 'button_create', '', 'fr', 'Créer un nouveau Robot', ''),");
+        SQLS.append(" ('page_robot', 'button_delete', '', 'en', 'Delete Robot', ''),");
+        SQLS.append(" ('page_robot', 'button_delete', '', 'fr', 'Supprimer le Robot', ''),");
+        SQLS.append(" ('page_robot', 'button_edit', '', 'en', 'Edit Robot', ''),");
+        SQLS.append(" ('page_robot', 'button_edit', '', 'fr', 'Modifier le Robot', ''),");
+        SQLS.append(" ('page_robot', 'title', '', 'en', 'ROBOT', 'This page can be used in order to manage the robots.'),");
+        SQLS.append(" ('page_robot', 'title', '', 'fr', 'ROBOT', 'Cette page permet de gérer et créer des Robots.'),");
+        SQLS.append(" ('robot', 'robotID', '', 'en', 'Robot ID', 'Technical identifier of the Robot.'),");
+        SQLS.append(" ('robot', 'robotID', '', 'fr', 'ID du Robot', 'Identifiant technique invariant du Robot.'),");
+        SQLS.append(" ('robot', 'robot', '', 'en', 'Robot', 'Name of the Robot. A robot define the server that will execute an automated test case. It can be used when starting an execution without having to feed information such as host, port platform or browser.'),");
+        SQLS.append(" ('robot', 'robot', '', 'fr', 'Robot', 'Nom du Robot. Le Robot est le serveur en charge de l\\'execution d\\'un test automatisé. Il permet de lancer une execution de test sans avoir à renseigner l\\'IP, le port, le navigateur ou OS à utiliser.'),");
+        SQLS.append(" ('robot', 'host', '', 'en', 'Hostname', 'IP Adress or host that host the selenium server that will execute the test case.'),");
+        SQLS.append(" ('robot', 'host', '', 'fr', 'Hostname', 'Address IP ou nom de server qui heberge le robot et qui sera utilisé lors l\\'excution du cas de test.'),");
+        SQLS.append(" ('robot', 'port', '', 'en', 'Port number', 'Port number of the robot.'),");
+        SQLS.append(" ('robot', 'port', '', 'fr', 'Numero de port', 'Numero du port à utiliser pour acceder au Root.'),");
+        SQLS.append(" ('robot', 'platform', '', 'en', 'Platform', 'Operating system of the robot.'),");
+        SQLS.append(" ('robot', 'platform', '', 'fr', 'Platforme', 'System d\\'exploitation du robot.'),");
+        SQLS.append(" ('robot', 'browser', '', 'en', 'Browser', 'Broswer of the robot.'),");
+        SQLS.append(" ('robot', 'browser', '', 'fr', 'Navigateur', 'Navitateur du robot.'),");
+        SQLS.append(" ('robot', 'version', '', 'en', 'Version', 'Brower Version of the robot.'),");
+        SQLS.append(" ('robot', 'version', '', 'fr', 'Version', 'Version du navigateur du Robot.'),");
+        SQLS.append(" ('robot', 'active', '', 'en', 'Active', 'Define if the robot is active or not.'),");
+        SQLS.append(" ('robot', 'active', '', 'fr', 'Actif', 'Defini si le robot est actif ou non.'),");
+        SQLS.append(" ('robot', 'useragent', '', 'en', 'User Agent', 'User Agent of the robot.'),");
+        SQLS.append(" ('robot', 'useragent', '', 'fr', 'User Agent', 'User Agent du Robot.'),");
+        SQLS.append(" ('robot', 'description', '', 'en', 'Description', 'Robot Description.'),");
+        SQLS.append(" ('robot', 'description', '', 'fr', 'Description', 'Description du robot.');");
+        SQLInstruction.add(SQLS.toString());
+        
         
         return SQLInstruction;
     }

@@ -47,13 +47,21 @@ function displayPageLabel() {
 
     displayHeaderLabel(doc);
     displayGlobalLabel(doc);
-    $("#pageTitle").html(doc.getDocLabel("page_deploytype" ,"title"));
-    $("#title").html(doc.getDocOnline("page_deploytype", "title"));
-    $("[name='addEntryField']").html(doc.getDocLabel("page_deploytype", "button_create"));
-    $("[name='confirmationField']").html(doc.getDocLabel("page_deploytype", "button_delete"));
-    $("[name='editEntryField']").html(doc.getDocLabel("page_deploytype", "button_edit"));
-    $("[name='deployTypeField']").html(doc.getDocOnline("deploytype", "deploytype"));
-    $("[name='descriptionField']").html(doc.getDocOnline("deploytype", "description"));
+    $("#pageTitle").html(doc.getDocLabel("page_robot" ,"title"));
+    $("#title").html(doc.getDocOnline("page_robot", "title"));
+    $("[name='addEntryField']").html(doc.getDocLabel("page_robot", "button_create"));
+    $("[name='confirmationField']").html(doc.getDocLabel("page_robot", "button_delete"));
+    $("[name='editEntryField']").html(doc.getDocLabel("page_robot", "button_edit"));
+    $("[name='robotField']").html(doc.getDocOnline("robot", "robot"));
+    $("[name='robotField']").html(doc.getDocOnline("robot", "host"));
+    $("[name='robotField']").html(doc.getDocOnline("robot", "port"));
+    $("[name='robotField']").html(doc.getDocOnline("robot", "platform"));
+    $("[name='robotField']").html(doc.getDocOnline("robot", "browser"));
+    $("[name='robotField']").html(doc.getDocOnline("robot", "version"));
+    $("[name='robotField']").html(doc.getDocOnline("robot", "active"));
+    $("[name='robotField']").html(doc.getDocOnline("robot", "useragent"));
+    $("[name='descriptionField']").html(doc.getDocOnline("robot", "description"));
+    
     displayFooter(doc);
 }
 
@@ -84,9 +92,9 @@ function deleteEntry(entry) {
     clearResponseMessageMainPage();
     var doc = new Doc();
     var messageComplete = doc.getDocLabel("page_global", "deleteMessage");
-    messageComplete = messageComplete.replace("%TABLE%", doc.getDocLabel("deploytype", "deploytype"));
+    messageComplete = messageComplete.replace("%TABLE%", doc.getDocLabel("robot", "robot"));
     messageComplete = messageComplete.replace("%ENTRY%", entry);
-    showModalConfirmation(deleteEntryHandlerClick, doc.getDocLabel("page_deploytype", "button_delete"), messageComplete, entry);
+    showModalConfirmation(deleteEntryHandlerClick, doc.getDocLabel("page_robot", "button_delete"), messageComplete, entry);
 }
 
 function saveEntry(servletName, modalID, form) {
@@ -171,7 +179,7 @@ function renderOptionsForRobot(data) {
     if (data["hasPermissions"]) {
         if ($("#createRobotButton").length === 0) {
             var contentToAdd = "<div class='marginBottom10'><button id='createRobotButton' type='button' class='btn btn-default'>\n\
-            " + doc.getDocLabel("page_deploytype", "button_create") + "</button></div>";
+            " + doc.getDocLabel("page_robot", "button_create") + "</button></div>";
 
             $("#robotsTable_wrapper div.ColVis").before(contentToAdd);
             $('#robot #createRobotButton').click(CreateRobotTypeClick);
@@ -189,13 +197,13 @@ function aoColumnsFunc() {
             "bSortable": false,
             "bSearchable": false,
             "mRender": function (data, type, obj) {
-                var editEntry = '<button id="editEntry" onclick="editEntry(\'' + obj["robot"] + '\');"\n\
+                var editEntry = '<button id="editEntry" onclick="editEntry(\'' + obj["robotID"] + '\');"\n\
                                 class="editEntry btn btn-default btn-xs margin-right5" \n\
-                                name="editEntry" title="' + doc.getDocLabel("page_deploytype", "button_edit") + '" type="button">\n\
+                                name="editEntry" title="' + doc.getDocLabel("page_robot", "button_edit") + '" type="button">\n\
                                 <span class="glyphicon glyphicon-pencil"></span></button>';
                 var deleteEntry = '<button id="deleteEntry" onclick="deleteEntry(\'' + obj["robot"] + '\');" \n\
                                 class="deleteEntry btn btn-default btn-xs margin-right5" \n\
-                                name="deleteEntry" title="' + doc.getDocLabel("page_deploytype", "button_delete") + '" type="button">\n\
+                                name="deleteEntry" title="' + doc.getDocLabel("page_robot", "button_delete") + '" type="button">\n\
                                 <span class="glyphicon glyphicon-trash"></span></button>';
 
                 return '<div class="center btn-group width150">' + editEntry + deleteEntry + '</div>';
@@ -203,31 +211,31 @@ function aoColumnsFunc() {
         },
         {"data": "robot",
             "sName": "robot",
-            "title": doc.getDocOnline("deploytype", "deploytype")},
+            "title": doc.getDocOnline("robot", "robot")},
         {"data": "host",
             "sName": "host",
-            "title": doc.getDocOnline("deploytype", "deploytype")},
+            "title": doc.getDocOnline("robot", "host")},
         {"data": "port",
             "sName": "port",
-            "title": doc.getDocOnline("deploytype", "deploytype")},
+            "title": doc.getDocOnline("robot", "port")},
         {"data": "platform",
             "sName": "platform",
-            "title": doc.getDocOnline("deploytype", "deploytype")},
+            "title": doc.getDocOnline("robot", "platform")},
         {"data": "browser",
             "sName": "browser",
-            "title": doc.getDocOnline("deploytype", "deploytype")},
+            "title": doc.getDocOnline("robot", "browser")},
         {"data": "version",
             "sName": "version",
-            "title": doc.getDocOnline("deploytype", "deploytype")},
+            "title": doc.getDocOnline("robot", "version")},
         {"data": "active",
             "sName": "active",
-            "title": doc.getDocOnline("deploytype", "deploytype")},
-        {"data": "useragent",
-            "sName": "useragent",
-            "title": doc.getDocOnline("deploytype", "deploytype")},
+            "title": doc.getDocOnline("robot", "active")},
+        {"data": "userAgent",
+            "sName": "userAgent",
+            "title": doc.getDocOnline("robot", "useragent")},
         {"data": "description",
             "sName": "description",
-            "title": doc.getDocOnline("deploytype", "description")}
+            "title": doc.getDocOnline("robot", "description")}
     ];
     return aoColumns;
 }
