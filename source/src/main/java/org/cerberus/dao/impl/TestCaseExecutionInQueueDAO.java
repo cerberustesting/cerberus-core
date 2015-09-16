@@ -27,6 +27,7 @@ import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.cerberus.dao.ITestCaseExecutionInQueueDAO;
 import org.cerberus.database.DatabaseSpring;
@@ -39,6 +40,7 @@ import org.cerberus.entity.TestCaseExecutionInQueue;
 import org.cerberus.exception.CerberusException;
 import org.cerberus.exception.FactoryCreationException;
 import org.cerberus.factory.IFactoryTestCaseExecutionInQueue;
+import org.cerberus.log.MyLogger;
 import org.cerberus.util.answer.AnswerList;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
@@ -737,7 +739,6 @@ public class TestCaseExecutionInQueueDAO implements ITestCaseExecutionInQueueDAO
         query.append(" order by test, testcase, ID desc) as tce, application app ")
                 .append("where tce.application = app.application ");
 
-
         gSearch.append("and (tce.`test` like '%");
         gSearch.append(searchTerm);
         gSearch.append("%'");
@@ -816,5 +817,63 @@ public class TestCaseExecutionInQueueDAO implements ITestCaseExecutionInQueueDAO
             }
         }
         return answer;
+    }
+
+    @Override
+    public AnswerList readDistinctEnvCoutnryBrowserByTag(String tag) {
+        AnswerList answer = new AnswerList();
+        StringBuilder query = new StringBuilder();
+        MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
+
+        query.append("SELECT Environment, Country, Browser FROM testcaseexecutionqueue WHERE tag = ? GROUP BY Environment, Country, Browser");
+
+        Connection connection = this.databaseSpring.connect();
+
+        List<TestCaseWithExecution> EnvCountryBrowserList = new ArrayList<TestCaseWithExecution>();
+
+        try {
+            PreparedStatement preStat = connection.prepareStatement(query.toString());
+
+            preStat.setString(1, tag);
+            try {
+                ResultSet resultSet = preStat.executeQuery();
+                try {
+                    while (resultSet.next()) {
+                        EnvCountryBrowserList.add(this.loadEnvCountryBrowserFromResultSet(resultSet));
+                    }
+                    msg.setDescription(msg.getDescription().replace("%ITEM%", "TestCaseExecution").replace("%OPERATION%", "SELECT"));
+                    answer = new AnswerList(EnvCountryBrowserList, EnvCountryBrowserList.size());
+                } catch (SQLException exception) {
+                    MyLogger.log(TestCaseExecutionDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
+                    msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_UNEXPECTED_ERROR);
+                    msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", "Unable to retrieve the list of entries!"));
+                    EnvCountryBrowserList = null;
+                } finally {
+                    resultSet.close();
+                }
+            } catch (SQLException ex) {
+                MyLogger.log(TestCaseExecutionDAO.class.getName(), Level.ERROR, "Unable to execute query : " + ex.toString());
+                msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_UNEXPECTED_ERROR);
+                msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", "Unable to retrieve the list of entries!"));
+                EnvCountryBrowserList = null;
+            } finally {
+                preStat.close();
+            }
+        } catch (SQLException ex) {
+            MyLogger.log(TestCaseExecutionDAO.class.getName(), Level.WARN, ex.toString());
+        }
+
+        return answer;
+    }
+
+    public TestCaseWithExecution loadEnvCountryBrowserFromResultSet(ResultSet resultSet) throws SQLException {
+        TestCaseWithExecution testCaseWithExecution = new TestCaseWithExecution();
+
+        testCaseWithExecution.setEnvironment(resultSet.getString("Environment"));
+        testCaseWithExecution.setCountry(resultSet.getString("Country"));
+        testCaseWithExecution.setBrowser(resultSet.getString("Browser"));
+        testCaseWithExecution.setControlStatus("NE");
+
+        return testCaseWithExecution;
     }
 }

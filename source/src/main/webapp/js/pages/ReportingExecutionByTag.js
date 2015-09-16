@@ -102,7 +102,10 @@ function loadReport() {
     }
 }
 
+
 function loadReportList() {
+    var t0 = performance.now();
+
     var selectTag = $("#selectTag option:selected").text();
     var statusFilter = $("#statusFilter input");
 
@@ -132,6 +135,10 @@ function loadReportList() {
             });
         });
     }
+    var t1 = performance.now();
+    
+    console.log("It tooks " + (t1 - t0) + " ms");
+
 }
 
 /*
