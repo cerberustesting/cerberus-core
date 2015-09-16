@@ -896,7 +896,6 @@ public class TestCaseExecutionDAO implements ITestCaseExecutionDAO {
                 .append("on tce.Test = tc.Test ")
                 .append("and tce.TestCase = tc.TestCase ")
                 .append("where tce.tag = ? ");
-        
 
         query.append(" order by test, testcase, ID desc) as tce, application app ")
                 .append("where tce.application = app.application ");
@@ -922,7 +921,7 @@ public class TestCaseExecutionDAO implements ITestCaseExecutionDAO {
         query.append(column);
         query.append("` ");
         query.append(dir);
-        
+
         List<TestCaseWithExecution> testCaseWithExecutionList = new ArrayList<TestCaseWithExecution>();
         Connection connection = this.databaseSpring.connect();
         try {
@@ -981,6 +980,64 @@ public class TestCaseExecutionDAO implements ITestCaseExecutionDAO {
         return answer;
     }
 
+    @Override
+    public AnswerList readDistinctEnvCoutnryBrowserByTag(String tag) {
+        AnswerList answer = new AnswerList();
+        StringBuilder query = new StringBuilder();
+        MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
+
+        query.append("SELECT Environment, Country, Browser, ControlStatus FROM testcaseexecution WHERE tag = ? GROUP BY Environment, Country, Browser, ControlStatus");
+
+        Connection connection = this.databaseSpring.connect();
+
+        List<TestCaseWithExecution> EnvCountryBrowserList = new ArrayList<TestCaseWithExecution>();
+
+        try {
+            PreparedStatement preStat = connection.prepareStatement(query.toString());
+
+            preStat.setString(1, tag);
+            try {
+                ResultSet resultSet = preStat.executeQuery();
+                try {
+                    while (resultSet.next()) {
+                        EnvCountryBrowserList.add(this.loadEnvCountryBrowserFromResultSet(resultSet));
+                    }
+                    msg.setDescription(msg.getDescription().replace("%ITEM%", "TestCaseExecution").replace("%OPERATION%", "SELECT"));
+                    answer = new AnswerList(EnvCountryBrowserList, EnvCountryBrowserList.size());
+                } catch (SQLException exception) {
+                    MyLogger.log(TestCaseExecutionDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
+                    msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_UNEXPECTED_ERROR);
+                    msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", "Unable to retrieve the list of entries!"));
+                    EnvCountryBrowserList = null;
+                } finally {
+                    resultSet.close();
+                }
+            } catch (SQLException ex) {
+                MyLogger.log(TestCaseExecutionDAO.class.getName(), Level.ERROR, "Unable to execute query : " + ex.toString());
+                msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_UNEXPECTED_ERROR);
+                msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", "Unable to retrieve the list of entries!"));
+                EnvCountryBrowserList = null;
+            } finally {
+                preStat.close();
+            }
+        } catch (SQLException ex) {
+            MyLogger.log(TestCaseExecutionDAO.class.getName(), Level.WARN, ex.toString());
+        }
+
+        return answer;
+    }
+
+    public TestCaseWithExecution loadEnvCountryBrowserFromResultSet(ResultSet resultSet) throws SQLException {
+        TestCaseWithExecution testCaseWithExecution = new TestCaseWithExecution();
+        
+        testCaseWithExecution.setEnvironment(resultSet.getString("Environment"));
+        testCaseWithExecution.setCountry(resultSet.getString("Country"));
+        testCaseWithExecution.setBrowser(resultSet.getString("Browser"));
+        testCaseWithExecution.setControlStatus(resultSet.getString("ControlStatus"));
+        
+        return testCaseWithExecution;
+    }
+    
     public TestCaseWithExecution loadTestCaseWithExecutionFromResultSet(ResultSet resultSet) throws SQLException {
         TestCaseWithExecution testCaseWithExecution = new TestCaseWithExecution();
 

@@ -58,6 +58,8 @@
         <script type="text/javascript" src="js/jquery.multiselect.js" charset="utf-8"></script>
         <script type="text/javascript" src="js/jquery.multiselect.filter.js"></script>
         <script type="text/javascript" src="js/jquery.form.js"></script>
+        <!--Custom scripts inclusions-->
+        <script type="text/javascript" src="js/pages/global/user.js"></script>
     </head>
     <body>
         <style>
@@ -1133,7 +1135,8 @@
     <script>
         $(document).ready(function() {
             var system = $('#MySystem').val();
-            $('#testcasesearchdiv').load("RunTestsSearchFilters.jsp?system=" + system , function() {
+            var myLang = getUser().language;
+            $('#testcasesearchdiv').load("RunTestsSearchFilters.jsp?system=" + system + "&MyLang=" + myLang, function() {
 
 
                 $(".multiSelectOptions").each(function() {

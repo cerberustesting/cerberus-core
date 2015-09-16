@@ -23,6 +23,7 @@ import java.io.IOException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map.Entry;
@@ -204,26 +205,16 @@ public class ReadTestCaseExecution extends HttpServlet {
         ITestCaseExecutionInQueueService testCaseExecutionInQueueService = appContext
                 .getBean(ITestCaseExecutionInQueueService.class);
 
-        int startPosition = Integer.valueOf(ParameterParserUtil.parseStringParam(request.getParameter("iDisplayStart"), "0"));
-//        int length = Integer.valueOf(ParameterParserUtil.parseStringParam(request.getParameter("iDisplayLength"), "100000"));
-        int length = 100000;
-
-        String searchParameter = ParameterParserUtil.parseStringParam(request.getParameter("sSearch"), "");
-        int columnToSortParameter = Integer.parseInt(ParameterParserUtil.parseStringParam(request.getParameter("iSortCol_0"), "0"));
-        String sColumns = ParameterParserUtil.parseStringParam(request.getParameter("sColumns"), "test,testCase,application,status,description,bugId,function");
-        String columnToSort[] = sColumns.split(",");
-        String columnName = columnToSort[columnToSortParameter];
-        String sort = ParameterParserUtil.parseStringParam(request.getParameter("sSortDir_0"), "asc");
         /**
          * Get list of execution by tag, env, country, browser
          */
-        testCaseExecution = testCaseExecService.readByCriteria(startPosition, length, columnName, sort, searchParameter, "", Tag);
+        testCaseExecution = testCaseExecService.readDistinctEnvCoutnryBrowserByTag(Tag);
         List<TestCaseWithExecution> testCaseWithExecutions = testCaseExecution.getDataList();
 
         /**
          * Get list of Execution in Queue by Tag
          */
-        testCaseExecutionInQueue = testCaseExecutionInQueueService.readByCriteria(startPosition, length, columnName, sort, searchParameter, "", Tag);
+        testCaseExecutionInQueue = testCaseExecutionInQueueService.readDistinctEnvCoutnryBrowserByTag(Tag);
         List<TestCaseWithExecution> testCaseWithExecutionsInQueue = testCaseExecutionInQueue.getDataList();
 
         /**
@@ -231,48 +222,39 @@ public class ReadTestCaseExecution extends HttpServlet {
          * test,testcase,country,env,browser)
          */
         LinkedHashMap<String, TestCaseWithExecution> testCaseWithExecutionsList = new LinkedHashMap();
-        SimpleDateFormat formater = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
 
         for (TestCaseWithExecution testCaseWithExecution : testCaseWithExecutions) {
             String key = testCaseWithExecution.getBrowser() + "_"
                     + testCaseWithExecution.getCountry() + "_"
-                    + testCaseWithExecution.getEnvironment() + "_"
-                    + testCaseWithExecution.getTest() + "_"
-                    + testCaseWithExecution.getTestCase();
+                    + testCaseWithExecution.getEnvironment() + " "
+                    + testCaseWithExecution.getControlStatus();
             testCaseWithExecutionsList.put(key, testCaseWithExecution);
         }
         for (TestCaseWithExecution testCaseWithExecutionInQueue : testCaseWithExecutionsInQueue) {
             String key = testCaseWithExecutionInQueue.getBrowser() + "_"
                     + testCaseWithExecutionInQueue.getCountry() + "_"
                     + testCaseWithExecutionInQueue.getEnvironment() + "_"
-                    + testCaseWithExecutionInQueue.getTest() + "_"
-                    + testCaseWithExecutionInQueue.getTestCase();
-            if ((testCaseWithExecutionsList.containsKey(key)
-                    && formater.parse(testCaseWithExecutionsList.get(key).getStart()).before(formater.parse(testCaseWithExecutionInQueue.getStart())))
-                    || !testCaseWithExecutionsList.containsKey(key)) {
+                    + testCaseWithExecutionInQueue.getControlStatus();
                 testCaseWithExecutionsList.put(key, testCaseWithExecutionInQueue);
-            }
         }
+        
         testCaseWithExecutions = new ArrayList<TestCaseWithExecution>(testCaseWithExecutionsList.values());
 
         JSONObject statusFilter = getStatusList(request);
-        LinkedHashMap<String, JSONObject> ceb = new LinkedHashMap<String, JSONObject>();
-        LinkedHashMap<String, String> ttc = new LinkedHashMap<String, String>();
+        LinkedHashMap<String, JSONObject> columnMap = new LinkedHashMap<String, JSONObject>();
 
         for (TestCaseWithExecution testCaseWithExecution : testCaseWithExecutions) {
             String controlStatus = testCaseWithExecution.getControlStatus();
             if (statusFilter.get(controlStatus).equals("on")) {
-                JSONObject cebObject = new JSONObject();
-                cebObject.put("country", testCaseWithExecution.getCountry());
-                cebObject.put("environment", testCaseWithExecution.getEnvironment());
-                cebObject.put("browser", testCaseWithExecution.getBrowser());
-                ceb.put(testCaseWithExecution.getBrowser() + "_" + testCaseWithExecution.getCountry() + "_" + testCaseWithExecution.getEnvironment(), cebObject);
-                ttc.put(testCaseWithExecution.getTest() + "_" + testCaseWithExecution.getTestCase(), "");
+                JSONObject column = new JSONObject();
+                column.put("country", testCaseWithExecution.getCountry());
+                column.put("environment", testCaseWithExecution.getEnvironment());
+                column.put("browser", testCaseWithExecution.getBrowser());
+                columnMap.put(testCaseWithExecution.getBrowser() + "_" + testCaseWithExecution.getCountry() + "_" + testCaseWithExecution.getEnvironment(), column);
             }
         }
 
-        jsonResponse.put("Columns", ceb.values());
-        jsonResponse.put("DisplayLength", ttc.size());
+        jsonResponse.put("Columns", columnMap.values());
         answer.setItem(jsonResponse);
         answer.setResultMessage(new MessageEvent(MessageEventEnum.DATA_OPERATION_OK));
         return answer;
@@ -292,7 +274,6 @@ public class ReadTestCaseExecution extends HttpServlet {
 
         int startPosition = Integer.valueOf(ParameterParserUtil.parseStringParam(request.getParameter("iDisplayStart"), "0"));
         int length = Integer.valueOf(ParameterParserUtil.parseStringParam(request.getParameter("iDisplayLength"), "100000"));
-        int totalRecords = Integer.valueOf(request.getParameter("TotalRecords"));
 
         String searchParameter = ParameterParserUtil.parseStringParam(request.getParameter("sSearch"), "");
         int columnToSortParameter = Integer.parseInt(ParameterParserUtil.parseStringParam(request.getParameter("iSortCol_0"), "0"));
@@ -384,8 +365,8 @@ public class ReadTestCaseExecution extends HttpServlet {
 
         JSONObject jsonResponse = new JSONObject();
         jsonResponse.put("testList", ttc.values());
-        jsonResponse.put("iTotalRecords", totalRecords);
-        jsonResponse.put("iTotalDisplayRecords", totalRecords);
+        jsonResponse.put("iTotalRecords", ttc.size());
+        jsonResponse.put("iTotalDisplayRecords", ttc.size());
 
         answer.setItem(jsonResponse);
         answer.setResultMessage(new MessageEvent(MessageEventEnum.DATA_OPERATION_OK));
