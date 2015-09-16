@@ -71,8 +71,31 @@ public class ReadLogEvent extends HttpServlet {
         ApplicationContext appContext = WebApplicationContextUtils.getWebApplicationContext(this.getServletContext());
         PolicyFactory policy = Sanitizers.FORMATTING.and(Sanitizers.LINKS);
 
+        response.setContentType("application/json");
+
+        // Default message to unexpected error.
         MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_UNEXPECTED_ERROR);
         msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", ""));
+
+        /**
+         * Parsing and securing all required parameters.
+         */
+        long idlog = 0;
+        boolean idlog_error = true;
+        try {
+            if (request.getParameter("logeventid") != null && !request.getParameter("logeventid").equals("")) {
+                idlog = Integer.valueOf(policy.sanitize(request.getParameter("logeventid")));
+                idlog_error = false;
+            }
+        } catch (Exception ex) {
+            msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_EXPECTED_ERROR);
+            msg.setDescription(msg.getDescription().replace("%ITEM%", "LogEvent"));
+            msg.setDescription(msg.getDescription().replace("%OPERATION%", "Read"));
+            msg.setDescription(msg.getDescription().replace("%REASON%", "logeventid must be an integer value."));
+            idlog_error = true;
+        }
+
+        // Init Answer with potencial error from Parsing parameter.
         AnswerItem answer = new AnswerItem(msg);
 
         try {
@@ -81,16 +104,16 @@ public class ReadLogEvent extends HttpServlet {
                 answer = findLogEventList(appContext, request);
                 jsonResponse = (JSONObject) answer.getItem();
             } else {
-                String logeventid = policy.sanitize(request.getParameter("logeventid"));
-                answer = findLogEventByID(appContext, logeventid);
-                jsonResponse = (JSONObject) answer.getItem();
+                if ((request.getParameter("logeventid") != null) && !(idlog_error)) {
+                    answer = findLogEventByID(appContext, idlog);
+                    jsonResponse = (JSONObject) answer.getItem();
+                }
             }
 
             jsonResponse.put("messageType", answer.getResultMessage().getMessage().getCodeString());
             jsonResponse.put("message", answer.getResultMessage().getDescription());
             jsonResponse.put("sEcho", echo);
 
-            response.setContentType("application/json");
             response.getWriter().print(jsonResponse.toString());
 
         } catch (JSONException e) {
@@ -99,11 +122,10 @@ public class ReadLogEvent extends HttpServlet {
             response.setContentType("application/json");
             msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_UNEXPECTED_ERROR);
             StringBuilder errorMessage = new StringBuilder();
-            errorMessage.append("{'messageType':'").append(msg.getCode()).append("', ");
-            errorMessage.append(" 'message': '");
-            errorMessage.append(msg.getDescription().replace("%DESCRIPTION%", "Unable to check the status of your request! Try later or - Open a bug or ask for any new feature \n"
-                    + "<a href=\"https://github.com/vertigo17/Cerberus/issues/\" target=\"_blank\">here</a>"));
-            errorMessage.append("'}");
+            errorMessage.append("{\"messageType\":\"").append(msg.getCode()).append("\",");
+            errorMessage.append("\"message\":\"");
+            errorMessage.append(msg.getDescription().replace("%DESCRIPTION%", "Unable to check the status of your request! Try later or open a bug."));
+            errorMessage.append("\"}");
             response.getWriter().print(errorMessage.toString());
         }
 
@@ -198,15 +220,13 @@ public class ReadLogEvent extends HttpServlet {
         return result;
     }
 
-    private AnswerItem findLogEventByID(ApplicationContext appContext, String id) throws JSONException, CerberusException {
+    private AnswerItem findLogEventByID(ApplicationContext appContext, long id) throws JSONException, CerberusException {
         AnswerItem item = new AnswerItem();
         JSONObject object = new JSONObject();
 
         ILogEventService libService = appContext.getBean(ILogEventService.class);
 
-        long idlog;
-        idlog = Integer.valueOf(id);
-        AnswerItem answer = libService.readByKey(idlog);
+        AnswerItem answer = libService.readByKey(id);
 
         if (answer.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
             //if the service returns an OK message then we can get the item and convert it to JSONformat

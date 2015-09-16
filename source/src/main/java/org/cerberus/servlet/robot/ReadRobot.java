@@ -74,6 +74,10 @@ public class ReadRobot extends HttpServlet {
 
         response.setContentType("application/json");
 
+        // Default message to unexpected error.
+        MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_UNEXPECTED_ERROR);
+        msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", ""));
+
         /**
          * Parsing and securing all required parameters.
          */
@@ -85,15 +89,19 @@ public class ReadRobot extends HttpServlet {
                 robotid_error = false;
             }
         } catch (Exception ex) {
+            msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_EXPECTED_ERROR);
+            msg.setDescription(msg.getDescription().replace("%ITEM%", "Robot"));
+            msg.setDescription(msg.getDescription().replace("%OPERATION%", "Read"));
+            msg.setDescription(msg.getDescription().replace("%REASON%", "robotid must be an integer value."));
             robotid_error = true;
         }
 
-        MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_UNEXPECTED_ERROR);
-        msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", ""));
+        // Init Answer with potencial error from Parsing parameter.
         AnswerItem answer = new AnswerItem(msg);
+        
         try {
             JSONObject jsonResponse = new JSONObject();
-            if ((request.getParameter("robotid") == null) ) {
+            if ((request.getParameter("robotid") == null)) {
                 answer = findRobotList(appContext, request, response);
                 jsonResponse = (JSONObject) answer.getItem();
             } else {
@@ -101,7 +109,6 @@ public class ReadRobot extends HttpServlet {
                     answer = findRobotByKey(appContext, robotid);
                     jsonResponse = (JSONObject) answer.getItem();
                 }
-
             }
 
             jsonResponse.put("messageType", answer.getResultMessage().getMessage().getCodeString());
@@ -109,17 +116,17 @@ public class ReadRobot extends HttpServlet {
             jsonResponse.put("sEcho", echo);
 
             response.getWriter().print(jsonResponse.toString());
+            
         } catch (JSONException e) {
             org.apache.log4j.Logger.getLogger(ReadRobot.class.getName()).log(org.apache.log4j.Level.ERROR, null, e);
             //returns a default error message with the json format that is able to be parsed by the client-side
             response.setContentType("application/json");
             msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_UNEXPECTED_ERROR);
             StringBuilder errorMessage = new StringBuilder();
-            errorMessage.append("{'messageType':'").append(msg.getCode()).append("', ");
-            errorMessage.append(" 'message': '");
-            errorMessage.append(msg.getDescription().replace("%DESCRIPTION%", "Unable to check the status of your request! Try later or - Open a bug or ask for any new feature \n"
-                    + "<a href=\"https://github.com/vertigo17/Cerberus/issues/\" target=\"_blank\">here</a>"));
-            errorMessage.append("'}");
+            errorMessage.append("{\"messageType\":\"").append(msg.getCode()).append("\",");
+            errorMessage.append("\"message\":\"");
+            errorMessage.append(msg.getDescription().replace("%DESCRIPTION%", "Unable to check the status of your request! Try later or open a bug."));
+            errorMessage.append("\"}");
             response.getWriter().print(errorMessage.toString());
         }
     }
