@@ -350,47 +350,40 @@ public class ReadTestCaseExecution extends HttpServlet {
             try {
                 String controlStatus = testCaseWithExecution.getControlStatus();
                 if (statusFilter.get(controlStatus).equals("on")) {
+                    JSONObject execution = testCaseExecutionToJSONObject(testCaseWithExecution);
+                    String execKey = testCaseWithExecution.getEnvironment() + " " + testCaseWithExecution.getCountry() + " " + testCaseWithExecution.getBrowser();
+                    String testCaseKey = testCaseWithExecution.getTest() + "_" + testCaseWithExecution.getTestCase();
+                    JSONObject execTab = new JSONObject();
+
                     executionList.put(testCaseExecutionToJSONObject(testCaseWithExecution));
                     JSONObject ttcObject = new JSONObject();
-                    ttcObject.put("test", testCaseWithExecution.getTest());
-                    ttcObject.put("testCase", testCaseWithExecution.getTestCase());
-                    ttcObject.put("function", testCaseWithExecution.getFunction());
-                    ttcObject.put("shortDesc", testCaseWithExecution.getShortDescription());
-                    ttcObject.put("status", testCaseWithExecution.getStatus());
-                    ttcObject.put("application", testCaseWithExecution.getApplication());
-                    ttcObject.put("bugId", testCaseWithExecution.getBugID());
-                    ttcObject.put("comment", testCaseWithExecution.getComment());
+
+                    if (ttc.containsKey(testCaseKey)) {
+                        ttcObject = ttc.get(testCaseKey);
+                        execTab = ttcObject.getJSONObject("execTab");
+                        execTab.put(execKey, execution);
+                        ttcObject.put("execTab", execTab);
+                    } else {
+                        ttcObject.put("test", testCaseWithExecution.getTest());
+                        ttcObject.put("testCase", testCaseWithExecution.getTestCase());
+//                    ttcObject.put("function", testCaseWithExecution.getFunction());
+                        ttcObject.put("shortDesc", testCaseWithExecution.getShortDescription());
+//                    ttcObject.put("status", testCaseWithExecution.getStatus());
+                        ttcObject.put("application", testCaseWithExecution.getApplication());
+//                    ttcObject.put("bugId", testCaseWithExecution.getBugID());
+//                    ttcObject.put("comment", testCaseWithExecution.getComment());
+                        execTab.put(execKey, execution);
+                        ttcObject.put("execTab", execTab);
+                    }
                     ttc.put(testCaseWithExecution.getTest() + "_" + testCaseWithExecution.getTestCase(), ttcObject);
                 }
             } catch (JSONException ex) {
                 Logger.getLogger(CampaignExecutionReport.class.getName()).log(Level.SEVERE, null, ex);
             }
         }
-        JSONArray lines = new JSONArray(ttc.values());
-
-        for (int indexValues = 0; indexValues < executionList.length(); indexValues++) {
-            JSONObject testExec = executionList.getJSONObject(indexValues);
-
-            for (int indexLines = 0; indexLines < lines.length(); indexLines++) {
-
-                if (testExec.getString("Test").equals(lines.getJSONObject(indexLines).getString("test"))
-                        && testExec.getString("TestCase").equals(lines.getJSONObject(indexLines).getString("testCase"))
-                        && testExec.getString("Application").equals(lines.getJSONObject(indexLines).getString("application"))) {
-                    StringBuilder key = new StringBuilder();
-                    key.append(testExec.getString("Environment")).append(" ")
-                            .append(testExec.getString("Country")).append(" ")
-                            .append(testExec.getString("Browser"));
-                    if (!lines.getJSONObject(indexLines).has("execTab")) {
-                        lines.getJSONObject(indexLines).put("execTab", new JSONObject());
-                    }
-
-                    lines.getJSONObject(indexLines).getJSONObject("execTab").put(key.toString(), testExec);
-                }
-            }
-        }
 
         JSONObject jsonResponse = new JSONObject();
-        jsonResponse.put("testList", lines);
+        jsonResponse.put("testList", ttc.values());
         jsonResponse.put("iTotalRecords", totalRecords);
         jsonResponse.put("iTotalDisplayRecords", totalRecords);
 

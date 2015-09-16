@@ -747,16 +747,7 @@ public class TestCaseExecutionInQueueDAO implements ITestCaseExecutionInQueueDAO
         gSearch.append(" or tce.`application` like '%");
         gSearch.append(searchTerm);
         gSearch.append("%'");
-        gSearch.append(" or tce.`status` like '%");
-        gSearch.append(searchTerm);
-        gSearch.append("%'");
         gSearch.append(" or tce.`description` like '%");
-        gSearch.append(searchTerm);
-        gSearch.append("%'");
-        gSearch.append(" or tce.`bugId` like '%");
-        gSearch.append(searchTerm);
-        gSearch.append("%'");
-        gSearch.append(" or tce.`function` like '%");
         gSearch.append(searchTerm);
         gSearch.append("%')");
 
