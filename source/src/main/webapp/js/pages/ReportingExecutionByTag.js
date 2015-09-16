@@ -23,6 +23,9 @@ $.when($.getScript("js/pages/global/global.js")).then(function () {
     $(document).ready(function () {
         initPage();
 
+        bindToggleCollapse("#ReportByStatus");
+        bindToggleCollapse("#functionChart");
+        bindToggleCollapse("#listReport");
 
         loadTagFilters();
         $('body').tooltip({
@@ -115,11 +118,18 @@ function loadReportList() {
         $.when(jqxhr).then(function (data) {
             var request = "ReadTestCaseExecution?Tag=" + selectTag + "&" + statusFilter.serialize() + "&TotalRecords=" + data.DisplayLength;
 
-            var configurations = new TableConfigurationsServerSide("listTable", request, "testList", aoColumnsFunc(data.Columns));
-            configurations.paginate = false;
+            var config = new TableConfigurationsServerSide("listTable", request, "testList", aoColumnsFunc(data.Columns));
+            customConfig(config);
 
-            createDataTable(configurations);
+            var table = createDataTable(config, createShortDescRow);
+
             $('#listTable_wrapper').not('.initialized').addClass('initialized');
+
+            $("#listTable").on("draw.dt", function () {
+                $('#listTable tbody td.center').each(function () {
+                    $(this).attr('rowspan', '2');
+                });
+            });
         });
     }
 }
@@ -236,9 +246,9 @@ function convertData(dataset) {
 function loadReportByFunctionChart(dataset) {
     var data = convertData(dataset.axis);
 
-    var margin = {top: 20, right: 20, bottom: 100, left: 150},
+    var margin = {top: 20, right: 20, bottom: 200, left: 150},
     width = 1200 - margin.left - margin.right,
-            height = 500 - margin.top - margin.bottom;
+            height = 600 - margin.top - margin.bottom;
 
     var x = d3.scale.ordinal()
             .rangeRoundBands([0, width], .1);
@@ -298,7 +308,8 @@ function loadReportByFunctionChart(dataset) {
             .attr("transform", "translate(0," + height + ")")
             .call(xAxis)
             .selectAll("text")
-            .style("text-anchor", "end")
+            .call(wrap, 200)
+            .style({"text-anchor": "end"})
             .attr("dx", "-.8em")
             .attr("dy", "-.55em")
             .attr("transform", "rotate(-75)");
@@ -347,6 +358,23 @@ function loadReportByFunctionChart(dataset) {
  * Helper functions
  */
 
+function createShortDescRow(row, data, index) {
+    var tableAPI = $("#listTable").DataTable();
+    var createdRow = tableAPI.row(row);
+    var rowClass = "";
+
+    if (index % 2 === 0) {
+        rowClass = "odd printBorder";
+    } else {
+        rowClass = "even printBorder";
+    }
+
+    createdRow.child(data.shortDesc);
+    $(createdRow.child()).attr('class', rowClass);
+    $(createdRow.child()).children('td').attr('colspan', '3').attr('class', 'shortDesc');
+    createdRow.child.show();
+}
+
 function generateTooltip(data) {
     var htmlRes;
 
@@ -360,50 +388,44 @@ function generateTooltip(data) {
 
 function aoColumnsFunc(Columns) {
     var doc = new Doc();
+    var nbColumn = Columns.length + 3;
+    var testCaseInfoWidth = (1 / 3) * 30;
+    var testExecWidth = (1 / nbColumn) * 70;
+
 
     var aoColumns = [
-        {"data": "test",
+        {
+            "data": "test",
             "sName": "test",
-            "title": doc.getDocOnline("test", "Test")
+            "sWidth": testCaseInfoWidth + "%",
+            "title": doc.getDocOnline("test", "Test"),
+            "sClass": "bold"
         },
-        {"data": "testCase",
+        {
+            "data": "testCase",
             "sName": "testCase",
+            "sWidth": testCaseInfoWidth + "%",
             "title": doc.getDocOnline("testcase", "TestCase"),
             "mRender": function (data, type, obj, meta) {
                 var result = "<a href='./TestCase.jsp?Test=" + obj.test + "&TestCase=" + obj.testCase + "&Load=Load'>" + obj.testCase + "</a>";
                 return result;
             }
         },
-        {"data": "application",
+        {
+            "data": "application",
             "sName": "application",
+            "sWidth": testCaseInfoWidth + "%",
             "title": doc.getDocOnline("application", "Application")
-        },
-        {
-            "data": "status",
-            "sName": "status",
-            "title": doc.getDocOnline("testcase", "Status")
-        },
-        {"data": "shortDesc",
-            "sName": "description",
-            "title": doc.getDocOnline("testcase", "Description")
-        },
-        {
-            "data": "bugId",
-            "sName": "bugId",
-            "title": doc.getDocOnline("testcase", "BugID")
-        },
-        {
-            "data": "function",
-            "sName": "function",
-            "title": doc.getDocOnline("testcase", "Function")
         }
     ];
     for (var i = 0; i < Columns.length; i++) {
         var title = Columns[i].environment + " " + Columns[i].country + " " + Columns[i].browser;
 
-        var col = {"title": title,
+        var col = {
+            "title": title,
             "bSortable": false,
             "bSearchable": false,
+            "sWidth": testExecWidth + "%",
             "data": function (row, type, val, meta) {
                 var dataTitle = meta.settings.aoColumns[meta.col].sTitle;
                 if (row.hasOwnProperty("execTab") && row["execTab"].hasOwnProperty(dataTitle)) {
@@ -419,11 +441,11 @@ function aoColumnsFunc(Columns) {
                     var glyphClass = getRowClass(data.ControlStatus);
                     var tooltip = generateTooltip(data);
                     var cell = '<div class="progress-bar status' + data.ControlStatus + '" \n\
-                                role="progressbar" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100" style="width: 100%;cursor: pointer;" \n\
+                                role="progressbar" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100" style="width: 100%;cursor: pointer; height: 40px;" \n\
                                 data-toggle="tooltip" data-html="true" title="' + tooltip + '"\n\
                                 onclick="location.href=\'' + executionLink + '\'">\n\
                                 <span class="' + glyphClass.glyph + ' marginRight5"></span>\n\
-                                 ' + data.ControlStatus + '</div>';
+                                 <span>' + data.ControlStatus + '<span></div>';
                     return cell;
                 } else {
                     return data;
@@ -433,6 +455,23 @@ function aoColumnsFunc(Columns) {
         aoColumns.push(col);
     }
     return aoColumns;
+}
+
+function customConfig(config) {
+    var doc = new Doc();
+    var customColvisConfig = {"buttonText": doc.getDocLabel("dataTable", "colVis"),
+        "exclude": [0, 1, 2],
+        "stateChange": function (iColumn, bVisible) {
+            $('.shortDesc').each(function () {
+                $(this).attr('colspan', '3');
+            });
+        }
+    };
+
+    config.paginate = false;
+    config.lang.colVis = customColvisConfig;
+    config.orderClasses = false;
+    config.bDeferRender = true;
 }
 
 function getRowClass(status) {
@@ -467,4 +506,38 @@ function generateExecutionLink(status, id) {
         result = "./ExecutionDetail.jsp?id_tc=" + id;
     }
     return result;
+}
+
+function bindToggleCollapse(id) {
+    $(id).on('shown.bs.collapse', function () {
+        $(this).prev().find(".toggle").removeClass("glyphicon-chevron-down").addClass("glyphicon-chevron-right");
+    });
+
+    $(id).on('hidden.bs.collapse', function () {
+        $(this).prev().find(".toggle").removeClass("glyphicon-chevron-right").addClass("glyphicon-chevron-down");
+    });
+}
+
+function wrap(text, width) {
+    text.each(function () {
+        var text = d3.select(this),
+                words = text.text().split(/\s+/).reverse(),
+                word,
+                line = [],
+                lineNumber = 0,
+                lineHeight = 1.1, // ems
+                y = text.attr("y"),
+                dy = parseFloat(text.attr("dy")),
+                tspan = text.text(null).append("tspan").attr("x", 0).attr("y", y).attr("dy", dy + "em");
+        while (word = words.pop()) {
+            line.push(word);
+            tspan.text(line.join(" "));
+            if (tspan.node().getComputedTextLength() > width) {
+                line.pop();
+                tspan.text(line.join(" "));
+                line = [word];
+                tspan = text.append("tspan").attr("x", 0).attr("y", y).attr("dy", ++lineNumber * lineHeight + dy + "em").text(word);
+            }
+        }
+    });
 }

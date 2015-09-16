@@ -37,9 +37,9 @@ function initPage() {
     //configure and create the dataTable
     var configurations = new TableConfigurationsServerSide("deploytypesTable", "ReadDeployType", "contentTable", aoColumnsFunc());
 
-    createDataTableWithPermissions(configurations, renderOptionsForDeployType);
-    var oTable = $("#deploytypesTable").dataTable();
-    oTable.fnSort([1, 'asc']);
+    var table = createDataTableWithPermissions(configurations, renderOptionsForDeployType);
+
+    table.fnSort([1, 'asc']);
 };
 
 function displayPageLabel() {

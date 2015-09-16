@@ -27,10 +27,9 @@ $.when($.getScript("js/pages/global/global.js")).then(function() {
         //configure and create the dataTable
         var configurations = new TableConfigurationsServerSide("homePageTable", "Homepage?MySystem=" + getSys(), "aaData", aoColumnsFunc());
 
-        createDataTable(configurations);
+        var table = createDataTable(configurations);
         //By default, sort the log messages from newest to oldest
-        var oTable = $("#homePageTable").dataTable();
-        oTable.fnSort([0, 'desc']);
+        table.fnSort([0, 'desc']);
     });
 });
 

@@ -100,8 +100,10 @@
     font-size: 20px;
 }
 
-.progress-bar {
+.progress-bar span {
     font-weight: bold;
+    color: white;
+    margin-top: 10px;
 }
 
 .test-link {
@@ -112,6 +114,21 @@
 
 .test-link:hover {
     text-decoration: underline;
+}
+
+text {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.table > tbody > tr > td {
+    border-top: 0px;
+    border-style: none;
+}
+
+.toggle {
+    cursor: pointer;
 }
 
 .total {
@@ -166,6 +183,10 @@
 
 .percentage {
     margin-right: 5px;
+}
+
+.bold {
+    font-weight: bold;
 }
 
 .color-box {   
