@@ -62,7 +62,8 @@ public class DeployTypeDAO implements IDeployTypeDAO {
         AnswerItem ans = new AnswerItem();
         DeployType result = null;
         final String query = "SELECT * FROM `deploytype` WHERE `deploytype` = ?";
-        MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
+        MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_UNEXPECTED_ERROR);
+        msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", ""));
 
         Connection connection = this.databaseSpring.connect();
         try {
@@ -73,8 +74,11 @@ public class DeployTypeDAO implements IDeployTypeDAO {
                 try {
                     if (resultSet.first()) {
                         result = loadFromResultSet(resultSet);
+                        msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
                         msg.setDescription(msg.getDescription().replace("%ITEM%", "Deploy Type").replace("%OPERATION%", "SELECT"));
                         ans.setItem(result);
+                    } else {
+                        msg = new MessageEvent(MessageEventEnum.NO_DATA_FOUND);
                     }
                 } catch (SQLException exception) {
                     MyLogger.log(DeployTypeDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
@@ -112,10 +116,9 @@ public class DeployTypeDAO implements IDeployTypeDAO {
     @Override
     public AnswerList readAll() {
         AnswerList response = new AnswerList();
-        MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
+        MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_UNEXPECTED_ERROR);
+        msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", ""));
         List<DeployType> deployTypeList = new ArrayList<DeployType>();
-        StringBuilder gSearch = new StringBuilder();
-        StringBuilder searchSQL = new StringBuilder();
 
         StringBuilder query = new StringBuilder();
         //SQL_CALC_FOUND_ROWS allows to retrieve the total number of columns by disrearding the limit clauses that 
@@ -141,6 +144,7 @@ public class DeployTypeDAO implements IDeployTypeDAO {
                         nrTotalRows = resultSet.getInt(1);
                     }
 
+                    msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
                     msg.setDescription(msg.getDescription().replace("%ITEM%", "Deploy Type").replace("%OPERATION%", "SELECT"));
                     response = new AnswerList(deployTypeList, nrTotalRows);
 
