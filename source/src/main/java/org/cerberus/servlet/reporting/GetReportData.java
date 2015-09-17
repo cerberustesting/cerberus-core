@@ -115,11 +115,14 @@ public class GetReportData extends HttpServlet {
         }
         testCaseWithExecutions = new ArrayList<TestCaseWithExecution>(testCaseWithExecutionsList.values());
 
-        JSONArray axis = new JSONArray();
+        HashMap<String, JSONObject> axisMap = new HashMap<String, JSONObject>();
+
         for (TestCaseWithExecution testCaseWithExecution : testCaseWithExecutions) {
             String key;
             String controlStatus;
             JSONObject control = new JSONObject();
+            JSONObject function = new JSONObject();
+
             if (testCaseWithExecution.getFunction() != null && !"".equals(testCaseWithExecution.getFunction())) {
                 key = testCaseWithExecution.getFunction();
             } else {
@@ -131,30 +134,21 @@ public class GetReportData extends HttpServlet {
             control.put("value", 1);
             control.put("color", getColor(controlStatus));
             control.put("label", controlStatus);
-            JSONObject tmp = new JSONObject();
-            tmp.put("name", key);
-            boolean isKey = false;
-            for (int i = 0; i < axis.length(); i++) {
-                tmp = axis.getJSONObject(i);
-                if (tmp.has("name") && tmp.getString("name").equals(key)) {
-                    isKey = true;
-                    if (tmp.has(controlStatus)) {
-                        int prec = tmp.getJSONObject(controlStatus).getInt("value");
-                        control.put("value", prec + 1);
-                    }
-                    axis.getJSONObject(i).put(controlStatus, control);
+            function.put("name", key);
+
+            if (axisMap.containsKey(key)) {
+                function = axisMap.get(key);
+                if (function.has(controlStatus)) {
+                    int prec = function.getJSONObject(controlStatus).getInt("value");
+                    control.put("value", prec + 1);
                 }
             }
-            if (isKey == false) {
-                tmp = new JSONObject();
-                tmp.put("name", key);
-                tmp.put(controlStatus, control);
-                axis.put(tmp);
-            }
+            function.put(controlStatus, control);
+            axisMap.put(key, function);
         }
         JSONObject jsonResult = new JSONObject();
 
-        jsonResult.put("axis", axis);
+        jsonResult.put("axis", axisMap.values());
 
         response.setContentType("application/json");
         response.getWriter().print(jsonResult);

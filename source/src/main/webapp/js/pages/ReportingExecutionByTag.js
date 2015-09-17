@@ -104,8 +104,6 @@ function loadReport() {
 
 
 function loadReportList() {
-    var t0 = performance.now();
-
     var selectTag = $("#selectTag option:selected").text();
     var statusFilter = $("#statusFilter input");
 
@@ -119,7 +117,7 @@ function loadReportList() {
         //configure and create the dataTable
         var jqxhr = $.getJSON("ReadTestCaseExecution", "Tag=" + selectTag + "&" + statusFilter.serialize());
         $.when(jqxhr).then(function (data) {
-            var request = "ReadTestCaseExecution?Tag=" + selectTag + "&" + statusFilter.serialize() + "&TotalRecords=" + data.DisplayLength;
+            var request = "ReadTestCaseExecution?Tag=" + selectTag + "&" + statusFilter.serialize();
 
             var config = new TableConfigurationsServerSide("listTable", request, "testList", aoColumnsFunc(data.Columns));
             customConfig(config);
@@ -128,17 +126,8 @@ function loadReportList() {
 
             $('#listTable_wrapper').not('.initialized').addClass('initialized');
 
-            $("#listTable").on("draw.dt", function () {
-                $('#listTable tbody td.center').each(function () {
-                    $(this).attr('rowspan', '2');
-                });
-            });
         });
     }
-    var t1 = performance.now();
-    
-    console.log("It tooks " + (t1 - t0) + " ms");
-
 }
 
 /*
@@ -377,6 +366,7 @@ function createShortDescRow(row, data, index) {
     }
 
     createdRow.child(data.shortDesc);
+    $(row).children('.center').attr('rowspan', '2');
     $(createdRow.child()).attr('class', rowClass);
     $(createdRow.child()).children('td').attr('colspan', '3').attr('class', 'shortDesc');
     createdRow.child.show();
