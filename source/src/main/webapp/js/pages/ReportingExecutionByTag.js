@@ -87,7 +87,7 @@ function loadTagFilters(urlTag) {
 function loadReport() {
     var selectTag = $("#selectTag option:selected").text();
     
-    window.history.pushState('tag', '', 'ReportingExecutionByTag2.jsp?tag=' + selectTag);
+    window.history.pushState('tag', '', 'ReportingExecutionByTag.jsp?tag=' + selectTag);
 
     //clear the old report content before reloading it
     $("#ReportByStatusTable").empty();

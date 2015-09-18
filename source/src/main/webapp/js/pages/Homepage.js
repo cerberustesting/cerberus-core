@@ -52,19 +52,21 @@ function readStatus() {
 }
 
 function generateTagLink(tagName) {
-    var link = '<a href="./ReportingExecutionByTag2.jsp?tag='+ tagName +'">'+ tagName +'</a>';
-    
+    var link = '<a href="./ReportingExecutionByTag.jsp?tag=' + tagName + '">' + tagName + '</a>';
+
     return link;
 }
 
 function generateProgressBar(totalTest, statusObj) {
     var percent = statusObj.value / totalTest * 100;
+    var roundPercent = Math.round(((statusObj.value / totalTest) * 100) * 10) / 10;
+    
     var bar = '<div class="progress-bar" \n\
                 role="progressbar" \n\
                 aria-valuenow="60" \n\
                 aria-value="0" \n\
                 aria-valuemax="100" \n\
-                style="width:' + percent + '%;background-color:' + statusObj.color + '">' + percent + '%</div>';
+                style="width:' + percent + '%;background-color:' + statusObj.color + '">' + roundPercent + '%</div>';
 
     return bar;
 }
@@ -81,14 +83,19 @@ function getTotalExec(execData) {
 
 function generateTagReport(data) {
     var reportArea = $("#tagExecStatus");
+    var statusOrder = ["OK", "KO", "FA", "NA", "NE", "PE", "CA"];
 
     data.forEach(function (d) {
         var total = getTotalExec(d.total);
         var buildBar;
 
         buildBar = '<div>' + generateTagLink(d.tag) + '<div class="pull-right" style="display: inline;">Total executions : ' + total + '</div></div><div class="progress">';
-        for (var status in d.total) {
-            buildBar += generateProgressBar(total, d.total[status]);
+        for (var index = 0; index < statusOrder.length; index++) {
+            var status = statusOrder[index];
+           
+            if (d.total.hasOwnProperty(status)) {
+                buildBar += generateProgressBar(total, d.total[status]);
+            }
         }
         buildBar += '</div>';
         reportArea.append(buildBar);

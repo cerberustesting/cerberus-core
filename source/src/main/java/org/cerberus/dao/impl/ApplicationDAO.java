@@ -176,7 +176,6 @@ public class ApplicationDAO implements IApplicationDAO {
             query.append(" limit ").append(start).append(" , ").append(MAX_ROW_SELECTED);
         }
 
-        MyLogger.log(ApplicationDAO.class.getName(), Level.ERROR, "Execute query : " + query.toString());
 
         Connection connection = this.databaseSpring.connect();
         try {
