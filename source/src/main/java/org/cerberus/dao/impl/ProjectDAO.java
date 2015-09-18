@@ -29,10 +29,7 @@ import org.cerberus.dao.IProjectDAO;
 import org.cerberus.database.DatabaseSpring;
 import org.cerberus.entity.MessageEvent;
 import org.cerberus.enums.MessageEventEnum;
-import org.cerberus.entity.MessageGeneral;
-import org.cerberus.enums.MessageGeneralEnum;
 import org.cerberus.entity.Project;
-import org.cerberus.exception.CerberusException;
 import org.cerberus.factory.IFactoryProject;
 import org.cerberus.log.MyLogger;
 import org.cerberus.util.StringUtil;
@@ -60,11 +57,9 @@ public class ProjectDAO implements IProjectDAO {
     public AnswerItem readByKey(String project) {
         AnswerItem ans = new AnswerItem();
         Project result = null;
-        String idProject;
-        String vcCode;
-        String description;
         final String query = "SELECT * FROM project WHERE idproject = ?";
-        MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
+        MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_UNEXPECTED_ERROR);
+        msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", ""));
 
         Connection connection = this.databaseSpring.connect();
         try {
@@ -75,9 +70,11 @@ public class ProjectDAO implements IProjectDAO {
                 try {
                     if (resultSet.first()) {
                         result = loadFromResultSet(resultSet);
+                        msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
                         msg.setDescription(msg.getDescription().replace("%ITEM%", "Project Lib").replace("%OPERATION%", "SELECT"));
-
                         ans.setItem(result);
+                    } else {
+                        msg = new MessageEvent(MessageEventEnum.NO_DATA_FOUND);
                     }
                 } catch (SQLException exception) {
                     MyLogger.log(ProjectDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
@@ -115,7 +112,8 @@ public class ProjectDAO implements IProjectDAO {
     @Override
     public AnswerList readByCriteria(int start, int amount, String column, String dir, String searchTerm, String individualSearch) {
         AnswerList response = new AnswerList();
-        MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
+        MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_UNEXPECTED_ERROR);
+        msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", ""));
         List<Project> projectList = new ArrayList<Project>();
         StringBuilder searchSQL = new StringBuilder();
 
@@ -141,6 +139,7 @@ public class ProjectDAO implements IProjectDAO {
         if (!StringUtil.isNullOrEmpty(column)) {
             query.append("order by `").append(column).append("` ").append(dir);
         }
+        
         if (!(amount == 0)) {
             query.append(" limit ").append(start).append(" , ").append(amount);
         } else {
@@ -166,6 +165,7 @@ public class ProjectDAO implements IProjectDAO {
                         nrTotalRows = resultSet.getInt(1);
                     }
 
+                    msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
                     msg.setDescription(msg.getDescription().replace("%ITEM%", "Project Lib").replace("%OPERATION%", "SELECT"));
                     response = new AnswerList(projectList, nrTotalRows);
 

@@ -79,7 +79,8 @@ public class ApplicationDAO implements IApplicationDAO {
         AnswerItem ans = new AnswerItem();
         Application result = null;
         final String query = "SELECT * FROM `application` WHERE `application` = ?";
-        MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
+        MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_UNEXPECTED_ERROR);
+        msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", ""));
 
         Connection connection = this.databaseSpring.connect();
         try {
@@ -90,8 +91,11 @@ public class ApplicationDAO implements IApplicationDAO {
                 try {
                     if (resultSet.first()) {
                         result = loadFromResultSet(resultSet);
+                        msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
                         msg.setDescription(msg.getDescription().replace("%ITEM%", "Application").replace("%OPERATION%", "SELECT"));
                         ans.setItem(result);
+                    } else {
+                        msg = new MessageEvent(MessageEventEnum.NO_DATA_FOUND);
                     }
                 } catch (SQLException exception) {
                     MyLogger.log(ApplicationDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
@@ -129,7 +133,8 @@ public class ApplicationDAO implements IApplicationDAO {
     @Override
     public AnswerList readBySystemByCriteria(String system, int start, int amount, String column, String dir, String searchTerm, String individualSearch) {
         AnswerList response = new AnswerList();
-        MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
+        MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_UNEXPECTED_ERROR);
+        msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", ""));
         List<Application> applicationList = new ArrayList<Application>();
         StringBuilder searchSQL = new StringBuilder();
 
@@ -192,6 +197,7 @@ public class ApplicationDAO implements IApplicationDAO {
                         nrTotalRows = resultSet.getInt(1);
                     }
 
+                    msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
                     msg.setDescription(msg.getDescription().replace("%ITEM%", "Application").replace("%OPERATION%", "SELECT"));
                     response = new AnswerList(applicationList, nrTotalRows);
 
@@ -231,6 +237,7 @@ public class ApplicationDAO implements IApplicationDAO {
                 MyLogger.log(ApplicationDAO.class.getName(), Level.ERROR, "Unable to execute query : " + ex.toString());
             }
         }
+        
         response.setResultMessage(msg);
         response.setDataList(applicationList);
         return response;

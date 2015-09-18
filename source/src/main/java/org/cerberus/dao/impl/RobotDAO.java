@@ -75,7 +75,8 @@ public class RobotDAO implements IRobotDAO {
         AnswerItem ans = new AnswerItem();
         Robot result = null;
         final String query = "SELECT * FROM `robot` WHERE `robotID` = ?";
-        MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
+        MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_UNEXPECTED_ERROR);
+        msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", ""));
 
         Connection connection = this.databaseSpring.connect();
         try {
@@ -86,8 +87,11 @@ public class RobotDAO implements IRobotDAO {
                 try {
                     if (resultSet.first()) {
                         result = loadFromResultSet(resultSet);
+                        msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
                         msg.setDescription(msg.getDescription().replace("%ITEM%", "Robot").replace("%OPERATION%", "SELECT"));
                         ans.setItem(result);
+                    } else {
+                        msg = new MessageEvent(MessageEventEnum.NO_DATA_FOUND);
                     }
                 } catch (SQLException exception) {
                     MyLogger.log(RobotDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
@@ -127,7 +131,8 @@ public class RobotDAO implements IRobotDAO {
         AnswerItem ans = new AnswerItem();
         Robot result = null;
         final String query = "SELECT * FROM `robot` WHERE `robot` = ?";
-        MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
+        MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_UNEXPECTED_ERROR);
+        msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", ""));
 
         Connection connection = this.databaseSpring.connect();
         try {
@@ -138,8 +143,11 @@ public class RobotDAO implements IRobotDAO {
                 try {
                     if (resultSet.first()) {
                         result = loadFromResultSet(resultSet);
+                        msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
                         msg.setDescription(msg.getDescription().replace("%ITEM%", "Robot").replace("%OPERATION%", "SELECT"));
                         ans.setItem(result);
+                    } else {
+                        msg = new MessageEvent(MessageEventEnum.NO_DATA_FOUND);
                     }
                 } catch (SQLException exception) {
                     MyLogger.log(RobotDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
@@ -173,11 +181,12 @@ public class RobotDAO implements IRobotDAO {
         ans.setResultMessage(msg);
         return ans;
     }
-    
+
     @Override
     public AnswerList readByCriteria(int start, int amount, String column, String dir, String searchTerm, String individualSearch) {
         AnswerList response = new AnswerList();
-        MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
+        MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_UNEXPECTED_ERROR);
+        msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", ""));
         List<Robot> robotList = new ArrayList<Robot>();
         StringBuilder searchSQL = new StringBuilder();
 
@@ -213,8 +222,6 @@ public class RobotDAO implements IRobotDAO {
             query.append(" limit ").append(start).append(" , ").append(MAX_ROW_SELECTED);
         }
 
-        MyLogger.log(RobotDAO.class.getName(), Level.ERROR, "Execute query : " + query.toString());
-
         Connection connection = this.databaseSpring.connect();
         try {
             PreparedStatement preStat = connection.prepareStatement(query.toString());
@@ -234,6 +241,7 @@ public class RobotDAO implements IRobotDAO {
                         nrTotalRows = resultSet.getInt(1);
                     }
 
+                    msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
                     msg.setDescription(msg.getDescription().replace("%ITEM%", "Robot").replace("%OPERATION%", "SELECT"));
                     response = new AnswerList(robotList, nrTotalRows);
 
@@ -273,6 +281,7 @@ public class RobotDAO implements IRobotDAO {
                 MyLogger.log(RobotDAO.class.getName(), Level.ERROR, "Unable to execute query : " + ex.toString());
             }
         }
+        
         response.setResultMessage(msg);
         response.setDataList(robotList);
         return response;
@@ -285,8 +294,6 @@ public class RobotDAO implements IRobotDAO {
         query.append("INSERT INTO robot (`robot`, `host`, `port`, `platform`,`browser`, `version`,`active` , `description`) ");
         query.append("VALUES (?,?,?,?,?,?,?,?)");
 
-
-                
         Connection connection = this.databaseSpring.connect();
         try {
             PreparedStatement preStat = connection.prepareStatement(query.toString());
@@ -299,7 +306,7 @@ public class RobotDAO implements IRobotDAO {
                 preStat.setString(6, robot.getVersion());
                 preStat.setString(7, robot.getActive());
                 preStat.setString(8, robot.getDescription());
-                
+
                 preStat.executeUpdate();
                 msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
                 msg.setDescription(msg.getDescription().replace("%ITEM%", "Robot").replace("%OPERATION%", "INSERT"));
@@ -444,9 +451,6 @@ public class RobotDAO implements IRobotDAO {
         return factoryRobot.create(robotID, robot, host, port, platform, browser, version, active, description, userAgent);
     }
 
-    
-    
-    
     /**
      * Finds the Robot by the name. </p> Access to database to return the
      * {@link Robot} given by the unique name.<br/> If no Robot found with the

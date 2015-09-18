@@ -127,6 +127,7 @@ public class TestCaseExecutionService implements ITestCaseExecutionService {
         testCaseExecutionDao.setTagToExecution(id, tag);
     }
     
+    @Override
     public AnswerList findTagList() throws CerberusException {
         return testCaseExecutionDao.findTagList();
     }
@@ -136,4 +137,9 @@ public class TestCaseExecutionService implements ITestCaseExecutionService {
             , String tag) throws CerberusException {
         return testCaseExecutionDao.readByCriteria(start, amount, column, dir, searchTerm, individualSearch, tag);
     }
+    
+    @Override
+     public AnswerList readDistinctEnvCoutnryBrowserByTag(String tag) {
+         return testCaseExecutionDao.readDistinctEnvCoutnryBrowserByTag(tag);
+     }
 }

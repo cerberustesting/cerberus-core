@@ -27,7 +27,6 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
-import java.util.logging.Logger;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -123,12 +122,12 @@ public class RunTestCase extends HttpServlet {
         PolicyFactory policy = Sanitizers.FORMATTING.and(Sanitizers.LINKS);
 
         //Tool
-        String robotHost = "";
-        String robotPort = "";
+        String ss_ip = ""; // Selenium IP
+        String ss_p = ""; // Selenium Port
         String browser = "";
         String version = "";
         String platform = "";
-        String robot = ParameterParserUtil.parseStringParam(policy.sanitize(request.getParameter("robot")), "");
+        String robot = "";
         String active = "";
         String timeout = "";
         String userAgent = "";
@@ -137,32 +136,6 @@ public class RunTestCase extends HttpServlet {
         int getPageSource = 0;
         int getSeleniumLog = 0;
         String manualExecution = "";
-
-        if (robot.equals("")) {
-            robotHost = ParameterParserUtil.parseStringParam(policy.sanitize(request.getParameter("ss_ip")), "");
-            robotPort = ParameterParserUtil.parseStringParam(policy.sanitize(request.getParameter("ss_p")), "");
-            if (request.getParameter("Browser") != null && !"".equals(request.getParameter("Browser"))) {
-                browser = ParameterParserUtil.parseStringParam(policy.sanitize(request.getParameter("Browser")), "firefox");
-            } else {
-                browser = ParameterParserUtil.parseStringParam(policy.sanitize(request.getParameter("browser")), "firefox");
-            }
-            version = ParameterParserUtil.parseStringParam(policy.sanitize(request.getParameter("version")), "");
-            platform = ParameterParserUtil.parseStringParam(policy.sanitize(request.getParameter("platform")), "");
-        } else {
-            IRobotService robotService = appContext.getBean(IRobotService.class);
-            try {
-                Robot robObj = robotService.convert(robotService.readByKey(robot));
-                robotHost = robObj.getHost();
-                robotPort = String.valueOf(robObj.getPort());
-                browser = robObj.getBrowser();
-                version = robObj.getVersion();
-                platform = robObj.getPlatform();
-                active = robObj.getActive();
-                userAgent = robObj.getUserAgent();
-            } catch (CerberusException ex) {
-                Logger.getLogger(RunTestCase.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-            }
-        }
 
         //Test
         String test = ParameterParserUtil.parseStringParam(policy.sanitize(request.getParameter("Test")), "");
@@ -193,24 +166,35 @@ public class RunTestCase extends HttpServlet {
         int numberOfRetries = ParameterParserUtil.parseIntegerParam(policy.sanitize(request.getParameter("retries")), 0);
         screenSize = ParameterParserUtil.parseStringParam(policy.sanitize(request.getParameter("screenSize")), "");
 
+        robot = ParameterParserUtil.parseStringParam(policy.sanitize(request.getParameter("robot")), "");
+        ss_ip = ParameterParserUtil.parseStringParam(policy.sanitize(request.getParameter("ss_ip")), "");
+        ss_p = ParameterParserUtil.parseStringParam(policy.sanitize(request.getParameter("ss_p")), "");
+        if (request.getParameter("Browser") != null && !"".equals(request.getParameter("Browser"))) {
+            browser = ParameterParserUtil.parseStringParam(policy.sanitize(request.getParameter("Browser")), "firefox");
+        } else {
+            browser = ParameterParserUtil.parseStringParam(policy.sanitize(request.getParameter("browser")), "firefox");
+        }
+        version = ParameterParserUtil.parseStringParam(policy.sanitize(request.getParameter("version")), "");
+        platform = ParameterParserUtil.parseStringParam(policy.sanitize(request.getParameter("platform")), "");
+
         String helpMessage = "\nThis servlet is used to start the execution of a test case.\n"
                 + "Parameter list :\n"
                 + "- Test [mandatory] : Test to execute. [" + test + "]\n"
                 + "- TestCase [mandatory] : Test Case reference to execute. [" + testCase + "]\n"
                 + "- Country [mandatory] : Country where the test case will execute. [" + country + "]\n"
-                + "- Environment [mandatory] : Environment where the test case will execute. [" + environment + "]\n"
+                + "- Environment : Environment where the test case will execute. This parameter is mandatory only if manualURL is not set to Y. [" + environment + "]\n"
                 + "- robot : robot name on which the test will be executed. [" + robot + "]\n"
-                + "- ss_ip : Host of the Robot where the test will be executed. [" + robotHost + "]\n"
-                + "- ss_p : Port of the Robot. [" + robotPort + "]\n"
-                + "- browser : Browser to use for the execution. [" + browser + "]\n"
-                + "- version : Version to use for the execution. [" + version + "]\n"
-                + "- platform : Platform to use for the execution. [" + platform + "]\n"
+                + "- ss_ip : Host of the Robot where the test will be executed. (Can be overwriten if robot is defined) [" + ss_ip + "]\n"
+                + "- ss_p : Port of the Robot. (Can be overwriten if robot is defined) [" + ss_p + "]\n"
+                + "- browser : Browser to use for the execution. (Can be overwriten if robot is defined) [" + browser + "]\n"
+                + "- version : Version to use for the execution. (Can be overwriten if robot is defined) [" + version + "]\n"
+                + "- platform : Platform to use for the execution. (Can be overwriten if robot is defined) [" + platform + "]\n"
                 + "- screenSize : Size of the screen to set for the execution. [" + screenSize + "]\n"
                 + "- manualURL : Activate or not the Manual URL of the application to execute. If activated the 4 parameters after (myhost, mycontextroot, myloginrelativeurl, myenvdata) are necessary. [" + manualURL + "]\n"
-                + "- myhost : Host of the application to test. [" + myHost + "]\n"
-                + "- mycontextroot : Context root of the application to test. [" + myContextRoot + "]\n"
-                + "- myloginrelativeurl : Relative login URL of the application. [" + myLoginRelativeURL + "]\n"
-                + "- myenvdata : Environment where to get the test data when a manualURL is defined. [" + myEnvData + "]\n"
+                + "- myhost : Host of the application to test (only used when manualURL is feed). [" + myHost + "]\n"
+                + "- mycontextroot : Context root of the application to test (only used when manualURL is feed). [" + myContextRoot + "]\n"
+                + "- myloginrelativeurl : Relative login URL of the application (only used when manualURL is feed). [" + myLoginRelativeURL + "]\n"
+                + "- myenvdata : Environment where to get the test data when a manualURL is defined. (only used when manualURL is feed) [" + myEnvData + "]\n"
                 + "- Tag : Tag that will be stored on the execution. [" + StringEscapeUtils.escapeHtml4(tag) + "]\n"
                 + "- outputformat : Format of the output of the execution. [" + outputFormat + "]\n"
                 + "- screenshot : Activate or not the screenshots. [" + screenshot + "]\n"
@@ -224,7 +208,8 @@ public class RunTestCase extends HttpServlet {
 
         boolean error = false;
 
-        // Checking the parameter validity. Tag is a mandatory parameter
+        // -- Checking the parameter validity. --
+        // test, testcase and country parameters are mandatory
         if (StringUtils.isBlank(test)) {
             out.println("Error - Parameter test is mandatory.");
             error = true;
@@ -237,19 +222,15 @@ public class RunTestCase extends HttpServlet {
             out.println("Error - Parameter country is mandatory.");
             error = true;
         }
+        // environment is mandatory when manualURL is not activated.
         if (StringUtils.isBlank(environment) && !manualURL) {
-            out.println("Error - Parameter environment is mandatory.");
+            out.println("Error - Parameter environment is mandatory (or use the manualURL parameter).");
             error = true;
         }
-        if (active.equals("N") && !manualURL) {
-            out.println("Error - Robot is not Active.");
-            error = true;
-        }
-
         //verify the format of the ScreenSize. It must be 2 integer separated by a *. For example : 1024*768
         if (!"".equals(screenSize)) {
             if (!screenSize.contains("*")) {
-                out.println("Error - ScreenSize format is not Correct. It must be 2 Integer separated by a *");
+                out.println("Error - ScreenSize format is not Correct. It must be 2 Integer separated by a *.");
                 error = true;
             } else {
                 try {
@@ -258,11 +239,34 @@ public class RunTestCase extends HttpServlet {
                     Integer.parseInt(screenWidth);
                     Integer.parseInt(screenLength);
                 } catch (Exception e) {
-                    out.println("Error - ScreenSize format is not Correct. It must be 2 Integer separated by a *");
+                    out.println("Error - ScreenSize format is not Correct. It must be 2 Integer separated by a *.");
                     error = true;
                 }
             }
         }
+        if (!"".equals(robot)) {
+            IRobotService robotService = appContext.getBean(IRobotService.class);
+            try {
+                Robot robObj = robotService.convert(robotService.readByKey(robot));
+                // If Robot parameter is defined and we can find the robot, we overwrite the corresponding parameters.
+                ss_ip = ParameterParserUtil.parseStringParam(robObj.getHost(), ss_ip);
+                ss_p = ParameterParserUtil.parseStringParam(String.valueOf(robObj.getPort()), ss_p);
+                browser = ParameterParserUtil.parseStringParam(robObj.getBrowser(), browser);
+                version = ParameterParserUtil.parseStringParam(robObj.getVersion(), version);
+                platform = ParameterParserUtil.parseStringParam(robObj.getPlatform(), platform);
+                active = robObj.getActive();
+                userAgent = robObj.getUserAgent();
+            } catch (CerberusException ex) {
+                out.println("Error - Robot [" + robot + "] does not exist.");
+                error = true;
+            }
+        }
+        // We cannot execute a testcase on a desactivated Robot.
+        if (active.equals("N")) {
+            out.println("Error - Robot is not Active.");
+            error = true;
+        }
+
         if (!error) {
 
             IRunTestCaseService runTestCaseService = appContext.getBean(RunTestCaseService.class);
@@ -272,8 +276,9 @@ public class RunTestCase extends HttpServlet {
             TCase tCase = factoryTCase.create(test, testCase);
 
             TestCaseExecution tCExecution = factoryTCExecution.create(0, test, testCase, null, null, environment, country, browser, version, platform, "",
-                    0, 0, "", "", null, robotHost, null, robotPort, tag, "N", verbose, screenshot, getPageSource, getSeleniumLog, synchroneous, timeout, outputFormat, null,
-                    Infos.getInstance().getProjectNameAndVersion(), tCase, null, null, manualURL, myHost, myContextRoot, myLoginRelativeURL, myEnvData, robotHost, robotPort, null, new MessageGeneral(MessageGeneralEnum.EXECUTION_PE_TESTSTARTED), "Selenium", numberOfRetries, screenSize);
+                    0, 0, "", "", null, ss_ip, null, ss_p, tag, "N", verbose, screenshot, getPageSource, getSeleniumLog, synchroneous, timeout, outputFormat, null,
+                    Infos.getInstance().getProjectNameAndVersion(), tCase, null, null, manualURL, myHost, myContextRoot, myLoginRelativeURL, myEnvData, ss_ip, ss_p,
+                    null, new MessageGeneral(MessageGeneralEnum.EXECUTION_PE_TESTSTARTED), "Selenium", numberOfRetries, screenSize);
 
             /**
              * Set UserAgent
@@ -378,10 +383,11 @@ public class RunTestCase extends HttpServlet {
             }
 
             long runID = tCExecution.getId();
-            if (outputFormat.equalsIgnoreCase("gui")) {
-                if (runID > 0) {
+            if (outputFormat.equalsIgnoreCase("gui")) { // HTML GUI output. either the detailed execution page or an error page when the execution is not created.
+                if (runID > 0) { // Execution has been created.
                     response.sendRedirect("./ExecutionDetail.jsp?id_tc=" + runID);
-                } else {
+                } else { // Execution was not even created.
+                    response.setContentType("text/html");
                     out.println("<html><head><meta http-equiv=\"Content-Type\" content=\"text/html; charset=UTF-8\"><title>Test Execution Result</title></head>");
                     out.println("<body>");
                     out.println("<table>");
@@ -422,7 +428,8 @@ public class RunTestCase extends HttpServlet {
                     out.println("</body>");
                     out.println("</html>");
                 }
-            } else if (outputFormat.equalsIgnoreCase("verbose-txt")) {
+            } else if (outputFormat.equalsIgnoreCase("verbose-txt")) { // Text verbose output.
+                response.setContentType("text/plain");
                 String separator = " = ";
                 out.println("RunID" + separator + runID);
                 out.println("Test" + separator + test);
@@ -448,9 +455,10 @@ public class RunTestCase extends HttpServlet {
                 out.println("ReturnCode" + separator + tCExecution.getResultMessage().getCode());
                 out.println("ReturnCodeDescription" + separator + tCExecution.getResultMessage().getDescription());
                 out.println("ControlStatus" + separator + tCExecution.getResultMessage().getCodeString());
-            } else if (outputFormat.equalsIgnoreCase("redirectToReport")) {
+            } else if (outputFormat.equalsIgnoreCase("redirectToReport")) { // Redirect to the reporting page by tag.
                 response.sendRedirect("./ReportingExecutionByTag.jsp?Tag=" + StringUtil.encodeAsJavaScriptURIComponent(tag));
-            } else {
+            } else { // Default behaviour when not outputformat is defined : compact mode.
+                response.setContentType("text/plain");
                 DateFormat df = new SimpleDateFormat(DateUtil.DATE_FORMAT_DISPLAY);
                 out.println(df.format(tCExecution.getStart()) + " - " + runID
                         + " [" + test

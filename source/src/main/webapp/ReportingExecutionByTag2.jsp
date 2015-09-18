@@ -9,6 +9,7 @@
 <html>
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
         <%@ include file="include/dependenciesInclusions.html" %>
         <link rel="stylesheet" href="css/ReportingExecutionByTag.css" type="text/css"/>
         <script type="text/javascript" src="js/d3.min.js"></script>
@@ -49,7 +50,7 @@
                     <div class="panel panel-default">
                         <div class="panel-heading card">
                             <span class="fa fa-pie-chart fa-fw"></span>
-                            <label id="reportStatus"> Report by Status</label>
+                            <label id="reportStatus">Report by Status</label>
                             <a data-toggle="collapse" data-target="#ReportByStatus">
                                 <span class="toggle glyphicon glyphicon-chevron-right pull-right"></span>
                             </a>

@@ -62,7 +62,8 @@ public class LogEventDAO implements ILogEventDAO {
         AnswerItem ans = new AnswerItem();
         LogEvent result = null;
         final String query = "SELECT * FROM logevent WHERE `logEventID` = ?";
-        MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
+        MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_UNEXPECTED_ERROR);
+        msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", ""));
 
         Connection connection = this.databaseSpring.connect();
         try {
@@ -73,8 +74,11 @@ public class LogEventDAO implements ILogEventDAO {
                 try {
                     if (resultSet.first()) {
                         result = loadFromResultSet(resultSet);
+                        msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
                         msg.setDescription(msg.getDescription().replace("%ITEM%", "LogEvent").replace("%OPERATION%", "SELECT"));
                         ans.setItem(result);
+                    } else {
+                        msg = new MessageEvent(MessageEventEnum.NO_DATA_FOUND);
                     }
                 } catch (SQLException exception) {
                     MyLogger.log(LogEventDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
@@ -112,7 +116,8 @@ public class LogEventDAO implements ILogEventDAO {
     @Override
     public AnswerList readByCriteria(int start, int amount, String colName, String dir, String searchTerm, String individualSearch) {
         AnswerList response = new AnswerList();
-        MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
+        MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_UNEXPECTED_ERROR);
+        msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", ""));
         List<LogEvent> logEventList = new ArrayList<LogEvent>();
         StringBuilder searchSQL = new StringBuilder();
 
@@ -144,7 +149,6 @@ public class LogEventDAO implements ILogEventDAO {
             query.append(" limit ").append(start).append(" , ").append(MAX_ROW_SELECTED);
         }
 
-
         Connection connection = this.databaseSpring.connect();
         try {
             PreparedStatement preStat = connection.prepareStatement(query.toString());
@@ -164,6 +168,7 @@ public class LogEventDAO implements ILogEventDAO {
                         nrTotalRows = resultSet.getInt(1);
                     }
 
+                    msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
                     msg.setDescription(msg.getDescription().replace("%ITEM%", "LogEvent").replace("%OPERATION%", "SELECT"));
                     response = new AnswerList(logEventList, nrTotalRows);
 
@@ -183,16 +188,21 @@ public class LogEventDAO implements ILogEventDAO {
                 msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_UNEXPECTED_ERROR);
                 msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", "Unable to retrieve the list of entries!"));
             } finally {
-                preStat.close();
+                if (preStat != null) {
+                    preStat.close();
+                }
             }
+            
         } catch (SQLException exception) {
             MyLogger.log(LogEventDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
             msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_UNEXPECTED_ERROR);
             msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", "Unable to retrieve the list of entries!"));
         } finally {
             try {
-                if (connection != null) {
-                    connection.close();
+                if (!this.databaseSpring.isOnTransaction()) {
+                    if (connection != null) {
+                        connection.close();
+                    }
                 }
             } catch (SQLException e) {
                 MyLogger.log(LogEventDAO.class.getName(), Level.WARN, e.toString());

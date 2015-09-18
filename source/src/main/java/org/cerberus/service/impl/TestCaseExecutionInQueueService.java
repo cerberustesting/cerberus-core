@@ -110,9 +110,14 @@ public class TestCaseExecutionInQueueService implements ITestCaseExecutionInQueu
     public void updateComment(Long queueId, String comment) throws CerberusException {
         testCaseExecutionInQueueDAO.updateComment(queueId, comment);
     }
-    
-     public AnswerList readByCriteria(int start, int amount, String column, String dir, String searchTerm, String individualSearch, String tag) throws CerberusException {
-        return testCaseExecutionInQueueDAO.readByCriteria(start, amount, column, dir, searchTerm, individualSearch, tag);
-     }
 
+    @Override
+    public AnswerList readByCriteria(int start, int amount, String column, String dir, String searchTerm, String individualSearch, String tag) throws CerberusException {
+        return testCaseExecutionInQueueDAO.readByCriteria(start, amount, column, dir, searchTerm, individualSearch, tag);
+    }
+
+    @Override
+    public AnswerList readDistinctEnvCoutnryBrowserByTag(String tag) {
+        return testCaseExecutionInQueueDAO.readDistinctEnvCoutnryBrowserByTag(tag);
+    }
 }
