@@ -516,7 +516,7 @@ public class UpdateTestCaseWithDependencies extends HttpServlet {
                 int step = Integer.valueOf(getParameterIfExists(request, "action_step_" + stepInc + "_" + inc) == null ? "0" : getParameterIfExists(request, "action_step_" + stepInc + "_" + inc));
                 int sequence = Integer.valueOf(getParameterIfExists(request, "action_sequence_" + stepInc + "_" + inc) == null ? "0" : getParameterIfExists(request, "action_sequence_" + stepInc + "_" + inc));
                 String action = getParameterIfExists(request, "action_action_" + stepInc + "_" + inc);
-                String object = HtmlUtils.htmlEscape(getParameterIfExists(request, "action_object_" + stepInc + "_" + inc));
+                String object = getParameterIfExists(request, "action_object_" + stepInc + "_" + inc).replaceAll("\"", "\\\"");
                 String property = getParameterIfExists(request, "action_property_" + stepInc + "_" + inc);
                 String description = HtmlUtils.htmlEscape(getParameterIfExists(request, "action_description_" + stepInc + "_" + inc));
                 String screenshot = getParameterIfExists(request, "action_screenshot_" + stepInc + "_" + inc);

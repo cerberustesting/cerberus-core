@@ -1204,7 +1204,7 @@
                                                         String actionFontColor = "#333333";
                                                         int incrementAction = 0;
                                                         for (TestCaseStepAction tcsa : tcsaList) {
-
+System.out.println(tcsa.getObject());
                                                             incrementAction++;
                                                             int b;
                                                             b = incrementAction % 2;
@@ -1273,8 +1273,14 @@
                                                                     <div style="float:left;"><p name="labelTestCaseStepActionObject" style="float:right;font-weight:bold;" link="white" >Object</p>
                                                                      </div>
                                                                     <input style="float:left;border-style:groove;border-width:thin;border-color:white;border: 1px solid white; height:100%;width:75%; color:#999999"
-                                                                           value="<%=tcsa.getObject()%>"
+                                                                           value="<%=tcsa.getObject().replace("\"","&quot;")%>"
                                                                            onchange="showChangedRow(this.parentNode.parentNode.parentNode.parentNode)" name="action_object_<%=incrementStep%>_<%=incrementAction%>" <%=isReadonly%>>
+                                                                    <% if (tcsa.getObject().startsWith("picture=")){%>
+                                                                    <div>
+                                                                    <img class="wob" width="45" height="35" src="<%=tcsa.getObject().split("picture=")[1]%>" 
+                                                                     onclick="showPicture('<%=tcsa.getScreenshotFilename()%>', 'action_screenshot_<%=incrementStep%>_<%=incrementAction%>', 'AttachPictureDiv_<%=incrementStep%>_<%=incrementAction%>')"/>
+                                                                    </div>
+                                                                    <%}%>
                                                                 </div>
                                                                 <div class="technical_part" style="width: 30%; float:left; background-color:transparent">
                                                                     <div style="float:left;"><p name="labelTestCaseStepActionProperty" style="float:right;font-weight:bold;" link="white" >Property</p>
