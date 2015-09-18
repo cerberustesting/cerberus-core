@@ -34,6 +34,7 @@
         <meta content="text/html; charset=UTF-8" http-equiv="content-type">
         <title>Cerberus Homepage</title>
         <%@ include file="include/dependenciesInclusions.html" %>
+        <script type="text/javascript" src="js/d3.min.js"></script>
         <script type="text/javascript" src="js/pages/Homepage.js"></script>
     </head>
     <body>
@@ -55,16 +56,25 @@
         <% }
         %>
         <style>
-             
-             .DataTables_sort_wrapper { font-size:9px }
-             
-         </style>
+
+            .DataTables_sort_wrapper { font-size:9px }
+
+        </style>
         <div class="container-fluid center" id="page-layout">
 
             <h1 class="page-title-line" id="title">Welcome to Cerberus Application</h1>
             <div id="homeTableDiv" class="well">
                 <table id="homePageTable" class="table table-hover display" name="homePageTable"></table>
                 <div class="marginBottom20"></div>
+            </div>
+
+            <div class="panel panel-default">
+                <div class="panel-heading card">
+                    <label id="lastTagExec">Last tag executions</label>
+                </div>
+                <div class="panel-body" id="tagExecStatus">
+                    
+                </div>
             </div>
             <footer class="footer">
                 <div class="container-fluid" id="footer"></div>

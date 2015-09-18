@@ -128,8 +128,8 @@ public class TestCaseExecutionService implements ITestCaseExecutionService {
     }
     
     @Override
-    public AnswerList findTagList() throws CerberusException {
-        return testCaseExecutionDao.findTagList();
+    public AnswerList findTagList(int TagNumber) throws CerberusException {
+        return testCaseExecutionDao.findTagList(TagNumber);
     }
     
     @Override

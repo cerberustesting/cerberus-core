@@ -18,22 +18,19 @@
  * along with Cerberus.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-$.when($.getScript("js/pages/global/global.js")).then(function() {
-    $(document).ready(function() {
+$.when($.getScript("js/pages/global/global.js")).then(function () {
+    $(document).ready(function () {
         var doc = new Doc();
-
         displayHeaderLabel(doc);
         displayGlobalLabel(doc);
         //configure and create the dataTable
         var configurations = new TableConfigurationsServerSide("homePageTable", "Homepage?MySystem=" + getSys(), "aaData", aoColumnsFunc());
-
         var table = createDataTable(configurations);
         //By default, sort the log messages from newest to oldest
         table.fnSort([0, 'desc']);
+        loadLastTagExec();
     });
 });
-
-
 function getSys()
 {
     var sel = document.getElementById("MySystem");
@@ -47,11 +44,95 @@ function readStatus() {
         data: {idName: "TCSTATUS"},
         async: false,
         dataType: 'json',
-        success: function(data) {
+        success: function (data) {
             result = data;
         }
     });
     return result;
+}
+
+function generateTagLink(tagName) {
+    var link = '<a href="./ReportingExecutionByTag2.jsp?tag='+ tagName +'">'+ tagName +'</a>';
+    
+    return link;
+}
+
+function generateProgressBar(totalTest, statusObj) {
+    var percent = statusObj.value / totalTest * 100;
+    var bar = '<div class="progress-bar" \n\
+                role="progressbar" \n\
+                aria-valuenow="60" \n\
+                aria-value="0" \n\
+                aria-valuemax="100" \n\
+                style="width:' + percent + '%;background-color:' + statusObj.color + '">' + percent + '%</div>';
+
+    return bar;
+}
+
+function getTotalExec(execData) {
+    var total = 0;
+
+    for (var key in execData) {
+        total += execData[key].value;
+    }
+
+    return total;
+}
+
+function generateTagReport(data) {
+    var reportArea = $("#tagExecStatus");
+
+    data.forEach(function (d) {
+        var total = getTotalExec(d.total);
+        var buildBar;
+
+        buildBar = '<div>' + generateTagLink(d.tag) + '<div class="pull-right" style="display: inline;">Total executions : ' + total + '</div></div><div class="progress">';
+        for (var status in d.total) {
+            buildBar += generateProgressBar(total, d.total[status]);
+        }
+        buildBar += '</div>';
+        reportArea.append(buildBar);
+    });
+}
+
+function loadLastTagExec() {
+//Get the last tag which have been executed
+
+    var jqxhr = $.get("ReadTestCaseExecution", {TagNumber: "5"}, "json");
+    $.when(jqxhr).then(function (data) {
+        var tagExec = [];
+        for (var index = 0; index < data.tags.length; index++) {
+            var tagName = data.tags[index];
+            $.ajax({
+                type: "GET",
+                url: "GetReportData",
+                data: {CampaignName: "null", Tag: tagName},
+                async: false,
+                dataType: 'json',
+                success: function (data) {
+                    var tagData = {};
+                    var total = {};
+                    for (var index = 0; index < data.axis.length; index++) {
+                        for (var key in data.axis[index]) {
+                            if (key !== "name") {
+                                if (total.hasOwnProperty(key)) {
+                                    total[key].value += data.axis[index][key].value;
+                                } else {
+                                    total[key] = {"value": data.axis[index][key].value,
+                                        "color": data.axis[index][key].color};
+                                }
+                            }
+                        }
+                    }
+
+                    tagData.tag = tagName;
+                    tagData.total = total;
+                    tagExec.push(tagData);
+                }
+            });
+        }
+        generateTagReport(tagExec);
+    });
 }
 
 function aoColumnsFunc() {
@@ -63,8 +144,13 @@ function aoColumnsFunc() {
         {"data": "Total", "bSortable": false, "sName": "Total", "title": "Total"}
     ];
     for (var s = 0; s < status.length; s++) {
-        var obj = '{"data": "' + status[s].value + '","bSortable":false, "sName": "' + status[s].value + '", "title": "' + status[s].value + '"}';
-        aoColumns.push(eval('(' + obj + ')'));
+        var obj = {
+            "data": status[s].value,
+            "bSortable": false,
+            "sName": status[s].value,
+            "title": status[s].value
+        };
+        aoColumns.push(obj);
     }
     return aoColumns;
 }

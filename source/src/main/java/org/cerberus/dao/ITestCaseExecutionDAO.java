@@ -129,7 +129,7 @@ public interface ITestCaseExecutionDAO {
      */
     public void setTagToExecution(long id, String tag) throws CerberusException ;
     
-    AnswerList findTagList() throws CerberusException;
+    AnswerList findTagList(int TagNumber) throws CerberusException;
     
     public AnswerList readByCriteria(int start, int amount, String column, String dir, String searchTerm, String individualSearch, String tag) throws CerberusException;
 

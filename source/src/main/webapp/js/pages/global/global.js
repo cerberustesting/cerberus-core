@@ -724,3 +724,20 @@ function displayFooter(doc) {
     footerBugString = footerBugString.replace("%LINK%", "https://github.com/vertigo17/Cerberus/issues/new?body=Cerberus%20Version%20:%20" + cerberusInformation.projectVersion);
     $("#footer").html(footerString + " - " + footerBugString);
 }
+
+function GetURLParameter(sParam)
+{
+    var sPageURL = window.location.search.substring(1);
+    var sURLVariables = sPageURL.split('&');
+    
+    for (var i = 0; i < sURLVariables.length; i++)
+    {
+        var sParameterName = sURLVariables[i].split('=');
+        if (sParameterName[0] === sParam)
+        {
+            return sParameterName[1];
+        }
+    }
+    return null;
+}
+;

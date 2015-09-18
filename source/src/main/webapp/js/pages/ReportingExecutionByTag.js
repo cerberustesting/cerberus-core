@@ -27,7 +27,8 @@ $.when($.getScript("js/pages/global/global.js")).then(function () {
         bindToggleCollapse("#functionChart");
         bindToggleCollapse("#listReport");
 
-        loadTagFilters();
+        var urlTag = GetURLParameter('tag');
+        loadTagFilters(urlTag);
         $('body').tooltip({
             selector: '[data-toggle="tooltip"]'
         });
@@ -58,7 +59,7 @@ function displayPageLabel(doc) {
     $("#statusLabel").html(doc.getDocLabel("testcase", "Status") + " :");
 }
 
-function loadTagFilters() {
+function loadTagFilters(urlTag) {
     var jqxhr = $.get("ReadTestCaseExecution", "", "json");
     $.when(jqxhr).then(function (data) {
         var messageType = getAlertType(data.messageType);
@@ -71,6 +72,12 @@ function loadTagFilters() {
                 var option = $('<option></option>').attr("value", encodedString).text(data.tags[index]);
                 $('#selectTag').append(option);
             }
+
+            //if the tag is passed as a url parameter, then it loads the report from this tag
+            if (urlTag !== null) {
+                $('#selectTag option[value="' + urlTag + '"]').attr("selected", "selected");
+                loadReport();
+            }
         } else {
             showMessageMainPage(messageType, data.message);
         }
@@ -79,6 +86,8 @@ function loadTagFilters() {
 
 function loadReport() {
     var selectTag = $("#selectTag option:selected").text();
+    
+    window.history.pushState('tag', '', 'ReportingExecutionByTag2.jsp?tag=' + selectTag);
 
     //clear the old report content before reloading it
     $("#ReportByStatusTable").empty();

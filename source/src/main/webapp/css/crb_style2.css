@@ -57,6 +57,10 @@ a {
     text-decoration: none;
 }
 
+.card {
+    font-size: 14px;
+}
+
 .nodoc{
     color:#FF0000;
 }

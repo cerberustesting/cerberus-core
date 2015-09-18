@@ -92,14 +92,19 @@ public class ReadTestCaseExecution extends HttpServlet {
             AnswerItem answer = new AnswerItem(new MessageEvent(MessageEventEnum.DATA_OPERATION_OK));
             int sEcho = Integer.valueOf(ParameterParserUtil.parseStringParam(request.getParameter("sEcho"), "0"));
             String Tag = ParameterParserUtil.parseStringParam(request.getParameter("Tag"), "");
+            int TagNumber = Integer.valueOf(ParameterParserUtil.parseStringParam(request.getParameter("TagNumber"), "0"));
+            
             if (sEcho == 0 && !Tag.equals("")) {
                 answer = findExecutionColumns(appContext, request, Tag);
                 jsonResponse = (JSONObject) answer.getItem();
             } else if (sEcho != 0 && !Tag.equals("")) {
                 answer = findExecutionList(appContext, request, Tag);
                 jsonResponse = (JSONObject) answer.getItem();
-            } else if (sEcho == 0) {
-                answer = findTagList(appContext, request, response);
+            } else if (sEcho == 0 && TagNumber == 0) {
+                answer = findTagList(appContext);
+                jsonResponse = (JSONObject) answer.getItem();
+            } else if (sEcho == 0 && TagNumber != 0) {
+                answer = findLastTagExec(appContext, TagNumber);
                 jsonResponse = (JSONObject) answer.getItem();
             }
 
@@ -174,7 +179,7 @@ public class ReadTestCaseExecution extends HttpServlet {
         return "Short description";
     }// </editor-fold>
 
-    private AnswerItem findTagList(ApplicationContext appContext, HttpServletRequest request, HttpServletResponse response)
+    private AnswerItem findTagList(ApplicationContext appContext)
             throws CerberusException, JSONException {
         AnswerItem answer = new AnswerItem();
         JSONObject jsonResponse = new JSONObject();
@@ -183,7 +188,7 @@ public class ReadTestCaseExecution extends HttpServlet {
 
         AnswerList resp;
 
-        resp = testCaseExecutionService.findTagList();
+        resp = testCaseExecutionService.findTagList(0);
 
         jsonResponse.put("tags", resp.getDataList());
 
@@ -427,5 +432,22 @@ public class ReadTestCaseExecution extends HttpServlet {
         result.put("ShortDescription", testCaseWithExecution.getShortDescription());
 
         return result;
+    }
+
+    private AnswerItem findLastTagExec(ApplicationContext appContext, int TagNumber) throws JSONException, CerberusException {
+        AnswerItem answer = new AnswerItem();
+        JSONObject jsonResponse = new JSONObject();
+
+        testCaseExecutionService = appContext.getBean(ITestCaseExecutionService.class);
+
+        AnswerList resp;
+
+        resp = testCaseExecutionService.findTagList(TagNumber);
+
+        jsonResponse.put("tags", resp.getDataList());
+
+        answer.setItem(jsonResponse);
+        answer.setResultMessage(resp.getResultMessage());
+        return answer;
     }
 }

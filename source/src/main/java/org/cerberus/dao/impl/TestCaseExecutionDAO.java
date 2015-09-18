@@ -796,15 +796,22 @@ public class TestCaseExecutionDAO implements ITestCaseExecutionDAO {
     }
 
     @Override
-    public AnswerList findTagList() throws CerberusException {
+    public AnswerList findTagList(int TagNumber) throws CerberusException {
         AnswerList response = new AnswerList();
         MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
         List<String> list = null;
         StringBuilder query = new StringBuilder();
-        query.append("select distinct tag from testcaseexecution tce ")
-                .append("where tag != '' ");
-        query.append(" UNION select distinct tag from testcaseexecutionqueue where tag !='' ");
+        
+        query.append("select distinct tag from testcaseexecution tce ");
+        query.append("where tag != '' ");
+//        query.append(" UNION select distinct tag from testcaseexecutionqueue where tag !='' ");
+        
+        if (TagNumber != 0) {
+            query.append("ORDER BY id desc LIMIT ");
+            query.append(TagNumber);
+        }
 
+        query.append(";");
         Connection connection = this.databaseSpring.connect();
         try {
             PreparedStatement preStat = connection.prepareStatement(query.toString());
@@ -1029,15 +1036,15 @@ public class TestCaseExecutionDAO implements ITestCaseExecutionDAO {
 
     public TestCaseWithExecution loadEnvCountryBrowserFromResultSet(ResultSet resultSet) throws SQLException {
         TestCaseWithExecution testCaseWithExecution = new TestCaseWithExecution();
-        
+
         testCaseWithExecution.setEnvironment(resultSet.getString("Environment"));
         testCaseWithExecution.setCountry(resultSet.getString("Country"));
         testCaseWithExecution.setBrowser(resultSet.getString("Browser"));
         testCaseWithExecution.setControlStatus(resultSet.getString("ControlStatus"));
-        
+
         return testCaseWithExecution;
     }
-    
+
     public TestCaseWithExecution loadTestCaseWithExecutionFromResultSet(ResultSet resultSet) throws SQLException {
         TestCaseWithExecution testCaseWithExecution = new TestCaseWithExecution();
 

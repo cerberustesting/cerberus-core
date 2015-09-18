@@ -54,7 +54,7 @@
                         <li id="subactive"><a name="menu" id="menuSqlLibrary" href="SqlLibrary.jsp">SQL Library</a></li>
                         <li id="subactive"><a name="menu" id="menuSoapLibrary" href="SoapLibrary.jsp">SOAP Library</a></li>
                         <li id="subactive"><a name="menu" id="menuTestData" href="TestData.jsp">Test Data</a></li>
-<!--                        <li id="subactive"><a name="menu" id="menuTestDataLib" href="TestDataLib.jsp">Library</a></li>-->
+                        <!--                        <li id="subactive"><a name="menu" id="menuTestDataLib" href="TestDataLib.jsp">Library</a></li>-->
                     </ul>
                 </li>
                 <li class="dropdown RunTest"><a name="menu" id="menuRun" class="dropdown-toggle" aria-expanded="true" aria-haspopup="true" role="button" data-toggle="dropdown" href="#">Run <span class="caret"></span></a>
@@ -104,7 +104,7 @@
                 <li class="userConnected">
                     <a id="formSystem">
                         <span class=" glyphicon glyphicon-folder-open" style="color: white; margin-right: 5px;"></span>
-                        <form style="display: inline-block; margin-left: 5px;" action="" method="post" name="SysFilter" id="SysFilter">
+                        <form style="display: inline-block; margin-left: 5px;" action="" method="post" name="SysFilter" id="SysFilter" class="form-group">
                             <select class="form-control header-dropdown" id="MySystem" style="" name="MySystem" onchange="ChangeSystem()">
                             </select>
                         </form>
@@ -112,8 +112,10 @@
                 </li>
                 <li class="userConnected">
                     <a id="formLang">
-                    <select class="form-control header-dropdown f16" id="MyLang" name="MyLang" onchange="ChangeLanguage();">
-                    </select>
+                        <form class="form-group">
+                            <select class="form-control header-dropdown f16" id="MyLang" name="MyLang" onchange="ChangeLanguage();">
+                            </select>
+                        </form>
                     </a>
                 </li>
 
