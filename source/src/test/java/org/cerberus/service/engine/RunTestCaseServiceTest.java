@@ -1,4 +1,4 @@
-package org.cerberus.serviceEngine;
+package org.cerberus.service.engine;
 
 import org.cerberus.service.engine.IRunTestCaseService;
 import org.junit.Ignore;

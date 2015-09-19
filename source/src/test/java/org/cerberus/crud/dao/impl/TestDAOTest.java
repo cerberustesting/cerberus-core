@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU General Public License
  * along with Cerberus.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.cerberus.dao.impl;
+package org.cerberus.crud.dao.impl;
 
 import org.cerberus.crud.dao.impl.TestDAO;
 import static org.junit.Assert.assertTrue;

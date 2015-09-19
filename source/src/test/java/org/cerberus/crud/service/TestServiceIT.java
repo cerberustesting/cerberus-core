@@ -1,4 +1,4 @@
-package org.cerberus.service;
+package org.cerberus.crud.service;
 
 import org.cerberus.crud.service.ITestService;
 import org.junit.Ignore;

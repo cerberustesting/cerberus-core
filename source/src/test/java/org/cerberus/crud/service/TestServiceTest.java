@@ -17,7 +17,7 @@
  * You should have received a copy of the GNU General Public License
  * along with Cerberus.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.cerberus.service;
+package org.cerberus.crud.service;
 
 import org.cerberus.crud.service.ITestService;
 import junit.framework.Assert;

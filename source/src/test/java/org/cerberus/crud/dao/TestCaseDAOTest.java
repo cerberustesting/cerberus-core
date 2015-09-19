@@ -1,4 +1,4 @@
-package org.cerberus.dao;
+package org.cerberus.crud.dao;
 
 import org.junit.Ignore;
 import org.junit.Test;

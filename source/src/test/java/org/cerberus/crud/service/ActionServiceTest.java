@@ -18,7 +18,7 @@
  * along with Cerberus.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.cerberus.service;
+package org.cerberus.crud.service;
 
 import junit.framework.Assert;
 import org.cerberus.crud.entity.MessageEvent;

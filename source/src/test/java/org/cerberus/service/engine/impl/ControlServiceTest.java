@@ -18,7 +18,7 @@
  * along with Cerberus.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.cerberus.serviceEngine.impl;
+package org.cerberus.service.engine.impl;
 
 import org.cerberus.service.engine.impl.ControlService;
 import org.cerberus.service.engine.impl.PropertyService;

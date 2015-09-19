@@ -1,3 +1,5 @@
+package org.cerberus.service.engine.impl;
+
 ///*
 // * Cerberus  Copyright (C) 2013  vertigo17
 // * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.

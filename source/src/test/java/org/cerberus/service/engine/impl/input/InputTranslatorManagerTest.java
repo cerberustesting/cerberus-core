@@ -17,7 +17,7 @@
  * You should have received a copy of the GNU General Public License
  * along with Cerberus.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.cerberus.serviceEngine.impl.input;
+package org.cerberus.service.engine.impl.input;
 
 import org.cerberus.service.engine.impl.input.InputTranslatorManager;
 import org.cerberus.service.engine.impl.input.AInputTranslator;

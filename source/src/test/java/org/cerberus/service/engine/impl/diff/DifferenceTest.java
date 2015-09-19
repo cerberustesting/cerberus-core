@@ -17,7 +17,7 @@
  * You should have received a copy of the GNU General Public License
  * along with Cerberus.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.cerberus.serviceEngine.impl.diff;
+package org.cerberus.service.engine.impl.diff;
 
 import org.cerberus.service.engine.impl.diff.Difference;
 import junit.framework.Assert;

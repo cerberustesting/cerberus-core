@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU General Public License
  * along with Cerberus.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.cerberus.factory;
+package org.cerberus.crud.factory;
 
 import org.cerberus.crud.factory.IFactoryTest;
 import static org.junit.Assert.assertEquals;
