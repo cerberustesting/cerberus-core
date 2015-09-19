@@ -17,7 +17,7 @@
     </context-param>
     <servlet>
         <servlet-name>Homepage</servlet-name>
-        <servlet-class>org.cerberus.servlet.guiPages.Homepage</servlet-class>
+        <servlet-class>org.cerberus.servlet.guipages.Homepage</servlet-class>
     </servlet>
     <servlet>
         <servlet-name>RunTestCase</servlet-name>
@@ -33,11 +33,11 @@
     </servlet>
     <servlet>
         <servlet-name>GetTestCaseList</servlet-name>
-        <servlet-class>org.cerberus.servlet.testCase.GetTestCaseList</servlet-class>
+        <servlet-class>org.cerberus.servlet.testcase.GetTestCaseList</servlet-class>
     </servlet>
     <servlet>
         <servlet-name>GetTestCase</servlet-name>
-        <servlet-class>org.cerberus.servlet.testCase.GetTestCase</servlet-class>
+        <servlet-class>org.cerberus.servlet.testcase.GetTestCase</servlet-class>
     </servlet>
     <servlet>
         <servlet-name>DocumentationField</servlet-name>
@@ -49,15 +49,15 @@
     </servlet>
     <servlet>
         <servlet-name>importXML</servlet-name>
-        <servlet-class>org.cerberus.servlet.testCase.ImportSeleniumIDE</servlet-class>
+        <servlet-class>org.cerberus.servlet.testcase.ImportSeleniumIDE</servlet-class>
     </servlet>
     <servlet>
         <servlet-name>importFile</servlet-name>
-        <servlet-class>org.cerberus.servlet.testCase.importFile</servlet-class>
+        <servlet-class>org.cerberus.servlet.testcase.importFile</servlet-class>
     </servlet>
     <servlet>
         <servlet-name>AddTest</servlet-name>
-        <servlet-class>org.cerberus.servlet.testCase.TestcaseList</servlet-class>
+        <servlet-class>org.cerberus.servlet.testcase.TestcaseList</servlet-class>
     </servlet>
     <servlet>
         <servlet-name>UpdateTest</servlet-name>
@@ -73,27 +73,27 @@
     </servlet>
     <servlet>
         <servlet-name>DuplicateTestCase</servlet-name>
-        <servlet-class>org.cerberus.servlet.testCase.DuplicateTestCase</servlet-class>
+        <servlet-class>org.cerberus.servlet.testcase.DuplicateTestCase</servlet-class>
     </servlet>
     <servlet>
         <servlet-name>UpdateTestCase</servlet-name>
-        <servlet-class>org.cerberus.servlet.testCase.UpdateTestCase</servlet-class>
+        <servlet-class>org.cerberus.servlet.testcase.UpdateTestCase</servlet-class>
     </servlet>
     <servlet>
         <servlet-name>CalculatePropertyForTestCase</servlet-name>
-        <servlet-class>org.cerberus.servlet.testCase.CalculatePropertyForTestCase</servlet-class>
+        <servlet-class>org.cerberus.servlet.testcase.CalculatePropertyForTestCase</servlet-class>
     </servlet>
     <servlet>
         <servlet-name>TestcaseList</servlet-name>
-        <servlet-class>org.cerberus.servlet.testCase.TestcaseList</servlet-class>
+        <servlet-class>org.cerberus.servlet.testcase.TestcaseList</servlet-class>
     </servlet>
     <servlet>
         <servlet-name>TestcaseListGrid</servlet-name>
-        <servlet-class>org.cerberus.servlet.testCase.TestcaseListGrid</servlet-class>
+        <servlet-class>org.cerberus.servlet.testcase.TestcaseListGrid</servlet-class>
     </servlet>
     <servlet>
         <servlet-name>CreateTestCase</servlet-name>
-        <servlet-class>org.cerberus.servlet.testCase.CreateTestCase</servlet-class>
+        <servlet-class>org.cerberus.servlet.testcase.CreateTestCase</servlet-class>
     </servlet>
     <servlet>
         <servlet-name>GetUsers</servlet-name>
@@ -121,15 +121,15 @@
     </servlet>
     <servlet>
         <servlet-name>DeleteTestCase</servlet-name>
-        <servlet-class>org.cerberus.servlet.testCase.DeleteTestCase</servlet-class>
+        <servlet-class>org.cerberus.servlet.testcase.DeleteTestCase</servlet-class>
     </servlet>
     <servlet>
         <servlet-name>UpdateTestCaseDetail</servlet-name>
-        <servlet-class>org.cerberus.servlet.testCase.UpdateTestCaseDetail</servlet-class>
+        <servlet-class>org.cerberus.servlet.testcase.UpdateTestCaseDetail</servlet-class>
     </servlet>
     <servlet>
         <servlet-name>ImportSeleniumIDE</servlet-name>
-        <servlet-class>org.cerberus.servlet.testCase.ImportSeleniumIDE</servlet-class>
+        <servlet-class>org.cerberus.servlet.testcase.ImportSeleniumIDE</servlet-class>
     </servlet>
     <servlet>
         <servlet-name>TCEwwwDetail</servlet-name>
@@ -227,35 +227,35 @@
     </servlet>
     <servlet>
         <servlet-name>GetTestBattery</servlet-name>
-        <servlet-class>org.cerberus.servlet.testBattery.GetTestBattery</servlet-class>
+        <servlet-class>org.cerberus.servlet.testbattery.GetTestBattery</servlet-class>
     </servlet>
     <servlet>
         <servlet-name>AddTestBattery</servlet-name>
-        <servlet-class>org.cerberus.servlet.testBattery.AddTestBattery</servlet-class>
+        <servlet-class>org.cerberus.servlet.testbattery.AddTestBattery</servlet-class>
     </servlet>
     <servlet>
         <servlet-name>AddTestBatteryContent</servlet-name>
-        <servlet-class>org.cerberus.servlet.testBattery.AddTestBatteryContent</servlet-class>
+        <servlet-class>org.cerberus.servlet.testbattery.AddTestBatteryContent</servlet-class>
     </servlet>
     <servlet>
         <servlet-name>DeleteTestBattery</servlet-name>
-        <servlet-class>org.cerberus.servlet.testBattery.DeleteTestBattery</servlet-class>
+        <servlet-class>org.cerberus.servlet.testbattery.DeleteTestBattery</servlet-class>
     </servlet>
     <servlet>
         <servlet-name>DeleteTestBatteryContent</servlet-name>
-        <servlet-class>org.cerberus.servlet.testBattery.DeleteTestBatteryContent</servlet-class>
+        <servlet-class>org.cerberus.servlet.testbattery.DeleteTestBatteryContent</servlet-class>
     </servlet>
     <servlet>
         <servlet-name>UpdateTestBattery</servlet-name>
-        <servlet-class>org.cerberus.servlet.testBattery.UpdateTestBattery</servlet-class>
+        <servlet-class>org.cerberus.servlet.testbattery.UpdateTestBattery</servlet-class>
     </servlet>
     <servlet>
         <servlet-name>GetInvariantsForTest</servlet-name>
-        <servlet-class>org.cerberus.servlet.testCase.GetInvariantsForTest</servlet-class>
+        <servlet-class>org.cerberus.servlet.testcase.GetInvariantsForTest</servlet-class>
     </servlet>
     <servlet>
         <servlet-name>GetCountryForTestCase</servlet-name>
-        <servlet-class>org.cerberus.servlet.testCase.GetCountryForTestCase</servlet-class>
+        <servlet-class>org.cerberus.servlet.testcase.GetCountryForTestCase</servlet-class>
     </servlet>
     <servlet>
         <servlet-name>GetShortTests</servlet-name>
@@ -319,7 +319,7 @@
     </servlet>
     <servlet>
         <servlet-name>ExportListTestCase</servlet-name>
-        <servlet-class>org.cerberus.servlet.testCase.ExportListTestCase</servlet-class>
+        <servlet-class>org.cerberus.servlet.testcase.ExportListTestCase</servlet-class>
     </servlet>
     <servlet>
         <servlet-name>GetBuildRevisionInvariant</servlet-name>
@@ -331,19 +331,19 @@
     </servlet>
     <servlet>
         <servlet-name>ExecutionPerBuildRevision</servlet-name>
-        <servlet-class>org.cerberus.servlet.guiPages.ExecutionPerBuildRevision</servlet-class>
+        <servlet-class>org.cerberus.servlet.guipages.ExecutionPerBuildRevision</servlet-class>
     </servlet>
     <servlet>
         <servlet-name>GetDataForTestCaseSearch</servlet-name>
-        <servlet-class>org.cerberus.servlet.testCase.GetDataForTestCaseSearch</servlet-class>
+        <servlet-class>org.cerberus.servlet.testcase.GetDataForTestCaseSearch</servlet-class>
     </servlet>
     <servlet>
         <servlet-name>SearchManualTestCaseInformation</servlet-name>
-        <servlet-class>org.cerberus.servlet.manualTestCase.SearchManualTestCaseInformation</servlet-class>
+        <servlet-class>org.cerberus.servlet.manualtestcase.SearchManualTestCaseInformation</servlet-class>
     </servlet>
     <servlet>
         <servlet-name>SaveManualExecution</servlet-name>
-        <servlet-class>org.cerberus.servlet.manualTestCase.SaveManualExecution</servlet-class>
+        <servlet-class>org.cerberus.servlet.manualtestcase.SaveManualExecution</servlet-class>
     </servlet>
     <servlet>
         <servlet-name>GetParameterSystem</servlet-name>
@@ -351,7 +351,7 @@
     </servlet>
     <servlet>
         <servlet-name>ImportTestCaseStep</servlet-name>
-        <servlet-class>org.cerberus.servlet.testCase.ImportTestCaseStep</servlet-class>
+        <servlet-class>org.cerberus.servlet.testcase.ImportTestCaseStep</servlet-class>
     </servlet>
     <servlet>
         <servlet-name>CreateTestData</servlet-name>
@@ -371,7 +371,7 @@
     </servlet>
     <servlet>
         <servlet-name>SaveManualExecutionPicture</servlet-name>
-        <servlet-class>org.cerberus.servlet.manualTestCase.SaveManualExecutionPicture</servlet-class>
+        <servlet-class>org.cerberus.servlet.manualtestcase.SaveManualExecutionPicture</servlet-class>
     </servlet>
     <servlet>
         <servlet-name>CreateSqlLibrary</servlet-name>
@@ -459,11 +459,11 @@
     </servlet>
     <servlet>
         <servlet-name>FindTestImplementationStatusPerApplication</servlet-name>
-        <servlet-class>org.cerberus.servlet.guiPages.FindTestImplementationStatusPerApplication</servlet-class>
+        <servlet-class>org.cerberus.servlet.guipages.FindTestImplementationStatusPerApplication</servlet-class>
     </servlet>
     <servlet>
         <servlet-name>GetStepUsedAsLibraryInOtherTestCasePerApplication</servlet-name>
-        <servlet-class>org.cerberus.servlet.guiPages.GetStepUsedAsLibraryInOtherTestCasePerApplication</servlet-class>
+        <servlet-class>org.cerberus.servlet.guipages.GetStepUsedAsLibraryInOtherTestCasePerApplication</servlet-class>
     </servlet>
     <servlet>
         <servlet-name>CreateRobot</servlet-name>
@@ -495,7 +495,7 @@
     </servlet>
     <servlet>
         <servlet-name>PictureConnector</servlet-name>
-        <servlet-class>org.cerberus.servlet.testCase.SavePicture</servlet-class>
+        <servlet-class>org.cerberus.servlet.testcase.SavePicture</servlet-class>
     </servlet>
     <servlet>
         <servlet-name>thumbnailer</servlet-name>
@@ -507,7 +507,7 @@
     </servlet>
     <servlet>
         <servlet-name>GetTestCaseForTest</servlet-name>
-        <servlet-class>org.cerberus.servlet.testCase.GetTestCaseForTest</servlet-class>
+        <servlet-class>org.cerberus.servlet.testcase.GetTestCaseForTest</servlet-class>
     </servlet>
     <servlet>
         <servlet-name>UpdateUserRobotPreference</servlet-name>
@@ -519,23 +519,23 @@
     </servlet>
     <servlet>
         <servlet-name>UpdateTestCaseField</servlet-name>
-        <servlet-class>org.cerberus.servlet.testCase.UpdateTestCaseField</servlet-class>
+        <servlet-class>org.cerberus.servlet.testcase.UpdateTestCaseField</servlet-class>
     </servlet>
     <servlet>
         <servlet-name>GetPropertiesForTestCase</servlet-name>
-        <servlet-class>org.cerberus.servlet.testCase.GetPropertiesForTestCase</servlet-class>
+        <servlet-class>org.cerberus.servlet.testcase.GetPropertiesForTestCase</servlet-class>
     </servlet>
     <servlet>
         <servlet-name>ImportPropertyOfATestCaseToAnOtherTestCase</servlet-name>
-        <servlet-class>org.cerberus.servlet.testCase.ImportPropertyOfATestCaseToAnOtherTestCase</servlet-class>
+        <servlet-class>org.cerberus.servlet.testcase.ImportPropertyOfATestCaseToAnOtherTestCase</servlet-class>
     </servlet>
     <servlet>
         <servlet-name>CreateNotDefinedProperty</servlet-name>
-        <servlet-class>org.cerberus.servlet.testCase.CreateNotDefinedProperty</servlet-class>
+        <servlet-class>org.cerberus.servlet.testcase.CreateNotDefinedProperty</servlet-class>
     </servlet>
     <servlet>
         <servlet-name>UseTestCaseStep</servlet-name>
-        <servlet-class>org.cerberus.servlet.testCase.UseTestCaseStep</servlet-class>
+        <servlet-class>org.cerberus.servlet.testcase.UseTestCaseStep</servlet-class>
     </servlet>
     <servlet>
         <servlet-name>FindAllUsers</servlet-name>
@@ -543,11 +543,11 @@
     </servlet>
     <servlet>
         <servlet-name>ExportTestCase</servlet-name>
-        <servlet-class>org.cerberus.servlet.testCase.ExportTestCase</servlet-class>
+        <servlet-class>org.cerberus.servlet.testcase.ExportTestCase</servlet-class>
     </servlet>
     <servlet>
         <servlet-name>ImportTestCaseFromJson</servlet-name>
-        <servlet-class>org.cerberus.servlet.testCase.ImportTestCaseFromJson</servlet-class>
+        <servlet-class>org.cerberus.servlet.testcase.ImportTestCaseFromJson</servlet-class>
     </servlet>
     <servlet>
         <servlet-name>CampaignExecutionReport</servlet-name>
@@ -571,11 +571,11 @@
     </servlet>
     <servlet>
         <servlet-name>UpdateTestCaseWithDependencies</servlet-name>
-        <servlet-class>org.cerberus.servlet.testCase.UpdateTestCaseWithDependencies</servlet-class>
+        <servlet-class>org.cerberus.servlet.testcase.UpdateTestCaseWithDependencies</servlet-class>
     </servlet>
     <servlet>
         <servlet-name>DeleteTestCaseFromTestPage</servlet-name>
-        <servlet-class>org.cerberus.servlet.testCase.DeleteTestCaseFromTestPage</servlet-class>
+        <servlet-class>org.cerberus.servlet.testcase.DeleteTestCaseFromTestPage</servlet-class>
     </servlet>
     <servlet>
         <servlet-name>ReadTestDataLib</servlet-name>
@@ -583,11 +583,11 @@
     </servlet>
     <servlet>
         <servlet-name>RunManualTest</servlet-name>
-        <servlet-class>org.cerberus.servlet.manualTestCase.RunManualTest</servlet-class>
+        <servlet-class>org.cerberus.servlet.manualtestcase.RunManualTest</servlet-class>
     </servlet>
     <servlet>
         <servlet-name>GetStepInLibrary</servlet-name>
-        <servlet-class>org.cerberus.servlet.testCase.GetStepInLibrary</servlet-class>
+        <servlet-class>org.cerberus.servlet.testcase.GetStepInLibrary</servlet-class>
     </servlet>
     <servlet>
         <description>Find execution that are in Execution Queue.</description>
@@ -606,19 +606,19 @@
     </servlet>
     <servlet>
         <servlet-name>FindBuildContent</servlet-name>
-        <servlet-class>org.cerberus.servlet.buildContent.FindBuildContent</servlet-class>
+        <servlet-class>org.cerberus.servlet.buildcontent.FindBuildContent</servlet-class>
     </servlet>
     <servlet>
         <servlet-name>AddBuildContent</servlet-name>
-        <servlet-class>org.cerberus.servlet.buildContent.AddBuildContent</servlet-class>
+        <servlet-class>org.cerberus.servlet.buildcontent.AddBuildContent</servlet-class>
     </servlet>
     <servlet>
         <servlet-name>DeleteBuildContent</servlet-name>
-        <servlet-class>org.cerberus.servlet.buildContent.DeleteBuildContent</servlet-class>
+        <servlet-class>org.cerberus.servlet.buildcontent.DeleteBuildContent</servlet-class>
     </servlet>
     <servlet>
         <servlet-name>UpdateBuildContent</servlet-name>
-        <servlet-class>org.cerberus.servlet.buildContent.UpdateBuildContent</servlet-class>
+        <servlet-class>org.cerberus.servlet.buildcontent.UpdateBuildContent</servlet-class>
     </servlet>
     <servlet>
         <servlet-name>GetCountryEnvParamList</servlet-name>

@@ -1,6 +1,6 @@
 package org.cerberus.crud.entity;
 
-import org.cerberus.servlet.testCase.SavePicture;
+import org.cerberus.servlet.testcase.SavePicture;
 import org.elfinder.servlets.config.AbstractConnectorConfig;
 import org.elfinder.servlets.fs.DiskFsImpl;
 import org.elfinder.servlets.fs.IFsImpl;

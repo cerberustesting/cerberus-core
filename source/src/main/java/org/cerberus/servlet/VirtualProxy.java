@@ -1,7 +1,7 @@
 package org.cerberus.servlet;
 
 import org.apache.commons.io.FilenameUtils;
-import org.cerberus.servlet.testCase.SavePicture;
+import org.cerberus.servlet.testcase.SavePicture;
 
 import javax.servlet.ServletException;
 import javax.servlet.ServletOutputStream;
