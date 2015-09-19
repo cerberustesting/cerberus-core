@@ -82,10 +82,9 @@ public class ReadApplication extends HttpServlet {
          * Parsing and securing all required parameters.
          */
         // Nothing to do here as no parameter to check.
-        
         // Init Answer with potencial error from Parsing parameter.
         AnswerItem answer = new AnswerItem(new MessageEvent(MessageEventEnum.DATA_OPERATION_OK));
-        
+
         try {
             JSONObject jsonResponse = new JSONObject();
             if ((request.getParameter("application") == null) && (request.getParameter("system") == null)) {
@@ -108,7 +107,7 @@ public class ReadApplication extends HttpServlet {
             jsonResponse.put("sEcho", echo);
 
             response.getWriter().print(jsonResponse.toString());
-            
+
         } catch (JSONException e) {
             org.apache.log4j.Logger.getLogger(ReadApplication.class.getName()).log(org.apache.log4j.Level.ERROR, null, e);
             //returns a default error message with the json format that is able to be parsed by the client-side

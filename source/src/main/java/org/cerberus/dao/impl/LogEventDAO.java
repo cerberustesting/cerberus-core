@@ -25,14 +25,13 @@ import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.log4j.Level;
+import org.apache.log4j.Logger;
 import org.cerberus.dao.ILogEventDAO;
 import org.cerberus.database.DatabaseSpring;
 import org.cerberus.entity.LogEvent;
 import org.cerberus.entity.MessageEvent;
 import org.cerberus.enums.MessageEventEnum;
 import org.cerberus.factory.IFactoryLogEvent;
-import org.cerberus.log.MyLogger;
 import org.cerberus.util.StringUtil;
 import org.cerberus.util.answer.Answer;
 import org.cerberus.util.answer.AnswerItem;
@@ -53,6 +52,8 @@ public class LogEventDAO implements ILogEventDAO {
     private DatabaseSpring databaseSpring;
     @Autowired
     private IFactoryLogEvent factoryLogEvent;
+
+    private static final Logger LOG = Logger.getLogger(LogEventDAO.class);
 
     private final String SQL_DUPLICATED_CODE = "23000";
     private final int MAX_ROW_SELECTED = 100000;
@@ -81,21 +82,21 @@ public class LogEventDAO implements ILogEventDAO {
                         msg = new MessageEvent(MessageEventEnum.NO_DATA_FOUND);
                     }
                 } catch (SQLException exception) {
-                    MyLogger.log(LogEventDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
+                    LOG.error("Unable to execute query : " + exception.toString());
                     msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_UNEXPECTED_ERROR);
                     msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", exception.toString()));
                 } finally {
                     resultSet.close();
                 }
             } catch (SQLException exception) {
-                MyLogger.log(LogEventDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
+                LOG.error("Unable to execute query : " + exception.toString());
                 msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_UNEXPECTED_ERROR);
                 msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", exception.toString()));
             } finally {
                 preStat.close();
             }
         } catch (SQLException exception) {
-            MyLogger.log(LogEventDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
+            LOG.error("Unable to execute query : " + exception.toString());
             msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_UNEXPECTED_ERROR);
             msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", exception.toString()));
         } finally {
@@ -103,8 +104,8 @@ public class LogEventDAO implements ILogEventDAO {
                 if (connection != null) {
                     connection.close();
                 }
-            } catch (SQLException e) {
-                MyLogger.log(LogEventDAO.class.getName(), Level.WARN, e.toString());
+            } catch (SQLException exception) {
+                LOG.warn("Unable to close connection : " + exception.toString());
             }
         }
 
@@ -139,7 +140,7 @@ public class LogEventDAO implements ILogEventDAO {
             searchSQL.append(" and (`").append(individualSearch).append("`)");
         }
         query.append(searchSQL);
-        
+
         if (!StringUtil.isNullOrEmpty(colName)) {
             query.append("order by `").append(colName).append("` ").append(dir);
         }
@@ -173,7 +174,7 @@ public class LogEventDAO implements ILogEventDAO {
                     response = new AnswerList(logEventList, nrTotalRows);
 
                 } catch (SQLException exception) {
-                    MyLogger.log(LogEventDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
+                    LOG.error("Unable to execute query : " + exception.toString());
                     msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_UNEXPECTED_ERROR);
                     msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", "Unable to retrieve the list of entries!"));
 
@@ -184,7 +185,7 @@ public class LogEventDAO implements ILogEventDAO {
                 }
 
             } catch (SQLException exception) {
-                MyLogger.log(LogEventDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
+                LOG.error("Unable to execute query : " + exception.toString());
                 msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_UNEXPECTED_ERROR);
                 msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", "Unable to retrieve the list of entries!"));
             } finally {
@@ -192,9 +193,9 @@ public class LogEventDAO implements ILogEventDAO {
                     preStat.close();
                 }
             }
-            
+
         } catch (SQLException exception) {
-            MyLogger.log(LogEventDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
+            LOG.error("Unable to execute query : " + exception.toString());
             msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_UNEXPECTED_ERROR);
             msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", "Unable to retrieve the list of entries!"));
         } finally {
@@ -204,8 +205,8 @@ public class LogEventDAO implements ILogEventDAO {
                         connection.close();
                     }
                 }
-            } catch (SQLException e) {
-                MyLogger.log(LogEventDAO.class.getName(), Level.WARN, e.toString());
+            } catch (SQLException exception) {
+                LOG.warn("Unable to close connection : " + exception.toString());
             }
         }
 
@@ -238,7 +239,7 @@ public class LogEventDAO implements ILogEventDAO {
                 msg.setDescription(msg.getDescription().replace("%ITEM%", "LogEvent").replace("%OPERATION%", "INSERT"));
 
             } catch (SQLException exception) {
-                MyLogger.log(LogEventDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
+                LOG.error("Unable to execute query : " + exception.toString());
 
                 if (exception.getSQLState().equals(SQL_DUPLICATED_CODE)) { //23000 is the sql state for duplicate entries
                     msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_DUPLICATE_ERROR);
@@ -251,7 +252,7 @@ public class LogEventDAO implements ILogEventDAO {
                 preStat.close();
             }
         } catch (SQLException exception) {
-            MyLogger.log(LogEventDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
+            LOG.error("Unable to execute query : " + exception.toString());
             msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_UNEXPECTED_ERROR);
             msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", exception.toString()));
         } finally {
@@ -259,8 +260,8 @@ public class LogEventDAO implements ILogEventDAO {
                 if (connection != null) {
                     connection.close();
                 }
-            } catch (SQLException e) {
-                MyLogger.log(LogEventDAO.class.getName(), Level.WARN, e.toString());
+            } catch (SQLException exception) {
+                LOG.warn("Unable to execute query : " + exception.toString());
             }
         }
         return new Answer(msg);

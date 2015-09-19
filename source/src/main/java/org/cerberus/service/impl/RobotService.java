@@ -73,11 +73,6 @@ public class RobotService implements IRobotService {
         return robotDao.update(robot);
     }
 
-    
-    
-    
-    
-    
     @Override
     public Robot findRobotByKey(Integer id) throws CerberusException {
         return robotDao.findRobotByKey(id);

@@ -24,14 +24,13 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.log4j.Level;
+import org.apache.log4j.Logger;
 import org.cerberus.dao.IProjectDAO;
 import org.cerberus.database.DatabaseSpring;
 import org.cerberus.entity.MessageEvent;
 import org.cerberus.enums.MessageEventEnum;
 import org.cerberus.entity.Project;
 import org.cerberus.factory.IFactoryProject;
-import org.cerberus.log.MyLogger;
 import org.cerberus.util.StringUtil;
 import org.cerberus.util.answer.Answer;
 import org.cerberus.util.answer.AnswerItem;
@@ -49,6 +48,8 @@ public class ProjectDAO implements IProjectDAO {
     private DatabaseSpring databaseSpring;
     @Autowired
     private IFactoryProject factoryProject;
+
+    private static final Logger LOG = Logger.getLogger(ProjectDAO.class);
 
     private final String SQL_DUPLICATED_CODE = "23000";
     private final int MAX_ROW_SELECTED = 100000;
@@ -77,21 +78,21 @@ public class ProjectDAO implements IProjectDAO {
                         msg = new MessageEvent(MessageEventEnum.NO_DATA_FOUND);
                     }
                 } catch (SQLException exception) {
-                    MyLogger.log(ProjectDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
+                    LOG.error("Unable to execute query : " + exception.toString());
                     msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_UNEXPECTED_ERROR);
                     msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", exception.toString()));
                 } finally {
                     resultSet.close();
                 }
             } catch (SQLException exception) {
-                MyLogger.log(ProjectDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
+                LOG.error("Unable to execute query : " + exception.toString());
                 msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_UNEXPECTED_ERROR);
                 msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", exception.toString()));
             } finally {
                 preStat.close();
             }
         } catch (SQLException exception) {
-            MyLogger.log(ProjectDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
+            LOG.error("Unable to execute query : " + exception.toString());
             msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_UNEXPECTED_ERROR);
             msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", exception.toString()));
         } finally {
@@ -99,8 +100,8 @@ public class ProjectDAO implements IProjectDAO {
                 if (connection != null) {
                     connection.close();
                 }
-            } catch (SQLException e) {
-                MyLogger.log(ProjectDAO.class.getName(), Level.WARN, e.toString());
+            } catch (SQLException exception) {
+                LOG.error("Unable to close connection : " + exception.toString());
             }
         }
 
@@ -139,13 +140,13 @@ public class ProjectDAO implements IProjectDAO {
         if (!StringUtil.isNullOrEmpty(column)) {
             query.append("order by `").append(column).append("` ").append(dir);
         }
-        
+
         if (!(amount == 0)) {
             query.append(" limit ").append(start).append(" , ").append(amount);
         } else {
             query.append(" limit ").append(start).append(" , ").append(MAX_ROW_SELECTED);
         }
-        
+
         Connection connection = this.databaseSpring.connect();
         try {
             PreparedStatement preStat = connection.prepareStatement(query.toString());
@@ -170,7 +171,7 @@ public class ProjectDAO implements IProjectDAO {
                     response = new AnswerList(projectList, nrTotalRows);
 
                 } catch (SQLException exception) {
-                    MyLogger.log(ProjectDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
+                    LOG.error("Unable to execute query : " + exception.toString());
                     msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_UNEXPECTED_ERROR);
                     msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", "Unable to retrieve the list of entries!"));
 
@@ -181,7 +182,7 @@ public class ProjectDAO implements IProjectDAO {
                 }
 
             } catch (SQLException exception) {
-                MyLogger.log(ProjectDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
+                LOG.error("Unable to execute query : " + exception.toString());
                 msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_UNEXPECTED_ERROR);
                 msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", "Unable to retrieve the list of entries!"));
             } finally {
@@ -191,7 +192,7 @@ public class ProjectDAO implements IProjectDAO {
             }
 
         } catch (SQLException exception) {
-            MyLogger.log(ProjectDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
+            LOG.error("Unable to execute query : " + exception.toString());
             msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_UNEXPECTED_ERROR);
             msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", "Unable to retrieve the list of entries!"));
         } finally {
@@ -201,8 +202,8 @@ public class ProjectDAO implements IProjectDAO {
                         connection.close();
                     }
                 }
-            } catch (SQLException ex) {
-                MyLogger.log(ProjectDAO.class.getName(), Level.ERROR, "Unable to execute query : " + ex.toString());
+            } catch (SQLException exception) {
+                LOG.error("Unable to close connection : " + exception.toString());
             }
         }
         response.setResultMessage(msg);
@@ -231,7 +232,7 @@ public class ProjectDAO implements IProjectDAO {
                 msg.setDescription(msg.getDescription().replace("%ITEM%", "Project").replace("%OPERATION%", "INSERT"));
 
             } catch (SQLException exception) {
-                MyLogger.log(ProjectDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
+                LOG.error("Unable to execute query : " + exception.toString());
 
                 if (exception.getSQLState().equals(SQL_DUPLICATED_CODE)) { //23000 is the sql state for duplicate entries
                     msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_DUPLICATE_ERROR);
@@ -244,7 +245,7 @@ public class ProjectDAO implements IProjectDAO {
                 preStat.close();
             }
         } catch (SQLException exception) {
-            MyLogger.log(ProjectDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
+            LOG.error("Unable to execute query : " + exception.toString());
             msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_UNEXPECTED_ERROR);
             msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", "Unable to execute query - INSERT Project"));
         } finally {
@@ -252,8 +253,8 @@ public class ProjectDAO implements IProjectDAO {
                 if (connection != null) {
                     connection.close();
                 }
-            } catch (SQLException e) {
-                MyLogger.log(ProjectDAO.class.getName(), Level.WARN, e.toString());
+            } catch (SQLException exception) {
+                LOG.error("Unable to close connection : " + exception.toString());
             }
         }
         return new Answer(msg);
@@ -274,14 +275,14 @@ public class ProjectDAO implements IProjectDAO {
                 msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
                 msg.setDescription(msg.getDescription().replace("%ITEM%", "Project").replace("%OPERATION%", "DELETE"));
             } catch (SQLException exception) {
-                MyLogger.log(ProjectDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
+                LOG.error("Unable to execute query : " + exception.toString());
                 msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_UNEXPECTED_ERROR);
                 msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", exception.toString()));
             } finally {
                 preStat.close();
             }
         } catch (SQLException exception) {
-            MyLogger.log(ProjectDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
+            LOG.error("Unable to execute query : " + exception.toString());
             msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_UNEXPECTED_ERROR);
             msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", exception.toString()));
         } finally {
@@ -289,8 +290,8 @@ public class ProjectDAO implements IProjectDAO {
                 if (connection != null) {
                     connection.close();
                 }
-            } catch (SQLException e) {
-                MyLogger.log(ProjectDAO.class.getName(), Level.WARN, e.toString());
+            } catch (SQLException exception) {
+                LOG.error("Unable to close connection : " + exception.toString());
             }
         }
         return new Answer(msg);
@@ -314,14 +315,14 @@ public class ProjectDAO implements IProjectDAO {
                 msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
                 msg.setDescription(msg.getDescription().replace("%ITEM%", "Project").replace("%OPERATION%", "UPDATE"));
             } catch (SQLException exception) {
-                MyLogger.log(ProjectDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
+                LOG.error("Unable to execute query : " + exception.toString());
                 msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_UNEXPECTED_ERROR);
                 msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", exception.toString()));
             } finally {
                 preStat.close();
             }
         } catch (SQLException exception) {
-            MyLogger.log(ProjectDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
+            LOG.error("Unable to execute query : " + exception.toString());
             msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_UNEXPECTED_ERROR);
             msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", exception.toString()));
         } finally {
@@ -329,8 +330,8 @@ public class ProjectDAO implements IProjectDAO {
                 if (connection != null) {
                     connection.close();
                 }
-            } catch (SQLException e) {
-                MyLogger.log(ProjectDAO.class.getName(), Level.WARN, e.toString());
+            } catch (SQLException exception) {
+                LOG.error("Unable to close connection : " + exception.toString());
             }
         }
         return new Answer(msg);

@@ -24,7 +24,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.log4j.Level;
+import org.apache.log4j.Logger;
 import org.cerberus.dao.IDeployTypeDAO;
 import org.cerberus.database.DatabaseSpring;
 import org.cerberus.entity.DeployType;
@@ -32,7 +32,6 @@ import org.cerberus.entity.MessageEvent;
 import org.cerberus.enums.MessageEventEnum;
 import org.cerberus.factory.IFactoryDeployType;
 import org.cerberus.factory.impl.FactoryDeployType;
-import org.cerberus.log.MyLogger;
 import org.cerberus.util.ParameterParserUtil;
 import org.cerberus.util.StringUtil;
 import org.cerberus.util.answer.Answer;
@@ -48,6 +47,8 @@ public class DeployTypeDAO implements IDeployTypeDAO {
     private DatabaseSpring databaseSpring;
     @Autowired
     private IFactoryDeployType factoryDeployType;
+
+    private static final Logger LOG = Logger.getLogger(DeployTypeDAO.class);
 
     private final String SQL_DUPLICATED_CODE = "23000";
     private final int MAX_ROW_SELECTED = 100000;
@@ -81,21 +82,21 @@ public class DeployTypeDAO implements IDeployTypeDAO {
                         msg = new MessageEvent(MessageEventEnum.NO_DATA_FOUND);
                     }
                 } catch (SQLException exception) {
-                    MyLogger.log(DeployTypeDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
+                    LOG.error("Unable to execute query : " + exception.toString());
                     msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_UNEXPECTED_ERROR);
                     msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", exception.toString()));
                 } finally {
                     resultSet.close();
                 }
             } catch (SQLException exception) {
-                MyLogger.log(DeployTypeDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
+                LOG.error("Unable to execute query : " + exception.toString());
                 msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_UNEXPECTED_ERROR);
                 msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", exception.toString()));
             } finally {
                 preStat.close();
             }
         } catch (SQLException exception) {
-            MyLogger.log(DeployTypeDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
+            LOG.error("Unable to execute query : " + exception.toString());
             msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_UNEXPECTED_ERROR);
             msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", exception.toString()));
         } finally {
@@ -103,8 +104,8 @@ public class DeployTypeDAO implements IDeployTypeDAO {
                 if (connection != null) {
                     connection.close();
                 }
-            } catch (SQLException e) {
-                MyLogger.log(DeployTypeDAO.class.getName(), Level.WARN, e.toString());
+            } catch (SQLException exception) {
+                LOG.warn("Unable to close connection : " + exception.toString());
             }
         }
 
@@ -149,7 +150,7 @@ public class DeployTypeDAO implements IDeployTypeDAO {
                     response = new AnswerList(deployTypeList, nrTotalRows);
 
                 } catch (SQLException exception) {
-                    MyLogger.log(DeployTypeDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
+                    LOG.error("Unable to execute query : " + exception.toString());
                     msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_UNEXPECTED_ERROR);
                     msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", exception.toString()));
 
@@ -160,7 +161,7 @@ public class DeployTypeDAO implements IDeployTypeDAO {
                 }
 
             } catch (SQLException exception) {
-                MyLogger.log(DeployTypeDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
+                LOG.error("Unable to execute query : " + exception.toString());
                 msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_UNEXPECTED_ERROR);
                 msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", exception.toString()));
             } finally {
@@ -170,7 +171,7 @@ public class DeployTypeDAO implements IDeployTypeDAO {
             }
 
         } catch (SQLException exception) {
-            MyLogger.log(DeployTypeDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
+            LOG.error("Unable to execute query : " + exception.toString());
             msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_UNEXPECTED_ERROR);
             msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", exception.toString()));
         } finally {
@@ -180,8 +181,8 @@ public class DeployTypeDAO implements IDeployTypeDAO {
                         connection.close();
                     }
                 }
-            } catch (SQLException ex) {
-                MyLogger.log(DeployTypeDAO.class.getName(), Level.ERROR, "Unable to execute query : " + ex.toString());
+            } catch (SQLException exception) {
+                LOG.warn("Unable to close connection : " + exception.toString());
             }
         }
         response.setResultMessage(msg);
@@ -245,7 +246,7 @@ public class DeployTypeDAO implements IDeployTypeDAO {
                     response = new AnswerList(deployTypeList, nrTotalRows);
 
                 } catch (SQLException exception) {
-                    MyLogger.log(DeployTypeDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
+                    LOG.error("Unable to execute query : " + exception.toString());
                     msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_UNEXPECTED_ERROR);
                     msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", exception.toString()));
 
@@ -256,7 +257,7 @@ public class DeployTypeDAO implements IDeployTypeDAO {
                 }
 
             } catch (SQLException exception) {
-                MyLogger.log(DeployTypeDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
+                LOG.error("Unable to execute query : " + exception.toString());
                 msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_UNEXPECTED_ERROR);
                 msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", exception.toString()));
             } finally {
@@ -266,7 +267,7 @@ public class DeployTypeDAO implements IDeployTypeDAO {
             }
 
         } catch (SQLException exception) {
-            MyLogger.log(DeployTypeDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
+            LOG.error("Unable to execute query : " + exception.toString());
             msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_UNEXPECTED_ERROR);
             msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", exception.toString()));
         } finally {
@@ -276,8 +277,8 @@ public class DeployTypeDAO implements IDeployTypeDAO {
                         connection.close();
                     }
                 }
-            } catch (SQLException ex) {
-                MyLogger.log(DeployTypeDAO.class.getName(), Level.ERROR, "Unable to execute query : " + ex.toString());
+            } catch (SQLException exception) {
+                LOG.warn("Unable to close connection : " + exception.toString());
             }
         }
         response.setResultMessage(msg);
@@ -304,7 +305,7 @@ public class DeployTypeDAO implements IDeployTypeDAO {
                 msg.setDescription(msg.getDescription().replace("%ITEM%", "Deploy Type").replace("%OPERATION%", "INSERT"));
 
             } catch (SQLException exception) {
-                MyLogger.log(DeployTypeDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
+                LOG.error("Unable to execute query : " + exception.toString());
 
                 if (exception.getSQLState().equals(SQL_DUPLICATED_CODE)) { //23000 is the sql state for duplicate entries
                     msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_DUPLICATE_ERROR);
@@ -317,7 +318,7 @@ public class DeployTypeDAO implements IDeployTypeDAO {
                 preStat.close();
             }
         } catch (SQLException exception) {
-            MyLogger.log(DeployTypeDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
+            LOG.error("Unable to execute query : " + exception.toString());
             msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_UNEXPECTED_ERROR);
             msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", exception.toString()));
         } finally {
@@ -325,8 +326,8 @@ public class DeployTypeDAO implements IDeployTypeDAO {
                 if (connection != null) {
                     connection.close();
                 }
-            } catch (SQLException e) {
-                MyLogger.log(DeployTypeDAO.class.getName(), Level.WARN, e.toString());
+            } catch (SQLException exception) {
+                LOG.warn("Unable to close connection : " + exception.toString());
             }
         }
         return new Answer(msg);
@@ -347,14 +348,14 @@ public class DeployTypeDAO implements IDeployTypeDAO {
                 msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
                 msg.setDescription(msg.getDescription().replace("%ITEM%", "Deploy Type").replace("%OPERATION%", "DELETE"));
             } catch (SQLException exception) {
-                MyLogger.log(DeployTypeDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
+                LOG.error("Unable to execute query : " + exception.toString());
                 msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_UNEXPECTED_ERROR);
                 msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", exception.toString()));
             } finally {
                 preStat.close();
             }
         } catch (SQLException exception) {
-            MyLogger.log(DeployTypeDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
+            LOG.error("Unable to execute query : " + exception.toString());
             msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_UNEXPECTED_ERROR);
             msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", exception.toString()));
         } finally {
@@ -362,8 +363,8 @@ public class DeployTypeDAO implements IDeployTypeDAO {
                 if (connection != null) {
                     connection.close();
                 }
-            } catch (SQLException e) {
-                MyLogger.log(DeployTypeDAO.class.getName(), Level.WARN, e.toString());
+            } catch (SQLException exception) {
+                LOG.warn("Unable to close connection : " + exception.toString());
             }
         }
         return new Answer(msg);
@@ -385,14 +386,14 @@ public class DeployTypeDAO implements IDeployTypeDAO {
                 msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
                 msg.setDescription(msg.getDescription().replace("%ITEM%", "Deploy Tpe").replace("%OPERATION%", "UPDATE"));
             } catch (SQLException exception) {
-                MyLogger.log(DeployTypeDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
+                LOG.error("Unable to execute query : " + exception.toString());
                 msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_UNEXPECTED_ERROR);
                 msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", exception.toString()));
             } finally {
                 preStat.close();
             }
         } catch (SQLException exception) {
-            MyLogger.log(DeployTypeDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
+            LOG.error("Unable to execute query : " + exception.toString());
             msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_UNEXPECTED_ERROR);
             msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", exception.toString()));
         } finally {
@@ -400,8 +401,8 @@ public class DeployTypeDAO implements IDeployTypeDAO {
                 if (connection != null) {
                     connection.close();
                 }
-            } catch (SQLException e) {
-                MyLogger.log(DeployTypeDAO.class.getName(), Level.WARN, e.toString());
+            } catch (SQLException exception) {
+                LOG.warn("Unable to close connection : " + exception.toString());
             }
         }
         return new Answer(msg);
