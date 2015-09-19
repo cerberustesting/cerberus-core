@@ -1,13 +1,13 @@
 package org.cerberus.servlet.manualTestCase;
 
 import org.apache.log4j.Level;
-import org.cerberus.entity.TestCaseStepActionExecution;
-import org.cerberus.entity.TestCaseStepExecution;
+import org.cerberus.crud.entity.TestCaseStepActionExecution;
+import org.cerberus.crud.entity.TestCaseStepExecution;
 import org.cerberus.exception.CerberusException;
 import org.cerberus.log.MyLogger;
-import org.cerberus.service.IParameterService;
-import org.cerberus.service.ITestCaseStepActionExecutionService;
-import org.cerberus.service.ITestCaseStepExecutionService;
+import org.cerberus.crud.service.IParameterService;
+import org.cerberus.crud.service.ITestCaseStepActionExecutionService;
+import org.cerberus.crud.service.ITestCaseStepExecutionService;
 import org.cerberus.util.ParameterParserUtil;
 import org.springframework.context.ApplicationContext;
 import org.springframework.web.context.support.WebApplicationContextUtils;

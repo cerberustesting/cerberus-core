@@ -29,17 +29,17 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
-import org.cerberus.entity.BuildRevisionInvariant;
+import org.cerberus.crud.entity.BuildRevisionInvariant;
 import org.cerberus.exception.CerberusException;
-import org.cerberus.factory.IFactoryBuildRevisionInvariant;
-import org.cerberus.factory.IFactoryLogEvent;
-import org.cerberus.factory.impl.FactoryBuildRevisionInvariant;
-import org.cerberus.factory.impl.FactoryLogEvent;
-import org.cerberus.service.IBuildRevisionInvariantService;
-import org.cerberus.service.ILogEventService;
-import org.cerberus.service.impl.BuildRevisionInvariantService;
-import org.cerberus.service.impl.LogEventService;
-import org.cerberus.service.impl.UserService;
+import org.cerberus.crud.factory.IFactoryBuildRevisionInvariant;
+import org.cerberus.crud.factory.IFactoryLogEvent;
+import org.cerberus.crud.factory.impl.FactoryBuildRevisionInvariant;
+import org.cerberus.crud.factory.impl.FactoryLogEvent;
+import org.cerberus.crud.service.IBuildRevisionInvariantService;
+import org.cerberus.crud.service.ILogEventService;
+import org.cerberus.crud.service.impl.BuildRevisionInvariantService;
+import org.cerberus.crud.service.impl.LogEventService;
+import org.cerberus.crud.service.impl.UserService;
 import org.springframework.context.ApplicationContext;
 import org.springframework.web.context.support.WebApplicationContextUtils;
 

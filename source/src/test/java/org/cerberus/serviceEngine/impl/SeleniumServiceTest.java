@@ -21,10 +21,10 @@
 //package org.cerberus.serviceEngine.impl;
 //
 //import junit.framework.Assert;
-//import org.cerberus.entity.MessageEvent;
+//import org.cerberus.crud.entity.MessageEvent;
 //
-//import org.cerberus.entity.Selenium;
-//import org.cerberus.entity.Session;
+//import org.cerberus.crud.entity.Selenium;
+//import org.cerberus.crud.entity.Session;
 //import org.junit.Test;
 //import org.junit.runner.RunWith;
 //import org.mockito.InjectMocks;

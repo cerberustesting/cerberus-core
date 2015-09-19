@@ -18,11 +18,11 @@
   ~ along with Cerberus.  If not, see <http://www.gnu.org/licenses/>.
 --%>
 
-<%@page import="org.cerberus.entity.TestCaseStep"%>
-<%@page import="org.cerberus.entity.TCase"%>
-<%@page import="org.cerberus.service.ITestCaseStepService"%>
-<%@page import="org.cerberus.service.ITestCaseService"%>
-<%@page import="org.cerberus.service.IDocumentationService"%>
+<%@page import="org.cerberus.crud.entity.TestCaseStep"%>
+<%@page import="org.cerberus.crud.entity.TCase"%>
+<%@page import="org.cerberus.crud.service.ITestCaseStepService"%>
+<%@page import="org.cerberus.crud.service.ITestCaseService"%>
+<%@page import="org.cerberus.crud.service.IDocumentationService"%>
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 
 <%--

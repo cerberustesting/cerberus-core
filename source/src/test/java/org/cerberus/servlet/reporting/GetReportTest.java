@@ -20,10 +20,10 @@
 
 package org.cerberus.servlet.reporting;
 
-import org.cerberus.entity.TCase;
-import org.cerberus.factory.impl.FactoryTCase;
-import org.cerberus.service.impl.TestCaseExecutionService;
-import org.cerberus.service.impl.TestCaseService;
+import org.cerberus.crud.entity.TCase;
+import org.cerberus.crud.factory.impl.FactoryTCase;
+import org.cerberus.crud.service.impl.TestCaseExecutionService;
+import org.cerberus.crud.service.impl.TestCaseService;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;

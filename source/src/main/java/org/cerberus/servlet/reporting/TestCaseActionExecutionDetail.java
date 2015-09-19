@@ -25,7 +25,7 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import org.cerberus.service.ITestCaseStepActionExecutionService;
+import org.cerberus.crud.service.ITestCaseStepActionExecutionService;
 import org.json.JSONArray;
 import org.owasp.html.PolicyFactory;
 import org.owasp.html.Sanitizers;

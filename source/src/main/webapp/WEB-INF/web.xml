@@ -21,11 +21,11 @@
     </servlet>
     <servlet>
         <servlet-name>RunTestCase</servlet-name>
-        <servlet-class>org.cerberus.servlet.publi.RunTestCase</servlet-class>
+        <servlet-class>org.cerberus.servlet.zzpublic.RunTestCase</servlet-class>
     </servlet>
     <servlet>
         <servlet-name>RunTestCaseManually</servlet-name>
-        <servlet-class>org.cerberus.servlet.publi.RunTestCaseManually</servlet-class>
+        <servlet-class>org.cerberus.servlet.zzpublic.RunTestCaseManually</servlet-class>
     </servlet>
     <servlet>
         <servlet-name>SaveStatistic</servlet-name>
@@ -69,7 +69,7 @@
     </servlet>
     <servlet>
         <servlet-name>ResultCI</servlet-name>
-        <servlet-class>org.cerberus.servlet.publi.ResultCI</servlet-class>
+        <servlet-class>org.cerberus.servlet.zzpublic.ResultCI</servlet-class>
     </servlet>
     <servlet>
         <servlet-name>DuplicateTestCase</servlet-name>
@@ -154,12 +154,12 @@
     <servlet>
         <description>This Servlet is used to Record a new Release inside the pending sprint.</description>
         <servlet-name>NewRelease</servlet-name>
-        <servlet-class>org.cerberus.servlet.publi.NewRelease</servlet-class>
+        <servlet-class>org.cerberus.servlet.zzpublic.NewRelease</servlet-class>
     </servlet>
     <servlet>
         <description>This Servlet is used to monitor from Nagios the number of execution performed for Performance monitoring.</description>
         <servlet-name>GetNumberOfExecutions</servlet-name>
-        <servlet-class>org.cerberus.servlet.publi.GetNumberOfExecutions</servlet-class>
+        <servlet-class>org.cerberus.servlet.zzpublic.GetNumberOfExecutions</servlet-class>
     </servlet>
     <servlet>
         <servlet-name>GetParameter</servlet-name>
@@ -179,7 +179,7 @@
     </servlet>
     <servlet>
         <servlet-name>GetTagExecutions</servlet-name>
-        <servlet-class>org.cerberus.servlet.publi.GetTagExecutions</servlet-class>
+        <servlet-class>org.cerberus.servlet.zzpublic.GetTagExecutions</servlet-class>
     </servlet>
     <servlet>
         <servlet-name>ReadTestCaseExecution</servlet-name>
@@ -187,7 +187,7 @@
     </servlet>
     <servlet>
         <servlet-name>GetCampaignExecutionsCommand</servlet-name>
-        <servlet-class>org.cerberus.servlet.publi.GetCampaignExecutionsCommand</servlet-class>
+        <servlet-class>org.cerberus.servlet.zzpublic.GetCampaignExecutionsCommand</servlet-class>
     </servlet>
     <servlet>
         <servlet-name>ListCampaignParameter</servlet-name>
@@ -597,12 +597,12 @@
     <servlet>
         <description>Add a test case to the execution queue.</description>
         <servlet-name>AddToExecutionQueue</servlet-name>
-        <servlet-class>org.cerberus.servlet.publi.AddToExecutionQueue</servlet-class>
+        <servlet-class>org.cerberus.servlet.zzpublic.AddToExecutionQueue</servlet-class>
     </servlet>
     <servlet>
         <description>Execute the next record from the execution queue.</description>
         <servlet-name>ExecuteNextInQueue</servlet-name>
-        <servlet-class>org.cerberus.servlet.publi.ExecuteNextInQueue</servlet-class>
+        <servlet-class>org.cerberus.servlet.zzpublic.ExecuteNextInQueue</servlet-class>
     </servlet>
     <servlet>
         <servlet-name>FindBuildContent</servlet-name>
@@ -670,11 +670,11 @@
     </servlet>
     <servlet>
         <servlet-name>ExecutionThreadMonitoring</servlet-name>
-        <servlet-class>org.cerberus.serviceExecutor.ExecutionThreadMonitoring</servlet-class>
+        <servlet-class>org.cerberus.service.executor.ExecutionThreadMonitoring</servlet-class>
     </servlet>
     <servlet>
         <servlet-name>ExecutionThreadReset</servlet-name>
-        <servlet-class>org.cerberus.serviceExecutor.ExecutionThreadReset</servlet-class>
+        <servlet-class>org.cerberus.service.executor.ExecutionThreadReset</servlet-class>
     </servlet>
     <servlet>
         <servlet-name>DeleteExecutionInQueue</servlet-name>
@@ -1929,6 +1929,6 @@
         <listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>
     </listener>
     <listener>
-        <listener-class>org.cerberus.entity.SessionCounterListener</listener-class>
+        <listener-class>org.cerberus.crud.entity.SessionCounterListener</listener-class>
     </listener>
 </web-app>

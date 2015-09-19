@@ -20,11 +20,11 @@
 <%@page import="java.sql.Connection"%>
 <%@page import="java.sql.ResultSet"%>
 <%@page import="java.sql.Statement"%>
-<%@page import="org.cerberus.entity.CountryEnvParam"%>
-<%@page import="org.cerberus.entity.CountryEnvLink"%>
-<%@page import="org.cerberus.service.IDocumentationService"%>
-<%@page import="org.cerberus.service.ICountryEnvParamService"%>
-<%@page import="org.cerberus.service.ICountryEnvLinkService"%>
+<%@page import="org.cerberus.crud.entity.CountryEnvParam"%>
+<%@page import="org.cerberus.crud.entity.CountryEnvLink"%>
+<%@page import="org.cerberus.crud.service.IDocumentationService"%>
+<%@page import="org.cerberus.crud.service.ICountryEnvParamService"%>
+<%@page import="org.cerberus.crud.service.ICountryEnvLinkService"%>
 <%
 	Date DatePageStart = new Date();
 %>

@@ -17,10 +17,10 @@
   ~ You should have received a copy of the GNU General Public License
   ~ along with Cerberus.  If not, see <http://www.gnu.org/licenses/>.
 --%>
-<%@page import="org.cerberus.entity.TCase"%>
-<%@page import="org.cerberus.service.IManualTestCaseService"%>
-<%@page import="org.cerberus.service.ITestCaseService"%>
-<%@page import="org.cerberus.service.IDocumentationService"%>
+<%@page import="org.cerberus.crud.entity.TCase"%>
+<%@page import="org.cerberus.crud.service.IManualTestCaseService"%>
+<%@page import="org.cerberus.crud.service.ITestCaseService"%>
+<%@page import="org.cerberus.crud.service.IDocumentationService"%>
 <%@page import="java.net.URLEncoder"%>
 <%@ page import="org.cerberus.util.ParameterParserUtil" %>
 

@@ -31,11 +31,11 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.log4j.Level;
-import org.cerberus.entity.TCase;
-import org.cerberus.factory.IFactoryTCase;
-import org.cerberus.factory.impl.FactoryTCase;
+import org.cerberus.crud.entity.TCase;
+import org.cerberus.crud.factory.IFactoryTCase;
+import org.cerberus.crud.factory.impl.FactoryTCase;
 import org.cerberus.log.MyLogger;
-import org.cerberus.service.IManualTestCaseService;
+import org.cerberus.crud.service.IManualTestCaseService;
 import org.cerberus.util.StringUtil;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.json.JSONArray;

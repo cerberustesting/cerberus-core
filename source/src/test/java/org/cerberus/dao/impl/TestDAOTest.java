@@ -17,6 +17,7 @@
  */
 package org.cerberus.dao.impl;
 
+import org.cerberus.crud.dao.impl.TestDAO;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.when;
@@ -28,7 +29,7 @@ import java.sql.SQLException;
 import java.util.List;
 
 import org.cerberus.database.DatabaseSpring;
-import org.cerberus.factory.impl.FactoryTest;
+import org.cerberus.crud.factory.impl.FactoryTest;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
@@ -60,7 +61,7 @@ public class TestDAOTest {
 
     @Test
     public void testCanFindAllTest() throws SQLException {
-        List<org.cerberus.entity.Test> listOfTest;
+        List<org.cerberus.crud.entity.Test> listOfTest;
         String test = "Test";
         String description = "Test Description";
         String active = "Y";

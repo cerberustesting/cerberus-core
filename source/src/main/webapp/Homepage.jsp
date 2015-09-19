@@ -21,10 +21,10 @@
 <%@page import="org.springframework.web.context.support.WebApplicationContextUtils"%>
 <%@page import="org.springframework.context.ApplicationContext"%>
 <%@page import="org.springframework.web.context.WebApplicationContext"%>
-<%@page import="org.cerberus.entity.Invariant"%>
+<%@page import="org.cerberus.crud.entity.Invariant"%>
 <%@page import="java.util.List"%>
-<%@page import="org.cerberus.service.IInvariantService"%>
-<%@page import="org.cerberus.service.IDatabaseVersioningService"%>
+<%@page import="org.cerberus.crud.service.IInvariantService"%>
+<%@page import="org.cerberus.crud.service.IDatabaseVersioningService"%>
 <% Date DatePageStart = new Date();%>
 
 <%@page contentType="text/html" pageEncoding="UTF-8"%><!DOCTYPE HTML>

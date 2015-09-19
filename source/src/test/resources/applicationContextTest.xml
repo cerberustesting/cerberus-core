@@ -16,10 +16,10 @@
         <property name="driverClassName" value="com.mysql.jdbc.Driver"/>
     </bean>
 
-<!--    <bean id="seleniumService" class="org.cerberus.serviceEngine.impl.SeleniumService">
+<!--    <bean id="seleniumService" class="org.cerberus.service.engine.impl.SeleniumService">
     </bean>
 
-    <bean id="runTestCaseService" class="org.cerberus.serviceEngine.impl.RunTestCaseService">
+    <bean id="runTestCaseService" class="org.cerberus.service.engine.impl.RunTestCaseService">
     </bean>-->
 
     <context:annotation-config/>

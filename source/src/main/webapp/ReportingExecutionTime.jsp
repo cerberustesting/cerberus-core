@@ -21,10 +21,10 @@
 <%@page import="org.cerberus.util.StringUtil"%>
 <%@page import="org.apache.commons.lang3.StringUtils"%>
 <%@page import="java.lang.*" %>
-<%@page import="org.cerberus.service.IDocumentationService"%>
-<%@page import="org.cerberus.entity.BuildRevisionInvariant"%>
-<%@page import="org.cerberus.service.impl.BuildRevisionInvariantService"%>
-<%@page import="org.cerberus.service.IBuildRevisionInvariantService"%>
+<%@page import="org.cerberus.crud.service.IDocumentationService"%>
+<%@page import="org.cerberus.crud.entity.BuildRevisionInvariant"%>
+<%@page import="org.cerberus.crud.service.impl.BuildRevisionInvariantService"%>
+<%@page import="org.cerberus.crud.service.IBuildRevisionInvariantService"%>
 <% Date DatePageStart = new Date();%>
 
 <%@page contentType="text/html" pageEncoding="UTF-8"%>

@@ -21,11 +21,11 @@
 package org.cerberus.servlet.environment;
 
 import org.apache.log4j.Logger;
-import org.cerberus.entity.CountryEnvParam;
-import org.cerberus.entity.Invariant;
+import org.cerberus.crud.entity.CountryEnvParam;
+import org.cerberus.crud.entity.Invariant;
 import org.cerberus.exception.CerberusException;
-import org.cerberus.service.ICountryEnvParamService;
-import org.cerberus.service.IInvariantService;
+import org.cerberus.crud.service.ICountryEnvParamService;
+import org.cerberus.crud.service.IInvariantService;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;

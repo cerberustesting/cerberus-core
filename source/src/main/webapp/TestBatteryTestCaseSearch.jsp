@@ -18,21 +18,21 @@
   ~ along with Cerberus.  If not, see <http://www.gnu.org/licenses/>.
 --%>
 <%@page import="org.cerberus.util.ParameterParserUtil"%>
-<%@page import="org.cerberus.entity.Invariant"%>
-<%@page import="org.cerberus.entity.Application"%>
-<%@page import="org.cerberus.entity.User"%>
-<%@page import="org.cerberus.entity.BuildRevisionInvariant"%>
-<%@page import="org.cerberus.service.IInvariantService"%>
+<%@page import="org.cerberus.crud.entity.Invariant"%>
+<%@page import="org.cerberus.crud.entity.Application"%>
+<%@page import="org.cerberus.crud.entity.User"%>
+<%@page import="org.cerberus.crud.entity.BuildRevisionInvariant"%>
+<%@page import="org.cerberus.crud.service.IInvariantService"%>
 <%@page import="java.util.TreeMap"%>
-<%@page import="org.cerberus.entity.Project"%>
-<%@page import="org.cerberus.entity.Test"%>
-<%@page import="org.cerberus.service.IProjectService"%>
-<%@page import="org.cerberus.service.ITestService"%>
-<%@page import="org.cerberus.service.IDocumentationService"%>
-<%@page import="org.cerberus.service.impl.InvariantService"%>
-<%@page import="org.cerberus.service.IApplicationService"%>
-<%@page import="org.cerberus.service.IUserService"%>
-<%@page import="org.cerberus.service.IBuildRevisionInvariantService"%>
+<%@page import="org.cerberus.crud.entity.Project"%>
+<%@page import="org.cerberus.crud.entity.Test"%>
+<%@page import="org.cerberus.crud.service.IProjectService"%>
+<%@page import="org.cerberus.crud.service.ITestService"%>
+<%@page import="org.cerberus.crud.service.IDocumentationService"%>
+<%@page import="org.cerberus.crud.service.impl.InvariantService"%>
+<%@page import="org.cerberus.crud.service.IApplicationService"%>
+<%@page import="org.cerberus.crud.service.IUserService"%>
+<%@page import="org.cerberus.crud.service.IBuildRevisionInvariantService"%>
 <%@ page import="org.apache.log4j.Logger" %>
             <div id="filtersList" style="clear:both;">
 

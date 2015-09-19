@@ -20,6 +20,7 @@
 
 package org.cerberus.dao.impl;
 
+import org.cerberus.crud.dao.impl.ApplicationDAO;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.when;
 
@@ -30,7 +31,7 @@ import java.sql.SQLException;
 import java.util.List;
 
 import org.cerberus.database.DatabaseSpring;
-import org.cerberus.entity.Application;
+import org.cerberus.crud.entity.Application;
 import org.cerberus.exception.CerberusException;
 import org.junit.Assert;
 import org.junit.Test;

@@ -27,9 +27,9 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import org.apache.log4j.Logger;
-import org.cerberus.entity.ExecutionUUID;
-import org.cerberus.service.ITestCaseExecutionwwwDetService;
-import org.cerberus.service.impl.TestCaseExecutionwwwDetService;
+import org.cerberus.crud.entity.ExecutionUUID;
+import org.cerberus.crud.service.ITestCaseExecutionwwwDetService;
+import org.cerberus.crud.service.impl.TestCaseExecutionwwwDetService;
 import org.springframework.context.ApplicationContext;
 import org.springframework.web.context.support.WebApplicationContextUtils;
 

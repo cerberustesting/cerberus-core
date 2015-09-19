@@ -11,7 +11,7 @@ import java.util.List;
 
 import org.apache.log4j.Level;
 import org.cerberus.database.DatabaseSpring;
-import org.cerberus.entity.TCase;
+import org.cerberus.crud.entity.TCase;
 import org.cerberus.log.MyLogger;
 import org.cerberus.util.DateUtil;
 import org.cerberus.util.ParameterParserUtil;

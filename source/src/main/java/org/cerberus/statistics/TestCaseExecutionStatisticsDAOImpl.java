@@ -29,12 +29,12 @@ import java.util.logging.Logger;
 
 import org.apache.log4j.Level;
 import org.cerberus.database.DatabaseSpring;
-import org.cerberus.entity.Application;
-import org.cerberus.entity.Invariant;
+import org.cerberus.crud.entity.Application;
+import org.cerberus.crud.entity.Invariant;
 import org.cerberus.exception.CerberusException;
 import org.cerberus.log.MyLogger;
-import org.cerberus.service.IApplicationService;
-import org.cerberus.service.IInvariantService;
+import org.cerberus.crud.service.IApplicationService;
+import org.cerberus.crud.service.IInvariantService;
 import org.cerberus.util.SqlUtil;
 import org.cerberus.util.StringUtil;
 import org.springframework.beans.factory.annotation.Autowired;

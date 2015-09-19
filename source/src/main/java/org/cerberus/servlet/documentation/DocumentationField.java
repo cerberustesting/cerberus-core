@@ -29,7 +29,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.log4j.Level;
 import org.cerberus.log.MyLogger;
-import org.cerberus.service.IDocumentationService;
+import org.cerberus.crud.service.IDocumentationService;
 import org.cerberus.util.ParameterParserUtil;
 import org.owasp.html.PolicyFactory;
 import org.owasp.html.Sanitizers;

@@ -17,16 +17,16 @@
   ~ You should have received a copy of the GNU General Public License
   ~ along with Cerberus.  If not, see <http://www.gnu.org/licenses/>.
 --%>
-<%@page import="org.cerberus.entity.Robot"%>
-<%@page import="org.cerberus.service.IRobotService"%>
+<%@page import="org.cerberus.crud.entity.Robot"%>
+<%@page import="org.cerberus.crud.service.IRobotService"%>
 <%@page import="java.util.Enumeration"%>
 <%@page import="org.apache.log4j.Level"%>
 <%@page import="org.apache.commons.lang3.StringUtils"%>
-<%@page import="org.cerberus.entity.Application"%>
-<%@page import="org.cerberus.service.IDocumentationService"%>
-<%@page import="org.cerberus.service.IParameterService"%>
-<%@page import="org.cerberus.service.IApplicationService"%>
-<%@page import="org.cerberus.service.impl.ApplicationService"%>
+<%@page import="org.cerberus.crud.entity.Application"%>
+<%@page import="org.cerberus.crud.service.IDocumentationService"%>
+<%@page import="org.cerberus.crud.service.IParameterService"%>
+<%@page import="org.cerberus.crud.service.IApplicationService"%>
+<%@page import="org.cerberus.crud.service.impl.ApplicationService"%>
 <%@page import="org.cerberus.log.MyLogger"%>
 <%@page import="org.cerberus.util.SqlUtil"%>
 <% Date DatePageStart = new Date();%>

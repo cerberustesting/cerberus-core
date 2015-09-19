@@ -21,10 +21,10 @@ package org.cerberus.util;
 
 import junit.framework.Assert;
 
-import org.cerberus.entity.MessageEvent;
+import org.cerberus.crud.entity.MessageEvent;
 import org.cerberus.enums.MessageEventEnum;
-import org.cerberus.entity.TestCaseExecutionData;
-import org.cerberus.factory.impl.FactoryTestCaseExecutionData;
+import org.cerberus.crud.entity.TestCaseExecutionData;
+import org.cerberus.crud.factory.impl.FactoryTestCaseExecutionData;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;

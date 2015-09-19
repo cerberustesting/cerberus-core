@@ -19,12 +19,12 @@
 --%>
 <%@page import="org.apache.log4j.Level"%>
 <%@page import="org.springframework.web.context.support.WebApplicationContextUtils" %>
-<%@page import="org.cerberus.factory.IFactoryMyversion"%>
-<%@page import="org.cerberus.factory.impl.FactoryMyversion"%>
-<%@page import="org.cerberus.service.IDatabaseVersioningService"%>
+<%@page import="org.cerberus.crud.factory.IFactoryMyversion"%>
+<%@page import="org.cerberus.crud.factory.impl.FactoryMyversion"%>
+<%@page import="org.cerberus.crud.service.IDatabaseVersioningService"%>
 <%@page import="org.cerberus.log.MyLogger"%>
-<%@page import="org.cerberus.entity.MyVersion"%>
-<%@page import="org.cerberus.service.IMyVersionService"%>
+<%@page import="org.cerberus.crud.entity.MyVersion"%>
+<%@page import="org.cerberus.crud.service.IMyVersionService"%>
 <% Date DatePageStart = new Date();%>
 
 <%@page contentType="text/html" pageEncoding="UTF-8"%>

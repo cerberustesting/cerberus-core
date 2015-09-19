@@ -30,12 +30,12 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.cerberus.entity.LogEvent;
-import org.cerberus.entity.MessageEvent;
+import org.cerberus.crud.entity.LogEvent;
+import org.cerberus.crud.entity.MessageEvent;
 import org.cerberus.enums.MessageEventEnum;
 import org.cerberus.exception.CerberusException;
-import org.cerberus.service.ILogEventService;
-import org.cerberus.service.impl.LogEventService;
+import org.cerberus.crud.service.ILogEventService;
+import org.cerberus.crud.service.impl.LogEventService;
 import org.cerberus.util.ParameterParserUtil;
 import org.cerberus.util.answer.AnswerItem;
 import org.cerberus.util.answer.AnswerList;

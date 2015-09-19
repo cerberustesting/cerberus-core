@@ -19,7 +19,7 @@
  */
 package org.cerberus.util;
 
-import org.cerberus.entity.TestCaseExecutionData;
+import org.cerberus.crud.entity.TestCaseExecutionData;
 
 /**
  * Set of utility methods related to the {@link TestCaseExecutionData} class.

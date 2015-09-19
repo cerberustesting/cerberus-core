@@ -25,7 +25,7 @@
 <%@page import="java.util.List"%>
 <%@page import="java.sql.ResultSet"%>
 <%@page import="java.sql.Statement"%>
-<%@page import="org.cerberus.service.IDocumentationService"%>
+<%@page import="org.cerberus.crud.service.IDocumentationService"%>
 <%@page import="org.apache.log4j.Level"%>
 <%@page import="org.apache.log4j.Logger"%>
 <%

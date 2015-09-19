@@ -17,6 +17,7 @@
  */
 package org.cerberus.factory;
 
+import org.cerberus.crud.factory.IFactoryTest;
 import static org.junit.Assert.assertEquals;
 
 import org.junit.Test;
@@ -40,7 +41,7 @@ public class FactoryTestTest {
     @Test
     public void testCanCreateTest() {
 
-        org.cerberus.entity.Test test;
+        org.cerberus.crud.entity.Test test;
         String tst = "test";
         String description = "description";
         String active = "Y";

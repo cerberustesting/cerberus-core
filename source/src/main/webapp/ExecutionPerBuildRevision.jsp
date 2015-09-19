@@ -17,9 +17,9 @@
   ~ You should have received a copy of the GNU General Public License
   ~ along with Cerberus.  If not, see <http://www.gnu.org/licenses/>.
 --%>
-<%@page import="org.cerberus.entity.BuildRevisionInvariant"%>
-<%@page import="org.cerberus.service.IBuildRevisionInvariantService"%>
-<%@page import="org.cerberus.service.IDocumentationService"%>
+<%@page import="org.cerberus.crud.entity.BuildRevisionInvariant"%>
+<%@page import="org.cerberus.crud.service.IBuildRevisionInvariantService"%>
+<%@page import="org.cerberus.crud.service.IDocumentationService"%>
 
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <!DOCTYPE HTML>

@@ -20,6 +20,7 @@
 
 package org.cerberus.dao.impl;
 
+import org.cerberus.crud.dao.impl.UserDAO;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.when;
@@ -33,7 +34,7 @@ import java.sql.Statement;
 import junit.framework.Assert;
 
 import org.cerberus.database.DatabaseSpring;
-import org.cerberus.entity.User;
+import org.cerberus.crud.entity.User;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;

@@ -18,7 +18,7 @@
   ~ along with Cerberus.  If not, see <http://www.gnu.org/licenses/>.
 --%>
 <%@page import="org.cerberus.util.ParameterParserUtil"%>
-<%@page import="org.cerberus.service.IDocumentationService"%>
+<%@page import="org.cerberus.crud.service.IDocumentationService"%>
 
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <%@include file="include/function.jsp"%>

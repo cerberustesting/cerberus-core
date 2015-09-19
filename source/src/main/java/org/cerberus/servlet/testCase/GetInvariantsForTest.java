@@ -32,10 +32,10 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.log4j.Level;
-import org.cerberus.entity.Invariant;
+import org.cerberus.crud.entity.Invariant;
 import org.cerberus.log.MyLogger;
-import org.cerberus.service.IInvariantService;
-import org.cerberus.service.impl.InvariantService;
+import org.cerberus.crud.service.IInvariantService;
+import org.cerberus.crud.service.impl.InvariantService;
 import org.cerberus.servlet.invariant.GetInvariantList;
 import org.cerberus.util.SqlUtil;
 import org.json.JSONArray;

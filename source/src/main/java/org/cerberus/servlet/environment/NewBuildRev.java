@@ -35,11 +35,11 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.cerberus.database.DatabaseSpring;
 import org.cerberus.log.MyLogger;
-import org.cerberus.service.IParameterService;
-import org.cerberus.service.impl.ParameterService;
-import org.cerberus.serviceEmail.IEmailGeneration;
-import org.cerberus.serviceEmail.impl.EmailGeneration;
-import org.cerberus.serviceEmail.impl.sendMail;
+import org.cerberus.crud.service.IParameterService;
+import org.cerberus.crud.service.impl.ParameterService;
+import org.cerberus.service.email.IEmailGeneration;
+import org.cerberus.service.email.impl.EmailGeneration;
+import org.cerberus.service.email.impl.sendMail;
 import org.cerberus.version.Infos;
 import org.springframework.context.ApplicationContext;
 import org.springframework.web.context.support.WebApplicationContextUtils;

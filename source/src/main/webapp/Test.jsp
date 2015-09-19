@@ -17,16 +17,16 @@
   ~ You should have received a copy of the GNU General Public License
   ~ along with Cerberus.  If not, see <http://www.gnu.org/licenses/>.
 --%>
-<%@page import="org.cerberus.service.IUserSystemService"%>
+<%@page import="org.cerberus.crud.service.IUserSystemService"%>
 <%@page import="org.apache.commons.lang3.StringUtils"%>
-<%@page import="org.cerberus.entity.TCase"%>
-<%@page import="org.cerberus.entity.Test"%>
-<%@page import="org.cerberus.service.ITestCaseService"%>
-<%@page import="org.cerberus.service.IDocumentationService"%>
-<%@page import="org.cerberus.service.ITestService"%>
-<%@page import="org.cerberus.service.ITestCaseCountryService"%>
-<%@page import="org.cerberus.service.impl.TestService"%>
-<%@page import="org.cerberus.dao.ITestDAO"%>
+<%@page import="org.cerberus.crud.entity.TCase"%>
+<%@page import="org.cerberus.crud.entity.Test"%>
+<%@page import="org.cerberus.crud.service.ITestCaseService"%>
+<%@page import="org.cerberus.crud.service.IDocumentationService"%>
+<%@page import="org.cerberus.crud.service.ITestService"%>
+<%@page import="org.cerberus.crud.service.ITestCaseCountryService"%>
+<%@page import="org.cerberus.crud.service.impl.TestService"%>
+<%@page import="org.cerberus.crud.dao.ITestDAO"%>
 <%@ page import="org.cerberus.util.ParameterParserUtil" %>
 
 <% Date DatePageStart = new Date();%>

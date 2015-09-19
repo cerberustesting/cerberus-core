@@ -20,10 +20,10 @@
 <%@page import="java.sql.Connection"%>
 <%@page import="java.sql.ResultSet"%>
 <%@page import="java.sql.Statement"%>
-<%@page import="org.cerberus.service.IDocumentationService"%>
-<%@page import="org.cerberus.service.impl.BuildRevisionInvariantService"%>
-<%@page import="org.cerberus.entity.BuildRevisionInvariant"%>
-<%@page import="org.cerberus.service.IBuildRevisionInvariantService"%>
+<%@page import="org.cerberus.crud.service.IDocumentationService"%>
+<%@page import="org.cerberus.crud.service.impl.BuildRevisionInvariantService"%>
+<%@page import="org.cerberus.crud.entity.BuildRevisionInvariant"%>
+<%@page import="org.cerberus.crud.service.IBuildRevisionInvariantService"%>
 <%
 	Date DatePageStart = new Date();
 %>

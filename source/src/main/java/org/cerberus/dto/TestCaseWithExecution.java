@@ -21,8 +21,8 @@ package org.cerberus.dto;
 
 import java.util.HashMap;
 import java.util.List;
-import org.cerberus.entity.Application;
-import org.cerberus.entity.TCase;
+import org.cerberus.crud.entity.Application;
+import org.cerberus.crud.entity.TCase;
 
 /**
  *

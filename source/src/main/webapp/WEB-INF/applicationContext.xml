@@ -15,11 +15,11 @@
         <property name="order" value="1"/>
     </bean>
 
-<!--    <bean id="seleniumService" class="org.cerberus.serviceEngine.impl.SeleniumService" scope="request">
+<!--    <bean id="seleniumService" class="org.cerberus.service.engine.impl.SeleniumService" scope="request">
         <aop:scoped-proxy proxy-target-class="true"/>
     </bean>
 
-    <bean id="runTestCaseService" class="org.cerberus.serviceEngine.impl.RunTestCaseService" scope="prototype">
+    <bean id="runTestCaseService" class="org.cerberus.service.engine.impl.RunTestCaseService" scope="prototype">
         <aop:scoped-proxy proxy-target-class="true"/>
     </bean>-->
 

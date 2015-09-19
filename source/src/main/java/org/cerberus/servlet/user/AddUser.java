@@ -29,30 +29,30 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
-import org.cerberus.entity.Group;
-import org.cerberus.entity.User;
-import org.cerberus.entity.UserSystem;
+import org.cerberus.crud.entity.Group;
+import org.cerberus.crud.entity.User;
+import org.cerberus.crud.entity.UserSystem;
 import org.cerberus.exception.CerberusException;
-import org.cerberus.factory.IFactoryGroup;
-import org.cerberus.factory.IFactoryLogEvent;
-import org.cerberus.factory.IFactoryUser;
-import org.cerberus.factory.IFactoryUserSystem;
-import org.cerberus.factory.impl.FactoryGroup;
-import org.cerberus.factory.impl.FactoryLogEvent;
-import org.cerberus.factory.impl.FactoryUser;
-import org.cerberus.factory.impl.FactoryUserSystem;
-import org.cerberus.service.ILogEventService;
-import org.cerberus.service.IParameterService;
-import org.cerberus.service.IUserGroupService;
-import org.cerberus.service.IUserService;
-import org.cerberus.service.IUserSystemService;
-import org.cerberus.service.impl.LogEventService;
-import org.cerberus.service.impl.ParameterService;
-import org.cerberus.service.impl.UserGroupService;
-import org.cerberus.service.impl.UserService;
-import org.cerberus.service.impl.UserSystemService;
-import org.cerberus.serviceEmail.IEmailGeneration;
-import org.cerberus.serviceEmail.impl.EmailGeneration;
+import org.cerberus.crud.factory.IFactoryGroup;
+import org.cerberus.crud.factory.IFactoryLogEvent;
+import org.cerberus.crud.factory.IFactoryUser;
+import org.cerberus.crud.factory.IFactoryUserSystem;
+import org.cerberus.crud.factory.impl.FactoryGroup;
+import org.cerberus.crud.factory.impl.FactoryLogEvent;
+import org.cerberus.crud.factory.impl.FactoryUser;
+import org.cerberus.crud.factory.impl.FactoryUserSystem;
+import org.cerberus.crud.service.ILogEventService;
+import org.cerberus.crud.service.IParameterService;
+import org.cerberus.crud.service.IUserGroupService;
+import org.cerberus.crud.service.IUserService;
+import org.cerberus.crud.service.IUserSystemService;
+import org.cerberus.crud.service.impl.LogEventService;
+import org.cerberus.crud.service.impl.ParameterService;
+import org.cerberus.crud.service.impl.UserGroupService;
+import org.cerberus.crud.service.impl.UserService;
+import org.cerberus.crud.service.impl.UserSystemService;
+import org.cerberus.service.email.IEmailGeneration;
+import org.cerberus.service.email.impl.EmailGeneration;
 import org.cerberus.util.ParameterParserUtil;
 import org.springframework.context.ApplicationContext;
 import org.springframework.web.context.support.WebApplicationContextUtils;
@@ -77,7 +77,7 @@ public class AddUser extends HttpServlet {
      *
      * @param request http servlet request
      * @param response http servlet response
-     * @see org.cerberus.service.impl.UserService
+     * @see org.cerberus.crud.service.impl.UserService
      */
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {

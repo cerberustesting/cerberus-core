@@ -19,7 +19,7 @@
  */
 package org.cerberus.util.answer;
 
-import org.cerberus.entity.MessageEvent;
+import org.cerberus.crud.entity.MessageEvent;
 
 /**
  * Auxiliary class that is used to store an answer that contains only a message.

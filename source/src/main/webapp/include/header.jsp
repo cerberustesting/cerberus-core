@@ -18,16 +18,16 @@
   ~ along with Cerberus.  If not, see <http://www.gnu.org/licenses/>.
 --%>
 <%@page import="java.util.Set"%>
-<%@page import="org.cerberus.entity.UserSystem"%>
+<%@page import="org.cerberus.crud.entity.UserSystem"%>
 <%@page import="org.apache.log4j.Level"%>
 <%@page import="org.cerberus.log.MyLogger"%>
-<%@page import="org.cerberus.service.IDatabaseVersioningService"%>
-<%@page import="org.cerberus.entity.Invariant"%>
-<%@page import="org.cerberus.service.IInvariantService"%>
-<%@page import="org.cerberus.service.IUserService"%>
+<%@page import="org.cerberus.crud.service.IDatabaseVersioningService"%>
+<%@page import="org.cerberus.crud.entity.Invariant"%>
+<%@page import="org.cerberus.crud.service.IInvariantService"%>
+<%@page import="org.cerberus.crud.service.IUserService"%>
 <%@page import="org.springframework.web.context.support.WebApplicationContextUtils"%>
 <%@page import="org.springframework.context.ApplicationContext"%>
-<%@page import="org.cerberus.entity.User"%>
+<%@page import="org.cerberus.crud.entity.User"%>
 <%@page import="org.cerberus.util.ParameterParserUtil"%>
 <%@page import="java.util.Collection"%>
 <%@page import="java.util.Iterator"%>

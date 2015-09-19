@@ -35,11 +35,11 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.log4j.Level;
 import org.cerberus.database.DatabaseSpring;
-import org.cerberus.factory.IFactoryLogEvent;
-import org.cerberus.factory.impl.FactoryLogEvent;
+import org.cerberus.crud.factory.IFactoryLogEvent;
+import org.cerberus.crud.factory.impl.FactoryLogEvent;
 import org.cerberus.log.MyLogger;
-import org.cerberus.service.ILogEventService;
-import org.cerberus.service.impl.LogEventService;
+import org.cerberus.crud.service.ILogEventService;
+import org.cerberus.crud.service.impl.LogEventService;
 import org.cerberus.util.StringUtil;
 import org.springframework.context.ApplicationContext;
 import org.springframework.web.context.support.WebApplicationContextUtils;

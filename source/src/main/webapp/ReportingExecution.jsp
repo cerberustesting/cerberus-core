@@ -19,17 +19,17 @@
   --%>
 <%@page import="org.apache.commons.lang3.StringEscapeUtils"%>
 <%@ page import="java.util.TreeMap" %>
-<%@ page import="org.cerberus.service.IDocumentationService" %>
-<%@ page import="org.cerberus.service.ITestService" %>
-<%@ page import="org.cerberus.service.IProjectService" %>
-<%@ page import="org.cerberus.service.IInvariantService" %>
-<%@ page import="org.cerberus.service.IBuildRevisionInvariantService" %>
-<%@ page import="org.cerberus.service.IApplicationService" %>
-<%@ page import="org.cerberus.service.IUserService" %>
-<%@ page import="org.cerberus.entity.Test" %>
-<%@ page import="org.cerberus.entity.Project" %>
-<%@ page import="org.cerberus.entity.Application" %>
-<%@ page import="org.cerberus.entity.BuildRevisionInvariant" %>
+<%@ page import="org.cerberus.crud.service.IDocumentationService" %>
+<%@ page import="org.cerberus.crud.service.ITestService" %>
+<%@ page import="org.cerberus.crud.service.IProjectService" %>
+<%@ page import="org.cerberus.crud.service.IInvariantService" %>
+<%@ page import="org.cerberus.crud.service.IBuildRevisionInvariantService" %>
+<%@ page import="org.cerberus.crud.service.IApplicationService" %>
+<%@ page import="org.cerberus.crud.service.IUserService" %>
+<%@ page import="org.cerberus.crud.entity.Test" %>
+<%@ page import="org.cerberus.crud.entity.Project" %>
+<%@ page import="org.cerberus.crud.entity.Application" %>
+<%@ page import="org.cerberus.crud.entity.BuildRevisionInvariant" %>
 <%@ page import="org.cerberus.exception.CerberusException" %>
 
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>

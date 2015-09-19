@@ -21,14 +21,14 @@
 <%@page import="java.sql.ResultSet"%>
 <%@page import="java.sql.Statement"%>
 <%@page import="org.cerberus.util.StringUtil"%>
-<%@page import="org.cerberus.service.IDocumentationService"%>
-<%@page import="org.cerberus.util.SqlUtil"%>
-<%@page import="org.cerberus.entity.BuildRevisionInvariant"%>
-<%@page import="org.cerberus.service.impl.BuildRevisionInvariantService"%>
-<%@page import="org.cerberus.service.IBuildRevisionInvariantService"%>
-<%@page import="org.cerberus.service.impl.ApplicationService"%>
-<%@page import="org.cerberus.entity.Application"%>
-<%@page import="org.cerberus.service.IApplicationService"%>
+<%@page import="org.cerberus.crud.service.IDocumentationService"%>
+<%@page import="org.cerberus.crud.util.SqlUtil"%>
+<%@page import="org.cerberus.crud.entity.BuildRevisionInvariant"%>
+<%@page import="org.cerberus.crud.service.impl.BuildRevisionInvariantService"%>
+<%@page import="org.cerberus.crud.service.IBuildRevisionInvariantService"%>
+<%@page import="org.cerberus.crud.service.impl.ApplicationService"%>
+<%@page import="org.cerberus.crud.entity.Application"%>
+<%@page import="org.cerberus.crud.service.IApplicationService"%>
 <%
     Date DatePageStart = new Date();
 %>

@@ -19,6 +19,7 @@
  */
 package org.cerberus.serviceEngine.impl.diff;
 
+import org.cerberus.service.engine.impl.diff.Difference;
 import junit.framework.Assert;
 
 import org.junit.Test;

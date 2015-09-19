@@ -20,21 +20,25 @@
 
 package org.cerberus.serviceEngine.impl;
 
+import org.cerberus.service.engine.impl.ControlService;
+import org.cerberus.service.engine.impl.PropertyService;
+import org.cerberus.service.engine.impl.IdentifierService;
+import org.cerberus.service.engine.impl.XmlUnitService;
+import org.cerberus.service.engine.impl.WebDriverService;
 import junit.framework.Assert;
-import org.cerberus.entity.Application;
-import org.cerberus.entity.Identifier;
+import org.cerberus.crud.entity.Application;
+import org.cerberus.crud.entity.Identifier;
 import org.cerberus.enums.MessageEventEnum;
-import org.cerberus.entity.Session;
-import org.cerberus.entity.TestCaseExecution;
-import org.cerberus.entity.TestCaseStepActionControlExecution;
-import org.cerberus.entity.TestCaseStepActionExecution;
-import org.cerberus.entity.TestCaseStepExecution;
+import org.cerberus.crud.entity.Session;
+import org.cerberus.crud.entity.TestCaseExecution;
+import org.cerberus.crud.entity.TestCaseStepActionControlExecution;
+import org.cerberus.crud.entity.TestCaseStepActionExecution;
+import org.cerberus.crud.entity.TestCaseStepExecution;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
-import static org.mockito.Matchers.anyString;
 import org.mockito.Mock;
 import static org.mockito.Mockito.when;
 import org.mockito.runners.MockitoJUnitRunner;

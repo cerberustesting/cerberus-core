@@ -29,7 +29,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.log4j.Level;
 import org.cerberus.log.MyLogger;
-import org.cerberus.service.ITestCaseCountryService;
+import org.cerberus.crud.service.ITestCaseCountryService;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;

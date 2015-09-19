@@ -19,17 +19,17 @@
 --%>
 <%@page import="org.cerberus.enums.MessageEventEnum"%>
 <%@page import="org.cerberus.util.answer.AnswerList"%>
-<%@page import="org.cerberus.entity.SessionCounter"%>
-<%@page import="org.cerberus.entity.Project"%>
-<%@page import="org.cerberus.service.IProjectService"%>
-<%@page import="org.cerberus.entity.Invariant"%>
+<%@page import="org.cerberus.crud.entity.SessionCounter"%>
+<%@page import="org.cerberus.crud.entity.Project"%>
+<%@page import="org.cerberus.crud.service.IProjectService"%>
+<%@page import="org.cerberus.crud.entity.Invariant"%>
 <%@page import="org.cerberus.exception.CerberusException"%>
-<%@page import="org.cerberus.service.IInvariantService"%>
+<%@page import="org.cerberus.crud.service.IInvariantService"%>
 <%@page import="org.apache.commons.lang3.StringUtils"%>
 <%@page import="java.util.TreeMap"%>
 <%@page import="org.springframework.web.context.support.WebApplicationContextUtils"%>
 <%@page import="org.springframework.context.ApplicationContext"%>
-<%@page import="org.cerberus.entity.Country"%>
+<%@page import="org.cerberus.crud.entity.Country"%>
 <%@page import="java.util.Collection"%>
 <%@page import="java.util.Iterator"%>
 <%@page import="com.mysql.jdbc.ResultSetImpl"%>
@@ -44,8 +44,8 @@
 <%@page import="java.text.SimpleDateFormat"%>
 <%@page import="org.cerberus.version.Infos"%>
 <%@page import="org.cerberus.database.DatabaseSpring" %>
-<%@page import="org.cerberus.service.IDeployTypeService" %>
-<%@page import="org.cerberus.entity.DeployType" %>
+<%@page import="org.cerberus.crud.service.IDeployTypeService" %>
+<%@page import="org.cerberus.crud.entity.DeployType" %>
 <%!String ComboInvariant(ApplicationContext appContext, String HTMLComboName, String HTMLComboStyle, String HTMLId, String HTMLClass, String combonumber, String value, String HTMLOnChange, String firstOption) {
         try {
             IInvariantService invFunctionService = appContext.getBean(IInvariantService.class);

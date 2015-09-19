@@ -29,11 +29,11 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
-import org.cerberus.entity.Parameter;
+import org.cerberus.crud.entity.Parameter;
 import org.cerberus.exception.CerberusException;
 import org.cerberus.log.MyLogger;
-import org.cerberus.service.IParameterService;
-import org.cerberus.service.impl.ParameterService;
+import org.cerberus.crud.service.IParameterService;
+import org.cerberus.crud.service.impl.ParameterService;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;

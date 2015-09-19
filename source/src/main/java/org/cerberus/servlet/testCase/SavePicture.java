@@ -2,12 +2,12 @@ package org.cerberus.servlet.testCase;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Level;
-import org.cerberus.entity.Parameter;
-import org.cerberus.entity.SavePictureConfig;
+import org.cerberus.crud.entity.Parameter;
+import org.cerberus.crud.entity.SavePictureConfig;
 import org.cerberus.exception.CerberusException;
 import org.cerberus.log.MyLogger;
-import org.cerberus.service.IParameterService;
-import org.cerberus.service.impl.ParameterService;
+import org.cerberus.crud.service.IParameterService;
+import org.cerberus.crud.service.impl.ParameterService;
 
 import org.elfinder.servlets.AbstractConnectorServlet;
 import org.elfinder.servlets.config.AbstractConnectorConfig;

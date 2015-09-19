@@ -30,8 +30,8 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.cerberus.service.IParameterService;
-import org.cerberus.service.impl.ParameterService;
+import org.cerberus.crud.service.IParameterService;
+import org.cerberus.crud.service.impl.ParameterService;
 import org.cerberus.util.HTTPSession;
 import org.cerberus.version.Infos;
 import org.springframework.context.ApplicationContext;

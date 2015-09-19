@@ -1,6 +1,6 @@
 package org.cerberus.serviceEngine;
 
-import org.cerberus.serviceEngine.IRunTestCaseService;
+import org.cerberus.service.engine.IRunTestCaseService;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;

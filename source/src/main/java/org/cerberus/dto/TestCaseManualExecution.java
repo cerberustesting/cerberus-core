@@ -1,6 +1,6 @@
 package org.cerberus.dto;
 
-import org.cerberus.entity.TCase;
+import org.cerberus.crud.entity.TCase;
 
 /**
  * {Insert class description here}

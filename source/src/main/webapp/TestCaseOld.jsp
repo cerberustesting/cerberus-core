@@ -18,20 +18,20 @@
   ~ along with Cerberus.  If not, see <http://www.gnu.org/licenses/>.
 --%>
 <%@page import="java.util.Enumeration"%>
-<%@page import="org.cerberus.entity.Parameter"%>
+<%@page import="org.cerberus.crud.entity.Parameter"%>
 <%@page import="java.util.ArrayList"%>
 <%@page import="java.util.List"%>
 <%@page import="java.sql.ResultSet"%>
 <%@page import="java.sql.Statement"%>
 <%@page import="java.sql.Connection"%>
 <%@page import="java.net.URLEncoder"%>
-<%@page import="org.cerberus.entity.BuildRevisionInvariant"%>
-<%@page import="org.cerberus.entity.Application"%>
-<%@page import="org.cerberus.service.IDocumentationService"%>
-<%@page import="org.cerberus.service.impl.BuildRevisionInvariantService"%>
-<%@page import="org.cerberus.service.IBuildRevisionInvariantService"%>
-<%@page import="org.cerberus.service.IApplicationService"%>
-<%@page import="org.cerberus.service.IParameterService"%>
+<%@page import="org.cerberus.crud.entity.BuildRevisionInvariant"%>
+<%@page import="org.cerberus.crud.entity.Application"%>
+<%@page import="org.cerberus.crud.service.IDocumentationService"%>
+<%@page import="org.cerberus.crud.service.impl.BuildRevisionInvariantService"%>
+<%@page import="org.cerberus.crud.service.IBuildRevisionInvariantService"%>
+<%@page import="org.cerberus.crud.service.IApplicationService"%>
+<%@page import="org.cerberus.crud.service.IParameterService"%>
 <%@page import="org.cerberus.util.StringUtil"%>
 <%@page import="org.apache.commons.lang3.StringUtils"%>
 <% Date DatePageStart = new Date();%>

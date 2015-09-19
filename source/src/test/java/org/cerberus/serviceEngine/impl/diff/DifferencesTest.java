@@ -19,6 +19,9 @@
  */
 package org.cerberus.serviceEngine.impl.diff;
 
+import org.cerberus.service.engine.impl.diff.Difference;
+import org.cerberus.service.engine.impl.diff.DifferencesException;
+import org.cerberus.service.engine.impl.diff.Differences;
 import java.io.IOException;
 
 import org.cerberus.util.XmlUtil;

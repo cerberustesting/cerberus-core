@@ -19,9 +19,10 @@
  */
 package org.cerberus.service;
 
+import org.cerberus.crud.service.ITestService;
 import junit.framework.Assert;
 import org.cerberus.exception.CerberusException;
-import org.cerberus.factory.IFactoryTest;
+import org.cerberus.crud.factory.IFactoryTest;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;

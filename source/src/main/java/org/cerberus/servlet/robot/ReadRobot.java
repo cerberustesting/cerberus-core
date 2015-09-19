@@ -30,12 +30,12 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.cerberus.entity.MessageEvent;
-import org.cerberus.entity.Robot;
+import org.cerberus.crud.entity.MessageEvent;
+import org.cerberus.crud.entity.Robot;
 import org.cerberus.enums.MessageEventEnum;
 import org.cerberus.exception.CerberusException;
-import org.cerberus.service.IRobotService;
-import org.cerberus.service.impl.RobotService;
+import org.cerberus.crud.service.IRobotService;
+import org.cerberus.crud.service.impl.RobotService;
 import org.cerberus.util.ParameterParserUtil;
 import org.cerberus.util.answer.AnswerItem;
 import org.cerberus.util.answer.AnswerList;

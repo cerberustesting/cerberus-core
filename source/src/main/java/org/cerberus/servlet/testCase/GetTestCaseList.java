@@ -28,9 +28,9 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.log4j.Level;
-import org.cerberus.entity.TCase;
+import org.cerberus.crud.entity.TCase;
 import org.cerberus.log.MyLogger;
-import org.cerberus.service.ITestCaseService;
+import org.cerberus.crud.service.ITestCaseService;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;

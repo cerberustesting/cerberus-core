@@ -29,38 +29,38 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
-import org.cerberus.entity.Group;
+import org.cerberus.crud.entity.Group;
 import org.cerberus.enums.MessageGeneralEnum;
-import org.cerberus.entity.TCase;
-import org.cerberus.entity.Test;
-import org.cerberus.entity.TestCaseCountry;
-import org.cerberus.entity.TestCaseCountryProperties;
-import org.cerberus.entity.TestCaseStep;
-import org.cerberus.entity.TestCaseStepAction;
-import org.cerberus.entity.TestCaseStepActionControl;
-import org.cerberus.entity.User;
+import org.cerberus.crud.entity.TCase;
+import org.cerberus.crud.entity.Test;
+import org.cerberus.crud.entity.TestCaseCountry;
+import org.cerberus.crud.entity.TestCaseCountryProperties;
+import org.cerberus.crud.entity.TestCaseStep;
+import org.cerberus.crud.entity.TestCaseStepAction;
+import org.cerberus.crud.entity.TestCaseStepActionControl;
+import org.cerberus.crud.entity.User;
 import org.cerberus.exception.CerberusException;
-import org.cerberus.factory.IFactoryLogEvent;
-import org.cerberus.factory.IFactoryTCase;
-import org.cerberus.factory.IFactoryTestCaseCountry;
-import org.cerberus.factory.IFactoryTestCaseCountryProperties;
-import org.cerberus.factory.IFactoryTestCaseStep;
-import org.cerberus.factory.IFactoryTestCaseStepAction;
-import org.cerberus.factory.IFactoryTestCaseStepActionControl;
-import org.cerberus.factory.impl.FactoryLogEvent;
-import org.cerberus.service.IGroupService;
-import org.cerberus.service.IInvariantService;
-import org.cerberus.service.ILogEventService;
-import org.cerberus.service.ITestCaseCountryPropertiesService;
-import org.cerberus.service.ITestCaseCountryService;
-import org.cerberus.service.ITestCaseService;
-import org.cerberus.service.ITestCaseStepActionControlService;
-import org.cerberus.service.ITestCaseStepActionService;
-import org.cerberus.service.ITestCaseStepService;
-import org.cerberus.service.ITestService;
-import org.cerberus.service.IUserService;
-import org.cerberus.service.impl.LogEventService;
-import org.cerberus.service.impl.UserService;
+import org.cerberus.crud.factory.IFactoryLogEvent;
+import org.cerberus.crud.factory.IFactoryTCase;
+import org.cerberus.crud.factory.IFactoryTestCaseCountry;
+import org.cerberus.crud.factory.IFactoryTestCaseCountryProperties;
+import org.cerberus.crud.factory.IFactoryTestCaseStep;
+import org.cerberus.crud.factory.IFactoryTestCaseStepAction;
+import org.cerberus.crud.factory.IFactoryTestCaseStepActionControl;
+import org.cerberus.crud.factory.impl.FactoryLogEvent;
+import org.cerberus.crud.service.IGroupService;
+import org.cerberus.crud.service.IInvariantService;
+import org.cerberus.crud.service.ILogEventService;
+import org.cerberus.crud.service.ITestCaseCountryPropertiesService;
+import org.cerberus.crud.service.ITestCaseCountryService;
+import org.cerberus.crud.service.ITestCaseService;
+import org.cerberus.crud.service.ITestCaseStepActionControlService;
+import org.cerberus.crud.service.ITestCaseStepActionService;
+import org.cerberus.crud.service.ITestCaseStepService;
+import org.cerberus.crud.service.ITestService;
+import org.cerberus.crud.service.IUserService;
+import org.cerberus.crud.service.impl.LogEventService;
+import org.cerberus.crud.service.impl.UserService;
 import org.springframework.context.ApplicationContext;
 import org.springframework.web.context.support.WebApplicationContextUtils;
 import org.springframework.web.util.HtmlUtils;
@@ -350,7 +350,7 @@ public class UpdateTestCaseWithDependencies extends HttpServlet {
      *
      * @param request information from the request page
      * @return TestCase object
-     * @see org.cerberus.entity.TestCase
+     * @see org.cerberus.crud.entity.TestCase
      */
     private TCase getTestCaseFromParameter(HttpServletRequest request, ApplicationContext appContext, String test, String testCase) {
 

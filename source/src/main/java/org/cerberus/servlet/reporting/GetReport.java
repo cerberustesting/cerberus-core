@@ -1,13 +1,13 @@
 package org.cerberus.servlet.reporting;
 
 import org.apache.log4j.Logger;
-import org.cerberus.entity.Application;
-import org.cerberus.entity.Invariant;
-import org.cerberus.entity.TCase;
-import org.cerberus.entity.TestCaseExecution;
+import org.cerberus.crud.entity.Application;
+import org.cerberus.crud.entity.Invariant;
+import org.cerberus.crud.entity.TCase;
+import org.cerberus.crud.entity.TestCaseExecution;
 import org.cerberus.exception.CerberusException;
-import org.cerberus.factory.IFactoryTCase;
-import org.cerberus.factory.impl.FactoryTCase;
+import org.cerberus.crud.factory.IFactoryTCase;
+import org.cerberus.crud.factory.impl.FactoryTCase;
 import org.cerberus.util.StringUtil;
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -25,11 +25,11 @@ import java.io.IOException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.*;
-import org.cerberus.service.IApplicationService;
-import org.cerberus.service.IInvariantService;
-import org.cerberus.service.ITestCaseCountryService;
-import org.cerberus.service.ITestCaseExecutionService;
-import org.cerberus.service.ITestCaseService;
+import org.cerberus.crud.service.IApplicationService;
+import org.cerberus.crud.service.IInvariantService;
+import org.cerberus.crud.service.ITestCaseCountryService;
+import org.cerberus.crud.service.ITestCaseExecutionService;
+import org.cerberus.crud.service.ITestCaseService;
 
 /**
  * Build data for detail table and calculate data dor statistics tables

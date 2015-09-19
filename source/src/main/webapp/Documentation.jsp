@@ -22,8 +22,8 @@
 <%@page import="java.util.List"%>
 <%@page import="org.springframework.context.ApplicationContext" %>
 <%@page import="org.springframework.web.context.support.WebApplicationContextUtils" %>
-<%@page import="org.cerberus.entity.Documentation"%>
-<%@page import="org.cerberus.service.IDocumentationService"%>
+<%@page import="org.cerberus.crud.entity.Documentation"%>
+<%@page import="org.cerberus.crud.service.IDocumentationService"%>
 <%@page import="org.cerberus.util.StringUtil"%>
 <%@page import="org.cerberus.util.ParameterParserUtil"%>
 

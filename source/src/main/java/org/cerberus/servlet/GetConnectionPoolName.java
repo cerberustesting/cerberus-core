@@ -31,7 +31,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.cerberus.exception.CerberusException;
-import org.cerberus.service.ICountryEnvironmentDatabaseService;
+import org.cerberus.crud.service.ICountryEnvironmentDatabaseService;
 import org.cerberus.util.ParameterParserUtil;
 import org.springframework.context.ApplicationContext;
 import org.springframework.web.context.support.WebApplicationContextUtils;

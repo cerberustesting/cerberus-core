@@ -17,17 +17,17 @@
   ~ You should have received a copy of the GNU General Public License
   ~ along with Cerberus.  If not, see <http://www.gnu.org/licenses/>.
 --%>
-<%@page import="org.cerberus.service.IDocumentationService"%>
-<%@page import="org.cerberus.service.IParameterService"%>
-<%@page import="org.cerberus.service.ICountryEnvParamService"%>
-<%@page import="org.cerberus.service.ICountryEnvDeployTypeService"%>
-<%@page import="org.cerberus.service.IBuildRevisionParametersService"%>
-<%@page import="org.cerberus.service.IApplicationService"%>
-<%@page import="org.cerberus.serviceEmail.IEmailGeneration"%>
+<%@page import="org.cerberus.crud.service.IDocumentationService"%>
+<%@page import="org.cerberus.crud.service.IParameterService"%>
+<%@page import="org.cerberus.crud.service.ICountryEnvParamService"%>
+<%@page import="org.cerberus.crud.service.ICountryEnvDeployTypeService"%>
+<%@page import="org.cerberus.crud.service.IBuildRevisionParametersService"%>
+<%@page import="org.cerberus.crud.service.IApplicationService"%>
+<%@page import="org.cerberus.service.email.IEmailGeneration"%>
 <%@page import="org.cerberus.util.StringUtil"%>
-<%@ page import="org.cerberus.entity.CountryEnvParam" %>
-<%@ page import="org.cerberus.entity.BuildRevisionParameters" %>
-<%@ page import="org.cerberus.entity.Application" %>
+<%@ page import="org.cerberus.crud.entity.CountryEnvParam" %>
+<%@ page import="org.cerberus.crud.entity.BuildRevisionParameters" %>
+<%@ page import="org.cerberus.crud.entity.Application" %>
 <%
 	Date DatePageStart = new Date();
 %>

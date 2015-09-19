@@ -32,7 +32,7 @@ import java.util.Date;
 import java.util.List;
 
 import org.cerberus.database.DatabaseSpring;
-import org.cerberus.entity.TCase;
+import org.cerberus.crud.entity.TCase;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;

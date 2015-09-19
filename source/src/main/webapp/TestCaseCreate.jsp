@@ -19,12 +19,12 @@
 --%>
 <%@page import="java.net.URLDecoder"%>
 <%@page import="org.apache.commons.lang3.StringUtils"%>
-<%@ page import="org.cerberus.service.IDocumentationService" %>
-<%@ page import="org.cerberus.service.ITestService" %>
-<%@ page import="org.cerberus.service.ITestCaseService" %>
-<%@ page import="org.cerberus.service.IApplicationService" %>
-<%@ page import="org.cerberus.entity.Application" %>
-<%@ page import="org.cerberus.entity.Test" %>
+<%@ page import="org.cerberus.crud.service.IDocumentationService" %>
+<%@ page import="org.cerberus.crud.service.ITestService" %>
+<%@ page import="org.cerberus.crud.service.ITestCaseService" %>
+<%@ page import="org.cerberus.crud.service.IApplicationService" %>
+<%@ page import="org.cerberus.crud.entity.Application" %>
+<%@ page import="org.cerberus.crud.entity.Test" %>
 <% Date DatePageStart = new Date();%>
 
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>

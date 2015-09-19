@@ -4,14 +4,14 @@
     Author     : bcivel
 --%>
 
-<%@page import="org.cerberus.entity.BuildRevisionInvariant"%>
-<%@page import="org.cerberus.entity.Application"%>
-<%@page import="org.cerberus.entity.Test"%>
-<%@page import="org.cerberus.service.IBuildRevisionInvariantService"%>
-<%@page import="org.cerberus.service.IApplicationService"%>
-<%@page import="org.cerberus.service.IDocumentationService"%>
-<%@page import="org.cerberus.service.ITestService"%>
-<%@page import="org.cerberus.service.impl.InvariantService"%>
+<%@page import="org.cerberus.crud.entity.BuildRevisionInvariant"%>
+<%@page import="org.cerberus.crud.entity.Application"%>
+<%@page import="org.cerberus.crud.entity.Test"%>
+<%@page import="org.cerberus.crud.service.IBuildRevisionInvariantService"%>
+<%@page import="org.cerberus.crud.service.IApplicationService"%>
+<%@page import="org.cerberus.crud.service.IDocumentationService"%>
+<%@page import="org.cerberus.crud.service.ITestService"%>
+<%@page import="org.cerberus.crud.service.impl.InvariantService"%>
 <%@page import="org.apache.log4j.Logger"%>
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <!DOCTYPE html>

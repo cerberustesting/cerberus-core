@@ -19,8 +19,8 @@
 --%>
 <%@page import="org.json.JSONObject"%>
 <%@page import="org.json.JSONArray"%>
-<%@page import="org.cerberus.entity.TestCaseExecution"%>
-<%@page import="org.cerberus.service.ITestCaseExecutionService"%>
+<%@page import="org.cerberus.crud.entity.TestCaseExecution"%>
+<%@page import="org.cerberus.crud.service.ITestCaseExecutionService"%>
 <% Date start = new Date();%>
 
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>

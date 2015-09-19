@@ -20,13 +20,13 @@
 package org.cerberus.servlet.buildContent;
 
 import org.apache.log4j.Logger;
-import org.cerberus.entity.BuildRevisionParameters;
-import org.cerberus.entity.Project;
-import org.cerberus.entity.User;
+import org.cerberus.crud.entity.BuildRevisionParameters;
+import org.cerberus.crud.entity.Project;
+import org.cerberus.crud.entity.User;
 import org.cerberus.exception.CerberusException;
-import org.cerberus.service.IBuildRevisionParametersService;
-import org.cerberus.service.IProjectService;
-import org.cerberus.service.IUserService;
+import org.cerberus.crud.service.IBuildRevisionParametersService;
+import org.cerberus.crud.service.IProjectService;
+import org.cerberus.crud.service.IUserService;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;

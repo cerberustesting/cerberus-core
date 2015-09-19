@@ -32,9 +32,9 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.log4j.Level;
-import org.cerberus.entity.Documentation;
+import org.cerberus.crud.entity.Documentation;
 import org.cerberus.log.MyLogger;
-import org.cerberus.service.IDocumentationService;
+import org.cerberus.crud.service.IDocumentationService;
 import org.cerberus.util.ParameterParserUtil;
 import org.json.JSONArray;
 import org.json.JSONException;

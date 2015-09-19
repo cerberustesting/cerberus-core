@@ -17,8 +17,8 @@
   ~ You should have received a copy of the GNU General Public License
   ~ along with Cerberus.  If not, see <http://www.gnu.org/licenses/>.
 --%>
-<%@ page import="org.cerberus.service.ISqlLibraryService" %>
-<%@ page import="org.cerberus.entity.SqlLibrary" %>
+<%@ page import="org.cerberus.crud.service.ISqlLibraryService" %>
+<%@ page import="org.cerberus.crud.entity.SqlLibrary" %>
 
 <%@page contentType="text/html" pageEncoding="UTF-8" %>
 <script>

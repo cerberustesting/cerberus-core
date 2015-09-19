@@ -19,15 +19,16 @@
  */
 package org.cerberus.serviceEngine.impl;
 
+import org.cerberus.service.engine.impl.XmlUnitService;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.net.URL;
 
-import org.cerberus.entity.ExecutionSOAPResponse;
-import org.cerberus.entity.TestCaseExecution;
-import org.cerberus.serviceEngine.impl.diff.Difference;
-import org.cerberus.serviceEngine.impl.diff.Differences;
+import org.cerberus.crud.entity.ExecutionSOAPResponse;
+import org.cerberus.crud.entity.TestCaseExecution;
+import org.cerberus.service.engine.impl.diff.Difference;
+import org.cerberus.service.engine.impl.diff.Differences;
 import org.cerberus.util.XmlUtilException;
 import org.custommonkey.xmlunit.DetailedDiff;
 import org.custommonkey.xmlunit.XMLUnit;

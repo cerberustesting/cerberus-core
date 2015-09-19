@@ -1,6 +1,6 @@
-<%@page import="org.cerberus.service.IBuildRevisionInvariantService"%>
-<%@page import="org.cerberus.service.IDocumentationService"%>
-<%@page import="org.cerberus.entity.BuildRevisionInvariant"%>
+<%@page import="org.cerberus.crud.service.IBuildRevisionInvariantService"%>
+<%@page import="org.cerberus.crud.service.IDocumentationService"%>
+<%@page import="org.cerberus.crud.entity.BuildRevisionInvariant"%>
 <%@ page import="org.apache.log4j.Logger" %>
 <%--
   ~ Cerberus  Copyright (C) 2013  vertigo17

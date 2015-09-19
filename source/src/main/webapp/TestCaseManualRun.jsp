@@ -17,38 +17,39 @@
   ~ You should have received a copy of the GNU General Public License
   ~ along with Cerberus.  If not, see <http://www.gnu.org/licenses/>.
 --%>
-<%@page import="org.cerberus.service.ITestCaseExecutionInQueueService"%>
-<%@page import="org.cerberus.service.ICountryEnvironmentApplicationService"%>
-<%@page import="org.cerberus.entity.CountryEnvironmentApplication"%>
-<%@page import="org.cerberus.service.ITestCaseExecutionSysVerService"%>
-<%@page import="org.cerberus.entity.TestCaseExecutionSysVer"%>
-<%@page import="org.cerberus.factory.IFactoryTestCaseExecutionSysVer"%>
-<%@page import="org.cerberus.factory.IFactoryTestCaseExecution"%>
-<%@page import="org.cerberus.entity.TestCaseExecution"%>
+<%@page import="org.cerberus.enums.MessageGeneralEnum"%>
+<%@page import="org.cerberus.crud.service.ITestCaseExecutionInQueueService"%>
+<%@page import="org.cerberus.crud.service.ICountryEnvironmentApplicationService"%>
+<%@page import="org.cerberus.crud.entity.CountryEnvironmentApplication"%>
+<%@page import="org.cerberus.crud.service.ITestCaseExecutionSysVerService"%>
+<%@page import="org.cerberus.crud.entity.TestCaseExecutionSysVer"%>
+<%@page import="org.cerberus.crud.factory.IFactoryTestCaseExecutionSysVer"%>
+<%@page import="org.cerberus.crud.factory.IFactoryTestCaseExecution"%>
+<%@page import="org.cerberus.crud.entity.TestCaseExecution"%>
 <%@page import="org.cerberus.util.ParameterParserUtil"%>
-<%@page import="org.cerberus.service.ICountryEnvParamService"%>
-<%@page import="org.cerberus.entity.CountryEnvParam"%>
-<%@page import="org.cerberus.entity.MessageGeneralEnum"%>
-<%@page import="org.cerberus.entity.MessageGeneral"%>
-<%@page import="org.cerberus.entity.TestCaseStepActionControl"%>
-<%@page import="org.cerberus.entity.TestCaseStepAction"%>
-<%@page import="org.cerberus.entity.TestCaseStep"%>
-<%@page import="org.cerberus.entity.Application"%>
-<%@page import="org.cerberus.entity.TCase"%>
-<%@page import="org.cerberus.entity.Test"%>
-<%@page import="org.cerberus.service.IUserSystemService"%>
-<%@page import="org.cerberus.service.ITestCaseExecutionService"%>
-<%@page import="org.cerberus.service.ISqlLibraryService"%>
-<%@page import="org.cerberus.service.ITestCaseCountryPropertiesService"%>
-<%@page import="org.cerberus.service.ITestCaseStepActionControlService"%>
-<%@page import="org.cerberus.service.ITestCaseStepActionService"%>
-<%@page import="org.cerberus.service.ITestCaseStepService"%>
-<%@page import="org.cerberus.service.ITestCaseCountryService"%>
-<%@page import="org.cerberus.service.ITestCaseService"%>
-<%@page import="org.cerberus.service.ITestService"%>
-<%@page import="org.cerberus.service.IBuildRevisionInvariantService"%>
-<%@page import="org.cerberus.service.IParameterService"%>
-<%@page import="org.cerberus.service.IApplicationService"%>
+<%@page import="org.cerberus.crud.service.ICountryEnvParamService"%>
+<%@page import="org.cerberus.crud.entity.CountryEnvParam"%>
+<%@page import="org.cerberus.enums.MessageGeneralEnum"%>
+<%@page import="org.cerberus.crud.entity.MessageGeneral"%>
+<%@page import="org.cerberus.crud.entity.TestCaseStepActionControl"%>
+<%@page import="org.cerberus.crud.entity.TestCaseStepAction"%>
+<%@page import="org.cerberus.crud.entity.TestCaseStep"%>
+<%@page import="org.cerberus.crud.entity.Application"%>
+<%@page import="org.cerberus.crud.entity.TCase"%>
+<%@page import="org.cerberus.crud.entity.Test"%>
+<%@page import="org.cerberus.crud.service.IUserSystemService"%>
+<%@page import="org.cerberus.crud.service.ITestCaseExecutionService"%>
+<%@page import="org.cerberus.crud.service.ISqlLibraryService"%>
+<%@page import="org.cerberus.crud.service.ITestCaseCountryPropertiesService"%>
+<%@page import="org.cerberus.crud.service.ITestCaseStepActionControlService"%>
+<%@page import="org.cerberus.crud.service.ITestCaseStepActionService"%>
+<%@page import="org.cerberus.crud.service.ITestCaseStepService"%>
+<%@page import="org.cerberus.crud.service.ITestCaseCountryService"%>
+<%@page import="org.cerberus.crud.service.ITestCaseService"%>
+<%@page import="org.cerberus.crud.service.ITestService"%>
+<%@page import="org.cerberus.crud.service.IBuildRevisionInvariantService"%>
+<%@page import="org.cerberus.crud.service.IParameterService"%>
+<%@page import="org.cerberus.crud.service.IApplicationService"%>
 
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%

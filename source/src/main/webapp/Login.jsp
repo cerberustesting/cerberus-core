@@ -17,13 +17,13 @@
   ~ You should have received a copy of the GNU General Public License
   ~ along with Cerberus.  If not, see <http://www.gnu.org/licenses/>.
 --%>
-<%@page import="org.cerberus.factory.impl.FactoryLogEvent"%>
-<%@page import="org.cerberus.factory.IFactoryLogEvent"%>
-<%@page import="org.cerberus.service.impl.LogEventService"%>
-<%@page import="org.cerberus.service.ILogEventService"%>
+<%@page import="org.cerberus.crud.factory.impl.FactoryLogEvent"%>
+<%@page import="org.cerberus.crud.factory.IFactoryLogEvent"%>
+<%@page import="org.cerberus.crud.service.impl.LogEventService"%>
+<%@page import="org.cerberus.crud.service.ILogEventService"%>
 <%@page import="org.cerberus.version.Infos"%>
 <%@page import="org.cerberus.log.MyLogger"%>
-<%@page import="org.cerberus.service.IParameterService"%>
+<%@page import="org.cerberus.crud.service.IParameterService"%>
 <%@page import="org.apache.log4j.Level"%>
 <%@page import="org.springframework.web.context.support.WebApplicationContextUtils"%>
 <%@page import="org.springframework.context.ApplicationContext"%>

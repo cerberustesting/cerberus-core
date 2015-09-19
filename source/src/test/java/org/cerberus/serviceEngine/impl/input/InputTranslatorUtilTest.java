@@ -19,6 +19,7 @@
  */
 package org.cerberus.serviceEngine.impl.input;
 
+import org.cerberus.service.engine.impl.input.InputTranslatorUtil;
 import junit.framework.Assert;
 
 import org.junit.Test;

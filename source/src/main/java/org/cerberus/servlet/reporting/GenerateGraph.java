@@ -32,8 +32,8 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import org.cerberus.entity.TestCase;
-import org.cerberus.service.ITestCaseExecutionwwwDetService;
+import org.cerberus.crud.entity.TestCase;
+import org.cerberus.crud.service.ITestCaseExecutionwwwDetService;
 import org.springframework.context.ApplicationContext;
 import org.springframework.web.context.support.WebApplicationContextUtils;
 
