@@ -21,16 +21,25 @@
 $.when($.getScript("js/pages/global/global.js")).then(function () {
     $(document).ready(function () {
         var doc = new Doc();
+
         displayHeaderLabel(doc);
         displayGlobalLabel(doc);
+
+        $('body').tooltip({
+            selector: '[data-toggle="tooltip"]'
+        });
+
         //configure and create the dataTable
         var configurations = new TableConfigurationsServerSide("homePageTable", "Homepage?MySystem=" + getSys(), "aaData", aoColumnsFunc());
         var table = createDataTable(configurations);
         //By default, sort the log messages from newest to oldest
+
         table.fnSort([0, 'desc']);
         loadLastTagExec();
     });
 });
+
+
 function getSys()
 {
     var sel = document.getElementById("MySystem");
@@ -57,16 +66,33 @@ function generateTagLink(tagName) {
     return link;
 }
 
-function generateProgressBar(totalTest, statusObj) {
-    var percent = statusObj.value / totalTest * 100;
-    var roundPercent = Math.round(((statusObj.value / totalTest) * 100) * 10) / 10;
-    
+function generateTooltip(data) {
+    var htmlRes;
+
+    console.log(data);
+    htmlRes = "<div class='tag-tooltip'><strong>Tag : </strong>" + data.tag;
+    for (var status in data.total) {
+        if (status !== "totalTest") {
+            data.total[status].percent = (data.total[status].value / data.total.totalTest) * 100;
+            data.total[status].roundPercent = Math.round(((data.total[status].value / data.total.totalTest) * 100) * 10) / 10;
+            
+            
+            htmlRes += "<div>\n\
+                        <span class='color-box' style='background-color: " + data.total[status].color + ";'></span>\n\
+                        <strong> " + status + " : </strong>" + data.total[status].roundPercent + "%</div>";
+        }
+    }
+    htmlRes += '</div>';
+    return htmlRes;
+}
+
+function generateProgressBar(statusObj) {
     var bar = '<div class="progress-bar" \n\
                 role="progressbar" \n\
                 aria-valuenow="60" \n\
                 aria-value="0" \n\
                 aria-valuemax="100" \n\
-                style="width:' + percent + '%;background-color:' + statusObj.color + '">' + roundPercent + '%</div>';
+                style="width:' + statusObj.percent + '%;background-color:' + statusObj.color + '">' + statusObj.roundPercent + '%</div>';
 
     return bar;
 }
@@ -78,7 +104,7 @@ function getTotalExec(execData) {
         total += execData[key].value;
     }
 
-    return total;
+    execData.totalTest = total;
 }
 
 function generateTagReport(data) {
@@ -86,15 +112,17 @@ function generateTagReport(data) {
     var statusOrder = ["OK", "KO", "FA", "NA", "NE", "PE", "CA"];
 
     data.forEach(function (d) {
-        var total = getTotalExec(d.total);
+        getTotalExec(d.total);
         var buildBar;
+        var tooltip = generateTooltip(d);
 
-        buildBar = '<div>' + generateTagLink(d.tag) + '<div class="pull-right" style="display: inline;">Total executions : ' + total + '</div></div><div class="progress">';
+        buildBar = '<div>' + generateTagLink(d.tag) + '<div class="pull-right" style="display: inline;">Total executions : ' + d.total.totalTest + '</div>\n\
+                                                        </div><div class="progress" data-toggle="tooltip" data-html="true" title="' + tooltip + '">';
         for (var index = 0; index < statusOrder.length; index++) {
             var status = statusOrder[index];
-           
+
             if (d.total.hasOwnProperty(status)) {
-                buildBar += generateProgressBar(total, d.total[status]);
+                buildBar += generateProgressBar(d.total[status]);
             }
         }
         buildBar += '</div>';

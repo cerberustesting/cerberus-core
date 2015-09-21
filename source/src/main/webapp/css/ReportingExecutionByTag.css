@@ -185,15 +185,6 @@ text {
     font-weight: bold;
 }
 
-.color-box {   
-    float: left;
-    width: 10px;
-    height: 10px;
-    border-width: 1px;
-    border-style: solid;
-    border-color: rgba(0,0,0,.2);
-}
-
 .d3-tip {
     line-height: 1;
     font-weight: bold;

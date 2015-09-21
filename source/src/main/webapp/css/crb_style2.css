@@ -26,28 +26,28 @@ pre{
 .buttonAddStep{
     height:20px;
     font-weight:bold;
-font-family: Trebuchet MS;
-border-color:orange;
-border-width:1px;
-border-style:solid;
-background-color:white;
-color:orange;
-text-align: center;
-border-radius: 5px;
-    
+    font-family: Trebuchet MS;
+    border-color:orange;
+    border-width:1px;
+    border-style:solid;
+    background-color:white;
+    color:orange;
+    text-align: center;
+    border-radius: 5px;
+
 }
 .buttonSaveChanges{
     height:20px;
     font-weight:bold;
-font-family: Trebuchet MS;
-border-color:#333333;
-border-width:1px;
-border-style:solid;
-background-color:white;
-color:#333333;
-text-align: center;
-border-radius: 5px;
-    
+    font-family: Trebuchet MS;
+    border-color:#333333;
+    border-width:1px;
+    border-style:solid;
+    background-color:white;
+    color:#333333;
+    text-align: center;
+    border-radius: 5px;
+
 }
 select{
     font-size:90%;
@@ -61,6 +61,18 @@ a {
     font-size: 14px;
 }
 
+.color-box {   
+    float: left;
+    width: 10px;
+    height: 10px;
+    border-width: 1px;
+    border-style: solid;
+    border-color: rgba(0,0,0,.2);
+}
+
+.tag-tooltip {
+    line-height: 1;
+}
 .nodoc{
     color:#FF0000;
 }
@@ -109,29 +121,29 @@ input#wob {
 }
 /**Title of the parts in pages*/
 .dttTitle{
-font-weight:bold;
-font-family: Trebuchet MS;
-color:#555555;
-font-size:14px;
+    font-weight:bold;
+    font-family: Trebuchet MS;
+    color:#555555;
+    font-size:14px;
 }
 
 /** */
 .filters{
-background-image: -moz-linear-gradient(top, #ebebeb, #CCCCCC); 
-background-image: -webkit-linear-gradient(top, #ebebeb, #CCCCCC); 
-font-weight:bold;
-font-family: Trebuchet MS;
-color:#555555;
-text-align: center;
+    background-image: -moz-linear-gradient(top, #ebebeb, #CCCCCC); 
+    background-image: -webkit-linear-gradient(top, #ebebeb, #CCCCCC); 
+    font-weight:bold;
+    font-family: Trebuchet MS;
+    color:#555555;
+    text-align: center;
 }
 
 .backDiv{
-background-image: -moz-linear-gradient(bottom, #ebebeb, #f8f8f8); 
-background-image: -webkit-linear-gradient(bottom, #ebebeb, #f8f8f8); 
-font-weight:bold;
-font-family: Trebuchet MS;
-color:#555555;
-text-align: center;
+    background-image: -moz-linear-gradient(bottom, #ebebeb, #f8f8f8); 
+    background-image: -webkit-linear-gradient(bottom, #ebebeb, #f8f8f8); 
+    font-weight:bold;
+    font-family: Trebuchet MS;
+    color:#555555;
+    text-align: center;
 }
 
 div#header {
@@ -142,16 +154,16 @@ div#header {
 }
 
 .tableHeader{
-background-image: -moz-linear-gradient(bottom, #ebebeb, #f8f8f8); 
-background-image: -webkit-linear-gradient(bottom, #ebebeb, #f8f8f8); 
-font-weight:bold;
-font-family: Trebuchet MS;
-color:#555555;
-text-align: center;
+    background-image: -moz-linear-gradient(bottom, #ebebeb, #f8f8f8); 
+    background-image: -webkit-linear-gradient(bottom, #ebebeb, #f8f8f8); 
+    font-weight:bold;
+    font-family: Trebuchet MS;
+    color:#555555;
+    text-align: center;
 }
 
 .tableContent{
-background-color: white;
+    background-color: white;
 }
 
 .tableBorder{
@@ -407,13 +419,13 @@ ul.nav li.dropdown:hover > ul.dropdown-menu {
 .navbar-inverse {
     /*background-color: #333;*/
     border-color: #333;
-/*    background: url("../images/background.png") repeat-x scroll 0 -45px rgba(0, 0, 0, 0);
-    display: inline-block;
-    height: 35px;
-    margin: 0;
-    padding-left: 1px;
-    text-align:center;
-    vertical-align: middle;*/
+    /*    background: url("../images/background.png") repeat-x scroll 0 -45px rgba(0, 0, 0, 0);
+        display: inline-block;
+        height: 35px;
+        margin: 0;
+        padding-left: 1px;
+        text-align:center;
+        vertical-align: middle;*/
 }
 
 /*
