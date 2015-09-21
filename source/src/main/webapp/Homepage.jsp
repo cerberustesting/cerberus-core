@@ -34,12 +34,13 @@
         <meta content="text/html; charset=UTF-8" http-equiv="content-type">
         <title>Cerberus Homepage</title>
         <%@ include file="include/dependenciesInclusions.html" %>
+        <link rel="stylesheet" href="css/pages/Homepage.css" type="text/css"/>
         <script type="text/javascript" src="js/d3.min.js"></script>
         <script type="text/javascript" src="js/pages/Homepage.js"></script>
     </head>
     <body>
         <%@ include file="include/header.html"%>
-
+        <%@ include file="include/homepage/tagSettingsModal.html" %>
         <%
             ApplicationContext appContext = WebApplicationContextUtils.getWebApplicationContext(this.getServletContext());
 
@@ -69,11 +70,15 @@
             </div>
 
             <div class="panel panel-default">
-                <div class="panel-heading card">
+                <div class="panel-heading card clearfix">
+                    <div class="btn-group pull-right">
+                        <button id="tagSettings" class="btn btn-default"><span class="glyphicon glyphicon-cog"></span> Settings</button>
+                    </div>
+                    <span class="fa fa-tag fa-fw"></span>
                     <label id="lastTagExec">Last tag executions</label>
                 </div>
                 <div class="panel-body" id="tagExecStatus">
-                    
+
                 </div>
             </div>
             <footer class="footer">

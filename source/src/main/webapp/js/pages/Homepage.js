@@ -29,6 +29,51 @@ $.when($.getScript("js/pages/global/global.js")).then(function () {
             selector: '[data-toggle="tooltip"]'
         });
 
+        $("#tagSettingsModal").on('hidden.bs.modal', modalCloseHandler);
+
+        $("#addTag").on('click', function () {
+            var tagListForm = $("#tagList");
+            var selectedTag = $("#selectTag option:selected").text();
+
+            if (selectedTag !== "") {
+                tagListForm.append('<div class="input-group">\n\
+                                    <span class="input-group-addon"><span class="glyphicon glyphicon-remove"></span></span>\n\
+                                    <input type="tag" name="tag" class="form-control" id="tag" value="' + selectedTag + '" readonly>\n\
+                                    </div>');
+            }
+        });
+
+        $("#saveTagList").on('click', function () {
+            var tagListForm = $("#tagListForm input");
+
+            localStorage.setItem("tagList", JSON.stringify(tagListForm.serializeArray()));
+            $("#tagSettingsModal").modal('hide');
+            $('#tagExecStatus').empty();
+            loadLastTagExec();
+        });
+
+        $("#tagSettings").on('click', function () {
+            var tagListForm = $("#tagList");
+            var tagList = JSON.parse(localStorage.getItem("tagList"));
+
+            if (tagList !== null) {
+                for (var index = 0; index < tagList.length; index++) {
+                    tagListForm.append('<div class="input-group">\n\
+                                        <span class="input-group-addon removeTag"><span class="glyphicon glyphicon-remove"></span></span>\n\
+                                        <input type="tag" name="tag" class="form-control" id="tag" value="' + tagList[index].value + '" readonly>\n\
+                                        </div>');
+                }
+            }
+
+            loadTagFilter();
+
+            $(".removeTag").on('click', function () {
+                $(this).parent().remove();
+            });
+
+            $("#tagSettingsModal").modal('show');
+        });
+
         //configure and create the dataTable
         var configurations = new TableConfigurationsServerSide("homePageTable", "Homepage?MySystem=" + getSys(), "aaData", aoColumnsFunc());
         var table = createDataTable(configurations);
@@ -60,6 +105,32 @@ function readStatus() {
     return result;
 }
 
+function modalCloseHandler() {
+    $("#tagList").empty();
+    $("#selectTag").empty();
+}
+
+function loadTagFilter() {
+    var jqxhr = $.get("ReadTestCaseExecution", "", "json");
+
+    $.when(jqxhr).then(function (data) {
+        var messageType = getAlertType(data.messageType);
+
+        if (messageType === "success") {
+            var index;
+            $('#selectTag').append($('<option></option>').attr("value", "")).attr("placeholder", "Select a Tag");
+            for (index = 0; index < data.tags.length; index++) {
+                //the character " needs a special encoding in order to avoid breaking the string that creates the html element   
+                var encodedString = data.tags[index].replace(/\"/g, "%22");
+                var option = $('<option></option>').attr("value", encodedString).text(data.tags[index]);
+                $('#selectTag').append(option);
+            }
+        } else {
+            showMessageMainPage(messageType, data.message);
+        }
+    }).fail(handleErrorAjaxAfterTimeout);
+}
+
 function generateTagLink(tagName) {
     var link = '<a href="./ReportingExecutionByTag.jsp?tag=' + tagName + '">' + tagName + '</a>';
 
@@ -69,14 +140,13 @@ function generateTagLink(tagName) {
 function generateTooltip(data) {
     var htmlRes;
 
-    console.log(data);
     htmlRes = "<div class='tag-tooltip'><strong>Tag : </strong>" + data.tag;
     for (var status in data.total) {
         if (status !== "totalTest") {
             data.total[status].percent = (data.total[status].value / data.total.totalTest) * 100;
             data.total[status].roundPercent = Math.round(((data.total[status].value / data.total.totalTest) * 100) * 10) / 10;
-            
-            
+
+
             htmlRes += "<div>\n\
                         <span class='color-box' style='background-color: " + data.total[status].color + ";'></span>\n\
                         <strong> " + status + " : </strong>" + data.total[status].roundPercent + "%</div>";
@@ -132,42 +202,40 @@ function generateTagReport(data) {
 
 function loadLastTagExec() {
 //Get the last tag which have been executed
+    var tagList = JSON.parse(localStorage.getItem("tagList"));
 
-    var jqxhr = $.get("ReadTestCaseExecution", {TagNumber: "5"}, "json");
-    $.when(jqxhr).then(function (data) {
-        var tagExec = [];
-        for (var index = 0; index < data.tags.length; index++) {
-            var tagName = data.tags[index];
-            $.ajax({
-                type: "GET",
-                url: "GetReportData",
-                data: {CampaignName: "null", Tag: tagName},
-                async: false,
-                dataType: 'json',
-                success: function (data) {
-                    var tagData = {};
-                    var total = {};
-                    for (var index = 0; index < data.axis.length; index++) {
-                        for (var key in data.axis[index]) {
-                            if (key !== "name") {
-                                if (total.hasOwnProperty(key)) {
-                                    total[key].value += data.axis[index][key].value;
-                                } else {
-                                    total[key] = {"value": data.axis[index][key].value,
-                                        "color": data.axis[index][key].color};
-                                }
+    var tagExec = [];
+    for (var index = 0; index < tagList.length; index++) {
+        var tagName = tagList[index].value;
+        $.ajax({
+            type: "GET",
+            url: "GetReportData",
+            data: {CampaignName: "null", Tag: tagName},
+            async: false,
+            dataType: 'json',
+            success: function (data) {
+                var tagData = {};
+                var total = {};
+                for (var index = 0; index < data.axis.length; index++) {
+                    for (var key in data.axis[index]) {
+                        if (key !== "name") {
+                            if (total.hasOwnProperty(key)) {
+                                total[key].value += data.axis[index][key].value;
+                            } else {
+                                total[key] = {"value": data.axis[index][key].value,
+                                    "color": data.axis[index][key].color};
                             }
                         }
                     }
-
-                    tagData.tag = tagName;
-                    tagData.total = total;
-                    tagExec.push(tagData);
                 }
-            });
-        }
-        generateTagReport(tagExec);
-    });
+
+                tagData.tag = tagName;
+                tagData.total = total;
+                tagExec.push(tagData);
+            }
+        });
+    }
+    generateTagReport(tagExec);
 }
 
 function aoColumnsFunc() {
