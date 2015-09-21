@@ -24,13 +24,13 @@
 //$.getScript("js/jquery.blockUI.js");
 
 function handleErrorAjaxAfterTimeout(result) {
-    var doc = getDoc();
-    var docGlobal = doc.page_global;
+    var doc = new Doc();
+
     if (result.readyState === 4 && result.status === 200) {
         $(location).prop("pathname", $(location).prop("pathname"));
         $(location).prop("search", $(location).prop("search"));
     } else {
-        var localMessage = new Message("danger", docGlobal.unexpected_error_message.docLabel);
+        var localMessage = new Message("danger", doc.getDocLabel("page_global", "unexpected_error_message"));
         showMessageMainPage(localMessage);
     }
 
@@ -257,9 +257,8 @@ $(function () {
  * @param {type} element 
  */
 function showLoader(element) {
-    var doc = getDoc();
-    var docGlobal = doc.page_global;
-    var processing = docGlobal.processing.docLabel;
+    var doc = new Doc();
+    var processing = doc.getDocLabel("page_global", "processing");
     $(element).block({message: processing});
 }
 /**
@@ -274,9 +273,8 @@ function hideLoader(element) {
  * @param {type} element dialog
  */
 function showLoaderInModal(element) {
-    var doc = getDoc();
-    var docGlobal = doc.page_global;
-    var processing = docGlobal.processing.docLabel;
+    var doc = new Doc();
+    var processing = doc.getDocLabel("page_global", "processing");
     $(element).find(".modal-content").block({message: processing});
 }
 /**
@@ -339,12 +337,11 @@ function showModalUpload(handlerClickOk, fileExtension, translations) {
         });
     } else {
         //use the default translations (for the specific language)
-        var doc = getDoc();
-        var docModalDefault = doc.modal_upload;
-        $("#modalUploadLabel").text(docModalDefault.title.docLabel);
-        $("#choseFileLabel").text(docModalDefault.btn_choose.docLabel);
-        $("#cancelButton").text(docModalDefault.btn_cancel.docLabel);
-        $("#uploadOk").text(docModalDefault.btn_upload.docLabel);
+        var doc = new Doc();
+        $("#modalUploadLabel").text(doc.getDocLabel("modal_upload", "title"));
+        $("#choseFileLabel").text(doc.getDocLabel("modal_upload", "btn_choose"));
+        $("#cancelButton").text(doc.getDocLabel("modal_upload", "btn_cancel"));
+        $("#uploadOk").text(doc.getDocLabel("modal_upload", "btn_upload"));
     }
 
     $('#modalUpload').modal('show');

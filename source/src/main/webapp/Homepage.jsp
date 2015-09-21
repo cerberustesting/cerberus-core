@@ -73,7 +73,7 @@
             <div class="panel panel-default">
                 <div class="panel-heading card clearfix">
                     <div class="btn-group pull-right">
-                        <button id="tagSettings" class="btn btn-default"><span class="glyphicon glyphicon-cog"></span> Settings</button>
+                        <button id="tagSettings" class="btn btn-default"><span class="glyphicon glyphicon-cog"></span> <label id="tagSettingsLabel">Settings</label></button>
                     </div>
                     <span class="fa fa-tag fa-fw"></span>
                     <label id="lastTagExec">Last tag executions</label>

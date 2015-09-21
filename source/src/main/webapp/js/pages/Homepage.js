@@ -23,6 +23,7 @@ $.when($.getScript("js/pages/global/global.js")).then(function () {
         var doc = new Doc();
 
         displayHeaderLabel(doc);
+        displayPageLabel(doc);
         displayGlobalLabel(doc);
 
         $('body').tooltip({
@@ -90,6 +91,12 @@ $.when($.getScript("js/pages/global/global.js")).then(function () {
     });
 });
 
+function displayPageLabel(doc) {
+    $("#lastTagExec").html(doc.getDocOnline("homepage", "lastTagExecution"));
+    $("#tagSettingsLabel").html(doc.getDocLabel("homepage", "btn_settings"));
+    $("#modalTitle").html(doc.getDocLabel("homepage", "modal_title"));
+    $("#addTag").html(doc.getDocLabel("homepage", "btn_addTag"));
+}
 
 function getSys()
 {
@@ -226,7 +233,7 @@ function loadTagExec() {
 //Get the last tag to display
     var tagList = JSON.parse(localStorage.getItem("tagList"));
       
-    if (tagList.length === 0) {
+    if (tagList ===null || tagList.length === 0) {
         tagList = readLastTagExec();
     }
 
