@@ -32,6 +32,7 @@
 <html>
     <head>
         <meta content="text/html; charset=UTF-8" http-equiv="content-type">
+        <meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
         <title>Cerberus Homepage</title>
         <%@ include file="include/dependenciesInclusions.html" %>
         <link rel="stylesheet" href="css/pages/Homepage.css" type="text/css"/>

@@ -45,11 +45,17 @@ $.when($.getScript("js/pages/global/global.js")).then(function () {
 
         $("#saveTagList").on('click', function () {
             var tagListForm = $("#tagListForm input");
+            var tagList = [];
 
-            localStorage.setItem("tagList", JSON.stringify(tagListForm.serializeArray()));
+
+            $.each(tagListForm.serializeArray(), function () {
+                tagList.push(this.value);
+            });
+
+            localStorage.setItem("tagList", JSON.stringify(tagList));
             $("#tagSettingsModal").modal('hide');
             $('#tagExecStatus').empty();
-            loadLastTagExec();
+            loadTagExec();
         });
 
         $("#tagSettings").on('click', function () {
@@ -60,7 +66,7 @@ $.when($.getScript("js/pages/global/global.js")).then(function () {
                 for (var index = 0; index < tagList.length; index++) {
                     tagListForm.append('<div class="input-group">\n\
                                         <span class="input-group-addon removeTag"><span class="glyphicon glyphicon-remove"></span></span>\n\
-                                        <input type="tag" name="tag" class="form-control" id="tag" value="' + tagList[index].value + '" readonly>\n\
+                                        <input type="tag" name="tag" class="form-control" id="tag" value="' + tagList[index] + '" readonly>\n\
                                         </div>');
                 }
             }
@@ -80,7 +86,7 @@ $.when($.getScript("js/pages/global/global.js")).then(function () {
         //By default, sort the log messages from newest to oldest
 
         table.fnSort([0, 'desc']);
-        loadLastTagExec();
+        loadTagExec();
     });
 });
 
@@ -103,6 +109,22 @@ function readStatus() {
         }
     });
     return result;
+}
+
+function readLastTagExec() {
+    var tagList = [];
+    
+    $.ajax({
+        type: "GET",
+        url: "ReadTestCaseExecution",
+        data: {TagNumber: "5"},
+        async: false,
+        dataType: 'json',
+        success: function (data) {
+            tagList = data.tags;
+        }
+    });
+    return tagList;
 }
 
 function modalCloseHandler() {
@@ -181,32 +203,35 @@ function generateTagReport(data) {
     var reportArea = $("#tagExecStatus");
     var statusOrder = ["OK", "KO", "FA", "NA", "NE", "PE", "CA"];
 
-    data.forEach(function (d) {
-        getTotalExec(d.total);
+        getTotalExec(data.total);
         var buildBar;
-        var tooltip = generateTooltip(d);
+        var tooltip = generateTooltip(data);
 
-        buildBar = '<div>' + generateTagLink(d.tag) + '<div class="pull-right" style="display: inline;">Total executions : ' + d.total.totalTest + '</div>\n\
+        buildBar = '<div>' + generateTagLink(data.tag) + '<div class="pull-right" style="display: inline;">Total executions : ' + data.total.totalTest + '</div>\n\
                                                         </div><div class="progress" data-toggle="tooltip" data-html="true" title="' + tooltip + '">';
         for (var index = 0; index < statusOrder.length; index++) {
             var status = statusOrder[index];
 
-            if (d.total.hasOwnProperty(status)) {
-                buildBar += generateProgressBar(d.total[status]);
+            if (data.total.hasOwnProperty(status)) {
+                buildBar += generateProgressBar(data.total[status]);
             }
         }
         buildBar += '</div>';
         reportArea.append(buildBar);
-    });
 }
 
-function loadLastTagExec() {
-//Get the last tag which have been executed
-    var tagList = JSON.parse(localStorage.getItem("tagList"));
 
-    var tagExec = [];
+
+function loadTagExec() {
+//Get the last tag to display
+    var tagList = JSON.parse(localStorage.getItem("tagList"));
+      
+    if (tagList.length === 0) {
+        tagList = readLastTagExec();
+    }
+
     for (var index = 0; index < tagList.length; index++) {
-        var tagName = tagList[index].value;
+        var tagName = tagList[index];
         $.ajax({
             type: "GET",
             url: "GetReportData",
@@ -231,11 +256,10 @@ function loadLastTagExec() {
 
                 tagData.tag = tagName;
                 tagData.total = total;
-                tagExec.push(tagData);
+                generateTagReport(tagData);
             }
         });
     }
-    generateTagReport(tagExec);
 }
 
 function aoColumnsFunc() {
