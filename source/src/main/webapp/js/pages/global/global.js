@@ -722,6 +722,11 @@ function displayFooter(doc) {
     $("#footer").html(footerString + " - " + footerBugString);
 }
 
+/**
+ * Get the parameter passed in the url Example : url?param=value
+ * @param {type} sParam parameter you want to get value from
+ * @returns {GetURLParameter.sParameterName} the value or null if not found
+ */
 function GetURLParameter(sParam)
 {
     var sPageURL = window.location.search.substring(1);
@@ -737,4 +742,18 @@ function GetURLParameter(sParam)
     }
     return null;
 }
-;
+
+/**
+ * Bind the toggle action to the panel body
+ * @param {type} id of the panel body to be collapsed
+ * @returns {void}
+ */
+function bindToggleCollapse(id) {
+    $(id).on('shown.bs.collapse', function () {
+        $(this).prev().find(".toggle").removeClass("glyphicon-chevron-down").addClass("glyphicon-chevron-right");
+    });
+
+    $(id).on('hidden.bs.collapse', function () {
+        $(this).prev().find(".toggle").removeClass("glyphicon-chevron-right").addClass("glyphicon-chevron-down");
+    });
+}

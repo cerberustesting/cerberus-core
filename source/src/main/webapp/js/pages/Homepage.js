@@ -25,6 +25,9 @@ $.when($.getScript("js/pages/global/global.js")).then(function () {
         displayHeaderLabel(doc);
         displayPageLabel(doc);
         displayGlobalLabel(doc);
+        
+        bindToggleCollapse("#tagExecStatus");
+        bindToggleCollapse("#applicationPanel");
 
         $('body').tooltip({
             selector: '[data-toggle="tooltip"]'
@@ -96,6 +99,8 @@ function displayPageLabel(doc) {
     $("#tagSettingsLabel").html(doc.getDocLabel("homepage", "btn_settings"));
     $("#modalTitle").html(doc.getDocLabel("homepage", "modal_title"));
     $("#addTag").html(doc.getDocLabel("homepage", "btn_addTag"));
+    $("#testCaseStatusByApp").html(doc.getDocOnline("homepage", "testCaseStatusByApp"));
+    $("#title").html(doc.getDocLabel("homepage", "title"));
 }
 
 function getSys()

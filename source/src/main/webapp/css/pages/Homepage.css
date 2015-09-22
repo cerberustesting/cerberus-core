@@ -28,3 +28,7 @@
 .input-group-addon span {
     color: #D9534F;
 }
+
+#tagSettings {
+    margin-right: 5px;
+}

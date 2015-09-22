@@ -4745,6 +4745,23 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLS.append(",('homepage','modal_title','','fr','Filtre des tags','Ce modal vous permet d\\'ajouter des tags au rapport des dernières exécutions de tags')");
         SQLS.append(",('homepage','btn_addTag','','fr','Ajouter le tag','')");
         SQLInstruction.add(SQLS.toString());
+        
+        // Documentation entries for Homepage.
+        //-- ------------------------ 627-629
+        SQLS = new StringBuilder();
+        SQLS.append("INSERT INTO `documentation` VALUES ('homepage','testCaseStatusByApp','','en','Test Case Status by Application','Workflow status of the test case by Application')");
+        SQLS.append(",('homepage','testCaseStatusByApp','','fr','Status des Cas de Tests par Application','Status de l\\'avancement des cas de tests par Application')");
+        SQLS.append(",('homepage','title','','en','Welcome to Cerberus application','')");
+        SQLS.append(",('homepage','title','','fr','Bienvenue dans l\\'application Cerberus','')");
+        SQLInstruction.add(SQLS.toString());
+        
+        SQLS = new StringBuilder();
+        SQLS.append("UPDATE `documentation` SET `DocLabel`='Customize' WHERE `DocTable`='homepage' and`DocField`='btn_settings' and`DocValue`='' and`Lang`='en';");
+        SQLInstruction.add(SQLS.toString());
+        
+        SQLS = new StringBuilder();
+        SQLS.append("UPDATE `documentation` SET `DocLabel`='Personnaliser' WHERE `DocTable`='homepage' and`DocField`='btn_settings' and`DocValue`='' and`Lang`='fr';");
+        SQLInstruction.add(SQLS.toString());
 
         return SQLInstruction;
     }

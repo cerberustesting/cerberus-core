@@ -32,7 +32,6 @@
 <html>
     <head>
         <meta content="text/html; charset=UTF-8" http-equiv="content-type">
-        <meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
         <title>Cerberus Homepage</title>
         <%@ include file="include/dependenciesInclusions.html" %>
         <link rel="stylesheet" href="css/pages/Homepage.css" type="text/css"/>
@@ -65,20 +64,32 @@
         <div class="container-fluid center" id="page-layout">
 
             <h1 class="page-title-line" id="title">Welcome to Cerberus Application</h1>
-            <div id="homeTableDiv" class="well">
-                <table id="homePageTable" class="table table-hover display" name="homePageTable"></table>
-                <div class="marginBottom20"></div>
+            <div id="homeTableDiv" class="panel panel-default">
+                <div class="panel-heading card">
+                    <a data-toggle="collapse" data-target="#applicationPanel">
+                        <span class="toggle glyphicon glyphicon-chevron-right pull-right"></span>
+                    </a>
+                    <span class="fa fa-retweet fa-fw"></span>
+                    <label id="testCaseStatusByApp">Test Case Status by Application</label>
+                </div>
+                <div class="panel-body collapse in" id="applicationPanel">
+                    <table id="homePageTable" class="table table-hover display" name="homePageTable"></table>
+                    <div class="marginBottom20"></div>
+                </div>
             </div>
 
             <div class="panel panel-default">
                 <div class="panel-heading card clearfix">
+                    <a data-toggle="collapse" data-target="#tagExecStatus">
+                        <span class="toggle glyphicon glyphicon-chevron-right pull-right"></span>
+                    </a>
                     <div class="btn-group pull-right">
-                        <button id="tagSettings" class="btn btn-default"><span class="glyphicon glyphicon-cog"></span> <label id="tagSettingsLabel">Settings</label></button>
+                        <button id="tagSettings" class="btn btn-default btn-xs"><span class="glyphicon glyphicon-cog"></span> <label id="tagSettingsLabel">Settings</label></button>
                     </div>
                     <span class="fa fa-tag fa-fw"></span>
                     <label id="lastTagExec">Last tag executions</label>
                 </div>
-                <div class="panel-body" id="tagExecStatus">
+                <div class="panel-body collapse in" id="tagExecStatus">
 
                 </div>
             </div>
@@ -86,6 +97,5 @@
                 <div class="container-fluid" id="footer"></div>
             </footer>
         </div>
-        <br>
     </body>
 </html>

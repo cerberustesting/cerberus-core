@@ -123,10 +123,6 @@ text {
     border-style: none;
 }
 
-.toggle {
-    cursor: pointer;
-}
-
 .total {
     font-size: 20px;
 }

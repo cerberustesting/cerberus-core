@@ -514,16 +514,6 @@ function generateExecutionLink(status, id) {
     return result;
 }
 
-function bindToggleCollapse(id) {
-    $(id).on('shown.bs.collapse', function () {
-        $(this).prev().find(".toggle").removeClass("glyphicon-chevron-down").addClass("glyphicon-chevron-right");
-    });
-
-    $(id).on('hidden.bs.collapse', function () {
-        $(this).prev().find(".toggle").removeClass("glyphicon-chevron-right").addClass("glyphicon-chevron-down");
-    });
-}
-
 function wrap(text, width) {
     text.each(function () {
         var text = d3.select(this),

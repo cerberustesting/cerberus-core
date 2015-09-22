@@ -70,6 +70,10 @@ a {
     border-color: rgba(0,0,0,.2);
 }
 
+.toggle {
+    cursor: pointer;
+}
+
 .nodoc{
     color:#FF0000;
 }
