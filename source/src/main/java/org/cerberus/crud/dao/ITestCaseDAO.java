@@ -110,4 +110,6 @@ public interface ITestCaseDAO {
     public String findSystemOfTestCase(String test, String testcase) throws CerberusException;
     
     public AnswerList findNumberOfTestCasePerTCStatus(String system, int startPosition, int length, String columnName, String sort, String searchParameter, String individualSearch);
+
+    AnswerList readTestCaseByStepsInLibrary(String test);
 }

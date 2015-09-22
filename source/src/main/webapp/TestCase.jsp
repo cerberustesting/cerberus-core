@@ -61,6 +61,7 @@
 <%@page import="org.cerberus.crud.service.IParameterService"%>
 <%@page import="org.cerberus.util.StringUtil"%>
 <%@page import="org.apache.commons.lang3.StringUtils"%>
+<%@page import="org.cerberus.util.answer.AnswerList"%>
 <% Date DatePageStart = new Date();%>
 
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
@@ -1156,7 +1157,8 @@
                                                 <%  if (tcs.getUseStepTestCase().equals("")) { %>
                                                 <option style="width: 400px" value="">---</option>
                                                 <%  } else {
-                                                    List<TCase> tcaseList = testCaseService.findTestCaseByTest(testCombo);
+                                                    AnswerList anstcaseList = testCaseService.readTestCaseByStepsInLibrary(testCombo);
+                                                    List<TCase>tcaseList =  anstcaseList.getDataList();
                                                     for (TCase tc : tcaseList) {%>
                                                 <option style="width: 400px;" class="font_weight_bold_<%=tc.getActive()%>" value="<%=tc.getTestCase()%>" <%=tcs.getUseStepTestCase().compareTo(tc.getTestCase()) == 0 ? " SELECTED " : ""%>><%=tc.getTestCase()%> [<%=tc.getApplication()%>] : <%=tc.getShortDescription()%>
                                                 </option>
@@ -1171,10 +1173,14 @@
                                                 <option style="width: 400px" value="">---</option>
                                                 <%  } else {
                                                     List<TestCaseStep> tcstepList = tcsService.getListOfSteps(tcs.getUseStepTest(), tcs.getUseStepTestCase());
-                                                    for (TestCaseStep tcstep : tcstepList) {%>
+                                                    for (TestCaseStep tcstep : tcstepList) {
+                                                        if(tcstep.getInLibrary().equalsIgnoreCase("Y")){
+                                                    %>
+                                                    
                                                 <option style="width: 400px;" value="<%=tcstep.getStep()%>" <%=tcs.getUseStepStep().compareTo(tcstep.getStep()) == 0 ? " SELECTED " : ""%>><%=tcstep.getStep()%> : <%=tcstep.getDescription()%>
                                                 </option>
                                                 <% }
+                                                    }
                                                     }%>
                                             </select>
                                         </div>
@@ -1964,7 +1970,7 @@ System.out.println(tcsa.getObject());
                         <input type="checkbox" data-id="step_useStep_template" style="margin-top:15px;font-weight: bold; width:20px">
                     </div>
                 </div>
-                <div data-id="useStepForNewStep" style="display:none; clear:both">
+                <div data-id="useStepForNewStep" style="display:none; ">
                     <div id="StepCopiedFromDiv" style="float:left">
                         <p style="margin-top:15px;"> Copied from : </p>
                     </div>
@@ -2115,78 +2121,6 @@ System.out.println(tcsa.getObject());
                 ;
             }
             ;</script>
-        <script type="text/javascript">
-            function findTestcaseByTest(test, system, field) {
-                var url;
-                if (system === "") {
-                    url = 'GetTestCaseList?test=' + test;
-                } else {
-                    url = 'GetTestCaseForTest?system=' + system + '&test=' + test;
-                }
-                $.get(url, function(data) {
-                    $(document.getElementById(field)).empty();
-                    $('#' + field).append($("<option></option>")
-                            .attr('value', '')
-                            .attr('style', 'width:300px;')
-                            .text('Choose TestCase'));
-                    if (system !== "") {
-                        for (var i = 0; i < data.testCaseList.length; i++) {
-                            $('#' + field).append($("<option></option>")
-                                    .attr('value', data.testCaseList[i].testCase)
-                                    .attr('style', 'width:300px;')
-                                    .text(data.testCaseList[i].description));
-                        }
-                    } else {
-                        for (var i = 0; i < data.testcasesList.length; i++) {
-                            $('#' + field).append($("<option></option>")
-                                    .attr('value', data.testcasesList[i])
-                                    .attr('style', 'width:300px;')
-                                    .text(data.testcasesList[i]));
-                        }
-                    }
-                });
-            }
-
-            function findStepBySystemTest(test, system, field) {
-                var url;
-                url = 'GetStepInLibrary?system=' + system + '&test=' + test;
-                $.get(url, function(data) {
-                    $(document.getElementById(field)).empty();
-                    $('#' + field).append($("<option></option>")
-                            .attr('value', '')
-                            .attr('style', 'width:300px;')
-                            .text('Choose TestCase'));
-                    var testFromLib = "";
-                    for (var i = 0; i < data.testCaseStepList.length; i++) {
-                        if (data.testCaseStepList[i].testCase !== testFromLib) {
-                            $('#' + field).append($("<option></option>")
-                                    .attr('value', data.testCaseStepList[i].testCase)
-                                    .attr('style', 'width:300px;')
-                                    .text(data.testCaseStepList[i].testCase + " : " + data.testCaseStepList[i].tcdesc));
-                            testFromLib = data.testCaseStepList[i].testCase;
-                        }
-                    }
-                });
-            }
-
-            function findStepBySystemTestTestCase(test, testCase, system, field) {
-                var url;
-                url = 'GetStepInLibrary?system=' + system + '&test=' + test + '&testCase=' + testCase;
-                $.get(url, function(data) {
-                    $(document.getElementById(field)).empty();
-                    $('#' + field).append($("<option></option>")
-                            .attr('value', '')
-                            .attr('style', 'width:300px;')
-                            .text('Choose TestCase'));
-                    for (var i = 0; i < data.testCaseStepList.length; i++) {
-                        $('#' + field).append($("<option></option>")
-                                .attr('value', data.testCaseStepList[i].step)
-                                .attr('style', 'width:300px;')
-                                .text(data.testCaseStepList[i].step + ':' + data.testCaseStepList[i].description));
-                    }
-                });
-            }
-        </script>
 
         <script type="text/javascript">
             function addOptionInSelect(newElementId, selectElementId) {

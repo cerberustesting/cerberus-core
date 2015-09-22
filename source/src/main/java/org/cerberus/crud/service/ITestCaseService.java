@@ -147,4 +147,6 @@ public interface ITestCaseService {
      * @return an answer with the test cases and a message indicating the status of the operation
      */
     AnswerList findTestCasesThatUseTestDataLib(int testDataLibId, String name, String country);
+    
+    AnswerList readTestCaseByStepsInLibrary(String test);  
 }
