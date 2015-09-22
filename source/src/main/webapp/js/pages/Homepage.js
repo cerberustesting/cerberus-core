@@ -20,12 +20,8 @@
 
 $.when($.getScript("js/pages/global/global.js")).then(function () {
     $(document).ready(function () {
-        var doc = new Doc();
+        displayPageLabel();
 
-        displayHeaderLabel(doc);
-        displayPageLabel(doc);
-        displayGlobalLabel(doc);
-        
         bindToggleCollapse("#tagExecStatus");
         bindToggleCollapse("#applicationPanel");
 
@@ -94,13 +90,18 @@ $.when($.getScript("js/pages/global/global.js")).then(function () {
     });
 });
 
-function displayPageLabel(doc) {
+function displayPageLabel() {
+    var doc = new Doc();
+
+    displayHeaderLabel(doc);
     $("#lastTagExec").html(doc.getDocOnline("homepage", "lastTagExecution"));
     $("#tagSettingsLabel").html(doc.getDocLabel("homepage", "btn_settings"));
     $("#modalTitle").html(doc.getDocLabel("homepage", "modal_title"));
     $("#addTag").html(doc.getDocLabel("homepage", "btn_addTag"));
     $("#testCaseStatusByApp").html(doc.getDocOnline("homepage", "testCaseStatusByApp"));
     $("#title").html(doc.getDocLabel("homepage", "title"));
+    displayFooter(doc);
+    displayGlobalLabel(doc);
 }
 
 function getSys()
@@ -125,7 +126,7 @@ function readStatus() {
 
 function readLastTagExec() {
     var tagList = [];
-    
+
     $.ajax({
         type: "GET",
         url: "ReadTestCaseExecution",
@@ -215,21 +216,21 @@ function generateTagReport(data) {
     var reportArea = $("#tagExecStatus");
     var statusOrder = ["OK", "KO", "FA", "NA", "NE", "PE", "CA"];
 
-        getTotalExec(data.total);
-        var buildBar;
-        var tooltip = generateTooltip(data);
+    getTotalExec(data.total);
+    var buildBar;
+    var tooltip = generateTooltip(data);
 
-        buildBar = '<div>' + generateTagLink(data.tag) + '<div class="pull-right" style="display: inline;">Total executions : ' + data.total.totalTest + '</div>\n\
+    buildBar = '<div>' + generateTagLink(data.tag) + '<div class="pull-right" style="display: inline;">Total executions : ' + data.total.totalTest + '</div>\n\
                                                         </div><div class="progress" data-toggle="tooltip" data-html="true" title="' + tooltip + '">';
-        for (var index = 0; index < statusOrder.length; index++) {
-            var status = statusOrder[index];
+    for (var index = 0; index < statusOrder.length; index++) {
+        var status = statusOrder[index];
 
-            if (data.total.hasOwnProperty(status)) {
-                buildBar += generateProgressBar(data.total[status]);
-            }
+        if (data.total.hasOwnProperty(status)) {
+            buildBar += generateProgressBar(data.total[status]);
         }
-        buildBar += '</div>';
-        reportArea.append(buildBar);
+    }
+    buildBar += '</div>';
+    reportArea.append(buildBar);
 }
 
 
@@ -237,8 +238,8 @@ function generateTagReport(data) {
 function loadTagExec() {
 //Get the last tag to display
     var tagList = JSON.parse(localStorage.getItem("tagList"));
-      
-    if (tagList ===null || tagList.length === 0) {
+
+    if (tagList === null || tagList.length === 0) {
         tagList = readLastTagExec();
     }
 
