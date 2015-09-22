@@ -24,11 +24,11 @@ var listOfPropertyTypes;
  * @param {type} param1 - filename
  */
 $.when($.getScript("js/pages/global/global.js")).then(function() {
-
+    
     $(document).ready(function() {
         displayPageLabel();
     });
-
+    
 
     /**
      * Document ready methods
@@ -125,12 +125,16 @@ $.when($.getScript("js/pages/global/global.js")).then(function() {
             setPropertyValuesAutoComplete($(this), callbackAutoCompleteTestDataLibName);
         });
 
-
-
+        
+        if($("#editableContent").find("div[class='blockUI']").size() > 0){
+            //checks if the editable content has a loader component
+            hideLoader($("#editableContent"));
+        }
+        
     });
     //Show save button when testcase page loaded
     $("input[name='divButtonSaveChange']").removeAttr("style");
-
+    
 });
 /**
  * Method that overrides a property from the click on the button
