@@ -23,15 +23,11 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.List;
-import java.util.logging.Logger;
+import java.util.List; 
 import org.apache.log4j.Level;
 import org.cerberus.crud.dao.ITestCaseDAO;
-import org.cerberus.database.DatabaseSpring;
-import org.cerberus.crud.entity.Application;
-import org.cerberus.crud.entity.Invariant;
+import org.cerberus.database.DatabaseSpring; 
 import org.cerberus.crud.entity.MessageEvent;
-import org.cerberus.enums.MessageEventEnum;
 import org.cerberus.crud.entity.MessageGeneral;
 import org.cerberus.enums.MessageGeneralEnum;
 import org.cerberus.crud.entity.TCase;
@@ -41,8 +37,8 @@ import org.cerberus.crud.factory.IFactoryTCase;
 import org.cerberus.log.MyLogger;
 import org.cerberus.crud.service.impl.ApplicationService;
 import org.cerberus.crud.service.impl.InvariantService;
-import org.cerberus.util.ParameterParserUtil;
-import org.cerberus.util.SqlUtil;
+import org.cerberus.enums.MessageEventEnum;
+import org.cerberus.util.ParameterParserUtil; 
 import org.cerberus.util.StringUtil;
 import org.cerberus.util.answer.AnswerList;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -97,7 +93,7 @@ public class TestCaseDAO implements ITestCaseDAO {
                     list = new ArrayList<TCase>();
 
                     while (resultSet.next()) {
-                        list.add(this.loadTestCaseFromResultSet(resultSet));
+                        list.add(this.loadFromResultSet(resultSet));
                     }
                 } catch (SQLException exception) {
                     MyLogger.log(TestCaseDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
@@ -149,7 +145,7 @@ public class TestCaseDAO implements ITestCaseDAO {
                 ResultSet resultSet = preStat.executeQuery();
                 try {
                     if (resultSet.next()) {
-                        result = this.loadTestCaseFromResultSet(resultSet);
+                        result = this.loadFromResultSet(resultSet);
                     } else {
                         result = null;
                     }
@@ -411,7 +407,7 @@ public class TestCaseDAO implements ITestCaseDAO {
                 list = new ArrayList<TCase>();
                 try {
                     while (resultSet.next()) {
-                        list.add(this.loadTestCaseFromResultSet(resultSet));
+                        list.add(this.loadFromResultSet(resultSet));
                     }
                 } catch (SQLException exception) {
                     MyLogger.log(TestCaseDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
@@ -461,7 +457,7 @@ public class TestCaseDAO implements ITestCaseDAO {
                 list = new ArrayList<TCase>();
                 try {
                     while (resultSet.next()) {
-                        list.add(this.loadTestCaseFromResultSet(resultSet));
+                        list.add(this.loadFromResultSet(resultSet));
                     }
                 } catch (SQLException exception) {
                     MyLogger.log(TestCaseDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
@@ -558,7 +554,7 @@ public class TestCaseDAO implements ITestCaseDAO {
                 list = new ArrayList<TCase>();
                 try {
                     while (resultSet.next()) {
-                        list.add(this.loadTestCaseFromResultSet(resultSet));
+                        list.add(this.loadFromResultSet(resultSet));
                     }
                 } catch (SQLException exception) {
                     MyLogger.log(TestCaseDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
@@ -587,7 +583,7 @@ public class TestCaseDAO implements ITestCaseDAO {
     /**
      * @since 0.9.1
      */
-    private TCase loadTestCaseFromResultSet(ResultSet resultSet) throws SQLException {
+    private TCase loadFromResultSet(ResultSet resultSet) throws SQLException {
         String test = resultSet.getString("Test");
         String testCase = resultSet.getString("TestCase");
         String tcapplication = resultSet.getString("Application");
@@ -915,7 +911,7 @@ public class TestCaseDAO implements ITestCaseDAO {
                 list = new ArrayList<TCase>();
                 try {
                     while (resultSet.next()) {
-                        list.add(this.loadTestCaseFromResultSet(resultSet));
+                        list.add(this.loadFromResultSet(resultSet));
                     }
                 } catch (SQLException exception) {
                     MyLogger.log(TestCaseDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
@@ -1083,7 +1079,7 @@ public class TestCaseDAO implements ITestCaseDAO {
                 list = new ArrayList<TCase>();
                 try {
                     while (resultSet.next()) {
-                        list.add(this.loadTestCaseFromResultSet(resultSet));
+                        list.add(this.loadFromResultSet(resultSet));
                     }
                 } catch (SQLException exception) {
                     MyLogger.log(TestCaseDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
@@ -1129,7 +1125,7 @@ public class TestCaseDAO implements ITestCaseDAO {
                     list = new ArrayList<TCase>();
 
                     while (resultSet.next()) {
-                        list.add(this.loadTestCaseFromResultSet(resultSet));
+                        list.add(this.loadFromResultSet(resultSet));
                     }
                 } catch (SQLException exception) {
                     MyLogger.log(TestCaseDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
@@ -1191,7 +1187,7 @@ public class TestCaseDAO implements ITestCaseDAO {
                     list = new ArrayList<TCase>();
 
                     while (resultSet.next()) {
-                        list.add(this.loadTestCaseFromResultSet(resultSet));
+                        list.add(this.loadFromResultSet(resultSet));
                     }
                 } catch (SQLException exception) {
                     MyLogger.log(TestCaseDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
@@ -1383,4 +1379,63 @@ public class TestCaseDAO implements ITestCaseDAO {
 //            Logger.getLogger(TestCaseDAO.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
 //        }
     return null;}
+
+    @Override
+    public AnswerList readTestCaseByStepsInLibrary(String test) {
+        AnswerList response = new AnswerList();
+        MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
+        List<TCase> list = new ArrayList<TCase>();
+        StringBuilder query = new StringBuilder();
+        query.append("SELECT * FROM testcase tc  ");
+        query.append("inner join testcasestep  tcs on tc.test = tcs.test and tc.testcase = tcs.testcase ");
+        query.append("WHERE tc.test= ? and (tcs.inlibrary = 'Y' or tcs.inlibrary = 'y') ");        
+        query.append("group by tc.testcase order by tc.testcase ");
+        Connection connection = this.databaseSpring.connect();
+        try {
+            PreparedStatement preStat = connection.prepareStatement(query.toString());
+            try {
+                preStat.setString(1, test);
+
+                ResultSet resultSet = preStat.executeQuery();
+                try {
+                    list = new ArrayList<TCase>();
+
+                    while (resultSet.next()) {
+                        list.add(loadFromResultSet(resultSet));
+                    }
+                } catch (SQLException exception) {
+                    MyLogger.log(TestCaseDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
+                    msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_UNEXPECTED_ERROR);
+                    msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", exception.toString()));
+                } finally {
+                    if(resultSet != null){
+                        resultSet.close();
+                    }
+                }
+            } catch (SQLException exception) {
+                MyLogger.log(TestCaseDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
+                msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_UNEXPECTED_ERROR);
+                msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", exception.toString()));
+            } finally {
+                if(preStat != null){
+                    preStat.close();
+                }
+            }
+        } catch (SQLException exception) {
+            MyLogger.log(TestCaseDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
+            msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_UNEXPECTED_ERROR);
+            msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", exception.toString()));
+        } finally {
+            try {
+                if (connection != null) {
+                    connection.close();
+                }
+            } catch (SQLException e) {
+                MyLogger.log(TestCaseDAO.class.getName(), Level.WARN, e.toString());
+            }
+        }
+        response.setDataList(list);
+        response.setResultMessage(msg);
+        return response;
+    }
 }

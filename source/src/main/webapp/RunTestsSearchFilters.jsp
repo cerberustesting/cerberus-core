@@ -56,7 +56,7 @@
                 ICampaignService campaignService = appContext.getBean(ICampaignService.class);
                 ITestBatteryService batteryService = appContext.getBean(ITestBatteryService.class);
                 
-                String myLang = request.getParameterValues("MyLang").toString();
+                String myLang = request.getParameter("MyLang");
 
                 try {
             %>

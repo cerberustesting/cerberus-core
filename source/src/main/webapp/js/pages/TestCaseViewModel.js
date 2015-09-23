@@ -24,11 +24,11 @@ var listOfPropertyTypes;
  * @param {type} param1 - filename
  */
 $.when($.getScript("js/pages/global/global.js")).then(function() {
-
+    
     $(document).ready(function() {
         displayPageLabel();
     });
-
+    
 
     /**
      * Document ready methods
@@ -125,12 +125,16 @@ $.when($.getScript("js/pages/global/global.js")).then(function() {
             setPropertyValuesAutoComplete($(this), callbackAutoCompleteTestDataLibName);
         });
 
-
-
+        
+        if($("#editableContent").find("div[class='blockUI']").size() > 0){
+            //checks if the editable content has a loader component
+            hideLoader($("#editableContent"));
+        }
+        
     });
     //Show save button when testcase page loaded
     $("input[name='divButtonSaveChange']").removeAttr("style");
-
+    
 });
 /**
  * Method that overrides a property from the click on the button
@@ -516,4 +520,82 @@ function aoColumnsFunc() {
     return aoColumns;
 
 
+}
+/******************* Used Step functions ******************************/
+function findTestcaseByTest(test, system, field) {
+    var url;
+    if (system === "") {
+        url = 'GetTestCaseList?test=' + test;
+    } else {
+        url = 'GetTestCaseForTest?system=' + system + '&test=' + test;
+    }
+    $.get(url, function(data) {
+        $(document.getElementById(field)).empty();
+        $('#' + field).append($("<option></option>")
+                .attr('value', '')
+                .attr('style', 'width:300px;')
+                .text('Choose TestCase'));
+        if (system !== "") {
+            for (var i = 0; i < data.testCaseList.length; i++) {
+                $('#' + field).append($("<option></option>")
+                        .attr('value', data.testCaseList[i].testCase)
+                        .attr('style', 'width:300px;')
+                        .text(data.testCaseList[i].description));
+            }
+        } else {
+            for (var i = 0; i < data.testcasesList.length; i++) {
+                $('#' + field).append($("<option></option>")
+                        .attr('value', data.testcasesList[i])
+                        .attr('style', 'width:300px;')
+                        .text(data.testcasesList[i]));
+            }
+        }
+    });
+}
+
+function findStepBySystemTest(test, system, field) {
+    var url;
+    url = 'GetStepInLibrary?system=' + system + '&test=' + test;
+    $.get(url, function(data) {
+        $(document.getElementById(field)).empty();
+        $('#' + field).append($("<option></option>")
+                .attr('value', '')
+                .attr('style', 'width:300px;')
+                .text('Choose TestCase'));
+        var testFromLib = "";
+        
+        //clears the step dropdown
+        var elementParent = $('#' + field).parents("div[id*=StepFirstLineDiv]");
+        var selectSteps = $(elementParent).find("div[id*='StepUseStepStepDiv'] select");
+        $(selectSteps).find("option").remove();
+        $(selectSteps).append($("<option></option>").attr('value', '').attr('style', 'width:300px;').text('Choose Step'));
+                            
+        for (var i = 0; i < data.testCaseStepList.length; i++) {
+            if (data.testCaseStepList[i].testCase !== testFromLib) {
+                $('#' + field).append($("<option></option>")
+                        .attr('value', data.testCaseStepList[i].testCase)
+                        .attr('style', 'width:300px;')
+                        .text(data.testCaseStepList[i].testCase + " : " + data.testCaseStepList[i].tcdesc));
+                testFromLib = data.testCaseStepList[i].testCase;
+            }
+        }
+    });
+}
+
+function findStepBySystemTestTestCase(test, testCase, system, field) {
+    var url;
+    url = 'GetStepInLibrary?system=' + system + '&test=' + test + '&testCase=' + testCase;
+    $.get(url, function(data) {
+        $(document.getElementById(field)).empty();
+        $('#' + field).append($("<option></option>")
+                .attr('value', '')
+                .attr('style', 'width:300px;')
+                .text('Choose Step'));
+        for (var i = 0; i < data.testCaseStepList.length; i++) {
+            $('#' + field).append($("<option></option>")
+                    .attr('value', data.testCaseStepList[i].step)
+                    .attr('style', 'width:300px;')
+                    .text(data.testCaseStepList[i].step + ':' + data.testCaseStepList[i].description));
+        }
+    });
 }

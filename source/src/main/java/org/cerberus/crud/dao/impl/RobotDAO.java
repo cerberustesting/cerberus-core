@@ -292,8 +292,8 @@ public class RobotDAO implements IRobotDAO {
     public Answer create(Robot robot) {
         MessageEvent msg = null;
         StringBuilder query = new StringBuilder();
-        query.append("INSERT INTO robot (`robot`, `host`, `port`, `platform`,`browser`, `version`,`active` , `description`) ");
-        query.append("VALUES (?,?,?,?,?,?,?,?)");
+        query.append("INSERT INTO robot (`robot`, `host`, `port`, `platform`,`browser`, `version`,`active` , `description`, `useragent`) ");
+        query.append("VALUES (?,?,?,?,?,?,?,?,?)");
 
         Connection connection = this.databaseSpring.connect();
         try {
@@ -307,6 +307,7 @@ public class RobotDAO implements IRobotDAO {
                 preStat.setString(6, robot.getVersion());
                 preStat.setString(7, robot.getActive());
                 preStat.setString(8, robot.getDescription());
+                preStat.setString(9, robot.getUserAgent());
 
                 preStat.executeUpdate();
                 msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
