@@ -41,11 +41,23 @@ function initPage() {
 
     displayHeaderLabel(doc);
     displayGlobalLabel(doc);
-//    displayPageLabel(doc);
+    displayPageLabel(doc);
     displayFooter(doc);
     displayInvariantList("TESTACTIVE", "Active");
     displayInvariantList("TESTAUTOMATED", "Automated");
 
+}
+
+function displayPageLabel(doc) {
+    $("#pageTitle").html(doc.getDocLabel("test", "Test"));
+    $("#title").html(doc.getDocLabel("test", "Test"));
+    $("[name='addEntryField']").html(doc.getDocLabel("page_test", "btn_create"));
+    $("[name='confirmationField']").html(doc.getDocLabel("page_test", "btn_delete"));
+    $("[name='editEntryField']").html(doc.getDocLabel("page_test", "btn_edit"));
+    $("[name='testField']").html(doc.getDocOnline("test", "Test"));
+    $("[name='activeField']").html(doc.getDocOnline("test", "Active"));
+    $("[name='automatedField']").html(doc.getDocOnline("test", "Automated"));
+    $("[name='descriptionField']").html(doc.getDocOnline("test", "Description"));
 }
 
 function saveNewEntryHandler() {
@@ -89,7 +101,6 @@ function saveUpdateEntryHandler() {
     clearResponseMessage($('#editEntryModal'));
     var formEdit = $('#editEntryModalForm');
 
-    console.log(formEdit.serialize());
     showLoaderInModal('#editEntryModal');
     saveEntry("UpdateTest1", "#editEntryModal", formEdit);
 }
@@ -165,13 +176,13 @@ function renderOptionsForTest(data) {
 
 function aoColumnsFunc() {
     var doc = new Doc();
-    
+
     var aoColumns = [
         {
             "data": null,
             "bSortable": false,
             "bSearchable": false,
-            "title": "Actions",
+            "title": doc.getDocOnline("page_global", "columnAction"),
             "mRender": function (data, type, obj) {
                 if (data["hasPermissions"]) {
                     var editEntry = '<button id="editEntry" onclick="editEntry(\'' + obj["test"] + '\');"\n\
@@ -191,27 +202,27 @@ function aoColumnsFunc() {
         {
             "data": "test",
             "sName": "test",
-            "title": "Test"
+            "title": doc.getDocOnline("test", "Test")
         },
         {
             "data": "description",
             "sName": "description",
-            "title": "Description"
+            "title": doc.getDocOnline("test", "Description")
         },
         {
             "data": "active",
             "sName": "active",
-            "title": "Active"
+            "title": doc.getDocOnline("test", "Active")
         },
         {
             "data": "automated",
             "sName": "automated",
-            "title": "Automated"
+            "title": doc.getDocOnline("test", "Automated")
         },
         {
             "data": "tDateCrea",
             "sName": "tdatecrea",
-            "title": "Created"
+            "title": doc.getDocOnline("test", "dateCreation")
         }
     ];
     return aoColumns;

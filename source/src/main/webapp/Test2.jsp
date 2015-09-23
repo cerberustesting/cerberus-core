@@ -11,7 +11,7 @@
         <meta content="text/html; charset=UTF-8" http-equiv="content-type">
         <%@ include file="include/dependenciesInclusions.html" %>
         <script type="text/javascript" src="js/pages/Test.js"></script>
-        <title>Test</title>
+        <title id="pageTitle">Test</title>
     </head>
     <body>
         <%@ include file="include/header.html"%>

@@ -4776,7 +4776,7 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLInstruction.add(SQLS.toString());
         
         // Documentation entries for Test page.
-        //-- ------------------------ 630
+        //-- ------------------------ 631
         SQLS = new StringBuilder();
         SQLS.append("INSERT INTO `documentation` (DocTable, DocField, DocValue, Lang, DocLabel, DocDesc) VALUES ");
         SQLS.append("('page_test', 'btn_create', '', 'en', 'Create Test', ''),");
@@ -4785,6 +4785,24 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLS.append("('page_test', 'btn_delete', '', 'fr', 'Supprimer le Test', ''),");
         SQLS.append("('page_test', 'btn_edit', '', 'en', 'Edit Test', ''),");
         SQLS.append("('page_test', 'btn_edit', '', 'fr', 'Modifier le Test', '');");        
+        SQLInstruction.add(SQLS.toString());
+        
+        // Documentation entries for Test page.
+        //-- ------------------------ 632-633
+        
+        SQLS = new StringBuilder();
+        SQLS.append("UPDATE `documentation` SET ");
+        SQLS.append("`DocDesc`='Un <code class=\\'doc-crbvvoca\\'>test</code> regroupe plusieurs <code class=\\'doc-crbvvoca\\'>Cas de tests</code> ensemble.'");
+        SQLS.append(" WHERE `DocTable`='test' and`DocField`='Test' and `DocValue`='' and `Lang`='fr';");
+        SQLInstruction.add(SQLS.toString());
+        
+        SQLS = new StringBuilder();
+        SQLS.append("INSERT INTO `documentation` (DocTable, DocField, DocValue, Lang, DocLabel, DocDesc) VALUES ");
+        SQLS.append("('test', 'Active', '', 'fr', 'Actif', 'Booléen qui définit si le <code class=\\'doc-crbvvoca\\'>test</code> est actif.<br>Si le <code class=\\'doc-crbvvoca\\'>test</code> n\\'est pas actif, aucune execution des <code class=\\'doc-crbvvoca\\'>Cas de tests</code> n\\'est possible.'),");
+        SQLS.append("('test', 'Automated', '', 'fr', 'Automatisé', 'Boléen qui définit si le test est automatisé ou non'),");
+        SQLS.append("('test', 'Description', '', 'fr', 'Description du test', 'Description du <code class=\\'doc-crbvvoca\\'>test</code>.'),");
+        SQLS.append("('test', 'dateCreation', '', 'en', 'Creation date', 'The date when the test have been created'),");
+        SQLS.append("('test', 'dateCreation', '', 'fr', 'Date de création', 'Date à laquelle le test a été créé');");        
         SQLInstruction.add(SQLS.toString());
 
         return SQLInstruction;
