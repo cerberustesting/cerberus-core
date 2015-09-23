@@ -73,5 +73,9 @@ public interface ITestService {
 
     public AnswerList readByCriteria(int start, int amount, String colName, String dir, String searchTerm, String individualSearch);
 
+    public Answer create(Test test);
+
     public Answer update(Test test);
+    
+    public Answer delete(Test test);
 }

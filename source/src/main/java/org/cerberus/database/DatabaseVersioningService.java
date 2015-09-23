@@ -4774,6 +4774,18 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLS.append("('TESTAUTOMATED', 'Y', '10', 'Automated', ''),");
         SQLS.append("('TESTAUTOMATED', 'N', '20', 'Not automated', '');");
         SQLInstruction.add(SQLS.toString());
+        
+        // Documentation entries for Test page.
+        //-- ------------------------ 630
+        SQLS = new StringBuilder();
+        SQLS.append("INSERT INTO `documentation` (DocTable, DocField, DocValue, Lang, DocLabel, DocDesc) VALUES ");
+        SQLS.append("('page_test', 'btn_create', '', 'en', 'Create Test', ''),");
+        SQLS.append("('page_test', 'btn_create', '', 'fr', 'Créer un Test', ''),");
+        SQLS.append("('page_test', 'btn_delete', '', 'en', 'Delete Test', ''),");
+        SQLS.append("('page_test', 'btn_delete', '', 'fr', 'Supprimer le Test', ''),");
+        SQLS.append("('page_test', 'btn_edit', '', 'en', 'Edit Test', ''),");
+        SQLS.append("('page_test', 'btn_edit', '', 'fr', 'Modifier le Test', '');");        
+        SQLInstruction.add(SQLS.toString());
 
         return SQLInstruction;
     }

@@ -86,14 +86,24 @@ public class TestService implements ITestService {
     public AnswerItem readByKey(String test) {
         return testDao.readByKey(test);
     }
-    
+
     @Override
     public AnswerList readByCriteria(int start, int amount, String colName, String dir, String searchTerm, String individualSearch) {
         return testDao.readByCriteria(start, amount, colName, dir, searchTerm, individualSearch);
     }
 
     @Override
+    public Answer create(Test test) {
+        return testDao.create(test);
+    }
+
+    @Override
     public Answer update(Test test) {
         return testDao.update(test);
+    }
+    
+    @Override
+    public Answer delete(Test test) {
+        return testDao.delete(test);
     }
 }

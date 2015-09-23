@@ -67,7 +67,7 @@ function saveNewEntryHandler() {
         return;
 
     showLoaderInModal('#addEntryModal');
-    saveEntry("CreateProject", "#addEntryModal", formAdd);
+    saveEntry("CreateTest1", "#addEntryModal", formAdd);
 }
 
 function saveEntry(servletName, modalID, form) {
@@ -116,6 +116,38 @@ function CreateTestClick() {
     $('#addEntryModal').modal('show');
 }
 
+function deleteEntryHandlerClick() {
+    var test = $('#confirmationModal').find('#hiddenField').prop("value");
+    var jqxhr = $.post("DeleteTest1", {test: test}, "json");
+    $.when(jqxhr).then(function (data) {
+        var messageType = getAlertType(data.messageType);
+        if (messageType === "success") {
+            //redraw the datatable
+            var oTable = $("#testTable").dataTable();
+            oTable.fnDraw(true);
+            var info = oTable.fnGetData().length;
+
+            if (info === 1) {//page has only one row, then returns to the previous page
+                oTable.fnPageChange('previous');
+            }
+
+        }
+        //show message in the main page
+        showMessageMainPage(messageType, data.message);
+        //close confirmation window
+        $('#confirmationModal').modal('hide');
+    }).fail(handleErrorAjaxAfterTimeout);
+}
+
+function deleteEntry(entry) {
+    clearResponseMessageMainPage();
+    var doc = new Doc();
+    var messageComplete = doc.getDocLabel("page_global", "deleteMessage");
+    messageComplete = messageComplete.replace("%TABLE%", doc.getDocLabel("test", "Test"));
+    messageComplete = messageComplete.replace("%ENTRY%", entry);
+    showModalConfirmation(deleteEntryHandlerClick, doc.getDocLabel("page_test", "btn_delete"), messageComplete, entry);
+}
+
 function renderOptionsForTest(data) {
     var doc = new Doc();
     //check if user has permissions to perform the add and import operations
@@ -132,6 +164,8 @@ function renderOptionsForTest(data) {
 }
 
 function aoColumnsFunc() {
+    var doc = new Doc();
+    
     var aoColumns = [
         {
             "data": null,
@@ -139,15 +173,19 @@ function aoColumnsFunc() {
             "bSearchable": false,
             "title": "Actions",
             "mRender": function (data, type, obj) {
-                var editEntry = '<button id="editEntry" onclick="editEntry(\'' + obj["test"] + '\');"\n\
+                if (data["hasPermissions"]) {
+                    var editEntry = '<button id="editEntry" onclick="editEntry(\'' + obj["test"] + '\');"\n\
                                 class="editEntry btn btn-default btn-xs margin-right5" \n\
-                                name="editEntry" title="' + "edit entry" + '" type="button">\n\
+                                name="editEntry" title="' + doc.getDocLabel("page_test", "btn_edit") + '" type="button">\n\
                                 <span class="glyphicon glyphicon-pencil"></span></button>';
-                var deleteEntry = '<button id="deleteEntry" onclick="deleteEntry(\'' + obj + '\');" \n\
+                    var deleteEntry = '<button id="deleteEntry" onclick="deleteEntry(\'' + obj["test"] + '\');" \n\
                                 class="deleteEntry btn btn-default btn-xs margin-right5" \n\
-                                name="deleteEntry" title="' + "delete entry" + '" type="button">\n\
+                                name="deleteEntry" title="' + doc.getDocLabel("page_test", "btn_delete") + '" type="button">\n\
                                 <span class="glyphicon glyphicon-trash"></span></button>';
-                return '<div class="center btn-group width150">' + editEntry + deleteEntry + '</div>';
+                    return '<div class="center btn-group width150">' + editEntry + deleteEntry + '</div>';
+                } else {
+                    return '';
+                }
             }
         },
         {

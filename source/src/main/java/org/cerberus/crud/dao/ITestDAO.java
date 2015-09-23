@@ -51,9 +51,13 @@ public interface ITestDAO {
     List<Test> findListOfTestBySystems(List<String> systems);
 
     public AnswerItem readByKey(String test);
-    
+
     public AnswerList readByCriteria(int start, int amount, String colName, String dir, String searchTerm, String individualSearch);
+
+    public Answer create(Test test);
 
     public Answer update(Test test);
     
+    public Answer delete(Test test);
+
 }

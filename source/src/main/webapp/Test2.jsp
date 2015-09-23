@@ -15,15 +15,18 @@
     </head>
     <body>
         <%@ include file="include/header.html"%>
-        <%@ include file="include/test/editTest.html" %>
-        <%@ include file="include/test/addTest.html" %>
         <div class="container-fluid center" id="page-layout">
+            <%@ include file="include/messagesArea.html"%>
+            <%@ include file="include/utils/modal-confirmation.html"%>
+            <%@ include file="include/test/editTest.html" %>
+            <%@ include file="include/test/addTest.html" %>
+
             <h1 class="page-title-line" id="title">Test</h1>
 
-                <div class="well" id="testList">
-                    <table id="testTable" class="table table-hover display" name="testTable"></table>
-                    <div class="marginBottom20"></div>
-                </div>
+            <div class="well" id="testList">
+                <table id="testTable" class="table table-hover display" name="testTable"></table>
+                <div class="marginBottom20"></div>
+            </div>
 
             <footer class="footer">
                 <div class="container-fluid" id="footer"></div>
