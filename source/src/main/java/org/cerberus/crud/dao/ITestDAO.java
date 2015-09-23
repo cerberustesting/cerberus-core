@@ -20,6 +20,9 @@ package org.cerberus.crud.dao;
 import java.util.List;
 import org.cerberus.crud.entity.Test;
 import org.cerberus.exception.CerberusException;
+import org.cerberus.util.answer.Answer;
+import org.cerberus.util.answer.AnswerItem;
+import org.cerberus.util.answer.AnswerList;
 
 /**
  * {Insert class description here}
@@ -37,13 +40,20 @@ public interface ITestDAO {
     boolean createTest(Test test) throws CerberusException;
 
     boolean deleteTest(Test test);
-    
+
     /**
-     * 
+     *
      * @param test Name of the test
      * @return Test Object
      */
     Test findTestByKey(String test);
-    
+
     List<Test> findListOfTestBySystems(List<String> systems);
+
+    public AnswerItem readByKey(String test);
+    
+    public AnswerList readByCriteria(int start, int amount, String colName, String dir, String searchTerm, String individualSearch);
+
+    public Answer update(Test test);
+    
 }

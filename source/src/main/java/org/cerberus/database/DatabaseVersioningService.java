@@ -4727,7 +4727,7 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLS.append(",('user','Team','','en','Team','This is the team of the user.')");
         SQLS.append(",('usergroup','GroupName','','en','Group Name','Authorities are managed by group. In order to be granted to a set of feature, you must belong to the corresponding group.<br>Every user can of course belong to as many group as necessary in order to get access to as many feature as required.<br>In order to get the full access to the system you must belong to every group.<br>Some groups are linked together on the test perimeter and integration perimeter.<br><br><b>Test perimeter :</b><br><br><code class=\\'doc-fixed\\'>TestRO</code>: Has read only access to the information related to test cases and also has access to execution reporting options.<br><br><code class=\\'doc-fixed\\'>Test</code>: Can modify non WORKING test cases but cannot delete test cases.<br><br><code class=\\'doc-fixed\\'>TestAdmin</code>: Can modify or delete any test case (including Pre Testing test cases). Can also create or delete a test.<br><br>The minimum group you need to belong is <code class=\\'doc-fixed\\'>TestRO</code> that will give you access in read only to all test data (including its execution reporting page).<br>If you want to be able to modify the testcases (except the WORKING ones), you need <code class=\\'doc-fixed\\'>Test</code> group on top of <code class=\\'doc-fixed\\'>TestRO</code> group.<br>If you want the full access to all testcase (including beeing able to delete any testcase), you will need <code class=\\'doc-fixed\\'>TestAdmin</code> on top of <code class=\\'doc-fixed\\'>TestRO</code> and <code class=\\'doc-fixed\\'>Test</code> group.<br><br><b>Test Execution perimeter :</b><br><br><code class=\\'doc-fixed\\'>RunTest</code>: Can run both Manual and Automated test cases from GUI.<br><br><b>Integration perimeter :</b><br><br><code class=\\'doc-fixed\\'>IntegratorRO</code>: Has access to the integration status.<br><br><code class=\\'doc-fixed\\'>Integrator</code>: Can add an application. Can change parameters of the environments.<br><br><code class=\\'doc-fixed\\'>IntegratorNewChain</code>: Can register the end of the chain execution. Has read only access to the other informations on the same page.<br><br><code class=\\'doc-fixed\\'>IntegratorDeploy</code>: Can disable or enable environments and register new build / revision.<br><br>The minimum group you need to belong is <code class=\\'doc-fixed\\'>IntegratorRO</code> that will give you access in read only to all environment data.<br>If you want to be able to modify the environment data, you need <code class=\\'doc-fixed\\'>Integrator</code> group on top of <code class=\\'doc-fixed\\'>IntegratorRO</code> group.<br><code class=\\'doc-fixed\\'>IntegratorNewChain</code> and <code class=\\'doc-fixed\\'>IntegratorDeploy</code> are used on top of <code class=\\'doc-fixed\\'>Integrator</code> Group to be able to create a new chain on an environment or perform a deploy operation.<br><br><b>Administration perimeter :</b><br><br><code class=\\'doc-fixed\\'>Administrator</code>: Can create, modify or delete users. Has access to log Event and Database Maintenance. Can change Parameter values.')");
         SQLInstruction.add(SQLS.toString());
-        
+
         // Documentation entries for Homepage.
         //-- ------------------------ 625
         SQLS = new StringBuilder();
@@ -4736,7 +4736,7 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLS.append(",('homepage','lastTagExecution','','fr','Dernières exécutions de tags','Affiche les statistiques d\\'exécutions des derniers tags exécutés ou des tags définis dans les options')");
         SQLS.append(",('homepage','btn_settings','','fr','Options','')");
         SQLInstruction.add(SQLS.toString());
-        
+
         // Documentation entries for Homepage.
         //-- ------------------------ 626
         SQLS = new StringBuilder();
@@ -4745,7 +4745,7 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLS.append(",('homepage','modal_title','','fr','Filtre des tags','Ce modal vous permet d\\'ajouter des tags au rapport des dernières exécutions de tags')");
         SQLS.append(",('homepage','btn_addTag','','fr','Ajouter le tag','')");
         SQLInstruction.add(SQLS.toString());
-        
+
         // Documentation entries for Homepage.
         //-- ------------------------ 627-629
         SQLS = new StringBuilder();
@@ -4754,13 +4754,25 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLS.append(",('homepage','title','','en','Welcome to Cerberus application','')");
         SQLS.append(",('homepage','title','','fr','Bienvenue dans l\\'application Cerberus','')");
         SQLInstruction.add(SQLS.toString());
-        
+
         SQLS = new StringBuilder();
         SQLS.append("UPDATE `documentation` SET `DocLabel`='Customize' WHERE `DocTable`='homepage' and`DocField`='btn_settings' and`DocValue`='' and`Lang`='en';");
         SQLInstruction.add(SQLS.toString());
-        
+
         SQLS = new StringBuilder();
         SQLS.append("UPDATE `documentation` SET `DocLabel`='Personnaliser' WHERE `DocTable`='homepage' and`DocField`='btn_settings' and`DocValue`='' and`Lang`='fr';");
+        SQLInstruction.add(SQLS.toString());
+
+        // Added private invariant for test active and automated.
+        //-- ------------------------ 630
+        SQLS = new StringBuilder();
+        SQLS.append("INSERT INTO `invariant` (idname, value, sort, description, VeryShortDesc) VALUES ");
+        SQLS.append("('INVARIANTPRIVATE', 'TESTACTIVE', '510', '', ''),");
+        SQLS.append("('INVARIANTPRIVATE', 'TESTAUTOMATED', '520', '', ''),");
+        SQLS.append("('TESTACTIVE', 'Y', '10', 'Active', ''),");
+        SQLS.append("('TESTACTIVE', 'N', '20', 'Disable', ''),");
+        SQLS.append("('TESTAUTOMATED', 'Y', '10', 'Automated', ''),");
+        SQLS.append("('TESTAUTOMATED', 'N', '20', 'Not automated', '');");
         SQLInstruction.add(SQLS.toString());
 
         return SQLInstruction;

@@ -171,12 +171,14 @@ function generateTagLink(tagName) {
     return link;
 }
 
-function generateTooltip(data) {
+function generateTooltip(data, statusOrder) {
     var htmlRes;
 
     htmlRes = "<div class='tag-tooltip'><strong>Tag : </strong>" + data.tag;
-    for (var status in data.total) {
-        if (status !== "totalTest") {
+    for (var index = 0; index < statusOrder.length; index++) {
+        var status = statusOrder[index];
+
+        if (data.total.hasOwnProperty(status)) {
             data.total[status].percent = (data.total[status].value / data.total.totalTest) * 100;
             data.total[status].roundPercent = Math.round(((data.total[status].value / data.total.totalTest) * 100) * 10) / 10;
 
@@ -217,7 +219,7 @@ function generateTagReport(data) {
 
         getTotalExec(data.total);
         var buildBar;
-        var tooltip = generateTooltip(data);
+        var tooltip = generateTooltip(data, statusOrder);
 
         buildBar = '<div>' + generateTagLink(data.tag) + '<div class="pull-right" style="display: inline;">Total executions : ' + data.total.totalTest + '</div>\n\
                                                         </div><div class="progress" data-toggle="tooltip" data-html="true" title="' + tooltip + '">';

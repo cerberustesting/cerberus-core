@@ -22,6 +22,9 @@ package org.cerberus.crud.service;
 import java.util.List;
 import org.cerberus.crud.entity.Test;
 import org.cerberus.exception.CerberusException;
+import org.cerberus.util.answer.Answer;
+import org.cerberus.util.answer.AnswerItem;
+import org.cerberus.util.answer.AnswerList;
 
 /**
  * {Insert class description here}
@@ -31,7 +34,6 @@ import org.cerberus.exception.CerberusException;
  * @since 2.0.0
  */
 public interface ITestService {
-
 
     /**
      * @return List of Tests name
@@ -57,13 +59,19 @@ public interface ITestService {
      * @return TRUE if test have been deleted successfully
      */
     boolean deleteTest(Test test);
-    
+
     /**
-     * 
+     *
      * @param test Key of the table Test
      * @return Test object
      */
     Test findTestByKey(String test);
-    
+
     List<Test> findTestBySystems(List<String> systems);
+
+    public AnswerItem readByKey(String test);
+
+    public AnswerList readByCriteria(int start, int amount, String colName, String dir, String searchTerm, String individualSearch);
+
+    public Answer update(Test test);
 }
