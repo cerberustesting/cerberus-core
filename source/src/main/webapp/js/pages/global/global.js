@@ -284,6 +284,22 @@ function showLoaderInModal(element) {
 function hideLoaderInModal(element) {
     $(element).find(".modal-content").unblock();
 }
+
+/**
+ * Method that reset form values from a modal
+ * @param {type} event
+ * @returns {void}
+ */
+function modalFormCleaner(event) {
+    var modalID = event.data.extra;
+    // reset form values
+    $(modalID + " " + modalID + "Form")[0].reset();
+    // remove all errors on the form fields
+    $(this).find('div.has-error').removeClass("has-error");
+    // clear the response messages of the modal
+    clearResponseMessage($(modalID));
+}
+
 /***********************************MODAL CONFIRMATION*************************************************/
 /**
  * 
