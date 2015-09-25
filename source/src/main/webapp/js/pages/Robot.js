@@ -142,7 +142,7 @@ function saveUpdateEntryHandler() {
     var formEdit = $('#editEntryModal #editEntryModalForm');
 
     showLoaderInModal('#editEntryModal');
-    saveEntry("UpdateRobot", "#editEntryModal", formEdit);
+    saveEntry("UpdateRobot1", "#editEntryModal", formEdit);
 }
 
 function buttonCloseHandler(event) {
@@ -168,7 +168,15 @@ function editEntry(id) {
 
         var formEdit = $('#editEntryModal');
 
-        formEdit.find("#robot").prop("value", id);
+        formEdit.find("#robotid").prop("value", id);
+        formEdit.find("#robot").prop("value", obj["robot"]);
+        formEdit.find("#active").prop("value", obj["active"]);
+        formEdit.find("#host").prop("value", obj["host"]);
+        formEdit.find("#port").prop("value", obj["port"]);
+        formEdit.find("#platform").prop("value", obj["platform"]);
+        formEdit.find("#browser").prop("value", obj["browser"]);
+        formEdit.find("#version").prop("value", obj["version"]);
+        formEdit.find("#useragent").prop("value", obj["userAgent"]);
         formEdit.find("#Description").prop("value", obj["description"]);
 
         formEdit.modal('show');
