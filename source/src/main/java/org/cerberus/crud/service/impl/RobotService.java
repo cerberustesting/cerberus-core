@@ -54,6 +54,11 @@ public class RobotService implements IRobotService {
     }
 
     @Override
+    public AnswerList readAll() {
+        return readByCriteria(0, 0, "robot", "asc", null, null);
+    }
+
+    @Override
     public AnswerList readByCriteria(int startPosition, int length, String columnName, String sort, String searchParameter, String string) {
         return robotDao.readByCriteria(startPosition, length, columnName, sort, searchParameter, string);
     }
@@ -71,46 +76,6 @@ public class RobotService implements IRobotService {
     @Override
     public Answer update(Robot robot) {
         return robotDao.update(robot);
-    }
-
-    @Override
-    public Robot findRobotByKey(Integer id) throws CerberusException {
-        return robotDao.findRobotByKey(id);
-    }
-
-    @Override
-    public List<Robot> findAllRobot() throws CerberusException {
-        return robotDao.findAllRobot();
-    }
-
-    @Override
-    public void updateRobot(Robot robot) throws CerberusException {
-        robotDao.updateRobot(robot);
-    }
-
-    @Override
-    public void createRobot(Robot robot) throws CerberusException {
-        robotDao.createRobot(robot);
-    }
-
-    @Override
-    public void deleteRobot(Robot robot) throws CerberusException {
-        robotDao.deleteRobot(robot);
-    }
-
-    @Override
-    public List<Robot> findRobotListByCriteria(int start, int amount, String column, String dir, String searchTerm, String individualSearch) {
-        return robotDao.findRobotListByCriteria(start, amount, column, dir, searchTerm, individualSearch);
-    }
-
-    @Override
-    public Integer getNumberOfRobotPerCriteria(String searchTerm, String inds) {
-        return robotDao.getNumberOfRobotPerCriteria(searchTerm, inds);
-    }
-
-    @Override
-    public Robot findRobotByName(String name) throws CerberusException {
-        return robotDao.findRobotByName(name);
     }
 
     @Override

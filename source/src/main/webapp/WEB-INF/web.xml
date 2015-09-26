@@ -474,10 +474,6 @@
         <servlet-class>org.cerberus.servlet.robot.DeleteRobot</servlet-class>
     </servlet>
     <servlet>
-        <servlet-name>FindAllRobot</servlet-name>
-        <servlet-class>org.cerberus.servlet.robot.FindAllRobot</servlet-class>
-    </servlet>
-    <servlet>
         <servlet-name>UpdateRobot</servlet-name>
         <servlet-class>org.cerberus.servlet.robot.UpdateRobot</servlet-class>
     </servlet>
@@ -1181,10 +1177,6 @@
         <url-pattern>/DeleteRobot</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
-        <servlet-name>FindAllRobot</servlet-name>
-        <url-pattern>/FindAllRobot</url-pattern>
-    </servlet-mapping>
-    <servlet-mapping>
         <servlet-name>UpdateRobot</servlet-name>
         <url-pattern>/UpdateRobot</url-pattern>
     </servlet-mapping>
@@ -1720,7 +1712,6 @@
             <url-pattern>/CreateRobot</url-pattern>
             <url-pattern>/DeleteRobot</url-pattern>
             <url-pattern>/UpdateRobot</url-pattern>
-            <url-pattern>/FindAllRobot</url-pattern>
             <url-pattern>/AddBuildContent</url-pattern>
             <url-pattern>/DeleteBuildContent</url-pattern>
             <url-pattern>/UpdateBuildContent</url-pattern>

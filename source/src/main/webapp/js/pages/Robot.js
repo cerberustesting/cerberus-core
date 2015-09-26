@@ -68,7 +68,7 @@ function displayPageLabel() {
 
 function deleteEntryHandlerClick() {
     var robotID = $('#confirmationModal').find('#hiddenField').prop("value");
-    var jqxhr = $.post("DeleteRobot1", {robotid: robotID}, "json");
+    var jqxhr = $.post("DeleteRobot", {robotid: robotID}, "json");
     $.when(jqxhr).then(function (data) {
         var messageType = getAlertType(data.messageType);
         if (messageType === "success") {
@@ -133,7 +133,7 @@ function saveNewEntryHandler() {
         return;
 
     showLoaderInModal('#addEntryModal');
-    saveEntry("CreateRobot1", "#addEntryModal", formAdd);
+    saveEntry("CreateRobot", "#addEntryModal", formAdd);
 
 }
 
@@ -142,7 +142,7 @@ function saveUpdateEntryHandler() {
     var formEdit = $('#editEntryModal #editEntryModalForm');
 
     showLoaderInModal('#editEntryModal');
-    saveEntry("UpdateRobot1", "#editEntryModal", formEdit);
+    saveEntry("UpdateRobot", "#editEntryModal", formEdit);
 }
 
 function buttonCloseHandler(event) {
