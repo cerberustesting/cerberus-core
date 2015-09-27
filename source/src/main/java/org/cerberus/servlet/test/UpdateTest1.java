@@ -65,7 +65,7 @@ public class UpdateTest1 extends HttpServlet {
             throws ServletException, IOException, JSONException {
         JSONObject jsonResponse = new JSONObject();
         Answer ans = new Answer();
-        MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_UNEXPECTED_ERROR);
+        MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
         msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", ""));
         PolicyFactory policy = Sanitizers.FORMATTING.and(Sanitizers.LINKS);
 
@@ -83,7 +83,7 @@ public class UpdateTest1 extends HttpServlet {
          * Checking all constrains before calling the services.
          */
         if (StringUtil.isNullOrEmpty(test)) {
-            msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_EXPECTED_ERROR);
+            msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_EXPECTED);
             msg.setDescription(msg.getDescription().replace("%ITEM%", "Test")
                     .replace("%OPERATION%", "Update")
                     .replace("%REASON%", "Test name (test) is missing"));
@@ -101,7 +101,7 @@ public class UpdateTest1 extends HttpServlet {
                 /**
                  * Object could not be found. We stop here and report the error.
                  */
-                msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_EXPECTED_ERROR);
+                msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_EXPECTED);
                 msg.setDescription(msg.getDescription().replace("%ITEM%", "Application")
                         .replace("%OPERATION%", "Update")
                         .replace("%REASON%", "Application does not exist."));

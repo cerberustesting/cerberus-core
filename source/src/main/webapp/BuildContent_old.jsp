@@ -22,7 +22,7 @@
 <%@page import="java.sql.Statement"%>
 <%@page import="org.cerberus.util.StringUtil"%>
 <%@page import="org.cerberus.crud.service.IDocumentationService"%>
-<%@page import="org.cerberus.crud.util.SqlUtil"%>
+<%@page import="org.cerberus.util.SqlUtil"%>
 <%@page import="org.cerberus.crud.entity.BuildRevisionInvariant"%>
 <%@page import="org.cerberus.crud.service.impl.BuildRevisionInvariantService"%>
 <%@page import="org.cerberus.crud.service.IBuildRevisionInvariantService"%>

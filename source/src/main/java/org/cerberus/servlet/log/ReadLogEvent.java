@@ -74,7 +74,7 @@ public class ReadLogEvent extends HttpServlet {
         response.setContentType("application/json");
 
         // Default message to unexpected error.
-        MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_UNEXPECTED_ERROR);
+        MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
         msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", ""));
 
         /**
@@ -88,7 +88,7 @@ public class ReadLogEvent extends HttpServlet {
                 idlog_error = false;
             }
         } catch (Exception ex) {
-            msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_EXPECTED_ERROR);
+            msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_EXPECTED);
             msg.setDescription(msg.getDescription().replace("%ITEM%", "LogEvent"));
             msg.setDescription(msg.getDescription().replace("%OPERATION%", "Read"));
             msg.setDescription(msg.getDescription().replace("%REASON%", "logeventid must be an integer value."));
@@ -120,7 +120,7 @@ public class ReadLogEvent extends HttpServlet {
             org.apache.log4j.Logger.getLogger(ReadLogEvent.class.getName()).log(org.apache.log4j.Level.ERROR, null, e);
             //returns a default error message with the json format that is able to be parsed by the client-side
             response.setContentType("application/json");
-            msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_UNEXPECTED_ERROR);
+            msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
             StringBuilder errorMessage = new StringBuilder();
             errorMessage.append("{\"messageType\":\"").append(msg.getCode()).append("\",");
             errorMessage.append("\"message\":\"");

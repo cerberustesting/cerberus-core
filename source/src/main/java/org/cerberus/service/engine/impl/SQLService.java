@@ -185,7 +185,7 @@ public class SQLService implements ISQLService {
                 mes.setDescription(mes.getDescription().replaceAll("%JDBC%", connectionName));       
             }
         } catch (CerberusException ex) {
-            mes = new MessageEvent(MessageEventEnum.DATA_OPERATION_UNEXPECTED_ERROR);
+            mes = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
             mes.setDescription(mes.getDescription().replaceAll("%DESCRIPTION%", "Unable to retrieve the specified data."));            
         }
         

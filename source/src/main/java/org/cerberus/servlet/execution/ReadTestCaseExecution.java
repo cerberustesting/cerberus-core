@@ -116,7 +116,7 @@ public class ReadTestCaseExecution extends HttpServlet {
             org.apache.log4j.Logger.getLogger(ReadTestCaseExecution.class.getName()).log(org.apache.log4j.Level.ERROR, null, ex);
             //returns a default error message with the json format that is able to be parsed by the client-side
             response.setContentType("application/json");
-            MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_UNEXPECTED_ERROR);
+            MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
             StringBuilder errorMessage = new StringBuilder();
             errorMessage.append("{'messageType':'").append(msg.getCode()).append("', ");
             errorMessage.append(" 'message': '");

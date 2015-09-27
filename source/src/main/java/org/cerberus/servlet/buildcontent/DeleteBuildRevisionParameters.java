@@ -1,6 +1,4 @@
-/*
- * Cerberus  Copyright (C) 2013  vertigo17
- * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
+/* DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
  *
  * This file is part of Cerberus.
  *
@@ -17,8 +15,9 @@
  * You should have received a copy of the GNU General Public License
  * along with Cerberus.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.cerberus.servlet.test;
+package org.cerberus.servlet.buildcontent;
 
+import org.cerberus.servlet.robot.*;
 import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -28,15 +27,14 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import org.cerberus.crud.entity.MessageEvent;
-import org.cerberus.crud.entity.Test;
-import org.cerberus.crud.factory.IFactoryLogEvent;
-import org.cerberus.crud.factory.IFactoryTest;
-import org.cerberus.crud.factory.impl.FactoryLogEvent;
-import org.cerberus.crud.service.ILogEventService;
-import org.cerberus.crud.service.ITestService;
-import org.cerberus.crud.service.impl.LogEventService;
+import org.cerberus.crud.entity.Robot;
 import org.cerberus.enums.MessageEventEnum;
+import org.cerberus.exception.CerberusException;
+import org.cerberus.crud.service.ILogEventService;
+import org.cerberus.crud.service.IRobotService;
+import org.cerberus.crud.service.impl.LogEventService;
 import org.cerberus.util.answer.Answer;
+import org.cerberus.util.answer.AnswerItem;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.owasp.html.PolicyFactory;
@@ -46,10 +44,10 @@ import org.springframework.web.context.support.WebApplicationContextUtils;
 
 /**
  *
- * @author cerberus
+ * @author bcivel
  */
-@WebServlet(name = "CreateTest1", urlPatterns = {"/CreateTest1"})
-public class CreateTest1 extends HttpServlet {
+@WebServlet(name = "DeleteBuildRevisionParameters", urlPatterns = {"/DeleteBuildRevisionParameters"})
+public class DeleteBuildRevisionParameters extends HttpServlet {
 
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
@@ -61,8 +59,8 @@ public class CreateTest1 extends HttpServlet {
      * @throws IOException if an I/O error occurs
      */
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException, JSONException {
-                JSONObject jsonResponse = new JSONObject();
+            throws ServletException, IOException, CerberusException, JSONException {
+        JSONObject jsonResponse = new JSONObject();
         Answer ans = new Answer();
         MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
         msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", ""));
@@ -74,39 +72,59 @@ public class CreateTest1 extends HttpServlet {
         /**
          * Parsing and securing all required parameters.
          */
-        String test = policy.sanitize(request.getParameter("test"));
-        String active = policy.sanitize(request.getParameter("Active"));
-        String automated = policy.sanitize(request.getParameter("Automated"));
-        String description = policy.sanitize(request.getParameter("Description"));
+        Integer robotid = 0;
+        boolean robotid_error = true;
+        try {
+            if (request.getParameter("robotid") != null && !request.getParameter("robotid").equals("")) {
+                robotid = Integer.valueOf(policy.sanitize(request.getParameter("robotid")));
+                robotid_error = false;
+            }
+        } catch (Exception ex) {
+            robotid_error = true;
+        }
 
         /**
          * Checking all constrains before calling the services.
          */
-        if (test.isEmpty()) {
+        if (robotid_error) {
             msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_EXPECTED);
-            msg.setDescription(msg.getDescription().replace("%ITEM%", "Test")
-                    .replace("%OPERATION%", "Create")
-                    .replace("%REASON%", "Test name is missing!"));
+            msg.setDescription(msg.getDescription().replace("%ITEM%", "Robot")
+                    .replace("%OPERATION%", "Delete")
+                    .replace("%REASON%", "Robot ID (robotid) is missing."));
             ans.setResultMessage(msg);
         } else {
             /**
              * All data seems cleans so we can call the services.
              */
             ApplicationContext appContext = WebApplicationContextUtils.getWebApplicationContext(this.getServletContext());
-            ITestService testService = appContext.getBean(ITestService.class);
-            IFactoryTest factoryTest = appContext.getBean(IFactoryTest.class);
+            IRobotService robotService = appContext.getBean(IRobotService.class);
 
-            Test testData = factoryTest.create(test, description, active, automated, "");
-            ans = testService.create(testData);
-
-            if (ans.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
+            AnswerItem resp = robotService.readByKeyTech(robotid);
+            if (!(resp.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode()))) {
                 /**
-                 * Object created. Adding Log entry.
+                 * Object could not be found. We stop here and report the error.
                  */
-                ILogEventService logEventService = appContext.getBean(LogEventService.class);
-                IFactoryLogEvent factoryLogEvent = appContext.getBean(FactoryLogEvent.class);
+                msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_EXPECTED);
+                msg.setDescription(msg.getDescription().replace("%ITEM%", "Robot")
+                        .replace("%OPERATION%", "Delete")
+                        .replace("%REASON%", "Robot does not exist."));
+                ans.setResultMessage(msg);
 
-                logEventService.createPrivateCalls("/CreateTest", "CREATE", "Create Test : ['" + test + "']", request);
+            } else {
+                /**
+                 * The service was able to perform the query and confirm the
+                 * object exist, then we can delete it.
+                 */
+                Robot robotData = (Robot) resp.getItem();
+                ans = robotService.delete(robotData);
+
+                if (ans.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
+                    /**
+                     * Delete was successful. Adding Log entry.
+                     */
+                    ILogEventService logEventService = appContext.getBean(LogEventService.class);
+                    logEventService.createPrivateCalls("/DeleteRobot", "DELETE", "Delete Robot : ['" + robotid + "'|'" + robotData.getRobot() + "']", request);
+                }
             }
         }
 
@@ -116,11 +134,12 @@ public class CreateTest1 extends HttpServlet {
         jsonResponse.put("messageType", ans.getResultMessage().getMessage().getCodeString());
         jsonResponse.put("message", ans.getResultMessage().getDescription());
 
-        response.getWriter().print(jsonResponse);
+        response.getWriter().print(jsonResponse.toString());
         response.getWriter().flush();
+
     }
 
-    // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
+// <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
     /**
      * Handles the HTTP <code>GET</code> method.
      *
@@ -134,8 +153,13 @@ public class CreateTest1 extends HttpServlet {
             throws ServletException, IOException {
         try {
             processRequest(request, response);
+
+        } catch (CerberusException ex) {
+            Logger.getLogger(DeleteBuildRevisionParameters.class
+                    .getName()).log(Level.SEVERE, null, ex);
         } catch (JSONException ex) {
-            Logger.getLogger(CreateTest1.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(DeleteBuildRevisionParameters.class
+                    .getName()).log(Level.SEVERE, null, ex);
         }
     }
 
@@ -152,8 +176,13 @@ public class CreateTest1 extends HttpServlet {
             throws ServletException, IOException {
         try {
             processRequest(request, response);
+
+        } catch (CerberusException ex) {
+            Logger.getLogger(DeleteBuildRevisionParameters.class
+                    .getName()).log(Level.SEVERE, null, ex);
         } catch (JSONException ex) {
-            Logger.getLogger(CreateTest1.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(DeleteBuildRevisionParameters.class
+                    .getName()).log(Level.SEVERE, null, ex);
         }
     }
 
@@ -166,5 +195,4 @@ public class CreateTest1 extends HttpServlet {
     public String getServletInfo() {
         return "Short description";
     }// </editor-fold>
-
 }

@@ -100,8 +100,10 @@ public enum MessageGeneralEnum {
     GUI_TESTCASE_DUPLICATION_ALREADY_EXISTS(403, "", "Error : You're trying to duplicate a testcase which already exists."),
     GUI_TESTCASE_DELETE_USED_STEP(403, "", "Error : You're trying to delete a testcase which have some step used in other tests. Please remove the link before delete this testcase."),
     GUI_TESTCASE_NON_ADMIN_SAVE_WORKING_TESTCASE(403, "", "Error : You're trying to save a WORKING testcase without having the TestAdmin right to do so."),
-    //data operations
-    DATA_OPERATION_SUCCESS(000, MessageCodeEnum.DATA_OPERATION_CODE_SUCCESS.getCode(), "The requested operation was concluded with success !"),
+
+    // Data operations
+    DATA_OPERATION_SUCCESS(000, MessageCodeEnum.DATA_OPERATION_CODE_SUCCESS.getCode(), "The requested operation was concluded with success."),
+    DATA_OPERATION_WARNING(000, MessageCodeEnum.DATA_OPERATION_CODE_WARNING.getCode(), "The requested operation was concluded but with warnings."),
     DATA_OPERATION_ERROR(900, MessageCodeEnum.DATA_OPERATION_CODE_ERROR.getCode(), "An error occurred while executing the requested operation !");
     
     private final int code;

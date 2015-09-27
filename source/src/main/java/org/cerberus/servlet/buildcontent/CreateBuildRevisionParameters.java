@@ -1,6 +1,4 @@
-/*
- * Cerberus  Copyright (C) 2013  vertigo17
- * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
+/* DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
  *
  * This file is part of Cerberus.
  *
@@ -17,8 +15,9 @@
  * You should have received a copy of the GNU General Public License
  * along with Cerberus.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.cerberus.servlet.test;
+package org.cerberus.servlet.buildcontent;
 
+import org.cerberus.servlet.robot.*;
 import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -28,28 +27,30 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import org.cerberus.crud.entity.MessageEvent;
-import org.cerberus.crud.entity.Test;
-import org.cerberus.crud.factory.IFactoryLogEvent;
-import org.cerberus.crud.factory.IFactoryTest;
-import org.cerberus.crud.factory.impl.FactoryLogEvent;
-import org.cerberus.crud.service.ILogEventService;
-import org.cerberus.crud.service.ITestService;
-import org.cerberus.crud.service.impl.LogEventService;
+import org.cerberus.crud.entity.Robot;
+import org.cerberus.crud.factory.IFactoryBuildRevisionParameters;
 import org.cerberus.enums.MessageEventEnum;
+import org.cerberus.exception.CerberusException;
+import org.cerberus.crud.factory.IFactoryRobot;
+import org.cerberus.crud.service.IBuildRevisionParametersService;
+import org.cerberus.crud.service.ILogEventService;
+import org.cerberus.crud.service.IRobotService;
+import org.cerberus.crud.service.impl.LogEventService;
+import org.cerberus.util.StringUtil;
 import org.cerberus.util.answer.Answer;
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.owasp.html.PolicyFactory;
-import org.owasp.html.Sanitizers;
 import org.springframework.context.ApplicationContext;
 import org.springframework.web.context.support.WebApplicationContextUtils;
+import org.owasp.html.PolicyFactory;
+import org.owasp.html.Sanitizers;
 
 /**
  *
- * @author cerberus
+ * @author bcivel
  */
-@WebServlet(name = "CreateTest1", urlPatterns = {"/CreateTest1"})
-public class CreateTest1 extends HttpServlet {
+@WebServlet(name = "CreateBuildRevisionParameters", urlPatterns = {"/CreateBuildRevisionParameters"})
+public class CreateBuildRevisionParameters extends HttpServlet {
 
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
@@ -59,10 +60,12 @@ public class CreateTest1 extends HttpServlet {
      * @param response servlet response
      * @throws ServletException if a servlet-specific error occurs
      * @throws IOException if an I/O error occurs
+     * @throws org.cerberus.exception.CerberusException
+     * @throws org.json.JSONException
      */
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException, JSONException {
-                JSONObject jsonResponse = new JSONObject();
+            throws ServletException, IOException, CerberusException, JSONException {
+        JSONObject jsonResponse = new JSONObject();
         Answer ans = new Answer();
         MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
         msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", ""));
@@ -74,39 +77,53 @@ public class CreateTest1 extends HttpServlet {
         /**
          * Parsing and securing all required parameters.
          */
-        String test = policy.sanitize(request.getParameter("test"));
-        String active = policy.sanitize(request.getParameter("Active"));
-        String automated = policy.sanitize(request.getParameter("Automated"));
-        String description = policy.sanitize(request.getParameter("Description"));
+        String build = policy.sanitize(request.getParameter("build"));
+        String revision = policy.sanitize(request.getParameter("revision"));
+        String release = policy.sanitize(request.getParameter("release"));
+        String application = policy.sanitize(request.getParameter("application"));
+        String project = policy.sanitize(request.getParameter("project"));
+        String ticketidfixed = policy.sanitize(request.getParameter("ticketidfixed"));
+        String bugidfixed = policy.sanitize(request.getParameter("bugidfixed"));
+        String link = policy.sanitize(request.getParameter("link"));
+        String releaseowner = policy.sanitize(request.getParameter("releaseowner"));
+        String subject = policy.sanitize(request.getParameter("subject"));
+        String jenkinsbuildid = policy.sanitize(request.getParameter("jenkinsbuildid"));
+        String mavenGroupID = policy.sanitize(request.getParameter("mavengroupid"));
+        String mavenArtefactID = policy.sanitize(request.getParameter("mavenartefactid"));
+        String mavenVersion = policy.sanitize(request.getParameter("mavenversion"));
 
         /**
          * Checking all constrains before calling the services.
          */
-        if (test.isEmpty()) {
+        if (StringUtil.isNullOrEmpty(build)) {
             msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_EXPECTED);
-            msg.setDescription(msg.getDescription().replace("%ITEM%", "Test")
+            msg.setDescription(msg.getDescription().replace("%ITEM%", "BuildRevisionParameters")
                     .replace("%OPERATION%", "Create")
-                    .replace("%REASON%", "Test name is missing!"));
+                    .replace("%REASON%", "Build is missing."));
+            ans.setResultMessage(msg);
+        } else if (StringUtil.isNullOrEmpty(revision)) {
+            msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_EXPECTED);
+            msg.setDescription(msg.getDescription().replace("%ITEM%", "BuildRevisionParameters")
+                    .replace("%OPERATION%", "Create")
+                    .replace("%REASON%", "Revision is missing."));
             ans.setResultMessage(msg);
         } else {
             /**
              * All data seems cleans so we can call the services.
              */
             ApplicationContext appContext = WebApplicationContextUtils.getWebApplicationContext(this.getServletContext());
-            ITestService testService = appContext.getBean(ITestService.class);
-            IFactoryTest factoryTest = appContext.getBean(IFactoryTest.class);
+            IBuildRevisionParametersService buildRevisionParametersService = appContext.getBean(IBuildRevisionParametersService.class);
+            IFactoryBuildRevisionParameters buildRevisionParametersFactory = appContext.getBean(IFactoryBuildRevisionParameters.class);
 
-            Test testData = factoryTest.create(test, description, active, automated, "");
-            ans = testService.create(testData);
+//            Robot robotData = buildRevisionParametersFactory.create(robotid, build, revision, release, application, project, ticketidfixed, bugidfixed, link, mavenVersion);
+//            ans = buildRevisionParametersService.create(robotData);
 
             if (ans.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
                 /**
                  * Object created. Adding Log entry.
                  */
                 ILogEventService logEventService = appContext.getBean(LogEventService.class);
-                IFactoryLogEvent factoryLogEvent = appContext.getBean(FactoryLogEvent.class);
-
-                logEventService.createPrivateCalls("/CreateTest", "CREATE", "Create Test : ['" + test + "']", request);
+                logEventService.createPrivateCalls("/CreateRobot", "CREATE", "Create Robot : ['" + build + "']", request);
             }
         }
 
@@ -118,6 +135,7 @@ public class CreateTest1 extends HttpServlet {
 
         response.getWriter().print(jsonResponse);
         response.getWriter().flush();
+
     }
 
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
@@ -134,8 +152,10 @@ public class CreateTest1 extends HttpServlet {
             throws ServletException, IOException {
         try {
             processRequest(request, response);
+        } catch (CerberusException ex) {
+            Logger.getLogger(CreateBuildRevisionParameters.class.getName()).log(Level.SEVERE, null, ex);
         } catch (JSONException ex) {
-            Logger.getLogger(CreateTest1.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(CreateBuildRevisionParameters.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
 
@@ -152,8 +172,10 @@ public class CreateTest1 extends HttpServlet {
             throws ServletException, IOException {
         try {
             processRequest(request, response);
+        } catch (CerberusException ex) {
+            Logger.getLogger(CreateBuildRevisionParameters.class.getName()).log(Level.SEVERE, null, ex);
         } catch (JSONException ex) {
-            Logger.getLogger(CreateTest1.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(CreateBuildRevisionParameters.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
 
@@ -166,5 +188,4 @@ public class CreateTest1 extends HttpServlet {
     public String getServletInfo() {
         return "Short description";
     }// </editor-fold>
-
 }

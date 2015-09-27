@@ -17,8 +17,9 @@
  * You should have received a copy of the GNU General Public License
  * along with Cerberus.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.cerberus.servlet.application;
+package org.cerberus.servlet.buildcontent;
 
+import org.cerberus.servlet.robot.*;
 import com.google.gson.Gson;
 import java.io.IOException;
 import java.util.List;
@@ -29,12 +30,13 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import org.cerberus.crud.entity.DeployType;
+
 import org.cerberus.crud.entity.MessageEvent;
+import org.cerberus.crud.entity.Robot;
 import org.cerberus.enums.MessageEventEnum;
 import org.cerberus.exception.CerberusException;
-import org.cerberus.crud.service.IDeployTypeService;
-import org.cerberus.crud.service.impl.DeployTypeService;
+import org.cerberus.crud.service.IRobotService;
+import org.cerberus.crud.service.impl.RobotService;
 import org.cerberus.util.ParameterParserUtil;
 import org.cerberus.util.answer.AnswerItem;
 import org.cerberus.util.answer.AnswerList;
@@ -50,10 +52,10 @@ import org.springframework.web.context.support.WebApplicationContextUtils;
  *
  * @author vertigo
  */
-@WebServlet(name = "ReadDeployType", urlPatterns = {"/ReadDeployType"})
-public class ReadDeployType extends HttpServlet {
+@WebServlet(name = "ReadBuildRevisionParameters", urlPatterns = {"/ReadBuildRevisionParameters"})
+public class ReadBuildRevisionParameters extends HttpServlet {
 
-    private IDeployTypeService deployTypeService;
+    private IRobotService robotService;
 
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
@@ -80,20 +82,34 @@ public class ReadDeployType extends HttpServlet {
         /**
          * Parsing and securing all required parameters.
          */
-        // Nothing to do here as no parameter to check.
-        
+        Integer robotid = 0;
+        boolean robotid_error = true;
+        try {
+            if (request.getParameter("robotid") != null && !request.getParameter("robotid").equals("")) {
+                robotid = Integer.valueOf(policy.sanitize(request.getParameter("robotid")));
+                robotid_error = false;
+            }
+        } catch (Exception ex) {
+            msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_EXPECTED);
+            msg.setDescription(msg.getDescription().replace("%ITEM%", "Robot"));
+            msg.setDescription(msg.getDescription().replace("%OPERATION%", "Read"));
+            msg.setDescription(msg.getDescription().replace("%REASON%", "robotid must be an integer value."));
+            robotid_error = true;
+        }
+
         // Init Answer with potencial error from Parsing parameter.
         AnswerItem answer = new AnswerItem(msg);
-
+        
         try {
             JSONObject jsonResponse = new JSONObject();
-            if (request.getParameter("deploytype") == null) {
-                answer = findDeployTypeList(appContext, request, response);
+            if ((request.getParameter("robotid") == null)) {
+                answer = findRobotList(appContext, request, response);
                 jsonResponse = (JSONObject) answer.getItem();
             } else {
-                String deployType = policy.sanitize(request.getParameter("deploytype"));
-                answer = findDeployTypeByID(appContext, deployType);
-                jsonResponse = (JSONObject) answer.getItem();
+                if ((request.getParameter("robotid") != null) && !(robotid_error)) {
+                    answer = findRobotByKey(appContext, robotid);
+                    jsonResponse = (JSONObject) answer.getItem();
+                }
             }
 
             jsonResponse.put("messageType", answer.getResultMessage().getMessage().getCodeString());
@@ -101,9 +117,9 @@ public class ReadDeployType extends HttpServlet {
             jsonResponse.put("sEcho", echo);
 
             response.getWriter().print(jsonResponse.toString());
-
+            
         } catch (JSONException e) {
-            org.apache.log4j.Logger.getLogger(ReadDeployType.class.getName()).log(org.apache.log4j.Level.ERROR, null, e);
+            org.apache.log4j.Logger.getLogger(ReadBuildRevisionParameters.class.getName()).log(org.apache.log4j.Level.ERROR, null, e);
             //returns a default error message with the json format that is able to be parsed by the client-side
             response.setContentType("application/json");
             msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
@@ -131,7 +147,7 @@ public class ReadDeployType extends HttpServlet {
         try {
             processRequest(request, response);
         } catch (CerberusException ex) {
-            Logger.getLogger(ReadDeployType.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            Logger.getLogger(ReadBuildRevisionParameters.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         }
     }
 
@@ -149,7 +165,7 @@ public class ReadDeployType extends HttpServlet {
         try {
             processRequest(request, response);
         } catch (CerberusException ex) {
-            Logger.getLogger(ReadDeployType.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            Logger.getLogger(ReadBuildRevisionParameters.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         }
     }
 
@@ -163,28 +179,29 @@ public class ReadDeployType extends HttpServlet {
         return "Short description";
     }// </editor-fold>
 
-    private AnswerItem findDeployTypeList(ApplicationContext appContext, HttpServletRequest request, HttpServletResponse response) throws JSONException {
+    private AnswerItem findRobotList(ApplicationContext appContext, HttpServletRequest request, HttpServletResponse response) throws JSONException {
 
         AnswerItem item = new AnswerItem();
         JSONObject jsonResponse = new JSONObject();
-        deployTypeService = appContext.getBean(DeployTypeService.class);
+        robotService = appContext.getBean(RobotService.class);
 
         int startPosition = Integer.valueOf(ParameterParserUtil.parseStringParam(request.getParameter("iDisplayStart"), "0"));
         int length = Integer.valueOf(ParameterParserUtil.parseStringParam(request.getParameter("iDisplayLength"), "100000"));
+        /*int sEcho  = Integer.valueOf(request.getParameter("sEcho"));*/
 
         String searchParameter = ParameterParserUtil.parseStringParam(request.getParameter("sSearch"), "");
-        int columnToSortParameter = Integer.parseInt(ParameterParserUtil.parseStringParam(request.getParameter("iSortCol_0"), "0"));
-        String sColumns = ParameterParserUtil.parseStringParam(request.getParameter("sColumns"), "deploytype,description");
+        int columnToSortParameter = Integer.parseInt(ParameterParserUtil.parseStringParam(request.getParameter("iSortCol_0"), "1"));
+        String sColumns = ParameterParserUtil.parseStringParam(request.getParameter("sColumns"), "robotID,robot,host,port,platform,browser,version,active,useragent,description");
         String columnToSort[] = sColumns.split(",");
         String columnName = columnToSort[columnToSortParameter];
         String sort = ParameterParserUtil.parseStringParam(request.getParameter("sSortDir_0"), "asc");
-        AnswerList resp = deployTypeService.readByCriteria(startPosition, length, columnName, sort, searchParameter, "");
+        AnswerList resp = robotService.readByCriteria(startPosition, length, columnName, sort, searchParameter, "");
 
         JSONArray jsonArray = new JSONArray();
         boolean userHasPermissions = request.isUserInRole("IntegratorRO");
-        if (resp.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {  //the service was able to perform the query, then we should get all values
-            for (DeployType deploytype : (List<DeployType>) resp.getDataList()) {
-                jsonArray.put(convertDeployTypeToJSONObject(deploytype));
+        if (resp.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {//the service was able to perform the query, then we should get all values
+            for (Robot robot : (List<Robot>) resp.getDataList()) {
+                jsonArray.put(convertRobotToJSONObject(robot));
             }
         }
 
@@ -198,26 +215,26 @@ public class ReadDeployType extends HttpServlet {
         return item;
     }
 
-    private JSONObject convertDeployTypeToJSONObject(DeployType deployType) throws JSONException {
+    private JSONObject convertRobotToJSONObject(Robot robot) throws JSONException {
 
         Gson gson = new Gson();
-        JSONObject result = new JSONObject(gson.toJson(deployType));
+        JSONObject result = new JSONObject(gson.toJson(robot));
         return result;
     }
 
-    private AnswerItem findDeployTypeByID(ApplicationContext appContext, String id) throws JSONException, CerberusException {
+    private AnswerItem findRobotByKey(ApplicationContext appContext, Integer id) throws JSONException, CerberusException {
         AnswerItem item = new AnswerItem();
         JSONObject object = new JSONObject();
 
-        IDeployTypeService libService = appContext.getBean(IDeployTypeService.class);
+        IRobotService libService = appContext.getBean(IRobotService.class);
 
-        //finds the Deploy Type
-        AnswerItem answer = libService.readByKey(id);
+        //finds the project     
+        AnswerItem answer = libService.readByKeyTech(id);
 
         if (answer.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
             //if the service returns an OK message then we can get the item and convert it to JSONformat
-            DeployType lib = (DeployType) answer.getItem();
-            JSONObject response = convertDeployTypeToJSONObject(lib);
+            Robot lib = (Robot) answer.getItem();
+            JSONObject response = convertRobotToJSONObject(lib);
             object.put("contentTable", response);
         }
 
@@ -226,4 +243,5 @@ public class ReadDeployType extends HttpServlet {
 
         return item;
     }
+
 }

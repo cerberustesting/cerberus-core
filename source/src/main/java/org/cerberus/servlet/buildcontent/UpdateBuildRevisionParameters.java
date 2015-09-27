@@ -1,4 +1,6 @@
-/* DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
+/*
+ * Cerberus  Copyright (C) 2013  vertigo17
+ * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
  *
  * This file is part of Cerberus.
  *
@@ -15,8 +17,9 @@
  * You should have received a copy of the GNU General Public License
  * along with Cerberus.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.cerberus.servlet.application;
+package org.cerberus.servlet.buildcontent;
 
+import org.cerberus.servlet.robot.*;
 import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -25,12 +28,12 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import org.cerberus.crud.entity.DeployType;
 import org.cerberus.crud.entity.MessageEvent;
+import org.cerberus.crud.entity.Robot;
 import org.cerberus.enums.MessageEventEnum;
 import org.cerberus.exception.CerberusException;
-import org.cerberus.crud.service.IDeployTypeService;
 import org.cerberus.crud.service.ILogEventService;
+import org.cerberus.crud.service.IRobotService;
 import org.cerberus.crud.service.impl.LogEventService;
 import org.cerberus.util.StringUtil;
 import org.cerberus.util.answer.Answer;
@@ -46,8 +49,8 @@ import org.springframework.web.context.support.WebApplicationContextUtils;
  *
  * @author bcivel
  */
-@WebServlet(name = "DeleteDeployType", urlPatterns = {"/DeleteDeployType"})
-public class DeleteDeployType extends HttpServlet {
+@WebServlet(name = "UpdateBuildRevisionParameters", urlPatterns = {"/UpdateBuildRevisionParameters"})
+public class UpdateBuildRevisionParameters extends HttpServlet {
 
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
@@ -72,49 +75,82 @@ public class DeleteDeployType extends HttpServlet {
         /**
          * Parsing and securing all required parameters.
          */
-        String key = policy.sanitize(request.getParameter("deploytype"));
+        String robot = policy.sanitize(request.getParameter("robot"));
+        String host = policy.sanitize(request.getParameter("host"));
+        String port = policy.sanitize(request.getParameter("port"));
+        String platform = policy.sanitize(request.getParameter("platform"));
+        String browser = policy.sanitize(request.getParameter("browser"));
+        String version = policy.sanitize(request.getParameter("version"));
+        String active = policy.sanitize(request.getParameter("active"));
+        String description = policy.sanitize(request.getParameter("description"));
+        String userAgent = policy.sanitize(request.getParameter("useragent"));
+        Integer robotid = 0;
+        boolean robotid_error = true;
+        try {
+            if (request.getParameter("robotid") != null && !request.getParameter("robotid").equals("")) {
+                robotid = Integer.valueOf(policy.sanitize(request.getParameter("robotid")));
+                robotid_error = false;
+            }
+        } catch (Exception ex) {
+            robotid_error = true;
+        }
 
         /**
          * Checking all constrains before calling the services.
          */
-        if (StringUtil.isNullOrEmpty(key)) {
+        if (StringUtil.isNullOrEmpty(robot)) {
             msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_EXPECTED);
-            msg.setDescription(msg.getDescription().replace("%ITEM%", "Deploy Type")
-                    .replace("%OPERATION%", "Delete")
-                    .replace("%REASON%", "Deployement Type ID (deploytype) is missing."));
+            msg.setDescription(msg.getDescription().replace("%ITEM%", "Robot")
+                    .replace("%OPERATION%", "Update")
+                    .replace("%REASON%", "Robot name is missing."));
+            ans.setResultMessage(msg);
+        } else if (robotid_error) {
+            msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_EXPECTED);
+            msg.setDescription(msg.getDescription().replace("%ITEM%", "Robot")
+                    .replace("%OPERATION%", "Update")
+                    .replace("%REASON%", "Could not manage to convert robotid to an integer value or robotid is missing."));
             ans.setResultMessage(msg);
         } else {
             /**
              * All data seems cleans so we can call the services.
              */
             ApplicationContext appContext = WebApplicationContextUtils.getWebApplicationContext(this.getServletContext());
-            IDeployTypeService deployTypeService = appContext.getBean(IDeployTypeService.class);
+            IRobotService robotService = appContext.getBean(IRobotService.class);
 
-            AnswerItem resp = deployTypeService.readByKey(key);
+            AnswerItem resp = robotService.readByKeyTech(robotid);
             if (!(resp.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode()))) {
                 /**
                  * Object could not be found. We stop here and report the error.
                  */
                 msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_EXPECTED);
-                msg.setDescription(msg.getDescription().replace("%ITEM%", "Deploy Type")
-                        .replace("%OPERATION%", "Delete")
-                        .replace("%REASON%", "Deploy Type does not exist."));
+                msg.setDescription(msg.getDescription().replace("%ITEM%", "Robot")
+                        .replace("%OPERATION%", "Update")
+                        .replace("%REASON%", "Robot does not exist."));
                 ans.setResultMessage(msg);
 
             } else {
                 /**
                  * The service was able to perform the query and confirm the
-                 * object exist, then we can delete it.
+                 * object exist, then we can update it.
                  */
-                DeployType deployTypeData = (DeployType) resp.getItem();
-                ans = deployTypeService.delete(deployTypeData);
+                Robot robotData = (Robot) resp.getItem();
+                robotData.setRobot(robot);
+                robotData.setHost(host);
+                robotData.setPort(port);
+                robotData.setPlatform(platform);
+                robotData.setBrowser(browser);
+                robotData.setVersion(version);
+                robotData.setActive(active);
+                robotData.setDescription(description);
+                robotData.setUserAgent(userAgent);
+                ans = robotService.update(robotData);
 
                 if (ans.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
                     /**
-                     * Delete was successful. Adding Log entry.
+                     * Update was succesfull. Adding Log entry.
                      */
                     ILogEventService logEventService = appContext.getBean(LogEventService.class);
-                    logEventService.createPrivateCalls("/DeleteDeployType", "DELETE", "Delete Deploy Type : ['" + key + "']", request);
+                    logEventService.createPrivateCalls("/UpdateRobot", "UPDATE", "Updated Robot : ['" + robotid + "'|'" + robot + "']", request);
                 }
             }
         }
@@ -125,9 +161,8 @@ public class DeleteDeployType extends HttpServlet {
         jsonResponse.put("messageType", ans.getResultMessage().getMessage().getCodeString());
         jsonResponse.put("message", ans.getResultMessage().getDescription());
 
-        response.getWriter().print(jsonResponse.toString());
+        response.getWriter().print(jsonResponse);
         response.getWriter().flush();
-
     }
 
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
@@ -144,10 +179,12 @@ public class DeleteDeployType extends HttpServlet {
             throws ServletException, IOException {
         try {
             processRequest(request, response);
+
         } catch (CerberusException ex) {
-            Logger.getLogger(DeleteDeployType.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(UpdateBuildRevisionParameters.class
+                    .getName()).log(Level.SEVERE, null, ex);
         } catch (JSONException ex) {
-            Logger.getLogger(DeleteDeployType.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(UpdateBuildRevisionParameters.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
 
@@ -164,10 +201,12 @@ public class DeleteDeployType extends HttpServlet {
             throws ServletException, IOException {
         try {
             processRequest(request, response);
+
         } catch (CerberusException ex) {
-            Logger.getLogger(DeleteDeployType.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(UpdateBuildRevisionParameters.class
+                    .getName()).log(Level.SEVERE, null, ex);
         } catch (JSONException ex) {
-            Logger.getLogger(DeleteDeployType.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(UpdateBuildRevisionParameters.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
 

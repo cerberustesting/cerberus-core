@@ -61,7 +61,7 @@ public class DeleteRobot extends HttpServlet {
             throws ServletException, IOException, CerberusException, JSONException {
         JSONObject jsonResponse = new JSONObject();
         Answer ans = new Answer();
-        MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_UNEXPECTED_ERROR);
+        MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
         msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", ""));
         ans.setResultMessage(msg);
         PolicyFactory policy = Sanitizers.FORMATTING.and(Sanitizers.LINKS);
@@ -86,7 +86,7 @@ public class DeleteRobot extends HttpServlet {
          * Checking all constrains before calling the services.
          */
         if (robotid_error) {
-            msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_EXPECTED_ERROR);
+            msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_EXPECTED);
             msg.setDescription(msg.getDescription().replace("%ITEM%", "Robot")
                     .replace("%OPERATION%", "Delete")
                     .replace("%REASON%", "Robot ID (robotid) is missing."));
@@ -103,7 +103,7 @@ public class DeleteRobot extends HttpServlet {
                 /**
                  * Object could not be found. We stop here and report the error.
                  */
-                msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_EXPECTED_ERROR);
+                msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_EXPECTED);
                 msg.setDescription(msg.getDescription().replace("%ITEM%", "Robot")
                         .replace("%OPERATION%", "Delete")
                         .replace("%REASON%", "Robot does not exist."));

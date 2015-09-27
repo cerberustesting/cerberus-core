@@ -213,7 +213,7 @@ public class TestDataLibDataDAO implements ITestDataLibDataDAO{
                         replace("%OPERATION%", "DELETE").replace("%OPERATION%", "Delete"));
             } catch (SQLException exception) {
                 MyLogger.log(TestDataLibDataDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
-                msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_EXPECTED_ERROR);
+                msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_EXPECTED);
                 msg.setDescription(msg.getDescription().replace("%ITEM%", "Test Data Lib Data").
                         replace("%OPERATION%", "DELETE").replace("%REASON%", ""));
             } finally {
@@ -223,7 +223,7 @@ public class TestDataLibDataDAO implements ITestDataLibDataDAO{
             }
         } catch (SQLException exception) {
             MyLogger.log(TestDataLibDataDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
-            msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_UNEXPECTED_ERROR);
+            msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
             msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", "Unable to execute Delete"));
         } finally {
             try {
@@ -264,7 +264,7 @@ public class TestDataLibDataDAO implements ITestDataLibDataDAO{
                     }
                 } catch (SQLException exception) {
                     MyLogger.log(TestDataLibDataDAO.class.getName(), Level.ERROR, "Unable to execute query : "+exception.toString());
-                    msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_UNEXPECTED_ERROR);
+                    msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
                     msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", "It was not possible to select table."));
                 } finally {
                     if(resultSet != null){
@@ -280,7 +280,7 @@ public class TestDataLibDataDAO implements ITestDataLibDataDAO{
             }
         } catch (SQLException exception) {
             MyLogger.log(TestDataLibDataDAO.class.getName(), Level.ERROR, "Unable to execute query : "+exception.toString());
-            msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_UNEXPECTED_ERROR);
+            msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
             msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", "It was not possible to select table."));
         } finally {
            try {
@@ -370,7 +370,7 @@ public class TestDataLibDataDAO implements ITestDataLibDataDAO{
                     answer.setTotalRows(testDataLibListData.size());
                 } catch (SQLException exception) {
                     MyLogger.log(TestDataLibDataDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());                    
-                    rs = new MessageEvent(MessageEventEnum.DATA_OPERATION_UNEXPECTED_ERROR);
+                    rs = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
                     rs.setDescription(rs.getDescription().replace("%DESCRIPTION%", "It was not possible to select table."));
                     
                 } finally {
@@ -381,7 +381,7 @@ public class TestDataLibDataDAO implements ITestDataLibDataDAO{
                 
             } catch (SQLException exception) {
                 MyLogger.log(TestDataLibDataDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
-                rs = new MessageEvent(MessageEventEnum.DATA_OPERATION_UNEXPECTED_ERROR);
+                rs = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
                 rs.setDescription(rs.getDescription().replace("%DESCRIPTION%", "It was not possible to select table."));
                     
             } finally {
@@ -392,7 +392,7 @@ public class TestDataLibDataDAO implements ITestDataLibDataDAO{
 
         } catch (SQLException exception) {
             MyLogger.log(TestDataLibDataDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
-            rs = new MessageEvent(MessageEventEnum.DATA_OPERATION_UNEXPECTED_ERROR);
+            rs = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
             rs.setDescription(rs.getDescription().replace("%DESCRIPTION%", "It was not possible to select table."));
         } finally {
             try {
@@ -548,17 +548,17 @@ public class TestDataLibDataDAO implements ITestDataLibDataDAO{
                     rs.setDescription(rs.getDescription().replace("%ITEM%", "Subdata entries ").replace("%OPERATION%", "INSERT"));
                 }else{
                     //some of the statements failed therefore we need to send a specific exception 
-                    rs = new MessageEvent(MessageEventEnum.DATA_OPERATION_EXPECTED_ERROR);
+                    rs = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_EXPECTED);
                     rs.setDescription(rs.getDescription().replace("%ITEM%", "Subdata entries ").replace("%OPERATION%", "INSERT").
                             replace("%REASON%", "Some problem occurred while inserting the subdata entries - some failed to be inserted!"));
                 }
             } catch (SQLException exception) {
                 MyLogger.log(TestDataLibDataDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
                 if(exception.getSQLState().equals("23000")){ //23000 is the sql state for duplicate entries
-                    rs = new MessageEvent(MessageEventEnum.DATA_OPERATION_DUPLICATE_ERROR);
+                    rs = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_DUPLICATE);
                     rs.setDescription(rs.getDescription().replace("%ITEM%", "Test data lib data ").replace("%OPERATION%", "INSERT"));                
                 }else{
-                    rs = new MessageEvent(MessageEventEnum.DATA_OPERATION_UNEXPECTED_ERROR);
+                    rs = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
                     rs.setDescription(rs.getDescription().replace("%DESCRIPTION%", "It was not possible to update table."));
                 }
             } finally {
@@ -567,7 +567,7 @@ public class TestDataLibDataDAO implements ITestDataLibDataDAO{
                 }
             }
         } catch (SQLException exception) {
-            rs = new MessageEvent(MessageEventEnum.DATA_OPERATION_UNEXPECTED_ERROR);
+            rs = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
             rs.setDescription(rs.getDescription().replace("%DESCRIPTION%", "It was not possible to update table."));
             MyLogger.log(TestDataLibDataDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
         } finally {
@@ -616,19 +616,19 @@ public class TestDataLibDataDAO implements ITestDataLibDataDAO{
                     rs = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
                     rs.setDescription(rs.getDescription().replace("%ITEM%", "Sub-data entries ").replace("%OPERATION%", "UPDATE"));
                 }else{
-                    rs = new MessageEvent(MessageEventEnum.DATA_OPERATION_EXPECTED_ERROR);
+                    rs = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_EXPECTED);
                     rs.setDescription(rs.getDescription().replace("%ITEM%", "Sub-data entries ").replace("%OPERATION%", "UPDATE").
                             replace("%REASON%", "Some problem occurred while updating the subdata entries!"));
                 }
             } catch (SQLException exception) {
-                rs = new MessageEvent(MessageEventEnum.DATA_OPERATION_UNEXPECTED_ERROR);
+                rs = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
                 rs.setDescription(rs.getDescription().replace("%DESCRIPTION%", "It was not possible to update table."));
                 MyLogger.log(TestDataLibDataDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
             } finally {
                 preStat.close();
             }
         } catch (SQLException exception) {
-            rs = new MessageEvent(MessageEventEnum.DATA_OPERATION_UNEXPECTED_ERROR);
+            rs = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
             rs.setDescription(rs.getDescription().replace("%DESCRIPTION%", "It was not possible to update table."));
             MyLogger.log(TestDataLibDataDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
         } finally {
@@ -672,13 +672,13 @@ public class TestDataLibDataDAO implements ITestDataLibDataDAO{
                     rs = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
                     rs.setDescription(rs.getDescription().replace("%ITEM%", "Test data library").replace("%OPERATION%", "UPDATE"));
                 }else{
-                    rs = new MessageEvent(MessageEventEnum.DATA_OPERATION_EXPECTED_ERROR);
+                    rs = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_EXPECTED);
                     rs.setDescription(rs.getDescription().replace("%ITEM%", "Test data library").replace("%OPERATION%", "DELETE").
                             replace("%REASON%", "Some problem occurred while deleting the subdata entries! Please check if there are active test cases that are using"
                             + " the subdata entries that you are trying to delete!"));                    
                 }
             } catch (SQLException exception) {
-                rs = new MessageEvent(MessageEventEnum.DATA_OPERATION_UNEXPECTED_ERROR);
+                rs = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
                 rs.setDescription(rs.getDescription().replace("%DESCRIPTION%", "It was not possible to update table."));
                 MyLogger.log(TestDataLibDataDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
             } finally {
@@ -687,7 +687,7 @@ public class TestDataLibDataDAO implements ITestDataLibDataDAO{
                 }
             }
         } catch (SQLException exception) {
-            rs = new MessageEvent(MessageEventEnum.DATA_OPERATION_UNEXPECTED_ERROR);
+            rs = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
             rs.setDescription(rs.getDescription().replace("%DESCRIPTION%", "It was not possible to update table."));
             MyLogger.log(TestDataLibDataDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
         } finally {
@@ -758,7 +758,7 @@ public class TestDataLibDataDAO implements ITestDataLibDataDAO{
                     
                 } catch (SQLException exception) {
                     MyLogger.log(TestDataLibDataDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
-                    rs = new MessageEvent(MessageEventEnum.DATA_OPERATION_UNEXPECTED_ERROR);
+                    rs = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
                     rs.setDescription(rs.getDescription().replace("%DESCRIPTION%", "It was not possible to retrieve the data."));
                     
                 } finally {
@@ -769,7 +769,7 @@ public class TestDataLibDataDAO implements ITestDataLibDataDAO{
                 
             } catch (SQLException exception) {
                 MyLogger.log(TestDataLibDataDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
-                rs = new MessageEvent(MessageEventEnum.DATA_OPERATION_UNEXPECTED_ERROR);
+                rs = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
                 rs.setDescription(rs.getDescription().replace("%DESCRIPTION%", "It was not possible to retrieve the data."));
             } finally {
                 if(preStat != null){
@@ -779,7 +779,7 @@ public class TestDataLibDataDAO implements ITestDataLibDataDAO{
 
         } catch (SQLException exception) {
             MyLogger.log(TestDataLibDataDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
-            rs = new MessageEvent(MessageEventEnum.DATA_OPERATION_UNEXPECTED_ERROR);
+            rs = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
             rs.setDescription(rs.getDescription().replace("%DESCRIPTION%", "It was not possible to retrieve the data."));
         } finally {
             try {
@@ -842,7 +842,7 @@ public class TestDataLibDataDAO implements ITestDataLibDataDAO{
                     
                 } catch (SQLException exception) {
                     MyLogger.log(TestDataLibDataDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
-                    rs = new MessageEvent(MessageEventEnum.DATA_OPERATION_UNEXPECTED_ERROR);
+                    rs = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
                     rs.setDescription(rs.getDescription().replace("%DESCRIPTION%", "It was not possible to retrieve the data."));
 
                 } finally {
@@ -853,7 +853,7 @@ public class TestDataLibDataDAO implements ITestDataLibDataDAO{
                 
             } catch (SQLException exception) {
                 MyLogger.log(TestDataLibDataDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
-                rs = new MessageEvent(MessageEventEnum.DATA_OPERATION_UNEXPECTED_ERROR);
+                rs = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
                 rs.setDescription(rs.getDescription().replace("%DESCRIPTION%", "It was not possible to retrieve the data."));            
             } finally {
                 if(preStat != null){
@@ -863,7 +863,7 @@ public class TestDataLibDataDAO implements ITestDataLibDataDAO{
 
         } catch (SQLException exception) {
             MyLogger.log(TestDataLibDataDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
-            rs = new MessageEvent(MessageEventEnum.DATA_OPERATION_UNEXPECTED_ERROR);
+            rs = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
             rs.setDescription(rs.getDescription().replace("%DESCRIPTION%", "It was not possible to retrieve the data."));
             
         } finally {
