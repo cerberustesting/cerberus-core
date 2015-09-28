@@ -41,6 +41,28 @@ function initPage() {
 //    displayGlobalLabel(doc);
 //    displayPageLabel(doc);
     displayFooter(doc);
+    displayInvariantList("GROUP", "group");
+    displayInvariantList("TCSTATUS", "status");
+    displayInvariantList("PRIORITY", "priority");
+    displayInvariantList("TCACTIVE", "active");
+    displayInvariantList("TCACTIVE", "activeQA");
+    displayInvariantList("TCACTIVE", "activeUAT");
+    displayInvariantList("TCACTIVE", "activeProd");
+    appendCountryList();
+}
+
+function appendCountryList() {
+    var jqxhr = $.getJSON("FindInvariantByID", "idName=COUNTRY");
+    $.when(jqxhr).then(function (data) {
+        var countryList = $("#countryList");
+        var res = '<label class="checkbox-inline"><input type="checkbox" name="BE"/>BE</label>';
+
+        for (var index = 0; index < data.length; index++) {
+            var country = data[index].value;
+
+            countryList.append('<label class="checkbox-inline"><input type="checkbox" name="' + country + '"/>' + country + '</label>');
+        }
+    });
 }
 
 function loadTestFilters(urlTag) {
@@ -95,20 +117,49 @@ function loadTable() {
 }
 
 function editEntry(testCase) {
-//    clearResponseMessageMainPage();
-//    var jqxhr = $.getJSON("ReadTest", "test=" + test);
-//    $.when(jqxhr).then(function (data) {
-//        var obj = data["contentTable"];
+    clearResponseMessageMainPage();
+    var test = GetURLParameter('test');
+    var jqxhr = $.getJSON("ReadTestCase", "test=" + test + "&testCase=" + testCase);
+    $.when(jqxhr).then(function (data) {
+        console.log(data);
 
-    var formEdit = $('#editEntryModal');
+        var formEdit = $('#editEntryModal');
 
-//        formEdit.find("#test").prop("value", obj.test);
+        formEdit.find("#test").prop("value", data.test);
+        formEdit.find("#testCase").prop("value", data.testCase);
+        formEdit.find("#description").prop("value", data.description);
+        formEdit.find("#creator").prop("value", data.creator);
+        formEdit.find("#lastModifier").prop("value", data.lastModifier);
+        formEdit.find("#implementer").prop("value", data.implementer);
+        formEdit.find("#tcDateCrea").prop("value", data.tcDateCrea);
+        formEdit.find("#ticket").prop("value", data.ticket);
+        formEdit.find("#function").prop("value", data.function);
+        formEdit.find("#shortDesc").prop("value", data.shortDesc);
+        formEdit.find("#behaviorOrValueExpected").prop("value", data.behaviorOrValueExpected);
 //        formEdit.find("#active").prop("value", obj.active);
 //        formEdit.find("#description").prop("value", obj.description);
 //        formEdit.find("#automated").prop("value", obj.automated);
 
-    formEdit.modal('show');
-//    });
+        formEdit.modal('show');
+    });
+}
+
+function setActive(checkbox) {
+    var test = GetURLParameter('test');
+    var testCase = checkbox.name;
+    var active;
+
+    if (checkbox.checked === true) {
+        active = "Y";
+    } else {
+        active = "N";
+    }
+    $.ajax({
+        url: "UpdateTestCase2",
+        method: "POST",
+        data: {test: test, testCase: testCase, active: active},
+        dataType: "json"
+    });
 }
 
 function aoColumnsFunc(countries) {
@@ -119,6 +170,7 @@ function aoColumnsFunc(countries) {
             "bSearchable": false,
             "title": "Actions",
             "sDefaultContent": "",
+            "sWidth": "100px",
             "mRender": function (data, type, obj) {
                 if (data.hasPermissions) {
                     var editEntry = '<button id="editEntry" onclick="editEntry(\'' + obj["testCase"] + '\');"\n\
@@ -133,30 +185,35 @@ function aoColumnsFunc(countries) {
             "data": "testCase",
             "sName": "testCase",
             "title": "Test Case",
+            "sWidth": "70px",
             "sDefaultContent": ""
         },
         {
             "data": "application",
             "sName": "application",
             "title": "Application",
+            "sWidth": "100px",
             "sDefaultContent": ""
         },
         {
             "data": "project",
             "sName": "project",
             "title": "Project",
+            "sWidth": "100px",
             "sDefaultContent": ""
         },
         {
             "data": "creator",
             "sName": "creator",
             "title": "Creator",
+            "sWidth": "100px",
             "sDefaultContent": ""
         },
         {
             "data": "lastModifier",
             "sName": "lastmodifier",
             "title": "Last Modifier",
+            "sWidth": "100px",
             "sDefaultContent": ""
         },
         {
@@ -164,11 +221,13 @@ function aoColumnsFunc(countries) {
             "sName": "active",
             "title": "Active",
             "sDefaultContent": "",
+            "sWidth": "70px",
+            "className": "center",
             "mRender": function (data, type, obj) {
                 if (data === "Y") {
-                    return data + '<button class="btn btn-default btn-xs btnActive">Activate</button>';
+                    return '<input type="checkbox" name="' + obj["testCase"] + '" onchange="setActive(this);" checked/>';
                 } else if (data === "N") {
-                    return data + '<button class="btn btn-default btn-xs btnActive">Disable</button>';
+                    return '<input type="checkbox" name="' + obj["testCase"] + '" onchange="setActive(this);"/>';
                 }
             }
         },
@@ -176,51 +235,58 @@ function aoColumnsFunc(countries) {
             "data": "status",
             "sName": "status",
             "title": "Status",
+            "sWidth": "100px",
             "sDefaultContent": ""
         },
         {
             "data": "priority",
             "sName": "priority",
             "title": "Priority",
+            "sWidth": "70px",
             "sDefaultContent": ""
         },
         {
             "data": "group",
             "sName": "group",
             "title": "Group",
+            "sWidth": "100px",
             "sDefaultContent": ""
         },
         {
             "data": "shortDescription",
             "sName": "description",
             "title": "Description",
+            "sWidth": "300px",
             "sDefaultContent": ""
         },
         {
             "data": "tcDateCrea",
             "sName": "tcDateCrea",
             "title": "Created",
+            "sWidth": "150px",
             "sDefaultContent": ""
         }
     ];
 
     for (var index = 0; index < countries.length; index++) {
         var country = countries[index].value;
-        
+
         var column = {
+            "data": function (row, type, val, meta) {
+                var dataTitle = meta.settings.aoColumns[meta.col].sTitle;
+
+                if (row.hasOwnProperty("countryList") && row["countryList"].hasOwnProperty(dataTitle)) {
+                    return '<input type="checkbox" name="' + dataTitle + '" checked/>';
+                } else {
+                    return '<input type="checkbox" name="' + dataTitle + '"/>';
+                }
+            },
             "bSortable": false,
             "bSearchable": false,
             "title": country,
-            "sDefaultContent": "",
-            "mRender": function (data, type, obj) {
-                if (obj.hasOwnProperty("countryList") && obj.countryList.hasOwnProperty()) {
-                    return "YES";
-                } else {
-                    return "NO";
-                }
-            }
+            "sDefaultContent": ""
         };
-        
+
         aoColumns.push(column);
     }
 

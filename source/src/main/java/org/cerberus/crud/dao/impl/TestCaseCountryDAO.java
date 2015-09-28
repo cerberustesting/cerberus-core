@@ -250,14 +250,12 @@ public class TestCaseCountryDAO implements ITestCaseCountryDAO {
     @Override
     public AnswerList readByTest(String test) {
         AnswerList answer = new AnswerList();
-        MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_UNEXPECTED_ERROR);
+        MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
         msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", ""));
         List<TestCaseCountry> testCaseCountryList = new ArrayList<TestCaseCountry>();
         StringBuilder query = new StringBuilder();
 
         query.append("SELECT * FROM testcasecountry WHERE test = ?;");
-
-        System.out.println(query.toString());
 
         Connection connection = this.databaseSpring.connect();
         try {
@@ -278,7 +276,7 @@ public class TestCaseCountryDAO implements ITestCaseCountryDAO {
 
                 } catch (SQLException exception) {
                     LOG.error("Unable to execute query : " + exception.toString());
-                    msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_UNEXPECTED_ERROR);
+                    msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
                     msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", "Unable to retrieve the list of entries!"));
 
                 } finally {
@@ -289,7 +287,7 @@ public class TestCaseCountryDAO implements ITestCaseCountryDAO {
 
             } catch (SQLException exception) {
                 LOG.error("Unable to execute query : " + exception.toString());
-                msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_UNEXPECTED_ERROR);
+                msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
                 msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", "Unable to retrieve the list of entries!"));
             } finally {
                 if (preStat != null) {
@@ -299,7 +297,7 @@ public class TestCaseCountryDAO implements ITestCaseCountryDAO {
 
         } catch (SQLException exception) {
             LOG.error("Unable to execute query : " + exception.toString());
-            msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_UNEXPECTED_ERROR);
+            msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
             msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", "Unable to retrieve the list of entries!"));
         } finally {
             try {

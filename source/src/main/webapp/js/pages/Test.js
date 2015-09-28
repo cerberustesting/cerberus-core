@@ -169,6 +169,11 @@ function aoColumnsFunc() {
             "bSearchable": false,
             "title": doc.getDocOnline("page_global", "columnAction"),
             "mRender": function (data, type, obj) {
+                var testCaseLink = '<button id="testCaseLink" class="btn btn-primary btn-xs margin-right5"\n\
+                                    onclick="location.href=\'./TestCaseList.jsp?test='+ encodeURIComponent(obj["test"]) +'\'">\n\
+                                    <span class="glyphicon glyphicon-link"></span>\n\
+                                    </button>';
+                
                 if (data["hasPermissions"]) {
                     var editEntry = '<button id="editEntry" onclick="editEntry(\'' + obj["test"] + '\');"\n\
                                 class="editEntry btn btn-default btn-xs margin-right5" \n\
@@ -178,9 +183,9 @@ function aoColumnsFunc() {
                                 class="deleteEntry btn btn-default btn-xs margin-right5" \n\
                                 name="deleteEntry" title="' + doc.getDocLabel("page_test", "btn_delete") + '" type="button">\n\
                                 <span class="glyphicon glyphicon-trash"></span></button>';
-                    return '<div class="center btn-group width150">' + editEntry + deleteEntry + '</div>';
+                    return '<div class="center btn-group width150">' + editEntry + deleteEntry + testCaseLink + '</div>';
                 } else {
-                    return '';
+                    return '<div class="center btn-group width150">' + testCaseLink + '</div>';
                 }
             }
         },

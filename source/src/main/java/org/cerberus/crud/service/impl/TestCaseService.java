@@ -42,6 +42,8 @@ import org.cerberus.crud.service.ITestCaseStepActionControlService;
 import org.cerberus.crud.service.ITestCaseStepActionService;
 import org.cerberus.crud.service.ITestCaseStepService;
 import org.cerberus.util.SqlUtil;
+import org.cerberus.util.answer.Answer;
+import org.cerberus.util.answer.AnswerItem;
 import org.cerberus.util.answer.AnswerList;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -293,5 +295,15 @@ public class TestCaseService implements ITestCaseService {
     @Override
     public AnswerList readByTestByCriteria(String test, int start, int amount, String column, String dir, String searchTerm, String individualSearch) {
         return testCaseDao.readByTestByCriteria(test, start, amount, column, dir, searchTerm, individualSearch);
+    }
+
+    @Override
+    public AnswerItem readByKey(String test, String testCase) {
+        return testCaseDao.readByKey(test, testCase);
+    }
+
+    @Override
+    public Answer update(TCase testCase) {
+        return testCaseDao.update(testCase);
     }
 }

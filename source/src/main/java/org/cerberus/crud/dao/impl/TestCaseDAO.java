@@ -41,6 +41,8 @@ import org.cerberus.crud.service.impl.InvariantService;
 import org.cerberus.enums.MessageEventEnum;
 import org.cerberus.util.ParameterParserUtil;
 import org.cerberus.util.StringUtil;
+import org.cerberus.util.answer.Answer;
+import org.cerberus.util.answer.AnswerItem;
 import org.cerberus.util.answer.AnswerList;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
@@ -128,7 +130,7 @@ public class TestCaseDAO implements ITestCaseDAO {
     @Override
     public AnswerList readByTestByCriteria(String test, int start, int amount, String column, String dir, String searchTerm, String individualSearch) {
         AnswerList answer = new AnswerList();
-        MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_UNEXPECTED_ERROR);
+        MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
         msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", ""));
         List<TCase> testCaseList = new ArrayList<TCase>();
         StringBuilder searchSQL = new StringBuilder();
@@ -145,6 +147,13 @@ public class TestCaseDAO implements ITestCaseDAO {
             searchSQL.append(" and (`testcase` like '%").append(searchTerm).append("%'");
             searchSQL.append(" or `application` like '%").append(searchTerm).append("%'");
             searchSQL.append(" or `project` like '%").append(searchTerm).append("%'");
+            searchSQL.append(" or `creator` like '%").append(searchTerm).append("%'");
+            searchSQL.append(" or `lastmodifier` like '%").append(searchTerm).append("%'");
+            searchSQL.append(" or `tcactive` like '%").append(searchTerm).append("%'");
+            searchSQL.append(" or `status` like '%").append(searchTerm).append("%'");
+            searchSQL.append(" or `group` like '%").append(searchTerm).append("%'");
+            searchSQL.append(" or `priority` like '%").append(searchTerm).append("%'");
+            searchSQL.append(" or `tcdatecrea` like '%").append(searchTerm).append("%'");
             searchSQL.append(" or `description` like '%").append(searchTerm).append("%')");
         }
         if (!StringUtil.isNullOrEmpty(individualSearch)) {
@@ -189,7 +198,7 @@ public class TestCaseDAO implements ITestCaseDAO {
 
                 } catch (SQLException exception) {
                     LOG.error("Unable to execute query : " + exception.toString());
-                    msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_UNEXPECTED_ERROR);
+                    msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
                     msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", exception.toString()));
 
                 } finally {
@@ -200,7 +209,7 @@ public class TestCaseDAO implements ITestCaseDAO {
 
             } catch (SQLException exception) {
                 LOG.error("Unable to execute query : " + exception.toString());
-                msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_UNEXPECTED_ERROR);
+                msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
                 msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", exception.toString()));
             } finally {
                 if (preStat != null) {
@@ -210,7 +219,7 @@ public class TestCaseDAO implements ITestCaseDAO {
 
         } catch (SQLException exception) {
             LOG.error("Unable to execute query : " + exception.toString());
-            msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_UNEXPECTED_ERROR);
+            msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
             msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", exception.toString()));
         } finally {
             try {
@@ -1547,5 +1556,101 @@ public class TestCaseDAO implements ITestCaseDAO {
         response.setDataList(list);
         response.setResultMessage(msg);
         return response;
+    }
+
+    @Override
+    public AnswerItem readByKey(String test, String testCase) {
+        AnswerItem ans = new AnswerItem();
+        TCase result = null;
+        final String query = "SELECT * FROM `testcase` WHERE `test` = ? AND `testcase` = ?";
+        MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
+        msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", ""));
+
+        Connection connection = this.databaseSpring.connect();
+        try {
+            PreparedStatement preStat = connection.prepareStatement(query);
+            try {
+                preStat.setString(1, test);
+                preStat.setString(2, testCase);
+                ResultSet resultSet = preStat.executeQuery();
+                try {
+                    if (resultSet.first()) {
+                        result = loadFromResultSet(resultSet);
+                        msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
+                        msg.setDescription(msg.getDescription().replace("%ITEM%", "Test case").replace("%OPERATION%", "SELECT"));
+                        ans.setItem(result);
+                    } else {
+                        msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_NO_DATA_FOUND);
+                    }
+                } catch (SQLException exception) {
+                    LOG.error("Unable to execute query : " + exception.toString());
+                    msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
+                    msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", exception.toString()));
+                } finally {
+                    resultSet.close();
+                }
+            } catch (SQLException exception) {
+                LOG.error("Unable to execute query : " + exception.toString());
+                msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
+                msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", exception.toString()));
+            } finally {
+                preStat.close();
+            }
+        } catch (SQLException exception) {
+            LOG.error("Unable to execute query : " + exception.toString());
+            msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
+            msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", exception.toString()));
+        } finally {
+            try {
+                if (connection != null) {
+                    connection.close();
+                }
+            } catch (SQLException exception) {
+                LOG.warn("Unable to close connection : " + exception.toString());
+            }
+        }
+
+        //sets the message
+        ans.setResultMessage(msg);
+        return ans;
+    }
+
+    @Override
+    public Answer update(TCase testCase) {
+        MessageEvent msg = null;
+        final String query = "UPDATE testcase SET tcactive = ? WHERE test = ? AND testcase = ?";
+
+        Connection connection = this.databaseSpring.connect();
+        try {
+            PreparedStatement preStat = connection.prepareStatement(query);
+            try {
+                preStat.setString(1, testCase.getActive());
+                preStat.setString(2, testCase.getTest());
+                preStat.setString(3, testCase.getTestCase());
+
+                preStat.executeUpdate();
+                msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
+                msg.setDescription(msg.getDescription().replace("%ITEM%", "TestCase").replace("%OPERATION%", "UPDATE"));
+            } catch (SQLException exception) {
+                LOG.error("Unable to execute query : " + exception.toString());
+                msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
+                msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", exception.toString()));
+            } finally {
+                preStat.close();
+            }
+        } catch (SQLException exception) {
+            LOG.error("Unable to execute query : " + exception.toString());
+            msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
+            msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", exception.toString()));
+        } finally {
+            try {
+                if (connection != null) {
+                    connection.close();
+                }
+            } catch (SQLException exception) {
+                LOG.warn("Unable to close connection : " + exception.toString());
+            }
+        }
+        return new Answer(msg);
     }
 }

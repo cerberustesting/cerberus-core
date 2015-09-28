@@ -22,7 +22,6 @@ package org.cerberus.servlet.testcase;
 import com.google.common.base.Strings;
 import com.google.gson.Gson;
 import java.io.IOException;
-import java.io.PrintWriter;
 import java.util.LinkedHashMap;
 import java.util.List;
 import javax.servlet.ServletException;
@@ -39,6 +38,7 @@ import org.cerberus.crud.service.impl.TestCaseCountryService;
 import org.cerberus.crud.service.impl.TestCaseService;
 import org.cerberus.enums.MessageEventEnum;
 import org.cerberus.util.ParameterParserUtil;
+import org.cerberus.util.answer.Answer;
 import org.cerberus.util.answer.AnswerItem;
 import org.cerberus.util.answer.AnswerList;
 import org.json.JSONArray;
@@ -71,21 +71,26 @@ public class ReadTestCase extends HttpServlet {
             throws ServletException, IOException {
         ApplicationContext appContext = WebApplicationContextUtils.getWebApplicationContext(this.getServletContext());
         JSONObject jsonResponse = new JSONObject();
-        AnswerItem answer = new AnswerItem(new MessageEvent(MessageEventEnum.DATA_OPERATION_UNEXPECTED_ERROR));
+        AnswerItem answer = new AnswerItem(new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED));
 
         int sEcho = Integer.valueOf(ParameterParserUtil.parseStringParam(request.getParameter("sEcho"), "0"));
         String test = ParameterParserUtil.parseStringParam(request.getParameter("test"), "");
+        String testCase = ParameterParserUtil.parseStringParam(request.getParameter("testCase"), "");
+        String active = ParameterParserUtil.parseStringParam(request.getParameter("active"), "");
 
         // Default message to unexpected error.
-        MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_UNEXPECTED_ERROR);
+        MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
         msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", ""));
 
         try {
             if (sEcho != 0 && !Strings.isNullOrEmpty(test)) {
                 answer = findTestCaseByTest(appContext, request, test);
                 jsonResponse = (JSONObject) answer.getItem();
+            } else if (sEcho == 0 && !Strings.isNullOrEmpty(test) && !Strings.isNullOrEmpty(testCase)) {
+                answer = findTestCaseByTestTestCase(appContext, test, testCase);
+                jsonResponse = (JSONObject) answer.getItem();
             }
-
+            
             jsonResponse.put("messageType", answer.getResultMessage().getMessage().getCodeString());
             jsonResponse.put("message", answer.getResultMessage().getDescription());
             jsonResponse.put("sEcho", sEcho);
@@ -96,7 +101,7 @@ public class ReadTestCase extends HttpServlet {
             org.apache.log4j.Logger.getLogger(ReadTestCase.class.getName()).log(org.apache.log4j.Level.ERROR, null, e);
             //returns a default error message with the json format that is able to be parsed by the client-side
             response.setContentType("application/json");
-            msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_UNEXPECTED_ERROR);
+            msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
             StringBuilder errorMessage = new StringBuilder();
             errorMessage.append("{\"messageType\":\"").append(msg.getCode()).append("\",");
             errorMessage.append("\"message\":\"");
@@ -204,6 +209,27 @@ public class ReadTestCase extends HttpServlet {
         Gson gson = new Gson();
         JSONObject result = new JSONObject(gson.toJson(testCase));
         return result;
+    }
+
+    private AnswerItem findTestCaseByTestTestCase(ApplicationContext appContext, String test, String testCase) throws JSONException {
+        AnswerItem item = new AnswerItem();
+        JSONObject object = new JSONObject();
+
+        testCaseService = appContext.getBean(TestCaseService.class);
+
+        //finds the project     
+        AnswerItem answer = testCaseService.readByKey(test, testCase);
+
+        if (answer.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
+            //if the service returns an OK message then we can get the item and convert it to JSONformat
+            TCase tc = (TCase) answer.getItem();
+            object = convertTestCaseToJSONObject(tc);
+        }
+
+        item.setItem(object);
+        item.setResultMessage(answer.getResultMessage());
+
+        return item;
     }
 
 }

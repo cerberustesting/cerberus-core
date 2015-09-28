@@ -64,6 +64,14 @@ function getSubDataLabel(type) {
 function displayInvariantList(idName, selectName) {
     $.when($.getJSON("FindInvariantByID", "idName=" + idName)).then(function (data) {
         for (var option in data) {
+            $("[name='" + selectName + "']").append($('<option></option>').text(data[option].value).val(data[option].value));
+        }
+    });
+}
+
+function displayInvariantListWithDesc(idName, selectName) {
+    $.when($.getJSON("FindInvariantByID", "idName=" + idName)).then(function (data) {
+        for (var option in data) {
             $("[name='" + selectName + "']").append($('<option></option>').text(data[option].value + " - " + data[option].description).val(data[option].value));
         }
     });

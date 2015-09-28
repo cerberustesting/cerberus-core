@@ -23,6 +23,8 @@ import java.util.List;
 import org.cerberus.crud.entity.TCase;
 import org.cerberus.crud.entity.TestCase;
 import org.cerberus.exception.CerberusException;
+import org.cerberus.util.answer.Answer;
+import org.cerberus.util.answer.AnswerItem;
 import org.cerberus.util.answer.AnswerList;
 
 /**
@@ -153,4 +155,8 @@ public interface ITestCaseService {
     AnswerList readTestCaseByStepsInLibrary(String test);
 
     public AnswerList readByTestByCriteria(String test, int start, int amount, String column, String dir, String searchTerm, String individualSearch);
+    
+    public AnswerItem readByKey(String test, String testCase);
+    
+    public Answer update(TCase testCase);
 }

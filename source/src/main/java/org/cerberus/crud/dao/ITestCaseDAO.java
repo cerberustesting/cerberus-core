@@ -22,6 +22,8 @@ import java.util.List;
 import org.cerberus.crud.entity.TCase;
 import org.cerberus.crud.entity.TestCase;
 import org.cerberus.exception.CerberusException;
+import org.cerberus.util.answer.Answer;
+import org.cerberus.util.answer.AnswerItem;
 import org.cerberus.util.answer.AnswerList;
 
 /**
@@ -108,10 +110,14 @@ public interface ITestCaseDAO {
     List<TCase> findTestCaseByCriteria(String testClause, String projectClause, String appClause, String activeClause, String priorityClause, String statusClause, String groupClause, String targetBuildClause, String targetRevClause, String creatorClause, String implementerClause, String functionClause, String campaignClause, String batteryClause);
 
     public String findSystemOfTestCase(String test, String testcase) throws CerberusException;
-    
+
     public AnswerList findNumberOfTestCasePerTCStatus(String system, int startPosition, int length, String columnName, String sort, String searchParameter, String individualSearch);
 
     AnswerList readTestCaseByStepsInLibrary(String test);
+
+    public AnswerList readByTestByCriteria(String test, int start, int amount, String column, String dir, String searchTerm, String individualSearch);
     
-     public AnswerList readByTestByCriteria(String test, int start, int amount, String column, String dir, String searchTerm, String individualSearch);
+    public AnswerItem readByKey(String test, String testCase);
+    
+    public Answer update(TCase testCase);
 }

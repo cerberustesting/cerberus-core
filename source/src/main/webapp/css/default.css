@@ -398,6 +398,11 @@ table.display thead th div.DataTables_sort_wrapper span {
     overflow-y: scroll;
 }
 
+.modal-subtitle {
+    border-bottom: 2px solid #3D3D3D;
+    margin-bottom: 5px;
+}
+
 .ListItem{
     height: 40px;
 }
