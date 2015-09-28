@@ -112,4 +112,6 @@ public interface ITestCaseDAO {
     public AnswerList findNumberOfTestCasePerTCStatus(String system, int startPosition, int length, String columnName, String sort, String searchParameter, String individualSearch);
 
     AnswerList readTestCaseByStepsInLibrary(String test);
+    
+     public AnswerList readByTestByCriteria(String test, int start, int amount, String column, String dir, String searchTerm, String individualSearch);
 }

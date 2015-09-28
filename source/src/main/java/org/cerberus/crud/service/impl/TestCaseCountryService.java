@@ -28,6 +28,7 @@ import org.cerberus.crud.entity.TestCaseCountry;
 import org.cerberus.exception.CerberusException;
 import org.cerberus.log.MyLogger;
 import org.cerberus.crud.service.ITestCaseCountryService;
+import org.cerberus.util.answer.AnswerList;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -92,5 +93,10 @@ public class TestCaseCountryService implements ITestCaseCountryService {
     @Override
     public void deleteTestCaseCountry(TestCaseCountry tcc) throws CerberusException {
         tccDao.deleteTestCaseCountry(tcc);
+    }
+    
+    @Override
+    public AnswerList readByTest(String test) {
+        return tccDao.readByTest(test);
     }
 }

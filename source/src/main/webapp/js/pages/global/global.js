@@ -630,6 +630,50 @@ function createDataTable(tableConfigurations, callback) {
 }
 
 /**
+ * Create the entry and display the message retrieved by the ajax call
+ * @param {type} servletName
+ * @param {type} form
+ * @param {type} tableID
+ * @returns {void}
+ */
+function createEntry(servletName, form, tableID) {
+    var jqxhr = $.post(servletName, form.serialize());
+    $.when(jqxhr).then(function (data) {
+        hideLoaderInModal("#addEntryModal");
+        if (getAlertType(data.messageType) === 'success') {
+            var oTable = $(tableID).dataTable();
+            oTable.fnDraw(true);
+            showMessage(data);
+            $("#addEntryModal").modal('hide');
+        } else {
+            showMessage(data, $("#addEntryModal"));
+        }
+    }).fail(handleErrorAjaxAfterTimeout);
+}
+
+/**
+ * Update the entry and display the message retrieved by the ajax call (does not change pagination)
+ * @param {type} servletName
+ * @param {type} form
+ * @param {type} tableID
+ * @returns {void}
+ */
+function updateEntry(servletName, form, tableID) {
+    var jqxhr = $.post(servletName, form.serialize());
+    $.when(jqxhr).then(function (data) {
+        hideLoaderInModal("#editEntryModal");
+        if (getAlertType(data.messageType) === 'success') {
+            var oTable = $(tableID).dataTable();
+            oTable.fnDraw(false);
+            showMessage(data);
+            $("#editEntryModal").modal('hide');
+        } else {
+            showMessage(data, $("#editEntryModal"));
+        }
+    }).fail(handleErrorAjaxAfterTimeout);
+}
+
+/**
  * This function is used to stop the propagtion of the click on the "?" anchor present on dataTables header so when we click on it, the sorting of the column doesn't change.
  * It should be called directly in the <a> tag with the onclick attribute
  * @param {type} event

@@ -41,11 +41,11 @@ public interface ITestCaseService {
      * @throws org.cerberus.exception.CerberusException
      */
     TCase findTestCaseByKey(String test, String testCase) throws CerberusException;
-    
-    TCase findTestCaseByKeyWithDependency (String test, String testCase) throws CerberusException;
+
+    TCase findTestCaseByKeyWithDependency(String test, String testCase) throws CerberusException;
 
     List<TCase> findTestCaseByTest(String test);
-    
+
     List<TCase> findTestCaseByTestSystem(String test, String system);
 
     List<TCase> findTestCaseActiveByCriteria(String test, String application, String country);
@@ -55,7 +55,7 @@ public interface ITestCaseService {
     boolean updateTestCaseInformationCountries(TestCase tc);
 
     boolean createTestCase(TCase testCase) throws CerberusException;
-    
+
     /**
      * @since 0.9.1
      */
@@ -65,31 +65,31 @@ public interface ITestCaseService {
      * @since 0.9.1
      */
     List<String> findUniqueDataOfColumn(String column);
-    
+
     /**
      * @param system
      * @return List of String formated like this >> Test
      * @since 0.9.2
      */
     List<String> findTestWithTestCaseActiveAutomatedBySystem(String system);
-    
+
     /**
      * @param test
-     * @param system 
-     * @return  List of TCase object
+     * @param system
+     * @return List of TCase object
      * @since 0.9.2
      */
     List<TCase> findTestCaseActiveAutomatedBySystem(String test, String system);
-    
+
     /**
-     * 
+     *
      * @param testCase
      * @return true if delete is OK
      */
     boolean deleteTestCase(TCase testCase);
 
-     /**
-     * 
+    /**
+     *
      * @param name Key of the table
      * @param columnName Name of the column
      * @param value New value of the columnName
@@ -112,16 +112,17 @@ public interface ITestCaseService {
      * @since 1.0.2
      */
     List<TCase> findTestCaseByCampaignName(String campaign);
-    
+
     /**
      *
      * @param campaign the campaign name
      * @param countries arrays of country
-     * @return the list of TCase used in the campaign and activated for the countries
+     * @return the list of TCase used in the campaign and activated for the
+     * countries
      * @since 1.0.2
      */
     List<TCase> findTestCaseByCampaignNameAndCountries(String campaign, String[] countries);
-    
+
     public void updateTestCase(TCase tc) throws CerberusException;
 
     /**
@@ -131,22 +132,25 @@ public interface ITestCaseService {
      * @since 1.0.2
      */
     String getMaxNumberTestCase(String test);
-    
-    List<TCase> findUseTestCaseList(String test, String testCase) throws CerberusException ;
-    
-    List<TCase> findByCriteria(String[] test, String[] project, String[] app, String[] active, String[] priority,String[] status
-    ,String[] group,String[] targetBuild,String[] targetRev,String[] creator , String[] implementer,String[] function,String[] campaign,String[] battery);
-    
+
+    List<TCase> findUseTestCaseList(String test, String testCase) throws CerberusException;
+
+    List<TCase> findByCriteria(String[] test, String[] project, String[] app, String[] active, String[] priority, String[] status, String[] group, String[] targetBuild, String[] targetRev, String[] creator, String[] implementer, String[] function, String[] campaign, String[] battery);
+
     String findSystemOfTestCase(String test, String testcase) throws CerberusException;
-      
+
     /**
      * Method that get all the testcases that use a determined testdatalib entry
+     *
      * @param testDataLibId testdatalib unique identifier
      * @param name testdatalib name
      * @param country country for which testdatalib is defined
-     * @return an answer with the test cases and a message indicating the status of the operation
+     * @return an answer with the test cases and a message indicating the status
+     * of the operation
      */
     AnswerList findTestCasesThatUseTestDataLib(int testDataLibId, String name, String country);
-    
-    AnswerList readTestCaseByStepsInLibrary(String test);  
+
+    AnswerList readTestCaseByStepsInLibrary(String test);
+
+    public AnswerList readByTestByCriteria(String test, int start, int amount, String column, String dir, String searchTerm, String individualSearch);
 }

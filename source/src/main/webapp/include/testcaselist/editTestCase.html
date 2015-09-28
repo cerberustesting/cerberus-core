@@ -1,0 +1,161 @@
+<!--Edit test page-->
+<div data-backdrop="static" class="modal fade center" id="editEntryModal" tabindex="-1" role="dialog" aria-labelledby="editEntryModalLabel" aria-hidden="true">
+    <div class="modal-admin nomargintop nomarginbottom center">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title" id="editEntryModalLabel" name="editEntryField">Edit Test Case</h4>
+            </div>
+            <div class="modal-body">
+
+                <!--edit form-->
+                <form id="editEntryModalForm" name="editEntryModalForm"  title="EditTestCase" role="form">
+                    <div class="container-fluid center">
+                        <!-- messages area-->
+                        <div id="DialogMessagesArea">
+                            <div class="alert" id="DialogMessagesAlert"  style="display:none;">
+                                <strong><span class="alert-description" id="DialogAlertDescription"></span></strong>
+                                <button type="button" class="close" data-hide="alert"  aria-hidden="true">
+                                    <span class="glyphicon glyphicon-remove alert-right alert-close pull-right"></span>
+                                </button>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="form-group col-xs-12">
+                                <label for="test" name="testField">Test</label>
+                                <input type="text" class="form-control" name="test" id="test" aria-describedby="basic-addon1" readonly>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="form-group col-xs-3">
+                                <label for="testCase" name="testCaseField">Test Case</label>
+                                <input type="text" class="form-control" name="testCase" id="testCase" readonly>
+                            </div>
+                            <div class="form-group col-xs-9">
+                                <label for="testDesc" name="testDescField">Test description</label>
+                                <input class="form-control"  id="testDesc" name="testDesc" readonly>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="form-group col-xs-4">
+                                <label for="creator" name="creatorField">Creator</label>
+                                <input type="text" class="form-control" name="creator" id="creator" readonly>
+                            </div>
+                            <div class="form-group col-xs-4">
+                                <label for="lastModifier" name="lastModifierField">Last Modifier</label>
+                                <input class="form-control"  id="lastModifier" name="lastModifier" readonly>
+                            </div>
+                            <div class="form-group col-xs-4">
+                                <label for="lastModifier" name="lastModifierField">Implementer</label>
+                                <input class="form-control"  id="lastModifier" name="lastModifier">
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="form-group col-xs-6">
+                                <label for="application" name="applicationField">Application</label>
+                                <select type="text" class="form-control" name="application" id="application"></select>
+                            </div>
+                            <div class="form-group col-xs-6">
+                                <label for="project" name="projectField">Project</label>
+                                <select type="text" class="form-control" name="project" id="project"></select>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="form-group col-xs-4">
+                                <label for="active" name="activeField">Active</label>
+                                <select type="text" class="form-control input-sm" name="active" id="active"></select>
+                            </div>
+                            <div class="form-group col-xs-4">
+                                <label for="status" name="statusField">Status</label>
+                                <select type="text" class="form-control" name="status" id="status"></select>
+                            </div>
+                            <div class="form-group col-xs-4">
+                                <label for="group" name="groupField">Group</label>
+                                <select type="text" class="form-control" name="group" id="group"></select>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="form-group col-xs-3">
+                                <label for="actQA" name="actQAField">Active QA</label>
+                                <select type="text" class="form-control" name="actQA" id="actQA"></select>
+                            </div>
+                            <div class="form-group col-xs-3">
+                                <label for="actUAT" name="actUATField">Active UAT</label>
+                                <select type="text" class="form-control" name="actUAT" id="actUAT"></select>
+                            </div>
+                            <div class="form-group col-xs-3">
+                                <label for="actProd" name="actProdField">Active Prod</label>
+                                <select type="text" class="form-control" name="actProd" id="actProd"></select>
+                            </div>
+                            <div class="form-group col-xs-3">
+                                <label for="priority" name="priorityField">Priority</label>
+                                <select type="text" class="form-control" name="priority" id="priority"></select>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <label id="countryListLabel">Country List :</label>
+                            <div class="form-group" id="countryList" style="display: inline;">
+                                <label class="checkbox-inline">
+                                    <input type="checkbox" name="BE"/>
+                                    BE
+                                </label>
+                                <label class="checkbox-inline">
+                                    <input type="checkbox" name="CH"/>
+                                    CH
+                                </label>
+                                <label class="checkbox-inline">
+                                    <input type="checkbox" name="ES"/>
+                                    ES
+                                </label>
+                                <label class="checkbox-inline">
+                                    <input type="checkbox" name="IT"/>
+                                    IT
+                                </label>
+                                <label class="checkbox-inline">
+                                    <input type="checkbox" name="PT"/>
+                                    PT
+                                </label>
+                                <label class="checkbox-inline">
+                                    <input type="checkbox" name="RU"/>
+                                    RU
+                                </label>
+                                <label class="checkbox-inline">
+                                    <input type="checkbox" name="UK"/>
+                                    UK
+                                </label>
+                                <label class="checkbox-inline">
+                                    <input type="checkbox" name="UA"/>
+                                    UA
+                                </label>
+                                <label class="checkbox-inline">
+                                    <input type="checkbox" name="DE"/>
+                                    DE
+                                </label>
+                                <label class="checkbox-inline">
+                                    <input type="checkbox" name="AT"/>
+                                    AT
+                                </label>
+                                <label class="checkbox-inline">
+                                    <input type="checkbox" name="GR"/>
+                                    GR
+                                </label>
+                                <label class="checkbox-inline">
+                                    <input type="checkbox" name="RX"/>
+                                    RX
+                                </label>
+                                <label class="checkbox-inline">
+                                    <input type="checkbox" name="FR"/>
+                                    FR
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal" name="buttonClose">Close</button>
+                <button type="button" id="editEntryButton" class="btn btn-primary" name="buttonAdd">Save</button>
+            </div>
+        </div>
+    </div>
+</div>

@@ -21,6 +21,7 @@ import java.util.List;
 
 import org.cerberus.crud.entity.TestCaseCountry;
 import org.cerberus.exception.CerberusException;
+import org.cerberus.util.answer.AnswerList;
 
 /**
  * {Insert class description here}
@@ -38,4 +39,6 @@ public interface ITestCaseCountryDAO {
     void insertTestCaseCountry(TestCaseCountry testCaseCountry) throws CerberusException;
     
     void deleteTestCaseCountry(TestCaseCountry tcc) throws CerberusException;
+    
+    public AnswerList readByTest(String test);
 }

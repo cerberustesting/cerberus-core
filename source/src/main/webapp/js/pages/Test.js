@@ -79,22 +79,7 @@ function saveNewEntryHandler() {
         return;
 
     showLoaderInModal('#addEntryModal');
-    saveEntry("CreateTest1", "#addEntryModal", formAdd);
-}
-
-function saveEntry(servletName, modalID, form) {
-    var jqxhr = $.post(servletName, form.serialize());
-    $.when(jqxhr).then(function (data) {
-        hideLoaderInModal(modalID);
-        if (getAlertType(data.messageType) === 'success') {
-            var oTable = $("#testTable").dataTable();
-            oTable.fnDraw(true);
-            showMessage(data);
-            $(modalID).modal('hide');
-        } else {
-            showMessage(data, $(modalID));
-        }
-    }).fail(handleErrorAjaxAfterTimeout);
+    createEntry("CreateTest1", formAdd, "#testTable");
 }
 
 function saveUpdateEntryHandler() {
@@ -102,7 +87,7 @@ function saveUpdateEntryHandler() {
     var formEdit = $('#editEntryModalForm');
 
     showLoaderInModal('#editEntryModal');
-    saveEntry("UpdateTest1", "#editEntryModal", formEdit);
+    updateEntry("UpdateTest1", formEdit, "#testTable");
 }
 
 function editEntry(test) {

@@ -93,21 +93,6 @@ function deleteEntry(entry) {
     showModalConfirmation(deleteEntryHandlerClick, doc.getDocLabel("page_project", "button_delete"), messageComplete, entry);
 }
 
-function saveEntry(servletName, modalID, form) {
-    var jqxhr = $.post(servletName, form.serialize());
-    $.when(jqxhr).then(function (data) {
-        hideLoaderInModal(modalID);
-        if (getAlertType(data.messageType) === 'success') {
-            var oTable = $("#projectsTable").dataTable();
-            oTable.fnDraw(true);
-            showMessage(data);
-            $(modalID).modal('hide');
-        } else {
-            showMessage(data, $(modalID));
-        }
-    }).fail(handleErrorAjaxAfterTimeout);
-}
-
 function saveNewEntryHandler() {
     clearResponseMessage($('#addEntryModal'));
     var formAdd = $("#addEntryModal #addEntryModalForm");
@@ -137,7 +122,7 @@ function saveNewEntryHandler() {
         return;
 
     showLoaderInModal('#addEntryModal');
-    saveEntry("CreateProject", "#addEntryModal", formAdd);
+    createEntry("CreateProject", formAdd, "#projectsTable");
 
 }
 
@@ -146,7 +131,7 @@ function saveUpdateEntryHandler() {
     var formEdit = $('#editEntryModal #editEntryModalForm');
 
     showLoaderInModal('#editEntryModal');
-    saveEntry("UpdateProject", "#editEntryModal", formEdit);
+    updateEntry("UpdateProject", formEdit, "#projectsTable");
 }
 
 function buttonCloseHandler(event) {

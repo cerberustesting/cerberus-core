@@ -49,12 +49,21 @@ pre{
     border-radius: 5px;
 
 }
-select{
+select {
     font-size:90%;
 }
+
 a {
     color: #008CDA;
     text-decoration: none;
+}
+
+.btnActive {
+    margin-left: 10px;
+}
+
+.modal-admin {
+    max-width: 90%;
 }
 
 .card {

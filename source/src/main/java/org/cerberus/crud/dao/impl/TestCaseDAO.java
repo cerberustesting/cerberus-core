@@ -23,10 +23,11 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.List; 
+import java.util.List;
 import org.apache.log4j.Level;
+import org.apache.log4j.Logger;
 import org.cerberus.crud.dao.ITestCaseDAO;
-import org.cerberus.database.DatabaseSpring; 
+import org.cerberus.database.DatabaseSpring;
 import org.cerberus.crud.entity.MessageEvent;
 import org.cerberus.crud.entity.MessageGeneral;
 import org.cerberus.enums.MessageGeneralEnum;
@@ -38,7 +39,7 @@ import org.cerberus.log.MyLogger;
 import org.cerberus.crud.service.impl.ApplicationService;
 import org.cerberus.crud.service.impl.InvariantService;
 import org.cerberus.enums.MessageEventEnum;
-import org.cerberus.util.ParameterParserUtil; 
+import org.cerberus.util.ParameterParserUtil;
 import org.cerberus.util.StringUtil;
 import org.cerberus.util.answer.AnswerList;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -67,6 +68,10 @@ public class TestCaseDAO implements ITestCaseDAO {
     private ApplicationService applicationService;
     @Autowired
     private InvariantService invariantService;
+
+    private final int MAX_ROW_SELECTED = 100000;
+
+    private static final Logger LOG = Logger.getLogger(TestCaseDAO.class);
 
     /**
      * Get summary information of all test cases of one group.
@@ -118,6 +123,110 @@ public class TestCaseDAO implements ITestCaseDAO {
         }
 
         return list;
+    }
+
+    @Override
+    public AnswerList readByTestByCriteria(String test, int start, int amount, String column, String dir, String searchTerm, String individualSearch) {
+        AnswerList answer = new AnswerList();
+        MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_UNEXPECTED_ERROR);
+        msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", ""));
+        List<TCase> testCaseList = new ArrayList<TCase>();
+        StringBuilder searchSQL = new StringBuilder();
+
+        StringBuilder query = new StringBuilder();
+
+        //SQL_CALC_FOUND_ROWS allows to retrieve the total number of columns by disrearding the limit clauses that 
+        //were applied -- used for pagination p
+        query.append("SELECT SQL_CALC_FOUND_ROWS * FROM testcase ");
+
+        searchSQL.append("WHERE 1=1 AND test = ?");
+
+        if (!StringUtil.isNullOrEmpty(searchTerm)) {
+            searchSQL.append(" and (`testcase` like '%").append(searchTerm).append("%'");
+            searchSQL.append(" or `application` like '%").append(searchTerm).append("%'");
+            searchSQL.append(" or `project` like '%").append(searchTerm).append("%'");
+            searchSQL.append(" or `description` like '%").append(searchTerm).append("%')");
+        }
+        if (!StringUtil.isNullOrEmpty(individualSearch)) {
+            searchSQL.append(" and (`").append(individualSearch).append("`)");
+        }
+        query.append(searchSQL);
+
+        if (!StringUtil.isNullOrEmpty(column)) {
+            query.append(" order by `").append(column).append("` ").append(dir);
+        }
+
+        if (amount != 0) {
+            query.append(" limit ").append(start).append(" , ").append(amount);
+        } else {
+            query.append(" limit ").append(start).append(" , ").append(MAX_ROW_SELECTED);
+        }
+
+        Connection connection = this.databaseSpring.connect();
+        try {
+            PreparedStatement preStat = connection.prepareStatement(query.toString());
+
+            preStat.setString(1, test);
+            try {
+                ResultSet resultSet = preStat.executeQuery();
+                try {
+                    //gets the data
+                    while (resultSet.next()) {
+                        testCaseList.add(this.loadFromResultSet(resultSet));
+                    }
+
+                    //get the total number of rows
+                    resultSet = preStat.executeQuery("SELECT FOUND_ROWS()");
+                    int nrTotalRows = 0;
+
+                    if (resultSet != null && resultSet.next()) {
+                        nrTotalRows = resultSet.getInt(1);
+                    }
+
+                    msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
+                    msg.setDescription(msg.getDescription().replace("%ITEM%", "Application").replace("%OPERATION%", "SELECT"));
+                    answer = new AnswerList(testCaseList, nrTotalRows);
+
+                } catch (SQLException exception) {
+                    LOG.error("Unable to execute query : " + exception.toString());
+                    msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_UNEXPECTED_ERROR);
+                    msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", exception.toString()));
+
+                } finally {
+                    if (resultSet != null) {
+                        resultSet.close();
+                    }
+                }
+
+            } catch (SQLException exception) {
+                LOG.error("Unable to execute query : " + exception.toString());
+                msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_UNEXPECTED_ERROR);
+                msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", exception.toString()));
+            } finally {
+                if (preStat != null) {
+                    preStat.close();
+                }
+            }
+
+        } catch (SQLException exception) {
+            LOG.error("Unable to execute query : " + exception.toString());
+            msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_UNEXPECTED_ERROR);
+            msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", exception.toString()));
+        } finally {
+            try {
+                if (!this.databaseSpring.isOnTransaction()) {
+                    if (connection != null) {
+                        connection.close();
+                    }
+                }
+            } catch (SQLException exception) {
+                LOG.warn("Unable to close connection : " + exception.toString());
+            }
+        }
+
+        answer.setResultMessage(msg);
+        answer.setDataList(testCaseList);
+        return answer;
     }
 
     /**
@@ -1157,11 +1266,11 @@ public class TestCaseDAO implements ITestCaseDAO {
         List<TCase> list = null;
         StringBuilder sb = new StringBuilder();
         sb.append("SELECT * FROM testcase tc join application app on tc.application=app.application ")
-           .append("left join testbatterycontent tbc ")
-           .append("on tbc.Test = tc.Test ")
-           .append("and tbc.TestCase = tc.TestCase ")
-           .append("left join campaigncontent cc ")
-           .append("on cc.testbattery = tbc.testbattery ");
+                .append("left join testbatterycontent tbc ")
+                .append("on tbc.Test = tc.Test ")
+                .append("and tbc.TestCase = tc.TestCase ")
+                .append("left join campaigncontent cc ")
+                .append("on cc.testbattery = tbc.testbattery ");
         sb.append(" WHERE 1=1 ");
         sb.append(testClause);
         sb.append(projectClause);
@@ -1213,10 +1322,10 @@ public class TestCaseDAO implements ITestCaseDAO {
 
         return list;
     }
-    
+
     @Override
-    public String findSystemOfTestCase(String test, String testcase) throws CerberusException{
-    String result = "";
+    public String findSystemOfTestCase(String test, String testcase) throws CerberusException {
+        String result = "";
         final String sql = "SELECT system from application a join testcase tc on tc.application=a.Application where tc.test= ? and tc.testcase= ?";
 
         Connection connection = this.databaseSpring.connect();
@@ -1378,7 +1487,8 @@ public class TestCaseDAO implements ITestCaseDAO {
 //        } catch (CerberusException ex) {
 //            Logger.getLogger(TestCaseDAO.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
 //        }
-    return null;}
+        return null;
+    }
 
     @Override
     public AnswerList readTestCaseByStepsInLibrary(String test) {
@@ -1388,7 +1498,7 @@ public class TestCaseDAO implements ITestCaseDAO {
         StringBuilder query = new StringBuilder();
         query.append("SELECT * FROM testcase tc  ");
         query.append("inner join testcasestep  tcs on tc.test = tcs.test and tc.testcase = tcs.testcase ");
-        query.append("WHERE tc.test= ? and (tcs.inlibrary = 'Y' or tcs.inlibrary = 'y') ");        
+        query.append("WHERE tc.test= ? and (tcs.inlibrary = 'Y' or tcs.inlibrary = 'y') ");
         query.append("group by tc.testcase order by tc.testcase ");
         Connection connection = this.databaseSpring.connect();
         try {
@@ -1408,7 +1518,7 @@ public class TestCaseDAO implements ITestCaseDAO {
                     msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_UNEXPECTED_ERROR);
                     msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", exception.toString()));
                 } finally {
-                    if(resultSet != null){
+                    if (resultSet != null) {
                         resultSet.close();
                     }
                 }
@@ -1417,7 +1527,7 @@ public class TestCaseDAO implements ITestCaseDAO {
                 msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_UNEXPECTED_ERROR);
                 msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", exception.toString()));
             } finally {
-                if(preStat != null){
+                if (preStat != null) {
                     preStat.close();
                 }
             }
