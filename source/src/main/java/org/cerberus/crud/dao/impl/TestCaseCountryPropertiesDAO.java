@@ -648,7 +648,7 @@ public class TestCaseCountryPropertiesDAO implements ITestCaseCountryPropertiesD
                     
                 }catch (SQLException exception) {
                     MyLogger.log(TestCaseCountryPropertiesDAO.class.getName(), Level.ERROR, "Unable to execute query : "+exception.toString());
-                    rs = new MessageEvent(MessageEventEnum.DATA_OPERATION_UNEXPECTED_ERROR);
+                    rs = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
                     rs.setDescription(rs.getDescription().replace("%DESCRIPTION%", "Unable to get the list of test cases."));
                 } finally{
                     if(resultSet != null){
@@ -657,7 +657,7 @@ public class TestCaseCountryPropertiesDAO implements ITestCaseCountryPropertiesD
                 }
             } catch (SQLException exception) {
                 MyLogger.log(TestCaseCountryPropertiesDAO.class.getName(), Level.ERROR, "Unable to execute query : "+exception.toString());
-                rs = new MessageEvent(MessageEventEnum.DATA_OPERATION_UNEXPECTED_ERROR);
+                rs = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
                 rs.setDescription(rs.getDescription().replace("%DESCRIPTION%", "Unable to get the list of test cases."));
             } finally {
                 if(preStat != null){
@@ -666,7 +666,7 @@ public class TestCaseCountryPropertiesDAO implements ITestCaseCountryPropertiesD
             }
         } catch (SQLException exception) {
             MyLogger.log(TestCaseCountryPropertiesDAO.class.getName(), Level.ERROR, "Unable to execute query : "+exception.toString());
-            rs = new MessageEvent(MessageEventEnum.DATA_OPERATION_UNEXPECTED_ERROR);
+            rs = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
             rs.setDescription(rs.getDescription().replace("%DESCRIPTION%", "Unable to get the list of test cases."));
         } finally {
             try {
@@ -725,14 +725,14 @@ public class TestCaseCountryPropertiesDAO implements ITestCaseCountryPropertiesD
                     rs = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
                     rs.setDescription(rs.getDescription().replace("%ITEM%", "Property").replace("%OPERATION%", "CREATE")); 
                 }else{
-                    rs = new MessageEvent(MessageEventEnum.DATA_OPERATION_EXPECTED_ERROR);
+                    rs = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_EXPECTED);
                     rs.setDescription(rs.getDescription().replace("%ITEM%", "Property").replace("%OPERATION%", "CREATE").
                             replace("%REASON%", "Some problem occurred while creating the new property! "));                     
                 }
                 
                 
             } catch (SQLException exception) {
-                rs = new MessageEvent(MessageEventEnum.DATA_OPERATION_UNEXPECTED_ERROR);
+                rs = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
                 rs.setDescription(rs.getDescription().replace("%DESCRIPTION%", "It was not possible to update table."));                
                 MyLogger.log(TestCaseCountryPropertiesDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
             } finally {
@@ -741,7 +741,7 @@ public class TestCaseCountryPropertiesDAO implements ITestCaseCountryPropertiesD
                 }
             }
         } catch (SQLException exception) {
-            rs = new MessageEvent(MessageEventEnum.DATA_OPERATION_UNEXPECTED_ERROR);
+            rs = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
             rs.setDescription(rs.getDescription().replace("%DESCRIPTION%", "It was not possible to update table."));
             MyLogger.log(TestCaseCountryPropertiesDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
         } finally {

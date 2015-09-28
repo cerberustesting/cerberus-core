@@ -1,6 +1,4 @@
-/*
- * Cerberus  Copyright (C) 2013  vertigo17
- * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
+/* DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
  *
  * This file is part of Cerberus.
  *
@@ -17,8 +15,9 @@
  * You should have received a copy of the GNU General Public License
  * along with Cerberus.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.cerberus.servlet.robot;
+package org.cerberus.servlet.buildcontent;
 
+import org.cerberus.servlet.robot.*;
 import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -29,27 +28,29 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import org.cerberus.crud.entity.MessageEvent;
 import org.cerberus.crud.entity.Robot;
+import org.cerberus.crud.factory.IFactoryBuildRevisionParameters;
 import org.cerberus.enums.MessageEventEnum;
 import org.cerberus.exception.CerberusException;
+import org.cerberus.crud.factory.IFactoryRobot;
+import org.cerberus.crud.service.IBuildRevisionParametersService;
 import org.cerberus.crud.service.ILogEventService;
 import org.cerberus.crud.service.IRobotService;
 import org.cerberus.crud.service.impl.LogEventService;
 import org.cerberus.util.StringUtil;
 import org.cerberus.util.answer.Answer;
-import org.cerberus.util.answer.AnswerItem;
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.owasp.html.PolicyFactory;
-import org.owasp.html.Sanitizers;
 import org.springframework.context.ApplicationContext;
 import org.springframework.web.context.support.WebApplicationContextUtils;
+import org.owasp.html.PolicyFactory;
+import org.owasp.html.Sanitizers;
 
 /**
  *
  * @author bcivel
  */
-@WebServlet(name = "UpdateRobot1", urlPatterns = {"/UpdateRobot1"})
-public class UpdateRobot1 extends HttpServlet {
+@WebServlet(name = "CreateBuildRevisionParameters", urlPatterns = {"/CreateBuildRevisionParameters"})
+public class CreateBuildRevisionParameters extends HttpServlet {
 
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
@@ -59,12 +60,14 @@ public class UpdateRobot1 extends HttpServlet {
      * @param response servlet response
      * @throws ServletException if a servlet-specific error occurs
      * @throws IOException if an I/O error occurs
+     * @throws org.cerberus.exception.CerberusException
+     * @throws org.json.JSONException
      */
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException, CerberusException, JSONException {
         JSONObject jsonResponse = new JSONObject();
         Answer ans = new Answer();
-        MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_UNEXPECTED_ERROR);
+        MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
         msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", ""));
         ans.setResultMessage(msg);
         PolicyFactory policy = Sanitizers.FORMATTING.and(Sanitizers.LINKS);
@@ -74,83 +77,53 @@ public class UpdateRobot1 extends HttpServlet {
         /**
          * Parsing and securing all required parameters.
          */
-        String robot = policy.sanitize(request.getParameter("robot"));
-        String host = policy.sanitize(request.getParameter("host"));
-        String port = policy.sanitize(request.getParameter("port"));
-        String platform = policy.sanitize(request.getParameter("platform"));
-        String browser = policy.sanitize(request.getParameter("browser"));
-        String version = policy.sanitize(request.getParameter("version"));
-        String active = policy.sanitize(request.getParameter("active"));
-        String description = policy.sanitize(request.getParameter("description"));
-        String userAgent = policy.sanitize(request.getParameter("useragent"));
-        Integer robotid = 0;
-        boolean robotid_error = true;
-        try {
-            if (request.getParameter("robotid") != null && !request.getParameter("robotid").equals("")) {
-                robotid = Integer.valueOf(policy.sanitize(request.getParameter("robotid")));
-                robotid_error = false;
-            }
-        } catch (Exception ex) {
-            robotid_error = true;
-        }
+        String build = policy.sanitize(request.getParameter("build"));
+        String revision = policy.sanitize(request.getParameter("revision"));
+        String release = policy.sanitize(request.getParameter("release"));
+        String application = policy.sanitize(request.getParameter("application"));
+        String project = policy.sanitize(request.getParameter("project"));
+        String ticketidfixed = policy.sanitize(request.getParameter("ticketidfixed"));
+        String bugidfixed = policy.sanitize(request.getParameter("bugidfixed"));
+        String link = policy.sanitize(request.getParameter("link"));
+        String releaseowner = policy.sanitize(request.getParameter("releaseowner"));
+        String subject = policy.sanitize(request.getParameter("subject"));
+        String jenkinsbuildid = policy.sanitize(request.getParameter("jenkinsbuildid"));
+        String mavenGroupID = policy.sanitize(request.getParameter("mavengroupid"));
+        String mavenArtefactID = policy.sanitize(request.getParameter("mavenartefactid"));
+        String mavenVersion = policy.sanitize(request.getParameter("mavenversion"));
 
         /**
          * Checking all constrains before calling the services.
          */
-        if (StringUtil.isNullOrEmpty(robot)) {
-            msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_EXPECTED_ERROR);
-            msg.setDescription(msg.getDescription().replace("%ITEM%", "Robot")
-                    .replace("%OPERATION%", "Update")
-                    .replace("%REASON%", "Robot name is missing."));
+        if (StringUtil.isNullOrEmpty(build)) {
+            msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_EXPECTED);
+            msg.setDescription(msg.getDescription().replace("%ITEM%", "BuildRevisionParameters")
+                    .replace("%OPERATION%", "Create")
+                    .replace("%REASON%", "Build is missing."));
             ans.setResultMessage(msg);
-        } else if (robotid_error) {
-            msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_EXPECTED_ERROR);
-            msg.setDescription(msg.getDescription().replace("%ITEM%", "Robot")
-                    .replace("%OPERATION%", "Update")
-                    .replace("%REASON%", "Could not manage to convert robotid to an integer value or robotid is missing."));
+        } else if (StringUtil.isNullOrEmpty(revision)) {
+            msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_EXPECTED);
+            msg.setDescription(msg.getDescription().replace("%ITEM%", "BuildRevisionParameters")
+                    .replace("%OPERATION%", "Create")
+                    .replace("%REASON%", "Revision is missing."));
             ans.setResultMessage(msg);
         } else {
             /**
              * All data seems cleans so we can call the services.
              */
             ApplicationContext appContext = WebApplicationContextUtils.getWebApplicationContext(this.getServletContext());
-            IRobotService robotService = appContext.getBean(IRobotService.class);
+            IBuildRevisionParametersService buildRevisionParametersService = appContext.getBean(IBuildRevisionParametersService.class);
+            IFactoryBuildRevisionParameters buildRevisionParametersFactory = appContext.getBean(IFactoryBuildRevisionParameters.class);
 
-            AnswerItem resp = robotService.readByKeyTech(robotid);
-            if (!(resp.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode()))) {
+//            Robot robotData = buildRevisionParametersFactory.create(robotid, build, revision, release, application, project, ticketidfixed, bugidfixed, link, mavenVersion);
+//            ans = buildRevisionParametersService.create(robotData);
+
+            if (ans.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
                 /**
-                 * Object could not be found. We stop here and report the error.
+                 * Object created. Adding Log entry.
                  */
-                msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_EXPECTED_ERROR);
-                msg.setDescription(msg.getDescription().replace("%ITEM%", "Robot")
-                        .replace("%OPERATION%", "Update")
-                        .replace("%REASON%", "Robot does not exist."));
-                ans.setResultMessage(msg);
-
-            } else {
-                /**
-                 * The service was able to perform the query and confirm the
-                 * object exist, then we can update it.
-                 */
-                Robot robotData = (Robot) resp.getItem();
-                robotData.setRobot(robot);
-                robotData.setHost(host);
-                robotData.setPort(port);
-                robotData.setPlatform(platform);
-                robotData.setBrowser(browser);
-                robotData.setVersion(version);
-                robotData.setActive(active);
-                robotData.setDescription(description);
-                robotData.setUserAgent(userAgent);
-                ans = robotService.update(robotData);
-
-                if (ans.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
-                    /**
-                     * Update was succesfull. Adding Log entry.
-                     */
-                    ILogEventService logEventService = appContext.getBean(LogEventService.class);
-                    logEventService.createPrivateCalls("/UpdateRobot", "UPDATE", "Updated Robot : ['" + robotid + "'|'" + robot + "']", request);
-                }
+                ILogEventService logEventService = appContext.getBean(LogEventService.class);
+                logEventService.createPrivateCalls("/CreateRobot", "CREATE", "Create Robot : ['" + build + "']", request);
             }
         }
 
@@ -162,6 +135,7 @@ public class UpdateRobot1 extends HttpServlet {
 
         response.getWriter().print(jsonResponse);
         response.getWriter().flush();
+
     }
 
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
@@ -178,12 +152,10 @@ public class UpdateRobot1 extends HttpServlet {
             throws ServletException, IOException {
         try {
             processRequest(request, response);
-
         } catch (CerberusException ex) {
-            Logger.getLogger(UpdateRobot1.class
-                    .getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(CreateBuildRevisionParameters.class.getName()).log(Level.SEVERE, null, ex);
         } catch (JSONException ex) {
-            Logger.getLogger(UpdateRobot1.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(CreateBuildRevisionParameters.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
 
@@ -200,12 +172,10 @@ public class UpdateRobot1 extends HttpServlet {
             throws ServletException, IOException {
         try {
             processRequest(request, response);
-
         } catch (CerberusException ex) {
-            Logger.getLogger(UpdateRobot1.class
-                    .getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(CreateBuildRevisionParameters.class.getName()).log(Level.SEVERE, null, ex);
         } catch (JSONException ex) {
-            Logger.getLogger(UpdateRobot1.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(CreateBuildRevisionParameters.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
 

@@ -174,24 +174,6 @@
                 </tfoot>
             </table>
         </div>
-                    <br>
-<p class="dttTitle">Step Library of the System <%=MySystem%></p>
-<br>
-
-        <div style="width: 100%; font: 90% sans-serif">
-            <table id="stepTable<%=applicationL.getApplication()%>" class="display">
-                <thead>
-                    <tr>
-                        <th>Test</th>
-                        <th>TestCase</th>
-                        <th>Step</th>
-                        <th>Description</th>
-                    </tr>
-                </thead>
-                <tbody>
-                </tbody>
-            </table>
-        </div>
                     <script type="text/javascript">
 
             $(document).ready(function() {
@@ -250,12 +232,32 @@
 
 
         </script>
+        <%  } %>
+
+                    <br>
+<p class="dttTitle">Step Library of the System <%=MySystem%></p>
+<br>
+
+        <div style="width: 100%; font: 90% sans-serif">
+            <table id="stepTable" class="display">
+                <thead>
+                    <tr>
+                        <th>Test</th>
+                        <th>TestCase</th>
+                        <th>Step</th>
+                        <th>Description</th>
+                    </tr>
+                </thead>
+                <tbody>
+                </tbody>
+            </table>
+        </div>
+        
         <script type="text/javascript">
 
             $(document).ready(function() {
                 var mySys = getSys();
-                var myApp = '<%=applicationL.getApplication()%>';
-                var tableName = '#stepTable'+myApp.replace('.','\\.');
+                var tableName = '#stepTable';
                 var oTable = $(tableName).dataTable({
                     "aaSorting": [[0, "asc"]],
                     "bServerSide": false,
@@ -281,7 +283,8 @@
 
 
         </script>
-        <%  } %>
+
+
  </div>
  <script>
      $("#tableList").show();

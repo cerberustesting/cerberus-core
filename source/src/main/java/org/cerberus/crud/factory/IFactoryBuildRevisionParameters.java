@@ -17,25 +17,19 @@
  * You should have received a copy of the GNU General Public License
  * along with Cerberus.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.cerberus.enums;
+package org.cerberus.crud.factory;
+
+import java.sql.Timestamp;
+import org.cerberus.crud.entity.BuildRevisionParameters;
 
 /**
- * Enumeration that saves the codes used by the messages.
- * @author FNogueira
+ * @author vertigo
  */
-public enum MessageCodeEnum {
-    
-    DATA_OPERATION_CODE_SUCCESS("OK"),
-    DATA_OPERATION_CODE_WARNING("WARNING"),
-    DATA_OPERATION_CODE_ERROR("KO");
-    
-    private final String code;
+public interface IFactoryBuildRevisionParameters {
 
-    public String getCode() {
-        return code;
-    }
-    private MessageCodeEnum(String code){
-        this.code = code;
-    }
-    
+    BuildRevisionParameters create(int id, String build, String revision, String release,
+            String application, String project, String ticketIDFixed, String bugIDFixed, String link,
+            String releaseOwner, String subject, Timestamp dateCre, String jenkinsBuildID,
+            String mavenGroupID, String mavenArtefactID, String mavenVersion);
+
 }

@@ -72,7 +72,7 @@ public class ReadTest extends HttpServlet {
         int sEcho = Integer.valueOf(ParameterParserUtil.parseStringParam(request.getParameter("sEcho"), "0"));
         String test = ParameterParserUtil.parseStringParam(request.getParameter("test"), "");
 
-        AnswerItem answer = new AnswerItem(new MessageEvent(MessageEventEnum.DATA_OPERATION_UNEXPECTED_ERROR));
+        AnswerItem answer = new AnswerItem(new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED));
         JSONObject jsonResponse = new JSONObject();
 
         if (sEcho != 0) {
@@ -91,7 +91,7 @@ public class ReadTest extends HttpServlet {
     }
 
     private AnswerItem findTestList(ApplicationContext appContext, HttpServletRequest request) throws JSONException {
-        AnswerItem answer = new AnswerItem(new MessageEvent(MessageEventEnum.DATA_OPERATION_UNEXPECTED_ERROR));
+        AnswerItem answer = new AnswerItem(new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED));
         AnswerList testList = new AnswerList();
         JSONObject jsonResponse = new JSONObject();
 
