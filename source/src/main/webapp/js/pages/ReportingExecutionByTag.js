@@ -27,7 +27,7 @@ $.when($.getScript("js/pages/global/global.js")).then(function () {
         bindToggleCollapse("#functionChart");
         bindToggleCollapse("#listReport");
 
-        var urlTag = GetURLParameter('tag');
+        var urlTag = GetURLParameter('Tag');
         loadTagFilters(urlTag);
         $('body').tooltip({
             selector: '[data-toggle="tooltip"]'
@@ -87,7 +87,7 @@ function loadTagFilters(urlTag) {
 function loadReport() {
     var selectTag = $("#selectTag option:selected").text();
     
-    window.history.pushState('tag', '', 'ReportingExecutionByTag.jsp?tag=' + selectTag);
+    window.history.pushState('Tag', '', 'ReportingExecutionByTag.jsp?Tag=' + encodeURIComponent(selectTag));
 
     //clear the old report content before reloading it
     $("#ReportByStatusTable").empty();
@@ -413,7 +413,7 @@ function aoColumnsFunc(Columns) {
             "sWidth": testCaseInfoWidth + "%",
             "title": doc.getDocOnline("testcase", "TestCase"),
             "mRender": function (data, type, obj, meta) {
-                var result = "<a href='./TestCase.jsp?Test=" + obj.test + "&TestCase=" + obj.testCase + "&Load=Load'>" + obj.testCase + "</a>";
+                var result = "<a href='./TestCase.jsp?Test=" + encodeURIComponent(obj.test) + "&TestCase=" + encodeURIComponent(obj.testCase) + "&Load=Load'>" + obj.testCase + "</a>";
                 return result;
             }
         },

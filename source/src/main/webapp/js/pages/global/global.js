@@ -573,17 +573,15 @@ function createDataTable(tableConfigurations, callback) {
     configs["paging"] = tableConfigurations.paginate;
     configs["autoWidth"] = tableConfigurations.autoWidth;
     configs["pagingType"] = tableConfigurations.paginationType;
-    configs["columns.searchable"] = false;
     configs["columnDefs.targets"] = [0];
     configs["pageLength"] = tableConfigurations.displayLength;
-    configs["scrollX"] = tableConfigurations.tableWidth;
+    configs["scrollX"] = tableConfigurations.scrollX;
     configs["scrollY"] = tableConfigurations.scrollY;
     configs["scrollCollapse"] = tableConfigurations.scrollCollapse;
     configs["stateSave"] = tableConfigurations.stateSave;
     configs["language"] = tableConfigurations.lang.table;
     configs["columns"] = tableConfigurations.aoColumnsFunction;
     configs["colVis"] = tableConfigurations.lang.colVis;
-    configs["scrollX"] = tableConfigurations.scrollX;
     configs["lengthChange"] = true;
     configs["lengthMenu"] = tableConfigurations.lengthMenu;
     configs["createdRow"] = callback;
@@ -797,7 +795,7 @@ function GetURLParameter(sParam)
         var sParameterName = sURLVariables[i].split('=');
         if (sParameterName[0] === sParam)
         {
-            return sParameterName[1];
+            return decodeURIComponent(sParameterName[1]);
         }
     }
     return null;

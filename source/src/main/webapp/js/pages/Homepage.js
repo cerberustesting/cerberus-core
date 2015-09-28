@@ -167,7 +167,7 @@ function loadTagFilter() {
 }
 
 function generateTagLink(tagName) {
-    var link = '<a href="./ReportingExecutionByTag.jsp?tag=' + tagName + '">' + tagName + '</a>';
+    var link = '<a href="./ReportingExecutionByTag.jsp?Tag=' + encodeURIComponent(tagName) + '">' + tagName + '</a>';
 
     return link;
 }
