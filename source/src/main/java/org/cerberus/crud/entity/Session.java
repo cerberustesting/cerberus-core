@@ -19,6 +19,7 @@
  */
 package org.cerberus.crud.entity;
 
+import io.appium.java_client.AppiumDriver;
 import java.util.List;
 import org.openqa.selenium.WebDriver;
 
@@ -31,9 +32,18 @@ public class Session {
     private String host;
     private String port;
     private WebDriver driver;
+    private AppiumDriver appiumDriver;
     private long defaultWait;
     private boolean started;
     List<SessionCapabilities> capabilities;
+
+    public AppiumDriver getAppiumDriver() {
+        return appiumDriver;
+    }
+
+    public void setAppiumDriver(AppiumDriver appiumDriver) {
+        this.appiumDriver = appiumDriver;
+    }
 
     public List<SessionCapabilities> getCapabilities() {
         return capabilities;

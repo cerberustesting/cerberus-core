@@ -19,6 +19,7 @@
  */
 package org.cerberus.service.engine.impl;
 
+import io.appium.java_client.AppiumDriver;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -35,15 +36,15 @@ import org.apache.http.message.BasicHttpEntityEnclosingRequest;
 import org.apache.log4j.Level;
 import org.cerberus.crud.entity.Invariant;
 import org.cerberus.crud.entity.MessageGeneral;
-import org.cerberus.enums.MessageGeneralEnum;
 import org.cerberus.crud.entity.Selenium;
 import org.cerberus.crud.entity.Session;
 import org.cerberus.crud.entity.SessionCapabilities;
 import org.cerberus.crud.entity.TestCaseExecution;
-import org.cerberus.exception.CerberusException;
-import org.cerberus.log.MyLogger;
 import org.cerberus.crud.service.IInvariantService;
 import org.cerberus.crud.service.IParameterService;
+import org.cerberus.enums.MessageGeneralEnum;
+import org.cerberus.exception.CerberusException;
+import org.cerberus.log.MyLogger;
 import org.cerberus.service.engine.ISeleniumServerService;
 import org.cerberus.util.StringUtil;
 import org.json.JSONException;
@@ -90,9 +91,17 @@ public class SeleniumServerService implements ISeleniumServerService {
              * SetUp Driver
              */
             MyLogger.log(SeleniumServerService.class.getName(), Level.DEBUG, "Set Driver");
-            WebDriver driver = new RemoteWebDriver(new URL("http://" + tCExecution.getSession().getHost() + ":" + tCExecution.getSession().getPort() + "/wd/hub"), caps);
-//            WebDriver driver = new FirefoxDriver(caps);
+            WebDriver driver = null;
+            AppiumDriver appiumDriver = null;
+            if (tCExecution.getApplication().getType().equalsIgnoreCase("GUI")) {
+                driver = new RemoteWebDriver(new URL("http://" + tCExecution.getSession().getHost() + ":" + tCExecution.getSession().getPort() + "/wd/hub"), caps);
+            } else if (tCExecution.getApplication().getType().equalsIgnoreCase("APK")) {
+                appiumDriver = new AppiumDriver(new URL("http://" + tCExecution.getSession().getHost() + ":" + tCExecution.getSession().getPort() + "/wd/hub"), caps);
+                driver = (WebDriver) appiumDriver;
+            }
+
             tCExecution.getSession().setDriver(driver);
+            tCExecution.getSession().setAppiumDriver(appiumDriver);
 
             /**
              * If Gui application, maximize window Get IP of Node in case of
@@ -117,11 +126,11 @@ public class SeleniumServerService implements ISeleniumServerService {
         } catch (CerberusException exception) {
             MyLogger.log(Selenium.class.getName(), Level.ERROR, exception.toString());
             throw new CerberusException(exception.getMessageError());
-//        } catch (MalformedURLException exception) {
-//            MyLogger.log(Selenium.class.getName(), Level.ERROR, exception.toString());
-//            MessageGeneral mes = new MessageGeneral(MessageGeneralEnum.VALIDATION_FAILED_URL_MALFORMED);
-//            mes.setDescription(mes.getDescription().replace("%URL%", tCExecution.getSession().getHost() + ":" + tCExecution.getSession().getPort()));
-//            throw new CerberusException(mes);
+        } catch (MalformedURLException exception) {
+            MyLogger.log(Selenium.class.getName(), Level.ERROR, exception.toString());
+            MessageGeneral mes = new MessageGeneral(MessageGeneralEnum.VALIDATION_FAILED_URL_MALFORMED);
+            mes.setDescription(mes.getDescription().replace("%URL%", tCExecution.getSession().getHost() + ":" + tCExecution.getSession().getPort()));
+            throw new CerberusException(mes);
         } catch (UnreachableBrowserException exception) {
             MyLogger.log(Selenium.class.getName(), Level.ERROR, exception.toString());
             MessageGeneral mes = new MessageGeneral(MessageGeneralEnum.VALIDATION_FAILED_SELENIUM_COULDNOTCONNECT);
@@ -246,7 +255,6 @@ public class SeleniumServerService implements ISeleniumServerService {
     private DesiredCapabilities setCapabilities(TestCaseExecution tCExecution) throws CerberusException {
         DesiredCapabilities caps = new DesiredCapabilities();
         for (SessionCapabilities cap : tCExecution.getSession().getCapabilities()) {
-
             if (!cap.getValue().equals("")) {
                 if (tCExecution.getApplication().getType().equalsIgnoreCase("GUI")) {
                     if (cap.getCapability().equalsIgnoreCase("browser")) {
@@ -256,17 +264,22 @@ public class SeleniumServerService implements ISeleniumServerService {
                     }
                 }
             }
-
             if (tCExecution.getApplication().getType().equalsIgnoreCase("APK")) {
-                if (cap.getCapability().equalsIgnoreCase("browser")) {
-                    caps.setCapability(CapabilityType.BROWSER_NAME, "android");
-                }
-                if (cap.getCapability().equalsIgnoreCase("platform")) {
-                    caps.setCapability("platformName", cap.getValue());
-                }
-                if (cap.getCapability().equalsIgnoreCase("version")) {
-                    caps.setCapability("deviceName", cap.getValue());
-                }
+                caps.setCapability(CapabilityType.BROWSER_NAME, "");
+                caps.setCapability("deviceName", "Android");
+                caps.setCapability("automationName", "Appium");
+                caps.setCapability("platformName", "Android");
+                caps.setCapability("autoWebview", true);
+
+//                if (cap.getCapability().equalsIgnoreCase("browser")) {
+//                    caps.setCapability(CapabilityType.BROWSER_NAME, "android");
+//                }
+//                if (cap.getCapability().equalsIgnoreCase("platform")) {
+//                    caps.setCapability("platformName", cap.getValue());
+//                }
+//                if (cap.getCapability().equalsIgnoreCase("version")) {
+//                    caps.setCapability("deviceName", cap.getValue());
+//                }
             }
 
         }
@@ -370,7 +383,7 @@ public class SeleniumServerService implements ISeleniumServerService {
         driver.manage().window().setSize(new Dimension(width, length));
     }
 
-    private String getScreenSize(WebDriver driver){
+    private String getScreenSize(WebDriver driver) {
         return driver.manage().window().getSize().toString();
     }
 }

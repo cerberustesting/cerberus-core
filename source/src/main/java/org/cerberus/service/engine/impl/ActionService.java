@@ -24,18 +24,19 @@ import java.util.logging.Logger;
 import org.apache.log4j.Level;
 import org.cerberus.crud.entity.Identifier;
 import org.cerberus.crud.entity.MessageEvent;
-import org.cerberus.enums.MessageEventEnum;
 import org.cerberus.crud.entity.MessageGeneral;
-import org.cerberus.enums.MessageGeneralEnum;
 import org.cerberus.crud.entity.SoapLibrary;
 import org.cerberus.crud.entity.TestCaseExecution;
 import org.cerberus.crud.entity.TestCaseExecutionData;
 import org.cerberus.crud.entity.TestCaseStepActionExecution;
+import org.cerberus.crud.service.ISoapLibraryService;
+import org.cerberus.enums.MessageEventEnum;
+import org.cerberus.enums.MessageGeneralEnum;
 import org.cerberus.exception.CerberusEventException;
 import org.cerberus.exception.CerberusException;
 import org.cerberus.log.MyLogger;
-import org.cerberus.crud.service.ISoapLibraryService;
 import org.cerberus.service.engine.IActionService;
+import org.cerberus.service.engine.IAppiumService;
 import org.cerberus.service.engine.IIdentifierService;
 import org.cerberus.service.engine.IPropertyService;
 import org.cerberus.service.engine.IRecorderService;
@@ -70,6 +71,8 @@ public class ActionService implements IActionService {
     private ISikuliService sikuliService;
     @Autowired
     private IIdentifierService identifierService;
+    @Autowired
+    private IAppiumService appiumService;
 
     @Override
     public TestCaseStepActionExecution doAction(TestCaseStepActionExecution testCaseStepActionExecution) {
@@ -242,7 +245,7 @@ public class ActionService implements IActionService {
                     return webdriverService.doSeleniumActionClick(tCExecution.getSession(), identifier, true, true);
                 }
             } else if (tCExecution.getApplication().getType().equalsIgnoreCase("APK")) {
-                return webdriverService.doSeleniumActionClick(tCExecution.getSession(), identifier, true, false);
+                return appiumService.doActionClick(tCExecution.getSession(), identifier, true, false);
             }
 
             message = new MessageEvent(MessageEventEnum.ACTION_NOTEXECUTED_NOTSUPPORTED_FOR_APPLICATION);
@@ -360,6 +363,8 @@ public class ActionService implements IActionService {
 
             if (tCExecution.getApplication().getType().equalsIgnoreCase("GUI")) {
                 return webdriverService.doSeleniumActionSwitchToWindow(tCExecution.getSession(), identifier);
+            } else if (tCExecution.getApplication().getType().equalsIgnoreCase("APK")) {
+                return appiumService.switchToContext(tCExecution.getSession(), identifier);
             }
             message = new MessageEvent(MessageEventEnum.ACTION_NOTEXECUTED_NOTSUPPORTED_FOR_APPLICATION);
             message.setDescription(message.getDescription().replaceAll("%ACTION%", "SwitchToWindow"));
@@ -473,13 +478,14 @@ public class ActionService implements IActionService {
             Identifier identifier = identifierService.convertStringToIdentifier(object);
             identifierService.checkWebElementIdentifier(identifier.getIdentifier());
 
-            if (tCExecution.getApplication().getType().equalsIgnoreCase("GUI")
-                    || tCExecution.getApplication().getType().equalsIgnoreCase("APK")) {
+            if (tCExecution.getApplication().getType().equalsIgnoreCase("GUI")) {
                 if (identifier.getIdentifier().equals("picture")) {
                     return sikuliService.doSikuliAction(tCExecution.getSession(), "type", identifier.getLocator(), property);
                 } else {
                     return webdriverService.doSeleniumActionType(tCExecution.getSession(), identifier, property, propertyName);
                 }
+            } else if (tCExecution.getApplication().getType().equalsIgnoreCase("APK")){
+            return appiumService.doActionType(tCExecution.getSession(), identifier, property, propertyName);
             }
             message = new MessageEvent(MessageEventEnum.ACTION_NOTEXECUTED_NOTSUPPORTED_FOR_APPLICATION);
             message.setDescription(message.getDescription().replaceAll("%ACTION%", "Type"));

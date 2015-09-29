@@ -20,20 +20,21 @@
 
 package org.cerberus.service.engine.impl;
 
-import org.cerberus.service.engine.impl.ControlService;
-import org.cerberus.service.engine.impl.PropertyService;
-import org.cerberus.service.engine.impl.IdentifierService;
-import org.cerberus.service.engine.impl.XmlUnitService;
-import org.cerberus.service.engine.impl.WebDriverService;
 import junit.framework.Assert;
 import org.cerberus.crud.entity.Application;
 import org.cerberus.crud.entity.Identifier;
-import org.cerberus.enums.MessageEventEnum;
 import org.cerberus.crud.entity.Session;
 import org.cerberus.crud.entity.TestCaseExecution;
 import org.cerberus.crud.entity.TestCaseStepActionControlExecution;
 import org.cerberus.crud.entity.TestCaseStepActionExecution;
 import org.cerberus.crud.entity.TestCaseStepExecution;
+import org.cerberus.enums.MessageEventEnum;
+import org.cerberus.service.engine.IAppiumService;
+import org.cerberus.service.engine.impl.ControlService;
+import org.cerberus.service.engine.impl.IdentifierService;
+import org.cerberus.service.engine.impl.PropertyService;
+import org.cerberus.service.engine.impl.WebDriverService;
+import org.cerberus.service.engine.impl.XmlUnitService;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -73,6 +74,9 @@ public class ControlServiceTest {
     
     @Mock
     private IdentifierService identifierService;
+    
+    @Mock
+    private IAppiumService appiumService;
     
     @InjectMocks
     private ControlService controlService;

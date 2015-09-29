@@ -125,6 +125,25 @@
             <version>${json.version}</version>
         </dependency>
         <dependency>
+            <groupId>io.appium</groupId>
+            <artifactId>java-client</artifactId>
+            <version>1.6.1</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>asm</groupId>
+                    <artifactId>asm</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>asm</groupId>
+                    <artifactId>asm-attrs</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>cglib</groupId>
+                    <artifactId>cglib</artifactId>
+                </exclusion>
+            </exclusions> 
+        </dependency>
+        <dependency>
             <groupId>org.seleniumhq.selenium</groupId>
             <artifactId>selenium-java</artifactId>
             <version>${selenium.version}</version>
@@ -199,6 +218,7 @@
             <artifactId>json-path</artifactId>
             <version>${jsonxpath.version}</version>
         </dependency>
+        
 
 
         <!-- Provided scope -->
@@ -283,15 +303,15 @@
         <finalName>${project.name}-${project.version}</finalName>
         
         <resources>
-        	<!-- Filter the lang property files -->
-        	<resource>
-                    <directory>src/main/resources</directory>
-                    <includes>
-                            <include>lang/**/*.properties</include>
-                            <include>xsd/**/*.xsd</include>
-                    </includes>
-                    <filtering>true</filtering>
-                </resource>
+            <!-- Filter the lang property files -->
+            <resource>
+                <directory>src/main/resources</directory>
+                <includes>
+                    <include>lang/**/*.properties</include>
+                    <include>xsd/**/*.xsd</include>
+                </includes>
+                <filtering>true</filtering>
+            </resource>
         </resources>
         
         <plugins>
