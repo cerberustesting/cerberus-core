@@ -60,7 +60,7 @@ public class DeleteProject extends HttpServlet {
             throws ServletException, IOException, CerberusException, JSONException {
         JSONObject jsonResponse = new JSONObject();
         Answer ans = new Answer();
-        MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_UNEXPECTED_ERROR);
+        MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
         msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", ""));
         ans.setResultMessage(msg);
         PolicyFactory policy = Sanitizers.FORMATTING.and(Sanitizers.LINKS);
@@ -76,7 +76,7 @@ public class DeleteProject extends HttpServlet {
          * Checking all constrains before calling the services.
          */
         if (StringUtil.isNullOrEmpty(key)) {
-            msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_EXPECTED_ERROR);
+            msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_EXPECTED);
             msg.setDescription(msg.getDescription().replace("%ITEM%", "Project")
                     .replace("%OPERATION%", "Delete")
                     .replace("%REASON%", "Project ID (idproject) is missing."));
@@ -94,7 +94,7 @@ public class DeleteProject extends HttpServlet {
                 /**
                  * Object could not be found. We stop here and report the error.
                  */
-                msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_EXPECTED_ERROR);
+                msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_EXPECTED);
                 msg.setDescription(msg.getDescription().replace("%ITEM%", "Project")
                         .replace("%OPERATION%", "Delete")
                         .replace("%REASON%", "Project does not exist."));

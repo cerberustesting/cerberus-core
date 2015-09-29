@@ -82,11 +82,11 @@ public class ImportFileService implements IImportFileService{
                 
             }catch (ParserConfigurationException ex) {
                 MyLogger.log(ImportFileService.class.getName(), Level.ERROR, "Unable to parse XML: " + ex.toString());
-                msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_UNEXPECTED_ERROR);
+                msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
                 msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", "Unable to parse the XML document. Please try again later."));                                               
             } catch (IOException ex) {
                 MyLogger.log(ImportFileService.class.getName(), Level.ERROR, "Unable to parse XML: " + ex.toString());
-                msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_UNEXPECTED_ERROR);
+                msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
                 msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", "Unable to verify if the XML document is valid. Please try again later."));                               
             }
             

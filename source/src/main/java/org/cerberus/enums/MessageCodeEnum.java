@@ -26,6 +26,7 @@ package org.cerberus.enums;
 public enum MessageCodeEnum {
     
     DATA_OPERATION_CODE_SUCCESS("OK"),
+    DATA_OPERATION_CODE_WARNING("WARNING"),
     DATA_OPERATION_CODE_ERROR("KO");
     
     private final String code;

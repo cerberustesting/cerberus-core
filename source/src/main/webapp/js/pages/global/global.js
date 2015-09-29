@@ -64,6 +64,14 @@ function getSubDataLabel(type) {
 function displayInvariantList(idName, selectName) {
     $.when($.getJSON("FindInvariantByID", "idName=" + idName)).then(function (data) {
         for (var option in data) {
+            $("[name='" + selectName + "']").append($('<option></option>').text(data[option].value).val(data[option].value));
+        }
+    });
+}
+
+function displayInvariantListWithDesc(idName, selectName) {
+    $.when($.getJSON("FindInvariantByID", "idName=" + idName)).then(function (data) {
+        for (var option in data) {
             $("[name='" + selectName + "']").append($('<option></option>').text(data[option].value + " - " + data[option].description).val(data[option].value));
         }
     });
@@ -115,6 +123,8 @@ function getAlertType(code) {
         return "success";
     } else if (code === "KO") {
         return "danger";
+    } else if (code === "WARNING") {
+        return "warning";
     }
 
     return code;
@@ -284,6 +294,22 @@ function showLoaderInModal(element) {
 function hideLoaderInModal(element) {
     $(element).find(".modal-content").unblock();
 }
+
+/**
+ * Method that reset form values from a modal
+ * @param {type} event
+ * @returns {void}
+ */
+function modalFormCleaner(event) {
+    var modalID = event.data.extra;
+    // reset form values
+    $(modalID + " " + modalID + "Form")[0].reset();
+    // remove all errors on the form fields
+    $(this).find('div.has-error').removeClass("has-error");
+    // clear the response messages of the modal
+    clearResponseMessage($(modalID));
+}
+
 /***********************************MODAL CONFIRMATION*************************************************/
 /**
  * 
@@ -465,6 +491,25 @@ function TableConfigurationsServerSide(divId, ajaxSource, ajaxProp, aoColumnsFun
     this.bDeferRender = false;
 }
 
+function returnMessageHandler(response) {
+    if (response.hasOwnProperty("messageType") && response.hasOwnProperty("message")) {
+        if (response.messageType !== "OK") {
+            var type = getAlertType(response.messageType);
+
+            showMessageMainPage(type, response.message);
+        }
+    } else {
+        showUnexpectedError();
+    }
+}
+
+function showUnexpectedError() {
+    var type = getAlertType("KO");
+    var message = "ERROR - An unexpected error occured, the servlet may not be available";
+
+    showMessageMainPage(type, message);
+}
+
 function createDataTableWithPermissions(tableConfigurations, callbackfunction) {
     var domConf = 'Cl<"showInlineElement pull-left marginLeft5"f>rti<"marginTop5"p>';
     if (!tableConfigurations.showColvis) {
@@ -504,10 +549,12 @@ function createDataTableWithPermissions(tableConfigurations, callbackfunction) {
                 "type": "GET",
                 "url": sSource,
                 "data": aoData,
-                "success": fnCallback,
+                "success": function (json) {
+                    returnMessageHandler(json);
+                    fnCallback(json);
+                },
                 "error": function (e) {
-                    $(location).prop("pathname", $(location).prop("pathname"));
-                    $(location).prop("search", $(location).prop("search"));
+                    showUnexpectedError();
                 }
             });
             $.when(oSettings.jqXHR).then(function (data) {
@@ -557,17 +604,15 @@ function createDataTable(tableConfigurations, callback) {
     configs["paging"] = tableConfigurations.paginate;
     configs["autoWidth"] = tableConfigurations.autoWidth;
     configs["pagingType"] = tableConfigurations.paginationType;
-    configs["columns.searchable"] = false;
     configs["columnDefs.targets"] = [0];
     configs["pageLength"] = tableConfigurations.displayLength;
-    configs["scrollX"] = tableConfigurations.tableWidth;
+    configs["scrollX"] = tableConfigurations.scrollX;
     configs["scrollY"] = tableConfigurations.scrollY;
     configs["scrollCollapse"] = tableConfigurations.scrollCollapse;
     configs["stateSave"] = tableConfigurations.stateSave;
     configs["language"] = tableConfigurations.lang.table;
     configs["columns"] = tableConfigurations.aoColumnsFunction;
     configs["colVis"] = tableConfigurations.lang.colVis;
-    configs["scrollX"] = tableConfigurations.scrollX;
     configs["lengthChange"] = true;
     configs["lengthMenu"] = tableConfigurations.lengthMenu;
     configs["createdRow"] = callback;
@@ -584,10 +629,12 @@ function createDataTable(tableConfigurations, callback) {
                 "type": "GET",
                 "url": sSource,
                 "data": aoData,
-                "success": fnCallback,
+                "success": function (json) {
+                    returnMessageHandler(json);
+                    fnCallback(json);
+                },
                 "error": function (e) {
-                    $(location).prop("pathname", $(location).prop("pathname"));
-                    $(location).prop("search", $(location).prop("search"));
+                    showUnexpectedError();
                 }
             });
         };
@@ -611,6 +658,50 @@ function createDataTable(tableConfigurations, callback) {
     $("#" + tableConfigurations.divId + "_filter").addClass("marginBottom10").addClass("width150");
 
     return oTable;
+}
+
+/**
+ * Create the entry and display the message retrieved by the ajax call
+ * @param {type} servletName
+ * @param {type} form
+ * @param {type} tableID
+ * @returns {void}
+ */
+function createEntry(servletName, form, tableID) {
+    var jqxhr = $.post(servletName, form.serialize());
+    $.when(jqxhr).then(function (data) {
+        hideLoaderInModal("#addEntryModal");
+        if (getAlertType(data.messageType) === 'success') {
+            var oTable = $(tableID).dataTable();
+            oTable.fnDraw(true);
+            showMessage(data);
+            $("#addEntryModal").modal('hide');
+        } else {
+            showMessage(data, $("#addEntryModal"));
+        }
+    }).fail(handleErrorAjaxAfterTimeout);
+}
+
+/**
+ * Update the entry and display the message retrieved by the ajax call (does not change pagination)
+ * @param {type} servletName
+ * @param {type} form
+ * @param {type} tableID
+ * @returns {void}
+ */
+function updateEntry(servletName, form, tableID) {
+    var jqxhr = $.post(servletName, form.serialize());
+    $.when(jqxhr).then(function (data) {
+        hideLoaderInModal("#editEntryModal");
+        if (getAlertType(data.messageType) === 'success') {
+            var oTable = $(tableID).dataTable();
+            oTable.fnDraw(false);
+            showMessage(data);
+            $("#editEntryModal").modal('hide');
+        } else {
+            showMessage(data, $("#editEntryModal"));
+        }
+    }).fail(handleErrorAjaxAfterTimeout);
 }
 
 /**
@@ -731,13 +822,13 @@ function GetURLParameter(sParam)
 {
     var sPageURL = window.location.search.substring(1);
     var sURLVariables = sPageURL.split('&');
-    
+
     for (var i = 0; i < sURLVariables.length; i++)
     {
         var sParameterName = sURLVariables[i].split('=');
         if (sParameterName[0] === sParam)
         {
-            return sParameterName[1];
+            return decodeURIComponent(sParameterName[1]);
         }
     }
     return null;

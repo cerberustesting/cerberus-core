@@ -23,6 +23,7 @@ import java.util.List;
 
 import org.cerberus.crud.entity.TestCaseCountry;
 import org.cerberus.exception.CerberusException;
+import org.cerberus.util.answer.AnswerList;
 
 /**
  *
@@ -52,5 +53,7 @@ public interface ITestCaseCountryService {
     void deleteTestCaseCountry(TestCaseCountry tcc) throws CerberusException;
 
     void deleteListTestCaseCountry(List<TestCaseCountry> tccToDelete) throws CerberusException;
+    
+    public AnswerList readByTest(String test);
 
 }

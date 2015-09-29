@@ -18,20 +18,24 @@
 package org.cerberus.servlet.robot;
 
 import java.io.IOException;
-import java.io.PrintWriter;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.servlet.ServletException;
+import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import org.apache.log4j.Level;
+import org.cerberus.crud.entity.MessageEvent;
 import org.cerberus.crud.entity.Robot;
+import org.cerberus.enums.MessageEventEnum;
 import org.cerberus.exception.CerberusException;
-import org.cerberus.crud.factory.IFactoryLogEvent;
-import org.cerberus.crud.factory.impl.FactoryLogEvent;
-import org.cerberus.log.MyLogger;
 import org.cerberus.crud.service.ILogEventService;
 import org.cerberus.crud.service.IRobotService;
 import org.cerberus.crud.service.impl.LogEventService;
+import org.cerberus.util.answer.Answer;
+import org.cerberus.util.answer.AnswerItem;
+import org.json.JSONException;
+import org.json.JSONObject;
 import org.owasp.html.PolicyFactory;
 import org.owasp.html.Sanitizers;
 import org.springframework.context.ApplicationContext;
@@ -41,6 +45,7 @@ import org.springframework.web.context.support.WebApplicationContextUtils;
  *
  * @author bcivel
  */
+@WebServlet(name = "DeleteRobot", urlPatterns = {"/DeleteRobot"})
 public class DeleteRobot extends HttpServlet {
 
     /**
@@ -53,32 +58,87 @@ public class DeleteRobot extends HttpServlet {
      * @throws IOException if an I/O error occurs
      */
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException, CerberusException {
-        response.setContentType("text/html;charset=UTF-8");
-        PrintWriter out = response.getWriter();
+            throws ServletException, IOException, CerberusException, JSONException {
+        JSONObject jsonResponse = new JSONObject();
+        Answer ans = new Answer();
+        MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
+        msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", ""));
+        ans.setResultMessage(msg);
         PolicyFactory policy = Sanitizers.FORMATTING.and(Sanitizers.LINKS);
 
-        try {
-            String id = policy.sanitize(request.getParameter("id"));
+        response.setContentType("application/json");
 
+        /**
+         * Parsing and securing all required parameters.
+         */
+        Integer robotid = 0;
+        boolean robotid_error = true;
+        try {
+            if (request.getParameter("robotid") != null && !request.getParameter("robotid").equals("")) {
+                robotid = Integer.valueOf(policy.sanitize(request.getParameter("robotid")));
+                robotid_error = false;
+            }
+        } catch (Exception ex) {
+            robotid_error = true;
+        }
+
+        /**
+         * Checking all constrains before calling the services.
+         */
+        if (robotid_error) {
+            msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_EXPECTED);
+            msg.setDescription(msg.getDescription().replace("%ITEM%", "Robot")
+                    .replace("%OPERATION%", "Delete")
+                    .replace("%REASON%", "Robot ID (robotid) is missing."));
+            ans.setResultMessage(msg);
+        } else {
+            /**
+             * All data seems cleans so we can call the services.
+             */
             ApplicationContext appContext = WebApplicationContextUtils.getWebApplicationContext(this.getServletContext());
             IRobotService robotService = appContext.getBean(IRobotService.class);
 
-            Robot robot = robotService.convert(robotService.readByKeyTech(Integer.valueOf(id)));
-            robotService.convert(robotService.delete(robot));
+            AnswerItem resp = robotService.readByKeyTech(robotid);
+            if (!(resp.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode()))) {
+                /**
+                 * Object could not be found. We stop here and report the error.
+                 */
+                msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_EXPECTED);
+                msg.setDescription(msg.getDescription().replace("%ITEM%", "Robot")
+                        .replace("%OPERATION%", "Delete")
+                        .replace("%REASON%", "Robot does not exist."));
+                ans.setResultMessage(msg);
 
-            /**
-             * Adding Log entry.
-             */
-            ILogEventService logEventService = appContext.getBean(LogEventService.class);
-            logEventService.createPrivateCalls("/DeleteRobot", "DELETE", "Delete Robot : " + robot.getPlatform() + "/" + robot.getBrowser() + "/" + robot.getVersion(), request);
+            } else {
+                /**
+                 * The service was able to perform the query and confirm the
+                 * object exist, then we can delete it.
+                 */
+                Robot robotData = (Robot) resp.getItem();
+                ans = robotService.delete(robotData);
 
-        } finally {
-            out.close();
+                if (ans.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
+                    /**
+                     * Delete was successful. Adding Log entry.
+                     */
+                    ILogEventService logEventService = appContext.getBean(LogEventService.class);
+                    logEventService.createPrivateCalls("/DeleteRobot", "DELETE", "Delete Robot : ['" + robotid + "'|'" + robotData.getRobot() + "']", request);
+                }
+            }
         }
+
+        /**
+         * Formating and returning the json result.
+         */
+        jsonResponse.put("messageType", ans.getResultMessage().getMessage().getCodeString());
+        jsonResponse.put("message", ans.getResultMessage().getDescription());
+
+        response.getWriter().print(jsonResponse.toString());
+        response.getWriter().flush();
+
     }
 
-    // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
+// <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
     /**
      * Handles the HTTP <code>GET</code> method.
      *
@@ -92,8 +152,13 @@ public class DeleteRobot extends HttpServlet {
             throws ServletException, IOException {
         try {
             processRequest(request, response);
+
         } catch (CerberusException ex) {
-            MyLogger.log(DeleteRobot.class.getName(), Level.FATAL, ex.toString());
+            Logger.getLogger(DeleteRobot.class
+                    .getName()).log(Level.SEVERE, null, ex);
+        } catch (JSONException ex) {
+            Logger.getLogger(DeleteRobot.class
+                    .getName()).log(Level.SEVERE, null, ex);
         }
     }
 
@@ -110,8 +175,13 @@ public class DeleteRobot extends HttpServlet {
             throws ServletException, IOException {
         try {
             processRequest(request, response);
+
         } catch (CerberusException ex) {
-            MyLogger.log(DeleteRobot.class.getName(), Level.FATAL, ex.toString());
+            Logger.getLogger(DeleteRobot.class
+                    .getName()).log(Level.SEVERE, null, ex);
+        } catch (JSONException ex) {
+            Logger.getLogger(DeleteRobot.class
+                    .getName()).log(Level.SEVERE, null, ex);
         }
     }
 
@@ -124,5 +194,4 @@ public class DeleteRobot extends HttpServlet {
     public String getServletInfo() {
         return "Short description";
     }// </editor-fold>
-
 }

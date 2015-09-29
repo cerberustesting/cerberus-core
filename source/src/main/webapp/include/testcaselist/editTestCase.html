@@ -1,0 +1,184 @@
+<!--Edit test page-->
+<div data-backdrop="static" class="modal fade center" id="editEntryModal" tabindex="-1" role="dialog" aria-labelledby="editEntryModalLabel" aria-hidden="true">
+    <div class="modal-admin nomargintop nomarginbottom center">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title" id="editEntryModalLabel" name="editEntryField">Edit Test Case</h4>
+            </div>
+            <div class="modal-body">
+
+                <!--edit form-->
+                <form id="editEntryModalForm" name="editEntryModalForm"  title="EditTestCase" role="form">
+                    <div class="container-fluid center">
+                        <!-- messages area-->
+                        <div id="DialogMessagesArea">
+                            <div class="alert" id="DialogMessagesAlert"  style="display:none;">
+                                <strong><span class="alert-description" id="DialogAlertDescription"></span></strong>
+                                <button type="button" class="close" data-hide="alert"  aria-hidden="true">
+                                    <span class="glyphicon glyphicon-remove alert-right alert-close pull-right"></span>
+                                </button>
+                            </div>
+                        </div>
+                        <h3 class="modal-subtitle">Test Info</h3>
+                        <div class="row">
+                            <div class="form-group form-group-sm col-xs-3">
+                                <label class="control-label" for="test" name="testField">Test</label>
+                                <input type="text" class="form-control input-sm" name="test" id="test" aria-describedby="basic-addon1" readonly>
+                            </div>
+                            <div class="form-group form-group-sm col-xs-3">
+                                <label class="control-label" for="testCase" name="testCaseField">Test Case</label>
+                                <input type="text" class="form-control input-sm" name="testCase" id="testCase" readonly>
+                            </div>
+                            <div class="form-group form-group-sm col-xs-6">
+                                <label class="control-label" for="description" name="descriptionField">Test description</label>
+                                <input class="form-control input-sm"  id="description" name="description" readonly>
+                            </div>
+                        </div>
+                        <h3 class="modal-subtitle">TestCase Info</h3>
+                        <div class="row">
+                            <div class="form-group form-group-sm col-xs-3">
+                                <label for="creator" name="creatorField">Creator</label>
+                                <input type="text" class="form-control input-sm" name="creator" id="creator" readonly>
+                            </div>
+                            <div class="form-group form-group-sm col-xs-3">
+                                <label for="lastModifier" name="lastModifierField">Last Modifier</label>
+                                <input class="form-control input-sm"  id="lastModifier" name="lastModifier" readonly>
+                            </div>
+                            <div class="form-group form-group-sm col-xs-3">
+                                <label for="implementer" name="lastModifierField">Implementer</label>
+                                <input class="form-control input-sm"  id="implementer" name="implementer">
+                            </div>
+                            <div class="form-group form-group-sm col-xs-3">
+                                <label for="tcDateCrea" name="tcDateCreaField">Creation date</label>
+                                <input class="form-control input-sm"  id="tcDateCrea" name="tcDateCrea" readonly>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="form-group form-group-sm col-xs-4">
+                                <label for="project" name="projectField">Project</label>
+                                <select type="text" class="form-control input-sm" name="project" id="project"></select>
+                            </div>
+                            <div class="form-group form-group-sm col-xs-2">
+                                <label for="ticket" name="ticketField">Ticket</label>
+                                <input type="text" class="form-control input-sm" name="ticket" id="ticket"/>
+                            </div>
+                            <div class="form-group form-group-sm col-xs-6">
+                                <label for="function" name="functionField">Function</label>
+                                <input type="text" class="form-control input-sm" name="function" id="function"/>
+                            </div>
+                        </div>
+                        <h3 class="modal-subtitle">TestCase Parameters</h3>
+                        <div class="row">
+                            <div class="form-group form-group-sm col-xs-4">
+                                <label for="application" name="applicationField">Application</label>
+                                <select type="text" class="form-control input-sm" name="application" id="application"></select>
+                            </div>
+                            <div class="form-group form-group-sm col-xs-2">
+                                <label for="status" name="statusField">Status</label>
+                                <select type="text" class="form-control input-sm" name="status" id="status"></select>
+                            </div>
+                            <div class="form-group form-group-sm col-xs-2">
+                                <label for="group" name="groupField">Group</label>
+                                <select type="text" class="form-control input-sm" name="group" id="group">
+                                </select>
+                            </div>
+                            <div class="form-group form-group-sm col-xs-1">
+                                <label for="priority" name="priorityField">Priority</label>
+                                <select type="text" class="form-control input-sm" name="priority" id="priority"></select>
+                            </div>
+                            <div class="form-group form-group-sm col-xs-1">
+                                <label for="actQA" name="actQAField">Active QA</label>
+                                <select type="text" class="form-control input-sm" name="activeQA" id="actQA">
+                                </select>
+                            </div>
+                            <div class="form-group form-group-sm col-xs-1">
+                                <label for="actUAT" name="actUATField">Active UAT</label>
+                                <select type="text" class="form-control input-sm" name="activeUAT" id="actUAT"></select>
+                            </div>
+                            <div class="form-group form-group-sm col-xs-1">
+                                <label for="actProd" name="actProdField">Active Prod</label>
+                                <select type="text" class="form-control input-sm" name="activeProd" id="actProd"></select>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="form-group form-group-sm col-xs-6">
+                                <label for="countryList" id="countryListLabel">Country List :</label>
+                                <div id="countryList" name="countryList" style="margin-top: 5px;"></div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="form-group form-group-sm col-xs-10">
+                                <label for="shortDesc" name="shortDescField">TestCase short description</label>
+                                <input type="text" class="form-control input-sm" name="shortDesc" id="shortDesc"/>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="form-group form-group-sm col-xs-6">
+                                <label for="behaviorOrValueExpected" name="behaviorOrValueExpectedField">Behavior or value expected</label>
+                                <textarea id="behaviorOrValueExpected" name="behaviorOrValueExpected" class="form-control" style="height: 200px"></textarea> 
+                            </div>
+                            <div class="form-group form-group-sm col-xs-6">
+                                <label for="howTo" name="howToField">How to</label>
+                                <textarea id="howTo" name="howTo" class="form-control" style="height: 200px"></textarea> 
+                            </div>
+                        </div>
+                        <h3 class="modal-subtitle">Activation Criterias</h3>
+                        <div class="row">
+                            <div class="form-group form-group-sm col-xs-1">
+                                <label for="active" name="activeField">Active</label>
+                                <select type="text" class="form-control input-sm" name="active" id="active"></select>
+                            </div>
+                            <div class="form-group form-group-sm col-xs-1">
+                                <label for="fromSprint" name="fromSprintField">From Sprint</label>
+                                <select type="text" class="form-control input-sm" name="fromSprint" id="fromSprint"></select>
+                            </div>
+                            <div class="form-group form-group-sm col-xs-1">
+                                <label for="fromRev" name="fromRevField">From Rev</label>
+                                <select type="text" class="form-control input-sm" name="fromRev" id="fromRev"></select>
+                            </div>
+                            <div class="form-group form-group-sm col-xs-1">
+                                <label for="toSprint" name="toSprintField">To Sprint</label>
+                                <select type="text" class="form-control input-sm" name="toSprint" id="toSprint"></select>
+                            </div>
+                            <div class="form-group form-group-sm col-xs-1">
+                                <label for="toRev" name="toRevField">To Rev</label>
+                                <select type="text" class="form-control input-sm" name="toRev" id="toRev"></select>
+                            </div>
+                            <div class="form-group form-group-sm col-xs-1">
+                                <label for="bugId" name="bugIdField">Bug ID</label>
+                                <input type="text" class="form-control input-sm" name="bugId" id="bugId"/>
+                            </div>
+                            <div class="form-group form-group-sm col-xs-4">
+                                <label for="link" name="linkField">Link</label>
+                                <input type="text" class="form-control input-sm" name="link" id="link"/>
+                            </div>
+                            <div class="form-group form-group-sm col-xs-1">
+                                <label for="targetSprint" name="targetSprintField">Target Sprint</label>
+                                <select type="text" class="form-control input-sm" name="targetSprint" id="targetSprint"></select>
+                            </div>
+                            <div class="form-group form-group-sm col-xs-1">
+                                <label for="targetRev" name="targetRevField">Target Rev</label>
+                                <select type="text" class="form-control input-sm" name="targetRev" id="targetRev"></select>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="form-group form-group-sm col-xs-6">
+                                <label for="comment" name="commentField">Comment</label>
+                                <input type="text" class="form-control input-sm" name="comment" id="comment"/>
+                            </div>
+                            <div class="form-group form-group-sm col-xs-6">
+                                <label for="lastExec" name="lastExecField">Last Execution</label>
+                                <div class="marginTop5">Last <a href="ExecutionDetail.jsp?id_tc=36">Execution</a> was <a style="color : green">OK</a> in UAT in UK on Mon Aug 03 11:01:12 CEST 2015<a onclick="return checkUndefinedProperties();" href="RunTests.jsp?Test=Examples&amp;TestCase=0002A&amp;MySystem=DEFAULT&amp;Country=UK&amp;Environment=UAT"><i> (Run it again) </i></a></div>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal" name="buttonClose">Close</button>
+                <button type="button" id="editEntryButton" class="btn btn-primary" name="buttonAdd">Save</button>
+            </div>
+        </div>
+    </div>
+</div>

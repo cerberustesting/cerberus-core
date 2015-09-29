@@ -59,7 +59,7 @@ public class ProjectDAO implements IProjectDAO {
         AnswerItem ans = new AnswerItem();
         Project result = null;
         final String query = "SELECT * FROM project WHERE idproject = ?";
-        MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_UNEXPECTED_ERROR);
+        MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
         msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", ""));
 
         Connection connection = this.databaseSpring.connect();
@@ -75,25 +75,25 @@ public class ProjectDAO implements IProjectDAO {
                         msg.setDescription(msg.getDescription().replace("%ITEM%", "Project Lib").replace("%OPERATION%", "SELECT"));
                         ans.setItem(result);
                     } else {
-                        msg = new MessageEvent(MessageEventEnum.NO_DATA_FOUND);
+                        msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_NO_DATA_FOUND);
                     }
                 } catch (SQLException exception) {
                     LOG.error("Unable to execute query : " + exception.toString());
-                    msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_UNEXPECTED_ERROR);
+                    msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
                     msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", exception.toString()));
                 } finally {
                     resultSet.close();
                 }
             } catch (SQLException exception) {
                 LOG.error("Unable to execute query : " + exception.toString());
-                msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_UNEXPECTED_ERROR);
+                msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
                 msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", exception.toString()));
             } finally {
                 preStat.close();
             }
         } catch (SQLException exception) {
             LOG.error("Unable to execute query : " + exception.toString());
-            msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_UNEXPECTED_ERROR);
+            msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
             msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", exception.toString()));
         } finally {
             try {
@@ -113,7 +113,7 @@ public class ProjectDAO implements IProjectDAO {
     @Override
     public AnswerList readByCriteria(int start, int amount, String column, String dir, String searchTerm, String individualSearch) {
         AnswerList response = new AnswerList();
-        MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_UNEXPECTED_ERROR);
+        MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
         msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", ""));
         List<Project> projectList = new ArrayList<Project>();
         StringBuilder searchSQL = new StringBuilder();
@@ -141,10 +141,10 @@ public class ProjectDAO implements IProjectDAO {
             query.append("order by `").append(column).append("` ").append(dir);
         }
 
-        if (!(amount == 0)) {
-            query.append(" limit ").append(start).append(" , ").append(amount);
-        } else {
+        if ((amount == 0) || (amount >= MAX_ROW_SELECTED)) {
             query.append(" limit ").append(start).append(" , ").append(MAX_ROW_SELECTED);
+        } else {
+            query.append(" limit ").append(start).append(" , ").append(amount);
         }
 
         Connection connection = this.databaseSpring.connect();
@@ -166,13 +166,20 @@ public class ProjectDAO implements IProjectDAO {
                         nrTotalRows = resultSet.getInt(1);
                     }
 
-                    msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
-                    msg.setDescription(msg.getDescription().replace("%ITEM%", "Project Lib").replace("%OPERATION%", "SELECT"));
-                    response = new AnswerList(projectList, nrTotalRows);
+                    if (projectList.size() >= MAX_ROW_SELECTED) { // Result of SQl was limited by MAX_ROW_SELECTED constrain. That means that we may miss some lines in the resultList.
+                        LOG.error("Partial Result in the query.");
+                        msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_WARNING_PARTIAL_RESULT);
+                        msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", "Maximum row reached : " + MAX_ROW_SELECTED));
+                        response = new AnswerList(projectList, nrTotalRows);
+                    } else {
+                        msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
+                        msg.setDescription(msg.getDescription().replace("%ITEM%", "Project Lib").replace("%OPERATION%", "SELECT"));
+                        response = new AnswerList(projectList, nrTotalRows);
+                    }
 
                 } catch (SQLException exception) {
                     LOG.error("Unable to execute query : " + exception.toString());
-                    msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_UNEXPECTED_ERROR);
+                    msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
                     msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", "Unable to retrieve the list of entries!"));
 
                 } finally {
@@ -183,7 +190,7 @@ public class ProjectDAO implements IProjectDAO {
 
             } catch (SQLException exception) {
                 LOG.error("Unable to execute query : " + exception.toString());
-                msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_UNEXPECTED_ERROR);
+                msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
                 msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", "Unable to retrieve the list of entries!"));
             } finally {
                 if (preStat != null) {
@@ -193,7 +200,7 @@ public class ProjectDAO implements IProjectDAO {
 
         } catch (SQLException exception) {
             LOG.error("Unable to execute query : " + exception.toString());
-            msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_UNEXPECTED_ERROR);
+            msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
             msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", "Unable to retrieve the list of entries!"));
         } finally {
             try {
@@ -235,10 +242,10 @@ public class ProjectDAO implements IProjectDAO {
                 LOG.error("Unable to execute query : " + exception.toString());
 
                 if (exception.getSQLState().equals(SQL_DUPLICATED_CODE)) { //23000 is the sql state for duplicate entries
-                    msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_DUPLICATE_ERROR);
+                    msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_DUPLICATE);
                     msg.setDescription(msg.getDescription().replace("%ITEM%", "Project").replace("%OPERATION%", "INSERT"));
                 } else {
-                    msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_UNEXPECTED_ERROR);
+                    msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
                     msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", exception.toString()));
                 }
             } finally {
@@ -246,7 +253,7 @@ public class ProjectDAO implements IProjectDAO {
             }
         } catch (SQLException exception) {
             LOG.error("Unable to execute query : " + exception.toString());
-            msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_UNEXPECTED_ERROR);
+            msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
             msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", "Unable to execute query - INSERT Project"));
         } finally {
             try {
@@ -276,14 +283,14 @@ public class ProjectDAO implements IProjectDAO {
                 msg.setDescription(msg.getDescription().replace("%ITEM%", "Project").replace("%OPERATION%", "DELETE"));
             } catch (SQLException exception) {
                 LOG.error("Unable to execute query : " + exception.toString());
-                msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_UNEXPECTED_ERROR);
+                msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
                 msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", exception.toString()));
             } finally {
                 preStat.close();
             }
         } catch (SQLException exception) {
             LOG.error("Unable to execute query : " + exception.toString());
-            msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_UNEXPECTED_ERROR);
+            msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
             msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", exception.toString()));
         } finally {
             try {
@@ -316,14 +323,14 @@ public class ProjectDAO implements IProjectDAO {
                 msg.setDescription(msg.getDescription().replace("%ITEM%", "Project").replace("%OPERATION%", "UPDATE"));
             } catch (SQLException exception) {
                 LOG.error("Unable to execute query : " + exception.toString());
-                msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_UNEXPECTED_ERROR);
+                msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
                 msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", exception.toString()));
             } finally {
                 preStat.close();
             }
         } catch (SQLException exception) {
             LOG.error("Unable to execute query : " + exception.toString());
-            msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_UNEXPECTED_ERROR);
+            msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
             msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", exception.toString()));
         } finally {
             try {

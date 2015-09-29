@@ -25,6 +25,9 @@ import org.cerberus.crud.dao.ITestDAO;
 import org.cerberus.crud.entity.Test;
 import org.cerberus.exception.CerberusException;
 import org.cerberus.crud.service.ITestService;
+import org.cerberus.util.answer.Answer;
+import org.cerberus.util.answer.AnswerItem;
+import org.cerberus.util.answer.AnswerList;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -72,11 +75,35 @@ public class TestService implements ITestService {
     @Override
     public Test findTestByKey(String test) {
         return testDao.findTestByKey(test);
-                }
+    }
 
     @Override
     public List<Test> findTestBySystems(List<String> systems) {
         return testDao.findListOfTestBySystems(systems);
     }
 
+    @Override
+    public AnswerItem readByKey(String test) {
+        return testDao.readByKey(test);
+    }
+
+    @Override
+    public AnswerList readByCriteria(int start, int amount, String colName, String dir, String searchTerm, String individualSearch) {
+        return testDao.readByCriteria(start, amount, colName, dir, searchTerm, individualSearch);
+    }
+
+    @Override
+    public Answer create(Test test) {
+        return testDao.create(test);
+    }
+
+    @Override
+    public Answer update(Test test) {
+        return testDao.update(test);
+    }
+    
+    @Override
+    public Answer delete(Test test) {
+        return testDao.delete(test);
+    }
 }

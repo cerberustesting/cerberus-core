@@ -83,7 +83,6 @@ public enum MessageEventEnum {
     PROPERTY_FAILED_CYCLICDEFINITION(189, "FA", "Property %PROP% is cyclically defined", true, false ,false , MessageGeneralEnum.EXECUTION_FA),
     PROPERTY_FAILED_GETFROMJSON_PARAMETERNOTFOUND(190, "FA", "Value %PARAM% not found in Json file from %URL%", true, true ,true , MessageGeneralEnum.EXECUTION_FA),
     PROPERTY_FAILED_CALCULATE_OBJECTPROPERTYNULL(191, "FA", "Both object and property are null. Please specify one of them.", true, false, false, MessageGeneralEnum.EXECUTION_FA),
-    PROPERTY_PENDING(199, "PE", "Calculating property...", false, false ,false , MessageGeneralEnum.EXECUTION_PE_TESTSTARTED),
     PROPERTY_FAILED_GETFROMDATALIB(192, "FA", "Failed to get Data from '%VALUE1%' because could not find the library entry!. ", true, false, false, MessageGeneralEnum.EXECUTION_FA),
     PROPERTY_FAILED_GETFROMDATALIB_NODATA(192, "FA", "No data found for SQL test data library entry '%ENTRY%'! Database: %DATABASE%, SQL %SQL%", true, false, false, MessageGeneralEnum.EXECUTION_FA),
     PROPERTY_FAILED_GETFROMDATALIB_GENERIC(192, "FA", "An error occurred while calculating the SQL from test data library entry '%ENTRY%'! Database: %DATABASE%, SQL %SQL%", true, false, false, MessageGeneralEnum.EXECUTION_FA),
@@ -95,6 +94,9 @@ public enum MessageEventEnum {
     PROPERTY_FAILED_GETFROMDATALIBDATA_XMLEXCEPTION(197, "FA", "The evaluation of the xpath expression '%XPATH%' specified in the sub-data entry '%SUBDATA%' for the library entry '%ENTRY%' has failed! '%REASON%'", true, false, false, MessageGeneralEnum.EXECUTION_FA),
     PROPERTY_FAILED_GETFROMDATALIBDATA_XML_NOTFOUND(197, "FA", "No elements found! The evaluation of the xpath expression '%XPATH%' specified in the sub-data entry '%SUBDATA%' for the library entry '%ENTRY%' didn't match any XML elements!", true, false, false, MessageGeneralEnum.EXECUTION_FA),
     PROPERTY_FAILED_GETFROMDATALIBDATA_CHECK_XPATH(197, "FA", "A XML element was found, but no data was retrieved! Please verify the xpath expression '%XPATH%' specified in the sub-data entry '%SUBDATA%' for the library entry '%ENTRY%' didn't match any XML elements!", true, false, false, MessageGeneralEnum.EXECUTION_FA),
+    PROPERTY_PENDING(199, "PE", "Calculating property...", false, false ,false , MessageGeneralEnum.EXECUTION_PE_TESTSTARTED),
+    
+    // *********** EXECUTION ACTIONS ***********
     ACTION_SUCCESS(200, "OK", "", false, false ,false , MessageGeneralEnum.EXECUTION_PE_TESTSTARTED),
     ACTION_SUCCESS_CLICK(200, "OK", "Element '%ELEMENT%' clicked.", false, false ,false , MessageGeneralEnum.EXECUTION_PE_TESTSTARTED),
     ACTION_SUCCESS_CLICKANDWAIT(200, "OK", "Element '%ELEMENT%' clicked and waited %TIME% ms.", false, false ,false , MessageGeneralEnum.EXECUTION_PE_TESTSTARTED),
@@ -168,6 +170,8 @@ public enum MessageEventEnum {
     ACTION_NOTEXECUTED_NO_PROPERTY_DEFINITION(290, "NA", "Not executed because Property '%PROP%' is not defined for the country '%COUNTRY%'.", false, false ,false , MessageGeneralEnum.EXECUTION_PE_TESTSTARTED),
     ACTION_NOTEXECUTED_NOTSUPPORTED_FOR_APPLICATION(291, "FA", "Not executed because Action '%ACTION%' is not supported for application type '%APPLICATIONTYPE%'.", true, true ,false , MessageGeneralEnum.EXECUTION_FA_ACTION),
     ACTION_PENDING(299, "PE", "Doing Action...", false, false ,false , MessageGeneralEnum.EXECUTION_PE_TESTSTARTED),
+    
+    // *********** EXECUTION CONTROLS ***********
     CONTROL_SUCCESS(300, "OK", "", false, false ,false , MessageGeneralEnum.EXECUTION_PE_TESTSTARTED),
     CONTROL_SUCCESS_EQUAL(300, "OK", "'%STRING1%' is equal to '%STRING2%'.", false, false ,false , MessageGeneralEnum.EXECUTION_PE_TESTSTARTED),
     CONTROL_SUCCESS_CONTAINS(300, "OK", "'%STRING1%' contains '%STRING2%'.", false, false ,false , MessageGeneralEnum.EXECUTION_PE_TESTSTARTED),
@@ -240,28 +244,31 @@ public enum MessageEventEnum {
     CONTROL_FAILED_ELEMENTDIFFERENT(389, "KO", "Element in path '%XPATH%' is not different from '%DIFFERENT_ELEMENT%'.", true, true ,true , MessageGeneralEnum.EXECUTION_KO),
     CONTROL_NOTEXECUTED_NOTSUPPORTED_FOR_APPLICATION(384, "KO", "Not executed because Control '%CONTROL%' is not supported for application type '%APPLICATIONTYPE%'.", true, true ,false , MessageGeneralEnum.EXECUTION_FA),
     CONTROL_PENDING(399, "PE", "Control beeing performed...", false, false ,false , MessageGeneralEnum.EXECUTION_PE_TESTSTARTED),
+    
+    // *********** EXECUTION STEP ***********
     STEP_SUCCESS(400, "OK", "", false, false ,false , MessageGeneralEnum.EXECUTION_PE_TESTSTARTED),
     STEP_FAILED(450, "KO", "", false, true ,false , MessageGeneralEnum.EXECUTION_PE_TESTSTARTED),
     STEP_PENDING(499, "PE", "Step running...", false, false ,false , MessageGeneralEnum.EXECUTION_PE_TESTSTARTED),
-    NO_DATA_FOUND(500, "", "Could not find row.", true, true ,false , MessageGeneralEnum.EXECUTION_FA),
-    APPLICATION_NOT_FOUND(501, "FA", "Application of the testcase does not exist.", true, true ,false , MessageGeneralEnum.EXECUTION_FA),
-    TESTCASEEXECUTION_CANNOTFINDTESTCASEEXECUTIONBYCRITERIA(502, "CA", "An error occur when trying to find execution by criteria", true, true ,false , MessageGeneralEnum.EXECUTION_FA),
-    TESTCASEEXECUTION_CANNOTINSERTTESTCASEEXECUTION(503, "CA", "An error occur when trying to insert a testcaseexecution", true, true ,false , MessageGeneralEnum.EXECUTION_FA),
-    NOT_IMPLEMEMTED(900, "", "Not Implememted.", true, true ,false , MessageGeneralEnum.EXECUTION_FA) ,
-    //TODO add env property => configure com.cerberus.environment and JNDI
-        //New messages to handle data operations
-    DATA_OPERATION_EXPECTED_ERROR(901, MessageCodeEnum.DATA_OPERATION_CODE_ERROR.getCode(), "%ITEM% - operation %OPERATION% failed to complete. %REASON%", false, false ,false , MessageGeneralEnum.DATA_OPERATION_ERROR),
-    DATA_OPERATION_DUPLICATE_ERROR(902, MessageCodeEnum.DATA_OPERATION_CODE_ERROR.getCode(), "The %ITEM% that you are trying to %OPERATION% conflicts with an existing one! Please check for duplicates!", false, false ,false, MessageGeneralEnum.DATA_OPERATION_ERROR),
-    DATA_OPERATION_UNEXPECTED_ERROR(903, MessageCodeEnum.DATA_OPERATION_CODE_ERROR.getCode(), "An unexpected problem occurred. %DESCRIPTION%", false, false ,false, 
-            MessageGeneralEnum.DATA_OPERATION_ERROR),
-    TESTDATALIB_NOT_FOUND_ERROR(904, "FA", "The test data library entry %ITEM% is not available for the selected system %SYSTEM%, environment %ENVIRONMENT% and country %COUNTRY%.", true, false ,false, 
-            MessageGeneralEnum.EXECUTION_FA),
+    
+    // *********** DATA OPERATION ***********
+    DATA_OPERATION_OK(500, MessageCodeEnum.DATA_OPERATION_CODE_SUCCESS.getCode(), "%ITEM% - %OPERATION% was finished with success!", false, false ,false , MessageGeneralEnum.DATA_OPERATION_SUCCESS),    
+    DATA_OPERATION_NO_DATA_FOUND(500, MessageCodeEnum.DATA_OPERATION_CODE_SUCCESS.getCode(), "Could not find row.", true, true ,false , MessageGeneralEnum.EXECUTION_FA),
+    DATA_OPERATION_WARNING_PARTIAL_RESULT(500, MessageCodeEnum.DATA_OPERATION_CODE_WARNING.getCode(), "Result may contain partial result. %DESCRIPTION%", false, false ,false , MessageGeneralEnum.DATA_OPERATION_WARNING)   , 
+    DATA_OPERATION_ERROR_EXPECTED(550, MessageCodeEnum.DATA_OPERATION_CODE_ERROR.getCode(), "%ITEM% - operation %OPERATION% failed to complete. %REASON%", false, false ,false , MessageGeneralEnum.DATA_OPERATION_ERROR),
+    DATA_OPERATION_ERROR_DUPLICATE(551, MessageCodeEnum.DATA_OPERATION_CODE_ERROR.getCode(), "The %ITEM% that you are trying to %OPERATION% conflicts with an existing one! Please check for duplicates!", false, false ,false, MessageGeneralEnum.DATA_OPERATION_ERROR),
+    DATA_OPERATION_ERROR_UNEXPECTED(552, MessageCodeEnum.DATA_OPERATION_CODE_ERROR.getCode(), "An unexpected problem occurred. %DESCRIPTION%", false, false ,false, MessageGeneralEnum.DATA_OPERATION_ERROR),
+    
+    DATA_OPERATION_IMPORT_OK(003, MessageCodeEnum.DATA_OPERATION_CODE_SUCCESS.getCode(), "%ITEM% was imported with success!", false, false ,false , MessageGeneralEnum.DATA_OPERATION_SUCCESS),
     DATA_OPERATION_IMPORT_ERROR(905, MessageCodeEnum.DATA_OPERATION_CODE_ERROR.getCode(), "%ITEM% - Import failed! %REASON%", false, false ,false , MessageGeneralEnum.DATA_OPERATION_ERROR),
     DATA_OPERATION_IMPORT_ERROR_FORMAT(906, MessageCodeEnum.DATA_OPERATION_CODE_ERROR.getCode(), "%ITEM% Import failed! Format %FORMAT% is invalid!", false, false ,false , MessageGeneralEnum.DATA_OPERATION_ERROR),
-    DATA_OPERATION_VALIDATIONS_ERROR(905, MessageCodeEnum.DATA_OPERATION_CODE_ERROR.getCode(), "Data is invalid! Details: %DESCRIPTION%", false, false ,false , MessageGeneralEnum.DATA_OPERATION_ERROR)   , 
-    DATA_OPERATION_OK(001, MessageCodeEnum.DATA_OPERATION_CODE_SUCCESS.getCode(), "%ITEM% - %OPERATION% was finished with success!", false, false ,false , MessageGeneralEnum.DATA_OPERATION_SUCCESS),    
+    
     DATA_OPERATION_VALIDATIONS_OK(002, MessageCodeEnum.DATA_OPERATION_CODE_SUCCESS.getCode(), "Data is valid!", false, false ,false , MessageGeneralEnum.DATA_OPERATION_SUCCESS),
-    DATA_OPERATION_IMPORT_OK(003, MessageCodeEnum.DATA_OPERATION_CODE_SUCCESS.getCode(), "%ITEM% was imported with success!", false, false ,false , MessageGeneralEnum.DATA_OPERATION_SUCCESS);
+    DATA_OPERATION_VALIDATIONS_ERROR(905, MessageCodeEnum.DATA_OPERATION_CODE_ERROR.getCode(), "Data is invalid! Details: %DESCRIPTION%", false, false ,false , MessageGeneralEnum.DATA_OPERATION_ERROR)   , 
+    TESTDATALIB_NOT_FOUND_ERROR(904, "FA", "The test data library entry %ITEM% is not available for the selected system %SYSTEM%, environment %ENVIRONMENT% and country %COUNTRY%.", true, false ,false, MessageGeneralEnum.EXECUTION_FA),
+
+    // *********** OTHERS ***********
+    NOT_IMPLEMEMTED(900, "", "Not Implememted.", true, true ,false , MessageGeneralEnum.EXECUTION_FA) ;
+   
     
     private final int code;
     private final String codeString;

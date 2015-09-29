@@ -384,7 +384,7 @@
                             MyLogger.log("RunTests.jsp", Level.FATAL, " Exception catched : " + ex);
                         }
 
-                        List<Robot> robots = robService.findAllRobot();
+                        List<Robot> robots = robService.convert(robService.readAll());
 
 
                 %>

@@ -30,10 +30,7 @@ import org.cerberus.crud.dao.IRobotDAO;
 import org.cerberus.database.DatabaseSpring;
 import org.cerberus.crud.entity.MessageEvent;
 import org.cerberus.crud.entity.Robot;
-import org.cerberus.crud.entity.MessageGeneral;
 import org.cerberus.enums.MessageEventEnum;
-import org.cerberus.enums.MessageGeneralEnum;
-import org.cerberus.exception.CerberusException;
 import org.cerberus.crud.factory.IFactoryRobot;
 import org.cerberus.crud.factory.impl.FactoryRobot;
 import org.cerberus.util.ParameterParserUtil;
@@ -76,7 +73,7 @@ public class RobotDAO implements IRobotDAO {
         AnswerItem ans = new AnswerItem();
         Robot result = null;
         final String query = "SELECT * FROM `robot` WHERE `robotID` = ?";
-        MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_UNEXPECTED_ERROR);
+        MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
         msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", ""));
 
         Connection connection = this.databaseSpring.connect();
@@ -92,25 +89,25 @@ public class RobotDAO implements IRobotDAO {
                         msg.setDescription(msg.getDescription().replace("%ITEM%", "Robot").replace("%OPERATION%", "SELECT"));
                         ans.setItem(result);
                     } else {
-                        msg = new MessageEvent(MessageEventEnum.NO_DATA_FOUND);
+                        msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_NO_DATA_FOUND);
                     }
                 } catch (SQLException exception) {
                     LOG.error("Unable to execute query : " + exception.toString());
-                    msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_UNEXPECTED_ERROR);
+                    msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
                     msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", exception.toString()));
                 } finally {
                     resultSet.close();
                 }
             } catch (SQLException exception) {
                 LOG.error("Unable to execute query : " + exception.toString());
-                msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_UNEXPECTED_ERROR);
+                msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
                 msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", exception.toString()));
             } finally {
                 preStat.close();
             }
         } catch (SQLException exception) {
             LOG.error("Unable to execute query : " + exception.toString());
-            msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_UNEXPECTED_ERROR);
+            msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
             msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", exception.toString()));
         } finally {
             try {
@@ -132,7 +129,7 @@ public class RobotDAO implements IRobotDAO {
         AnswerItem ans = new AnswerItem();
         Robot result = null;
         final String query = "SELECT * FROM `robot` WHERE `robot` = ?";
-        MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_UNEXPECTED_ERROR);
+        MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
         msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", ""));
 
         Connection connection = this.databaseSpring.connect();
@@ -148,25 +145,25 @@ public class RobotDAO implements IRobotDAO {
                         msg.setDescription(msg.getDescription().replace("%ITEM%", "Robot").replace("%OPERATION%", "SELECT"));
                         ans.setItem(result);
                     } else {
-                        msg = new MessageEvent(MessageEventEnum.NO_DATA_FOUND);
+                        msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_NO_DATA_FOUND);
                     }
                 } catch (SQLException exception) {
                     LOG.error("Unable to execute query : " + exception.toString());
-                    msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_UNEXPECTED_ERROR);
+                    msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
                     msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", exception.toString()));
                 } finally {
                     resultSet.close();
                 }
             } catch (SQLException exception) {
                 LOG.error("Unable to execute query : " + exception.toString());
-                msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_UNEXPECTED_ERROR);
+                msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
                 msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", exception.toString()));
             } finally {
                 preStat.close();
             }
         } catch (SQLException exception) {
             LOG.error("Unable to execute query : " + exception.toString());
-            msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_UNEXPECTED_ERROR);
+            msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
             msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", exception.toString()));
         } finally {
             try {
@@ -186,7 +183,7 @@ public class RobotDAO implements IRobotDAO {
     @Override
     public AnswerList readByCriteria(int start, int amount, String column, String dir, String searchTerm, String individualSearch) {
         AnswerList response = new AnswerList();
-        MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_UNEXPECTED_ERROR);
+        MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
         msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", ""));
         List<Robot> robotList = new ArrayList<Robot>();
         StringBuilder searchSQL = new StringBuilder();
@@ -217,10 +214,10 @@ public class RobotDAO implements IRobotDAO {
             query.append(" order by `").append(column).append("` ").append(dir);
         }
 
-        if (!(amount == 0)) {
-            query.append(" limit ").append(start).append(" , ").append(amount);
-        } else {
+        if ((amount == 0) || (amount >= MAX_ROW_SELECTED)) {
             query.append(" limit ").append(start).append(" , ").append(MAX_ROW_SELECTED);
+        } else {
+            query.append(" limit ").append(start).append(" , ").append(amount);
         }
 
         Connection connection = this.databaseSpring.connect();
@@ -242,13 +239,20 @@ public class RobotDAO implements IRobotDAO {
                         nrTotalRows = resultSet.getInt(1);
                     }
 
-                    msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
-                    msg.setDescription(msg.getDescription().replace("%ITEM%", "Robot").replace("%OPERATION%", "SELECT"));
-                    response = new AnswerList(robotList, nrTotalRows);
+                    if (robotList.size() >= MAX_ROW_SELECTED) { // Result of SQl was limited by MAX_ROW_SELECTED constrain. That means that we may miss some lines in the resultList.
+                        LOG.error("Partial Result in the query.");
+                        msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_WARNING_PARTIAL_RESULT);
+                        msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", "Maximum row reached : " + MAX_ROW_SELECTED));
+                        response = new AnswerList(robotList, nrTotalRows);
+                    } else {
+                        msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
+                        msg.setDescription(msg.getDescription().replace("%ITEM%", "Robot").replace("%OPERATION%", "SELECT"));
+                        response = new AnswerList(robotList, nrTotalRows);
+                    }
 
                 } catch (SQLException exception) {
                     LOG.error("Unable to execute query : " + exception.toString());
-                    msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_UNEXPECTED_ERROR);
+                    msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
                     msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", exception.toString()));
 
                 } finally {
@@ -259,7 +263,7 @@ public class RobotDAO implements IRobotDAO {
 
             } catch (SQLException exception) {
                 LOG.error("Unable to execute query : " + exception.toString());
-                msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_UNEXPECTED_ERROR);
+                msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
                 msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", exception.toString()));
             } finally {
                 if (preStat != null) {
@@ -269,7 +273,7 @@ public class RobotDAO implements IRobotDAO {
 
         } catch (SQLException exception) {
             LOG.error("Unable to execute query : " + exception.toString());
-            msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_UNEXPECTED_ERROR);
+            msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
             msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", exception.toString()));
         } finally {
             try {
@@ -292,8 +296,8 @@ public class RobotDAO implements IRobotDAO {
     public Answer create(Robot robot) {
         MessageEvent msg = null;
         StringBuilder query = new StringBuilder();
-        query.append("INSERT INTO robot (`robot`, `host`, `port`, `platform`,`browser`, `version`,`active` , `description`) ");
-        query.append("VALUES (?,?,?,?,?,?,?,?)");
+        query.append("INSERT INTO robot (`robot`, `host`, `port`, `platform`,`browser`, `version`,`active` , `description`, `useragent`) ");
+        query.append("VALUES (?,?,?,?,?,?,?,?,?)");
 
         Connection connection = this.databaseSpring.connect();
         try {
@@ -307,6 +311,7 @@ public class RobotDAO implements IRobotDAO {
                 preStat.setString(6, robot.getVersion());
                 preStat.setString(7, robot.getActive());
                 preStat.setString(8, robot.getDescription());
+                preStat.setString(9, robot.getUserAgent());
 
                 preStat.executeUpdate();
                 msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
@@ -316,10 +321,10 @@ public class RobotDAO implements IRobotDAO {
                 LOG.error("Unable to execute query : " + exception.toString());
 
                 if (exception.getSQLState().equals(SQL_DUPLICATED_CODE)) { //23000 is the sql state for duplicate entries
-                    msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_DUPLICATE_ERROR);
+                    msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_DUPLICATE);
                     msg.setDescription(msg.getDescription().replace("%ITEM%", "Robot").replace("%OPERATION%", "INSERT"));
                 } else {
-                    msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_UNEXPECTED_ERROR);
+                    msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
                     msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", exception.toString()));
                 }
             } finally {
@@ -327,7 +332,7 @@ public class RobotDAO implements IRobotDAO {
             }
         } catch (SQLException exception) {
             LOG.error("Unable to execute query : " + exception.toString());
-            msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_UNEXPECTED_ERROR);
+            msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
             msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", exception.toString()));
         } finally {
             try {
@@ -357,14 +362,14 @@ public class RobotDAO implements IRobotDAO {
                 msg.setDescription(msg.getDescription().replace("%ITEM%", "Robot").replace("%OPERATION%", "DELETE"));
             } catch (SQLException exception) {
                 LOG.error("Unable to execute query : " + exception.toString());
-                msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_UNEXPECTED_ERROR);
+                msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
                 msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", exception.toString()));
             } finally {
                 preStat.close();
             }
         } catch (SQLException exception) {
             LOG.error("Unable to execute query : " + exception.toString());
-            msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_UNEXPECTED_ERROR);
+            msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
             msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", exception.toString()));
         } finally {
             try {
@@ -405,14 +410,14 @@ public class RobotDAO implements IRobotDAO {
                 msg.setDescription(msg.getDescription().replace("%ITEM%", "Robot").replace("%OPERATION%", "UPDATE"));
             } catch (SQLException exception) {
                 LOG.error("Unable to execute query : " + exception.toString());
-                msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_UNEXPECTED_ERROR);
+                msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
                 msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", exception.toString()));
             } finally {
                 preStat.close();
             }
         } catch (SQLException exception) {
             LOG.error("Unable to execute query : " + exception.toString());
-            msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_UNEXPECTED_ERROR);
+            msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
             msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", exception.toString()));
         } finally {
             try {
@@ -450,461 +455,6 @@ public class RobotDAO implements IRobotDAO {
         //TODO remove when working in test with mockito and autowired
         factoryRobot = new FactoryRobot();
         return factoryRobot.create(robotID, robot, host, port, platform, browser, version, active, description, userAgent);
-    }
-
-    /**
-     * Finds the Robot by the name. </p> Access to database to return the
-     * {@link Robot} given by the unique name.<br/> If no Robot found with the
-     * given name, returns CerberusException with
-     * {@link MessageGeneralEnum#NO_DATA_FOUND}.<br/> If an SQLException occur,
-     * returns null in the Robot object and writes the error on the logs.
-     *
-     * @param id id of the Robot to find
-     * @return object Robot if exist
-     * @throws CerberusException when Robot does not exist
-     * @since 0.9.2
-     */
-    @Override
-    public Robot findRobotByKey(Integer id) throws CerberusException {
-        Robot result = null;
-        final String query = "SELECT * FROM robot a WHERE a.robotID = ? ";
-
-        Connection connection = this.databaseSpring.connect();
-        try {
-            PreparedStatement preStat = connection.prepareStatement(query);
-            try {
-                preStat.setInt(1, id);
-
-                ResultSet resultSet = preStat.executeQuery();
-                try {
-                    if (resultSet.first()) {
-                        result = this.loadFromResultSet(resultSet);
-                    } else {
-                        throw new CerberusException(new MessageGeneral(MessageGeneralEnum.NO_DATA_FOUND));
-                    }
-                } catch (SQLException exception) {
-                    LOG.error("Unable to execute query : " + exception.toString());
-                } finally {
-                    resultSet.close();
-                }
-            } catch (SQLException exception) {
-                LOG.error("Unable to execute query : " + exception.toString());
-            } finally {
-                preStat.close();
-            }
-        } catch (SQLException exception) {
-            LOG.error("Unable to execute query : " + exception.toString());
-        } finally {
-            try {
-                if (connection != null) {
-                    connection.close();
-                }
-            } catch (SQLException exception) {
-                LOG.warn("Unable to close connection : " + exception.toString());
-            }
-        }
-        return result;
-    }
-
-    /**
-     * Finds all Robot that exists. </p> Access to database to return all
-     * existing {@link Robot}.<br/> If no Robot found, returns a empty
-     * {@literal List<Robot>}.<br/> If an SQLException occur, returns null in
-     * the list object and writes the error on the logs.
-     *
-     * @return list of Robot
-     * @throws CerberusException
-     * @since 0.9.2
-     */
-    @Override
-    public List<Robot> findAllRobot() throws CerberusException {
-        List<Robot> list = null;
-        final String query = "SELECT * FROM robot a";
-
-        Connection connection = this.databaseSpring.connect();
-        try {
-            PreparedStatement preStat = connection.prepareStatement(query);
-
-            try {
-                ResultSet resultSet = preStat.executeQuery();
-                try {
-                    list = new ArrayList<Robot>();
-                    while (resultSet.next()) {
-                        Robot robot = this.loadFromResultSet(resultSet);
-                        list.add(robot);
-                    }
-                } catch (SQLException exception) {
-                    LOG.error("Unable to execute query : " + exception.toString());
-                } finally {
-                    resultSet.close();
-                }
-            } catch (SQLException exception) {
-                LOG.error("Unable to execute query : " + exception.toString());
-            } finally {
-                preStat.close();
-            }
-        } catch (SQLException exception) {
-            LOG.error("Unable to execute query : " + exception.toString());
-        } finally {
-            try {
-                if (connection != null) {
-                    connection.close();
-                }
-            } catch (SQLException exception) {
-                LOG.warn("Unable to close connection : " + exception.toString());
-            }
-        }
-        return list;
-    }
-
-    /**
-     * Updates the information based on the object Robot. </p> Access to
-     * database to update Robot information given by the object Robot.
-     * <br/> If an SQLException occur, throw CerberusException.
-     *
-     * @param robot object Robot to update
-     * @throws CerberusException
-     * @since 0.9.2
-     */
-    @Override
-    public void updateRobot(Robot robot) throws CerberusException {
-        StringBuilder query = new StringBuilder();
-        query.append("UPDATE robot SET robot= ? , host = ? , port = ? ,");
-        query.append("platform = ?, browser = ? , version = ?, active=?, description = ?, useragent = ? WHERE robotID = ?");
-
-        Connection connection = this.databaseSpring.connect();
-        try {
-            PreparedStatement preStat = connection.prepareStatement(query.toString());
-            try {
-                preStat.setString(1, robot.getRobot());
-                preStat.setString(2, robot.getHost());
-                preStat.setString(3, robot.getPort());
-                preStat.setString(4, robot.getPlatform());
-                preStat.setString(5, robot.getBrowser());
-                preStat.setString(6, robot.getVersion());
-                preStat.setString(7, robot.getActive());
-                preStat.setString(8, robot.getDescription());
-                preStat.setString(9, robot.getUserAgent());
-                preStat.setInt(10, robot.getRobotID());
-
-                preStat.executeUpdate();
-            } catch (SQLException exception) {
-                LOG.error("Unable to execute query : " + exception.toString());
-            } finally {
-                preStat.close();
-            }
-        } catch (SQLException exception) {
-            LOG.error("Unable to execute query : " + exception.toString());
-        } finally {
-            try {
-                if (connection != null) {
-                    connection.close();
-                }
-            } catch (SQLException exception) {
-                LOG.warn("Unable to close connection : " + exception.toString());
-            }
-        }
-
-    }
-
-    @Override
-    public void createRobot(Robot robot) throws CerberusException {
-        boolean throwExcep = false;
-        StringBuilder query = new StringBuilder();
-        query.append("INSERT INTO robot (`robot`, `host`, `port`, `platform`,`browser`, `version`,`active` , `description`) ");
-        query.append("VALUES (?,?,?,?,?,?,?,?)");
-
-        Connection connection = this.databaseSpring.connect();
-        try {
-            PreparedStatement preStat = connection.prepareStatement(query.toString());
-            try {
-                preStat.setString(1, robot.getRobot());
-                preStat.setString(2, robot.getHost());
-                preStat.setString(3, robot.getPort());
-                preStat.setString(4, robot.getPlatform());
-                preStat.setString(5, robot.getBrowser());
-                preStat.setString(6, robot.getVersion());
-                preStat.setString(7, robot.getActive());
-                preStat.setString(8, robot.getDescription());
-
-                preStat.executeUpdate();
-                throwExcep = false;
-
-            } catch (SQLException exception) {
-                LOG.error("Unable to execute query : " + exception.toString());
-            } finally {
-                preStat.close();
-            }
-        } catch (SQLException exception) {
-            LOG.error("Unable to execute query : " + exception.toString());
-        } finally {
-            try {
-                if (connection != null) {
-                    connection.close();
-                }
-            } catch (SQLException exception) {
-                LOG.warn("Unable to close exception : " + exception.toString());
-            }
-        }
-        if (throwExcep) {
-            throw new CerberusException(new MessageGeneral(MessageGeneralEnum.CANNOT_UPDATE_TABLE));
-        }
-    }
-
-    @Override
-    public void deleteRobot(Robot robot) throws CerberusException {
-        boolean throwExcep = false;
-        final String query = "DELETE FROM robot WHERE robotID = ? ";
-
-        Connection connection = this.databaseSpring.connect();
-        try {
-            PreparedStatement preStat = connection.prepareStatement(query);
-            try {
-                preStat.setInt(1, robot.getRobotID());
-
-                throwExcep = preStat.executeUpdate() == 0;
-            } catch (SQLException exception) {
-                LOG.error("Unable to execute query : " + exception.toString());
-            } finally {
-                preStat.close();
-            }
-        } catch (SQLException exception) {
-            LOG.error("Unable to execute query : " + exception.toString());
-        } finally {
-            try {
-                if (connection != null) {
-                    connection.close();
-                }
-            } catch (SQLException exception) {
-                LOG.warn("Unable to close connection : " + exception.toString());
-            }
-        }
-        if (throwExcep) {
-            throw new CerberusException(new MessageGeneral(MessageGeneralEnum.CANNOT_UPDATE_TABLE));
-        }
-    }
-
-    @Override
-    public List<Robot> findRobotListByCriteria(int start, int amount, String column, String dir, String searchTerm, String individualSearch) {
-        List<Robot> robotList = new ArrayList<Robot>();
-        StringBuilder gSearch = new StringBuilder();
-        StringBuilder searchSQL = new StringBuilder();
-
-        StringBuilder query = new StringBuilder();
-        query.append("SELECT * FROM robot ");
-
-        gSearch.append(" where (`platform` like '%");
-        gSearch.append(searchTerm);
-        gSearch.append("%'");
-        gSearch.append(" or `host` like '%");
-        gSearch.append(searchTerm);
-        gSearch.append("%'");
-        gSearch.append(" or `port` like '%");
-        gSearch.append(searchTerm);
-        gSearch.append("%'");
-        gSearch.append(" or `description` like '%");
-        gSearch.append(searchTerm);
-        gSearch.append("%'");
-        gSearch.append(" or `robot` like '%");
-        gSearch.append(searchTerm);
-        gSearch.append("%'");
-        gSearch.append(" or `browser` like '%");
-        gSearch.append(searchTerm);
-        gSearch.append("%'");
-        gSearch.append(" or `active` like '%");
-        gSearch.append(searchTerm);
-        gSearch.append("%'");
-        gSearch.append(" or `useragent` like '%");
-        gSearch.append(searchTerm);
-        gSearch.append("%'");
-        gSearch.append(" or `version` like '%");
-        gSearch.append(searchTerm);
-        gSearch.append("%')");
-
-        if (!searchTerm.equals("") && !individualSearch.equals("")) {
-            searchSQL.append(gSearch.toString());
-            searchSQL.append(" and ");
-            searchSQL.append(individualSearch);
-        } else if (!individualSearch.equals("")) {
-            searchSQL.append(" where `");
-            searchSQL.append(individualSearch);
-            searchSQL.append("`");
-        } else if (!searchTerm.equals("")) {
-            searchSQL.append(gSearch.toString());
-        }
-
-        query.append(searchSQL);
-        query.append("order by `");
-        query.append(column);
-        query.append("` ");
-        query.append(dir);
-        query.append(" limit ");
-        query.append(start);
-        query.append(" , ");
-        query.append(amount);
-
-        Connection connection = this.databaseSpring.connect();
-        try {
-            PreparedStatement preStat = connection.prepareStatement(query.toString());
-            try {
-                ResultSet resultSet = preStat.executeQuery();
-                try {
-
-                    while (resultSet.next()) {
-                        robotList.add(this.loadFromResultSet(resultSet));
-                    }
-
-                } catch (SQLException exception) {
-                    LOG.error("Unable to execute query : " + exception.toString());
-                } finally {
-                    resultSet.close();
-                }
-
-            } catch (SQLException exception) {
-                LOG.error("Unable to execute query : " + exception.toString());
-            } finally {
-                preStat.close();
-            }
-
-        } catch (SQLException exception) {
-            LOG.error("Unable to execute query : " + exception.toString());
-        } finally {
-            try {
-                if (connection != null) {
-                    connection.close();
-                }
-            } catch (SQLException exception) {
-                LOG.warn("Unable to close connection : " + exception.toString());
-            }
-        }
-
-        return robotList;
-    }
-
-    @Override
-    public Integer getNumberOfRobotPerCriteria(String searchTerm, String inds) {
-        Integer result = 0;
-        StringBuilder query = new StringBuilder();
-        StringBuilder gSearch = new StringBuilder();
-        String searchSQL = "";
-
-        query.append("SELECT count(*) FROM robot");
-
-        gSearch.append(" where (`platform` like '%");
-        gSearch.append(searchTerm);
-        gSearch.append("%'");
-        gSearch.append(" or `host` like '%");
-        gSearch.append(searchTerm);
-        gSearch.append("%'");
-        gSearch.append(" or `port` like '%");
-        gSearch.append(searchTerm);
-        gSearch.append("%'");
-        gSearch.append(" or `description` like '%");
-        gSearch.append(searchTerm);
-        gSearch.append("%'");
-        gSearch.append(" or `robot` like '%");
-        gSearch.append(searchTerm);
-        gSearch.append("%'");
-        gSearch.append(" or `browser` like '%");
-        gSearch.append(searchTerm);
-        gSearch.append("%'");
-        gSearch.append(" or `active` like '%");
-        gSearch.append(searchTerm);
-        gSearch.append("%'");
-        gSearch.append(" or `useragent` like '%");
-        gSearch.append(searchTerm);
-        gSearch.append("%'");
-        gSearch.append(" or `version` like '%");
-        gSearch.append(searchTerm);
-        gSearch.append("%')");
-
-        if (!searchTerm.equals("") && !inds.equals("")) {
-            searchSQL = gSearch.toString() + " and " + inds;
-        } else if (!inds.equals("")) {
-            searchSQL = " where " + inds;
-        } else if (!searchTerm.equals("")) {
-            searchSQL = gSearch.toString();
-        }
-
-        query.append(searchSQL);
-
-        Connection connection = this.databaseSpring.connect();
-        try {
-            PreparedStatement preStat = connection.prepareStatement(query.toString());
-            try {
-                ResultSet resultSet = preStat.executeQuery();
-                try {
-
-                    if (resultSet.first()) {
-                        result = resultSet.getInt(1);
-                    }
-
-                } catch (SQLException exception) {
-                    LOG.error("Unable to execute query : " + exception.toString());
-                } finally {
-                    resultSet.close();
-                }
-
-            } catch (SQLException exception) {
-                LOG.error("Unable to execute query : " + exception.toString());
-            } finally {
-                preStat.close();
-            }
-
-        } catch (SQLException exception) {
-            LOG.error("Unable to execute query : " + exception.toString());
-        } finally {
-            try {
-                if (connection != null) {
-                    connection.close();
-                }
-            } catch (SQLException exception) {
-                LOG.warn("Unable to close connection : " + exception.toString());
-            }
-        }
-        return result;
-    }
-
-    @Override
-    public Robot findRobotByName(String name) throws CerberusException {
-        Robot result = null;
-        final String query = "SELECT * FROM robot a WHERE a.robot = ? ";
-
-        Connection connection = this.databaseSpring.connect();
-        try {
-            PreparedStatement preStat = connection.prepareStatement(query);
-            try {
-                preStat.setString(1, name);
-
-                ResultSet resultSet = preStat.executeQuery();
-                try {
-                    if (resultSet.first()) {
-                        result = this.loadFromResultSet(resultSet);
-                    } else {
-                        throw new CerberusException(new MessageGeneral(MessageGeneralEnum.NO_DATA_FOUND));
-                    }
-                } catch (SQLException exception) {
-                    LOG.error("Unable to execute query : " + exception.toString());
-                } finally {
-                    resultSet.close();
-                }
-            } catch (SQLException exception) {
-                LOG.error("Unable to execute query : " + exception.toString());
-            } finally {
-                preStat.close();
-            }
-        } catch (SQLException exception) {
-            LOG.error("Unable to execute query : " + exception.toString());
-        } finally {
-            try {
-                if (connection != null) {
-                    connection.close();
-                }
-            } catch (SQLException exception) {
-                LOG.warn("Unable to close connection : " + exception.toString());
-            }
-        }
-        return result;
     }
 
 }

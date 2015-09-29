@@ -53,21 +53,22 @@ function displayPageLabel() {
     $("[name='confirmationField']").html(doc.getDocLabel("page_robot", "button_delete"));
     $("[name='editEntryField']").html(doc.getDocLabel("page_robot", "button_edit"));
     $("[name='robotField']").html(doc.getDocOnline("robot", "robot"));
-    $("[name='robotField']").html(doc.getDocOnline("robot", "host"));
-    $("[name='robotField']").html(doc.getDocOnline("robot", "port"));
-    $("[name='robotField']").html(doc.getDocOnline("robot", "platform"));
-    $("[name='robotField']").html(doc.getDocOnline("robot", "browser"));
-    $("[name='robotField']").html(doc.getDocOnline("robot", "version"));
-    $("[name='robotField']").html(doc.getDocOnline("robot", "active"));
-    $("[name='robotField']").html(doc.getDocOnline("robot", "useragent"));
+    $("[name='hostField']").html(doc.getDocOnline("robot", "host"));
+    $("[name='portField']").html(doc.getDocOnline("robot", "port"));
+    $("[name='platformField']").html(doc.getDocOnline("robot", "platform"));
+    $("[name='browserField']").html(doc.getDocOnline("robot", "browser"));
+    $("[name='versionField']").html(doc.getDocOnline("robot", "version"));
+    $("[name='activeField']").html(doc.getDocOnline("robot", "active"));
+    $("[name='useragentField']").html(doc.getDocOnline("robot", "useragent"));
     $("[name='descriptionField']").html(doc.getDocOnline("robot", "description"));
+    displayInvariantList("ROBOTACTIVE", "active");
     
     displayFooter(doc);
 }
 
 function deleteEntryHandlerClick() {
-    var robot = $('#confirmationModal').find('#hiddenField').prop("value");
-    var jqxhr = $.post("DeleteRobot", {robotid: robotid}, "json");
+    var robotID = $('#confirmationModal').find('#hiddenField').prop("value");
+    var jqxhr = $.post("DeleteRobot", {robotid: robotID}, "json");
     $.when(jqxhr).then(function (data) {
         var messageType = getAlertType(data.messageType);
         if (messageType === "success") {
@@ -88,12 +89,13 @@ function deleteEntryHandlerClick() {
     }).fail(handleErrorAjaxAfterTimeout);
 }
 
-function deleteEntry(entry) {
+function deleteEntry(entry, name) {
     clearResponseMessageMainPage();
     var doc = new Doc();
     var messageComplete = doc.getDocLabel("page_global", "deleteMessage");
     messageComplete = messageComplete.replace("%TABLE%", doc.getDocLabel("robot", "robot"));
-    messageComplete = messageComplete.replace("%ENTRY%", entry);
+//    messageComplete = messageComplete.replace("%ENTRY%", entry);
+    messageComplete = messageComplete.replace("%ENTRY%", name);
     showModalConfirmation(deleteEntryHandlerClick, doc.getDocLabel("page_robot", "button_delete"), messageComplete, entry);
 }
 
@@ -153,7 +155,7 @@ function buttonCloseHandler(event) {
     clearResponseMessage($(modalID));
 }
 
-function CreateRobotTypeClick() {
+function CreateRobotClick() {
     clearResponseMessageMainPage();
     $('#addEntryModal').modal('show');
 }
@@ -166,7 +168,15 @@ function editEntry(id) {
 
         var formEdit = $('#editEntryModal');
 
-        formEdit.find("#robot").prop("value", id);
+        formEdit.find("#robotid").prop("value", id);
+        formEdit.find("#robot").prop("value", obj["robot"]);
+        formEdit.find("#active").prop("value", obj["active"]);
+        formEdit.find("#host").prop("value", obj["host"]);
+        formEdit.find("#port").prop("value", obj["port"]);
+        formEdit.find("#platform").prop("value", obj["platform"]);
+        formEdit.find("#browser").prop("value", obj["browser"]);
+        formEdit.find("#version").prop("value", obj["version"]);
+        formEdit.find("#useragent").prop("value", obj["userAgent"]);
         formEdit.find("#Description").prop("value", obj["description"]);
 
         formEdit.modal('show');
@@ -182,7 +192,7 @@ function renderOptionsForRobot(data) {
             " + doc.getDocLabel("page_robot", "button_create") + "</button></div>";
 
             $("#robotsTable_wrapper div.ColVis").before(contentToAdd);
-            $('#robot #createRobotButton').click(CreateRobotTypeClick);
+            $('#robot #createRobotButton').click(CreateRobotClick);
         }
     }
 }
@@ -201,7 +211,7 @@ function aoColumnsFunc() {
                                 class="editEntry btn btn-default btn-xs margin-right5" \n\
                                 name="editEntry" title="' + doc.getDocLabel("page_robot", "button_edit") + '" type="button">\n\
                                 <span class="glyphicon glyphicon-pencil"></span></button>';
-                var deleteEntry = '<button id="deleteEntry" onclick="deleteEntry(\'' + obj["robot"] + '\');" \n\
+                var deleteEntry = '<button id="deleteEntry" onclick="deleteEntry(\'' + obj["robotID"] + '\',\'' + obj["robot"] + '\');" \n\
                                 class="deleteEntry btn btn-default btn-xs margin-right5" \n\
                                 name="deleteEntry" title="' + doc.getDocLabel("page_robot", "button_delete") + '" type="button">\n\
                                 <span class="glyphicon glyphicon-trash"></span></button>';
