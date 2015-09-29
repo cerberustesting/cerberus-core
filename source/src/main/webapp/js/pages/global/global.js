@@ -123,6 +123,8 @@ function getAlertType(code) {
         return "success";
     } else if (code === "KO") {
         return "danger";
+    } else if (code === "WARNING") {
+        return "warning";
     }
 
     return code;
@@ -489,6 +491,25 @@ function TableConfigurationsServerSide(divId, ajaxSource, ajaxProp, aoColumnsFun
     this.bDeferRender = false;
 }
 
+function returnMessageHandler(response) {
+    if (response.hasOwnProperty("messageType") && response.hasOwnProperty("message")) {
+        if (response.messageType !== "OK") {
+            var type = getAlertType(response.messageType);
+
+            showMessageMainPage(type, response.message);
+        }
+    } else {
+        showUnexpectedError();
+    }
+}
+
+function showUnexpectedError() {
+    var type = getAlertType("KO");
+    var message = "ERROR - An unexpected error occured, the servlet may not be available";
+
+    showMessageMainPage(type, message);
+}
+
 function createDataTableWithPermissions(tableConfigurations, callbackfunction) {
     var domConf = 'Cl<"showInlineElement pull-left marginLeft5"f>rti<"marginTop5"p>';
     if (!tableConfigurations.showColvis) {
@@ -528,10 +549,12 @@ function createDataTableWithPermissions(tableConfigurations, callbackfunction) {
                 "type": "GET",
                 "url": sSource,
                 "data": aoData,
-                "success": fnCallback,
+                "success": function (json) {
+                    returnMessageHandler(json);
+                    fnCallback(json);
+                },
                 "error": function (e) {
-                    $(location).prop("pathname", $(location).prop("pathname"));
-                    $(location).prop("search", $(location).prop("search"));
+                    showUnexpectedError();
                 }
             });
             $.when(oSettings.jqXHR).then(function (data) {
@@ -606,10 +629,12 @@ function createDataTable(tableConfigurations, callback) {
                 "type": "GET",
                 "url": sSource,
                 "data": aoData,
-                "success": fnCallback,
+                "success": function (json) {
+                    returnMessageHandler(json);
+                    fnCallback(json);
+                },
                 "error": function (e) {
-                    $(location).prop("pathname", $(location).prop("pathname"));
-                    $(location).prop("search", $(location).prop("search"));
+                    showUnexpectedError();
                 }
             });
         };
@@ -797,7 +822,7 @@ function GetURLParameter(sParam)
 {
     var sPageURL = window.location.search.substring(1);
     var sURLVariables = sPageURL.split('&');
-    
+
     for (var i = 0; i < sURLVariables.length; i++)
     {
         var sParameterName = sURLVariables[i].split('=');
