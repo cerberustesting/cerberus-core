@@ -31,7 +31,9 @@ public interface IAppiumService {
     
     public MessageEvent switchToContext(Session session, Identifier identifier);
     
-    public MessageEvent doActionType(Session session, Identifier identifier, String property, String propertyName);
+    public MessageEvent type(Session session, Identifier identifier, String property, String propertyName);
 
-    public MessageEvent doActionClick(Session session, Identifier identifier, boolean waitForVisibility, boolean waitForClickability);
+    public MessageEvent click(Session session, Identifier identifier);
+
+    public MessageEvent press(Session session, Identifier identifier);
 }

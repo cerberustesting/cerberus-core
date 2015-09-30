@@ -54,7 +54,7 @@ public class AppiumService implements IAppiumService {
         String newContext = "";
         Set<String> contextNames = driver.getContextHandles();
         for (String contextName : contextNames) {
-            System.out.println("context"+contextName);
+            System.out.println("context" + contextName);
             if (contextName.contains("WEBVIEW")) {
                 driver.context(contextName);
                 newContext = contextName;
@@ -66,22 +66,15 @@ public class AppiumService implements IAppiumService {
         message.setDescription(message.getDescription().replaceAll("%WINDOW%", newContext));
         return message;
     }
-    
+
     @Override
-    public MessageEvent doActionType(Session session, Identifier identifier, String property, String propertyName) {
+    public MessageEvent type(Session session, Identifier identifier, String property, String propertyName) {
         MessageEvent message;
-        //System.out.print(session.getDriver().getWindowHandles());
         try {
-            //WebElement webElement = this.getElement(session, identifier, true, true);
-            //webElement.click();
-            WebDriverWait wait = new WebDriverWait(session.getAppiumDriver(), session.getDefaultWait());
             if (!StringUtil.isNull(property)) {
-//                wait.until(ExpectedConditions.elementToBeClickable(this.getBy(identifier)))
-//                .click();
                 TouchAction action = new TouchAction(session.getAppiumDriver());
-                action.press(wait.until(ExpectedConditions.elementToBeClickable(this.getBy(identifier)))).release().perform();
+                action.press(this.getElement(session, identifier, true, true)).release().perform();
                 session.getAppiumDriver().getKeyboard().pressKey(property);
-                //webElement.sendKeys(property);
             }
             message = new MessageEvent(MessageEventEnum.ACTION_SUCCESS_TYPE);
             message.setDescription(message.getDescription().replaceAll("%ELEMENT%", identifier.getIdentifier() + "=" + identifier.getLocator()));
@@ -102,7 +95,31 @@ public class AppiumService implements IAppiumService {
             return message;
         }
     }
-    
+
+    @Override
+    public MessageEvent click(Session session, Identifier identifier) {
+        MessageEvent message;
+        try {
+            TouchAction action = new TouchAction(session.getAppiumDriver());
+            action.press(this.getElement(session, identifier, true, true))
+                    .release()
+                    .perform();
+            message = new MessageEvent(MessageEventEnum.ACTION_SUCCESS_CLICK);
+            message.setDescription(message.getDescription().replaceAll("%ELEMENT%", identifier.getIdentifier() + "=" + identifier.getLocator()));
+            return message;
+        } catch (NoSuchElementException exception) {
+            message = new MessageEvent(MessageEventEnum.ACTION_FAILED_CLICK_NO_SUCH_ELEMENT);
+            message.setDescription(message.getDescription().replaceAll("%ELEMENT%", identifier.getIdentifier() + "=" + identifier.getLocator()));
+            MyLogger.log(WebDriverService.class.getName(), Level.DEBUG, exception.toString());
+            return message;
+        } catch (WebDriverException exception) {
+            message = new MessageEvent(MessageEventEnum.ACTION_FAILED_SELENIUM_CONNECTIVITY);
+            MyLogger.log(WebDriverService.class.getName(), Level.FATAL, exception.toString());
+            return message;
+        }
+
+    }
+
     private By getBy(Identifier identifier) {
 
         MyLogger.log(RunTestCaseService.class.getName(), Level.DEBUG, "Finding selenium Element : " + identifier.getLocator() + " by : " + identifier.getIdentifier());
@@ -136,7 +153,7 @@ public class AppiumService implements IAppiumService {
     private WebElement getElement(Session session, Identifier identifier, boolean visible, boolean clickable) {
         AppiumDriver driver = session.getAppiumDriver();
         By locator = this.getBy(identifier);
-        
+
         MyLogger.log(RunTestCaseService.class.getName(), Level.DEBUG, "Waiting for Element : " + identifier.getIdentifier() + "=" + identifier.getLocator());
         try {
             WebDriverWait wait = new WebDriverWait(driver, session.getDefaultWait());
@@ -156,31 +173,10 @@ public class AppiumService implements IAppiumService {
         MyLogger.log(RunTestCaseService.class.getName(), Level.DEBUG, "Finding Element : " + identifier.getIdentifier() + "=" + identifier.getLocator());
         return driver.findElement(locator);
     }
-    
-    @Override
-    public MessageEvent doActionClick(Session session, Identifier identifier, boolean waitForVisibility, boolean waitForClickability) {
-        MessageEvent message;
-        try {
-            WebDriverWait wait = new WebDriverWait(session.getAppiumDriver(), session.getDefaultWait());
-//            wait.until(ExpectedConditions.elementToBeClickable(this.getBy(identifier)))
-//                .click();
-            TouchAction action = new TouchAction(session.getAppiumDriver());
-                action.press(wait.until(ExpectedConditions.elementToBeClickable(this.getBy(identifier)))).release().perform();
-                
-                
-            message = new MessageEvent(MessageEventEnum.ACTION_SUCCESS_CLICK);
-            message.setDescription(message.getDescription().replaceAll("%ELEMENT%", identifier.getIdentifier() + "=" + identifier.getLocator()));
-            return message;
-        } catch (NoSuchElementException exception) {
-            message = new MessageEvent(MessageEventEnum.ACTION_FAILED_CLICK_NO_SUCH_ELEMENT);
-            message.setDescription(message.getDescription().replaceAll("%ELEMENT%", identifier.getIdentifier() + "=" + identifier.getLocator()));
-            MyLogger.log(WebDriverService.class.getName(), Level.DEBUG, exception.toString());
-            return message;
-        } catch (WebDriverException exception) {
-            message = new MessageEvent(MessageEventEnum.ACTION_FAILED_SELENIUM_CONNECTIVITY);
-            MyLogger.log(WebDriverService.class.getName(), Level.FATAL, exception.toString());
-            return message;
-        }
 
+    @Override
+    public MessageEvent press(Session session, Identifier identifier) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
+
 }

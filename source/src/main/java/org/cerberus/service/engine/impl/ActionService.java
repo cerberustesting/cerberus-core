@@ -245,7 +245,7 @@ public class ActionService implements IActionService {
                     return webdriverService.doSeleniumActionClick(tCExecution.getSession(), identifier, true, true);
                 }
             } else if (tCExecution.getApplication().getType().equalsIgnoreCase("APK")) {
-                return appiumService.doActionClick(tCExecution.getSession(), identifier, true, false);
+                return appiumService.click(tCExecution.getSession(), identifier);
             }
 
             message = new MessageEvent(MessageEventEnum.ACTION_NOTEXECUTED_NOTSUPPORTED_FOR_APPLICATION);
@@ -275,6 +275,8 @@ public class ActionService implements IActionService {
 
             if (tCExecution.getApplication().getType().equalsIgnoreCase("GUI")) {
                 return webdriverService.doSeleniumActionMouseDown(tCExecution.getSession(), identifier);
+            } else if (tCExecution.getApplication().getType().equalsIgnoreCase("APK")) {
+                return appiumService.press(tCExecution.getSession(), identifier);
             }
             message = new MessageEvent(MessageEventEnum.ACTION_NOTEXECUTED_NOTSUPPORTED_FOR_APPLICATION);
             message.setDescription(message.getDescription().replaceAll("%ACTION%", "MouseDown"));
@@ -485,7 +487,7 @@ public class ActionService implements IActionService {
                     return webdriverService.doSeleniumActionType(tCExecution.getSession(), identifier, property, propertyName);
                 }
             } else if (tCExecution.getApplication().getType().equalsIgnoreCase("APK")){
-            return appiumService.doActionType(tCExecution.getSession(), identifier, property, propertyName);
+            return appiumService.type(tCExecution.getSession(), identifier, property, propertyName);
             }
             message = new MessageEvent(MessageEventEnum.ACTION_NOTEXECUTED_NOTSUPPORTED_FOR_APPLICATION);
             message.setDescription(message.getDescription().replaceAll("%ACTION%", "Type"));
