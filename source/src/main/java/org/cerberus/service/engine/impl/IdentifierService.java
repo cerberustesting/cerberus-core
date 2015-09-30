@@ -74,4 +74,9 @@ public class IdentifierService implements IIdentifierService {
             throw new CerberusEventException(message);
         }
     }
+
+    @Override
+    public void checkSQLIdentifier(String identifier) throws CerberusEventException {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
 }
