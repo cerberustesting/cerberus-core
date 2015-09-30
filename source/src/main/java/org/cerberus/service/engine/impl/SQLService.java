@@ -530,7 +530,7 @@ public class SQLService implements ISQLService {
     }
 
     @Override
-    public MessageEvent execute(String system, String country, String environment, String database, String sql) {
+    public MessageEvent executeCallableStatement(String system, String country, String environment, String database, String sql) {
         String connectionName;
         CountryEnvironmentDatabase countryEnvironmentDatabase;
         MessageEvent msg = new MessageEvent(MessageEventEnum.ACTION_FAILED);

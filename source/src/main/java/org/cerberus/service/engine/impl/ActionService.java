@@ -965,8 +965,13 @@ public class ActionService implements IActionService {
             Identifier identifier = identifierService.convertStringToIdentifier(property);
             identifierService.checkSQLIdentifier(identifier.getIdentifier());
 
+            if(identifier.getIdentifier().equals("script")){
             return sqlService.executeUpdate(tCExecution.getApplication().getSystem(),
                     tCExecution.getCountry(), tCExecution.getEnvironment(), object, identifier.getLocator());
+            } else {
+            return sqlService.executeCallableStatement(tCExecution.getApplication().getSystem(),
+                    tCExecution.getCountry(), tCExecution.getEnvironment(), object, identifier.getLocator());
+            }
         } catch (CerberusEventException ex) {
             LOG.fatal("Error doing Action ExecuteSQL :"+ex);
             return ex.getMessageError();

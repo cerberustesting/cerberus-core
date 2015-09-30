@@ -61,5 +61,5 @@ public interface ISQLService {
 
     public MessageEvent executeUpdate(String system, String country, String environment, String db, String sql);
     
-    public MessageEvent execute(String system, String country, String environment, String db, String sql);
+    public MessageEvent executeCallableStatement(String system, String country, String environment, String db, String sql);
 }
