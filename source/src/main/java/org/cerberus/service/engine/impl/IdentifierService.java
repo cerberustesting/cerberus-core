@@ -77,6 +77,12 @@ public class IdentifierService implements IIdentifierService {
 
     @Override
     public void checkSQLIdentifier(String identifier) throws CerberusEventException {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        String[] selectOptionAttributes = {"script", "procedure"};
+
+        if (!Arrays.asList(selectOptionAttributes).contains(identifier)) {
+            MessageEvent message = new MessageEvent(MessageEventEnum.ACTION_FAILED_NO_SUCH_ELEMENT);
+            message.setDescription(message.getDescription().replaceAll("%IDENTIFIER%", identifier));
+            throw new CerberusEventException(message);
+        }
     }
 }
