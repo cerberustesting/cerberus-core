@@ -19,6 +19,7 @@
  */
 package org.cerberus.servlet.buildrevision;
 
+import com.google.gson.Gson;
 import java.io.IOException;
 
 import javax.servlet.ServletException;
@@ -49,9 +50,8 @@ import org.springframework.web.context.support.WebApplicationContextUtils;
 public class GetBuildRevisionInvariant extends HttpServlet {
 
     /**
-     * Processes requests for both HTTP
-     * <code>GET</code> and
-     * <code>POST</code> methods.
+     * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
+     * methods.
      *
      * @param request servlet request
      * @param response servlet response
@@ -65,42 +65,66 @@ public class GetBuildRevisionInvariant extends HttpServlet {
         JSONArray arrayData = new JSONArray(); //data that will be shown in the table
 
         String MySystem = ParameterParserUtil.parseStringParam(request.getParameter("System"), "%");
+        int level = Integer.valueOf(ParameterParserUtil.parseStringParam(request.getParameter("level"), "0"));
         ApplicationContext appContext = WebApplicationContextUtils.getWebApplicationContext(this.getServletContext());
         IBuildRevisionInvariantService buildRevisionInvariantService = appContext.getBean(BuildRevisionInvariantService.class);
-        try {
-            JSONObject jsonResponse = new JSONObject();
+        if (level == 0) {
             try {
-                for (BuildRevisionInvariant myBuildRevisionInvariant : buildRevisionInvariantService.findAllBuildRevisionInvariantBySystem(MySystem)) {
-                    JSONArray row = new JSONArray();
-                    row.put(myBuildRevisionInvariant.getSystem() + "$#" + myBuildRevisionInvariant.getLevel() + "$#" + myBuildRevisionInvariant.getSeq())
-                            .put(myBuildRevisionInvariant.getSystem())
-                            .put(myBuildRevisionInvariant.getLevel())
-                            .put(myBuildRevisionInvariant.getSeq())
-                            .put(myBuildRevisionInvariant.getVersionName());
-                    arrayData.put(row);
-                }
-            } catch (CerberusException ex) {
-                response.setContentType("text/html");
-                response.getWriter().print(ex.getMessageError().getDescription());
+                JSONObject jsonResponse = new JSONObject();
+                try {
+                    for (BuildRevisionInvariant myBuildRevisionInvariant : buildRevisionInvariantService.findAllBuildRevisionInvariantBySystem(MySystem)) {
+                        JSONArray row = new JSONArray();
+                        row.put(myBuildRevisionInvariant.getSystem() + "$#" + myBuildRevisionInvariant.getLevel() + "$#" + myBuildRevisionInvariant.getSeq())
+                                .put(myBuildRevisionInvariant.getSystem())
+                                .put(myBuildRevisionInvariant.getLevel())
+                                .put(myBuildRevisionInvariant.getSeq())
+                                .put(myBuildRevisionInvariant.getVersionName());
+                        arrayData.put(row);
+                    }
+                } catch (CerberusException ex) {
+                    response.setContentType("text/html");
+                    response.getWriter().print(ex.getMessageError().getDescription());
 
+                }
+                jsonResponse.put("aaData", arrayData);
+                jsonResponse.put("sEcho", echo);
+                jsonResponse.put("iTotalRecords", arrayData.length());
+                jsonResponse.put("iTotalDisplayRecords", arrayData.length());
+                response.setContentType("application/json");
+                response.getWriter().print(jsonResponse.toString());
+
+            } catch (JSONException e) {
+                MyLogger.log(GetUsers.class.getName(), Level.FATAL, "" + e);
+                response.setContentType("text/html");
+                response.getWriter().print(e.getMessage());
             }
-            jsonResponse.put("aaData", arrayData);
-            jsonResponse.put("sEcho", echo);
-            jsonResponse.put("iTotalRecords", arrayData.length());
-            jsonResponse.put("iTotalDisplayRecords", arrayData.length());
-            response.setContentType("application/json");
-            response.getWriter().print(jsonResponse.toString());
-        } catch (JSONException e) {
-            MyLogger.log(GetUsers.class.getName(), Level.FATAL, "" + e);
-            response.setContentType("text/html");
-            response.getWriter().print(e.getMessage());
+        } else {
+              try {
+                JSONObject jsonResponse = new JSONObject();
+                try {
+                    for (BuildRevisionInvariant myBuildRevisionInvariant : buildRevisionInvariantService.findAllBuildRevisionInvariantBySystemLevel(MySystem, level)) {
+                        arrayData.put(convertToJSONObject(myBuildRevisionInvariant));
+                    }
+                } catch (CerberusException ex) {
+                    response.setContentType("text/html");
+                    response.getWriter().print(ex.getMessageError().getDescription());
+
+                }
+                jsonResponse.put("aaData", arrayData);
+                response.setContentType("application/json");
+                response.getWriter().print(jsonResponse.toString());
+
+            } catch (JSONException e) {
+                MyLogger.log(GetUsers.class.getName(), Level.FATAL, "" + e);
+                response.setContentType("text/html");
+                response.getWriter().print(e.getMessage());
+            }
         }
     }
 
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
     /**
-     * Handles the HTTP
-     * <code>GET</code> method.
+     * Handles the HTTP <code>GET</code> method.
      *
      * @param request servlet request
      * @param response servlet response
@@ -114,8 +138,7 @@ public class GetBuildRevisionInvariant extends HttpServlet {
     }
 
     /**
-     * Handles the HTTP
-     * <code>POST</code> method.
+     * Handles the HTTP <code>POST</code> method.
      *
      * @param request servlet request
      * @param response servlet response
@@ -137,4 +160,11 @@ public class GetBuildRevisionInvariant extends HttpServlet {
     public String getServletInfo() {
         return "Short description";
     }// </editor-fold>
+    
+      private JSONObject convertToJSONObject(BuildRevisionInvariant myBRinvariant) throws JSONException {
+
+        Gson gson = new Gson();
+        JSONObject result = new JSONObject(gson.toJson(myBRinvariant));
+        return result;
+    }
 }

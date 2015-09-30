@@ -90,7 +90,7 @@ public class ReadTestCase extends HttpServlet {
                 answer = findTestCaseByTestTestCase(appContext, test, testCase);
                 jsonResponse = (JSONObject) answer.getItem();
             }
-            
+
             jsonResponse.put("messageType", answer.getResultMessage().getMessage().getCodeString());
             jsonResponse.put("message", answer.getResultMessage().getDescription());
             jsonResponse.put("sEcho", sEcho);
@@ -169,7 +169,7 @@ public class ReadTestCase extends HttpServlet {
         String sort = ParameterParserUtil.parseStringParam(request.getParameter("sSortDir_0"), "asc");
         AnswerList testCaseList = testCaseService.readByTestByCriteria(test, startPosition, length, columnName, sort, searchParameter, "");
 
-        AnswerList testCaseCountryList = testCaseCountryService.readByTest(test);
+        AnswerList testCaseCountryList = testCaseCountryService.readByKey(test, null);
 
         LinkedHashMap<String, JSONObject> testCaseWithCountry = new LinkedHashMap();
         for (TestCaseCountry country : (List<TestCaseCountry>) testCaseCountryList.getDataList()) {
@@ -216,14 +216,22 @@ public class ReadTestCase extends HttpServlet {
         JSONObject object = new JSONObject();
 
         testCaseService = appContext.getBean(TestCaseService.class);
+        testCaseCountryService = appContext.getBean(TestCaseCountryService.class);
 
         //finds the project     
         AnswerItem answer = testCaseService.readByKey(test, testCase);
+
+        AnswerList testCaseCountryList = testCaseCountryService.readByKey(test, testCase);
 
         if (answer.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
             //if the service returns an OK message then we can get the item and convert it to JSONformat
             TCase tc = (TCase) answer.getItem();
             object = convertTestCaseToJSONObject(tc);
+            object.put("countryList", new JSONObject());
+        }
+
+        for (TestCaseCountry country : (List<TestCaseCountry>) testCaseCountryList.getDataList()) {
+            object.getJSONObject("countryList").put(country.getCountry(), country.getCountry());
         }
 
         item.setItem(object);

@@ -22,13 +22,15 @@ $.when($.getScript("js/pages/global/global.js")).then(function () {
     $(document).ready(function () {
         initPage();
 
+        $("#editEntryButton").click(saveUpdateEntryHandler);
+
         var urlTag = GetURLParameter('test');
         loadTestFilters(urlTag);
 
-//        $("#editEntryButton").click(saveUpdateEntryHandler);
+        $('#editEntryModal').on('hidden.bs.modal', {extra: "#editEntryModal"}, modalFormCleaner);
+
 //        $("#addEntryButton").click(saveNewEntryHandler);
 //
-//        $('#editEntryModal').on('hidden.bs.modal', {extra: "#editEntryModal"}, modalFormCleaner);
 //        $('#addEntryModal').on('hidden.bs.modal', {extra: "#addEntryModal"}, modalFormCleaner);
 
     });
@@ -38,7 +40,7 @@ function initPage() {
     var doc = new Doc();
 
     displayHeaderLabel(doc);
-//    displayGlobalLabel(doc);
+    displayGlobalLabel(doc);
 //    displayPageLabel(doc);
     displayFooter(doc);
     displayInvariantList("GROUP", "group");
@@ -49,6 +51,46 @@ function initPage() {
     displayInvariantList("TCACTIVE", "activeUAT");
     displayInvariantList("TCACTIVE", "activeProd");
     appendCountryList();
+    appendApplicationList();
+    appendProjectList();
+    appendBuildRevList();
+}
+
+function appendBuildRevList() {
+    var user = getUser();
+
+    var jqxhr = $.getJSON("GetBuildRevisionInvariant", "System=" + user.defaultSystem + "&level=1");
+    $.when(jqxhr).then(function (data) {
+        var fromBuild = $("#fromSprint");
+        var toBuild = $("#toSprint");
+        var targetBuild = $("#targetSprint");
+
+        fromBuild.append($('<option></option>').text("-----").val(""));
+        toBuild.append($('<option></option>').text("-----").val(""));
+        targetBuild.append($('<option></option>').text("-----").val(""));
+
+        for (var index = 0; index < data.aaData.length; index++) {
+            fromBuild.append($('<option></option>').text(data.aaData[index].versionName).val(data.aaData[index].versionName));
+            toBuild.append($('<option></option>').text(data.aaData[index].versionName).val(data.aaData[index].versionName));
+            targetBuild.append($('<option></option>').text(data.aaData[index].versionName).val(data.aaData[index].versionName));
+        }
+    });
+    var jqxhr = $.getJSON("GetBuildRevisionInvariant", "System=" + user.defaultSystem + "&level=2");
+    $.when(jqxhr).then(function (data) {
+        var fromRev = $("#fromRev");
+        var toRev = $("#toRev");
+        var targetRev = $("#targetRev");
+
+        fromRev.append($('<option></option>').text("-----").val(""));
+        toRev.append($('<option></option>').text("-----").val(""));
+        targetRev.append($('<option></option>').text("-----").val(""));
+
+        for (var index = 0; index < data.aaData.length; index++) {
+            fromRev.append($('<option></option>').text(data.aaData[index].versionName).val(data.aaData[index].versionName));
+            toRev.append($('<option></option>').text(data.aaData[index].versionName).val(data.aaData[index].versionName));
+            targetRev.append($('<option></option>').text(data.aaData[index].versionName).val(data.aaData[index].versionName));
+        }
+    });
 }
 
 function appendCountryList() {
@@ -61,6 +103,34 @@ function appendCountryList() {
             var country = data[index].value;
 
             countryList.append('<label class="checkbox-inline"><input type="checkbox" name="' + country + '"/>' + country + '</label>');
+        }
+    });
+}
+
+function appendApplicationList() {
+    var user = getUser();
+
+    var jqxhr = $.getJSON("ReadApplication", "system=" + user.defaultSystem);
+    $.when(jqxhr).then(function (data) {
+        var applicationList = $("#application");
+
+        for (var index = 0; index < data.contentTable.length; index++) {
+            applicationList.append($('<option></option>').text(data.contentTable[index].application).val(data.contentTable[index].application));
+        }
+    });
+}
+
+function appendProjectList() {
+    var jqxhr = $.getJSON("ReadProject");
+    $.when(jqxhr).then(function (data) {
+        var projectList = $("#project");
+
+        projectList.append($('<option></option>').text("No project defined").val(""));
+        for (var index = 0; index < data.contentTable.length; index++) {
+            var idProject = data.contentTable[index].idProject;
+            var desc = data.contentTable[index].description;
+
+            projectList.append($('<option></option>').text(idProject + " " + desc).val(idProject));
         }
     });
 }
@@ -116,6 +186,19 @@ function loadTable() {
     }
 }
 
+function saveUpdateEntryHandler() {
+    clearResponseMessage($('#editEntryModal'));
+    var formEdit = $('#editEntryModalForm');
+
+    console.log($('#editEntryModalForm').serialize());
+    showLoaderInModal('#editEntryModal');
+    updateEntry("UpdateTestCase2", formEdit, "#testCaseTable");
+}
+
+function getLastExecution(data) {
+    console.log(data);
+}
+
 function editEntry(testCase) {
     clearResponseMessageMainPage();
     var test = GetURLParameter('test');
@@ -125,21 +208,47 @@ function editEntry(testCase) {
 
         var formEdit = $('#editEntryModal');
 
+        //test info
         formEdit.find("#test").prop("value", data.test);
         formEdit.find("#testCase").prop("value", data.testCase);
         formEdit.find("#description").prop("value", data.description);
+        //test case info
         formEdit.find("#creator").prop("value", data.creator);
         formEdit.find("#lastModifier").prop("value", data.lastModifier);
         formEdit.find("#implementer").prop("value", data.implementer);
         formEdit.find("#tcDateCrea").prop("value", data.tcDateCrea);
         formEdit.find("#ticket").prop("value", data.ticket);
         formEdit.find("#function").prop("value", data.function);
+        formEdit.find("#origin").prop("value", data.origin);
+        formEdit.find("#refOrigin").prop("value", data.refOrigin);
+        formEdit.find("#project").prop("value", data.project);
+        // test case parameters
+        formEdit.find("#application").prop("value", data.application);
+        formEdit.find("#group").prop("value", data.group);
+        formEdit.find("#status").prop("value", data.status);
+        formEdit.find("#priority").prop("value", data.priority);
+        formEdit.find("#actQA").prop("value", data.runQA);
+        formEdit.find("#actUAT").prop("value", data.runUAT);
+        formEdit.find("#actProd").prop("value", data.runPROD);
+        for (var country in data.countryList) {
+            $('#countryList input[name="' + data.countryList[country] + '"]').prop("checked", true);
+        }
         formEdit.find("#shortDesc").prop("value", data.shortDesc);
         formEdit.find("#behaviorOrValueExpected").prop("value", data.behaviorOrValueExpected);
-//        formEdit.find("#active").prop("value", obj.active);
-//        formEdit.find("#description").prop("value", obj.description);
-//        formEdit.find("#automated").prop("value", obj.automated);
+        formEdit.find("#howTo").prop("value", data.howTo);
+        //activation criteria        
+        formEdit.find("#active").prop("value", data.active);
+        formEdit.find("#bugId").prop("value", data.bugID);
+        formEdit.find("#link").prop("value", data.link);
+        formEdit.find("#comment").prop("value", data.comment);
+        formEdit.find("#fromSprint").prop("value", data.fromSprint);
+        formEdit.find("#toSprint").prop("value", data.toSprint);
+        formEdit.find("#targetSprint").prop("value", data.targetSprint);
+        formEdit.find("#fromRevision").prop("value", data.fromSprint);
+        formEdit.find("#toRevision").prop("value", data.toRevision);
+        formEdit.find("#targetRevision").prop("value", data.targetRevision);
 
+        getLastExecution(data);
         formEdit.modal('show');
     });
 }
@@ -283,6 +392,7 @@ function aoColumnsFunc(countries) {
             },
             "bSortable": false,
             "bSearchable": false,
+            "sClass": "center",
             "title": country,
             "sDefaultContent": ""
         };

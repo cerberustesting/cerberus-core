@@ -96,7 +96,7 @@ public class TestCaseCountryService implements ITestCaseCountryService {
     }
     
     @Override
-    public AnswerList readByTest(String test) {
-        return tccDao.readByTest(test);
+    public AnswerList readByKey(String test, String testCase) {
+        return tccDao.readByKey(test, testCase);
     }
 }

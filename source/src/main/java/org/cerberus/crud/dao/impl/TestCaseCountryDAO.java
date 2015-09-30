@@ -17,6 +17,7 @@
  */
 package org.cerberus.crud.dao.impl;
 
+import com.google.common.base.Strings;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -248,14 +249,20 @@ public class TestCaseCountryDAO implements ITestCaseCountryDAO {
     }
 
     @Override
-    public AnswerList readByTest(String test) {
+    public AnswerList readByKey(String test, String testCase) {
         AnswerList answer = new AnswerList();
         MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
         msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", ""));
         List<TestCaseCountry> testCaseCountryList = new ArrayList<TestCaseCountry>();
         StringBuilder query = new StringBuilder();
 
-        query.append("SELECT * FROM testcasecountry WHERE test = ?;");
+        query.append("SELECT * FROM testcasecountry WHERE test = ?");
+        
+        if (!Strings.isNullOrEmpty(testCase)) {
+            query.append(" AND testcase = '");
+            query.append(testCase);
+            query.append("'");
+        }
 
         Connection connection = this.databaseSpring.connect();
         try {

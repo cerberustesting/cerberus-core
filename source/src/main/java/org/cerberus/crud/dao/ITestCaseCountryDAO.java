@@ -40,5 +40,5 @@ public interface ITestCaseCountryDAO {
     
     void deleteTestCaseCountry(TestCaseCountry tcc) throws CerberusException;
     
-    public AnswerList readByTest(String test);
+    public AnswerList readByKey(String test, String testCase);
 }

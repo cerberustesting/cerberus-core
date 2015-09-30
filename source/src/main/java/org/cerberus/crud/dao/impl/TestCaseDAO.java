@@ -193,7 +193,7 @@ public class TestCaseDAO implements ITestCaseDAO {
                     }
 
                     msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
-                    msg.setDescription(msg.getDescription().replace("%ITEM%", "Application").replace("%OPERATION%", "SELECT"));
+                    msg.setDescription(msg.getDescription().replace("%ITEM%", "TestCase").replace("%OPERATION%", "SELECT"));
                     answer = new AnswerList(testCaseList, nrTotalRows);
 
                 } catch (SQLException exception) {
@@ -1616,17 +1616,66 @@ public class TestCaseDAO implements ITestCaseDAO {
     }
 
     @Override
-    public Answer update(TCase testCase) {
+    public Answer update(TCase tc) {
         MessageEvent msg = null;
-        final String query = "UPDATE testcase SET tcactive = ? WHERE test = ? AND testcase = ?";
+        StringBuilder query = new StringBuilder("UPDATE testcase SET");
+
+        query.append(" implementer = ?,");
+        query.append(" lastmodifier = ?,");
+        query.append(" project = ?,");
+        query.append(" ticket = ?,");
+        query.append(" application = ?,");
+        query.append(" activeQA = ?,");
+        query.append(" activeUAT = ?,");
+        query.append(" activeProd = ?,");
+        query.append(" status = ?,");
+        query.append(" description = ?,");
+        query.append(" behaviorOrValueExpected = ?,");
+        query.append(" howTo = ?,");
+        query.append(" tcactive = ?,");
+        query.append(" fromBuild = ?,");
+        query.append(" fromRev = ?,");
+        query.append(" toBuild = ?,");
+        query.append(" toRev = ?,");
+        query.append(" bugId = ?,");
+        query.append(" targetBuild = ?,");
+        query.append(" targetRev = ?,");
+        query.append(" comment = ?,");
+        query.append(" function = ?,");
+        query.append(" priority = ?,");
+        query.append(" `group` = ?");
+        query.append(" WHERE test = ? AND testcase = ?;");
 
         Connection connection = this.databaseSpring.connect();
         try {
-            PreparedStatement preStat = connection.prepareStatement(query);
+            PreparedStatement preStat = connection.prepareStatement(query.toString());
             try {
-                preStat.setString(1, testCase.getActive());
-                preStat.setString(2, testCase.getTest());
-                preStat.setString(3, testCase.getTestCase());
+                preStat.setString(1, tc.getImplementer());
+                preStat.setString(2, tc.getLastModifier());
+                preStat.setString(3, tc.getProject());
+                preStat.setString(4, tc.getTicket());
+                preStat.setString(5, tc.getApplication());
+                preStat.setString(6, tc.getRunQA());
+                preStat.setString(7, tc.getRunUAT());
+                preStat.setString(8, tc.getRunPROD());
+                preStat.setString(9, tc.getStatus());
+                preStat.setString(10, tc.getShortDescription());
+                preStat.setString(11, tc.getDescription());
+                preStat.setString(12, tc.getHowTo());
+                preStat.setString(13, tc.getActive());
+                preStat.setString(14, tc.getFromSprint());
+                preStat.setString(15, tc.getFromRevision());
+                preStat.setString(16, tc.getToSprint());
+                preStat.setString(17, tc.getToRevision());
+                preStat.setString(18, tc.getBugID());
+                preStat.setString(19, tc.getTargetSprint());
+                preStat.setString(20, tc.getTargetRevision());
+                preStat.setString(21, tc.getComment());
+                preStat.setString(22, tc.getFunction());
+                preStat.setString(23, Integer.toString(tc.getPriority()));
+                preStat.setString(24, tc.getGroup());
+                preStat.setString(25, tc.getTest());
+                preStat.setString(26, tc.getTestCase());
 
                 preStat.executeUpdate();
                 msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
