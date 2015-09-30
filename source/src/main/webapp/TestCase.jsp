@@ -81,7 +81,7 @@
         <!--<script type="text/javascript" src="js/jquery.dataTables.js"></script>-->
         <script type="text/javascript" src="js/jquery.jeditable.mini.js"></script>
         <script type="text/javascript" src="js/jquery.dataTables.editable.js"></script>
-        <script type="text/javascript" src="js/pages/TestCaseViewModel.js"></script>
+        <script type="text/javascript" src="js/pages/TestCase.js"></script>
         <link rel="stylesheet" type="text/css" href="css/elrte.min.css">
         <link rel="stylesheet" type="text/css" href="css/elfinder.min.css">
         <link rel="stylesheet" type="text/css" href="css/theme.css">

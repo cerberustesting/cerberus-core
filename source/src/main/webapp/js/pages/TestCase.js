@@ -24,11 +24,13 @@ var listOfPropertyTypes;
  * @param {type} param1 - filename
  */
 $.when($.getScript("js/pages/global/global.js")).then(function() {
-    
+
     $(document).ready(function() {
         displayPageLabel();
+        //Show save button when testcase page loaded
+        $("input[name='divButtonSaveChange']").removeAttr("style");
     });
-    
+
 
     /**
      * Document ready methods
@@ -126,12 +128,12 @@ $.when($.getScript("js/pages/global/global.js")).then(function() {
             setPropertyValuesAutoComplete($(this), callbackAutoCompleteTestDataLibName);
         });
 
-        
-        if($("#editableContent").find("div[class='blockUI']").size() > 0){
+
+        if ($("#editableContent").find("div[class='blockUI']").size() > 0) {
             //checks if the editable content has a loader component
             hideLoader($("#editableContent"));
         }
-        
+
         //handlers for library and useStep checkboxes in order to avoid that both are selected at the same time
         $("input[id*=step_useStep_]").change(useStepChangeHandler);
         $("input[id*=step_inLibrary_]").change(stepInLibraryChangeHandler);
@@ -142,52 +144,50 @@ $.when($.getScript("js/pages/global/global.js")).then(function() {
         //handlers for the buttons that allow to load and reset the steps
         $("button[id*='load_step_inLibrary_']").click(loadStep);
         $("button[id*='reset_step_inLibrary_']").click(resetStepClickHandler);
-        
+
         //saves the steps that useStep, to restore purposes
         saveUseStepInfo();
     });
-    //Show save button when testcase page loaded
-    $("input[name='divButtonSaveChange']").removeAttr("style");
-    
+
 });
 
 /**
  * Function that stores the information about the steps that the useStep option. This allows us to restore a step after modifing it.
  * @returns {undefined}
  */
-function saveUseStepInfo(){
+function saveUseStepInfo() {
     var usedStepBackup = sessionStorage.getItem("usedStepBackup");
-    if(usedStepBackup === null){
+    if (usedStepBackup === null) {
         usedStepBackup = {};
-    }else{
+    } else {
         usedStepBackup = JSON.parse(usedStepBackup);
     }
-    $("input[id*='step_useStep_'][value='Y']").each(function () { 
-        
-        var test  = "";
-        var testCase  = "";
-        var testStep  = ""; 
+    $("input[id*='step_useStep_'][value='Y']").each(function() {
+
+        var test = "";
+        var testCase = "";
+        var testStep = "";
         var type = 0; //normal, 1 - imported
-        
+
         var stepNumber = $(this).attr("data-step-number");
-        
-        if(Boolean($(this).attr("checked"))){
+
+        if (Boolean($(this).attr("checked"))) {
             test = $("#step_useStepTest_" + stepNumber).val();
             testCase = $("#step_useStepTestCase_" + stepNumber).val();
-            testStep = $("#step_useStepStep_" + stepNumber).val();        
+            testStep = $("#step_useStepStep_" + stepNumber).val();
             type = 1;
         }
-        
 
-        
-        
-        var useStepKey = "useStep" + stepNumber; 
+
+
+
+        var useStepKey = "useStep" + stepNumber;
         var testDescription = $("#step_description_" + stepNumber).attr("value");
 
         var currentStep = new ImportedStep(test, testCase, testStep, stepNumber, testDescription, type);
         usedStepBackup[useStepKey] = currentStep;
     });
-    
+
     sessionStorage.setItem("usedStepBackup", JSON.stringify(usedStepBackup));
 }
 
@@ -195,15 +195,15 @@ function saveUseStepInfo(){
  * Handler that manages the options available when the useStep checkbox is changed
  * @returns {undefined}
  */
-function useStepChangeHandler(){
+function useStepChangeHandler() {
     var stepNumber = $(this).attr("data-step-number");
     //disables the stepinlibrary
-    
-     //gets the useStep element 
-    var inLibraryElement= $("#step_inLibrary_" + stepNumber);
-    
+
+    //gets the useStep element 
+    var inLibraryElement = $("#step_inLibrary_" + stepNumber);
+
     var parentNode = $(this).parent("div[id*='StepUseStepDiv']");
-    
+
     var idStepCopiedFromDiv = "StepCopiedFromDiv" + stepNumber;
     var idStepUseStepTestDiv = "StepUseStepTestDiv" + stepNumber;
     var idStepUseStepTestCaseDiv = "StepUseStepTestCaseDiv" + stepNumber;
@@ -213,99 +213,99 @@ function useStepChangeHandler(){
     var idlinkEditUsedStep = "linkEditUsedStep" + stepNumber;
     var idButtonLoad = "load_step_inLibrary_" + stepNumber;
     var idButtonReset = "reset_step_inLibrary_" + stepNumber;
-    
-    
-    
-    if($(this).attr("checked")){ 
+
+
+
+    if ($(this).attr("checked")) {
         //sets the value to Y
         $(this).attr("value", "Y");
         var htmlAppend = '';
         //disables the "inLibrary" checkbox and loads the comboboxes
         $(inLibraryElement).attr("disabled", "disabled");
-        
+
         //if nodes were not added then include them
-        if($("div[id='" + idStepCopiedFromDiv + "']").size() === 0){
+        if ($("div[id='" + idStepCopiedFromDiv + "']").size() === 0) {
             //TODO:FN this could be improved when the refactoring. 
             //does not make sense to have, in the same page, elements with the same id
-            var doc = new Doc();        
+            var doc = new Doc();
             var idTestSelect = "step_useStepTest_" + stepNumber;
             var idTestCaseSelect = "step_useStepTestCase_" + stepNumber;
             var idStepSelect = "step_useStepStep_" + stepNumber;
 
             //TODO:FN when page is refactored, please add the corresponding translations
-            htmlAppend +='<div id="' + idStepCopiedFromDiv + '" style="float:left"><p style="margin-top:15px;">' + doc.getDocLabel("page_testcase", "lbl_copied_from") + '</p></div>'; 
+            htmlAppend += '<div id="' + idStepCopiedFromDiv + '" style="float:left"><p style="margin-top:15px;">' + doc.getDocLabel("page_testcase", "lbl_copied_from") + '</p></div>';
             //div for select with list of tests
-            htmlAppend +='<div id="' + idStepUseStepTestDiv + '"  style="float:left">' +"</div>"; 
-            
-            
-            
+            htmlAppend += '<div id="' + idStepUseStepTestDiv + '"  style="float:left">' + "</div>";
+
+
+
             //div for select with list of test cases
-            htmlAppend +='<div id="' + idStepUseStepTestCaseDiv + '"  style="float:left">';
+            htmlAppend += '<div id="' + idStepUseStepTestCaseDiv + '"  style="float:left">';
             htmlAppend += '<select name="' + idTestCaseSelect + '" id="' + idTestCaseSelect + '" style="width: 200px;margin-top:12.5px;font-weight: bold;">';
             htmlAppend += '<option style="width: 200px" value="">---</option>';
-            htmlAppend +="</select></div>"; 
+            htmlAppend += "</select></div>";
             //div for select with list of test steps
-            htmlAppend +='<div id="' + idStepUseStepStepDiv + '"  style="float:left">';
-            
-            htmlAppend +='<select data-step-number="' + stepNumber + '" id="' + idStepSelect + '" name="' + idStepSelect + '" style="width: 200px;margin-top:12.5px;font-weight: bold;">';
-            htmlAppend +='<option style="width: 200px" value="0">---</option>';
-            htmlAppend +='</select>';
-            htmlAppend +="</div>"; 
+            htmlAppend += '<div id="' + idStepUseStepStepDiv + '"  style="float:left">';
+
+            htmlAppend += '<select data-step-number="' + stepNumber + '" id="' + idStepSelect + '" name="' + idStepSelect + '" style="width: 200px;margin-top:12.5px;font-weight: bold;">';
+            htmlAppend += '<option style="width: 200px" value="0">---</option>';
+            htmlAppend += '</select>';
+            htmlAppend += "</div>";
 
             //appends the link that allows you to edit the test case
-            htmlAppend += '<div id="' + idStepUseStepLinkDiv + '" class="StepUseStepLinkDiv">'; 
-            
-            htmlAppend += '<a target="blank" id="' + idlinkEditUsedStep + '" href="" title="'+doc.getDocLabel("page_testcase", "link_edit_step") +'">\n\
+            htmlAppend += '<div id="' + idStepUseStepLinkDiv + '" class="StepUseStepLinkDiv">';
+
+            htmlAppend += '<a target="blank" id="' + idlinkEditUsedStep + '" href="" title="' + doc.getDocLabel("page_testcase", "link_edit_step") + '">\n\
                 <span class="glyphicon glyphicon-new-window"></span></a>';
             htmlAppend += '<button id="load_step_inLibrary_' + stepNumber + '" class="btn btn-xs" disabled="disabled" data-step-number="' + stepNumber + '" type="button">';
             htmlAppend += '<span class="glyphicon glyphicon-refresh"></span></button>';
-            
+
             //adds the reset button
             htmlAppend += '<button id="reset_step_inLibrary_' + stepNumber + '" class="btn btn-xs" disabled="disabled" data-step-number="' + stepNumber + '" type="button">';
             htmlAppend += '<span class="glyphicon glyphicon-remove"></span></button>';
-            
-            htmlAppend += '</div>';           
-           
+
+            htmlAppend += '</div>';
+
 
             htmlAppend += "</div>";
             //add divs
             $(parentNode).after(htmlAppend);
-            
 
-           //adds select with list of tests
+
+            //adds select with list of tests
             var testSelect = $("div[data-id='useStepForNewStep'] select[data-id='step_useStepTest_template']").clone();
             $(testSelect).removeAttr('data-id');
-            
+
             $(testSelect).attr("id", idTestSelect);
             $(testSelect).attr("name", idTestSelect);
-            
-            $(testSelect).change(function(){            
+
+            $(testSelect).change(function() {
                 //findStepBySystemTest($(this).val(), $("select[id='MySystem']").val(), 'step_useStepTestCase_' + stepNumber);  
-                findStepBySystemTest($(this), $("select[id='MySystem']").val(), $('#step_useStepTestCase_' + stepNumber), $("#load_step_inLibrary_" + stepNumber), "");  
+                findStepBySystemTest($(this), $("select[id='MySystem']").val(), $('#step_useStepTestCase_' + stepNumber), $("#load_step_inLibrary_" + stepNumber), "");
             });
             $('#' + idStepUseStepTestDiv).append(testSelect);
 
             //add select with list of test cases and adds the event to the select
             //add steps
-            $("#step_useStepTestCase_" + stepNumber).change(function (){
+            $("#step_useStepTestCase_" + stepNumber).change(function() {
                 //findStepBySystemTestTestCase($('#step_useStepTest_' + stepNumber).val(), $(this).val(), $("select[id='MySystem']").val(),'step_useStepStep_' + stepNumber);
                 findStepBySystemTestTestCase($('#step_useStepTest_' + stepNumber), $(this), $("select[id='MySystem']").val(), $('#step_useStepStep_' + stepNumber), $("#load_step_inLibrary_" + stepNumber), "");
             });
-            
+
             //step select changed handler
             $("#" + idStepSelect).change(stepInUseStepChangeHandler);
-            
+
             //associates the events to the new elements
-            $("#load_step_inLibrary_"+ stepNumber ).click(loadStep);
+            $("#load_step_inLibrary_" + stepNumber).click(loadStep);
             //adds the handler for the reset button, when applicable
             $("#reset_step_inLibrary_" + stepNumber).click(resetStepClickHandler);
-            
-            
+
+
             $("#" + idButtonReset).css("visibility", "hidden"); //hides the button for the moment, only shows when the usestep select is selected                
             $("#" + idlinkEditUsedStep).css("visibility", "hidden");
             $("#" + idButtonLoad).css("visibility", "hidden");
-            
-        }else{
+
+        } else {
             //show the elements that were hidden
             $(parentNode).siblings("div[id='" + idStepCopiedFromDiv + "']").css("visibility", "visible");
             $(parentNode).siblings("div[id='" + idStepUseStepTestDiv + "']").css("visibility", "visible");
@@ -314,14 +314,14 @@ function useStepChangeHandler(){
             $(parentNode).siblings("div[id='" + idStepUseStepLinkDiv + "']").css("visibility", "visible");
             $("#" + idlinkEditUsedStep).css("visibility", "visible");
             $("#" + idButtonLoad).css("visibility", "visible");
-            $("#" + idButtonReset).css("visibility", "visible");             
-        }        
-    }else{
+            $("#" + idButtonReset).css("visibility", "visible");
+        }
+    } else {
         //asks if the user wants to break the link between steps 
         //if yes all actions/controls will be added into the current test case
-        if(confirm("Do you want to break the link between steps? If you select yes, when you save this test case, all actions and controls will be copied to the current test case.")){
+        if (confirm("Do you want to break the link between steps? If you select yes, when you save this test case, all actions and controls will be copied to the current test case.")) {
             $(this).attr("value", "N");
-            $(inLibraryElement).removeAttr("disabled");  
+            $(inLibraryElement).removeAttr("disabled");
             //hide the remaing elements
             $(parentNode).siblings("div[id='" + idStepCopiedFromDiv + "']").css("visibility", "hidden");
             $(parentNode).siblings("div[id='" + idStepUseStepTestDiv + "']").css("visibility", "hidden");
@@ -331,9 +331,9 @@ function useStepChangeHandler(){
             $(parentNode).siblings("a[id='" + idlinkEditUsedStep + "']").css("visibility", "hidden");
             $("#" + idlinkEditUsedStep).css("visibility", "hidden");
             $("#" + idButtonLoad).css("visibility", "hidden");
-            $("#" + idButtonReset).css("visibility", "hidden"); 
-            $("#isToCopySteps_" + stepNumber).attr("value", "Y");             
-        }else{
+            $("#" + idButtonReset).css("visibility", "hidden");
+            $("#isToCopySteps_" + stepNumber).attr("value", "Y");
+        } else {
             //sets the useStep checked again because users selected cancel
             $(this).attr("checked", "checked");
         }
@@ -344,43 +344,43 @@ function useStepChangeHandler(){
  * Handler for the button that resets the step
  * @returns {undefined}
  */
-function resetStepClickHandler(){
+function resetStepClickHandler() {
     var stepNumber = $(this).attr("data-step-number");
     var backupFromSessionStorage = JSON.parse(sessionStorage.getItem("usedStepBackup"));
-    var useStepKey = "useStep" + stepNumber; 
-    
+    var useStepKey = "useStep" + stepNumber;
+
     var stepToRestore = backupFromSessionStorage[useStepKey];
     //the current button is set to disabled as well as the load button
     $(this).attr("disabled", "disabled");
-    
+
     //restores the description value
     $("#step_description_" + stepNumber).attr("value", stepToRestore.description);
-        
+
     //need to reset the select components
     //the defferred option $.when(). done() does not seem to work with trigger calls trigger("change"), therefore 
     //the method that is invoked in the change event is called here    
-    if(stepToRestore.type === 0){
+    if (stepToRestore.type === 0) {
         $("#step_useStep_" + stepNumber).removeAttr("checked");
         //hide the elements associated with the useStep
-        $("#StepCopiedFromDiv" + stepNumber ).css("visibility", "hidden");
-        $("#StepUseStepTestDiv" + stepNumber ).css("visibility", "hidden");
-        $("#StepUseStepTestCaseDiv" + stepNumber ).css("visibility", "hidden");
-        $("#StepUseStepStepDiv" + stepNumber ).css("visibility", "hidden");
-        $("#StepUseStepLinkDiv" + stepNumber ).css("visibility", "hidden");
-        
+        $("#StepCopiedFromDiv" + stepNumber).css("visibility", "hidden");
+        $("#StepUseStepTestDiv" + stepNumber).css("visibility", "hidden");
+        $("#StepUseStepTestCaseDiv" + stepNumber).css("visibility", "hidden");
+        $("#StepUseStepStepDiv" + stepNumber).css("visibility", "hidden");
+        $("#StepUseStepLinkDiv" + stepNumber).css("visibility", "hidden");
+
         /*$("#linkEditUsedStep" + stepNumber ).css("visibility", "hidden");
-        $("#load_step_inLibrary_" + stepNumber).css("visibility", "hidden");
-        $("#reset_step_inLibrary_" + stepNumber).css("visibility", "hidden");*/
+         $("#load_step_inLibrary_" + stepNumber).css("visibility", "hidden");
+         $("#reset_step_inLibrary_" + stepNumber).css("visibility", "hidden");*/
         hideLinkElementsPanel(stepNumber);
-        
-    }else{
+
+    } else {
         console.log("data to restore " + stepToRestore.useTest + " " + stepToRestore.useTestCase + " " + stepToRestore.useStep);
-        loadTestCaseAndStepComponents($("#step_useStepTest_" + stepNumber),  $("#step_useStepTestCase_" + stepNumber), $('#step_useStepStep_' + stepNumber), 
-        $("select[id='MySystem']").val(), $("#load_step_inLibrary_" + stepNumber), stepToRestore.useTest, stepToRestore.useTestCase, stepToRestore.useStep);
+        loadTestCaseAndStepComponents($("#step_useStepTest_" + stepNumber), $("#step_useStepTestCase_" + stepNumber), $('#step_useStepStep_' + stepNumber),
+                $("select[id='MySystem']").val(), $("#load_step_inLibrary_" + stepNumber), stepToRestore.useTest, stepToRestore.useTestCase, stepToRestore.useStep);
         //resets the edit step url
         /*var urlElement = $("a[id='linkEditUsedStep" + stepNumber + "']");
-        var url = 'TestCase.jsp?Test=' +  stepToRestore.useTest +'&TestCase=' + stepToRestore.useTestCase +'#stepAnchor_step' + stepToRestore.useStep;
-        $(urlElement).attr("href", url);*/
+         var url = 'TestCase.jsp?Test=' +  stepToRestore.useTest +'&TestCase=' + stepToRestore.useTestCase +'#stepAnchor_step' + stepToRestore.useStep;
+         $(urlElement).attr("href", url);*/
         setNewHrefForEditStep(stepNumber, stepToRestore.useTest, stepToRestore.useTestCase, stepToRestore.useStep);
     }
     //sets the step as it was not modified
@@ -388,7 +388,7 @@ function resetStepClickHandler(){
     //removes all current actions and controls drawn 
     removeActionsAndControls(stepNumber);
     drawStep($("#BeforeFirstAction" + stepNumber), stepNumber, stepToRestore.actionList, stepToRestore.type, false);
-    
+
 }
 /**
  * Auxiliary function that updates the link href attribute that allows the edition of the step that is being imported
@@ -398,28 +398,28 @@ function resetStepClickHandler(){
  * @param {type} step
  * @returns {undefined}
  */
-function setNewHrefForEditStep(stepNumber, test, testcase, step){
+function setNewHrefForEditStep(stepNumber, test, testcase, step) {
     var urlElement = $("a[id='linkEditUsedStep" + stepNumber + "']");
-    var url = 'TestCase.jsp?Test=' +  test +'&TestCase=' + testcase +'#stepAnchor_step' + step;
+    var url = 'TestCase.jsp?Test=' + test + '&TestCase=' + testcase + '#stepAnchor_step' + step;
     $(urlElement).attr("href", url);
 }
 /**
  * Handler that manages the options available when the inLibrary checkbox is changed
  * @returns {undefined}
  */
-function stepInLibraryChangeHandler(){
-    
+function stepInLibraryChangeHandler() {
+
     var stepNumber = $(this).attr("data-step-number");
     //gets the useStep element 
     var useStepElement = $("#step_useStep_" + stepNumber);
-    
-    if($(this).attr("checked")){
+
+    if ($(this).attr("checked")) {
         //disables the "useStep" checkbox if the test is marked as inLibrary
         $(useStepElement).attr("disabled", "disabled");
         $(this).attr("value", "Y");
         $("input[name='" + $(this).attr("name") + "'][type='hidden']").attr("value", "Y");
-    }else{
-        $(useStepElement).removeAttr("disabled");        
+    } else {
+        $(useStepElement).removeAttr("disabled");
         $(this).attr("value", "N");
         $("input[name='" + $(this).attr("name") + "'][type='hidden']").attr("value", "N");
     }
@@ -429,28 +429,28 @@ function stepInLibraryChangeHandler(){
  * Auxiliary function that loads a step into the GUI
  * @returns {undefined}
  */
-function loadStep(){
-    
+function loadStep() {
+
     var stepNumber = $(this).attr("data-step-number");
-    
+
     var parent = "#StepsBorderDiv" + stepNumber + " #Action" + stepNumber;
     //var description = $("input[name='step_description_" + stepNumber + "']").attr("value");
-    
+
     /*var useTest = $("#step_useStepTest_" + stepNumber).attr("value");
-    var useTestCase = $("#step_useStepTestCase_" + stepNumber).attr("value");
-    var useStep = $("#step_useStepStep_" + stepNumber).attr("value");
-    */
-    var useStepKey = "useStep" + stepNumber; 
+     var useTestCase = $("#step_useStepTestCase_" + stepNumber).attr("value");
+     var useStep = $("#step_useStepStep_" + stepNumber).attr("value");
+     */
+    var useStepKey = "useStep" + stepNumber;
     //gets the current information that is in storage
     var usedStepBackup = JSON.parse(sessionStorage.getItem("usedStepBackup"));
-    
+
     $("#step_useStepChanged_" + stepNumber).attr("value", "Y");
-    
-    if(!usedStepBackup.hasOwnProperty(useStepKey) || !usedStepBackup[useStepKey].actionsLoaded){
+
+    if (!usedStepBackup.hasOwnProperty(useStepKey) || !usedStepBackup[useStepKey].actionsLoaded) {
         //var step = new ImportedStep(useTest, useTestCase, useStep, stepNumber, description);
         var step = $.extend(new ImportedStep(), usedStepBackup[useStepKey]);
-        
-        if(!usedStepBackup.hasOwnProperty(useStepKey) ){
+
+        if (!usedStepBackup.hasOwnProperty(useStepKey)) {
             step.type = 0;
             step.description = "";
             this.useTest = "";
@@ -461,41 +461,41 @@ function loadStep(){
 
         var actionList = {};
 
-        $.each($(parent).children("div"), function (idx, obj) {    
+        $.each($(parent).children("div"), function(idx, obj) {
             var id = $(obj).attr("id");
             //check if there are itens inside the div
-            if (id.indexOf("StepListOfActionDiv") >= 0 ){
+            if (id.indexOf("StepListOfActionDiv") >= 0) {
 
                 var sequence = $(obj).find('input[data-field="sequence"]').attr("value");
-                var description = $(obj).find('input[id="action_description_'+ stepNumber + '_' + sequence + '"]').attr("value");
-                var actionType = $(obj).find('#action_action_'+ stepNumber + '_' + sequence + '').attr("value");
-                var actionObject = $(obj).find('input[id="action_object_'+ stepNumber + '_' + sequence + '"]').attr("value");
+                var description = $(obj).find('input[id="action_description_' + stepNumber + '_' + sequence + '"]').attr("value");
+                var actionType = $(obj).find('#action_action_' + stepNumber + '_' + sequence + '').attr("value");
+                var actionObject = $(obj).find('input[id="action_object_' + stepNumber + '_' + sequence + '"]').attr("value");
 
-                var actionPropertyElement = $(obj).find('input[id="action_property_'+ stepNumber + '_' + sequence + '"]');
+                var actionPropertyElement = $(obj).find('input[id="action_property_' + stepNumber + '_' + sequence + '"]');
 
                 var actionProperty = $(actionPropertyElement).attr("value");
 
-                var fileName = $(obj).find('div[id="AttachPictureDiv_'+ stepNumber  + '_' + sequence + '"] img').attr("src");
+                var fileName = $(obj).find('div[id="AttachPictureDiv_' + stepNumber + '_' + sequence + '"] img').attr("src");
 
 
                 var action = new Action(id, sequence, description, actionType, actionObject, actionProperty, fileName);
                 //check if the property has some button associated
-                if($(actionPropertyElement).prev("button").length === 1){
+                if ($(actionPropertyElement).prev("button").length === 1) {
                     var buttonElement = $(actionPropertyElement).prev("button");
                     var type = 0;
                     var dataTest = "";
                     var dataTestCase = "";
-                    if($(buttonElement).hasClass("property_tooverride")){
+                    if ($(buttonElement).hasClass("property_tooverride")) {
                         type = 2;
                         dataTest = $(actionPropertyElement).attr("data-usestep-test");
                         dataTestCase = $(actionPropertyElement).attr("data-usestep-testcase");
 
-                    }else if($(buttonElement).hasClass("property_overriden")){
+                    } else if ($(buttonElement).hasClass("property_overriden")) {
                         dataTest = $(actionPropertyElement).attr("data-usestep-test");
                         dataTestCase = $(actionPropertyElement).attr("data-usestep-testcase");
                         type = 3;
 
-                    }else if($(buttonElement).hasClass("property_missing")){
+                    } else if ($(buttonElement).hasClass("property_missing")) {
                         type = 1;
                     }
                     //get the values that indicate the source of the property, e.g., data-usestep-testcase="0001A" data-usestep-test="_IMPORTED_STEPS
@@ -504,9 +504,9 @@ function loadStep(){
                 }
 
                 step.addAction(action);
-                actionList [sequence] = action; 
+                actionList [sequence] = action;
             }
-            if (id.indexOf("StepListOfControlDiv") >= 0 ){
+            if (id.indexOf("StepListOfControlDiv") >= 0) {
                 //this is a control
 
                 //retrieve all data
@@ -515,12 +515,12 @@ function loadStep(){
                 var currentAction = actionList[actionSequence];
 
                 var controlNR = $(obj).find('input[data-field="control"]').attr("value");
-                var controlDescription = $(obj).find('input[id="control_description_'+ stepNumber + '_' + actionSequence + '_' + controlNR + '"]').attr("value");
-                var controlType = $('#control_type_'+ stepNumber + '_' + actionSequence + '_' + controlNR ).attr("value");
-                var controlProperty = $(obj).find('input[id="control_property_'+ stepNumber + '_' + actionSequence + '_' + controlNR + '"]').attr("value");
-                var controlValue  = $(obj).find('input[id="control_value_'+ stepNumber + '_' + actionSequence + '_' + controlNR + '"]').attr("value");
-                var controlFatal = $('#control_fatal_'+ stepNumber + '_' + actionSequence + '_' + controlNR ).attr("value");
-                var controlFileName = $(obj).find('div[id="AttachPictureDiv_'+ stepNumber + '_' + actionSequence + '_' + controlNR + '"] img').attr("src");
+                var controlDescription = $(obj).find('input[id="control_description_' + stepNumber + '_' + actionSequence + '_' + controlNR + '"]').attr("value");
+                var controlType = $('#control_type_' + stepNumber + '_' + actionSequence + '_' + controlNR).attr("value");
+                var controlProperty = $(obj).find('input[id="control_property_' + stepNumber + '_' + actionSequence + '_' + controlNR + '"]').attr("value");
+                var controlValue = $(obj).find('input[id="control_value_' + stepNumber + '_' + actionSequence + '_' + controlNR + '"]').attr("value");
+                var controlFatal = $('#control_fatal_' + stepNumber + '_' + actionSequence + '_' + controlNR).attr("value");
+                var controlFileName = $(obj).find('div[id="AttachPictureDiv_' + stepNumber + '_' + actionSequence + '_' + controlNR + '"] img').attr("src");
 
 
                 var control = new Control(id, actionSequence, controlNR, controlDescription, controlType, controlProperty, controlValue, controlFatal, controlFileName);
@@ -539,24 +539,24 @@ function loadStep(){
         usedStepBackup[useStepKey] = step;
         sessionStorage.setItem("usedStepBackup", JSON.stringify(usedStepBackup));
     }
-    
+
     //remove all actions and controls from the interface
     removeActionsAndControls(stepNumber);
-    
+
     //Retrieves the selected values for test, testcase and step, in order to load the test step
     var selectedTest = $("#step_useStepTest_" + stepNumber).val();
     var selectedTestCase = $("#step_useStepTestCase_" + stepNumber).val();
     var selectedStep = $("#step_useStepStep_" + stepNumber).val();
-    
+
     var parentNode = $(parent).find("#BeforeFirstAction" + stepNumber);
-    
+
     //Activates the loader, that is hidden after the readfromdatabase completes
     showLoader($("#BeforeFirstAction" + stepNumber));
     readStepFromDatabase(selectedTest, selectedTestCase, selectedStep, stepNumber, parentNode);
-    
+
     //Activates the reset button 
     $("#reset_step_inLibrary_" + stepNumber).removeAttr("disabled");
-    
+
 }
 
 /**
@@ -564,52 +564,52 @@ function loadStep(){
  * @param {type} stepNumber step where items are removed
  * @returns {undefined}
  */
-function removeActionsAndControls(stepNumber){
+function removeActionsAndControls(stepNumber) {
     $("div[id*='StepListOfActionDiv" + stepNumber + "']").remove();
     $("div[id*='DivActionEndOfAction" + stepNumber + "']").remove();
     $("div[id*='StepListOfControlDiv" + stepNumber + "']").remove();
 }
-function stepInUseStepChangeHandler(){
+function stepInUseStepChangeHandler() {
     //gets the step number that is being defined
     var stepNumber = $(this).attr("data-step-number"); //current step number
-    
-    
-    if($(this).val() === "0" ){
+
+
+    if ($(this).val() === "0") {
         hideLinkElementsPanel(stepNumber);
         $("#step_useStepChanged_" + stepNumber).attr("value", "");
-    }else{
+    } else {
         $("#step_useStepChanged_" + stepNumber).attr("value", "N");
         //removes the empty option
         $(this).find("option[value='']").remove();
         //shows the options that should be displayed when the step is selected
         showLinkElementsPanel(stepNumber);
-        
+
         //updates the url of the option, edit testcase
         /*var url = 'TestCase.jsp?Test=' + $("#step_useStepTest_" + stepNumber).val() +'&TestCase=' + $("#step_useStepTestCase_" + stepNumber).val() +'#stepAnchor_step' + $(this).val();
-        $("#linkEditUsedStep" + stepNumber).attr("href", url); */
-        setNewHrefForEditStep(stepNumber, $("#step_useStepTest_" + stepNumber).val(), $("#step_useStepTestCase_" + stepNumber).val(),  $(this).val());
+         $("#linkEditUsedStep" + stepNumber).attr("href", url); */
+        setNewHrefForEditStep(stepNumber, $("#step_useStepTest_" + stepNumber).val(), $("#step_useStepTestCase_" + stepNumber).val(), $(this).val());
     }
 }
- 
-function showLinkElementsPanel(stepNumber){
+
+function showLinkElementsPanel(stepNumber) {
     var urlElement = $("#linkEditUsedStep" + stepNumber);
     var btnRefresh = $("#load_step_inLibrary_" + stepNumber);
     var btnReset = $("#reset_step_inLibrary_" + stepNumber);
-    
-    $(urlElement).css("visibility", "visible");        
-    $(btnRefresh).css("visibility", "visible"); 
-    $(btnReset).css("visibility", "visible"); 
+
+    $(urlElement).css("visibility", "visible");
+    $(btnRefresh).css("visibility", "visible");
+    $(btnReset).css("visibility", "visible");
     $(btnRefresh).removeAttr("disabled");
-} 
-function hideLinkElementsPanel(stepNumber){
+}
+function hideLinkElementsPanel(stepNumber) {
     var urlElement = $("#linkEditUsedStep" + stepNumber);
     var btnRefresh = $("#load_step_inLibrary_" + stepNumber);
     var btnReset = $("#reset_step_inLibrary_" + stepNumber);
-    
-    $(urlElement).css("visibility", "hidden");   
-    $(btnRefresh).css("visibility", "hidden"); 
-    $(btnReset).css("visibility", "hidden"); 
-} 
+
+    $(urlElement).css("visibility", "hidden");
+    $(btnRefresh).css("visibility", "hidden");
+    $(btnReset).css("visibility", "hidden");
+}
 
 
 
@@ -624,19 +624,19 @@ function hideLinkElementsPanel(stepNumber){
  */
 function readStepFromDatabase(test, testcase, step, stepNumber, parentNode) {
     //var jqxhr = $.getJSON("ReadTestCaseStep", {test: test, testcase:testcase, step:step});
-    var jqxhr = $.post("ReadTestCaseStep",{test: test, testcase:testcase, step:step}, "json");
-    $.when(jqxhr).then(function (data) {
- 
+    var jqxhr = $.post("ReadTestCaseStep", {test: test, testcase: testcase, step: step}, "json");
+    $.when(jqxhr).then(function(data) {
+
         var actionList = [];
         //iterates the actions set
-        $.each(data.tcsActionList, function(idx, obj){           
+        $.each(data.tcsActionList, function(idx, obj) {
             var action = $.parseJSON(obj)
             var actionObj = $.extend(new Action(), action);
             //sets the new action
             actionList[actionObj.sequence] = actionObj;
         });
         //iterates the controls set and associates each one with the corresponding action
-        $.each(data.tcsActionControlList, function(idx, obj){
+        $.each(data.tcsActionControlList, function(idx, obj) {
             //var obj2 = $.parseJSON(obj);
             var control = $.parseJSON(obj)
             //console.log("aa >>   " + action.test);
@@ -647,16 +647,16 @@ function readStepFromDatabase(test, testcase, step, stepNumber, parentNode) {
             action.addControl(controlObj);
             actionList[controlObj.sequence] = action;
         });
-        
+
         //updates the description
         $("#step_description_" + stepNumber).attr("value", data.step.description);
 
         //draws the actions and controls
-        drawStep(parentNode, stepNumber, actionList,  data.step.type, true);
+        drawStep(parentNode, stepNumber, actionList, data.step.type, true);
         //hides loader, meaning that the process has finished
         hideLoader($("#BeforeFirstAction" + stepNumber));
     });
- 
+
 }
 /**
  * Auxiliary method that draws the actions that belong to a step. 
@@ -667,50 +667,50 @@ function readStepFromDatabase(test, testcase, step, stepNumber, parentNode) {
  * @param {type} temporary - if temporary = true than means that the current step is being edited.
  * @returns {undefined}
  */
-function drawStep(parentNode, stepNumber, actionList, stepType, temporary){
-    var htmlToAppend = ""; 
-    
+function drawStep(parentNode, stepNumber, actionList, stepType, temporary) {
+    var htmlToAppend = "";
+
     //TODO:FN draw step needs to be refactored when the page is converted to the new standards (new css classes should be defined)
-    for(var index in actionList){
+    for (var index in actionList) {
         var action = actionList[index];
-        
+
         //starts action element
         htmlToAppend += '<div style="margin-top:0px;display:block;height:50px;width:100%;border-style: solid; border-width:thin ; border-color:#CCCCCC;" \n\
         class="RowActionDiv ';
-        if(stepType === 1){
+        if (stepType === 1) {
             htmlToAppend += 'ActionOfUseStep '; //imported step
-        }else{
+        } else {
             htmlToAppend += 'ActionOfNormalStep '; //normal step
         }
-        if(temporary){
+        if (temporary) {
             htmlToAppend += 'ActionOfUseStepTemp';
         }
-        htmlToAppend += '" id="StepListOfActionDiv' + stepNumber +  action.sequence +'">';
-        htmlToAppend += '<div style="background-color:blue; width:8px;height:100%;display:inline-block;float:left" name="actionRow_color_' + stepNumber +  '">';
+        htmlToAppend += '" id="StepListOfActionDiv' + stepNumber + action.sequence + '">';
+        htmlToAppend += '<div style="background-color:blue; width:8px;height:100%;display:inline-block;float:left" name="actionRow_color_' + stepNumber + '">';
         htmlToAppend += '</div>';
         htmlToAppend += '<div style="display:inline-block;float:left;width:2%;height:100%;text-align:center">';
         //if is a normal step, then we need to add the options to delete 
-        if(stepType === 0){
-            htmlToAppend += '<img id="img_delete_' + stepNumber + "_"  +action.sequence +'" onclick="checkDeleteBox(\'img_delete_' + stepNumber + "_"  +action.sequence +'\'';
-            htmlToAppend += '\'action_delete_' + stepNumber + "_"  +action.sequence +'\', \'StepListOfActionDiv' + stepNumber +action.sequence +'\', \'RowActionDiv\')" src="images/bin.png" style="margin-top:12px">';
-            htmlToAppend += '<input id="action_delete_' + stepNumber + "_"  +action.sequence +'" class="wob" type="checkbox" value="' + stepNumber + "-"  +action.sequence +'" style="display:none;';
-            htmlToAppend += 'margin-top:20px; background-color: transparent" name="action_delete_' + stepNumber + "_"  +action.sequence +'" data-action="delete_action">';
+        if (stepType === 0) {
+            htmlToAppend += '<img id="img_delete_' + stepNumber + "_" + action.sequence + '" onclick="checkDeleteBox(\'img_delete_' + stepNumber + "_" + action.sequence + '\'';
+            htmlToAppend += '\'action_delete_' + stepNumber + "_" + action.sequence + '\', \'StepListOfActionDiv' + stepNumber + action.sequence + '\', \'RowActionDiv\')" src="images/bin.png" style="margin-top:12px">';
+            htmlToAppend += '<input id="action_delete_' + stepNumber + "_" + action.sequence + '" class="wob" type="checkbox" value="' + stepNumber + "-" + action.sequence + '" style="display:none;';
+            htmlToAppend += 'margin-top:20px; background-color: transparent" name="action_delete_' + stepNumber + "_" + action.sequence + '" data-action="delete_action">';
         }
-        htmlToAppend += '<input type="hidden" value="' + action.sequence +'" name="action_increment_' + stepNumber + '">';
-        htmlToAppend += '<input type="hidden" value="' + stepNumber +'" data-fieldtype="stepNumber" name="action_step_' + stepNumber + '_' + action.sequence + '">';
+        htmlToAppend += '<input type="hidden" value="' + action.sequence + '" name="action_increment_' + stepNumber + '">';
+        htmlToAppend += '<input type="hidden" value="' + stepNumber + '" data-fieldtype="stepNumber" name="action_step_' + stepNumber + '_' + action.sequence + '">';
         htmlToAppend += '</div>';
         htmlToAppend += '<div style="height:100%;width:3%;float:left;display:inline-block">';
-        
+
         //if is a normal step, then we need to add the options to add action and control
-        if(stepType === 0){
+        if (stepType === 0) {
             htmlToAppend += '<div style="margin-top: 5px;height:50%;width:100%;clear:both;display:inline-block">';
-            htmlToAppend += '<img onclick="addTCSANew(\'DivActionEndOfAction' + stepNumber + action.sequence + '\', \''+ stepNumber + '\', this)" data-fieldtype="addActionButton" title="Add Action" style="width:15px;height:15px" src="images/addAction.png">';
+            htmlToAppend += '<img onclick="addTCSANew(\'DivActionEndOfAction' + stepNumber + action.sequence + '\', \'' + stepNumber + '\', this)" data-fieldtype="addActionButton" title="Add Action" style="width:15px;height:15px" src="images/addAction.png">';
             htmlToAppend += '</div>';
             htmlToAppend += '<div style="margin-top:-15px;height:50%;width:100%;clear:both;display:inline-block">';
-            htmlToAppend += '<img onclick="addTCSACNew(\'StepListOfActionDiv' + stepNumber + action.sequence + '\', \''+ stepNumber + '\', \''+action.sequence+'\', this)" data-fieldtype="addControlButton" title="Add Control" style="width:15px;height:15px" src="images/addControl.png">';
+            htmlToAppend += '<img onclick="addTCSACNew(\'StepListOfActionDiv' + stepNumber + action.sequence + '\', \'' + stepNumber + '\', \'' + action.sequence + '\', this)" data-fieldtype="addControlButton" title="Add Control" style="width:15px;height:15px" src="images/addControl.png">';
             htmlToAppend += '</div>';
         }
-        
+
         htmlToAppend += '</div>';
         htmlToAppend += '<div style="height:100%;width:4%;display:inline-block;float:left">';
         htmlToAppend += '<input id="action_sequence_' + stepNumber + '_' + action.sequence + '" name="action_sequence_' + stepNumber + '_' + action.sequence + '" \n\
@@ -724,7 +724,7 @@ function drawStep(parentNode, stepNumber, actionList, stepType, temporary){
         href="javascript:popup(&quot;Documentation.jsp?DocTable=testcasestepaction&amp;DocField=description&amp;Lang=en&quot;)" \n\
         class="docOnline"><span class="glyphicon glyphicon-question-sign"></span></a></p>';
         htmlToAppend += '</div>';
-        htmlToAppend += '<input readonly id="action_description_' + stepNumber + '_' + action.sequence + '" name="action_description_' + stepNumber + '_' + action.sequence + 
+        htmlToAppend += '<input readonly id="action_description_' + stepNumber + '_' + action.sequence + '" name="action_description_' + stepNumber + '_' + action.sequence +
                 '" placeholder="Description" value="' + action.description + '" style="border-style:groove;border-width:thin;border-color:white;border: 1px solid white; \n\
         color:#333333; width: 80%; font-weight:bold;font-size:12px ;font-family: Trebuchet MS; " data-fieldtype="Description" class="wob">';
         htmlToAppend += '</div>';
@@ -735,7 +735,7 @@ function drawStep(parentNode, stepNumber, actionList, stepType, temporary){
         <a onclick="stopPropagation(event)" href="javascript:popup(&quot;Documentation.jsp?DocTable=testcasestepaction&amp;DocField=Action&amp;Lang=en&quot;)" class="docOnline">\n\
         <span class="glyphicon glyphicon-question-sign"></span></a></p>';
         htmlToAppend += '</div>';
-        htmlToAppend += '<input id="action_action_' + stepNumber + '_' + action.sequence + '" value="' + action.action+'" name="action_action_' + stepNumber + '_' + 
+        htmlToAppend += '<input id="action_action_' + stepNumber + '_' + action.sequence + '" value="' + action.action + '" name="action_action_' + stepNumber + '_' +
                 action.sequence + '"  readonly style="float:left;border-style:groove;border-width:thin;border-color:white;border: 1px solid white; height:100%;width:75%; color:#999999"/>';
         htmlToAppend += '</div>';
         htmlToAppend += '<div style="width: 40%; float:left; background-color: transparent" class="technical_part">';
@@ -752,13 +752,13 @@ function drawStep(parentNode, stepNumber, actionList, stepType, temporary){
         class="docOnline"><span class="glyphicon glyphicon-question-sign"></span></a></p>';
         htmlToAppend += '</div>';
         //draws the button if it exists
-        if(action.propertyButtonAction !== null){
+        if (action.propertyButtonAction !== null) {
             htmlToAppend += drawPropertyActionButton(action.property, action.propertyButtonAction, 'id="action_property_' + stepNumber + '_' + action.sequence + '"');
         }
         htmlToAppend += '<input readonly name="action_property_' + stepNumber + '_' + action.sequence + '" id="action_property_' + stepNumber + '_' + action.sequence + '" \n\
-        value="' + action.property + '"'; 
-        if(action.propertyButtonAction !== null && (action.propertyButtonAction.type === 2 || action.propertyButtonAction.type === 3)){
-            htmlToAppend += ' data-usestep-test="' + action.propertyButtonAction.usestep_test + '" data-usestep-testcase="' +  action.propertyButtonAction.usestep_testcase + '" ';
+        value="' + action.property + '"';
+        if (action.propertyButtonAction !== null && (action.propertyButtonAction.type === 2 || action.propertyButtonAction.type === 3)) {
+            htmlToAppend += ' data-usestep-test="' + action.propertyButtonAction.usestep_test + '" data-usestep-testcase="' + action.propertyButtonAction.usestep_testcase + '" ';
         }
         htmlToAppend += ' style="width:75%;border-style:groove;border-width:thin;border-color:white;border: 1px solid white; \n\
         color:#888888" class="wob property_value"/>';
@@ -769,19 +769,19 @@ function drawStep(parentNode, stepNumber, actionList, stepType, temporary){
         htmlToAppend += '</div>';
         htmlToAppend += '<div style="height:100%;width:5%;display:inline-block;float:right">';
         htmlToAppend += '<div id="AttachPictureDiv_' + stepNumber + '_' + action.sequence + '">';
-        htmlToAppend += '<img width="45" height="35" src="' + action.screenshotFilename+ '" class="wob">';
+        htmlToAppend += '<img width="45" height="35" src="' + action.screenshotFilename + '" class="wob">';
         htmlToAppend += '</div>';
-        htmlToAppend += '<input value="' + action.screenshotFilename +'" \n\
+        htmlToAppend += '<input value="' + action.screenshotFilename + '" \n\
         id="action_screenshot_' + stepNumber + '_' + action.sequence + '" name="action_screenshot_' + stepNumber + '_' + action.sequence + '" style="display:none">';
         htmlToAppend += '</div>';
         htmlToAppend += '</div>';
-        
+
         htmlToAppend += drawControlList(stepNumber, action.controlList, temporary);
 
         htmlToAppend += '<div id="DivActionEndOfAction' + stepNumber + action.sequence + '" class="endOfAction"></div>';
-    
+
     }
-    
+
     //insert the html after the node that indicates the place were action should be listed
     $(parentNode).after(htmlToAppend);
 }
@@ -792,7 +792,7 @@ function drawStep(parentNode, stepNumber, actionList, stepType, temporary){
  * @param {type} inputID
  * @returns {String}
  */
-function drawPropertyActionButton(propertyValue, propertyAction, inputID){
+function drawPropertyActionButton(propertyValue, propertyAction, inputID) {
     //(propertyValue, toolTipMessage, type, listOfPropertyTypes, inputName)
     return createCommandList(propertyValue, propertyAction.title, propertyAction.type, inputID);
 }
@@ -803,32 +803,32 @@ function drawPropertyActionButton(propertyValue, propertyAction, inputID){
  * @param {type} temporary - if temporary = true than means that the current step is being edited.
  * @returns {String}
  */
-function drawControlList(stepNumber, controlList, temporary){
+function drawControlList(stepNumber, controlList, temporary) {
     var htmlToAppend = '';
-    
-    for(var index in controlList){
+
+    for (var index in controlList) {
         var control = controlList[index];
         htmlToAppend += '<div style="width:100%;height:50px;clear:both;display:block;border-style: solid; border-width:thin ; border-color:#CCCCCC;" \n\
         class="RowActionDiv ActionOfUseStep ';
-        if(temporary){
+        if (temporary) {
             htmlToAppend += 'ActionControlOfUseStepTemp';
-        } 
-        htmlToAppend += '" data-associatedaction="StepListOfActionDiv' + stepNumber +  control.sequence + '" id="StepListOfControlDiv' + 
+        }
+        htmlToAppend += '" data-associatedaction="StepListOfActionDiv' + stepNumber + control.sequence + '" id="StepListOfControlDiv' +
                 stepNumber + control.sequence + control.control + '">';
         htmlToAppend += '<div style="background-color:#33CC33; width:8px;height:100%;display:inline-block;float:left">';
         htmlToAppend += '</div>';
         htmlToAppend += '<div style="height:100%;width: 2%;float:left; text-align: center;">';
-        htmlToAppend += '<input type="hidden" name="control_increment_'+ stepNumber + '_' + control.sequence +'" value="' + control.control + '" />'; 
+        htmlToAppend += '<input type="hidden" name="control_increment_' + stepNumber + '_' + control.sequence + '" value="' + control.control + '" />';
         htmlToAppend += '<input type="hidden" data-fieldtype="stepNumber" name="control_step_' + stepNumber + '_' + control.sequence + '_' + control.control + '" value="' + stepNumber + '" />';
         htmlToAppend += '</div>';
-        htmlToAppend += '<div style="height:100%;width:3%;float:left;display:inline-block">';                                                                
+        htmlToAppend += '<div style="height:100%;width:3%;float:left;display:inline-block">';
         htmlToAppend += '</div>';
         htmlToAppend += '<div style="width:2%;float:left;height:100%;display:inline-block">';
         htmlToAppend += '<input name="control_sequence_' + stepNumber + '_' + control.sequence + '_' + control.control + '" value="' + control.sequence + '" \n\
             class="wob readonlyaction_seq" data-field="sequence" data-fieldtype="ctrlseq_' + stepNumber + '" readonly />';
         htmlToAppend += '</div>';
         htmlToAppend += '<div style="width:2%;float:left;height:100%;display:inline-block">';
-        htmlToAppend += '<input name="control_control_' + stepNumber + '_' + control.sequence + '_' + control.control + '" value="' + control.control +'" \n\
+        htmlToAppend += '<input name="control_control_' + stepNumber + '_' + control.sequence + '_' + control.control + '" value="' + control.control + '" \n\
             data-fieldtype="control_' + stepNumber + '_' + control.sequence + '" data-field="control" class="wob readonlyactioncontrol_seq" readonly />';
         htmlToAppend += '</div>';
         htmlToAppend += '<div style="height:100%;width:80%;float:left;display:inline-block">';
@@ -852,21 +852,21 @@ function drawControlList(stepNumber, controlList, temporary){
         htmlToAppend += '<div style="width:30%;float:left;" class="technical_part">';
         htmlToAppend += '<div style="float:left;"><p link="white" style="float:right;font-weight:bold;" name="labelTestCaseStepActionControlProperty">Property</p>';
         htmlToAppend += '</div>';
-        htmlToAppend += '<input value="'+ control.controlProperty + '" name="control_property_' + stepNumber + '_' + control.sequence + '_' + control.control + '" \n\
+        htmlToAppend += '<input value="' + control.controlProperty + '" name="control_property_' + stepNumber + '_' + control.sequence + '_' + control.control + '" \n\
             id="control_property_' + stepNumber + '_' + control.sequence + '_' + control.control + '" style="width: 70%;border: 1px solid white;  \n\
             color:grey" class="wob" readonly />';
         htmlToAppend += '</div>';
         htmlToAppend += '<div style="width:30%;float:left; " class="technical_part">';
         htmlToAppend += '<div style="float:left;"><p link="white" style="float:right;font-weight:bold;" name="labelTestCaseStepActionControlValue">Value</p>';
         htmlToAppend += '</div>';
-        htmlToAppend += '<input value="'+ control.controlValue + '" name="control_value_' + stepNumber + '_' + control.sequence + '_' + control.control + '" \n\
+        htmlToAppend += '<input value="' + control.controlValue + '" name="control_value_' + stepNumber + '_' + control.sequence + '_' + control.control + '" \n\
         id="control_value_' + stepNumber + '_' + control.sequence + '_' + control.control + '" value="" style="width: 70%;border: 1px solid white; color:grey" class="wob"  readonly/>';
         htmlToAppend += '</div>';
         htmlToAppend += '<div style="width:8%;float:left; " class="technical_part">';
         htmlToAppend += '<div style="float:left;"><p link="white" style="float:right;font-weight:bold;" name="labelTestCaseStepActionControlFatal">Fatal</p>';
         htmlToAppend += '</div>';
         htmlToAppend += '<input name="control_fatal_' + stepNumber + '_' + control.sequence + '_' + control.control + '" style="width: 40%;border: 1px solid white;color:grey" \n\
-        class="wob" id="control_fatal_' + stepNumber + '_' + control.sequence + '_' + control.control + '" value="'+ control.fatal +'" readonly />';
+        class="wob" id="control_fatal_' + stepNumber + '_' + control.sequence + '_' + control.control + '" value="' + control.fatal + '" readonly />';
         htmlToAppend += '</div>';
         htmlToAppend += '</div>';
         htmlToAppend += '</div>';
@@ -1313,12 +1313,12 @@ function findTestcaseByTest(test, system, field) {
  * @param {type} testStepSelectedOption
  * @returns {undefined}
  */
-function loadTestCaseAndStepComponents(testElement, testCaseElement, testStepElement, system, refreshButton, testSelectedOption, testCaseSelectedOption, testStepSelectedOption){
+function loadTestCaseAndStepComponents(testElement, testCaseElement, testStepElement, system, refreshButton, testSelectedOption, testCaseSelectedOption, testStepSelectedOption) {
     //disables the button that performs the reload
     $(refreshButton).attr("disabled", "disabled");
     //sets the test value
     $(testElement).attr("value", testSelectedOption);
-    
+
     var url = 'GetStepInLibrary?system=' + system + '&test=' + testSelectedOption;
     $.get(url, function(data) {
         $(testCaseElement).empty();
@@ -1327,7 +1327,7 @@ function loadTestCaseAndStepComponents(testElement, testCaseElement, testStepEle
                 .attr('style', 'width:300px;')
                 .text('Choose TestCase'));
         var testFromLib = "";
-        
+
         for (var i = 0; i < data.testCaseStepList.length; i++) {
             if (data.testCaseStepList[i].testCase !== testFromLib) {
                 $(testCaseElement).append($("<option></option>")
@@ -1337,22 +1337,22 @@ function loadTestCaseAndStepComponents(testElement, testCaseElement, testStepEle
                 testFromLib = data.testCaseStepList[i].testCase;
             }
         }
-        
+
         //sets the value for the test case
         $(testCaseElement).find("option[value='" + testCaseSelectedOption + "']").attr("selected", "selected");
-        
+
         //loads the test case information
-        findStepBySystemTestTestCase(testElement, testCaseElement, system, testStepElement, refreshButton, testStepSelectedOption); 
+        findStepBySystemTestTestCase(testElement, testCaseElement, system, testStepElement, refreshButton, testStepSelectedOption);
     });
 }
 function findStepBySystemTest(testElement, system, testCaseElement, refreshElement, testCaseSelectedOption) {
     var url;
     var test = $(testElement).val();
-    if(test !== ''){
+    if (test !== '') {
         $(testElement).find("option[value='']").remove();
-    } 
+    }
     $(refreshElement).attr("disabled", "disabled");
-    
+
     url = 'GetStepInLibrary?system=' + system + '&test=' + test;
     $.get(url, function(data) {
         $(testCaseElement).empty();
@@ -1361,13 +1361,13 @@ function findStepBySystemTest(testElement, system, testCaseElement, refreshEleme
                 .attr('style', 'width:300px;')
                 .text('Choose TestCase'));
         var testFromLib = "";
-        
+
         //clears the step dropdown
         var elementParent = $(testCaseElement).parents("div[id*=StepFirstLineDiv]");
         var selectSteps = $(elementParent).find("div[id*='StepUseStepStepDiv'] select");
         $(selectSteps).find("option").remove();
         $(selectSteps).append($("<option></option>").attr('value', '').attr('style', 'width:300px;').text('---'));
-                            
+
         for (var i = 0; i < data.testCaseStepList.length; i++) {
             if (data.testCaseStepList[i].testCase !== testFromLib) {
                 $(testCaseElement).append($("<option></option>")
@@ -1377,19 +1377,19 @@ function findStepBySystemTest(testElement, system, testCaseElement, refreshEleme
                 testFromLib = data.testCaseStepList[i].testCase;
             }
         }
-        if(testCaseSelectedOption !== null){
+        if (testCaseSelectedOption !== null) {
             $(testCaseElement).find("option[value='" + testCaseSelectedOption + "']").attr("selected", "selected");
         }
     });
 }
 
 function findStepBySystemTestTestCase(testElement, testCaseElement, system, testStepElement, refreshButton, testStepSelectedOption) {
-    
+
     var test = $(testElement).val();
     var testCase = $(testCaseElement).val();
-        
+
     //removes the choose test option
-    if(testCase !== ""){
+    if (testCase !== "") {
         $(testCaseElement).find("option[value='']").remove();
     }
     //disables the button to load the actions and controls
@@ -1410,7 +1410,7 @@ function findStepBySystemTestTestCase(testElement, testCaseElement, system, test
                     .attr('style', 'width:300px;')
                     .text(data.testCaseStepList[i].step + ':' + data.testCaseStepList[i].description));
         }
-        if(testStepSelectedOption !== null){
+        if (testStepSelectedOption !== null) {
             $(testStepElement).find("option[value='" + testStepSelectedOption + "']").attr("selected", "selected");
         }
     });
@@ -1422,7 +1422,7 @@ function showUseStep(checkbox, incStep) {
         document.getElementById("useStepForNewStep_" + incStep).style.display = 'none';
     }
 }
-                                                                    
+
 function findStepByTestCase(test, testcase, field) {
     $.get('GetTestCase?testcase=' + testcase + '&test=' + test, function(data) {
         $('#' + field).empty();
@@ -1450,14 +1450,14 @@ function findStepByTestCase(test, testcase, field) {
  * @param {type} type
  * @returns {ImportedStep}
  */
-function ImportedStep(useTest, useTestCase, useStep, step, description, type){
+function ImportedStep(useTest, useTestCase, useStep, step, description, type) {
     this.useTest = useTest;
     this.useTestCase = useTestCase;
     this.useStep = useStep;
     this.step = step;
     this.description = description;
     this.type = type;
-    this.actionList = [];    
+    this.actionList = [];
     this.actionsLoaded = false;
 }
 /**
@@ -1471,15 +1471,15 @@ function ImportedStep(useTest, useTestCase, useStep, step, description, type){
  * @param {type} screenshotFilename
  * @returns {Action}
  */
-function Action(id, sequence, description, action, object, property, screenshotFilename){
+function Action(id, sequence, description, action, object, property, screenshotFilename) {
     this.id = id;
     this.sequence = sequence;
     this.description = description;
     this.action = action,
-    this.object = object;
+            this.object = object;
     this.property = property;
     this.screenshotFilename = screenshotFilename;
-    this.controlList =[];
+    this.controlList = [];
     this.propertyButtonAction = null;
 }
 /**
@@ -1495,14 +1495,14 @@ function Action(id, sequence, description, action, object, property, screenshotF
  * @param {type} screenshotFilename
  * @returns {Control}
  */
-function Control(id, sequence, control, description, type, controlProperty, controlValue,  fatal, screenshotFilename){
+function Control(id, sequence, control, description, type, controlProperty, controlValue, fatal, screenshotFilename) {
     this.id = id;
     this.sequence = sequence;
-    this.control = control; 
+    this.control = control;
     this.description = description;
     this.type = type;
     this.controlProperty = controlProperty;
-    this.controlValue = controlValue;    
+    this.controlValue = controlValue;
     this.fatal = fatal;
     this.screenshotFilename = screenshotFilename;
 }
@@ -1514,7 +1514,7 @@ function Control(id, sequence, control, description, type, controlProperty, cont
  * @param {type} usestep_testcase
  * @returns {PropertyButtonAction}
  */
-function PropertyButtonAction(type, title, usestep_test, usestep_testcase){
+function PropertyButtonAction(type, title, usestep_test, usestep_testcase) {
     this.type = type;
     this.title = title;
     this.usestep_test = usestep_test;
@@ -1525,7 +1525,7 @@ function PropertyButtonAction(type, title, usestep_test, usestep_testcase){
  * @param {type} actionList
  * @returns {undefined}
  */
-ImportedStep.prototype.setActionList = function (actionList) {
+ImportedStep.prototype.setActionList = function(actionList) {
     this.actionList = actionList;
 };
 /**
@@ -1533,7 +1533,7 @@ ImportedStep.prototype.setActionList = function (actionList) {
  * @param {type} action
  * @returns {undefined}
  */
-ImportedStep.prototype.addAction = function (action) {
+ImportedStep.prototype.addAction = function(action) {
     this.actionList.push(action);
 };
 /**
@@ -1541,7 +1541,7 @@ ImportedStep.prototype.addAction = function (action) {
  * @param {type} control
  * @returns {undefined}
  */
-Action.prototype.addControl = function (control) {
+Action.prototype.addControl = function(control) {
     this.controlList.push(control);
 };
 /**
@@ -1550,6 +1550,6 @@ Action.prototype.addControl = function (control) {
  * @returns {undefined}
  */
 
-Action.prototype.setPropertyButtonAction = function (propertyButtonAction) {
+Action.prototype.setPropertyButtonAction = function(propertyButtonAction) {
     this.propertyButtonAction = propertyButtonAction;
 };
