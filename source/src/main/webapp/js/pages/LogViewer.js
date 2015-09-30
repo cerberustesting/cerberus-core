@@ -74,8 +74,7 @@ function aoColumnsFunc() {
     var doc = new Doc();
 
     var aoColumns = [
-        {"data": "button",
-            "sName": "Actions",
+        {"data": null,
             "title": doc.getDocLabel("page_global", "columnAction"),
             "bSortable": false,
             "bSearchable": false,
