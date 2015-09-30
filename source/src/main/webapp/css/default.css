@@ -406,3 +406,175 @@ table.display thead th div.DataTables_sort_wrapper span {
 .ListItem{
     height: 40px;
 }
+
+/************************** test case page **/
+.fitWidth{
+    width: 100%;
+}
+activeY{
+    color: #483D8B;
+}
+
+activeN{
+    color: #8B0404;
+}
+
+/***************test case page CSS *************************/
+.only_functional {
+    font-weight:bold;
+    font-size:20px ;
+    font-family: Trebuchet MS;
+}
+
+.only_functional_description_size {
+    font-weight:bold;
+    font-size:20px ;
+    font-family: Trebuchet MS;
+}
+
+.collapseOrExpandAllStep {
+    display:none;
+}
+.RowActionDiv{
+    display:inline-block;
+    background-color: white;
+}
+.RowActionDiv:hover {
+    background-color: #EEEEEE;
+    color:black;
+}
+.RowActionDiv:hover .AttachPictureClass{
+    display: inline-block;
+}
+.AttachPictureClass{
+    display: none;
+}
+.RowActionDiv:hover p{
+    color:black;
+}
+.RowActionDiv p{
+    color:white;
+}
+.RowActionDiv:hover input{
+    background-color:#EEEEEE;
+}
+.RowActionDiv input{
+    background-color:white;
+}
+.RowActionDiv:hover select{
+    background-color:#EEEEEE;
+}
+.RowActionDiv select{
+    background-color:white;
+}
+.RowActionDiv span{
+    color:white;
+}
+.RowActionDiv:hover span{
+    color : #008cda;
+}
+.RowActionDiv:focus{
+    background-color: #EEEEEE;
+    color:black;
+}
+.generalPropertyDiv{
+    display:inline-block;
+    background-color: white;
+}
+.generalPropertyDiv div{
+    background-color: white;
+}
+.generalPropertyDiv:hover div{
+    background-color: #EEEEEE;
+}
+.generalPropertyDiv:hover{
+    background-color: #EEEEEE;
+}
+.generalPropertyDiv:focus{
+    background-color: #EEEEEE;
+}
+.StepHeaderDiv {
+    width:100%;
+    height:45px;
+    clear:both;
+    /*display:block;*/
+    border-style: solid;
+    border-width:thin;
+    border-color:#CCCCCC;
+    background-image: -moz-linear-gradient(top, #ebebeb, #CCCCCC); 
+    background-image: -webkit-linear-gradient(top, #ebebeb, #CCCCCC); 
+    font-weight:bold;
+    font-family: Trebuchet MS;
+    color:#555555;
+    text-align: center;
+
+}
+
+.StepHeaderContent {
+    margin-top:15px; 
+}
+
+a.docOnline{
+    /*color:white;*/
+}
+
+.RowToDelete{
+    display:inline-block;
+    background-color: #DD7777;
+}
+.RowToDelete input{
+    background-color:#DD7777;
+}
+.RowToDelete select{
+    background-color:#DD7777;
+}
+
+.libLineDiv{
+    display:block;
+}
+.libHideLineDiv{
+    display:none;
+}
+
+
+div.ImportedStepAction{
+    margin-top:0px;    
+    display:block;
+    height:50px;
+    width:100%;
+    border-style: solid; 
+    border-width:thin ;
+    border-color:#CCCCCC;
+}
+ 
+
+input.readonlyaction_seq, input.readonlyactioncontrol_seq{
+    width: 40px; 
+    font-weight: bold; 
+    background-color: transparent; 
+    height:100%; color:grey;
+    
+}
+
+div.StepUseStepLinkDiv{
+    float:left;
+    margin-top:10px; 
+    width:5%;
+}
+div.StepUseStepLinkDiv button, div.StepUseStepLinkDiv a{
+    margin-left: 2.5px;
+} 
+
+div.ActionOfUseStepTemp  {
+    background-color:#C4EBFF;
+}
+
+div.ActionOfUseStepTemp  input, div.ActionControlOfUseStepTemp input{
+    background-color: transparent;
+}
+
+
+div.ActionControlOfUseStepTemp  {
+    background-color:#C4FFEB;
+}
+

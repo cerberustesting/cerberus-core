@@ -27,10 +27,7 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import org.apache.log4j.Level;
-import org.apache.log4j.Logger;
 import org.cerberus.crud.entity.Group;
-import org.cerberus.enums.MessageGeneralEnum;
 import org.cerberus.crud.entity.TCase;
 import org.cerberus.crud.entity.Test;
 import org.cerberus.crud.entity.TestCaseCountry;
@@ -39,15 +36,12 @@ import org.cerberus.crud.entity.TestCaseStep;
 import org.cerberus.crud.entity.TestCaseStepAction;
 import org.cerberus.crud.entity.TestCaseStepActionControl;
 import org.cerberus.crud.entity.User;
-import org.cerberus.exception.CerberusException;
-import org.cerberus.crud.factory.IFactoryLogEvent;
 import org.cerberus.crud.factory.IFactoryTCase;
 import org.cerberus.crud.factory.IFactoryTestCaseCountry;
 import org.cerberus.crud.factory.IFactoryTestCaseCountryProperties;
 import org.cerberus.crud.factory.IFactoryTestCaseStep;
 import org.cerberus.crud.factory.IFactoryTestCaseStepAction;
 import org.cerberus.crud.factory.IFactoryTestCaseStepActionControl;
-import org.cerberus.crud.factory.impl.FactoryLogEvent;
 import org.cerberus.crud.service.IGroupService;
 import org.cerberus.crud.service.IInvariantService;
 import org.cerberus.crud.service.ILogEventService;
@@ -60,7 +54,10 @@ import org.cerberus.crud.service.ITestCaseStepService;
 import org.cerberus.crud.service.ITestService;
 import org.cerberus.crud.service.IUserService;
 import org.cerberus.crud.service.impl.LogEventService;
-import org.cerberus.crud.service.impl.UserService;
+import org.cerberus.crud.service.impl.TestCaseStepActionControlService;
+import org.cerberus.crud.service.impl.TestCaseStepActionService;
+import org.cerberus.enums.MessageGeneralEnum;
+import org.cerberus.exception.CerberusException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.web.context.support.WebApplicationContextUtils;
 import org.springframework.web.util.HtmlUtils;
@@ -463,6 +460,7 @@ public class UpdateTestCaseWithDependencies extends HttpServlet {
                 int initialStep = Integer.valueOf(getParameterIfExists(request, "initial_step_number_" + inc) == null ? "0" : getParameterIfExists(request, "initial_step_number_" + inc));
                 String desc = HtmlUtils.htmlEscape(getParameterIfExists(request, "step_description_" + inc));
                 String useStep = getParameterIfExists(request, "step_useStep_" + inc);
+                String useStepChanged = getParameterIfExists(request, "step_useStepChanged_" + inc);
                 String useStepTest = getParameterIfExists(request, "step_useStepTest_" + inc) == null ? "" : getParameterIfExists(request, "step_useStepTest_" + inc);
                 String useStepTestCase = getParameterIfExists(request, "step_useStepTestCase_" + inc) == null ? "" : getParameterIfExists(request, "step_useStepTestCase_" + inc);
                 String stepValue = getParameterIfExists(request, "step_useStepStep_" + inc);
@@ -473,12 +471,52 @@ public class UpdateTestCaseWithDependencies extends HttpServlet {
                     TestCaseStep tcStep = testCaseStepFactory.create(test, testCase, step, desc, useStep == null ? "N" : useStep, useStepTest, useStepTestCase, useStepStep, inLibrary == null ? "N" : inLibrary);
                     /* Take action and control only if not use step*/
                     if (useStep == null) {
-                        tcStep.setTestCaseStepAction(getTestCaseStepActionFromParameter(request, appContext, test, testCase, inc));
+                        String isToCopySteps = getParameterIfExists(request, "isToCopySteps_" + inc);
+                        if(isToCopySteps != null && isToCopySteps.equals("Y")){
+                            // TODO:FN the information about the useStep should be cleared?
+                            //tcStep.setTestCaseStepAction(tcsService.findTestCaseStep(useStepTest, useStepTestCase, useStepStep));
+                            ITestCaseStepActionService tcsaService = appContext.getBean(TestCaseStepActionService.class);
+                            ITestCaseStepActionControlService tcsacService = appContext.getBean(TestCaseStepActionControlService.class);
+                            int stepNumber = Integer.parseInt(stepValue);
+                            List<TestCaseStepAction> actions = tcsaService.getListOfAction(useStepTest, useStepTestCase, stepNumber);
+                            for(TestCaseStepAction act : actions){
+                                List<TestCaseStepActionControl> controlsPerAction = tcsacService.findControlByTestTestCaseStepSequence(useStepTest, 
+                                        useStepTestCase, stepNumber, act.getSequence());
+                                
+                                //these actions now belong to the current test case, therefore we need to change it
+                                act.setTest(test);
+                                act.setTestCase(testCase);
+                                act.setStep(step);
+                                List<TestCaseStepActionControl> updatedControlsPerAction = new ArrayList<TestCaseStepActionControl>();
+                                for(TestCaseStepActionControl ctrl : controlsPerAction){
+                                    ctrl.setTest(test);
+                                    ctrl.setTestCase(testCase);
+                                    ctrl.setStep(step);
+                                    updatedControlsPerAction.add(ctrl);
+                                }
+                                act.setTestCaseStepActionControl(updatedControlsPerAction);
+                            }
+                            tcStep.setTestCaseStepAction(actions);
+                        }else{
+                            tcStep.setTestCaseStepAction(getTestCaseStepActionFromParameter(request, appContext, test, testCase, inc));
+                        }
                     } else {
+                        TestCaseStep tcs = null;
                         if (useStepStep != -1 && !useStepTest.equals("") && !useStepTestCase.equals("")) {
                             /* If use step, verify if used step alread use another one */
-                            TestCaseStep tcs = tcsService.findTestCaseStep(useStepTest, useStepTestCase, useStepStep);
-                            if (tcs != null && tcs.getUseStep().equals("Y")) {
+                            if(useStepChanged != null && useStepChanged.equals("Y")){                                                          
+                                //save the same info that was displayed
+                                tcs = tcsService.findTestCaseStep(useStepTest, useStepTestCase, useStepStep);                          
+                            }else{
+                                tcs = tcsService.findTestCaseStep(test, testCase, Integer.parseInt(inc));   
+                            }
+                        }else{
+                            //does not defines a valid step, then keep has it was
+                            tcs = tcsService.findTestCaseStep(test, testCase, Integer.parseInt(inc));   
+                        }
+                        
+                        if(tcs != null){
+                            if (tcs.getUseStep().equals("Y") || (useStepChanged != null && useStepChanged.equals("N"))) {
                                 tcStep.setUseStepTest(tcs.getUseStepTest());
                                 tcStep.setUseStepTestCase(tcs.getUseStepTestCase());
                                 tcStep.setUseStepStep(tcs.getUseStepStep());
@@ -490,6 +528,10 @@ public class UpdateTestCaseWithDependencies extends HttpServlet {
                             if (desc.equals("")) {
                                 tcStep.setDescription(tcs.getDescription());
                             }
+                        }else{
+                            //if the step that should be defined is not imported then we should save the data
+                            //and the test case should have the useStep = 'N'
+                            tcStep.setUseStep("N");
                         }
                     }
                     if (stepInUse != null && stepInUse.equals("Y")) {

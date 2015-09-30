@@ -1107,22 +1107,29 @@
                                             </div>
                                             <div id="StepDescDiv" style="width:30%;float:left;margin-top:10px">
                                                 <div><div><input style="float:right;font-weight: bold; width: 100%;background-color:transparent; font-weight:bold;font-size:14px ;font-family: Trebuchet MS; color:#333333; border-color:#EEEEEE;border-style:solid; border-width:thin"
-                                                                 placeholder="Description" data-fieldtype="Description" name="step_description_<%=incrementStep%>" value="<%=tcs.getDescription()%>">
+                                                                 placeholder="Description" data-fieldtype="Description" name="step_description_<%=incrementStep%>" id="step_description_<%=incrementStep%>" value="<%=tcs.getDescription()%>">
                                                     </div></div></div>
                                             <div id="StepUseStepDiv" style="float:left">UseStep
-                                                <input type="checkbox" name="step_useStep_<%=incrementStep%>" style="margin-top:15px;font-weight: bold; width:20px" onclick="confirmDeletingAction(this, '<%=incrementStep%>')"
+                                                <input type="checkbox" id="step_useStep_<%=incrementStep%>" name="step_useStep_<%=incrementStep%>" data-step-number="<%=incrementStep%>" style="margin-top:12.5px;font-weight: bold; width:20px" 
                                                        <% if (tcs.getUseStep().equals("Y")) {%>
-                                                       CHECKED
+                                                       checked
                                                        <%}%>
-                                                       value="Y">
+                                                       value="Y"
+                                                       <%if (tcs.getInLibrary().equals("Y")) {%>
+                                                           disabled="disabled" title ='This step uses another step!'
+                                                       <%}%>> 
+                                                <input type="hidden" name="isToCopySteps_<%=incrementStep%>" value="N" id="isToCopySteps_<%=incrementStep%>" />
+                                                <input type="hidden" name="step_useStepChanged_<%=incrementStep%>" value="N" id="step_useStepChanged_<%=incrementStep%>" />
+                                                       
                                             </div>
                                             <% if (tcs.getUseStep().equals("Y")) {%>
-                                            <div id="StepCopiedFromDiv" style="float:left">
+                                            <div id="StepCopiedFromDiv<%=incrementStep%>" style="float:left">
                                                 <p style="margin-top:15px;"> Copied from : </p>
                                             </div>
-                                            <div id="StepUseStepTestDiv" style="float:left; width:10%">
-                                                <select id="step_useStepTest_<%=incrementStep%>" name="step_useStepTest_<%=incrementStep%>" style="width: 100%;margin-top:15px;font-weight: bold;" 
-                                                        OnChange="findStepBySystemTest(this.value, '<%=MySystem%>', 'step_useStepTestCase_<%=incrementStep%>')">
+                                            <div id="StepUseStepTestDiv<%=incrementStep%>" style="float:left; width:10%">
+                                                <select id="step_useStepTest_<%=incrementStep%>" name="step_useStepTest_<%=incrementStep%>" style="width: 100%;margin-top:7.5px;font-weight: bold;" 
+                                                        OnChange="findStepBySystemTest(this, '<%=MySystem%>', $('#step_useStepTestCase_<%=incrementStep%>'), 
+                                                                    $('#load_step_inLibrary_<%=incrementStep%>'))">
                                                     <%  if (tcs.getUseStepTest() == null || tcs.getUseStepTest().equals("")) { %>
                                                     <option style="width: 200px" value="">-- Choose Test --
                                                     </option>
@@ -1157,9 +1164,10 @@
                                                 </select>
                                             </div>
 
-                                            <div id="StepUseStepTestCaseDiv" style="float:left;width:10%">
-                                                <select name="step_useStepTestCase_<%=incrementStep%>" style="width: 100%;margin-top:15px;font-weight: bold;" 
-                                                        OnChange="findStepBySystemTestTestCase($('#step_useStepTest_<%=incrementStep%>').val(), this.value, '<%=MySystem%>', 'step_useStepStep_<%=incrementStep%>')"
+                                            <div id="StepUseStepTestCaseDiv<%=incrementStep%>" style="float:left;width:10%">
+                                                <select name="step_useStepTestCase_<%=incrementStep%>" style="width: 100%;margin-top:7.5px;font-weight: bold;" 
+                                                        OnChange="findStepBySystemTestTestCase($('#step_useStepTest_<%=incrementStep%>'), this, '<%=MySystem%>', 
+                                                                    $('#step_useStepStep_<%=incrementStep%>'), $('#load_step_inLibrary_<%=incrementStep%>'))"
                                                         id="step_useStepTestCase_<%=incrementStep%>">
                                                     <%  if (tcs.getUseStepTestCase().equals("")) { %>
                                                     <option style="width: 400px" value="">---</option>
@@ -1173,9 +1181,9 @@
                                                         }%>
                                                 </select>
                                             </div>
-                                            <div id="StepUseStepStepDiv" style="float:left; width:10%">
-                                                <select name="step_useStepStep_<%=incrementStep%>" style="width: 100%;margin-top:15px;font-weight: bold;" 
-                                                        id="step_useStepStep_<%=incrementStep%>" onchange="javascript:$('#UpdateTestCase').attr('action', $('#UpdateTestCase').attr('action') + '#stepAnchor_<%=incrementStep%>').submit();">
+                                            <div id="StepUseStepStepDiv<%=incrementStep%>" style="float:left; width:10%">
+                                                <select name="step_useStepStep_<%=incrementStep%>" style="width: 100%;margin-top:7.5px;font-weight: bold;" 
+                                                        id="step_useStepStep_<%=incrementStep%>" data-step-number="<%=incrementStep%>">
                                                     <%  if (tcs.getUseStepTest().equals("") || tcs.getUseStepTestCase().equals("")) { %>
                                                     <option style="width: 400px" value="">---</option>
                                                     <%  } else {
@@ -1191,19 +1199,35 @@
                                                         }%>
                                                 </select>
                                             </div>
-                                            <div id="StepUseStepLinkDiv" style="float:left;margin-top:15px; width:5%">
-                                                <a href="TestCase.jsp?Test=<%=tcs.getUseStepTest()%>&TestCase=<%=tcs.getUseStepTestCase()%>#stepAnchor_step<%=tcs.getUseStepStep()%>">Edit Used Step</a>
+     
+                                            <div id="StepUseStepLinkDiv<%=incrementStep%>" class="StepUseStepLinkDiv">
+                                                <a target="_blank" id="linkEditUsedStep<%=incrementStep%>" href="TestCase.jsp?Test=<%=tcs.getUseStepTest()%>&TestCase=<%=tcs.getUseStepTestCase()%>#stepAnchor_step<%=tcs.getUseStepStep()%>">
+                                                    <span class="glyphicon glyphicon-new-window"></span>
+                                                </a>
+                                                <%if(useStep){%>    
+                                                    <button type="button" class="btn btn-xs" id="load_step_inLibrary_<%=incrementStep%>" data-step-number="<%=incrementStep%>" disabled="disabled">
+                                                        <span class="glyphicon glyphicon-refresh"></span>
+                                                    </button>
+                                                    <button type="button" class="btn btn-xs" id="reset_step_inLibrary_<%=incrementStep%>" data-step-number="<%=incrementStep%>" disabled="disabled">
+                                                        <span class="glyphicon glyphicon-remove"></span>
+                                                    </button>
+                                                <%}%>
                                             </div>
                                             <%}%>
                                             <div style="margin-top:15px;float:right;width:5%">Library
-                                                <input type="checkbox" style="font-weight: bold;" name="step_inLibrary_<%=incrementStep%>" 
-                                                       <%if (tcs.getInLibrary().equals("Y")) {%>
-                                                       CHECKED
-                                                       <%}%>
-                                                       value="Y"
-                                                       <%if (stepusedByAnotherTest) {%>
-                                                       onclick="return false"
-                                                       <%}%>>
+                                                    <input type="hidden"  name="step_inLibrary_<%=incrementStep%>" value="<%=tcs.getInLibrary()%>" />
+                                                    <input type="checkbox" style="font-weight: bold;" name="step_inLibrary_<%=incrementStep%>" id="step_inLibrary_<%=incrementStep%>"
+                                                       data-step-number="<%=incrementStep%>" 
+                                                       <%if (tcs.getUseStep().equals("Y")) {%>
+                                                            disabled title ='This step can not be used as library, because it uses another step!'
+                                                       <%}else
+                                                       if (tcs.getInLibrary().equals("Y")) {%>
+                                                       checked                                                       
+                                                       <%}%>   
+                                                       value="<%=tcs.getInLibrary()%>"
+                                                       <%if (stepusedByAnotherTest) { %>                                                       
+                                                            checked disabled title ='This step is being used by another step(s)!'
+                                                       <%}%>/>
                                             </div>
 
                                         </div>
@@ -1259,7 +1283,7 @@
                                                             <div style="height:100%;width:4%;display:inline-block;float:left">
                                                                 <input class="wob" style="width: 40px; font-weight: bold; background-color: transparent; height:100%; color:<%=actionFontColor%>"
                                                                        value="<%=incrementAction%>" data-fieldtype="action_<%=incrementStep%>" data-field="sequence"
-                                                                       name="action_sequence_<%=incrementStep%>_<%=incrementAction%>" id="action_sequence_<%=incrementStep%>_<%=incrementAction%>">
+                                                                       name="action_sequence_<%=incrementStep%>_<%=incrementAction%>" id="action_sequence_<%=incrementStep%>_<%=incrementAction%>" <%if (useStep) {%>readonly<%}%>/>
                                                             </div>
                                                             <div style="height:100%;width:80%;float:left; display:inline-block">
                                                                 <div class="functional_description" style="height:20px;display:inline-block;clear:both;width:100%; background-color: transparent">
@@ -1280,14 +1304,22 @@
                                                                     <div class="technical_part" style="width: 30%; float:left; background-color: transparent">
                                                                         <div style="float:left;width:80px; "><p name="labelTestCaseStepActionAction" style="float:right;font-weight:bold;" link="white" >Action</p>
                                                                         </div>
-                                                                        <%=ComboInvariant(appContext, "action_action_" + incrementStep + "_" + incrementAction, "width:50%;border: 1px solid white; color:#888888", "action_action_" + incrementStep + "_" + incrementAction, "wob", "ACTION", tcsa.getAction(), "showChangedRow(this.parentNode.parentNode.parentNode.parentNode)", null)%>
+                                                                        <%if (!useStep) {%>
+                                                                            <%=ComboInvariant(appContext, "action_action_" + incrementStep + "_" + incrementAction, "width:50%;border: 1px solid white; color:#888888", "action_action_" + incrementStep + "_" + incrementAction, "wob", "ACTION", tcsa.getAction(), "showChangedRow(this.parentNode.parentNode.parentNode.parentNode)", null)%>
+                                                                        <%}else{
+                                                                            String action_action_id = "action_action_" + incrementStep + "_" + incrementAction;
+                                                                            %>
+                                                                            <input id="<%=action_action_id%>" value="<%=tcsa.getAction()%>" readonly style="float:left;border-style:groove;border-width:thin;border-color:white;border: 1px solid white; height:100%;width:75%; color:#999999" />
+                                                                        <%}%>
                                                                     </div>
                                                                     <div class="technical_part" style="width: 40%; float:left; background-color: transparent">
                                                                         <div style="float:left;"><p name="labelTestCaseStepActionObject" style="float:right;font-weight:bold;" link="white" >Object</p>
                                                                          </div>
                                                                         <input style="float:left;border-style:groove;border-width:thin;border-color:white;border: 1px solid white; height:100%;width:75%; color:#999999"
                                                                                value="<%=tcsa.getObject().replace("\"","&quot;")%>"
-                                                                               onchange="showChangedRow(this.parentNode.parentNode.parentNode.parentNode)" name="action_object_<%=incrementStep%>_<%=incrementAction%>" <%=isReadonly%>>
+                                                                               onchange="showChangedRow(this.parentNode.parentNode.parentNode.parentNode)" 
+                                                                               id="action_object_<%=incrementStep%>_<%=incrementAction%>" 
+                                                                               name="action_object_<%=incrementStep%>_<%=incrementAction%>" <%=isReadonly%>>
                                                                         <% if (tcsa.getObject().startsWith("picture=")){%>
                                                                         <div>
                                                                         <img class="wob" width="45" height="35" src="<%=tcsa.getObject().split("picture=")[1]%>" 
@@ -1320,7 +1352,9 @@
                                                                                     }
                                                                                 }                                                                            
                                                                                 %>
-                                                                                onchange="showChangedRow(this.parentNode.parentNode.parentNode.parentNode)" name="action_property_<%=incrementStep%>_<%=incrementAction%>" <%=isReadonly%>>
+                                                                                onchange="showChangedRow(this.parentNode.parentNode.parentNode.parentNode)" 
+                                                                                id="action_property_<%=incrementStep%>_<%=incrementAction%>"
+                                                                                name="action_property_<%=incrementStep%>_<%=incrementAction%>" <%=isReadonly%>>
                                                                     </div>
                                                                 </div>
                                                             </div>
@@ -1328,17 +1362,23 @@
                                                             </div>
                                                             <div style="height:100%;width:5%;display:inline-block;float:right">
                                                                 <div id="AttachPictureDiv_<%=incrementStep%>_<%=incrementAction%>">
-                                                                    <% if (tcsa.getScreenshotFilename() != null && !"".equals(tcsa.getScreenshotFilename())) {%>
+                                                                <%if (tcsa.getScreenshotFilename() != null && !"".equals(tcsa.getScreenshotFilename())) {%>
                                                                     <img class="wob" width="45" height="35" src="<%=tcsa.getScreenshotFilename()%>" 
                                                                          onclick="showPicture('<%=tcsa.getScreenshotFilename()%>', 'action_screenshot_<%=incrementStep%>_<%=incrementAction%>', 'AttachPictureDiv_<%=incrementStep%>_<%=incrementAction%>')">
-                                                                    <%} else {%>
-                                                                    <img class="AttachPictureClass"  style="margin-top:15px; margin-left:15px" width="15" height="15" src="./images/th.jpg" 
+                                                                    
+                                                                <%}else {%>
+                                                                    <%if(!useStep){%>
+                                                                        <img class="AttachPictureClass"  style="margin-top:15px; margin-left:15px" width="15" height="15" src="./images/th.jpg" 
                                                                          onclick="attachPicture('action_screenshot_<%=incrementStep%>_<%=incrementAction%>', 'AttachPictureDiv_<%=incrementStep%>_<%=incrementAction%>')">
-
-                                                                    <%}%>
+                                                                    <%}else{%>    
+                                                                        <img  width="45" height="35" src="<%=tcsa.getScreenshotFilename()%>" style="margin-top:15px; margin-left:15px" class="AttachPictureClass" />
+                                                                    <%}%>   
+                                                                <%}%>    
                                                                 </div>
-                                                                <input style="display:none" name="action_screenshot_<%=incrementStep%>_<%=incrementAction%>" onchange="showChangedRow(this.parentNode.parentNode)" 
-                                                                       id="action_screenshot_<%=incrementStep%>_<%=incrementAction%>" value="<%=tcsa.getScreenshotFilename() != null ? tcsa.getScreenshotFilename() : ""%>">
+                                                                <%if(!useStep){%>
+                                                                    <input style="display:none" name="action_screenshot_<%=incrementStep%>_<%=incrementAction%>" onchange="showChangedRow(this.parentNode.parentNode)" 
+                                                                       id="action_screenshot_<%=incrementStep%>_<%=incrementAction%>" value="<%=tcsa.getScreenshotFilename() != null ? tcsa.getScreenshotFilename() : ""%>" <%if (useStep) {%>readonly<%}%>/>
+                                                                <%}%>   
                                                             </div>
 
                                                         </div>
@@ -1391,11 +1431,12 @@
                                                             </div>
                                                             <div style="width:2%;float:left;height:100%;display:inline-block">
                                                                 <input data-fieldtype="ctrlseq_<%=incrementStep%>" data-field="sequence" class="wob" style="margin-top:20px;width: 20px; font-weight: bold;color:<%=actionFontColor%>"
-                                                                       value="<%=incrementAction%>" name="control_sequence_<%=incrementStep%>_<%=incrementAction%>_<%=incrementControl%>">
+                                                                       value="<%=incrementAction%>" name="control_sequence_<%=incrementStep%>_<%=incrementAction%>_<%=incrementControl%>"  <%if (useStep) {%>readonly<%}%> />
                                                             </div>
                                                             <div style="width:2%;float:left;height:100%;display:inline-block">
-                                                                <input class="wob" style="margin-top:20px;width: 20px; font-weight: bold; color:<%=actionFontColor%>"
-                                                                       data-fieldtype="control_<%=incrementStep%>_<%=incrementAction%>" value="<%=incrementControl%>" name="control_control_<%=incrementStep%>_<%=incrementAction%>_<%=incrementControl%>">
+                                                                <input class="wob" style="margin-top:20px;width: 20px; font-weight: bold; color:<%=actionFontColor%>" data-field="control"
+                                                                       data-fieldtype="control_<%=incrementStep%>_<%=incrementAction%>" value="<%=incrementControl%>" 
+                                                                       name="control_control_<%=incrementStep%>_<%=incrementAction%>_<%=incrementControl%>"  <%if (useStep) {%>readonly<%}%> />
                                                             </div>
                                                             <div style="height:100%;width:80%;float:left;display:inline-block">
                                                                 <div class="functional_description" style="clear:both;width:100%;height:20px">
@@ -1403,30 +1444,47 @@
                                                                         <div style="float:left;width:80px; "><p name="labelTestCaseStepActionControlDescription" style="float:right;font-weight:bold;" link="white" >Description</p>
                                                                         </div>
                                                                         <input class="wob" placeholder="Description" class="functional_description" style="border-style:groove;border-width:thin;border-color:white;border: 2px solid white; color:#333333; width: 80%; font-weight:bold;font-size:12px ;font-family: Trebuchet MS; "
-                                                                               data-fieldtype="Description" value="<%=tcsac.getDescription()%>" name="control_description_<%=incrementStep%>_<%=incrementAction%>_<%=incrementControl%>" maxlength="1000">
+                                                                               data-fieldtype="Description" value="<%=tcsac.getDescription()%>" id ="control_description_<%=incrementStep%>_<%=incrementAction%>_<%=incrementControl%>" name="control_description_<%=incrementStep%>_<%=incrementAction%>_<%=incrementControl%>" 
+                                                                               maxlength="1000"  <%if (useStep) {%>readonly<%}%> />
                                                                     </div>
                                                                 </div>
                                                                 <div style="clear:both;display:inline-block; width:100%; height:15px">
                                                                     <div style="width:30%; float:left;">
                                                                         <div style="float:left;width:80px; "><p name="labelTestCaseStepActionControlType" style="float:right;font-weight:bold;" link="white" >Type</p>
                                                                         </div>
-                                                                        <%=ComboInvariant(appContext, "control_type_" + incrementStep + "_" + incrementAction + "_" + incrementControl, "width:50%;font-size:10px ;border: 1px solid white;color:" + actionFontColor, "control_type_" + incrementStep + "_" + incrementAction + "_" + incrementControl, "technical_part", "CONTROL", tcsac.getType(), "", null)%>
+                                                                        <%if (!useStep) {%>
+                                                                            <%=ComboInvariant(appContext, "control_type_" + incrementStep + "_" + incrementAction + "_" + incrementControl, "width:50%;font-size:10px ;border: 1px solid white;color:" + actionFontColor, "control_type_" + incrementStep + "_" + incrementAction + "_" + incrementControl, "technical_part", "CONTROL", tcsac.getType(), "", null)%>
+                                                                        <%}else{
+                                                                            String controlTypeid = "control_type_" + incrementStep + "_" + incrementAction + "_" + incrementControl;
+                                                                            %>    
+                                                                            <input value="<%=tcsac.getType()%>" name="<%=controlTypeid%>" style="width:50%;font-size:10px ;border: 1px solid white;color:grey" class="technical_part" id="<%=controlTypeid%>" readonly />
+                                                                        <%}%>    
                                                                     </div>
                                                                     <div class="technical_part" style="width:30%;float:left;">
                                                                         <div style="float:left;"><p name="labelTestCaseStepActionControlProperty" style="float:right;font-weight:bold;" link="white" >Property</p>
                                                                         </div>
                                                                         <input class="wob" style="width: 70%;border: 1px solid white;  color:<%=actionFontColor%>"
-                                                                               value="<%=tcsac.getControlProperty()%>" name="control_property_<%=incrementStep%>_<%=incrementAction%>_<%=incrementControl%>">
+                                                                               value="<%=tcsac.getControlProperty()%>" 
+                                                                               id="control_property_<%=incrementStep%>_<%=incrementAction%>_<%=incrementControl%>"
+                                                                               name="control_property_<%=incrementStep%>_<%=incrementAction%>_<%=incrementControl%>" <%if (useStep) {%>readonly<%}%> />
                                                                     </div>
                                                                     <div class="technical_part" style="width:30%;float:left; ">
                                                                         <div style="float:left;"><p name="labelTestCaseStepActionControlValue" style="float:right;font-weight:bold;" link="white" >Value</p>
                                                                         </div><input class="wob" style="width: 70%;border: 1px solid white; color:<%=actionFontColor%>"
-                                                                                     value="<%=tcsac.getControlValue()%>" name="control_value_<%=incrementStep%>_<%=incrementAction%>_<%=incrementControl%>">
+                                                                                     value="<%=tcsac.getControlValue()%>" 
+                                                                                     id="control_value_<%=incrementStep%>_<%=incrementAction%>_<%=incrementControl%>"
+                                                                                     name="control_value_<%=incrementStep%>_<%=incrementAction%>_<%=incrementControl%>" <%if (useStep) {%>readonly<%}%> />
                                                                     </div>
                                                                     <div class="technical_part" style="width:8%;float:left; ">
                                                                         <div style="float:left;"><p name="labelTestCaseStepActionControlFatal" style="float:right;font-weight:bold;" link="white" >Fatal</p>
                                                                         </div>
+                                                                        <%if (!useStep) {%>
                                                                         <%=ComboInvariant(appContext, "control_fatal_" + incrementStep + "_" + incrementAction + "_" + incrementControl, "width: 40%;border: 1px solid white;color:" + actionFontColor, "control_fatal_" + incrementStep + "_" + incrementAction + "_" + incrementControl, "wob", "CTRLFATAL", tcsac.getFatal(), "trackChanges(this.value, '" + tcsac.getFatal() + "', 'submitButtonChanges')", null)%>
+                                                                        <%}else{
+                                                                            String controlfatalId = "control_fatal_" + incrementStep + "_" + incrementAction + "_" + incrementControl;
+                                                                        %>        
+                                                                            <input name="<%=controlfatalId%>" id="<%=controlfatalId%>" style="width: 40%;border: 1px solid white;color:grey" class="wob" value="<%=tcsac.getFatal()%>" readonly />
+                                                                        <%}%>        
                                                                     </div>
                                                                 </div>
                                                             </div>
@@ -1434,17 +1492,23 @@
                                                             </div>
                                                             <div style="height:100%;width:5%;display:inline-block;float:right">
                                                                 <div id="AttachPictureDiv_<%=incrementStep%>_<%=incrementAction%>_<%=incrementControl%>">
-                                                                    <% if (tcsac.getScreenshotFilename() != null && !"".equals(tcsac.getScreenshotFilename())) {%>
-                                                                    <img class="wob" width="45" height="35" src="<%=tcsac.getScreenshotFilename()%>" 
-                                                                         onclick="showPicture('<%=tcsac.getScreenshotFilename()%>', 'control_screenshot_<%=incrementStep%>_<%=incrementAction%>_<%=incrementControl%>', 'AttachPictureDiv_<%=incrementStep%>_<%=incrementAction%>_<%=incrementControl%>')">
-                                                                    <%} else {%>
-                                                                    <img class="AttachPictureClass"  style="margin-top:15px; margin-left:15px" width="15" height="15" src="./images/th.jpg" 
-                                                                         onclick="attachPicture('control_screenshot_<%=incrementStep%>_<%=incrementAction%>_<%=incrementControl%>', 'AttachPictureDiv_<%=incrementStep%>_<%=incrementAction%>_<%=incrementControl%>')">
-
+                                                                    <%if (tcsac.getScreenshotFilename() != null && !"".equals(tcsac.getScreenshotFilename())) {%>
+                                                                            <img class="wob" width="45" height="35" src="<%=tcsac.getScreenshotFilename()%>" 
+                                                                             onclick="showPicture('<%=tcsac.getScreenshotFilename()%>', 'control_screenshot_<%=incrementStep%>_<%=incrementAction%>_<%=incrementControl%>', 'AttachPictureDiv_<%=incrementStep%>_<%=incrementAction%>_<%=incrementControl%>')">
+                                                                    <%}else {%>
+                                                                        <%if(!useStep){%>
+                                                                            <img class="AttachPictureClass"  style="margin-top:15px; margin-left:15px" width="15" height="15" src="./images/th.jpg" 
+                                                                                 onclick="attachPicture('control_screenshot_<%=incrementStep%>_<%=incrementAction%>_<%=incrementControl%>', 'AttachPictureDiv_<%=incrementStep%>_<%=incrementAction%>_<%=incrementControl%>')">
+                                                                        <%}else{%>
+                                                                            <img  width="45" height="35" src="<%=tcsac.getScreenshotFilename()%>" style="margin-top:15px; margin-left:15px" class="AttachPictureClass" />
+                                                                        <%}%>
                                                                     <%}%>
                                                                 </div>
+                                                                <%if(!useStep){%>
                                                                 <input style="display:none" name="control_screenshot_<%=incrementStep%>_<%=incrementAction%>_<%=incrementControl%>" onchange="showChangedRow(this.parentNode.parentNode)" 
-                                                                       id="control_screenshot_<%=incrementStep%>_<%=incrementAction%>_<%=incrementControl%>" value="<%=tcsac.getScreenshotFilename() != null ? tcsac.getScreenshotFilename() : ""%>">
+                                                                       id="control_screenshot_<%=incrementStep%>_<%=incrementAction%>_<%=incrementControl%>" value="<%=tcsac.getScreenshotFilename() != null ? tcsac.getScreenshotFilename() : ""%>" <%if (useStep) {%>readonly<%}%> />
+                                                                
+                                                                <%}%>
                                                             </div>
 
                                                         </div>    
@@ -1909,7 +1973,7 @@
                            data-id="control_sequence_template">
                 </div>
                 <div style="width:2%;float:left;height:100%;display:inline-block">
-                    <input class="wob" style="margin-top:20px;width: 20px; font-weight: bold;"
+                    <input data-field="control" class="wob" style="margin-top:20px;width: 20px; font-weight: bold;"
                            data-id="control_control_template">
                 </div>
                 <div style="height:100%;width:89%;float:left;display:inline-block">
@@ -1976,6 +2040,7 @@
                     </div>
                     <div id="StepUseStepDiv" style="float:left">UseStep
                         <input type="checkbox" data-id="step_useStep_template" style="margin-top:15px;font-weight: bold; width:20px">
+                        <input type="hidden" name="step_useStepChanged_template" value="N" id="step_useStepChanged_template" />
                     </div>
                 </div>
                 <div data-id="useStepForNewStep" style="display:none; ">
@@ -1983,7 +2048,8 @@
                         <p style="margin-top:15px;"> Copied from : </p>
                     </div>
                     <div id="StepUseStepTestDiv" style="float:left">
-                        <select data-id="step_useStepTest_template" style="width: 200px;margin-top:15px;font-weight: bold;">
+                        <select data-id="step_useStepTest_template" style="width: 200px;margin-top:12.5px;font-weight: bold;">
+                            <option style="width: 200px" value="">Choose Test</option>                            
                             <% List<TestCaseStep> tcsLib = tcsService.getStepLibraryBySystem(MySystem);
                                 Set<String> tList = new HashSet();
                                 HashMap tcListByTc = new HashMap();
@@ -2008,12 +2074,12 @@
                         </select>
                     </div>
                     <div id="StepUseStepTestCaseDiv" style="float:left;">
-                        <select data-id="step_useStepTestCase_template" style="width: 200px;margin-top:15px;font-weight: bold;">
+                        <select data-id="step_useStepTestCase_template" style="width: 200px;margin-top:7.5px;font-weight: bold;">
                             <option style="width: 200px" value="All">---</option>
                         </select>
                     </div>
                     <div id="StepUseStepStepDiv" style="float:left">
-                        <select data-id="step_useStepStep_template" style="width: 200px;margin-top:15px;font-weight: bold;">
+                        <select data-id="step_useStepStep_template" style="width: 200px;margin-top:7.5px;font-weight: bold;">
                             <option style="width: 200px" value="0">---</option>
                         </select>
                     </div>
@@ -2139,44 +2205,6 @@
                 document.getElementById(selectElementId).value = document.getElementById(newElementId).value;
             }
         </script>
-        <script type="text/javascript">
-            function findStepByTestCase(test, testcase, field) {
-                $.get('GetTestCase?testcase=' + testcase + '&test=' + test, function(data) {
-                    $('#' + field).empty();
-                    $('#' + field).append($("<option></option>")
-                            .attr('value', '')
-                            .attr('style', 'width:300px;')
-                            .text('Choose Step'));
-                    for (var i = 0; i < data.list.length; i++) {
-                        $('#' + field).append($("<option></option>")
-                                .attr('value', data.list[i].number)
-                                .attr('style', 'width:300px;')
-                                .text(data.list[i].number + ':' + data.list[i].name));
-                    }
-                });
-            }
-        </script>
-        <script>
-            function confirmDeletingAction(checkbox, incrementStep) {
-                if (checkbox.checked === true && document.getElementsByName('actionRow_color_' + incrementStep).length > 0) {
-                    if (confirm("Beware, all the action of this step will be deleted")) {
-                        $("#UpdateTestCase").attr("action", $("#UpdateTestCase").attr("action") + "#stepAnchor_" + incrementStep).submit();
-                    } else {
-                        checkbox.checked = false;
-                    }
-                } else {
-                    if (checkbox.checked === false) {
-                        if (confirm("Beware, the link to the used step will be lost. Action and controle will be imported into the step")) {
-                            $("#UpdateTestCase").attr("action", $("#UpdateTestCase").attr("action") + "#stepAnchor_" + incrementStep).submit();
-                        } else {
-                            checkbox.checked = true;
-                        }
-                    } else if (checkbox.checked === true) {
-                        $("#UpdateTestCase").attr("action", $("#UpdateTestCase").attr("action") + "#stepAnchor_" + incrementStep).submit();
-                    }
-                }
-            }
-        </script>
         <script>
             function enableDuplicateField() {
                 document.getElementById('inputAddTestCaseInSelectTestCase').style.display = 'inline-block';
@@ -2232,13 +2260,7 @@
                     });
                 });
             }</script>
-        <script>function showUseStep(checkbox, incStep) {
-                if (checkbox.checked === true) {
-                    document.getElementById("useStepForNewStep_" + incStep).style.display = 'block';
-                } else {
-                    document.getElementById("useStepForNewStep_" + incStep).style.display = 'none';
-                }
-            }</script>
+       
         <script>function insertTCS(event, incStep) {
                 event.preventDefault();
             }

@@ -4804,7 +4804,20 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLS.append("('test', 'dateCreation', '', 'en', 'Creation date', 'The date when the test have been created'),");
         SQLS.append("('test', 'dateCreation', '', 'fr', 'Date de création', 'Date à laquelle le test a été créé');");        
         SQLInstruction.add(SQLS.toString());
+        
+        // Documentation entries for Test Case page - useStep option.
+        //-- ------------------------ 632-633
+        SQLS = new StringBuilder();
+        SQLS.append("INSERT INTO `documentation` VALUES ");
+        SQLS.append("('page_testcase', 'dpd_choose_test','','en','-- Choose Test --', \"\") "); 
+        SQLS.append(", ('page_testcase', 'dpd_choose_testcase','','en','-- Choose Test Case --', \"\") "); 
+        SQLS.append(", ('page_testcase', 'dpd_choose_step','','en','-- Choose Step  --', \"\") "); 
+        SQLS.append(", ('page_testcase', 'tooltip_step_used','','en','This step is being used by another step(s)!', \"\") "); 
+        SQLS.append(", ('page_testcase', 'tooltip_is_useStep','','en','This step can not be used as library, because it uses another step!', \"\") "); 
+        SQLS.append(", ('page_testcase', 'lbl_copied_from','','en','Copied from:', \"\") "); 
+        SQLS.append(", ('page_testcase', 'link_edit_step','','en','Edit Used Step', \"\") ");
 
+        SQLInstruction.add(SQLS.toString());
         return SQLInstruction;
     }
 
