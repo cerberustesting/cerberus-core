@@ -716,6 +716,10 @@
         <servlet-name>ReadCerberusInformation</servlet-name>
         <servlet-class>org.cerberus.servlet.information.ReadCerberustInformation</servlet-class>
     </servlet>
+    <servlet>
+        <servlet-name>ReadTestCaseStep</servlet-name>
+        <servlet-class>org.cerberus.servlet.testcase.ReadTestCaseStep</servlet-class>
+    </servlet>
     <servlet-mapping>
         <servlet-name>ExecutionThreadMonitoring</servlet-name>
         <url-pattern>/ExecutionThreadMonitoring</url-pattern>
@@ -1412,6 +1416,10 @@
         <servlet-name>ReadCerberusInformation</servlet-name>
         <url-pattern>/ReadCerberusInformation</url-pattern>
     </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>ReadTestCaseStep</servlet-name>
+        <url-pattern>/ReadTestCaseStep</url-pattern>
+    </servlet-mapping>
     <session-config>
         <session-timeout>
             60
@@ -1502,6 +1510,7 @@
             <url-pattern>/ViewProperty.jsp</url-pattern>
             <url-pattern>/TestPerApplication.jsp</url-pattern>
             <url-pattern>/CampaignReportByTag.jsp</url-pattern>
+            <url-pattern>/ReadTestCaseStep</url-pattern>            
         </web-resource-collection>
         <web-resource-collection>
             <web-resource-name>servlet</web-resource-name>

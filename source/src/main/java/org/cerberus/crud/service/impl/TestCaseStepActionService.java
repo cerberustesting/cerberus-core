@@ -43,7 +43,7 @@ public class TestCaseStepActionService implements ITestCaseStepActionService {
 
     @Override
     public TestCaseStepAction findTestCaseStepActionbyKey(String test, String testCase, int step, int sequence) {
-        return testCaseStepActionDAO.findTestCaseStepActionbyKey(test, testCase, step, sequence);
+        return testCaseStepActionDAO.readByKey(test, testCase, step, sequence);
     }
 
     @Override
@@ -53,7 +53,7 @@ public class TestCaseStepActionService implements ITestCaseStepActionService {
 
     @Override
     public void insertTestCaseStepAction(TestCaseStepAction testCaseStepAction) throws CerberusException {
-        testCaseStepActionDAO.insertTestCaseStepAction(testCaseStepAction);
+        testCaseStepActionDAO.create(testCaseStepAction);
     }
 
     @Override
@@ -77,7 +77,7 @@ public class TestCaseStepActionService implements ITestCaseStepActionService {
     @Override
     public boolean updateTestCaseStepAction(TestCaseStepAction tcsa) {
         try {
-            testCaseStepActionDAO.updateTestCaseStepAction(tcsa);
+            testCaseStepActionDAO.update(tcsa);
         } catch (CerberusException ex) {
             Logger.getLogger(TestCaseStepActionService.class.getName()).log(Level.SEVERE, null, ex);
             return false;
@@ -100,7 +100,7 @@ public class TestCaseStepActionService implements ITestCaseStepActionService {
 
     @Override
     public void deleteTestCaseStepAction(TestCaseStepAction tcsa) throws CerberusException {
-        testCaseStepActionDAO.deleteTestCaseStepAction(tcsa);
+        testCaseStepActionDAO.delete(tcsa);
     }
 
     @Override

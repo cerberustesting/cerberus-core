@@ -1971,7 +1971,7 @@ function submitTestCaseModificationNew(anchor) {
                 allControlsToDelete + " control(s).\nDo you want to continue ?");
     }
 
-    if (execute) {
+    if (execute) {        
         execute = checkForm();
     }
 
@@ -2209,15 +2209,48 @@ function addTCSCNew(rowID, obj) {
     referenceNode.parentNode.insertBefore(mainDiv, referenceNode.nextSibling);
 
     var DIV = document.createElement('div');
+    //TODO:FN temporary fix - should be solved when the page is refactored
+    //selects should be loaded when the useStep is checked.
+    
+    var cloneElement = $("#StepTemplateDiv").clone();
+    $(cloneElement).find('div[data-id="useStepForNewStep"]').remove();
     if (document.getElementById("StepTemplateDiv")) {
-        DIV.innerHTML = (DIV.innerHTML + document
-                .getElementById('StepTemplateDiv').innerHTML);
+        //DIV.innerHTML = (DIV.innerHTML + document.getElementById('StepTemplateDiv').innerHTML);
+        DIV.innerHTML = DIV.innerHTML + $(cloneElement).html();
     }
     DIV.setAttribute('id', 'StepFirstLineDiv' + nextIncStep);
     DIV.setAttribute('class', 'StepHeaderDiv');
     DIV.setAttribute('style', 'display:block; height:70px');
     mainDiv.appendChild(DIV);
-
+    
+    //appends the area that contains the actions and controls
+    //TODO:FN needs to be refactored
+    var DIVStepsBorderDiv = document.createElement('div');
+    DIVStepsBorderDiv.setAttribute("style", "display:block;margin-top:0px;border-style: solid; border-width:thin ; border-color:#EEEEEE; clear:both;");
+    DIVStepsBorderDiv.setAttribute("id", "StepsBorderDiv" +  nextIncStep);
+    
+    var DIVStepDetailsDiv = document.createElement('div');
+    DIVStepDetailsDiv.setAttribute("style", "clear:both");
+    DIVStepDetailsDiv.setAttribute("id", "StepDetailsDiv" +  nextIncStep);
+     
+    var DIVActionControlDivUnderTitle = document.createElement('div');
+    DIVActionControlDivUnderTitle.setAttribute("style", "height:100%;width:100%;clear:both");
+    DIVActionControlDivUnderTitle.setAttribute("id", "ActionControlDivUnderTitle" +  nextIncStep);
+    
+    var DIVAction = document.createElement('div');
+    DIVAction.setAttribute("style", "height:100%; width:100%;text-align: left; clear:both");
+    DIVAction.setAttribute("id", "Action" +  nextIncStep);
+    
+    var DIVBeforeFirstAction = document.createElement('div');
+    DIVBeforeFirstAction.setAttribute("id", "BeforeFirstAction" +  nextIncStep);
+    
+    DIVAction.appendChild(DIVBeforeFirstAction);
+    DIVActionControlDivUnderTitle.appendChild(DIVAction);
+    DIVStepDetailsDiv.appendChild(DIVActionControlDivUnderTitle);
+    DIVStepsBorderDiv.appendChild(DIVStepDetailsDiv);
+    
+    mainDiv.appendChild(DIVStepsBorderDiv);
+    
     var DIV2 = document.createElement('div');
     if (document.getElementById("StepButtonTemplateDiv")) {
         DIV2.innerHTML = (DIV2.innerHTML + document
@@ -2251,23 +2284,18 @@ function addTCSCNew(rowID, obj) {
             .attr('name', 'step_number_' + nextIncStep).val(incrementStep + 1);
     $('#StepFirstLineDiv' + nextIncStep).find('input[data-id="step_description_template"]')
             .attr('name', 'step_description_' + nextIncStep).attr('data-fieldtype', 'Description')
+            .attr('id', 'step_description_' + nextIncStep)
             .attr('placeholder', 'Description');
     $('#StepFirstLineDiv' + nextIncStep).find('input[data-id="initial_step_number_template"]')
             .attr('name', 'initial_step_number_' + nextIncStep).val(nextIncStep);
     $('#StepFirstLineDiv' + nextIncStep).find('input[data-id="step_useStep_template"]')
             .attr('name', 'step_useStep_' + nextIncStep).val("Y")
             .attr('id', 'step_useStep_' + nextIncStep)
-            .attr('onclick', 'showUseStep(this, ' + nextIncStep + ')');
-    $('#StepFirstLineDiv' + nextIncStep).find('div[data-id="useStepForNewStep"]')
-            .attr('id', 'useStepForNewStep_' + nextIncStep);
-    $('#StepFirstLineDiv' + nextIncStep).find('select[data-id="step_useStepTest_template"]')
-            .attr('name', 'step_useStepTest_' + nextIncStep).attr('id', 'step_useStepTest_' + nextIncStep)
-            .attr('onchange', 'findStepBySystemTest(this.value, \'' + mySystem + '\', \'step_useStepTestCase_' + nextIncStep + '\')');
-    $('#StepFirstLineDiv' + nextIncStep).find('select[data-id="step_useStepTestCase_template"]')
-            .attr('name', 'step_useStepTestCase_' + nextIncStep).attr('id', 'step_useStepTestCase_' + nextIncStep)
-            .attr('onchange', 'findStepByTestCase($(\'#step_useStepTest_' + nextIncStep + '\').val(), this.value, \'step_useStepStep_' + nextIncStep + '\')');
-    $('#StepFirstLineDiv' + nextIncStep).find('select[data-id="step_useStepStep_template"]')
-            .attr('name', 'step_useStepStep_' + nextIncStep).attr('id', 'step_useStepStep_' + nextIncStep);
+            .attr("data-step-number", nextIncStep);
+    //adds the element that helps to validate if the step was modified
+    $('#StepFirstLineDiv' + nextIncStep).find('input[id="step_useStepChanged_template"]')
+            .attr('id', 'step_useStepChanged_' + nextIncStep)
+            .attr('name', 'step_useStepChanged_' + nextIncStep);    
     $('#StepFirstLineDiv' + nextIncStep).find('select[data-id="step_addActionButton_template"]')
             .attr('onclick', 'addTCSANew(\'BeforeFirstAction' + nextIncStep + '\', \'' + nextIncStep + '\', null)');
     $('#StepButtonDiv' + nextIncStep).find('input[data-id="submitButtonActionTemplate"]')
@@ -2275,6 +2303,8 @@ function addTCSCNew(rowID, obj) {
     $('#StepButtonDiv' + nextIncStep).find('input[data-id="addStepButtonTemplate"]')
             .attr('onclick', 'addTCSCNew(\'StepsEndDiv' + nextIncStep + '\', this)')
             .attr('id', 'addStepButton' + nextIncStep);
+
+    $("#step_useStep_" + nextIncStep).change(useStepChangeHandler);
     callEvent();
 
 

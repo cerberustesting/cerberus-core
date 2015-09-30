@@ -31,17 +31,17 @@ import org.cerberus.exception.CerberusException;
  */
 public interface ITestCaseStepActionDAO {
 
-    TestCaseStepAction findTestCaseStepActionbyKey(String test, String testCase, int step, int sequence);
+    TestCaseStepAction readByKey(String test, String testCase, int step, int sequence);
     
     List<TestCaseStepAction> findActionByTestTestCaseStep(String test, String testcase, int stepNumber);
 
-    void insertTestCaseStepAction(TestCaseStepAction testCaseStepAction) throws CerberusException;
+    void create(TestCaseStepAction testCaseStepAction) throws CerberusException;
 
     boolean changeTestCaseStepActionSequence(String test, String testCase, int step, int oldSequence, int newSequence);
 
-    public void updateTestCaseStepAction(TestCaseStepAction tcsa) throws CerberusException;
+    void update(TestCaseStepAction tcsa) throws CerberusException;
 
-    public void deleteTestCaseStepAction(TestCaseStepAction tcsa) throws CerberusException ;
+    void delete(TestCaseStepAction tcsa) throws CerberusException ;
 
-    public List<TestCaseStepAction> findTestCaseStepActionbyTestTestCase(String test, String testCase) throws CerberusException ;
+    List<TestCaseStepAction> findTestCaseStepActionbyTestTestCase(String test, String testCase) throws CerberusException ;
 }
