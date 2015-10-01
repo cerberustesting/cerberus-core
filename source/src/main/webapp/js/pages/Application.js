@@ -228,8 +228,7 @@ function renderOptionsForApplication(data) {
 function aoColumnsFunc() {
     var doc = new Doc();
     var aoColumns = [
-    {"data": "button",
-            "sName": "Actions",
+        {"data": null,
             "title": doc.getDocLabel("page_global", "columnAction"),
             "bSortable": false,
             "bSearchable": false,
@@ -245,41 +244,41 @@ function aoColumnsFunc() {
 
                 return '<div class="center btn-group width150">' + editApplication + deleteApplication + '</div>';
             }
-    },
-    {"data": "application",
+        },
+        {"data": "application",
             "sName": "application",
             "title": doc.getDocOnline("application", "Application")},
-    {"data": "description",
+        {"data": "description",
             "sName": "description",
             "title": doc.getDocOnline("application", "Description")},
-    {"data": "sort",
+        {"data": "sort",
             "sName": "sort",
             "title": doc.getDocOnline("application", "sort")},
-    {"data": "type",
+        {"data": "type",
             "sName": "type",
             "title": doc.getDocOnline("application", "type")},
-    {"data": "system",
+        {"data": "system",
             "sName": "system",
             "title": doc.getDocOnline("application", "system")},
-    {"data": "subsystem",
+        {"data": "subsystem",
             "sName": "subsystem",
             "title": doc.getDocOnline("application", "subsystem")},
-    {"data": "svnurl",
+        {"data": "svnurl",
             "sName": "svnurl",
             "title": doc.getDocOnline("application", "svnurl")
-    },
-    {"data": "bugTrackerUrl",
+        },
+        {"data": "bugTrackerUrl",
             "sName": "bugTrackerUrl",
             "title": doc.getDocOnline("application", "bugtrackerurl")},
-    {"data": "bugTrackerNewUrl",
+        {"data": "bugTrackerNewUrl",
             "sName": "bugTrackerNewUrl",
             "title": doc.getDocOnline("application", "bugtrackernewurl")},
-    {"data": "deploytype",
+        {"data": "deploytype",
             "sName": "deploytype",
             "title": doc.getDocOnline("application", "deploytype")},
-    {"data": "mavengroupid",
+        {"data": "mavengroupid",
             "sName": "mavengroupid",
             "title": doc.getDocOnline("application", "mavengroupid")}
     ];
-            return aoColumns;
+    return aoColumns;
 }

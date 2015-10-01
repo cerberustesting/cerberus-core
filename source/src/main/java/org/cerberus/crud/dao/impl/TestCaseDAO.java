@@ -72,6 +72,7 @@ public class TestCaseDAO implements ITestCaseDAO {
     private InvariantService invariantService;
 
     private final int MAX_ROW_SELECTED = 100000;
+    private final String SQL_DUPLICATED_CODE = "23000";
 
     private static final Logger LOG = Logger.getLogger(TestCaseDAO.class);
 
@@ -193,7 +194,7 @@ public class TestCaseDAO implements ITestCaseDAO {
                     }
 
                     msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
-                    msg.setDescription(msg.getDescription().replace("%ITEM%", "Application").replace("%OPERATION%", "SELECT"));
+                    msg.setDescription(msg.getDescription().replace("%ITEM%", "TestCase").replace("%OPERATION%", "SELECT"));
                     answer = new AnswerList(testCaseList, nrTotalRows);
 
                 } catch (SQLException exception) {
@@ -1616,17 +1617,66 @@ public class TestCaseDAO implements ITestCaseDAO {
     }
 
     @Override
-    public Answer update(TCase testCase) {
+    public Answer update(TCase tc) {
         MessageEvent msg = null;
-        final String query = "UPDATE testcase SET tcactive = ? WHERE test = ? AND testcase = ?";
+        StringBuilder query = new StringBuilder("UPDATE testcase SET");
+
+        query.append(" implementer = ?,");
+        query.append(" lastmodifier = ?,");
+        query.append(" project = ?,");
+        query.append(" ticket = ?,");
+        query.append(" application = ?,");
+        query.append(" activeQA = ?,");
+        query.append(" activeUAT = ?,");
+        query.append(" activeProd = ?,");
+        query.append(" status = ?,");
+        query.append(" description = ?,");
+        query.append(" behaviorOrValueExpected = ?,");
+        query.append(" howTo = ?,");
+        query.append(" tcactive = ?,");
+        query.append(" fromBuild = ?,");
+        query.append(" fromRev = ?,");
+        query.append(" toBuild = ?,");
+        query.append(" toRev = ?,");
+        query.append(" bugId = ?,");
+        query.append(" targetBuild = ?,");
+        query.append(" targetRev = ?,");
+        query.append(" comment = ?,");
+        query.append(" function = ?,");
+        query.append(" priority = ?,");
+        query.append(" `group` = ?");
+        query.append(" WHERE test = ? AND testcase = ?;");
 
         Connection connection = this.databaseSpring.connect();
         try {
-            PreparedStatement preStat = connection.prepareStatement(query);
+            PreparedStatement preStat = connection.prepareStatement(query.toString());
             try {
-                preStat.setString(1, testCase.getActive());
-                preStat.setString(2, testCase.getTest());
-                preStat.setString(3, testCase.getTestCase());
+                preStat.setString(1, tc.getImplementer());
+                preStat.setString(2, tc.getLastModifier());
+                preStat.setString(3, tc.getProject());
+                preStat.setString(4, tc.getTicket());
+                preStat.setString(5, tc.getApplication());
+                preStat.setString(6, tc.getRunQA());
+                preStat.setString(7, tc.getRunUAT());
+                preStat.setString(8, tc.getRunPROD());
+                preStat.setString(9, tc.getStatus());
+                preStat.setString(10, tc.getShortDescription());
+                preStat.setString(11, tc.getDescription());
+                preStat.setString(12, tc.getHowTo());
+                preStat.setString(13, tc.getActive());
+                preStat.setString(14, tc.getFromSprint());
+                preStat.setString(15, tc.getFromRevision());
+                preStat.setString(16, tc.getToSprint());
+                preStat.setString(17, tc.getToRevision());
+                preStat.setString(18, tc.getBugID());
+                preStat.setString(19, tc.getTargetSprint());
+                preStat.setString(20, tc.getTargetRevision());
+                preStat.setString(21, tc.getComment());
+                preStat.setString(22, tc.getFunction());
+                preStat.setString(23, Integer.toString(tc.getPriority()));
+                preStat.setString(24, tc.getGroup());
+                preStat.setString(25, tc.getTest());
+                preStat.setString(26, tc.getTestCase());
 
                 preStat.executeUpdate();
                 msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
@@ -1635,6 +1685,88 @@ public class TestCaseDAO implements ITestCaseDAO {
                 LOG.error("Unable to execute query : " + exception.toString());
                 msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
                 msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", exception.toString()));
+            } finally {
+                preStat.close();
+            }
+        } catch (SQLException exception) {
+            LOG.error("Unable to execute query : " + exception.toString());
+            msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
+            msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", exception.toString()));
+        } finally {
+            try {
+                if (connection != null) {
+                    connection.close();
+                }
+            } catch (SQLException exception) {
+                LOG.warn("Unable to close connection : " + exception.toString());
+            }
+        }
+        return new Answer(msg);
+    }
+
+    public Answer create(TCase testCase) {
+        MessageEvent msg = null;
+
+        final StringBuffer sql = new StringBuffer("INSERT INTO `testcase` ")
+                .append(" ( `Test`, `TestCase`, `Application`, `Project`, `Ticket`, ")
+                .append("`Description`, `BehaviorOrValueExpected`, ")
+                .append("`ChainNumberNeeded`, `Priority`, `Status`, `TcActive`, ")
+                .append("`Group`, `Origine`, `RefOrigine`, `HowTo`, `Comment`, ")
+                .append("`FromBuild`, `FromRev`, `ToBuild`, `ToRev`, ")
+                .append("`BugID`, `TargetBuild`, `TargetRev`, `Creator`, ")
+                .append("`Implementer`, `LastModifier`, `function`, `activeQA`, `activeUAT`, `activePROD`) ")
+                .append("VALUES ( ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ")
+                .append("?, ?, ?, ?, ?, ?, ?, ?, ?, ? ); ");
+
+        Connection connection = this.databaseSpring.connect();
+        try {
+            PreparedStatement preStat = connection.prepareStatement(sql.toString());
+            try {
+                preStat.setString(1, ParameterParserUtil.parseStringParam(testCase.getTest(), ""));
+                preStat.setString(2, ParameterParserUtil.parseStringParam(testCase.getTestCase(), ""));
+                preStat.setString(3, ParameterParserUtil.parseStringParam(testCase.getApplication(), ""));
+                preStat.setString(4, ParameterParserUtil.parseStringParam(testCase.getProject(), ""));
+                preStat.setString(5, ParameterParserUtil.parseStringParam(testCase.getTicket(), ""));
+                preStat.setString(6, ParameterParserUtil.parseStringParam(testCase.getShortDescription(), ""));
+                preStat.setString(7, ParameterParserUtil.parseStringParam(testCase.getDescription(), ""));
+                preStat.setString(8, null);
+                preStat.setString(9, Integer.toString(testCase.getPriority()));
+                preStat.setString(10, ParameterParserUtil.parseStringParam(testCase.getStatus(), ""));
+                preStat.setString(11, testCase.getActive() != null && !testCase.getActive().equals("Y") ? "N" : "Y");
+                preStat.setString(12, ParameterParserUtil.parseStringParam(testCase.getGroup(), ""));
+                preStat.setString(13, "");
+                preStat.setString(14, "");
+                preStat.setString(15, ParameterParserUtil.parseStringParam(testCase.getHowTo(), ""));
+                preStat.setString(16, ParameterParserUtil.parseStringParam(testCase.getComment(), ""));
+                preStat.setString(17, ParameterParserUtil.parseStringParam(testCase.getFromSprint(), ""));
+                preStat.setString(18, ParameterParserUtil.parseStringParam(testCase.getFromRevision(), ""));
+                preStat.setString(19, ParameterParserUtil.parseStringParam(testCase.getToSprint(), ""));
+                preStat.setString(20, ParameterParserUtil.parseStringParam(testCase.getToRevision(), ""));
+                preStat.setString(21, ParameterParserUtil.parseStringParam(testCase.getBugID(), ""));
+                preStat.setString(22, ParameterParserUtil.parseStringParam(testCase.getTargetSprint(), ""));
+                preStat.setString(23, ParameterParserUtil.parseStringParam(testCase.getTargetRevision(), ""));
+                preStat.setString(24, ParameterParserUtil.parseStringParam(testCase.getCreator(), ""));
+                preStat.setString(25, ParameterParserUtil.parseStringParam(testCase.getImplementer(), ""));
+                preStat.setString(26, ParameterParserUtil.parseStringParam(testCase.getLastModifier(), ""));
+                preStat.setString(27, ParameterParserUtil.parseStringParam(testCase.getFunction(), ""));
+                preStat.setString(28, testCase.getRunQA() != null && !testCase.getRunQA().equals("Y") ? "N" : "Y");
+                preStat.setString(29, testCase.getRunUAT() != null && !testCase.getRunUAT().equals("Y") ? "N" : "Y");
+                preStat.setString(30, testCase.getRunPROD() != null && !testCase.getRunPROD().equals("N") ? "Y" : "N");
+
+                preStat.executeUpdate();
+                msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
+                msg.setDescription(msg.getDescription().replace("%ITEM%", "TestCase").replace("%OPERATION%", "INSERT"));
+
+            } catch (SQLException exception) {
+                LOG.error("Unable to execute query : " + exception.toString());
+
+                if (exception.getSQLState().equals(SQL_DUPLICATED_CODE)) { //23000 is the sql state for duplicate entries
+                    msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_DUPLICATE);
+                    msg.setDescription(msg.getDescription().replace("%ITEM%", "Application").replace("%OPERATION%", "INSERT"));
+                } else {
+                    msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
+                    msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", exception.toString()));
+                }
             } finally {
                 preStat.close();
             }

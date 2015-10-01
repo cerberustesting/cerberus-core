@@ -40,14 +40,14 @@ function initPage() {
     var table = createDataTableWithPermissions(configurations, renderOptionsForDeployType);
 
     table.fnSort([1, 'asc']);
-};
+}
 
 function displayPageLabel() {
     var doc = new Doc();
 
     displayHeaderLabel(doc);
     displayGlobalLabel(doc);
-    $("#pageTitle").html(doc.getDocLabel("page_deploytype" ,"title"));
+    $("#pageTitle").html(doc.getDocLabel("page_deploytype", "title"));
     $("#title").html(doc.getDocOnline("page_deploytype", "title"));
     $("[name='addEntryField']").html(doc.getDocLabel("page_deploytype", "button_create"));
     $("[name='confirmationField']").html(doc.getDocLabel("page_deploytype", "button_delete"));
@@ -181,10 +181,9 @@ function renderOptionsForDeployType(data) {
 
 function aoColumnsFunc() {
     var doc = new Doc();
-    
+
     var aoColumns = [
-        {"data": "button",
-            "sName": "Actions",
+        {"data": null,
             "title": doc.getDocLabel("page_global", "columnAction"),
             "bSortable": false,
             "bSearchable": false,
