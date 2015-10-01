@@ -28,11 +28,9 @@ $.when($.getScript("js/pages/global/global.js")).then(function () {
         loadTestFilters(urlTag);
 
         $('#editEntryModal').on('hidden.bs.modal', {extra: "#editEntryModal"}, modalFormCleaner);
+        $('#addEntryModal').on('hidden.bs.modal', {extra: "#addEntryModal"}, modalFormCleaner);
 
-//        $("#addEntryButton").click(saveNewEntryHandler);
-//
-//        $('#addEntryModal').on('hidden.bs.modal', {extra: "#addEntryModal"}, modalFormCleaner);
-
+        $("#addEntryButton").click(saveNewEntryHandler);
     });
 });
 
@@ -61,9 +59,9 @@ function appendBuildRevList() {
 
     var jqxhr = $.getJSON("GetBuildRevisionInvariant", "System=" + user.defaultSystem + "&level=1");
     $.when(jqxhr).then(function (data) {
-        var fromBuild = $("#fromSprint");
-        var toBuild = $("#toSprint");
-        var targetBuild = $("#targetSprint");
+        var fromBuild = $("[name=fromSprint]");
+        var toBuild = $("[name=toSprint]");
+        var targetBuild = $("[name=targetSprint]");
 
         fromBuild.append($('<option></option>').text("-----").val(""));
         toBuild.append($('<option></option>').text("-----").val(""));
@@ -77,9 +75,9 @@ function appendBuildRevList() {
     });
     var jqxhr = $.getJSON("GetBuildRevisionInvariant", "System=" + user.defaultSystem + "&level=2");
     $.when(jqxhr).then(function (data) {
-        var fromRev = $("#fromRev");
-        var toRev = $("#toRev");
-        var targetRev = $("#targetRev");
+        var fromRev = $("[name=fromRev]");
+        var toRev = $("[name=toRev]");
+        var targetRev = $("[name=targetRev]");
 
         fromRev.append($('<option></option>').text("-----").val(""));
         toRev.append($('<option></option>').text("-----").val(""));
@@ -112,7 +110,7 @@ function appendApplicationList() {
 
     var jqxhr = $.getJSON("ReadApplication", "system=" + user.defaultSystem);
     $.when(jqxhr).then(function (data) {
-        var applicationList = $("#application");
+        var applicationList = $("[name=application]");
 
         for (var index = 0; index < data.contentTable.length; index++) {
             applicationList.append($('<option></option>').text(data.contentTable[index].application).val(data.contentTable[index].application));
@@ -123,7 +121,7 @@ function appendApplicationList() {
 function appendProjectList() {
     var jqxhr = $.getJSON("ReadProject");
     $.when(jqxhr).then(function (data) {
-        var projectList = $("#project");
+        var projectList = $("[name=project]");
 
         projectList.append($('<option></option>').text("No project defined").val(""));
         for (var index = 0; index < data.contentTable.length; index++) {
@@ -148,6 +146,7 @@ function loadTestFilters(urlTag) {
                 var text = data.contentTable[index].test + ' - ' + data.contentTable[index].description;
                 var option = $('<option></option>').attr("value", encodedString).text(text);
                 $('#selectTest').append(option);
+                $('#testAdd').append($('<option></option>').text(text).val(encodedString));
             }
 
             //if the tag is passed as a url parameter, then it loads the report from this tag
@@ -178,7 +177,7 @@ function loadTable() {
         $.when(jqxhr).then(function (data) {
             var config = new TableConfigurationsServerSide("testCaseTable", "ReadTestCase?test=" + selectTest, "contentTable", aoColumnsFunc(data));
 
-            var table = createDataTable(config);
+            var table = createDataTableWithPermissions(config, renderOptionsForTestCaseList);
             table.fnSort([1, 'asc']);
 
             $('#testCaseTable_wrapper').not('.initialized').addClass('initialized');
@@ -186,17 +185,63 @@ function loadTable() {
     }
 }
 
+function CreateTestCaseClick() {
+    clearResponseMessageMainPage();
+    $('#addEntryModal').modal('show');
+}
+
+function renderOptionsForTestCaseList(data) {
+    var doc = new Doc();
+    //check if user has permissions to perform the add and import operations
+    if (data["hasPermissions"]) {
+        if ($("#createTestCaseButton").length === 0) {
+            var contentToAdd = "<div class='marginBottom10'><button id='createTestCaseButton' type='button' class='btn btn-default'>\n\
+            " + doc.getDocLabel("page_project", "button_create") + "</button></div>";
+
+            $("#testCaseTable_wrapper div.ColVis").before(contentToAdd);
+            $('#testCaseList #createTestCaseButton').click(CreateTestCaseClick);
+        }
+    }
+}
+
+function saveNewEntryHandler() {
+    clearResponseMessage($('#addEntryModal'));
+    var formAdd = $("#addEntryModal #addEntryModalForm");
+
+    var nameElement = formAdd.find("#test");
+    var nameElementEmpty = nameElement.prop("value") === '';
+    if (nameElementEmpty) {
+        var localMessage = new Message("danger", "Please specify the name of the test!");
+        nameElement.parents("div.form-group").addClass("has-error");
+        showMessage(localMessage, $('#addEntryModal'));
+    } else {
+        nameElement.parents("div.form-group").removeClass("has-error");
+    }
+
+    var testCase = formAdd.find("#testCase");
+    var testCaseEmpty = nameElement.prop("value") === '';
+    if (testCaseEmpty) {
+        var localMessage = new Message("danger", "Please specify the name of the testCase!");
+        testCase.parents("div.form-group").addClass("has-error");
+        showMessage(localMessage, $('#addEntryModal'));
+    } else {
+        testCase.parents("div.form-group").removeClass("has-error");
+    }
+
+    // verif if all mendatory fields are not empty
+    if (nameElementEmpty || testCaseEmpty)
+        return;
+
+    showLoaderInModal('#addEntryModal');
+    createEntry("CreateTestCase2", formAdd, "#testCaseTable");
+}
+
 function saveUpdateEntryHandler() {
     clearResponseMessage($('#editEntryModal'));
     var formEdit = $('#editEntryModalForm');
 
-    console.log($('#editEntryModalForm').serialize());
     showLoaderInModal('#editEntryModal');
     updateEntry("UpdateTestCase2", formEdit, "#testCaseTable");
-}
-
-function getLastExecution(data) {
-    console.log(data);
 }
 
 function editEntry(testCase) {
@@ -248,13 +293,12 @@ function editEntry(testCase) {
         formEdit.find("#toRevision").prop("value", data.toRevision);
         formEdit.find("#targetRevision").prop("value", data.targetRevision);
 
-        getLastExecution(data);
         formEdit.modal('show');
     });
 }
 
 function setActive(checkbox) {
-    var test = GetURLParameter('test');
+    var test = checkbox.dataset.test;
     var testCase = checkbox.name;
     var active;
 
@@ -263,6 +307,7 @@ function setActive(checkbox) {
     } else {
         active = "N";
     }
+
     $.ajax({
         url: "UpdateTestCase2",
         method: "POST",
@@ -270,6 +315,27 @@ function setActive(checkbox) {
         dataType: "json"
     });
 }
+
+function setCountry(checkbox) {
+    var test = checkbox.dataset.test;
+    var testCase = checkbox.dataset.testcase;
+    var country = checkbox.name;
+    var state;
+
+    if (checkbox.checked === true) {
+        state = "on";
+    } else {
+        state = "off";
+    }
+
+    $.ajax({
+        url: "UpdateTestCase2",
+        method: "POST",
+        data: {test: test, testCase: testCase, country: country, state: state},
+        dataType: "json"
+    });
+}
+
 
 function aoColumnsFunc(countries) {
     var aoColumns = [
@@ -334,9 +400,9 @@ function aoColumnsFunc(countries) {
             "className": "center",
             "mRender": function (data, type, obj) {
                 if (data === "Y") {
-                    return '<input type="checkbox" name="' + obj["testCase"] + '" onchange="setActive(this);" checked/>';
+                    return '<input type="checkbox" name="' + obj["testCase"] + '" data-test="' + obj.test + '" onchange="setActive(this);" checked/>';
                 } else if (data === "N") {
-                    return '<input type="checkbox" name="' + obj["testCase"] + '" onchange="setActive(this);"/>';
+                    return '<input type="checkbox" name="' + obj["testCase"] + '" data-test="' + obj.test + '" onchange="setActive(this);" />';
                 }
             }
         },
@@ -385,9 +451,9 @@ function aoColumnsFunc(countries) {
                 var dataTitle = meta.settings.aoColumns[meta.col].sTitle;
 
                 if (row.hasOwnProperty("countryList") && row["countryList"].hasOwnProperty(dataTitle)) {
-                    return '<input type="checkbox" name="' + dataTitle + '" checked/>';
+                    return '<input type="checkbox" name="' + dataTitle + '" data-test="' + row.test + '" data-testcase="' + row.testCase + '" onchange="setCountry(this);" checked/>';
                 } else {
-                    return '<input type="checkbox" name="' + dataTitle + '"/>';
+                    return '<input type="checkbox" name="' + dataTitle + '" data-test="' + row.test + '" data-testcase="' + row.testCase + '" onchange="setCountry(this);"/>';
                 }
             },
             "bSortable": false,

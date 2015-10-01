@@ -306,4 +306,9 @@ public class TestCaseService implements ITestCaseService {
     public Answer update(TCase testCase) {
         return testCaseDao.update(testCase);
     }
+    
+    @Override
+    public Answer create(TCase testCase) {
+        return testCaseDao.create(testCase);
+    }
 }

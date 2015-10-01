@@ -19,6 +19,7 @@
             <%@ include file="include/messagesArea.html"%>
             <%@ include file="include/utils/modal-confirmation.html"%>
             <%@ include file="include/testcaselist/editTestCase.html"%>
+            <%@ include file="include/testcaselist/addTestCase.html"%>
 
             <h1 class="page-title-line" id="title">Test Case List</h1>
 

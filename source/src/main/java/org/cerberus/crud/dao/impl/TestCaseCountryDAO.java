@@ -37,6 +37,7 @@ import org.cerberus.exception.CerberusException;
 import org.cerberus.crud.factory.IFactoryTestCaseCountry;
 import org.cerberus.enums.MessageEventEnum;
 import org.cerberus.log.MyLogger;
+import org.cerberus.util.answer.AnswerItem;
 import org.cerberus.util.answer.AnswerList;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
@@ -249,7 +250,7 @@ public class TestCaseCountryDAO implements ITestCaseCountryDAO {
     }
 
     @Override
-    public AnswerList readByKey(String test, String testCase) {
+    public AnswerList readByTestTestCase(String test, String testCase) {
         AnswerList answer = new AnswerList();
         MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
         msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", ""));
@@ -257,7 +258,7 @@ public class TestCaseCountryDAO implements ITestCaseCountryDAO {
         StringBuilder query = new StringBuilder();
 
         query.append("SELECT * FROM testcasecountry WHERE test = ?");
-        
+
         if (!Strings.isNullOrEmpty(testCase)) {
             query.append(" AND testcase = '");
             query.append(testCase);
@@ -328,5 +329,69 @@ public class TestCaseCountryDAO implements ITestCaseCountryDAO {
         String country = resultSet.getString("country") == null ? "" : resultSet.getString("country");
 
         return factoryTestCaseCountry.create(test, testcase, country);
+    }
+
+    @Override
+    public AnswerItem readByKey(String test, String testCase, String country) {
+        AnswerItem answer = new AnswerItem();
+        MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
+        msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", ""));
+        TestCaseCountry result = new TestCaseCountry();
+        final String query = "SELECT * FROM testcasecountry WHERE test = ? AND testcase = ? AND country = ?";
+
+        Connection connection = this.databaseSpring.connect();
+        try {
+            PreparedStatement preStat = connection.prepareStatement(query);
+
+            try {
+                preStat.setString(1, test);
+                preStat.setString(2, testCase);
+                preStat.setString(3, country);
+                ResultSet resultSet = preStat.executeQuery();
+
+                try {
+                    if (resultSet.first()) {
+                        result = loadFromResultSet(resultSet);
+                        msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
+                        msg.setDescription(msg.getDescription().replace("%ITEM%", "TestCaseCountry").replace("%OPERATION%", "SELECT"));
+                        answer.setItem(result);
+                    } else {
+                        msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_NO_DATA_FOUND);
+                    }
+                } catch (SQLException exception) {
+                    LOG.error("Unable to execute query : " + exception.toString());
+                    msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
+                    msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", exception.toString()));
+                } finally {
+                    resultSet.close();
+                }
+            } catch (SQLException exception) {
+                LOG.error("Unable to execute query : " + exception.toString());
+                msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
+                msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", "Unable to retrieve the entry!"));
+            } finally {
+                if (preStat != null) {
+                    preStat.close();
+                }
+            }
+
+        } catch (SQLException exception) {
+            LOG.error("Unable to execute query : " + exception.toString());
+            msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
+            msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", "Unable to retrieve the list of entries!"));
+        } finally {
+            try {
+                if (!this.databaseSpring.isOnTransaction()) {
+                    if (connection != null) {
+                        connection.close();
+                    }
+                }
+            } catch (SQLException exception) {
+                LOG.warn("Unable to close connection : " + exception.toString());
+            }
+        }
+
+        answer.setResultMessage(msg);
+        return answer;
     }
 }

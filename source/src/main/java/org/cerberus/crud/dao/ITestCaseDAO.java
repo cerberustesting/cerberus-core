@@ -120,4 +120,6 @@ public interface ITestCaseDAO {
     public AnswerItem readByKey(String test, String testCase);
     
     public Answer update(TCase testCase);
+    
+    public Answer create(TCase testCase);
 }

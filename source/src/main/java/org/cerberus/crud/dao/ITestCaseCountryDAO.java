@@ -21,6 +21,7 @@ import java.util.List;
 
 import org.cerberus.crud.entity.TestCaseCountry;
 import org.cerberus.exception.CerberusException;
+import org.cerberus.util.answer.AnswerItem;
 import org.cerberus.util.answer.AnswerList;
 
 /**
@@ -40,5 +41,7 @@ public interface ITestCaseCountryDAO {
     
     void deleteTestCaseCountry(TestCaseCountry tcc) throws CerberusException;
     
-    public AnswerList readByKey(String test, String testCase);
+    public AnswerList readByTestTestCase(String test, String testCase);
+        
+    public AnswerItem readByKey(String test, String testCase, String country);
 }
