@@ -19,6 +19,7 @@
  */
 package org.cerberus.servlet.testcase;
 
+import com.google.common.base.Strings;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.ArrayList;
@@ -103,11 +104,12 @@ public class UpdateTestCase2 extends HttpServlet {
                     .replace("%OPERATION%", "Update")
                     .replace("%REASON%", "mendatory fields are missing."));
             ans.setResultMessage(msg);
-        } else if (!StringUtil.isNullOrEmpty(tcDateCrea)) {
+        } else {
             ApplicationContext appContext = WebApplicationContextUtils.getWebApplicationContext(this.getServletContext());
             ITestCaseService testCaseService = appContext.getBean(ITestCaseService.class);
 
             AnswerItem resp = testCaseService.readByKey(test, testCase);
+            TCase tc = (TCase) resp.getItem();
             if (!(resp.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode()))) {
                 /**
                  * Object could not be found. We stop here and report the error.
@@ -123,7 +125,8 @@ public class UpdateTestCase2 extends HttpServlet {
                  * The service was able to perform the query and confirm the
                  * object exist, then we can update it.
                  */
-                TCase tc = getInfo(request);
+
+                getInfo(request, tc);
 
                 ans = testCaseService.update(tc);
                 getCountryList(tc, request);
@@ -133,81 +136,7 @@ public class UpdateTestCase2 extends HttpServlet {
                      * Update was succesfull. Adding Log entry.
                      */
                     ILogEventService logEventService = appContext.getBean(LogEventService.class);
-                    logEventService.createPrivateCalls("/UpdateApplication", "UPDATE", "Updated TestCase : ['" + testCase + "']", request);
-                }
-            }
-        } else if (!StringUtil.isNullOrEmpty(active)) {
-            /**
-             * All data seems cleans so we can call the services.
-             */
-            ApplicationContext appContext = WebApplicationContextUtils.getWebApplicationContext(this.getServletContext());
-            ITestCaseService testCaseService = appContext.getBean(ITestCaseService.class);
-
-            AnswerItem resp = testCaseService.readByKey(test, testCase);
-            if (!(resp.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode()))) {
-                /**
-                 * Object could not be found. We stop here and report the error.
-                 */
-                msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_EXPECTED);
-                msg.setDescription(msg.getDescription().replace("%ITEM%", "TestCase")
-                        .replace("%OPERATION%", "Update")
-                        .replace("%REASON%", "TestCase does not exist."));
-                ans.setResultMessage(msg);
-
-            } else {
-                /**
-                 * The service was able to perform the query and confirm the
-                 * object exist, then we can update it.
-                 */
-                TCase tc = (TCase) resp.getItem();
-                tc.setActive(active);
-
-                ans = testCaseService.update(tc);
-
-                if (ans.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
-                    /**
-                     * Update was succesfull. Adding Log entry.
-                     */
-                    ILogEventService logEventService = appContext.getBean(LogEventService.class);
-                    logEventService.createPrivateCalls("/UpdateApplication", "UPDATE", "Updated TestCase : ['" + testCase + "']", request);
-                }
-            }
-        } else if (!StringUtil.isNullOrEmpty(country) && !StringUtil.isNullOrEmpty(state)) {
-            /**
-             * All data seems cleans so we can call the services.
-             */
-            ApplicationContext appContext = WebApplicationContextUtils.getWebApplicationContext(this.getServletContext());
-            ITestCaseService testCaseService = appContext.getBean(ITestCaseService.class);
-
-            AnswerItem resp = testCaseService.readByKey(test, testCase);
-            if (!(resp.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode()))) {
-                /**
-                 * Object could not be found. We stop here and report the error.
-                 */
-                msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_EXPECTED);
-                msg.setDescription(msg.getDescription().replace("%ITEM%", "TestCase")
-                        .replace("%OPERATION%", "Update")
-                        .replace("%REASON%", "TestCase does not exist."));
-                ans.setResultMessage(msg);
-
-            } else {
-                /**
-                 * The service was able to perform the query and confirm the
-                 * object exist, then we can update it.
-                 */
-                TCase tc = (TCase) resp.getItem();
-                ITestCaseCountryService testCaseCountryService = appContext.getBean(TestCaseCountryService.class);
-                AnswerItem tcc = testCaseCountryService.readByKey(tc.getTest(), tc.getTestCase(), country);
-                
-                if (tcc.isCodeEquals(MessageEventEnum.DATA_OPERATION_NO_DATA_FOUND.getCode()) && state.equals("on")) {
-                    TestCaseCountry addCountry = new TestCaseCountry();
-                    addCountry.setTest(tc.getTest());
-                    addCountry.setTestCase(tc.getTestCase());
-                    addCountry.setCountry(country);
-
-                    testCaseCountryService.insertTestCaseCountry(addCountry);
-                } else if (tcc.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode()) && state.equals("off")) {                   
-                    testCaseCountryService.deleteTestCaseCountry((TestCaseCountry) tcc.getItem());
+                    logEventService.createPrivateCalls("/UpdateTestCase", "UPDATE", "Updated TestCase : ['" + testCase + "']", request);
                 }
             }
         }
@@ -277,34 +206,37 @@ public class UpdateTestCase2 extends HttpServlet {
         return "Short description";
     }// </editor-fold>
 
-    private TCase getInfo(HttpServletRequest request) throws CerberusException, JSONException {
-        TCase tc = new TCase();
-        tc.setTest(request.getParameter("test"));
-        tc.setTestCase(request.getParameter("testCase"));
-        tc.setImplementer(request.getParameter("implementer"));
+    private TCase getInfo(HttpServletRequest request, TCase tc) throws CerberusException, JSONException {
+        tc.setTest(ParameterParserUtil.parseStringParam(request.getParameter("test"), tc.getTest()));
+        tc.setTestCase(ParameterParserUtil.parseStringParam(request.getParameter("testCase"), tc.getTestCase()));
+        tc.setImplementer(ParameterParserUtil.parseStringParam(request.getParameter("imlementer"), tc.getImplementer()));
         tc.setLastModifier(request.getUserPrincipal().getName());
-        tc.setProject(request.getParameter("project"));
-        tc.setTicket(request.getParameter("ticket"));
-        tc.setApplication(request.getParameter("application"));
-        tc.setRunQA(request.getParameter("activeQA"));
-        tc.setRunUAT(request.getParameter("activeUAT"));
-        tc.setRunPROD(request.getParameter("activeProd"));
-        tc.setPriority(Integer.parseInt(request.getParameter("priority")));
-        tc.setGroup(request.getParameter("group"));
-        tc.setStatus(request.getParameter("status"));
-        tc.setShortDescription(request.getParameter("shortDesc"));
-        tc.setDescription(request.getParameter("behaviorOrValueExpected"));
-        tc.setHowTo(request.getParameter("howTo"));
-        tc.setActive(request.getParameter("active"));
-        tc.setFromSprint(request.getParameter("fromSprint"));
-        tc.setFromRevision(request.getParameter("fromRev"));
-        tc.setToSprint(request.getParameter("toSprint"));
-        tc.setToRevision(request.getParameter("toRev"));
-        tc.setBugID(request.getParameter("bugId"));
-        tc.setTargetSprint(request.getParameter("targetSprint"));
-        tc.setTargetRevision(request.getParameter("targetRev"));
-        tc.setComment(request.getParameter("comment"));
-        tc.setFunction(request.getParameter("function"));
+        if (Strings.isNullOrEmpty(request.getParameter("project"))) {
+            tc.setProject(tc.getProject());
+        } else {
+            tc.setProject(request.getParameter("project"));
+        }
+        tc.setTicket(ParameterParserUtil.parseStringParam(request.getParameter("ticket"), tc.getTicket()));
+        tc.setApplication(ParameterParserUtil.parseStringParam(request.getParameter("application"), tc.getApplication()));
+        tc.setRunQA(ParameterParserUtil.parseStringParam(request.getParameter("activeQA"), tc.getRunQA()));
+        tc.setRunUAT(ParameterParserUtil.parseStringParam(request.getParameter("activeUAT"), tc.getRunUAT()));
+        tc.setRunPROD(ParameterParserUtil.parseStringParam(request.getParameter("activeProd"), tc.getRunPROD()));
+        tc.setPriority(ParameterParserUtil.parseIntegerParam(request.getParameter("priority"), tc.getPriority()));
+        tc.setGroup(ParameterParserUtil.parseStringParam(request.getParameter("group"), tc.getGroup()));
+        tc.setStatus(ParameterParserUtil.parseStringParam(request.getParameter("status"), tc.getStatus()));
+        tc.setShortDescription(ParameterParserUtil.parseStringParam(request.getParameter("shortDesc"), tc.getShortDescription()));
+        tc.setDescription(ParameterParserUtil.parseStringParam(request.getParameter("behaviorOrValueExpected"), tc.getDescription()));
+        tc.setHowTo(ParameterParserUtil.parseStringParam(request.getParameter("howTo"), tc.getHowTo()));
+        tc.setActive(ParameterParserUtil.parseStringParam(request.getParameter("active"), tc.getActive()));
+        tc.setFromSprint(ParameterParserUtil.parseStringParam(request.getParameter("fromSprint"), tc.getFromSprint()));
+        tc.setFromRevision(ParameterParserUtil.parseStringParam(request.getParameter("fromRev"), tc.getFromRevision()));
+        tc.setToSprint(ParameterParserUtil.parseStringParam(request.getParameter("toSprint"), tc.getToSprint()));
+        tc.setToRevision(ParameterParserUtil.parseStringParam(request.getParameter("toRev"), tc.getToRevision()));
+        tc.setBugID(ParameterParserUtil.parseStringParam(request.getParameter("bugId"), tc.getBugID()));
+        tc.setTargetSprint(ParameterParserUtil.parseStringParam(request.getParameter("targetSprint"), tc.getTargetSprint()));
+        tc.setTargetRevision(ParameterParserUtil.parseStringParam(request.getParameter("targetRev"), tc.getTargetRevision()));
+        tc.setComment(ParameterParserUtil.parseStringParam(request.getParameter("comment"), tc.getComment()));
+        tc.setFunction(ParameterParserUtil.parseStringParam(request.getParameter("function"), tc.getFunction()));
         return tc;
     }
 
@@ -318,7 +250,7 @@ public class UpdateTestCase2 extends HttpServlet {
         List<TestCaseCountry> tcCountry = answer.getDataList();
 
         for (Invariant country : invariantService.findListOfInvariantById("COUNTRY")) {
-            countryList.put(country.getValue(), ParameterParserUtil.parseStringParam(request.getParameter(country.getValue()), "off"));
+            countryList.put(country.getValue(), ParameterParserUtil.parseStringParam(request.getParameter(country.getValue()), ""));
         }
 
         for (TestCaseCountry countryDB : tcCountry) {

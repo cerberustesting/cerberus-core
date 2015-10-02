@@ -1785,4 +1785,42 @@ public class TestCaseDAO implements ITestCaseDAO {
         }
         return new Answer(msg);
     }
+    
+    @Override
+    public Answer delete(TCase testCase) {
+        MessageEvent msg = null;
+        final String query = "DELETE FROM testcase WHERE test = ? AND testcase = ?";
+
+        Connection connection = this.databaseSpring.connect();
+        try {
+            PreparedStatement preStat = connection.prepareStatement(query);
+            try {
+                preStat.setString(1, testCase.getTest());
+                preStat.setString(2, testCase.getTestCase());
+
+                preStat.executeUpdate();
+                msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
+                msg.setDescription(msg.getDescription().replace("%ITEM%", "TestCase").replace("%OPERATION%", "DELETE"));
+            } catch (SQLException exception) {
+                LOG.error("Unable to execute query : " + exception.toString());
+                msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
+                msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", exception.toString()));
+            } finally {
+                preStat.close();
+            }
+        } catch (SQLException exception) {
+            LOG.error("Unable to execute query : " + exception.toString());
+            msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
+            msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", exception.toString()));
+        } finally {
+            try {
+                if (connection != null) {
+                    connection.close();
+                }
+            } catch (SQLException exception) {
+                LOG.warn("Unable to close connection : " + exception.toString());
+            }
+        }
+        return new Answer(msg);
+    }
 }

@@ -311,4 +311,9 @@ public class TestCaseService implements ITestCaseService {
     public Answer create(TCase testCase) {
         return testCaseDao.create(testCase);
     }
+    
+    @Override
+    public Answer delete(TCase testCase) {
+        return testCaseDao.delete(testCase);
+    }
 }

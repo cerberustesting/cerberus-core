@@ -17,10 +17,9 @@
  * You should have received a copy of the GNU General Public License
  * along with Cerberus.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.cerberus.servlet.test;
+package org.cerberus.servlet.testcase;
 
 import java.io.IOException;
-import java.io.PrintWriter;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.servlet.ServletException;
@@ -29,9 +28,9 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import org.cerberus.crud.entity.MessageEvent;
-import org.cerberus.crud.entity.Test;
+import org.cerberus.crud.entity.TCase;
 import org.cerberus.crud.service.ILogEventService;
-import org.cerberus.crud.service.ITestService;
+import org.cerberus.crud.service.ITestCaseService;
 import org.cerberus.crud.service.impl.LogEventService;
 import org.cerberus.enums.MessageEventEnum;
 import org.cerberus.util.StringUtil;
@@ -48,8 +47,8 @@ import org.springframework.web.context.support.WebApplicationContextUtils;
  *
  * @author cerberus
  */
-@WebServlet(name = "DeleteTest1", urlPatterns = {"/DeleteTest1"})
-public class DeleteTest1 extends HttpServlet {
+@WebServlet(name = "DeleteTestCase2", urlPatterns = {"/DeleteTestCase2"})
+public class DeleteTestCase2 extends HttpServlet {
 
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
@@ -74,34 +73,34 @@ public class DeleteTest1 extends HttpServlet {
         /**
          * Parsing and securing all required parameters.
          */
-        String key = policy.sanitize(request.getParameter("test"));
+        String test = policy.sanitize(request.getParameter("test"));
+        String testCase = policy.sanitize(request.getParameter("testCase")); 
 
         /**
          * Checking all constrains before calling the services.
          */
-        if (StringUtil.isNull(key)) {
+        if (StringUtil.isNullOrEmpty(test) || StringUtil.isNullOrEmpty(testCase)) {
             msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_EXPECTED);
-            msg.setDescription(msg.getDescription().replace("%ITEM%", "Test")
+            msg.setDescription(msg.getDescription().replace("%ITEM%", "TestCase")
                     .replace("%OPERATION%", "Delete")
-                    .replace("%REASON%", "Test name is missing."));
+                    .replace("%REASON%", "mendatory fields is missing!"));
             ans.setResultMessage(msg);
         } else {
             /**
              * All data seems cleans so we can call the services.
              */
             ApplicationContext appContext = WebApplicationContextUtils.getWebApplicationContext(this.getServletContext());
-            ITestService testService = appContext.getBean(ITestService.class);
+            ITestCaseService testCaseService = appContext.getBean(ITestCaseService.class);
 
-            AnswerItem resp = testService.readByKey(key);
-
+            AnswerItem resp = testCaseService.readByKey(test, testCase);
             if (!(resp.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode()))) {
                 /**
                  * Object could not be found. We stop here and report the error.
                  */
                 msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_EXPECTED);
-                msg.setDescription(msg.getDescription().replace("%ITEM%", "Test")
+                msg.setDescription(msg.getDescription().replace("%ITEM%", "TestCase")
                         .replace("%OPERATION%", "Delete")
-                        .replace("%REASON%", "Test does not exist."));
+                        .replace("%REASON%", "TestCase does not exist."));
                 ans.setResultMessage(msg);
 
             } else {
@@ -109,15 +108,15 @@ public class DeleteTest1 extends HttpServlet {
                  * The service was able to perform the query and confirm the
                  * object exist, then we can delete it.
                  */
-                Test testData = (Test) resp.getItem();
-                ans = testService.delete(testData);
+                TCase testCaseData = (TCase) resp.getItem();
+                ans = testCaseService.delete(testCaseData);
 
                 if (ans.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
                     /**
-                     * Delete was successful. Adding Log entry.
+                     * Delete was succesfull. Adding Log entry.
                      */
                     ILogEventService logEventService = appContext.getBean(LogEventService.class);
-                    logEventService.createPrivateCalls("/DeleteTest", "DELETE", "Delete Test : ['" + key + "']", request);
+                    logEventService.createPrivateCalls("/DeleteTestCase", "DELETE", "Delete TestCase : ['" + testCase + "']", request);
                 }
             }
         }
@@ -147,7 +146,7 @@ public class DeleteTest1 extends HttpServlet {
         try {
             processRequest(request, response);
         } catch (JSONException ex) {
-            Logger.getLogger(DeleteTest1.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(DeleteTestCase2.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
 
@@ -165,7 +164,7 @@ public class DeleteTest1 extends HttpServlet {
         try {
             processRequest(request, response);
         } catch (JSONException ex) {
-            Logger.getLogger(DeleteTest1.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(DeleteTestCase2.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
 

@@ -496,6 +496,7 @@ function returnMessageHandler(response) {
         if (response.messageType !== "OK") {
             var type = getAlertType(response.messageType);
 
+            clearResponseMessageMainPage();
             showMessageMainPage(type, response.message);
         }
     } else {
@@ -504,6 +505,7 @@ function returnMessageHandler(response) {
 }
 
 function showUnexpectedError() {
+    clearResponseMessageMainPage();
     var type = getAlertType("KO");
     var message = "ERROR - An unexpected error occured, the servlet may not be available";
 
