@@ -354,6 +354,7 @@
         <%@ include file="include/testcase/listTestDataLib.html"%> 
         <%@ include file="include/testcase/addPicture.html"%> 
         <%@ include file="include/testcase/showPicture.html"%> 
+        <%@ include file="include/testcase/showTestCases.html"%> 
         <div id="body">
             <%
                 boolean booleanFunction = false;
@@ -1053,7 +1054,7 @@
                                             List<TestCaseStepAction> tcsaList = tcsaService.getListOfAction(testForQuery, testcaseForQuery, stepForQuery);
 
                                     %>
-                                    <div id="listOfTestCaseUsingStep" style="display:none;">
+                                    <div id="listOfTestCaseUsingStep<%=incrementStep%>" style="display:none;">
                                         <%                                    if (!tcsUsingThisStep.isEmpty()) {
                                                 for (TestCaseStep TcUsed : tcsUsingThisStep) {
                                         %>    
@@ -1073,7 +1074,7 @@
                                                 <%}%>
                                                 <%if (stepusedByAnotherTest) {%>
                                                 <div id="StepWarnAlreadyInUse" title="Step In Use By Other Testcase" style="float:left;width:10px;height:100%;display:inline-block; background-color:yellow;"
-                                                     onclick="showTestCaseUsingThisStep()">
+                                                     onclick="showTestCaseUsingThisStep(<%=incrementStep%>)">
                                                 </div>
                                                 <%}%>
                                                 <%if (useStep) {%>
@@ -2238,19 +2239,7 @@
             }
 
         </script>
-        <script>
-            function showTestCaseUsingThisStep() {
-                $("#listOfTestCaseUsingStep").dialog({
-                    width: "800",
-                    height: "600",
-                    buttons: {
-                        "OK": function() {
-                            $(this).dialog("close");
-                        }
-                    }
-                });
-            }
-        </script>
+
         <script>
             function showChangedRow(row) {
                 $(row).css('background-color', '#FFEBC4');
