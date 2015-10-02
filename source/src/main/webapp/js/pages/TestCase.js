@@ -1719,7 +1719,16 @@ function addPictureClickHandler(){
     }
     
 }
-
+/**
+ * Show modal listing the test cases that use the step
+ * @param {type} stepNumber
+ * @returns {undefined}
+ */
+function showTestCaseUsingThisStep(stepNumber) {
+    $("#showTestCasesModal #listofTC").empty();
+    $("#showTestCasesModal #listofTC").html($("#listOfTestCaseUsingStep" + stepNumber).html());
+    $("#showTestCasesModal").modal("show");    
+}
 /*********************drag and drop functions ******************************/
 function insertTCS(event, incStep) {
     event.preventDefault();
