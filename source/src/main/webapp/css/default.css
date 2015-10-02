@@ -120,6 +120,12 @@ td
     width: 1400px;
 }
 
+/**heights**/
+.height400{
+    height: 400px;
+}
+/**margins**/
+
 .marginRight5{
     margin-right: 5px;
 }
@@ -135,7 +141,9 @@ td
     padding-left:0px;
 }
 /*margins*/
-
+.marginTop20{
+    margin-top: 20px;
+}
 .marginTop25{
     margin-top: 25px;
 }
@@ -559,7 +567,7 @@ input.readonlyaction_seq, input.readonlyactioncontrol_seq{
 div.StepUseStepLinkDiv{
     float:left;
     margin-top:10px; 
-    width:5%;
+    width:10%;
 }
 div.StepUseStepLinkDiv button, div.StepUseStepLinkDiv a{
     margin-left: 2.5px;
@@ -578,3 +586,7 @@ div.ActionControlOfUseStepTemp  {
     background-color:#C4FFEB;
 }
 
+img.selectedPicture{
+    max-height: 400px; 
+    max-width: 600px;
+}

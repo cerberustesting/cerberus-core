@@ -4806,7 +4806,7 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLInstruction.add(SQLS.toString());
         
         // Documentation entries for Test Case page - useStep option.
-        //-- ------------------------ 632-633
+        //-- ------------------------ 634
         SQLS = new StringBuilder();
         SQLS.append("INSERT INTO `documentation` VALUES ");
         SQLS.append("('page_testcase', 'dpd_choose_test','','en','-- Choose Test --', \"\") "); 
@@ -4816,8 +4816,23 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLS.append(", ('page_testcase', 'tooltip_is_useStep','','en','This step can not be used as library, because it uses another step!', \"\") "); 
         SQLS.append(", ('page_testcase', 'lbl_copied_from','','en','Copied from:', \"\") "); 
         SQLS.append(", ('page_testcase', 'link_edit_step','','en','Edit Used Step', \"\") ");
-
+        
         SQLInstruction.add(SQLS.toString());
+        
+        
+        // Documentation entries for Test Case page - tooltips for controls and actions.
+        //-- ------------------------ 635
+        SQLS = new StringBuilder();
+        SQLS.append("INSERT INTO `documentation` VALUES ");
+        SQLS.append("('page_testcase', 'tooltip_addAction','','en','Add Action', \"\") "); 
+        SQLS.append(", ('page_testcase', 'tooltip_addControl','','en','Add Control', \"\") "); 
+        SQLS.append(", ('page_testcase_m_addPicture', 'title','','en','Add URL for picture', \"\") "); 
+        SQLS.append(", ('page_testcase_m_addPicture', 'lbl_feedurl','','en','Feed URL', \"\") "); 
+        SQLS.append(", ('page_testcase_m_addPicture', 'error_message_empty','','en','The URL value is empty!', \"\") "); 
+        SQLS.append(", ('page_testcase_m_showPicture', 'title','','en','Selected Picture', \"\") "); 
+        SQLS.append(", ('page_testcase_m_showPicture', 'btn_remove','','en','Remove', \"\") "); 
+        SQLInstruction.add(SQLS.toString());
+        
         return SQLInstruction;
     }
 
