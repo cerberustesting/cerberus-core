@@ -17,6 +17,9 @@
   ~ You should have received a copy of the GNU General Public License
   ~ along with Cerberus.  If not, see <http://www.gnu.org/licenses/>.
 --%>
+<%@page import="org.springframework.context.ApplicationContext"%>
+<%@page import="org.springframework.web.context.support.WebApplicationContextUtils"%>
+<%@page import="org.springframework.web.context.WebApplicationContext"%>
 <%@page import="org.cerberus.crud.entity.TCase"%>
 <%@page import="org.cerberus.crud.service.IManualTestCaseService"%>
 <%@page import="org.cerberus.crud.service.ITestCaseService"%>
@@ -25,15 +28,12 @@
 <%@ page import="org.cerberus.util.ParameterParserUtil" %>
 
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
-<%@ include file="include/function.jsp" %>
 <%
-
+    ApplicationContext appContext = WebApplicationContextUtils.getWebApplicationContext(this.getServletContext());
     IDocumentationService docService = appContext.getBean(IDocumentationService.class);
     ITestCaseService testCaseService = appContext.getBean(ITestCaseService.class);
     IManualTestCaseService manualTestCaseService = appContext.getBean(IManualTestCaseService.class);
-    String myLang = request.getParameterValues("MyLang").toString();
-
-
+    
 
     try {
 %>
@@ -48,10 +48,10 @@
                     <thead>
                     <tr id="headerFirst"  class="filters">
                         <td ><input type="checkbox" name="checkAllTestCases" id="checkAllTestCases" onclick="selectAll();"><label for="checkAllTestCases">All</label></td>
-                        <td ><%=docService.findLabelHTML("test", "test", "Test",myLang)%></td>
-                        <td ><%=docService.findLabelHTML("testcase", "testcase", "TestCase",myLang)%></td>
-                        <td ><%=docService.findLabelHTML("application", "application", "Aplication",myLang)%></td>
-                        <td ><%=docService.findLabelHTML("testcase", "description", "Description",myLang)%></td>
+                        <td >Test</td>
+                        <td >TestCase</td>
+                        <td >Aplication</td>
+                        <td >Description</td>
                     </tr>
                     </thead>
                     <tbody>
