@@ -128,6 +128,7 @@ public enum MessageEventEnum {
     ACTION_FAILED_CLICK(251, "FA", "Failed to click on '%ELEMENT%'.", true, true ,true , MessageGeneralEnum.EXECUTION_FA_ACTION),
     ACTION_FAILED_SELENIUM_CONNECTIVITY(252, "CA", "The test case is canceled due to lost connection to Selenium Server!", true, true ,true , MessageGeneralEnum.EXECUTION_FA_ACTION),
     ACTION_FAILED_NO_SUCH_ELEMENT(253, "FA", "Identifier '%IDENTIFIER%=' isn't recognized! Use: id=, name=, class=, css= , xpath= , link= , picture= or data-cerberus=.", true, true ,true , MessageGeneralEnum.EXECUTION_FA_ACTION),
+    ACTION_FAILED_SQL_NOT_ALLOWED_IDENTIFIER(253, "FA", "Identifier '%IDENTIFIER%=' isn't recognized for this action! Use: script=, procedure=.", true, true ,true , MessageGeneralEnum.EXECUTION_FA_ACTION),
     ACTION_FAILED_NO_ELEMENT_TO_PERFORM_ACTION(254, "FA", "Object and Property are ‘null’. At least one is mandatory in order to perform the action %ACTION%.", true, true ,true , MessageGeneralEnum.EXECUTION_FA_ACTION),
     ACTION_FAILED_CLICKANDWAIT_GENERIC(255, "FA", "Object is 'null'. This is mandatory in order to perform the action click and wait.", true, true ,true , MessageGeneralEnum.EXECUTION_FA_ACTION),
     ACTION_FAILED_CLICKANDWAIT(256, "FA", "Element '%ELEMENT%' clicked but failed to wait '%TIME%' ms.", true, true ,true , MessageGeneralEnum.EXECUTION_FA_ACTION),
@@ -169,6 +170,10 @@ public enum MessageEventEnum {
     ACTION_FAILED_SIKULI_ELEMENT_NOT_FOUND(289, "FA", "Failed to perform the action %ACTION% probably due to Element %ELEMENT% not found.", true, true ,false , MessageGeneralEnum.EXECUTION_FA_ACTION),
     ACTION_NOTEXECUTED_NO_PROPERTY_DEFINITION(290, "NA", "Not executed because Property '%PROP%' is not defined for the country '%COUNTRY%'.", false, false ,false , MessageGeneralEnum.EXECUTION_PE_TESTSTARTED),
     ACTION_NOTEXECUTED_NOTSUPPORTED_FOR_APPLICATION(291, "FA", "Not executed because Action '%ACTION%' is not supported for application type '%APPLICATIONTYPE%'.", true, true ,false , MessageGeneralEnum.EXECUTION_FA_ACTION),
+    ACTION_FAILED_SQL_GENERIC(292, "FA", "An unknown error occur when connecting to %JDBC%.", true, false ,false , MessageGeneralEnum.EXECUTION_FA_ACTION),
+    ACTION_FAILED_SQL_ERROR(293, "FA", "The SQL '%SQL%' has an error : '%EX%'.", true, false ,false , MessageGeneralEnum.EXECUTION_FA_ACTION),
+    ACTION_FAILED_SQL_CANNOTACCESSJDBC(294, "FA", "An error occur when connecting to JDBC datasource '%JDBC%'. Please verify with your administrator that the JDBC is configured inside the application server. Error detail: %EX%", true, false ,false , MessageGeneralEnum.EXECUTION_FA_ACTION),
+    ACTION_FAILED_SQL_JDBCPOOLNOTCONFIGURED(295, "FA", "The JDBC connection pool name does not exist for the corresponding System : %SYSTEM% Country : %COUNTRY%, environment : %ENV% and database : %DB% . Please define it inside the database.", true, false ,false , MessageGeneralEnum.EXECUTION_FA_ACTION),
     ACTION_PENDING(299, "PE", "Doing Action...", false, false ,false , MessageGeneralEnum.EXECUTION_PE_TESTSTARTED),
     
     // *********** EXECUTION CONTROLS ***********

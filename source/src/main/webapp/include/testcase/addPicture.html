@@ -1,0 +1,31 @@
+<div data-backdrop="static" class=" center width800 modal fade" id="addPictureModal" role="dialog" aria-labelledby="addPictureModalLabel" aria-hidden="true">
+    <div class="modal-dialog width800 nomarginbottom nomargintop">
+        <div class="modal-content width800">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title" id="addPictureModalTitle">Add URL for picture</h4>
+            </div>
+            <div class="modal-body center container"> 
+                <div id="DialogMessagesAlertAddPictureMain" class="width600">
+                    <div class="alert" id="DialogMessagesAlertAddPicture"  style="display:none;">
+                        <strong><span class="alert-description" id="DialogAlertDescriptionAddPicture"></span></strong>
+                        <button type="button" class="close" data-hide="alert"  aria-hidden="true">
+                            <span class="glyphicon glyphicon-remove alert-right alert-close pull-right"></span>
+                        </button>
+                    </div>
+                </div>
+                <div  class="form-group col-xs-6">
+                    <label id="lblFeedUrl" for="attachNewScreenshot">Feed URL</label>
+                    <input id="attachNewScreenshot" class="form-control width600" />
+                    <input id="step" type ="hidden" />
+                    <input id="action" type ="hidden" />
+                    <input id="control" type ="hidden" />
+                </div>                 
+            </div> 
+           <div class="modal-footer">
+                <button type="button" class="btn btn-default" id="closeAddPictureButton" data-dismiss="modal">Close</button> 
+                <button type="button" class="btn btn-primary" id="addAddPictureButton">Add</button> 
+            </div>
+        </div> 
+    </div> 
+</div> 
