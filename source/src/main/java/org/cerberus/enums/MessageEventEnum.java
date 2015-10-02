@@ -174,6 +174,7 @@ public enum MessageEventEnum {
     ACTION_FAILED_SQL_ERROR(293, "FA", "The SQL '%SQL%' has an error : '%EX%'.", true, false ,false , MessageGeneralEnum.EXECUTION_FA_ACTION),
     ACTION_FAILED_SQL_CANNOTACCESSJDBC(294, "FA", "An error occur when connecting to JDBC datasource '%JDBC%'. Please verify with your administrator that the JDBC is configured inside the application server. Error detail: %EX%", true, false ,false , MessageGeneralEnum.EXECUTION_FA_ACTION),
     ACTION_FAILED_SQL_JDBCPOOLNOTCONFIGURED(295, "FA", "The JDBC connection pool name does not exist for the corresponding System : %SYSTEM% Country : %COUNTRY%, environment : %ENV% and database : %DB% . Please define it inside the database.", true, false ,false , MessageGeneralEnum.EXECUTION_FA_ACTION),
+    ACTION_FAILED_SQL_AGAINST_CERBERUS(295, "FA", "You cannot executeSqlUpdate using Cerberus connection pool. Please create new connection with dedicated rights.", true, false ,false , MessageGeneralEnum.EXECUTION_FA_ACTION),
     ACTION_PENDING(299, "PE", "Doing Action...", false, false ,false , MessageGeneralEnum.EXECUTION_PE_TESTSTARTED),
     
     // *********** EXECUTION CONTROLS ***********

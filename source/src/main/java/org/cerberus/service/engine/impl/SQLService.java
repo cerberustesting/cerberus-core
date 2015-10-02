@@ -491,6 +491,7 @@ public class SQLService implements ISQLService {
                     PreparedStatement preStat = connection.prepareStatement(sql);
                     try {
                         preStat.executeUpdate();
+                        msg = new MessageEvent(MessageEventEnum.ACTION_SUCCESS);
                     } catch (SQLException exception) {
                         MyLogger.log(SQLService.class.getName(), Level.WARN, exception.toString());
                         msg = new MessageEvent(MessageEventEnum.ACTION_FAILED_SQL_ERROR);
@@ -525,6 +526,7 @@ public class SQLService implements ISQLService {
             msg.setDescription(msg.getDescription().replaceAll("%COUNTRY%", country));
             msg.setDescription(msg.getDescription().replaceAll("%ENV%", environment));
             msg.setDescription(msg.getDescription().replaceAll("%DB%", database));
+            MyLogger.log(SQLService.class.getName(), Level.FATAL, ex.getMessageError().getDescription());
         }
         return msg;
     }
