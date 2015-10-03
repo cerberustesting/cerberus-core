@@ -22,7 +22,6 @@ import java.sql.SQLException;
 import java.util.List;
 
 import org.cerberus.crud.entity.Application;
-import org.cerberus.exception.CerberusException;
 import org.cerberus.util.answer.Answer;
 import org.cerberus.util.answer.AnswerItem;
 import org.cerberus.util.answer.AnswerList;
@@ -37,19 +36,50 @@ import org.cerberus.util.answer.AnswerList;
  */
 public interface IApplicationDAO {
 
+    /**
+     *
+     * @param application
+     * @return
+     */
     AnswerItem readByKey(String application);
 
+    /**
+     *
+     * @param system
+     * @param startPosition
+     * @param length
+     * @param columnName
+     * @param sort
+     * @param searchParameter
+     * @param string
+     * @return
+     */
     AnswerList readBySystemByCriteria(String system, int startPosition, int length, String columnName, String sort, String searchParameter, String string);
 
+    /**
+     *
+     * @param application
+     * @return
+     */
     Answer create(Application application);
 
+    /**
+     *
+     * @param application
+     * @return
+     */
     Answer delete(Application application);
 
+    /**
+     *
+     * @param application
+     * @return
+     */
     Answer update(Application application);
 
     /**
      *
-     * @return @throws CerberusException
+     * @return
      * @since 0.9.1
      */
     List<String> readDistinctSystem();

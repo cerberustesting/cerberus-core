@@ -29,17 +29,57 @@ import org.cerberus.util.answer.AnswerList;
  */
 public interface IDeployTypeDAO {
 
+    /**
+     *
+     * @param deployType
+     * @return
+     */
     public AnswerItem readByKey(String deployType);
 
+    /**
+     *
+     * @return
+     */
     public AnswerList readAll();
 
+    /**
+     *
+     * @param startPosition
+     * @param length
+     * @param columnName
+     * @param sort
+     * @param searchParameter
+     * @param string
+     * @return
+     */
     public AnswerList readByCriteria(int startPosition, int length, String columnName, String sort, String searchParameter, String string);
 
+    /**
+     *
+     * @param deployType
+     * @return
+     */
     public Answer create(DeployType deployType);
 
+    /**
+     *
+     * @param deployType
+     * @return
+     */
     public Answer delete(DeployType deployType);
 
+    /**
+     *
+     * @param deployType
+     * @return
+     */
     public Answer update(DeployType deployType);
 
+    /**
+     *
+     * @param rs
+     * @return
+     * @throws SQLException
+     */
     public DeployType loadFromResultSet(ResultSet rs) throws SQLException;
 }

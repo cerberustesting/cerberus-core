@@ -31,15 +31,51 @@ import org.cerberus.util.answer.AnswerList;
  */
 public interface IProjectDAO {
 
+    /**
+     *
+     * @param project
+     * @return
+     */
     AnswerItem readByKey(String project);
 
+    /**
+     *
+     * @param startPosition
+     * @param length
+     * @param columnName
+     * @param sort
+     * @param searchParameter
+     * @param string
+     * @return
+     */
     AnswerList readByCriteria(int startPosition, int length, String columnName, String sort, String searchParameter, String string);
 
+    /**
+     *
+     * @param project
+     * @return
+     */
     Answer create(Project project);
 
+    /**
+     *
+     * @param project
+     * @return
+     */
     Answer delete(Project project);
 
+    /**
+     *
+     * @param project
+     * @return
+     */
     Answer update(Project project);
 
+    /**
+     *
+     * @param resultSet
+     * @return
+     * @throws SQLException
+     */
     Project loadFromResultSet(ResultSet resultSet) throws SQLException;
 }
