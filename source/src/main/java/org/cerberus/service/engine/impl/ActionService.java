@@ -20,8 +20,8 @@
 package org.cerberus.service.engine.impl;
 
 import java.util.Date;
-import java.util.logging.Logger;
 import org.apache.log4j.Level;
+import org.apache.log4j.Logger;
 import org.cerberus.crud.entity.Identifier;
 import org.cerberus.crud.entity.MessageEvent;
 import org.cerberus.crud.entity.MessageGeneral;
@@ -31,7 +31,6 @@ import org.cerberus.crud.entity.TestCaseExecutionData;
 import org.cerberus.crud.entity.TestCaseStepActionExecution;
 import org.cerberus.crud.service.ISoapLibraryService;
 import org.cerberus.enums.MessageEventEnum;
-import org.cerberus.enums.MessageGeneralEnum;
 import org.cerberus.exception.CerberusEventException;
 import org.cerberus.exception.CerberusException;
 import org.cerberus.log.MyLogger;
@@ -40,6 +39,7 @@ import org.cerberus.service.engine.IAppiumService;
 import org.cerberus.service.engine.IIdentifierService;
 import org.cerberus.service.engine.IPropertyService;
 import org.cerberus.service.engine.IRecorderService;
+import org.cerberus.service.engine.ISQLService;
 import org.cerberus.service.engine.ISikuliService;
 import org.cerberus.service.engine.ISoapService;
 import org.cerberus.service.engine.IWebDriverService;
@@ -73,6 +73,10 @@ public class ActionService implements IActionService {
     private IIdentifierService identifierService;
     @Autowired
     private IAppiumService appiumService;
+    @Autowired
+    private ISQLService sqlService;
+
+    private static final Logger LOG = Logger.getLogger(ActionService.class);
 
     @Override
     public TestCaseStepActionExecution doAction(TestCaseStepActionExecution testCaseStepActionExecution) {
@@ -200,6 +204,10 @@ public class ActionService implements IActionService {
             res = this.doActionGetPageSource(testCaseStepActionExecution);
         } else if (testCaseStepActionExecution.getAction().equals("removeDifference")) {
             res = this.doActionRemoveDifference(testCaseStepActionExecution, object, property);
+        } else if (testCaseStepActionExecution.getAction().equals("executeSqlUpdate")) {
+            res = this.doActionExecuteSQLUpdate(tCExecution, object, property);
+        } else if (testCaseStepActionExecution.getAction().equals("executeSqlStoredProcedure")) {
+            res = this.doActionExecuteSQLStoredProcedure(tCExecution, object, property);
         } else {
             res = new MessageEvent(MessageEventEnum.ACTION_FAILED_UNKNOWNACTION);
             res.setDescription(res.getDescription().replaceAll("%ACTION%", testCaseStepActionExecution.getAction()));
@@ -253,7 +261,7 @@ public class ActionService implements IActionService {
             message.setDescription(message.getDescription().replaceAll("%APPLICATIONTYPE%", tCExecution.getApplication().getType()));
             return message;
         } catch (CerberusEventException ex) {
-            Logger.getLogger(ActionService.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            LOG.fatal("Error doing Action Click :" + ex);
             return ex.getMessageError();
         }
     }
@@ -283,7 +291,7 @@ public class ActionService implements IActionService {
             message.setDescription(message.getDescription().replaceAll("%APPLICATIONTYPE%", tCExecution.getApplication().getType()));
             return message;
         } catch (CerberusEventException ex) {
-            Logger.getLogger(ActionService.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            LOG.fatal("Error doing Action MouseDown :" + ex);
             return ex.getMessageError();
         }
     }
@@ -315,7 +323,7 @@ public class ActionService implements IActionService {
             message.setDescription(message.getDescription().replaceAll("%APPLICATIONTYPE%", tCExecution.getApplication().getType()));
             return message;
         } catch (CerberusEventException ex) {
-            Logger.getLogger(ActionService.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            LOG.fatal("Error doing Action RightClick :" + ex);
             return ex.getMessageError();
         }
     }
@@ -343,7 +351,7 @@ public class ActionService implements IActionService {
             message.setDescription(message.getDescription().replaceAll("%APPLICATIONTYPE%", tCExecution.getApplication().getType()));
             return message;
         } catch (CerberusEventException ex) {
-            Logger.getLogger(ActionService.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            LOG.fatal("Error doing Action MouseUp :" + ex);
             return ex.getMessageError();
         }
     }
@@ -373,7 +381,7 @@ public class ActionService implements IActionService {
             message.setDescription(message.getDescription().replaceAll("%APPLICATIONTYPE%", tCExecution.getApplication().getType()));
             return message;
         } catch (CerberusEventException ex) {
-            Logger.getLogger(ActionService.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            LOG.fatal("Error doing Action SwitchToWindow :" + ex);
             return ex.getMessageError();
         }
     }
@@ -401,7 +409,7 @@ public class ActionService implements IActionService {
             message.setDescription(message.getDescription().replaceAll("%APPLICATIONTYPE%", tCExecution.getApplication().getType()));
             return message;
         } catch (CerberusEventException ex) {
-            Logger.getLogger(ActionService.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            LOG.fatal("Error doing Action ManageDialog :" + ex);
             return ex.getMessageError();
         }
     }
@@ -425,7 +433,7 @@ public class ActionService implements IActionService {
             message.setDescription(message.getDescription().replaceAll("%APPLICATIONTYPE%", string1));
             return message;
         } catch (CerberusEventException ex) {
-            Logger.getLogger(ActionService.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            LOG.fatal("Error doing Action ClickAndWait :" + ex);
             return ex.getMessageError();
         }
     }
@@ -456,11 +464,11 @@ public class ActionService implements IActionService {
             }
 
             message = new MessageEvent(MessageEventEnum.ACTION_NOTEXECUTED_NOTSUPPORTED_FOR_APPLICATION);
-            message.setDescription(message.getDescription().replaceAll("%ACTION%", "Click"));
+            message.setDescription(message.getDescription().replaceAll("%ACTION%", "doubleClick"));
             message.setDescription(message.getDescription().replaceAll("%APPLICATIONTYPE%", tCExecution.getApplication().getType()));
             return message;
         } catch (CerberusEventException ex) {
-            Logger.getLogger(ActionService.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            LOG.fatal("Error doing Action DoubleClick :" + ex);
             return ex.getMessageError();
         }
     }
@@ -486,15 +494,15 @@ public class ActionService implements IActionService {
                 } else {
                     return webdriverService.doSeleniumActionType(tCExecution.getSession(), identifier, property, propertyName);
                 }
-            } else if (tCExecution.getApplication().getType().equalsIgnoreCase("APK")){
-            return appiumService.type(tCExecution.getSession(), identifier, property, propertyName);
+            } else if (tCExecution.getApplication().getType().equalsIgnoreCase("APK")) {
+                return appiumService.type(tCExecution.getSession(), identifier, property, propertyName);
             }
             message = new MessageEvent(MessageEventEnum.ACTION_NOTEXECUTED_NOTSUPPORTED_FOR_APPLICATION);
             message.setDescription(message.getDescription().replaceAll("%ACTION%", "Type"));
             message.setDescription(message.getDescription().replaceAll("%APPLICATIONTYPE%", tCExecution.getApplication().getType()));
             return message;
         } catch (CerberusEventException ex) {
-            Logger.getLogger(ActionService.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            LOG.fatal("Error doing Action Type :" + ex);
             return ex.getMessageError();
         }
     }
@@ -526,7 +534,7 @@ public class ActionService implements IActionService {
             message.setDescription(message.getDescription().replaceAll("%APPLICATIONTYPE%", tCExecution.getApplication().getType()));
             return message;
         } catch (CerberusEventException ex) {
-            Logger.getLogger(ActionService.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            LOG.fatal("Error doing Action MouseOver :" + ex);
             return ex.getMessageError();
         }
     }
@@ -562,7 +570,7 @@ public class ActionService implements IActionService {
             message.setDescription(message.getDescription().replaceAll("%APPLICATIONTYPE%", tCExecution.getApplication().getType()));
             return message;
         } catch (CerberusEventException ex) {
-            Logger.getLogger(ActionService.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            LOG.fatal("Error doing Action MouseOverAndWait :" + ex);
             return ex.getMessageError();
         }
     }
@@ -611,7 +619,7 @@ public class ActionService implements IActionService {
             message.setDescription(message.getDescription().replaceAll("%APPLICATIONTYPE%", tCExecution.getApplication().getType()));
             return message;
         } catch (CerberusEventException ex) {
-            Logger.getLogger(ActionService.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            LOG.fatal("Error doing Action ClickAndWait :" + ex);
             return ex.getMessageError();
         }
     }
@@ -644,7 +652,7 @@ public class ActionService implements IActionService {
             message.setDescription(message.getDescription().replaceAll("%APPLICATIONTYPE%", tCExecution.getApplication().getType()));
             return message;
         } catch (CerberusEventException ex) {
-            Logger.getLogger(ActionService.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            LOG.fatal("Error doing Action KeyPress :" + ex);
             return ex.getMessageError();
         }
     }
@@ -673,7 +681,7 @@ public class ActionService implements IActionService {
             message.setDescription(message.getDescription().replaceAll("%APPLICATIONTYPE%", tCExecution.getApplication().getType()));
             return message;
         } catch (CerberusEventException ex) {
-            Logger.getLogger(ActionService.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            LOG.fatal("Error doing Action OpenUrl :" + ex);
             return ex.getMessageError();
         }
     }
@@ -705,7 +713,7 @@ public class ActionService implements IActionService {
             message.setDescription(message.getDescription().replaceAll("%APPLICATIONTYPE%", tCExecution.getApplication().getType()));
             return message;
         } catch (CerberusEventException ex) {
-            Logger.getLogger(ActionService.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            LOG.fatal("Error doing Action Select :" + ex);
             return ex.getMessageError();
         }
 
@@ -745,7 +753,7 @@ public class ActionService implements IActionService {
             message.setDescription(message.getDescription().replaceAll("%APPLICATIONTYPE%", tCExecution.getApplication().getType()));
             return message;
         } catch (CerberusEventException ex) {
-            Logger.getLogger(ActionService.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            LOG.fatal("Error doing Action FocusToIframe :" + ex);
             return ex.getMessageError();
         }
     }
@@ -832,11 +840,11 @@ public class ActionService implements IActionService {
                 return webdriverService.doSeleniumActionMouseDownMouseUp(tCExecution.getSession(), identifier);
             }
             message = new MessageEvent(MessageEventEnum.ACTION_NOTEXECUTED_NOTSUPPORTED_FOR_APPLICATION);
-            message.setDescription(message.getDescription().replaceAll("%ACTION%", "Click"));
+            message.setDescription(message.getDescription().replaceAll("%ACTION%", "mouseDownMouseUp"));
             message.setDescription(message.getDescription().replaceAll("%APPLICATIONTYPE%", tCExecution.getApplication().getType()));
             return message;
         } catch (CerberusEventException ex) {
-            Logger.getLogger(ActionService.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            LOG.fatal("Error doing Action MouseDownMouseUp :" + ex);
             return ex.getMessageError();
         }
     }
@@ -917,6 +925,7 @@ public class ActionService implements IActionService {
         if (!StringUtil.isNullOrEmpty(object)) {
             return object;
         } else if (!StringUtil.isNullOrEmpty(property)) {
+            LOG.warn("[DEPRECATED] Beware, in future release, it won't be allowed to use action without using field value1. Please read documentation for more detail.");
             return property;
         }
         if (action != null) {
@@ -945,6 +954,24 @@ public class ActionService implements IActionService {
             MyLogger.log(ActionService.class.getName(), Level.INFO, exception.toString());
             message = new MessageEvent(MessageEventEnum.ACTION_FAILED_WAIT);
             return message;
+        }
+    }
+
+    private MessageEvent doActionExecuteSQLUpdate(TestCaseExecution tCExecution, String object, String property) {
+        if (object.equals("cerberus" + System.getProperty("org.cerberus.environment"))) {
+            return new MessageEvent(MessageEventEnum.ACTION_FAILED_SQL_AGAINST_CERBERUS);
+        } else {
+            return sqlService.executeUpdate(tCExecution.getApplication().getSystem(),
+                    tCExecution.getCountry(), tCExecution.getEnvironment(), object, property);
+        }
+    }
+
+    private MessageEvent doActionExecuteSQLStoredProcedure(TestCaseExecution tCExecution, String object, String property) {
+        if (object.equals("cerberus" + System.getProperty("org.cerberus.environment"))) {
+            return new MessageEvent(MessageEventEnum.ACTION_FAILED_SQL_AGAINST_CERBERUS);
+        } else {
+            return sqlService.executeCallableStatement(tCExecution.getApplication().getSystem(),
+                    tCExecution.getCountry(), tCExecution.getEnvironment(), object, property);
         }
     }
 

@@ -202,7 +202,7 @@ public class ExecutionStartService implements IExecutionStartService {
             /**
              * If execution is manual, we force the env at empty string.
              */
-            tCExecution.setEnvironment("");
+            tCExecution.setEnvironment("MANUAL");
         } else {
             /**
              * Automatic application configuration execution.

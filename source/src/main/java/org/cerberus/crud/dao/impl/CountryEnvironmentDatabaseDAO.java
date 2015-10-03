@@ -84,7 +84,7 @@ public class CountryEnvironmentDatabaseDAO implements ICountryEnvironmentDatabas
                 try {
                     if (resultSet.next()) {
                         String connectionPoolName = resultSet.getString("ConnectionPoolName");
-                        result = factoryCountryEnvironmentDatabase.create(database, environment, country, connectionPoolName);
+                        result = factoryCountryEnvironmentDatabase.create(system, country, environment, database, connectionPoolName);
                     } else {
                         throwEx = true;
                     }
@@ -173,7 +173,7 @@ public class CountryEnvironmentDatabaseDAO implements ICountryEnvironmentDatabas
 
     @Override
     public void update(CountryEnvironmentDatabase ced) throws CerberusException {
-        final StringBuffer query = new StringBuffer("UPDATE `countryenvironmentdatabase` SET `connectionpoolname`=?, ");
+        final StringBuffer query = new StringBuffer("UPDATE `countryenvironmentdatabase` SET `connectionpoolname`=? ");
         query.append(" where `system`=? and `country`=? and `environment`=? and `database`=?");
         
         Connection connection = this.databaseSpring.connect();

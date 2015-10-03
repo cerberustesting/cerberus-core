@@ -1515,7 +1515,7 @@ function openTestData(value) {
     }
 }
 
-function showPicture(url, id, div) {
+/*function showPicture(url, id, div) {
     $('#popin').empty();
     $('#popin').prepend("<img src='" + url + "'/>");
     $('#popin').dialog({hide: {duration: 300}, height: 600, width: 800, buttons: [{text: "Ok", click: function () {
@@ -1525,9 +1525,9 @@ function showPicture(url, id, div) {
                     $("#" + id).val("").trigger("change");
                     $(this).dialog("close");
                 }}]});
-}
+}*/
 
-function attachPicture(id, pictureToRemove) {
+/*function attachPicture(id, pictureToRemove) {
     $('#popin').empty();
     $('#popin').append("<p>Feed Picture URL</p><input style='width:600px' id='attachNewScreenshot'></input>");
     $('#popin').dialog({hide: {duration: 300}, height: 200, width: 700, buttons: [{text: "Ok", click: function () {
@@ -1537,7 +1537,7 @@ function attachPicture(id, pictureToRemove) {
                     ;
                     $(this).dialog("close");
                 }}]});
-}
+}*/
 
 function openSqlLibraryPopin(value) {
     loadSqlLibraryPopin(value);
@@ -2296,6 +2296,9 @@ function addTCSCNew(rowID, obj) {
     $('#StepFirstLineDiv' + nextIncStep).find('input[id="step_useStepChanged_template"]')
             .attr('id', 'step_useStepChanged_' + nextIncStep)
             .attr('name', 'step_useStepChanged_' + nextIncStep);    
+    $('#StepFirstLineDiv' + nextIncStep).find('input[id="isToCopySteps_template"]')
+            .attr('id', 'isToCopySteps_' + nextIncStep)
+            .attr('name', 'isToCopySteps_' + nextIncStep);    
     $('#StepFirstLineDiv' + nextIncStep).find('select[data-id="step_addActionButton_template"]')
             .attr('onclick', 'addTCSANew(\'BeforeFirstAction' + nextIncStep + '\', \'' + nextIncStep + '\', null)');
     $('#StepButtonDiv' + nextIncStep).find('input[data-id="submitButtonActionTemplate"]')
@@ -2463,7 +2466,7 @@ function openRunManualPopin(test, testcase, env, country, idFromQueue, tag, brow
 function loadRunManualPopin(test, testcase, env, country, idFromQueue, tag, browser) {
 //    $('#popin').hide().empty();
     console.log(test);
-    $('#popin').load('TestCaseManualRun.jsp?Test=' + test.replace(new RegExp(' ', 'g'), '%20') + '&TestCase=' + testcase + '&Environment=' + env + '&Country=' + country + '&IdFromQueue=' + idFromQueue + '&Tag=' + tag + '&Browser=' + browser);
+    $('#popin').load('TestCaseManualRun.jsp?Test=' + test.replace(new RegExp(' ', 'g'), '%20') + '&TestCase=' + testcase + '&Environment=' + env + '&Country=' + country + '&IdFromQueue=' + idFromQueue + '&Tag=' + tag.replace(new RegExp(' ', 'g'), '%20') + '&Browser=' + browser);
 //    $('#popin').show();
 }
 

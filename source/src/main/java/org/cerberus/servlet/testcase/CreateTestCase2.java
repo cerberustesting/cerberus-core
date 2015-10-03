@@ -105,7 +105,7 @@ public class CreateTestCase2 extends HttpServlet {
 
             TCase testCaseData = getInfo(request);
             ans = testCaseService.create(testCaseData);
-            
+
             getCountryList(testCaseData, request);
 
             if (ans.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
@@ -185,7 +185,11 @@ public class CreateTestCase2 extends HttpServlet {
         tc.setImplementer(request.getParameter("implementer"));
         tc.setCreator(request.getUserPrincipal().getName());
         tc.setLastModifier(request.getUserPrincipal().getName());
-        tc.setProject(request.getParameter("project"));
+        if (request.getParameter("project").equals("")) {
+            tc.setProject(null);
+        } else {
+            tc.setProject(request.getParameter("project"));
+        }
         tc.setTicket(request.getParameter("ticket"));
         tc.setApplication(request.getParameter("application"));
         tc.setRunQA(request.getParameter("activeQA"));

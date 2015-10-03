@@ -352,7 +352,9 @@
         <%@ include file="include/function.jsp" %>
         <%@ include file="include/header.html" %>
         <%@ include file="include/testcase/listTestDataLib.html"%> 
-        
+        <%@ include file="include/testcase/addPicture.html"%> 
+        <%@ include file="include/testcase/showPicture.html"%> 
+        <%@ include file="include/testcase/showTestCases.html"%> 
         <div id="body">
             <%
                 boolean booleanFunction = false;
@@ -396,20 +398,19 @@
                     String proplist = "";
 
                     /*
-                     * Get Parameters
+                     * Get default system and language
                      */
-                    HttpSession httpSession = request.getSession();
-                    System.out.print(httpSession.getId());
-                    String MySystem = httpSession.getAttribute("MySystem").toString();
-                    if (request.getParameter("system") != null && request.getParameter("system").compareTo("") != 0) {
-                        MySystem = request.getParameter("system");
-                    }
+                    String user = request.getUserPrincipal().getName();
+                    User myUser = userService.findUserByKey(user);
                     List<String> systems = new ArrayList();
+                    //TODO:FN temporary fix
+                    String MySystem = myUser.getDefaultSystem();
                     systems.add(MySystem);
-                    
-                    String myLang = ParameterParserUtil.parseStringParam(httpSession.getAttribute("MyLang").toString(), "en");
+                    String myLang = myUser.getLanguage();
+                    HttpSession httpSession = request.getSession();
+                    httpSession.setAttribute("MySystem", myUser.getDefaultSystem());
+                    httpSession.setAttribute("MyLang", myUser.getLanguage());
 
-                    
                     List<Test> tests = new ArrayList();
 
                     String group = getRequestParameterWildcardIfEmpty(request, "group");
@@ -1053,7 +1054,7 @@
                                             List<TestCaseStepAction> tcsaList = tcsaService.getListOfAction(testForQuery, testcaseForQuery, stepForQuery);
 
                                     %>
-                                    <div id="listOfTestCaseUsingStep" style="display:none;">
+                                    <div id="listOfTestCaseUsingStep<%=incrementStep%>" style="display:none;">
                                         <%                                    if (!tcsUsingThisStep.isEmpty()) {
                                                 for (TestCaseStep TcUsed : tcsUsingThisStep) {
                                         %>    
@@ -1073,7 +1074,7 @@
                                                 <%}%>
                                                 <%if (stepusedByAnotherTest) {%>
                                                 <div id="StepWarnAlreadyInUse" title="Step In Use By Other Testcase" style="float:left;width:10px;height:100%;display:inline-block; background-color:yellow;"
-                                                     onclick="showTestCaseUsingThisStep()">
+                                                     onclick="showTestCaseUsingThisStep(<%=incrementStep%>)">
                                                 </div>
                                                 <%}%>
                                                 <%if (useStep) {%>
@@ -1118,6 +1119,13 @@
                                                        <%if (tcs.getInLibrary().equals("Y")) {%>
                                                            disabled="disabled" title ='This step uses another step!'
                                                        <%}%>> 
+                                                <input type="hidden" name="initUseStep_<%=incrementStep%>"
+                                                       <% if (tcs.getUseStep().equals("Y")) {%>
+                                                       value="Y"
+                                                       <%}else{%> 
+                                                       value="N"
+                                                       <%}%> 
+                                                       id="initUseStep_<%=incrementStep%>" />
                                                 <input type="hidden" name="isToCopySteps_<%=incrementStep%>" value="N" id="isToCopySteps_<%=incrementStep%>" />
                                                 <input type="hidden" name="step_useStepChanged_<%=incrementStep%>" value="N" id="step_useStepChanged_<%=incrementStep%>" />
                                                        
@@ -1129,7 +1137,7 @@
                                             <div id="StepUseStepTestDiv<%=incrementStep%>" style="float:left; width:10%">
                                                 <select id="step_useStepTest_<%=incrementStep%>" name="step_useStepTest_<%=incrementStep%>" style="width: 100%;margin-top:7.5px;font-weight: bold;" 
                                                         OnChange="findStepBySystemTest(this, '<%=MySystem%>', $('#step_useStepTestCase_<%=incrementStep%>'), 
-                                                                    $('#load_step_inLibrary_<%=incrementStep%>'))">
+                                                                    $('#load_step_inLibrary_<%=incrementStep%>'), '')">
                                                     <%  if (tcs.getUseStepTest() == null || tcs.getUseStepTest().equals("")) { %>
                                                     <option style="width: 200px" value="">-- Choose Test --
                                                     </option>
@@ -1167,7 +1175,7 @@
                                             <div id="StepUseStepTestCaseDiv<%=incrementStep%>" style="float:left;width:10%">
                                                 <select name="step_useStepTestCase_<%=incrementStep%>" style="width: 100%;margin-top:7.5px;font-weight: bold;" 
                                                         OnChange="findStepBySystemTestTestCase($('#step_useStepTest_<%=incrementStep%>'), this, '<%=MySystem%>', 
-                                                                    $('#step_useStepStep_<%=incrementStep%>'), $('#load_step_inLibrary_<%=incrementStep%>'))"
+                                                                    $('#step_useStepStep_<%=incrementStep%>'), $('#load_step_inLibrary_<%=incrementStep%>'), '')"
                                                         id="step_useStepTestCase_<%=incrementStep%>">
                                                     <%  if (tcs.getUseStepTestCase().equals("")) { %>
                                                     <option style="width: 400px" value="">---</option>
@@ -1241,7 +1249,6 @@
                                                             String actionFontColor = "#333333";
                                                             int incrementAction = 0;
                                                             for (TestCaseStepAction tcsa : tcsaList) {
-    System.out.println(tcsa.getObject());
                                                                 incrementAction++;
                                                                 int b;
                                                                 b = incrementAction % 2;
@@ -1263,7 +1270,7 @@
                                                                 <% if (!useStep) {%>
                                                                 <img style="margin-top:12px" src="images/bin.png" id="img_delete_<%=incrementStep%>_<%=incrementAction%>" onclick="checkDeleteBox('img_delete_<%=incrementStep%>_<%=incrementAction%>', 'action_delete_<%=incrementStep%>_<%=incrementAction%>', 'StepListOfActionDiv<%=incrementStep%><%=incrementAction%>', 'RowActionDiv')">
                                                                 <input  class="wob" type="checkbox" data-action="delete_action" name="action_delete_<%=incrementStep%>_<%=incrementAction%>" style="display:none; margin-top:20px; background-color: transparent"
-                                                                        id="action_delete_<%=incrementStep%>_<%=incrementAction%>" value="<%=tcsa.getStep() + "-" + tcsa.getSequence()%>" <%=isReadonly%>>
+                                                                        id="action_delete_<%=incrementStep%>_<%=incrementAction%>" value="<%=tcsa.getStep() + "_" + tcsa.getSequence()%>" <%=isReadonly%>>
                                                                 <%}%>
                                                                 <input type="hidden" name="action_increment_<%=incrementStep%>" value="<%=incrementAction%>" >
                                                                 <input type="hidden" name="action_step_<%=incrementStep%>_<%=incrementAction%>" data-fieldtype="stepNumber" value="<%=incrementStep%>" >
@@ -1305,7 +1312,8 @@
                                                                         <div style="float:left;width:80px; "><p name="labelTestCaseStepActionAction" style="float:right;font-weight:bold;" link="white" >Action</p>
                                                                         </div>
                                                                         <%if (!useStep) {%>
-                                                                            <%=ComboInvariant(appContext, "action_action_" + incrementStep + "_" + incrementAction, "width:50%;border: 1px solid white; color:#888888", "action_action_" + incrementStep + "_" + incrementAction, "wob", "ACTION", tcsa.getAction(), "showChangedRow(this.parentNode.parentNode.parentNode.parentNode)", null)%>
+                                                                            <%=ComboInvariant(appContext, "action_action_" + incrementStep + "_" + incrementAction, "width:50%;border: 1px solid white; color:#888888", "action_action_" + incrementStep + "_" + incrementAction, "wob", "ACTION", 
+                                                                                    tcsa.getAction(), "showChangedRow(this.parentNode.parentNode.parentNode.parentNode)", null)%>
                                                                         <%}else{
                                                                             String action_action_id = "action_action_" + incrementStep + "_" + incrementAction;
                                                                             %>
@@ -1322,9 +1330,14 @@
                                                                                name="action_object_<%=incrementStep%>_<%=incrementAction%>" <%=isReadonly%>>
                                                                         <% if (tcsa.getObject().startsWith("picture=")){%>
                                                                         <div>
-                                                                        <img class="wob" width="45" height="35" src="<%=tcsa.getObject().split("picture=")[1]%>" 
-                                                                         onclick="showPicture('<%=tcsa.getScreenshotFilename()%>', 'action_screenshot_<%=incrementStep%>_<%=incrementAction%>', 'AttachPictureDiv_<%=incrementStep%>_<%=incrementAction%>')"/>
-                                                                        </div>
+                                                                            <%if(!useStep){%>
+                                                                                <img class="wob" width="45" height="35" src="<%=tcsa.getObject().split("picture=")[1]%>" 
+                                                                                 onclick="showPicture('<%=tcsa.getScreenshotFilename()%>', <%=incrementStep%>, <%=incrementAction%>, null)"/>                                                                                
+                                                                            <%}else{%>
+                                                                                <img class="wob" width="45" height="35" src="<%=tcsa.getObject().split("picture=")[1]%>" />
+                                                                                
+                                                                            <%}%>
+                                                                            </div>
                                                                         <%}%>
                                                                     </div>
                                                                     <div class="technical_part" style="width: 30%; float:left; background-color:transparent">
@@ -1363,13 +1376,16 @@
                                                             <div style="height:100%;width:5%;display:inline-block;float:right">
                                                                 <div id="AttachPictureDiv_<%=incrementStep%>_<%=incrementAction%>">
                                                                 <%if (tcsa.getScreenshotFilename() != null && !"".equals(tcsa.getScreenshotFilename())) {%>
-                                                                    <img class="wob" width="45" height="35" src="<%=tcsa.getScreenshotFilename()%>" 
-                                                                         onclick="showPicture('<%=tcsa.getScreenshotFilename()%>', 'action_screenshot_<%=incrementStep%>_<%=incrementAction%>', 'AttachPictureDiv_<%=incrementStep%>_<%=incrementAction%>')">
-                                                                    
+                                                                    <%if(!useStep){%>
+                                                                        <img id="displayedPicture_<%=incrementStep%>_<%=incrementAction%>" class="wob" width="45" height="35" src="<%=tcsa.getScreenshotFilename()%>" 
+                                                                         onclick="showPicture('<%=tcsa.getScreenshotFilename()%>', <%=incrementStep%>, <%=incrementAction%>, null)"/>
+                                                                    <%}else {%>
+                                                                        <img id="displayedPicture_<%=incrementStep%>_<%=incrementAction%>" class="wob" width="45" height="35" src="<%=tcsa.getScreenshotFilename()%>"/>
+                                                                    <%}%>   
                                                                 <%}else {%>
                                                                     <%if(!useStep){%>
                                                                         <img class="AttachPictureClass"  style="margin-top:15px; margin-left:15px" width="15" height="15" src="./images/th.jpg" 
-                                                                         onclick="attachPicture('action_screenshot_<%=incrementStep%>_<%=incrementAction%>', 'AttachPictureDiv_<%=incrementStep%>_<%=incrementAction%>')">
+                                                                             onclick="showModalAddPicture(<%=incrementStep%>, <%=incrementAction%>, null)" />
                                                                     <%}else{%>    
                                                                         <img  width="45" height="35" src="<%=tcsa.getScreenshotFilename()%>" style="margin-top:15px; margin-left:15px" class="AttachPictureClass" />
                                                                     <%}%>   
@@ -1410,7 +1426,7 @@
                                                                 <%  if (!useStep) {%>
                                                                 <img style="margin-top:12px" src="images/bin.png" id="img_delete_<%=incrementStep%>_<%=incrementAction%>_<%=incrementControl%>" onclick="checkDeleteBox('img_delete_<%=incrementStep%>_<%=incrementAction%>_<%=incrementControl%>', 'control_delete_<%=incrementStep%>_<%=incrementAction%>_<%=incrementControl%>', 'StepListOfControlDiv<%=incrementStep%><%=incrementAction%><%=incrementControl%>', 'RowActionDiv')">
                                                                 <input  class="wob" type="checkbox" data-associatedaction="action_delete_<%=incrementStep%>_<%=incrementAction%>" name="control_delete_<%=incrementStep%>_<%=incrementAction%>_<%=incrementControl%>" style="display:none; margin-top:20px; background-color: transparent"
-                                                                        id="control_delete_<%=incrementStep%>_<%=incrementAction%>_<%=incrementControl%>" value="<%=tcsac.getStep() + '-' + tcsac.getSequence() + '-' + tcsac.getControl()%>">
+                                                                        id="control_delete_<%=incrementStep%>_<%=incrementAction%>_<%=incrementControl%>" value="<%=tcsac.getStep() + '_' + tcsac.getSequence() + '_' + tcsac.getControl()%>">
                                                                 <% }%>
                                                                 <input type="hidden" value="<%=incrementControl%>" name="control_increment_<%=incrementStep%>_<%=incrementAction%>">
                                                                 <input type="hidden" value="<%=incrementStep%>" name="control_step_<%=incrementStep%>_<%=incrementAction%>_<%=incrementControl%>" data-fieldtype="stepNumber">
@@ -1493,12 +1509,16 @@
                                                             <div style="height:100%;width:5%;display:inline-block;float:right">
                                                                 <div id="AttachPictureDiv_<%=incrementStep%>_<%=incrementAction%>_<%=incrementControl%>">
                                                                     <%if (tcsac.getScreenshotFilename() != null && !"".equals(tcsac.getScreenshotFilename())) {%>
-                                                                            <img class="wob" width="45" height="35" src="<%=tcsac.getScreenshotFilename()%>" 
-                                                                             onclick="showPicture('<%=tcsac.getScreenshotFilename()%>', 'control_screenshot_<%=incrementStep%>_<%=incrementAction%>_<%=incrementControl%>', 'AttachPictureDiv_<%=incrementStep%>_<%=incrementAction%>_<%=incrementControl%>')">
+                                                                            <%if(!useStep){%>
+                                                                                <img id="displayedPicture_<%=incrementStep%>_<%=incrementAction%>_<%=incrementControl%>" class="wob" width="45" height="35" src="<%=tcsac.getScreenshotFilename()%>" 
+                                                                                 onclick="showPicture('<%=tcsac.getScreenshotFilename()%>', <%=incrementStep%>, <%=incrementAction%>, <%=incrementControl%>)" />
+                                                                            <%}else {%>
+                                                                                <img id="displayedPicture_<%=incrementStep%>_<%=incrementAction%>_<%=incrementControl%>" class="wob" width="45" height="35" src="<%=tcsac.getScreenshotFilename()%>"/>
+                                                                            <%}%>
                                                                     <%}else {%>
                                                                         <%if(!useStep){%>
                                                                             <img class="AttachPictureClass"  style="margin-top:15px; margin-left:15px" width="15" height="15" src="./images/th.jpg" 
-                                                                                 onclick="attachPicture('control_screenshot_<%=incrementStep%>_<%=incrementAction%>_<%=incrementControl%>', 'AttachPictureDiv_<%=incrementStep%>_<%=incrementAction%>_<%=incrementControl%>')">
+                                                                                 onclick="showModalAddPicture(<%=incrementStep%>, <%=incrementAction%>, <%=incrementControl%>)"/>
                                                                         <%}else{%>
                                                                             <img  width="45" height="35" src="<%=tcsac.getScreenshotFilename()%>" style="margin-top:15px; margin-left:15px" class="AttachPictureClass" />
                                                                         <%}%>
@@ -2041,6 +2061,7 @@
                     <div id="StepUseStepDiv" style="float:left">UseStep
                         <input type="checkbox" data-id="step_useStep_template" style="margin-top:15px;font-weight: bold; width:20px">
                         <input type="hidden" name="step_useStepChanged_template" value="N" id="step_useStepChanged_template" />
+                        <input type="hidden" name="isToCopySteps_template" value="N" id="isToCopySteps_template" />
                     </div>
                 </div>
                 <div data-id="useStepForNewStep" style="display:none; ">
@@ -2048,8 +2069,8 @@
                         <p style="margin-top:15px;"> Copied from : </p>
                     </div>
                     <div id="StepUseStepTestDiv" style="float:left">
-                        <select data-id="step_useStepTest_template" style="width: 200px;margin-top:12.5px;font-weight: bold;">
-                            <option style="width: 200px" value="">Choose Test</option>                            
+                        <select data-id="step_useStepTest_template" style="width: 150px;margin-top:12.5px;font-weight: bold;">
+                            <option style="width: 400px" value="">Choose Test</option>                            
                             <% List<TestCaseStep> tcsLib = tcsService.getStepLibraryBySystem(MySystem);
                                 Set<String> tList = new HashSet();
                                 HashMap tcListByTc = new HashMap();
@@ -2068,19 +2089,19 @@
                                 String testCombo = test;
 
                                 for (String tst : tList) {%>
-                            <option style="width: 200px;" value="<%=tst%>"><%=tst%>
+                            <option style="width: 400px;" value="<%=tst%>"><%=tst%>
                             </option>
                             <% }%>
                         </select>
                     </div>
                     <div id="StepUseStepTestCaseDiv" style="float:left;">
-                        <select data-id="step_useStepTestCase_template" style="width: 200px;margin-top:7.5px;font-weight: bold;">
-                            <option style="width: 200px" value="All">---</option>
+                        <select data-id="step_useStepTestCase_template" style="width: 150px;margin-top:7.5px;font-weight: bold;">
+                            <option style="width: 400px" value="All">---</option>
                         </select>
                     </div>
                     <div id="StepUseStepStepDiv" style="float:left">
-                        <select data-id="step_useStepStep_template" style="width: 200px;margin-top:7.5px;font-weight: bold;">
-                            <option style="width: 200px" value="0">---</option>
+                        <select data-id="step_useStepStep_template" style="width: 150px;margin-top:7.5px;font-weight: bold;">
+                            <option style="width: 400px" value="0">---</option>
                         </select>
                     </div>
                 </div>
@@ -2218,19 +2239,7 @@
             }
 
         </script>
-        <script>
-            function showTestCaseUsingThisStep() {
-                $("#listOfTestCaseUsingStep").dialog({
-                    width: "800",
-                    height: "600",
-                    buttons: {
-                        "OK": function() {
-                            $(this).dialog("close");
-                        }
-                    }
-                });
-            }
-        </script>
+
         <script>
             function showChangedRow(row) {
                 $(row).css('background-color', '#FFEBC4');
@@ -2261,41 +2270,8 @@
                 });
             }</script>
        
-        <script>function insertTCS(event, incStep) {
-                event.preventDefault();
-            }
-            function drag(ev, th) {
-                ev.dataTransfer.setData("text/html", ev.target.id);
-                console.log(th);
-            }
-
-            function drop(ev, incStep) {
-                ev.preventDefault();
-                var data = ev.dataTransfer.getData("text/html");
-                ev.target.appendChild(document.getElementById(data));
-                if (incStep === null) {
-                    addTCSCNew('StepNumberDiv0', null);
-                } else {
-                    addTCSCNew('StepsEndDiv' + incStep, document.getElementById('addStepButton' + incStep));
-                }
-                var newIncStep = document.getElementsByName('step_increment').length;
-                $("#step_useStep_" + newIncStep).prop('checked', true);
-                showUseStep(document.getElementById("step_useStep_" + newIncStep), newIncStep);
-                var test = $(document.getElementById(data)).attr("data-test");
-                $("#step_useStepTest_" + newIncStep).val(test);
-                var testc = $(document.getElementById(data)).attr("data-testcase");
-                $("#step_useStepTestCase_" + newIncStep).empty().append($("<option></option>")
-                        .attr('value', testc)
-                        .text(testc));
-                var step = $(document.getElementById(data)).attr("data-step");
-                $("#step_useStepStep_" + newIncStep).empty().append($("<option></option>")
-                        .attr('value', step)
-                        .text(step));
-                $("#UpdateTestCase").attr("action", $("#UpdateTestCase").attr("action") + "#stepAnchor_" + incStep).submit();
-                //loadNewTCS();
-
-            }</script>
-        <script>function showLib() {
+    <script>
+    function showLib() {
     var expiration_date = new Date();
                 expiration_date.setFullYear(expiration_date.getFullYear() + 1);
                 

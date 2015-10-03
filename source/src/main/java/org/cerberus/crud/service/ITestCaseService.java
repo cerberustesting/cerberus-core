@@ -161,4 +161,6 @@ public interface ITestCaseService {
     public Answer update(TCase testCase);
     
     public Answer create(TCase testCase);
+
+    public Answer delete(TCase testCase);
 }

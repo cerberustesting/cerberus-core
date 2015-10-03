@@ -68,7 +68,7 @@ public class UpdateCountryEnvironmentDatabase extends HttpServlet {
 
         response.setContentType("text/html");
         try {
-            CountryEnvironmentDatabase ced = cedService.findCountryEnvironmentDatabaseByKey(system, country, name, database);
+            CountryEnvironmentDatabase ced = cedService.findCountryEnvironmentDatabaseByKey(system, country, env, database);
             if (name != null && "ConnectionPoolName".equalsIgnoreCase(name.trim())) {
                 ced.setConnectionPoolName(value);
             } else {

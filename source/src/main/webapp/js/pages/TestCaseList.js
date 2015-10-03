@@ -94,13 +94,13 @@ function appendBuildRevList() {
 function appendCountryList() {
     var jqxhr = $.getJSON("FindInvariantByID", "idName=COUNTRY");
     $.when(jqxhr).then(function (data) {
-        var countryList = $("#countryList");
-        var res = '<label class="checkbox-inline"><input type="checkbox" name="BE"/>BE</label>';
+        var countryList = $("[name=countryList]");
 
         for (var index = 0; index < data.length; index++) {
             var country = data[index].value;
 
-            countryList.append('<label class="checkbox-inline"><input type="checkbox" name="' + country + '"/>' + country + '</label>');
+            countryList.append('<label class="checkbox-inline"><input class="countrycb" type="checkbox" name="' + country + '"/>' + country + '\
+                                <input class="countrycb-hidden" type="hidden" name="' + country + '" value="off"/></label>');
         }
     });
 }
@@ -187,6 +187,12 @@ function loadTable() {
 
 function CreateTestCaseClick() {
     clearResponseMessageMainPage();
+    var urlTag = GetURLParameter('test');
+
+    if (urlTag !== "") {
+        $('#testAdd option[value="' + urlTag + '"]').attr("selected", "selected");
+    }
+
     $('#addEntryModal').modal('show');
 }
 
@@ -196,7 +202,7 @@ function renderOptionsForTestCaseList(data) {
     if (data["hasPermissions"]) {
         if ($("#createTestCaseButton").length === 0) {
             var contentToAdd = "<div class='marginBottom10'><button id='createTestCaseButton' type='button' class='btn btn-default'>\n\
-            " + doc.getDocLabel("page_project", "button_create") + "</button></div>";
+            " + "Create Test Case" + "</button></div>";
 
             $("#testCaseTable_wrapper div.ColVis").before(contentToAdd);
             $('#testCaseList #createTestCaseButton').click(CreateTestCaseClick);
@@ -238,10 +244,45 @@ function saveNewEntryHandler() {
 
 function saveUpdateEntryHandler() {
     clearResponseMessage($('#editEntryModal'));
+
     var formEdit = $('#editEntryModalForm');
 
+    console.log(formEdit.serialize());
     showLoaderInModal('#editEntryModal');
     updateEntry("UpdateTestCase2", formEdit, "#testCaseTable");
+}
+
+function deleteEntryHandlerClick() {
+    var test = GetURLParameter('test');
+    var testCase = $('#confirmationModal').find('#hiddenField').prop("value");
+    var jqxhr = $.post("DeleteTestCase2", {test: test, testCase: testCase}, "json");
+    $.when(jqxhr).then(function (data) {
+        var messageType = getAlertType(data.messageType);
+        if (messageType === "success") {
+            //redraw the datatable
+            var oTable = $("#testCaseTable").dataTable();
+            oTable.fnDraw(true);
+            var info = oTable.fnGetData().length;
+
+            if (info === 1) {//page has only one row, then returns to the previous page
+                oTable.fnPageChange('previous');
+            }
+
+        }
+        //show message in the main page
+        showMessageMainPage(messageType, data.message);
+        //close confirmation window
+        $('#confirmationModal').modal('hide');
+    }).fail(handleErrorAjaxAfterTimeout);
+}
+
+function deleteEntry(entry) {
+    clearResponseMessageMainPage();
+    var doc = new Doc();
+    var messageComplete = doc.getDocLabel("page_global", "deleteMessage");
+    messageComplete = messageComplete.replace("%TABLE%", "TestCase");
+    messageComplete = messageComplete.replace("%ENTRY%", entry);
+    showModalConfirmation(deleteEntryHandlerClick, "Delete", messageComplete, entry);
 }
 
 function editEntry(testCase) {
@@ -249,7 +290,6 @@ function editEntry(testCase) {
     var test = GetURLParameter('test');
     var jqxhr = $.getJSON("ReadTestCase", "test=" + test + "&testCase=" + testCase);
     $.when(jqxhr).then(function (data) {
-        console.log(data);
 
         var formEdit = $('#editEntryModal');
 
@@ -312,7 +352,16 @@ function setActive(checkbox) {
         url: "UpdateTestCase2",
         method: "POST",
         data: {test: test, testCase: testCase, active: active},
-        dataType: "json"
+        dataType: "json",
+        success: function (data) {
+            clearResponseMessageMainPage();
+            var messageType = getAlertType(data.messageType);
+            //show message in the main page
+            showMessageMainPage(messageType, data.message);
+        },
+        error: function (e) {
+            showUnexpectedError();
+        }
     });
 }
 
@@ -331,8 +380,17 @@ function setCountry(checkbox) {
     $.ajax({
         url: "UpdateTestCase2",
         method: "POST",
-        data: {test: test, testCase: testCase, country: country, state: state},
-        dataType: "json"
+        data: "test=" + test + "&testCase=" + testCase + "&" + country + "=" + state,
+        dataType: "json",
+        success: function (data) {
+            clearResponseMessageMainPage();
+            var messageType = getAlertType(data.messageType);
+            //show message in the main page
+            showMessageMainPage(messageType, data.message);
+        },
+        error: function (e) {
+            showUnexpectedError();
+        }
     });
 }
 
@@ -352,7 +410,13 @@ function aoColumnsFunc(countries) {
                                 class="editEntry btn btn-default btn-xs margin-right5" \n\
                                 name="editEntry" title="' + "edit test case" + '" type="button">\n\
                                 <span class="glyphicon glyphicon-pencil"></span></button>';
-                    return '<div class="center btn-group width150">' + editEntry + '</div>';
+
+                    var deleteEntry = '<button id="deleteEntry" onclick="deleteEntry(\'' + obj["testCase"] + '\');"\n\
+                                        class="deleteEntry btn btn-default btn-xs margin-right5" \n\
+                                        name="deleteEntry" title="' + "delete test case" + '" type="button">\n\
+                                        <span class="glyphicon glyphicon-trash"></span></button>';
+
+                    return '<div class="center btn-group width150">' + editEntry + deleteEntry + '</div>';
                 }
             }
         },

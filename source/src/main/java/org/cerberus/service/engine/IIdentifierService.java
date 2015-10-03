@@ -33,4 +33,6 @@ public interface IIdentifierService {
      public void checkSelectOptionsIdentifier(String identifier) throws CerberusEventException;
 
      public void checkWebElementIdentifier(String identifier) throws CerberusEventException;
+
+    public void checkSQLIdentifier(String identifier) throws CerberusEventException;
      }

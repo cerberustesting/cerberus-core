@@ -20,6 +20,7 @@
 package org.cerberus.service.engine;
 
 import java.util.List;
+import org.cerberus.crud.entity.MessageEvent;
 import org.cerberus.crud.entity.TestCaseCountryProperties;
 import org.cerberus.crud.entity.TestCaseExecution;
 import org.cerberus.crud.entity.TestCaseExecutionData;
@@ -57,4 +58,8 @@ public interface ISQLService {
      * @return a row with several columns
      */
     AnswerItem calculateOnDatabaseNColumns(String sql, String db, String system, String country, String environment, int rowLimit, String propertyNature);
+
+    public MessageEvent executeUpdate(String system, String country, String environment, String db, String sql);
+    
+    public MessageEvent executeCallableStatement(String system, String country, String environment, String db, String sql);
 }
