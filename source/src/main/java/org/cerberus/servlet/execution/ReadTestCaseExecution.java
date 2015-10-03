@@ -23,10 +23,8 @@ import java.io.IOException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Map.Entry;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.servlet.ServletException;
@@ -78,12 +76,6 @@ public class ReadTestCaseExecution extends HttpServlet {
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException, CerberusException, ParseException {
         ApplicationContext appContext = WebApplicationContextUtils.getWebApplicationContext(this.getServletContext());
-
-        /**
-         * Adding Log entry.
-         */
-        ILogEventService logEventService = appContext.getBean(LogEventService.class);
-        logEventService.createPublicCalls("/GetCampaignExecutionsCommand", "CALL", "GetCampaignExecutionsCommandV0 called : " + request.getRequestURL(), request);
 
         testCaseExecutionService = appContext.getBean(ITestCaseExecutionService.class);
 
@@ -278,7 +270,7 @@ public class ReadTestCaseExecution extends HttpServlet {
                 .getBean(ITestCaseExecutionInQueueService.class);
 
         int startPosition = Integer.valueOf(ParameterParserUtil.parseStringParam(request.getParameter("iDisplayStart"), "0"));
-        int length = Integer.valueOf(ParameterParserUtil.parseStringParam(request.getParameter("iDisplayLength"), "100000"));
+        int length = Integer.valueOf(ParameterParserUtil.parseStringParam(request.getParameter("iDisplayLength"), "0"));
 
         String searchParameter = ParameterParserUtil.parseStringParam(request.getParameter("sSearch"), "");
         int columnToSortParameter = Integer.parseInt(ParameterParserUtil.parseStringParam(request.getParameter("iSortCol_0"), "0"));
