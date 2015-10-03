@@ -50,6 +50,7 @@
                     <div class="marginBottom20"></div>
                 </div>
             </div>
+
             <footer class="footer">
                 <div class="container-fluid" id="footer"></div>
             </footer>
