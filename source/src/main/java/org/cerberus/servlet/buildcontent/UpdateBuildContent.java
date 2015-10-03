@@ -75,7 +75,7 @@ public class UpdateBuildContent extends HttpServlet {
                 brp.setTicketIdFixed(value);
                 break;
             case 6:
-                brp.setBudIdFixed(value);
+                brp.setBugIdFixed(value);
                 break;
             case 7:
                 brp.setSubject(value);

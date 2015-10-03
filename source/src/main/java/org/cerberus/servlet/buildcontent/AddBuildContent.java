@@ -57,7 +57,7 @@ public class AddBuildContent extends HttpServlet {
         brp.setApplication(req.getParameter("application"));
         brp.setReleaseOwner(req.getParameter("owner"));
         brp.setProject(req.getParameter("project"));
-        brp.setBudIdFixed(req.getParameter("bug"));
+        brp.setBugIdFixed(req.getParameter("bug"));
         brp.setTicketIdFixed(req.getParameter("ticket"));
         brp.setSubject(req.getParameter("subject"));
 

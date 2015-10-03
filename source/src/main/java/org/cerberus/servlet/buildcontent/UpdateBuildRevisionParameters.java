@@ -19,7 +19,6 @@
  */
 package org.cerberus.servlet.buildcontent;
 
-import org.cerberus.servlet.robot.*;
 import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -28,14 +27,13 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import org.cerberus.crud.entity.BuildRevisionParameters;
 import org.cerberus.crud.entity.MessageEvent;
-import org.cerberus.crud.entity.Robot;
+import org.cerberus.crud.service.IBuildRevisionParametersService;
 import org.cerberus.enums.MessageEventEnum;
 import org.cerberus.exception.CerberusException;
 import org.cerberus.crud.service.ILogEventService;
-import org.cerberus.crud.service.IRobotService;
 import org.cerberus.crud.service.impl.LogEventService;
-import org.cerberus.util.StringUtil;
 import org.cerberus.util.answer.Answer;
 import org.cerberus.util.answer.AnswerItem;
 import org.json.JSONException;
@@ -52,6 +50,8 @@ import org.springframework.web.context.support.WebApplicationContextUtils;
 @WebServlet(name = "UpdateBuildRevisionParameters", urlPatterns = {"/UpdateBuildRevisionParameters"})
 public class UpdateBuildRevisionParameters extends HttpServlet {
 
+    private final String OBJECT_NAME = "BuildRevisionParameters";
+    
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
      * methods.
@@ -75,57 +75,56 @@ public class UpdateBuildRevisionParameters extends HttpServlet {
         /**
          * Parsing and securing all required parameters.
          */
-        String robot = policy.sanitize(request.getParameter("robot"));
-        String host = policy.sanitize(request.getParameter("host"));
-        String port = policy.sanitize(request.getParameter("port"));
-        String platform = policy.sanitize(request.getParameter("platform"));
-        String browser = policy.sanitize(request.getParameter("browser"));
-        String version = policy.sanitize(request.getParameter("version"));
-        String active = policy.sanitize(request.getParameter("active"));
-        String description = policy.sanitize(request.getParameter("description"));
-        String userAgent = policy.sanitize(request.getParameter("useragent"));
-        Integer robotid = 0;
-        boolean robotid_error = true;
+        String build = policy.sanitize(request.getParameter("build"));
+        String revision = policy.sanitize(request.getParameter("revision"));
+        String release = policy.sanitize(request.getParameter("release"));
+        String application = policy.sanitize(request.getParameter("application"));
+        String project = policy.sanitize(request.getParameter("project"));
+        String ticketidfixed = policy.sanitize(request.getParameter("ticketidfixed"));
+        String bugidfixed = policy.sanitize(request.getParameter("bugidfixed"));
+        String link = policy.sanitize(request.getParameter("link"));
+        String releaseowner = policy.sanitize(request.getParameter("releaseowner"));
+        String subject = policy.sanitize(request.getParameter("subject"));
+        String jenkinsbuildid = policy.sanitize(request.getParameter("jenkinsbuildid"));
+        String mavenGroupID = policy.sanitize(request.getParameter("mavengroupid"));
+        String mavenArtefactID = policy.sanitize(request.getParameter("mavenartefactid"));
+        String mavenVersion = policy.sanitize(request.getParameter("mavenversion"));
+        Integer brpid = 0;
+        boolean brpid_error = true;
         try {
-            if (request.getParameter("robotid") != null && !request.getParameter("robotid").equals("")) {
-                robotid = Integer.valueOf(policy.sanitize(request.getParameter("robotid")));
-                robotid_error = false;
+            if (request.getParameter("id") != null && !request.getParameter("id").equals("")) {
+                brpid = Integer.valueOf(policy.sanitize(request.getParameter("id")));
+                brpid_error = false;
             }
         } catch (Exception ex) {
-            robotid_error = true;
+            brpid_error = true;
         }
 
         /**
          * Checking all constrains before calling the services.
          */
-        if (StringUtil.isNullOrEmpty(robot)) {
+        if (brpid_error) {
             msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_EXPECTED);
-            msg.setDescription(msg.getDescription().replace("%ITEM%", "Robot")
+            msg.setDescription(msg.getDescription().replace("%ITEM%", OBJECT_NAME)
                     .replace("%OPERATION%", "Update")
-                    .replace("%REASON%", "Robot name is missing."));
-            ans.setResultMessage(msg);
-        } else if (robotid_error) {
-            msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_EXPECTED);
-            msg.setDescription(msg.getDescription().replace("%ITEM%", "Robot")
-                    .replace("%OPERATION%", "Update")
-                    .replace("%REASON%", "Could not manage to convert robotid to an integer value or robotid is missing."));
+                    .replace("%REASON%", "Could not manage to convert id to an integer value or id is missing."));
             ans.setResultMessage(msg);
         } else {
             /**
              * All data seems cleans so we can call the services.
              */
             ApplicationContext appContext = WebApplicationContextUtils.getWebApplicationContext(this.getServletContext());
-            IRobotService robotService = appContext.getBean(IRobotService.class);
+            IBuildRevisionParametersService brpService = appContext.getBean(IBuildRevisionParametersService.class);
 
-            AnswerItem resp = robotService.readByKeyTech(robotid);
+            AnswerItem resp = brpService.readByKeyTech(brpid);
             if (!(resp.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode()))) {
                 /**
                  * Object could not be found. We stop here and report the error.
                  */
                 msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_EXPECTED);
-                msg.setDescription(msg.getDescription().replace("%ITEM%", "Robot")
+                msg.setDescription(msg.getDescription().replace("%ITEM%", OBJECT_NAME)
                         .replace("%OPERATION%", "Update")
-                        .replace("%REASON%", "Robot does not exist."));
+                        .replace("%REASON%", "BuildRevisionParameters does not exist."));
                 ans.setResultMessage(msg);
 
             } else {
@@ -133,24 +132,29 @@ public class UpdateBuildRevisionParameters extends HttpServlet {
                  * The service was able to perform the query and confirm the
                  * object exist, then we can update it.
                  */
-                Robot robotData = (Robot) resp.getItem();
-                robotData.setRobot(robot);
-                robotData.setHost(host);
-                robotData.setPort(port);
-                robotData.setPlatform(platform);
-                robotData.setBrowser(browser);
-                robotData.setVersion(version);
-                robotData.setActive(active);
-                robotData.setDescription(description);
-                robotData.setUserAgent(userAgent);
-                ans = robotService.update(robotData);
-
+                BuildRevisionParameters brpData = (BuildRevisionParameters) resp.getItem();
+                brpData.setBuild(build);
+                brpData.setRevision(revision);
+                brpData.setRelease(release);
+                brpData.setApplication(application);
+                brpData.setProject(project);
+                brpData.setTicketIdFixed(ticketidfixed);
+                brpData.setBugIdFixed(bugidfixed);
+                brpData.setLink(link);
+                brpData.setReleaseOwner(releaseowner);
+                brpData.setSubject(subject);
+                brpData.setJenkinsBuildId(jenkinsbuildid);
+                brpData.setMavenGroupId(mavenGroupID);
+                brpData.setMavenArtifactId(mavenArtefactID);
+                brpData.setMavenVersion(mavenVersion);
+                ans = brpService.update(brpData);
+                
                 if (ans.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
                     /**
                      * Update was succesfull. Adding Log entry.
                      */
                     ILogEventService logEventService = appContext.getBean(LogEventService.class);
-                    logEventService.createPrivateCalls("/UpdateRobot", "UPDATE", "Updated Robot : ['" + robotid + "'|'" + robot + "']", request);
+                    logEventService.createPrivateCalls("/UpdateBuildRevisionParameters", "UPDATE", "Updated BuildRevisionParameters : ['" + brpid + "'|'" + build + "'|'" + revision + "'|'" + release + "']", request);
                 }
             }
         }

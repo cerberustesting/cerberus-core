@@ -17,7 +17,6 @@
  */
 package org.cerberus.servlet.buildcontent;
 
-import org.cerberus.servlet.robot.*;
 import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -26,12 +25,12 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import org.cerberus.crud.entity.BuildRevisionParameters;
 import org.cerberus.crud.entity.MessageEvent;
-import org.cerberus.crud.entity.Robot;
+import org.cerberus.crud.service.IBuildRevisionParametersService;
 import org.cerberus.enums.MessageEventEnum;
 import org.cerberus.exception.CerberusException;
 import org.cerberus.crud.service.ILogEventService;
-import org.cerberus.crud.service.IRobotService;
 import org.cerberus.crud.service.impl.LogEventService;
 import org.cerberus.util.answer.Answer;
 import org.cerberus.util.answer.AnswerItem;
@@ -49,6 +48,8 @@ import org.springframework.web.context.support.WebApplicationContextUtils;
 @WebServlet(name = "DeleteBuildRevisionParameters", urlPatterns = {"/DeleteBuildRevisionParameters"})
 public class DeleteBuildRevisionParameters extends HttpServlet {
 
+    private final String OBJECT_NAME = "BuildRevisionParameters";
+    
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
      * methods.
@@ -72,42 +73,42 @@ public class DeleteBuildRevisionParameters extends HttpServlet {
         /**
          * Parsing and securing all required parameters.
          */
-        Integer robotid = 0;
-        boolean robotid_error = true;
+        Integer brpid = 0;
+        boolean brpid_error = true;
         try {
-            if (request.getParameter("robotid") != null && !request.getParameter("robotid").equals("")) {
-                robotid = Integer.valueOf(policy.sanitize(request.getParameter("robotid")));
-                robotid_error = false;
+            if (request.getParameter("id") != null && !request.getParameter("id").equals("")) {
+                brpid = Integer.valueOf(policy.sanitize(request.getParameter("id")));
+                brpid_error = false;
             }
         } catch (Exception ex) {
-            robotid_error = true;
+            brpid_error = true;
         }
 
         /**
          * Checking all constrains before calling the services.
          */
-        if (robotid_error) {
+        if (brpid_error) {
             msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_EXPECTED);
-            msg.setDescription(msg.getDescription().replace("%ITEM%", "Robot")
+            msg.setDescription(msg.getDescription().replace("%ITEM%", OBJECT_NAME)
                     .replace("%OPERATION%", "Delete")
-                    .replace("%REASON%", "Robot ID (robotid) is missing."));
+                    .replace("%REASON%", "BuildRevisionParameters ID (id) is missing."));
             ans.setResultMessage(msg);
         } else {
             /**
              * All data seems cleans so we can call the services.
              */
             ApplicationContext appContext = WebApplicationContextUtils.getWebApplicationContext(this.getServletContext());
-            IRobotService robotService = appContext.getBean(IRobotService.class);
+            IBuildRevisionParametersService brpService = appContext.getBean(IBuildRevisionParametersService.class);
 
-            AnswerItem resp = robotService.readByKeyTech(robotid);
+            AnswerItem resp = brpService.readByKeyTech(brpid);
             if (!(resp.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode()))) {
                 /**
                  * Object could not be found. We stop here and report the error.
                  */
                 msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_EXPECTED);
-                msg.setDescription(msg.getDescription().replace("%ITEM%", "Robot")
+                msg.setDescription(msg.getDescription().replace("%ITEM%", OBJECT_NAME)
                         .replace("%OPERATION%", "Delete")
-                        .replace("%REASON%", "Robot does not exist."));
+                        .replace("%REASON%", "BuildRevisionParameter does not exist."));
                 ans.setResultMessage(msg);
 
             } else {
@@ -115,15 +116,15 @@ public class DeleteBuildRevisionParameters extends HttpServlet {
                  * The service was able to perform the query and confirm the
                  * object exist, then we can delete it.
                  */
-                Robot robotData = (Robot) resp.getItem();
-                ans = robotService.delete(robotData);
+                BuildRevisionParameters brpData = (BuildRevisionParameters) resp.getItem();
+                ans = brpService.delete(brpData);
 
                 if (ans.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
                     /**
                      * Delete was successful. Adding Log entry.
                      */
                     ILogEventService logEventService = appContext.getBean(LogEventService.class);
-                    logEventService.createPrivateCalls("/DeleteRobot", "DELETE", "Delete Robot : ['" + robotid + "'|'" + robotData.getRobot() + "']", request);
+                    logEventService.createPrivateCalls("/DeleteBuildRevisionParameters", "DELETE", "Delete BuildRevisionParameters : ['" + brpid + "'|'" + brpData.getRelease()+ "']", request);
                 }
             }
         }

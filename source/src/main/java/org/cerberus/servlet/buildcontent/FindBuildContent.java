@@ -82,7 +82,7 @@ public class FindBuildContent extends HttpServlet {
                 }
 
                 array.put(brp.getTicketIdFixed());
-                array.put(brp.getBudIdFixed());
+                array.put(brp.getBugIdFixed());
                 array.put(brp.getSubject());
                 try {
                     User user = userService.findUserByKey(brp.getReleaseOwner());

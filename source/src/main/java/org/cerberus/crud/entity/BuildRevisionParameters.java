@@ -20,6 +20,8 @@
 
 package org.cerberus.crud.entity;
 
+import java.sql.Timestamp;
+
 public class BuildRevisionParameters {
 
     private int id;
@@ -29,11 +31,11 @@ public class BuildRevisionParameters {
     private String application;
     private String project;
     private String ticketIdFixed;
-    private String budIdFixed;
+    private String bugIdFixed;
     private String link;
     private String releaseOwner;
     private String subject;
-    private String dateCreation;
+    private Timestamp datecre;
     private String jenkinsBuildId;
     private String mavenGroupId;
     private String mavenArtifactId;
@@ -95,12 +97,12 @@ public class BuildRevisionParameters {
         this.ticketIdFixed = ticketIdFixed;
     }
 
-    public String getBudIdFixed() {
-        return budIdFixed;
+    public String getBugIdFixed() {
+        return bugIdFixed;
     }
 
-    public void setBudIdFixed(String budIdFixed) {
-        this.budIdFixed = budIdFixed;
+    public void setBugIdFixed(String bugIdFixed) {
+        this.bugIdFixed = bugIdFixed;
     }
 
     public String getLink() {
@@ -127,12 +129,12 @@ public class BuildRevisionParameters {
         this.subject = subject;
     }
 
-    public String getDateCreation() {
-        return dateCreation;
+    public Timestamp getDatecre() {
+        return datecre;
     }
 
-    public void setDateCreation(String dateCreation) {
-        this.dateCreation = dateCreation;
+    public void setDatecre(Timestamp datecre) {
+        this.datecre = datecre;
     }
 
     public String getJenkinsBuildId() {

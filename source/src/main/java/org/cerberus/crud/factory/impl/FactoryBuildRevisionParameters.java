@@ -41,11 +41,11 @@ public class FactoryBuildRevisionParameters implements IFactoryBuildRevisionPara
         newBuildRevisionParameters.setApplication(application);
         newBuildRevisionParameters.setProject(project);
         newBuildRevisionParameters.setTicketIdFixed(ticketIDFixed);
-        newBuildRevisionParameters.setBudIdFixed(bugIDFixed);
+        newBuildRevisionParameters.setBugIdFixed(bugIDFixed);
         newBuildRevisionParameters.setLink(link);
         newBuildRevisionParameters.setReleaseOwner(releaseOwner);
         newBuildRevisionParameters.setSubject(subject);
-        newBuildRevisionParameters.setDateCreation(mavenVersion);
+        newBuildRevisionParameters.setDatecre(dateCre);
         newBuildRevisionParameters.setJenkinsBuildId(jenkinsBuildID);
         newBuildRevisionParameters.setMavenGroupId(mavenGroupID);
         newBuildRevisionParameters.setMavenArtifactId(mavenArtefactID);

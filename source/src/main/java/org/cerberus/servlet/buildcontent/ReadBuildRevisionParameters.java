@@ -19,7 +19,6 @@
  */
 package org.cerberus.servlet.buildcontent;
 
-import org.cerberus.servlet.robot.*;
 import com.google.gson.Gson;
 import java.io.IOException;
 import java.util.List;
@@ -30,13 +29,13 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import org.cerberus.crud.entity.BuildRevisionParameters;
 
 import org.cerberus.crud.entity.MessageEvent;
-import org.cerberus.crud.entity.Robot;
+import org.cerberus.crud.service.IBuildRevisionParametersService;
 import org.cerberus.enums.MessageEventEnum;
 import org.cerberus.exception.CerberusException;
-import org.cerberus.crud.service.IRobotService;
-import org.cerberus.crud.service.impl.RobotService;
+import org.cerberus.crud.service.impl.BuildRevisionParametersService;
 import org.cerberus.util.ParameterParserUtil;
 import org.cerberus.util.answer.AnswerItem;
 import org.cerberus.util.answer.AnswerList;
@@ -55,7 +54,8 @@ import org.springframework.web.context.support.WebApplicationContextUtils;
 @WebServlet(name = "ReadBuildRevisionParameters", urlPatterns = {"/ReadBuildRevisionParameters"})
 public class ReadBuildRevisionParameters extends HttpServlet {
 
-    private IRobotService robotService;
+    private IBuildRevisionParametersService brpService;
+    private final String OBJECT_NAME = "BuildRevisionParameters";
 
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
@@ -82,42 +82,42 @@ public class ReadBuildRevisionParameters extends HttpServlet {
         /**
          * Parsing and securing all required parameters.
          */
-        Integer robotid = 0;
-        boolean robotid_error = true;
+        Integer brpid = 0;
+        boolean brpid_error = true;
         try {
-            if (request.getParameter("robotid") != null && !request.getParameter("robotid").equals("")) {
-                robotid = Integer.valueOf(policy.sanitize(request.getParameter("robotid")));
-                robotid_error = false;
+            if (request.getParameter("id") != null && !request.getParameter("id").equals("")) {
+                brpid = Integer.valueOf(policy.sanitize(request.getParameter("id")));
+                brpid_error = false;
             }
         } catch (Exception ex) {
             msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_EXPECTED);
-            msg.setDescription(msg.getDescription().replace("%ITEM%", "Robot"));
+            msg.setDescription(msg.getDescription().replace("%ITEM%", OBJECT_NAME));
             msg.setDescription(msg.getDescription().replace("%OPERATION%", "Read"));
-            msg.setDescription(msg.getDescription().replace("%REASON%", "robotid must be an integer value."));
-            robotid_error = true;
+            msg.setDescription(msg.getDescription().replace("%REASON%", "id must be an integer value."));
+            brpid_error = true;
         }
 
         // Init Answer with potencial error from Parsing parameter.
         AnswerItem answer = new AnswerItem(msg);
-        
+
         try {
             JSONObject jsonResponse = new JSONObject();
-            if ((request.getParameter("robotid") == null)) {
-                answer = findRobotList(appContext, request, response);
+            if ((request.getParameter("id") != null) && !(brpid_error)) { // ID parameter is specified so we return the unique record of object.
+                answer = findBuildRevisionParametersByKey(appContext, brpid);
                 jsonResponse = (JSONObject) answer.getItem();
-            } else {
-                if ((request.getParameter("robotid") != null) && !(robotid_error)) {
-                    answer = findRobotByKey(appContext, robotid);
-                    jsonResponse = (JSONObject) answer.getItem();
-                }
+            } else if ((request.getParameter("system") != null) && (request.getParameter("getlast") != null)) { // Default behaviour, we return the list of objects.
+                answer = findlastBuildRevisionParametersBySystem(appContext, request.getParameter("system"));
+                jsonResponse = (JSONObject) answer.getItem();
+            } else { // Default behaviour, we return the list of objects.
+                answer = findBuildRevisionParametersList(request.getParameter("system"), request.getParameter("build"), request.getParameter("revision"), request.getParameter("application"), appContext, request, response);
+                jsonResponse = (JSONObject) answer.getItem();
             }
-
             jsonResponse.put("messageType", answer.getResultMessage().getMessage().getCodeString());
             jsonResponse.put("message", answer.getResultMessage().getDescription());
             jsonResponse.put("sEcho", echo);
 
             response.getWriter().print(jsonResponse.toString());
-            
+
         } catch (JSONException e) {
             org.apache.log4j.Logger.getLogger(ReadBuildRevisionParameters.class.getName()).log(org.apache.log4j.Level.ERROR, null, e);
             //returns a default error message with the json format that is able to be parsed by the client-side
@@ -179,29 +179,29 @@ public class ReadBuildRevisionParameters extends HttpServlet {
         return "Short description";
     }// </editor-fold>
 
-    private AnswerItem findRobotList(ApplicationContext appContext, HttpServletRequest request, HttpServletResponse response) throws JSONException {
+    private AnswerItem findBuildRevisionParametersList(String system, String build, String revision, String application, ApplicationContext appContext, HttpServletRequest request, HttpServletResponse response) throws JSONException {
 
         AnswerItem item = new AnswerItem();
         JSONObject jsonResponse = new JSONObject();
-        robotService = appContext.getBean(RobotService.class);
+        brpService = appContext.getBean(BuildRevisionParametersService.class);
 
         int startPosition = Integer.valueOf(ParameterParserUtil.parseStringParam(request.getParameter("iDisplayStart"), "0"));
-        int length = Integer.valueOf(ParameterParserUtil.parseStringParam(request.getParameter("iDisplayLength"), "100000"));
+        int length = Integer.valueOf(ParameterParserUtil.parseStringParam(request.getParameter("iDisplayLength"), "0"));
         /*int sEcho  = Integer.valueOf(request.getParameter("sEcho"));*/
 
         String searchParameter = ParameterParserUtil.parseStringParam(request.getParameter("sSearch"), "");
         int columnToSortParameter = Integer.parseInt(ParameterParserUtil.parseStringParam(request.getParameter("iSortCol_0"), "1"));
-        String sColumns = ParameterParserUtil.parseStringParam(request.getParameter("sColumns"), "robotID,robot,host,port,platform,browser,version,active,useragent,description");
+        String sColumns = ParameterParserUtil.parseStringParam(request.getParameter("sColumns"), "ID,Build,Revision,Release,Application,Project,TicketIDFixed,BugIDFixed,Link,ReleaseOwner,Subject,datecre,jenkinsbuildid,mavengroupid,mavenartifactid,mavenversion");
         String columnToSort[] = sColumns.split(",");
         String columnName = columnToSort[columnToSortParameter];
         String sort = ParameterParserUtil.parseStringParam(request.getParameter("sSortDir_0"), "asc");
-        AnswerList resp = robotService.readByCriteria(startPosition, length, columnName, sort, searchParameter, "");
+        AnswerList resp = brpService.readByVarious1ByCriteria(system, application, build, revision, startPosition, length, columnName, sort, searchParameter, "");
 
         JSONArray jsonArray = new JSONArray();
         boolean userHasPermissions = request.isUserInRole("IntegratorRO");
         if (resp.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {//the service was able to perform the query, then we should get all values
-            for (Robot robot : (List<Robot>) resp.getDataList()) {
-                jsonArray.put(convertRobotToJSONObject(robot));
+            for (BuildRevisionParameters brp : (List<BuildRevisionParameters>) resp.getDataList()) {
+                jsonArray.put(convertBuildRevisionParametersToJSONObject(brp));
             }
         }
 
@@ -215,26 +215,19 @@ public class ReadBuildRevisionParameters extends HttpServlet {
         return item;
     }
 
-    private JSONObject convertRobotToJSONObject(Robot robot) throws JSONException {
-
-        Gson gson = new Gson();
-        JSONObject result = new JSONObject(gson.toJson(robot));
-        return result;
-    }
-
-    private AnswerItem findRobotByKey(ApplicationContext appContext, Integer id) throws JSONException, CerberusException {
+    private AnswerItem findBuildRevisionParametersByKey(ApplicationContext appContext, Integer id) throws JSONException, CerberusException {
         AnswerItem item = new AnswerItem();
         JSONObject object = new JSONObject();
 
-        IRobotService libService = appContext.getBean(IRobotService.class);
+        IBuildRevisionParametersService libService = appContext.getBean(IBuildRevisionParametersService.class);
 
         //finds the project     
         AnswerItem answer = libService.readByKeyTech(id);
 
         if (answer.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
             //if the service returns an OK message then we can get the item and convert it to JSONformat
-            Robot lib = (Robot) answer.getItem();
-            JSONObject response = convertRobotToJSONObject(lib);
+            BuildRevisionParameters brp = (BuildRevisionParameters) answer.getItem();
+            JSONObject response = convertBuildRevisionParametersToJSONObject(brp);
             object.put("contentTable", response);
         }
 
@@ -242,6 +235,35 @@ public class ReadBuildRevisionParameters extends HttpServlet {
         item.setResultMessage(answer.getResultMessage());
 
         return item;
+    }
+
+    private AnswerItem findlastBuildRevisionParametersBySystem(ApplicationContext appContext, String system) throws JSONException, CerberusException {
+        AnswerItem item = new AnswerItem();
+        JSONObject object = new JSONObject();
+
+        IBuildRevisionParametersService libService = appContext.getBean(IBuildRevisionParametersService.class);
+
+        //finds the project     
+        AnswerItem answer = libService.readLastBySystem(system);
+
+        if (answer.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
+            //if the service returns an OK message then we can get the item and convert it to JSONformat
+            BuildRevisionParameters brp = (BuildRevisionParameters) answer.getItem();
+            JSONObject response = convertBuildRevisionParametersToJSONObject(brp);
+            object.put("contentTable", response);
+        }
+
+        item.setItem(object);
+        item.setResultMessage(answer.getResultMessage());
+
+        return item;
+    }
+
+    private JSONObject convertBuildRevisionParametersToJSONObject(BuildRevisionParameters brp) throws JSONException {
+
+        Gson gson = new Gson();
+        JSONObject result = new JSONObject(gson.toJson(brp));
+        return result;
     }
 
 }

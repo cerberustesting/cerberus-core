@@ -17,7 +17,6 @@
  */
 package org.cerberus.servlet.buildcontent;
 
-import org.cerberus.servlet.robot.*;
 import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -26,17 +25,14 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import org.cerberus.crud.entity.BuildRevisionParameters;
 import org.cerberus.crud.entity.MessageEvent;
-import org.cerberus.crud.entity.Robot;
 import org.cerberus.crud.factory.IFactoryBuildRevisionParameters;
 import org.cerberus.enums.MessageEventEnum;
 import org.cerberus.exception.CerberusException;
-import org.cerberus.crud.factory.IFactoryRobot;
 import org.cerberus.crud.service.IBuildRevisionParametersService;
 import org.cerberus.crud.service.ILogEventService;
-import org.cerberus.crud.service.IRobotService;
 import org.cerberus.crud.service.impl.LogEventService;
-import org.cerberus.util.StringUtil;
 import org.cerberus.util.answer.Answer;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -52,6 +48,8 @@ import org.owasp.html.Sanitizers;
 @WebServlet(name = "CreateBuildRevisionParameters", urlPatterns = {"/CreateBuildRevisionParameters"})
 public class CreateBuildRevisionParameters extends HttpServlet {
 
+    private final String OBJECT_NAME = "BuildRevisionParameters";
+    
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
      * methods.
@@ -95,18 +93,8 @@ public class CreateBuildRevisionParameters extends HttpServlet {
         /**
          * Checking all constrains before calling the services.
          */
-        if (StringUtil.isNullOrEmpty(build)) {
-            msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_EXPECTED);
-            msg.setDescription(msg.getDescription().replace("%ITEM%", "BuildRevisionParameters")
-                    .replace("%OPERATION%", "Create")
-                    .replace("%REASON%", "Build is missing."));
-            ans.setResultMessage(msg);
-        } else if (StringUtil.isNullOrEmpty(revision)) {
-            msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_EXPECTED);
-            msg.setDescription(msg.getDescription().replace("%ITEM%", "BuildRevisionParameters")
-                    .replace("%OPERATION%", "Create")
-                    .replace("%REASON%", "Revision is missing."));
-            ans.setResultMessage(msg);
+        if (false) {
+            // No constrain on that Create operation.
         } else {
             /**
              * All data seems cleans so we can call the services.
@@ -115,15 +103,15 @@ public class CreateBuildRevisionParameters extends HttpServlet {
             IBuildRevisionParametersService buildRevisionParametersService = appContext.getBean(IBuildRevisionParametersService.class);
             IFactoryBuildRevisionParameters buildRevisionParametersFactory = appContext.getBean(IFactoryBuildRevisionParameters.class);
 
-//            Robot robotData = buildRevisionParametersFactory.create(robotid, build, revision, release, application, project, ticketidfixed, bugidfixed, link, mavenVersion);
-//            ans = buildRevisionParametersService.create(robotData);
+            BuildRevisionParameters brpData = buildRevisionParametersFactory.create(0, build, revision, release, application, project, ticketidfixed, bugidfixed, link, releaseowner, subject, null, jenkinsbuildid, mavenGroupID, mavenArtefactID, mavenVersion);
+            ans = buildRevisionParametersService.create(brpData);
 
             if (ans.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
                 /**
                  * Object created. Adding Log entry.
                  */
                 ILogEventService logEventService = appContext.getBean(LogEventService.class);
-                logEventService.createPrivateCalls("/CreateRobot", "CREATE", "Create Robot : ['" + build + "']", request);
+                logEventService.createPrivateCalls("/CreateBuildRevisionParameters", "CREATE", "Create BuildRevisionParameters : ['" + build + "']", request);
             }
         }
 
