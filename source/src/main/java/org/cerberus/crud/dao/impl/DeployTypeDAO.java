@@ -50,14 +50,10 @@ public class DeployTypeDAO implements IDeployTypeDAO {
 
     private static final Logger LOG = Logger.getLogger(DeployTypeDAO.class);
 
+    private final String OBJECT_NAME = "Deploy Type";
     private final String SQL_DUPLICATED_CODE = "23000";
     private final int MAX_ROW_SELECTED = 100000;
 
-    /**
-     *
-     * @param deployType - idDeployType
-     * @return ans - AnswerIterm
-     */
     @Override
     public AnswerItem readByKey(String deployType) {
         AnswerItem ans = new AnswerItem();
@@ -66,6 +62,10 @@ public class DeployTypeDAO implements IDeployTypeDAO {
         MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
         msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", ""));
 
+        // Debug message on SQL.
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("SQL : " + query);
+        }
         Connection connection = this.databaseSpring.connect();
         try {
             PreparedStatement preStat = connection.prepareStatement(query);
@@ -76,7 +76,7 @@ public class DeployTypeDAO implements IDeployTypeDAO {
                     if (resultSet.first()) {
                         result = loadFromResultSet(resultSet);
                         msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
-                        msg.setDescription(msg.getDescription().replace("%ITEM%", "Deploy Type").replace("%OPERATION%", "SELECT"));
+                        msg.setDescription(msg.getDescription().replace("%ITEM%", OBJECT_NAME).replace("%OPERATION%", "SELECT"));
                         ans.setItem(result);
                     } else {
                         msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_NO_DATA_FOUND);
@@ -126,6 +126,10 @@ public class DeployTypeDAO implements IDeployTypeDAO {
         //were applied -- used for pagination p
         query.append("SELECT SQL_CALC_FOUND_ROWS * FROM deploytype limit 0 , ").append(MAX_ROW_SELECTED);
 
+        // Debug message on SQL.
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("SQL : " + query.toString());
+        }
         Connection connection = this.databaseSpring.connect();
         try {
             PreparedStatement preStat = connection.prepareStatement(query.toString());
@@ -152,7 +156,7 @@ public class DeployTypeDAO implements IDeployTypeDAO {
                         response = new AnswerList(deployTypeList, nrTotalRows);
                     } else {
                         msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
-                        msg.setDescription(msg.getDescription().replace("%ITEM%", "Deploy Type").replace("%OPERATION%", "SELECT"));
+                        msg.setDescription(msg.getDescription().replace("%ITEM%", OBJECT_NAME).replace("%OPERATION%", "SELECT"));
                         response = new AnswerList(deployTypeList, nrTotalRows);
                     }
 
@@ -225,12 +229,16 @@ public class DeployTypeDAO implements IDeployTypeDAO {
             query.append("order by `").append(column).append("` ").append(dir);
         }
 
-        if ((amount == 0) || (amount >= MAX_ROW_SELECTED)) {
+        if ((amount <= 0) || (amount >= MAX_ROW_SELECTED)) {
             query.append(" limit ").append(start).append(" , ").append(MAX_ROW_SELECTED);
         } else {
             query.append(" limit ").append(start).append(" , ").append(amount);
         }
 
+        // Debug message on SQL.
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("SQL : " + query.toString());
+        }
         Connection connection = this.databaseSpring.connect();
         try {
             PreparedStatement preStat = connection.prepareStatement(query.toString());
@@ -257,7 +265,7 @@ public class DeployTypeDAO implements IDeployTypeDAO {
                         response = new AnswerList(deployTypeList, nrTotalRows);
                     } else {
                         msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
-                        msg.setDescription(msg.getDescription().replace("%ITEM%", "Deploy Type").replace("%OPERATION%", "SELECT"));
+                        msg.setDescription(msg.getDescription().replace("%ITEM%", OBJECT_NAME).replace("%OPERATION%", "SELECT"));
                         response = new AnswerList(deployTypeList, nrTotalRows);
                     }
 
@@ -309,6 +317,10 @@ public class DeployTypeDAO implements IDeployTypeDAO {
         query.append("INSERT INTO deploytype (`deploytype`, `description`) ");
         query.append("VALUES (?,?)");
 
+        // Debug message on SQL.
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("SQL : " + query.toString());
+        }
         Connection connection = this.databaseSpring.connect();
         try {
             PreparedStatement preStat = connection.prepareStatement(query.toString());
@@ -318,14 +330,14 @@ public class DeployTypeDAO implements IDeployTypeDAO {
 
                 preStat.executeUpdate();
                 msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
-                msg.setDescription(msg.getDescription().replace("%ITEM%", "Deploy Type").replace("%OPERATION%", "INSERT"));
+                msg.setDescription(msg.getDescription().replace("%ITEM%", OBJECT_NAME).replace("%OPERATION%", "INSERT"));
 
             } catch (SQLException exception) {
                 LOG.error("Unable to execute query : " + exception.toString());
 
                 if (exception.getSQLState().equals(SQL_DUPLICATED_CODE)) { //23000 is the sql state for duplicate entries
                     msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_DUPLICATE);
-                    msg.setDescription(msg.getDescription().replace("%ITEM%", "Deploy Type").replace("%OPERATION%", "INSERT"));
+                    msg.setDescription(msg.getDescription().replace("%ITEM%", OBJECT_NAME).replace("%OPERATION%", "INSERT"));
                 } else {
                     msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
                     msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", exception.toString()));
@@ -354,6 +366,10 @@ public class DeployTypeDAO implements IDeployTypeDAO {
         MessageEvent msg = null;
         final String query = "DELETE FROM deploytype WHERE deploytype = ? ";
 
+        // Debug message on SQL.
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("SQL : " + query);
+        }
         Connection connection = this.databaseSpring.connect();
         try {
             PreparedStatement preStat = connection.prepareStatement(query);
@@ -362,7 +378,7 @@ public class DeployTypeDAO implements IDeployTypeDAO {
 
                 preStat.executeUpdate();
                 msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
-                msg.setDescription(msg.getDescription().replace("%ITEM%", "Deploy Type").replace("%OPERATION%", "DELETE"));
+                msg.setDescription(msg.getDescription().replace("%ITEM%", OBJECT_NAME).replace("%OPERATION%", "DELETE"));
             } catch (SQLException exception) {
                 LOG.error("Unable to execute query : " + exception.toString());
                 msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
@@ -391,6 +407,10 @@ public class DeployTypeDAO implements IDeployTypeDAO {
         MessageEvent msg = null;
         final String query = "UPDATE deploytype SET description = ? WHERE deploytype = ? ";
 
+        // Debug message on SQL.
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("SQL : " + query);
+        }
         Connection connection = this.databaseSpring.connect();
         try {
             PreparedStatement preStat = connection.prepareStatement(query);

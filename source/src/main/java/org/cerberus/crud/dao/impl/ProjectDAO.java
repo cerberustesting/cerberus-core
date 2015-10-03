@@ -51,6 +51,7 @@ public class ProjectDAO implements IProjectDAO {
 
     private static final Logger LOG = Logger.getLogger(ProjectDAO.class);
 
+    private final String OBJECT_NAME = "Project";
     private final String SQL_DUPLICATED_CODE = "23000";
     private final int MAX_ROW_SELECTED = 100000;
 
@@ -62,6 +63,10 @@ public class ProjectDAO implements IProjectDAO {
         MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
         msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", ""));
 
+        // Debug message on SQL.
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("SQL : " + query);
+        }
         Connection connection = this.databaseSpring.connect();
         try {
             PreparedStatement preStat = connection.prepareStatement(query);
@@ -72,7 +77,7 @@ public class ProjectDAO implements IProjectDAO {
                     if (resultSet.first()) {
                         result = loadFromResultSet(resultSet);
                         msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
-                        msg.setDescription(msg.getDescription().replace("%ITEM%", "Project Lib").replace("%OPERATION%", "SELECT"));
+                        msg.setDescription(msg.getDescription().replace("%ITEM%", OBJECT_NAME).replace("%OPERATION%", "SELECT"));
                         ans.setItem(result);
                     } else {
                         msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_NO_DATA_FOUND);
@@ -141,12 +146,16 @@ public class ProjectDAO implements IProjectDAO {
             query.append("order by `").append(column).append("` ").append(dir);
         }
 
-        if ((amount == 0) || (amount >= MAX_ROW_SELECTED)) {
+        if ((amount <= 0) || (amount >= MAX_ROW_SELECTED)) {
             query.append(" limit ").append(start).append(" , ").append(MAX_ROW_SELECTED);
         } else {
             query.append(" limit ").append(start).append(" , ").append(amount);
         }
 
+        // Debug message on SQL.
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("SQL : " + query.toString());
+        }
         Connection connection = this.databaseSpring.connect();
         try {
             PreparedStatement preStat = connection.prepareStatement(query.toString());
@@ -173,7 +182,7 @@ public class ProjectDAO implements IProjectDAO {
                         response = new AnswerList(projectList, nrTotalRows);
                     } else {
                         msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
-                        msg.setDescription(msg.getDescription().replace("%ITEM%", "Project Lib").replace("%OPERATION%", "SELECT"));
+                        msg.setDescription(msg.getDescription().replace("%ITEM%", OBJECT_NAME).replace("%OPERATION%", "SELECT"));
                         response = new AnswerList(projectList, nrTotalRows);
                     }
 
@@ -225,6 +234,10 @@ public class ProjectDAO implements IProjectDAO {
         query.append("INSERT INTO project (`idproject`, `VCCode`, `Description`, `active` ) ");
         query.append("VALUES (?,?,?,?)");
 
+        // Debug message on SQL.
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("SQL : " + query.toString());
+        }
         Connection connection = this.databaseSpring.connect();
         try {
             PreparedStatement preStat = connection.prepareStatement(query.toString());
@@ -236,14 +249,14 @@ public class ProjectDAO implements IProjectDAO {
 
                 preStat.executeUpdate();
                 msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
-                msg.setDescription(msg.getDescription().replace("%ITEM%", "Project").replace("%OPERATION%", "INSERT"));
+                msg.setDescription(msg.getDescription().replace("%ITEM%", OBJECT_NAME).replace("%OPERATION%", "INSERT"));
 
             } catch (SQLException exception) {
                 LOG.error("Unable to execute query : " + exception.toString());
 
                 if (exception.getSQLState().equals(SQL_DUPLICATED_CODE)) { //23000 is the sql state for duplicate entries
                     msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_DUPLICATE);
-                    msg.setDescription(msg.getDescription().replace("%ITEM%", "Project").replace("%OPERATION%", "INSERT"));
+                    msg.setDescription(msg.getDescription().replace("%ITEM%", OBJECT_NAME).replace("%OPERATION%", "INSERT"));
                 } else {
                     msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
                     msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", exception.toString()));
@@ -272,6 +285,10 @@ public class ProjectDAO implements IProjectDAO {
         MessageEvent msg = null;
         final String query = "DELETE FROM project WHERE idproject = ? ";
 
+        // Debug message on SQL.
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("SQL : " + query.toString());
+        }
         Connection connection = this.databaseSpring.connect();
         try {
             PreparedStatement preStat = connection.prepareStatement(query);
@@ -280,7 +297,7 @@ public class ProjectDAO implements IProjectDAO {
 
                 preStat.executeUpdate();
                 msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
-                msg.setDescription(msg.getDescription().replace("%ITEM%", "Project").replace("%OPERATION%", "DELETE"));
+                msg.setDescription(msg.getDescription().replace("%ITEM%", OBJECT_NAME).replace("%OPERATION%", "DELETE"));
             } catch (SQLException exception) {
                 LOG.error("Unable to execute query : " + exception.toString());
                 msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
@@ -309,6 +326,10 @@ public class ProjectDAO implements IProjectDAO {
         MessageEvent msg = null;
         final String query = "UPDATE project SET VCCode = ?, Description = ?, active = ?  WHERE idproject = ? ";
 
+        // Debug message on SQL.
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("SQL : " + query.toString());
+        }
         Connection connection = this.databaseSpring.connect();
         try {
             PreparedStatement preStat = connection.prepareStatement(query);
@@ -320,7 +341,7 @@ public class ProjectDAO implements IProjectDAO {
 
                 preStat.executeUpdate();
                 msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
-                msg.setDescription(msg.getDescription().replace("%ITEM%", "Project").replace("%OPERATION%", "UPDATE"));
+                msg.setDescription(msg.getDescription().replace("%ITEM%", OBJECT_NAME).replace("%OPERATION%", "UPDATE"));
             } catch (SQLException exception) {
                 LOG.error("Unable to execute query : " + exception.toString());
                 msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);

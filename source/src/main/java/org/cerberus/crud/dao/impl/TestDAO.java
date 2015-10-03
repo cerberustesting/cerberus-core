@@ -566,7 +566,7 @@ public class TestDAO implements ITestDAO {
         if (!StringUtil.isNullOrEmpty(colName)) {
             query.append("order by `").append(colName).append("` ").append(dir);
         }
-        if ((amount == 0) || (amount >= MAX_ROW_SELECTED)) {
+        if ((amount <= 0) || (amount >= MAX_ROW_SELECTED)) {
             query.append(" limit ").append(start).append(" , ").append(MAX_ROW_SELECTED);
         } else {
             query.append(" limit ").append(start).append(" , ").append(amount);

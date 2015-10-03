@@ -45,9 +45,6 @@ import org.springframework.stereotype.Repository;
 @Repository
 public class LogEventDAO implements ILogEventDAO {
 
-    /**
-     * Description of the variable here.
-     */
     @Autowired
     private DatabaseSpring databaseSpring;
     @Autowired
@@ -55,6 +52,7 @@ public class LogEventDAO implements ILogEventDAO {
 
     private static final Logger LOG = Logger.getLogger(LogEventDAO.class);
 
+    private final String OBJECT_NAME = "LogEvent";
     private final String SQL_DUPLICATED_CODE = "23000";
     private final int MAX_ROW_SELECTED = 100000;
 
@@ -66,6 +64,10 @@ public class LogEventDAO implements ILogEventDAO {
         MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
         msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", ""));
 
+        // Debug message on SQL.
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("SQL : " + query);
+        }
         Connection connection = this.databaseSpring.connect();
         try {
             PreparedStatement preStat = connection.prepareStatement(query);
@@ -76,7 +78,7 @@ public class LogEventDAO implements ILogEventDAO {
                     if (resultSet.first()) {
                         result = loadFromResultSet(resultSet);
                         msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
-                        msg.setDescription(msg.getDescription().replace("%ITEM%", "LogEvent").replace("%OPERATION%", "SELECT"));
+                        msg.setDescription(msg.getDescription().replace("%ITEM%", OBJECT_NAME).replace("%OPERATION%", "SELECT"));
                         ans.setItem(result);
                     } else {
                         msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_NO_DATA_FOUND);
@@ -144,12 +146,16 @@ public class LogEventDAO implements ILogEventDAO {
         if (!StringUtil.isNullOrEmpty(colName)) {
             query.append("order by `").append(colName).append("` ").append(dir);
         }
-        if ((amount == 0) || (amount >= MAX_ROW_SELECTED)) {
+        if ((amount <= 0) || (amount >= MAX_ROW_SELECTED)) {
             query.append(" limit ").append(start).append(" , ").append(MAX_ROW_SELECTED);
         } else {
             query.append(" limit ").append(start).append(" , ").append(amount);
         }
 
+        // Debug message on SQL.
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("SQL : " + query.toString());
+        }
         Connection connection = this.databaseSpring.connect();
         try {
             PreparedStatement preStat = connection.prepareStatement(query.toString());
@@ -176,7 +182,7 @@ public class LogEventDAO implements ILogEventDAO {
                         response = new AnswerList(logEventList, nrTotalRows);
                     } else {
                         msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
-                        msg.setDescription(msg.getDescription().replace("%ITEM%", "LogEvent").replace("%OPERATION%", "SELECT"));
+                        msg.setDescription(msg.getDescription().replace("%ITEM%", OBJECT_NAME).replace("%OPERATION%", "SELECT"));
                         response = new AnswerList(logEventList, nrTotalRows);
                     }
 
@@ -229,6 +235,10 @@ public class LogEventDAO implements ILogEventDAO {
         query.append("INSERT INTO logevent (userID, Login, Page, Action, Log, remoteIP, localIP) ");
         query.append("VALUES (?, ?, ?, ?, ?, ?, ?)");
 
+        // Debug message on SQL.
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("SQL : " + query.toString());
+        }
         Connection connection = this.databaseSpring.connect();
         try {
             PreparedStatement preStat = connection.prepareStatement(query.toString());
@@ -243,14 +253,14 @@ public class LogEventDAO implements ILogEventDAO {
 
                 preStat.executeUpdate();
                 msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
-                msg.setDescription(msg.getDescription().replace("%ITEM%", "LogEvent").replace("%OPERATION%", "INSERT"));
+                msg.setDescription(msg.getDescription().replace("%ITEM%", OBJECT_NAME).replace("%OPERATION%", "INSERT"));
 
             } catch (SQLException exception) {
                 LOG.error("Unable to execute query : " + exception.toString());
 
                 if (exception.getSQLState().equals(SQL_DUPLICATED_CODE)) { //23000 is the sql state for duplicate entries
                     msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_DUPLICATE);
-                    msg.setDescription(msg.getDescription().replace("%ITEM%", "LogEvent").replace("%OPERATION%", "INSERT"));
+                    msg.setDescription(msg.getDescription().replace("%ITEM%", OBJECT_NAME).replace("%OPERATION%", "INSERT"));
                 } else {
                     msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
                     msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", exception.toString()));

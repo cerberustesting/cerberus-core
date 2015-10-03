@@ -51,30 +51,17 @@ import org.springframework.stereotype.Repository;
 @Repository
 public class ApplicationDAO implements IApplicationDAO {
 
-    /**
-     * Bean of the DatabaseSpring, Spring automatically links. Establishes
-     * connection to database and return it to allow perform queries and
-     * updates.
-     */
     @Autowired
     private DatabaseSpring databaseSpring;
-    /**
-     * Bean of the IFactoryApplication, Spring automatically links. Creates new
-     * objects {@link Application}
-     */
     @Autowired
     private IFactoryApplication factoryApplication;
 
     private static final Logger LOG = Logger.getLogger(ApplicationDAO.class);
 
+    private final String OBJECT_NAME = "Application";
     private final String SQL_DUPLICATED_CODE = "23000";
     private final int MAX_ROW_SELECTED = 100000;
 
-    /**
-     *
-     * @param application - idApplication
-     * @return ans - AnswerIterm
-     */
     @Override
     public AnswerItem readByKey(String application) {
         AnswerItem ans = new AnswerItem();
@@ -93,7 +80,7 @@ public class ApplicationDAO implements IApplicationDAO {
                     if (resultSet.first()) {
                         result = loadFromResultSet(resultSet);
                         msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
-                        msg.setDescription(msg.getDescription().replace("%ITEM%", "Application").replace("%OPERATION%", "SELECT"));
+                        msg.setDescription(msg.getDescription().replace("%ITEM%", OBJECT_NAME).replace("%OPERATION%", "SELECT"));
                         ans.setItem(result);
                     } else {
                         msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_NO_DATA_FOUND);
@@ -171,12 +158,16 @@ public class ApplicationDAO implements IApplicationDAO {
             query.append(" order by `").append(column).append("` ").append(dir);
         }
 
-        if ((amount == 0) || (amount >= MAX_ROW_SELECTED)) {
+        if ((amount <= 0) || (amount >= MAX_ROW_SELECTED)) {
             query.append(" limit ").append(start).append(" , ").append(MAX_ROW_SELECTED);
         } else {
             query.append(" limit ").append(start).append(" , ").append(amount);
         }
 
+        // Debug message on SQL.
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("SQL : " + query.toString());
+        }
         Connection connection = this.databaseSpring.connect();
         try {
             PreparedStatement preStat = connection.prepareStatement(query.toString());
@@ -199,11 +190,11 @@ public class ApplicationDAO implements IApplicationDAO {
                     if (applicationList.size() >= MAX_ROW_SELECTED) { // Result of SQl was limited by MAX_ROW_SELECTED constrain. That means that we may miss some lines in the resultList.
                         LOG.error("Partial Result in the query.");
                         msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_WARNING_PARTIAL_RESULT);
-                        msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", "Maximum row reached : " + MAX_ROW_SELECTED ));
+                        msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", "Maximum row reached : " + MAX_ROW_SELECTED));
                         response = new AnswerList(applicationList, nrTotalRows);
                     } else {
                         msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
-                        msg.setDescription(msg.getDescription().replace("%ITEM%", "Application").replace("%OPERATION%", "SELECT"));
+                        msg.setDescription(msg.getDescription().replace("%ITEM%", OBJECT_NAME).replace("%OPERATION%", "SELECT"));
                         response = new AnswerList(applicationList, nrTotalRows);
                     }
 
@@ -256,6 +247,10 @@ public class ApplicationDAO implements IApplicationDAO {
         query.append("INSERT INTO application (`application`, `description`, `sort`, `type`, `system`, `SubSystem`, `svnurl`, `BugTrackerUrl`, `BugTrackerNewUrl`, `deploytype`, `mavengroupid` ) ");
         query.append("VALUES (?,?,?,?,?,?,?,?,?,?,?)");
 
+        // Debug message on SQL.
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("SQL : " + query.toString());
+        }
         Connection connection = this.databaseSpring.connect();
         try {
             PreparedStatement preStat = connection.prepareStatement(query.toString());
@@ -274,14 +269,14 @@ public class ApplicationDAO implements IApplicationDAO {
 
                 preStat.executeUpdate();
                 msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
-                msg.setDescription(msg.getDescription().replace("%ITEM%", "Application").replace("%OPERATION%", "INSERT"));
+                msg.setDescription(msg.getDescription().replace("%ITEM%", OBJECT_NAME).replace("%OPERATION%", "INSERT"));
 
             } catch (SQLException exception) {
                 LOG.error("Unable to execute query : " + exception.toString());
 
                 if (exception.getSQLState().equals(SQL_DUPLICATED_CODE)) { //23000 is the sql state for duplicate entries
                     msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_DUPLICATE);
-                    msg.setDescription(msg.getDescription().replace("%ITEM%", "Application").replace("%OPERATION%", "INSERT"));
+                    msg.setDescription(msg.getDescription().replace("%ITEM%", OBJECT_NAME).replace("%OPERATION%", "INSERT"));
                 } else {
                     msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
                     msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", exception.toString()));
@@ -310,6 +305,10 @@ public class ApplicationDAO implements IApplicationDAO {
         MessageEvent msg = null;
         final String query = "DELETE FROM application WHERE application = ? ";
 
+        // Debug message on SQL.
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("SQL : " + query);
+        }
         Connection connection = this.databaseSpring.connect();
         try {
             PreparedStatement preStat = connection.prepareStatement(query);
@@ -318,7 +317,7 @@ public class ApplicationDAO implements IApplicationDAO {
 
                 preStat.executeUpdate();
                 msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
-                msg.setDescription(msg.getDescription().replace("%ITEM%", "Application").replace("%OPERATION%", "DELETE"));
+                msg.setDescription(msg.getDescription().replace("%ITEM%", OBJECT_NAME).replace("%OPERATION%", "DELETE"));
             } catch (SQLException exception) {
                 LOG.error("Unable to execute query : " + exception.toString());
                 msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
@@ -347,6 +346,10 @@ public class ApplicationDAO implements IApplicationDAO {
         MessageEvent msg = null;
         final String query = "UPDATE application SET description = ?, sort = ?, `type` = ?, `system` = ?, SubSystem = ?, svnurl = ?, BugTrackerUrl = ?, BugTrackerNewUrl = ?, deploytype = ?, mavengroupid = ?  WHERE Application = ?";
 
+        // Debug message on SQL.
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("SQL : " + query);
+        }
         Connection connection = this.databaseSpring.connect();
         try {
             PreparedStatement preStat = connection.prepareStatement(query);
@@ -365,7 +368,7 @@ public class ApplicationDAO implements IApplicationDAO {
 
                 preStat.executeUpdate();
                 msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
-                msg.setDescription(msg.getDescription().replace("%ITEM%", "Application").replace("%OPERATION%", "UPDATE"));
+                msg.setDescription(msg.getDescription().replace("%ITEM%", OBJECT_NAME).replace("%OPERATION%", "UPDATE"));
             } catch (SQLException exception) {
                 LOG.error("Unable to execute query : " + exception.toString());
                 msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
@@ -389,16 +392,15 @@ public class ApplicationDAO implements IApplicationDAO {
         return new Answer(msg);
     }
 
-    /**
-     *
-     * @return @throws CerberusException
-     * @since 0.9.1
-     */
     @Override
     public List<String> readDistinctSystem() {
         List<String> list = null;
         final String query = "SELECT DISTINCT a.system FROM application a ORDER BY a.system ASC";
 
+        // Debug message on SQL.
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("SQL : " + query);
+        }
         Connection connection = this.databaseSpring.connect();
         try {
             PreparedStatement preStat = connection.prepareStatement(query);

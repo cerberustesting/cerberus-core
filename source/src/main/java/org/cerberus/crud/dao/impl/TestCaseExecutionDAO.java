@@ -69,11 +69,16 @@ public class TestCaseExecutionDAO implements ITestCaseExecutionDAO {
 
     private static final Logger LOG = Logger.getLogger(TestCaseExecutionDAO.class);
 
+    private final String OBJECT_NAME = "TestCase Execution";
+    private final String SQL_DUPLICATED_CODE = "23000";
+    private final int MAX_ROW_SELECTED = 100000;
+
     @Override
     public long insertTCExecution(TestCaseExecution tCExecution) throws CerberusException {
         boolean throwEx = false;
         final String query = "INSERT INTO testcaseexecution(test, testcase, build, revision, environment, country, browser, application, ip, "
-                + "url, port, tag, verbose, status, start, end, controlstatus, controlMessage, crbversion, finished, browserFullVersion, executor, screensize) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+                + "url, port, tag, verbose, status, start, end, controlstatus, controlMessage, crbversion, finished, browserFullVersion, executor, screensize) "
+                + "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
         Connection connection = this.databaseSpring.connect();
         try {
@@ -153,7 +158,8 @@ public class TestCaseExecutionDAO implements ITestCaseExecutionDAO {
         boolean throwEx = false;
         final String query = "UPDATE testcaseexecution SET test = ?, testcase = ?, build = ?, revision = ?, environment = ?, country = ?"
                 + ", browser = ?, application = ?, ip = ?, url = ?, port = ?, tag = ?, verbose = ?, status = ?"
-                + ", start = ?, end = ? , controlstatus = ?, controlMessage = ?, crbversion = ?, finished = ? , browserFullVersion = ?, version = ?, platform = ?, executor = ?, screensize = ? WHERE id = ?";
+                + ", start = ?, end = ? , controlstatus = ?, controlMessage = ?, crbversion = ?, finished = ? "
+                + ", browserFullVersion = ?, version = ?, platform = ?, executor = ?, screensize = ? WHERE id = ?";
 
         Connection connection = this.databaseSpring.connect();
         try {
@@ -801,11 +807,11 @@ public class TestCaseExecutionDAO implements ITestCaseExecutionDAO {
         MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
         List<String> list = null;
         StringBuilder query = new StringBuilder();
-        
+
         query.append("select distinct tag from testcaseexecution tce ");
         query.append("where tag != '' ");
 //        query.append(" UNION select distinct tag from testcaseexecutionqueue where tag !='' ");
-        
+
         if (TagNumber != 0) {
             query.append("ORDER BY id desc LIMIT ");
             query.append(TagNumber);
@@ -894,47 +900,58 @@ public class TestCaseExecutionDAO implements ITestCaseExecutionDAO {
 
     @Override
     public AnswerList readByCriteria(int start, int amount, String column, String dir, String searchTerm, String individualSearch, String tag) throws CerberusException {
-        StringBuilder gSearch = new StringBuilder();
         MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
         AnswerList answer = new AnswerList();
-        final StringBuffer query = new StringBuffer("SELECT SQL_CALC_FOUND_ROWS * FROM ( select tc.*, tce.Start, tce.End, tce.ID as statusExecutionID, tce.ControlStatus, tce.ControlMessage, tce.Environment, tce.Country, tce.Browser ")
-                .append("from testcase tc ")
-                .append("left join testcaseexecution tce ")
-                .append("on tce.Test = tc.Test ")
-                .append("and tce.TestCase = tc.TestCase ")
-                .append("where tce.tag = ? ");
 
-        query.append(" order by test, testcase, ID desc) as tce, application app ")
-                .append("where tce.application = app.application ");
+        final StringBuffer query = new StringBuffer();
 
-        gSearch.append("and (tce.`test` like '%");
-        gSearch.append(searchTerm);
-        gSearch.append("%'");
-        gSearch.append(" or tce.`testCase` like '%");
-        gSearch.append(searchTerm);
-        gSearch.append("%'");
-        gSearch.append(" or tce.`application` like '%");
-        gSearch.append(searchTerm);
-        gSearch.append("%'");
-        gSearch.append(" or tce.`description` like '%");
-        gSearch.append(searchTerm);
-        gSearch.append("%')");
+        query.append("SELECT SQL_CALC_FOUND_ROWS * FROM ");
+        query.append("( select tc.*, tce.Start, tce.End, tce.ID as statusExecutionID, tce.ControlStatus, tce.ControlMessage, tce.Environment, tce.Country, tce.Browser ");
+        query.append("from testcase tc ");
+        query.append("left join testcaseexecution tce ");
+        query.append("on tce.Test = tc.Test ");
+        query.append("and tce.TestCase = tc.TestCase ");
 
-        if (!searchTerm.equals("")) {
-            query.append(gSearch.toString());
+        query.append(" where 1=1 ");
+
+        if (!StringUtil.isNullOrEmpty(tag)) {
+            query.append("and tce.tag = ? ");
         }
-        query.append("group by tce.test, tce.testcase, tce.Environment, tce.Browser, tce.Country ");
-        query.append(" order by tce.`");
-        query.append(column);
-        query.append("` ");
-        query.append(dir);
 
+        query.append(" order by test, testcase, ID desc) as tce");
+        query.append(" , application app where tce.application = app.application ");
+
+        if (!StringUtil.isNullOrEmpty(searchTerm)) {
+            query.append("and (tce.`test` like '%").append(searchTerm).append("%'");
+            query.append(" or tce.`testCase` like '%").append(searchTerm).append("%'");
+            query.append(" or tce.`application` like '%").append(searchTerm).append("%'");
+            query.append(" or tce.`description` like '%").append(searchTerm).append("%')");
+        }
+
+        query.append("group by tce.test, tce.testcase, tce.Environment, tce.Browser, tce.Country ");
+
+        if (!StringUtil.isNullOrEmpty(column)) {
+            query.append(" order by tce.`").append(column).append("` ").append(dir);
+        }
+
+        if ((amount <= 0) || (amount >= MAX_ROW_SELECTED)) {
+            query.append(" limit ").append(start).append(" , ").append(MAX_ROW_SELECTED);
+        } else {
+            query.append(" limit ").append(start).append(" , ").append(amount);
+        }
+
+        // Debug message on SQL.
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("SQL : " + query.toString());
+        }
         List<TestCaseWithExecution> testCaseWithExecutionList = new ArrayList<TestCaseWithExecution>();
         Connection connection = this.databaseSpring.connect();
         try {
             PreparedStatement preStat = connection.prepareStatement(query.toString());
+            if (!StringUtil.isNullOrEmpty(tag)) {
+                preStat.setString(1, tag);
+            }
 
-            preStat.setString(1, tag);
             try {
                 ResultSet resultSet = preStat.executeQuery();
                 try {
