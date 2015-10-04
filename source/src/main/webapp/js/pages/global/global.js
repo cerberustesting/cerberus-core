@@ -92,6 +92,21 @@ function displayDeployTypeList(selectName) {
     });
 }
 
+/*****DEPLOYTYPE LIST **********************************/
+/**
+ * Method that display a combo box in all the selectName tags with the value retrieved from the DeployType list
+ * @param {String} selectName value name of the select tag in the html
+ * @returns {void}
+ */
+function displayApplicationList(selectName) {
+    $.when($.getJSON("ReadApplication", "")).then(function (data) {
+        console.log(data);
+        for (var option in data.contentTable) {
+            $("[name='" + selectName + "']").append($('<option></option>').text(data.contentTable[option].application + " - " + data.contentTable[option].description).val(data.contentTable[option].application));
+        }
+    });
+}
+
 /**
  * Auxiliary method that retrieves a list containing the values that belong to the invariant that matches the provided idname.
  * @param {idName} idName value that filters the invariants that will be retrieved

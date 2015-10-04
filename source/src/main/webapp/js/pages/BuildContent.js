@@ -27,12 +27,12 @@ $.when($.getScript("js/pages/global/global.js")).then(function () {
 function initBuildContentPage() {
     displayPageLabel();
     // handle the click for specific action buttons
-    $("#addApplicationButton").click(saveNewBrpHandler);
-    $("#editApplicationButton").click(saveUpdateBrpHandler);
+    $("#addBrpButton").click(saveNewBrpHandler);
+    $("#editBrpButton").click(saveUpdateBrpHandler);
 
     //clear the modals fields when closed
-    $('#addApplicationModal').on('hidden.bs.modal', addBrpModalCloseHandler);
-    $('#editApplicationModal').on('hidden.bs.modal', editBrpModalCloseHandler);
+    $('#addBrpModal').on('hidden.bs.modal', addBrpModalCloseHandler);
+    $('#editBrpModal').on('hidden.bs.modal', editBrpModalCloseHandler);
 
     //configure and create the dataTable
     var configurations = new TableConfigurationsServerSide("buildrevisionparametersTable", "ReadBuildRevisionParameters?system=" + getUser().defaultSystem, "contentTable", aoColumnsFunc());
@@ -47,37 +47,31 @@ function displayPageLabel() {
     var doc = new Doc();
 
     displayHeaderLabel(doc);
-    $("#pageTitle").html(doc.getDocLabel("page_application", "title"));
-    $("#title").html(doc.getDocOnline("page_application", "title"));
-    $("[name='createApplicationField']").html(doc.getDocLabel("page_application", "button_create"));
-    $("[name='confirmationField']").html(doc.getDocLabel("page_application", "button_delete"));
-    $("[name='editApplicationField']").html(doc.getDocLabel("page_application", "button_edit"));
+    $("#pageTitle").html(doc.getDocLabel("page_buildcontent", "title"));
+    $("#title").html(doc.getDocOnline("page_buildcontent", "title"));
+    $("[name='createBrpField']").html(doc.getDocLabel("page_buildcontent", "button_create"));
+    $("[name='confirmationField']").html(doc.getDocLabel("page_buildcontent", "button_delete"));
+    $("[name='editBrpField']").html(doc.getDocLabel("page_buildcontent", "button_edit"));
     $("[name='buttonAdd']").html(doc.getDocLabel("page_global", "buttonAdd"));
     $("[name='buttonClose']").html(doc.getDocLabel("page_global", "buttonClose"));
     $("[name='buttonConfirm']").html(doc.getDocLabel("page_global", "buttonConfirm"));
     $("[name='buttonDismiss']").html(doc.getDocLabel("page_global", "buttonDismiss"));
-    $("[name='applicationField']").html(doc.getDocOnline("application", "Application"));
-    $("[name='descriptionField']").html(doc.getDocOnline("application", "Description"));
-    $("[name='sortField']").html(doc.getDocOnline("application", "sort"));
-    $("[name='typeField']").html(doc.getDocOnline("application", "type"));
-    $("[name='systemField']").html(doc.getDocOnline("application", "system"));
-    $("[name='subsystemField']").html(doc.getDocOnline("application", "subsystem"));
-    $("[name='svnurlField']").html(doc.getDocOnline("application", "svnurl"));
-    $("[name='bugtrackerurlField']").html(doc.getDocOnline("application", "bugtrackerurl"));
-    $("[name='bugtrackernewurlField']").html(doc.getDocOnline("application", "bugtrackernewurl"));
-    $("[name='deploytypeField']").html(doc.getDocOnline("application", "deploytype"));
-    $("[name='mavengroupidField']").html(doc.getDocOnline("application", "mavengroupid"));
+
+    $("[name='idField']").html(doc.getDocOnline("buildrevisionparameters", "id"));
+    $("[name='buildField']").html(doc.getDocOnline("buildrevisionparameters", "Build"));
+    $("[name='revisionField']").html(doc.getDocOnline("buildrevisionparameters", "Revision"));
+    displayApplicationList("application");
     displayFooter(doc);
 }
 
 function deleteBrpHandlerClick() {
-    var idApplication = $('#confirmationModal').find('#hiddenField').prop("value");
-    var jqxhr = $.post("DeleteApplication", {application: idApplication}, "json");
+    var id = $('#confirmationModal').find('#hiddenField').prop("value");
+    var jqxhr = $.post("DeleteBuildRevisionParameters", {id: id}, "json");
     $.when(jqxhr).then(function (data) {
         var messageType = getAlertType(data.messageType);
         if (messageType === "success") {
             //redraw the datatable
-            var oTable = $("#applicationsTable").dataTable();
+            var oTable = $("#buildrevisionparametersTable").dataTable();
             oTable.fnDraw(true);
             var info = oTable.fnGetData().length;
 
@@ -93,25 +87,29 @@ function deleteBrpHandlerClick() {
     }).fail(handleErrorAjaxAfterTimeout);
 }
 
-function deleteBrp(id) {
+function deleteBrp(id, build, revision, release, application) {
     clearResponseMessageMainPage();
     var doc = new Doc();
-    var messageComplete = doc.getDocLabel("page_global", "deleteMessage");
-    messageComplete = messageComplete.replace("%TABLE%", doc.getDocLabel("application", "Application"));
+    var messageComplete = doc.getDocLabel("page_buildcontent", "deleteMessage");
+    messageComplete = "Do you want to delete release entry %ENTRY% ?<br> NB : It correspond to the release %RELEASE% of application %APPLI% of Build %BUILD% Revision %REVISION%."
     messageComplete = messageComplete.replace("%ENTRY%", id);
-    showModalConfirmation(deleteBrpHandlerClick, doc.getDocLabel("page_application", "button_delete"), messageComplete, id);
+    messageComplete = messageComplete.replace("%BUILD%", build);
+    messageComplete = messageComplete.replace("%REVISION%", revision);
+    messageComplete = messageComplete.replace("%RELEASE%", release);
+    messageComplete = messageComplete.replace("%APPLI%", application);
+    showModalConfirmation(deleteBrpHandlerClick, doc.getDocLabel("page_buildcontent", "button_delete"), messageComplete, id);
 }
 
 function saveNewBrpHandler() {
-    clearResponseMessage($('#addApplicationModal'));
-    var formAdd = $("#addApplicationModal #addApplicationModalForm");
+    clearResponseMessage($('#addBrpModal'));
+    var formAdd = $("#addBrpModal #addBrpModalForm");
 
-    var nameElement = formAdd.find("#application");
+    var nameElement = formAdd.find("#build");
     var nameElementEmpty = nameElement.prop("value") === '';
     if (nameElementEmpty) {
-        var localMessage = new Message("danger", "Please specify the name of the application!");
+        var localMessage = new Message("danger", "Please specify the name of the build!");
         nameElement.parents("div.form-group").addClass("has-error");
-        showMessage(localMessage, $('#addApplicationModal'));
+        showMessage(localMessage, $('#addBrpModal'));
     } else {
         nameElement.parents("div.form-group").removeClass("has-error");
     }
@@ -120,68 +118,68 @@ function saveNewBrpHandler() {
     if (nameElementEmpty)
         return;
 
-    showLoaderInModal('#addApplicationModal');
-    var jqxhr = $.post("CreateApplication", formAdd.serialize());
+    showLoaderInModal('#addBrpModal');
+    var jqxhr = $.post("CreateBuildRevisionParameters", formAdd.serialize());
     $.when(jqxhr).then(function (data) {
-        hideLoaderInModal('#addApplicationModal');
+        hideLoaderInModal('#addBrpModal');
         console.log(data.messageType);
         if (getAlertType(data.messageType) === 'success') {
-            var oTable = $("#applicationsTable").dataTable();
+            var oTable = $("#buildrevisionparametersTable").dataTable();
             oTable.fnDraw(true);
             showMessage(data);
-            $('#addApplicationModal').modal('hide');
+            $('#addBrpModal').modal('hide');
         } else {
-            showMessage(data, $('#addApplicationModal'));
+            showMessage(data, $('#addBrpModal'));
         }
     }).fail(handleErrorAjaxAfterTimeout);
 }
 
 function saveUpdateBrpHandler() {
-    clearResponseMessage($('#editApplicationModal'));
-    var formEdit = $('#editApplicationModal #editApplicationModalForm');
-    showLoaderInModal('#editApplicationModal');
+    clearResponseMessage($('#editBrpModal'));
+    var formEdit = $('#editBrpModal #editBrpModalForm');
+    showLoaderInModal('#editBrpModal');
 
-    var jqxhr = $.post("UpdateApplication", formEdit.serialize(), "json");
+    var jqxhr = $.post("UpdateBuildRevisionParameters", formEdit.serialize(), "json");
     $.when(jqxhr).then(function (data) {
         // unblock when remote call returns 
-        hideLoaderInModal('#editApplicationModal');
+        hideLoaderInModal('#editBrpModal');
         if (getAlertType(data.messageType) === "success") {
-            var oTable = $("#applicationsTable").dataTable();
+            var oTable = $("#buildrevisionparametersTable").dataTable();
             oTable.fnDraw(true);
-            $('#editApplicationModal').modal('hide');
+            $('#editBrpModal').modal('hide');
             showMessage(data);
 
         } else {
-            showMessage(data, $('#editApplicationModal'));
+            showMessage(data, $('#editBrpModal'));
         }
     }).fail(handleErrorAjaxAfterTimeout);
 }
 
 function addBrpModalCloseHandler() {
     // reset form values
-    $('#addApplicationModal #addApplicationModalForm')[0].reset();
+    $('#addBrpModal #addBrpModalForm')[0].reset();
     // remove all errors on the form fields
     $(this).find('div.has-error').removeClass("has-error");
     // clear the response messages of the modal
-    clearResponseMessage($('#addApplicationModal'));
+    clearResponseMessage($('#addBrpModal'));
 }
 
 function editBrpModalCloseHandler() {
     // reset form values
-    $('#editApplicationModal #editApplicationModalForm')[0].reset();
+    $('#editBrpModal #editBrpModalForm')[0].reset();
     // remove all errors on the form fields
     $(this).find('div.has-error').removeClass("has-error");
     // clear the response messages of the modal
-    clearResponseMessage($('#editApplicationModal'));
+    clearResponseMessage($('#editBrpModal'));
 }
 
 function CreateBrpClick() {
     clearResponseMessageMainPage();
     // When creating a new application, System takes the default value of the 
     // system already selected in header.
-    var formAdd = $('#addApplicationModal');
-    formAdd.find("#system").prop("value", getUser().defaultSystem);
-    $('#addApplicationModal').modal('show');
+//    var formAdd = $('#addApplicationModal');
+//    formAdd.find("#system").prop("value", getUser().defaultSystem);
+    $('#addBrpModal').modal('show');
 }
 
 function editBrp(id) {
@@ -190,19 +188,24 @@ function editBrp(id) {
     $.when(jqxhr).then(function (data) {
         var obj = data["contentTable"];
 
-        var formEdit = $('#editApplicationModal');
+        var formEdit = $('#editBrpModal');
 
-        formEdit.find("#application").prop("value", id);
-        formEdit.find("#description").prop("value", obj["description"]);
-        formEdit.find("#sort").prop("value", obj["sort"]);
-        formEdit.find("#type").prop("value", obj["type"]);
-        formEdit.find("#system").prop("value", obj["system"]);
-        formEdit.find("#subsystem").prop("value", obj["subsystem"]);
-        formEdit.find("#svnurl").prop("value", obj["svnurl"]);
-        formEdit.find("#bugtrackerurl").prop("value", obj["bugTrackerUrl"]);
-        formEdit.find("#bugtrackernewurl").prop("value", obj["bugTrackerNewUrl"]);
-        formEdit.find("#deploytype").prop("value", obj["deploytype"]);
-        formEdit.find("#mavengroupid").prop("value", obj["mavengroupid"]);
+        formEdit.find("#id").prop("value", id);
+        formEdit.find("#build").prop("value", obj["build"]);
+        formEdit.find("#revision").prop("value", obj["revision"]);
+        formEdit.find("#datecre").prop("value", obj["datecre"]);
+        formEdit.find("#application").prop("value", obj["application"]);
+        formEdit.find("#release").prop("value", obj["release"]);
+        formEdit.find("#owner").prop("value", obj["releaseOwner"]);
+        formEdit.find("#project").prop("value", obj["project"]);
+        formEdit.find("#ticketIdFixed").prop("value", obj["ticketIdFixed"]);
+        formEdit.find("#bugIdFixed").prop("value", obj["bugIdFixed"]);
+        formEdit.find("#link").prop("value", obj["link"]);
+        formEdit.find("#subject").prop("value", obj["subject"]);
+        formEdit.find("#jenkinsBuildId").prop("value", obj["jenkinsBuildId"]);
+        formEdit.find("#mavenGroupId").prop("value", obj["mavenGroupId"]);
+        formEdit.find("#mavenArtifactId").prop("value", obj["mavenArtifactId"]);
+        formEdit.find("#mavenVersion").prop("value", obj["mavenVersion"]);
 
         formEdit.modal('show');
     });
@@ -212,12 +215,12 @@ function renderOptionsForBrp(data) {
     var doc = new Doc();
     //check if user has permissions to perform the add and import operations
     if (data["hasPermissions"]) {
-        if ($("#createApplicationButton").length === 0) {
-            var contentToAdd = "<div class='marginBottom10'><button id='createApplicationButton' type='button' class='btn btn-default'>\n\
-            " + doc.getDocLabel("page_application", "button_create") + "</button></div>";
+        if ($("#createBrpButton").length === 0) {
+            var contentToAdd = "<div class='marginBottom10'><button id='createBrpButton' type='button' class='btn btn-default'>\n\
+            " + doc.getDocLabel("page_buildcontent", "button_create") + "</button></div>";
 
-            $("#applicationsTable_wrapper div.ColVis").before(contentToAdd);
-            $('#application #createApplicationButton').click(CreateBrpClick);
+            $("#buildrevisionparametersTable_wrapper div.ColVis").before(contentToAdd);
+            $('#application #createBrpButton').click(CreateBrpClick);
         }
     }
 }
@@ -234,7 +237,7 @@ function aoColumnsFunc() {
                                 class="editBrp btn btn-default btn-xs margin-right5" \n\
                                 name="editBrp" title="\'' + doc.getDocLabel("page_application", "button_edit") + '\'" type="button">\n\
                                 <span class="glyphicon glyphicon-pencil"></span></button>';
-                var deleteBrp = '<button id="deleteBrp" onclick="deleteBrp(\'' + obj["id"] + '\');" \n\
+                var deleteBrp = '<button id="deleteBrp" onclick="deleteBrp(\'' + obj["id"] + '\',\'' + obj["build"] + '\',\'' + obj["revision"] + '\',\'' + obj["release"] + '\',\'' + obj["application"] + '\');" \n\
                                 class="deleteBrp btn btn-default btn-xs margin-right5" \n\
                                 name="deleteBrp" title="\'' + doc.getDocLabel("page_application", "button_delete") + '\'" type="button">\n\
                                 <span class="glyphicon glyphicon-trash"></span></button>';

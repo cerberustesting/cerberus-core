@@ -757,7 +757,7 @@ public class BuildRevisionParametersDAO implements IBuildRevisionParametersDAO {
         try {
             PreparedStatement preStat = connection.prepareStatement(query);
             try {
-                preStat.setString(1, brp.getApplication());
+                preStat.setInt(1, brp.getId());
 
                 preStat.executeUpdate();
                 msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);

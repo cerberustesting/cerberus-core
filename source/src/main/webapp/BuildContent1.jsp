@@ -61,7 +61,7 @@
                 <div class="panel-heading card">
                     Build Content List
                 </div>
-                <div class="panel-body" id="testCaseList">
+                <div class="panel-body" id="buildContentList">
                     <table id="buildrevisionparametersTable" class="table table-hover display" name="buildrevisionparametersTable"></table>
                     <div class="marginBottom20"></div>
                 </div>
