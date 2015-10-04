@@ -4754,11 +4754,9 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLS.append(",('homepage','title','','en','Welcome to Cerberus application','')");
         SQLS.append(",('homepage','title','','fr','Bienvenue dans l\\'application Cerberus','')");
         SQLInstruction.add(SQLS.toString());
-
         SQLS = new StringBuilder();
         SQLS.append("UPDATE `documentation` SET `DocLabel`='Customize' WHERE `DocTable`='homepage' and`DocField`='btn_settings' and`DocValue`='' and`Lang`='en';");
         SQLInstruction.add(SQLS.toString());
-
         SQLS = new StringBuilder();
         SQLS.append("UPDATE `documentation` SET `DocLabel`='Personnaliser' WHERE `DocTable`='homepage' and`DocField`='btn_settings' and`DocValue`='' and`Lang`='fr';");
         SQLInstruction.add(SQLS.toString());
@@ -4774,7 +4772,7 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLS.append("('TESTAUTOMATED', 'Y', '10', 'Automated', ''),");
         SQLS.append("('TESTAUTOMATED', 'N', '20', 'Not automated', '');");
         SQLInstruction.add(SQLS.toString());
-        
+
         // Documentation entries for Test page.
         //-- ------------------------ 631
         SQLS = new StringBuilder();
@@ -4784,55 +4782,57 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLS.append("('page_test', 'btn_delete', '', 'en', 'Delete Test', ''),");
         SQLS.append("('page_test', 'btn_delete', '', 'fr', 'Supprimer le Test', ''),");
         SQLS.append("('page_test', 'btn_edit', '', 'en', 'Edit Test', ''),");
-        SQLS.append("('page_test', 'btn_edit', '', 'fr', 'Modifier le Test', '');");        
+        SQLS.append("('page_test', 'btn_edit', '', 'fr', 'Modifier le Test', '');");
         SQLInstruction.add(SQLS.toString());
-        
+
         // Documentation entries for Test page.
         //-- ------------------------ 632-633
-        
         SQLS = new StringBuilder();
         SQLS.append("UPDATE `documentation` SET ");
         SQLS.append("`DocDesc`='Un <code class=\\'doc-crbvvoca\\'>test</code> regroupe plusieurs <code class=\\'doc-crbvvoca\\'>Cas de tests</code> ensemble.'");
         SQLS.append(" WHERE `DocTable`='test' and`DocField`='Test' and `DocValue`='' and `Lang`='fr';");
         SQLInstruction.add(SQLS.toString());
-        
         SQLS = new StringBuilder();
         SQLS.append("INSERT INTO `documentation` (DocTable, DocField, DocValue, Lang, DocLabel, DocDesc) VALUES ");
         SQLS.append("('test', 'Active', '', 'fr', 'Actif', 'Booléen qui définit si le <code class=\\'doc-crbvvoca\\'>test</code> est actif.<br>Si le <code class=\\'doc-crbvvoca\\'>test</code> n\\'est pas actif, aucune execution des <code class=\\'doc-crbvvoca\\'>Cas de tests</code> n\\'est possible.'),");
         SQLS.append("('test', 'Automated', '', 'fr', 'Automatisé', 'Boléen qui définit si le test est automatisé ou non'),");
         SQLS.append("('test', 'Description', '', 'fr', 'Description du test', 'Description du <code class=\\'doc-crbvvoca\\'>test</code>.'),");
         SQLS.append("('test', 'dateCreation', '', 'en', 'Creation date', 'The date when the test have been created'),");
-        SQLS.append("('test', 'dateCreation', '', 'fr', 'Date de création', 'Date à laquelle le test a été créé');");        
+        SQLS.append("('test', 'dateCreation', '', 'fr', 'Date de création', 'Date à laquelle le test a été créé');");
         SQLInstruction.add(SQLS.toString());
-        
+
         // Documentation entries for Test Case page - useStep option.
         //-- ------------------------ 634
         SQLS = new StringBuilder();
         SQLS.append("INSERT INTO `documentation` VALUES ");
-        SQLS.append("('page_testcase', 'dpd_choose_test','','en','-- Choose Test --', \"\") "); 
-        SQLS.append(", ('page_testcase', 'dpd_choose_testcase','','en','-- Choose Test Case --', \"\") "); 
-        SQLS.append(", ('page_testcase', 'dpd_choose_step','','en','-- Choose Step  --', \"\") "); 
-        SQLS.append(", ('page_testcase', 'tooltip_step_used','','en','This step is being used by another step(s)!', \"\") "); 
-        SQLS.append(", ('page_testcase', 'tooltip_is_useStep','','en','This step can not be used as library, because it uses another step!', \"\") "); 
-        SQLS.append(", ('page_testcase', 'lbl_copied_from','','en','Copied from:', \"\") "); 
+        SQLS.append("('page_testcase', 'dpd_choose_test','','en','-- Choose Test --', \"\") ");
+        SQLS.append(", ('page_testcase', 'dpd_choose_testcase','','en','-- Choose Test Case --', \"\") ");
+        SQLS.append(", ('page_testcase', 'dpd_choose_step','','en','-- Choose Step  --', \"\") ");
+        SQLS.append(", ('page_testcase', 'tooltip_step_used','','en','This step is being used by another step(s)!', \"\") ");
+        SQLS.append(", ('page_testcase', 'tooltip_is_useStep','','en','This step can not be used as library, because it uses another step!', \"\") ");
+        SQLS.append(", ('page_testcase', 'lbl_copied_from','','en','Copied from:', \"\") ");
         SQLS.append(", ('page_testcase', 'link_edit_step','','en','Edit Used Step', \"\") ");
-        
         SQLInstruction.add(SQLS.toString());
-        
-        
+
         // Documentation entries for Test Case page - tooltips for controls and actions.
         //-- ------------------------ 635
         SQLS = new StringBuilder();
         SQLS.append("INSERT INTO `documentation` VALUES ");
-        SQLS.append("('page_testcase', 'tooltip_addAction','','en','Add Action', \"\") "); 
-        SQLS.append(", ('page_testcase', 'tooltip_addControl','','en','Add Control', \"\") "); 
-        SQLS.append(", ('page_testcase_m_addPicture', 'title','','en','Add URL for picture', \"\") "); 
-        SQLS.append(", ('page_testcase_m_addPicture', 'lbl_feedurl','','en','Feed URL', \"\") "); 
-        SQLS.append(", ('page_testcase_m_addPicture', 'error_message_empty','','en','The URL value is empty!', \"\") "); 
-        SQLS.append(", ('page_testcase_m_showPicture', 'title','','en','Selected Picture', \"\") "); 
-        SQLS.append(", ('page_testcase_m_showPicture', 'btn_remove','','en','Remove', \"\") "); 
+        SQLS.append("('page_testcase', 'tooltip_addAction','','en','Add Action', \"\") ");
+        SQLS.append(", ('page_testcase', 'tooltip_addControl','','en','Add Control', \"\") ");
+        SQLS.append(", ('page_testcase_m_addPicture', 'title','','en','Add URL for picture', \"\") ");
+        SQLS.append(", ('page_testcase_m_addPicture', 'lbl_feedurl','','en','Feed URL', \"\") ");
+        SQLS.append(", ('page_testcase_m_addPicture', 'error_message_empty','','en','The URL value is empty!', \"\") ");
+        SQLS.append(", ('page_testcase_m_showPicture', 'title','','en','Selected Picture', \"\") ");
+        SQLS.append(", ('page_testcase_m_showPicture', 'btn_remove','','en','Remove', \"\") ");
         SQLInstruction.add(SQLS.toString());
-        
+
+        // Enlarge Page column on Logevent table in order to support log of long Servlet.
+        //-- ------------------------ 636
+        SQLS = new StringBuilder();
+        SQLS.append("ALTER TABLE `logevent` CHANGE COLUMN `Page` `Page` VARCHAR(200) NULL DEFAULT NULL ;");
+        SQLInstruction.add(SQLS.toString());
+
         return SQLInstruction;
     }
 
