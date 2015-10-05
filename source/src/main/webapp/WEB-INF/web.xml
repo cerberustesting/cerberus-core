@@ -470,6 +470,10 @@
         <servlet-class>org.cerberus.servlet.robot.CreateRobot</servlet-class>
     </servlet>
     <servlet>
+        <servlet-name>ReadRobot</servlet-name>
+        <servlet-class>org.cerberus.servlet.robot.ReadRobot</servlet-class>
+    </servlet>
+    <servlet>
         <servlet-name>DeleteRobot</servlet-name>
         <servlet-class>org.cerberus.servlet.robot.DeleteRobot</servlet-class>
     </servlet>
@@ -1177,6 +1181,10 @@
         <url-pattern>/CreateRobot</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
+        <servlet-name>ReadRobot</servlet-name>
+        <url-pattern>/ReadRobot</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
         <servlet-name>DeleteRobot</servlet-name>
         <url-pattern>/DeleteRobot</url-pattern>
     </servlet-mapping>
@@ -1718,6 +1726,7 @@
             <url-pattern>/CreateBuildRevisionInvariant</url-pattern>
             <url-pattern>/UpdateBuildRevisionInvariant</url-pattern>
             <url-pattern>/DeleteBuildRevisionInvariant</url-pattern>
+            <url-pattern>/ReadRobot</url-pattern>
             <url-pattern>/CreateRobot</url-pattern>
             <url-pattern>/DeleteRobot</url-pattern>
             <url-pattern>/UpdateRobot</url-pattern>

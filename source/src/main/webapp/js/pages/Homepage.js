@@ -251,7 +251,7 @@ function loadTagExec() {
             type: "GET",
             url: "GetReportData",
             data: {CampaignName: "null", Tag: tagName},
-            async: false,
+            async: true,
             dataType: 'json',
             success: function (data) {
                 var tagData = {};
