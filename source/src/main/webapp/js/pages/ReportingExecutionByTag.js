@@ -385,6 +385,9 @@ function generateTooltip(data) {
     var htmlRes;
 
     htmlRes = '<div>Test ID : ' + data.ID + '</div>' +
+            '<div>Country : ' + data.Country + '</div>' +
+            '<div>Environment : ' + data.Environment + '</div>' +
+            '<div>Browser : ' + data.Browser + '</div>' +
             '<div>Start : ' + data.Start + '</div>' +
             '<div>End : ' + data.End + '</div>' +
             '<div>' + data.ControlMessage + '</div>';
