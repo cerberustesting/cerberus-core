@@ -449,9 +449,9 @@ function aoColumnsFunc(Columns) {
                     var cell = '<div class="progress-bar status' + data.ControlStatus + '" \n\
                                 role="progressbar" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100" style="width: 100%;cursor: pointer; height: 40px;" \n\
                                 data-toggle="tooltip" data-html="true" title="' + tooltip + '"\n\
-                                onclick="location.href=\'' + executionLink + '\'">\n\
+                                ><a href="' +executionLink + '" target="_blank">\
                                 <span class="' + glyphClass.glyph + ' marginRight5"></span>\n\
-                                 <span>' + data.ControlStatus + '<span></div>';
+                                 <span>' + data.ControlStatus + '<span></a></div>';
                     return cell;
                 } else {
                     return data;
