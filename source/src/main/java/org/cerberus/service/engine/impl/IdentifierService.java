@@ -35,13 +35,22 @@ import org.springframework.stereotype.Service;
 public class IdentifierService implements IIdentifierService {
 
     @Override
-    public Identifier convertStringToIdentifier(String input) {
+    public Identifier convertStringToIdentifier(String input) { 
+        return getIdentifier(input, "id");
+    }
+    
+    @Override
+    public Identifier convertStringToSelectIdentifier(String input) { 
+        return getIdentifier(input, "value");
+    }
+    
+    private Identifier getIdentifier(String input, String defaultIdentifier){
         Identifier result = new Identifier();
         String identifier;
         String locator;
         String[] strings = input.split("=", 2);
         if (strings.length == 1) {
-            identifier = "id";
+            identifier = defaultIdentifier;
             locator = strings[0];
         } else {
             identifier = strings[0];
