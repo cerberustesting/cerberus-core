@@ -808,11 +808,15 @@ public class TestCaseExecutionDAO implements ITestCaseExecutionDAO {
         List<String> list = null;
         StringBuilder query = new StringBuilder();
 
-        query.append("select distinct tag from testcaseexecution tce ");
-        query.append("where tag != '' ");
-//        query.append(" UNION select distinct tag from testcaseexecutionqueue where tag !='' ");
+        if (TagNumber == 0) {
+            query.append("SELECT tag FROM testcaseexecution WHERE tag != ''");
+            query.append(" UNION ");
+            query.append("SELECT tag FROM testcaseexecutionqueue WHERE tag != ''");
+        }
 
         if (TagNumber != 0) {
+            query.append("select distinct tag from testcaseexecution tce ");
+            query.append("where tag != '' ");
             query.append("ORDER BY id desc LIMIT ");
             query.append(TagNumber);
         }

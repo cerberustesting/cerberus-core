@@ -563,7 +563,7 @@ function createDataTableWithPermissions(tableConfigurations, callbackfunction) {
         configs["fnServerData"] = function (sSource, aoData, fnCallback, oSettings) {
             oSettings.jqXHR = $.ajax({
                 "dataType": 'json',
-                "type": "GET",
+                "type": "POST",
                 "url": sSource,
                 "data": aoData,
                 "success": function (json) {
@@ -643,7 +643,7 @@ function createDataTable(tableConfigurations, callback) {
         configs["fnServerData"] = function (sSource, aoData, fnCallback, oSettings) {
             oSettings.jqXHR = $.ajax({
                 "dataType": 'json',
-                "type": "GET",
+                "type": "POST",
                 "url": sSource,
                 "data": aoData,
                 "success": function (json) {
