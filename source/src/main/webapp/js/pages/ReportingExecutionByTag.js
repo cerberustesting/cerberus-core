@@ -86,7 +86,7 @@ function loadTagFilters(urlTag) {
 
 function loadReport() {
     var selectTag = $("#selectTag option:selected").text();
-    
+
     window.history.pushState('Tag', '', 'ReportingExecutionByTag.jsp?Tag=' + encodeURIComponent(selectTag));
 
     //clear the old report content before reloading it
@@ -452,7 +452,7 @@ function aoColumnsFunc(Columns) {
                     var cell = '<div class="progress-bar status' + data.ControlStatus + '" \n\
                                 role="progressbar" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100" style="width: 100%;cursor: pointer; height: 40px;" \n\
                                 data-toggle="tooltip" data-html="true" title="' + tooltip + '"\n\
-                                ><a href="' +executionLink + '" target="_blank">\
+                                onclick="window.open(\'' + executionLink + '\')">\n\
                                 <span class="' + glyphClass.glyph + ' marginRight5"></span>\n\
                                  <span>' + data.ControlStatus + '<span></a></div>';
                     return cell;

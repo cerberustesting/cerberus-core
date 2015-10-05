@@ -269,7 +269,7 @@ function loadTagExec() {
                     }
                 }
 
-                tagData.tag = tagName;
+                tagData.tag = data.tag;
                 tagData.total = total;
                 generateTagReport(tagData);
             }

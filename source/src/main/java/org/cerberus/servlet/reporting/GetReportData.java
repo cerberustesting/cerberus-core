@@ -149,6 +149,7 @@ public class GetReportData extends HttpServlet {
         JSONObject jsonResult = new JSONObject();
 
         jsonResult.put("axis", axisMap.values());
+        jsonResult.put("tag", tag);
 
         response.setContentType("application/json");
         response.getWriter().print(jsonResult);
