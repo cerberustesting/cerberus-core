@@ -59,8 +59,9 @@ function ChangeSystem() {
     var selectValue = select.options[select.selectedIndex].value;
     var user = getUser();
 
-    $.ajax({url: "UpdateUser",
-        data: {id: user.login, columnPosition: "5", value: selectValue},
+    console.log(selectValue);
+    $.ajax({url: "UpdateSystem",
+        data: {id: user.login, value: selectValue},
         async: false,
         success: function () {
             sessionStorage.removeItem("user");

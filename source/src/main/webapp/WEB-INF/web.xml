@@ -108,6 +108,10 @@
         <servlet-class>org.cerberus.servlet.user.UpdateUser</servlet-class>
     </servlet>
     <servlet>
+        <servlet-name>UpdateSystem</servlet-name>
+        <servlet-class>org.cerberus.servlet.user.UpdateSystem</servlet-class>
+    </servlet>
+    <servlet>
         <servlet-name>DeleteUser</servlet-name>
         <servlet-class>org.cerberus.servlet.user.DeleteUser</servlet-class>
     </servlet>
@@ -791,6 +795,10 @@
     <servlet-mapping>
         <servlet-name>UpdateUser</servlet-name>
         <url-pattern>/UpdateUser</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>UpdateSystem</servlet-name>
+        <url-pattern>/UpdateSystem</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
         <servlet-name>DeleteUser</servlet-name>
@@ -1524,6 +1532,7 @@
             <web-resource-name>servlet</web-resource-name>
             <description>servlet</description>
             <url-pattern>/GetTestCaseList</url-pattern>
+            <url-pattern>/UpdateSystem</url-pattern>
             <url-pattern>/GetTestCase</url-pattern>
             <url-pattern>/TestcaseList</url-pattern>
             <url-pattern>/ExportListTestCase</url-pattern>
