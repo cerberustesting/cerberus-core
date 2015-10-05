@@ -699,7 +699,7 @@ public class ActionService implements IActionService {
              * Get Identifier (identifier, locator)
              */
             Identifier identifierObject = identifierService.convertStringToIdentifier(object);
-            Identifier identifierProperty = identifierService.convertStringToIdentifier(property);
+            Identifier identifierProperty = identifierService.convertStringToSelectIdentifier(property);
 
             identifierService.checkWebElementIdentifier(identifierObject.getIdentifier());
             identifierService.checkSelectOptionsIdentifier(identifierProperty.getIdentifier());
