@@ -124,7 +124,7 @@ public class LogEventDAO implements ILogEventDAO {
         List<LogEvent> logEventList = new ArrayList<LogEvent>();
         StringBuilder searchSQL = new StringBuilder();
 
-        StringBuilder query = new StringBuilder();
+        final StringBuffer query = new StringBuffer();
         //SQL_CALC_FOUND_ROWS allows to retrieve the total number of columns by disrearding the limit clauses that 
         //were applied -- used for pagination p
         query.append("SELECT SQL_CALC_FOUND_ROWS * FROM logevent ");
@@ -132,11 +132,11 @@ public class LogEventDAO implements ILogEventDAO {
         searchSQL.append(" where 1=1 ");
 
         if (!StringUtil.isNullOrEmpty(searchTerm)) {
-            searchSQL.append(" and (`time` like '%").append(searchTerm).append("%'");
-            searchSQL.append(" or `login` like '%").append(searchTerm).append("%'");
-            searchSQL.append(" or `page` like '%").append(searchTerm).append("%'");
-            searchSQL.append(" or `action` like '%").append(searchTerm).append("%'");
-            searchSQL.append(" or `log` like '%").append(searchTerm).append("%')");
+            searchSQL.append(" and (`time` like ?");
+            searchSQL.append(" or `login` like ?");
+            searchSQL.append(" or `page` like ?");
+            searchSQL.append(" or `action` like ?");
+            searchSQL.append(" or `log` like ?)");
         }
         if (!StringUtil.isNullOrEmpty(individualSearch)) {
             searchSQL.append(" and (`").append(individualSearch).append("`)");
@@ -160,6 +160,13 @@ public class LogEventDAO implements ILogEventDAO {
         try {
             PreparedStatement preStat = connection.prepareStatement(query.toString());
             try {
+                if (!StringUtil.isNullOrEmpty(searchTerm)) {
+                    preStat.setString(1, "%" + searchTerm + "%");
+                    preStat.setString(2, "%" + searchTerm + "%");
+                    preStat.setString(3, "%" + searchTerm + "%");
+                    preStat.setString(4, "%" + searchTerm + "%");
+                    preStat.setString(5, "%" + searchTerm + "%");
+                }
                 ResultSet resultSet = preStat.executeQuery();
                 try {
                     //gets the data

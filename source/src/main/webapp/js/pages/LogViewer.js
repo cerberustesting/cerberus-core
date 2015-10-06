@@ -21,14 +21,28 @@
 $.when($.getScript("js/pages/global/global.js")).then(function () {
     $(document).ready(function () {
         displayPageLabel();
+
         //configure and create the dataTable
         var configurations = new TableConfigurationsServerSide("logViewerTable", "ReadLogEvent", "contentTable", aoColumnsFunc());
 
         var table = createDataTable(configurations);
         //By default, sort the log messages from newest to oldest
         table.fnSort([1, 'desc']);
+        var api = table.api();
+        api.search(buildSearchString()).draw();
     });
 });
+
+function buildSearchString() {
+    var test = GetURLParameter("Test");
+    var testCase = GetURLParameter("TestCase");
+    
+    if (test !== null && testCase !== null) {
+        var searchString = "'" + test + "'|'" + testCase + "'";
+        return searchString;
+    }
+    return '';
+}
 
 function displayPageLabel() {
     var doc = new Doc();
