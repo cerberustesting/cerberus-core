@@ -92,12 +92,6 @@ public class ReadTestCaseExecution extends HttpServlet {
             } else if (sEcho != 0 && !Tag.equals("")) {
                 answer = findExecutionList(appContext, request, Tag);
                 jsonResponse = (JSONObject) answer.getItem();
-            } else if (sEcho == 0 && TagNumber == 0) {
-                answer = findTagList(appContext);
-                jsonResponse = (JSONObject) answer.getItem();
-            } else if (sEcho == 0 && TagNumber != 0) {
-                answer = findLastTagExec(appContext, TagNumber);
-                jsonResponse = (JSONObject) answer.getItem();
             }
 
             jsonResponse.put("messageType", answer.getResultMessage().getMessage().getCodeString());
@@ -170,24 +164,6 @@ public class ReadTestCaseExecution extends HttpServlet {
     public String getServletInfo() {
         return "Short description";
     }// </editor-fold>
-
-    private AnswerItem findTagList(ApplicationContext appContext)
-            throws CerberusException, JSONException {
-        AnswerItem answer = new AnswerItem();
-        JSONObject jsonResponse = new JSONObject();
-
-        testCaseExecutionService = appContext.getBean(ITestCaseExecutionService.class);
-
-        AnswerList resp;
-
-        resp = testCaseExecutionService.findTagList(0);
-
-        jsonResponse.put("tags", resp.getDataList());
-
-        answer.setItem(jsonResponse);
-        answer.setResultMessage(resp.getResultMessage());
-        return answer;
-    }
 
     private AnswerItem findExecutionColumns(ApplicationContext appContext, HttpServletRequest request, String Tag) throws CerberusException, ParseException, JSONException {
         AnswerItem answer = new AnswerItem(new MessageEvent(MessageEventEnum.DATA_OPERATION_OK));
@@ -282,13 +258,13 @@ public class ReadTestCaseExecution extends HttpServlet {
         /**
          * Get list of execution by tag, env, country, browser
          */
-        testCaseExecution = testCaseExecService.readByCriteria(startPosition, length, columnName, sort, searchParameter, "", Tag);
+        testCaseExecution = testCaseExecService.readByTagByCriteria(Tag, startPosition, length, columnName, sort, searchParameter, "");
         List<TestCaseWithExecution> testCaseWithExecutions = testCaseExecution.getDataList();
 
         /**
          * Get list of Execution in Queue by Tag
          */
-        testCaseExecutionInQueue = testCaseExecutionInQueueService.readByCriteria(startPosition, length, columnName, sort, searchParameter, "", Tag);
+        testCaseExecutionInQueue = testCaseExecutionInQueueService.readByTagByCriteria(Tag, startPosition, length, columnName, sort, searchParameter, "");
         List<TestCaseWithExecution> testCaseWithExecutionsInQueue = testCaseExecutionInQueue.getDataList();
 
         /**
@@ -424,22 +400,5 @@ public class ReadTestCaseExecution extends HttpServlet {
         result.put("ShortDescription", testCaseWithExecution.getShortDescription());
 
         return result;
-    }
-
-    private AnswerItem findLastTagExec(ApplicationContext appContext, int TagNumber) throws JSONException, CerberusException {
-        AnswerItem answer = new AnswerItem();
-        JSONObject jsonResponse = new JSONObject();
-
-        testCaseExecutionService = appContext.getBean(ITestCaseExecutionService.class);
-
-        AnswerList resp;
-
-        resp = testCaseExecutionService.findTagList(TagNumber);
-
-        jsonResponse.put("tags", resp.getDataList());
-
-        answer.setItem(jsonResponse);
-        answer.setResultMessage(resp.getResultMessage());
-        return answer;
     }
 }

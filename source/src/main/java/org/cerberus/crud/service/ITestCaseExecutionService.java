@@ -19,9 +19,7 @@
  */
 package org.cerberus.crud.service;
 
-import java.util.ArrayList;
 import java.util.List;
-import org.cerberus.dto.TestCaseWithExecution;
 
 import org.cerberus.crud.entity.TestCaseExecution;
 import org.cerberus.exception.CerberusException;
@@ -124,7 +122,7 @@ public interface ITestCaseExecutionService {
     
     AnswerList findTagList(int TagNumber) throws CerberusException;
     
-    AnswerList readByCriteria(int start, int amount, String column, String dir, String searchTerm, String individualSearch, String tag) throws CerberusException;
+    AnswerList readByTagByCriteria(String Tag, int start, int amount, String column, String dir, String searchTerm, String individualSearch) throws CerberusException;
     
      public AnswerList readDistinctEnvCoutnryBrowserByTag(String tag);
 }

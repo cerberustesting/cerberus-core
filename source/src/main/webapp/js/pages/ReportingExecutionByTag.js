@@ -357,7 +357,6 @@ function loadReportByFunctionChart(dataset) {
                 return d.color;
             });
 }
-;
 
 /*
  * Helper functions
