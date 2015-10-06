@@ -190,6 +190,10 @@
         <servlet-class>org.cerberus.servlet.execution.ReadTestCaseExecution</servlet-class>
     </servlet>
     <servlet>
+        <servlet-name>ReadTag</servlet-name>
+        <servlet-class>org.cerberus.servlet.execution.ReadTag</servlet-class>
+    </servlet>
+    <servlet>
         <servlet-name>GetCampaignExecutionsCommand</servlet-name>
         <servlet-class>org.cerberus.servlet.zzpublic.GetCampaignExecutionsCommand</servlet-class>
     </servlet>
@@ -903,6 +907,10 @@
     <servlet-mapping>
         <servlet-name>ReadTestCaseExecution</servlet-name>
         <url-pattern>/ReadTestCaseExecution</url-pattern>
+    </servlet-mapping>
+        <servlet-mapping>
+        <servlet-name>ReadTag</servlet-name>
+        <url-pattern>/ReadTag</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
         <servlet-name>GetCampaignExecutionsCommand</servlet-name>
@@ -1886,6 +1894,7 @@
             <url-pattern>/ReadDocumentation</url-pattern>
             <url-pattern>/ReadCerberusInformation</url-pattern>
             <url-pattern>/ReadTestCaseExecution</url-pattern>
+            <url-pattern>/ReadTag</url-pattern>
         </web-resource-collection>
     </security-constraint>
     <security-constraint>
