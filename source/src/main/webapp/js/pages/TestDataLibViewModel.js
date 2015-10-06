@@ -317,22 +317,20 @@ $.when($.getScript("js/pages/global/global.js")).then(function () {
  * Method that translates the content of the pages with base on the user language.
  */
 function displayPageLabel() {
-    var doc = new Doc();
-    var old_doc = getDoc();
+    var doc = new Doc(); 
 
     displayHeaderLabel(doc);
     displayGlobalLabel(doc);
 
-//    var docPage = doc.page_testdatalib;
     $("#pageTitle").html(doc.getDocLabel("page_testdatalib", "page_title"));
     $("#title").html(doc.getDocOnline("page_testdatalib", "title"));
 //    
 //    //set translations for create testdatalib modal
-    displayCreateTestDataLibLabels(old_doc);   
-    displayUpdateTestDataLibLabels(old_doc);
-    displayManageTestDataLibDataLabels(old_doc);
-    displayListTestCasesLabels(old_doc);    
-    displayListTestDataLibDataLabels(old_doc);
+    displayCreateTestDataLibLabels(doc);   
+    displayUpdateTestDataLibLabels(doc);
+    displayManageTestDataLibDataLabels(doc);
+    displayListTestCasesLabels(doc);    
+    displayListTestDataLibDataLabels(doc);
     displayFooter(doc);
 }
 
@@ -341,30 +339,29 @@ function displayPageLabel() {
  * @param {type} doc object that contains Cerberus' documentation 
  */
 function displayUpdateTestDataLibLabels(doc) {
-    var docTestDataLib = doc.testdatalib;
+    
     //title 
-    $("#editTestDataLibTitle").text(doc.page_testdatalib_m_updatelib.title.docLabel);
+    $("#editTestDataLibTitle").text(doc.getDocLabel("page_testdatalib_m_updatelib",  "title"));
     //content
 
-    $("#lbl_type_edit").html(displayDocLink(docTestDataLib.type));
-    $("#lbl_system_edit").html(displayDocLink(docTestDataLib.system));
-    $("#lbl_environment_edit").html(displayDocLink(docTestDataLib.environment));
-    $("#lbl_country_edit").html(displayDocLink(docTestDataLib.country));
+    $("#lbl_type_edit").html(doc.getDocOnline("testdatalib",  "type"));
+    $("#lbl_system_edit").html(doc.getDocOnline("testdatalib",  "system"));
+    $("#lbl_environment_edit").html(doc.getDocOnline("testdatalib",  "environment"));
+    $("#lbl_country_edit").html(doc.getDocOnline("testdatalib",  "country"));
 
-    $("#lbl_description_edit").html(displayDocLink(docTestDataLib.description));
-    $("#lbl_database_edit").html(displayDocLink(docTestDataLib.database));
-    $("#lbl_script_edit").html(displayDocLink(docTestDataLib.script));
-    $("#lbl_service_path_edit").html(displayDocLink(docTestDataLib.servicepath));
-    $("#lbl_method_edit").html(displayDocLink(docTestDataLib.method));
-    $("#lbl_envelope_edit").html(displayDocLink(docTestDataLib.envelope));
+    $("#lbl_description_edit").html(doc.getDocOnline("testdatalib",  "description"));
+    $("#lbl_database_edit").html(doc.getDocOnline("testdatalib",  "database"));
+    $("#lbl_script_edit").html(doc.getDocOnline("testdatalib",  "script"));
+    $("#lbl_service_path_edit").html(doc.getDocOnline("testdatalib",  "servicepath"));
+    $("#lbl_method_edit").html(doc.getDocOnline("testdatalib",  "method"));
+    $("#lbl_envelope_edit").html(doc.getDocOnline("testdatalib",  "envelope"));
     //buttons    
-    $("#cancelTestDataLib").text(doc.page_global.btn_cancel.docLabel);
-    $("#saveTestDataLib").text(doc.page_global.buttonAdd.docLabel);
-
-    var groupDoc = doc.page_testdatalib_m_createupdatelib;
+    $("#cancelTestDataLib").text(doc.getDocLabel("page_global",  "btn_cancel"));
+    $("#saveTestDataLib").text(doc.getDocLabel("page_global",  "buttonAdd"));
+ 
     //auxiliar for group edition
-    $("#lbl_choose_group_edit").html(displayDocLink(groupDoc.lbl_choose_group));
-    $("#lbl_enter_group_edit").html(displayDocLink(groupDoc.lbl_enter_group));
+    $("#lbl_choose_group_edit").html(doc.getDocOnline("page_testdatalib_m_createupdatelib", "lbl_choose_group"));
+    $("#lbl_enter_group_edit").html(doc.getDocOnline("page_testdatalib_m_createupdatelib", "lbl_enter_group"));
 }
 
 /**
@@ -372,17 +369,16 @@ function displayUpdateTestDataLibLabels(doc) {
  * @param {type} doc object that contains Cerberus' documentation 
  */
 function displayManageTestDataLibDataLabels(doc) {
-    var docManageSubData = doc.page_testdatalib_m_managetestdatalibdata;
-    $("#manageTestDataLibDataModalLabel").html(docManageSubData.title.docLabel);
-    $("#subdataActionsHeader").html(displayDocLink(docManageSubData.actions));
-    $("#subdataHeaderManage").html(displayDocLink(doc.testdatalibdata.subData));
-    $("#subdataDescriptionManage").html(displayDocLink(doc.testdatalibdata.description));
+    $("#manageTestDataLibDataModalLabel").html(doc.getDocLabel("page_testdatalib_m_managetestdatalibdata", "title"));
+    $("#subdataActionsHeader").html(doc.getDocOnline("page_testdatalib_m_managetestdatalibdata", "actions"));
+    $("#subdataHeaderManage").html(doc.getDocOnline("testdatalibdata", "subData"));
+    $("#subdataDescriptionManage").html(doc.getDocOnline("testdatalibdata", "description"));
     //subdataLabelManage will be filled depending on the type of the library entry
-    $("#editSubData_addRow").text(docManageSubData.link_add_new.docLabel);
-    $("#editSubData_addRow").prop("title", docManageSubData.link_add_new_title.docLabel);
+    $("#editSubData_addRow").text(doc.getDocLabel("page_testdatalib_m_managetestdatalibdata", "link_add_new"));
+    $("#editSubData_addRow").prop("title", doc.getDocLabel("page_testdatalib_m_managetestdatalibdata", "link_add_new_title"));
     //buttons    
-    $("#cancelSubDataManage").text(doc.page_global.btn_cancel.docLabel);
-    $("#saveChangesSubData").text(doc.page_global.buttonAdd.docLabel);
+    $("#cancelSubDataManage").text(doc.getDocLabel("page_global",  "btn_cancel"));
+    $("#saveChangesSubData").text(doc.getDocLabel("page_global",  "buttonAdd"));
 }
 
 /**
@@ -391,14 +387,14 @@ function displayManageTestDataLibDataLabels(doc) {
  */
 function displayListTestDataLibDataLabels(doc) {
     //title
-    $("#viewTestDataLibDataModalLabel").html(doc.page_testdatalib_m_listtestdatalibdata.title.docLabel);
+    $("#viewTestDataLibDataModalLabel").html(doc.getDocLabel("page_testdatalib_m_listtestdatalibdata",  "title"));
     //table headers
-    $("#viewTestDataLibDataID").html(displayDocLink(doc.testdatalib.testdatalibid));
-    $("#viewTestDataLibDataSubData").html(displayDocLink(doc.testdatalibdata.subData));
-    $("#viewTestDataLibDataDescription").html(displayDocLink(doc.testdatalibdata.description));
+    $("#viewTestDataLibDataID").html(doc.getDocOnline("testdatalib", "testdatalibid"));
+    $("#viewTestDataLibDataSubData").html(doc.getDocOnline("testdatalibdata", "subData"));
+    $("#viewTestDataLibDataDescription").html(doc.getDocOnline("testdatalibdata", "description"));
     //the #viewTestDataLibDataLabel" is filled when the modal is opened because its value depends on the type of entry selected
     //button 
-    $("#closeSubDataManage").text(doc.page_global.buttonClose.docLabel);
+    $("#closeSubDataManage").text(doc.getDocLabel("page_global",  "buttonClose"));
 }
 /**
  * Applies the translations for the get list of test cases modal.
@@ -406,12 +402,10 @@ function displayListTestDataLibDataLabels(doc) {
  * 
  */
 function displayListTestCasesLabels(doc) {
-    var docGetListTC = doc.page_testdatalib_m_gettestcases;
-    var docGlobal = doc.page_global;
     //title
-    $("#testCaseListModalLabel").text(docGetListTC.title.docLabel);
+    $("#testCaseListModalLabel").text(doc.getDocLabel("page_testdatalib_m_gettestcases",  "title"));
     //button
-    $("#closeButton").text(docGlobal.buttonClose.docLabel);
+    $("#closeButton").text(doc.getDocLabel("page_global",  "buttonClose"));
 }
 
 /**
@@ -419,55 +413,51 @@ function displayListTestCasesLabels(doc) {
  * @param {type} doc object that contains Cerberus' documentation 
  */
 function displayCreateTestDataLibLabels(doc) {
-    var docCreate = doc.page_testdatalib_m_createlib;
 
-    var docTestDataLib = doc.testdatalib;
-    var docTestDataLibData = doc.testdatalibdata;
     //title
-    $("#addTestDataLibModalLabel").text(docCreate.title.docLabel);
+    $("#addTestDataLibModalLabel").text(doc.getDocLabel("page_testdatalib_m_createlib", "title"));//docCreate.title.docLabel
     //cancel + add buttons
-    $("#addTestDataLibButton").text(doc.page_global.btn_add.docLabel);
-    $("#cancelTestDataLibButton").text(doc.page_global.btn_cancel.docLabel);
+    $("#addTestDataLibButton").text(doc.getDocLabel("page_global", "btn_add"));
+    $("#cancelTestDataLibButton").text(doc.getDocLabel("page_global", "btn_cancel"));
     //tabs, tab2 is updated when the entries are managed
-    $("#tab1Text").text(docCreate.m_tab1_text.docLabel);
+    $("#tab1Text").text(doc.getDocLabel("page_testdatalib_m_createlib", "m_tab1_text"));
 
 
-    //group information
-    var groupDoc = doc.page_testdatalib_m_createupdatelib;
-    $("#lbl_choose_group").html(displayDocLink(groupDoc.lbl_choose_group));
-    $("#lbl_enter_group").html(displayDocLink(groupDoc.lbl_enter_group));
+    //group information 
+    $("#lbl_choose_group").html(doc.getDocOnline("page_testdatalib_m_createupdatelib", "lbl_choose_group"));
+    $("#lbl_enter_group").html(doc.getDocOnline("page_testdatalib_m_createupdatelib", "lbl_enter_group"));
 
     //common information
-    $("#lbl_name").html(displayDocLink(docTestDataLib.name));
-    $("#lbl_type").html(displayDocLink(docTestDataLib.type));
-    $("#lbl_system").html(displayDocLink(docTestDataLib.system));
-    $("#lbl_environment").html(displayDocLink(docTestDataLib.environment));
-    $("#lbl_country").html(displayDocLink(docTestDataLib.country));
-    $("#lbl_description").html(displayDocLink(docTestDataLib.description));
-    $("#lbl_database").html(displayDocLink(docTestDataLib.database));
-    $("#lbl_script").html(displayDocLink(docTestDataLib.script));
-    $("#lbl_service_path").html(displayDocLink(docTestDataLib.servicepath));
-    $("#lbl_method").html(displayDocLink(docTestDataLib.method));
-    $("#lbl_envelope").html(displayDocLink(docTestDataLib.envelope));
+    $("#lbl_name").html(doc.getDocOnline("testdatalib",  "name"));
+    $("#lbl_type").html(doc.getDocOnline("testdatalib",  "type"));
+    $("#lbl_system").html(doc.getDocOnline("testdatalib",  "system"));
+    $("#lbl_environment").html(doc.getDocOnline("testdatalib",  "environment"));
+    $("#lbl_country").html(doc.getDocOnline("testdatalib",  "country"));
+    $("#lbl_description").html(doc.getDocOnline("testdatalib",  "description"));
+    $("#lbl_database").html(doc.getDocOnline("testdatalib",  "database"));
+    $("#lbl_script").html(doc.getDocOnline("testdatalib",  "script"));
+    $("#lbl_service_path").html(doc.getDocOnline("testdatalib",  "servicepath"));
+    $("#lbl_method").html(doc.getDocOnline("testdatalib",  "method"));
+    $("#lbl_envelope").html(doc.getDocOnline("testdatalib",  "envelope"));
 
     //documentation for sub-data entries
-    $("#subdataHeader").html(displayDocLink(docTestDataLibData.subData));
-    $("#dataHeader").html(displayDocLink(docTestDataLibData.value));
-    $("#descriptionHeader").html(displayDocLink(docTestDataLibData.description));
+    $("#subdataHeader").html(doc.getDocOnline("testdatalibdata",  "subData"));
+    $("#dataHeader").html(doc.getDocOnline("testdatalibdata",  "value"));
+    $("#descriptionHeader").html(doc.getDocOnline("testdatalibdata",  "description"));
 
 
     //links for managing the subdata information
-    $("#link_add_new").html(displayDocLink(docCreate.link_add_new));
-    $("#link_delete_all").html(displayDocLink(docCreate.link_delete_all));
-    $("#link_add_new_title").html(displayDocLink(docCreate.link_add_new_title));
-    $("#link_delete_all_title").html(displayDocLink(docCreate.link_delete_all_title));
+    $("#link_add_new").html(doc.getDocOnline("page_testdatalib_m_createupdatelib",  "link_add_new"));
+    $("#link_delete_all").html(doc.getDocOnline("page_testdatalib_m_createupdatelib",  "link_delete_all"));
+    $("#link_add_new_title").html(doc.getDocOnline("page_testdatalib_m_createupdatelib",  "link_add_new_title"));
+    $("#link_delete_all_title").html(doc.getDocOnline("page_testdatalib_m_createupdatelib",  "link_delete_all_title"));
 
 
     //tab2 - links to edit table
-    $("#newSubData_addRow").text(docCreate.link_add_new.docLabel);
-    $("#newSubData_addRow").prop("title", docCreate.link_add_new_title.docLabel);
-    $("#newSubData_deleteAll").text(docCreate.link_delete_all.docLabel);
-    $("#newSubData_deleteAll").prop("title", docCreate.link_delete_all_title.docLabel);
+    $("#newSubData_addRow").text(doc.getDocLabel("page_testdatalib_m_createlib", "link_add_new"));
+    $("#newSubData_addRow").prop("title", doc.getDocLabel("page_testdatalib_m_createlib", "link_add_new_title"));
+    $("#newSubData_deleteAll").text(doc.getDocLabel("page_testdatalib_m_createlib", "link_delete_all"));
+    $("#newSubData_deleteAll").prop("title", doc.getDocLabel("page_testdatalib_m_createlib", "link_delete_all_title"));
 
 }
 
@@ -477,14 +467,14 @@ function displayCreateTestDataLibLabels(doc) {
  */
 function renderOptionsForTestDataManager(data) {
     //check if user has permissions to perform the add and import operations
-    var doc = getDoc();
+    var doc = new Doc();
 
     if (data["hasPermissions"]) {
         if ($("#createLibButton").length === 0) {
             var contentToAdd = "<div class='marginBottom10'><button id='createLibButton' type='bytton' class='btn btn-default'>";
-            contentToAdd += doc.page_testdatalib.btn_create.docLabel; //translation for the create button;
+            contentToAdd += doc.getDocLabel("page_testdatalib","btn_create"); //translation for the create button;
             contentToAdd += "</button><button id='importDataButton' type='bytton' class='btn btn-default marginLeft5'>";
-            contentToAdd += doc.page_testdatalib.btn_import.docLabel; //translation for the create button;
+            contentToAdd += doc.getDocLabel("page_testdatalib","btn_import"); //translation for the create button;
             contentToAdd += "</button></div>";
 
             $("#listOfTestDataLib_wrapper div.ColVis").before(contentToAdd);
@@ -494,18 +484,16 @@ function renderOptionsForTestDataManager(data) {
                 var translations = {};
                 //I defined specific translations for this upload modal
                 var docImportTestDataLib = doc.page_testdatalib_m_upload;
-                translations["modalUploadLabel"] = docImportTestDataLib.title.docLabel;
-                translations["choseFileLabel"] = docImportTestDataLib.btn_choose.docLabel;
-                translations["cancelButton"] = docImportTestDataLib.btn_cancel.docLabel;
-                translations["uploadOk"] = docImportTestDataLib.btn_upload.docLabel;
+                translations["modalUploadLabel"] = doc.getDocLabel("page_testdatalib_m_upload","title");
+                translations["choseFileLabel"] = doc.getDocLabel("page_testdatalib_m_upload","btn_choose");
+                translations["cancelButton"] = doc.getDocLabel("page_testdatalib_m_upload","btn_cancel").docLabel;
+                translations["uploadOk"] = doc.getDocLabel("page_testdatalib_m_upload","btn_upload");
 
                 showModalUpload(uploadTestDataLibFromXMLFile, "XML", translations);
             });
         }
     } else {
-
-        var actionsNoPermissions = doc.testdatalib.actions_nopermissions;
-        $("#testdatalibFirstColumnHeader").html(displayDocLink(actionsNoPermissions));
+        $("#testdatalibFirstColumnHeader").html(doc.getDocLabel("testdatalib", "actions_nopermissions"));
     }
 }
 /**
@@ -536,9 +524,8 @@ function saveNewTestDataLibHandler() {
     //validates if the property name is not empty
     var nameElementEmpty = nameElement.prop("value") === '';
     if (nameElementEmpty) {
-        var doc = getDoc();
-        var docPageTestDataLib = doc.page_testdatalib;
-        var localMessage = new Message("danger", docPageTestDataLib.empty_name_message.docLabel);
+        var doc = new Doc(); 
+        var localMessage = new Message("danger", doc.getDocLabel("page_testdatalib", "empty_name_message"));
         nameElement.parents("div.form-group").addClass("has-error");
         showMessage(localMessage, $('#addTestDataLibModal'));
         //return ;
@@ -664,10 +651,10 @@ function createLibButtonClick() {
     //action = 3 retrieves the groups and the if is sql type it also returns the list of databases
     var jqxhr = $.getJSON("ReadTestDataLib", "action=0&Type=STATIC");
     $.when(jqxhr).then(function (data) {
-        var doc = getDoc();
+        var doc = new Doc();
         $('#addTestDataLibModal').modal('show');
         showLoaderInModal("#addTestDataLibModal");
-        loadSelectElement(data["GROUPS"], $('#addTestDataLibModal #Group'), true, doc.page_testdatalib_m_createlib.lbl_dropdown_help.docLabel);
+        loadSelectElement(data["GROUPS"], $('#addTestDataLibModal #Group'), true, doc.getDocLabel("page_testdatalib_m_createlib", "lbl_dropdown_help"));
         $('#addTestDataLibModal #Group option:first-child').attr("selected", "selected");
         $('#addTestDataLibModal #Group option:first').addClass("emptySelectOption");
         $('#addTestDataLibModal #Group').change();
@@ -760,9 +747,8 @@ function validateSubDataEntriesRepeated(dialog, tableBody, checkOnesMarkedToRemo
     }).size();
 
     if (elementsWithRepeatedSubdata > 0) {
-        var doc = getDoc();
-        var docPageTestDataLib = doc.page_testdatalib;
-        var localMessage = new Message("danger", docPageTestDataLib.duplicated_message.docLabel + elementsWithRepeatedSubdata);
+        var doc = new Doc();
+        var localMessage = new Message("danger", doc.getDocLabel("page_testdatalib", "duplicated_message") + elementsWithRepeatedSubdata);
         showMessage(localMessage, dialog);
         
         return false;
@@ -837,8 +823,8 @@ function refreshListsByType(selectedType, formID, groupElementID, databaseElemen
     $.when(jqxhr).then(function (data) {
         var groupSelector = "#" + formID + " #" + groupElementID;
         var groupCurrentSelected = $(groupSelector + ' option:selected').prop("value");
-        var doc = getDoc();
-        loadSelectElement(data["GROUPS"], $(groupSelector), true, doc.page_testdatalib_m_createlib.lbl_dropdown_help.docLabel);
+        var doc = new Doc();
+        loadSelectElement(data["GROUPS"], $(groupSelector), true, doc.getDocLabel("page_testdatalib_m_createlib", "lbl_dropdown_help"));
 
         if (isToAdd) {
             //selects the first item and changes its style
@@ -895,10 +881,10 @@ function deleteRow(element) {
  * Method that updates the tab text with number of entries that are currently defined.
  */
 function updateSubDataTabLabel() {
-    var doc = getDoc();
-    var docCreate = doc.page_testdatalib_m_createlib;
-    $("#tab2Text").text(docCreate.m_tab2_text.docLabel);
-    $('#tab2Text').text(docCreate.m_tab2_text.docLabel + " (" + $('#addSubDataTable tr[class="trData"]').size() + " " + docCreate.m_tab2_text_entries.docLabel + ")");
+    var doc = new Doc();
+
+    $("#tab2Text").text(doc.getDocLabel("page_testdatalib_m_createlib", "m_tab2_text"));
+    $('#tab2Text').text(doc.getDocLabel("page_testdatalib_m_createlib", "m_tab2_text") + " (" + $('#addSubDataTable tr[class="trData"]').size() + " " + doc.getDocLabel("page_testdatalib_m_createlib", "m_tab2_text_entries") + ")");
 }
 function editDeleteRowTestDataLibData(element) {
     //if is a new record then we know that is to remove from the interface
@@ -946,25 +932,22 @@ function removeRows(tableID) {
  * @param {type} type - type of the entry used to create custom message
  */
 function deleteTestDataLib(testDataLibID, name, system, environment, country, type) {
-    var doc = getDoc();
-    var docTestDataLib = doc.testdatalib;
-    var docTestDataLibDelete = doc.page_testdatalib_delete;
-    var docPageGlobal = doc.page_global;
-    var baseMessage = docPageGlobal.deleteMessage.docLabel;
-    var systemLabel = system === '' ? docPageGlobal.lbl_all.docLabel : system;
-    var environmentLabel = environment === '' ? docPageGlobal.lbl_all.docLabel : environment;
-    var countryLabel = country === '' ? docPageGlobal.lbl_all.docLabel : country;
+    var doc = new Doc();
+    
+    var systemLabel = system === '' ? doc.getDocLabel("page_global", "lbl_all") : system;
+    var environmentLabel = environment === '' ? doc.getDocLabel("page_global", "lbl_all"): environment;
+    var countryLabel = country === '' ? doc.getDocLabel("page_global", "lbl_all"): country;
 
     var deleteMessage = " TestDataLib: <ul><li>ID: " +
             testDataLibID +
-            "</li><li>" + docTestDataLib.type.docLabel + ": " + name +
-            "</li><li>" + docTestDataLib.type.docLabel + ": " + type +
-            " </li><li>" + docTestDataLib.system.docLabel + ": " + systemLabel +
-            "</li><li> " + docTestDataLib.environment.docLabel + ": " + environmentLabel +
-            " </li><li>" + docTestDataLib.country.docLabel + ":" + countryLabel +
-            "</li> </ul>" + docTestDataLibDelete.subdata_msg.docLabel;
-    var messageComplete = baseMessage.replace("%ENTRY%", deleteMessage).replace("%TABLE%", "");
-    showModalConfirmation(deleteTestDataLibHandlerClick, docTestDataLibDelete.title.docLabel, messageComplete, testDataLibID);
+            "</li><li>" + doc.getDocLabel("testdatalib", "name") + ": " + name +
+            "</li><li>" + doc.getDocLabel("testdatalib", "type") + ": " + type +
+            " </li><li>" + doc.getDocLabel("testdatalib", "system") + ": " + systemLabel +
+            "</li><li> " + doc.getDocLabel("testdatalib", "environment") + ": " + environmentLabel +
+            " </li><li>" + doc.getDocLabel("testdatalib", "country") + ":" + countryLabel +
+            "</li> </ul>" + doc.getDocLabel("page_testdatalib_delete", "subdata_msg");
+    var messageComplete = doc.getDocLabel("page_global", "deleteMessage").replace("%ENTRY%", deleteMessage).replace("%TABLE%", "");
+    showModalConfirmation(deleteTestDataLibHandlerClick,  doc.getDocLabel("page_testdatalib_delete", "title"), messageComplete, testDataLibID);
 
 }
 
@@ -1030,8 +1013,8 @@ function editTestDataLib(testDataLibID, type) {
         }
         formEdit.find('#ScriptEdit').prop("value", obj[8]);
         //load groups per type
-        var doc = getDoc();
-        loadSelectElement(data["GROUPS"]["GROUPS"], $('#editTestDataLibModal').find("#GroupEdit"), true, doc.page_testdatalib_m_createlib.lbl_dropdown_help.docLabel);
+        var doc = new Doc();
+        loadSelectElement(data["GROUPS"]["GROUPS"], $('#editTestDataLibModal').find("#GroupEdit"), true, doc.getDocLabel("page_testdatalib_m_createlib", "lbl_dropdown_help"));
         //selects the group entered by the user
 
         formEdit.find('#GroupEdit option[value="' + obj[5] + '"]:first').prop("selected", "selected");
