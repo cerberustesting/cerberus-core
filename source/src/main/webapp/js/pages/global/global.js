@@ -98,8 +98,12 @@ function displayDeployTypeList(selectName) {
  * @param {String} selectName value name of the select tag in the html
  * @returns {void}
  */
-function displayApplicationList(selectName) {
-    $.when($.getJSON("ReadApplication", "")).then(function (data) {
+function displayApplicationList(selectName, system) {
+    var myData="";
+    if (system !== "") {
+        myData="system=" + system
+    }
+    $.when($.getJSON("ReadApplication", myData)).then(function (data) {
         console.log(data);
         for (var option in data.contentTable) {
             $("[name='" + selectName + "']").append($('<option></option>').text(data.contentTable[option].application + " - " + data.contentTable[option].description).val(data.contentTable[option].application));

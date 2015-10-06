@@ -60,7 +60,7 @@ function displayPageLabel() {
     $("[name='idField']").html(doc.getDocOnline("buildrevisionparameters", "id"));
     $("[name='buildField']").html(doc.getDocOnline("buildrevisionparameters", "Build"));
     $("[name='revisionField']").html(doc.getDocOnline("buildrevisionparameters", "Revision"));
-    displayApplicationList("application");
+    displayApplicationList("application",getUser().defaultSystem);
     displayProjectList("project");
     displayFooter(doc);
 }
