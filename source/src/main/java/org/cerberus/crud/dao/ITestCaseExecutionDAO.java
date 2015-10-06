@@ -17,10 +17,7 @@
  */
 package org.cerberus.crud.dao;
 
-import java.util.ArrayList;
 import java.util.List;
-import org.cerberus.dto.TestCaseWithExecution;
-
 import org.cerberus.crud.entity.TestCaseExecution;
 import org.cerberus.exception.CerberusException;
 import org.cerberus.util.answer.AnswerList;
@@ -131,7 +128,7 @@ public interface ITestCaseExecutionDAO {
     
     AnswerList findTagList(int TagNumber) throws CerberusException;
     
-    public AnswerList readByCriteria(int start, int amount, String column, String dir, String searchTerm, String individualSearch, String tag) throws CerberusException;
+    public AnswerList readByTagByCriteria(String tag, int start, int amount, String column, String dir, String searchTerm, String individualSearch) throws CerberusException;
 
     public AnswerList readDistinctEnvCoutnryBrowserByTag(String tag);
 

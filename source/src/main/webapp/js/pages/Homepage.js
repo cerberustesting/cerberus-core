@@ -129,7 +129,7 @@ function readLastTagExec() {
 
     $.ajax({
         type: "GET",
-        url: "ReadTestCaseExecution",
+        url: "ReadTag",
         data: {TagNumber: "5"},
         async: false,
         dataType: 'json',
@@ -146,7 +146,7 @@ function modalCloseHandler() {
 }
 
 function loadTagFilter() {
-    var jqxhr = $.get("ReadTestCaseExecution", "", "json");
+    var jqxhr = $.get("ReadTag", "", "json");
 
     $.when(jqxhr).then(function (data) {
         var messageType = getAlertType(data.messageType);

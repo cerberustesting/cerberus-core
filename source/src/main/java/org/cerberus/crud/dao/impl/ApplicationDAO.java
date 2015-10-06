@@ -134,17 +134,17 @@ public class ApplicationDAO implements IApplicationDAO {
         searchSQL.append(" where 1=1 ");
 
         if (!StringUtil.isNullOrEmpty(searchTerm)) {
-            searchSQL.append(" and (`application` like '%").append(searchTerm).append("%'");
-            searchSQL.append(" or `description` like '%").append(searchTerm).append("%'");
-            searchSQL.append(" or `sort` like '%").append(searchTerm).append("%'");
-            searchSQL.append(" or `type` like '%").append(searchTerm).append("%'");
-            searchSQL.append(" or `System` like '%").append(searchTerm).append("%'");
-            searchSQL.append(" or `Subsystem` like '%").append(searchTerm).append("%'");
-            searchSQL.append(" or `svnURL` like '%").append(searchTerm).append("%'");
-            searchSQL.append(" or `bugtrackerurl` like '%").append(searchTerm).append("%'");
-            searchSQL.append(" or `bugtrackernewurl` like '%").append(searchTerm).append("%'");
-            searchSQL.append(" or `deploytype` like '%").append(searchTerm).append("%'");
-            searchSQL.append(" or `mavengroupid` like '%").append(searchTerm).append("%')");
+            searchSQL.append(" and (`application` like ?");
+            searchSQL.append(" or `description` like ?");
+            searchSQL.append(" or `sort` like ?");
+            searchSQL.append(" or `type` like ?");
+            searchSQL.append(" or `System` like ?");
+            searchSQL.append(" or `Subsystem` like ?");
+            searchSQL.append(" or `svnURL` like ?");
+            searchSQL.append(" or `bugtrackerurl` like ?");
+            searchSQL.append(" or `bugtrackernewurl` like ?");
+            searchSQL.append(" or `deploytype` like ?");
+            searchSQL.append(" or `mavengroupid` like ?)");
         }
         if (!StringUtil.isNullOrEmpty(individualSearch)) {
             searchSQL.append(" and (`").append(individualSearch).append("`)");
@@ -172,6 +172,19 @@ public class ApplicationDAO implements IApplicationDAO {
         try {
             PreparedStatement preStat = connection.prepareStatement(query.toString());
             try {
+                 if (!StringUtil.isNullOrEmpty(searchTerm)) {
+                     preStat.setString(1, "%" + searchTerm + "%");
+                     preStat.setString(2, "%" + searchTerm + "%");
+                     preStat.setString(3, "%" + searchTerm + "%");
+                     preStat.setString(4, "%" + searchTerm + "%");
+                     preStat.setString(5, "%" + searchTerm + "%");
+                     preStat.setString(6, "%" + searchTerm + "%");
+                     preStat.setString(7, "%" + searchTerm + "%");
+                     preStat.setString(8, "%" + searchTerm + "%");
+                     preStat.setString(9, "%" + searchTerm + "%");
+                     preStat.setString(10, "%" + searchTerm + "%");
+                     preStat.setString(11, "%" + searchTerm + "%");
+                 }
                 ResultSet resultSet = preStat.executeQuery();
                 try {
                     //gets the data
