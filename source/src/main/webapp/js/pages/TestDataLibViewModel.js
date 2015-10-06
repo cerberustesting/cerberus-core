@@ -483,7 +483,6 @@ function renderOptionsForTestDataManager(data) {
             $('#importDataButton').click(function () {
                 var translations = {};
                 //I defined specific translations for this upload modal
-                var docImportTestDataLib = doc.page_testdatalib_m_upload;
                 translations["modalUploadLabel"] = doc.getDocLabel("page_testdatalib_m_upload","title");
                 translations["choseFileLabel"] = doc.getDocLabel("page_testdatalib_m_upload","btn_choose");
                 translations["cancelButton"] = doc.getDocLabel("page_testdatalib_m_upload","btn_cancel").docLabel;
@@ -883,22 +882,22 @@ function deleteRow(element) {
 function updateSubDataTabLabel() {
     var doc = new Doc();
 
-    $("#tab2Text").text(doc.getDocLabel("page_testdatalib_m_createlib", "m_tab2_text"));
+    //$("#tab2Text").text(doc.getDocLabel("page_testdatalib_m_createlib", "m_tab2_text"));
     $('#tab2Text').text(doc.getDocLabel("page_testdatalib_m_createlib", "m_tab2_text") + " (" + $('#addSubDataTable tr[class="trData"]').size() + " " + doc.getDocLabel("page_testdatalib_m_createlib", "m_tab2_text_entries") + ")");
 }
 function editDeleteRowTestDataLibData(element) {
     //if is a new record then we know that is to remove from the interface
-    var doc = getDoc();
-    var docPageGlobal = doc.page_global;
+    var doc = new Doc();
+    
     if ($(element).parents("tr").attr("data-operation") === 'insert') {
         deleteRow(element);
     } else if ($(element).parents("tr").attr("data-operation") === 'remove') {
         //the line was loaded from the database, then it should be market to be removed
-        $(element).prop("title", docPageGlobal.tooltip_mark_remove.docLabel);
+        $(element).prop("title", doc.getDocLabel("page_global", "tooltip_mark_remove"));
         $(element).parents("tr").attr("data-operation", "update");
         $(element).find("span:first").removeAttr("class").addClass("glyphicon glyphicon-trash")
     } else {
-        $(element).prop("title", docPageGlobal.tooltip_delete_item.docLabel);
+        $(element).prop("title", doc.getDocLabel("page_global", "tooltip_delete_item"));
         $(element).parents("tr").attr("data-operation", "remove");
         $(element).find("span:first").removeAttr("class").addClass("glyphicon glyphicon-remove colorRed");
     }
@@ -1043,19 +1042,18 @@ function getTestCasesUsing(testDataLibID, name, country) {
     showLoaderInModal('#testCaseListModal');
     var jqxhr = $.getJSON("ReadTestDataLib", "action=4&testDataLib=" + testDataLibID + "&name=" + name + "&country=" + country);
 
-    var doc = getDoc();
-    var docGetTestCases = doc.page_testdatalib_m_gettestcases;
+    var doc = new Doc(); 
 
     $.when(jqxhr).then(function (result) {
 
-        $('#testCaseListModal #totalTestCases').text(docGetTestCases.nrTests.docLabel + " " + result["TestCasesList"].length);
+        $('#testCaseListModal #totalTestCases').text(doc.getDocLabel("page_testdatalib_m_gettestcases", "nrTests") +  " " + result["TestCasesList"].length);
         var htmlContent = "";
-        var docTestCases = doc.testcase;
+        
         $.each(result["TestCasesList"], function (idx, obj) {
 
             var item = '<b><a class="list-group-item ListItem" data-remote="true" href="#sub_cat' + idx + '" id="cat' + idx + '" data-toggle="collapse" \n\
             data-parent="#sub_cat' + idx + '"><span class="pull-left">' + obj[0] + '</span>\n\
-                                        <span style="margin-left: 25px;" class="pull-right">' + docGetTestCases.nrTestCases.docLabel + obj[2] + '</span>\n\
+                                        <span style="margin-left: 25px;" class="pull-right">' + doc.getDocLabel("page_testdatalib_m_gettestcases", "nrTestCases") + obj[2] + '</span>\n\
                                         <span class="menu-ico-collapse"><i class="fa fa-chevron-down"></i></span>\n\
                                     </a></b>';
             htmlContent += item;
@@ -1066,10 +1064,10 @@ function getTestCasesUsing(testDataLibID, name, country) {
                 var hrefTest = 'TestCase.jsp?Test=' + obj[0] + '&TestCase=' + obj2.TestCaseNumber;
                 htmlContent += '<span class="list-group-item sub-item ListItem" data-parent="#sub_cat' + idx + '" style="padding-left: 78px;">';
                 htmlContent += '<span class="pull-left"><a href="' + hrefTest + '">' + obj2.TestCaseNumber + '- ' + obj2.TestCaseDescription + '</a></span>';
-                htmlContent += '<span class="pull-right">' + docGetTestCases.nrTests.docLabel + " " + obj2.NrProperties + '</span><br/>';
-                htmlContent += '<span class="pull-left"> ' + docTestCases.Creator.docLabel + ": " + obj2.Creator + ' | '
-                        + docTestCases.TcActive.docLabel + ": " + obj2.Active + ' | ' + docTestCases.Status.docLabel + ": " + obj2.Status + ' | ' +
-                        doc.invariant.GROUP.docLabel + ": " + obj2.Group + ' | ' + doc.application.Application.docLabel + ": " + obj2.Application + '</span>';
+                htmlContent += '<span class="pull-right">' + doc.getDocLabel("page_testdatalib_m_gettestcases", "nrTests")  + " " + obj2.NrProperties + '</span><br/>';
+                htmlContent += '<span class="pull-left"> ' + doc.getDocLabel("testcase", "Creator") + ": " + obj2.Creator + ' | '
+                        + doc.getDocLabel("testcase", "TcActive") + ": " + obj2.Active + ' | ' + doc.getDocLabel("testcase", "Status") + ": " + obj2.Status + ' | ' +
+                        doc.getDocLabel("invariant", "GROUP") + ": " + obj2.Group + ' | ' + doc.getDocLabel("application", "Application")  + ": " + obj2.Application + '</span>';
                 htmlContent += '</span>';
             });
 
@@ -1087,12 +1085,12 @@ function getTestCasesUsing(testDataLibID, name, country) {
 }
 
 function appendNewSubDataRow(rowId, subdata, data, description) {
-    var doc = getDoc();
+    var doc = new Doc();
 
     //for each subdata entry adds a new row
     $('#editSubDataTableBody').append('<tr id="' + rowId + '" data-operation="update"> \n\
         <td><div class="nomarginbottom marginTop5"> \n\
-        <button title="' + doc.page_global.tooltip_mark_remove.docLabel + '" onclick="editDeleteRowTestDataLibData(this)" \n\
+        <button title="' + doc.getDocLabel("page_global", "tooltip_mark_remove") + '" onclick="editDeleteRowTestDataLibData(this)" \n\
 class="delete_row pull-left btn btn-default btn-xs manageRowsFont"><span class="glyphicon glyphicon-trash"></span></button></div></td>\n\
         <td><div class="nomarginbottom form-group form-group-sm">\n\
         <input name="subdata" type="text" class="subDataClass form-control input-xs" data-original-value="' + subdata + '" value="' + subdata + '"/><span></span></div></td>\n\

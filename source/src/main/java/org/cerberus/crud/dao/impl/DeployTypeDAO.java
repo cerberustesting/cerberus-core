@@ -217,8 +217,8 @@ public class DeployTypeDAO implements IDeployTypeDAO {
         searchSQL.append(" where 1=1 ");
 
         if (!StringUtil.isNullOrEmpty(searchTerm)) {
-            searchSQL.append(" and (`deploytype` like '%").append(searchTerm).append("%'");
-            searchSQL.append(" or `description` like '%").append(searchTerm).append("%'");
+            searchSQL.append(" and (`deploytype` like ?");
+            searchSQL.append(" or `description`  like ?)");
         }
         if (!StringUtil.isNullOrEmpty(individualSearch)) {
             searchSQL.append(" and (`").append(individualSearch).append("`)");
@@ -243,6 +243,10 @@ public class DeployTypeDAO implements IDeployTypeDAO {
         try {
             PreparedStatement preStat = connection.prepareStatement(query.toString());
             try {
+                if (!StringUtil.isNullOrEmpty(searchTerm)) {
+                    preStat.setString(1, "%" + searchTerm + "%");
+                    preStat.setString(2, "%" + searchTerm + "%");
+                }
                 ResultSet resultSet = preStat.executeQuery();
                 try {
                     //gets the data

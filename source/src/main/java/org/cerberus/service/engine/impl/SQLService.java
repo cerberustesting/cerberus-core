@@ -550,6 +550,7 @@ public class SQLService implements ISQLService {
                     CallableStatement cs = connection.prepareCall(sql);
                     try {
                         cs.execute();
+                        msg = new MessageEvent(MessageEventEnum.ACTION_SUCCESS);
                     } catch (SQLException exception) {
                         MyLogger.log(SQLService.class.getName(), Level.WARN, exception.toString());
                         msg = new MessageEvent(MessageEventEnum.ACTION_FAILED_SQL_ERROR);

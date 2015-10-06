@@ -19,6 +19,7 @@
  */
 package org.cerberus.crud.dao.impl;
 
+import com.google.common.base.Strings;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -196,14 +197,14 @@ public class RobotDAO implements IRobotDAO {
         searchSQL.append(" where 1=1 ");
 
         if (!StringUtil.isNullOrEmpty(searchTerm)) {
-            searchSQL.append(" and (`platform` like '%").append(searchTerm).append("%'");
-            searchSQL.append(" or `host` like '%").append(searchTerm).append("%'");
-            searchSQL.append(" or `port` like '%").append(searchTerm).append("%'");
-            searchSQL.append(" or `description` like '%").append(searchTerm).append("%'");
-            searchSQL.append(" or `robot` like '%").append(searchTerm).append("%'");
-            searchSQL.append(" or `browser` like '%").append(searchTerm).append("%'");
-            searchSQL.append(" or `useragent` like '%").append(searchTerm).append("%'");
-            searchSQL.append(" or `version` like '%").append(searchTerm).append("%'");
+            searchSQL.append(" and (`platform` like ?");
+            searchSQL.append(" or `host` like ?");
+            searchSQL.append(" or `port` like ?");
+            searchSQL.append(" or `description` like ?");
+            searchSQL.append(" or `robot` like ?");
+            searchSQL.append(" or `browser` like ?");
+            searchSQL.append(" or `useragent` like ?");
+            searchSQL.append(" or `version` like ?)");
         }
         if (!StringUtil.isNullOrEmpty(individualSearch)) {
             searchSQL.append(" and (`").append(individualSearch).append("`)");
@@ -228,6 +229,16 @@ public class RobotDAO implements IRobotDAO {
         try {
             PreparedStatement preStat = connection.prepareStatement(query.toString());
             try {
+                if (!Strings.isNullOrEmpty(searchTerm)) {
+                    preStat.setString(1, "%" + searchTerm + "%");
+                    preStat.setString(2, "%" + searchTerm + "%");
+                    preStat.setString(3, "%" + searchTerm + "%");
+                    preStat.setString(4, "%" + searchTerm + "%");
+                    preStat.setString(5, "%" + searchTerm + "%");
+                    preStat.setString(6, "%" + searchTerm + "%");
+                    preStat.setString(7, "%" + searchTerm + "%");
+                    preStat.setString(8, "%" + searchTerm + "%");
+                }
                 ResultSet resultSet = preStat.executeQuery();
                 try {
                     //gets the data

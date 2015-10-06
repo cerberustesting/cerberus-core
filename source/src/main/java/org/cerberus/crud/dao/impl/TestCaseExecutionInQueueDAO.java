@@ -724,7 +724,7 @@ public class TestCaseExecutionInQueueDAO implements ITestCaseExecutionInQueueDAO
     }
 
     @Override
-    public AnswerList readByCriteria(int start, int amount, String column, String dir, String searchTerm, String individualSearch, String tag) throws CerberusException {
+    public AnswerList readByTagByCriteria(String tag, int start, int amount, String column, String dir, String searchTerm, String individualSearch) throws CerberusException {
         boolean throwEx = false;
         MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
         AnswerList answer = new AnswerList();
@@ -882,6 +882,66 @@ public class TestCaseExecutionInQueueDAO implements ITestCaseExecutionInQueueDAO
         return answer;
     }
 
+     @Override
+    public AnswerList findTagList(int TagNumber) {
+        AnswerList response = new AnswerList();
+        MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
+        List<String> list = null;
+        StringBuilder query = new StringBuilder();
+
+        query.append("SELECT DISTINCT tag FROM testcaseexecutionqueue WHERE tag != ''");
+        
+        if (TagNumber != 0) {
+            query.append("ORDER BY id desc LIMIT ");
+            query.append(TagNumber);
+        }
+
+        query.append(";");
+        Connection connection = this.databaseSpring.connect();
+        try {
+            PreparedStatement preStat = connection.prepareStatement(query.toString());
+            try {
+                ResultSet resultSet = preStat.executeQuery();
+                try {
+                    list = new ArrayList<String>();
+
+                    while (resultSet.next()) {
+                        list.add(resultSet.getString("tag"));
+                    }
+                    msg.setDescription(msg.getDescription().replace("%ITEM%", "TagList").replace("%OPERATION%", "SELECT"));
+                } catch (SQLException exception) {
+                    LOG.error("Unable to execute query : " + exception.toString());
+                    msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
+                    msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", "Unable to retrieve the list of entries!"));
+                } finally {
+                    resultSet.close();
+                }
+            } catch (SQLException exception) {
+                LOG.error("Unable to execute query : " + exception.toString());
+                msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
+                msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", "Unable to retrieve the list of entries!"));
+            } finally {
+                preStat.close();
+            }
+        } catch (SQLException exception) {
+            LOG.error("Unable to execute query : " + exception.toString());
+            msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
+            msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", "Unable to retrieve the list of entries!"));
+        } finally {
+            try {
+                if (connection != null) {
+                    connection.close();
+                }
+            } catch (SQLException e) {
+                LOG.warn(e.toString());
+            }
+        }
+
+        response.setResultMessage(msg);
+        response.setDataList(list);
+        return response;
+    }
+    
     public TestCaseWithExecution loadEnvCountryBrowserFromResultSet(ResultSet resultSet) throws SQLException {
         TestCaseWithExecution testCaseWithExecution = new TestCaseWithExecution();
 

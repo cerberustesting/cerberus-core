@@ -128,7 +128,9 @@ public interface ITestCaseExecutionInQueueService {
     
     public void updateComment(Long queueId, String comment)throws CerberusException;
     
-    public AnswerList readByCriteria(int start, int amount, String column, String dir, String searchTerm, String individualSearch, String tag) throws CerberusException;
+    public AnswerList readByTagByCriteria(String tag, int start, int amount, String column, String dir, String searchTerm, String individualSearch) throws CerberusException;
     
     public AnswerList readDistinctEnvCoutnryBrowserByTag(String tag);
+    
+    public AnswerList findTagList(int TagNumber);
 }
