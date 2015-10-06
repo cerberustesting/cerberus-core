@@ -17,6 +17,7 @@
  */
 package org.cerberus.crud.dao.impl;
 
+import com.google.common.base.Strings;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -131,11 +132,11 @@ public class ProjectDAO implements IProjectDAO {
         searchSQL.append(" where 1=1 ");
 
         if (!StringUtil.isNullOrEmpty(searchTerm)) {
-            searchSQL.append(" and (`idproject` like '%").append(searchTerm).append("%'");
-            searchSQL.append(" or `VCCode` like '%").append(searchTerm).append("%'");
-            searchSQL.append(" or `Description` like '%").append(searchTerm).append("%'");
-            searchSQL.append(" or `active` like '%").append(searchTerm).append("%'");
-            searchSQL.append(" or `dateCre` like '%").append(searchTerm).append("%')");
+            searchSQL.append(" and (`idproject` like ?");
+            searchSQL.append(" or `VCCode` like ?");
+            searchSQL.append(" or `Description` like ?");
+            searchSQL.append(" or `active` like ?");
+            searchSQL.append(" or `dateCre` like ?)");
         }
         if (!StringUtil.isNullOrEmpty(individualSearch)) {
             searchSQL.append(" and (`").append(individualSearch).append("`)");
@@ -160,6 +161,13 @@ public class ProjectDAO implements IProjectDAO {
         try {
             PreparedStatement preStat = connection.prepareStatement(query.toString());
             try {
+                if (!Strings.isNullOrEmpty(searchTerm)) {
+                    preStat.setString(1, "%" + searchTerm + "%");
+                    preStat.setString(2, "%" + searchTerm + "%");
+                    preStat.setString(3, "%" + searchTerm + "%");
+                    preStat.setString(4, "%" + searchTerm + "%");
+                    preStat.setString(5, "%" + searchTerm + "%");
+                }
                 ResultSet resultSet = preStat.executeQuery();
                 try {
                     //gets the data

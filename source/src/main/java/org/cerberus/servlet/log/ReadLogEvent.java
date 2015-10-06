@@ -179,7 +179,6 @@ public class ReadLogEvent extends HttpServlet {
     }// </editor-fold>
 
     private AnswerItem findLogEventList(ApplicationContext appContext, HttpServletRequest request) throws CerberusException, JSONException {
-        PolicyFactory policy = Sanitizers.FORMATTING.and(Sanitizers.LINKS);
         AnswerItem item = new AnswerItem();
         JSONObject jsonResponse = new JSONObject();
         logEventService = appContext.getBean(LogEventService.class);
