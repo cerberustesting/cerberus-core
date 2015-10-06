@@ -131,4 +131,6 @@ public interface ITestCaseExecutionInQueueService {
     public AnswerList readByCriteria(int start, int amount, String column, String dir, String searchTerm, String individualSearch, String tag) throws CerberusException;
     
     public AnswerList readDistinctEnvCoutnryBrowserByTag(String tag);
+    
+    public AnswerList findTagList(int TagNumber);
 }

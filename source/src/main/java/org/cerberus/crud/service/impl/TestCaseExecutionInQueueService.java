@@ -120,4 +120,9 @@ public class TestCaseExecutionInQueueService implements ITestCaseExecutionInQueu
     public AnswerList readDistinctEnvCoutnryBrowserByTag(String tag) {
         return testCaseExecutionInQueueDAO.readDistinctEnvCoutnryBrowserByTag(tag);
     }
+    
+    @Override
+    public AnswerList findTagList(int TagNumber) {
+        return testCaseExecutionInQueueDAO.findTagList(TagNumber);
+    }
 }

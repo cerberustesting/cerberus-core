@@ -802,21 +802,15 @@ public class TestCaseExecutionDAO implements ITestCaseExecutionDAO {
     }
 
     @Override
-    public AnswerList findTagList(int TagNumber) throws CerberusException {
+    public AnswerList findTagList(int TagNumber) {
         AnswerList response = new AnswerList();
         MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
         List<String> list = null;
         StringBuilder query = new StringBuilder();
 
-        if (TagNumber == 0) {
-            query.append("SELECT tag FROM testcaseexecution WHERE tag != ''");
-            query.append(" UNION ");
-            query.append("SELECT tag FROM testcaseexecutionqueue WHERE tag != ''");
-        }
-
+        query.append("SELECT DISTINCT tag FROM testcaseexecution WHERE tag != ''");
+        
         if (TagNumber != 0) {
-            query.append("select distinct tag from testcaseexecution tce ");
-            query.append("where tag != '' ");
             query.append("ORDER BY id desc LIMIT ");
             query.append(TagNumber);
         }

@@ -60,7 +60,7 @@ function displayPageLabel(doc) {
 }
 
 function loadTagFilters(urlTag) {
-    var jqxhr = $.get("ReadTestCaseExecution", "", "json");
+    var jqxhr = $.get("ReadTag", "", "json");
     $.when(jqxhr).then(function (data) {
         var messageType = getAlertType(data.messageType);
         if (messageType === "success") {
@@ -454,7 +454,7 @@ function aoColumnsFunc(Columns) {
                                 data-toggle="tooltip" data-html="true" title="' + tooltip + '"\n\
                                 onclick="window.open(\'' + executionLink + '\')">\n\
                                 <span class="' + glyphClass.glyph + ' marginRight5"></span>\n\
-                                 <span>' + data.ControlStatus + '<span></a></div>';
+                                 <span>' + data.ControlStatus + '<span></div>';
                     return cell;
                 } else {
                     return data;
