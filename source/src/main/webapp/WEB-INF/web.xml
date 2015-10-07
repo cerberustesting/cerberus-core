@@ -726,7 +726,7 @@
     </servlet>
     <servlet>
         <servlet-name>ReadCerberusInformation</servlet-name>
-        <servlet-class>org.cerberus.servlet.information.ReadCerberustInformation</servlet-class>
+        <servlet-class>org.cerberus.servlet.information.ReadCerberusInformation</servlet-class>
     </servlet>
     <servlet>
         <servlet-name>ReadTestCaseStep</servlet-name>
@@ -908,7 +908,7 @@
         <servlet-name>ReadTestCaseExecution</servlet-name>
         <url-pattern>/ReadTestCaseExecution</url-pattern>
     </servlet-mapping>
-        <servlet-mapping>
+    <servlet-mapping>
         <servlet-name>ReadTag</servlet-name>
         <url-pattern>/ReadTag</url-pattern>
     </servlet-mapping>
@@ -1520,9 +1520,12 @@
             <url-pattern>/ReportingExecution.jsp</url-pattern>
             <url-pattern>/ReportingExecutionTime.jsp</url-pattern>
             <url-pattern>/ReportingExecutionByTag.jsp</url-pattern>
+            <url-pattern>/ReportingExecutionByTag2.jsp</url-pattern>
             <url-pattern>/ExecutionPending.jsp</url-pattern>
             <url-pattern>/Test.jsp</url-pattern>
+            <url-pattern>/Test2.jsp</url-pattern>
             <url-pattern>/TestCase.jsp</url-pattern>
+            <url-pattern>/TestCaseList.jsp</url-pattern>
             <url-pattern>/TestCaseOld.jsp</url-pattern>
             <url-pattern>/TestCase_bkp.jsp</url-pattern>
             <url-pattern>/TestCaseSearch.jsp</url-pattern>
@@ -1534,13 +1537,12 @@
             <url-pattern>/ViewProperty.jsp</url-pattern>
             <url-pattern>/TestPerApplication.jsp</url-pattern>
             <url-pattern>/CampaignReportByTag.jsp</url-pattern>
-            <url-pattern>/ReadTestCaseStep</url-pattern>            
+            <url-pattern>/ReadTestCaseStep</url-pattern>
         </web-resource-collection>
         <web-resource-collection>
             <web-resource-name>servlet</web-resource-name>
             <description>servlet</description>
             <url-pattern>/GetTestCaseList</url-pattern>
-            <url-pattern>/UpdateSystem</url-pattern>
             <url-pattern>/GetTestCase</url-pattern>
             <url-pattern>/TestcaseList</url-pattern>
             <url-pattern>/ExportListTestCase</url-pattern>
@@ -1560,6 +1562,7 @@
             <url-pattern>/GetPropertiesForTestCase</url-pattern>
             <url-pattern>/GetReport</url-pattern>
             <url-pattern>/GetStepInLibrary</url-pattern>
+            <url-pattern>/UpdateSystem</url-pattern>
         </web-resource-collection>
         <auth-constraint>
             <description>TestRO</description>
@@ -1697,6 +1700,7 @@
             <description>jsp</description>
             <url-pattern>/Application.jsp</url-pattern>
             <url-pattern>/BuildContent.jsp</url-pattern>
+            <url-pattern>/BuildContent1.jsp</url-pattern>
             <url-pattern>/BuildContent_old.jsp</url-pattern>
             <url-pattern>/BuildRevDefinition.jsp</url-pattern>
             <url-pattern>/Environment.jsp</url-pattern>
