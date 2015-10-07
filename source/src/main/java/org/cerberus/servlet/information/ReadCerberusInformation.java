@@ -20,14 +20,12 @@
 package org.cerberus.servlet.information;
 
 import java.io.IOException;
-import java.io.PrintWriter;
 import java.util.logging.Logger;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import org.cerberus.exception.CerberusException;
 import org.cerberus.version.Infos;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -39,7 +37,7 @@ import org.springframework.web.context.support.WebApplicationContextUtils;
  * @author bcivel
  */
 @WebServlet(name = "ReadCerberusInformation", urlPatterns = {"/ReadCerberusInformation"})
-public class ReadCerberustInformation extends HttpServlet {
+public class ReadCerberusInformation extends HttpServlet {
 
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
@@ -61,7 +59,7 @@ public class ReadCerberustInformation extends HttpServlet {
             data.put("projectVersion", infos.getProjectVersion());
             data.put("environment", System.getProperty("org.cerberus.environment"));
         } catch (JSONException ex) {
-            Logger.getLogger(ReadCerberustInformation.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            Logger.getLogger(ReadCerberusInformation.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } 
         response.setContentType("application/json");
         response.getWriter().print(data.toString());
