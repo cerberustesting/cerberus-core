@@ -130,11 +130,11 @@ function readLastTagExec() {
     $.ajax({
         type: "GET",
         url: "ReadTag",
-        data: {TagNumber: "5"},
+        data: {tagNumber: "5"},
         async: false,
         dataType: 'json',
         success: function (data) {
-            tagList = data.tags;
+            tagList = data.contentTable;
         }
     });
     return tagList;
@@ -154,10 +154,10 @@ function loadTagFilter() {
         if (messageType === "success") {
             var index;
             $('#selectTag').append($('<option></option>').attr("value", "")).attr("placeholder", "Select a Tag");
-            for (index = 0; index < data.tags.length; index++) {
+            for (index = 0; index < data.contentTable.length; index++) {
                 //the character " needs a special encoding in order to avoid breaking the string that creates the html element   
-                var encodedString = data.tags[index].replace(/\"/g, "%22");
-                var option = $('<option></option>').attr("value", encodedString).text(data.tags[index]);
+                var encodedString = data.contentTable[index].replace(/\"/g, "%22");
+                var option = $('<option></option>').attr("value", encodedString).text(data.contentTable[index]);
                 $('#selectTag').append(option);
             }
         } else {

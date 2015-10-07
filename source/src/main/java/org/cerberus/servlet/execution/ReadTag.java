@@ -64,17 +64,17 @@ public class ReadTag extends HttpServlet {
             throws ServletException, IOException, CerberusException {
         ApplicationContext appContext = WebApplicationContextUtils.getWebApplicationContext(this.getServletContext());
 
-        int TagNumber = Integer.valueOf(ParameterParserUtil.parseStringParam(request.getParameter("TagNumber"), "0"));
+        int tagNumber = Integer.valueOf(ParameterParserUtil.parseStringParam(request.getParameter("tagNumber"), "0"));
 
         try {
             JSONObject jsonResponse = new JSONObject();
             AnswerItem answer = new AnswerItem(new MessageEvent(MessageEventEnum.DATA_OPERATION_OK));
 
-            if (TagNumber == 0) {
+            if (tagNumber == 0) {
                 answer = findTagList(appContext);
                 jsonResponse = (JSONObject) answer.getItem();
-            } else if (TagNumber != 0) {
-                answer = findLastTagExec(appContext, TagNumber);
+            } else if (tagNumber != 0) {
+                answer = findLastTagExec(appContext, tagNumber);
                 jsonResponse = (JSONObject) answer.getItem();
             }
 
@@ -169,14 +169,14 @@ public class ReadTag extends HttpServlet {
             tagList.add(tag);
         }
         
-        jsonResponse.put("tags", tagList.toArray());
+        jsonResponse.put("contentTable", tagList.toArray());
 
         answer.setItem(jsonResponse);
         answer.setResultMessage(execTagAns.getResultMessage());
         return answer;
     }
 
-    private AnswerItem findLastTagExec(ApplicationContext appContext, int TagNumber) throws JSONException, CerberusException {
+    private AnswerItem findLastTagExec(ApplicationContext appContext, int tagNumber) throws JSONException, CerberusException {
         AnswerItem answer = new AnswerItem();
         JSONObject jsonResponse = new JSONObject();
 
@@ -184,9 +184,9 @@ public class ReadTag extends HttpServlet {
 
         AnswerList resp;
 
-        resp = testCaseExecutionService.findTagList(TagNumber);
+        resp = testCaseExecutionService.findTagList(tagNumber);
 
-        jsonResponse.put("tags", resp.getDataList());
+        jsonResponse.put("contentTable", resp.getDataList());
 
         answer.setItem(jsonResponse);
         answer.setResultMessage(resp.getResultMessage());

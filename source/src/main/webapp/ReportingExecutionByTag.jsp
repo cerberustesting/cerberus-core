@@ -85,51 +85,54 @@
                             <a data-toggle="collapse" data-target="#listReport">
                                 <span class="toggle glyphicon glyphicon-chevron-right pull-right"></span>
                             </a>
-                            <div class="pull-right">
-                                <label id="statusLabel">Status :</label>
-                                <div class="form-group" id="statusFilter">
-                                    <label class="checkbox-inline">
-                                        <input type="checkbox" name="OK" checked/>
-                                        OK
-                                    </label>
-                                    <label class="checkbox-inline">
-                                        <input type="checkbox" name="KO" checked/>
-                                        KO
-                                    </label>
-                                    <label class="checkbox-inline">
-                                        <input type="checkbox" name="FA" checked/>
-                                        FA
-                                    </label>
-                                    <label class="checkbox-inline">
-                                        <input type="checkbox" name="NA" checked/>
-                                        NA
-                                    </label>
-                                    <label class="checkbox-inline">
-                                        <input type="checkbox" name="NE" checked/>
-                                        NE
-                                    </label>
-                                    <label class="checkbox-inline">
-                                        <input type="checkbox" name="PE" checked/>
-                                        PE
-                                    </label>
-                                    <label class="checkbox-inline">
-                                        <input type="checkbox" name="CA" checked/>
-                                        CA
-                                    </label>
-                                    <button type="button" class="btn btn-default btn-xs" onclick="loadReportList()" id="reloadbutton">Reload</button>
-                                </div>
-                            </div>
+                            <button type="button" class="btn btn-default btn-xs pull-right" onclick="loadReportList()" id="reloadbutton">Reload</button>
                         </div>
                         <div class="panel-body collapse in" id="listReport">
-                            <table id="listTable" class="table table-hover display" name="listTable"></table>
-                            <div class="marginBottom20"></div>
+                            <label id="countryLabel" class="bold">Country :</label>
+                            <div class="form-group" id="countryFilter">
+
+                            </div>
+                            <label id="statusLabel" class="bold">Status :</label>
+                            <div class="form-group marginBottom20" id="statusFilter">
+                                <label class="checkbox-inline">
+                                    <input type="checkbox" name="OK" checked/>
+                                    OK
+                                </label>
+                                <label class="checkbox-inline">
+                                    <input type="checkbox" name="KO" checked/>
+                                    KO
+                                </label>
+                                <label class="checkbox-inline">
+                                    <input type="checkbox" name="FA" checked/>
+                                    FA
+                                </label>
+                                <label class="checkbox-inline">
+                                    <input type="checkbox" name="NA" checked/>
+                                    NA
+                                </label>
+                                <label class="checkbox-inline">
+                                    <input type="checkbox" name="NE" checked/>
+                                    NE
+                                </label>
+                                <label class="checkbox-inline">
+                                    <input type="checkbox" name="PE" checked/>
+                                    PE
+                                </label>
+                                <label class="checkbox-inline">
+                                    <input type="checkbox" name="CA" checked/>
+                                    CA
+                                </label>
+                            </div>
+                            <div id="tableArea">
+                                <table id="listTable" class="table table-hover display" name="listTable"></table>
+                                <div class="marginBottom20"></div>
+                            </div>
                         </div>
                     </div>
                 </div>
+                <footer class="footer">
+                    <div class="container-fluid" id="footer"></div>
+                </footer>
             </div>
-            <footer class="footer">
-                <div class="container-fluid" id="footer"></div>
-            </footer>
-        </div>
     </body>
 </html>

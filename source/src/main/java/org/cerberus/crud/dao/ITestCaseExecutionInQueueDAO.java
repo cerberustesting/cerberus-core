@@ -110,5 +110,5 @@ public interface ITestCaseExecutionInQueueDAO {
 
     public AnswerList readDistinctEnvCoutnryBrowserByTag(String tag);
     
-    public AnswerList findTagList(int TagNumber);
+    public AnswerList findTagList(int tagnumber);
 }
