@@ -21,36 +21,21 @@
 <%@ page import="org.cerberus.crud.entity.SqlLibrary" %>
 
 <%@page contentType="text/html" pageEncoding="UTF-8" %>
-<script>
-    function reporter(script, valueField, propertyType) {
-        document.getElementById(valueField).value = script;
-        document.getElementById(propertyType).value = "executeSqlFromLib";
-
-        $("#popin").dialog('close');
-    }
-
-    function reporterScript(script, valueField, propertyType) {
-        document.getElementById(valueField).value = script;
-        document.getElementById(propertyType).value = "executeSql";
-        $("#popin").dialog('close');
-    }
-
-</script>
 
 <%@ include file="include/function.jsp" %>
 
 <%
     ISqlLibraryService sqlLibraryService = appContext.getBean(ISqlLibraryService.class);
     try {
-        String Lign = request.getParameter("Lign");
-        String propertyType = "type" + Lign;
+        String valueid = request.getParameter("valueid");
+        String typeid = request.getParameter("typeid");
 
         String Type = request.getParameter("Type");
         //Enter when type is selected
         if (request.getParameter("Type") != null) {
 %>
 
-<h3><a href="#" onclick="loadSqlLibraryPopin('<%=Lign%>');">Root</a> / <%=Type %>
+<h3><a href="#" onclick="loadSqlLibraryPopin('<%=valueid%>', '<%=typeid%>');">Root</a> / <%=Type %>
 </h3>
 <table>
     <%
@@ -63,15 +48,15 @@
     %>
     <tr id="header">
         <td rowspan="2"><%=name%><input type="button" value="Select SQL"
-                                        onclick="reporter('<%=name%>', '<%=Lign%>', '<%=propertyType%>');"></td>
+                                        onclick="setSQLValue('<%=name%>','executeSqlFromLib', '<%=valueid%>', '<%=typeid%>' );"></td>
         <td style="font-style: normal"><%=sqlLibrary.getDescription()%>
         </td>
     </tr>
     <tr>
-        <td><textarea rows="2" style="width: 700px"><%=script%>
+        <td><textarea rows="2" class="width600" style="max-width: 600px"><%=script%>
         </textarea>
             <input type="button" value="Import SQL"
-                   onclick="reporterScript('<%=script%>', '<%=Lign%>', '<%=propertyType%>');">
+                   onclick="setSQLValue('<%=script%>','executeSql', '<%=valueid%>', '<%=typeid%>' );">
         </td>
     </tr>
 
@@ -88,11 +73,34 @@
 %>
 <h3> SQL Library !</h3>
 <%
-    for (String type : sqlLibraryService.findDistinctTypeOfSqlLibrary()) {
+    List<String> list = sqlLibraryService.findDistinctTypeOfSqlLibrary();
+        for (int i = 0 ; i< list.size(); i++) {
+            String type = list.get(i);
+            //gets de first
 %>
-<a href="#" class="sqlLib"
-   onclick="loadSqlLibraryPopin('<%=Lign%>&Type=<%=type%>');"><%=type%>
-</a>
+            <div class="center"> 
+                <a href="#" class="sqlLib width200"
+                   onclick="loadSqlLibraryPopin('<%=valueid%>', '<%=typeid%>&Type=<%=type%>');"><%=type%>
+                </a>
+                <% 
+                    //gets the second
+                    if( ++i < list.size()){
+                        type = list.get(i);%>
+                        <a href="#" class="sqlLib width200"
+                           onclick="loadSqlLibraryPopin('<%=valueid%>', '<%=typeid%>&Type=<%=type%>');"><%=type%>
+                        </a>
+                   <% } %>
+               <% 
+                    //gets the third
+                    if( ++i < list.size()){
+                        type = list.get(i);
+                    %>
+                    
+                    <a href="#" class="sqlLib width200"
+                       onclick="loadSqlLibraryPopin('<%=valueid%>', '<%=typeid%>&Type=<%=type%>');"><%=type%>
+                    </a>
+               <% } %>
+            </div>
 <%
             }
 
