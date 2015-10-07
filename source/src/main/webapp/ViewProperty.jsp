@@ -30,7 +30,7 @@
     String type = request.getParameter("type");
 
     IDocumentationService docService = appContext.getBean(IDocumentationService.class);
-    String myLang = ParameterParserUtil.parseStringParam(request.getParameterValues("MyLang").toString(), "en");
+    String myLang = ParameterParserUtil.parseStringParam(request.getParameter("MyLang"), "en");
 
     if(test != null && !"".equals(test.trim()) 
         && testcase != null && !"".equals(testcase.trim())) {
@@ -56,7 +56,7 @@
         <%}%>
             <textarea rows="5" cols="80" id="property" name="property"><%=property%></textarea>
             <br>
-            <input type="button" name="calculate" id="calculate" value="Calculate property" onclick="calculateProperty()">
+            <button class="btn btn-default" type="button" onclick="calculateProperty();" name="calculate" id="calculate" >Calculate Property</button>
             <div id="result"></div>
             <br>
             <div id="propdesc"></div>

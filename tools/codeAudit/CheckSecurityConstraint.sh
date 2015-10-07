@@ -19,6 +19,8 @@ DEBUG="1"
 SCRIPTNAME=`basename $0`
 LOG_FILE=${TMP_DIR}/${SCRIPTNAME}.log
 TMP_SERVLET=${TMP_DIR}/${SCRIPTNAME}.tmp.listservlet
+TMP_SERVLET2=${TMP_DIR}/${SCRIPTNAME}.tmp.listservlet2
+TMP_SERVLET3=${TMP_DIR}/${SCRIPTNAME}.tmp.listservlet3
 TMP_JSP=${TMP_DIR}/${SCRIPTNAME}.tmp.listjsp
 TMP_JSP2=${TMP_DIR}/${SCRIPTNAME}.tmp.listjsp2
 
@@ -47,17 +49,41 @@ fi
 # Servlet
 #-------------------------------------------------------------------------------
 
-#find $PROJECTROOT -type f -wholename *servlet*java -exec basename {} \; > $TMP_SERVLET
-grep servlet-name $WEBXML | sort | uniq > $TMP_SERVLET
-
+log "----------   List of servlet that exist in the project source servlet"
+log "----------              folder that does not appear (or appear twice)"
+log "----------                 in <security-constraint> in web.xml file :"
+log "---------------------------------------------------------------------"
+find $PROJECTROOT -type f -wholename *servlet*java -exec basename {} \; > $TMP_SERVLET
 #cat $TMP_SERVLET
+servlet_to_fix=0
+for j in `cat $TMP_SERVLET`
+do
+  log_debug "Processing $j"
+  j=${j/.java/}
+  log_debug "Counting $j"
+  cntwebxml=`grep \/${j%}\<\/url $WEBXML | wc -l`
+  log_debug "Found $cntwebxml"
+  if [ ! $cntwebxml -eq 2 ]
+    then
+      echo "${j} $cntwebxml"
+      servlet_to_fix=`expr $servlet_to_fix + 1`
+  fi
+done
+if [ $servlet_to_fix -eq 0 ]
+  then
+    log "--> No Servlet to fix."
+fi
+
+#-------
 
 log "----------  List of Servlet defined in the web.xml file that does not"
 log "----------          appear (or appear twice) in <security-constraint>"
 log "----------                                    still in web.xml file :"
 log "---------------------------------------------------------------------"
+grep servlet-name $WEBXML | sort | uniq > $TMP_SERVLET2
+#cat $TMP_SERVLET2
 servlet_to_fix=0
-for j in `cat $TMP_SERVLET`
+for j in `cat $TMP_SERVLET2`
 do
   log_debug "Processing $j"
   j=${j/<servlet-name>/}
@@ -76,18 +102,24 @@ if [ $servlet_to_fix -eq 0 ]
     log "--> No Servlet to fix."
 fi
 
+#------- TO BE IMPLEMETED
+
+#log "----------   List of servlet that exist in the web.xml file and does "
+#log "----------                           not exist in the project source "
+#log "----------                                            servlet folder :"
+#log "---------------------------------------------------------------------"
+#grep "\.jsp</url" $WEBXML > $TMP_SERVLET3
+#cat $TMP_SERVLET3
+
 
 # jsp
 #-------------------------------------------------------------------------------
-
-find $PROJECTROOT -type f -wholename *src*main*webapp*.jsp -exec basename {} \; | sort > $TMP_JSP
-
-#cat $TMP_JSP
-
 log "---------- List of jsp that exist in the project source webapp folder"
 log "----------                     that does not appear (or appear twice)"
 log "----------                 in <security-constraint> in web.xml file :"
 log "---------------------------------------------------------------------"
+find $PROJECTROOT -type f -wholename *src*main*webapp*.jsp -exec basename {} \; | sort > $TMP_JSP
+#cat $TMP_JSP
 jsp_to_fix=0
 for j in `cat $TMP_JSP`
 do
@@ -134,6 +166,8 @@ fi
 # Clean temporary files.
 #-------------------------------------------------------------------------------
 rm $TMP_SERVLET
+rm $TMP_SERVLET2
+#rm $TMP_SERVLET3
 rm $TMP_JSP
 rm $TMP_JSP2
 

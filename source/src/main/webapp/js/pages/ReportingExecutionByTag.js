@@ -45,6 +45,43 @@ function initPage() {
     displayHeaderLabel(doc);
     displayPageLabel(doc);
     displayFooter(doc);
+    loadCountryFilter();
+}
+
+function loadCountryFilter() {
+    $.ajax({url: "FindInvariantByID",
+        data: {idName: "COUNTRY"},
+        async: false,
+        dataType: 'json',
+        success: function (data) {
+            var countryFilter = $("#countryFilter");
+            for (var i = 0; i < data.length; i++) {
+                var filter = JSON.parse(sessionStorage.getItem("countryFilter"));
+                var cb;
+                console.log(filter === null);
+                if (filter !== null && !filter.hasOwnProperty(data[i].value)) {
+                    cb = '<label class="checkbox-inline">\n\
+                        <input type="checkbox" name="' + data[i].value + '"/>\n\
+                        ' + data[i].value + '</label>';
+                } else {
+                    cb = '<label class="checkbox-inline">\n\
+                        <input type="checkbox" name="' + data[i].value + '" checked/>\n\
+                        ' + data[i].value + '</label>';
+                }
+                countryFilter.append(cb);
+            }
+            $("#countryFilter input").on("click", function () {
+                var serial = $("#countryFilter input").serialize();
+                var data = serial.split("&");
+
+                var obj = {};
+                for (var key in data) {
+                    obj[data[key].split("=")[0]] = data[key].split("=")[1];
+                }
+                sessionStorage.setItem("countryFilter", JSON.stringify(obj));
+            });
+        }
+    });
 }
 
 function displayPageLabel(doc) {
@@ -66,10 +103,10 @@ function loadTagFilters(urlTag) {
         if (messageType === "success") {
             var index;
             $('#selectTag').append($('<option></option>').attr("value", "")).attr("placeholder", "Select a Tag");
-            for (index = 0; index < data.tags.length; index++) {
+            for (index = 0; index < data.contentTable.length; index++) {
                 //the character " needs a special encoding in order to avoid breaking the string that creates the html element   
-                var encodedString = data.tags[index].replace(/\"/g, "%22");
-                var option = $('<option></option>').attr("value", encodedString).text(data.tags[index]);
+                var encodedString = data.contentTable[index].replace(/\"/g, "%22");
+                var option = $('<option></option>').attr("value", encodedString).text(data.contentTable[index]);
                 $('#selectTag').append(option);
             }
 
@@ -94,8 +131,8 @@ function loadReport() {
     $("#statusChart").empty();
     $("#functionChart").empty();
     if ($("#listTable_wrapper").hasClass("initialized")) {
-        $("#ListPanel .panel-body").empty();
-        $("#ListPanel .panel-body").html('<table id="listTable" class="table table-hover display" name="listTable">\n\
+        $("#tableArea").empty();
+        $("#tableArea").html('<table id="listTable" class="table table-hover display" name="listTable">\n\
                                             </table><div class="marginBottom20"></div>');
     }
     if (selectTag !== "") {
@@ -115,18 +152,19 @@ function loadReport() {
 function loadReportList() {
     var selectTag = $("#selectTag option:selected").text();
     var statusFilter = $("#statusFilter input");
+    var countryFilter = $("#countryFilter input");
 
     if ($("#listTable_wrapper").hasClass("initialized")) {
-        $("#ListPanel .panel-body").empty();
-        $("#ListPanel .panel-body").html('<table id="listTable" class="table table-hover display" name="listTable">\n\
+        $("#tableArea").empty();
+        $("#tableArea").html('<table id="listTable" class="table table-hover display" name="listTable">\n\
                                             </table><div class="marginBottom20"></div>');
     }
 
     if (selectTag !== "") {
         //configure and create the dataTable
-        var jqxhr = $.getJSON("ReadTestCaseExecution", "Tag=" + selectTag + "&" + statusFilter.serialize());
+        var jqxhr = $.getJSON("ReadTestCaseExecution", "Tag=" + selectTag + "&" + statusFilter.serialize() + "&" + countryFilter.serialize());
         $.when(jqxhr).then(function (data) {
-            var request = "ReadTestCaseExecution?Tag=" + selectTag + "&" + statusFilter.serialize();
+            var request = "ReadTestCaseExecution?Tag=" + selectTag + "&" + statusFilter.serialize() + "&" + countryFilter.serialize();
 
             var config = new TableConfigurationsServerSide("listTable", request, "testList", aoColumnsFunc(data.Columns));
             customConfig(config);

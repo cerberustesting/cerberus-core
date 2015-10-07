@@ -122,7 +122,7 @@ public class TestCaseExecutionInQueueService implements ITestCaseExecutionInQueu
     }
     
     @Override
-    public AnswerList findTagList(int TagNumber) {
-        return testCaseExecutionInQueueDAO.findTagList(TagNumber);
+    public AnswerList findTagList(int tagnumber) {
+        return testCaseExecutionInQueueDAO.findTagList(tagnumber);
     }
 }

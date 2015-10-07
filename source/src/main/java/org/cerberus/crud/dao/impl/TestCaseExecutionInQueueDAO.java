@@ -883,7 +883,7 @@ public class TestCaseExecutionInQueueDAO implements ITestCaseExecutionInQueueDAO
     }
 
      @Override
-    public AnswerList findTagList(int TagNumber) {
+    public AnswerList findTagList(int tagnumber) {
         AnswerList response = new AnswerList();
         MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
         List<String> list = null;
@@ -891,9 +891,9 @@ public class TestCaseExecutionInQueueDAO implements ITestCaseExecutionInQueueDAO
 
         query.append("SELECT DISTINCT tag FROM testcaseexecutionqueue WHERE tag != ''");
         
-        if (TagNumber != 0) {
+        if (tagnumber != 0) {
             query.append("ORDER BY id desc LIMIT ");
-            query.append(TagNumber);
+            query.append(tagnumber);
         }
 
         query.append(";");

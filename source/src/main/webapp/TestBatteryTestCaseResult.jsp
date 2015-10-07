@@ -54,7 +54,6 @@
 
     IDocumentationService docService = appContext.getBean(IDocumentationService.class);
     ITestCaseService testCaseService = appContext.getBean(ITestCaseService.class);
-    String myLang = ParameterParserUtil.parseStringParam(request.getAttribute("MyLang").toString(), "en");
     try {
 %>
     <br><br>
@@ -67,11 +66,11 @@
                     <thead>
                     <tr id="headerFirst"  class="filters">
                         <td ><input type="checkbox" name="checkAllTestCases" id="checkAllTestCases" onclick="selectAll();"><label for="checkAllTestCases">All</label></td>
-                        <td ><%=docService.findLabelHTML("test", "test", "Test", myLang)%></td>
-                        <td ><%=docService.findLabelHTML("testcase", "testcase", "TestCase", myLang)%></td>
-                        <td ><%=docService.findLabelHTML("application", "application", "Aplication", myLang)%></td>
-                        <td ><%=docService.findLabelHTML("testcase", "description", "Description", myLang)%></td>
-                        <td ><%=docService.findLabelHTML("testcase", "BehaviorOrValueExpected", "Detailed Description", myLang)%></td>
+                        <td >Test</td>
+                        <td >TestCase</td>
+                        <td >Application</td>
+                        <td >Description</td>
+                        <td >Detailed Description</td>
                     </tr>
                     </thead>
                     <tbody>

@@ -165,14 +165,6 @@ text {
     margin: 5px;
 }
 
-#statusFilter {
-    display: inline-block;
-}
-
-#statusLabel {
-    font-weight: bold;
-}
-
 .percentage {
     margin-right: 5px;
 }

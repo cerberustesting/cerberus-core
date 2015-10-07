@@ -120,9 +120,9 @@ public interface ITestCaseExecutionService {
      */
     void setTagToExecution(long id, String tag) throws CerberusException;
     
-    AnswerList findTagList(int TagNumber) throws CerberusException;
+    AnswerList findTagList(int tagnumber) throws CerberusException;
     
-    AnswerList readByTagByCriteria(String Tag, int start, int amount, String column, String dir, String searchTerm, String individualSearch) throws CerberusException;
+    AnswerList readByTagByCriteria(String tag, int start, int amount, String column, String dir, String searchTerm, String individualSearch) throws CerberusException;
     
      public AnswerList readDistinctEnvCoutnryBrowserByTag(String tag);
 }

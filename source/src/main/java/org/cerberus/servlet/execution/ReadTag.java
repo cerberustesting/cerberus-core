@@ -20,10 +20,10 @@
 package org.cerberus.servlet.execution;
 
 import java.io.IOException;
-import java.io.PrintWriter;
-import java.util.HashSet;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
-import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.servlet.ServletException;
@@ -64,17 +64,17 @@ public class ReadTag extends HttpServlet {
             throws ServletException, IOException, CerberusException {
         ApplicationContext appContext = WebApplicationContextUtils.getWebApplicationContext(this.getServletContext());
 
-        int TagNumber = Integer.valueOf(ParameterParserUtil.parseStringParam(request.getParameter("TagNumber"), "0"));
+        int tagNumber = Integer.valueOf(ParameterParserUtil.parseStringParam(request.getParameter("tagNumber"), "0"));
 
         try {
             JSONObject jsonResponse = new JSONObject();
             AnswerItem answer = new AnswerItem(new MessageEvent(MessageEventEnum.DATA_OPERATION_OK));
 
-            if (TagNumber == 0) {
+            if (tagNumber == 0) {
                 answer = findTagList(appContext);
                 jsonResponse = (JSONObject) answer.getItem();
-            } else if (TagNumber != 0) {
-                answer = findLastTagExec(appContext, TagNumber);
+            } else if (tagNumber != 0) {
+                answer = findLastTagExec(appContext, tagNumber);
                 jsonResponse = (JSONObject) answer.getItem();
             }
 
@@ -157,10 +157,10 @@ public class ReadTag extends HttpServlet {
         AnswerList inQueueTagAns;
 
         execTagAns = testCaseExecutionService.findTagList(0);
-        
+
         inQueueTagAns = inQueueService.findTagList(0);
-        
-        Set<String> tagList = new HashSet<String>();
+
+        List<String> tagList = new ArrayList<String>();
 
         for (String tag : (List<String>) execTagAns.getDataList()) {
             tagList.add(tag);
@@ -168,15 +168,20 @@ public class ReadTag extends HttpServlet {
         for (String tag : (List<String>) inQueueTagAns.getDataList()) {
             tagList.add(tag);
         }
-        
-        jsonResponse.put("tags", tagList.toArray());
+        Collections.sort(tagList, new Comparator<String>() {
+            @Override
+            public int compare(String o1, String o2) {
+                return o1.compareToIgnoreCase(o2);
+            }
+        });
+        jsonResponse.put("contentTable", tagList);
 
         answer.setItem(jsonResponse);
         answer.setResultMessage(execTagAns.getResultMessage());
         return answer;
     }
 
-    private AnswerItem findLastTagExec(ApplicationContext appContext, int TagNumber) throws JSONException, CerberusException {
+    private AnswerItem findLastTagExec(ApplicationContext appContext, int tagNumber) throws JSONException, CerberusException {
         AnswerItem answer = new AnswerItem();
         JSONObject jsonResponse = new JSONObject();
 
@@ -184,9 +189,9 @@ public class ReadTag extends HttpServlet {
 
         AnswerList resp;
 
-        resp = testCaseExecutionService.findTagList(TagNumber);
+        resp = testCaseExecutionService.findTagList(tagNumber);
 
-        jsonResponse.put("tags", resp.getDataList());
+        jsonResponse.put("contentTable", resp.getDataList());
 
         answer.setItem(jsonResponse);
         answer.setResultMessage(resp.getResultMessage());

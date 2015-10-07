@@ -32,13 +32,16 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import org.cerberus.crud.entity.Invariant;
 import org.cerberus.dto.TestCaseWithExecution;
 import org.cerberus.crud.entity.MessageEvent;
+import org.cerberus.crud.service.IInvariantService;
 import org.cerberus.enums.MessageEventEnum;
 import org.cerberus.exception.CerberusException;
 import org.cerberus.crud.service.ILogEventService;
 import org.cerberus.crud.service.ITestCaseExecutionInQueueService;
 import org.cerberus.crud.service.ITestCaseExecutionService;
+import org.cerberus.crud.service.impl.InvariantService;
 import org.cerberus.crud.service.impl.LogEventService;
 import org.cerberus.servlet.campaign.CampaignExecutionReport;
 import org.cerberus.util.ParameterParserUtil;
@@ -85,7 +88,7 @@ public class ReadTestCaseExecution extends HttpServlet {
             int sEcho = Integer.valueOf(ParameterParserUtil.parseStringParam(request.getParameter("sEcho"), "0"));
             String Tag = ParameterParserUtil.parseStringParam(request.getParameter("Tag"), "");
             int TagNumber = Integer.valueOf(ParameterParserUtil.parseStringParam(request.getParameter("TagNumber"), "0"));
-            
+
             if (sEcho == 0 && !Tag.equals("")) {
                 answer = findExecutionColumns(appContext, request, Tag);
                 jsonResponse = (JSONObject) answer.getItem();
@@ -208,17 +211,18 @@ public class ReadTestCaseExecution extends HttpServlet {
                     + testCaseWithExecutionInQueue.getCountry() + "_"
                     + testCaseWithExecutionInQueue.getEnvironment() + "_"
                     + testCaseWithExecutionInQueue.getControlStatus();
-                testCaseWithExecutionsList.put(key, testCaseWithExecutionInQueue);
+            testCaseWithExecutionsList.put(key, testCaseWithExecutionInQueue);
         }
-        
+
         testCaseWithExecutions = new ArrayList<TestCaseWithExecution>(testCaseWithExecutionsList.values());
 
         JSONObject statusFilter = getStatusList(request);
+        JSONObject countryFilter = getCountryList(request, appContext);
         LinkedHashMap<String, JSONObject> columnMap = new LinkedHashMap<String, JSONObject>();
 
         for (TestCaseWithExecution testCaseWithExecution : testCaseWithExecutions) {
             String controlStatus = testCaseWithExecution.getControlStatus();
-            if (statusFilter.get(controlStatus).equals("on")) {
+            if (statusFilter.get(controlStatus).equals("on") && countryFilter.get(testCaseWithExecution.getCountry()).equals("on")) {
                 JSONObject column = new JSONObject();
                 column.put("country", testCaseWithExecution.getCountry());
                 column.put("environment", testCaseWithExecution.getEnvironment());
@@ -298,12 +302,13 @@ public class ReadTestCaseExecution extends HttpServlet {
 
         JSONArray executionList = new JSONArray();
         JSONObject statusFilter = getStatusList(request);
+        JSONObject countryFilter = getCountryList(request, appContext);
         LinkedHashMap<String, JSONObject> ttc = new LinkedHashMap<String, JSONObject>();
 
         for (TestCaseWithExecution testCaseWithExecution : testCaseWithExecutions) {
             try {
                 String controlStatus = testCaseWithExecution.getControlStatus();
-                if (statusFilter.get(controlStatus).equals("on")) {
+                if (statusFilter.get(controlStatus).equals("on") && countryFilter.get(testCaseWithExecution.getCountry()).equals("on")) {
                     JSONObject execution = testCaseExecutionToJSONObject(testCaseWithExecution);
                     String execKey = testCaseWithExecution.getEnvironment() + " " + testCaseWithExecution.getCountry() + " " + testCaseWithExecution.getBrowser();
                     String testCaseKey = testCaseWithExecution.getTest() + "_" + testCaseWithExecution.getTestCase();
@@ -362,6 +367,24 @@ public class ReadTestCaseExecution extends HttpServlet {
         }
 
         return statusList;
+    }
+
+    private JSONObject getCountryList(HttpServletRequest request, ApplicationContext appContext) {
+        JSONObject countryList = new JSONObject();
+
+        IInvariantService invariantService = appContext.getBean(InvariantService.class);
+        
+        try {
+            for (Invariant country : invariantService.findListOfInvariantById("COUNTRY")) {
+                countryList.put(country.getValue(), ParameterParserUtil.parseStringParam(request.getParameter(country.getValue()), "off"));
+            }
+        } catch (JSONException ex) {
+            Logger.getLogger(ReadTestCaseExecution.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (CerberusException ex) {
+            Logger.getLogger(ReadTestCaseExecution.class.getName()).log(Level.SEVERE, null, ex);
+        }
+
+        return countryList;
     }
 
     private JSONObject testCaseExecutionToJSONObject(
