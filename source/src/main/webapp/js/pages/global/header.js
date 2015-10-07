@@ -81,6 +81,14 @@ function displayMenuItem(doc) {
                 $(this).html(doc.getDocLabel("page_header", id));
         }
     });
+    /**
+     * Display Menu accordingly to the user right
+     */
+    var user = getUser();
+    for (var group in user.group){
+        $('#navlist li[class="dropdown '+user.group[group]+'"]').removeAttr('style');
+    }
+    
 }
 
 function readSystem() {
