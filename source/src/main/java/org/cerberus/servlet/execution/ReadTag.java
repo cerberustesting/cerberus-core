@@ -20,10 +20,10 @@
 package org.cerberus.servlet.execution;
 
 import java.io.IOException;
-import java.io.PrintWriter;
-import java.util.HashSet;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
-import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.servlet.ServletException;
@@ -157,10 +157,10 @@ public class ReadTag extends HttpServlet {
         AnswerList inQueueTagAns;
 
         execTagAns = testCaseExecutionService.findTagList(0);
-        
+
         inQueueTagAns = inQueueService.findTagList(0);
-        
-        Set<String> tagList = new HashSet<String>();
+
+        List<String> tagList = new ArrayList<String>();
 
         for (String tag : (List<String>) execTagAns.getDataList()) {
             tagList.add(tag);
@@ -168,8 +168,13 @@ public class ReadTag extends HttpServlet {
         for (String tag : (List<String>) inQueueTagAns.getDataList()) {
             tagList.add(tag);
         }
-        
-        jsonResponse.put("contentTable", tagList.toArray());
+        Collections.sort(tagList, new Comparator<String>() {
+            @Override
+            public int compare(String o1, String o2) {
+                return o1.compareToIgnoreCase(o2);
+            }
+        });
+        jsonResponse.put("contentTable", tagList);
 
         answer.setItem(jsonResponse);
         answer.setResultMessage(execTagAns.getResultMessage());
