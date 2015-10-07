@@ -1058,34 +1058,6 @@ function setInvisibleContent10() {
     document.getElementById('button210').style.display = "inline";
 }
 
-function showEntireValue(valueId, nbline, buttonOneId, buttonTwoId) {
-    document.getElementById(valueId).rows = nbline;
-    document.getElementById(buttonOneId).style.display = "none";
-    document.getElementById(buttonTwoId).style.display = "inline";
-}
-
-function showLessValue(valueId, buttonOneId, buttonTwoId) {
-    document.getElementById(valueId).rows = "2";
-    document.getElementById(buttonOneId).style.display = "inline";
-    document.getElementById(buttonTwoId).style.display = "none";
-}
-// Functions for SQL Library
-
-function openSqlLibraryPopup(page, field) {
-    window.open(page + field, 'popup',
-            'width=800,height=400,scrollbars=yes,menubar=false,location=false');
-}
-
-function showSqlDetails(valueId, buttonOneId, buttonTwoId) {
-    document.getElementById(valueId).style.display = "inline";
-    document.getElementById(buttonOneId).style.display = "none";
-    document.getElementById(buttonTwoId).style.display = "inline";
-}
-function hideSqlDetails(valueId, buttonOneId, buttonTwoId) {
-    document.getElementById(valueId).style.display = "none";
-    document.getElementById(buttonOneId).style.display = "inline";
-    document.getElementById(buttonTwoId).style.display = "none";
-}
 
 function activateDatabaseBox(value, fieldOneId, fieldTwoId) {
     if (value === "executeSql" || value === "executeSqlFromLib" || value === "executeSoapFromLib") {
@@ -1486,70 +1458,6 @@ function submitTestCaseModification(anchor) {
     }
 
     return false;
-}
-
-function openViewPropertyPopin(propertyID, test, testcase) {
-    loadPropertyPopin(propertyID, test, testcase);
-    $('#popin').dialog({hide: {duration: 300}, height: 300, width: 700, buttons: [{text: "Ok", click: function () {
-                    $(this).dialog("close");
-                }}]});
-}
-
-function loadPropertyPopin(propertyID, test, testcase) {
-//    $('#popin').hide().empty();
-    var prop = $(document.getElementById("properties_property_" + propertyID)).val();
-    var value = $(document.getElementById("properties_value1_" + propertyID)).val();
-    var db = $('select#properties_dtb_' + propertyID + '[name=\'properties_dtb_' + propertyID + '\']').val();
-    var type = $(document.getElementById('properties_type_' + propertyID)).val();
-
-    $('#popin').load('ViewProperty.jsp?type=' + encodeURI(type) + '&db=' + encodeURI(db) + '&test=' + encodeURI(test) + '&testcase=' + encodeURI(testcase) + '&property=' + encodeURI(value));
-//    $('#popin').show();
-}
-
-function openTestData(value) {
-    var win = window.open('TestData.jsp?Search=' + value, '_blank');
-    if (win) {
-        win.focus();
-    } else {
-        alert('Please allow popups for Cerberus');
-    }
-}
-
-/*function showPicture(url, id, div) {
-    $('#popin').empty();
-    $('#popin').prepend("<img src='" + url + "'/>");
-    $('#popin').dialog({hide: {duration: 300}, height: 600, width: 800, buttons: [{text: "Ok", click: function () {
-                    $(this).dialog("close");
-                }}, {text: "Remove", click: function () {
-                    $("#" + div).empty();
-                    $("#" + id).val("").trigger("change");
-                    $(this).dialog("close");
-                }}]});
-}*/
-
-/*function attachPicture(id, pictureToRemove) {
-    $('#popin').empty();
-    $('#popin').append("<p>Feed Picture URL</p><input style='width:600px' id='attachNewScreenshot'></input>");
-    $('#popin').dialog({hide: {duration: 300}, height: 200, width: 700, buttons: [{text: "Ok", click: function () {
-                    var newUrl = $("#attachNewScreenshot").val();
-                    $("#" + id).val(newUrl).trigger("change");
-                    $("#" + pictureToRemove).empty().prepend("<img width='45' height='35' src='" + newUrl + "'/>");
-                    ;
-                    $(this).dialog("close");
-                }}]});
-}*/
-
-function openSqlLibraryPopin(value) {
-    loadSqlLibraryPopin(value);
-    $('#popin').dialog({hide: {duration: 300}, height: 600, width: 800, buttons: [{text: "Ok", click: function () {
-                    $(this).dialog("close");
-                }}]});
-}
-
-function loadSqlLibraryPopin(value) {
-//    $('#popin').hide().empty();
-    $('#popin').load('SqlLib.jsp?Lign=' + value);
-//    $('#popin').show();
 }
 
 

@@ -92,17 +92,36 @@ function displayDeployTypeList(selectName) {
     });
 }
 
-/*****DEPLOYTYPE LIST **********************************/
+/*****APPLICATION LIST **********************************/
 /**
- * Method that display a combo box in all the selectName tags with the value retrieved from the DeployType list
+ * Method that display a combo box in all the selectName tags with the value retrieved from the Application list
  * @param {String} selectName value name of the select tag in the html
  * @returns {void}
  */
-function displayApplicationList(selectName) {
-    $.when($.getJSON("ReadApplication", "")).then(function (data) {
+function displayApplicationList(selectName, system) {
+    var myData="";
+    if (system !== "") {
+        myData="system=" + system
+    }
+    $.when($.getJSON("ReadApplication", myData)).then(function (data) {
         console.log(data);
         for (var option in data.contentTable) {
             $("[name='" + selectName + "']").append($('<option></option>').text(data.contentTable[option].application + " - " + data.contentTable[option].description).val(data.contentTable[option].application));
+        }
+    });
+}
+
+/*****PROJECT LIST **********************************/
+/**
+ * Method that display a combo box in all the selectName tags with the value retrieved from the Project list
+ * @param {String} selectName value name of the select tag in the html
+ * @returns {void}
+ */
+function displayProjectList(selectName) {
+    $.when($.getJSON("ReadProject", "")).then(function (data) {
+        console.log(data);
+        for (var option in data.contentTable) {
+            $("[name='" + selectName + "']").append($('<option></option>').text(data.contentTable[option].idProject + " - " + data.contentTable[option].description).val(data.contentTable[option].idProject));
         }
     });
 }

@@ -1729,6 +1729,74 @@ function showTestCaseUsingThisStep(stepNumber) {
     $("#showTestCasesModal #listofTC").html($("#listOfTestCaseUsingStep" + stepNumber).html());
     $("#showTestCasesModal").modal("show");    
 }
+
+function openViewPropertyPopin(propertyID, test, testcase) {
+    $("#showPropertyModal #showPropertyModalContent").empty();
+    var prop = $(document.getElementById("properties_property_" + propertyID)).val();
+    var value = $(document.getElementById("properties_value1_" + propertyID)).val();
+    var db = $('select#properties_dtb_' + propertyID + '[name=\'properties_dtb_' + propertyID + '\']').val();
+    var type = $(document.getElementById('properties_type_' + propertyID)).val();
+
+    
+    $("#showPropertyModal #showPropertyModalContent").load('ViewProperty.jsp?type=' + encodeURI(type) + '&db=' + encodeURI(db) + '&test=' + encodeURI(test) + '&testcase=' + encodeURI(testcase) + '&property=' + encodeURI(value));
+    $("#showPropertyModal").modal("show");    
+   
+}
+
+function setSQLValue(value, type, valueField, propertyTypeField) { 
+    $("#" + valueField).attr("value", value);
+    $("#" + propertyTypeField).find("option[value='"+type+"']").attr("selected", "selected");
+    $("#showSQLLibraryModal").modal("hide");    
+}
+
+
+function openSqlLibraryPopin(valueId, typeId) {
+    loadSqlLibraryPopin(valueId, typeId);
+    $("#showSQLLibraryModal").modal("show");    
+}
+
+function loadSqlLibraryPopin(valueId, typeId){
+    $("#showSQLLibraryModal #showSQLLibraryModalContent").empty();
+    $('#showSQLLibraryModal #showSQLLibraryModalContent').load('SqlLib.jsp?valueid=' + valueId + "&typeid=" + typeId);
+   
+}
+
+function showEntireValue(valueId, nbline, buttonOneId, buttonTwoId) {
+    //TODO:FN this is not implemented yet. previous implementation does not seem to work
+    /*document.getElementById(valueId).rows = nbline;
+    document.getElementById(buttonOneId).style.display = "none";
+    document.getElementById(buttonTwoId).style.display = "inline";*/
+}
+
+function showLessValue(valueId, buttonOneId, buttonTwoId) {
+    //TODO:FN this is not implemented yet. previous implementation does not seem to work
+    /*document.getElementById(valueId).rows = "2";
+    document.getElementById(buttonOneId).style.display = "inline";
+    document.getElementById(buttonTwoId).style.display = "none";*/
+}
+
+function showSqlInstruction(valueId, buttonOneId, buttonTwoId) {
+    //TODO:FN this is not implemented yet. previous implementation does not seem to work
+    /*document.getElementById(valueId).style.display = "inline";
+    document.getElementById(buttonOneId).style.display = "none";
+    document.getElementById(buttonTwoId).style.display = "inline";*/
+}
+function hideSqlInstruction(valueId, buttonOneId, buttonTwoId) {
+    //TODO:FN this is not implemented yet. previous implementation didn't work
+    /*document.getElementById(valueId).style.display = "none";
+    document.getElementById(buttonOneId).style.display = "inline";
+    document.getElementById(buttonTwoId).style.display = "none";*/
+}
+ 
+ 
+ function openTestData(value) {
+    var win = window.open('TestData.jsp?Search=' + value, '_blank');
+    if (win) {
+        win.focus();
+    } else {
+        alert('Please allow popups for Cerberus');
+    }
+}
 /*********************drag and drop functions ******************************/
 function insertTCS(event, incStep) {
     event.preventDefault();

@@ -475,7 +475,7 @@ public class WebDriverService implements IWebDriverService {
 
     private boolean seleniumTestTitleOfWindow(Session session, String title, String identifier, String value) {
         if (value != null && title != null) {
-            if ("title".equals(identifier) && value.equals(title)) {
+            if (value.equals(title)) {
                 return true;
             }
 

@@ -369,7 +369,7 @@ public class ActionService implements IActionService {
              * Get Identifier (identifier, locator)
              */
             Identifier identifier = identifierService.convertStringToIdentifier(element);
-            identifierService.checkWebElementIdentifier(identifier.getIdentifier());
+            //identifierService.checkWebElementIdentifier(identifier.getIdentifier());
 
             if (tCExecution.getApplication().getType().equalsIgnoreCase("GUI")) {
                 return webdriverService.doSeleniumActionSwitchToWindow(tCExecution.getSession(), identifier);

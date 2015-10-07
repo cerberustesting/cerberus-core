@@ -355,6 +355,8 @@
         <%@ include file="include/testcase/addPicture.html"%> 
         <%@ include file="include/testcase/showPicture.html"%> 
         <%@ include file="include/testcase/showTestCases.html"%> 
+        <%@ include file="include/testcase/showProperty.html"%> 
+        <%@ include file="include/testcase/showSQLLibrary.html"%> 
         <div id="body">
             <%
                 boolean booleanFunction = false;
@@ -1798,14 +1800,16 @@
                                                                 || tccp.getType().equals("executeSql")) {
                                                     %>
                                                     <div style="clear:both" class="wob">
-                                                        <input style="display:inline; height:18px; width:18px; color:blue; font-weight:bolder" title="Open SQL Library" class="smallbutton" type="button" value="L" name="opensql-library"  onclick="openSqlLibraryPopin('<%=valueID%>')">
+                                                        <input style="display:inline; height:18px; width:18px; color:blue; font-weight:bolder" title="Open SQL Library" 
+                                                               class="smallbutton" type="button" value="L" name="opensql-library"  onclick="openSqlLibraryPopin('properties_value1_<%=incrementProperty%>', 'properties_type_<%=incrementProperty%>')">
                                                     </div>
                                                     <% }%>
                                                     <%
                                                         if (tccp.getType().equals("getFromTestData")) {
                                                     %>
                                                     <div style="clear:both" class="wob">
-                                                        <input style="display:inline; height:18px; width:18px; color:blue; font-weight:bolder" title="Open TestData" class="smallbutton" type="button" value="L" name="open-testdata"  onclick="openTestData('<%=tccp.getValue1()%>')">
+                                                        <input style="display:inline; height:18px; width:18px; color:blue; font-weight:bolder" title="Open TestData" 
+                                                               class="smallbutton" type="button" value="L" name="open-testdata"  onclick="openTestData('<%=tccp.getValue1()%>')">
                                                     </div>
                                                     <% }%>
                                                     <%
@@ -1826,8 +1830,8 @@
                                                     <%} else {%>
                                                     <div class="wob" style="clear:both;text-align: center; border-left-color:white">
                                                         <% if (tccp.getType().equals("executeSqlFromLib")) {%>
-                                                        <input style="display:inline; height:18px; width:18px; color: orange; font-weight:bolder" class="smallbutton" type="button" value="e" title="Show the SQL" id="<%=sqlDetailsB1%>" onclick="showSqlDetails('<%=sqlDetails%>', '<%=sqlDetailsB1%>', '<%=sqlDetailsB2%>');">
-                                                        <input style="display:none; height:18px; width:18px; color: orange; font-weight:bolder" class="smallbutton" type="button" value="-" title="Hide the SQL" id="<%=sqlDetailsB2%>" onclick="hideSqlDetails('<%=sqlDetails%>', '<%=sqlDetailsB1%>', '<%=sqlDetailsB2%>');">
+                                                        <input style="display:inline; height:18px; width:18px; color: orange; font-weight:bolder" class="smallbutton" type="button" value="e" title="Show the SQL" id="<%=sqlDetailsB1%>" onclick="showSqlInstruction('<%=sqlDetails%>', '<%=sqlDetailsB1%>', '<%=sqlDetailsB2%>');">
+                                                        <input style="display:none; height:18px; width:18px; color: orange; font-weight:bolder" class="smallbutton" type="button" value="-" title="Hide the SQL" id="<%=sqlDetailsB2%>" onclick="hideSqlInstruction('<%=sqlDetails%>', '<%=sqlDetailsB1%>', '<%=sqlDetailsB2%>');">
                                                         <% } %>
                                                     </div>
                                                     <% }%>
