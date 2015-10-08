@@ -36,6 +36,7 @@ import org.cerberus.dto.TestCaseWithExecution;
 import org.cerberus.exception.CerberusException;
 import org.cerberus.crud.service.ICampaignService;
 import org.cerberus.crud.service.ITestCaseExecutionInQueueService;
+import org.cerberus.util.ParameterParserUtil;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -68,18 +69,17 @@ public class GetReportData extends HttpServlet {
         ITestCaseExecutionInQueueService testCaseExecutionInQueueService = appContext.getBean(ITestCaseExecutionInQueueService.class);
 
         PolicyFactory policy = Sanitizers.FORMATTING.and(Sanitizers.LINKS);
+        JSONObject jsonResult = new JSONObject();
 
-        String campaignName = policy.sanitize(request
-                .getParameter("CampaignName"));
         String tag = request.getParameter("Tag");
-        String[] env = request.getParameterValues("Environment");
-        String[] country = request.getParameterValues("Country");
-        String[] browser = request.getParameterValues("Browser");
+        String env = ParameterParserUtil.parseStringParam(request.getParameter("env"), "");
+        String country = ParameterParserUtil.parseStringParam(request.getParameter("country"), "");
+        String browser = ParameterParserUtil.parseStringParam(request.getParameter("browser"), "");
 
         /**
          * Get list of execution by tag, env, country, browser
          */
-        List<TestCaseWithExecution> testCaseWithExecutions = campaignService.getCampaignTestCaseExecutionForEnvCountriesBrowserTag(campaignName, tag, env, country, browser);
+        List<TestCaseWithExecution> testCaseWithExecutions = campaignService.getCampaignTestCaseExecutionForEnvCountriesBrowserTag(tag);
 
         /**
          * Get list of Execution in Queue by Tag
@@ -115,41 +115,45 @@ public class GetReportData extends HttpServlet {
         }
         testCaseWithExecutions = new ArrayList<TestCaseWithExecution>(testCaseWithExecutionsList.values());
 
-        HashMap<String, JSONObject> axisMap = new HashMap<String, JSONObject>();
+        if (env.equals("") && country.equals("") && browser.equals("")) {
 
-        for (TestCaseWithExecution testCaseWithExecution : testCaseWithExecutions) {
-            String key;
-            String controlStatus;
-            JSONObject control = new JSONObject();
-            JSONObject function = new JSONObject();
+            HashMap<String, JSONObject> axisMap = new HashMap<String, JSONObject>();
 
-            if (testCaseWithExecution.getFunction() != null && !"".equals(testCaseWithExecution.getFunction())) {
-                key = testCaseWithExecution.getFunction();
-            } else {
-                key = testCaseWithExecution.getTest();
-            }
+            for (TestCaseWithExecution testCaseWithExecution : testCaseWithExecutions) {
+                String key;
+                String controlStatus;
+                JSONObject control = new JSONObject();
+                JSONObject function = new JSONObject();
 
-            controlStatus = testCaseWithExecution.getControlStatus();
-
-            control.put("value", 1);
-            control.put("color", getColor(controlStatus));
-            control.put("label", controlStatus);
-            function.put("name", key);
-
-            if (axisMap.containsKey(key)) {
-                function = axisMap.get(key);
-                if (function.has(controlStatus)) {
-                    int prec = function.getJSONObject(controlStatus).getInt("value");
-                    control.put("value", prec + 1);
+                if (testCaseWithExecution.getFunction() != null && !"".equals(testCaseWithExecution.getFunction())) {
+                    key = testCaseWithExecution.getFunction();
+                } else {
+                    key = testCaseWithExecution.getTest();
                 }
-            }
-            function.put(controlStatus, control);
-            axisMap.put(key, function);
-        }
-        JSONObject jsonResult = new JSONObject();
 
-        jsonResult.put("axis", axisMap.values());
-        jsonResult.put("tag", tag);
+                controlStatus = testCaseWithExecution.getControlStatus();
+
+                control.put("value", 1);
+                control.put("color", getColor(controlStatus));
+                control.put("label", controlStatus);
+                function.put("name", key);
+
+                if (axisMap.containsKey(key)) {
+                    function = axisMap.get(key);
+                    if (function.has(controlStatus)) {
+                        int prec = function.getJSONObject(controlStatus).getInt("value");
+                        control.put("value", prec + 1);
+                    }
+                }
+                function.put(controlStatus, control);
+                axisMap.put(key, function);
+            }
+
+            jsonResult.put("axis", axisMap.values());
+            jsonResult.put("tag", tag);
+        } else {
+            jsonResult = getStatByEnvCountryBrowser(testCaseWithExecutions, env, country, browser);
+        }
 
         response.setContentType("application/json");
         response.getWriter().print(jsonResult);
@@ -210,6 +214,36 @@ public class GetReportData extends HttpServlet {
         return "Short description";
     }// </editor-fold>
 
+    private JSONObject getStatByEnvCountryBrowser(List<TestCaseWithExecution> testCaseWithExecutions, String env, String country, String browser) throws JSONException {
+        JSONObject response = new JSONObject();
+                    JSONObject total = new JSONObject();
+            int totalExec = 0;
+            int totalReport = 0;
+            total.put("OK", 0);
+            total.put("KO", 0);
+            total.put("FA", 0);
+            total.put("CA", 0);
+            total.put("NA", 0);
+            total.put("NE", 0);
+            total.put("PE", 0);
+
+            for (TestCaseWithExecution testCaseWithExecution : testCaseWithExecutions) {
+                totalExec++;
+                if (testCaseWithExecution.getBrowser().equals(browser) && testCaseWithExecution.getEnvironment().equals(env)
+                        && testCaseWithExecution.getCountry().equals(country)) {
+                    totalReport++;
+                    String controlStatus = testCaseWithExecution.getControlStatus();
+                    int prec = total.getInt(controlStatus);
+                    total.put(controlStatus, prec + 1);
+                }
+            }
+            response.put("total", total);
+            response.put("totalExec", totalExec);
+            response.put("totalReport", totalReport);
+            
+            return response;
+    }
+    
     private String getColor(String controlStatus) {
         String color = null;
 

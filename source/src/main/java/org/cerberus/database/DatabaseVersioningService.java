@@ -4833,6 +4833,14 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLS.append("ALTER TABLE `logevent` CHANGE COLUMN `Page` `Page` VARCHAR(200) NULL DEFAULT NULL ;");
         SQLInstruction.add(SQLS.toString());
 
+        // Documentation entries for Reporting By Tag
+        //-- ------------------------ 637
+        SQLS = new StringBuilder();
+        SQLS.append("INSERT INTO `documentation` (DocTable, DocField, DocValue, Lang, DocLabel, DocDesc) VALUES ");
+        SQLS.append("('page_reportbytag', 'report_envcountrybrowser', '', 'en', 'Report By Environement Country Browser', 'Report of the execution filtering by Environement Country and Browser'),");
+        SQLS.append("('page_reportbytag', 'report_envcountrybrowser', '', 'fr', 'Rapport par Envrionnement Pays Navigateur', 'Rapport d\\'execution filtré par Envrionnment Pays et Navigateur');");        
+        SQLInstruction.add(SQLS.toString());
+
         return SQLInstruction;
     }
 

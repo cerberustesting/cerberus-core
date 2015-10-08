@@ -218,9 +218,9 @@ function generateTagReport(data) {
     var reportArea = $("#tagExecStatus");
     var statusOrder = ["OK", "KO", "FA", "NA", "NE", "PE", "CA"];
 
-        getTotalExec(data.total);
-        var buildBar;
-        var tooltip = generateTooltip(data, statusOrder);
+    getTotalExec(data.total);
+    var buildBar;
+    var tooltip = generateTooltip(data, statusOrder);
 
     buildBar = '<div>' + generateTagLink(data.tag) + '<div class="pull-right" style="display: inline;">Total executions : ' + data.total.totalTest + '</div>\n\
                                                         </div><div class="progress" data-toggle="tooltip" data-html="true" title="' + tooltip + '">';

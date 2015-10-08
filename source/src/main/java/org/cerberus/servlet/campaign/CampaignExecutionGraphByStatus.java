@@ -79,17 +79,12 @@ public class CampaignExecutionGraphByStatus extends HttpServlet {
 
             PolicyFactory policy = Sanitizers.FORMATTING.and(Sanitizers.LINKS);
 
-            String campaignName = policy.sanitize(request
-                    .getParameter("CampaignName"));
             String tag = request.getParameter("Tag");
-            String[] env = request.getParameterValues("Environment");
-            String[] country = request.getParameterValues("Country");
-            String[] browser = request.getParameterValues("Browser");
 
             /**
              * Get list of execution by tag, env, country, browser
              */
-            List<TestCaseWithExecution> testCaseWithExecutions = campaignService.getCampaignTestCaseExecutionForEnvCountriesBrowserTag(campaignName, tag, env, country, browser);
+            List<TestCaseWithExecution> testCaseWithExecutions = campaignService.getCampaignTestCaseExecutionForEnvCountriesBrowserTag(tag);
             
             /**
              * Get list of Execution in Queue by Tag

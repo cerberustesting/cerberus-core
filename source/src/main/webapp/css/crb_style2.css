@@ -68,6 +68,7 @@ a {
 
 .card {
     font-size: 14px;
+    cursor: pointer;
 }
 
 .color-box {   
@@ -81,6 +82,7 @@ a {
 
 .toggle {
     cursor: pointer;
+    color: #008CDA; 
 }
 
 .nodoc{

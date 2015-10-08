@@ -360,72 +360,25 @@ public class CampaignDAO implements ICampaignDAO {
     }
 
     @Override
-    public List<TestCaseWithExecution> getCampaignTestCaseExecutionForEnvCountriesBrowserTag(String campaignName, String tag, String[] env, String[] country, String[] browser) throws CerberusException {
+    public List<TestCaseWithExecution> getCampaignTestCaseExecutionForEnvCountriesBrowserTag(String tag) throws CerberusException {
         boolean throwEx = false;
         final StringBuffer query = new StringBuffer("select * from ( select tc.*, tce.Start, tce.End, tce.ID as statusExecutionID, tce.ControlStatus, tce.ControlMessage, tce.Environment, tce.Country, tce.Browser ")
-                                    .append("from testcase tc ")
-                                    .append("left join testcaseexecution tce ")
-                                    .append("on tce.Test = tc.Test ")
-                                    .append("and tce.TestCase = tc.TestCase ")
-                                    .append("where tce.tag = ? ");
-        
-//        query.append("and tce.Browser in (");
-//        for (int i = 0; i < browser.length; i++) {
-//            query.append("?");
-//            if(i<browser.length-1) {
-//                query.append(", ");
-//            }
-//        }
-//        
-//        query.append(") and tce.Environment in (");
-//        for (int i = 0; i < env.length; i++) {
-//            query.append("?");
-//            if(i<env.length-1) {
-//                query.append(", ");
-//            }
-//        }
-//
-//        
-//        query.append(") and tce.Country in (");
-//        for (int i = 0; i < country.length; i++) {
-//            query.append("?");
-//            if(i<country.length-1) {
-//                query.append(", ");
-//            }
-//        }
+                .append("from testcase tc ")
+                .append("left join testcaseexecution tce ")
+                .append("on tce.Test = tc.Test ")
+                .append("and tce.TestCase = tc.TestCase ")
+                .append("where tce.tag = ? ");
 
-//        query.append(") order by test, testcase, ID desc) as tce, application app ")
         query.append(" order by test, testcase, ID desc) as tce, application app ")
-          .append("where tce.application = app.application ")
-//          .append("group by tce.test, tce.testcase ").toString();
-          .append("group by tce.test, tce.testcase, tce.Environment, tce.Browser, tce.Country ").toString();
+                .append("where tce.application = app.application ")
+                .append("group by tce.test, tce.testcase, tce.Environment, tce.Browser, tce.Country ").toString();
 
         List<TestCaseWithExecution> testCaseWithExecutionList = new ArrayList<TestCaseWithExecution>();
         Connection connection = this.databaseSpring.connect();
         try {
             PreparedStatement preStat = connection.prepareStatement(query.toString());
-            int index = 1;
-//            preStat.setString(index, campaignName);
-//            index++;
 
-            preStat.setString(index, tag);
-            index++;
-
-//            for (String b : browser) {
-//                preStat.setString(index, b);
-//                index++;
-//            }
-//            
-//            for (String e : env) {
-//                preStat.setString(index, e);
-//                index++;
-//            }
-//            
-//            for (String c : country) {
-//                preStat.setString(index, c);
-//                index++;
-//            }
-            
+            preStat.setString(1, tag);
             try {
                 ResultSet resultSet = preStat.executeQuery();
                 try {
@@ -464,7 +417,7 @@ public class CampaignDAO implements ICampaignDAO {
 
     public TestCaseWithExecution loadTestCaseWithExecutionFromResultSet(ResultSet resultSet) throws SQLException {
         TestCaseWithExecution testCaseWithExecution = new TestCaseWithExecution();
-        
+
         testCaseWithExecution.setTest(resultSet.getString("Test"));
         testCaseWithExecution.setTestCase(resultSet.getString("TestCase"));
         testCaseWithExecution.setApplication(resultSet.getString("Application"));
@@ -495,10 +448,10 @@ public class CampaignDAO implements ICampaignDAO {
         testCaseWithExecution.setRunPROD(resultSet.getString("activePROD"));
         testCaseWithExecution.setFunction(resultSet.getString("function"));
         String start = resultSet.getString("Start");
-        if (start.endsWith(".0")){
-        testCaseWithExecution.setStart(start.replace(".0", ""));
+        if (start.endsWith(".0")) {
+            testCaseWithExecution.setStart(start.replace(".0", ""));
         } else {
-        testCaseWithExecution.setStart(start);
+            testCaseWithExecution.setStart(start);
         }
         try { // Managing the case where the date is 0000-00-00 00:00:00 inside MySQL
             testCaseWithExecution.setEnd(resultSet.getString("End"));
@@ -513,9 +466,8 @@ public class CampaignDAO implements ICampaignDAO {
         testCaseWithExecution.setBrowser(resultSet.getString("Browser"));
 
         testCaseWithExecution.setApplicationObject(applicationDAO.loadFromResultSet(resultSet));
-        
+
         return testCaseWithExecution;
     }
-
 
 }

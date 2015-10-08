@@ -44,6 +44,5 @@ public interface ICampaignDAO {
 
     List<Campaign> findCampaignByCriteria(Integer campaignID, String campaign, String description) throws CerberusException;
 
-    List<TestCaseWithExecution> getCampaignTestCaseExecutionForEnvCountriesBrowserTag(
-        String campaignName, String tag, String[] env, String[] country, String[] browser ) throws CerberusException;
+    List<TestCaseWithExecution> getCampaignTestCaseExecutionForEnvCountriesBrowserTag(String tag) throws CerberusException;
 }

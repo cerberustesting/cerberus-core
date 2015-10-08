@@ -25,6 +25,11 @@
     border-color: #5CB85C;
 }
 
+.statusEnvCountryBrowser {
+    display: inline-block;
+    font-size: 1.5em;
+}
+
 .panelOK .panel-heading {
     border-color: #5CB85C;
     color: #FFF;
@@ -155,6 +160,9 @@ text {
     background-color: #F0AD4E; 
 }
 
+#statusByEnvCountryBrowser span {
+    margin: 5px;
+}
 
 #ReportByStatusTable {
     width: 40%; 

@@ -145,8 +145,8 @@ public class CampaignService implements ICampaignService {
     }
 
     @Override
-    public List<TestCaseWithExecution> getCampaignTestCaseExecutionForEnvCountriesBrowserTag(String campaignName, String tag, String[] env, String[] country, String[] browser) throws CerberusException {
-        return campaignDAO.getCampaignTestCaseExecutionForEnvCountriesBrowserTag(campaignName, tag, env, country, browser);
+    public List<TestCaseWithExecution> getCampaignTestCaseExecutionForEnvCountriesBrowserTag(String tag) throws CerberusException {
+        return campaignDAO.getCampaignTestCaseExecutionForEnvCountriesBrowserTag(tag);
     }
 
     @Override

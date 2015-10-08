@@ -46,12 +46,10 @@
                 </div>
                 <div class="col-lg-6" id="ReportByStatusPanel">
                     <div class="panel panel-default">
-                        <div class="panel-heading card">
+                        <div class="panel-heading card" data-toggle="collapse" data-target="#ReportByStatus">
                             <span class="fa fa-pie-chart fa-fw"></span>
                             <label id="reportStatus">Report by Status</label>
-                            <a data-toggle="collapse" data-target="#ReportByStatus">
-                                <span class="toggle glyphicon glyphicon-chevron-right pull-right"></span>
-                            </a>
+                            <span class="toggle glyphicon glyphicon-chevron-right pull-right"></span>
                         </div>
                         <div class="panel-body collapse in" id="ReportByStatus">
                             <div class="row">
@@ -65,29 +63,51 @@
             <div class="row" id="ReportByFunctionPanel">
                 <div class="col-lg-12">
                     <div class="panel panel-default">
-                        <div class="panel-heading card">
+                        <div class="panel-heading card" data-toggle="collapse" data-target="#functionChart">
                             <span class="fa fa-bar-chart fa-fw"></span>
                             <label id="reportFunction">Report by Function</label>
-                            <a data-toggle="collapse" data-target="#functionChart">
-                                <span class="toggle glyphicon glyphicon-chevron-right pull-right"></span>
-                            </a>
+                            <span class="toggle glyphicon glyphicon-chevron-right pull-right"></span>
                         </div>
                         <div class="panel-body collapse in" id="functionChart"></div>
                     </div>
                 </div>
             </div>
             <div class="row">
+                <div class="col-lg-12" id="reportByEnvCountryBrowser">
+                    <div class="panel panel-default">
+                        <div class="panel-heading card" data-toggle="collapse" data-target="#reportEnvCountryBrowser">
+                            <label id="envCountryBrowser">Report by EnvCountryBrowser</label>
+                            <span class="toggle glyphicon glyphicon-chevron-right pull-right"></span>
+                        </div>
+                        <div class="panel-body collapse in" id="reportEnvCountryBrowser">
+                            <select id="envCountryBrowserSelect" class="form-control" style="width: 15%; margin-bottom: 10px;"></select>
+                            <div id="progressEnvCountryBrowser">
+                                <div class="progress"></div>
+                            </div>
+                            <div id="statusByEnvCountryBrowser">
+                                <div class="statusEnvCountryBrowser" id="EnvCountryBrowserOK"><span class='color-box statusOK'></span>OK : <span class="value">0</span></div>
+                                <div class="statusEnvCountryBrowser" id="EnvCountryBrowserKO"><span class='color-box statusKO'></span>KO : <span class="value">0</span></div>
+                                <div class="statusEnvCountryBrowser" id="EnvCountryBrowserFA"><span class='color-box statusFA'></span>FA : <span class="value">0</span></div>
+                                <div class="statusEnvCountryBrowser" id="EnvCountryBrowserNA"><span class='color-box statusNA'></span>NA : <span class="value">0</span></div>
+                                <div class="statusEnvCountryBrowser" id="EnvCountryBrowserNE"><span class='color-box statusNE'></span>NE : <span class="value">0</span></div>
+                                <div class="statusEnvCountryBrowser" id="EnvCountryBrowserPE"><span class='color-box statusPE'></span>PE : <span class="value">0</span></div>
+                                <div class="statusEnvCountryBrowser" id="EnvCountryBrowserCA"><span class='color-box statusCA'></span>CA : <span class="value">0</span></div>
+                                <div class="statusEnvCountryBrowser pull-right">Executions : <span class="value" id="totalExec">0</span></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
                 <div class="col-lg-12" id="ListPanel">
                     <div class="panel panel-default">
-                        <div class="panel-heading card">
+                        <div class="panel-heading card" data-toggle="collapse" data-target="#listReport">
                             <span class="glyphicon glyphicon-list"></span>
                             <label id="List">List</label>
-                            <a data-toggle="collapse" data-target="#listReport">
-                                <span class="toggle glyphicon glyphicon-chevron-right pull-right"></span>
-                            </a>
-                            <button type="button" class="btn btn-default btn-xs pull-right" onclick="loadReportList()" id="reloadbutton">Reload</button>
+                            <span class="toggle glyphicon glyphicon-chevron-right pull-right"></span>
                         </div>
                         <div class="panel-body collapse in" id="listReport">
+                            <button type="button" class="btn btn-default pull-right" onclick="loadReportList()" id="reloadbutton">Reload</button>
                             <label id="countryLabel" class="bold">Country :</label>
                             <div class="form-group" id="countryFilter">
 

@@ -26,6 +26,7 @@ $.when($.getScript("js/pages/global/global.js")).then(function () {
         bindToggleCollapse("#ReportByStatus");
         bindToggleCollapse("#functionChart");
         bindToggleCollapse("#listReport");
+        bindToggleCollapse("#reportEnvCountryBrowser");
 
         var urlTag = GetURLParameter('Tag');
         loadTagFilters(urlTag);
@@ -58,7 +59,7 @@ function loadCountryFilter() {
             for (var i = 0; i < data.length; i++) {
                 var filter = JSON.parse(sessionStorage.getItem("countryFilter"));
                 var cb;
-                console.log(filter === null);
+
                 if (filter !== null && !filter.hasOwnProperty(data[i].value)) {
                     cb = '<label class="checkbox-inline">\n\
                         <input type="checkbox" name="' + data[i].value + '"/>\n\
@@ -72,12 +73,7 @@ function loadCountryFilter() {
             }
             $("#countryFilter input").on("click", function () {
                 var serial = $("#countryFilter input").serialize();
-                var data = serial.split("&");
-
-                var obj = {};
-                for (var key in data) {
-                    obj[data[key].split("=")[0]] = data[key].split("=")[1];
-                }
+                var obj = convertSerialToJSONObject(serial);
                 sessionStorage.setItem("countryFilter", JSON.stringify(obj));
             });
         }
@@ -92,6 +88,7 @@ function displayPageLabel(doc) {
     $("#filters").html(doc.getDocOnline("page_reportbytag", "filters"));
     $("#reportStatus").html(doc.getDocOnline("page_reportbytag", "report_status"));
     $("#reportFunction").html(doc.getDocOnline("page_reportbytag", "report_function"));
+    $("#envCountryBrowser").html(doc.getDocOnline("page_reportbytag", "report_envcountrybrowser"));
     $("#List").html(doc.getDocOnline("page_reportbytag", "report_list"));
     $("#statusLabel").html(doc.getDocLabel("testcase", "Status") + " :");
 }
@@ -130,6 +127,9 @@ function loadReport() {
     $("#ReportByStatusTable").empty();
     $("#statusChart").empty();
     $("#functionChart").empty();
+    $("#envCountryBrowserSelect").empty();
+    $("#progressEnvCountryBrowser .progress").empty();
+    $(".value").html("0");
     if ($("#listTable_wrapper").hasClass("initialized")) {
         $("#tableArea").empty();
         $("#tableArea").html('<table id="listTable" class="table table-hover display" name="listTable">\n\
@@ -148,6 +148,58 @@ function loadReport() {
     }
 }
 
+function loadEnvCountryBrowserReport(tag, data) {
+    $("#envCountryBrowserSelect").empty();
+    $("#progressEnvCountryBrowser .progress").empty();
+
+    $("#envCountryBrowserSelect").append('<option value=""></option>');
+    for (var i = 0; i < data.Columns.length; i++) {
+        var title = data.Columns[i].environment + " " + data.Columns[i].country + " " + data.Columns[i].browser;
+        var serialValue = "env=" + data.Columns[i].environment + "&country=" + data.Columns[i].country + "&browser=" + data.Columns[i].browser;
+
+        $("#envCountryBrowserSelect").append('<option value="' + serialValue + '">' + title + '</option>');
+    }
+
+    $("#envCountryBrowserSelect").change(function () {
+        var selectedOption = $("#envCountryBrowserSelect option:selected").val();
+        $("#progressEnvCountryBrowser .progress").empty();
+        $(".value").html("0");
+
+        if (selectedOption !== "") {
+            var obj = convertSerialToJSONObject(selectedOption);
+
+            $.ajax({
+                type: "GET",
+                url: "GetReportData",
+                data: {Tag: tag, env: obj.env, country: obj.country, browser: obj.browser},
+                async: true,
+                dataType: 'json',
+                success: function (data) {
+                    $("#totalExec").html(data.totalReport);
+                    var buildBar = '';
+                    var statusOrder = ["OK", "KO", "FA", "NA", "NE", "PE", "CA"];
+
+                    for (var i = 0; i < statusOrder.length; i++) {
+                        var status = statusOrder[i];
+                        if (data.total[status] !== 0) {
+                            var percent = (data.total[status] / data.totalReport) * 100;
+                            var roundPercent = Math.round(percent * 10) / 10;
+
+                            buildBar += '<div class="progress-bar status' + status + '" \n\
+                                    role="progressbar" \n\
+                                    aria-valuenow="60" \n\
+                                    aria-value="0" \n\
+                                    aria-valuemax="100" \n\
+                                    style="width:' + percent + '%;">' + roundPercent + '%</div>';
+                        }
+                        $('#EnvCountryBrowser' + status + ' .value').html(data.total[status]);
+                    }
+                    $("#progressEnvCountryBrowser .progress").append(buildBar);
+                }
+            });
+        }
+    });
+}
 
 function loadReportList() {
     var selectTag = $("#selectTag option:selected").text();
@@ -165,6 +217,8 @@ function loadReportList() {
         var jqxhr = $.getJSON("ReadTestCaseExecution", "Tag=" + selectTag + "&" + statusFilter.serialize() + "&" + countryFilter.serialize());
         $.when(jqxhr).then(function (data) {
             var request = "ReadTestCaseExecution?Tag=" + selectTag + "&" + statusFilter.serialize() + "&" + countryFilter.serialize();
+
+            loadEnvCountryBrowserReport(selectTag, data);
 
             var config = new TableConfigurationsServerSide("listTable", request, "testList", aoColumnsFunc(data.Columns));
             customConfig(config);
@@ -552,6 +606,16 @@ function generateExecutionLink(status, id) {
         result = "./ExecutionDetail.jsp?id_tc=" + id;
     }
     return result;
+}
+
+function convertSerialToJSONObject(serial) {
+    var data = serial.split("&");
+
+    var obj = {};
+    for (var key in data) {
+        obj[data[key].split("=")[0]] = data[key].split("=")[1];
+    }
+    return obj;
 }
 
 function wrap(text, width) {

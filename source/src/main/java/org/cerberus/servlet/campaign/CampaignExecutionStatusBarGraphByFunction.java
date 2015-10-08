@@ -92,7 +92,7 @@ public class CampaignExecutionStatusBarGraphByFunction extends HttpServlet {
             /**
              * Get list of execution by tag, env, country, browser
              */
-            List<TestCaseWithExecution> testCaseWithExecutions = campaignService.getCampaignTestCaseExecutionForEnvCountriesBrowserTag(campaignName, tag, env, country, browser);
+            List<TestCaseWithExecution> testCaseWithExecutions = campaignService.getCampaignTestCaseExecutionForEnvCountriesBrowserTag(tag);
             
             /**
              * Get list of Execution in Queue by Tag
