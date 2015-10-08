@@ -23,7 +23,9 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.servlet.ServletException;
@@ -160,7 +162,7 @@ public class ReadTag extends HttpServlet {
 
         inQueueTagAns = inQueueService.findTagList(0);
 
-        List<String> tagList = new ArrayList<String>();
+        Set<String> tagList = new HashSet<String>();
 
         for (String tag : (List<String>) execTagAns.getDataList()) {
             tagList.add(tag);
@@ -168,13 +170,15 @@ public class ReadTag extends HttpServlet {
         for (String tag : (List<String>) inQueueTagAns.getDataList()) {
             tagList.add(tag);
         }
-        Collections.sort(tagList, new Comparator<String>() {
+        List sortedList = new ArrayList(tagList);
+
+        Collections.sort(sortedList, new Comparator<String>() {
             @Override
             public int compare(String o1, String o2) {
                 return o1.compareToIgnoreCase(o2);
             }
         });
-        jsonResponse.put("contentTable", tagList);
+        jsonResponse.put("contentTable", sortedList);
 
         answer.setItem(jsonResponse);
         answer.setResultMessage(execTagAns.getResultMessage());
