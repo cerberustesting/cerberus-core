@@ -19,6 +19,7 @@
     <body>
         <%@ include file="include/header.html" %>
         <div class="container-fluid center" id="page-layout">
+            <%@ include file="include/messagesArea.html"%>
             <h1 class="page-title-line" id="title">Execution reporting by tag</h1>
             <div class="row">
                 <div class="col-lg-6" id="FiltersPanel">
@@ -150,9 +151,10 @@
                         </div>
                     </div>
                 </div>
-                <footer class="footer">
-                    <div class="container-fluid" id="footer"></div>
-                </footer>
             </div>
+            <footer class="footer">
+                <div class="container-fluid" id="footer"></div>
+            </footer>
+        </div>
     </body>
 </html>

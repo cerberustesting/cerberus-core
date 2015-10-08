@@ -176,6 +176,7 @@ function loadEnvCountryBrowserReport(tag, data) {
                 dataType: 'json',
                 success: function (data) {
                     $("#totalExec").html(data.totalReport);
+                    $("#progressEnvCountryBrowser .progress").empty();
                     var buildBar = '';
                     var statusOrder = ["OK", "KO", "FA", "NA", "NE", "PE", "CA"];
 
@@ -195,6 +196,9 @@ function loadEnvCountryBrowserReport(tag, data) {
                         $('#EnvCountryBrowser' + status + ' .value').html(data.total[status]);
                     }
                     $("#progressEnvCountryBrowser .progress").append(buildBar);
+                },
+                error: function () {
+                    showUnexpectedError();
                 }
             });
         }
