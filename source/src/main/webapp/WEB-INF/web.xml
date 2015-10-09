@@ -1889,7 +1889,6 @@
             <url-pattern>/CreateBuildRevisionInvariant</url-pattern>
             <url-pattern>/UpdateBuildRevisionInvariant</url-pattern>
             <url-pattern>/DeleteBuildRevisionInvariant</url-pattern>
-            <url-pattern>/ReadRobot</url-pattern>
             <url-pattern>/CreateRobot</url-pattern>
             <url-pattern>/DeleteRobot</url-pattern>
             <url-pattern>/UpdateRobot</url-pattern>
@@ -1904,7 +1903,6 @@
             <url-pattern>/CreateCountryEnvironmentDatabase</url-pattern>
             <url-pattern>/DeleteCountryEnvironmentDatabase</url-pattern>
             <url-pattern>/UpdateCountryEnvironmentDatabase</url-pattern>
-            <url-pattern>/ReadApplication</url-pattern>
             <url-pattern>/CreateDeployType</url-pattern>
             <url-pattern>/DeleteDeployType</url-pattern>
             <url-pattern>/UpdateDeployType</url-pattern>
