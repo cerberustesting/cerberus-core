@@ -4841,6 +4841,24 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLS.append("('page_reportbytag', 'report_envcountrybrowser', '', 'fr', 'Rapport par Envrionnement Pays Navigateur', 'Rapport d\\'execution filtré par Envrionnment Pays et Navigateur');");        
         SQLInstruction.add(SQLS.toString());
 
+        // Insert invariant executeSqlUpdate, executeSqlStoredProcedure and skipAction
+        //-- ------------------------ 638
+        SQLS = new StringBuilder();
+        SQLS.append("INSERT INTO `invariant` (`idname`, `value`, `sort`, `description`, `VeryShortDesc`) ");
+        SQLS.append(" VALUES ('ACTION', 'executeSqlUpdate', '230', 'Execute SQL Script (Update, Delete, Insert)', ''),");
+        SQLS.append(" ('ACTION', 'executeSqlStoredProcedure', '240', 'Execute Stored Procedure', ''),");
+        SQLS.append(" ('ACTION', 'skipAction', '250', 'Skip Action', '');");
+        SQLInstruction.add(SQLS.toString());
+
+        // Documentation entries for executeSqlUpdate, executeSqlStoredProcedure and skipAction
+        //-- ------------------------  639
+        SQLS = new StringBuilder();
+        SQLS.append("INSERT INTO `documentation` (DocTable, DocField, DocValue, Lang, DocLabel, DocDesc) VALUES ");
+        SQLS.append("('testcasestepaction', 'Action', 'executeSqlUpdate', 'en', 'Execute SQL update', '<code class=\\'doc-fixed\\'>executeSqlUpdate</code> will allow you to execute SQL update (insert,delete,update).<br><br>Usage :<br><doc class=\"usage\"><table cellspacing=0 cellpadding=2><th class=\\'ex\\'>Field</th><th class=\\'ex\\'>Usage</th><tr><td class=\\'ex\\'>Object</td><td class=\\'ex\\'>Name of the Connection Pool.</td></tr><tr><td class=\\'ex\\'>Property</td><td class=\\'ex\\'>Property name of the script to execute. The property should be a text one.</td></tr></table></doc><br><br>Examples :<br><doc class=\"examples\"><table cellspacing=0 cellpadding=2><th class=\\'ex\\'>Object</th><th class=\\'ex\\'>Property</th><th class=\\'ex\\'>Result</th><tr><td class=\\'ex\\'>CONNECTION_POOL_NAME</td><td class=\\'ex\\'>PROPERTY_NAME</td><td class=\\'ex\\'>The script declared in the property PROPERTY_NAME will be executed on database through connection pool CONNECTION_POOL_NAME.</td></tr></table></doc>'),");
+        SQLS.append("('testcasestepaction', 'Action', 'executeSqlStoredProcedure', 'en', 'Execute SQL Stored Procedure', '<code class=\\'doc-fixed\\'>executeSqlStoredProcedure</code> will allow you to execute SQL stored procedure.<br><br>Usage :<br><doc class=\"usage\"><table cellspacing=0 cellpadding=2><th class=\\'ex\\'>Field</th><th class=\\'ex\\'>Usage</th><tr><td class=\\'ex\\'>Object</td><td class=\\'ex\\'>Name of the Connection Pool.</td></tr><tr><td class=\\'ex\\'>Property</td><td class=\\'ex\\'>Property name of the procedure to execute. The property should be a text one.</td></tr></table></doc><br><br>Examples :<br><doc class=\"examples\"><table cellspacing=0 cellpadding=2><th class=\\'ex\\'>Object</th><th class=\\'ex\\'>Property</th><th class=\\'ex\\'>Result</th><tr><td class=\\'ex\\'>CONNECTION_POOL_NAME</td><td class=\\'ex\\'>PROPERTY_NAME</td><td class=\\'ex\\'>The procedure name declared in the property PROPERTY_NAME will be executed on database through connection pool CONNECTION_POOL_NAME.</td></tr></table></doc>'),");
+        SQLS.append("('testcasestepaction', 'Action', 'skipAction', 'en', 'Skip this action', '<code class=\\'doc-fixed\\'>skipAction</code> will skip the action. Can be used in case of control that must be done without action before.<br><br>Usage :<br><doc class=\"usage\"><table cellspacing=0 cellpadding=2><th class=\\'ex\\'>Field</th><th class=\\'ex\\'>Usage</th><tr><td class=\\'ex\\'>Object</td><td class=\\'ex\\'></td></tr><tr><td class=\\'ex\\'>Property</td><td class=\\'ex\\'></td></tr></table></doc><br><br>Examples :<br><doc class=\"examples\"><table cellspacing=0 cellpadding=2><th class=\\'ex\\'>Object</th><th class=\\'ex\\'>Property</th><th class=\\'ex\\'>Result</th><tr><td class=\\'ex\\'></td><td class=\\'ex\\'></td><td class=\\'ex\\'>No action will be executed and engine will go to the next action or control</td></tr></table></doc>');");        
+        SQLInstruction.add(SQLS.toString());
+        
         return SQLInstruction;
     }
 
