@@ -85,9 +85,8 @@ function displayInvariantListWithDesc(idName, selectName) {
  */
 function displayDeployTypeList(selectName) {
     $.when($.getJSON("ReadDeployType", "")).then(function (data) {
-        console.log(data);
         for (var option in data.contentTable) {
-            $("[name='" + selectName + "']").append($('<option></option>').text(data.contentTable[option].deploytype + " - " + data.contentTable[option].description).val(data.contentTable[option].deploytype));
+            $("select[id='" + selectName + "']").append($('<option></option>').text(data.contentTable[option].deploytype + " - " + data.contentTable[option].description).val(data.contentTable[option].deploytype));
         }
     });
 }
@@ -104,7 +103,6 @@ function displayApplicationList(selectName, system) {
         myData = "system=" + system
     }
     $.when($.getJSON("ReadApplication", myData)).then(function (data) {
-        console.log(data);
         for (var option in data.contentTable) {
             $("[name='" + selectName + "']").append($('<option></option>').text(data.contentTable[option].application + " - " + data.contentTable[option].description).val(data.contentTable[option].application));
         }
@@ -119,7 +117,6 @@ function displayApplicationList(selectName, system) {
  */
 function displayProjectList(selectName) {
     $.when($.getJSON("ReadProject", "")).then(function (data) {
-        console.log(data);
         for (var option in data.contentTable) {
             $("[name='" + selectName + "']").append($('<option></option>').text(data.contentTable[option].idProject + " - " + data.contentTable[option].description).val(data.contentTable[option].idProject));
         }
@@ -541,7 +538,7 @@ function returnMessageHandler(response) {
 function showUnexpectedError() {
     clearResponseMessageMainPage();
     var type = getAlertType("KO");
-    var message = "ERROR - An unexpected error occured, the servlet may not be available";
+    var message = "ERROR - An unexpected error occured, the servlet may not be available. Please check if your session is still active";
 
     showMessageMainPage(type, message);
 }
@@ -586,6 +583,13 @@ function createDataTableWithPermissions(tableConfigurations, callbackfunction) {
                 "url": sSource,
                 "data": aoData,
                 "success": function (json) {
+                    var tabCheckPermissions = $("#" + tableConfigurations.divId);
+                    var hasPermissions = false; //by default does not have permissions
+                    if(Boolean(json["hasPermissions"])){ //if the response information about permissions then we will update it
+                        hasPermissions = json["hasPermissions"];
+                    }
+                    //sets the permissions in the table
+                    tabCheckPermissions.attr("hasPermissions", hasPermissions);
                     returnMessageHandler(json);
                     fnCallback(json);
                 },
@@ -886,4 +890,12 @@ function bindToggleCollapse(id) {
     $(id).on('hidden.bs.collapse', function () {
         $(this).prev().find(".toggle").removeClass("glyphicon-chevron-right").addClass("glyphicon-chevron-down");
     });
+}
+
+
+function drawURL(data){    
+    if (data !== '') {
+        return "<a target = '_blank' href='" + data + "'>" + data + "</a>";//TODO:FN ver se tem caracters que precisam de ser encapsulados
+    }
+    return '';
 }
