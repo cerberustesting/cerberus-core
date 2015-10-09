@@ -76,7 +76,7 @@ public class ReadTestCase extends HttpServlet {
         int sEcho = Integer.valueOf(ParameterParserUtil.parseStringParam(request.getParameter("sEcho"), "0"));
         String test = ParameterParserUtil.parseStringParam(request.getParameter("test"), "");
         String testCase = ParameterParserUtil.parseStringParam(request.getParameter("testCase"), "");
-        String active = ParameterParserUtil.parseStringParam(request.getParameter("active"), "");
+        boolean getMaxTC = ParameterParserUtil.parseBooleanParam(request.getParameter("getMaxTC"), false);
 
         // Default message to unexpected error.
         MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
@@ -89,6 +89,11 @@ public class ReadTestCase extends HttpServlet {
             } else if (sEcho == 0 && !Strings.isNullOrEmpty(test) && !Strings.isNullOrEmpty(testCase)) {
                 answer = findTestCaseByTestTestCase(appContext, test, testCase);
                 jsonResponse = (JSONObject) answer.getItem();
+            } else if (sEcho == 0 && !Strings.isNullOrEmpty(test) && getMaxTC) {
+                testCaseService = appContext.getBean(TestCaseService.class);
+                String max = testCaseService.getMaxNumberTestCase(test);
+                jsonResponse.put("maxTestCase", Integer.valueOf(max));
+                answer.setResultMessage(new MessageEvent(MessageEventEnum.DATA_OPERATION_OK));
             }
 
             jsonResponse.put("messageType", answer.getResultMessage().getMessage().getCodeString());

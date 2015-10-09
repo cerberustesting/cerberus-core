@@ -189,27 +189,41 @@ function loadTable() {
 
 function CreateTestCaseClick(eventData) {
     clearResponseMessageMainPage();
-    var urlTag = GetURLParameter('test');
-    var testCaseNumber = eventData.data.iTotalRecords + 1;
-    var tcnumber;
+    var test = GetURLParameter('test');
 
-    if (testCaseNumber < 10) {
-        tcnumber = "000" + testCaseNumber.toString() + "A";
-    } else if (testCaseNumber >= 10 && testCaseNumber < 99) {
-        tcnumber = "00" + testCaseNumber.toString() + "A";
-    } else if (testCaseNumber >= 100 && testCaseNumber < 999) {
-        tcnumber = "0" + testCaseNumber.toString() + "A";
-    } else if (testCaseNumber >= 1000) {
-        tcnumber = testCaseNumber.toString() + "A";
-    } else {
-        tcnumber = "0001A";
-    }
+    $.ajax({
+        url: "ReadTestCase",
+        method: "GET",
+        data: {test: test, getMaxTC: true},
+        dataType: "json",
+        success: function (data) {
+            var testCaseNumber = data.maxTestCase + 1;
+            var tcnumber;
 
-    if (urlTag !== "") {
-        $('#testAdd option[value="' + urlTag + '"]').attr("selected", "selected");
+            if (testCaseNumber < 10) {
+                tcnumber = "000" + testCaseNumber.toString() + "A";
+            } else if (testCaseNumber >= 10 && testCaseNumber < 99) {
+                tcnumber = "00" + testCaseNumber.toString() + "A";
+            } else if (testCaseNumber >= 100 && testCaseNumber < 999) {
+                tcnumber = "0" + testCaseNumber.toString() + "A";
+            } else if (testCaseNumber >= 1000) {
+                tcnumber = testCaseNumber.toString() + "A";
+            } else {
+                tcnumber = "0001A";
+            }
+
+            $('#addEntryModalForm #testCase').val(tcnumber);
+        },
+        error: function (e) {
+            showUnexpectedError();
+        }
+    });
+
+    if (test !== "") {
+        $('#testAdd option[value="' + test + '"]').attr("selected", "selected");
     }
     
-    $('#addEntryModalForm #testCase').val(tcnumber);
+    $('#addEntryModalForm #actProd option[value="N"]').attr("selected", "selected");
 
     $('#addEntryModal').modal('show');
 }
@@ -243,7 +257,7 @@ function saveNewEntryHandler() {
     }
 
     var testCase = formAdd.find("#testCase");
-    var testCaseEmpty = nameElement.prop("value") === '';
+    var testCaseEmpty = testCase.prop("value") === '';
     if (testCaseEmpty) {
         var localMessage = new Message("danger", "Please specify the name of the testCase!");
         testCase.parents("div.form-group").addClass("has-error");

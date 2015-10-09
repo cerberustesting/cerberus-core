@@ -99,9 +99,9 @@ function displayDeployTypeList(selectName) {
  * @returns {void}
  */
 function displayApplicationList(selectName, system) {
-    var myData="";
+    var myData = "";
     if (system !== "") {
-        myData="system=" + system
+        myData = "system=" + system
     }
     $.when($.getJSON("ReadApplication", myData)).then(function (data) {
         console.log(data);

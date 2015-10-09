@@ -211,10 +211,12 @@ public class UpdateTestCase2 extends HttpServlet {
         tc.setTestCase(ParameterParserUtil.parseStringParam(request.getParameter("testCase"), tc.getTestCase()));
         tc.setImplementer(ParameterParserUtil.parseStringParam(request.getParameter("imlementer"), tc.getImplementer()));
         tc.setLastModifier(request.getUserPrincipal().getName());
-        if (Strings.isNullOrEmpty(request.getParameter("project"))) {
-            tc.setProject(tc.getProject());
-        } else {
+        if (!Strings.isNullOrEmpty(request.getParameter("project"))) {
             tc.setProject(request.getParameter("project"));
+        } else if (request.getParameter("project") != null && request.getParameter("project").isEmpty()) {
+            tc.setProject(null);
+        } else {
+            tc.setProject(tc.getProject());
         }
         tc.setTicket(ParameterParserUtil.parseStringParam(request.getParameter("ticket"), tc.getTicket()));
         tc.setApplication(ParameterParserUtil.parseStringParam(request.getParameter("application"), tc.getApplication()));
