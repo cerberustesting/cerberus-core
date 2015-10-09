@@ -35,11 +35,9 @@ function initPage() {
     $('#editEntryModal').on('hidden.bs.modal', {extra: "#editEntryModal"}, buttonCloseHandler);
 
     //configure and create the dataTable
-    var configurations = new TableConfigurationsServerSide("deploytypesTable", "ReadDeployType", "contentTable", aoColumnsFunc());
+    var configurations = new TableConfigurationsServerSide("deploytypesTable", "ReadDeployType", "contentTable", aoColumnsFunc("deploytypesTable"));
 
-    var table = createDataTableWithPermissions(configurations, renderOptionsForDeployType);
-
-    table.fnSort([1, 'asc']);
+    createDataTableWithPermissions(configurations, renderOptionsForDeployType);
 }
 
 function displayPageLabel() {
@@ -179,7 +177,7 @@ function renderOptionsForDeployType(data) {
     }
 }
 
-function aoColumnsFunc() {
+function aoColumnsFunc(tableId) {
     var doc = new Doc();
 
     var aoColumns = [
@@ -188,16 +186,21 @@ function aoColumnsFunc() {
             "bSortable": false,
             "bSearchable": false,
             "mRender": function (data, type, obj) {
-                var editEntry = '<button id="editEntry" onclick="editEntry(\'' + obj["deploytype"] + '\');"\n\
-                                class="editEntry btn btn-default btn-xs margin-right5" \n\
-                                name="editEntry" title="' + doc.getDocLabel("page_deploytype", "button_edit") + '" type="button">\n\
-                                <span class="glyphicon glyphicon-pencil"></span></button>';
-                var deleteEntry = '<button id="deleteEntry" onclick="deleteEntry(\'' + obj["deploytype"] + '\');" \n\
-                                class="deleteEntry btn btn-default btn-xs margin-right5" \n\
-                                name="deleteEntry" title="' + doc.getDocLabel("page_deploytype", "button_delete") + '" type="button">\n\
-                                <span class="glyphicon glyphicon-trash"></span></button>';
+                var hasPermissions = $("#" + tableId).attr("hasPermissions");
+                
+                if(hasPermissions === "true"){ //only draws the options if the user has the correct privileges
+                    var editEntry = '<button id="editEntry" onclick="editEntry(\'' + obj["deploytype"] + '\');"\n\
+                                    class="editEntry btn btn-default btn-xs margin-right5" \n\
+                                    name="editEntry" title="' + doc.getDocLabel("page_deploytype", "button_edit") + '" type="button">\n\
+                                    <span class="glyphicon glyphicon-pencil"></span></button>';
+                    var deleteEntry = '<button id="deleteEntry" onclick="deleteEntry(\'' + obj["deploytype"] + '\');" \n\
+                                    class="deleteEntry btn btn-default btn-xs margin-right5" \n\
+                                    name="deleteEntry" title="' + doc.getDocLabel("page_deploytype", "button_delete") + '" type="button">\n\
+                                    <span class="glyphicon glyphicon-trash"></span></button>';
 
-                return '<div class="center btn-group width150">' + editEntry + deleteEntry + '</div>';
+                    return '<div class="center btn-group width150">' + editEntry + deleteEntry + '</div>';
+                }
+                return '';
             }
         },
         {"data": "deploytype",

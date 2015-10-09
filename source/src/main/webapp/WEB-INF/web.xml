@@ -1726,6 +1726,8 @@
             <url-pattern>/GetCountryEnvParamList</url-pattern>
             <url-pattern>/GetCountryEnvironmentParameterList</url-pattern>
             <url-pattern>/ReadDeployType</url-pattern>
+            <url-pattern>/ReadApplication</url-pattern>
+            <url-pattern>/ReadRobot</url-pattern>
         </web-resource-collection>
         <auth-constraint>
             <description>IntegratorRO</description>
