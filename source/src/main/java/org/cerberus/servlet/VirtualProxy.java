@@ -1,7 +1,7 @@
 package org.cerberus.servlet;
 
 import org.apache.commons.io.FilenameUtils;
-import org.cerberus.servlet.testcase.SavePicture;
+import org.cerberus.servlet.testcase.PictureConnector;
 
 import javax.servlet.ServletException;
 import javax.servlet.ServletOutputStream;
@@ -13,7 +13,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 
-@WebServlet(name = "virtualproxy", urlPatterns = {"/virtualproxy "})
+@WebServlet(name = "VirtualProxy", urlPatterns = {"/VirtualProxy "})
 public class VirtualProxy extends HttpServlet{
     private static final long serialVersionUID = 1L;
 
@@ -31,7 +31,7 @@ public class VirtualProxy extends HttpServlet{
 // security
         path = FilenameUtils.normalize(path);
 
-        File file = new File(SavePicture.HOME_SHARED_DOCS, path);
+        File file = new File(PictureConnector.HOME_SHARED_DOCS, path);
 
 
         FileInputStream fileIn = new FileInputStream(file);
