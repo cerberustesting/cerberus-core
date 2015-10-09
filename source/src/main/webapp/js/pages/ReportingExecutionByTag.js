@@ -56,7 +56,9 @@ function loadCountryFilter() {
         dataType: 'json',
         success: function (data) {
             var countryFilter = $("#countryFilter");
-            for (var i = 0; i < data.length; i++) {
+            var len = data.length;
+            
+            for (var i = 0; i < len; i++) {
                 var filter = JSON.parse(sessionStorage.getItem("countryFilter"));
                 var cb;
 
@@ -99,8 +101,10 @@ function loadTagFilters(urlTag) {
         var messageType = getAlertType(data.messageType);
         if (messageType === "success") {
             var index;
+            var len = data.contentTable.length;
+            
             $('#selectTag').append($('<option></option>').attr("value", "")).attr("placeholder", "Select a Tag");
-            for (index = 0; index < data.contentTable.length; index++) {
+            for (index = 0; index < len; index++) {
                 //the character " needs a special encoding in order to avoid breaking the string that creates the html element   
                 var encodedString = data.contentTable[index].replace(/\"/g, "%22");
                 var option = $('<option></option>').attr("value", encodedString).text(data.contentTable[index]);
@@ -149,11 +153,13 @@ function loadReport() {
 }
 
 function loadEnvCountryBrowserReport(tag, data) {
+    var colLen = data.Columns.length;
+    
     $("#envCountryBrowserSelect").empty();
     $("#progressEnvCountryBrowser .progress").empty();
 
     $("#envCountryBrowserSelect").append('<option value=""></option>');
-    for (var i = 0; i < data.Columns.length; i++) {
+    for (var i = 0; i < colLen; i++) {
         var title = data.Columns[i].environment + " " + data.Columns[i].country + " " + data.Columns[i].browser;
         var serialValue = "env=" + data.Columns[i].environment + "&country=" + data.Columns[i].country + "&browser=" + data.Columns[i].browser;
 
@@ -179,8 +185,9 @@ function loadEnvCountryBrowserReport(tag, data) {
                     $("#progressEnvCountryBrowser .progress").empty();
                     var buildBar = '';
                     var statusOrder = ["OK", "KO", "FA", "NA", "NE", "PE", "CA"];
+                    var len = statusOrder.length;
 
-                    for (var i = 0; i < statusOrder.length; i++) {
+                    for (var i = 0; i < len; i++) {
                         var status = statusOrder[i];
                         if (data.total[status] !== 0) {
                             var percent = (data.total[status] / data.totalReport) * 100;
@@ -255,9 +262,11 @@ function appendPanelStatus(status, total) {
 
 function loadReportByStatusTable(data) {
     var total = {};
+    var len = data.axis.length;
+    
     //calculate totaltest nb
     total["test"] = 0;
-    for (var index = 0; index < data.axis.length; index++) {
+    for (var index = 0; index < len; index++) {
         // increase the total execution
         for (var key in data.axis[index]) {
             if (key !== "name") {
@@ -370,7 +379,9 @@ function loadReportByFunctionChart(dataset) {
             .offset([-10, 0])
             .html(function (d) {
                 var res = "<strong>Function :</strong> <span style='color:red'>" + d.name + "</span>";
-                for (var index = 0; index < d.chartData.length; index++) {
+                var len = d.chartData.length;
+        
+                for (var index = 0; index < len; index++) {
                     res = res + "<div><div class='color-box' style='background-color:" + d.chartData[index].color + " ;'>\n\
                     </div>" + d.chartData[index].name + " : " + d[d.chartData[index].name].value + "</div>";
                 }
@@ -492,7 +503,8 @@ function generateTooltip(data) {
 
 function aoColumnsFunc(Columns) {
     var doc = new Doc();
-    var nbColumn = Columns.length + 3;
+    var colLen = Columns.length;
+    var nbColumn = colLen + 3;
     var testCaseInfoWidth = (1 / 3) * 30;
     var testExecWidth = (1 / nbColumn) * 70;
 
@@ -522,7 +534,7 @@ function aoColumnsFunc(Columns) {
             "title": doc.getDocOnline("application", "Application")
         }
     ];
-    for (var i = 0; i < Columns.length; i++) {
+    for (var i = 0; i < colLen; i++) {
         var title = Columns[i].environment + " " + Columns[i].country + " " + Columns[i].browser;
 
         var col = {

@@ -18,6 +18,8 @@
  * along with Cerberus.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+/* global modalFormCleaner */
+
 $.when($.getScript("js/pages/global/global.js")).then(function () {
     $(document).ready(function () {
         initPage();
@@ -185,13 +187,29 @@ function loadTable() {
     }
 }
 
-function CreateTestCaseClick() {
+function CreateTestCaseClick(eventData) {
     clearResponseMessageMainPage();
     var urlTag = GetURLParameter('test');
+    var testCaseNumber = eventData.data.iTotalRecords + 1;
+    var tcnumber;
+
+    if (testCaseNumber < 10) {
+        tcnumber = "000" + testCaseNumber.toString() + "A";
+    } else if (testCaseNumber >= 10 && testCaseNumber < 99) {
+        tcnumber = "00" + testCaseNumber.toString() + "A";
+    } else if (testCaseNumber >= 100 && testCaseNumber < 999) {
+        tcnumber = "0" + testCaseNumber.toString() + "A";
+    } else if (testCaseNumber >= 1000) {
+        tcnumber = testCaseNumber.toString() + "A";
+    } else {
+        tcnumber = "0001A";
+    }
 
     if (urlTag !== "") {
         $('#testAdd option[value="' + urlTag + '"]').attr("selected", "selected");
     }
+    
+    $('#addEntryModalForm #testCase').val(tcnumber);
 
     $('#addEntryModal').modal('show');
 }
@@ -205,7 +223,7 @@ function renderOptionsForTestCaseList(data) {
             " + "Create Test Case" + "</button></div>";
 
             $("#testCaseTable_wrapper div.ColVis").before(contentToAdd);
-            $('#testCaseList #createTestCaseButton').click(CreateTestCaseClick);
+            $('#testCaseList #createTestCaseButton').click(data, CreateTestCaseClick);
         }
     }
 }
@@ -247,7 +265,6 @@ function saveUpdateEntryHandler() {
 
     var formEdit = $('#editEntryModalForm');
 
-    console.log(formEdit.serialize());
     showLoaderInModal('#editEntryModal');
     updateEntry("UpdateTestCase2", formEdit, "#testCaseTable");
 }
@@ -321,7 +338,7 @@ function editEntry(testCase) {
         formEdit.find("#shortDesc").prop("value", data.shortDesc);
         formEdit.find("#behaviorOrValueExpected").prop("value", data.behaviorOrValueExpected);
         formEdit.find("#howTo").prop("value", data.howTo);
-        //activation criteria        
+        //activation criteria
         formEdit.find("#active").prop("value", data.active);
         formEdit.find("#bugId").prop("value", data.bugID);
         formEdit.find("#link").prop("value", data.link);
@@ -396,6 +413,7 @@ function setCountry(checkbox) {
 
 
 function aoColumnsFunc(countries) {
+    var countryLen = countries.length;
     var aoColumns = [
         {
             "data": null,
@@ -507,7 +525,7 @@ function aoColumnsFunc(countries) {
         }
     ];
 
-    for (var index = 0; index < countries.length; index++) {
+    for (var index = 0; index < countryLen; index++) {
         var country = countries[index].value;
 
         var column = {

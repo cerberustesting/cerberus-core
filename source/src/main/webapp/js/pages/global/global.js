@@ -624,6 +624,8 @@ function createDataTableWithPermissions(tableConfigurations, callbackfunction) {
 /***
  * Creates a datatable that is server-side processed.
  * @param {type} tableConfigurations set of configurations that define how data is retrieved and presented
+ * @param {Function} callback callback function to be called after each row is created
+ * @return {Object} Return the dataTable object to use the api
  */
 function createDataTable(tableConfigurations, callback) {
     var domConf = 'Cl<"showInlineElement pull-left marginLeft5"f>rti<"marginTop5"p>';
@@ -819,6 +821,7 @@ function setAutoCompleteServerSide(selector, source) {
 
 /**
  * display global label
+ * @param {JavaScript Object} doc 
  * @returns {void}
  */
 function displayGlobalLabel(doc) {

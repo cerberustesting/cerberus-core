@@ -58,7 +58,8 @@ $.when($.getScript("js/pages/global/global.js")).then(function () {
             loadTagExec();
         });
 
-        $("#tagSettings").on('click', function () {
+        $("#tagSettings").on('click', function (event) {
+            stopPropagation(event);
             var tagListForm = $("#tagList");
             var tagList = JSON.parse(localStorage.getItem("tagList"));
 
@@ -174,9 +175,10 @@ function generateTagLink(tagName) {
 
 function generateTooltip(data, statusOrder) {
     var htmlRes;
+    var len = statusOrder.length;
 
     htmlRes = "<div class='tag-tooltip'><strong>Tag : </strong>" + data.tag;
-    for (var index = 0; index < statusOrder.length; index++) {
+    for (var index = 0; index < len; index++) {
         var status = statusOrder[index];
 
         if (data.total.hasOwnProperty(status)) {
@@ -217,14 +219,14 @@ function getTotalExec(execData) {
 function generateTagReport(data) {
     var reportArea = $("#tagExecStatus");
     var statusOrder = ["OK", "KO", "FA", "NA", "NE", "PE", "CA"];
-
     getTotalExec(data.total);
     var buildBar;
     var tooltip = generateTooltip(data, statusOrder);
+    var len = statusOrder.length;
 
     buildBar = '<div>' + generateTagLink(data.tag) + '<div class="pull-right" style="display: inline;">Total executions : ' + data.total.totalTest + '</div>\n\
                                                         </div><div class="progress" data-toggle="tooltip" data-html="true" title="' + tooltip + '">';
-    for (var index = 0; index < statusOrder.length; index++) {
+    for (var index = 0; index < len; index++) {
         var status = statusOrder[index];
 
         if (data.total.hasOwnProperty(status)) {
@@ -256,7 +258,9 @@ function loadTagExec() {
             success: function (data) {
                 var tagData = {};
                 var total = {};
-                for (var index = 0; index < data.axis.length; index++) {
+                var dataLen = data.axis.length;
+                
+                for (var index = 0; index < dataLen; index++) {
                     for (var key in data.axis[index]) {
                         if (key !== "name") {
                             if (total.hasOwnProperty(key)) {
@@ -280,12 +284,13 @@ function loadTagExec() {
 function aoColumnsFunc() {
     var doc = getDoc();
     var status = readStatus();
-    var t = "";
+    var statusLen = status.length;
     var aoColumns = [
         {"data": "Application", "bSortable": false, "sName": "Application", "title": displayDocLink(doc.application.Application)},
         {"data": "Total", "bSortable": false, "sName": "Total", "title": "Total"}
     ];
-    for (var s = 0; s < status.length; s++) {
+    
+    for (var s = 0; s < statusLen; s++) {
         var obj = {
             "data": status[s].value,
             "bSortable": false,
@@ -294,5 +299,6 @@ function aoColumnsFunc() {
         };
         aoColumns.push(obj);
     }
+    
     return aoColumns;
 }
