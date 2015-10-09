@@ -35,13 +35,10 @@ function initApplicationPage() {
     $('#editApplicationModal').on('hidden.bs.modal', editApplicationModalCloseHandler);
 
     //configure and create the dataTable
-    var configurations = new TableConfigurationsServerSide("applicationsTable", "ReadApplication?system=" + getUser().defaultSystem, "contentTable", aoColumnsFunc());
-
-    var table = createDataTableWithPermissions(configurations, renderOptionsForApplication);
-
-    table.fnSort([1, 'asc']);
+    var configurations = new TableConfigurationsServerSide("applicationsTable", "ReadApplication?system=" + getUser().defaultSystem, "contentTable", aoColumnsFunc("applicationsTable"));
+    createDataTableWithPermissions(configurations, renderOptionsForApplication);    
 }
-;
+
 
 function displayPageLabel() {
     var doc = new Doc();
@@ -225,7 +222,7 @@ function renderOptionsForApplication(data) {
     }
 }
 
-function aoColumnsFunc() {
+function aoColumnsFunc(tableId) {
     var doc = new Doc();
     var aoColumns = [
         {"data": null,
@@ -233,16 +230,21 @@ function aoColumnsFunc() {
             "bSortable": false,
             "bSearchable": false,
             "mRender": function (data, type, obj) {
-                var editApplication = '<button id="editApplication" onclick="editApplication(\'' + obj["application"] + '\');"\n\
-                                class="editApplication btn btn-default btn-xs margin-right5" \n\
-                                name="editApplication" title="\'' + doc.getDocLabel("page_application", "button_edit") + '\'" type="button">\n\
-                                <span class="glyphicon glyphicon-pencil"></span></button>';
-                var deleteApplication = '<button id="deleteApplication" onclick="deleteApplication(\'' + obj["application"] + '\');" \n\
-                                class="deleteApplication btn btn-default btn-xs margin-right5" \n\
-                                name="deleteApplication" title="\'' + doc.getDocLabel("page_application", "button_delete") + '\'" type="button">\n\
-                                <span class="glyphicon glyphicon-trash"></span></button>';
+                var hasPermissions = $("#" + tableId).attr("hasPermissions");
+                
+                if(hasPermissions === "true"){ //only draws the options if the user has the correct privileges
+                    var editApplication = '<button id="editApplication" onclick="editApplication(\'' + obj["application"] + '\');"\n\
+                                    class="editApplication btn btn-default btn-xs margin-right5" \n\
+                                    name="editApplication" title="\'' + doc.getDocLabel("page_application", "button_edit") + '\'" type="button">\n\
+                                    <span class="glyphicon glyphicon-pencil"></span></button>';
+                    var deleteApplication = '<button id="deleteApplication" onclick="deleteApplication(\'' + obj["application"] + '\');" \n\
+                                    class="deleteApplication btn btn-default btn-xs margin-right5" \n\
+                                    name="deleteApplication" title="\'' + doc.getDocLabel("page_application", "button_delete") + '\'" type="button">\n\
+                                    <span class="glyphicon glyphicon-trash"></span></button>';
 
-                return '<div class="center btn-group width150">' + editApplication + deleteApplication + '</div>';
+                    return '<div class="center btn-group width150">' + editApplication + deleteApplication + '</div>';
+                }
+                return '';                
             }
         },
         {"data": "application",
@@ -265,14 +267,25 @@ function aoColumnsFunc() {
             "title": doc.getDocOnline("application", "subsystem")},
         {"data": "svnurl",
             "sName": "svnurl",
-            "title": doc.getDocOnline("application", "svnurl")
+            "title": doc.getDocOnline("application", "svnurl"),
+            "mRender": function (data, type, oObj) {
+                return drawURL(data);
+            }
         },
         {"data": "bugTrackerUrl",
             "sName": "bugTrackerUrl",
-            "title": doc.getDocOnline("application", "bugtrackerurl")},
+            "title": doc.getDocOnline("application", "bugtrackerurl"),
+            "mRender": function (data, type, oObj) {
+                return drawURL(data);
+            }        
+        },
         {"data": "bugTrackerNewUrl",
             "sName": "bugTrackerNewUrl",
-            "title": doc.getDocOnline("application", "bugtrackernewurl")},
+            "title": doc.getDocOnline("application", "bugtrackernewurl"),
+            "mRender": function (data, type, oObj) {
+                return drawURL(data);
+            }
+        },
         {"data": "deploytype",
             "sName": "deploytype",
             "title": doc.getDocOnline("application", "deploytype")},

@@ -181,7 +181,7 @@ public class ReadDeployType extends HttpServlet {
         AnswerList resp = deployTypeService.readByCriteria(startPosition, length, columnName, sort, searchParameter, "");
 
         JSONArray jsonArray = new JSONArray();
-        boolean userHasPermissions = request.isUserInRole("IntegratorRO");
+        boolean userHasPermissions = request.isUserInRole("Integrator");
         if (resp.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {  //the service was able to perform the query, then we should get all values
             for (DeployType deploytype : (List<DeployType>) resp.getDataList()) {
                 jsonArray.put(convertDeployTypeToJSONObject(deploytype));

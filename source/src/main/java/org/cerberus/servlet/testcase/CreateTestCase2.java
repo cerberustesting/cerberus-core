@@ -185,7 +185,7 @@ public class CreateTestCase2 extends HttpServlet {
         tc.setImplementer(request.getParameter("implementer"));
         tc.setCreator(request.getUserPrincipal().getName());
         tc.setLastModifier(request.getUserPrincipal().getName());
-        if (request.getParameter("project").equals("")) {
+        if (request.getParameter("project").isEmpty()) {
             tc.setProject(null);
         } else {
             tc.setProject(request.getParameter("project"));

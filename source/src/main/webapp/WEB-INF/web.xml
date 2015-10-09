@@ -1866,6 +1866,8 @@
             <url-pattern>/ReadDeployType</url-pattern>
             <url-pattern>/ReadBuildRevisionParameters</url-pattern>
             <url-pattern>/FindEnvironments</url-pattern>
+            <url-pattern>/ReadApplication</url-pattern>
+            <url-pattern>/ReadRobot</url-pattern>
         </web-resource-collection>
         <auth-constraint>
             <description>IntegratorRO</description>

@@ -170,10 +170,10 @@ function aoColumnsFunc() {
             "title": doc.getDocOnline("page_global", "columnAction"),
             "mRender": function (data, type, obj) {
                 var testCaseLink = '<button id="testCaseLink" class="btn btn-primary btn-xs margin-right5"\n\
-                                    onclick="location.href=\'./TestCaseList.jsp?test='+ encodeURIComponent(obj["test"]) +'\'">\n\
+                                    onclick="location.href=\'./TestCaseList.jsp?test=' + encodeURIComponent(obj["test"]) + '\'">\n\
                                     <span class="glyphicon glyphicon-link"></span>\n\
                                     </button>';
-                
+
                 if (data["hasPermissions"]) {
                     var editEntry = '<button id="editEntry" onclick="editEntry(\'' + obj["test"] + '\');"\n\
                                 class="editEntry btn btn-default btn-xs margin-right5" \n\
@@ -202,12 +202,14 @@ function aoColumnsFunc() {
         {
             "data": "active",
             "sName": "active",
-            "title": doc.getDocOnline("test", "Active")
+            "title": doc.getDocOnline("test", "Active"),
+            "className": "center"
         },
         {
             "data": "automated",
             "sName": "automated",
-            "title": doc.getDocOnline("test", "Automated")
+            "title": doc.getDocOnline("test", "Automated"),
+            "className": "center"
         },
         {
             "data": "tDateCrea",

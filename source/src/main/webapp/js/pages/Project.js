@@ -35,13 +35,11 @@ function initPage() {
     $('#editEntryModal').on('hidden.bs.modal', {extra: "#editEntryModal"}, buttonCloseHandler);
 
     //configure and create the dataTable
-    var configurations = new TableConfigurationsServerSide("projectsTable", "ReadProject", "contentTable", aoColumnsFunc());
+    var configurations = new TableConfigurationsServerSide("projectsTable", "ReadProject", "contentTable", aoColumnsFunc("projectsTable"));
 
-    var table = createDataTableWithPermissions(configurations, renderOptionsForProject);
-
-    table.fnSort([1, 'asc']);
+    createDataTableWithPermissions(configurations, renderOptionsForProject);
 }
-;
+
 
 function displayPageLabel() {
     var doc = new Doc();
@@ -180,7 +178,7 @@ function renderOptionsForProject(data) {
     }
 }
 
-function aoColumnsFunc() {
+function aoColumnsFunc(tableId) {
     var doc = new Doc();
     var aoColumns = [
         {"data": null,
@@ -188,16 +186,21 @@ function aoColumnsFunc() {
             "bSortable": false,
             "bSearchable": false,
             "mRender": function (data, type, obj) {
-                var editEntry = '<button id="editEntry" onclick="editEntry(\'' + obj["idProject"] + '\');"\n\
-                                class="editEntry btn btn-default btn-xs margin-right5" \n\
-                                name="editEntry" title="' + doc.getDocLabel("page_project", "button_edit") + '" type="button">\n\
-                                <span class="glyphicon glyphicon-pencil"></span></button>';
-                var deleteEntry = '<button id="deleteEntry" onclick="deleteEntry(\'' + obj["idProject"] + '\');" \n\
-                                class="deleteEntry btn btn-default btn-xs margin-right5" \n\
-                                name="deleteEntry" title="' + doc.getDocLabel("page_project", "button_delete") + '" type="button">\n\
-                                <span class="glyphicon glyphicon-trash"></span></button>';
+                var hasPermissions = $("#" + tableId).attr("hasPermissions");
+                
+                if(hasPermissions === "true"){ //only draws the options if the user has the correct privileges
+                    var editEntry = '<button id="editEntry" onclick="editEntry(\'' + obj["idProject"] + '\');"\n\
+                                    class="editEntry btn btn-default btn-xs margin-right5" \n\
+                                    name="editEntry" title="' + doc.getDocLabel("page_project", "button_edit") + '" type="button">\n\
+                                    <span class="glyphicon glyphicon-pencil"></span></button>';
+                    var deleteEntry = '<button id="deleteEntry" onclick="deleteEntry(\'' + obj["idProject"] + '\');" \n\
+                                    class="deleteEntry btn btn-default btn-xs margin-right5" \n\
+                                    name="deleteEntry" title="' + doc.getDocLabel("page_project", "button_delete") + '" type="button">\n\
+                                    <span class="glyphicon glyphicon-trash"></span></button>';
 
-                return '<div class="center btn-group width150">' + editEntry + deleteEntry + '</div>';
+                    return '<div class="center btn-group width150">' + editEntry + deleteEntry + '</div>';
+                }
+                return '';
             }
         },
         {"data": "idProject",

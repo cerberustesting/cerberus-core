@@ -208,6 +208,8 @@ public class ActionService implements IActionService {
             res = this.doActionExecuteSQLUpdate(tCExecution, object, property);
         } else if (testCaseStepActionExecution.getAction().equals("executeSqlStoredProcedure")) {
             res = this.doActionExecuteSQLStoredProcedure(tCExecution, object, property);
+        } else if (testCaseStepActionExecution.getAction().equals("skipAction")) {
+            res = new MessageEvent(MessageEventEnum.ACTION_SUCCESS);
         } else {
             res = new MessageEvent(MessageEventEnum.ACTION_FAILED_UNKNOWNACTION);
             res.setDescription(res.getDescription().replaceAll("%ACTION%", testCaseStepActionExecution.getAction()));

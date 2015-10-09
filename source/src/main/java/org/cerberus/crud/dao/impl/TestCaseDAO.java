@@ -1704,6 +1704,7 @@ public class TestCaseDAO implements ITestCaseDAO {
         return new Answer(msg);
     }
 
+    @Override
     public Answer create(TCase testCase) {
         MessageEvent msg = null;
 
@@ -1725,7 +1726,7 @@ public class TestCaseDAO implements ITestCaseDAO {
                 preStat.setString(1, ParameterParserUtil.parseStringParam(testCase.getTest(), ""));
                 preStat.setString(2, ParameterParserUtil.parseStringParam(testCase.getTestCase(), ""));
                 preStat.setString(3, ParameterParserUtil.parseStringParam(testCase.getApplication(), ""));
-                preStat.setString(4, ParameterParserUtil.parseStringParam(testCase.getProject(), ""));
+                preStat.setString(4, testCase.getProject());
                 preStat.setString(5, ParameterParserUtil.parseStringParam(testCase.getTicket(), ""));
                 preStat.setString(6, ParameterParserUtil.parseStringParam(testCase.getShortDescription(), ""));
                 preStat.setString(7, ParameterParserUtil.parseStringParam(testCase.getDescription(), ""));
@@ -1762,7 +1763,7 @@ public class TestCaseDAO implements ITestCaseDAO {
 
                 if (exception.getSQLState().equals(SQL_DUPLICATED_CODE)) { //23000 is the sql state for duplicate entries
                     msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_DUPLICATE);
-                    msg.setDescription(msg.getDescription().replace("%ITEM%", "Application").replace("%OPERATION%", "INSERT"));
+                    msg.setDescription(msg.getDescription().replace("%ITEM%", "TestCase").replace("%OPERATION%", "INSERT"));
                 } else {
                     msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
                     msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", exception.toString()));

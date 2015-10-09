@@ -187,7 +187,7 @@ public class ReadApplication extends HttpServlet {
         AnswerList resp = applicationService.readBySystemByCriteria(system, startPosition, length, columnName, sort, searchParameter, "");
 
         JSONArray jsonArray = new JSONArray();
-        boolean userHasPermissions = request.isUserInRole("IntegratorRO");
+        boolean userHasPermissions = request.isUserInRole("Integrator");
         if (resp.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {//the service was able to perform the query, then we should get all values
             for (Application application : (List<Application>) resp.getDataList()) {
                 jsonArray.put(convertApplicationToJSONObject(application));
