@@ -46,6 +46,8 @@ function initPage() {
     displayInvariantList("GROUP", "group");
     displayInvariantList("TCSTATUS", "status");
     displayInvariantList("PRIORITY", "priority");
+    $('[name="origin"]').append('<option value="All">All</option>');
+    displayInvariantList("ORIGIN", "origin");
     displayInvariantList("TCACTIVE", "active");
     displayInvariantList("TCACTIVE", "activeQA");
     displayInvariantList("TCACTIVE", "activeUAT");
@@ -514,6 +516,20 @@ function aoColumnsFunc(countries) {
             "sName": "priority",
             "title": "Priority",
             "sWidth": "70px",
+            "sDefaultContent": ""
+        },
+         {
+            "data": "origin",
+            "sName": "origine",
+            "title": "Origin",
+            "sWidth": "70px",
+            "sDefaultContent": ""
+        },
+         {
+            "data": "refOrigin",
+            "sName": "refOrigine",
+            "title": "refOrigin",
+            "sWidth": "80px",
             "sDefaultContent": ""
         },
         {

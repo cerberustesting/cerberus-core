@@ -1644,7 +1644,8 @@ public class TestCaseDAO implements ITestCaseDAO {
         query.append(" comment = ?,");
         query.append(" function = ?,");
         query.append(" priority = ?,");
-        query.append(" `group` = ?");
+        query.append(" `group` = ?,");
+        query.append(" `origine` = ?");
         query.append(" WHERE test = ? AND testcase = ?;");
 
         Connection connection = this.databaseSpring.connect();
@@ -1675,8 +1676,9 @@ public class TestCaseDAO implements ITestCaseDAO {
                 preStat.setString(22, tc.getFunction());
                 preStat.setString(23, Integer.toString(tc.getPriority()));
                 preStat.setString(24, tc.getGroup());
-                preStat.setString(25, tc.getTest());
-                preStat.setString(26, tc.getTestCase());
+                preStat.setString(25, tc.getOrigin());
+                preStat.setString(26, tc.getTest());
+                preStat.setString(27, tc.getTestCase());
 
                 preStat.executeUpdate();
                 msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
@@ -1735,8 +1737,8 @@ public class TestCaseDAO implements ITestCaseDAO {
                 preStat.setString(10, ParameterParserUtil.parseStringParam(testCase.getStatus(), ""));
                 preStat.setString(11, testCase.getActive() != null && !testCase.getActive().equals("Y") ? "N" : "Y");
                 preStat.setString(12, ParameterParserUtil.parseStringParam(testCase.getGroup(), ""));
-                preStat.setString(13, "");
-                preStat.setString(14, "");
+                preStat.setString(13, ParameterParserUtil.parseStringParam(testCase.getOrigin(), ""));
+                preStat.setString(14, ParameterParserUtil.parseStringParam(testCase.getRefOrigin(), ""));
                 preStat.setString(15, ParameterParserUtil.parseStringParam(testCase.getHowTo(), ""));
                 preStat.setString(16, ParameterParserUtil.parseStringParam(testCase.getComment(), ""));
                 preStat.setString(17, ParameterParserUtil.parseStringParam(testCase.getFromSprint(), ""));

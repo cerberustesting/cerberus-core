@@ -30,10 +30,6 @@
                                 <label class="control-label" for="testCase" name="testCaseField">Test Case</label>
                                 <input type="text" class="form-control input-sm" name="testCase" id="testCase">
                             </div>
-                            <div class="form-group form-group-sm col-xs-6">
-                                <label class="control-label" for="description" name="descriptionField">Test description</label>
-                                <input class="form-control input-sm"  id="description" name="description">
-                            </div>
                         </div>
                         <h3 class="modal-subtitle">TestCase Info</h3>
                         <div class="row">
@@ -43,7 +39,7 @@
                             </div>
                             <div class="form-group form-group-sm col-xs-2">
                                 <label for="origin" name="originField">Origin</label>
-                                <input type="text" class="form-control input-sm" name="origin" id="origin"/>
+                                <select type="text" class="form-control input-sm" name="origin" id="origin"></select>
                             </div>
                             <div class="form-group form-group-sm col-xs-2">
                                 <label for="refOrigin" name="functionField">Ref Origin</label>
@@ -64,7 +60,7 @@
                         </div>
                         <h3 class="modal-subtitle">TestCase Parameters</h3>
                         <div class="row">
-                            <div class="form-group form-group-sm col-xs-4">
+                            <div class="form-group form-group-sm col-xs-3">
                                 <label for="application" name="applicationField">Application</label>
                                 <select type="text" class="form-control input-sm" name="application" id="application"></select>
                             </div>
@@ -82,6 +78,10 @@
                                 <select type="text" class="form-control input-sm" name="priority" id="priority"></select>
                             </div>
                             <div class="form-group form-group-sm col-xs-1">
+                                <label for="bugId" name="bugIdField">Bug ID</label>
+                                <input type="text" class="form-control input-sm" name="bugId" id="bugId"/>
+                            </div>
+                            <div class="form-group form-group-sm col-xs-1">
                                 <label for="actQA" name="actQAField">Active QA</label>
                                 <select type="text" class="form-control input-sm" name="activeQA" id="actQA">
                                 </select>
@@ -94,6 +94,7 @@
                                 <label for="actProd" name="actProdField">Active Prod</label>
                                 <select type="text" class="form-control input-sm" name="activeProd" id="actProd"></select>
                             </div>
+                            <input type="hidden" name="active" value="N">
                         </div>
                         <div class="row">
                             <div class="col-xs-6">
@@ -115,47 +116,6 @@
                             <div class="form-group form-group-sm col-xs-6">
                                 <label for="howTo" name="howToField">How to</label>
                                 <textarea id="howTo" name="howTo" class="form-control" style="height: 200px"></textarea> 
-                            </div>
-                        </div>
-                        <h3 class="modal-subtitle">Activation Criterias</h3>
-                        <div class="row">
-                            <div class="form-group form-group-sm col-xs-1">
-                                <label for="active" name="activeField">Active</label>
-                                <select type="text" class="form-control input-sm" name="active" id="active"></select>
-                            </div>
-                            <div class="form-group form-group-sm col-xs-1">
-                                <label for="fromSprint" name="fromSprintField">From Sprint</label>
-                                <select type="text" class="form-control input-sm" name="fromSprint" id="fromSprint"></select>
-                            </div>
-                            <div class="form-group form-group-sm col-xs-1">
-                                <label for="fromRev" name="fromRevField">From Rev</label>
-                                <select type="text" class="form-control input-sm" name="fromRev" id="fromRev"></select>
-                            </div>
-                            <div class="form-group form-group-sm col-xs-1">
-                                <label for="toSprint" name="toSprintField">To Sprint</label>
-                                <select type="text" class="form-control input-sm" name="toSprint" id="toSprint"></select>
-                            </div>
-                            <div class="form-group form-group-sm col-xs-1">
-                                <label for="toRev" name="toRevField">To Rev</label>
-                                <select type="text" class="form-control input-sm" name="toRev" id="toRev"></select>
-                            </div>
-                            <div class="form-group form-group-sm col-xs-1">
-                                <label for="bugId" name="bugIdField">Bug ID</label>
-                                <input type="text" class="form-control input-sm" name="bugId" id="bugId"/>
-                            </div>
-                            <div class="form-group form-group-sm col-xs-1">
-                                <label for="targetSprint" name="targetSprintField">Target Sprint</label>
-                                <select type="text" class="form-control input-sm" name="targetSprint" id="targetSprint"></select>
-                            </div>
-                            <div class="form-group form-group-sm col-xs-1">
-                                <label for="targetRev" name="targetRevField">Target Rev</label>
-                                <select type="text" class="form-control input-sm" name="targetRev" id="targetRev"></select>
-                            </div>
-                        </div>
-                        <div class="row">
-                            <div class="form-group form-group-sm col-xs-6">
-                                <label for="comment" name="commentField">Comment</label>
-                                <input type="text" class="form-control input-sm" name="comment" id="comment"/>
                             </div>
                         </div>
                     </div>

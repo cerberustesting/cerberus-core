@@ -195,6 +195,8 @@ public class CreateTestCase2 extends HttpServlet {
         tc.setRunQA(request.getParameter("activeQA"));
         tc.setRunUAT(request.getParameter("activeUAT"));
         tc.setRunPROD(request.getParameter("activeProd"));
+        tc.setOrigin(request.getParameter("origin"));
+        tc.setRefOrigin(request.getParameter("refOrigin"));
         tc.setPriority(Integer.parseInt(request.getParameter("priority")));
         tc.setGroup(request.getParameter("group"));
         tc.setStatus(request.getParameter("status"));
