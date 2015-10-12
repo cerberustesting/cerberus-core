@@ -23,16 +23,18 @@ import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.net.URLEncoder;
 import java.util.List;
+import java.util.concurrent.Future;
 import java.util.concurrent.PriorityBlockingQueue;
+import java.util.concurrent.RejectedExecutionException;
 import java.util.concurrent.RunnableFuture;
 import java.util.concurrent.TimeUnit;
 import org.apache.log4j.Level;
 import org.cerberus.crud.entity.ExecutionThreadPool;
 import org.cerberus.crud.entity.TestCaseExecutionInQueue;
-import org.cerberus.exception.CerberusException;
-import org.cerberus.log.MyLogger;
 import org.cerberus.crud.service.IParameterService;
 import org.cerberus.crud.service.ITestCaseExecutionInQueueService;
+import org.cerberus.exception.CerberusException;
+import org.cerberus.log.MyLogger;
 import org.cerberus.servlet.zzpublic.RunTestCase;
 import org.cerberus.util.ParamRequestMaker;
 import org.cerberus.util.ParameterParserUtil;
@@ -55,58 +57,52 @@ public class ExecutionThreadPoolService {
     IParameterService parameterService;
 
     @Async
-    public void putExecutionInQueue(String url) throws CerberusException, InterruptedException {
-
+    public void putExecutionInQueue(String url, String tag) throws CerberusException, InterruptedException {
         ExecutionWorkerThread task = new ExecutionWorkerThread();
-        task.setCommand(url);
+        task.setExecutionUrl(url);
         task.setExecThreadPool(threadPool);
-        threadPool.getExecutor().execute(task);
-        threadPool.incrementSize();
-        
-        
-
+        task.setTag(tag);
+        try {
+            Future<?> future = threadPool.getExecutor().submit(task);
+            threadPool.increment(tag, future);
+            task.setFuture(future);
+        } catch (RejectedExecutionException e) {
+            System.out.println("RejectedExecutionException :"+e);
+        }
     }
-    
-//    public ExecutionThreadPoolService(){
-//        ExecutionThreadPriorityService mThreadPoolExecutor = new ExecutionThreadPriorityService(10, Integer.MAX_VALUE,//corepool and maxpool
-//                1L, TimeUnit.SECONDS,//keep alive idle threads
-//                new PriorityBlockingQueue<Runnable>());//priority queue for jobs
-//    }
-//
-//public void queuePhoto(String url, ImageView imageView, int priority) {     
-//    BitmapToLoad p = new BitmapToLoad(url, imageView, priority);
-//    final RunnableFuture<Object> futureTask = 
-//            mThreadPoolExecutor.newTaskForValue(new ExecutionWorkerThread(p), null);
-//    Log.d("BitmapLoader", "Scheduling job with priority " + priority);
-//    mThreadPoolExecutor.execute(futureTask);
-//}
+
 
     public void searchExecutionInQueueTableAndTriggerExecution() throws CerberusException, UnsupportedEncodingException, InterruptedException {
-        
-        try {
-        List<TestCaseExecutionInQueue> tceiqList = tceiqService.findAllNotProcedeed();
-        
-        if (null != tceiqList && !tceiqList.isEmpty()){
-        
-        String host = parameterService.findParameterByKey("cerberus_url", "").getValue() ;
-        host += "/RunTestCase?";
-        
-        if (!threadPool.isNumberOfPoolInitialized()){
-        threadPool.setNumberOfPool(Integer.valueOf(parameterService.findParameterByKey("cerberus_execution_threadpool_size", "").getValue())) ;
-        threadPool.setNumberOfPoolInitialized(true);
-        }
-        
 
-        for (TestCaseExecutionInQueue tceiq : tceiqList) {
-            ParamRequestMaker paramRequestMaker = makeParamRequestfromLastInQueue(tceiq);
-            String uri = paramRequestMaker.mkString().replace(" ", "+");
-            String query = host + uri;
-            this.putExecutionInQueue(query);
-        }
-        }
-        
-        }catch (CerberusException ex){
-        MyLogger.log(ExecutionThreadPoolService.class.getName(), Level.INFO, ex.toString());
+        try {
+            /**
+             * Verify if numberOfPool to use has been initialized. If not
+             * initialize.
+             */
+            if (!threadPool.isNumberOfPoolInitialized()) {
+                threadPool.setNumberOfPool(Integer.valueOf(parameterService.findParameterByKey("cerberus_execution_threadpool_size", "").getValue()));
+                threadPool.setNumberOfPoolInitialized(true);
+            }
+            /**
+             * Find all testCase in Queue not Procedeed
+             */
+            List<TestCaseExecutionInQueue> tceiqList = tceiqService.findAllNotProcedeed();
+            if (null != tceiqList && !tceiqList.isEmpty()) {
+                /**
+                 * Generate the URL for the execution
+                 */
+                String host = parameterService.findParameterByKey("cerberus_url", "").getValue();
+                host += "/RunTestCase?";
+                for (TestCaseExecutionInQueue tceiq : tceiqList) {
+                    ParamRequestMaker paramRequestMaker = makeParamRequestfromLastInQueue(tceiq);
+                    String uri = paramRequestMaker.mkString().replace(" ", "+");
+                    String query = host + uri;
+                    this.putExecutionInQueue(query, tceiq.getTag());
+                }
+            }
+
+        } catch (CerberusException ex) {
+            MyLogger.log(ExecutionThreadPoolService.class.getName(), Level.INFO, ex.toString());
         }
 
     }

@@ -27,6 +27,7 @@ import java.net.MalformedURLException;
 import java.net.SocketTimeoutException;
 import java.net.URL;
 import java.net.URLConnection;
+import java.util.concurrent.Future;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.cerberus.crud.entity.ExecutionThreadPool;
@@ -37,42 +38,50 @@ import org.cerberus.crud.entity.ExecutionThreadPool;
  */
 public class ExecutionWorkerThread implements Runnable, Comparable {
 
-    private String command;
+    private String executionUrl;
     private ExecutionThreadPool execThreadPool;
+    private String tag;
+    private Future<?> future;
 
-    public void setCommand(String s) {
-        this.command = s;
+    public void setExecutionUrl(String url) {
+        this.executionUrl = url;
     }
 
     public void setExecThreadPool(ExecutionThreadPool etp) {
         this.execThreadPool = etp;
     }
 
+    public void setTag(String tag) {
+        this.tag = tag;
+    }
+
+    public void setFuture(Future<?> future) {
+        this.future = future;
+    }
+
     @Override
     public void run() {
-
         try {
-            processCommand(command);
-            execThreadPool.decrementSize();
+            processCommand(executionUrl);
         } catch (MalformedURLException ex) {
             Logger.getLogger(ExecutionWorkerThread.class.getName()).log(Level.SEVERE, null, ex);
         } catch (IOException ex) {
             Logger.getLogger(ExecutionWorkerThread.class.getName()).log(Level.SEVERE, null, ex);
-
         } catch (Exception ex) {
             Logger.getLogger(ExecutionWorkerThread.class.getName()).log(Level.SEVERE, null, ex);
+        } finally {
+            execThreadPool.decrement(tag, future);
         }
     }
 
     private void processCommand(String url) throws MalformedURLException, IOException {
         URL urlToCall = new URL(url);
-        execThreadPool.incrementInExecution();
         HttpURLConnection c = null;
         BufferedReader br = null;
         try {
-            c = (HttpURLConnection) urlToCall.openConnection();
+            execThreadPool.incrementInExecution();
 
-            // set the connection timeout to 600 seconds
+            c = (HttpURLConnection) urlToCall.openConnection();
             c.setConnectTimeout(600000);
             c.setReadTimeout(600000);
 
@@ -94,14 +103,13 @@ public class ExecutionWorkerThread implements Runnable, Comparable {
             if (null != c) {
                 c.disconnect();
             }
+            execThreadPool.decrementInExecution();
         }
-
-        execThreadPool.decrementInExecution();
     }
 
     @Override
     public String toString() {
-        return this.command;
+        return this.executionUrl;
     }
 
     @Override

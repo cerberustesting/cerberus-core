@@ -19,8 +19,13 @@
  */
 package org.cerberus.crud.entity;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 import javax.annotation.PostConstruct;
 import org.springframework.stereotype.Component;
 
@@ -36,6 +41,7 @@ public class ExecutionThreadPool {
     private Integer size;
     private Integer inExecution;
     private boolean numberOfPoolInitialized;
+    Map<String, List<Future<?>>> map = new HashMap<String, List<Future<?>>>();
 
     @PostConstruct
     public void init() {
@@ -45,7 +51,7 @@ public class ExecutionThreadPool {
         inExecution = 0;
         numberOfPoolInitialized = false;
     }
-    
+
     public ExecutorService getExecutor() {
         return executor;
     }
@@ -53,8 +59,8 @@ public class ExecutionThreadPool {
     public void setExecutor(ExecutorService executor) {
         this.executor = executor;
     }
-    
-    public void setNumberOfPool(Integer numberOfPool){
+
+    public void setNumberOfPool(Integer numberOfPool) {
         this.executor = Executors.newFixedThreadPool(numberOfPool);
         totalNumberOfThread = numberOfPool;
     }
@@ -62,6 +68,7 @@ public class ExecutionThreadPool {
     public Integer getSize() {
         return size;
     }
+
     public Integer getNumberOfThread() {
         return totalNumberOfThread;
     }
@@ -69,15 +76,31 @@ public class ExecutionThreadPool {
     public void setSize(Integer size) {
         this.size = size;
     }
-    
-    public void incrementSize() {
+
+    public void increment(String tag, Future<?> future) {
+        /**
+         * Feed the map to get the list of Future execution
+         */
+        if (map.containsKey(tag)) {
+            map.get(tag).add(future);
+        } else {
+            List<Future<?>> f = new ArrayList();
+            f.add(future);
+            map.put(tag, f);
+        }
+        /**
+         * Increment counter;
+         */
         this.size++;
     }
-    
-    public void decrementSize() {
+
+    public void decrement(String tag, Future<?> future) {
+        if (map.containsKey(tag)) {
+            map.get(tag).remove(future);
+        } 
         this.size--;
     }
-    
+
     public void reset() {
         this.stop();
         init();
@@ -96,11 +119,11 @@ public class ExecutionThreadPool {
     public void setInExecution(Integer inExecution) {
         this.inExecution = inExecution;
     }
-    
+
     public void incrementInExecution() {
         this.inExecution++;
     }
-    
+
     public void decrementInExecution() {
         this.inExecution--;
     }
@@ -112,5 +135,5 @@ public class ExecutionThreadPool {
     public void setNumberOfPoolInitialized(boolean numberOfPoolInitialized) {
         this.numberOfPoolInitialized = numberOfPoolInitialized;
     }
-    
+
 }
