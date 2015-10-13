@@ -125,4 +125,6 @@ public interface ITestCaseExecutionService {
     AnswerList readByTagByCriteria(String tag, int start, int amount, String column, String dir, String searchTerm, String individualSearch) throws CerberusException;
     
      public AnswerList readDistinctEnvCoutnryBrowserByTag(String tag);
+
+    public AnswerList readDistinctColumnByTag(String tag, boolean env, boolean country, boolean browser, boolean app);
 }

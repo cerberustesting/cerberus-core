@@ -120,7 +120,12 @@ public class TestCaseExecutionInQueueService implements ITestCaseExecutionInQueu
     public AnswerList readDistinctEnvCoutnryBrowserByTag(String tag) {
         return testCaseExecutionInQueueDAO.readDistinctEnvCoutnryBrowserByTag(tag);
     }
-    
+
+    @Override
+    public AnswerList readDistinctColumnByTag(String tag, boolean env, boolean country, boolean browser, boolean app) {
+        return testCaseExecutionInQueueDAO.readDistinctColumnByTag(tag, env, country, browser, app);
+    }
+
     @Override
     public AnswerList findTagList(int tagnumber) {
         return testCaseExecutionInQueueDAO.findTagList(tagnumber);

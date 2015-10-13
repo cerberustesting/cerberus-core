@@ -189,7 +189,7 @@ function loadTable() {
     }
 }
 
-function CreateTestCaseClick(eventData) {
+function CreateTestCaseClick() {
     clearResponseMessageMainPage();
     var test = GetURLParameter('test');
 

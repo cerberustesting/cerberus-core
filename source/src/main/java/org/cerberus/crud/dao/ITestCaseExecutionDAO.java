@@ -132,4 +132,6 @@ public interface ITestCaseExecutionDAO {
 
     public AnswerList readDistinctEnvCoutnryBrowserByTag(String tag);
 
+    public AnswerList readDistinctColumnByTag(String tag, boolean env, boolean country, boolean browser, boolean app);
+
     }

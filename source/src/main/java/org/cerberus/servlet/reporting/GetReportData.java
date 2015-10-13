@@ -24,6 +24,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -36,7 +37,9 @@ import org.cerberus.dto.TestCaseWithExecution;
 import org.cerberus.exception.CerberusException;
 import org.cerberus.crud.service.ICampaignService;
 import org.cerberus.crud.service.ITestCaseExecutionInQueueService;
+import org.cerberus.crud.service.ITestCaseExecutionService;
 import org.cerberus.util.ParameterParserUtil;
+import org.cerberus.util.answer.AnswerList;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -66,15 +69,15 @@ public class GetReportData extends HttpServlet {
         response.setContentType("text/html;charset=UTF-8");
         ApplicationContext appContext = WebApplicationContextUtils.getWebApplicationContext(this.getServletContext());
         ICampaignService campaignService = appContext.getBean(ICampaignService.class);
+        ITestCaseExecutionService testCaseExecutionService = appContext.getBean(ITestCaseExecutionService.class);
         ITestCaseExecutionInQueueService testCaseExecutionInQueueService = appContext.getBean(ITestCaseExecutionInQueueService.class);
 
         PolicyFactory policy = Sanitizers.FORMATTING.and(Sanitizers.LINKS);
         JSONObject jsonResult = new JSONObject();
 
         String tag = request.getParameter("Tag");
-        String env = ParameterParserUtil.parseStringParam(request.getParameter("env"), "");
-        String country = ParameterParserUtil.parseStringParam(request.getParameter("country"), "");
-        String browser = ParameterParserUtil.parseStringParam(request.getParameter("browser"), "");
+        boolean split = ParameterParserUtil.parseBooleanParam(request.getParameter("split"), false);
+        boolean barData = ParameterParserUtil.parseBooleanParam(request.getParameter("barData"), false);
 
         /**
          * Get list of execution by tag, env, country, browser
@@ -90,32 +93,9 @@ public class GetReportData extends HttpServlet {
          * Feed hash map with execution from the two list (to get only one by
          * test,testcase,country,env,browser)
          */
-        HashMap<String, TestCaseWithExecution> testCaseWithExecutionsList = new HashMap();
-        SimpleDateFormat formater = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
+        testCaseWithExecutions = hashExecution(testCaseWithExecutions, testCaseWithExecutionsInQueue);
 
-        for (TestCaseWithExecution testCaseWithExecution : testCaseWithExecutions) {
-            String key = testCaseWithExecution.getBrowser() + "_"
-                    + testCaseWithExecution.getCountry() + "_"
-                    + testCaseWithExecution.getEnvironment() + "_"
-                    + testCaseWithExecution.getTest() + "_"
-                    + testCaseWithExecution.getTestCase();
-            testCaseWithExecutionsList.put(key, testCaseWithExecution);
-        }
-        for (TestCaseWithExecution testCaseWithExecutionInQueue : testCaseWithExecutionsInQueue) {
-            String key = testCaseWithExecutionInQueue.getBrowser() + "_"
-                    + testCaseWithExecutionInQueue.getCountry() + "_"
-                    + testCaseWithExecutionInQueue.getEnvironment() + "_"
-                    + testCaseWithExecutionInQueue.getTest() + "_"
-                    + testCaseWithExecutionInQueue.getTestCase();
-            if ((testCaseWithExecutionsList.containsKey(key)
-                    && formater.parse(testCaseWithExecutionsList.get(key).getStart()).before(formater.parse(testCaseWithExecutionInQueue.getStart())))
-                    || !testCaseWithExecutionsList.containsKey(key)) {
-                testCaseWithExecutionsList.put(key, testCaseWithExecutionInQueue);
-            }
-        }
-        testCaseWithExecutions = new ArrayList<TestCaseWithExecution>(testCaseWithExecutionsList.values());
-
-        if (env.equals("") && country.equals("") && browser.equals("")) {
+        if (!split && !barData) {
 
             HashMap<String, JSONObject> axisMap = new HashMap<String, JSONObject>();
 
@@ -151,8 +131,55 @@ public class GetReportData extends HttpServlet {
 
             jsonResult.put("axis", axisMap.values());
             jsonResult.put("tag", tag);
-        } else {
-            jsonResult = getStatByEnvCountryBrowser(testCaseWithExecutions, env, country, browser);
+        } else if (split && !barData) {
+            boolean env = ParameterParserUtil.parseBooleanParam(request.getParameter("env"), false);
+            boolean country = ParameterParserUtil.parseBooleanParam(request.getParameter("country"), false);
+            boolean browser = ParameterParserUtil.parseBooleanParam(request.getParameter("browser"), false);
+            boolean app = ParameterParserUtil.parseBooleanParam(request.getParameter("app"), false);
+
+            AnswerList columnExec = testCaseExecutionService.readDistinctColumnByTag(tag, env, country, browser, app);
+            List<TestCaseWithExecution> columnTcExec = columnExec.getDataList();
+
+            AnswerList columnQueue = testCaseExecutionInQueueService.readDistinctColumnByTag(tag, env, country, browser, app);
+            List<TestCaseWithExecution> columnInQueue = columnQueue.getDataList();
+
+            LinkedHashMap<String, TestCaseWithExecution> testCaseWithExecutionsList = new LinkedHashMap();
+
+            for (TestCaseWithExecution column : columnTcExec) {
+                String key = column.getBrowser()
+                        + column.getCountry()
+                        + column.getEnvironment()
+                        + column.getApplication();
+                testCaseWithExecutionsList.put(key, column);
+            }
+            
+            for (TestCaseWithExecution column : columnInQueue) {
+                String key = column.getBrowser()
+                        + column.getCountry()
+                        + column.getEnvironment()
+                        + column.getApplication();
+                testCaseWithExecutionsList.put(key, column);
+            }
+
+            List<TestCaseWithExecution> res = new ArrayList<TestCaseWithExecution>(testCaseWithExecutionsList.values());
+            JSONArray col = new JSONArray();
+             for (TestCaseWithExecution column : res) {
+                 JSONObject tmp = new JSONObject();
+                 tmp.put("env", column.getEnvironment());
+                 tmp.put("country", column.getCountry());
+                 tmp.put("browser", column.getBrowser());
+                 tmp.put("application", column.getApplication());
+                 col.put(tmp);
+             }
+
+            jsonResult.put("contentTable", col);
+        } else if (barData && !split) {
+            String env = ParameterParserUtil.parseStringParam(request.getParameter("env"), "");
+            String country = ParameterParserUtil.parseStringParam(request.getParameter("country"), "");
+            String browser = ParameterParserUtil.parseStringParam(request.getParameter("browser"), "");
+            String app = ParameterParserUtil.parseStringParam(request.getParameter("app"), "");
+            
+            jsonResult.put("contentTable", getStatByEnvCountryBrowser(testCaseWithExecutions, env, country, browser, app));
         }
 
         response.setContentType("application/json");
@@ -214,36 +241,77 @@ public class GetReportData extends HttpServlet {
         return "Short description";
     }// </editor-fold>
 
-    private JSONObject getStatByEnvCountryBrowser(List<TestCaseWithExecution> testCaseWithExecutions, String env, String country, String browser) throws JSONException {
-        JSONObject response = new JSONObject();
-                    JSONObject total = new JSONObject();
-            int totalExec = 0;
-            int totalReport = 0;
-            total.put("OK", 0);
-            total.put("KO", 0);
-            total.put("FA", 0);
-            total.put("CA", 0);
-            total.put("NA", 0);
-            total.put("NE", 0);
-            total.put("PE", 0);
+    private List<TestCaseWithExecution> hashExecution(List<TestCaseWithExecution> testCaseWithExecutions, List<TestCaseWithExecution> testCaseWithExecutionsInQueue) throws ParseException {
+        LinkedHashMap<String, TestCaseWithExecution> testCaseWithExecutionsList = new LinkedHashMap();
+        SimpleDateFormat formater = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
 
-            for (TestCaseWithExecution testCaseWithExecution : testCaseWithExecutions) {
-                totalExec++;
-                if (testCaseWithExecution.getBrowser().equals(browser) && testCaseWithExecution.getEnvironment().equals(env)
-                        && testCaseWithExecution.getCountry().equals(country)) {
-                    totalReport++;
-                    String controlStatus = testCaseWithExecution.getControlStatus();
-                    int prec = total.getInt(controlStatus);
-                    total.put(controlStatus, prec + 1);
-                }
+        for (TestCaseWithExecution testCaseWithExecution : testCaseWithExecutions) {
+            String key = testCaseWithExecution.getBrowser() + "_"
+                    + testCaseWithExecution.getCountry() + "_"
+                    + testCaseWithExecution.getEnvironment() + "_"
+                    + testCaseWithExecution.getTest() + "_"
+                    + testCaseWithExecution.getTestCase();
+            testCaseWithExecutionsList.put(key, testCaseWithExecution);
+        }
+        for (TestCaseWithExecution testCaseWithExecutionInQueue : testCaseWithExecutionsInQueue) {
+            String key = testCaseWithExecutionInQueue.getBrowser() + "_"
+                    + testCaseWithExecutionInQueue.getCountry() + "_"
+                    + testCaseWithExecutionInQueue.getEnvironment() + "_"
+                    + testCaseWithExecutionInQueue.getTest() + "_"
+                    + testCaseWithExecutionInQueue.getTestCase();
+            if ((testCaseWithExecutionsList.containsKey(key)
+                    && formater.parse(testCaseWithExecutionsList.get(key).getStart()).before(formater.parse(testCaseWithExecutionInQueue.getStart())))
+                    || !testCaseWithExecutionsList.containsKey(key)) {
+                testCaseWithExecutionsList.put(key, testCaseWithExecutionInQueue);
             }
-            response.put("total", total);
-            response.put("totalExec", totalExec);
-            response.put("totalReport", totalReport);
-            
-            return response;
+        }
+        List<TestCaseWithExecution> result = new ArrayList<TestCaseWithExecution>(testCaseWithExecutionsList.values());
+
+        return result;
     }
-    
+
+    private JSONObject getStatByEnvCountryBrowser(List<TestCaseWithExecution> testCaseWithExecutions, String env, String country, String browser, String app) throws JSONException {
+        JSONObject response = new JSONObject();
+        JSONObject total = new JSONObject();
+        int totalExec = 0;
+        int totalReport = 0;
+        total.put("OK", 0);
+        total.put("KO", 0);
+        total.put("FA", 0);
+        total.put("CA", 0);
+        total.put("NA", 0);
+        total.put("NE", 0);
+        total.put("PE", 0);
+
+        for (TestCaseWithExecution testCaseWithExecution : testCaseWithExecutions) {
+            boolean filter = true;
+            totalExec++;
+            if (!env.equals("") && !env.equals(testCaseWithExecution.getEnvironment())) {
+                filter = false;
+            }
+            if (!country.equals("") && !country.equals(testCaseWithExecution.getCountry())) {
+                filter = false;
+            }
+            if (!browser.equals("") && !browser.equals(testCaseWithExecution.getBrowser())) {
+                filter = false;
+            }
+            if (!app.equals("") && !app.equals(testCaseWithExecution.getApplication())) {
+                filter = false;
+            }
+            if (filter) {
+                totalReport++;
+                String controlStatus = testCaseWithExecution.getControlStatus();
+                int prec = total.getInt(controlStatus);
+                total.put(controlStatus, prec + 1);
+            }
+        }
+        response.put("total", total);
+        response.put("totalExec", totalExec);
+        response.put("totalReport", totalReport);
+
+        return response;
+    }
+
     private String getColor(String controlStatus) {
         String color = null;
 

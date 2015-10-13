@@ -57,11 +57,12 @@ function loadCountryFilter() {
         success: function (data) {
             var countryFilter = $("#countryFilter");
             var len = data.length;
-            
+
             for (var i = 0; i < len; i++) {
                 var filter = JSON.parse(sessionStorage.getItem("countryFilter"));
                 var cb;
-
+                
+                //Load the filters depenbding on the preferences retrieved from session storage
                 if (filter !== null && !filter.hasOwnProperty(data[i].value)) {
                     cb = '<label class="checkbox-inline">\n\
                         <input type="checkbox" name="' + data[i].value + '"/>\n\
@@ -74,6 +75,7 @@ function loadCountryFilter() {
                 countryFilter.append(cb);
             }
             $("#countryFilter input").on("click", function () {
+                //save the filter preferences in the session storage
                 var serial = $("#countryFilter input").serialize();
                 var obj = convertSerialToJSONObject(serial);
                 sessionStorage.setItem("countryFilter", JSON.stringify(obj));
@@ -102,7 +104,7 @@ function loadTagFilters(urlTag) {
         if (messageType === "success") {
             var index;
             var len = data.contentTable.length;
-            
+
             $('#selectTag').append($('<option></option>').attr("value", "")).attr("placeholder", "Select a Tag");
             for (index = 0; index < len; index++) {
                 //the character " needs a special encoding in order to avoid breaking the string that creates the html element   
@@ -131,9 +133,7 @@ function loadReport() {
     $("#ReportByStatusTable").empty();
     $("#statusChart").empty();
     $("#functionChart").empty();
-    $("#envCountryBrowserSelect").empty();
-    $("#progressEnvCountryBrowser .progress").empty();
-    $(".value").html("0");
+    $("#progressEnvCountryBrowser").empty();
     if ($("#listTable_wrapper").hasClass("initialized")) {
         $("#tableArea").empty();
         $("#tableArea").html('<table id="listTable" class="table table-hover display" name="listTable">\n\
@@ -141,8 +141,8 @@ function loadReport() {
     }
     if (selectTag !== "") {
         //handle the test case execution list display
+        loadEnvCountryBrowserReport();
         loadReportList();
-
         //Retrieve data for charts and draw them
         var jqxhr = $.get("GetReportData", {CampaignName: "null", Tag: selectTag}, "json");
         $.when(jqxhr).then(function (data) {
@@ -152,62 +152,81 @@ function loadReport() {
     }
 }
 
-function loadEnvCountryBrowserReport(tag, data) {
-    var colLen = data.Columns.length;
-    
-    $("#envCountryBrowserSelect").empty();
-    $("#progressEnvCountryBrowser .progress").empty();
+function buildBar(tag, obj) {
+    $.ajax({
+        type: "GET",
+        url: "GetReportData",
+        data: {barData: true, Tag: tag, env: obj.env, country: obj.country, browser: obj.browser, app: obj.application},
+        async: true,
+        dataType: 'json',
+        success: function (data) {
+            $("#totalExec").html(data.totalReport);
+            var buildBar;
+            var statusOrder = ["OK", "KO", "FA", "NA", "NE", "PE", "CA"];
+            var len = statusOrder.length;
+            var key = obj.env + " " + obj.country + " " + obj.browser + " " + obj.application;
 
-    $("#envCountryBrowserSelect").append('<option value=""></option>');
-    for (var i = 0; i < colLen; i++) {
-        var title = data.Columns[i].environment + " " + data.Columns[i].country + " " + data.Columns[i].browser;
-        var serialValue = "env=" + data.Columns[i].environment + "&country=" + data.Columns[i].country + "&browser=" + data.Columns[i].browser;
+            buildBar = '<div>' + key + '<div class="pull-right" style="display: inline;">Total executions : ' + data.contentTable.totalReport + '</div>\n\
+                                                        </div><div class="progress">';
 
-        $("#envCountryBrowserSelect").append('<option value="' + serialValue + '">' + title + '</option>');
-    }
+            for (var i = 0; i < len; i++) {
+                var status = statusOrder[i];
+                if (data.contentTable.total[status] !== 0) {
+                    var percent = (data.contentTable.total[status] / data.contentTable.totalReport) * 100;
+                    var roundPercent = Math.round(percent * 10) / 10;
 
-    $("#envCountryBrowserSelect").change(function () {
-        var selectedOption = $("#envCountryBrowserSelect option:selected").val();
-        $("#progressEnvCountryBrowser .progress").empty();
-        $(".value").html("0");
-
-        if (selectedOption !== "") {
-            var obj = convertSerialToJSONObject(selectedOption);
-
-            $.ajax({
-                type: "GET",
-                url: "GetReportData",
-                data: {Tag: tag, env: obj.env, country: obj.country, browser: obj.browser},
-                async: true,
-                dataType: 'json',
-                success: function (data) {
-                    $("#totalExec").html(data.totalReport);
-                    $("#progressEnvCountryBrowser .progress").empty();
-                    var buildBar = '';
-                    var statusOrder = ["OK", "KO", "FA", "NA", "NE", "PE", "CA"];
-                    var len = statusOrder.length;
-
-                    for (var i = 0; i < len; i++) {
-                        var status = statusOrder[i];
-                        if (data.total[status] !== 0) {
-                            var percent = (data.total[status] / data.totalReport) * 100;
-                            var roundPercent = Math.round(percent * 10) / 10;
-
-                            buildBar += '<div class="progress-bar status' + status + '" \n\
+                    buildBar += '<div class="progress-bar status' + status + '" \n\
                                     role="progressbar" \n\
                                     aria-valuenow="60" \n\
                                     aria-value="0" \n\
                                     aria-valuemax="100" \n\
                                     style="width:' + percent + '%;">' + roundPercent + '%</div>';
-                        }
-                        $('#EnvCountryBrowser' + status + ' .value').html(data.total[status]);
-                    }
-                    $("#progressEnvCountryBrowser .progress").append(buildBar);
-                },
-                error: function () {
-                    showUnexpectedError();
                 }
-            });
+                $('#EnvCountryBrowser' + status + ' .value').html(data.contentTable.total[status]);
+            }
+            buildBar += '</div>';
+            $("#progressEnvCountryBrowser").append(buildBar);
+        },
+        error: function () {
+            showUnexpectedError();
+        }
+    });
+}
+
+function loadEnvCountryBrowserReport() {
+    var tag = GetURLParameter('Tag');
+    $("#progressEnvCountryBrowser").empty();
+    var params = convertSerialToJSONObject($("#splitFilter input").serialize());
+
+    //turns checkbox status too boolean
+    if (params.env === "on") {
+        params.env = true;
+    }
+    if (params.country === "on") {
+        params.country = true;
+    }
+    if (params.browser === "on") {
+        params.browser = true;
+    }
+    if (params.app === "on") {
+        params.app = true;
+    }
+
+    $.ajax({
+        type: "GET",
+        url: "GetReportData",
+        data: {split: true, Tag: tag, env: params.env, country: params.country, browser: params.browser, app: params.app},
+        async: true,
+        dataType: 'json',
+        success: function (json) {
+            var len = json.contentTable.length;
+            for (var index = 0; index < len; index++) {
+                //draw a progress bar for each combo retrieved
+                buildBar(tag, json.contentTable[index]);
+            }
+        },
+        error: function () {
+            showUnexpectedError();
         }
     });
 }
@@ -228,8 +247,6 @@ function loadReportList() {
         var jqxhr = $.getJSON("ReadTestCaseExecution", "Tag=" + selectTag + "&" + statusFilter.serialize() + "&" + countryFilter.serialize());
         $.when(jqxhr).then(function (data) {
             var request = "ReadTestCaseExecution?Tag=" + selectTag + "&" + statusFilter.serialize() + "&" + countryFilter.serialize();
-
-            loadEnvCountryBrowserReport(selectTag, data);
 
             var config = new TableConfigurationsServerSide("listTable", request, "testList", aoColumnsFunc(data.Columns));
             customConfig(config);
@@ -263,7 +280,7 @@ function appendPanelStatus(status, total) {
 function loadReportByStatusTable(data) {
     var total = {};
     var len = data.axis.length;
-    
+
     //calculate totaltest nb
     total["test"] = 0;
     for (var index = 0; index < len; index++) {
@@ -380,7 +397,7 @@ function loadReportByFunctionChart(dataset) {
             .html(function (d) {
                 var res = "<strong>Function :</strong> <span style='color:red'>" + d.name + "</span>";
                 var len = d.chartData.length;
-        
+
                 for (var index = 0; index < len; index++) {
                     res = res + "<div><div class='color-box' style='background-color:" + d.chartData[index].color + " ;'>\n\
                     </div>" + d.chartData[index].name + " : " + d[d.chartData[index].name].value + "</div>";

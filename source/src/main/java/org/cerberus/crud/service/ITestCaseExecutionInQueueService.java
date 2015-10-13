@@ -132,5 +132,7 @@ public interface ITestCaseExecutionInQueueService {
     
     public AnswerList readDistinctEnvCoutnryBrowserByTag(String tag);
     
+    public AnswerList readDistinctColumnByTag(String tag, boolean env, boolean country, boolean browser, boolean app);
+    
     public AnswerList findTagList(int tagnumber);
 }

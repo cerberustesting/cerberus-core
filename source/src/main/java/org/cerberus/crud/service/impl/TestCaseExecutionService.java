@@ -141,4 +141,9 @@ public class TestCaseExecutionService implements ITestCaseExecutionService {
      public AnswerList readDistinctEnvCoutnryBrowserByTag(String tag) {
          return testCaseExecutionDao.readDistinctEnvCoutnryBrowserByTag(tag);
      }
+     
+     @Override
+     public AnswerList readDistinctColumnByTag(String tag, boolean env, boolean country, boolean browser, boolean app) {
+         return testCaseExecutionDao.readDistinctColumnByTag(tag, env, country, browser, app);
+     }
 }

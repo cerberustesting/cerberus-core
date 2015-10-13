@@ -4859,6 +4859,15 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLS.append("('testcasestepaction', 'Action', 'skipAction', 'en', 'Skip this action', '<code class=\\'doc-fixed\\'>skipAction</code> will skip the action. Can be used in case of control that must be done without action before.<br><br>Usage :<br><doc class=\"usage\"><table cellspacing=0 cellpadding=2><th class=\\'ex\\'>Field</th><th class=\\'ex\\'>Usage</th><tr><td class=\\'ex\\'>Object</td><td class=\\'ex\\'></td></tr><tr><td class=\\'ex\\'>Property</td><td class=\\'ex\\'></td></tr></table></doc><br><br>Examples :<br><doc class=\"examples\"><table cellspacing=0 cellpadding=2><th class=\\'ex\\'>Object</th><th class=\\'ex\\'>Property</th><th class=\\'ex\\'>Result</th><tr><td class=\\'ex\\'></td><td class=\\'ex\\'></td><td class=\\'ex\\'>No action will be executed and engine will go to the next action or control</td></tr></table></doc>');");        
         SQLInstruction.add(SQLS.toString());
         
+        // Documentation entries update for reporting by tag
+        //-- ------------------------  640
+        SQLS = new StringBuilder();
+        SQLS.append("UPDATE `documentation` SET `DocLabel`='Rapport par Application Envrionnement Pays Navigateur', `DocDesc`='Rapport d\\'execution filtré par Application Envrionnment Pays et Navigateur' WHERE `DocTable`='page_reportbytag' and`DocField`='report_envcountrybrowser' and`DocValue`='' and`Lang`='fr';");
+        SQLInstruction.add(SQLS.toString());
+        SQLS = new StringBuilder();
+        SQLS.append("UPDATE `documentation` SET `DocLabel`='Report By Application Environement Country Browser', `DocDesc`='Report of the execution filtering by Application Environement Country and Browser' WHERE `DocTable`='page_reportbytag' and`DocField`='report_envcountrybrowser' and`DocValue`='' and`Lang`='en';");
+        SQLInstruction.add(SQLS.toString());
+        
         return SQLInstruction;
     }
 

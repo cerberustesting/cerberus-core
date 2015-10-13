@@ -41,6 +41,7 @@ import org.cerberus.exception.CerberusException;
 import org.cerberus.exception.FactoryCreationException;
 import org.cerberus.crud.factory.IFactoryTestCaseExecutionInQueue;
 import org.cerberus.log.MyLogger;
+import org.cerberus.util.ParameterParserUtil;
 import org.cerberus.util.answer.AnswerList;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
@@ -850,7 +851,7 @@ public class TestCaseExecutionInQueueDAO implements ITestCaseExecutionInQueueDAO
                     msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", "Unable to retrieve the list of entries!"));
                     EnvCountryBrowserList = null;
                 } finally {
-                    if(resultSet != null){
+                    if (resultSet != null) {
                         resultSet.close();
                     }
                 }
@@ -860,7 +861,7 @@ public class TestCaseExecutionInQueueDAO implements ITestCaseExecutionInQueueDAO
                 msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", "Unable to retrieve the list of entries!"));
                 EnvCountryBrowserList = null;
             } finally {
-                if(preStat != null){
+                if (preStat != null) {
                     preStat.close();
                 }
             }
@@ -868,9 +869,9 @@ public class TestCaseExecutionInQueueDAO implements ITestCaseExecutionInQueueDAO
             MyLogger.log(TestCaseExecutionInQueueDAO.class.getName(), Level.WARN, ex.toString());
             msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
             msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", "Unable to retrieve the list of entries!"));
-        }finally {
+        } finally {
             try {
-                if(connection != null){
+                if (connection != null) {
                     connection.close();
                 }
             } catch (SQLException ex) {
@@ -882,7 +883,128 @@ public class TestCaseExecutionInQueueDAO implements ITestCaseExecutionInQueueDAO
         return answer;
     }
 
-     @Override
+    @Override
+    public AnswerList readDistinctColumnByTag(String tag, boolean env, boolean country, boolean browser, boolean app) {
+        AnswerList answer = new AnswerList();
+        StringBuilder query = new StringBuilder();
+        StringBuilder distinct = new StringBuilder();
+        int prev = 0;
+        MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
+
+        if (!(!env && !country && !app && !browser)) {
+            if (env) {
+                distinct.append("tce.Environment");
+                prev++;
+            }
+            if (country) {
+                if (prev != 0) {
+                    prev = 0;
+                    distinct.append(",");
+                }
+                distinct.append("tce.Country");
+                prev++;
+            }
+            if (browser) {
+                if (prev != 0) {
+                    prev = 0;
+                    distinct.append(",");
+                }
+                distinct.append("tce.Browser");
+                prev++;
+            }
+            if (app) {
+                if (prev != 0) {
+                    prev = 0;
+                    distinct.append(",");
+                }
+                distinct.append("tc.Application");
+            }
+
+            query.append("SELECT tc.test, tc.testcase, ");
+            query.append(distinct.toString());
+            query.append(" FROM testcase tc LEFT JOIN testcaseexecutionqueue tce ON tce.Test = tc.Test AND tce.TestCase = tc.TestCase WHERE tag = ? GROUP BY ");
+            query.append(distinct.toString());
+        } else {
+             //If there is no distinct, select nothing
+            query.append("SELECT * FROM testcaseexecutionqueue WHERE 1=0 AND tag = ?");
+        }
+
+        Connection connection = this.databaseSpring.connect();
+
+        List<TestCaseWithExecution> column = new ArrayList<TestCaseWithExecution>();
+
+        try {
+            PreparedStatement preStat = connection.prepareStatement(query.toString());
+
+            preStat.setString(1, tag);
+            try {
+                ResultSet resultSet = preStat.executeQuery();
+                try {
+                    while (resultSet.next()) {
+                        TestCaseWithExecution tmp = new TestCaseWithExecution();
+                        if (env) {
+                            tmp.setEnvironment(resultSet.getString("Environment"));
+                        } else {
+                            tmp.setEnvironment("");
+                        }
+                        if (country) {
+                            tmp.setCountry(resultSet.getString("Country"));
+                        } else {
+                            tmp.setCountry("");
+                        }
+                        if (browser) {
+                            tmp.setBrowser(resultSet.getString("Browser"));
+                        } else {
+                            tmp.setBrowser("");
+                        }
+                        if (app) {
+                            tmp.setApplication(resultSet.getString("Application"));
+                        } else {
+                            tmp.setApplication("");
+                        }
+                        column.add(tmp);
+                    }
+                    msg.setDescription(msg.getDescription().replace("%ITEM%", "TestCaseExecution").replace("%OPERATION%", "SELECT"));
+                    answer = new AnswerList(column, column.size());
+                } catch (SQLException exception) {
+                    MyLogger.log(TestCaseExecutionInQueueDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
+                    msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
+                    msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", "Unable to retrieve the list of entries!"));
+                    column = null;
+                } finally {
+                    if (resultSet != null) {
+                        resultSet.close();
+                    }
+                }
+            } catch (SQLException ex) {
+                MyLogger.log(TestCaseExecutionInQueueDAO.class.getName(), Level.ERROR, "Unable to execute query : " + ex.toString());
+                msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
+                msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", "Unable to retrieve the list of entries!"));
+                column = null;
+            } finally {
+                if (preStat != null) {
+                    preStat.close();
+                }
+            }
+        } catch (SQLException ex) {
+            MyLogger.log(TestCaseExecutionInQueueDAO.class.getName(), Level.WARN, ex.toString());
+            msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
+            msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", "Unable to retrieve the list of entries!"));
+        } finally {
+            try {
+                if (connection != null) {
+                    connection.close();
+                }
+            } catch (SQLException ex) {
+                MyLogger.log(TestCaseExecutionInQueueDAO.class.getName(), Level.ERROR, "Unable to execute query : " + ex.toString());
+            }
+        }
+
+        answer.setResultMessage(msg);
+        return answer;
+    }
+
+    @Override
     public AnswerList findTagList(int tagnumber) {
         AnswerList response = new AnswerList();
         MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
@@ -890,7 +1012,7 @@ public class TestCaseExecutionInQueueDAO implements ITestCaseExecutionInQueueDAO
         StringBuilder query = new StringBuilder();
 
         query.append("SELECT DISTINCT tag FROM testcaseexecutionqueue WHERE tag != ''");
-        
+
         if (tagnumber != 0) {
             query.append("ORDER BY id desc LIMIT ");
             query.append(tagnumber);
@@ -941,7 +1063,7 @@ public class TestCaseExecutionInQueueDAO implements ITestCaseExecutionInQueueDAO
         response.setDataList(list);
         return response;
     }
-    
+
     public TestCaseWithExecution loadEnvCountryBrowserFromResultSet(ResultSet resultSet) throws SQLException {
         TestCaseWithExecution testCaseWithExecution = new TestCaseWithExecution();
 

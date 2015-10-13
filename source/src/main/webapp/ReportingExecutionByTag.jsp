@@ -78,22 +78,31 @@
                     <div class="panel panel-default">
                         <div class="panel-heading card" data-toggle="collapse" data-target="#reportEnvCountryBrowser">
                             <label id="envCountryBrowser">Report by EnvCountryBrowser</label>
-                            <span class="toggle glyphicon glyphicon-chevron-right pull-right"></span>
+                            <span class="toggle glyphicon glyphicon-chevron-down pull-right"></span>
                         </div>
-                        <div class="panel-body collapse in" id="reportEnvCountryBrowser">
-                            <select id="envCountryBrowserSelect" class="form-control" style="width: 15%; margin-bottom: 10px;"></select>
-                            <div id="progressEnvCountryBrowser">
-                                <div class="progress"></div>
+                        <div class="panel-body collapse" id="reportEnvCountryBrowser">
+                            <label id="splitLabel" class="bold">Split by :</label>
+                            <button type="button" class="btn btn-default pull-right" onclick="loadEnvCountryBrowserReport()" id="reloadSplit">Reload</button>
+                            <div class="form-group marginBottom20" id="splitFilter">
+                                <label class="checkbox-inline">
+                                    <input type="checkbox" name="env" checked/>
+                                    Environment
+                                </label>
+                                <label class="checkbox-inline">
+                                    <input type="checkbox" name="country" checked/>
+                                    Country
+                                </label>
+                                <label class="checkbox-inline">
+                                    <input type="checkbox" name="browser" checked/>
+                                    Browser
+                                </label>
+                                <label class="checkbox-inline">
+                                    <input type="checkbox" name="app" checked/>
+                                    Application
+                                </label>
                             </div>
-                            <div id="statusByEnvCountryBrowser">
-                                <div class="statusEnvCountryBrowser" id="EnvCountryBrowserOK"><span class='color-box statusOK'></span>OK : <span class="value">0</span></div>
-                                <div class="statusEnvCountryBrowser" id="EnvCountryBrowserKO"><span class='color-box statusKO'></span>KO : <span class="value">0</span></div>
-                                <div class="statusEnvCountryBrowser" id="EnvCountryBrowserFA"><span class='color-box statusFA'></span>FA : <span class="value">0</span></div>
-                                <div class="statusEnvCountryBrowser" id="EnvCountryBrowserNA"><span class='color-box statusNA'></span>NA : <span class="value">0</span></div>
-                                <div class="statusEnvCountryBrowser" id="EnvCountryBrowserNE"><span class='color-box statusNE'></span>NE : <span class="value">0</span></div>
-                                <div class="statusEnvCountryBrowser" id="EnvCountryBrowserPE"><span class='color-box statusPE'></span>PE : <span class="value">0</span></div>
-                                <div class="statusEnvCountryBrowser" id="EnvCountryBrowserCA"><span class='color-box statusCA'></span>CA : <span class="value">0</span></div>
-                                <div class="statusEnvCountryBrowser pull-right">Executions : <span class="value" id="totalExec">0</span></div>
+                            <div id="progressEnvCountryBrowser">
+
                             </div>
                         </div>
                     </div>

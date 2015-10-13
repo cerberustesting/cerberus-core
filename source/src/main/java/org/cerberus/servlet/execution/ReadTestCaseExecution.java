@@ -23,6 +23,7 @@ import java.io.IOException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.logging.Level;
@@ -35,14 +36,13 @@ import javax.servlet.http.HttpServletResponse;
 import org.cerberus.crud.entity.Invariant;
 import org.cerberus.dto.TestCaseWithExecution;
 import org.cerberus.crud.entity.MessageEvent;
+import org.cerberus.crud.entity.TestCaseExecution;
 import org.cerberus.crud.service.IInvariantService;
 import org.cerberus.enums.MessageEventEnum;
 import org.cerberus.exception.CerberusException;
-import org.cerberus.crud.service.ILogEventService;
 import org.cerberus.crud.service.ITestCaseExecutionInQueueService;
 import org.cerberus.crud.service.ITestCaseExecutionService;
 import org.cerberus.crud.service.impl.InvariantService;
-import org.cerberus.crud.service.impl.LogEventService;
 import org.cerberus.servlet.campaign.CampaignExecutionReport;
 import org.cerberus.util.ParameterParserUtil;
 import org.cerberus.util.answer.AnswerItem;
@@ -50,8 +50,6 @@ import org.cerberus.util.answer.AnswerList;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.owasp.html.PolicyFactory;
-import org.owasp.html.Sanitizers;
 import org.springframework.context.ApplicationContext;
 import org.springframework.web.context.support.WebApplicationContextUtils;
 import org.springframework.web.util.JavaScriptUtils;
@@ -63,7 +61,6 @@ import org.springframework.web.util.JavaScriptUtils;
 @WebServlet(name = "ReadTestCaseExecution", urlPatterns = {"/ReadTestCaseExecution"})
 public class ReadTestCaseExecution extends HttpServlet {
 
-    private final PolicyFactory policy = Sanitizers.FORMATTING.and(Sanitizers.LINKS);
     private ITestCaseExecutionService testCaseExecutionService;
 
     /**
@@ -87,7 +84,8 @@ public class ReadTestCaseExecution extends HttpServlet {
             AnswerItem answer = new AnswerItem(new MessageEvent(MessageEventEnum.DATA_OPERATION_OK));
             int sEcho = Integer.valueOf(ParameterParserUtil.parseStringParam(request.getParameter("sEcho"), "0"));
             String Tag = ParameterParserUtil.parseStringParam(request.getParameter("Tag"), "");
-            int TagNumber = Integer.valueOf(ParameterParserUtil.parseStringParam(request.getParameter("TagNumber"), "0"));
+            String test = ParameterParserUtil.parseStringParam(request.getParameter("test"), "");
+            String testCase = ParameterParserUtil.parseStringParam(request.getParameter("testCase"), "");
 
             if (sEcho == 0 && !Tag.equals("")) {
                 answer = findExecutionColumns(appContext, request, Tag);
@@ -95,6 +93,15 @@ public class ReadTestCaseExecution extends HttpServlet {
             } else if (sEcho != 0 && !Tag.equals("")) {
                 answer = findExecutionList(appContext, request, Tag);
                 jsonResponse = (JSONObject) answer.getItem();
+            } else if (!test.equals("") && !testCase.equals("")) {
+                TestCaseExecution lastExec = testCaseExecutionService.findLastTestCaseExecutionNotPE(test, testCase);
+                JSONObject result = new JSONObject();
+                result.put("id", lastExec.getId());
+                result.put("controlStatus", lastExec.getControlStatus());
+                result.put("env", lastExec.getEnvironment());
+                result.put("country", lastExec.getCountry());
+                result.put("end", new Date(lastExec.getEnd())).toString();
+                jsonResponse.put("contentTable", result);
             }
 
             jsonResponse.put("messageType", answer.getResultMessage().getMessage().getCodeString());
@@ -275,30 +282,7 @@ public class ReadTestCaseExecution extends HttpServlet {
          * Feed hash map with execution from the two list (to get only one by
          * test,testcase,country,env,browser)
          */
-        LinkedHashMap<String, TestCaseWithExecution> testCaseWithExecutionsList = new LinkedHashMap();
-        SimpleDateFormat formater = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
-
-        for (TestCaseWithExecution testCaseWithExecution : testCaseWithExecutions) {
-            String key = testCaseWithExecution.getBrowser() + "_"
-                    + testCaseWithExecution.getCountry() + "_"
-                    + testCaseWithExecution.getEnvironment() + "_"
-                    + testCaseWithExecution.getTest() + "_"
-                    + testCaseWithExecution.getTestCase();
-            testCaseWithExecutionsList.put(key, testCaseWithExecution);
-        }
-        for (TestCaseWithExecution testCaseWithExecutionInQueue : testCaseWithExecutionsInQueue) {
-            String key = testCaseWithExecutionInQueue.getBrowser() + "_"
-                    + testCaseWithExecutionInQueue.getCountry() + "_"
-                    + testCaseWithExecutionInQueue.getEnvironment() + "_"
-                    + testCaseWithExecutionInQueue.getTest() + "_"
-                    + testCaseWithExecutionInQueue.getTestCase();
-            if ((testCaseWithExecutionsList.containsKey(key)
-                    && formater.parse(testCaseWithExecutionsList.get(key).getStart()).before(formater.parse(testCaseWithExecutionInQueue.getStart())))
-                    || !testCaseWithExecutionsList.containsKey(key)) {
-                testCaseWithExecutionsList.put(key, testCaseWithExecutionInQueue);
-            }
-        }
-        testCaseWithExecutions = new ArrayList<TestCaseWithExecution>(testCaseWithExecutionsList.values());
+        testCaseWithExecutions = hashExecution(testCaseWithExecutions, testCaseWithExecutionsInQueue);
 
         JSONArray executionList = new JSONArray();
         JSONObject statusFilter = getStatusList(request);
@@ -373,7 +357,7 @@ public class ReadTestCaseExecution extends HttpServlet {
         JSONObject countryList = new JSONObject();
 
         IInvariantService invariantService = appContext.getBean(InvariantService.class);
-        
+
         try {
             for (Invariant country : invariantService.findListOfInvariantById("COUNTRY")) {
                 countryList.put(country.getValue(), ParameterParserUtil.parseStringParam(request.getParameter(country.getValue()), "off"));
@@ -387,6 +371,35 @@ public class ReadTestCaseExecution extends HttpServlet {
         return countryList;
     }
 
+    private List<TestCaseWithExecution> hashExecution(List<TestCaseWithExecution> testCaseWithExecutions, List<TestCaseWithExecution> testCaseWithExecutionsInQueue) throws ParseException {
+        LinkedHashMap<String, TestCaseWithExecution> testCaseWithExecutionsList = new LinkedHashMap();
+        SimpleDateFormat formater = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
+
+        for (TestCaseWithExecution testCaseWithExecution : testCaseWithExecutions) {
+            String key = testCaseWithExecution.getBrowser() + "_"
+                    + testCaseWithExecution.getCountry() + "_"
+                    + testCaseWithExecution.getEnvironment() + "_"
+                    + testCaseWithExecution.getTest() + "_"
+                    + testCaseWithExecution.getTestCase();
+            testCaseWithExecutionsList.put(key, testCaseWithExecution);
+        }
+        for (TestCaseWithExecution testCaseWithExecutionInQueue : testCaseWithExecutionsInQueue) {
+            String key = testCaseWithExecutionInQueue.getBrowser() + "_"
+                    + testCaseWithExecutionInQueue.getCountry() + "_"
+                    + testCaseWithExecutionInQueue.getEnvironment() + "_"
+                    + testCaseWithExecutionInQueue.getTest() + "_"
+                    + testCaseWithExecutionInQueue.getTestCase();
+            if ((testCaseWithExecutionsList.containsKey(key)
+                    && formater.parse(testCaseWithExecutionsList.get(key).getStart()).before(formater.parse(testCaseWithExecutionInQueue.getStart())))
+                    || !testCaseWithExecutionsList.containsKey(key)) {
+                testCaseWithExecutionsList.put(key, testCaseWithExecutionInQueue);
+            }
+        }
+        List<TestCaseWithExecution> result = new ArrayList<TestCaseWithExecution>(testCaseWithExecutionsList.values());
+        
+        return result;
+    }
+    
     private JSONObject testCaseExecutionToJSONObject(
             TestCaseWithExecution testCaseWithExecution) throws JSONException {
         JSONObject result = new JSONObject();
