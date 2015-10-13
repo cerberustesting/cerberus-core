@@ -23,7 +23,7 @@
  * @returns {void}
  */
 function readUserFromDatabase() {
-    $.ajax({url: "ReadUser",
+    $.ajax({url: "ReadMyUser",
         async: false,
         dataType: 'json',
         success: function (data) {

@@ -17,9 +17,23 @@
     <body>
         <%@ include file="../include/function.jsp" %>
         <%@ include file="../include/header.jsp" %>
+        <%
+        if (request.getParameter("error").equals("403")) 
+                {
+        %>
+        <h1>Not Authorised Ressource...</h1>
+        <h3> You don't have enough privilege to open this page, Please ask your Cerberus administrator to grant the access.</h3>
+        <%
+                
+                } else {
+        %>
         <h1>Oops...</h1>
-        <h3>Sorry but an unexpected error occurred.
+        <h3>Sorry but an unexpected error occurred.</h3>
+        <%
+                        }
+        %>
         <br><br>
+        <h4>Error Code : <%=request.getParameter("error")%></h4>
         <h4><%=request.getAttribute("javax.servlet.error.message")%></h4>
         <br><%
             out.print(display_footer(DatePageStart));

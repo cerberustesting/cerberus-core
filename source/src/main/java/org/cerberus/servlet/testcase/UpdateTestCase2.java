@@ -224,6 +224,7 @@ public class UpdateTestCase2 extends HttpServlet {
         tc.setRunUAT(ParameterParserUtil.parseStringParam(request.getParameter("activeUAT"), tc.getRunUAT()));
         tc.setRunPROD(ParameterParserUtil.parseStringParam(request.getParameter("activeProd"), tc.getRunPROD()));
         tc.setPriority(ParameterParserUtil.parseIntegerParam(request.getParameter("priority"), tc.getPriority()));
+        tc.setOrigin(ParameterParserUtil.parseStringParam(request.getParameter("origin"), tc.getOrigin()));
         tc.setGroup(ParameterParserUtil.parseStringParam(request.getParameter("group"), tc.getGroup()));
         tc.setStatus(ParameterParserUtil.parseStringParam(request.getParameter("status"), tc.getStatus()));
         tc.setShortDescription(ParameterParserUtil.parseStringParam(request.getParameter("shortDesc"), tc.getShortDescription()));

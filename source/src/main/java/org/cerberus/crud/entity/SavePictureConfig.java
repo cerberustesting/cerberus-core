@@ -1,6 +1,6 @@
 package org.cerberus.crud.entity;
 
-import org.cerberus.servlet.testcase.SavePicture;
+import org.cerberus.servlet.testcase.PictureConnector;
 import org.elfinder.servlets.config.AbstractConnectorConfig;
 import org.elfinder.servlets.fs.DiskFsImpl;
 import org.elfinder.servlets.fs.IFsImpl;
@@ -24,12 +24,12 @@ public class SavePictureConfig extends AbstractConnectorConfig {
 
     @Override
     public String getRoot() {
-        return SavePicture.HOME_SHARED_DOCS;
+        return PictureConnector.HOME_SHARED_DOCS;
     }
 
     @Override
     public String getRootUrl() {
-        return SavePicture.REALOBJECTURL;
+        return PictureConnector.REALOBJECTURL;
     }
 
     @Override
@@ -39,12 +39,12 @@ public class SavePictureConfig extends AbstractConnectorConfig {
 
     @Override
     public String rootAliasOrBaseName() {
-        return SavePicture.SHARED_DOCS;
+        return PictureConnector.SHARED_DOCS;
     }
 
     @Override
     public String getThumbnailUrl(File path) {
-        return SavePicture.THUMBNAIL + getRelativePath(path);
+        return PictureConnector.THUMBNAIL + getRelativePath(path);
     }
 
     @Override

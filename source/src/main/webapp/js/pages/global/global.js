@@ -899,3 +899,15 @@ function drawURL(data){
     }
     return '';
 }
+
+//load elements
+function loadSelectElement(data, element, includeEmpty, includeEmptyText) {
+    $(element).empty();
+    if (includeEmpty !== null && includeEmpty) {
+        $(element).append("<option value=''>" + includeEmptyText + "</option>");
+    }
+    $.each(data, function (idx, obj) {
+        $(element).append("<option value='" + obj + "'>" + obj + "</option>");
+    });
+
+}

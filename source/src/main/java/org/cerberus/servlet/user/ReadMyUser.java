@@ -20,7 +20,6 @@
 package org.cerberus.servlet.user;
 
 import java.io.IOException;
-import java.io.PrintWriter;
 import java.util.logging.Logger;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -28,12 +27,10 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
-import org.apache.log4j.Level;
 import org.cerberus.crud.entity.Group;
 import org.cerberus.crud.entity.User;
 import org.cerberus.crud.entity.UserSystem;
 import org.cerberus.exception.CerberusException;
-import org.cerberus.log.MyLogger;
 import org.cerberus.crud.service.IUserGroupService;
 import org.cerberus.crud.service.IUserService;
 import org.cerberus.crud.service.IUserSystemService;
@@ -49,8 +46,8 @@ import org.springframework.web.context.support.WebApplicationContextUtils;
  *
  * @author bcivel
  */
-@WebServlet(name = "ReadUser", urlPatterns = {"/ReadUser"})
-public class ReadUser extends HttpServlet {
+@WebServlet(name = "ReadMyUser", urlPatterns = {"/ReadMyUser"})
+public class ReadMyUser extends HttpServlet {
 
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
@@ -102,7 +99,7 @@ public class ReadUser extends HttpServlet {
             response.setContentType("text/html");
             response.getWriter().print(ex.getMessageError().getDescription());
         } catch (JSONException ex) {
-            Logger.getLogger(ReadUser.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            Logger.getLogger(ReadMyUser.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (NullPointerException ex) {
             response.sendRedirect("./Login.jsp");
         }

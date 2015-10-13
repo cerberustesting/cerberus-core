@@ -20,12 +20,12 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServletRequest;
 
 @WebServlet(name = "PictureConnector", urlPatterns = {"/PictureConnector"})
-public class SavePicture extends AbstractConnectorServlet {
+public class PictureConnector extends AbstractConnectorServlet {
 
     public static String SHARED_DOCS = "Shared docs";
-    public static String THUMBNAIL = "thumbnailer?p=";
+    public static String THUMBNAIL = "Thumbnailer?p=";
     public static String HOME_SHARED_DOCS = "";
-    public static String REALOBJECTURL = "virtualproxy";
+    public static String REALOBJECTURL = "VirtualProxy";
 
     @Override
     public void init(ServletConfig config) throws ServletException {
@@ -36,7 +36,7 @@ public class SavePicture extends AbstractConnectorServlet {
             Parameter param = parameterService.findParameterByKey("cerberus_picture_testcase_path", "");
             HOME_SHARED_DOCS = param.getValue();
         } catch (CerberusException e) {
-            MyLogger.log(SavePicture.class.getName(), Level.FATAL, "Parameter (cerberus_picture_testcase_path) not in Parameter table.");
+            MyLogger.log(PictureConnector.class.getName(), Level.FATAL, "Parameter (cerberus_picture_testcase_path) not in Parameter table.");
         }
         if (!StringUtils.isBlank(getServletContext().getInitParameter("THUMBNAIL"))){
             THUMBNAIL = getServletContext().getInitParameter("THUMBNAIL");

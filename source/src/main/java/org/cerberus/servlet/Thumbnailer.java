@@ -5,7 +5,7 @@ import com.mortennobel.imagescaling.ResampleOp;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.time.DateUtils;
-import org.cerberus.servlet.testcase.SavePicture;
+import org.cerberus.servlet.testcase.PictureConnector;
 
 import javax.imageio.ImageIO;
 import javax.servlet.ServletException;
@@ -19,7 +19,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Calendar;
 
-@WebServlet(name = "thumbnailer", urlPatterns = {"/thumbnailer"})
+@WebServlet(name = "Thumbnailer", urlPatterns = {"/Thumbnailer"})
 public class Thumbnailer extends HttpServlet{
     private static final long serialVersionUID = 1L;
 
@@ -38,7 +38,7 @@ public class Thumbnailer extends HttpServlet{
 
         // security
         path = FilenameUtils.normalize(path);
-        File f = new File(SavePicture.HOME_SHARED_DOCS, path);
+        File f = new File(PictureConnector.HOME_SHARED_DOCS, path);
 
         Boolean real = request.getParameter("r") != null;
         BufferedImage b = null;
