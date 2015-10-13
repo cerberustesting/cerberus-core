@@ -152,6 +152,23 @@ function loadReport() {
     }
 }
 
+function generateBarTooltip(data, statusOrder) {
+    var htmlRes = "";
+    var len = statusOrder.length;
+
+    for (var index = 0; index < len; index++) {
+        var status = statusOrder[index];
+
+        if (data.total.hasOwnProperty(status)) {
+            htmlRes += "<div>\n\
+                        <span class='color-box status" + status +"'></span>\n\
+                        <strong> " + status + " : </strong>" + data.total[status] + "</div>";
+        }
+    }
+    htmlRes += '</div>';
+    return htmlRes;
+}
+
 function buildBar(tag, obj) {
     $.ajax({
         type: "GET",
@@ -165,9 +182,10 @@ function buildBar(tag, obj) {
             var statusOrder = ["OK", "KO", "FA", "NA", "NE", "PE", "CA"];
             var len = statusOrder.length;
             var key = obj.env + " " + obj.country + " " + obj.browser + " " + obj.application;
+            var tooltip = generateBarTooltip(data.contentTable, statusOrder);
 
             buildBar = '<div>' + key + '<div class="pull-right" style="display: inline;">Total executions : ' + data.contentTable.totalReport + '</div>\n\
-                                                        </div><div class="progress">';
+                                                        </div><div class="progress" data-toggle="tooltip" data-html="true" title="' + tooltip + '">';
 
             for (var i = 0; i < len; i++) {
                 var status = statusOrder[i];
