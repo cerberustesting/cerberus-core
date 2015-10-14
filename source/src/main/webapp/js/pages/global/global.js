@@ -585,7 +585,7 @@ function createDataTableWithPermissions(tableConfigurations, callbackfunction) {
                 "success": function (json) {
                     var tabCheckPermissions = $("#" + tableConfigurations.divId);
                     var hasPermissions = false; //by default does not have permissions
-                    if(Boolean(json["hasPermissions"])){ //if the response information about permissions then we will update it
+                    if (Boolean(json["hasPermissions"])) { //if the response information about permissions then we will update it
                         hasPermissions = json["hasPermissions"];
                     }
                     //sets the permissions in the table
@@ -879,21 +879,28 @@ function GetURLParameter(sParam)
 
 /**
  * Bind the toggle action to the panel body
- * @param {type} id of the panel body to be collapsed
  * @returns {void}
  */
-function bindToggleCollapse(id) {
-    $(id).on('shown.bs.collapse', function () {
-        $(this).prev().find(".toggle").removeClass("glyphicon-chevron-down").addClass("glyphicon-chevron-right");
-    });
+function bindToggleCollapse() {
+    $(".collapse").each(function () {
+        $(this).on('shown.bs.collapse', function () {
+            localStorage.setItem(this.id, true);
+            $(this).prev().find(".toggle").removeClass("glyphicon-chevron-down").addClass("glyphicon-chevron-right");
+        });
 
-    $(id).on('hidden.bs.collapse', function () {
-        $(this).prev().find(".toggle").removeClass("glyphicon-chevron-right").addClass("glyphicon-chevron-down");
+        $(this).on('hidden.bs.collapse', function () {
+            localStorage.setItem(this.id, false);
+            $(this).prev().find(".toggle").removeClass("glyphicon-chevron-right").addClass("glyphicon-chevron-down");
+        });
+        
+        if (localStorage.getItem(this.id) === "false") {
+            $(this).collapse();
+        }
     });
 }
 
 
-function drawURL(data){    
+function drawURL(data) {
     if (data !== '') {
         return "<a target = '_blank' href='" + data + "'>" + data + "</a>";//TODO:FN ver se tem caracters que precisam de ser encapsulados
     }
