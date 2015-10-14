@@ -25,7 +25,6 @@
 <%@page import="java.util.List"%>
 <%@page import="org.cerberus.crud.service.IInvariantService"%>
 <%@page import="org.cerberus.crud.service.IDatabaseVersioningService"%>
-<% Date DatePageStart = new Date();%>
 
 <%@page contentType="text/html" pageEncoding="UTF-8"%><!DOCTYPE HTML>
 <!DOCTYPE html>

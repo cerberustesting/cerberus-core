@@ -18,9 +18,9 @@
 package org.cerberus.crud.dao;
 
 import java.util.List;
-
 import org.cerberus.crud.entity.User;
 import org.cerberus.exception.CerberusException;
+import org.cerberus.util.answer.AnswerItem;
 
 /**
  * {Insert class description here}
@@ -76,7 +76,7 @@ public interface IUserDAO {
      * @return the user updated with the new password.
      * @throws CerberusException if the password cannot be updated.
      */
-    public User updateUserPassword(User user, String password) throws CerberusException;
+    public AnswerItem<User> updateUserPassword(User user, String password);
 
     /**
      * @param user

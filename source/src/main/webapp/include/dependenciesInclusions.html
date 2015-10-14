@@ -24,4 +24,11 @@
 <script type='text/javascript' src='js/Form.js'></script>
 <script type="text/javascript" src="js/pages/global/global.js"></script>
 <script type="text/javascript" src="js/pages/global/user.js"></script>
+<script type="text/javascript">
+    var user = getUser();
+    if(user.request === 'Y'){
+        //user needs to change password
+        $(location).attr("href", "ChangePassword.jsp");
+    }
+</script>            
 <script type="text/javascript" src="js/pages/global/header.js"></script>

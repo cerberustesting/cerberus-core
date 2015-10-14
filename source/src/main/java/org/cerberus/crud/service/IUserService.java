@@ -20,9 +20,9 @@
 package org.cerberus.crud.service;
 
 import java.util.List;
-
 import org.cerberus.crud.entity.User;
 import org.cerberus.exception.CerberusException;
+import org.cerberus.util.answer.AnswerItem;
 
 /**
  * @author vertigo
@@ -70,7 +70,7 @@ public interface IUserService {
      * @return
      * @throws CerberusException
      */
-    User updateUserPassword(User user, String currentPassword, String newPassword, String confirmPassword) throws CerberusException;
+    AnswerItem<User> updateUserPassword(User user, String currentPassword, String newPassword, String confirmPassword);
 
     /**
      * @param user
