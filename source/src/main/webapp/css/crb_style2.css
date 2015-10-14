@@ -66,8 +66,11 @@ a {
     max-width: 90%;
 }
 
-.card {
+.panel-heading {
     font-size: 14px;
+}
+
+.card {
     cursor: pointer;
 }
 

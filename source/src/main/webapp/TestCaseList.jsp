@@ -26,7 +26,7 @@
             <div class="row">
                 <div class="col-lg-6" id="FiltersPanel">
                     <div class="panel panel-default">
-                        <div class="panel-heading card">
+                        <div class="panel-heading">
                             <span class="fa fa-tag fa-fw"></span>
                             <label id="filters">Filters</label>
                         </div>
@@ -42,7 +42,7 @@
             </div>
 
             <div class="panel panel-default">
-                <div class="panel-heading card">
+                <div class="panel-heading">
                     Test Case List
                 </div>
                 <div class="panel-body" id="testCaseList">
