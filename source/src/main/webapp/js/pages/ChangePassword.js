@@ -22,17 +22,8 @@
     
 $(document).ready(function () {   
     
-    $("#changePassword").click(changePasswordClickHandler);       
-});
-
-function changePasswordClickHandler(){ 
-    var emptyValues = $("input[type='password']").filter(function () {        
-        return this.value === "";
-    }).size();
-            
-            
-    if(emptyValues === 0){
-        $("#changePasswordForm").submit(function(event) {
+    $("#changePassword").click(changePasswordClickHandler);   
+    $("#changePasswordForm").submit(function(event) {
             var postData = $(this).serializeArray();
             var jqxhr =  $.ajax({
                 type        : 'POST', 
@@ -48,11 +39,22 @@ function changePasswordClickHandler(){
                     user = JSON.parse(user);
                     user.request = 'N';
                     sessionStorage.setItem("user", JSON.stringify(user));
+                    $(location).attr("href", "Homepage.jsp");
                 }
             });       
             event.preventDefault(); //STOP default action
             $("#changePasswordForm").trigger("reset");
         });  
+});
+
+function changePasswordClickHandler(){ 
+    var emptyValues = $("input[type='password']").filter(function () {        
+        return this.value === "";
+    }).size();
+            
+            
+    if(emptyValues === 0){
+        $("#changePasswordForm").trigger("submit");
     }else{
         //TODO:FN needs to be refactored to new interface
         alert("All fields are mandatory");

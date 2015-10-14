@@ -48,7 +48,7 @@
                 <input type="password" name="confirmPassword" id="confirmPassword" maxlength="20" rel="2" />
                 <br /><br />
                 <!--<input id="submit" type="submit" value="Submit" />-->
-                <button id="changePassword">Change Password</button>
+                <button type ="button" id="changePassword">Change Password</button>
             </form>
                     </td></tr></table>
         </div>
