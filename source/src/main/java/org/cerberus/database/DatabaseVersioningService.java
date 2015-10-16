@@ -4838,7 +4838,7 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLS = new StringBuilder();
         SQLS.append("INSERT INTO `documentation` (DocTable, DocField, DocValue, Lang, DocLabel, DocDesc) VALUES ");
         SQLS.append("('page_reportbytag', 'report_envcountrybrowser', '', 'en', 'Report By Environement Country Browser', 'Report of the execution filtering by Environement Country and Browser'),");
-        SQLS.append("('page_reportbytag', 'report_envcountrybrowser', '', 'fr', 'Rapport par Envrionnement Pays Navigateur', 'Rapport d\\'execution filtré par Envrionnment Pays et Navigateur');");        
+        SQLS.append("('page_reportbytag', 'report_envcountrybrowser', '', 'fr', 'Rapport par Envrionnement Pays Navigateur', 'Rapport d\\'execution filtré par Envrionnment Pays et Navigateur');");
         SQLInstruction.add(SQLS.toString());
 
         // Insert invariant executeSqlUpdate, executeSqlStoredProcedure and skipAction
@@ -4856,18 +4856,24 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLS.append("INSERT INTO `documentation` (DocTable, DocField, DocValue, Lang, DocLabel, DocDesc) VALUES ");
         SQLS.append("('testcasestepaction', 'Action', 'executeSqlUpdate', 'en', 'Execute SQL update', '<code class=\\'doc-fixed\\'>executeSqlUpdate</code> will allow you to execute SQL update (insert,delete,update).<br><br>Usage :<br><doc class=\"usage\"><table cellspacing=0 cellpadding=2><th class=\\'ex\\'>Field</th><th class=\\'ex\\'>Usage</th><tr><td class=\\'ex\\'>Object</td><td class=\\'ex\\'>Name of the Connection Pool.</td></tr><tr><td class=\\'ex\\'>Property</td><td class=\\'ex\\'>Property name of the script to execute. The property should be a text one.</td></tr></table></doc><br><br>Examples :<br><doc class=\"examples\"><table cellspacing=0 cellpadding=2><th class=\\'ex\\'>Object</th><th class=\\'ex\\'>Property</th><th class=\\'ex\\'>Result</th><tr><td class=\\'ex\\'>CONNECTION_POOL_NAME</td><td class=\\'ex\\'>PROPERTY_NAME</td><td class=\\'ex\\'>The script declared in the property PROPERTY_NAME will be executed on database through connection pool CONNECTION_POOL_NAME.</td></tr></table></doc>'),");
         SQLS.append("('testcasestepaction', 'Action', 'executeSqlStoredProcedure', 'en', 'Execute SQL Stored Procedure', '<code class=\\'doc-fixed\\'>executeSqlStoredProcedure</code> will allow you to execute SQL stored procedure.<br><br>Usage :<br><doc class=\"usage\"><table cellspacing=0 cellpadding=2><th class=\\'ex\\'>Field</th><th class=\\'ex\\'>Usage</th><tr><td class=\\'ex\\'>Object</td><td class=\\'ex\\'>Name of the Connection Pool.</td></tr><tr><td class=\\'ex\\'>Property</td><td class=\\'ex\\'>Property name of the procedure to execute. The property should be a text one.</td></tr></table></doc><br><br>Examples :<br><doc class=\"examples\"><table cellspacing=0 cellpadding=2><th class=\\'ex\\'>Object</th><th class=\\'ex\\'>Property</th><th class=\\'ex\\'>Result</th><tr><td class=\\'ex\\'>CONNECTION_POOL_NAME</td><td class=\\'ex\\'>PROPERTY_NAME</td><td class=\\'ex\\'>The procedure name declared in the property PROPERTY_NAME will be executed on database through connection pool CONNECTION_POOL_NAME.</td></tr></table></doc>'),");
-        SQLS.append("('testcasestepaction', 'Action', 'skipAction', 'en', 'Skip this action', '<code class=\\'doc-fixed\\'>skipAction</code> will skip the action. Can be used in case of control that must be done without action before.<br><br>Usage :<br><doc class=\"usage\"><table cellspacing=0 cellpadding=2><th class=\\'ex\\'>Field</th><th class=\\'ex\\'>Usage</th><tr><td class=\\'ex\\'>Object</td><td class=\\'ex\\'></td></tr><tr><td class=\\'ex\\'>Property</td><td class=\\'ex\\'></td></tr></table></doc><br><br>Examples :<br><doc class=\"examples\"><table cellspacing=0 cellpadding=2><th class=\\'ex\\'>Object</th><th class=\\'ex\\'>Property</th><th class=\\'ex\\'>Result</th><tr><td class=\\'ex\\'></td><td class=\\'ex\\'></td><td class=\\'ex\\'>No action will be executed and engine will go to the next action or control</td></tr></table></doc>');");        
+        SQLS.append("('testcasestepaction', 'Action', 'skipAction', 'en', 'Skip this action', '<code class=\\'doc-fixed\\'>skipAction</code> will skip the action. Can be used in case of control that must be done without action before.<br><br>Usage :<br><doc class=\"usage\"><table cellspacing=0 cellpadding=2><th class=\\'ex\\'>Field</th><th class=\\'ex\\'>Usage</th><tr><td class=\\'ex\\'>Object</td><td class=\\'ex\\'></td></tr><tr><td class=\\'ex\\'>Property</td><td class=\\'ex\\'></td></tr></table></doc><br><br>Examples :<br><doc class=\"examples\"><table cellspacing=0 cellpadding=2><th class=\\'ex\\'>Object</th><th class=\\'ex\\'>Property</th><th class=\\'ex\\'>Result</th><tr><td class=\\'ex\\'></td><td class=\\'ex\\'></td><td class=\\'ex\\'>No action will be executed and engine will go to the next action or control</td></tr></table></doc>');");
         SQLInstruction.add(SQLS.toString());
-        
+
         // Documentation entries update for reporting by tag
-        //-- ------------------------  640
+        //-- ------------------------  640-641
         SQLS = new StringBuilder();
         SQLS.append("UPDATE `documentation` SET `DocLabel`='Rapport par Application Envrionnement Pays Navigateur', `DocDesc`='Rapport d\\'execution filtré par Application Envrionnment Pays et Navigateur' WHERE `DocTable`='page_reportbytag' and`DocField`='report_envcountrybrowser' and`DocValue`='' and`Lang`='fr';");
         SQLInstruction.add(SQLS.toString());
         SQLS = new StringBuilder();
         SQLS.append("UPDATE `documentation` SET `DocLabel`='Report By Application Environement Country Browser', `DocDesc`='Report of the execution filtering by Application Environement Country and Browser' WHERE `DocTable`='page_reportbytag' and`DocField`='report_envcountrybrowser' and`DocValue`='' and`Lang`='en';");
         SQLInstruction.add(SQLS.toString());
-        
+
+        // Enlarge Method column
+        //-- ------------------------  642
+        SQLS = new StringBuilder();
+        SQLS.append("ALTER TABLE `testdatalib` CHANGE COLUMN `Method` `Method` VARCHAR(255) NOT NULL DEFAULT '' ;");
+        SQLInstruction.add(SQLS.toString());
+
         return SQLInstruction;
     }
 
