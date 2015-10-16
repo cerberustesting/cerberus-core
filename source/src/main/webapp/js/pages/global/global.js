@@ -95,12 +95,13 @@ function displayDeployTypeList(selectName) {
 /**
  * Method that display a combo box in all the selectName tags with the value retrieved from the Application list
  * @param {String} selectName value name of the select tag in the html
+ * @param {String} system [optional] value name of the system in order to filter the application list
  * @returns {void}
  */
 function displayApplicationList(selectName, system) {
     var myData = "";
     if (system !== "") {
-        myData = "system=" + system
+        myData = "system=" + system;
     }
     $.when($.getJSON("ReadApplication", myData)).then(function (data) {
         for (var option in data.contentTable) {
@@ -117,11 +118,37 @@ function displayApplicationList(selectName, system) {
  */
 function displayProjectList(selectName) {
     $.when($.getJSON("ReadProject", "")).then(function (data) {
+    $("[name='" + selectName + "']").append($('<option></option>').text("NONE").val(""));
         for (var option in data.contentTable) {
             $("[name='" + selectName + "']").append($('<option></option>').text(data.contentTable[option].idProject + " - " + data.contentTable[option].description).val(data.contentTable[option].idProject));
         }
     });
 }
+
+/*****BuildInvariant LIST **********************************/
+/**
+ * Method that display a combo box in all the selectName tags with the value retrieved from the Build Invariant list
+ * @param {String} selectName value name of the select tag in the html
+ * @param {String} system value of the system to filter the build.
+ * @param {String} level value of the level of the build invariant
+ * @returns {void}
+ */
+function displayBuildList(selectName, system, level) {
+    var myData = "iSortCol_0=2"; // We sort by sequence.
+    if (system !== "") {
+        myData += "&system=" + system;
+    }
+    if (level !== "") {
+        myData += "&level=" + level;
+    }
+    $("[name='" + selectName + "']").append($('<option></option>').text("NONE").val("NONE"));
+    $.when($.getJSON("ReadBuildRevisionInvariant", myData)).then(function (data) {
+        for (var option in data.contentTable) {
+            $("[name='" + selectName + "']").append($('<option></option>').text(data.contentTable[option].versionName).val(data.contentTable[option].versionName));
+        }
+    });
+}
+
 
 /**
  * Auxiliary method that retrieves a list containing the values that belong to the invariant that matches the provided idname.

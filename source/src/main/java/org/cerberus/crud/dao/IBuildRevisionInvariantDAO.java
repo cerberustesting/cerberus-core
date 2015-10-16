@@ -21,6 +21,8 @@ import java.util.List;
 
 import org.cerberus.crud.entity.BuildRevisionInvariant;
 import org.cerberus.exception.CerberusException;
+import org.cerberus.util.answer.AnswerItem;
+import org.cerberus.util.answer.AnswerList;
 
 /**
  * {Insert class description here}
@@ -30,6 +32,28 @@ import org.cerberus.exception.CerberusException;
  * @since 2.0.0
  */
 public interface IBuildRevisionInvariantDAO {
+
+    /**
+     *
+     * @param system
+     * @param level
+     * @param seq
+     * @return
+     */
+    AnswerItem readByKey(String system, Integer level, Integer seq);
+
+    /**
+     *
+     * @param system
+     * @param start
+     * @param amount
+     * @param column
+     * @param dir
+     * @param searchTerm
+     * @param individualSearch
+     * @return
+     */
+    AnswerList readBySystemByCriteria(String system, Integer level, int start, int amount, String column, String dir, String searchTerm, String individualSearch);
 
     /**
      *

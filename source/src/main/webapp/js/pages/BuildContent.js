@@ -34,14 +34,37 @@ function initBuildContentPage() {
     $('#addBrpModal').on('hidden.bs.modal', addBrpModalCloseHandler);
     $('#editBrpModal').on('hidden.bs.modal', editBrpModalCloseHandler);
 
-    //configure and create the dataTable
-    var configurations = new TableConfigurationsServerSide("buildrevisionparametersTable", "ReadBuildRevisionParameters?system=" + getUser().defaultSystem, "contentTable", aoColumnsFunc());
-
-    var table = createDataTableWithPermissions(configurations, renderOptionsForBrp);
-
-    table.fnSort([1, 'asc']);
+    //if the build or revision is passed as a url parameter, then it loads the table
+    var urlBuild = GetURLParameter('build');
+    var urlRevision = GetURLParameter('revision');
+    if (urlBuild !== null) {
+        $('#selectBuild option[value="' + urlBuild + '"]').attr("selected", "selected");
+    }
+    if (urlRevision !== null) {
+        $('#selectRevision option[value="' + urlRevision + '"]').attr("selected", "selected");
+    }
+    console.log('B : ' + urlBuild + ' R : ' + urlRevision);
+    loadBCTable();
 }
-;
+
+function setNONE() {
+    var myBuild = "NONE";
+    var myRevision = "NONE";
+    $('#selectBuild option[value="' + myBuild + '"]').attr("selected", "selected");
+    $('#selectRevision option[value="' + myRevision + '"]').attr("selected", "selected");
+    loadBCTable();
+}
+
+function setLatest() {
+    // TODO : Get the latest build and revision.
+    var param = "system=" + getUser().defaultSystem;
+    var jqxhr = $.get("ReadBuildRevisionParameters", param, "json");
+    var myBuild = "VCBAT14";
+    var myRevision = "R10";
+    $('#selectBuild option[value="' + myBuild + '"]').attr("selected", "selected");
+    $('#selectRevision option[value="' + myRevision + '"]').attr("selected", "selected");
+    loadBCTable();
+}
 
 function displayPageLabel() {
     var doc = new Doc();
@@ -60,9 +83,44 @@ function displayPageLabel() {
     $("[name='idField']").html(doc.getDocOnline("buildrevisionparameters", "id"));
     $("[name='buildField']").html(doc.getDocOnline("buildrevisionparameters", "Build"));
     $("[name='revisionField']").html(doc.getDocOnline("buildrevisionparameters", "Revision"));
-    displayApplicationList("application",getUser().defaultSystem);
+    displayApplicationList("application", getUser().defaultSystem);
     displayProjectList("project");
+    displayBuildList("build", getUser().defaultSystem, "1")
+    displayBuildList("revision", getUser().defaultSystem, "2")
     displayFooter(doc);
+}
+
+function loadBCTable() {
+    var selectBuild = $("#selectBuild option:selected").text();
+    var selectRevision = $("#selectRevision option:selected").text();
+
+    console.log('B : ' + selectBuild + ' R : ' + selectRevision);
+
+    window.history.pushState('Tag', '', 'BuildContent1.jsp?build=' + encodeURIComponent(selectBuild) + '&revision=' + encodeURIComponent(selectRevision));
+
+    //clear the old report content before reloading it
+//    if ($("#listTable_wrapper").hasClass("initialized")) {
+    $("#buildContentList").empty();
+    $("#buildContentList").html('<table id="buildrevisionparametersTable" class="table table-hover display" name="buildrevisionparametersTable">\n\
+                                            </table><div class="marginBottom20"></div>');
+//    }
+    if (selectBuild !== "") {
+        //configure and create the dataTable
+        var param = "?system=" + getUser().defaultSystem + "&revision=" + selectRevision + "&build=" + selectBuild;
+        var configurations = new TableConfigurationsServerSide("buildrevisionparametersTable", "ReadBuildRevisionParameters" + param, "contentTable", aoColumnsFunc());
+
+        var table = createDataTableWithPermissions(configurations, renderOptionsForBrp);
+
+        //handle the test case execution list display
+//        loadEnvCountryBrowserReport();
+//        loadReportList();
+//        //Retrieve data for charts and draw them
+//        var jqxhr = $.get("GetReportData", {CampaignName: "null", Tag: selectBuild}, "json");
+//        $.when(jqxhr).then(function (data) {
+//            loadReportByStatusTable(data);
+//            loadReportByFunctionChart(data);
+//        });
+    }
 }
 
 function deleteBrpHandlerClick() {

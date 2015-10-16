@@ -25,6 +25,8 @@ import org.cerberus.crud.dao.IBuildRevisionInvariantDAO;
 import org.cerberus.crud.entity.BuildRevisionInvariant;
 import org.cerberus.exception.CerberusException;
 import org.cerberus.crud.service.IBuildRevisionInvariantService;
+import org.cerberus.util.answer.AnswerItem;
+import org.cerberus.util.answer.AnswerList;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -34,6 +36,16 @@ public class BuildRevisionInvariantService implements IBuildRevisionInvariantSer
 
     @Autowired
     private IBuildRevisionInvariantDAO BuildRevisionInvariantDAO;
+
+    @Override
+    public AnswerItem readByKey(String system, Integer level, Integer seq) {
+        return BuildRevisionInvariantDAO.readByKey(system, level, seq);
+    }
+
+    @Override
+    public AnswerList readBySystemByCriteria(String system, Integer level, int start, int amount, String column, String dir, String searchTerm, String individualSearch) {
+        return BuildRevisionInvariantDAO.readBySystemByCriteria(system, level, start, amount, column, dir, searchTerm, individualSearch);
+    }
 
     @Override
     public BuildRevisionInvariant findBuildRevisionInvariantByKey(String system, Integer level, Integer seq) throws CerberusException {

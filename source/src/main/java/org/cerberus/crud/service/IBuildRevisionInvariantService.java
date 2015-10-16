@@ -23,6 +23,8 @@ import java.util.List;
 
 import org.cerberus.crud.entity.BuildRevisionInvariant;
 import org.cerberus.exception.CerberusException;
+import org.cerberus.util.answer.AnswerItem;
+import org.cerberus.util.answer.AnswerList;
 
 /**
  *
@@ -30,6 +32,10 @@ import org.cerberus.exception.CerberusException;
  */
 public interface IBuildRevisionInvariantService {
 
+    AnswerItem readByKey(String system, Integer level, Integer seq);
+
+    AnswerList readBySystemByCriteria(String system, Integer level, int start, int amount, String column, String dir, String searchTerm, String individualSearch);
+    
     BuildRevisionInvariant findBuildRevisionInvariantByKey(String system, Integer level, Integer seq) throws CerberusException;
 
     BuildRevisionInvariant findBuildRevisionInvariantByKey(String system, Integer level, String versionName) throws CerberusException;
