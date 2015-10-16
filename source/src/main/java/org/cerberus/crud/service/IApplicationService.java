@@ -78,6 +78,7 @@ public interface IApplicationService {
      */
     AnswerList readBySystemByCriteria(String system, int startPosition, int length, String columnName, String sort, String searchParameter, String string);
 
+    AnswerItem readTotalTCBySystemByStatus(String system);
     /**
      *
      * @param application

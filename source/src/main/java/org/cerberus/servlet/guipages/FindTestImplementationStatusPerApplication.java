@@ -27,19 +27,18 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
-
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-
 import org.apache.log4j.Level;
-import org.cerberus.database.DatabaseSpring;
 import org.cerberus.crud.entity.Invariant;
-import org.cerberus.log.MyLogger;
 import org.cerberus.crud.service.IInvariantService;
 import org.cerberus.crud.service.impl.InvariantService;
+import org.cerberus.database.DatabaseSpring;
+import org.cerberus.log.MyLogger;
+import org.cerberus.util.answer.AnswerList;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -101,7 +100,8 @@ public class FindTestImplementationStatusPerApplication extends HttpServlet {
             DatabaseSpring database = appContext.getBean(DatabaseSpring.class);
             connection = database.connect();
 
-            List<Invariant> myInvariants = invariantService.findInvariantByIdGp1("TCSTATUS", "Y");
+            AnswerList answer = invariantService.findInvariantByIdGp1("TCSTATUS", "Y");
+            List<Invariant> myInvariants = answer.getDataList();
             StringBuilder SQL = new StringBuilder();
             StringBuilder SQLa = new StringBuilder();
             StringBuilder SQLb = new StringBuilder();

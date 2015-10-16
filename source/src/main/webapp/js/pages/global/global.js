@@ -485,12 +485,16 @@ $.fn.dataTableExt.oApi.fnNewAjax = function (oSettings, sNewSource) {
  * @param {type} divId - table unique identifier
  * @param {type} data - data that is presented in the table
  * @param {type} aoColumnsFunction - function to render the columns
+ * @param {type} defineLenghtMenu - allows the defintion of the select with the number or rows that should be displayed
  * @returns {TableConfigurationsClientSide}
  */
-function TableConfigurationsClientSide(divId, data, aoColumnsFunction) {
+function TableConfigurationsClientSide(divId, data, aoColumnsFunction, defineLenghtMenu) {
     this.divId = divId;
     this.aoColumnsFunction = aoColumnsFunction;
     this.aaData = data;
+    if(defineLenghtMenu){
+        this.lengthMenu = [10, 25, 50, 100];
+    }
     this.processing = false;
     this.serverSide = false;
     //not mandatory properties, and default values
@@ -951,8 +955,11 @@ function bindToggleCollapse() {
 
 
 function drawURL(data) {
-    if (data !== '') {
-        return "<a target = '_blank' href='" + data + "'>" + data + "</a>";//TODO:FN ver se tem caracters que precisam de ser encapsulados
+    return drawHyperlink(data, data);    
+}
+function drawHyperlink(href, text) {
+    if (text !== '') {
+        return "<a target = '_blank' href='" + href + "'>" + text + "</a>";//TODO:FN ver se tem caracters que precisam de ser encapsulados
     }
     return '';
 }

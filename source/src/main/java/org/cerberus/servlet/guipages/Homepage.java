@@ -19,36 +19,29 @@
 */
 package org.cerberus.servlet.guipages;
 
-import java.io.IOException;
-import java.io.PrintWriter;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.List;
 
+import java.io.IOException;
+import java.util.HashMap;
+import java.util.List;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.log4j.Level;
-import org.cerberus.database.DatabaseSpring;
-import org.cerberus.crud.entity.Application;
 import org.cerberus.crud.entity.Invariant;
-import org.cerberus.log.MyLogger;
+import org.cerberus.crud.entity.MessageEvent;
 import org.cerberus.crud.service.IApplicationService;
 import org.cerberus.crud.service.IInvariantService;
 import org.cerberus.crud.service.impl.ApplicationService;
 import org.cerberus.crud.service.impl.InvariantService;
-import org.cerberus.util.SqlUtil;
+import org.cerberus.enums.MessageEventEnum;
+import org.cerberus.servlet.application.ReadApplication;
+import org.cerberus.util.answer.AnswerItem;
+import org.cerberus.util.answer.AnswerList;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.owasp.html.PolicyFactory;
-import org.owasp.html.Sanitizers;
 import org.springframework.context.ApplicationContext;
 import org.springframework.web.context.support.WebApplicationContextUtils;
 
@@ -79,131 +72,96 @@ public class Homepage extends HttpServlet {
     }
 
     protected void processRequest(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        response.setContentType("text/html;charset=UTF-8");
-        PrintWriter out = response.getWriter();
-        PolicyFactory policy = Sanitizers.FORMATTING.and(Sanitizers.LINKS);
-
-        String echo = policy.sanitize(request.getParameter("sEcho"));
-        String mySystem = policy.sanitize(request.getParameter("MySystem"));
-        Connection connection = null;
-
-        JSONObject jsonResponse = new JSONObject();
+        
+        ApplicationContext appContext = WebApplicationContextUtils.getWebApplicationContext(this.getServletContext());
+  
+        AnswerItem answer = new AnswerItem(MessageEventEnum.DATA_OPERATION_OK);
 
         try {
-
-            List<String> sArray = new ArrayList<String>();
-            if (!mySystem.equals("")) {
-                String smySystem = " `system` like '%" + mySystem + "%'";
-                sArray.add(smySystem);
+            JSONObject jsonResponse = new JSONObject();
+            
+            if (request.getParameter("system") != null) {
+                String system = request.getParameter("system");
+                answer = readApplicationList(system, appContext);
+                jsonResponse = (JSONObject) answer.getItem();
             }
+  
+            jsonResponse.put("messageType", answer.getResultMessage().getMessage().getCodeString());
+            jsonResponse.put("message", answer.getResultMessage().getDescription());
+            
+            response.setContentType("application/json");
+            response.getWriter().print(jsonResponse.toString());
 
-            JSONArray data = new JSONArray();
-
-            ApplicationContext appContext = WebApplicationContextUtils.getWebApplicationContext(this.getServletContext());
-            IApplicationService applicationService = appContext.getBean(ApplicationService.class);
-            IInvariantService invariantService = appContext.getBean(InvariantService.class);
-            DatabaseSpring database = appContext.getBean(DatabaseSpring.class);
-            connection = database.connect();
-
-            List<Application> appliList = applicationService.convert(applicationService.readBySystem(mySystem));
-            String inSQL = SqlUtil.getInSQLClause(appliList);
-
-            if (!(inSQL.equalsIgnoreCase(""))) {
-                inSQL = " and application " + inSQL + " ";
-            } else {
-                inSQL = " and application in ('') ";
-            }
-
-            List<Invariant> myInvariants = invariantService.findInvariantByIdGp1("TCSTATUS", "Y");
-            StringBuilder SQL = new StringBuilder();
-            StringBuilder SQLa = new StringBuilder();
-            StringBuilder SQLb = new StringBuilder();
-            SQLa.append("SELECT t.application, count(*) as TOTAL ");
-            SQLb.append(" FROM testcase t ");
-            for (Invariant i : myInvariants) {
-                i.getSort();
-                SQLa.append(", Col");
-                SQLa.append(String.valueOf(i.getSort()));
-                SQLb.append(" LEFT JOIN (SELECT g.application, count(*) as Col");
-                SQLb.append(String.valueOf(i.getSort()));
-                SQLb.append(" FROM testcase g WHERE Status = '");
-                SQLb.append(i.getValue());
-                SQLb.append("' ");
-                SQLb.append(inSQL);
-                SQLb.append(" GROUP BY g.application) Tab");
-                SQLb.append(String.valueOf(i.getSort()));
-                SQLb.append(" ON Tab");
-                SQLb.append(String.valueOf(i.getSort()));
-                SQLb.append(".application=t.application ");
-            }
-            SQLb.append(" WHERE 1=1 ");
-            SQLb.append(inSQL.replace("application", "t.application"));
-            SQLb.append(" GROUP BY t.application ");
-
-            SQL.append(SQLa);
-            SQL.append(SQLb);
-            MyLogger.log(Homepage.class.getName(), Level.DEBUG, " SQL1 : " + SQL.toString());
-
-            PreparedStatement stmt_teststatus = connection.prepareStatement(SQL.toString());
-            try {
-
-                ResultSet rs_teststatus = stmt_teststatus.executeQuery();
-
-// Integer tot = 0;
-                ArrayList<Integer> totLine;
-                totLine = new ArrayList<Integer>();
-                for (Invariant i : myInvariants) {
-                    totLine.add(0);
-                }
-
-                try {
-                    while (rs_teststatus.next()) {
-                        JSONObject row = new JSONObject();
-                        StringBuilder testLink = new StringBuilder();
-                        testLink.append("<a href=\"TestPerApplication.jsp?Application=");
-                        testLink.append(rs_teststatus.getString("t.application"));
-                        testLink.append("\">");
-                        testLink.append(rs_teststatus.getString("t.application"));
-                        testLink.append("</a>");
-                        row.put("Application",testLink.toString());
-//                        row.put(rs_teststatus.getString("t.application"));
-                        row.put("Total",rs_teststatus.getString("TOTAL"));
-                        for (Invariant i : myInvariants) {
-                            i.getSort();
-                            row.put(i.getValue(), rs_teststatus.getString("Col" + String.valueOf(i.getSort()))==null?"":rs_teststatus.getString("Col" + String.valueOf(i.getSort())));
-                        }
-                        data.put(row);
-                    }
-
-                    //data that will be shown in the table
-
-                    jsonResponse.put("aaData", data);
-                    jsonResponse.put("sEcho", echo);
-                    jsonResponse.put("iTotalRecords", data.length());
-                    jsonResponse.put("iTotalDisplayRecords", data.length());
-
-                    response.setContentType("application/json");
-                    response.getWriter().print(jsonResponse.toString());
-                } catch (JSONException ex) {
-                    MyLogger.log(Homepage.class.getName(), Level.FATAL, ex.toString());
-                } finally {
-                    out.close();
-                }
-            } catch (SQLException ex) {
-                MyLogger.log(Homepage.class.getName(), Level.FATAL, " Exception trying to query '"+SQL.toString()+"' : " + ex);
-            } finally {
-                stmt_teststatus.close();
-            }
-        } catch (Exception ex) {
-            MyLogger.log(Homepage.class.getName(), Level.FATAL, " Exception catched : " + ex);
-        } finally {
-            try {
-                if (connection != null) {
-                    connection.close();
-                }
-            } catch (SQLException e) {
-                MyLogger.log(Homepage.class.getName(), org.apache.log4j.Level.WARN, e.toString());
-            }
+        } catch (JSONException e) {
+            org.apache.log4j.Logger.getLogger(ReadApplication.class.getName()).log(org.apache.log4j.Level.ERROR, null, e);
+            //returns a default error message with the json format that is able to be parsed by the client-side
+            response.setContentType("application/json");
+            MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
+            StringBuilder errorMessage = new StringBuilder();
+            errorMessage.append("{\"messageType\":\"").append(msg.getCode()).append("\",");
+            errorMessage.append("\"message\":\"");
+            errorMessage.append(msg.getDescription().replace("%DESCRIPTION%", "Unable to check the status of your request! Try later or open a bug."));
+            errorMessage.append("\"}");
+            response.getWriter().print(errorMessage.toString());
         }
+    }
+    
+    private AnswerItem readApplicationList(String system, ApplicationContext appContext) throws JSONException{
+        AnswerItem item = new AnswerItem();
+        JSONObject jsonResponse = new JSONObject();
+        IApplicationService applicationService = appContext.getBean(ApplicationService.class);
+        
+        
+        AnswerItem resp = applicationService.readTotalTCBySystemByStatus(system);
+        
+        
+        JSONArray jsonArray = new JSONArray();
+        HashMap<String, HashMap<String, Integer>> totalMap = (HashMap<String, HashMap<String, Integer>> )resp.getItem();
+        
+        if (resp.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
+                IInvariantService invariantService = appContext.getBean(InvariantService.class);
+                AnswerList<Invariant> answerList = invariantService.findInvariantByIdGp1("TCSTATUS", "Y");
+                List<Invariant> myInvariants = answerList.getDataList();
+                for (String application : totalMap.keySet()) {
+                    JSONObject row = extractRow(application, totalMap, myInvariants);
+                    jsonArray.put(row);
+                }
+        }
+
+        jsonResponse.put("aaData", jsonArray);
+        jsonResponse.put("iTotalRecords", totalMap.size());
+        jsonResponse.put("iTotalDisplayRecords", totalMap.size());
+
+        item.setItem(jsonResponse);
+        item.setResultMessage(resp.getResultMessage());
+        return item;
+    
+    }
+
+    private JSONObject extractRow(String application, HashMap<String, HashMap<String, Integer>> totalMap, List<Invariant> myInvariants) throws JSONException {
+        
+        JSONObject row = new JSONObject();
+        
+        row.put("Application", application);
+
+        HashMap mapApplication = totalMap.get(application);
+        int totalPerApplication = 0;
+
+        for (Invariant i : myInvariants) {            
+            Integer total = (Integer) mapApplication.get(i.getValue());
+            totalPerApplication += (total == null ? 0: total);
+        }
+        row.put("Total", totalPerApplication); 
+
+        for (Invariant i : myInvariants) {            
+            Integer total = (Integer)mapApplication.get(i.getValue());
+            if(total == null){
+                row.put(i.getValue(), 0);
+            }else{
+                row.put(i.getValue(), total);
+            }
+        } 
+        
+        return row;
     }
 }

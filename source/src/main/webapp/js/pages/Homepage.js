@@ -81,11 +81,27 @@ $.when($.getScript("js/pages/global/global.js")).then(function () {
         });
 
         //configure and create the dataTable
-        var configurations = new TableConfigurationsServerSide("homePageTable", "Homepage?MySystem=" + getSys(), "aaData", aoColumnsFunc());
-        var table = createDataTable(configurations);
-        //By default, sort the log messages from newest to oldest
+        //var configurations = new TableConfigurationsServerSide("homePageTable", "Homepage?system=" + getSys(), "aaData", aoColumnsFunc());
+        //var configurations = new TableConfigurationsServerSide("homePageTable", "Homepage?system=" + getSys(), "aaData", aoColumnsFunc());
+        var jqxhr = $.getJSON("Homepage", "system=" + getSys());
 
-        table.fnSort([0, 'desc']);
+        $.when(jqxhr).then(function (result) {
+            var configurations = new TableConfigurationsClientSide("homePageTable", result["aaData"], aoColumnsFunc(), true);
+            configurations.tableWidth = "550px";
+
+            if ($('#homePageTable').hasClass('dataTable') === false) {
+                createDataTable(configurations);
+            } else {
+                var oTable = $("#homePageTable").dataTable();
+                oTable.fnClearTable();
+                if (result["aaData"].length > 0) {
+                    oTable.fnAddData(result["aaData"]);
+                }
+            }
+            
+
+        }).fail(handleErrorAjaxAfterTimeout);
+
         loadTagExec();
     });
 });
@@ -285,14 +301,18 @@ function aoColumnsFunc() {
     var status = readStatus();
     var statusLen = status.length;
     var aoColumns = [
-        {"data": "Application", "bSortable": false, "sName": "Application", "title": displayDocLink(doc.application.Application)},
-        {"data": "Total", "bSortable": false, "sName": "Total", "title": "Total"}
+        {"data": "Application", "bSortable": true, "sName": "Application", "title": displayDocLink(doc.application.Application),
+            "mRender": function (data, type, oObj) {
+                return drawHyperlink("TestPerApplication.jsp?Application=" + data, data);    
+            }
+        },
+        {"data": "Total", "bSortable": true, "sName": "Total", "title": "Total"}
     ];
     
     for (var s = 0; s < statusLen; s++) {
         var obj = {
             "data": status[s].value,
-            "bSortable": false,
+            "bSortable": true,
             "sName": status[s].value,
             "title": status[s].value
         };

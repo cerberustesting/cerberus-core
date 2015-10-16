@@ -20,9 +20,9 @@
 package org.cerberus.crud.service;
 
 import java.util.List;
-
 import org.cerberus.crud.entity.Invariant;
 import org.cerberus.exception.CerberusException;
+import org.cerberus.util.answer.AnswerList;
 
 /**
  *
@@ -36,7 +36,7 @@ public interface IInvariantService {
 
     public List<Invariant> findListOfInvariantById(String idName) throws CerberusException;
 
-    public List<Invariant> findInvariantByIdGp1(String idName, String gp) throws CerberusException;
+    public AnswerList<Invariant> findInvariantByIdGp1(String idName, String gp);
 
     public List<Invariant> findInvariantPublicListByCriteria(int start, int amount, String column, String dir, String searchTerm, String individualSearch);
 

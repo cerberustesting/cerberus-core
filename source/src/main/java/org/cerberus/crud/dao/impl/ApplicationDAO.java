@@ -22,16 +22,18 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 import org.apache.log4j.Logger;
 import org.cerberus.crud.dao.IApplicationDAO;
 import org.cerberus.database.DatabaseSpring;
-import org.cerberus.crud.entity.Application;
+import org.cerberus.crud.entity.Application; 
 import org.cerberus.crud.entity.MessageEvent;
 import org.cerberus.enums.MessageEventEnum;
 import org.cerberus.crud.factory.IFactoryApplication;
 import org.cerberus.crud.factory.impl.FactoryApplication;
+import org.cerberus.crud.service.IInvariantService;
 import org.cerberus.util.ParameterParserUtil;
 import org.cerberus.util.StringUtil;
 import org.cerberus.util.answer.Answer;
@@ -54,6 +56,7 @@ public class ApplicationDAO implements IApplicationDAO {
     private DatabaseSpring databaseSpring;
     @Autowired
     private IFactoryApplication factoryApplication;
+    private IInvariantService invariantService;
 
     private static final Logger LOG = Logger.getLogger(ApplicationDAO.class);
 
@@ -115,6 +118,88 @@ public class ApplicationDAO implements IApplicationDAO {
         //sets the message
         ans.setResultMessage(msg);
         return ans;
+    }
+    
+    @Override
+    public AnswerItem readTotalTCBySystemByStatus(String system) {
+        AnswerItem response = new AnswerItem();
+        MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
+        msg.setDescription(msg.getDescription().replace("%ITEM%", "APPLICATION").replace("%OPERATION%", "SELECT TOTAL"));
+        
+
+        StringBuilder query = new StringBuilder();
+        query.append("SELECT a.application as ApplicationName, inv.`value` as `Status`, count(inv.`value`) as CountStatus ");
+        query.append("FROM application a ");
+        query.append("inner join testcase tc on a.application = tc.application ");
+        query.append("inner join invariant inv on tc.`Status` = inv.`value` ");
+        query.append("where a.system = ? ");
+        query.append("and inv.idname='TCSTATUS' and inv.gp1='Y' ");
+        query.append("group by a.application, inv.`value` ");
+        
+        HashMap<String, HashMap<String, Integer>> map  = new HashMap<String, HashMap<String, Integer>>();
+       
+         
+        Connection connection = this.databaseSpring.connect();
+        try {
+            PreparedStatement preStat = connection.prepareStatement(query.toString());
+            try {
+                preStat.setString(1, system);
+                 
+                ResultSet resultSet = preStat.executeQuery();
+                try {
+                    //gets the data
+                    while (resultSet.next()) {
+                        String appName = resultSet.getString("ApplicationName");
+                        String tcStatus = resultSet.getString("Status");
+                        int countStatus = resultSet.getInt("CountStatus");
+                        HashMap<String, Integer> totalsMap = map.get(appName);
+                        if(totalsMap == null){
+                            totalsMap = new HashMap<String, Integer>();                            
+                        }
+                        totalsMap.put(tcStatus, countStatus);
+                        map.put(appName, totalsMap);
+                    }
+                    
+                } catch (SQLException exception) {
+                    LOG.error("Unable to execute query : " + exception.toString());
+                    msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
+                    msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", exception.toString()));
+
+                } finally {
+                    if (resultSet != null) {
+                        resultSet.close();
+                    }
+                }
+
+            } catch (SQLException exception) {
+                LOG.error("Unable to execute query : " + exception.toString());
+                msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
+                msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", exception.toString()));
+            } finally {
+                if (preStat != null) {
+                    preStat.close();
+                }
+            }
+
+        } catch (SQLException exception) {
+            LOG.error("Unable to execute query : " + exception.toString());
+            msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
+            msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", exception.toString()));
+        } finally {
+            try {
+                if (!this.databaseSpring.isOnTransaction()) {
+                    if (connection != null) {
+                        connection.close();
+                    }
+                }
+            } catch (SQLException exception) {
+                LOG.warn("Unable to close connection : " + exception.toString());
+            }
+        }
+
+        response.setResultMessage(msg);
+        response.setItem(map);
+        return response;
     }
 
     @Override
@@ -311,7 +396,7 @@ public class ApplicationDAO implements IApplicationDAO {
         }
         return new Answer(msg);
     }
-
+    
     @Override
     public Answer delete(Application application) {
         MessageEvent msg = null;
