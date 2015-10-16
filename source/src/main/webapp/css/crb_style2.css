@@ -53,6 +53,10 @@ select {
     font-size:90%;
 }
 
+select[multiple] {
+    height: auto;
+}
+
 a {
     color: #008CDA;
     text-decoration: none;
@@ -72,6 +76,10 @@ a {
 
 .card {
     cursor: pointer;
+}
+
+.bold {
+    font-weight: bold;
 }
 
 .color-box {   

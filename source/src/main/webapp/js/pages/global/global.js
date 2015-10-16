@@ -877,6 +877,29 @@ function GetURLParameter(sParam)
     return null;
 }
 
+function convertSerialToJSONObject(serial) {
+    var data = serial.split("&");
+
+    var obj = {};
+    for (var param in data) {
+        var key = data[param].split("=")[0];
+        var value = data[param].split("=")[1];
+
+        if (obj.hasOwnProperty(key)) {
+            var tmp = obj[key];
+
+            if (typeof tmp === "object") {
+                obj[key].push(value);
+            } else {
+                obj[key] = [tmp, value];
+            }
+        } else {
+            obj[key] = value;
+        }
+    }
+    return obj;
+}
+
 /**
  * Bind the toggle action to the panel body
  * @returns {void}
@@ -892,7 +915,7 @@ function bindToggleCollapse() {
             localStorage.setItem(this.id, false);
             $(this).prev().find(".toggle").removeClass("glyphicon-chevron-right").addClass("glyphicon-chevron-down");
         });
-        
+
         if (localStorage.getItem(this.id) === "false") {
             $(this).collapse();
         }
