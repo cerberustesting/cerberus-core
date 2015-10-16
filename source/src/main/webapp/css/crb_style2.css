@@ -53,6 +53,10 @@ select {
     font-size:90%;
 }
 
+select[multiple] {
+    height: auto;
+}
+
 a {
     color: #008CDA;
     text-decoration: none;
@@ -66,9 +70,16 @@ a {
     max-width: 90%;
 }
 
-.card {
+.panel-heading {
     font-size: 14px;
+}
+
+.card {
     cursor: pointer;
+}
+
+.bold {
+    font-weight: bold;
 }
 
 .color-box {   

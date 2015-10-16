@@ -23,20 +23,18 @@
 <html>
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+        <script type="text/javascript" src="js/jquery-1.9.1.min.js"></script>
         <link rel="stylesheet" type="text/css" href="css/crb_style.css">
         <link rel="shortcut icon" type="image/x-icon" href="images/favicon.ico" />
         <title>Change Password</title>
-        
-        <script type="text/javascript">
-            
-        </script>
+        <script type="text/javascript" src="js/pages/ChangePassword.js"></script>
     </head>
     <body>
         <%@ include file="include/function.jsp" %>
         <%@ include file="include/header.jsp" %>
         <div style="width: 100%; font: 90% sans-serif">
             <table style="alignment-adjust: central"><tr><td style="alignment-adjust: central">
-            <form id="changePasswordForm" action="ChangeUserPassword" title="Change Password" method="post">
+            <form id="changePasswordForm" title="Change Password" method="post">
                 <h1>Hello <%=request.getUserPrincipal().getName() %>, you are requested to change your password.</h1>
                 <input type="hidden" name="login" id="login" value="<%=request.getUserPrincipal().getName() %>">
                 <br /><br />
@@ -49,7 +47,8 @@
                 <label for="confirmPassword">Confirm New Password</label>
                 <input type="password" name="confirmPassword" id="confirmPassword" maxlength="20" rel="2" />
                 <br /><br />
-                <input id="submit" type="submit" value="Submit" />
+                <!--<input id="submit" type="submit" value="Submit" />-->
+                <button type ="button" id="changePassword">Change Password</button>
             </form>
                     </td></tr></table>
         </div>

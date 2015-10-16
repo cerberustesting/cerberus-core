@@ -19,14 +19,15 @@
  */
 package org.cerberus.service.engine.impl;
 
+import java.awt.AWTException;
 import java.awt.Color;
+import java.awt.Robot; 
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.List;
-import java.util.Map;
+import java.util.List; 
 import java.util.Set;
 import java.util.logging.Logger;
 import java.util.regex.Matcher;
@@ -36,14 +37,14 @@ import javax.imageio.ImageIO;
 import org.apache.log4j.Level;
 import org.cerberus.crud.entity.Identifier;
 import org.cerberus.crud.entity.MessageEvent;
-import org.cerberus.enums.MessageEventEnum;
 import org.cerberus.crud.entity.Session;
+import org.cerberus.enums.KeyCodeEnum;
+import org.cerberus.enums.MessageEventEnum;
 import org.cerberus.exception.CerberusEventException;
 import org.cerberus.log.MyLogger;
 import org.cerberus.service.engine.IWebDriverService;
 import org.cerberus.util.ParameterParserUtil;
-import org.cerberus.util.StringUtil;
-import org.json.JSONObject;
+import org.cerberus.util.StringUtil; 
 import org.openqa.selenium.Alert;
 import org.openqa.selenium.By;
 import org.openqa.selenium.Cookie;
@@ -285,6 +286,28 @@ public class WebDriverService implements IWebDriverService {
         return strings[1];
     }
 
+    public File takeScreenShotFile(Session session) {
+        
+        boolean event = true;
+        long timeout = System.currentTimeMillis() + (1000 * session.getDefaultWait());
+        //Try to capture picture. Try again until timeout is WebDriverException is raised.
+        while (event) {
+            try {
+                WebDriver augmentedDriver = new Augmenter().augment(session.getDriver());
+                File image = ((TakesScreenshot) augmentedDriver).getScreenshotAs(OutputType.FILE);
+                
+                return image;                
+            } catch (WebDriverException exception) {
+                if (System.currentTimeMillis() >= timeout) {
+                    MyLogger.log(WebDriverService.class.getName(), Level.WARN, exception.toString());
+                }
+                event = false;
+            }
+        }
+        
+        return null;
+    }
+
     @Override
     public BufferedImage takeScreenShot(Session session) {
         BufferedImage newImage = null;
@@ -296,9 +319,9 @@ public class WebDriverService implements IWebDriverService {
                 WebDriver augmentedDriver = new Augmenter().augment(session.getDriver());
                 File image = ((TakesScreenshot) augmentedDriver).getScreenshotAs(OutputType.FILE);
                 BufferedImage bufferedImage = ImageIO.read(image);
-
-                newImage = new BufferedImage(bufferedImage.getWidth(), bufferedImage.getHeight(), BufferedImage.TYPE_INT_RGB);
-                newImage.createGraphics().drawImage(bufferedImage, 0, 0, Color.WHITE, null);
+                
+                        newImage = new BufferedImage(bufferedImage.getWidth(), bufferedImage.getHeight(), BufferedImage.TYPE_INT_RGB);
+                        newImage.createGraphics().drawImage(bufferedImage, 0, 0, Color.WHITE, null);
                 return newImage;
             } catch (IOException exception) {
                 MyLogger.log(WebDriverService.class.getName(), Level.WARN, exception.toString());
@@ -306,9 +329,9 @@ public class WebDriverService implements IWebDriverService {
             } catch (WebDriverException exception) {
                 if (System.currentTimeMillis() >= timeout) {
                     MyLogger.log(WebDriverService.class.getName(), Level.WARN, exception.toString());
-                    event = false;
-                }
+                event = false;
             }
+        }
         }
         return newImage;
     }
@@ -587,26 +610,58 @@ public class WebDriverService implements IWebDriverService {
     }
 
     @Override
-    public MessageEvent doSeleniumActionKeyPress(Session session, Identifier identifier, String property
-    ) {
+    public MessageEvent doSeleniumActionKeyPress(Session session, Identifier identifier, String property) {
+
         MessageEvent message;
         try {
-            WebElement element = this.getSeleniumElement(session, identifier, true, true);
-            element.sendKeys(Keys.valueOf(property));
-            message = new MessageEvent(MessageEventEnum.ACTION_SUCCESS_KEYPRESS);
-            message.setDescription(message.getDescription().replaceAll("%ELEMENT%", identifier.getIdentifier() + "=" + identifier.getLocator()));
-            message.setDescription(message.getDescription().replaceAll("%DATA%", property));
-            return message;
+            if (!StringUtil.isNullOrEmpty(identifier.getLocator())) {
+                WebElement element = this.getSeleniumElement(session, identifier, true, true);
+                element.sendKeys(Keys.valueOf(property));
+
+                message = new MessageEvent(MessageEventEnum.ACTION_SUCCESS_KEYPRESS);
+                message.setDescription(message.getDescription().replaceAll("%ELEMENT%", identifier.getIdentifier() + "=" + identifier.getLocator()));
+                message.setDescription(message.getDescription().replaceAll("%DATA%", property));
+            } else {
+                try {
+                    System.setProperty("java.awt.headless", "false");
+                    WebDriver driver = session.getDriver();
+                    driver.get(driver.getCurrentUrl());
+                    //gets the robot 
+                    Robot r = new Robot();
+                    //converts the Key description sent through Cerberus into the AWT key code
+                    int keyCode = KeyCodeEnum.getAWTKeyCode(property);
+
+                    if (keyCode != KeyCodeEnum.NOT_VALID.getKeyCode()) {
+                        //if the code is valid then presses the key and releases the key
+                        r.keyPress(keyCode);
+                        r.keyRelease(keyCode);
+                        message = new MessageEvent(MessageEventEnum.ACTION_SUCCESS_KEYPRESS_NO_ELEMENT);
+                    } else {
+                        //the key enterer is not valid
+                        message = new MessageEvent(MessageEventEnum.ACTION_FAILED_KEYPRESS_NOT_AVAILABLE);
+                        MyLogger.log(WebDriverService.class.getName(), Level.DEBUG, "Key " + property + "is not available in the current environment");
+                    }
+
+                    message.setDescription(message.getDescription().replaceAll("%KEY%", property));
+
+                } catch (AWTException ex) {
+                    Logger.getLogger(WebDriverService.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+                    message = new MessageEvent(MessageEventEnum.ACTION_FAILED_KEYPRESS_ENV_ERROR);
+                    MyLogger.log(WebDriverService.class.getName(), Level.DEBUG, ex.toString());
+                }
+            }
+
         } catch (NoSuchElementException exception) {
             message = new MessageEvent(MessageEventEnum.ACTION_FAILED_KEYPRESS_NO_SUCH_ELEMENT);
             message.setDescription(message.getDescription().replaceAll("%ELEMENT%", identifier.getIdentifier() + "=" + identifier.getLocator()));
             MyLogger.log(WebDriverService.class.getName(), Level.DEBUG, exception.toString());
-            return message;
+
         } catch (WebDriverException exception) {
             message = new MessageEvent(MessageEventEnum.ACTION_FAILED_SELENIUM_CONNECTIVITY);
             MyLogger.log(WebDriverService.class.getName(), Level.FATAL, exception.toString());
-            return message;
+
         }
+        return message;
     }
 
     @Override

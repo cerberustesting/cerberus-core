@@ -24,16 +24,18 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
-
 import org.apache.log4j.Level;
 import org.cerberus.crud.dao.IUserDAO;
-import org.cerberus.database.DatabaseSpring;
+import org.cerberus.crud.entity.MessageEvent;
 import org.cerberus.crud.entity.User;
-import org.cerberus.exception.CerberusException;
 import org.cerberus.crud.factory.IFactoryUser;
 import org.cerberus.crud.factory.impl.FactoryUser;
+import org.cerberus.database.DatabaseSpring;
+import org.cerberus.enums.MessageEventEnum;
+import org.cerberus.exception.CerberusException;
 import org.cerberus.log.MyLogger;
 import org.cerberus.util.ParameterParserUtil;
+import org.cerberus.util.answer.AnswerItem;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
@@ -265,7 +267,9 @@ public class UserDAO implements IUserDAO {
     }
 
     @Override
-    public User updateUserPassword(User user, String password) throws CerberusException {
+    public AnswerItem<User> updateUserPassword(User user, String password){
+        AnswerItem<User> answer = new AnswerItem<User>();
+        MessageEvent msg = null;
         boolean res = false;
         final String sql = "UPDATE user SET Password = SHA(?) , Request = ? WHERE Login LIKE ?";
 
@@ -280,11 +284,17 @@ public class UserDAO implements IUserDAO {
                 res = preStat.executeUpdate() > 0;
             } catch (SQLException exception) {
                 MyLogger.log(UserDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
+                msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
+                msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", "Update Password - Unable to execute query"));        
             } finally {
-                preStat.close();
+                if(preStat != null){
+                    preStat.close();
+                }                
             }
         } catch (SQLException exception) {
             MyLogger.log(UserDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
+            msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
+            msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", "Update Password - Unable to execute query"));
         } finally {
             try {
                 if (connection != null) {
@@ -296,11 +306,19 @@ public class UserDAO implements IUserDAO {
         }
 
         if (res) {
-            return this.findUserByKey(user.getLogin());
+            answer.setItem(this.findUserByKey(user.getLogin()));
+            msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
+            msg.setDescription(msg.getDescription().replace("%ITEM%", "User").replace("%OPERATION%", "Update password"));
         } else {
-            return user;
+            answer.setItem(user);
+            msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_EXPECTED);
+            msg.setDescription(msg.getDescription().replace("%ITEM%", "User").
+                    replace("%OPERATION%", "Update Password").replace("%REASON%", "Your password was not updated. "
+                            + "Please contact your Cerberus' administrator to learn more information."));
         }
-
+        
+        answer.setResultMessage(msg);
+        return answer;
     }
 
     @Override

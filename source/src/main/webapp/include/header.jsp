@@ -171,7 +171,7 @@
 
                             // If we are not already in changepassword page and user needs to change its password,
                             //    --> we redirect to Change Password page.
-                            if (!(request.getRequestURI().contains("ChangePassword.jsp"))) {
+                            if (!request.getRequestURI().contains("Logout.jsp") && !(request.getRequestURI().contains("ChangePassword.jsp"))) {
                                 if (MyUserobj.getRequest().equalsIgnoreCase("Y")) {
                                     request.getRequestDispatcher("/ChangePassword.jsp").forward(request, response);
                                 }

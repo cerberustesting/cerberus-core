@@ -78,9 +78,9 @@
                     <div class="panel panel-default">
                         <div class="panel-heading card" data-toggle="collapse" data-target="#reportEnvCountryBrowser">
                             <label id="envCountryBrowser">Report by EnvCountryBrowser</label>
-                            <span class="toggle glyphicon glyphicon-chevron-down pull-right"></span>
+                            <span class="toggle glyphicon glyphicon-chevron-right pull-right"></span>
                         </div>
-                        <div class="panel-body collapse" id="reportEnvCountryBrowser">
+                        <div class="panel-body collapse in" id="reportEnvCountryBrowser">
                             <label id="splitLabel" class="bold">Split by :</label>
                             <button type="button" class="btn btn-default pull-right" onclick="loadEnvCountryBrowserReport()" id="reloadSplit">Reload</button>
                             <div class="form-group marginBottom20" id="splitFilter">

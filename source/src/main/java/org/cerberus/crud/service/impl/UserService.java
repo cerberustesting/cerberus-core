@@ -21,13 +21,16 @@ package org.cerberus.crud.service.impl;
 
 import java.util.List;
 import org.cerberus.crud.dao.IUserDAO;
+import org.cerberus.crud.entity.MessageEvent;
 import org.cerberus.crud.entity.MessageGeneral;
-import org.cerberus.enums.MessageGeneralEnum;
 import org.cerberus.crud.entity.User;
-import org.cerberus.exception.CerberusException;
 import org.cerberus.crud.service.IUserGroupService;
 import org.cerberus.crud.service.IUserService;
 import org.cerberus.crud.service.IUserSystemService;
+import org.cerberus.enums.MessageEventEnum;
+import org.cerberus.enums.MessageGeneralEnum;
+import org.cerberus.exception.CerberusException;
+import org.cerberus.util.answer.AnswerItem;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -89,18 +92,29 @@ public class UserService implements IUserService {
     }
 
     @Override
-    public User updateUserPassword(User user, String currentPassword, String newPassword, String confirmPassword) throws CerberusException {
-        User newUser;
+    public AnswerItem<User> updateUserPassword(User user, String currentPassword, String newPassword, String confirmPassword){
+        AnswerItem answUpdate = new AnswerItem();
+        MessageEvent msg = null;
+        
         if (newPassword.equals(confirmPassword)) {
             if (this.verifyPassword(user, currentPassword)) {
-                newUser = userDAO.updateUserPassword(user, newPassword);
-                return newUser;
+                //verifications succeed
+                answUpdate = userDAO.updateUserPassword(user, newPassword);                
             } else {
-                return user;
+                //same user
+                answUpdate.setItem(user);                
+                msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_VALIDATIONS_ERROR);
+                msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", "Current password is not valid!"));
+                answUpdate.setResultMessage(msg);
             }
         } else {
-            return user;
+            //same user            
+            answUpdate.setItem(user);
+            msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_VALIDATIONS_ERROR);
+            msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", "New password confirmation failed! Please re-enter new password!"));
+            answUpdate.setResultMessage(msg);
         }
+        return answUpdate;
     }
 
     @Override

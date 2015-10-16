@@ -23,10 +23,7 @@ $.when($.getScript("js/pages/global/global.js")).then(function () {
     $(document).ready(function () {
         initPage();
 
-        bindToggleCollapse("#ReportByStatus");
-        bindToggleCollapse("#functionChart");
-        bindToggleCollapse("#listReport");
-        bindToggleCollapse("#reportEnvCountryBrowser");
+        bindToggleCollapse();
 
         var urlTag = GetURLParameter('Tag');
         loadTagFilters(urlTag);
@@ -350,8 +347,18 @@ function loadReportByStatusTable(data) {
 function loadReportByStatusChart(data) {
 
     var margin = {top: 20, right: 25, bottom: 20, left: 50};
-    var width = document.getElementById('statusChart').offsetWidth - margin.left - margin.right;
-    var height = document.getElementById('ReportByStatusTable').offsetHeight - margin.top - margin.bottom;
+    
+    var offsetW = document.getElementById('statusChart').offsetWidth;
+    if (offsetW === 0) {
+        offsetW = 300;
+    }
+    var offsetH = document.getElementById('ReportByStatusTable').offsetHeight;
+    if (offsetH === 0) {
+        offsetH = 300;
+    }
+    
+    var width = offsetW - margin.left - margin.right;
+    var height = offsetH - margin.top - margin.bottom;
     var radius = Math.min(width, height) / 2;
 
     var svg = d3.select('#statusChart')

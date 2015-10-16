@@ -22,8 +22,7 @@ $.when($.getScript("js/pages/global/global.js")).then(function () {
     $(document).ready(function () {
         displayPageLabel();
 
-        bindToggleCollapse("#tagExecStatus");
-        bindToggleCollapse("#applicationPanel");
+        bindToggleCollapse();
 
         $('body').tooltip({
             selector: '[data-toggle="tooltip"]'

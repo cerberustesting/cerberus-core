@@ -41,7 +41,7 @@ function initPage() {
 
     displayHeaderLabel(doc);
     displayGlobalLabel(doc);
-//    displayPageLabel(doc);
+    displayPageLabel(doc);
     displayFooter(doc);
     displayInvariantList("GROUP", "group");
     displayInvariantList("TCSTATUS", "status");
@@ -56,6 +56,42 @@ function initPage() {
     appendApplicationList();
     appendProjectList();
     appendBuildRevList();
+}
+
+function displayPageLabel(doc) {
+    $("[name='testField']").html(doc.getDocOnline("test", "Test"));
+    $("[name='testCaseField']").html(doc.getDocOnline("testcase", "TestCase"));
+    $("[name='lastModifierField']").html(doc.getDocOnline("testcase", "LastModifier"));
+    $("[name='originField']").html(doc.getDocOnline("testcase", "Origine"));
+    $("[name='refOriginField']").html(doc.getDocOnline("testcase", "RefOrigine"));
+    $("[name='projectField']").html(doc.getDocOnline("project", "idproject"));
+    $("[name='ticketField']").html(doc.getDocOnline("testcase", "ticket"));
+    $("[name='functionField']").html(doc.getDocOnline("testcase", "Function"));
+    $("[name='applicationField']").html(doc.getDocOnline("application", "Application"));
+    $("[name='statusField']").html(doc.getDocOnline("testcase", "Status"));
+    $("[name='bugIdField']").html(doc.getDocOnline("testcase", "BugID"));
+    $("[name='actQAField']").html(doc.getDocOnline("testcase", "activeQA"));
+    $("[name='actUATField']").html(doc.getDocOnline("testcase", "activeUAT"));
+    $("[name='actUATField']").html(doc.getDocOnline("testcase", "activeUAT"));
+    $("[name='actProdField']").html(doc.getDocOnline("testcase", "activePROD"));
+    $("[name='shortDescField']").html(doc.getDocOnline("testcase", "Description"));
+    $("[name='behaviorOrValueExpectedField']").html(doc.getDocOnline("testcase", "BehaviorOrValueExpected"));
+    $("[name='shortDescField']").html(doc.getDocOnline("testcase", "Description"));
+    $("[name='howToField']").html(doc.getDocOnline("testcase", "HowTo"));
+    $("[name='descriptionField']").html(doc.getDocOnline("test", "Description"));
+    $("[name='creatorField']").html(doc.getDocOnline("testcase", "Creator"));
+    $("[name='implementerField']").html(doc.getDocOnline("testcase", "Implementer"));
+    $("[name='bugIdField']").html(doc.getDocOnline("testcase", "BugID"));
+    $("[name='tcDateCreaField']").html(doc.getDocOnline("testcase", "TCDateCrea"));
+    $("[name='activeField']").html(doc.getDocOnline("testcase", "TcActive"));
+    $("[name='fromSprintField']").html(doc.getDocOnline("testcase", "FromBuild"));
+    $("[name='fromRevField']").html(doc.getDocOnline("testcase", "FromRev"));
+    $("[name='toSprintField']").html(doc.getDocOnline("testcase", "ToBuild"));
+    $("[name='toRevField']").html(doc.getDocOnline("testcase", "ToRev"));
+    $("[name='targetSprintField']").html(doc.getDocOnline("testcase", "TargetBuild"));
+    $("[name='targetRevField']").html(doc.getDocOnline("testcase", "TargetRev"));
+    $("[name='commentField']").html(doc.getDocOnline("testcase", "Comment"));
+    
 }
 
 function appendBuildRevList() {
@@ -224,7 +260,7 @@ function CreateTestCaseClick() {
     if (test !== "") {
         $('#testAdd option[value="' + test + '"]').attr("selected", "selected");
     }
-    
+
     $('#addEntryModalForm #actProd option[value="N"]').attr("selected", "selected");
 
     $('#addEntryModal').modal('show');
@@ -429,13 +465,15 @@ function setCountry(checkbox) {
 
 
 function aoColumnsFunc(countries) {
+    var doc = new Doc();
+
     var countryLen = countries.length;
     var aoColumns = [
         {
             "data": null,
             "bSortable": false,
             "bSearchable": false,
-            "title": "Actions",
+            "title": doc.getDocOnline("page_global", "columnAction"),
             "sDefaultContent": "",
             "sWidth": "100px",
             "mRender": function (data, type, obj) {
@@ -457,42 +495,42 @@ function aoColumnsFunc(countries) {
         {
             "data": "testCase",
             "sName": "testCase",
-            "title": "Test Case",
+            "title": doc.getDocOnline("testcase", "TestCase"),
             "sWidth": "70px",
             "sDefaultContent": ""
         },
         {
             "data": "application",
             "sName": "application",
-            "title": "Application",
+            "title": doc.getDocOnline("application", "Application"),
             "sWidth": "100px",
             "sDefaultContent": ""
         },
         {
             "data": "project",
             "sName": "project",
-            "title": "Project",
+            "title": doc.getDocOnline("project", "idproject"),
             "sWidth": "100px",
             "sDefaultContent": ""
         },
         {
             "data": "creator",
             "sName": "creator",
-            "title": "Creator",
+            "title": doc.getDocOnline("testcase", "Creator"),
             "sWidth": "100px",
             "sDefaultContent": ""
         },
         {
             "data": "lastModifier",
             "sName": "lastmodifier",
-            "title": "Last Modifier",
+            "title": doc.getDocOnline("testcase", "LastModifier"),
             "sWidth": "100px",
             "sDefaultContent": ""
         },
         {
             "data": "active",
             "sName": "active",
-            "title": "Active",
+            "title": doc.getDocOnline("testcase", "TcActive"),
             "sDefaultContent": "",
             "sWidth": "70px",
             "className": "center",
@@ -507,7 +545,7 @@ function aoColumnsFunc(countries) {
         {
             "data": "status",
             "sName": "status",
-            "title": "Status",
+            "title": doc.getDocOnline("testcase", "Status"),
             "sWidth": "100px",
             "sDefaultContent": ""
         },
@@ -518,17 +556,17 @@ function aoColumnsFunc(countries) {
             "sWidth": "70px",
             "sDefaultContent": ""
         },
-         {
+        {
             "data": "origin",
             "sName": "origine",
-            "title": "Origin",
+            "title": doc.getDocOnline("testcase", "Origine"),
             "sWidth": "70px",
             "sDefaultContent": ""
         },
-         {
+        {
             "data": "refOrigin",
             "sName": "refOrigine",
-            "title": "refOrigin",
+            "title": doc.getDocOnline("testcase", "RefOrigine"),
             "sWidth": "80px",
             "sDefaultContent": ""
         },
@@ -542,14 +580,14 @@ function aoColumnsFunc(countries) {
         {
             "data": "shortDescription",
             "sName": "description",
-            "title": "Description",
+            "title": doc.getDocOnline("testcase", "Description"),
             "sWidth": "300px",
             "sDefaultContent": ""
         },
         {
             "data": "tcDateCrea",
             "sName": "tcDateCrea",
-            "title": "Created",
+            "title": doc.getDocOnline("testcase", "TCDateCrea"),
             "sWidth": "150px",
             "sDefaultContent": ""
         }
