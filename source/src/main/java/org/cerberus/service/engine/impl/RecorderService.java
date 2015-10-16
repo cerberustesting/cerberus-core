@@ -31,6 +31,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.logging.Logger;
 import javax.imageio.ImageIO;
+import org.apache.commons.io.FileUtils;
 import org.apache.log4j.Level;
 import org.cerberus.crud.entity.ExecutionSOAPResponse;
 import org.cerberus.crud.entity.TestCaseExecution;
@@ -38,10 +39,10 @@ import org.cerberus.crud.entity.TestCaseStepActionControlExecution;
 import org.cerberus.crud.entity.TestCaseStepActionExecution;
 import org.cerberus.crud.entity.TestDataLibResult;
 import org.cerberus.crud.entity.TestDataLibResultSOAP;
+import org.cerberus.crud.service.IParameterService;
 import org.cerberus.enums.TestDataLibTypeEnum;
 import org.cerberus.exception.CerberusException;
 import org.cerberus.log.MyLogger;
-import org.cerberus.crud.service.IParameterService;
 import org.cerberus.service.engine.IRecorderService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -75,25 +76,41 @@ public class RecorderService implements IRecorderService {
         /**
          * Generate FileName
          */
-        String screenshotFilename = this.generateScreenshotFilename(test, testCase, step, sequence, controlString, null, "jpg");
+        String screenshotFilename = this.generateScreenshotFilename(test, testCase, step, sequence, controlString, null, "png");
 
         /**
          * Take Screenshot and write it
          */
-        String imgPath;
+        File newImage = this.webdriverService.takeScreenShotFile(testCaseExecution.getSession());
+        if(newImage != null){
             try {
-                BufferedImage newImage = this.webdriverService.takeScreenShot(testCaseExecution.getSession());
-                imgPath = parameterService.findParameterByKey("cerberus_picture_path", "").getValue();
+                String imgPath = parameterService.findParameterByKey("cerberus_picture_path", "").getValue();
                 File dir = new File(imgPath + runId);
-                dir.mkdirs();
-                ImageIO.write(newImage, "jpg", new File(imgPath + runId + File.separator + screenshotFilename));
+                if(!dir.exists()){
+                    dir.mkdirs();
+                }
+                FileUtils.copyFile(newImage, new File(imgPath + runId + File.separator + screenshotFilename));
+            } catch (IOException ex) {
+                Logger.getLogger(RecorderService.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
             } catch (CerberusException ex) {
                 Logger.getLogger(RecorderService.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-            } catch (IOException ex) {
-            Logger.getLogger(RecorderService.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-            } catch (IllegalArgumentException ex) {
-            Logger.getLogger(RecorderService.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
             }
+        }
+//old version        
+//        String imgPath;
+//            try {
+//                BufferedImage newImage = this.webdriverService.takeScreenShot(testCaseExecution.getSession());
+//                    imgPath = parameterService.findParameterByKey("cerberus_picture_path", "").getValue();
+//                    File dir = new File(imgPath + runId);
+//                    dir.mkdirs();
+//                ImageIO.write(newImage, "jpg", new File(imgPath + runId + File.separator + screenshotFilename));
+//            } catch (CerberusException ex) {
+//                Logger.getLogger(RecorderService.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+//            } catch (IOException ex) {
+//                Logger.getLogger(RecorderService.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+//            } catch (IllegalArgumentException ex) {
+//                Logger.getLogger(RecorderService.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+//            }
         String screenshotPath = Long.toString(testCaseStepActionExecution.getTestCaseStepExecution().gettCExecution().getId()) + File.separator + screenshotFilename;
         MyLogger.log(RecorderService.class.getName(), Level.DEBUG, "Screenshot done in : " + screenshotPath);
 

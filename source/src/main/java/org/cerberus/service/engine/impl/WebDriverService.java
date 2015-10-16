@@ -286,6 +286,28 @@ public class WebDriverService implements IWebDriverService {
         return strings[1];
     }
 
+    public File takeScreenShotFile(Session session) {
+        
+        boolean event = true;
+        long timeout = System.currentTimeMillis() + (1000 * session.getDefaultWait());
+        //Try to capture picture. Try again until timeout is WebDriverException is raised.
+        while (event) {
+            try {
+                WebDriver augmentedDriver = new Augmenter().augment(session.getDriver());
+                File image = ((TakesScreenshot) augmentedDriver).getScreenshotAs(OutputType.FILE);
+                
+                return image;                
+            } catch (WebDriverException exception) {
+                if (System.currentTimeMillis() >= timeout) {
+                    MyLogger.log(WebDriverService.class.getName(), Level.WARN, exception.toString());
+                }
+                event = false;
+            }
+        }
+        
+        return null;
+    }
+
     @Override
     public BufferedImage takeScreenShot(Session session) {
         BufferedImage newImage = null;
@@ -297,9 +319,9 @@ public class WebDriverService implements IWebDriverService {
                 WebDriver augmentedDriver = new Augmenter().augment(session.getDriver());
                 File image = ((TakesScreenshot) augmentedDriver).getScreenshotAs(OutputType.FILE);
                 BufferedImage bufferedImage = ImageIO.read(image);
-
-                newImage = new BufferedImage(bufferedImage.getWidth(), bufferedImage.getHeight(), BufferedImage.TYPE_INT_RGB);
-                newImage.createGraphics().drawImage(bufferedImage, 0, 0, Color.WHITE, null);
+                
+                        newImage = new BufferedImage(bufferedImage.getWidth(), bufferedImage.getHeight(), BufferedImage.TYPE_INT_RGB);
+                        newImage.createGraphics().drawImage(bufferedImage, 0, 0, Color.WHITE, null);
                 return newImage;
             } catch (IOException exception) {
                 MyLogger.log(WebDriverService.class.getName(), Level.WARN, exception.toString());
@@ -307,9 +329,9 @@ public class WebDriverService implements IWebDriverService {
             } catch (WebDriverException exception) {
                 if (System.currentTimeMillis() >= timeout) {
                     MyLogger.log(WebDriverService.class.getName(), Level.WARN, exception.toString());
-                    event = false;
-                }
+                event = false;
             }
+        }
         }
         return newImage;
     }
