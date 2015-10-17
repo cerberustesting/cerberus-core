@@ -4874,6 +4874,12 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLS.append("ALTER TABLE `testdatalib` CHANGE COLUMN `Method` `Method` VARCHAR(255) NOT NULL DEFAULT '' ;");
         SQLInstruction.add(SQLS.toString());
 
+        // Enlarge Doc Label column
+        //-- ------------------------  643
+        SQLS = new StringBuilder();
+        SQLS.append("ALTER TABLE `documentation` CHANGE COLUMN `DocLabel` `DocLabel` VARCHAR(300) NULL DEFAULT NULL ;");
+        SQLInstruction.add(SQLS.toString());
+
         return SQLInstruction;
     }
 
