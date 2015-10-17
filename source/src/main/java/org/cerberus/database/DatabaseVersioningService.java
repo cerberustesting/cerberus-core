@@ -4107,6 +4107,126 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         // New updated Documentation.
         //-- ------------------------ 623-624
         SQLS = new StringBuilder();
+        SQLS.append("SELECT 1 FROM dual;");
+        SQLInstruction.add(SQLS.toString());
+        SQLS = new StringBuilder();
+        SQLS.append("SELECT 1 FROM dual;");
+        SQLInstruction.add(SQLS.toString());
+
+        // Documentation entries for Homepage.
+        //-- ------------------------ 625
+        SQLS = new StringBuilder();
+        SQLS.append("SELECT 1 FROM dual;");
+        SQLInstruction.add(SQLS.toString());
+
+        // Documentation entries for Homepage.
+        //-- ------------------------ 626
+        SQLS = new StringBuilder();
+        SQLS.append("SELECT 1 FROM dual;");
+        SQLInstruction.add(SQLS.toString());
+
+        // Documentation entries for Homepage.
+        //-- ------------------------ 627-629
+        SQLS = new StringBuilder();
+        SQLS.append("SELECT 1 FROM dual;");
+        SQLInstruction.add(SQLS.toString());
+        SQLS = new StringBuilder();
+        SQLS.append("SELECT 1 FROM dual;");
+        SQLInstruction.add(SQLS.toString());
+        SQLS = new StringBuilder();
+        SQLS.append("SELECT 1 FROM dual;");
+        SQLInstruction.add(SQLS.toString());
+
+        // Added private invariant for test active and automated.
+        //-- ------------------------ 630
+        SQLS = new StringBuilder();
+        SQLS.append("INSERT INTO `invariant` (idname, value, sort, description, VeryShortDesc) VALUES ");
+        SQLS.append("('INVARIANTPRIVATE', 'TESTACTIVE', '510', '', ''),");
+        SQLS.append("('INVARIANTPRIVATE', 'TESTAUTOMATED', '520', '', ''),");
+        SQLS.append("('TESTACTIVE', 'Y', '10', 'Active', ''),");
+        SQLS.append("('TESTACTIVE', 'N', '20', 'Disable', ''),");
+        SQLS.append("('TESTAUTOMATED', 'Y', '10', 'Automated', ''),");
+        SQLS.append("('TESTAUTOMATED', 'N', '20', 'Not automated', '');");
+        SQLInstruction.add(SQLS.toString());
+
+        // Documentation entries for Test page.
+        //-- ------------------------ 631
+        SQLS = new StringBuilder();
+        SQLS.append("SELECT 1 FROM dual;");
+        SQLInstruction.add(SQLS.toString());
+
+        // Documentation entries for Test page.
+        //-- ------------------------ 632-633
+        SQLS = new StringBuilder();
+        SQLS.append("SELECT 1 FROM dual;");
+        SQLInstruction.add(SQLS.toString());
+        SQLS = new StringBuilder();
+        SQLS.append("SELECT 1 FROM dual;");
+        SQLInstruction.add(SQLS.toString());
+
+        // Documentation entries for Test Case page - useStep option.
+        //-- ------------------------ 634
+        SQLS = new StringBuilder();
+        SQLS.append("SELECT 1 FROM dual;");
+        SQLInstruction.add(SQLS.toString());
+
+        // Documentation entries for Test Case page - tooltips for controls and actions.
+        //-- ------------------------ 635
+        SQLS = new StringBuilder();
+        SQLS.append("SELECT 1 FROM dual;");
+        SQLInstruction.add(SQLS.toString());
+
+        // Enlarge Page column on Logevent table in order to support log of long Servlet.
+        //-- ------------------------ 636
+        SQLS = new StringBuilder();
+        SQLS.append("ALTER TABLE `logevent` CHANGE COLUMN `Page` `Page` VARCHAR(200) NULL DEFAULT NULL ;");
+        SQLInstruction.add(SQLS.toString());
+
+        // Documentation entries for Reporting By Tag
+        //-- ------------------------ 637
+        SQLS = new StringBuilder();
+        SQLS.append("SELECT 1 FROM dual;");
+        SQLInstruction.add(SQLS.toString());
+
+        // Insert invariant executeSqlUpdate, executeSqlStoredProcedure and skipAction
+        //-- ------------------------ 638
+        SQLS = new StringBuilder();
+        SQLS.append("INSERT INTO `invariant` (`idname`, `value`, `sort`, `description`, `VeryShortDesc`) ");
+        SQLS.append(" VALUES ('ACTION', 'executeSqlUpdate', '230', 'Execute SQL Script (Update, Delete, Insert)', ''),");
+        SQLS.append(" ('ACTION', 'executeSqlStoredProcedure', '240', 'Execute Stored Procedure', ''),");
+        SQLS.append(" ('ACTION', 'skipAction', '250', 'Skip Action', '');");
+        SQLInstruction.add(SQLS.toString());
+
+        // Documentation entries for executeSqlUpdate, executeSqlStoredProcedure and skipAction
+        //-- ------------------------  639
+        SQLS = new StringBuilder();
+        SQLS.append("SELECT 1 FROM dual;");
+        SQLInstruction.add(SQLS.toString());
+
+        // Documentation entries update for reporting by tag
+        //-- ------------------------  640-641
+        SQLS = new StringBuilder();
+        SQLS.append("SELECT 1 FROM dual;");
+        SQLInstruction.add(SQLS.toString());
+        SQLS = new StringBuilder();
+        SQLS.append("SELECT 1 FROM dual;");
+        SQLInstruction.add(SQLS.toString());
+
+        // Enlarge Method column
+        //-- ------------------------  642
+        SQLS = new StringBuilder();
+        SQLS.append("ALTER TABLE `testdatalib` CHANGE COLUMN `Method` `Method` VARCHAR(255) NOT NULL DEFAULT '' ;");
+        SQLInstruction.add(SQLS.toString());
+
+        // Enlarge Doc Label column
+        //-- ------------------------  643
+        SQLS = new StringBuilder();
+        SQLS.append("ALTER TABLE `documentation` CHANGE COLUMN `DocLabel` `DocLabel` VARCHAR(300) NULL DEFAULT NULL ;");
+        SQLInstruction.add(SQLS.toString());
+
+        // New updated Documentation.
+        //-- ------------------------ 643-644
+        SQLS = new StringBuilder();
         SQLS.append("DELETE FROM `documentation`;");
         SQLInstruction.add(SQLS.toString());
         SQLS = new StringBuilder();
@@ -4134,11 +4254,38 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLS.append(",('application','type','','fr','Type','Le type de l\\'<code class=\\'doc-crbvvoca\\'>application</code> defini si l\\'<code class=\\'doc-crbvvoca\\'>application</code> est une interface graphique (GUI), un fournisseur de Service ou un traitement batch.<br>Un <code class=\\'doc-crbvvoca\\'>cas de test</code> automatisé basé sur une <code class=\\'doc-crbvvoca\\'>application</code> de type GUI necessitera un serveur Selenium pour s\\'executer.')");
         SQLS.append(",('buildrevisioninvariant','versionname01','','en','Build','')");
         SQLS.append(",('buildrevisioninvariant','versionname02','','en','Revision','')");
-        SQLS.append(",('buildrevisionparameters','BugIDFixed','','en','BugID','This is the bug ID which has been solved with the <code class=\\'doc-crbvvoca\\'>release</code>.')");
+        SQLS.append(",('buildrevisionparameters','application','','en','Application','')");
+        SQLS.append(",('buildrevisionparameters','application','','fr','Application','')");
+        SQLS.append(",('buildrevisionparameters','BugIDFixed','','en','Associated Bug ID','This is the bug ID which has been solved with the <code class=\\'doc-crbvvoca\\'>release</code>.')");
+        SQLS.append(",('buildrevisionparameters','BugIDFixed','','fr','ID du Bug associé','ID du bug dont la release est associée.')");
+        SQLS.append(",('buildrevisionparameters','Build','','en','Build','')");
+        SQLS.append(",('buildrevisionparameters','Build','','fr','Build','')");
+        SQLS.append(",('buildrevisionparameters','datecre','','en','Creation Date','')");
+        SQLS.append(",('buildrevisionparameters','datecre','','fr','Date de Création','')");
+        SQLS.append(",('buildrevisionparameters','id','','en','ID','')");
+        SQLS.append(",('buildrevisionparameters','id','','fr','ID','')");
+        SQLS.append(",('buildrevisionparameters','jenkinsBuildId','','en','Jenkins Build ID','')");
+        SQLS.append(",('buildrevisionparameters','jenkinsBuildId','','fr','Jenkins Build ID','')");
         SQLS.append(",('buildrevisionparameters','Link','','en','Link','This is the link to the detailed content of the <code class=\\'doc-crbvvoca\\'>release</code>.')");
+        SQLS.append(",('buildrevisionparameters','Link','','fr','Lien','Lien vers le detail de la <code class=\\'doc-crbvvoca\\'>release</code>.')");
+        SQLS.append(",('buildrevisionparameters','mavenArtifactId','','en','Maven Artifact ID','')");
+        SQLS.append(",('buildrevisionparameters','mavenArtifactId','','fr','Maven Artifact ID','')");
+        SQLS.append(",('buildrevisionparameters','mavenGroupId','','en','Maven Group ID','')");
+        SQLS.append(",('buildrevisionparameters','mavenGroupId','','fr','Maven Group ID','')");
+        SQLS.append(",('buildrevisionparameters','mavenVersion','','en','Maven Version','')");
+        SQLS.append(",('buildrevisionparameters','mavenVersion','','fr','Maven Version','')");
+        SQLS.append(",('buildrevisionparameters','project','','en','Project','')");
+        SQLS.append(",('buildrevisionparameters','project','','fr','Projet','')");
         SQLS.append(",('buildrevisionparameters','Release','','en','Release','A <code class=\\'doc-crbvvoca\\'>release</code> is a single change done on the <code class=\\'doc-crbvvoca\\'>application</code>.')");
+        SQLS.append(",('buildrevisionparameters','Release','','fr','Release','A <code class=\\'doc-crbvvoca\\'>release</code> is a single change done on the <code class=\\'doc-crbvvoca\\'>application</code>.')");
         SQLS.append(",('buildrevisionparameters','ReleaseOwner','','en','Owner','This is the name of the person who is responsible for the <code class=\\'doc-crbvvoca\\'>release</code>.')");
-        SQLS.append(",('buildrevisionparameters','TicketIDFixed','','en','Ticket','This is the Ticket ID which has been delivered with the <code class=\\'doc-crbvvoca\\'>release</code>.')");
+        SQLS.append(",('buildrevisionparameters','ReleaseOwner','','fr','Responsable','Nom de la personne responsable de la <code class=\\'doc-crbvvoca\\'>release</code>.')");
+        SQLS.append(",('buildrevisionparameters','Revision','','en','Revision','')");
+        SQLS.append(",('buildrevisionparameters','Revision','','fr','Revision','')");
+        SQLS.append(",('buildrevisionparameters','subject','','en','Description','')");
+        SQLS.append(",('buildrevisionparameters','subject','','fr','Description','')");
+        SQLS.append(",('buildrevisionparameters','TicketIDFixed','','en','Associated Ticket ID','This is the Ticket ID which has been delivered with the <code class=\\'doc-crbvvoca\\'>release</code>.')");
+        SQLS.append(",('buildrevisionparameters','TicketIDFixed','','fr','ID du Ticket associé','ID du ticket dont la release est associée.')");
         SQLS.append(",('countryenvironmentdatabase','ConnectionPoolName','','en','JDBC Ressource','This is the name of the JDBC Ressource used to connect to the corresponding <code class=\\'doc-crbvvoca\\'>database</code> on the <code class=\\'doc-crbvvoca\\'>country</code> / <code class=\\'doc-crbvvoca\\'>environment</code>.<br>The JDBC Ressource (prefixed by <code class=\\'doc-fixed\\'>jdbc/</code> ) needs to be configured and associated to a connection pool on the application server that host the Cerberus application.<br><br>Example :<br><doc class=\"examples\"><table cellspacing=0 cellpadding=3><th class=\\'ex\\'>JDBC Ressource</th><th class=\\'ex\\'>Application server Ressource name</th><tr>\n<td class=\\'ex\\'>MyConnection</td>\n<td class=\\'ex\\'>jdbc/MyConnection</td>\n</tr></table>\n</doc>')");
         SQLS.append(",('countryenvironmentdatabase','Database','','en','Database','')");
         SQLS.append(",('countryenvironmentparameters','domain','','en','Domain','Domain of the Application. Can be used inside any test execution with %SYS_APP_DOMAIN% variable.')");
@@ -4199,6 +4346,18 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLS.append(",('deploytype','deploytype','','fr','Type de deploiement','')");
         SQLS.append(",('deploytype','description','','en','Description','')");
         SQLS.append(",('deploytype','description','','fr','Description','')");
+        SQLS.append(",('homepage','btn_addTag','','en','Add Tag','')");
+        SQLS.append(",('homepage','btn_addTag','','fr','Ajouter le tag','')");
+        SQLS.append(",('homepage','btn_settings','','en','Customize','')");
+        SQLS.append(",('homepage','btn_settings','','fr','Personnaliser','')");
+        SQLS.append(",('homepage','lastTagExecution','','en','Last Tags Executions','Display the statistics of the last tag executed or the tags set in the settings')");
+        SQLS.append(",('homepage','lastTagExecution','','fr','Dernières exécutions de tags','Affiche les statistiques d\\'exécutions des derniers tags exécutés ou des tags définis dans les options')");
+        SQLS.append(",('homepage','modal_title','','en','Tag Filter','This modal permits you to add tags to the last tags executions report')");
+        SQLS.append(",('homepage','modal_title','','fr','Filtre des tags','Ce modal vous permet d\\'ajouter des tags au rapport des dernières exécutions de tags')");
+        SQLS.append(",('homepage','testCaseStatusByApp','','en','Test Case Status by Application','Workflow status of the test case by Application')");
+        SQLS.append(",('homepage','testCaseStatusByApp','','fr','Status des Cas de Tests par Application','Status de l\\'avancement des cas de tests par Application')");
+        SQLS.append(",('homepage','title','','en','Welcome to Cerberus application','')");
+        SQLS.append(",('homepage','title','','fr','Bienvenue dans l\\'application Cerberus','')");
         SQLS.append(",('host','active','','en','Active','')");
         SQLS.append(",('host','host','','en','Host','')");
         SQLS.append(",('host','port','','en','port','')");
@@ -4255,7 +4414,28 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLS.append(",('page_application','button_edit','','fr','Modifier l\\'Application','')");
         SQLS.append(",('page_application','title','','en','APPLICATION','This page can be used to manage the applications.')");
         SQLS.append(",('page_application','title','','fr','APPLICATION','Cette page permet de gérer et créer des applications.')");
+        SQLS.append(",('page_buildcontent','buttonLoadLatest','','en','Load latest Build','')");
+        SQLS.append(",('page_buildcontent','buttonLoadLatest','','fr','Charger le dernier Build','')");
+        SQLS.append(",('page_buildcontent','buttonLoadPending','','en','Load pending Build','')");
+        SQLS.append(",('page_buildcontent','buttonLoadPending','','fr','Charger le Build encours','')");
+        SQLS.append(",('page_buildcontent','button_create','','en','Create new Build Content','')");
+        SQLS.append(",('page_buildcontent','button_create','','fr','Créer un nouveau contenu au Build','')");
+        SQLS.append(",('page_buildcontent','button_delete','','en','Delete Build Content','')");
+        SQLS.append(",('page_buildcontent','button_delete','','fr','Supprimer l\\'entrée du contenu du Build','')");
+        SQLS.append(",('page_buildcontent','button_edit','','en','Edit Build Content','')");
+        SQLS.append(",('page_buildcontent','button_edit','','fr','Editer le contenu du Build','')");
         SQLS.append(",('page_buildcontent','delete','','en','Dlt','Select this checkbox and then save changes in order to delete the row.')");
+        SQLS.append(",('page_buildcontent','delete','','fr','Dlt','Select this checkbox and then save changes in order to delete the row.')");
+        SQLS.append(",('page_buildcontent','filters','','en','Filters','')");
+        SQLS.append(",('page_buildcontent','filters','','fr','Filtres','')");
+        SQLS.append(",('page_buildcontent','list','','en','Build Content List','')");
+        SQLS.append(",('page_buildcontent','list','','fr','Liste du contenu du Build','')");
+        SQLS.append(",('page_buildcontent','message_delete','','en','Do you want to delete release entry %ENTRY% ?<br> NB : It correspond to the release %RELEASE% of application %APPLI% of Build %BUILD% Revision %REVISION%.','')");
+        SQLS.append(",('page_buildcontent','message_delete','','fr','Confirmez vous la suppression de l\\'entrée %ENTRY% ?<br> NB : correspond à la release %RELEASE% de l\\'application %APPLI% du Build %BUILD% Revision %REVISION%.','')");
+        SQLS.append(",('page_buildcontent','standardfilters','','en','Standard Filters','')");
+        SQLS.append(",('page_buildcontent','standardfilters','','fr','Standard Filters','')");
+        SQLS.append(",('page_buildcontent','title','','en','BUILD CONTENT','This page can be used to manage the Build Content.')");
+        SQLS.append(",('page_buildcontent','title','','fr','BUILD CONTENT','This page can be used to manage the Build Content.')");
         SQLS.append(",('page_deploytype','button_create','','en','Create new Deployment Type','')");
         SQLS.append(",('page_deploytype','button_create','','fr','Créer un nouveau Type de Deploiement','')");
         SQLS.append(",('page_deploytype','button_delete','','en','Delete Deployment Type','')");
@@ -4289,6 +4469,8 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLS.append(",('page_global','buttonConfirm','','fr','Oui','')");
         SQLS.append(",('page_global','buttonDismiss','','en','No','')");
         SQLS.append(",('page_global','buttonDismiss','','fr','Non','')");
+        SQLS.append(",('page_global','buttonLoad','','en','Load','')");
+        SQLS.append(",('page_global','buttonLoad','','fr','Charger','')");
         SQLS.append(",('page_global','columnAction','','en','Actions','')");
         SQLS.append(",('page_global','columnAction','','fr','Actions','')");
         SQLS.append(",('page_global','deleteMessage','','en','Do you want to delete %ENTRY% %TABLE% ?','')");
@@ -4423,6 +4605,8 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLS.append(",('page_reportbytag','button_reload','','fr','Recharger','')");
         SQLS.append(",('page_reportbytag','filters','','en','Filters','Filters for the report')");
         SQLS.append(",('page_reportbytag','filters','','fr','Filtres','Filtres du rapport')");
+        SQLS.append(",('page_reportbytag','report_envcountrybrowser','','en','Report By Application Environement Country Browser','Report of the execution filtering by Application Environement Country and Browser')");
+        SQLS.append(",('page_reportbytag','report_envcountrybrowser','','fr','Rapport par Application Envrionnement Pays Navigateur','Rapport d\\'execution filtré par Application Envrionnment Pays et Navigateur')");
         SQLS.append(",('page_reportbytag','report_function','','en','Report by Function','A bar chart with the number of execution and their status for each function')");
         SQLS.append(",('page_reportbytag','report_function','','fr','Rapport par Fonction','diagramme en bâtons contenant le nombre d\\'execution par status pour chaque fonction')");
         SQLS.append(",('page_reportbytag','report_list','','en','List','A list of all test case execution for each Environement, Country and Browser')");
@@ -4451,20 +4635,40 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLS.append(",('page_runtests','SeleniumServerPort','','en','Selenium Server Port','Selenium Server Port is the port which will be used to run the <code class=\\'doc-crbvvoca\\'>test case</code>.')");
         SQLS.append(",('page_runtests','Synchroneous','','en','Synchroneous','This is parameter to define if user mut be redirected to the reporting during the execution.<br><br>By default, synchroneous will be set to Y, meaning the redirection will be at the end of the execution.')");
         SQLS.append(",('page_runtests','Timeout','','en','Timeout','This is the timeout used for the execution.<br><br>If empty, the default value will be the one set in the parameter table.')");
+        SQLS.append(",('page_test','btn_create','','en','Create Test','')");
+        SQLS.append(",('page_test','btn_create','','fr','Créer un Test','')");
+        SQLS.append(",('page_test','btn_delete','','en','Delete Test','')");
+        SQLS.append(",('page_test','btn_delete','','fr','Supprimer le Test','')");
+        SQLS.append(",('page_test','btn_edit','','en','Edit Test','')");
+        SQLS.append(",('page_test','btn_edit','','fr','Modifier le Test','')");
         SQLS.append(",('page_test','delete','','en','Dlt','Select this checkbox and then save changes in order to delete the row.')");
         SQLS.append(",('page_testcase','BugIDLink','','en','Link','')");
         SQLS.append(",('page_testcase','delete','','en','Dlt','Select this checkbox and then save changes in order to delete the row.')");
+        SQLS.append(",('page_testcase','dpd_choose_step','','en','-- Choose Step  --','')");
+        SQLS.append(",('page_testcase','dpd_choose_test','','en','-- Choose Test --','')");
+        SQLS.append(",('page_testcase','dpd_choose_testcase','','en','-- Choose Test Case --','')");
         SQLS.append(",('page_testcase','laststatus','','en','Last Execution Status','')");
+        SQLS.append(",('page_testcase','lbl_copied_from','','en','Copied from:','')");
+        SQLS.append(",('page_testcase','link_edit_step','','en','Edit Used Step','')");
+        SQLS.append(",('page_testcase','tooltip_addAction','','en','Add Action','')");
+        SQLS.append(",('page_testcase','tooltip_addControl','','en','Add Control','')");
         SQLS.append(",('page_testcase','tooltip_clicktocreate','','en','Property %P% is missing! Click to create a property!','')");
         SQLS.append(",('page_testcase','tooltip_clicktooverride','','en','Property %P% is defined in the test: %T% - %TC% [step: %S%]. Click to override property!','')");
         SQLS.append(",('page_testcase','tooltip_infooverriden','','en','Property %P% was overridden in the current Test Case. Original test case: %T% - %TC% [step: %S%]','')");
+        SQLS.append(",('page_testcase','tooltip_is_useStep','','en','This step can not be used as library, because it uses another step!','')");
         SQLS.append(",('page_testcase','tooltip_select_entry','','en','Select an entry from library','')");
+        SQLS.append(",('page_testcase','tooltip_step_used','','en','This step is being used by another step(s)!','')");
         SQLS.append(",('page_testcase','txt_property_not_defined','','en','** Property not defined **','')");
         SQLS.append(",('page_testcase','undefined_error_message','','en','There are undefined properties! Please check them before proceed.','')");
         SQLS.append(",('page_testcasesearch','text','','en','Text','Insert here the text that will search against the following Fields of every <code class=\\'doc-crbvvoca\\'>test case</code> :<br>- Short Description,<br>- Detailed description / Value Expected,<br>- HowTo<br>- Comment<br><br>NB : Search is case insensitive.')");
+        SQLS.append(",('page_testcase_m_addPicture','error_message_empty','','en','The URL value is empty!','')");
+        SQLS.append(",('page_testcase_m_addPicture','lbl_feedurl','','en','Feed URL','')");
+        SQLS.append(",('page_testcase_m_addPicture','title','','en','Add URL for picture','')");
         SQLS.append(",('page_testcase_m_listtestdatalib','actions','','en','Actions','<p> List of available actions for the current user: </p><p><table border=\\'1\\'><tr><th class=\\'ex\\'>Button</th><th class=\\'ex\\'>Function</th><th class=\\'ex\\'>Description</th></tr><tr><td><span class=\\'glyphicon glyphicon-hand-up\\'></span></td><td>Select entry</td><td>Allows the user to select an entry that will be set in the \\'value\\' textarea for the current property.</td></tr></table></p>  ')");
         SQLS.append(",('page_testcase_m_listtestdatalib','title','','en','Select Test Data Library Entry','')");
         SQLS.append(",('page_testcase_m_listtestdatalib','tooltip_choose_entry','','en','Choose entry','')");
+        SQLS.append(",('page_testcase_m_showPicture','btn_remove','','en','Remove','')");
+        SQLS.append(",('page_testcase_m_showPicture','title','','en','Selected Picture','')");
         SQLS.append(",('page_testdatalib','btn_create','','en','Create New Entry','')");
         SQLS.append(",('page_testdatalib','btn_import','','en','Import from XML file','')");
         SQLS.append(",('page_testdatalib','duplicated_message','','en','Please check the subdata entries. There are entries with duplicated names, a total of: ','')");
@@ -4536,10 +4740,15 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLS.append(",('robot','version','','en','Version','Brower Version of the robot.')");
         SQLS.append(",('robot','version','','fr','Version','Version du navigateur du Robot.')");
         SQLS.append(",('test','Active','','en','Active','Define if the <code class=\\'doc-crbvvoca\\'>test</code> is active.<br>If <code class=\\'doc-crbvvoca\\'>test</code> is not active, no execution is possible on any of the associated <code class=\\'doc-crbvvoca\\'>test case</code>.')");
+        SQLS.append(",('test','Active','','fr','Actif','Booléen qui définit si le <code class=\\'doc-crbvvoca\\'>test</code> est actif.<br>Si le <code class=\\'doc-crbvvoca\\'>test</code> n\\'est pas actif, aucune execution des <code class=\\'doc-crbvvoca\\'>Cas de tests</code> n\\'est possible.')");
         SQLS.append(",('test','Automated','','en','Automated','Define if the test is automated or not.')");
+        SQLS.append(",('test','Automated','','fr','Automatisé','Boléen qui définit si le test est automatisé ou non')");
+        SQLS.append(",('test','dateCreation','','en','Creation date','The date when the test have been created')");
+        SQLS.append(",('test','dateCreation','','fr','Date de création','Date à laquelle le test a été créé')");
         SQLS.append(",('test','Description','','en','Test Description','This is the description of the <code class=\\'doc-crbvvoca\\'>test</code>.')");
+        SQLS.append(",('test','Description','','fr','Description du test','Description du <code class=\\'doc-crbvvoca\\'>test</code>.')");
         SQLS.append(",('test','Test','','en','Test','A <code class=\\'doc-crbvvoca\\'>test</code> is grouping some <code class=\\'doc-crbvvoca\\'>test case</code> together. The criteria that groups the <code class=\\'doc-crbvvoca\\'>test cases</code> can be an application page or a feature.')");
-        SQLS.append(",('test','Test','','fr','Test','')");
+        SQLS.append(",('test','Test','','fr','Test','Un <code class=\\'doc-crbvvoca\\'>test</code> regroupe plusieurs <code class=\\'doc-crbvvoca\\'>Cas de tests</code> ensemble.')");
         SQLS.append(",('testcase','activePROD','','en','Active PROD','Define whether the <code class=\\'doc-crbvvoca\\'>test case</code> can be executed in PROD environments.<br>If the environment gp1 (attached to the invariant) is PROD and Active PROD is No, the <code class=\\'doc-crbvvoca\\'>test case</code> will never be executed.')");
         SQLS.append(",('testcase','activeQA','','en','Active QA','Define whether the <code class=\\'doc-crbvvoca\\'>test case</code> can be executed in QA environments.<br>If the environment gp1 (attached to the invariant) is QA and Active QA is No, the <code class=\\'doc-crbvvoca\\'>test case</code> will never be executed.')");
         SQLS.append(",('testcase','activeUAT','','en','Active UAT','Define whether the <code class=\\'doc-crbvvoca\\'>test case</code> can be executed in UAT environments.<br>If the environment gp1 (attached to the invariant) is UAT and Active UAT is No, the <code class=\\'doc-crbvvoca\\'>test case</code> will never be executed.')");
@@ -4638,6 +4847,8 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLS.append(",('testcasestepaction','Action','clickAndWait','en','[DEPRECATED] Clicking on a button and waiting some time.','<code class=\\'doc-fixed\\'>clickAndWait</code> is a deprecated action. Please don\\'t use it anymore. You can use <code class=\\'doc-action\\'>click</code> and <code class=\\'doc-action\\'>wait</code> actions in stead.')");
         SQLS.append(",('testcasestepaction','Action','doubleClick','en','Double clicking on a button.','<code class=\\'doc-fixed\\'>doubleClick</code> will allow you to double click on an element inside the current page.<br><br>Usage :<br><doc class=\"usage\"><table cellspacing=0 cellpadding=2><th class=\\'ex\\'>Field</th><th class=\\'ex\\'>Usage</th><tr><td class=\\'ex\\'>Object</td><td class=\\'ex\\'>Identifier and name of the element to double click in the form of : identifier=html_reference.</td></tr><tr><td class=\\'ex\\'>Property</td><td class=\\'ex\\'>Property name (only used to activate or not double click depending on if the property exist for the country).</td></tr></table></doc><br><br>Examples :<br><doc class=\"examples\"><table cellspacing=0 cellpadding=2><th class=\\'ex\\'>Object</th><th class=\\'ex\\'>Property</th><th class=\\'ex\\'>Result</th><tr><td class=\\'ex\\'>id=html_reference</td><td class=\\'ex\\'></td><td class=\\'ex\\'>element that has id equal to html_reference will be double clicked.</td></tr></table></doc>')");
         SQLS.append(",('testcasestepaction','Action','enter','en','[DEPRECATED] Press ENTER key.','<code class=\\'doc-fixed\\'>enter</code> is a deprecated action. Please don\\'t use it anymore. You can use <code class=\\'doc-action\\'>keypress</code> action in stead with RETURN as the object value.')");
+        SQLS.append(",('testcasestepaction','Action','executeSqlStoredProcedure','en','Execute SQL Stored Procedure','<code class=\\'doc-fixed\\'>executeSqlStoredProcedure</code> will allow you to execute SQL stored procedure.<br><br>Usage :<br><doc class=\"usage\"><table cellspacing=0 cellpadding=2><th class=\\'ex\\'>Field</th><th class=\\'ex\\'>Usage</th><tr><td class=\\'ex\\'>Object</td><td class=\\'ex\\'>Name of the Connection Pool.</td></tr><tr><td class=\\'ex\\'>Property</td><td class=\\'ex\\'>Property name of the procedure to execute. The property should be a text one.</td></tr></table></doc><br><br>Examples :<br><doc class=\"examples\"><table cellspacing=0 cellpadding=2><th class=\\'ex\\'>Object</th><th class=\\'ex\\'>Property</th><th class=\\'ex\\'>Result</th><tr><td class=\\'ex\\'>CONNECTION_POOL_NAME</td><td class=\\'ex\\'>PROPERTY_NAME</td><td class=\\'ex\\'>The procedure name declared in the property PROPERTY_NAME will be executed on database through connection pool CONNECTION_POOL_NAME.</td></tr></table></doc>')");
+        SQLS.append(",('testcasestepaction','Action','executeSqlUpdate','en','Execute SQL update','<code class=\\'doc-fixed\\'>executeSqlUpdate</code> will allow you to execute SQL update (insert,delete,update).<br><br>Usage :<br><doc class=\"usage\"><table cellspacing=0 cellpadding=2><th class=\\'ex\\'>Field</th><th class=\\'ex\\'>Usage</th><tr><td class=\\'ex\\'>Object</td><td class=\\'ex\\'>Name of the Connection Pool.</td></tr><tr><td class=\\'ex\\'>Property</td><td class=\\'ex\\'>Property name of the script to execute. The property should be a text one.</td></tr></table></doc><br><br>Examples :<br><doc class=\"examples\"><table cellspacing=0 cellpadding=2><th class=\\'ex\\'>Object</th><th class=\\'ex\\'>Property</th><th class=\\'ex\\'>Result</th><tr><td class=\\'ex\\'>CONNECTION_POOL_NAME</td><td class=\\'ex\\'>PROPERTY_NAME</td><td class=\\'ex\\'>The script declared in the property PROPERTY_NAME will be executed on database through connection pool CONNECTION_POOL_NAME.</td></tr></table></doc>')");
         SQLS.append(",('testcasestepaction','Action','focusDefaultIframe','en','Focus on the default frame.','TBD')");
         SQLS.append(",('testcasestepaction','Action','focusToIframe','en','Focus to a specific frame.','TBD')");
         SQLS.append(",('testcasestepaction','Action','getPageSource','en','getPageSource','<code class=\\'doc-fixed\\'>getPageSource</code> will allow you to record the source of the page opened.<br><br> The result will be stored in a file which will be available in the execution detail<br><br>Usage :<br><doc class=\"usage\"><table cellspacing=0 cellpadding=2><th class=\\'ex\\'>Field</th><th class=\\'ex\\'>Usage</th><tr><td class=\\'ex\\'>Object</td><td class=\\'ex\\'></td></tr><tr><td class=\\'ex\\'>Property</td><td class=\\'ex\\'></td></tr></table></doc><br><br>Examples :<br><doc class=\"examples\"><table cellspacing=0 cellpadding=2><th class=\\'ex\\'>Object</th><th class=\\'ex\\'>Property</th><th class=\\'ex\\'>Result</th><tr><td class=\\'ex\\'></td><td class=\\'ex\\'> </td><td class=\\'ex\\'>Source will be recorded</td></tr></table></doc>')");
@@ -4653,6 +4864,7 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLS.append(",('testcasestepaction','Action','removeSelection','en','Remove a selection from a combo.','TBD')");
         SQLS.append(",('testcasestepaction','Action','select','en','Select a value on a combo.','<b>select :</b> When the action expected is to select a value from a select box.<br><br><dd><u><i>How to feed it :</i></u> <br><br><dd><i>Action =</i> select, <i>Value =</i> the <i>id</i> of the select box.  and <i>Property =</i> the property containing the value to select.<br>It could be label=TheExactNameOfTheValue or value=the first letter or the place number of the value expected in the select box<br>For example : label=WEB   , value=W   , value=3 if the WEB is the third value in the selectbox<br><br><br>')");
         SQLS.append(",('testcasestepaction','Action','selectAndWait','en','[DEPRECATED] Select a value on a combo and wait a certain ti','<b>selectAndWait :</b> When the action expected is to select a value in a select box and wait for a new URL opened.<br><br><dd><u><i>How to feed it :</i></u> <br><br><dd><i>Action =</i> selectAndWait, <i>Value =</i> the <i>id</i> of the select box.  and <i>Property =</i> the property containing the value to select.<br>It could be label=TheExactNameOfTheValue or value=the first letter or the place number of the value expected in the select box<br>For example : label=WEB   , value=W   , value=3 if the WEB is the third value in the selectbox. <br><br><br>')");
+        SQLS.append(",('testcasestepaction','Action','skipAction','en','Skip this action','<code class=\\'doc-fixed\\'>skipAction</code> will skip the action. Can be used in case of control that must be done without action before.<br><br>Usage :<br><doc class=\"usage\"><table cellspacing=0 cellpadding=2><th class=\\'ex\\'>Field</th><th class=\\'ex\\'>Usage</th><tr><td class=\\'ex\\'>Object</td><td class=\\'ex\\'></td></tr><tr><td class=\\'ex\\'>Property</td><td class=\\'ex\\'></td></tr></table></doc><br><br>Examples :<br><doc class=\"examples\"><table cellspacing=0 cellpadding=2><th class=\\'ex\\'>Object</th><th class=\\'ex\\'>Property</th><th class=\\'ex\\'>Result</th><tr><td class=\\'ex\\'></td><td class=\\'ex\\'></td><td class=\\'ex\\'>No action will be executed and engine will go to the next action or control</td></tr></table></doc>')");
         SQLS.append(",('testcasestepaction','Action','switchToWindow','en','Switching the focus to a window.','When the Test case need to switch to another window (like popup dialog) this action is used. Just specify title of other window in objet to switch to this window.')");
         SQLS.append(",('testcasestepaction','Action','takeScreenshot','en','Take a screenshot.','TBD')");
         SQLS.append(",('testcasestepaction','Action','type','en','Put a data in a field.','<b>type :</b> When the action expected is to type something into a field.<br><br><dd><u><i>How to feed it :</i></u> <br><br><dd><i>Action =</i> type, <i>Value =</i> the <i>id</i> of the field  and <i>Property =</i> the property containing the value to type.<br><br><br>')");
@@ -4726,158 +4938,6 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLS.append(",('user','DefaultSystem','','en','Default System','This is the default <code class=\\'doc-crbvvoca\\'>system</code> the user works on the most. It is used to default the perimeter of <code class=\\'doc-crbvvoca\\'>test case</code> or <code class=\\'doc-crbvvoca\\'>applications</code> displayed on some Cerberus pages.')");
         SQLS.append(",('user','Team','','en','Team','This is the team of the user.')");
         SQLS.append(",('usergroup','GroupName','','en','Group Name','Authorities are managed by group. In order to be granted to a set of feature, you must belong to the corresponding group.<br>Every user can of course belong to as many group as necessary in order to get access to as many feature as required.<br>In order to get the full access to the system you must belong to every group.<br>Some groups are linked together on the test perimeter and integration perimeter.<br><br><b>Test perimeter :</b><br><br><code class=\\'doc-fixed\\'>TestRO</code>: Has read only access to the information related to test cases and also has access to execution reporting options.<br><br><code class=\\'doc-fixed\\'>Test</code>: Can modify non WORKING test cases but cannot delete test cases.<br><br><code class=\\'doc-fixed\\'>TestAdmin</code>: Can modify or delete any test case (including Pre Testing test cases). Can also create or delete a test.<br><br>The minimum group you need to belong is <code class=\\'doc-fixed\\'>TestRO</code> that will give you access in read only to all test data (including its execution reporting page).<br>If you want to be able to modify the testcases (except the WORKING ones), you need <code class=\\'doc-fixed\\'>Test</code> group on top of <code class=\\'doc-fixed\\'>TestRO</code> group.<br>If you want the full access to all testcase (including beeing able to delete any testcase), you will need <code class=\\'doc-fixed\\'>TestAdmin</code> on top of <code class=\\'doc-fixed\\'>TestRO</code> and <code class=\\'doc-fixed\\'>Test</code> group.<br><br><b>Test Execution perimeter :</b><br><br><code class=\\'doc-fixed\\'>RunTest</code>: Can run both Manual and Automated test cases from GUI.<br><br><b>Integration perimeter :</b><br><br><code class=\\'doc-fixed\\'>IntegratorRO</code>: Has access to the integration status.<br><br><code class=\\'doc-fixed\\'>Integrator</code>: Can add an application. Can change parameters of the environments.<br><br><code class=\\'doc-fixed\\'>IntegratorNewChain</code>: Can register the end of the chain execution. Has read only access to the other informations on the same page.<br><br><code class=\\'doc-fixed\\'>IntegratorDeploy</code>: Can disable or enable environments and register new build / revision.<br><br>The minimum group you need to belong is <code class=\\'doc-fixed\\'>IntegratorRO</code> that will give you access in read only to all environment data.<br>If you want to be able to modify the environment data, you need <code class=\\'doc-fixed\\'>Integrator</code> group on top of <code class=\\'doc-fixed\\'>IntegratorRO</code> group.<br><code class=\\'doc-fixed\\'>IntegratorNewChain</code> and <code class=\\'doc-fixed\\'>IntegratorDeploy</code> are used on top of <code class=\\'doc-fixed\\'>Integrator</code> Group to be able to create a new chain on an environment or perform a deploy operation.<br><br><b>Administration perimeter :</b><br><br><code class=\\'doc-fixed\\'>Administrator</code>: Can create, modify or delete users. Has access to log Event and Database Maintenance. Can change Parameter values.')");
-        SQLInstruction.add(SQLS.toString());
-
-        // Documentation entries for Homepage.
-        //-- ------------------------ 625
-        SQLS = new StringBuilder();
-        SQLS.append("INSERT INTO `documentation` VALUES ('homepage','lastTagExecution','','en','Last Tags Executions','Display the statistics of the last tag executed or the tags set in the settings')");
-        SQLS.append(",('homepage','btn_settings','','en','Settings','')");
-        SQLS.append(",('homepage','lastTagExecution','','fr','Dernières exécutions de tags','Affiche les statistiques d\\'exécutions des derniers tags exécutés ou des tags définis dans les options')");
-        SQLS.append(",('homepage','btn_settings','','fr','Options','')");
-        SQLInstruction.add(SQLS.toString());
-
-        // Documentation entries for Homepage.
-        //-- ------------------------ 626
-        SQLS = new StringBuilder();
-        SQLS.append("INSERT INTO `documentation` VALUES ('homepage','modal_title','','en','Tag Filter','This modal permits you to add tags to the last tags executions report')");
-        SQLS.append(",('homepage','btn_addTag','','en','Add Tag','')");
-        SQLS.append(",('homepage','modal_title','','fr','Filtre des tags','Ce modal vous permet d\\'ajouter des tags au rapport des dernières exécutions de tags')");
-        SQLS.append(",('homepage','btn_addTag','','fr','Ajouter le tag','')");
-        SQLInstruction.add(SQLS.toString());
-
-        // Documentation entries for Homepage.
-        //-- ------------------------ 627-629
-        SQLS = new StringBuilder();
-        SQLS.append("INSERT INTO `documentation` VALUES ('homepage','testCaseStatusByApp','','en','Test Case Status by Application','Workflow status of the test case by Application')");
-        SQLS.append(",('homepage','testCaseStatusByApp','','fr','Status des Cas de Tests par Application','Status de l\\'avancement des cas de tests par Application')");
-        SQLS.append(",('homepage','title','','en','Welcome to Cerberus application','')");
-        SQLS.append(",('homepage','title','','fr','Bienvenue dans l\\'application Cerberus','')");
-        SQLInstruction.add(SQLS.toString());
-        SQLS = new StringBuilder();
-        SQLS.append("UPDATE `documentation` SET `DocLabel`='Customize' WHERE `DocTable`='homepage' and`DocField`='btn_settings' and`DocValue`='' and`Lang`='en';");
-        SQLInstruction.add(SQLS.toString());
-        SQLS = new StringBuilder();
-        SQLS.append("UPDATE `documentation` SET `DocLabel`='Personnaliser' WHERE `DocTable`='homepage' and`DocField`='btn_settings' and`DocValue`='' and`Lang`='fr';");
-        SQLInstruction.add(SQLS.toString());
-
-        // Added private invariant for test active and automated.
-        //-- ------------------------ 630
-        SQLS = new StringBuilder();
-        SQLS.append("INSERT INTO `invariant` (idname, value, sort, description, VeryShortDesc) VALUES ");
-        SQLS.append("('INVARIANTPRIVATE', 'TESTACTIVE', '510', '', ''),");
-        SQLS.append("('INVARIANTPRIVATE', 'TESTAUTOMATED', '520', '', ''),");
-        SQLS.append("('TESTACTIVE', 'Y', '10', 'Active', ''),");
-        SQLS.append("('TESTACTIVE', 'N', '20', 'Disable', ''),");
-        SQLS.append("('TESTAUTOMATED', 'Y', '10', 'Automated', ''),");
-        SQLS.append("('TESTAUTOMATED', 'N', '20', 'Not automated', '');");
-        SQLInstruction.add(SQLS.toString());
-
-        // Documentation entries for Test page.
-        //-- ------------------------ 631
-        SQLS = new StringBuilder();
-        SQLS.append("INSERT INTO `documentation` (DocTable, DocField, DocValue, Lang, DocLabel, DocDesc) VALUES ");
-        SQLS.append("('page_test', 'btn_create', '', 'en', 'Create Test', ''),");
-        SQLS.append("('page_test', 'btn_create', '', 'fr', 'Créer un Test', ''),");
-        SQLS.append("('page_test', 'btn_delete', '', 'en', 'Delete Test', ''),");
-        SQLS.append("('page_test', 'btn_delete', '', 'fr', 'Supprimer le Test', ''),");
-        SQLS.append("('page_test', 'btn_edit', '', 'en', 'Edit Test', ''),");
-        SQLS.append("('page_test', 'btn_edit', '', 'fr', 'Modifier le Test', '');");
-        SQLInstruction.add(SQLS.toString());
-
-        // Documentation entries for Test page.
-        //-- ------------------------ 632-633
-        SQLS = new StringBuilder();
-        SQLS.append("UPDATE `documentation` SET ");
-        SQLS.append("`DocDesc`='Un <code class=\\'doc-crbvvoca\\'>test</code> regroupe plusieurs <code class=\\'doc-crbvvoca\\'>Cas de tests</code> ensemble.'");
-        SQLS.append(" WHERE `DocTable`='test' and`DocField`='Test' and `DocValue`='' and `Lang`='fr';");
-        SQLInstruction.add(SQLS.toString());
-        SQLS = new StringBuilder();
-        SQLS.append("INSERT INTO `documentation` (DocTable, DocField, DocValue, Lang, DocLabel, DocDesc) VALUES ");
-        SQLS.append("('test', 'Active', '', 'fr', 'Actif', 'Booléen qui définit si le <code class=\\'doc-crbvvoca\\'>test</code> est actif.<br>Si le <code class=\\'doc-crbvvoca\\'>test</code> n\\'est pas actif, aucune execution des <code class=\\'doc-crbvvoca\\'>Cas de tests</code> n\\'est possible.'),");
-        SQLS.append("('test', 'Automated', '', 'fr', 'Automatisé', 'Boléen qui définit si le test est automatisé ou non'),");
-        SQLS.append("('test', 'Description', '', 'fr', 'Description du test', 'Description du <code class=\\'doc-crbvvoca\\'>test</code>.'),");
-        SQLS.append("('test', 'dateCreation', '', 'en', 'Creation date', 'The date when the test have been created'),");
-        SQLS.append("('test', 'dateCreation', '', 'fr', 'Date de création', 'Date à laquelle le test a été créé');");
-        SQLInstruction.add(SQLS.toString());
-
-        // Documentation entries for Test Case page - useStep option.
-        //-- ------------------------ 634
-        SQLS = new StringBuilder();
-        SQLS.append("INSERT INTO `documentation` VALUES ");
-        SQLS.append("('page_testcase', 'dpd_choose_test','','en','-- Choose Test --', \"\") ");
-        SQLS.append(", ('page_testcase', 'dpd_choose_testcase','','en','-- Choose Test Case --', \"\") ");
-        SQLS.append(", ('page_testcase', 'dpd_choose_step','','en','-- Choose Step  --', \"\") ");
-        SQLS.append(", ('page_testcase', 'tooltip_step_used','','en','This step is being used by another step(s)!', \"\") ");
-        SQLS.append(", ('page_testcase', 'tooltip_is_useStep','','en','This step can not be used as library, because it uses another step!', \"\") ");
-        SQLS.append(", ('page_testcase', 'lbl_copied_from','','en','Copied from:', \"\") ");
-        SQLS.append(", ('page_testcase', 'link_edit_step','','en','Edit Used Step', \"\") ");
-        SQLInstruction.add(SQLS.toString());
-
-        // Documentation entries for Test Case page - tooltips for controls and actions.
-        //-- ------------------------ 635
-        SQLS = new StringBuilder();
-        SQLS.append("INSERT INTO `documentation` VALUES ");
-        SQLS.append("('page_testcase', 'tooltip_addAction','','en','Add Action', \"\") ");
-        SQLS.append(", ('page_testcase', 'tooltip_addControl','','en','Add Control', \"\") ");
-        SQLS.append(", ('page_testcase_m_addPicture', 'title','','en','Add URL for picture', \"\") ");
-        SQLS.append(", ('page_testcase_m_addPicture', 'lbl_feedurl','','en','Feed URL', \"\") ");
-        SQLS.append(", ('page_testcase_m_addPicture', 'error_message_empty','','en','The URL value is empty!', \"\") ");
-        SQLS.append(", ('page_testcase_m_showPicture', 'title','','en','Selected Picture', \"\") ");
-        SQLS.append(", ('page_testcase_m_showPicture', 'btn_remove','','en','Remove', \"\") ");
-        SQLInstruction.add(SQLS.toString());
-
-        // Enlarge Page column on Logevent table in order to support log of long Servlet.
-        //-- ------------------------ 636
-        SQLS = new StringBuilder();
-        SQLS.append("ALTER TABLE `logevent` CHANGE COLUMN `Page` `Page` VARCHAR(200) NULL DEFAULT NULL ;");
-        SQLInstruction.add(SQLS.toString());
-
-        // Documentation entries for Reporting By Tag
-        //-- ------------------------ 637
-        SQLS = new StringBuilder();
-        SQLS.append("INSERT INTO `documentation` (DocTable, DocField, DocValue, Lang, DocLabel, DocDesc) VALUES ");
-        SQLS.append("('page_reportbytag', 'report_envcountrybrowser', '', 'en', 'Report By Environement Country Browser', 'Report of the execution filtering by Environement Country and Browser'),");
-        SQLS.append("('page_reportbytag', 'report_envcountrybrowser', '', 'fr', 'Rapport par Envrionnement Pays Navigateur', 'Rapport d\\'execution filtré par Envrionnment Pays et Navigateur');");
-        SQLInstruction.add(SQLS.toString());
-
-        // Insert invariant executeSqlUpdate, executeSqlStoredProcedure and skipAction
-        //-- ------------------------ 638
-        SQLS = new StringBuilder();
-        SQLS.append("INSERT INTO `invariant` (`idname`, `value`, `sort`, `description`, `VeryShortDesc`) ");
-        SQLS.append(" VALUES ('ACTION', 'executeSqlUpdate', '230', 'Execute SQL Script (Update, Delete, Insert)', ''),");
-        SQLS.append(" ('ACTION', 'executeSqlStoredProcedure', '240', 'Execute Stored Procedure', ''),");
-        SQLS.append(" ('ACTION', 'skipAction', '250', 'Skip Action', '');");
-        SQLInstruction.add(SQLS.toString());
-
-        // Documentation entries for executeSqlUpdate, executeSqlStoredProcedure and skipAction
-        //-- ------------------------  639
-        SQLS = new StringBuilder();
-        SQLS.append("INSERT INTO `documentation` (DocTable, DocField, DocValue, Lang, DocLabel, DocDesc) VALUES ");
-        SQLS.append("('testcasestepaction', 'Action', 'executeSqlUpdate', 'en', 'Execute SQL update', '<code class=\\'doc-fixed\\'>executeSqlUpdate</code> will allow you to execute SQL update (insert,delete,update).<br><br>Usage :<br><doc class=\"usage\"><table cellspacing=0 cellpadding=2><th class=\\'ex\\'>Field</th><th class=\\'ex\\'>Usage</th><tr><td class=\\'ex\\'>Object</td><td class=\\'ex\\'>Name of the Connection Pool.</td></tr><tr><td class=\\'ex\\'>Property</td><td class=\\'ex\\'>Property name of the script to execute. The property should be a text one.</td></tr></table></doc><br><br>Examples :<br><doc class=\"examples\"><table cellspacing=0 cellpadding=2><th class=\\'ex\\'>Object</th><th class=\\'ex\\'>Property</th><th class=\\'ex\\'>Result</th><tr><td class=\\'ex\\'>CONNECTION_POOL_NAME</td><td class=\\'ex\\'>PROPERTY_NAME</td><td class=\\'ex\\'>The script declared in the property PROPERTY_NAME will be executed on database through connection pool CONNECTION_POOL_NAME.</td></tr></table></doc>'),");
-        SQLS.append("('testcasestepaction', 'Action', 'executeSqlStoredProcedure', 'en', 'Execute SQL Stored Procedure', '<code class=\\'doc-fixed\\'>executeSqlStoredProcedure</code> will allow you to execute SQL stored procedure.<br><br>Usage :<br><doc class=\"usage\"><table cellspacing=0 cellpadding=2><th class=\\'ex\\'>Field</th><th class=\\'ex\\'>Usage</th><tr><td class=\\'ex\\'>Object</td><td class=\\'ex\\'>Name of the Connection Pool.</td></tr><tr><td class=\\'ex\\'>Property</td><td class=\\'ex\\'>Property name of the procedure to execute. The property should be a text one.</td></tr></table></doc><br><br>Examples :<br><doc class=\"examples\"><table cellspacing=0 cellpadding=2><th class=\\'ex\\'>Object</th><th class=\\'ex\\'>Property</th><th class=\\'ex\\'>Result</th><tr><td class=\\'ex\\'>CONNECTION_POOL_NAME</td><td class=\\'ex\\'>PROPERTY_NAME</td><td class=\\'ex\\'>The procedure name declared in the property PROPERTY_NAME will be executed on database through connection pool CONNECTION_POOL_NAME.</td></tr></table></doc>'),");
-        SQLS.append("('testcasestepaction', 'Action', 'skipAction', 'en', 'Skip this action', '<code class=\\'doc-fixed\\'>skipAction</code> will skip the action. Can be used in case of control that must be done without action before.<br><br>Usage :<br><doc class=\"usage\"><table cellspacing=0 cellpadding=2><th class=\\'ex\\'>Field</th><th class=\\'ex\\'>Usage</th><tr><td class=\\'ex\\'>Object</td><td class=\\'ex\\'></td></tr><tr><td class=\\'ex\\'>Property</td><td class=\\'ex\\'></td></tr></table></doc><br><br>Examples :<br><doc class=\"examples\"><table cellspacing=0 cellpadding=2><th class=\\'ex\\'>Object</th><th class=\\'ex\\'>Property</th><th class=\\'ex\\'>Result</th><tr><td class=\\'ex\\'></td><td class=\\'ex\\'></td><td class=\\'ex\\'>No action will be executed and engine will go to the next action or control</td></tr></table></doc>');");
-        SQLInstruction.add(SQLS.toString());
-
-        // Documentation entries update for reporting by tag
-        //-- ------------------------  640-641
-        SQLS = new StringBuilder();
-        SQLS.append("UPDATE `documentation` SET `DocLabel`='Rapport par Application Envrionnement Pays Navigateur', `DocDesc`='Rapport d\\'execution filtré par Application Envrionnment Pays et Navigateur' WHERE `DocTable`='page_reportbytag' and`DocField`='report_envcountrybrowser' and`DocValue`='' and`Lang`='fr';");
-        SQLInstruction.add(SQLS.toString());
-        SQLS = new StringBuilder();
-        SQLS.append("UPDATE `documentation` SET `DocLabel`='Report By Application Environement Country Browser', `DocDesc`='Report of the execution filtering by Application Environement Country and Browser' WHERE `DocTable`='page_reportbytag' and`DocField`='report_envcountrybrowser' and`DocValue`='' and`Lang`='en';");
-        SQLInstruction.add(SQLS.toString());
-
-        // Enlarge Method column
-        //-- ------------------------  642
-        SQLS = new StringBuilder();
-        SQLS.append("ALTER TABLE `testdatalib` CHANGE COLUMN `Method` `Method` VARCHAR(255) NOT NULL DEFAULT '' ;");
-        SQLInstruction.add(SQLS.toString());
-
-        // Enlarge Doc Label column
-        //-- ------------------------  643
-        SQLS = new StringBuilder();
-        SQLS.append("ALTER TABLE `documentation` CHANGE COLUMN `DocLabel` `DocLabel` VARCHAR(300) NULL DEFAULT NULL ;");
         SQLInstruction.add(SQLS.toString());
 
         return SQLInstruction;
