@@ -61,7 +61,7 @@ function getSubDataLabel(type) {
  * @param {String} selectName value name of the select tag in the html
  * @returns {void}
  */
-function displayInvariantList(idName, selectName) {
+function displayInvariantList(selectName, idName) {
     $.when($.getJSON("FindInvariantByID", "idName=" + idName)).then(function (data) {
         for (var option in data) {
             $("[name='" + selectName + "']").append($('<option></option>').text(data[option].value).val(data[option].value));
@@ -69,7 +69,7 @@ function displayInvariantList(idName, selectName) {
     });
 }
 
-function displayInvariantListWithDesc(idName, selectName) {
+function displayInvariantListWithDesc(selectName, idName) {
     $.when($.getJSON("FindInvariantByID", "idName=" + idName)).then(function (data) {
         for (var option in data) {
             $("[name='" + selectName + "']").append($('<option></option>').text(data[option].value + " - " + data[option].description).val(data[option].value));
@@ -145,6 +145,22 @@ function displayBuildList(selectName, system, level) {
     $.when($.getJSON("ReadBuildRevisionInvariant", myData)).then(function (data) {
         for (var option in data.contentTable) {
             $("[name='" + selectName + "']").append($('<option></option>').text(data.contentTable[option].versionName).val(data.contentTable[option].versionName));
+        }
+    });
+}
+
+/*****User LIST **********************************/
+/**
+ * Method that display a combo box in all the selectName tags with the value retrieved from the user list
+ * @param {String} selectName value name of the select tag in the html
+ * @returns {void}
+ */
+function displayUserList(selectName) {
+    var myData = "iSortCol_0=1"; // We sort by login.
+    $("[name='" + selectName + "']").append($('<option></option>').text("NONE").val(""));
+    $.when($.getJSON("ReadUser", myData)).then(function (data) {
+        for (var option in data.contentTable) {
+            $("[name='" + selectName + "']").append($('<option></option>').text(data.contentTable[option].login + " - " + data.contentTable[option].name).val(data.contentTable[option].login));
         }
     });
 }

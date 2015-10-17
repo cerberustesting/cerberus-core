@@ -43,8 +43,8 @@ function initPage() {
     displayGlobalLabel(doc);
     displayPageLabel(doc);
     displayFooter(doc);
-    displayInvariantList("TESTACTIVE", "Active");
-    displayInvariantList("TESTAUTOMATED", "Automated");
+    displayInvariantList("Active", "TESTACTIVE");
+    displayInvariantList("Automated", "TESTAUTOMATED");
 
 }
 

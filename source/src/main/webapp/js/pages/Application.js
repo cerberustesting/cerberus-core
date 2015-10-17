@@ -64,8 +64,8 @@ function displayPageLabel() {
     $("[name='bugtrackernewurlField']").html(doc.getDocOnline("application", "bugtrackernewurl"));
     $("[name='deploytypeField']").html(doc.getDocOnline("application", "deploytype"));
     $("[name='mavengroupidField']").html(doc.getDocOnline("application", "mavengroupid"));
-    displayInvariantList("SYSTEM", "system");
-    displayInvariantList("APPLITYPE", "type");
+    displayInvariantList("system", "SYSTEM");
+    displayInvariantList("type", "APPLITYPE");
     displayDeployTypeList("deploytype");
     displayFooter(doc);
 }

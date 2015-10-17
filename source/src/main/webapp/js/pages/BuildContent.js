@@ -43,27 +43,39 @@ function initBuildContentPage() {
     if (urlRevision !== null) {
         $('#selectRevision option[value="' + urlRevision + '"]').attr("selected", "selected");
     }
-    console.log('B : ' + urlBuild + ' R : ' + urlRevision);
+//    console.log('B : ' + urlBuild + ' R : ' + urlRevision);
     loadBCTable();
 }
 
-function setNONE() {
+function setPending() {
     var myBuild = "NONE";
     var myRevision = "NONE";
-    $('#selectBuild option[value="' + myBuild + '"]').attr("selected", "selected");
-    $('#selectRevision option[value="' + myRevision + '"]').attr("selected", "selected");
-    loadBCTable();
+    $('#selectBuild option[value="' + myBuild + '"]').attr("selected", true);
+    $('#selectRevision option[value="' + myRevision + '"]').attr("selected", true);
+//    loadBCTable();
 }
 
 function setLatest() {
+    var myBuild = "";
+    var myRevision = "";
     // TODO : Get the latest build and revision.
-    var param = "system=" + getUser().defaultSystem;
+    var param = "getlast=&system=" + getUser().defaultSystem;
     var jqxhr = $.get("ReadBuildRevisionParameters", param, "json");
-    var myBuild = "VCBAT14";
-    var myRevision = "R10";
-    $('#selectBuild option[value="' + myBuild + '"]').attr("selected", "selected");
-    $('#selectRevision option[value="' + myRevision + '"]').attr("selected", "selected");
-    loadBCTable();
+
+    $.when(jqxhr).then(function (data) {
+        var messageType = getAlertType(data.messageType);
+        if (messageType === "success") {
+            myBuild = data.contentTable.build;
+            myRevision = data.contentTable.revision;
+            console.log('Latest B : ' + myBuild + ' R : ' + myRevision);
+            $('#selectBuild option[value="' + myBuild + '"]').attr("selected", true);
+            $('#selectRevision option[value="' + myRevision + '"]').attr("selected", true);
+        } else {
+            showMessageMainPage(messageType, data.message);
+        }
+    }).fail(handleErrorAjaxAfterTimeout);
+
+//    loadBCTable();
 }
 
 function displayPageLabel() {
@@ -85,8 +97,9 @@ function displayPageLabel() {
     $("[name='revisionField']").html(doc.getDocOnline("buildrevisionparameters", "Revision"));
     displayApplicationList("application", getUser().defaultSystem);
     displayProjectList("project");
-    displayBuildList("build", getUser().defaultSystem, "1")
-    displayBuildList("revision", getUser().defaultSystem, "2")
+    displayBuildList("build", getUser().defaultSystem, "1");
+    displayBuildList("revision", getUser().defaultSystem, "2");
+    displayUserList("owner");
     displayFooter(doc);
 }
 
