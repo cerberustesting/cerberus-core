@@ -26,17 +26,19 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Logger;
-
 import org.apache.log4j.Level;
-import org.cerberus.database.DatabaseSpring;
 import org.cerberus.crud.entity.Application;
 import org.cerberus.crud.entity.Invariant;
-import org.cerberus.exception.CerberusException;
-import org.cerberus.log.MyLogger;
+import org.cerberus.crud.entity.MessageGeneral;
 import org.cerberus.crud.service.IApplicationService;
 import org.cerberus.crud.service.IInvariantService;
-import org.cerberus.util.SqlUtil;
-import org.cerberus.util.StringUtil;
+import org.cerberus.database.DatabaseSpring;
+import org.cerberus.enums.MessageEventEnum;
+import org.cerberus.enums.MessageGeneralEnum;
+import org.cerberus.exception.CerberusException;
+import org.cerberus.log.MyLogger;
+import org.cerberus.util.SqlUtil; 
+import org.cerberus.util.answer.AnswerList;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
@@ -67,8 +69,15 @@ public class TestCaseExecutionStatisticsDAOImpl implements ITestCaseExecutionSta
         String env;
         try {
             List<Invariant> inv = new ArrayList<Invariant>();
+            AnswerList answer;
             for (String e : environment) {
-                inv.addAll(invariantService.findInvariantByIdGp1("ENVIRONMENT", e));
+                answer = invariantService.findInvariantByIdGp1("ENVIRONMENT", e);
+                if(!answer.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())){
+                    //TODO: temporary fix that should be solved while refactoring
+                    throw new CerberusException(new MessageGeneral(MessageGeneralEnum.DATA_OPERATION_ERROR));
+                }else{
+                    inv.addAll(answer.getDataList());
+                }
             }
 
             StringBuffer buf = new StringBuffer();
@@ -206,8 +215,15 @@ public class TestCaseExecutionStatisticsDAOImpl implements ITestCaseExecutionSta
         String env = "";
         try {
             List<Invariant> inv = new ArrayList<Invariant>();
-            for (String e : environment) {
-                inv.addAll(invariantService.findInvariantByIdGp1("ENVIRONMENT", e));
+            AnswerList answer;
+            for (String e : environment) {                
+                answer = invariantService.findInvariantByIdGp1("ENVIRONMENT", e);
+                if(!answer.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())){
+                    //TODO: temporary fix that should be solved while refactoring
+                    throw new CerberusException(new MessageGeneral(MessageGeneralEnum.DATA_OPERATION_ERROR));
+                }else{
+                    inv.addAll(answer.getDataList());
+                }
             }
 
             StringBuffer buf = new StringBuffer();

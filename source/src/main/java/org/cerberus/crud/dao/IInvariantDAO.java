@@ -18,9 +18,9 @@
 package org.cerberus.crud.dao;
 
 import java.util.List;
-
 import org.cerberus.crud.entity.Invariant;
 import org.cerberus.exception.CerberusException;
+import org.cerberus.util.answer.AnswerList;
 
 /**
  * {Insert class description here}
@@ -37,7 +37,7 @@ public interface IInvariantDAO {
 
     List<Invariant> findListOfInvariantById(String idName) throws CerberusException;
 
-    List<Invariant> findInvariantByIdGp1(String idName, String gp) throws CerberusException;
+    AnswerList<Invariant> findInvariantByIdGp1(String idName, String gp);
 
     public List<Invariant> findInvariantListByCriteria(int start, int amount, String column, String dir, String searchTerm, String individualSearch, String PublicPrivateFilter);
 

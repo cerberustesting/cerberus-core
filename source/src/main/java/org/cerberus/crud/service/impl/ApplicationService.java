@@ -126,4 +126,9 @@ public class ApplicationService implements IApplicationService {
         throw new CerberusException(new MessageGeneral(MessageGeneralEnum.DATA_OPERATION_ERROR));
     }
 
+    @Override
+    public AnswerItem readTotalTCBySystemByStatus(String system) {
+        return  this.ApplicationDAO.readTotalTCBySystemByStatus(system);
+    }
+
 }

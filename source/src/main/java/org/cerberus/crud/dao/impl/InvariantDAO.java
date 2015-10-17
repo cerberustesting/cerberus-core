@@ -28,12 +28,15 @@ import org.apache.log4j.Level;
 import org.cerberus.crud.dao.IInvariantDAO;
 import org.cerberus.database.DatabaseSpring;
 import org.cerberus.crud.entity.Invariant;
+import org.cerberus.crud.entity.MessageEvent;
 import org.cerberus.crud.entity.MessageGeneral;
 import org.cerberus.enums.MessageGeneralEnum;
 import org.cerberus.exception.CerberusException;
 import org.cerberus.crud.factory.IFactoryInvariant;
+import org.cerberus.enums.MessageEventEnum;
 import org.cerberus.log.MyLogger;
 import org.cerberus.util.StringUtil;
+import org.cerberus.util.answer.AnswerList;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
@@ -225,9 +228,11 @@ public class InvariantDAO implements IInvariantDAO {
     }
 
     @Override
-    public List<Invariant> findInvariantByIdGp1(String idName, String gp) throws CerberusException {
-        boolean throwException = true;
-        List<Invariant> result = null;
+    public AnswerList<Invariant> findInvariantByIdGp1(String idName, String gp) {
+        AnswerList<Invariant>  ansList = new AnswerList<Invariant>();
+        MessageEvent msg = null;
+        
+        List<Invariant> result =  new ArrayList<Invariant>();
         final String query = "SELECT * FROM invariant i  WHERE i.idname = ? AND i.gp1 = ? ORDER BY sort";
 
         Connection connection = this.databaseSpring.connect();
@@ -239,24 +244,33 @@ public class InvariantDAO implements IInvariantDAO {
 
                 ResultSet resultSet = preStat.executeQuery();
                 try {
-                    result = new ArrayList<Invariant>();
-
                     while (resultSet.next()) {
-                        throwException = false;
                         result.add(this.loadInvariantFromResultSet(resultSet));
                     }
+                    msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
+                    msg.setDescription(msg.getDescription().replace("%ITEM%", "Invariant").replace("%OPERATION%", "SELECT"));
                 } catch (SQLException exception) {
                     MyLogger.log(InvariantDAO.class.getName(), Level.ERROR, "Unable to execute query : "+exception.toString());
+                    msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
+                    msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", "Unable to execute query : "+exception.toString()));
                 } finally {
-                    resultSet.close();
+                    if(resultSet != null){
+                        resultSet.close();
+                    }
                 }
             } catch (SQLException exception) {
                 MyLogger.log(InvariantDAO.class.getName(), Level.ERROR, "Unable to execute query : "+exception.toString());
+                msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
+                msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", "Unable to execute query : "+exception.toString()));
             } finally {
-                preStat.close();
+                if(preStat != null){
+                    preStat.close();
+                }
             }
         } catch (SQLException exception) {
             MyLogger.log(InvariantDAO.class.getName(), Level.ERROR, "Unable to execute query : "+exception.toString());
+            msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
+            msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", "Unable to execute query : "+exception.toString()));
         } finally {
             try {
                 if (connection != null) {
@@ -266,10 +280,10 @@ public class InvariantDAO implements IInvariantDAO {
                 MyLogger.log(InvariantDAO.class.getName(), Level.WARN, e.toString());
             }
         }
-        if (throwException) {
-            throw new CerberusException(new MessageGeneral(MessageGeneralEnum.NO_DATA_FOUND));
-        }
-        return result;
+
+        ansList.setDataList(result);
+        ansList.setResultMessage(msg);
+        return ansList;
     }
 
     @Override
