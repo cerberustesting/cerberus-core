@@ -21,13 +21,12 @@ package org.cerberus.servlet.user;
 
 import java.io.IOException;
 import javax.servlet.ServletException;
+import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import org.cerberus.crud.entity.User;
 import org.cerberus.exception.CerberusException;
-import org.cerberus.crud.factory.IFactoryLogEvent;
-import org.cerberus.crud.factory.impl.FactoryLogEvent;
 import org.cerberus.crud.service.ILogEventService;
 import org.cerberus.crud.service.IUserService;
 import org.cerberus.crud.service.impl.LogEventService;
@@ -40,7 +39,8 @@ import org.springframework.web.context.support.WebApplicationContextUtils;
  *
  * @author bcivel
  */
-public class UpdateUserRobotPreference extends HttpServlet {
+@WebServlet(name = "UpdateMyUserRobotPreference", urlPatterns = {"/UpdateMyUserRobotPreference"})
+public class UpdateMyUserRobotPreference extends HttpServlet {
 
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
@@ -74,7 +74,7 @@ public class UpdateUserRobotPreference extends HttpServlet {
             userService.updateUser(usr);
             
             ILogEventService logEventService = appContext.getBean(LogEventService.class);
-            logEventService.createPrivateCalls("/UpdateUserRobotPreference", "UPDATE", "Update user preference for user: " + usr.getLogin(), request);
+            logEventService.createPrivateCalls("/UpdateMyUserRobotPreference", "UPDATE", "Update user robot preference for user: " + usr.getLogin(), request);
 
             response.getWriter().print(usr.getLogin());
         } catch (CerberusException myexception) {

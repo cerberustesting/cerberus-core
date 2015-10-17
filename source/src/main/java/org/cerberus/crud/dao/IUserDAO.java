@@ -20,7 +20,9 @@ package org.cerberus.crud.dao;
 import java.util.List;
 import org.cerberus.crud.entity.User;
 import org.cerberus.exception.CerberusException;
+import org.cerberus.util.answer.Answer;
 import org.cerberus.util.answer.AnswerItem;
+import org.cerberus.util.answer.AnswerList;
 
 /**
  * {Insert class description here}
@@ -84,8 +86,8 @@ public interface IUserDAO {
      * @return true if password match and false if password does not match.
      */
     boolean verifyPassword(User user, String password);
-    
-        /**
+
+    /**
      *
      * @param start first row of the resultSet
      * @param amount number of row of the resultSet
@@ -97,11 +99,13 @@ public interface IUserDAO {
      * @return
      */
     List<User> findTestDataListByCriteria(int start, int amount, String column, String dir, String searchTerm, String individualSearch);
-    
+
     /**
-     * 
-     * @param searchTerm words to be searched in every column (Exemple : article)
-     * @param inds part of the script to add to where clause (Exemple : `type` = 'Article')
+     *
+     * @param searchTerm words to be searched in every column (Exemple :
+     * article)
+     * @param inds part of the script to add to where clause (Exemple : `type` =
+     * 'Article')
      * @return The number of records for these criterias
      */
     Integer getNumberOfUserPerCriteria(String searchTerm, String inds);
@@ -112,4 +116,46 @@ public interface IUserDAO {
      * @return
      */
     List<User> findAllUserBySystem(String system);
+
+    /**
+     *
+     * @param login
+     * @return
+     */
+    AnswerItem readByKey(String login);
+
+    /**
+     *
+     * @param system
+     * @param start
+     * @param amount
+     * @param column
+     * @param dir
+     * @param searchTerm
+     * @param individualSearch
+     * @return
+     */
+    AnswerList readByCriteria(int start, int amount, String column, String dir, String searchTerm, String individualSearch);
+
+    /**
+     *
+     * @param user
+     * @return
+     */
+    Answer create(User user);
+
+    /**
+     *
+     * @param user
+     * @return
+     */
+    Answer delete(User user);
+
+    /**
+     *
+     * @param user
+     * @return
+     */
+    Answer update(User user);
+
 }

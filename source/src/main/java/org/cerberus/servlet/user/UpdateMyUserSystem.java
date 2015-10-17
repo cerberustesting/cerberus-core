@@ -20,27 +20,16 @@
 package org.cerberus.servlet.user;
 
 import java.io.IOException;
-import java.io.PrintWriter;
-import java.util.ArrayList;
-import java.util.List;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import org.apache.log4j.Level;
-import org.cerberus.crud.entity.Group;
 import org.cerberus.crud.entity.User;
-import org.cerberus.crud.entity.UserSystem;
-import org.cerberus.crud.factory.IFactoryGroup;
-import org.cerberus.crud.factory.IFactoryUserSystem;
-import org.cerberus.crud.factory.impl.FactoryGroup;
 import org.cerberus.crud.service.ILogEventService;
-import org.cerberus.crud.service.IUserGroupService;
 import org.cerberus.crud.service.IUserService;
-import org.cerberus.crud.service.IUserSystemService;
 import org.cerberus.crud.service.impl.LogEventService;
-import org.cerberus.crud.service.impl.UserGroupService;
 import org.cerberus.crud.service.impl.UserService;
 import org.cerberus.exception.CerberusException;
 import org.cerberus.log.MyLogger;
@@ -51,8 +40,8 @@ import org.springframework.web.context.support.WebApplicationContextUtils;
  *
  * @author cerberus
  */
-@WebServlet(name = "UpdateSystem", urlPatterns = {"/UpdateSystem"})
-public class UpdateSystem extends HttpServlet {
+@WebServlet(name = "UpdateMyUserSystem", urlPatterns = {"/UpdateMyUserSystem"})
+public class UpdateMyUserSystem extends HttpServlet {
 
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
@@ -65,7 +54,7 @@ public class UpdateSystem extends HttpServlet {
      */
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        String login = request.getParameter("id");
+        String login = request.getUserPrincipal().getName();
         String value = request.getParameter("value").replaceAll("'", "");
 
         MyLogger.log(UpdateUser.class.getName(), Level.INFO, "value : " + value + " login : " + login);
@@ -85,7 +74,7 @@ public class UpdateSystem extends HttpServlet {
                  * Adding Log entry.
                  */
                 ILogEventService logEventService = appContext.getBean(LogEventService.class);
-                logEventService.createPrivateCalls("/UpdateUser", "UPDATE", "Updated user : " + login, request);
+                logEventService.createPrivateCalls("/UpdateMyUserSystem", "UPDATE", "Updated user : " + login, request);
                 response.getWriter().print(value);
             } catch (CerberusException ex) {
                 response.getWriter().print(ex.getMessageError().getDescription());

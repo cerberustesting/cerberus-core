@@ -21,6 +21,7 @@ package org.cerberus.crud.service.impl;
 
 import java.util.List;
 import org.cerberus.crud.dao.IUserDAO;
+import org.cerberus.crud.entity.Application;
 import org.cerberus.crud.entity.MessageEvent;
 import org.cerberus.crud.entity.MessageGeneral;
 import org.cerberus.crud.entity.User;
@@ -30,7 +31,9 @@ import org.cerberus.crud.service.IUserSystemService;
 import org.cerberus.enums.MessageEventEnum;
 import org.cerberus.enums.MessageGeneralEnum;
 import org.cerberus.exception.CerberusException;
+import org.cerberus.util.answer.Answer;
 import org.cerberus.util.answer.AnswerItem;
+import org.cerberus.util.answer.AnswerList;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -92,17 +95,17 @@ public class UserService implements IUserService {
     }
 
     @Override
-    public AnswerItem<User> updateUserPassword(User user, String currentPassword, String newPassword, String confirmPassword){
+    public AnswerItem<User> updateUserPassword(User user, String currentPassword, String newPassword, String confirmPassword) {
         AnswerItem answUpdate = new AnswerItem();
         MessageEvent msg = null;
-        
+
         if (newPassword.equals(confirmPassword)) {
             if (this.verifyPassword(user, currentPassword)) {
                 //verifications succeed
-                answUpdate = userDAO.updateUserPassword(user, newPassword);                
+                answUpdate = userDAO.updateUserPassword(user, newPassword);
             } else {
                 //same user
-                answUpdate.setItem(user);                
+                answUpdate.setItem(user);
                 msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_VALIDATIONS_ERROR);
                 msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", "Current password is not valid!"));
                 answUpdate.setResultMessage(msg);
@@ -154,4 +157,67 @@ public class UserService implements IUserService {
     public List<User> findAllUserBySystem(String system) {
         return this.userDAO.findAllUserBySystem(system);
     }
+
+    @Override
+    public AnswerItem readByKey(String login) {
+        return userDAO.readByKey(login);
+    }
+
+    @Override
+    public AnswerList readByCriteria(int startPosition, int length, String columnName, String sort, String searchParameter, String string) {
+        return userDAO.readByCriteria(startPosition, length, columnName, sort, searchParameter, string);
+    }
+
+    @Override
+    public boolean exist(String login) {
+        try {
+            convert(readByKey(login));
+            return true;
+        } catch (CerberusException e) {
+            return false;
+        }
+    }
+
+    @Override
+    public Answer create(User user) {
+        return userDAO.create(user);
+    }
+
+    @Override
+    public Answer delete(User user) {
+        return userDAO.delete(user);
+    }
+
+    @Override
+    public Answer update(User user) {
+        return userDAO.update(user);
+    }
+
+    @Override
+    public User convert(AnswerItem answerItem) throws CerberusException {
+        if (answerItem.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
+            //if the service returns an OK message then we can get the item
+            return (User) answerItem.getItem();
+        }
+        throw new CerberusException(new MessageGeneral(MessageGeneralEnum.DATA_OPERATION_ERROR));
+    }
+
+    @Override
+    public List<User> convert(AnswerList answerList) throws CerberusException {
+        if (answerList.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
+            //if the service returns an OK message then we can get the item
+            return (List<User>) answerList.getDataList();
+        }
+        throw new CerberusException(new MessageGeneral(MessageGeneralEnum.DATA_OPERATION_ERROR));
+    }
+
+    @Override
+    public void convert(Answer answer) throws CerberusException {
+        if (answer.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
+            //if the service returns an OK message then we can get the item
+            return;
+        }
+        throw new CerberusException(new MessageGeneral(MessageGeneralEnum.DATA_OPERATION_ERROR));
+    }
+
 }

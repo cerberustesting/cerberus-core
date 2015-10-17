@@ -120,8 +120,8 @@
         <servlet-class>org.cerberus.servlet.user.UpdateUser</servlet-class>
     </servlet>
     <servlet>
-        <servlet-name>UpdateSystem</servlet-name>
-        <servlet-class>org.cerberus.servlet.user.UpdateSystem</servlet-class>
+        <servlet-name>UpdateMyUserSystem</servlet-name>
+        <servlet-class>org.cerberus.servlet.user.UpdateMyUserSystem</servlet-class>
     </servlet>
     <servlet>
         <servlet-name>DeleteUser</servlet-name>
@@ -346,6 +346,10 @@
         <servlet-class>org.cerberus.servlet.buildrevision.GetBuildRevisionInvariant</servlet-class>
     </servlet>
     <servlet>
+        <servlet-name>ReadBuildRevisionInvariant</servlet-name>
+        <servlet-class>org.cerberus.servlet.buildrevision.ReadBuildRevisionInvariant</servlet-class>
+    </servlet>
+    <servlet>
         <servlet-name>DeleteBuildRevisionInvariant</servlet-name>
         <servlet-class>org.cerberus.servlet.buildrevision.DeleteBuildRevisionInvariant</servlet-class>
     </servlet>
@@ -534,12 +538,12 @@
         <servlet-class>org.cerberus.servlet.testcase.GetTestCaseForTest</servlet-class>
     </servlet>
     <servlet>
-        <servlet-name>UpdateUserRobotPreference</servlet-name>
-        <servlet-class>org.cerberus.servlet.user.UpdateUserRobotPreference</servlet-class>
+        <servlet-name>UpdateMyUserRobotPreference</servlet-name>
+        <servlet-class>org.cerberus.servlet.user.UpdateMyUserRobotPreference</servlet-class>
     </servlet>
     <servlet>
-        <servlet-name>UpdateUserReporting</servlet-name>
-        <servlet-class>org.cerberus.servlet.user.UpdateUserReporting</servlet-class>
+        <servlet-name>UpdateMyUserReporting</servlet-name>
+        <servlet-class>org.cerberus.servlet.user.UpdateMyUserReporting</servlet-class>
     </servlet>
     <servlet>
         <servlet-name>UpdateTestCaseField</servlet-name>
@@ -564,6 +568,10 @@
     <servlet>
         <servlet-name>FindAllUsers</servlet-name>
         <servlet-class>org.cerberus.servlet.user.FindAllUsers</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>ReadUser</servlet-name>
+        <servlet-class>org.cerberus.servlet.user.ReadUser</servlet-class>
     </servlet>
     <servlet>
         <servlet-name>ExportTestCase</servlet-name>
@@ -796,6 +804,10 @@
         <servlet-name>GeneratePerformanceString</servlet-name>
         <servlet-class>org.cerberus.servlet.reporting.GeneratePerformanceString</servlet-class>
     </servlet>
+    <servlet>
+        <servlet-name>UpdateMyUser</servlet-name>
+        <servlet-class>org.cerberus.servlet.user.UpdateMyUser</servlet-class>
+    </servlet>
     <servlet-mapping>
         <servlet-name>ExecutionThreadMonitoring</servlet-name>
         <url-pattern>/ExecutionThreadMonitoring</url-pattern>
@@ -865,8 +877,8 @@
         <url-pattern>/UpdateUser</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
-        <servlet-name>UpdateSystem</servlet-name>
-        <url-pattern>/UpdateSystem</url-pattern>
+        <servlet-name>UpdateMyUserSystem</servlet-name>
+        <url-pattern>/UpdateMyUserSystem</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
         <servlet-name>DeleteUser</servlet-name>
@@ -1133,6 +1145,10 @@
         <url-pattern>/GetBuildRevisionInvariant</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
+        <servlet-name>ReadBuildRevisionInvariant</servlet-name>
+        <url-pattern>/ReadBuildRevisionInvariant</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
         <servlet-name>DeleteBuildRevisionInvariant</servlet-name>
         <url-pattern>/DeleteBuildRevisionInvariant</url-pattern>
     </servlet-mapping>
@@ -1321,12 +1337,12 @@
         <url-pattern>/GetTestCaseForTest</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
-        <servlet-name>UpdateUserRobotPreference</servlet-name>
-        <url-pattern>/UpdateUserRobotPreference</url-pattern>
+        <servlet-name>UpdateMyUserRobotPreference</servlet-name>
+        <url-pattern>/UpdateMyUserRobotPreference</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
-        <servlet-name>UpdateUserReporting</servlet-name>
-        <url-pattern>/UpdateUserReporting</url-pattern>
+        <servlet-name>UpdateMyUserReporting</servlet-name>
+        <url-pattern>/UpdateMyUserReporting</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
         <servlet-name>UpdateTestCaseField</servlet-name>
@@ -1351,6 +1367,10 @@
     <servlet-mapping>
         <servlet-name>FindAllUsers</servlet-name>
         <url-pattern>/FindAllUsers</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>ReadUser</servlet-name>
+        <url-pattern>/ReadUser</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
         <servlet-name>ExportTestCase</servlet-name>
@@ -1572,6 +1592,10 @@
         <servlet-name>UpdateTest1</servlet-name>
         <url-pattern>/UpdateTest1</url-pattern>
     </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>UpdateMyUser</servlet-name>
+        <url-pattern>/UpdateMyUser</url-pattern>
+    </servlet-mapping>
     <session-config>
         <session-timeout>60</session-timeout>
     </session-config>
@@ -1664,6 +1688,7 @@
             <url-pattern>/TestPerApplication.jsp</url-pattern>
             <url-pattern>/CampaignReportByTag.jsp</url-pattern>
             <url-pattern>/ReadTestCaseStep</url-pattern>
+            <url-pattern>/TestCase_new_prototype.jsp</url-pattern>
         </web-resource-collection>
         <web-resource-collection>
             <web-resource-name>servlet</web-resource-name>
@@ -1681,14 +1706,12 @@
             <url-pattern>/ExecutionPerBuildRevision</url-pattern>
             <url-pattern>/FindInvariantByID</url-pattern>
             <url-pattern>/GetStepUsedAsLibraryInOtherTestCasePerApplication</url-pattern>
-            <url-pattern>/UpdateUserReporting</url-pattern>
             <url-pattern>/ExportTestCase</url-pattern>
             <url-pattern>/FindTestImplementationStatusPerApplication</url-pattern>
             <url-pattern>/GetCountryForTestCase</url-pattern>
             <url-pattern>/GetPropertiesForTestCase</url-pattern>
             <url-pattern>/GetReport</url-pattern>
             <url-pattern>/GetStepInLibrary</url-pattern>
-            <url-pattern>/UpdateSystem</url-pattern>
             <url-pattern>/ReadTestCase</url-pattern>
             <url-pattern>/ReadTest</url-pattern>
             <url-pattern>/GetReportTest</url-pattern>
@@ -1791,12 +1814,12 @@
             <url-pattern>/RunTestsManually.jsp</url-pattern>
             <url-pattern>/TestCaseManualRun.jsp</url-pattern>
             <url-pattern>/RunTestsTriggerBatchExecution.jsp</url-pattern>
+            <url-pattern>/RunTest2.jsp</url-pattern>
         </web-resource-collection>
         <web-resource-collection>
             <web-resource-name>servlet</web-resource-name>
             <description>servlet</description>
             <url-pattern>/findEnvironmentByCriteria</url-pattern>
-            <url-pattern>/UpdateUserRobotPreference</url-pattern>
             <url-pattern>/RunManualTest</url-pattern>
             <url-pattern>/SetTagToExecution</url-pattern>
             <url-pattern>/FindExecutionInQueue</url-pattern>
@@ -1835,7 +1858,6 @@
             <description>jsp</description>
             <url-pattern>/Application.jsp</url-pattern>
             <url-pattern>/BuildContent.jsp</url-pattern>
-            <url-pattern>/BuildContent1.jsp</url-pattern>
             <url-pattern>/BuildContent_old.jsp</url-pattern>
             <url-pattern>/BuildRevDefinition.jsp</url-pattern>
             <url-pattern>/Environment.jsp</url-pattern>
@@ -1847,6 +1869,7 @@
             <url-pattern>/Robot.jsp</url-pattern>
             <url-pattern>/EnvironmentManagement.jsp</url-pattern>
             <url-pattern>/DeployType.jsp</url-pattern>
+            <url-pattern>/BuildContent_old2.jsp</url-pattern>
         </web-resource-collection>
         <web-resource-collection>
             <web-resource-name>servlet</web-resource-name>
@@ -1865,6 +1888,7 @@
             <url-pattern>/FindEnvironments</url-pattern>
             <url-pattern>/ReadApplication</url-pattern>
             <url-pattern>/ReadRobot</url-pattern>
+            <url-pattern>/ReadBuildRevisionInvariant</url-pattern>
         </web-resource-collection>
         <auth-constraint>
             <description>IntegratorRO</description>
@@ -1907,6 +1931,7 @@
             <url-pattern>/DeleteBuildRevisionParameters</url-pattern>
             <url-pattern>/CreateBuildRevisionParameters</url-pattern>
             <url-pattern>/UpdateBuildRevisionParameters</url-pattern>
+            <url-pattern>/ReadUser</url-pattern>
         </web-resource-collection>
         <auth-constraint>
             <description>Integrator</description>
@@ -1988,8 +2013,9 @@
             <url-pattern>/Error.jsp</url-pattern>
             <url-pattern>/header.jsp</url-pattern>
             <url-pattern>/function.jsp</url-pattern>
-            <url-pattern>/index2.jsp</url-pattern>
             <url-pattern>/index1.jsp</url-pattern>
+            <url-pattern>/index2.jsp</url-pattern>
+            <url-pattern>/index3.jsp</url-pattern>
         </web-resource-collection>
         <web-resource-collection>
             <web-resource-name>servlet</web-resource-name>
@@ -2033,7 +2059,6 @@
             <url-pattern>/ExecuteNextInQueue</url-pattern>
             <url-pattern>/ExecutionThreadReset</url-pattern>
             <url-pattern>/VirtualProxy</url-pattern>
-            <url-pattern>/ReadMyUser</url-pattern>
             <url-pattern>/ReadDocumentation</url-pattern>
             <url-pattern>/ReadCerberusInformation</url-pattern>
             <url-pattern>/ReadTestCaseExecution</url-pattern>
@@ -2053,8 +2078,13 @@
             <web-resource-name>servlet</web-resource-name>
             <description>servlet</description>
             <url-pattern>/Homepage</url-pattern>
+            <url-pattern>/ReadMyUser</url-pattern>
             <url-pattern>/ChangeUserPassword</url-pattern>
             <url-pattern>/GeneratePerformanceString</url-pattern>
+            <url-pattern>/UpdateMyUser</url-pattern>
+            <url-pattern>/UpdateMyUserSystem</url-pattern>
+            <url-pattern>/UpdateMyUserReporting</url-pattern>
+            <url-pattern>/UpdateMyUserRobotPreference</url-pattern>
         </web-resource-collection>
         <auth-constraint>
             <description/>

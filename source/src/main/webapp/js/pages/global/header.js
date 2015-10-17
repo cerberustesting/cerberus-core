@@ -44,7 +44,7 @@ function ChangeLanguage() {
     var selectValue = select.options[select.selectedIndex].value;
     var user = getUser();
 
-    $.ajax({url: "UpdateUser",
+    $.ajax({url: "UpdateMyUser",
         data: {id: user.login, columnPosition: "8", value: selectValue},
         async: false,
         success: function () {
@@ -60,7 +60,7 @@ function ChangeSystem() {
     var user = getUser();
 
     console.log(selectValue);
-    $.ajax({url: "UpdateSystem",
+    $.ajax({url: "UpdateMyUserSystem",
         data: {id: user.login, value: selectValue},
         async: false,
         success: function () {

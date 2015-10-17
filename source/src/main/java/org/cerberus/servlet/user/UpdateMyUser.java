@@ -49,8 +49,8 @@ import org.springframework.web.context.support.WebApplicationContextUtils;
 /**
  * @author ip100003
  */
-@WebServlet(name = "UpdateUser", urlPatterns = {"/UpdateUser"})
-public class UpdateUser extends HttpServlet {
+@WebServlet(name = "UpdateMyUser", urlPatterns = {"/UpdateMyUser"})
+public class UpdateMyUser extends HttpServlet {
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
@@ -60,11 +60,11 @@ public class UpdateUser extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         //TODO create class Validator to validate all parameter from page
-        String login = request.getParameter("id");
+        String login = request.getUserPrincipal().getName();
         int columnPosition = Integer.parseInt(request.getParameter("columnPosition"));
         String value = request.getParameter("value").replaceAll("'", "");
 
-        MyLogger.log(UpdateUser.class.getName(), Level.INFO, "value : " + value + " columnPosition : " + columnPosition + " login : " + login);
+        MyLogger.log(UpdateMyUser.class.getName(), Level.INFO, "value : " + value + " columnPosition : " + columnPosition + " login : " + login);
 
         ApplicationContext appContext = WebApplicationContextUtils.getWebApplicationContext(this.getServletContext());
         IUserService userService = appContext.getBean(UserService.class);
@@ -124,7 +124,7 @@ public class UpdateUser extends HttpServlet {
                      * Adding Log entry.
                      */
                     ILogEventService logEventService = appContext.getBean(LogEventService.class);
-                    logEventService.createPrivateCalls("/UpdateUser", "UPDATE", "Updated user groups : " + login, request);
+                    logEventService.createPrivateCalls("/UpdateMyUser", "UPDATE", "Updated user groups : " + login, request);
 
                 } else if (newSystems != null) {
                     userSystemService.updateUserSystems(myUser, newSystems);
@@ -133,7 +133,7 @@ public class UpdateUser extends HttpServlet {
                      * Adding Log entry.
                      */
                     ILogEventService logEventService = appContext.getBean(LogEventService.class);
-                    logEventService.createPrivateCalls("/UpdateUser", "UPDATE", "Updated user system : " + login, request);
+                    logEventService.createPrivateCalls("/UpdateMyUser", "UPDATE", "Updated user system : " + login, request);
 
                 } else {
                     userService.updateUser(myUser);
@@ -142,7 +142,7 @@ public class UpdateUser extends HttpServlet {
                      * Adding Log entry.
                      */
                     ILogEventService logEventService = appContext.getBean(LogEventService.class);
-                    logEventService.createPrivateCalls("/UpdateUser", "UPDATE", "Updated user : " + login, request);
+                    logEventService.createPrivateCalls("/UpdateMyUser", "UPDATE", "Updated user : " + login, request);
                 }
                 response.getWriter().print(value);
             } catch (CerberusException ex) {

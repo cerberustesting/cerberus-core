@@ -689,8 +689,9 @@ public class BuildRevisionParametersDAO implements IBuildRevisionParametersDAO {
     public Answer create(BuildRevisionParameters brp) {
         MessageEvent msg = null;
         StringBuilder query = new StringBuilder();
-        query.append("INSERT INTO buildrevisionparameters (`Build`,`Revision`,`Release`,`Link` , `Application`, `releaseOwner`, `Project`, `BugIDFixed`, `TicketIDFixed` , `Subject`) ");
-        query.append("VALUES (?,?,?,?,?,?,?,?,?,?)");
+        query.append("INSERT INTO buildrevisionparameters (`Build`,`Revision`,`Release`,`Link` , `Application`, `releaseOwner`, `Project`");
+        query.append(" , `BugIDFixed`, `TicketIDFixed` , `Subject`, `jenkinsbuildid`, `mavengroupid`, `mavenartifactid`, `mavenversion`) ");
+        query.append("VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?)");
 
         // Debug message on SQL.
         if (LOG.isDebugEnabled()) {
@@ -710,6 +711,10 @@ public class BuildRevisionParametersDAO implements IBuildRevisionParametersDAO {
                 preStat.setString(8, brp.getBugIdFixed());
                 preStat.setString(9, brp.getTicketIdFixed());
                 preStat.setString(10, brp.getSubject());
+                preStat.setString(11, brp.getJenkinsBuildId());
+                preStat.setString(12, brp.getMavenGroupId());
+                preStat.setString(13, brp.getMavenArtifactId());
+                preStat.setString(14, brp.getMavenVersion());
 
                 preStat.executeUpdate();
                 msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
@@ -790,7 +795,8 @@ public class BuildRevisionParametersDAO implements IBuildRevisionParametersDAO {
         MessageEvent msg = null;
         final String query = "UPDATE buildrevisionparameters SET build = ?, revision = ?, application = ?,"
                 + "`release` = ?, project = ?, ticketidfixed = ?, bugidfixed = ?, `subject` = ?, releaseowner = ?,"
-                + "link = ? WHERE id = ?";
+                + " link = ?, jenkinsbuildid = ?, mavengroupid = ?, mavenartifactid = ?, mavenversion = ? "
+                + "  WHERE id = ?";
 
         // Debug message on SQL.
         if (LOG.isDebugEnabled()) {
@@ -810,7 +816,11 @@ public class BuildRevisionParametersDAO implements IBuildRevisionParametersDAO {
                 preStat.setString(8, brp.getSubject());
                 preStat.setString(9, brp.getReleaseOwner());
                 preStat.setString(10, brp.getLink());
-                preStat.setInt(11, brp.getId());
+                preStat.setString(11, brp.getJenkinsBuildId());
+                preStat.setString(12, brp.getMavenGroupId());
+                preStat.setString(13, brp.getMavenArtifactId());
+                preStat.setString(14, brp.getMavenVersion());
+                preStat.setInt(15, brp.getId());
 
                 preStat.executeUpdate();
                 msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);

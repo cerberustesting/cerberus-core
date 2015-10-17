@@ -360,7 +360,7 @@
 
         $.ajax({
             type: "POST",
-            url: "UpdateUserReporting",
+            url: "UpdateMyUserReporting",
             data: {reporting: data, login: "<%=request.getUserPrincipal().getName()%>"}
         });
     }

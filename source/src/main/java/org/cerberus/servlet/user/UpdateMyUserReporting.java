@@ -34,14 +34,16 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import org.cerberus.crud.service.ILogEventService;
+import org.cerberus.crud.service.impl.LogEventService;
 
-@WebServlet(name = "UpdateUserReporting", urlPatterns = {"/UpdateUserReporting"})
-public class UpdateUserReporting extends HttpServlet {
+@WebServlet(name = "UpdateMyUserReporting", urlPatterns = {"/UpdateMyUserReporting"})
+public class UpdateMyUserReporting extends HttpServlet {
 
     @Override
-    protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        String reporting = req.getParameter("reporting");
-        String login = StringUtil.sanitize(req.getParameter("login"));
+    protected void doPost(HttpServletRequest request, HttpServletResponse resp) throws ServletException, IOException {
+        String reporting = request.getUserPrincipal().getName();
+        String login = request.getUserPrincipal().getName();
 
         ApplicationContext appContext = WebApplicationContextUtils.getWebApplicationContext(this.getServletContext());
         IUserService userService = appContext.getBean(UserService.class);
@@ -51,6 +53,10 @@ public class UpdateUserReporting extends HttpServlet {
             user.setReportingFavorite(reporting);
 
             userService.updateUser(user);
+            
+            ILogEventService logEventService = appContext.getBean(LogEventService.class);
+            logEventService.createPrivateCalls("/UpdateMyUserReporting", "UPDATE", "Update user reporting preference for user: " + login, request);
+            
         } catch (CerberusException e) {
             e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
         }

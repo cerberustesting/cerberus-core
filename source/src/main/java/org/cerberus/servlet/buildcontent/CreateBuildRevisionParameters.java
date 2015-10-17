@@ -87,7 +87,7 @@ public class CreateBuildRevisionParameters extends HttpServlet {
         String subject = policy.sanitize(request.getParameter("subject"));
         String jenkinsbuildid = policy.sanitize(request.getParameter("jenkinsbuildid"));
         String mavenGroupID = policy.sanitize(request.getParameter("mavengroupid"));
-        String mavenArtefactID = policy.sanitize(request.getParameter("mavenartefactid"));
+        String mavenArtifactID = policy.sanitize(request.getParameter("mavenartifactid"));
         String mavenVersion = policy.sanitize(request.getParameter("mavenversion"));
 
         /**
@@ -103,7 +103,7 @@ public class CreateBuildRevisionParameters extends HttpServlet {
             IBuildRevisionParametersService buildRevisionParametersService = appContext.getBean(IBuildRevisionParametersService.class);
             IFactoryBuildRevisionParameters buildRevisionParametersFactory = appContext.getBean(IFactoryBuildRevisionParameters.class);
 
-            BuildRevisionParameters brpData = buildRevisionParametersFactory.create(0, build, revision, release, application, project, ticketidfixed, bugidfixed, link, releaseowner, subject, null, jenkinsbuildid, mavenGroupID, mavenArtefactID, mavenVersion);
+            BuildRevisionParameters brpData = buildRevisionParametersFactory.create(0, build, revision, release, application, project, ticketidfixed, bugidfixed, link, releaseowner, subject, null, jenkinsbuildid, mavenGroupID, mavenArtifactID, mavenVersion);
             ans = buildRevisionParametersService.create(brpData);
 
             if (ans.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {

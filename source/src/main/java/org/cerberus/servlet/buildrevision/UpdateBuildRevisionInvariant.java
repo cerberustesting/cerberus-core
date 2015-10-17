@@ -29,8 +29,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import org.cerberus.crud.entity.BuildRevisionInvariant;
 import org.cerberus.exception.CerberusException;
-import org.cerberus.crud.factory.IFactoryLogEvent;
-import org.cerberus.crud.factory.impl.FactoryLogEvent;
 import org.cerberus.crud.service.IBuildRevisionInvariantService;
 import org.cerberus.crud.service.ILogEventService;
 import org.cerberus.crud.service.impl.LogEventService;

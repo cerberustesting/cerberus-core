@@ -87,7 +87,7 @@ public class UpdateBuildRevisionParameters extends HttpServlet {
         String subject = policy.sanitize(request.getParameter("subject"));
         String jenkinsbuildid = policy.sanitize(request.getParameter("jenkinsbuildid"));
         String mavenGroupID = policy.sanitize(request.getParameter("mavengroupid"));
-        String mavenArtefactID = policy.sanitize(request.getParameter("mavenartefactid"));
+        String mavenArtifactID = policy.sanitize(request.getParameter("mavenartifactid"));
         String mavenVersion = policy.sanitize(request.getParameter("mavenversion"));
         Integer brpid = 0;
         boolean brpid_error = true;
@@ -145,7 +145,7 @@ public class UpdateBuildRevisionParameters extends HttpServlet {
                 brpData.setSubject(subject);
                 brpData.setJenkinsBuildId(jenkinsbuildid);
                 brpData.setMavenGroupId(mavenGroupID);
-                brpData.setMavenArtifactId(mavenArtefactID);
+                brpData.setMavenArtifactId(mavenArtifactID);
                 brpData.setMavenVersion(mavenVersion);
                 ans = brpService.update(brpData);
                 

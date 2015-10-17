@@ -22,7 +22,9 @@ package org.cerberus.crud.service;
 import java.util.List;
 import org.cerberus.crud.entity.User;
 import org.cerberus.exception.CerberusException;
+import org.cerberus.util.answer.Answer;
 import org.cerberus.util.answer.AnswerItem;
+import org.cerberus.util.answer.AnswerList;
 
 /**
  * @author vertigo
@@ -86,8 +88,8 @@ public interface IUserService {
      * @return true if user exist. false if not.
      */
     boolean isUserExist(String user);
-    
-        /**
+
+    /**
      *
      * @param start first row of the resultSet
      * @param amount number of row of the resultSet
@@ -99,15 +101,17 @@ public interface IUserService {
      * @return
      */
     List<User> findUserListByCriteria(int start, int amount, String column, String dir, String searchTerm, String individualSearch);
-    
+
     /**
-     * 
-     * @param searchTerm words to be searched in every column (Exemple : article)
-     * @param inds part of the script to add to where clause (Exemple : `type` = 'Article')
+     *
+     * @param searchTerm words to be searched in every column (Exemple :
+     * article)
+     * @param inds part of the script to add to where clause (Exemple : `type` =
+     * 'Article')
      * @return The number of records for these criterias
      */
     Integer getNumberOfUserPerCrtiteria(String searchTerm, String inds);
-    
+
     /**
      * @param login
      * @return the user that match the login
@@ -116,4 +120,75 @@ public interface IUserService {
     User findUserByKeyWithDependencies(String login) throws CerberusException;
 
     List<User> findAllUserBySystem(String system);
+
+    /**
+     *
+     * @param login
+     * @return
+     */
+    AnswerItem readByKey(String login);
+
+    /**
+     *
+     * @param startPosition
+     * @param length
+     * @param columnName
+     * @param sort
+     * @param searchParameter
+     * @param string
+     * @return
+     */
+    AnswerList readByCriteria(int startPosition, int length, String columnName, String sort, String searchParameter, String string);
+
+    /**
+     *
+     * @param login
+     * @return
+     */
+    boolean exist(String login);
+
+    /**
+     *
+     * @param user
+     * @return
+     */
+    Answer create(User user);
+
+    /**
+     *
+     * @param user
+     * @return
+     */
+    Answer delete(User user);
+
+    /**
+     *
+     * @param user
+     * @return
+     */
+    Answer update(User user);
+
+    /**
+     *
+     * @param answerItem
+     * @return
+     * @throws CerberusException
+     */
+    User convert(AnswerItem answerItem) throws CerberusException;
+
+    /**
+     *
+     * @param answerList
+     * @return
+     * @throws CerberusException
+     */
+    List<User> convert(AnswerList answerList) throws CerberusException;
+
+    /**
+     *
+     * @param answer
+     * @throws CerberusException
+     */
+    void convert(Answer answer) throws CerberusException;
+
 }

@@ -91,15 +91,36 @@ function displayPageLabel() {
     $("[name='buttonClose']").html(doc.getDocLabel("page_global", "buttonClose"));
     $("[name='buttonConfirm']").html(doc.getDocLabel("page_global", "buttonConfirm"));
     $("[name='buttonDismiss']").html(doc.getDocLabel("page_global", "buttonDismiss"));
+    $("[name='filtersField']").html(doc.getDocOnline("page_buildcontent", "filters"));
+    $("[name='shortcutsField']").html(doc.getDocOnline("page_buildcontent", "standardfilters"));
+    $("[name='listField']").html(doc.getDocOnline("page_buildcontent", "list"));
+    $("[name='btnLoad']").html(doc.getDocLabel("page_global", "buttonLoad"));
+    $("[name='btnLoadPending']").html(doc.getDocLabel("page_buildcontent", "buttonLoadPending"));
+    $("[name='btnLoadLatest']").html(doc.getDocLabel("page_buildcontent", "buttonLoadLatest"));
 
     $("[name='idField']").html(doc.getDocOnline("buildrevisionparameters", "id"));
     $("[name='buildField']").html(doc.getDocOnline("buildrevisionparameters", "Build"));
     $("[name='revisionField']").html(doc.getDocOnline("buildrevisionparameters", "Revision"));
-    displayApplicationList("application", getUser().defaultSystem);
-    displayProjectList("project");
+    $("[name='datecreField']").html(doc.getDocOnline("buildrevisionparameters", "datecre"));
+    $("[name='applicationField']").html(doc.getDocOnline("buildrevisionparameters", "application"));
+    $("[name='releaseField']").html(doc.getDocOnline("buildrevisionparameters", "Release"));
+    $("[name='ownerField']").html(doc.getDocOnline("buildrevisionparameters", "ReleaseOwner"));
+    $("[name='projectField']").html(doc.getDocOnline("buildrevisionparameters", "project"));
+    $("[name='ticketIdFixedField']").html(doc.getDocOnline("buildrevisionparameters", "TicketIDFixed"));
+    $("[name='bugIdFixedField']").html(doc.getDocOnline("buildrevisionparameters", "BugIDFixed"));
+    $("[name='linkField']").html(doc.getDocOnline("buildrevisionparameters", "Link"));
+    $("[name='subjectField']").html(doc.getDocOnline("buildrevisionparameters", "subject"));
+    $("[name='jenkinsBuildIdField']").html(doc.getDocOnline("buildrevisionparameters", "jenkinsBuildId"));
+    $("[name='mavenGroupIdField']").html(doc.getDocOnline("buildrevisionparameters", "mavenGroupId"));
+    $("[name='mavenArtifactIdField']").html(doc.getDocOnline("buildrevisionparameters", "mavenArtifactId"));
+    $("[name='mavenVersionField']").html(doc.getDocOnline("buildrevisionparameters", "mavenVersion"));
+
+
     displayBuildList("build", getUser().defaultSystem, "1");
     displayBuildList("revision", getUser().defaultSystem, "2");
-    displayUserList("owner");
+    displayApplicationList("application", getUser().defaultSystem);
+    displayProjectList("project");
+    displayUserList("releaseowner");
     displayFooter(doc);
 }
 
@@ -109,7 +130,7 @@ function loadBCTable() {
 
     console.log('B : ' + selectBuild + ' R : ' + selectRevision);
 
-    window.history.pushState('Tag', '', 'BuildContent1.jsp?build=' + encodeURIComponent(selectBuild) + '&revision=' + encodeURIComponent(selectRevision));
+    window.history.pushState('Tag', '', 'BuildContent.jsp?build=' + encodeURIComponent(selectBuild) + '&revision=' + encodeURIComponent(selectRevision));
 
     //clear the old report content before reloading it
 //    if ($("#listTable_wrapper").hasClass("initialized")) {
@@ -124,15 +145,6 @@ function loadBCTable() {
 
         var table = createDataTableWithPermissions(configurations, renderOptionsForBrp);
 
-        //handle the test case execution list display
-//        loadEnvCountryBrowserReport();
-//        loadReportList();
-//        //Retrieve data for charts and draw them
-//        var jqxhr = $.get("GetReportData", {CampaignName: "null", Tag: selectBuild}, "json");
-//        $.when(jqxhr).then(function (data) {
-//            loadReportByStatusTable(data);
-//            loadReportByFunctionChart(data);
-//        });
     }
 }
 
@@ -164,6 +176,7 @@ function deleteBrp(id, build, revision, release, application) {
     var doc = new Doc();
     var messageComplete = doc.getDocLabel("page_buildcontent", "deleteMessage");
     messageComplete = "Do you want to delete release entry %ENTRY% ?<br> NB : It correspond to the release %RELEASE% of application %APPLI% of Build %BUILD% Revision %REVISION%."
+    messageComplete = doc.getDocLabel("page_buildcontent", "message_delete");
     messageComplete = messageComplete.replace("%ENTRY%", id);
     messageComplete = messageComplete.replace("%BUILD%", build);
     messageComplete = messageComplete.replace("%REVISION%", revision);
@@ -247,10 +260,9 @@ function editBrpModalCloseHandler() {
 
 function CreateBrpClick() {
     clearResponseMessageMainPage();
-    // When creating a new application, System takes the default value of the 
-    // system already selected in header.
-//    var formAdd = $('#addApplicationModal');
-//    formAdd.find("#system").prop("value", getUser().defaultSystem);
+    // When creating a new item, Define here the default value.
+    var formAdd = $('#addBrpModal');
+    formAdd.find("#owner").prop("value", getUser().login);
     $('#addBrpModal').modal('show');
 }
 
@@ -292,7 +304,7 @@ function renderOptionsForBrp(data) {
             " + doc.getDocLabel("page_buildcontent", "button_create") + "</button></div>";
 
             $("#buildrevisionparametersTable_wrapper div.ColVis").before(contentToAdd);
-            $('#application #createBrpButton').click(CreateBrpClick);
+            $('#buildContentList #createBrpButton').click(CreateBrpClick);
         }
     }
 }
@@ -307,11 +319,11 @@ function aoColumnsFunc() {
             "mRender": function (data, type, obj) {
                 var editBrp = '<button id="editBrp" onclick="editBrp(\'' + obj["id"] + '\');"\n\
                                 class="editBrp btn btn-default btn-xs margin-right5" \n\
-                                name="editBrp" title="\'' + doc.getDocLabel("page_application", "button_edit") + '\'" type="button">\n\
+                                name="editBrp" title="\'' + doc.getDocLabel("page_buildcontent", "button_edit") + '\'" type="button">\n\
                                 <span class="glyphicon glyphicon-pencil"></span></button>';
                 var deleteBrp = '<button id="deleteBrp" onclick="deleteBrp(\'' + obj["id"] + '\',\'' + obj["build"] + '\',\'' + obj["revision"] + '\',\'' + obj["release"] + '\',\'' + obj["application"] + '\');" \n\
                                 class="deleteBrp btn btn-default btn-xs margin-right5" \n\
-                                name="deleteBrp" title="\'' + doc.getDocLabel("page_application", "button_delete") + '\'" type="button">\n\
+                                name="deleteBrp" title="\'' + doc.getDocLabel("page_buildcontent", "button_delete") + '\'" type="button">\n\
                                 <span class="glyphicon glyphicon-trash"></span></button>';
 
                 return '<div class="center btn-group width150">' + editBrp + deleteBrp + '</div>';
@@ -352,16 +364,16 @@ function aoColumnsFunc() {
             "title": doc.getDocOnline("buildrevisionparameters", "datecre")},
         {"data": "jenkinsBuildId",
             "sName": "jenkinsBuildId",
-            "title": doc.getDocOnline("buildrevisionparameters", "jenkinsbuildid")},
+            "title": doc.getDocOnline("buildrevisionparameters", "jenkinsBuildId")},
         {"data": "mavenGroupId",
             "sName": "mavenGroupId",
-            "title": doc.getDocOnline("buildrevisionparameters", "mavengroupid")},
+            "title": doc.getDocOnline("buildrevisionparameters", "mavenGroupId")},
         {"data": "mavenArtifactId",
             "sName": "mavenArtifactId",
-            "title": doc.getDocOnline("buildrevisionparameters", "mavenartifactid")},
+            "title": doc.getDocOnline("buildrevisionparameters", "mavenArtifactId")},
         {"data": "mavenVersion",
             "sName": "mavenVersion",
-            "title": doc.getDocOnline("buildrevisionparameters", "mavenversion")}
+            "title": doc.getDocOnline("buildrevisionparameters", "mavenVersion")}
     ];
     return aoColumns;
 }
