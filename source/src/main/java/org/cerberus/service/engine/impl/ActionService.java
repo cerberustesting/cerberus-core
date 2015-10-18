@@ -29,6 +29,7 @@ import org.cerberus.crud.entity.SoapLibrary;
 import org.cerberus.crud.entity.TestCaseExecution;
 import org.cerberus.crud.entity.TestCaseExecutionData;
 import org.cerberus.crud.entity.TestCaseStepActionExecution;
+import org.cerberus.crud.service.ILogEventService;
 import org.cerberus.crud.service.ISoapLibraryService;
 import org.cerberus.enums.MessageEventEnum;
 import org.cerberus.exception.CerberusEventException;
@@ -75,8 +76,11 @@ public class ActionService implements IActionService {
     private IAppiumService appiumService;
     @Autowired
     private ISQLService sqlService;
+    @Autowired
+    private ILogEventService logEventService;
 
     private static final Logger LOG = Logger.getLogger(ActionService.class);
+    private static final String MESSAGE_DEPRECATED = "[DEPRECATED]";
 
     @Override
     public TestCaseStepActionExecution doAction(TestCaseStepActionExecution testCaseStepActionExecution) {
@@ -123,17 +127,11 @@ public class ActionService implements IActionService {
         if (testCaseStepActionExecution.getAction().equals("click")) {
             res = this.doActionClick(tCExecution, object, property);
 
-        } else if (testCaseStepActionExecution.getAction().equals("clickAndWait")) {
-            res = this.doActionClickWait(tCExecution, object, property);
-
         } else if (testCaseStepActionExecution.getAction().equals("doubleClick")) {
             res = this.doActionDoubleClick(tCExecution, object, property);
 
         } else if (testCaseStepActionExecution.getAction().equals("rightClick")) {
             res = this.doActionRightClick(tCExecution, object, property);
-
-        } else if (testCaseStepActionExecution.getAction().equals("enter")) {
-            res = this.doActionKeyPress(tCExecution, object, "RETURN");
 
         } else if (testCaseStepActionExecution.getAction().equals("keypress")) {
             res = this.doActionKeyPress(tCExecution, object, property);
@@ -156,10 +154,6 @@ public class ActionService implements IActionService {
 
         } else if (testCaseStepActionExecution.getAction().equals("select")) {
             res = this.doActionSelect(tCExecution, object, property);
-
-        } else if (testCaseStepActionExecution.getAction().equals("selectAndWait")) {
-            res = this.doActionSelect(tCExecution, object, property);
-            this.doActionWait(tCExecution, StringUtil.NULL, StringUtil.NULL);
 
         } else if (testCaseStepActionExecution.getAction().equals("focusToIframe")) {
             res = this.doActionFocusToIframe(tCExecution, object, property);
@@ -199,17 +193,38 @@ public class ActionService implements IActionService {
 
         } else if (testCaseStepActionExecution.getAction().equals("takeScreenshot")) {
             res = this.doActionTakeScreenshot(testCaseStepActionExecution);
-            //res = new MessageEvent(MessageEventEnum.ACTION_SUCCESS_TAKESCREENSHOT);
+
         } else if (testCaseStepActionExecution.getAction().equals("getPageSource")) {
             res = this.doActionGetPageSource(testCaseStepActionExecution);
+
         } else if (testCaseStepActionExecution.getAction().equals("removeDifference")) {
             res = this.doActionRemoveDifference(testCaseStepActionExecution, object, property);
+
         } else if (testCaseStepActionExecution.getAction().equals("executeSqlUpdate")) {
             res = this.doActionExecuteSQLUpdate(tCExecution, object, property);
+
         } else if (testCaseStepActionExecution.getAction().equals("executeSqlStoredProcedure")) {
             res = this.doActionExecuteSQLStoredProcedure(tCExecution, object, property);
+
         } else if (testCaseStepActionExecution.getAction().equals("skipAction")) {
             res = new MessageEvent(MessageEventEnum.ACTION_SUCCESS);
+
+        } else if (testCaseStepActionExecution.getAction().equals("clickAndWait")) { // DEPRECATED ACTION
+            res = this.doActionClickWait(tCExecution, object, property);
+            res.setDescription(MESSAGE_DEPRECATED + " " + res.getDescription());
+            logEventService.createPrivateCalls("ENGINE", "clickAndWait", "Deprecated Action triggered by TestCase : ['" + testCaseStepActionExecution.getTest() + "|" + testCaseStepActionExecution.getTestCase() + "']");
+
+        } else if (testCaseStepActionExecution.getAction().equals("enter")) { // DEPRECATED ACTION
+            res = this.doActionKeyPress(tCExecution, object, "RETURN");
+            res.setDescription(MESSAGE_DEPRECATED + " " + res.getDescription());
+            logEventService.createPrivateCalls("ENGINE", "enter", "Deprecated Action triggered by TestCase : ['" + testCaseStepActionExecution.getTest() + "|" + testCaseStepActionExecution.getTestCase() + "']");
+
+        } else if (testCaseStepActionExecution.getAction().equals("selectAndWait")) { // DEPRECATED ACTION
+            res = this.doActionSelect(tCExecution, object, property);
+            this.doActionWait(tCExecution, StringUtil.NULL, StringUtil.NULL);
+            res.setDescription(MESSAGE_DEPRECATED + " " + res.getDescription());
+            logEventService.createPrivateCalls("ENGINE", "selectAndWait", "Deprecated Action triggered by TestCase : ['" + testCaseStepActionExecution.getTest() + "|" + testCaseStepActionExecution.getTestCase() + "']");
+
         } else {
             res = new MessageEvent(MessageEventEnum.ACTION_FAILED_UNKNOWNACTION);
             res.setDescription(res.getDescription().replaceAll("%ACTION%", testCaseStepActionExecution.getAction()));
