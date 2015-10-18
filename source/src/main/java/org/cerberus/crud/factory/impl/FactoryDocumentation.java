@@ -21,6 +21,7 @@ package org.cerberus.crud.factory.impl;
 
 import org.cerberus.crud.entity.Documentation;
 import org.cerberus.crud.factory.IFactoryDocumentation;
+import org.cerberus.util.StringUtil;
 import org.springframework.stereotype.Service;
 
 /**
@@ -37,6 +38,7 @@ public class FactoryDocumentation implements IFactoryDocumentation {
         documentation.setDocValue(docValue);
         documentation.setDocLabel(docLabel);
         documentation.setDocDesc(docDesc);
+        documentation.setHavedocDesc(!(StringUtil.isNullOrEmpty(docDesc)));
         return documentation;
     }
 

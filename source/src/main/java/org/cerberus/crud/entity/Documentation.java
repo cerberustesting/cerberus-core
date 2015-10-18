@@ -22,12 +22,22 @@ package org.cerberus.crud.entity;
  * @author bcivel
  */
 public class Documentation {
-    
+
     private String docTable;
     private String docField;
     private String docValue;
     private String docLabel;
     private String docDesc;
+
+    private boolean havedocDesc; // true if doc Desc is feed.
+
+    public boolean isHavedocDesc() {
+        return havedocDesc;
+    }
+
+    public void setHavedocDesc(boolean havedocDesc) {
+        this.havedocDesc = havedocDesc;
+    }
 
     public String getDocDesc() {
         return docDesc;

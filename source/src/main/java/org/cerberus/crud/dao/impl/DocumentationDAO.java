@@ -232,7 +232,7 @@ public class DocumentationDAO implements IDocumentationDAO {
     
     @Override
     public String findDescriptionFromTableFieldAndValue(String docTable, String docField, String docValue, String lang) {
-        final String query = "SELECT DocDesc FROM documentation where DocTable = ? and DocField = ? and DocValue = ? and length(docdesc) > 1";
+        final String query = "SELECT DocDesc FROM documentation where DocTable = ? and DocField = ? and DocValue = ? and Lang = ? and length(docdesc) > 1";
 
         Connection connection = this.databaseSpring.connect();
         try {
@@ -324,7 +324,7 @@ public class DocumentationDAO implements IDocumentationDAO {
     @Override
     public List<Documentation> findAllWithEmptyDocValue(String lang) {
         List<Documentation> result = new ArrayList<Documentation>();
-        final String query = "SELECT DocTable, DocField, DocValue, DocLabel, DocDesc FROM documentation where Lang = ? and docValue=''";
+        final String query = "SELECT DocTable, DocField, DocValue, DocLabel, DocDesc FROM documentation where Lang = ? and docValue='' ORDER BY DocTable, DocField, DocValue asc";
 
         Connection connection = this.databaseSpring.connect();
         try {
@@ -338,7 +338,7 @@ public class DocumentationDAO implements IDocumentationDAO {
                         String field = resultSet.getString("DocField");
                         String value = resultSet.getString("DocValue");
                         String label = resultSet.getString("DocLabel");
-                        String description = "";
+                        String description = resultSet.getString("DocDesc");
 
                         result.add(factoryDocumentation.create(table, field, value, label, description));
                     }

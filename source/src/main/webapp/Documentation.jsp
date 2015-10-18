@@ -95,8 +95,8 @@
                     Doc = Doc + "<table>";
                     for(int i=0; i<documentations.size();i++) {
                             Doc = Doc + "<tr><td><a href=\"?DocTable=" + DocTable;
-                            Doc = Doc + "&amp;DocField=" + DocField + "&amp;DocValue=" + documentations.get(i).getDocValue() + "\">";
-                            Doc = Doc + documentations.get(i).getDocValue() + "&amp;Lang=" + LangValue + "</a></td><td>" + documentations.get(i).getDocLabel() + "</td></tr>";
+                            Doc = Doc + "&amp;DocField=" + DocField + "&amp;DocValue=" + documentations.get(i).getDocValue() + "&amp;Lang=" + LangValue + "\">";
+                            Doc = Doc + documentations.get(i).getDocValue() + "</a></td><td>" + documentations.get(i).getDocLabel() + "</td></tr>";
                     }
                     Doc = Doc + "</table>";
 
