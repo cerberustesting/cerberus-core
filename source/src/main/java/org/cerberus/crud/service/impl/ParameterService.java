@@ -53,7 +53,7 @@ public class ParameterService implements IParameterService {
         try {
             Logger.getLogger(ParameterService.class.getName()).log(Level.DEBUG, Infos.getInstance().getProjectNameAndVersion() + " - Trying to retrieve parameter : " + key + " - [" + system + "]");
             myParameter = parameterDao.findParameterByKey(system, key);
-            if (myParameter.getValue().equalsIgnoreCase("")) {
+            if (myParameter != null && myParameter.getValue().equalsIgnoreCase("")) {
                 myParameter = parameterDao.findParameterByKey("", key);
             }
         } catch (CerberusException ex) {

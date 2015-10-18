@@ -22,13 +22,13 @@ package org.cerberus.crud.service.impl;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.servlet.http.HttpServletRequest;
-
 import org.cerberus.crud.dao.ILogEventDAO;
 import org.cerberus.crud.entity.LogEvent;
-import org.cerberus.exception.CerberusException;
+import org.cerberus.crud.entity.Parameter;
 import org.cerberus.crud.factory.IFactoryLogEvent;
 import org.cerberus.crud.service.ILogEventService;
 import org.cerberus.crud.service.IParameterService;
+import org.cerberus.exception.CerberusException;
 import org.cerberus.util.ParameterParserUtil;
 import org.cerberus.util.answer.Answer;
 import org.cerberus.util.answer.AnswerItem;
@@ -86,6 +86,16 @@ public class LogEventService implements ILogEventService {
         // Only log if cerberus_log_publiccalls parameter is equal to Y.
         String doit = "";
         try {
+            Parameter p = parameterService.findParameterByKey("cerberus_log_publiccalls", "");
+            //p can be null if the DAO fail to obain the parameter
+            if (p != null) {
+                doit = p.getValue();
+            } else {
+                //if some exception occurrs while accessing the parameter then we will activate the logs in order to 
+                //Check if there are more problems
+                doit = "Y";
+                Logger.getLogger(LogEventService.class.getName()).log(Level.WARNING, "Parameter is not available: cerberus_log_publiccalls", "");
+            }
             doit = parameterService.findParameterByKey("cerberus_log_publiccalls", "").getValue();
         } catch (CerberusException ex) {
             Logger.getLogger(LogEventService.class.getName()).log(Level.SEVERE, null, ex);
