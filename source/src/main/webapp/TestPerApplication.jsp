@@ -100,7 +100,8 @@
 
             IApplicationService applicationService = appContext.getBean(IApplicationService.class);
             List<Application> appList = applicationService.convert(applicationService.readBySystem(MySystem));
-            List<Invariant> myInvariants = invariantService.findInvariantByIdGp1("TCSTATUS", "Y");
+            AnswerList<Invariant> ans = invariantService.findInvariantByIdGp1("TCSTATUS", "Y");
+            List<Invariant> myInvariants = ans.getDataList();
             IDocumentationService docService = appContext.getBean(IDocumentationService.class);
         %>
          <div class="filters" style="float:left; width:100%; height:30px">
