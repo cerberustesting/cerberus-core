@@ -20,7 +20,6 @@
 package org.cerberus.service.engine.impl;
 
 
-import java.awt.image.BufferedImage;
 import java.io.ByteArrayOutputStream;
 import java.io.DataOutputStream;
 import java.io.File;
@@ -30,7 +29,6 @@ import java.io.IOException;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.logging.Logger;
-import javax.imageio.ImageIO;
 import org.apache.commons.io.FileUtils;
 import org.apache.log4j.Level;
 import org.cerberus.crud.entity.ExecutionSOAPResponse;
@@ -65,8 +63,8 @@ public class RecorderService implements IRecorderService {
     public String recordScreenshotAndGetName(TestCaseExecution testCaseExecution,
             TestCaseStepActionExecution testCaseStepActionExecution, Integer control) {
 
-        String test = testCaseExecution.getTest();
-        String testCase = testCaseExecution.getTestCase();
+        String test = testCaseStepActionExecution.getTest();
+        String testCase = testCaseStepActionExecution.getTestCase();
         String step = String.valueOf(testCaseStepActionExecution.getStep());
         String sequence = String.valueOf(testCaseStepActionExecution.getSequence());
         String controlString = control.equals(0) ? null : String.valueOf(control);
@@ -89,14 +87,17 @@ public class RecorderService implements IRecorderService {
                 if(!dir.exists()){
                     dir.mkdirs();
                 }
+                //copies the temp file to the execution file
                 FileUtils.copyFile(newImage, new File(imgPath + runId + File.separator + screenshotFilename));
+                //deletes the temporary file
+                FileUtils.forceDelete(newImage);
             } catch (IOException ex) {
                 Logger.getLogger(RecorderService.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
             } catch (CerberusException ex) {
                 Logger.getLogger(RecorderService.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-            }
+            } 
         }
-//old version        
+//old version  TODO:delete      
 //        String imgPath;
 //            try {
 //                BufferedImage newImage = this.webdriverService.takeScreenShot(testCaseExecution.getSession());
