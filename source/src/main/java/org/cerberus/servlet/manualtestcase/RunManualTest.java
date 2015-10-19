@@ -34,16 +34,17 @@ import org.cerberus.crud.entity.TestCaseExecutionData;
 import org.cerberus.crud.entity.TestCaseStepActionControlExecution;
 import org.cerberus.crud.entity.TestCaseStepActionExecution;
 import org.cerberus.crud.entity.TestCaseStepExecution;
-import org.cerberus.exception.CerberusException;
 import org.cerberus.crud.factory.IFactoryTestCaseStepActionControlExecution;
 import org.cerberus.crud.factory.IFactoryTestCaseStepActionExecution;
 import org.cerberus.crud.factory.IFactoryTestCaseStepExecution;
-import org.cerberus.log.MyLogger;
 import org.cerberus.crud.service.ITestCaseExecutionService;
 import org.cerberus.crud.service.ITestCaseStepActionControlExecutionService;
 import org.cerberus.crud.service.ITestCaseStepActionExecutionService;
 import org.cerberus.crud.service.ITestCaseStepExecutionService;
+import org.cerberus.exception.CerberusException;
+import org.cerberus.log.MyLogger;
 import org.cerberus.service.engine.IRecorderService;
+import org.cerberus.util.FileUtil;
 import org.springframework.context.ApplicationContext;
 import org.springframework.web.context.support.WebApplicationContextUtils;
 
@@ -241,7 +242,7 @@ public class RunManualTest extends HttpServlet {
         List<TestCaseStepActionExecution> result = new ArrayList();
         long now = new Date().getTime();
         IFactoryTestCaseStepActionExecution testCaseStepActionExecutionFactory = appContext.getBean(IFactoryTestCaseStepActionExecution.class);
-        IRecorderService recorderService = appContext.getBean(IRecorderService.class);
+        //IRecorderService recorderService = appContext.getBean(IRecorderService.class);
 
         String[] stepAction_increment = getParameterValuesIfExists(request, "action_increment_" + stepId);
         if (stepAction_increment != null) {
@@ -255,7 +256,7 @@ public class RunManualTest extends HttpServlet {
                 String takeScreenshot = getParameterIfExists(request, "takeScreenshot_" + stepId + "_" + inc);
                 String actionScreenshotFileName = null;
                 if (takeScreenshot.equals("Y")) {
-                    actionScreenshotFileName = recorderService.generateScreenshotFilename(test, testCase, String.valueOf(stepId), inc, null, null, "jpg");
+                    actionScreenshotFileName = FileUtil.generateScreenshotFilename(test, testCase, String.valueOf(stepId), inc, null, null, "jpg"); //TODO:FN should we enforce the extension? 
                     actionScreenshotFileName = executionId + File.separator + actionScreenshotFileName;
                 }
 
@@ -271,7 +272,7 @@ public class RunManualTest extends HttpServlet {
         List<TestCaseStepActionControlExecution> result = new ArrayList();
         long now = new Date().getTime();
         IFactoryTestCaseStepActionControlExecution testCaseStepActionExecutionFactory = appContext.getBean(IFactoryTestCaseStepActionControlExecution.class);
-        IRecorderService recorderService = appContext.getBean(IRecorderService.class);
+        //IRecorderService recorderService = appContext.getBean(IRecorderService.class);
 
         String[] stepActionControl_increment = getParameterValuesIfExists(request, "control_increment_" + stepId + "_" + sequenceId);
         if (stepActionControl_increment != null) {
@@ -287,7 +288,7 @@ public class RunManualTest extends HttpServlet {
                 String controlScreenshot = null;
                 String takeScreenshot = getParameterIfExists(request, "takeScreenshot_" + stepId + "_" + sequenceId + "_" + inc);
                 if (takeScreenshot.equals("Y")) {
-                    controlScreenshot = recorderService.generateScreenshotFilename(test, testCase, String.valueOf(stepId), String.valueOf(sequenceId), inc, null, "jpg");
+                    controlScreenshot = FileUtil.generateScreenshotFilename(test, testCase, String.valueOf(stepId), String.valueOf(sequenceId), inc, null, "jpg");
                     controlScreenshot = executionId + File.separator + controlScreenshot;
                 }
 
