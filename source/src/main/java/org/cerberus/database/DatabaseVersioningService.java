@@ -4943,7 +4943,7 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         // Max size for screenshot
         //-- ------------------------  645
         SQLS = new StringBuilder();
-        SQLS.append("INSERT INTO `cerberus_partial`.`parameter` (`param`, `value`, `description`) VALUES ('cerberus_screenshot_max_size', '1048576', 'Max size in bytes for a screenshot take while test case execution');");
+        SQLS.append("INSERT INTO `parameter` (`param`, `value`, `description`) VALUES ('cerberus_screenshot_max_size', '1048576', 'Max size in bytes for a screenshot take while test case execution');");
         SQLInstruction.add(SQLS.toString());
         
         return SQLInstruction;
