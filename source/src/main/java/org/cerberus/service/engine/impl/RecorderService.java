@@ -20,7 +20,6 @@
 package org.cerberus.service.engine.impl;
 
 
-import java.awt.image.BufferedImage;
 import java.io.ByteArrayOutputStream;
 import java.io.DataOutputStream;
 import java.io.File;
@@ -30,7 +29,6 @@ import java.io.IOException;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.logging.Logger;
-import javax.imageio.ImageIO;
 import org.apache.commons.io.FileUtils;
 import org.apache.log4j.Level;
 import org.cerberus.crud.entity.ExecutionSOAPResponse;
@@ -44,6 +42,7 @@ import org.cerberus.enums.TestDataLibTypeEnum;
 import org.cerberus.exception.CerberusException;
 import org.cerberus.log.MyLogger;
 import org.cerberus.service.engine.IRecorderService;
+import org.cerberus.util.FileUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -65,8 +64,8 @@ public class RecorderService implements IRecorderService {
     public String recordScreenshotAndGetName(TestCaseExecution testCaseExecution,
             TestCaseStepActionExecution testCaseStepActionExecution, Integer control) {
 
-        String test = testCaseExecution.getTest();
-        String testCase = testCaseExecution.getTestCase();
+        String test = testCaseStepActionExecution.getTest();
+        String testCase = testCaseStepActionExecution.getTestCase();
         String step = String.valueOf(testCaseStepActionExecution.getStep());
         String sequence = String.valueOf(testCaseStepActionExecution.getSequence());
         String controlString = control.equals(0) ? null : String.valueOf(control);
@@ -76,7 +75,7 @@ public class RecorderService implements IRecorderService {
         /**
          * Generate FileName
          */
-        String screenshotFilename = this.generateScreenshotFilename(test, testCase, step, sequence, controlString, null, "png");
+        String screenshotFilename = FileUtil.generateScreenshotFilename(test, testCase, step, sequence, controlString, null, "png");
 
         /**
          * Take Screenshot and write it
@@ -89,14 +88,17 @@ public class RecorderService implements IRecorderService {
                 if(!dir.exists()){
                     dir.mkdirs();
                 }
+                //copies the temp file to the execution file
                 FileUtils.copyFile(newImage, new File(imgPath + runId + File.separator + screenshotFilename));
+                //deletes the temporary file
+                FileUtils.forceDelete(newImage);
             } catch (IOException ex) {
                 Logger.getLogger(RecorderService.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
             } catch (CerberusException ex) {
                 Logger.getLogger(RecorderService.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-            }
+            } 
         }
-//old version        
+//old version  TODO:delete      
 //        String imgPath;
 //            try {
 //                BufferedImage newImage = this.webdriverService.takeScreenShot(testCaseExecution.getSession());
@@ -118,44 +120,7 @@ public class RecorderService implements IRecorderService {
 
     }
 
-    /**
-     * Generate ScreenshotFileName using 2 method : If pictureName is not null,
-     * use it directly. If picture name is null, generate name using test,
-     * testcase, step sequence and control.
-     *
-     * @param test
-     * @param testCase
-     * @param step
-     * @param sequence
-     * @param control
-     * @param pictureName
-     * @param extension
-     * @return
-     */
-    @Override
-    public String generateScreenshotFilename(String test, String testCase, String step, String sequence, String control, String pictureName, String extension) {
-
-        StringBuilder sbScreenshotFilename = new StringBuilder();
-        if (pictureName == null) {
-            sbScreenshotFilename.append(test);
-            sbScreenshotFilename.append("-");
-            sbScreenshotFilename.append(testCase);
-            sbScreenshotFilename.append("-St");
-            sbScreenshotFilename.append(step);
-            sbScreenshotFilename.append("Sq");
-            sbScreenshotFilename.append(sequence);
-            if (control != null) {
-                sbScreenshotFilename.append("Ct");
-                sbScreenshotFilename.append(control);
-            }
-        } else {
-            sbScreenshotFilename.append(pictureName);
-        }
-        sbScreenshotFilename.append(".");
-        sbScreenshotFilename.append(extension);
-
-        return sbScreenshotFilename.toString().replaceAll(" ", "");
-    }
+    
 
     @Override
     public String recordXMLAndGetName(TestCaseExecution testCaseExecution, TestCaseStepActionExecution testCaseStepActionExecution, Integer control) {
@@ -169,7 +134,7 @@ public class RecorderService implements IRecorderService {
         String controlString = control.equals(0) ? null : String.valueOf(control);
         String fileName = testCaseStepActionExecution.getProperty().equalsIgnoreCase("") ? null : testCaseStepActionExecution.getProperty();
 
-        String screenshotFilename = this.generateScreenshotFilename(test, testCase, step, sequence, controlString, fileName, "xml");
+        String screenshotFilename = FileUtil.generateScreenshotFilename(test, testCase, step, sequence, controlString, fileName, "xml");
 
         String imgPath = "";
         try {
@@ -209,7 +174,7 @@ public class RecorderService implements IRecorderService {
         String sequence = String.valueOf(testCaseStepActionExecution.getSequence());
         String controlString = control.equals(0) ? null : String.valueOf(control);
 
-        String screenshotFilename = this.generateScreenshotFilename(test, testCase, step, sequence, controlString, null, "html");
+        String screenshotFilename = FileUtil.generateScreenshotFilename(test, testCase, step, sequence, controlString, null, "html");
 
         String imgPath = "";
         try {
@@ -422,7 +387,7 @@ public class RecorderService implements IRecorderService {
                         //the XML execution is available in the entry
                         try {
                             String path = parameterService.findParameterByKey("cerberus_picture_path", "").getValue() + executionId + File.separator;
-                            String fileName = this.generateScreenshotFilename(test, testCase, step, sequence, controlString, null,  "xml") ;
+                            String fileName = FileUtil.generateScreenshotFilename(test, testCase, step, sequence, controlString, null,  "xml") ;
                             String requestFileName = fileName.replace(".xml", "_request.xml");
                             
                             url.append(testCaseStepActionExecution.getActionResultMessage().getDescription());

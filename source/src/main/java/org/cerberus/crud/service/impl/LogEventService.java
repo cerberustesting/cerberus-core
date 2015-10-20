@@ -96,7 +96,7 @@ public class LogEventService implements ILogEventService {
                 doit = "Y";
                 Logger.getLogger(LogEventService.class.getName()).log(Level.WARNING, "Parameter is not available: cerberus_log_publiccalls", "");
             }
-            doit = parameterService.findParameterByKey("cerberus_log_publiccalls", "").getValue();
+            
         } catch (CerberusException ex) {
             Logger.getLogger(LogEventService.class.getName()).log(Level.SEVERE, null, ex);
         }
