@@ -42,7 +42,7 @@
             </div>
 
             <div class="panel panel-default">
-                <div class="panel-heading">
+                <div class="panel-heading" id="testCaseListLabel">
                     Test Case List
                 </div>
                 <div class="panel-body" id="testCaseList">

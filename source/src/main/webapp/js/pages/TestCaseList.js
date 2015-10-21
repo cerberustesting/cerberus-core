@@ -81,6 +81,9 @@ function displayPageLabel(doc) {
     $("[name='descriptionField']").html(doc.getDocOnline("test", "Description"));
     $("[name='creatorField']").html(doc.getDocOnline("testcase", "Creator"));
     $("[name='implementerField']").html(doc.getDocOnline("testcase", "Implementer"));
+    $("[name='groupField']").html(doc.getDocOnline("invariant", "GROUP"));
+    $("[name='priorityField']").html(doc.getDocOnline("invariant", "PRIORITY"));
+    $("[name='countryList']").html(doc.getDocOnline("testcase", "countryList"));
     $("[name='bugIdField']").html(doc.getDocOnline("testcase", "BugID"));
     $("[name='tcDateCreaField']").html(doc.getDocOnline("testcase", "TCDateCrea"));
     $("[name='activeField']").html(doc.getDocOnline("testcase", "TcActive"));
@@ -91,7 +94,8 @@ function displayPageLabel(doc) {
     $("[name='targetSprintField']").html(doc.getDocOnline("testcase", "TargetBuild"));
     $("[name='targetRevField']").html(doc.getDocOnline("testcase", "TargetRev"));
     $("[name='commentField']").html(doc.getDocOnline("testcase", "Comment"));
-    
+    $("#filters").html(doc.getDocOnline("page_testcaselist", "filters"));
+    $("#testCaseListLabel").html(doc.getDocOnline("page_testcaselist", "testcaselist"));
 }
 
 function appendBuildRevList() {
@@ -205,11 +209,9 @@ function loadTable() {
 
     window.history.pushState('test', '', 'TestCaseList.jsp?test=' + selectTest);
 
-    if ($("#testCaseTable_wrapper").hasClass("initialized")) {
-        $("#testCaseList").empty();
-        $("#testCaseList").html('<table id="testCaseTable" class="table table-hover display" name="testCaseTable">\n\
+    $("#testCaseList").empty();
+    $("#testCaseList").html('<table id="testCaseTable" class="table table-hover display" name="testCaseTable">\n\
                                             </table><div class="marginBottom20"></div>');
-    }
 
     if (selectTest !== "") {
         var jqxhr = $.getJSON("FindInvariantByID", "idName=COUNTRY");
@@ -219,8 +221,6 @@ function loadTable() {
 
             var table = createDataTableWithPermissions(config, renderOptionsForTestCaseList);
             table.fnSort([1, 'asc']);
-
-            $('#testCaseTable_wrapper').not('.initialized').addClass('initialized');
         });
     }
 }
@@ -552,7 +552,7 @@ function aoColumnsFunc(countries) {
         {
             "data": "priority",
             "sName": "priority",
-            "title": "Priority",
+            "title": doc.getDocOnline("invariant", "PRIORITY"),
             "sWidth": "70px",
             "sDefaultContent": ""
         },
@@ -573,7 +573,7 @@ function aoColumnsFunc(countries) {
         {
             "data": "group",
             "sName": "group",
-            "title": "Group",
+            "title": doc.getDocOnline("invariant", "GROUP"),
             "sWidth": "100px",
             "sDefaultContent": ""
         },
