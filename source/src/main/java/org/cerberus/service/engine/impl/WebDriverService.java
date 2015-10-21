@@ -45,6 +45,7 @@ import org.cerberus.log.MyLogger;
 import org.cerberus.service.engine.IWebDriverService;
 import org.cerberus.util.ParameterParserUtil;
 import org.cerberus.util.StringUtil; 
+import org.jfree.chart.imagemap.ImageMapUtilities;
 import org.openqa.selenium.Alert;
 import org.openqa.selenium.By;
 import org.openqa.selenium.Cookie;
@@ -296,6 +297,12 @@ public class WebDriverService implements IWebDriverService {
                 WebDriver augmentedDriver = new Augmenter().augment(session.getDriver());
                 File image = ((TakesScreenshot) augmentedDriver).getScreenshotAs(OutputType.FILE);
                 
+                if(image != null){
+                    //logs for debug purposes
+                    MyLogger.log(WebDriverService.class.getName(), Level.INFO, "WebDriverService: screen-shot taken with succes: " + image.getName() + "(size" + image.length()+ ")");
+                }else{
+                    MyLogger.log(WebDriverService.class.getName(), Level.WARN, "WebDriverService: screen-shot returned null: ");
+                }
                 return image;                
             } catch (WebDriverException exception) {
                 if (System.currentTimeMillis() >= timeout) {

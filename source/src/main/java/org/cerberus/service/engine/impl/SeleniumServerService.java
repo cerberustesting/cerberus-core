@@ -78,30 +78,38 @@ public class SeleniumServerService implements ISeleniumServerService {
 
     @Override
     public void startServer(TestCaseExecution tCExecution) throws CerberusException {
-
+        //message used for log purposes 
+        String testCaseDescription = "[" + tCExecution.getTest() + " - " + tCExecution.getTestCase() + "]";
         try {
-
+            
             /**
              * SetUp Capabilities
              */
-            MyLogger.log(SeleniumServerService.class.getName(), Level.DEBUG, "Set Capabilities");
+            MyLogger.log(SeleniumServerService.class.getName(), Level.INFO, testCaseDescription + "Set Capabilities");
             DesiredCapabilities caps = this.setCapabilities(tCExecution);
 
             /**
              * SetUp Driver
              */
-            MyLogger.log(SeleniumServerService.class.getName(), Level.DEBUG, "Set Driver");
+            MyLogger.log(SeleniumServerService.class.getName(), Level.INFO, testCaseDescription + "Set Driver");
             WebDriver driver = null;
             AppiumDriver appiumDriver = null;
             if (tCExecution.getApplication().getType().equalsIgnoreCase("GUI")) {
                 driver = new RemoteWebDriver(new URL("http://" + tCExecution.getSession().getHost() + ":" + tCExecution.getSession().getPort() + "/wd/hub"), caps);
+                //TODO:FN temporary debug messages
+                org.apache.log4j.Logger.getLogger(SeleniumServerService.class.getName()).log(org.apache.log4j.Level.INFO, testCaseDescription + "CREATED GUI DRIVER");
+
             } else if (tCExecution.getApplication().getType().equalsIgnoreCase("APK")) {
                 appiumDriver = new AppiumDriver(new URL("http://" + tCExecution.getSession().getHost() + ":" + tCExecution.getSession().getPort() + "/wd/hub"), caps);
                 driver = (WebDriver) appiumDriver;
+                //TODO:FN temporary debug messages
+                org.apache.log4j.Logger.getLogger(SeleniumServerService.class.getName()).log(org.apache.log4j.Level.INFO, testCaseDescription + "CREATED APPIUM DRIVER");
             }
-
+            
             tCExecution.getSession().setDriver(driver);
             tCExecution.getSession().setAppiumDriver(appiumDriver);
+            //TODO:FN temporary debug messages
+            org.apache.log4j.Logger.getLogger(SeleniumServerService.class.getName()).log(org.apache.log4j.Level.INFO, testCaseDescription+ "SET DRIVERS");
 
             /**
              * If Gui application, maximize window Get IP of Node in case of
@@ -109,8 +117,12 @@ public class SeleniumServerService implements ISeleniumServerService {
              */
             if (tCExecution.getApplication().getType().equalsIgnoreCase("GUI")) {
                 driver.manage().window().maximize();
-                getIPOfNode(tCExecution);
+                //TODO:FN temporary debug messages
+                org.apache.log4j.Logger.getLogger(SeleniumServerService.class.getName()).log(org.apache.log4j.Level.INFO, testCaseDescription + "If type is GUI  maximize");
 
+                getIPOfNode(tCExecution);
+                //TODO:FN temporary debug messages
+                org.apache.log4j.Logger.getLogger(SeleniumServerService.class.getName()).log(org.apache.log4j.Level.INFO, testCaseDescription + "GET IP OF NODE");
                 /**
                  * If screenSize is defined, set the size of the screen.
                  */
@@ -122,23 +134,33 @@ public class SeleniumServerService implements ISeleniumServerService {
                 tCExecution.setScreenSize(getScreenSize(driver));
             }
             tCExecution.getSession().setStarted(true);
+            //TODO:FN temporary debug messages
+            org.apache.log4j.Logger.getLogger(SeleniumServerService.class.getName()).log(org.apache.log4j.Level.INFO, testCaseDescription + "SET STARTED to true");
 
         } catch (CerberusException exception) {
-            MyLogger.log(Selenium.class.getName(), Level.ERROR, exception.toString());
+            //MyLogger.log(Selenium.class.getName(), Level.ERROR, exception.toString());
+            //TODO:FN temporary debug messages
+            Logger.getLogger(SeleniumServerService.class.getName()).log(java.util.logging.Level.SEVERE, testCaseDescription, exception);
             throw new CerberusException(exception.getMessageError());
         } catch (MalformedURLException exception) {
-            MyLogger.log(Selenium.class.getName(), Level.ERROR, exception.toString());
+            //MyLogger.log(Selenium.class.getName(), Level.ERROR, exception.toString());
+            //TODO:FN temporary debug messages
+            Logger.getLogger(SeleniumServerService.class.getName()).log(java.util.logging.Level.SEVERE, testCaseDescription, exception);
             MessageGeneral mes = new MessageGeneral(MessageGeneralEnum.VALIDATION_FAILED_URL_MALFORMED);
             mes.setDescription(mes.getDescription().replace("%URL%", tCExecution.getSession().getHost() + ":" + tCExecution.getSession().getPort()));
             throw new CerberusException(mes);
         } catch (UnreachableBrowserException exception) {
-            MyLogger.log(Selenium.class.getName(), Level.ERROR, exception.toString());
+            //MyLogger.log(Selenium.class.getName(), Level.ERROR, exception.toString());
+            //TODO:FN temporary debug messages
+            Logger.getLogger(SeleniumServerService.class.getName()).log(java.util.logging.Level.SEVERE, testCaseDescription, exception);
             MessageGeneral mes = new MessageGeneral(MessageGeneralEnum.VALIDATION_FAILED_SELENIUM_COULDNOTCONNECT);
             mes.setDescription(mes.getDescription().replace("%SSIP%", tCExecution.getSeleniumIP()));
             mes.setDescription(mes.getDescription().replace("%SSPORT%", tCExecution.getSeleniumPort()));
             throw new CerberusException(mes);
-        } catch (Exception exception) {
-            MyLogger.log(Selenium.class.getName(), Level.ERROR, exception.toString());
+        }catch (Exception exception) {
+            //MyLogger.log(Selenium.class.getName(), Level.ERROR, exception.toString());
+            //TODO:FN temporary debug messages
+            Logger.getLogger(SeleniumServerService.class.getName()).log(java.util.logging.Level.SEVERE, testCaseDescription, exception);
             MessageGeneral mes = new MessageGeneral(MessageGeneralEnum.EXECUTION_FA_SELENIUM);
             mes.setDescription(mes.getDescription().replace("%MES%", exception.toString()));
             throw new CerberusException(mes);

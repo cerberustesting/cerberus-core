@@ -32,6 +32,7 @@ import java.util.logging.Logger;
 import org.apache.commons.io.FileUtils;
 import org.apache.log4j.Level;
 import org.cerberus.crud.entity.ExecutionSOAPResponse;
+import org.cerberus.crud.entity.Parameter;
 import org.cerberus.crud.entity.TestCaseExecution;
 import org.cerberus.crud.entity.TestCaseStepActionControlExecution;
 import org.cerberus.crud.entity.TestCaseStepActionExecution;
@@ -71,12 +72,15 @@ public class RecorderService implements IRecorderService {
         String controlString = control.equals(0) ? null : String.valueOf(control);
         long runId = testCaseExecution.getId();
 
-        MyLogger.log(RecorderService.class.getName(), Level.INFO, "Doing screenshot.");
+        //used for logging purposes
+        String testDescription = "[" + test + " - " + testCase + " - step: " + step + " action: " + sequence + "]";
+        
+        MyLogger.log(RecorderService.class.getName(), Level.INFO, testDescription + "Doing screenshot.");
         /**
          * Generate FileName
          */
-        String screenshotFilename = FileUtil.generateScreenshotFilename(test, testCase, step, sequence, controlString, null, "png");
-
+        String screenshotFilename = FileUtil.generateScreenshotFilename(test, testCase, step, sequence, controlString, null, "jpg");
+        
         /**
          * Take Screenshot and write it
          */
@@ -86,17 +90,32 @@ public class RecorderService implements IRecorderService {
                 String imgPath = parameterService.findParameterByKey("cerberus_picture_path", "").getValue();
                 File dir = new File(imgPath + runId);
                 if(!dir.exists()){
+                    MyLogger.log(RecorderService.class.getName(), Level.INFO, testDescription + "Create directory for execution " + runId);
                     dir.mkdirs();
+                }
+                long maxSize = 1048576; //default max size that should be saved in the database
+                Parameter paramMaxSize = parameterService.findParameterByKey("cerberus_screenshot_max_size", "");
+                if(paramMaxSize != null){
+                    maxSize = Long.valueOf(paramMaxSize.getValue());                
+                }
+                if(maxSize < newImage.length()){
+                    MyLogger.log(RecorderService.class.getName(), Level.WARN, testDescription + "Screen-shot size exceeds the maximum defined in configurations " + 
+                            newImage.getName() + " destination: " + screenshotFilename);
                 }
                 //copies the temp file to the execution file
                 FileUtils.copyFile(newImage, new File(imgPath + runId + File.separator + screenshotFilename));
+                MyLogger.log(RecorderService.class.getName(), Level.INFO, testDescription + "Copy file finished with success - source: " + newImage.getName() + " destination: " + screenshotFilename);
+                                
                 //deletes the temporary file
                 FileUtils.forceDelete(newImage);
+                MyLogger.log(RecorderService.class.getName(), Level.INFO, testDescription + "Temp file deleted with success " + newImage.getName());
             } catch (IOException ex) {
-                Logger.getLogger(RecorderService.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+                Logger.getLogger(RecorderService.class.getName()).log(java.util.logging.Level.SEVERE, testDescription, ex);
             } catch (CerberusException ex) {
-                Logger.getLogger(RecorderService.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+                Logger.getLogger(RecorderService.class.getName()).log(java.util.logging.Level.SEVERE, testDescription, ex);
             } 
+        }else{
+            MyLogger.log(RecorderService.class.getName(), Level.WARN, testDescription + "Screenshot returned null " );        
         }
 //old version  TODO:delete      
 //        String imgPath;
@@ -114,7 +133,7 @@ public class RecorderService implements IRecorderService {
 //                Logger.getLogger(RecorderService.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
 //            }
         String screenshotPath = Long.toString(testCaseStepActionExecution.getTestCaseStepExecution().gettCExecution().getId()) + File.separator + screenshotFilename;
-        MyLogger.log(RecorderService.class.getName(), Level.DEBUG, "Screenshot done in : " + screenshotPath);
+        MyLogger.log(RecorderService.class.getName(), Level.DEBUG, testDescription +  "Screenshot done in : " + screenshotPath);
 
         return screenshotPath;
 

@@ -291,7 +291,8 @@ public class RunTestCase extends HttpServlet {
             UUID executionUUID = UUID.randomUUID();
             executionUUIDObject.setExecutionUUID(executionUUID.toString(), tCExecution);
             tCExecution.setExecutionUUID(executionUUID.toString());
-            MyLogger.log(RunTestCase.class.getName(), Level.INFO, "Execution Requested : UUID=" + executionUUID);
+            org.apache.log4j.Logger.getLogger(RunTestCase.class.getName()).log(org.apache.log4j.Level.INFO, "Execution Requested : UUID=" + executionUUID);
+            //MyLogger.log(RunTestCase.class.getName(), Level.INFO, "Execution Requested : UUID=" + executionUUID);
 
             ExecutionSOAPResponse eSResponse = appContext.getBean(ExecutionSOAPResponse.class);
             eSResponse.setExecutionSOAPResponse(executionUUID.toString(), "init");
@@ -306,7 +307,8 @@ public class RunTestCase extends HttpServlet {
                 String to = tCExecution.getTimeout().equals("") ? param.getValue() : tCExecution.getTimeout();
                 defaultWait = Long.parseLong(to);
             } catch (CerberusException ex) {
-                MyLogger.log(RunTestCase.class.getName(), Level.WARN, "Parameter (selenium_defaultWait) not in Parameter table, default wait set to 90 seconds");
+                //MyLogger.log(RunTestCase.class.getName(), Level.WARN, "Parameter (selenium_defaultWait) not in Parameter table, default wait set to 90 seconds");
+                org.apache.log4j.Logger.getLogger(RunTestCase.class.getName()).log(org.apache.log4j.Level.WARN, "Parameter (selenium_defaultWait) not in Parameter table, default wait set to 90 seconds", ex);
                 defaultWait = 90;
             }
 
@@ -339,7 +341,8 @@ public class RunTestCase extends HttpServlet {
                     tCExecution = runTestCaseService.runTestCase(tCExecution);
                     tCExecution.decreaseNumberOfRetries();
                 } catch (Exception ex) {
-                    MyLogger.log(RunTestCase.class.getName(), Level.FATAL, "Exception on testcase: " + tCExecution.getId() + "\nDetail: " + ex.getMessage() + "\n\n" + ex.toString());
+                    org.apache.log4j.Logger.getLogger(RunTestCase.class.getName()).log(org.apache.log4j.Level.ERROR, "Error while executing RunTestCase ", ex);
+                    //MyLogger.log(RunTestCase.class.getName(), Level.FATAL, "Exception on testcase: " + tCExecution.getId() + "\nDetail: " + ex.getMessage() + "\n\n" + ex.toString());
                     break;
                 }
             }
@@ -361,7 +364,8 @@ public class RunTestCase extends HttpServlet {
                     }
                 }
             } catch (CerberusException ex) {
-                MyLogger.log(RunTestCase.class.getName(), Level.WARN, ex.getMessageError().getDescription());
+                org.apache.log4j.Logger.getLogger(RunTestCase.class.getName()).log(org.apache.log4j.Level.ERROR, "Error while performin testcase in queue ", ex);
+                //MyLogger.log(RunTestCase.class.getName(), Level.WARN, ex.getMessageError().getDescription());
             }
 
             /**
@@ -371,15 +375,18 @@ public class RunTestCase extends HttpServlet {
             try {
                 if (tCExecution.getId() == 0) {
                     executionUUIDObject.removeExecutionUUID(tCExecution.getExecutionUUID());
-                    MyLogger.log(RunTestCase.class.getName(), Level.DEBUG, "Clean ExecutionUUID");
+                    org.apache.log4j.Logger.getLogger(RunTestCase.class.getName()).log(org.apache.log4j.Level.DEBUG, "Clean ExecutionUUID");
+                    //MyLogger.log(RunTestCase.class.getName(), Level.DEBUG, "Clean ExecutionUUID");
 
                     if (eSResponse.getExecutionSOAPResponse(tCExecution.getExecutionUUID()) != null) {
                         eSResponse.removeExecutionSOAPResponse(tCExecution.getExecutionUUID());
-                        MyLogger.log(RunTestCase.class.getName(), Level.DEBUG, "Clean ExecutionSOAPResponse");
+                        org.apache.log4j.Logger.getLogger(RunTestCase.class.getName()).log(org.apache.log4j.Level.DEBUG, "ExecutionSOAPResponse ExecutionUUID");
+                        //MyLogger.log(RunTestCase.class.getName(), Level.DEBUG, "Clean ExecutionSOAPResponse");
                     }
                 }
             } catch (Exception ex) {
-                MyLogger.log(RunTestCase.class.getName(), Level.FATAL, "Exception cleaning Memory: " + ex.toString());
+                org.apache.log4j.Logger.getLogger(RunTestCase.class.getName()).log(org.apache.log4j.Level.ERROR, "Exception cleaning Memory: ", ex);
+                //MyLogger.log(RunTestCase.class.getName(), Level.FATAL, "Exception cleaning Memory: " + ex.toString());
             }
 
             long runID = tCExecution.getId();
