@@ -475,8 +475,13 @@ function aoColumnsFunc(countries) {
             "bSearchable": false,
             "title": doc.getDocOnline("page_global", "columnAction"),
             "sDefaultContent": "",
-            "sWidth": "100px",
+            "sWidth": "130px",
             "mRender": function (data, type, obj) {
+                var testCaseLink = '<a id="testCaseLink" class="btn btn-primary btn-xs margin-right5"\n\
+                                    target="_blank" href="TestCase.jsp?Test=' + encodeURIComponent(obj["test"]) + "&TestCase=" + encodeURIComponent(obj["testCase"]) + '&Load=Load">\n\
+                                    <span class="glyphicon glyphicon-new-window"></span>\n\
+                                    </a>';
+
                 if (data.hasPermissions) {
                     var editEntry = '<button id="editEntry" onclick="editEntry(\'' + obj["testCase"] + '\');"\n\
                                 class="editEntry btn btn-default btn-xs margin-right5" \n\
@@ -488,7 +493,9 @@ function aoColumnsFunc(countries) {
                                         name="deleteEntry" title="' + "delete test case" + '" type="button">\n\
                                         <span class="glyphicon glyphicon-trash"></span></button>';
 
-                    return '<div class="center btn-group width150">' + editEntry + deleteEntry + '</div>';
+                    return '<div class="center btn-group width150">' + editEntry + deleteEntry + testCaseLink + '</div>';
+                } else {
+                    return '<div class="center btn-group width150">' + testCaseLink + '</div>';
                 }
             }
         },
