@@ -325,7 +325,8 @@ public class SeleniumServerService implements ISeleniumServerService {
             } catch (InterruptedException ex) {
                 Logger.getLogger(SeleniumServerService.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
             }
-
+            //TODO:FN remove log messaegs
+            Logger.getLogger(SeleniumServerService.class.getName()).log(java.util.logging.Level.WARNING, "STOP SERVER");
             session.getDriver().quit();
             return true;
         }

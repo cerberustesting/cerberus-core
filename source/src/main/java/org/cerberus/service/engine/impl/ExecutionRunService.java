@@ -341,6 +341,7 @@ public class ExecutionRunService implements IExecutionRunService {
 
             try {
                 tCExecution = this.stopTestCase(tCExecution);
+                MyLogger.log(ExecutionRunService.class.getName(), Level.INFO, "STOPPED!!  " + tCExecution.getId());
             } catch (Exception ex) {
                 MyLogger.log(ExecutionRunService.class.getName(), Level.FATAL, "Exception Stopping Test " + tCExecution.getId() + " Exception :" + ex.toString());
             }

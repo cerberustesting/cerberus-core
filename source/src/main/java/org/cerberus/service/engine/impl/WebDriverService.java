@@ -77,7 +77,7 @@ import org.springframework.stereotype.Service;
 public class WebDriverService implements IWebDriverService {
 
     private static final int TIMEOUT_MILLIS = 30000;
-    private static final int TIMEOUT_WEBELEMENT = 300;
+    private static final int TIMEOUT_WEBELEMENT = 20; //previous value was 300
 
     private By getBy(Identifier identifier) {
 

@@ -338,6 +338,8 @@ public class RunTestCase extends HttpServlet {
 
             while (tCExecution.getNumberOfRetries() >= 0 && !tCExecution.getResultMessage().getCodeString().equals("OK")) {
                 try {
+                    //TODO:FN remove log messaegs
+                    org.apache.log4j.Logger.getLogger(RunTestCase.class.getName()).log(org.apache.log4j.Level.ERROR, "START!! " + tCExecution.getId()); 
                     tCExecution = runTestCaseService.runTestCase(tCExecution);
                     tCExecution.decreaseNumberOfRetries();
                 } catch (Exception ex) {
