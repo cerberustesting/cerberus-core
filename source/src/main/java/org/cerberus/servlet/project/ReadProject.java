@@ -79,7 +79,7 @@ public class ReadProject extends HttpServlet {
                 answer = findProjectList(appContext, request, response);
                 jsonResponse = (JSONObject) answer.getItem();
             } else {
-                String idProject = policy.sanitize(request.getParameter("idProject"));
+                String idProject = ParameterParserUtil.ParseStringParamAndSanitize(request.getParameter("idProject"), "");
                 answer = findProjectByID(appContext, idProject);
                 jsonResponse = (JSONObject) answer.getItem();
             }

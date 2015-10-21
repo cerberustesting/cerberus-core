@@ -61,7 +61,7 @@ function displayPageLabel() {
 
 function deleteEntryHandlerClick() {
     var idProject = $('#confirmationModal').find('#hiddenField').prop("value");
-    var jqxhr = $.post("DeleteProject", {idproject: idProject}, "json");
+    var jqxhr = $.post("DeleteProject", {idproject: encodeURIComponent(idProject)}, "json");
     $.when(jqxhr).then(function (data) {
         var messageType = getAlertType(data.messageType);
         if (messageType === "success") {
@@ -149,13 +149,13 @@ function CreateProjectClick() {
 
 function editEntry(id) {
     clearResponseMessageMainPage();
-    var jqxhr = $.getJSON("ReadProject", "idProject=" + id);
+    var jqxhr = $.getJSON("ReadProject", "idProject=" + encodeURIComponent(id));
     $.when(jqxhr).then(function (data) {
         var obj = data["contentTable"];
 
         var formEdit = $('#editEntryModal');
 
-        formEdit.find("#idProject").prop("value", id);
+        formEdit.find("#idProject").prop("value", obj["idProject"]);
         formEdit.find("#VCCode").prop("value", obj["code"]);
         formEdit.find("#Description").prop("value", obj["description"]);
         formEdit.find("#Active").prop("value", obj["active"]);
@@ -188,12 +188,14 @@ function aoColumnsFunc(tableId) {
             "mRender": function (data, type, obj) {
                 var hasPermissions = $("#" + tableId).attr("hasPermissions");
                 
-                if(hasPermissions === "true"){ //only draws the options if the user has the correct privileges
-                    var editEntry = '<button id="editEntry" onclick="editEntry(\'' + obj["idProject"] + '\');"\n\
+
+                if (hasPermissions === "true") { //only draws the options if the user has the correct privileges
+                    
+                    var editEntry = '<button id="editEntry" onclick="editEntry(\'' + escapeHtml(obj["idProject"]) + '\');"\n\
                                     class="editEntry btn btn-default btn-xs margin-right5" \n\
                                     name="editEntry" title="' + doc.getDocLabel("page_project", "button_edit") + '" type="button">\n\
                                     <span class="glyphicon glyphicon-pencil"></span></button>';
-                    var deleteEntry = '<button id="deleteEntry" onclick="deleteEntry(\'' + obj["idProject"] + '\');" \n\
+                    var deleteEntry = '<button id="deleteEntry" onclick="deleteEntry(\'' + escapeHtml(obj["idProject"]) + '\');" \n\
                                     class="deleteEntry btn btn-default btn-xs margin-right5" \n\
                                     name="deleteEntry" title="' + doc.getDocLabel("page_project", "button_delete") + '" type="button">\n\
                                     <span class="glyphicon glyphicon-trash"></span></button>';

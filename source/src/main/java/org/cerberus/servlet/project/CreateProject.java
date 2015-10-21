@@ -36,6 +36,7 @@ import org.cerberus.crud.service.ILogEventService;
 import org.cerberus.crud.service.IProjectService;
 import org.cerberus.crud.service.impl.LogEventService;
 import org.cerberus.crud.service.impl.UserService;
+import org.cerberus.util.ParameterParserUtil;
 import org.cerberus.util.answer.Answer;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -76,19 +77,19 @@ public class CreateProject extends HttpServlet {
         /**
          * Parsing and securing all required parameters.
          */
-        String idProject = policy.sanitize(request.getParameter("idProject"));
-        String code = policy.sanitize(request.getParameter("VCCode"));
-        String description = policy.sanitize(request.getParameter("Description"));
-        String active = policy.sanitize(request.getParameter("Active"));
+        String idProject = ParameterParserUtil.ParseStringParamAndSanitize(request.getParameter("idProject"), "");
+        String code = ParameterParserUtil.ParseStringParamAndSanitize(request.getParameter("VCCode"), "");
+        String description = ParameterParserUtil.ParseStringParamAndSanitize(request.getParameter("Description"), "");
+        String active = ParameterParserUtil.ParseStringParamAndSanitize(request.getParameter("Active"), "");
 
         /**
          * Checking all constrains before calling the services.
          */
-        if (idProject.isEmpty()) {
+        if (idProject.isEmpty() || code.isEmpty()) {
             msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_EXPECTED);
             msg.setDescription(msg.getDescription().replace("%ITEM%", "Project")
                     .replace("%OPERATION%", "Create")
-                    .replace("%REASON%", "Project ID is missing!"));
+                    .replace("%REASON%", "Some mendatory fields are missing!"));
             ans.setResultMessage(msg);
         } else {
             /**

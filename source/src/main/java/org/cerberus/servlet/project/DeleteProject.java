@@ -31,6 +31,7 @@ import org.cerberus.exception.CerberusException;
 import org.cerberus.crud.service.ILogEventService;
 import org.cerberus.crud.service.IProjectService;
 import org.cerberus.crud.service.impl.LogEventService;
+import org.cerberus.util.ParameterParserUtil;
 import org.cerberus.util.StringUtil;
 import org.cerberus.util.answer.Answer;
 import org.cerberus.util.answer.AnswerItem;
@@ -70,7 +71,8 @@ public class DeleteProject extends HttpServlet {
         /**
          * Parsing and securing all required parameters.
          */
-        String key = policy.sanitize(request.getParameter("idproject"));
+        String key = ParameterParserUtil.ParseStringParamAndSanitize(request.getParameter("idproject"), "");
+        System.out.println(key);
 
         /**
          * Checking all constrains before calling the services.
