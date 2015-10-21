@@ -23,7 +23,7 @@
         <junit.version>4.9</junit.version>
         <mysql-connector-java.version>5.1.20</mysql-connector-java.version>
         <json.version>20080701</json.version>
-        <selenium.version>2.45.0</selenium.version>
+        <selenium.version>2.44.0</selenium.version>
         <owasp-java-html-sanitizer.version>r223</owasp-java-html-sanitizer.version>
         <log4j.version>1.2.9</log4j.version>
         <jackson-core-asl.version>1.7.1</jackson-core-asl.version>
