@@ -4957,6 +4957,7 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLS.append(",('page_testcaselist','filters','','fr','Filtres','Filtre des tests')");
         SQLS.append(",('page_testcaselist','testcaselist','','en','Test Case List','List of all the test case of the selected test')");
         SQLS.append(",('page_testcaselist','testcaselist','','fr','Liste des cas de test','Liste de tout les cas de test du test selectionné')");
+        SQLInstruction.add(SQLS.toString());
 
         return SQLInstruction;
     }

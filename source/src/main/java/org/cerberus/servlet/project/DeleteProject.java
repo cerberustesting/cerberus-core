@@ -72,7 +72,6 @@ public class DeleteProject extends HttpServlet {
          * Parsing and securing all required parameters.
          */
         String key = ParameterParserUtil.ParseStringParamAndSanitize(request.getParameter("idproject"), "");
-        System.out.println(key);
 
         /**
          * Checking all constrains before calling the services.
