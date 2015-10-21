@@ -212,18 +212,21 @@ public class ActionService implements IActionService {
         } else if (testCaseStepActionExecution.getAction().equals("clickAndWait")) { // DEPRECATED ACTION
             res = this.doActionClickWait(tCExecution, object, property);
             res.setDescription(MESSAGE_DEPRECATED + " " + res.getDescription());
-            logEventService.createPrivateCalls("ENGINE", "clickAndWait", "Deprecated Action triggered by TestCase : ['" + testCaseStepActionExecution.getTest() + "|" + testCaseStepActionExecution.getTestCase() + "']");
+            logEventService.createPrivateCalls("ENGINE", "clickAndWait", MESSAGE_DEPRECATED + " Deprecated Action triggered by TestCase : ['" + testCaseStepActionExecution.getTest() + "|" + testCaseStepActionExecution.getTestCase() + "']");
+            LOG.warn(MESSAGE_DEPRECATED + " Deprecated Action clickAndWait triggered by TestCase : ['" + testCaseStepActionExecution.getTest() + "'|'" + testCaseStepActionExecution.getTestCase() + "']");
 
         } else if (testCaseStepActionExecution.getAction().equals("enter")) { // DEPRECATED ACTION
             res = this.doActionKeyPress(tCExecution, object, "RETURN");
             res.setDescription(MESSAGE_DEPRECATED + " " + res.getDescription());
-            logEventService.createPrivateCalls("ENGINE", "enter", "Deprecated Action triggered by TestCase : ['" + testCaseStepActionExecution.getTest() + "|" + testCaseStepActionExecution.getTestCase() + "']");
+            logEventService.createPrivateCalls("ENGINE", "enter", MESSAGE_DEPRECATED + " Deprecated Action triggered by TestCase : ['" + testCaseStepActionExecution.getTest() + "|" + testCaseStepActionExecution.getTestCase() + "']");
+            LOG.warn(MESSAGE_DEPRECATED + " Deprecated Action enter triggered by TestCase : ['" + testCaseStepActionExecution.getTest() + "'|'" + testCaseStepActionExecution.getTestCase() + "']");
 
         } else if (testCaseStepActionExecution.getAction().equals("selectAndWait")) { // DEPRECATED ACTION
             res = this.doActionSelect(tCExecution, object, property);
             this.doActionWait(tCExecution, StringUtil.NULL, StringUtil.NULL);
             res.setDescription(MESSAGE_DEPRECATED + " " + res.getDescription());
-            logEventService.createPrivateCalls("ENGINE", "selectAndWait", "Deprecated Action triggered by TestCase : ['" + testCaseStepActionExecution.getTest() + "|" + testCaseStepActionExecution.getTestCase() + "']");
+            logEventService.createPrivateCalls("ENGINE", "selectAndWait", MESSAGE_DEPRECATED + " Deprecated Action triggered by TestCase : ['" + testCaseStepActionExecution.getTest() + "|" + testCaseStepActionExecution.getTestCase() + "']");
+            LOG.warn(MESSAGE_DEPRECATED + " Deprecated Action selectAndWait triggered by TestCase : ['" + testCaseStepActionExecution.getTest() + "'|'" + testCaseStepActionExecution.getTestCase() + "']");
 
         } else {
             res = new MessageEvent(MessageEventEnum.ACTION_FAILED_UNKNOWNACTION);
@@ -256,7 +259,7 @@ public class ActionService implements IActionService {
              * Get element to use String object if not empty, String property if
              * object empty, throws Exception if both empty)
              */
-            element = getElementToUse(object, property, "click");
+            element = getElementToUse(object, property, "click", tCExecution);
             /**
              * Get Identifier (identifier, locator) and check it's valid
              */
@@ -291,7 +294,7 @@ public class ActionService implements IActionService {
              * Get element to use String object if not empty, String property if
              * object empty, throws Exception if both empty)
              */
-            element = getElementToUse(object, property, "mouseDown");
+            element = getElementToUse(object, property, "mouseDown", tCExecution);
             /**
              * Get Identifier (identifier, locator)
              */
@@ -321,7 +324,7 @@ public class ActionService implements IActionService {
              * Get element to use String object if not empty, String property if
              * object empty, throws Exception if both empty)
              */
-            element = getElementToUse(object, property, "rightClick");
+            element = getElementToUse(object, property, "rightClick", tCExecution);
             /**
              * Get Identifier (identifier, locator)
              */
@@ -353,7 +356,7 @@ public class ActionService implements IActionService {
              * Get element to use String object if not empty, String property if
              * object empty, throws Exception if both empty)
              */
-            element = getElementToUse(object, property, "mouseUp");
+            element = getElementToUse(object, property, "mouseUp", tCExecution);
             /**
              * Get Identifier (identifier, locator)
              */
@@ -381,7 +384,7 @@ public class ActionService implements IActionService {
              * Get element to use String object if not empty, String property if
              * object empty, throws Exception if both empty)
              */
-            element = getElementToUse(object, property, "switchToWindow");
+            element = getElementToUse(object, property, "switchToWindow", tCExecution);
             /**
              * Get Identifier (identifier, locator)
              */
@@ -411,7 +414,7 @@ public class ActionService implements IActionService {
              * Get element to use String object if not empty, String property if
              * object empty, throws Exception if both empty)
              */
-            element = getElementToUse(object, property, "manageDialog");
+            element = getElementToUse(object, property, "manageDialog", tCExecution);
             /**
              * Get Identifier (identifier, locator)
              */
@@ -463,7 +466,7 @@ public class ActionService implements IActionService {
              * Get element to use String object if not empty, String property if
              * object empty, throws Exception if both empty)
              */
-            element = getElementToUse(object, property, "doubleClick");
+            element = getElementToUse(object, property, "doubleClick", tCExecution);
             /**
              * Get Identifier (identifier, locator)
              */
@@ -532,7 +535,7 @@ public class ActionService implements IActionService {
              * Get element to use String object if not empty, String property if
              * object empty, throws Exception if both empty)
              */
-            element = getElementToUse(object, property, "mouseOver");
+            element = getElementToUse(object, property, "mouseOver", tCExecution);
             /**
              * Get Identifier (identifier, locator)
              */
@@ -602,7 +605,7 @@ public class ActionService implements IActionService {
              * Get element to use String object if not empty, String property if
              * object empty, null if both are empty
              */
-            element = getElementToUse(object, property, null);
+            element = getElementToUse(object, property, "wait", tCExecution);
             /**
              * if element is integer, set time to that value else Get Identifier
              * (identifier, locator)
@@ -682,7 +685,7 @@ public class ActionService implements IActionService {
              * Get element to use String object if not empty, String property if
              * object empty, throws Exception if both empty)
              */
-            element = getElementToUse(object, property, "openUrl[WithBase]");
+            element = getElementToUse(object, property, "openUrl[WithBase]", tCExecution);
             /**
              * Get Identifier (identifier, locator)
              */
@@ -755,7 +758,7 @@ public class ActionService implements IActionService {
              * Get element to use String object if not empty, String property if
              * object empty, throws Exception if both empty)
              */
-            element = getElementToUse(object, property, "focusToIframe");
+            element = getElementToUse(object, property, "focusToIframe", tCExecution);
             /**
              * Get Identifier (identifier, locator)
              */
@@ -846,7 +849,7 @@ public class ActionService implements IActionService {
              * Get element to use String object if not empty, String property if
              * object empty, throws Exception if both empty)
              */
-            element = getElementToUse(object, property, "mouseDownMouseUp");
+            element = getElementToUse(object, property, "mouseDownMouseUp", tCExecution);
             /**
              * Get Identifier (identifier, locator)
              */
@@ -938,14 +941,15 @@ public class ActionService implements IActionService {
         return message;
     }
 
-    private String getElementToUse(String object, String property, String action) throws CerberusEventException {
+    private String getElementToUse(String object, String property, String action, TestCaseExecution tCExecution) throws CerberusEventException {
         if (!StringUtil.isNullOrEmpty(object)) {
             return object;
         } else if (!StringUtil.isNullOrEmpty(property)) {
-            LOG.warn("[DEPRECATED] Beware, in future release, it won't be allowed to use action without using field value1. Please read documentation for more detail.");
+            logEventService.createPrivateCalls("ENGINE", action, MESSAGE_DEPRECATED + " Beware, in future release, it won't be allowed to use action without using field value1. Triggered by TestCase : ['" + tCExecution.getTest() + "'|'" + tCExecution.getTestCase() + "'] Property : " + property);
+            LOG.warn(MESSAGE_DEPRECATED + " Action : "+ action + ". Beware, in future release, it won't be allowed to use action without using field value1. Triggered by TestCase : ['" + tCExecution.getTest() + "'|'" + tCExecution.getTestCase() + "'] Property : " + property);
             return property;
         }
-        if (action != null) {
+        if (!(action.equals("wait"))) { // Wait is the only action can be excuted with no parameters. For all other actions we raize an exception as this should never happen.
             MessageEvent message = new MessageEvent(MessageEventEnum.ACTION_FAILED_NO_ELEMENT_TO_PERFORM_ACTION);
             message.setDescription(message.getDescription().replaceAll("%ACTION%", action));
             throw new CerberusEventException(message);

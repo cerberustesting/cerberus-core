@@ -37,11 +37,12 @@ function initBuildContentPage() {
     //if the build or revision is passed as a url parameter, then it loads the table
     var urlBuild = GetURLParameter('build');
     var urlRevision = GetURLParameter('revision');
+    console.log('URL - B : ' + urlBuild + ' R : ' + urlRevision);
     if (urlBuild !== null) {
-        $('#selectBuild option[value="' + urlBuild + '"]').attr("selected", "selected");
+        $('#selectBuild').val(urlBuild);
     }
     if (urlRevision !== null) {
-        $('#selectRevision option[value="' + urlRevision + '"]').attr("selected", "selected");
+        $('#selectRevision').val(urlRevision);
     }
 //    console.log('B : ' + urlBuild + ' R : ' + urlRevision);
     loadBCTable();
@@ -50,15 +51,18 @@ function initBuildContentPage() {
 function setPending() {
     var myBuild = "NONE";
     var myRevision = "NONE";
-    $('#selectBuild option[value="' + myBuild + '"]').attr("selected", true);
-    $('#selectRevision option[value="' + myRevision + '"]').attr("selected", true);
-//    loadBCTable();
+
+    $('#selectBuild').val(myBuild);
+    $('#selectRevision').val(myRevision);
+    // We refresh the list.
+    loadBCTable();
 }
 
 function setLatest() {
     var myBuild = "";
     var myRevision = "";
-    // TODO : Get the latest build and revision.
+
+    // We get the last build revision from ReadBuildRevisionParameters servlet with getlast parameter.
     var param = "getlast=&system=" + getUser().defaultSystem;
     var jqxhr = $.get("ReadBuildRevisionParameters", param, "json");
 
@@ -67,15 +71,15 @@ function setLatest() {
         if (messageType === "success") {
             myBuild = data.contentTable.build;
             myRevision = data.contentTable.revision;
-            console.log('Latest B : ' + myBuild + ' R : ' + myRevision);
-            $('#selectBuild option[value="' + myBuild + '"]').attr("selected", true);
-            $('#selectRevision option[value="' + myRevision + '"]').attr("selected", true);
+            $('#selectBuild').val(myBuild);
+            $('#selectRevision').val(myRevision);
+            // We refresh the list.
+            loadBCTable();
         } else {
             showMessageMainPage(messageType, data.message);
         }
     }).fail(handleErrorAjaxAfterTimeout);
 
-//    loadBCTable();
 }
 
 function displayPageLabel() {
@@ -115,7 +119,6 @@ function displayPageLabel() {
     $("[name='mavenArtifactIdField']").html(doc.getDocOnline("buildrevisionparameters", "mavenArtifactId"));
     $("[name='mavenVersionField']").html(doc.getDocOnline("buildrevisionparameters", "mavenVersion"));
 
-
     displayBuildList("build", getUser().defaultSystem, "1");
     displayBuildList("revision", getUser().defaultSystem, "2");
     displayApplicationList("application", getUser().defaultSystem);
@@ -128,23 +131,21 @@ function loadBCTable() {
     var selectBuild = $("#selectBuild option:selected").text();
     var selectRevision = $("#selectRevision option:selected").text();
 
-    console.log('B : ' + selectBuild + ' R : ' + selectRevision);
+    console.log('Chargement table B : ' + selectBuild + ' R : ' + selectRevision);
 
     window.history.pushState('Tag', '', 'BuildContent.jsp?build=' + encodeURIComponent(selectBuild) + '&revision=' + encodeURIComponent(selectRevision));
 
     //clear the old report content before reloading it
-//    if ($("#listTable_wrapper").hasClass("initialized")) {
     $("#buildContentList").empty();
     $("#buildContentList").html('<table id="buildrevisionparametersTable" class="table table-hover display" name="buildrevisionparametersTable">\n\
                                             </table><div class="marginBottom20"></div>');
-//    }
+
     if (selectBuild !== "") {
         //configure and create the dataTable
         var param = "?system=" + getUser().defaultSystem + "&revision=" + selectRevision + "&build=" + selectBuild;
         var configurations = new TableConfigurationsServerSide("buildrevisionparametersTable", "ReadBuildRevisionParameters" + param, "contentTable", aoColumnsFunc());
 
         var table = createDataTableWithPermissions(configurations, renderOptionsForBrp);
-
     }
 }
 
@@ -262,7 +263,15 @@ function CreateBrpClick() {
     clearResponseMessageMainPage();
     // When creating a new item, Define here the default value.
     var formAdd = $('#addBrpModal');
+    
+    // User that makes the creation is becoming the owner or the release.
     formAdd.find("#owner").prop("value", getUser().login);
+    // New release goes by default to the build/revision selected in filter combos.
+    var myBuild = $("#selectBuild option:selected").text();
+    var myRevision = $("#selectRevision option:selected").text();
+    formAdd.find("#build").val(myBuild);
+    formAdd.find("#revision").val(myRevision);
+
     $('#addBrpModal').modal('show');
 }
 
