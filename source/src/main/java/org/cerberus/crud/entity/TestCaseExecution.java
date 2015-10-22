@@ -62,6 +62,7 @@ public class TestCaseExecution {
     private Invariant CountryObj;
     private int screenshot;
     private String outputFormat;
+    private Test testObj;
     private TCase tCase;
     private List<TCase> PreTCase;
     private CountryEnvParam countryEnvParam;
@@ -325,6 +326,14 @@ public class TestCaseExecution {
 
     public void setCountryEnvironmentApplication(CountryEnvironmentApplication countryEnvironmentApplication) {
         this.countryEnvironmentApplication = countryEnvironmentApplication;
+    }
+
+    public Test getTestObj() {
+        return testObj;
+    }
+
+    public void setTestObj(Test testObj) {
+        this.testObj = testObj;
     }
 
     public TCase gettCase() {

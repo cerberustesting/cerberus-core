@@ -78,4 +78,27 @@ public interface ITestService {
     public Answer update(Test test);
     
     public Answer delete(Test test);
+    
+    /**
+     *
+     * @param answerItem
+     * @return
+     * @throws CerberusException
+     */
+    Test convert(AnswerItem answerItem) throws CerberusException;
+
+    /**
+     *
+     * @param answerList
+     * @return
+     * @throws CerberusException
+     */
+    List<Test> convert(AnswerList answerList) throws CerberusException;
+
+    /**
+     *
+     * @param answer
+     * @throws CerberusException
+     */
+    void convert(Answer answer) throws CerberusException;
 }

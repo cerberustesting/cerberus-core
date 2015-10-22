@@ -22,9 +22,12 @@ package org.cerberus.crud.service.impl;
 import java.util.ArrayList;
 import java.util.List;
 import org.cerberus.crud.dao.ITestDAO;
+import org.cerberus.crud.entity.MessageGeneral;
 import org.cerberus.crud.entity.Test;
 import org.cerberus.exception.CerberusException;
 import org.cerberus.crud.service.ITestService;
+import org.cerberus.enums.MessageEventEnum;
+import org.cerberus.enums.MessageGeneralEnum;
 import org.cerberus.util.answer.Answer;
 import org.cerberus.util.answer.AnswerItem;
 import org.cerberus.util.answer.AnswerList;
@@ -101,9 +104,36 @@ public class TestService implements ITestService {
     public Answer update(Test test) {
         return testDao.update(test);
     }
-    
+
     @Override
     public Answer delete(Test test) {
         return testDao.delete(test);
+    }
+
+    @Override
+    public Test convert(AnswerItem answerItem) throws CerberusException {
+        if (answerItem.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
+            //if the service returns an OK message then we can get the item
+            return (Test) answerItem.getItem();
+        }
+        throw new CerberusException(new MessageGeneral(MessageGeneralEnum.DATA_OPERATION_ERROR));
+    }
+
+    @Override
+    public List<Test> convert(AnswerList answerList) throws CerberusException {
+        if (answerList.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
+            //if the service returns an OK message then we can get the item
+            return (List<Test>) answerList.getDataList();
+        }
+        throw new CerberusException(new MessageGeneral(MessageGeneralEnum.DATA_OPERATION_ERROR));
+    }
+
+    @Override
+    public void convert(Answer answer) throws CerberusException {
+        if (answer.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
+            //if the service returns an OK message then we can get the item
+            return;
+        }
+        throw new CerberusException(new MessageGeneral(MessageGeneralEnum.DATA_OPERATION_ERROR));
     }
 }

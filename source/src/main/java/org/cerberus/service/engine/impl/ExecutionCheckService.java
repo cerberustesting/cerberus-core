@@ -29,6 +29,7 @@ import org.cerberus.crud.entity.BuildRevisionInvariant;
 import org.cerberus.crud.entity.CountryEnvParam;
 import org.cerberus.crud.entity.MessageGeneral;
 import org.cerberus.crud.entity.TCase;
+import org.cerberus.crud.entity.Test;
 import org.cerberus.crud.entity.TestCaseExecution;
 import org.cerberus.exception.CerberusException;
 import org.cerberus.crud.service.IApplicationService;
@@ -69,6 +70,7 @@ public class ExecutionCheckService implements IExecutionCheckService {
              * Manual application connectivity parameter
              */
             if (this.checkTestCaseActive(tCExecution.gettCase())
+                    && this.checkTestActive(tCExecution.getTestObj())
                     && this.checkTestCaseNotManual(tCExecution.gettCase())
                     && this.checkTypeEnvironment(tCExecution)
                     && this.checkCountry(tCExecution)
@@ -85,6 +87,7 @@ public class ExecutionCheckService implements IExecutionCheckService {
                     && this.checkTargetBuildRevision(tCExecution)
                     && this.checkActiveEnvironmentGroup(tCExecution)
                     && this.checkTestCaseActive(tCExecution.gettCase())
+                    && this.checkTestActive(tCExecution.getTestObj())
                     && this.checkTypeEnvironment(tCExecution)
                     && this.checkCountry(tCExecution)
                     && this.checkMaintenanceTime(tCExecution)
@@ -114,6 +117,18 @@ public class ExecutionCheckService implements IExecutionCheckService {
             return true;
         }
         message = new MessageGeneral(MessageGeneralEnum.VALIDATION_FAILED_TESTCASE_NOTACTIVE);
+        return false;
+    }
+
+    private boolean checkTestActive(Test test) {
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("Checking if test is active");
+        }
+        if (test.getActive().equals("Y")) {
+            return true;
+        }
+        message = new MessageGeneral(MessageGeneralEnum.VALIDATION_FAILED_TEST_NOTACTIVE);
+        message.setDescription(message.getDescription().replaceAll("%TEST%", test.getTest()));
         return false;
     }
 
