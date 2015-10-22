@@ -1907,7 +1907,7 @@
                     </td>
                     <%        } else if (tcase.getGroup().equalsIgnoreCase("MANUAL")) {%>
                     <td>
-                        <a href="RunManualTestCase.jsp?Test=<%=test%>&TestCase=<%=testcase%>&MySystem=<%=appSystem%>">Run this Test Case.</a>
+                        <a href="RunTests.jsp?Test=<%=test%>&TestCase=<%=testcase%>&MySystem=<%=appSystem%>&manualExecution=Y">Run this Test Case.</a>
                     </td>
                     <%        }%>    
                     <td>
