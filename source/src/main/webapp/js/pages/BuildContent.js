@@ -45,7 +45,9 @@ function initBuildContentPage() {
         $('#selectRevision').val(urlRevision);
     }
 //    console.log('B : ' + urlBuild + ' R : ' + urlRevision);
-    loadBCTable();
+    var table=loadBCTable();
+    table.fnSort([11, 'desc']);
+
 }
 
 function setPending() {
@@ -146,6 +148,7 @@ function loadBCTable() {
         var configurations = new TableConfigurationsServerSide("buildrevisionparametersTable", "ReadBuildRevisionParameters" + param, "contentTable", aoColumnsFunc());
 
         var table = createDataTableWithPermissions(configurations, renderOptionsForBrp);
+        return table;
     }
 }
 
@@ -263,7 +266,7 @@ function CreateBrpClick() {
     clearResponseMessageMainPage();
     // When creating a new item, Define here the default value.
     var formAdd = $('#addBrpModal');
-    
+
     // User that makes the creation is becoming the owner or the release.
     formAdd.find("#owner").prop("value", getUser().login);
     // New release goes by default to the build/revision selected in filter combos.
