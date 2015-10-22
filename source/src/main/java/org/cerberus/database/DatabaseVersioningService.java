@@ -4959,6 +4959,19 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLS.append(",('page_testcaselist','testcaselist','','fr','Liste des cas de test','Liste de tout les cas de test du test selectionné')");
         SQLInstruction.add(SQLS.toString());
 
+        //New documentation entries for header
+        //-- ------------------------ 647-649
+        SQLS = new StringBuilder();
+        SQLS.append("INSERT INTO `documentation` VALUES ('page_header','menuTestCaseList','','en','TestCase List','')");
+        SQLS.append(",('page_header','menuTestCaseList','','fr','Liste des Cas de Test','')");
+        SQLInstruction.add(SQLS.toString());
+        SQLS = new StringBuilder();
+        SQLS.append("UPDATE `documentation` SET `DocLabel`='Test' WHERE `DocTable`='page_header' and`DocField`='menuEditTest' and`DocValue`='' and`Lang`='en';");
+        SQLInstruction.add(SQLS.toString());
+        SQLS = new StringBuilder();
+        SQLS.append("UPDATE `documentation` SET `DocLabel`='Test' WHERE `DocTable`='page_header' and`DocField`='menuEditTest' and`DocValue`='' and`Lang`='fr';");
+        SQLInstruction.add(SQLS.toString());
+        
         return SQLInstruction;
     }
 

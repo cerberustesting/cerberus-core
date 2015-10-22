@@ -191,19 +191,22 @@ public class ReadTestCase extends HttpServlet {
         }
 
         JSONArray jsonArray = new JSONArray();
-        boolean userHasPermissions = request.isUserInRole("TestAdmin");
+        boolean canCreate = request.isUserInRole("Test");
+        boolean canDelete = request.isUserInRole("TestAdmin");
         if (testCaseList.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {//the service was able to perform the query, then we should get all values
             for (TCase testCase : (List<TCase>) testCaseList.getDataList()) {
                 String key = testCase.getTest() + "_" + testCase.getTestCase();
                 JSONObject value = convertTestCaseToJSONObject(testCase);
-                value.put("hasPermissions", userHasPermissions);
+                value.put("canCreate", canCreate);
+                value.put("canDelete", canDelete);
                 value.put("countryList", testCaseWithCountry.get(key));
 
                 jsonArray.put(value);
             }
         }
 
-        jsonResponse.put("hasPermissions", userHasPermissions);
+        jsonResponse.put("canCreate", canCreate);
+        jsonResponse.put("canDelete", canDelete);
         jsonResponse.put("contentTable", jsonArray);
         jsonResponse.put("iTotalRecords", testCaseList.getTotalRows());
         jsonResponse.put("iTotalDisplayRecords", testCaseList.getTotalRows());

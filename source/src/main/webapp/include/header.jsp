@@ -58,10 +58,7 @@
             <li id="active"><a id="menuTest" name="menu" href="#" style="width:100px">Test
                     <img src="images/dropdown.gif"/></a>
                 <ul class="subnav" id="subnavlist">
-                    <li id="subactive"><a name="menu" id="menuEditTest" href="Test.jsp" style="width:160px">Edit Test</a></li>
-                        <% if (request.getUserPrincipal() != null && (request.isUserInRole("TestAdmin"))) {%>
-                    <li id="subactive"><a name="menu" id="menuCreateTest" href="TestCreate.jsp" style="width:160px">Create Test</a></li>
-                        <% }%>
+                    <li id="subactive"><a name="menu" id="menuEditTest" href="Test.jsp" style="width:160px">Test</a></li>
                     <li id="subactive"><a name="menu" id="menuTestPerApplication" href="TestPerApplication.jsp" style="width:160px">Test Per Application</a></li>
                     <li id="subactive"><a name="menu" id="menuTestCampaign" href="TestCampaign.jsp" style="width:160px">Test Campaign</a></li>
                 </ul>
@@ -69,10 +66,8 @@
             <li id="active"><a id="menuTestCase" name="menu" href="#" style="width:100px">TestCase
                     <img src="images/dropdown.gif"/></a>
                 <ul class="subnav" id="subnavlist">
+                    <li id="subactive"><a name="menu" id="menuTestCaseList" href="TestCaseList.jsp" style="width:130px">TestCase List</a></li>
                     <li id="subactive"><a name="menu" id="menuEditTestCase" href="TestCase.jsp" style="width:130px">Edit TestCase</a></li>
-                        <% if (request.getUserPrincipal() != null && (request.isUserInRole("Test"))) {%>
-                    <li id="subactive"><a name="menu" id="menuCreateTestCase" href="TestCaseCreate.jsp" style="width:130px">Create TestCase</a></li>
-                        <% }%>
                     <li id="subactive"><a name="menu" id="menuSearchTestCase" href="TestCaseSearch.jsp" style="width:130px">Search TestCase</a></li>
                     <li id="subactive"><a name="menu" id="menuTestBattery" href="TestBattery.jsp" style="width:130px">Test Battery</a></li>
                 </ul>
