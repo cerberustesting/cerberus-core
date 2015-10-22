@@ -24,6 +24,7 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import org.apache.commons.lang3.StringEscapeUtils;
 import org.cerberus.crud.entity.MessageEvent;
 import org.cerberus.enums.MessageEventEnum;
 import org.cerberus.crud.entity.Project;
@@ -33,13 +34,18 @@ import org.cerberus.crud.factory.impl.FactoryLogEvent;
 import org.cerberus.crud.service.ILogEventService;
 import org.cerberus.crud.service.IProjectService;
 import org.cerberus.crud.service.impl.LogEventService;
+import org.cerberus.util.ParameterParserUtil;
+import static org.cerberus.util.ParameterParserUtil.parseStringParamAndDecode;
 import org.cerberus.util.StringUtil;
 import org.cerberus.util.answer.Answer;
 import org.cerberus.util.answer.AnswerItem;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.owasp.html.HtmlPolicyBuilder;
 import org.owasp.html.PolicyFactory;
 import org.owasp.html.Sanitizers;
+import static org.owasp.html.Sanitizers.LINKS;
+import static org.owasp.html.Sanitizers.STYLES;
 import org.springframework.context.ApplicationContext;
 import org.springframework.web.context.support.WebApplicationContextUtils;
 
@@ -67,17 +73,14 @@ public class UpdateProject extends HttpServlet {
         MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
         msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", ""));
         ans.setResultMessage(msg);
-        PolicyFactory policy = Sanitizers.FORMATTING.and(Sanitizers.LINKS);
+        PolicyFactory policy = Sanitizers.FORMATTING.and(LINKS);
 
         response.setContentType("application/json");
 
         /**
          * Parsing and securing all required parameters.
          */
-        String idProject = policy.sanitize(request.getParameter("idProject"));
-        String code = policy.sanitize(request.getParameter("VCCode"));
-        String description = policy.sanitize(request.getParameter("Description"));
-        String active = policy.sanitize(request.getParameter("Active"));
+        String idProject = ParameterParserUtil.ParseStringParamAndSanitize(request.getParameter("idProject"), "");
 
         /**
          * Checking all constrains before calling the services.
@@ -96,7 +99,6 @@ public class UpdateProject extends HttpServlet {
             IProjectService projectService = appContext.getBean(IProjectService.class);
 
             AnswerItem resp = projectService.readByKey(idProject);
-
             if (!(resp.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode()))) {
                 /**
                  * Object could not be found. We stop here and report the error.
@@ -113,9 +115,9 @@ public class UpdateProject extends HttpServlet {
                  * object exist, then we can update it.
                  */
                 Project projectData = (Project) resp.getItem();
-                projectData.setCode(code);
-                projectData.setDescription(description);
-                projectData.setActive(active);
+                projectData.setCode(ParameterParserUtil.ParseStringParamAndSanitize(request.getParameter("VCCode"), projectData.getCode()));
+                projectData.setDescription(ParameterParserUtil.ParseStringParamAndSanitize(request.getParameter("Description"), projectData.getDescription()));
+                projectData.setActive(ParameterParserUtil.ParseStringParamAndSanitize(request.getParameter("Active"), projectData.getActive()));
                 ans = projectService.update(projectData);
 
                 if (ans.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {

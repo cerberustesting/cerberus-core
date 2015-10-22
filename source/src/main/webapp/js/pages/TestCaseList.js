@@ -81,6 +81,9 @@ function displayPageLabel(doc) {
     $("[name='descriptionField']").html(doc.getDocOnline("test", "Description"));
     $("[name='creatorField']").html(doc.getDocOnline("testcase", "Creator"));
     $("[name='implementerField']").html(doc.getDocOnline("testcase", "Implementer"));
+    $("[name='groupField']").html(doc.getDocOnline("invariant", "GROUP"));
+    $("[name='priorityField']").html(doc.getDocOnline("invariant", "PRIORITY"));
+    $("[name='countryList']").html(doc.getDocOnline("testcase", "countryList"));
     $("[name='bugIdField']").html(doc.getDocOnline("testcase", "BugID"));
     $("[name='tcDateCreaField']").html(doc.getDocOnline("testcase", "TCDateCrea"));
     $("[name='activeField']").html(doc.getDocOnline("testcase", "TcActive"));
@@ -91,7 +94,8 @@ function displayPageLabel(doc) {
     $("[name='targetSprintField']").html(doc.getDocOnline("testcase", "TargetBuild"));
     $("[name='targetRevField']").html(doc.getDocOnline("testcase", "TargetRev"));
     $("[name='commentField']").html(doc.getDocOnline("testcase", "Comment"));
-    
+    $("#filters").html(doc.getDocOnline("page_testcaselist", "filters"));
+    $("#testCaseListLabel").html(doc.getDocOnline("page_testcaselist", "testcaselist"));
 }
 
 function appendBuildRevList() {
@@ -205,11 +209,9 @@ function loadTable() {
 
     window.history.pushState('test', '', 'TestCaseList.jsp?test=' + selectTest);
 
-    if ($("#testCaseTable_wrapper").hasClass("initialized")) {
-        $("#testCaseList").empty();
-        $("#testCaseList").html('<table id="testCaseTable" class="table table-hover display" name="testCaseTable">\n\
+    $("#testCaseList").empty();
+    $("#testCaseList").html('<table id="testCaseTable" class="table table-hover display" name="testCaseTable">\n\
                                             </table><div class="marginBottom20"></div>');
-    }
 
     if (selectTest !== "") {
         var jqxhr = $.getJSON("FindInvariantByID", "idName=COUNTRY");
@@ -219,8 +221,6 @@ function loadTable() {
 
             var table = createDataTableWithPermissions(config, renderOptionsForTestCaseList);
             table.fnSort([1, 'asc']);
-
-            $('#testCaseTable_wrapper').not('.initialized').addClass('initialized');
         });
     }
 }
@@ -269,7 +269,7 @@ function CreateTestCaseClick() {
 function renderOptionsForTestCaseList(data) {
     var doc = new Doc();
     //check if user has permissions to perform the add and import operations
-    if (data["hasPermissions"]) {
+    if (data["canCreate"]) {
         if ($("#createTestCaseButton").length === 0) {
             var contentToAdd = "<div class='marginBottom10'><button id='createTestCaseButton' type='button' class='btn btn-default'>\n\
             " + "Create Test Case" + "</button></div>";
@@ -475,21 +475,36 @@ function aoColumnsFunc(countries) {
             "bSearchable": false,
             "title": doc.getDocOnline("page_global", "columnAction"),
             "sDefaultContent": "",
-            "sWidth": "100px",
+            "sWidth": "130px",
             "mRender": function (data, type, obj) {
-                if (data.hasPermissions) {
+                var buttons = "";
+
+                var testCaseLink = '<a id="testCaseLink" class="btn btn-primary btn-xs margin-right5"\n\
+                                    target="_blank" href="TestCase.jsp?Test=' + encodeURIComponent(obj["test"]) + "&TestCase=" + encodeURIComponent(obj["testCase"]) + '&Load=Load">\n\
+                                    <span class="glyphicon glyphicon-new-window"></span>\n\
+                                    </a>';
+
+                if (data.canDelete || (data.canCreate && data.status !== "WORKING")) {
                     var editEntry = '<button id="editEntry" onclick="editEntry(\'' + obj["testCase"] + '\');"\n\
                                 class="editEntry btn btn-default btn-xs margin-right5" \n\
                                 name="editEntry" title="' + "edit test case" + '" type="button">\n\
                                 <span class="glyphicon glyphicon-pencil"></span></button>';
 
+                    buttons += editEntry;
+                }
+                
+                if (data.canDelete) {
                     var deleteEntry = '<button id="deleteEntry" onclick="deleteEntry(\'' + obj["testCase"] + '\');"\n\
                                         class="deleteEntry btn btn-default btn-xs margin-right5" \n\
                                         name="deleteEntry" title="' + "delete test case" + '" type="button">\n\
                                         <span class="glyphicon glyphicon-trash"></span></button>';
 
-                    return '<div class="center btn-group width150">' + editEntry + deleteEntry + '</div>';
+                    buttons += deleteEntry;
                 }
+
+                buttons += testCaseLink;
+                
+                return '<div class="center btn-group width150">' + buttons + '</div>';
             }
         },
         {
@@ -535,10 +550,18 @@ function aoColumnsFunc(countries) {
             "sWidth": "70px",
             "className": "center",
             "mRender": function (data, type, obj) {
-                if (data === "Y") {
-                    return '<input type="checkbox" name="' + obj["testCase"] + '" data-test="' + obj.test + '" onchange="setActive(this);" checked/>';
-                } else if (data === "N") {
-                    return '<input type="checkbox" name="' + obj["testCase"] + '" data-test="' + obj.test + '" onchange="setActive(this);" />';
+                if (obj.canDelete || (obj.canCreate && obj.status !== "WORKING")) {
+                    if (data === "Y") {
+                        return '<input type="checkbox" name="' + obj["testCase"] + '" data-test="' + obj.test + '" onchange="setActive(this);" checked/>';
+                    } else if (data === "N") {
+                        return '<input type="checkbox" name="' + obj["testCase"] + '" data-test="' + obj.test + '" onchange="setActive(this);" />';
+                    }
+                } else {
+                    if (data === "Y") {
+                        return '<input type="checkbox" checked readonly />';
+                    } else {
+                        return '<input type="checkbox" readonly />';
+                    }
                 }
             }
         },
@@ -552,7 +575,7 @@ function aoColumnsFunc(countries) {
         {
             "data": "priority",
             "sName": "priority",
-            "title": "Priority",
+            "title": doc.getDocOnline("invariant", "PRIORITY"),
             "sWidth": "70px",
             "sDefaultContent": ""
         },
@@ -573,7 +596,7 @@ function aoColumnsFunc(countries) {
         {
             "data": "group",
             "sName": "group",
-            "title": "Group",
+            "title": doc.getDocOnline("invariant", "GROUP"),
             "sWidth": "100px",
             "sDefaultContent": ""
         },
@@ -600,10 +623,18 @@ function aoColumnsFunc(countries) {
             "data": function (row, type, val, meta) {
                 var dataTitle = meta.settings.aoColumns[meta.col].sTitle;
 
-                if (row.hasOwnProperty("countryList") && row["countryList"].hasOwnProperty(dataTitle)) {
-                    return '<input type="checkbox" name="' + dataTitle + '" data-test="' + row.test + '" data-testcase="' + row.testCase + '" onchange="setCountry(this);" checked/>';
+                if (row.canDelete || (row.canCreate && row.status !== "WORKING")) {
+                    if (row.hasOwnProperty("countryList") && row["countryList"].hasOwnProperty(dataTitle)) {
+                        return '<input type="checkbox" name="' + dataTitle + '" data-test="' + row.test + '" data-testcase="' + row.testCase + '" onchange="setCountry(this);" checked/>';
+                    } else {
+                        return '<input type="checkbox" name="' + dataTitle + '" data-test="' + row.test + '" data-testcase="' + row.testCase + '" onchange="setCountry(this);"/>';
+                    }
                 } else {
-                    return '<input type="checkbox" name="' + dataTitle + '" data-test="' + row.test + '" data-testcase="' + row.testCase + '" onchange="setCountry(this);"/>';
+                    if (row.hasOwnProperty("countryList") && row["countryList"].hasOwnProperty(dataTitle)) {
+                        return '<input type="checkbox" checked readonly/>';
+                    } else {
+                        return '<input type="checkbox" readonly/>';
+                    }
                 }
             },
             "bSortable": false,

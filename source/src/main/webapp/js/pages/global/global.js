@@ -118,7 +118,7 @@ function displayApplicationList(selectName, system) {
  */
 function displayProjectList(selectName) {
     $.when($.getJSON("ReadProject", "")).then(function (data) {
-    $("[name='" + selectName + "']").append($('<option></option>').text("NONE").val(""));
+        $("[name='" + selectName + "']").append($('<option></option>').text("NONE").val(""));
         for (var option in data.contentTable) {
             $("[name='" + selectName + "']").append($('<option></option>').text(data.contentTable[option].idProject + " - " + data.contentTable[option].description).val(data.contentTable[option].idProject));
         }
@@ -508,7 +508,7 @@ function TableConfigurationsClientSide(divId, data, aoColumnsFunction, defineLen
     this.divId = divId;
     this.aoColumnsFunction = aoColumnsFunction;
     this.aaData = data;
-    if(defineLenghtMenu){
+    if (defineLenghtMenu) {
         this.lengthMenu = [10, 25, 50, 100];
     }
     this.processing = false;
@@ -971,7 +971,7 @@ function bindToggleCollapse() {
 
 
 function drawURL(data) {
-    return drawHyperlink(data, data);    
+    return drawHyperlink(data, data);
 }
 function drawHyperlink(href, text) {
     if (text !== '') {
@@ -990,4 +990,10 @@ function loadSelectElement(data, element, includeEmpty, includeEmptyText) {
         $(element).append("<option value='" + obj + "'>" + obj + "</option>");
     });
 
+}
+
+function escapeHtml(unsafe) {
+    return unsafe
+            .replace(/"/g, "&quot;")
+            .replace(/'/g, "\\'");
 }

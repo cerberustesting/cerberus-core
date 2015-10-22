@@ -666,16 +666,6 @@ function generateExecutionLink(status, id) {
     return result;
 }
 
-function convertSerialToJSONObject(serial) {
-    var data = serial.split("&");
-
-    var obj = {};
-    for (var key in data) {
-        obj[data[key].split("=")[0]] = data[key].split("=")[1];
-    }
-    return obj;
-}
-
 function wrap(text, width) {
     text.each(function () {
         var text = d3.select(this),

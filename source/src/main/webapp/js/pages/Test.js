@@ -169,10 +169,10 @@ function aoColumnsFunc() {
             "bSearchable": false,
             "title": doc.getDocOnline("page_global", "columnAction"),
             "mRender": function (data, type, obj) {
-                var testCaseLink = '<button id="testCaseLink" class="btn btn-primary btn-xs margin-right5"\n\
-                                    onclick="location.href=\'./TestCaseList.jsp?test=' + encodeURIComponent(obj["test"]) + '\'">\n\
-                                    <span class="glyphicon glyphicon-link"></span>\n\
-                                    </button>';
+                var testCaseLink = '<a id="testCaseLink" class="btn btn-primary btn-xs margin-right5"\n\
+                                    target="_blank" href="./TestCaseList.jsp?test=' + encodeURIComponent(obj["test"]) + '">\n\
+                                    <span class="glyphicon glyphicon-new-window"></span>\n\
+                                    </a>';
 
                 if (data["hasPermissions"]) {
                     var editEntry = '<button id="editEntry" onclick="editEntry(\'' + obj["test"] + '\');"\n\

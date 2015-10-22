@@ -45,6 +45,7 @@ import org.cerberus.log.MyLogger;
 import org.cerberus.service.engine.IWebDriverService;
 import org.cerberus.util.ParameterParserUtil;
 import org.cerberus.util.StringUtil; 
+import org.jfree.chart.imagemap.ImageMapUtilities;
 import org.openqa.selenium.Alert;
 import org.openqa.selenium.By;
 import org.openqa.selenium.Cookie;
@@ -76,7 +77,7 @@ import org.springframework.stereotype.Service;
 public class WebDriverService implements IWebDriverService {
 
     private static final int TIMEOUT_MILLIS = 30000;
-    private static final int TIMEOUT_WEBELEMENT = 300;
+    private static final int TIMEOUT_WEBELEMENT = 20; //previous value was 300
 
     private By getBy(Identifier identifier) {
 
@@ -107,8 +108,35 @@ public class WebDriverService implements IWebDriverService {
             throw new NoSuchElementException(identifier.getIdentifier());
         }
     }
-
+    //TODO:FN for debug purposes
     private WebElement getSeleniumElement(Session session, Identifier identifier, boolean visible, boolean clickable) {
+        By locator = this.getBy(identifier);
+        MyLogger.log(WebDriverService.class.getName(), Level.DEBUG, "Waiting for Element : " + identifier.getIdentifier() + "=" + identifier.getLocator());
+        try {
+            WebDriverWait wait = new WebDriverWait(session.getDriver(), session.getDefaultWait());
+            WebElement element;
+            if (visible) {
+                if (clickable) {
+                    element = wait.until(ExpectedConditions.elementToBeClickable(locator));
+                } else {
+                    element = wait.until(ExpectedConditions.visibilityOfElementLocated(locator));
+                }
+            } else {
+                element  = wait.until(ExpectedConditions.presenceOfElementLocated(locator));
+            }
+            MyLogger.log(WebDriverService.class.getName(), Level.DEBUG, "Finding Element : " + identifier.getIdentifier() + "=" + identifier.getLocator());
+            //TODO:FN remove debug messages
+            if(element == null){
+                MyLogger.log(WebDriverService.class.getName(), Level.WARN, "Element null !!!: " + identifier.getIdentifier() + "=" + identifier.getLocator());
+            }
+            return element;
+        } catch (TimeoutException exception) {
+            MyLogger.log(WebDriverService.class.getName(), Level.FATAL, "Exception waiting for element :" + exception);
+            throw new NoSuchElementException(identifier.getIdentifier() + "=" + identifier.getLocator());
+        }        
+        
+    }
+    /*private WebElement getSeleniumElement(Session session, Identifier identifier, boolean visible, boolean clickable) {
         By locator = this.getBy(identifier);
         MyLogger.log(RunTestCaseService.class.getName(), Level.DEBUG, "Waiting for Element : " + identifier.getIdentifier() + "=" + identifier.getLocator());
         try {
@@ -125,10 +153,10 @@ public class WebDriverService implements IWebDriverService {
         } catch (TimeoutException exception) {
             MyLogger.log(RunTestCaseService.class.getName(), Level.FATAL, "Exception waiting for element :" + exception);
             throw new NoSuchElementException(identifier.getIdentifier() + "=" + identifier.getLocator());
-        }
+        }        
         MyLogger.log(RunTestCaseService.class.getName(), Level.DEBUG, "Finding Element : " + identifier.getIdentifier() + "=" + identifier.getLocator());
         return session.getDriver().findElement(locator);
-    }
+    }*/
 
     @Override
     public String getValueFromHTMLVisible(Session session, Identifier identifier) {
@@ -296,6 +324,12 @@ public class WebDriverService implements IWebDriverService {
                 WebDriver augmentedDriver = new Augmenter().augment(session.getDriver());
                 File image = ((TakesScreenshot) augmentedDriver).getScreenshotAs(OutputType.FILE);
                 
+                if(image != null){
+                    //logs for debug purposes
+                    MyLogger.log(WebDriverService.class.getName(), Level.INFO, "WebDriverService: screen-shot taken with succes: " + image.getName() + "(size" + image.length()+ ")");
+                }else{
+                    MyLogger.log(WebDriverService.class.getName(), Level.WARN, "WebDriverService: screen-shot returned null: ");
+                }
                 return image;                
             } catch (WebDriverException exception) {
                 if (System.currentTimeMillis() >= timeout) {
