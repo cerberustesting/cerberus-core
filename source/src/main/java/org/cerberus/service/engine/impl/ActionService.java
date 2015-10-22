@@ -967,6 +967,8 @@ public class ActionService implements IActionService {
             return message;
         }
         try {
+            //TODO:FN remove debug messages
+            org.apache.log4j.Logger.getLogger(ActionService.class.getName()).log(org.apache.log4j.Level.WARN, "TIME TO WAIT = " + timeToWait);
             Thread.sleep(timeToWait);
             message = new MessageEvent(MessageEventEnum.ACTION_SUCCESS_WAIT_TIME);
             message.setDescription(message.getDescription().replaceAll("%TIME%", String.valueOf(timeToWait)));

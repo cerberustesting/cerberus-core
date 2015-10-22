@@ -339,7 +339,7 @@ public class RunTestCase extends HttpServlet {
             while (tCExecution.getNumberOfRetries() >= 0 && !tCExecution.getResultMessage().getCodeString().equals("OK")) {
                 try {
                     //TODO:FN remove log messaegs
-                    org.apache.log4j.Logger.getLogger(RunTestCase.class.getName()).log(org.apache.log4j.Level.ERROR, "START!! " + tCExecution.getId()); 
+                    org.apache.log4j.Logger.getLogger(RunTestCase.class.getName()).log(org.apache.log4j.Level.WARN, "START!! " + tCExecution.getId()); 
                     tCExecution = runTestCaseService.runTestCase(tCExecution);
                     tCExecution.decreaseNumberOfRetries();
                 } catch (Exception ex) {
@@ -349,7 +349,10 @@ public class RunTestCase extends HttpServlet {
                 }
             }
             //TODO:FN debug purposes
-            if(session.getDriver() != null){
+            if(session.getDriver() != null){                
+                if(session.getDriver().getWindowHandles() !=  null && session.getDriver().getWindowHandles().size() > 0){
+                    org.apache.log4j.Logger.getLogger(RunTestCase.class.getName()).log(org.apache.log4j.Level.WARN, "WINDOW HANDLES PENDING: " + session.getDriver().getWindowHandles().size());
+                }
                 session.getDriver().quit();
             }
             /**

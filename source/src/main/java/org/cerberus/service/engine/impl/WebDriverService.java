@@ -111,7 +111,7 @@ public class WebDriverService implements IWebDriverService {
     //TODO:FN for debug purposes
     private WebElement getSeleniumElement(Session session, Identifier identifier, boolean visible, boolean clickable) {
         By locator = this.getBy(identifier);
-        MyLogger.log(RunTestCaseService.class.getName(), Level.DEBUG, "Waiting for Element : " + identifier.getIdentifier() + "=" + identifier.getLocator());
+        MyLogger.log(WebDriverService.class.getName(), Level.DEBUG, "Waiting for Element : " + identifier.getIdentifier() + "=" + identifier.getLocator());
         try {
             WebDriverWait wait = new WebDriverWait(session.getDriver(), session.getDefaultWait());
             WebElement element;
@@ -124,10 +124,14 @@ public class WebDriverService implements IWebDriverService {
             } else {
                 element  = wait.until(ExpectedConditions.presenceOfElementLocated(locator));
             }
-            MyLogger.log(RunTestCaseService.class.getName(), Level.DEBUG, "Finding Element : " + identifier.getIdentifier() + "=" + identifier.getLocator());
+            MyLogger.log(WebDriverService.class.getName(), Level.DEBUG, "Finding Element : " + identifier.getIdentifier() + "=" + identifier.getLocator());
+            //TODO:FN remove debug messages
+            if(element == null){
+                MyLogger.log(WebDriverService.class.getName(), Level.WARN, "Element null !!!: " + identifier.getIdentifier() + "=" + identifier.getLocator());
+            }
             return element;
         } catch (TimeoutException exception) {
-            MyLogger.log(RunTestCaseService.class.getName(), Level.FATAL, "Exception waiting for element :" + exception);
+            MyLogger.log(WebDriverService.class.getName(), Level.FATAL, "Exception waiting for element :" + exception);
             throw new NoSuchElementException(identifier.getIdentifier() + "=" + identifier.getLocator());
         }        
         
