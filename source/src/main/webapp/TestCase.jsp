@@ -519,7 +519,7 @@
                 }
                 <%
                 } else {%>
-                alert("You are not allowed tp access to this system\nPlease contact your Cerberus Administrator to modify your account");
+                alert("You are not allowed to access to this system\nPlease contact your Cerberus Administrator to modify your account");
                 window.location = "./Homepage.jsp";
                 <%}%>
             </script>
