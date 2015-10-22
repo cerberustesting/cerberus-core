@@ -349,12 +349,12 @@ public class RunTestCase extends HttpServlet {
                 }
             }
             //TODO:FN debug purposes
-            if(session.getDriver() != null){                
+            /*if(session.getDriver() != null){                
                 if(session.getDriver().getWindowHandles() !=  null && session.getDriver().getWindowHandles().size() > 0){
                     org.apache.log4j.Logger.getLogger(RunTestCase.class.getName()).log(org.apache.log4j.Level.WARN, "WINDOW HANDLES PENDING: " + session.getDriver().getWindowHandles().size());
                 }
                 session.getDriver().quit();
-            }
+            }*/
             /**
              * If execution from queue, remove it from the queue or update
              * information in Queue
