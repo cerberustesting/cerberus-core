@@ -108,8 +108,31 @@ public class WebDriverService implements IWebDriverService {
             throw new NoSuchElementException(identifier.getIdentifier());
         }
     }
-
+    //TODO:FN for debug purposes
     private WebElement getSeleniumElement(Session session, Identifier identifier, boolean visible, boolean clickable) {
+        By locator = this.getBy(identifier);
+        MyLogger.log(RunTestCaseService.class.getName(), Level.DEBUG, "Waiting for Element : " + identifier.getIdentifier() + "=" + identifier.getLocator());
+        try {
+            WebDriverWait wait = new WebDriverWait(session.getDriver(), session.getDefaultWait());
+            WebElement element;
+            if (visible) {
+                if (clickable) {
+                    element = wait.until(ExpectedConditions.elementToBeClickable(locator));
+                } else {
+                    element = wait.until(ExpectedConditions.visibilityOfElementLocated(locator));
+                }
+            } else {
+                element  = wait.until(ExpectedConditions.presenceOfElementLocated(locator));
+            }
+            MyLogger.log(RunTestCaseService.class.getName(), Level.DEBUG, "Finding Element : " + identifier.getIdentifier() + "=" + identifier.getLocator());
+            return element;
+        } catch (TimeoutException exception) {
+            MyLogger.log(RunTestCaseService.class.getName(), Level.FATAL, "Exception waiting for element :" + exception);
+            throw new NoSuchElementException(identifier.getIdentifier() + "=" + identifier.getLocator());
+        }        
+        
+    }
+    /*private WebElement getSeleniumElement(Session session, Identifier identifier, boolean visible, boolean clickable) {
         By locator = this.getBy(identifier);
         MyLogger.log(RunTestCaseService.class.getName(), Level.DEBUG, "Waiting for Element : " + identifier.getIdentifier() + "=" + identifier.getLocator());
         try {
@@ -126,10 +149,10 @@ public class WebDriverService implements IWebDriverService {
         } catch (TimeoutException exception) {
             MyLogger.log(RunTestCaseService.class.getName(), Level.FATAL, "Exception waiting for element :" + exception);
             throw new NoSuchElementException(identifier.getIdentifier() + "=" + identifier.getLocator());
-        }
+        }        
         MyLogger.log(RunTestCaseService.class.getName(), Level.DEBUG, "Finding Element : " + identifier.getIdentifier() + "=" + identifier.getLocator());
         return session.getDriver().findElement(locator);
-    }
+    }*/
 
     @Override
     public String getValueFromHTMLVisible(Session session, Identifier identifier) {
