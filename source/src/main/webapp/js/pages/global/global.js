@@ -973,7 +973,15 @@ function bindToggleCollapse() {
 function drawURL(data) {
     return drawHyperlink(data, data);
 }
+
 function drawHyperlink(href, text) {
+    if (text !== '') {
+        return "<a href='" + href + "'>" + text + "</a>";//TODO:FN ver se tem caracters que precisam de ser encapsulados
+    }
+    return '';
+}
+
+function drawHyperlinkExternal(href, text) {
     if (text !== '') {
         return "<a target = '_blank' href='" + href + "'>" + text + "</a>";//TODO:FN ver se tem caracters que precisam de ser encapsulados
     }

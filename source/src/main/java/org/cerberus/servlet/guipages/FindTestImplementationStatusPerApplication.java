@@ -147,7 +147,7 @@ public class FindTestImplementationStatusPerApplication extends HttpServlet {
                     while (rs_teststatus.next()) {
                         JSONArray row = new JSONArray();
                         StringBuilder testLink = new StringBuilder();
-                        testLink.append("<a href=\"Test.jsp?stestbox=");
+                        testLink.append("<a href=\"TestCaseList.jsp?test=");
                         testLink.append(rs_teststatus.getString("t.test"));
                         testLink.append("\">");
                         testLink.append(rs_teststatus.getString("t.test"));
