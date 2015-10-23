@@ -45,7 +45,7 @@ function initBuildContentPage() {
         $('#selectRevision').val(urlRevision);
     }
 //    console.log('B : ' + urlBuild + ' R : ' + urlRevision);
-    var table=loadBCTable();
+    var table = loadBCTable();
     table.fnSort([11, 'desc']);
 
 }
@@ -53,6 +53,16 @@ function initBuildContentPage() {
 function setPending() {
     var myBuild = "NONE";
     var myRevision = "NONE";
+
+    $('#selectBuild').val(myBuild);
+    $('#selectRevision').val(myRevision);
+    // We refresh the list.
+    loadBCTable();
+}
+
+function setAll() {
+    var myBuild = "ALL";
+    var myRevision = "ALL";
 
     $('#selectBuild').val(myBuild);
     $('#selectRevision').val(myRevision);
@@ -103,6 +113,7 @@ function displayPageLabel() {
     $("[name='btnLoad']").html(doc.getDocLabel("page_global", "buttonLoad"));
     $("[name='btnLoadPending']").html(doc.getDocLabel("page_buildcontent", "buttonLoadPending"));
     $("[name='btnLoadLatest']").html(doc.getDocLabel("page_buildcontent", "buttonLoadLatest"));
+    $("[name='btnLoadAll']").html(doc.getDocLabel("page_buildcontent", "buttonLoadAll"));
 
     $("[name='idField']").html(doc.getDocOnline("buildrevisionparameters", "id"));
     $("[name='buildField']").html(doc.getDocOnline("buildrevisionparameters", "Build"));
@@ -121,7 +132,9 @@ function displayPageLabel() {
     $("[name='mavenArtifactIdField']").html(doc.getDocOnline("buildrevisionparameters", "mavenArtifactId"));
     $("[name='mavenVersionField']").html(doc.getDocOnline("buildrevisionparameters", "mavenVersion"));
 
+    $("[name='build']").append($('<option></option>').text("-- ALL --").val("ALL"));
     displayBuildList("build", getUser().defaultSystem, "1");
+    $("[name='revision']").append($('<option></option>').text("-- ALL --").val("ALL"));
     displayBuildList("revision", getUser().defaultSystem, "2");
     displayApplicationList("application", getUser().defaultSystem);
     displayProjectList("project");
@@ -130,12 +143,13 @@ function displayPageLabel() {
 }
 
 function loadBCTable() {
-    var selectBuild = $("#selectBuild option:selected").text();
-    var selectRevision = $("#selectRevision option:selected").text();
+    var selectBuild = $("#selectBuild option:selected").val();
+    var selectRevision = $("#selectRevision option:selected").val();
 
     console.log('Chargement table B : ' + selectBuild + ' R : ' + selectRevision);
 
-    window.history.pushState('Tag', '', 'BuildContent.jsp?build=' + encodeURIComponent(selectBuild) + '&revision=' + encodeURIComponent(selectRevision));
+    var CallParam = 'build=' + encodeURIComponent(selectBuild) + '&revision=' + encodeURIComponent(selectRevision);
+    window.history.pushState('Tag', '', 'BuildContent.jsp?' + CallParam);
 
     //clear the old report content before reloading it
     $("#buildContentList").empty();
@@ -144,7 +158,14 @@ function loadBCTable() {
 
     if (selectBuild !== "") {
         //configure and create the dataTable
-        var param = "?system=" + getUser().defaultSystem + "&revision=" + selectRevision + "&build=" + selectBuild;
+        var param = "?system=" + getUser().defaultSystem;
+        if (selectRevision !== 'ALL') {
+            param = param + "&revision=" + selectRevision;
+        }
+        if (selectBuild !== 'ALL') {
+            param = param + "&build=" + selectBuild;
+        }
+
         var configurations = new TableConfigurationsServerSide("buildrevisionparametersTable", "ReadBuildRevisionParameters" + param, "contentTable", aoColumnsFunc());
 
         var table = createDataTableWithPermissions(configurations, renderOptionsForBrp);

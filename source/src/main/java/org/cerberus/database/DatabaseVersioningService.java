@@ -4981,6 +4981,14 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLS.append("UPDATE testcase SET `group`='MANUAL' WHERE `group` = '' or `group` is null;");
         SQLInstruction.add(SQLS.toString());
 
+        //Adding doc.
+        //-- ------------------------ 652
+        SQLS = new StringBuilder();
+        SQLS.append("INSERT INTO `documentation` (`DocTable`, `DocField`, `DocValue`, `Lang`, `DocLabel`, `DocDesc`) ");
+        SQLS.append(" VALUES ('page_buildcontent', 'buttonLoadAll', '', 'en', 'Load All Build', '') ");
+        SQLS.append(" ,('page_buildcontent', 'buttonLoadAll', '', 'fr', 'Charger tous', ''); ");
+        SQLInstruction.add(SQLS.toString());
+
         return SQLInstruction;
     }
 
