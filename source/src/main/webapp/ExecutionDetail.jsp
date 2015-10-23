@@ -645,7 +645,7 @@
                         <%if (tcGroup.equalsIgnoreCase("MANUAL")) {%>
                             <td> 
                                 <button style="cursor:pointer; background:none; border:none;margin:0;padding:0;color: #008CDA;text-decoration: none;font-family: helvetica;font-size:11.2px " 
-                                        onclick="openRunManualPopin('<%=test%>','<%=testCase%>', '<%=environment%>','<%=country%>','','<%=testCaseExecution.getTag()==null?"" : tagEncoded%>')" 
+                                        onclick="openRunManualPopin('<%=test%>','<%=testCase%>', '<%=environment%>','<%=country%>','','<%=testCaseExecution.getTag()==null?"" : tagEncoded%>', '<%=browser%>')" 
                                         title="Allows the user to execute the current test case. It is executed with the exact same configurations: tag, environment, country...">
                                     Run the same Test Case again
                                 </button>
