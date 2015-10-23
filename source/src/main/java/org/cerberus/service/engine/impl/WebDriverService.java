@@ -316,7 +316,7 @@ public class WebDriverService implements IWebDriverService {
 
     public File takeScreenShotFile(Session session) {
         
-        boolean event = true;
+        /*boolean event = true;
         long timeout = System.currentTimeMillis() + (1000 * session.getDefaultWait());
         //Try to capture picture. Try again until timeout is WebDriverException is raised.
         while (event) {
@@ -337,7 +337,7 @@ public class WebDriverService implements IWebDriverService {
                 }
                 event = false;
             }
-        }
+        }*/
         
         return null;
     }
