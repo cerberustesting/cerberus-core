@@ -626,9 +626,8 @@ public class WebDriverService implements IWebDriverService {
     public MessageEvent doSeleniumActionWait(Session session, Identifier identifier) {
         MessageEvent message;
         try {
-            //TODO:FN comment for debug purposes
-            /*WebDriverWait wait = new WebDriverWait(session.getDriver(), TIMEOUT_WEBELEMENT);
-            wait.until(ExpectedConditions.presenceOfElementLocated(this.getBy(identifier)));*/
+            WebDriverWait wait = new WebDriverWait(session.getDriver(), TIMEOUT_WEBELEMENT);
+            wait.until(ExpectedConditions.presenceOfElementLocated(this.getBy(identifier)));
             message = new MessageEvent(MessageEventEnum.ACTION_SUCCESS_WAIT_ELEMENT);
             message.setDescription(message.getDescription().replaceAll("%ELEMENT%", identifier.getIdentifier() + "=" + identifier.getLocator()));
             return message;

@@ -320,12 +320,12 @@ public class SeleniumServerService implements ISeleniumServerService {
     public boolean stopServer(Session session) {
         if (session.isStarted()) {
             //TODO:FN comment for debug purposes
-//            try {
+            try {
 //                // Wait 2 sec till HAR is exported
-//                Thread.sleep(2000);
-//            } catch (InterruptedException ex) {
-//                Logger.getLogger(SeleniumServerService.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-//            }
+                Thread.sleep(2000);
+            } catch (InterruptedException ex) {
+                Logger.getLogger(SeleniumServerService.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            }
             //TODO:FN remove log messaegs
             Logger.getLogger(SeleniumServerService.class.getName()).log(java.util.logging.Level.WARNING, "STOP SERVER");
             session.getDriver().quit();

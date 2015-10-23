@@ -966,19 +966,19 @@ public class ActionService implements IActionService {
             message = new MessageEvent(MessageEventEnum.ACTION_FAILED_WAIT_INVALID_FORMAT);
             return message;
         }
-        //try {
+        try {
             //TODO:FN remove debug messages
             org.apache.log4j.Logger.getLogger(ActionService.class.getName()).log(org.apache.log4j.Level.WARN, "TIME TO WAIT = " + timeToWait);
             //TODO:FN debug purposes
-            //Thread.sleep(timeToWait);
+            Thread.sleep(timeToWait);
             message = new MessageEvent(MessageEventEnum.ACTION_SUCCESS_WAIT_TIME);
             message.setDescription(message.getDescription().replaceAll("%TIME%", String.valueOf(timeToWait)));
             return message;
-        /*} catch (InterruptedException exception) {
+        } catch (InterruptedException exception) {
             MyLogger.log(ActionService.class.getName(), Level.INFO, exception.toString());
             message = new MessageEvent(MessageEventEnum.ACTION_FAILED_WAIT);
             return message;
-        }*/
+        }
     }
 
     private MessageEvent doActionExecuteSQLUpdate(TestCaseExecution tCExecution, String object, String property) {
