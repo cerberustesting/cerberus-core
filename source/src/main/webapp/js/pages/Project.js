@@ -52,6 +52,7 @@ function displayPageLabel() {
     $("[name='confirmationField']").html(doc.getDocLabel("page_project", "button_delete"));
     $("[name='editEntryField']").html(doc.getDocLabel("page_project", "button_edit"));
     $("[name='idProjectField']").html(doc.getDocOnline("project", "idproject"));
+    $("[name='datecreField']").html(doc.getDocOnline("project", "dateCreation"));
     $("[name='activeField']").html(doc.getDocOnline("project", "active"));
     $("[name='codeField']").html(doc.getDocOnline("project", "code"));
     $("[name='descriptionField']").html(doc.getDocOnline("project", "description"));
@@ -159,6 +160,7 @@ function editEntry(id) {
         formEdit.find("#VCCode").prop("value", obj["code"]);
         formEdit.find("#Description").prop("value", obj["description"]);
         formEdit.find("#Active").prop("value", obj["active"]);
+        formEdit.find("#datecre").prop("value", obj["dateCreation"]);
 
         formEdit.modal('show');
     });

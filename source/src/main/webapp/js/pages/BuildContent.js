@@ -290,9 +290,15 @@ function CreateBrpClick() {
 
     // User that makes the creation is becoming the owner or the release.
     formAdd.find("#owner").prop("value", getUser().login);
-    // New release goes by default to the build/revision selected in filter combos.
-    var myBuild = $("#selectBuild option:selected").text();
-    var myRevision = $("#selectRevision option:selected").text();
+    // New release goes by default to the build/revision selected in filter combos. (except when ALL)
+    var myBuild = $("#selectBuild option:selected").val();
+    var myRevision = $("#selectRevision option:selected").val();
+    if (myBuild==='ALL') {
+        myBuild='NONE';
+    }
+    if (myRevision==='ALL') {
+        myRevision='NONE';
+    }
     formAdd.find("#build").val(myBuild);
     formAdd.find("#revision").val(myRevision);
 
