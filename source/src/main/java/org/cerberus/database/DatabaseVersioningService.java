@@ -4971,7 +4971,16 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLS = new StringBuilder();
         SQLS.append("UPDATE `documentation` SET `DocLabel`='Test' WHERE `DocTable`='page_header' and`DocField`='menuEditTest' and`DocValue`='' and`Lang`='fr';");
         SQLInstruction.add(SQLS.toString());
-        
+
+        //Removed empty group.
+        //-- ------------------------ 650-651
+        SQLS = new StringBuilder();
+        SQLS.append("DELETE FROM `invariant` WHERE `idname`='GROUP' and`value`='';");
+        SQLInstruction.add(SQLS.toString());
+        SQLS = new StringBuilder();
+        SQLS.append("UPDATE testcase SET `group`='MANUAL' WHERE `group` = '' or `group` is null;");
+        SQLInstruction.add(SQLS.toString());
+
         return SQLInstruction;
     }
 
