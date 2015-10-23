@@ -147,7 +147,13 @@
         <dependency>
             <groupId>org.seleniumhq.selenium</groupId>
             <artifactId>selenium-java</artifactId>
-            <version>${selenium.version}</version>                
+            <version>${selenium.version}</version>   
+            <exclusions>
+                <exclusion>
+                    <groupId>org.seleniumhq.selenium</groupId>
+                    <artifactId>selenium-firefox-driver</artifactId>
+                </exclusion>
+            </exclusions>             
         </dependency>
         <dependency>
             <groupId>org.seleniumhq.selenium</groupId>
@@ -280,12 +286,12 @@
         </dependency>
         
         <!-- System path -->
-        <dependency>
+                <dependency>
             <groupId>harlib</groupId>
             <artifactId>harlib</artifactId>
             <version>${harlib.version}</version>
             <scope>system</scope>
-            <systemPath>${basedir}/src/main/webapp/WEB-INF/lib/harlib-${harlib.version}.jar</systemPath>
+        <systemPath>${basedir}/src/main/webapp/WEB-INF/lib/harlib-${harlib.version}.jar</systemPath>
         </dependency>
         <dependency>
             <groupId>org.elfinder</groupId>
@@ -293,6 +299,13 @@
             <version>${elfinder-servlet.version}</version>
             <scope>system</scope>
             <systemPath>${basedir}/src/main/webapp/WEB-INF/lib/elfinder-servlet-${elfinder-servlet.version}.jar</systemPath>
+        </dependency>
+        <dependency>
+            <groupId>org.seleniumhq.selenium</groupId>
+            <artifactId>selenium-firefox-driver</artifactId>
+            <version>${selenium.version}</version>
+            <scope>system</scope>
+            <systemPath>${basedir}/src/main/webapp/WEB-INF/lib/selenium-firefox-driver-${selenium.version}.jar</systemPath>
         </dependency>
     </dependencies>
     <dependencyManagement>
