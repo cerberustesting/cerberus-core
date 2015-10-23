@@ -56,6 +56,9 @@ function initPage() {
     appendApplicationList();
     appendProjectList();
     appendBuildRevList();
+    tinymce.init({
+        selector: "textarea"
+    });
 }
 
 function displayPageLabel(doc) {
@@ -207,7 +210,7 @@ function loadTestFilters(urlTag) {
 function loadTable() {
     var selectTest = $("#selectTest option:selected").attr("value");
 
-    window.history.pushState('test', '', 'TestCaseList.jsp?test=' + selectTest);
+    window.history.pushState('test', '', 'TestCaseList.jsp?test=' + encodeURIComponent(selectTest));
 
     $("#testCaseList").empty();
     $("#testCaseList").html('<table id="testCaseTable" class="table table-hover display" name="testCaseTable">\n\
@@ -308,6 +311,7 @@ function saveNewEntryHandler() {
     if (nameElementEmpty || testCaseEmpty)
         return;
 
+    tinyMCE.triggerSave();
     showLoaderInModal('#addEntryModal');
     createEntry("CreateTestCase2", formAdd, "#testCaseTable");
 }
@@ -316,6 +320,7 @@ function saveUpdateEntryHandler() {
     clearResponseMessage($('#editEntryModal'));
 
     var formEdit = $('#editEntryModalForm');
+    tinyMCE.triggerSave();
 
     showLoaderInModal('#editEntryModal');
     updateEntry("UpdateTestCase2", formEdit, "#testCaseTable");
@@ -357,15 +362,18 @@ function deleteEntry(entry) {
 function editEntry(testCase) {
     clearResponseMessageMainPage();
     var test = GetURLParameter('test');
-    var jqxhr = $.getJSON("ReadTestCase", "test=" + test + "&testCase=" + testCase);
+    var jqxhr = $.getJSON("ReadTestCase", "test=" + encodeURIComponent(test) + "&testCase=" + encodeURIComponent(testCase));
     $.when(jqxhr).then(function (data) {
 
         var formEdit = $('#editEntryModal');
-
+        var testInfo = $.getJSON("ReadTest", "test=" + encodeURIComponent(test));
+        $.when(testInfo).then(function (data) {
+            formEdit.find("#testDesc").prop("value", data.contentTable.description);
+        });
         //test info
         formEdit.find("#test").prop("value", data.test);
         formEdit.find("#testCase").prop("value", data.testCase);
-        formEdit.find("#description").prop("value", data.description);
+
         //test case info
         formEdit.find("#creator").prop("value", data.creator);
         formEdit.find("#lastModifier").prop("value", data.lastModifier);
@@ -376,6 +384,7 @@ function editEntry(testCase) {
         formEdit.find("#origin").prop("value", data.origin);
         formEdit.find("#refOrigin").prop("value", data.refOrigin);
         formEdit.find("#project").prop("value", data.project);
+        
         // test case parameters
         formEdit.find("#application").prop("value", data.application);
         formEdit.find("#group").prop("value", data.group);
@@ -388,8 +397,9 @@ function editEntry(testCase) {
             $('#countryList input[name="' + data.countryList[country] + '"]').prop("checked", true);
         }
         formEdit.find("#shortDesc").prop("value", data.shortDesc);
-        formEdit.find("#behaviorOrValueExpected").prop("value", data.behaviorOrValueExpected);
-        formEdit.find("#howTo").prop("value", data.howTo);
+        tinyMCE.get('behaviorOrValueExpected1').setContent(data.description);
+        tinyMCE.get('howTo1').setContent(data.howTo);
+
         //activation criteria
         formEdit.find("#active").prop("value", data.active);
         formEdit.find("#bugId").prop("value", data.bugID);
@@ -492,7 +502,7 @@ function aoColumnsFunc(countries) {
 
                     buttons += editEntry;
                 }
-                
+
                 if (data.canDelete) {
                     var deleteEntry = '<button id="deleteEntry" onclick="deleteEntry(\'' + obj["testCase"] + '\');"\n\
                                         class="deleteEntry btn btn-default btn-xs margin-right5" \n\
@@ -503,7 +513,7 @@ function aoColumnsFunc(countries) {
                 }
 
                 buttons += testCaseLink;
-                
+
                 return '<div class="center btn-group width150">' + buttons + '</div>';
             }
         },

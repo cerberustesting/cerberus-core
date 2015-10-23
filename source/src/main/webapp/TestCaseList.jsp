@@ -10,6 +10,7 @@
     <head>
         <meta content="text/html; charset=UTF-8" http-equiv="content-type">
         <%@ include file="include/dependenciesInclusions.html" %>
+        <script type="text/javascript" src="js/tinymce/tinymce.min.js"></script>
         <script type="text/javascript" src="js/pages/TestCaseList.js"></script>
         <title id="pageTitle">Test Case List</title>
     </head>
