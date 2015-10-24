@@ -323,7 +323,7 @@ function saveUpdateEntryHandler() {
 
 function deleteEntryHandlerClick() {
     var test = GetURLParameter('test');
-    var testCase = $('#confirmationModal').find('#hiddenField').prop("value");
+    var testCase = $('#confirmationModal').find('#hiddenField1').prop("value");
     var jqxhr = $.post("DeleteTestCase2", {test: test, testCase: testCase}, "json");
     $.when(jqxhr).then(function (data) {
         var messageType = getAlertType(data.messageType);
@@ -351,7 +351,7 @@ function deleteEntry(entry) {
     var messageComplete = doc.getDocLabel("page_global", "deleteMessage");
     messageComplete = messageComplete.replace("%TABLE%", "TestCase");
     messageComplete = messageComplete.replace("%ENTRY%", entry);
-    showModalConfirmation(deleteEntryHandlerClick, "Delete", messageComplete, entry);
+    showModalConfirmation(deleteEntryHandlerClick, "Delete", messageComplete, entry, "", "", "");
 }
 
 function editEntry(testCase) {

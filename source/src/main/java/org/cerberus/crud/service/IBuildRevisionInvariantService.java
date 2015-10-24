@@ -23,6 +23,7 @@ import java.util.List;
 
 import org.cerberus.crud.entity.BuildRevisionInvariant;
 import org.cerberus.exception.CerberusException;
+import org.cerberus.util.answer.Answer;
 import org.cerberus.util.answer.AnswerItem;
 import org.cerberus.util.answer.AnswerList;
 
@@ -35,7 +36,7 @@ public interface IBuildRevisionInvariantService {
     AnswerItem readByKey(String system, Integer level, Integer seq);
 
     AnswerList readBySystemByCriteria(String system, Integer level, int start, int amount, String column, String dir, String searchTerm, String individualSearch);
-    
+
     BuildRevisionInvariant findBuildRevisionInvariantByKey(String system, Integer level, Integer seq) throws CerberusException;
 
     BuildRevisionInvariant findBuildRevisionInvariantByKey(String system, Integer level, String versionName) throws CerberusException;
@@ -44,9 +45,23 @@ public interface IBuildRevisionInvariantService {
 
     List<BuildRevisionInvariant> findAllBuildRevisionInvariantBySystem(String system) throws CerberusException;
 
-    public boolean insertBuildRevisionInvariant(BuildRevisionInvariant buildRevisionInvariant);
+    boolean insertBuildRevisionInvariant(BuildRevisionInvariant buildRevisionInvariant);
 
-    public boolean deleteBuildRevisionInvariant(BuildRevisionInvariant buildRevisionInvariant);
+    boolean deleteBuildRevisionInvariant(BuildRevisionInvariant buildRevisionInvariant);
 
-    public boolean updateBuildRevisionInvariant(BuildRevisionInvariant buildRevisionInvariant);
+    boolean updateBuildRevisionInvariant(BuildRevisionInvariant buildRevisionInvariant);
+
+    boolean exist(String system, Integer level, Integer seq);
+
+    Answer create(BuildRevisionInvariant buildRevisionInvariant);
+
+    Answer delete(BuildRevisionInvariant buildRevisionInvariant);
+
+    Answer update(BuildRevisionInvariant buildRevisionInvariant);
+
+    BuildRevisionInvariant convert(AnswerItem answerItem) throws CerberusException;
+
+    List<BuildRevisionInvariant> convert(AnswerList answerList) throws CerberusException;
+
+    void convert(Answer answer) throws CerberusException;
 }

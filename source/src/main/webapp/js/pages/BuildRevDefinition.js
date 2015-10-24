@@ -35,9 +35,10 @@ function initPage() {
     $('#editEntryModal').on('hidden.bs.modal', {extra: "#editEntryModal"}, buttonCloseHandler);
 
     //configure and create the dataTable
-    var configurations = new TableConfigurationsServerSide("projectsTable", "ReadProject", "contentTable", aoColumnsFunc("projectsTable"));
+    var configurations = new TableConfigurationsServerSide("buildrevdefinitionsTable", "ReadBuildRevisionInvariant?system=" + getUser().defaultSystem, "contentTable", aoColumnsFunc("buildrevdefinitionsTable"));
 
-    createDataTableWithPermissions(configurations, renderOptionsForProject);
+    var table = createDataTableWithPermissions(configurations, renderOptionsForBuildRevDefinition);
+
 }
 
 
@@ -46,28 +47,31 @@ function displayPageLabel() {
 
     displayHeaderLabel(doc);
     displayGlobalLabel(doc);
-    $("#pageTitle").html(doc.getDocLabel("page_project", "title"));
-    $("#title").html(doc.getDocOnline("page_project", "title"));
-    $("[name='addEntryField']").html(doc.getDocLabel("page_project", "button_create"));
-    $("[name='confirmationField']").html(doc.getDocLabel("page_project", "button_delete"));
-    $("[name='editEntryField']").html(doc.getDocLabel("page_project", "button_edit"));
-    $("[name='idProjectField']").html(doc.getDocOnline("project", "idproject"));
-    $("[name='datecreField']").html(doc.getDocOnline("project", "dateCreation"));
-    $("[name='activeField']").html(doc.getDocOnline("project", "active"));
-    $("[name='codeField']").html(doc.getDocOnline("project", "code"));
-    $("[name='descriptionField']").html(doc.getDocOnline("project", "description"));
-    displayInvariantList("Active", "PROJECTACTIVE");
+    $("#pageTitle").html(doc.getDocLabel("page_buildrevdefinition", "title"));
+    $("#title").html(doc.getDocOnline("page_buildrevdefinition", "title"));
+    $("[name='addEntryField']").html(doc.getDocLabel("page_buildrevdefinition", "button_create"));
+    $("[name='confirmationField']").html(doc.getDocLabel("page_buildrevdefinition", "button_delete"));
+    $("[name='editEntryField']").html(doc.getDocLabel("page_buildrevdefinition", "button_edit"));
+    $("[name='systemField']").html(doc.getDocOnline("buildrevisioninvariant", "system"));
+    $("[name='levelField']").html(doc.getDocOnline("buildrevisioninvariant", "level"));
+    $("[name='seqField']").html(doc.getDocOnline("buildrevisioninvariant", "seq"));
+    $("[name='versionnameField']").html(doc.getDocOnline("buildrevisioninvariant", "versionname"));
+    displayInvariantList("system", "SYSTEM");
+    $("[name='level']").append($('<option></option>').text("1").val("1"));
+    $("[name='level']").append($('<option></option>').text("2").val("2"));
     displayFooter(doc);
 }
 
 function deleteEntryHandlerClick() {
-    var idProject = $('#confirmationModal').find('#hiddenField1').prop("value");
-    var jqxhr = $.post("DeleteProject", {idproject: encodeURIComponent(idProject)}, "json");
+    var system = $('#confirmationModal').find('#hiddenField1').prop("value");
+    var level = $('#confirmationModal').find('#hiddenField2').prop("value");
+    var seq = $('#confirmationModal').find('#hiddenField3').prop("value");
+    var jqxhr = $.post("DeleteBuildRevisionInvariant1", {system: encodeURIComponent(system),level: encodeURIComponent(level),seq: encodeURIComponent(seq)}, "json");
     $.when(jqxhr).then(function (data) {
         var messageType = getAlertType(data.messageType);
         if (messageType === "success") {
             //redraw the datatable
-            var oTable = $("#projectsTable").dataTable();
+            var oTable = $("#buildrevdefinitionsTable").dataTable();
             oTable.fnDraw(true);
             var info = oTable.fnGetData().length;
 
@@ -83,33 +87,34 @@ function deleteEntryHandlerClick() {
     }).fail(handleErrorAjaxAfterTimeout);
 }
 
-function deleteEntry(entry) {
+function deleteEntry(system, level, seq, versionname) {
     clearResponseMessageMainPage();
     var doc = new Doc();
     var messageComplete = doc.getDocLabel("page_global", "deleteMessage");
-    messageComplete = messageComplete.replace("%TABLE%", doc.getDocLabel("project", "idproject"));
+    var entry = versionname + " (level : " + level + " sequence : " + seq + ")";
+    messageComplete = messageComplete.replace("%TABLE%", "Build Version");
     messageComplete = messageComplete.replace("%ENTRY%", entry);
-    showModalConfirmation(deleteEntryHandlerClick, doc.getDocLabel("page_project", "button_delete"), messageComplete, entry, "", "", "");
+    showModalConfirmation(deleteEntryHandlerClick, doc.getDocLabel("page_buildrevdefinition", "button_delete"), messageComplete, system, level, seq, "");
 }
 
 function saveNewEntryHandler() {
     clearResponseMessage($('#addEntryModal'));
     var formAdd = $("#addEntryModal #addEntryModalForm");
 
-    var nameElement = formAdd.find("#idProject");
+    var nameElement = formAdd.find("#seq");
     var nameElementEmpty = nameElement.prop("value") === '';
     if (nameElementEmpty) {
-        var localMessage = new Message("danger", "Please specify the name of the project!");
+        var localMessage = new Message("danger", "Please specify a sequence!");
         nameElement.parents("div.form-group").addClass("has-error");
         showMessage(localMessage, $('#addEntryModal'));
     } else {
         nameElement.parents("div.form-group").removeClass("has-error");
     }
 
-    var codeElement = formAdd.find("#VCCode");
+    var codeElement = formAdd.find("#versionname");
     var codeElementEmpty = codeElement.prop("value") === '';
     if (codeElementEmpty) {
-        var localMessage = new Message("danger", "Please specify the code of the project!");
+        var localMessage = new Message("danger", "Please specify a version name!");
         codeElement.parents("div.form-group").addClass("has-error");
         showMessage(localMessage, $('#addEntryModal'));
     } else {
@@ -121,7 +126,7 @@ function saveNewEntryHandler() {
         return;
 
     showLoaderInModal('#addEntryModal');
-    createEntry("CreateProject", formAdd, "#projectsTable");
+    createEntry("CreateBuildRevisionInvariant1", formAdd, "#buildrevdefinitionsTable");
 
 }
 
@@ -130,7 +135,7 @@ function saveUpdateEntryHandler() {
     var formEdit = $('#editEntryModal #editEntryModalForm');
 
     showLoaderInModal('#editEntryModal');
-    updateEntry("UpdateProject", formEdit, "#projectsTable");
+    updateEntry("UpdateBuildRevisionInvariant1", formEdit, "#buildrevdefinitionsTable");
 }
 
 function buttonCloseHandler(event) {
@@ -143,39 +148,45 @@ function buttonCloseHandler(event) {
     clearResponseMessage($(modalID));
 }
 
-function CreateProjectClick() {
+function CreateBuildRevDefinitionClick() {
     clearResponseMessageMainPage();
+    // When creating a new Entry, System takes the default value of the 
+    // system already selected in header.
+    var formAdd = $('#addEntryModal');
+    formAdd.find("#system").prop("value", getUser().defaultSystem);
     $('#addEntryModal').modal('show');
 }
 
-function editEntry(id) {
+function editEntry(system, level, seq) {
     clearResponseMessageMainPage();
-    var jqxhr = $.getJSON("ReadProject", "idProject=" + encodeURIComponent(id));
+    var param = "system=" + encodeURIComponent(system);
+    param = param + "&level=" + encodeURIComponent(level)
+    param = param + "&seq=" + encodeURIComponent(seq)
+    var jqxhr = $.getJSON("ReadBuildRevisionInvariant", param);
     $.when(jqxhr).then(function (data) {
         var obj = data["contentTable"];
 
         var formEdit = $('#editEntryModal');
 
-        formEdit.find("#idProject").prop("value", obj["idProject"]);
-        formEdit.find("#VCCode").prop("value", obj["code"]);
-        formEdit.find("#Description").prop("value", obj["description"]);
-        formEdit.find("#Active").prop("value", obj["active"]);
-        formEdit.find("#datecre").prop("value", obj["dateCreation"]);
+        formEdit.find("#system").prop("value", obj["system"]);
+        formEdit.find("#level").prop("value", obj["level"]);
+        formEdit.find("#seq").prop("value", obj["seq"]);
+        formEdit.find("#versionname").prop("value", obj["versionName"]);
 
         formEdit.modal('show');
     });
 }
 
-function renderOptionsForProject(data) {
+function renderOptionsForBuildRevDefinition(data) {
     var doc = new Doc();
     //check if user has permissions to perform the add and import operations
     if (data["hasPermissions"]) {
-        if ($("#createProjectButton").length === 0) {
-            var contentToAdd = "<div class='marginBottom10'><button id='createProjectButton' type='button' class='btn btn-default'>\n\
-            " + doc.getDocLabel("page_project", "button_create") + "</button></div>";
+        if ($("#createBuildRevDefinitionButton").length === 0) {
+            var contentToAdd = "<div class='marginBottom10'><button id='createBuildRevDefinitionButton' type='button' class='btn btn-default'>\n\
+            " + doc.getDocLabel("page_buildrevdefinition", "button_create") + "</button></div>";
 
-            $("#projectsTable_wrapper div.ColVis").before(contentToAdd);
-            $('#project #createProjectButton').click(CreateProjectClick);
+            $("#buildrevdefinitionsTable_wrapper div.ColVis").before(contentToAdd);
+            $('#buildrevdefinition #createBuildRevDefinitionButton').click(CreateBuildRevDefinitionClick);
         }
     }
 }
@@ -189,17 +200,17 @@ function aoColumnsFunc(tableId) {
             "bSearchable": false,
             "mRender": function (data, type, obj) {
                 var hasPermissions = $("#" + tableId).attr("hasPermissions");
-                
+
 
                 if (hasPermissions === "true") { //only draws the options if the user has the correct privileges
-                    
-                    var editEntry = '<button id="editEntry" onclick="editEntry(\'' + escapeHtml(obj["idProject"]) + '\');"\n\
+
+                    var editEntry = '<button id="editEntry" onclick="editEntry(\'' + escapeHtml(obj["system"]) + '\',\'' + obj["level"] + '\',\'' + obj["seq"] + '\');"\n\
                                     class="editEntry btn btn-default btn-xs margin-right5" \n\
-                                    name="editEntry" title="' + doc.getDocLabel("page_project", "button_edit") + '" type="button">\n\
+                                    name="editEntry" title="' + doc.getDocLabel("page_buildrevdefinition", "button_edit") + '" type="button">\n\
                                     <span class="glyphicon glyphicon-pencil"></span></button>';
-                    var deleteEntry = '<button id="deleteEntry" onclick="deleteEntry(\'' + escapeHtml(obj["idProject"]) + '\');" \n\
+                    var deleteEntry = '<button id="deleteEntry" onclick="deleteEntry(\'' + escapeHtml(obj["system"]) + '\',\'' + obj["level"] + '\',\'' + obj["seq"] + '\',\'' + obj["versionName"] + '\');" \n\
                                     class="deleteEntry btn btn-default btn-xs margin-right5" \n\
-                                    name="deleteEntry" title="' + doc.getDocLabel("page_project", "button_delete") + '" type="button">\n\
+                                    name="deleteEntry" title="' + doc.getDocLabel("page_buildrevdefinition", "button_delete") + '" type="button">\n\
                                     <span class="glyphicon glyphicon-trash"></span></button>';
 
                     return '<div class="center btn-group width150">' + editEntry + deleteEntry + '</div>';
@@ -207,21 +218,18 @@ function aoColumnsFunc(tableId) {
                 return '';
             }
         },
-        {"data": "idProject",
-            "sName": "idProject",
-            "title": doc.getDocOnline("project", "idproject")},
-        {"data": "code",
-            "sName": "VCCode",
-            "title": doc.getDocOnline("project", "code")},
-        {"data": "description",
-            "sName": "description",
-            "title": doc.getDocOnline("project", "description")},
-        {"data": "active",
-            "sName": "active",
-            "title": doc.getDocOnline("project", "active")},
-        {"data": "dateCreation",
-            "sName": "dateCre",
-            "title": doc.getDocOnline("project", "dateCreation")}
+        {"data": "system",
+            "sName": "system",
+            "title": doc.getDocOnline("buildrevisioninvariant", "system")},
+        {"data": "level",
+            "sName": "level",
+            "title": doc.getDocOnline("buildrevisioninvariant", "level")},
+        {"data": "seq",
+            "sName": "seq",
+            "title": doc.getDocOnline("buildrevisioninvariant", "seq")},
+        {"data": "versionName",
+            "sName": "versionName",
+            "title": doc.getDocOnline("buildrevisioninvariant", "versionName")}
     ];
     return aoColumns;
 }

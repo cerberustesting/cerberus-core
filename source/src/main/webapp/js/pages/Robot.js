@@ -65,7 +65,7 @@ function displayPageLabel() {
 }
 
 function deleteEntryHandlerClick() {
-    var robotID = $('#confirmationModal').find('#hiddenField').prop("value");
+    var robotID = $('#confirmationModal').find('#hiddenField1').prop("value");
     var jqxhr = $.post("DeleteRobot", {robotid: robotID}, "json");
     $.when(jqxhr).then(function (data) {
         var messageType = getAlertType(data.messageType);
@@ -94,7 +94,7 @@ function deleteEntry(entry, name) {
     messageComplete = messageComplete.replace("%TABLE%", doc.getDocLabel("robot", "robot"));
 //    messageComplete = messageComplete.replace("%ENTRY%", entry);
     messageComplete = messageComplete.replace("%ENTRY%", name);
-    showModalConfirmation(deleteEntryHandlerClick, doc.getDocLabel("page_robot", "button_delete"), messageComplete, entry);
+    showModalConfirmation(deleteEntryHandlerClick, doc.getDocLabel("page_robot", "button_delete"), messageComplete, entry, "", "", "");
 }
 
 function saveEntry(servletName, modalID, form) {

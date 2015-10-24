@@ -36,7 +36,7 @@ function initApplicationPage() {
 
     //configure and create the dataTable
     var configurations = new TableConfigurationsServerSide("applicationsTable", "ReadApplication?system=" + getUser().defaultSystem, "contentTable", aoColumnsFunc("applicationsTable"));
-    createDataTableWithPermissions(configurations, renderOptionsForApplication);    
+    createDataTableWithPermissions(configurations, renderOptionsForApplication);
 }
 
 
@@ -71,7 +71,7 @@ function displayPageLabel() {
 }
 
 function deleteApplicationHandlerClick() {
-    var idApplication = $('#confirmationModal').find('#hiddenField').prop("value");
+    var idApplication = $('#confirmationModal').find('#hiddenField1').prop("value");
     var jqxhr = $.post("DeleteApplication", {application: idApplication}, "json");
     $.when(jqxhr).then(function (data) {
         var messageType = getAlertType(data.messageType);
@@ -99,7 +99,7 @@ function deleteApplication(idApplication) {
     var messageComplete = doc.getDocLabel("page_global", "deleteMessage");
     messageComplete = messageComplete.replace("%TABLE%", doc.getDocLabel("application", "Application"));
     messageComplete = messageComplete.replace("%ENTRY%", idApplication);
-    showModalConfirmation(deleteApplicationHandlerClick, doc.getDocLabel("page_application", "button_delete"), messageComplete, idApplication);
+    showModalConfirmation(deleteApplicationHandlerClick, doc.getDocLabel("page_application", "button_delete"), messageComplete, idApplication, "", "", "");
 }
 
 function saveNewApplicationHandler() {
@@ -231,8 +231,8 @@ function aoColumnsFunc(tableId) {
             "bSearchable": false,
             "mRender": function (data, type, obj) {
                 var hasPermissions = $("#" + tableId).attr("hasPermissions");
-                
-                if(hasPermissions === "true"){ //only draws the options if the user has the correct privileges
+
+                if (hasPermissions === "true") { //only draws the options if the user has the correct privileges
                     var editApplication = '<button id="editApplication" onclick="editApplication(\'' + obj["application"] + '\');"\n\
                                     class="editApplication btn btn-default btn-xs margin-right5" \n\
                                     name="editApplication" title="\'' + doc.getDocLabel("page_application", "button_edit") + '\'" type="button">\n\
@@ -244,7 +244,7 @@ function aoColumnsFunc(tableId) {
 
                     return '<div class="center btn-group width150">' + editApplication + deleteApplication + '</div>';
                 }
-                return '';                
+                return '';
             }
         },
         {"data": "application",
@@ -277,7 +277,7 @@ function aoColumnsFunc(tableId) {
             "title": doc.getDocOnline("application", "bugtrackerurl"),
             "mRender": function (data, type, oObj) {
                 return drawURL(data);
-            }        
+            }
         },
         {"data": "bugTrackerNewUrl",
             "sName": "bugTrackerNewUrl",

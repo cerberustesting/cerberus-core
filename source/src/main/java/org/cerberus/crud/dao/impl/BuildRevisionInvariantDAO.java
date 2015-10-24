@@ -28,6 +28,7 @@ import java.util.List;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.cerberus.crud.dao.IBuildRevisionInvariantDAO;
+import org.cerberus.crud.entity.Application;
 import org.cerberus.database.DatabaseSpring;
 import org.cerberus.crud.entity.BuildRevisionInvariant;
 import org.cerberus.crud.entity.MessageEvent;
@@ -40,6 +41,7 @@ import org.cerberus.enums.MessageEventEnum;
 import org.cerberus.log.MyLogger;
 import org.cerberus.util.ParameterParserUtil;
 import org.cerberus.util.StringUtil;
+import org.cerberus.util.answer.Answer;
 import org.cerberus.util.answer.AnswerItem;
 import org.cerberus.util.answer.AnswerList;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -72,6 +74,8 @@ public class BuildRevisionInvariantDAO implements IBuildRevisionInvariantDAO {
             PreparedStatement preStat = connection.prepareStatement(query);
             try {
                 preStat.setString(1, system);
+                preStat.setInt(2, level);
+                preStat.setInt(3, seq);
                 ResultSet resultSet = preStat.executeQuery();
                 try {
                     if (resultSet.first()) {
@@ -116,7 +120,7 @@ public class BuildRevisionInvariantDAO implements IBuildRevisionInvariantDAO {
     }
 
     @Override
-    public AnswerList readBySystemByCriteria(String system, Integer level, int start, int amount, String column, String dir, String searchTerm, String individualSearch) {
+    public AnswerList readByVariousByCriteria(String system, Integer level, int start, int amount, String column, String dir, String searchTerm, String individualSearch) {
         AnswerList response = new AnswerList();
         MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
         msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", ""));
@@ -540,7 +544,148 @@ public class BuildRevisionInvariantDAO implements IBuildRevisionInvariantDAO {
         return bool;
     }
 
-    private BuildRevisionInvariant loadFromResultSet(ResultSet resultSet) throws SQLException {
+    @Override
+    public Answer create(BuildRevisionInvariant buildRevisionInvariant) {
+        MessageEvent msg = null;
+        StringBuilder query = new StringBuilder();
+        query.append("INSERT INTO buildrevisioninvariant (system, level, seq, versionname) ");
+        query.append("VALUES (?, ?, ?, ?)");
+
+        // Debug message on SQL.
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("SQL : " + query.toString());
+        }
+        Connection connection = this.databaseSpring.connect();
+        try {
+            PreparedStatement preStat = connection.prepareStatement(query.toString());
+            try {
+                preStat.setString(1, buildRevisionInvariant.getSystem());
+                preStat.setInt(2, buildRevisionInvariant.getLevel());
+                preStat.setInt(3, buildRevisionInvariant.getSeq());
+                preStat.setString(4, buildRevisionInvariant.getVersionName());
+
+                preStat.executeUpdate();
+                msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
+                msg.setDescription(msg.getDescription().replace("%ITEM%", OBJECT_NAME).replace("%OPERATION%", "INSERT"));
+
+            } catch (SQLException exception) {
+                LOG.error("Unable to execute query : " + exception.toString());
+
+                if (exception.getSQLState().equals(SQL_DUPLICATED_CODE)) { //23000 is the sql state for duplicate entries
+                    msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_DUPLICATE);
+                    msg.setDescription(msg.getDescription().replace("%ITEM%", OBJECT_NAME).replace("%OPERATION%", "INSERT"));
+                } else {
+                    msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
+                    msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", exception.toString()));
+                }
+            } finally {
+                preStat.close();
+            }
+        } catch (SQLException exception) {
+            LOG.error("Unable to execute query : " + exception.toString());
+            msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
+            msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", exception.toString()));
+        } finally {
+            try {
+                if (connection != null) {
+                    connection.close();
+                }
+            } catch (SQLException exception) {
+                LOG.warn("Unable to close connection : " + exception.toString());
+            }
+        }
+        return new Answer(msg);
+    }
+    
+    @Override
+    public Answer delete(BuildRevisionInvariant buildRevisionInvariant) {
+        MessageEvent msg = null;
+        final String query = "DELETE FROM buildrevisioninvariant WHERE system = ? and level= ? and seq = ? ";
+
+        // Debug message on SQL.
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("SQL : " + query);
+        }
+        Connection connection = this.databaseSpring.connect();
+        try {
+            PreparedStatement preStat = connection.prepareStatement(query);
+            try {
+                preStat.setString(1, buildRevisionInvariant.getSystem());
+                preStat.setInt(2, buildRevisionInvariant.getLevel());
+                preStat.setInt(3, buildRevisionInvariant.getSeq());
+
+                preStat.executeUpdate();
+                msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
+                msg.setDescription(msg.getDescription().replace("%ITEM%", OBJECT_NAME).replace("%OPERATION%", "DELETE"));
+            } catch (SQLException exception) {
+                LOG.error("Unable to execute query : " + exception.toString());
+                msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
+                msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", exception.toString()));
+            } finally {
+                preStat.close();
+            }
+        } catch (SQLException exception) {
+            LOG.error("Unable to execute query : " + exception.toString());
+            msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
+            msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", exception.toString()));
+        } finally {
+            try {
+                if (connection != null) {
+                    connection.close();
+                }
+            } catch (SQLException exception) {
+                LOG.warn("Unable to close connection : " + exception.toString());
+            }
+        }
+        return new Answer(msg);
+    }
+
+    @Override
+    public Answer update(BuildRevisionInvariant buildRevisionInvariant) {
+        MessageEvent msg = null;
+        final String query = "UPDATE buildrevisioninvariant SET versionname = ?  WHERE system = ? and level = ? and seq = ? ";
+
+        // Debug message on SQL.
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("SQL : " + query);
+        }
+        Connection connection = this.databaseSpring.connect();
+        try {
+            PreparedStatement preStat = connection.prepareStatement(query);
+            try {
+                preStat.setString(1, buildRevisionInvariant.getVersionName());
+                preStat.setString(2, buildRevisionInvariant.getSystem());
+                preStat.setInt(3, buildRevisionInvariant.getLevel());
+                preStat.setInt(4, buildRevisionInvariant.getSeq());
+
+                preStat.executeUpdate();
+                msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
+                msg.setDescription(msg.getDescription().replace("%ITEM%", OBJECT_NAME).replace("%OPERATION%", "UPDATE"));
+            } catch (SQLException exception) {
+                LOG.error("Unable to execute query : " + exception.toString());
+                msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
+                msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", exception.toString()));
+            } finally {
+                preStat.close();
+            }
+        } catch (SQLException exception) {
+            LOG.error("Unable to execute query : " + exception.toString());
+            msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
+            msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", exception.toString()));
+        } finally {
+            try {
+                if (connection != null) {
+                    connection.close();
+                }
+            } catch (SQLException exception) {
+                LOG.warn("Unable to close connection : " + exception.toString());
+            }
+        }
+        return new Answer(msg);
+    }
+
+    @Override
+    public BuildRevisionInvariant loadFromResultSet(ResultSet resultSet) throws SQLException {
         String system = ParameterParserUtil.parseStringParam(resultSet.getString("system"), "");
         Integer level = ParameterParserUtil.parseIntegerParam(resultSet.getString("level"), 0);
         Integer seq = ParameterParserUtil.parseIntegerParam(resultSet.getString("seq"), 0);

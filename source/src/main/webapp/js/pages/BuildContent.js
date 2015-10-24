@@ -178,7 +178,7 @@ function loadBCTable() {
 }
 
 function deleteBrpHandlerClick() {
-    var id = $('#confirmationModal').find('#hiddenField').prop("value");
+    var id = $('#confirmationModal').find('#hiddenField1').prop("value");
     var jqxhr = $.post("DeleteBuildRevisionParameters", {id: id}, "json");
     $.when(jqxhr).then(function (data) {
         var messageType = getAlertType(data.messageType);
@@ -211,7 +211,7 @@ function deleteBrp(id, build, revision, release, application) {
     messageComplete = messageComplete.replace("%REVISION%", revision);
     messageComplete = messageComplete.replace("%RELEASE%", release);
     messageComplete = messageComplete.replace("%APPLI%", application);
-    showModalConfirmation(deleteBrpHandlerClick, doc.getDocLabel("page_buildcontent", "button_delete"), messageComplete, id);
+    showModalConfirmation(deleteBrpHandlerClick, doc.getDocLabel("page_buildcontent", "button_delete"), messageComplete, id, "", "", "");
 }
 
 function saveNewBrpHandler() {

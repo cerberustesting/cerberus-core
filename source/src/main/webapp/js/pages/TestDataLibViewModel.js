@@ -590,7 +590,7 @@ function editTestDataLibModalCloseHandler() {
  * Handler method that deletes a test data lib
  */
 function deleteTestDataLibHandlerClick() {
-    var testDataLibID = $('#confirmationModal').find('#hiddenField').prop("value");
+    var testDataLibID = $('#confirmationModal').find('#hiddenField1').prop("value");
     var jqxhr = $.post("DeleteTestDataLib", {action: "delete", id: testDataLibID}, "json");
     $.when(jqxhr).then(function (data) {
         var messageType = getAlertType(data.messageType);
@@ -946,7 +946,7 @@ function deleteTestDataLib(testDataLibID, name, system, environment, country, ty
             " </li><li>" + doc.getDocLabel("testdatalib", "country") + ":" + countryLabel +
             "</li> </ul>" + doc.getDocLabel("page_testdatalib_delete", "subdata_msg");
     var messageComplete = doc.getDocLabel("page_global", "deleteMessage").replace("%ENTRY%", deleteMessage).replace("%TABLE%", "");
-    showModalConfirmation(deleteTestDataLibHandlerClick,  doc.getDocLabel("page_testdatalib_delete", "title"), messageComplete, testDataLibID);
+    showModalConfirmation(deleteTestDataLibHandlerClick,  doc.getDocLabel("page_testdatalib_delete", "title"), messageComplete, testDataLibID, "", "", "");
 
 }
 
