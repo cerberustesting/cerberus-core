@@ -132,9 +132,13 @@ function displayPageLabel() {
     $("[name='mavenArtifactIdField']").html(doc.getDocOnline("buildrevisionparameters", "mavenArtifactId"));
     $("[name='mavenVersionField']").html(doc.getDocOnline("buildrevisionparameters", "mavenVersion"));
 
-    $("[name='build']").append($('<option></option>').text("-- ALL --").val("ALL"));
+    // Adding ALL entry in build combo (when selected, no filters are applied on build).
+    $("#selectBuild").append($('<option></option>').text("-- ALL --").val("ALL"));
+    // Adding all other entries.
     displayBuildList("build", getUser().defaultSystem, "1");
-    $("[name='revision']").append($('<option></option>').text("-- ALL --").val("ALL"));
+    // Adding ALL entry in revision combo (when selected, no filters are applied on revision).
+    $("#selectRevision").append($('<option></option>').text("-- ALL --").val("ALL"));
+    // Adding all other entries.
     displayBuildList("revision", getUser().defaultSystem, "2");
     displayApplicationList("application", getUser().defaultSystem);
     displayProjectList("project");
