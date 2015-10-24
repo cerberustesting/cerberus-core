@@ -39,7 +39,7 @@ public class AppContextListener implements ServletContextListener {
     @Override
     public void contextInitialized(ServletContextEvent sce) {
       // create the thread pool
-        ThreadPoolExecutor executor = new ThreadPoolExecutor(100, 200, 50000L,TimeUnit.MILLISECONDS, new ArrayBlockingQueue<Runnable>(100));
+        ThreadPoolExecutor executor = new ThreadPoolExecutor(10, 30, 50000L,TimeUnit.MILLISECONDS, new ArrayBlockingQueue<Runnable>(100));
         sce.getServletContext().setAttribute("executor",executor);
         org.apache.log4j.Logger.getLogger(AppContextListener.class.getName()).log(org.apache.log4j.Level.WARN, "Context initialized");
     }

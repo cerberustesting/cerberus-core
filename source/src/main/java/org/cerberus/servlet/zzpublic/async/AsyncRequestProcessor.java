@@ -19,7 +19,14 @@
  */
 package org.cerberus.servlet.zzpublic.async;
 
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.servlet.AsyncContext;
+import org.cerberus.crud.entity.TCase;
+import org.cerberus.crud.service.ITestCaseService;
+import org.cerberus.exception.CerberusException;
+import org.springframework.context.ApplicationContext;
+import org.springframework.web.context.support.WebApplicationContextUtils;
 
 /**
  * {Insert class description here}
@@ -31,14 +38,16 @@ import javax.servlet.AsyncContext;
 public class AsyncRequestProcessor implements Runnable {
 
     private AsyncContext asyncContext;
-    private int secs;
+    private String test;
+    private String testCase;
+    private String result;
     
     @Override
     public void run() {
         String msg = "Async Supported? " + asyncContext.getRequest().isAsyncSupported();
         System.out.println(msg);
         org.apache.log4j.Logger.getLogger(AsyncRequestProcessor.class.getName()).log(org.apache.log4j.Level.WARN, msg);
-        longProcessing(secs);
+        processing();
         /*try {
                 PrintWriter out = asyncContext.getResponse().getWriter();
                 out.write("Processing done for " + secs + " milliseconds!!");
@@ -67,21 +76,26 @@ public class AsyncRequestProcessor implements Runnable {
         
     }
 
-    public AsyncRequestProcessor(AsyncContext asyncCtx, int secs) {
+    public AsyncRequestProcessor(AsyncContext asyncCtx, String test, String testCase) {
         this.asyncContext = asyncCtx;
-        this.secs = secs;
+        this.test = test;
+        this.testCase = testCase;
     }
     
     // TODO:FN remove test debug
-    private void longProcessing(int secs) {
-        // wait for given time before finishing
-        //try {
-            org.apache.log4j.Logger.getLogger(AsyncRequestProcessor.class.getName()).log(org.apache.log4j.Level.WARN, "Processing..");
-            //Thread.sleep(secs);
-
-        //} catch (InterruptedException e) {
-        //    e.printStackTrace();
-        //}
+    private void processing() {
+        
+        ApplicationContext appContext = WebApplicationContextUtils.getWebApplicationContext(asyncContext.getRequest().getServletContext());
+        ITestCaseService service = appContext.getBean(ITestCaseService.class);
+        try {
+            TCase tc = service.findTestCaseByKey(test, testCase);
+            result = "KO " + tc.getTest() + " - " + tc.getTestCase() + " - " + tc.getDescription();
+        } catch (CerberusException ex) {
+            Logger.getLogger(AsyncRequestProcessor.class.getName()).log(Level.SEVERE, null, ex);
+            result = "KO " + ex.toString();
+        }
+        org.apache.log4j.Logger.getLogger(AsyncRequestProcessor.class.getName()).log(org.apache.log4j.Level.WARN, "Processing..");
+        
     }
     
 }

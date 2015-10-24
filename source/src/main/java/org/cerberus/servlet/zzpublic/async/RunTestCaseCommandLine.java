@@ -94,24 +94,19 @@ public class RunTestCaseCommandLine extends HttpServlet {
         request.setAttribute("org.apache.catalina.ASYNC_SUPPORTED", true);
 
         String test = request.getParameter("test");
-        String testcase = request.getParameter("testcase");
-        int secs = 10000;
-        //int secs = Integer.valueOf(time);
+        String testCase = request.getParameter("testcase");
         
-        // max 10 seconds
-        //if (secs > 10000)
-        //        secs = 10000;
-
+        
         AsyncContext asyncCtx = request.startAsync();
         asyncCtx.addListener(new AppAsyncListener());
         asyncCtx.setTimeout(300000);
 
         ThreadPoolExecutor executor = (ThreadPoolExecutor) request.getServletContext().getAttribute("executor");
-        executor.execute(new AsyncRequestProcessor(asyncCtx, secs));
+        executor.execute(new AsyncRequestProcessor(asyncCtx, test, testCase));
         
         org.apache.log4j.Logger.getLogger(RunTestCaseCommandLine.class.getName()).log(org.apache.log4j.Level.WARN, "RunTestCaseCommandLine - Start::Name="
                         + Thread.currentThread().getName() + "::ID="
-                        + Thread.currentThread().getId() + " TEST = " + test + "TESTCASE " + testcase);
+                        + Thread.currentThread().getId() + " TEST = " + test + "TESTCASE " + testCase);
 
         
         long endTime = System.currentTimeMillis();
