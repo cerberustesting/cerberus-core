@@ -138,7 +138,7 @@ public class AsyncRequestProcessor implements Runnable {
                         urlParameters.getCountry(), urlParameters.getBrowser(), urlParameters.getVersion(), urlParameters.getPlatform(), "", 0, 0, "", "", null, 
                         urlParameters.getSeleniumIp(), null, urlParameters.getSeleniumPort(), urlParameters.getTag(), "N", urlParameters.getVerbose(), 
                         urlParameters.getScreenshot(), urlParameters.getPageSource(), urlParameters.getSeleniumLog(), false, "", urlParameters.getOutputFormat(), null,
-                        Infos.getInstance().getProjectNameAndVersion(), tCase, null, null, false, "", "", "", "", "", "",
+                        Infos.getInstance().getProjectNameAndVersion(), tCase, null, null, false, "", "", "", "", urlParameters.getSeleniumIp(), urlParameters.getSeleniumPort(),
                         null, new MessageGeneral(MessageGeneralEnum.EXECUTION_PE_TESTSTARTED), "Selenium", urlParameters.getNrRetries(), urlParameters.getScreenSize());
             
                 /*********************EXECUTION***********************/ 
