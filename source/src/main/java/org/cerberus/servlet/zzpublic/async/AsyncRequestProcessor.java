@@ -283,6 +283,7 @@ public class AsyncRequestProcessor implements Runnable {
         String testcase  = ParameterParserUtil.parseStringParam(request.getParameter("testcase"), "");
         String country  = ParameterParserUtil.parseStringParam(request.getParameter("country"), "");
         String environment  = ParameterParserUtil.parseStringParam(request.getParameter("environment"), "");        
+        org.apache.log4j.Logger.getLogger(AsyncRequestProcessor.class.getName()).log(org.apache.log4j.Level.WARN, "DATA: Test: " + test + " Testcase: " + testcase + " country: " + country + "ENV: " + environment);
         urlParameters = new AsyncRequestParameters(test, testcase, country,environment);        
     }    
 
