@@ -93,20 +93,14 @@ public class RunTestCaseCommandLine extends HttpServlet {
 
         request.setAttribute("org.apache.catalina.ASYNC_SUPPORTED", true);
 
-        String test = request.getParameter("test");
-        String testCase = request.getParameter("testcase");
-        
         
         AsyncContext asyncCtx = request.startAsync();
         asyncCtx.addListener(new AppAsyncListener());
         asyncCtx.setTimeout(300000);
 
         ThreadPoolExecutor executor = (ThreadPoolExecutor) request.getServletContext().getAttribute("executor");
-        executor.execute(new AsyncRequestProcessor(asyncCtx, test, testCase));
+        executor.execute(new AsyncRequestProcessor(asyncCtx));
         
-        org.apache.log4j.Logger.getLogger(RunTestCaseCommandLine.class.getName()).log(org.apache.log4j.Level.WARN, "RunTestCaseCommandLine - Start::Name="
-                        + Thread.currentThread().getName() + "::ID="
-                        + Thread.currentThread().getId() + " TEST = " + test + "TESTCASE " + testCase);
 
         
         long endTime = System.currentTimeMillis();
@@ -119,24 +113,7 @@ public class RunTestCaseCommandLine extends HttpServlet {
                         + Thread.currentThread().getId() + "::Time Taken="
                         + (endTime - startTime) + " ms.");
         
-        /*final AsyncContext asyncContext = req.startAsync();
-        final PrintWriter writer = res.getWriter();
-        Runnable runnable = new Runnable() {
-            @Override
-            public void run() {
-                writer.println("Done");
-                asyncContext.complete();
-            }
-        };
-
-        AsyncContext ctx=req.startAsync();
-        Thread t = new Thread(new TaskExecutor(ctx) {
-
-            @Override
-            public void execute(Runnable r) {
-                throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-            }
-        });
-        t.start();*/
     }
+
+    
 }

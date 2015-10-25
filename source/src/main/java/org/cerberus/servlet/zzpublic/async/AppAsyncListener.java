@@ -41,7 +41,7 @@ public class AppAsyncListener implements AsyncListener{
         org.apache.log4j.Logger.getLogger(AppAsyncListener.class.getName()).log(org.apache.log4j.Level.WARN, "AppAsyncListener onComplete");
         ServletResponse response = ae.getAsyncContext().getResponse();  
         PrintWriter out = response.getWriter(); 
-        out.write("Processing completed");
+        //ae.getAsyncContext().
     }
 
     @Override
