@@ -319,8 +319,9 @@ public class SeleniumServerService implements ISeleniumServerService {
     @Override
     public boolean stopServer(Session session) {
         if (session.isStarted()) {
+            //TODO:FN comment for debug purposes
             try {
-                // Wait 2 sec till HAR is exported
+//                // Wait 2 sec till HAR is exported
                 Thread.sleep(2000);
             } catch (InterruptedException ex) {
                 Logger.getLogger(SeleniumServerService.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);

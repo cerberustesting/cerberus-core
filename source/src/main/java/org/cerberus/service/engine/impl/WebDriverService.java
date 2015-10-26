@@ -45,7 +45,6 @@ import org.cerberus.log.MyLogger;
 import org.cerberus.service.engine.IWebDriverService;
 import org.cerberus.util.ParameterParserUtil;
 import org.cerberus.util.StringUtil; 
-import org.jfree.chart.imagemap.ImageMapUtilities;
 import org.openqa.selenium.Alert;
 import org.openqa.selenium.By;
 import org.openqa.selenium.Cookie;
@@ -251,6 +250,7 @@ public class WebDriverService implements IWebDriverService {
             WebElement webElement = this.getSeleniumElement(session, identifier, false, false);
             return webElement != null;
         } catch (NoSuchElementException exception) {
+            MyLogger.log(WebDriverService.class.getName(), Level.FATAL, exception.toString());
             return false;
         }
     }
@@ -261,6 +261,7 @@ public class WebDriverService implements IWebDriverService {
             WebElement webElement = this.getSeleniumElement(session, identifier, true, false);
             return webElement != null && webElement.isDisplayed();
         } catch (NoSuchElementException exception) {
+            MyLogger.log(WebDriverService.class.getName(), Level.FATAL, exception.toString());            
             return false;
         }
     }
@@ -271,6 +272,7 @@ public class WebDriverService implements IWebDriverService {
             WebElement webElement = this.getSeleniumElement(session, identifier, false, false);
             return webElement != null && !webElement.isDisplayed();
         } catch (NoSuchElementException exception) {
+            MyLogger.log(WebDriverService.class.getName(), Level.FATAL, exception.toString());            
             return false;
         }
     }
@@ -315,7 +317,6 @@ public class WebDriverService implements IWebDriverService {
     }
 
     public File takeScreenShotFile(Session session) {
-        
         boolean event = true;
         long timeout = System.currentTimeMillis() + (1000 * session.getDefaultWait());
         //Try to capture picture. Try again until timeout is WebDriverException is raised.
@@ -385,6 +386,7 @@ public class WebDriverService implements IWebDriverService {
             WebElement webElement = this.getSeleniumElement(session, identifier, true, true);
             return webElement == null;
         } catch (NoSuchElementException exception) {
+            MyLogger.log(WebDriverService.class.getName(), Level.FATAL, exception.toString());            
             return false;
         }
     }
@@ -395,6 +397,7 @@ public class WebDriverService implements IWebDriverService {
             WebElement webElement = this.getSeleniumElement(session, identifier, true, true);
             return webElement != null;
         } catch (NoSuchElementException exception) {
+            MyLogger.log(WebDriverService.class.getName(), Level.FATAL, exception.toString());            
             return false;
         }
     }

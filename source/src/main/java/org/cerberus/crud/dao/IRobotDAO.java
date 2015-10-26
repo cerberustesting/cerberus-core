@@ -19,10 +19,8 @@ package org.cerberus.crud.dao;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.List;
 
 import org.cerberus.crud.entity.Robot;
-import org.cerberus.exception.CerberusException;
 import org.cerberus.util.answer.Answer;
 import org.cerberus.util.answer.AnswerItem;
 import org.cerberus.util.answer.AnswerList;
@@ -48,7 +46,6 @@ public interface IRobotDAO {
 
     /**
      *
-     * @param system
      * @param startPosition
      * @param length
      * @param columnName

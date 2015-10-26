@@ -45,7 +45,7 @@ function initBuildContentPage() {
         $('#selectRevision').val(urlRevision);
     }
 //    console.log('B : ' + urlBuild + ' R : ' + urlRevision);
-    var table=loadBCTable();
+    var table = loadBCTable();
     table.fnSort([11, 'desc']);
 
 }
@@ -53,6 +53,16 @@ function initBuildContentPage() {
 function setPending() {
     var myBuild = "NONE";
     var myRevision = "NONE";
+
+    $('#selectBuild').val(myBuild);
+    $('#selectRevision').val(myRevision);
+    // We refresh the list.
+    loadBCTable();
+}
+
+function setAll() {
+    var myBuild = "ALL";
+    var myRevision = "ALL";
 
     $('#selectBuild').val(myBuild);
     $('#selectRevision').val(myRevision);
@@ -103,6 +113,7 @@ function displayPageLabel() {
     $("[name='btnLoad']").html(doc.getDocLabel("page_global", "buttonLoad"));
     $("[name='btnLoadPending']").html(doc.getDocLabel("page_buildcontent", "buttonLoadPending"));
     $("[name='btnLoadLatest']").html(doc.getDocLabel("page_buildcontent", "buttonLoadLatest"));
+    $("[name='btnLoadAll']").html(doc.getDocLabel("page_buildcontent", "buttonLoadAll"));
 
     $("[name='idField']").html(doc.getDocOnline("buildrevisionparameters", "id"));
     $("[name='buildField']").html(doc.getDocOnline("buildrevisionparameters", "Build"));
@@ -121,7 +132,13 @@ function displayPageLabel() {
     $("[name='mavenArtifactIdField']").html(doc.getDocOnline("buildrevisionparameters", "mavenArtifactId"));
     $("[name='mavenVersionField']").html(doc.getDocOnline("buildrevisionparameters", "mavenVersion"));
 
+    // Adding ALL entry in build combo (when selected, no filters are applied on build).
+    $("#selectBuild").append($('<option></option>').text("-- ALL --").val("ALL"));
+    // Adding all other entries.
     displayBuildList("build", getUser().defaultSystem, "1");
+    // Adding ALL entry in revision combo (when selected, no filters are applied on revision).
+    $("#selectRevision").append($('<option></option>').text("-- ALL --").val("ALL"));
+    // Adding all other entries.
     displayBuildList("revision", getUser().defaultSystem, "2");
     displayApplicationList("application", getUser().defaultSystem);
     displayProjectList("project");
@@ -130,12 +147,13 @@ function displayPageLabel() {
 }
 
 function loadBCTable() {
-    var selectBuild = $("#selectBuild option:selected").text();
-    var selectRevision = $("#selectRevision option:selected").text();
+    var selectBuild = $("#selectBuild option:selected").val();
+    var selectRevision = $("#selectRevision option:selected").val();
 
     console.log('Chargement table B : ' + selectBuild + ' R : ' + selectRevision);
 
-    window.history.pushState('Tag', '', 'BuildContent.jsp?build=' + encodeURIComponent(selectBuild) + '&revision=' + encodeURIComponent(selectRevision));
+    var CallParam = 'build=' + encodeURIComponent(selectBuild) + '&revision=' + encodeURIComponent(selectRevision);
+    window.history.pushState('Tag', '', 'BuildContent.jsp?' + CallParam);
 
     //clear the old report content before reloading it
     $("#buildContentList").empty();
@@ -144,7 +162,14 @@ function loadBCTable() {
 
     if (selectBuild !== "") {
         //configure and create the dataTable
-        var param = "?system=" + getUser().defaultSystem + "&revision=" + selectRevision + "&build=" + selectBuild;
+        var param = "?system=" + getUser().defaultSystem;
+        if (selectRevision !== 'ALL') {
+            param = param + "&revision=" + selectRevision;
+        }
+        if (selectBuild !== 'ALL') {
+            param = param + "&build=" + selectBuild;
+        }
+
         var configurations = new TableConfigurationsServerSide("buildrevisionparametersTable", "ReadBuildRevisionParameters" + param, "contentTable", aoColumnsFunc());
 
         var table = createDataTableWithPermissions(configurations, renderOptionsForBrp);
@@ -153,7 +178,7 @@ function loadBCTable() {
 }
 
 function deleteBrpHandlerClick() {
-    var id = $('#confirmationModal').find('#hiddenField').prop("value");
+    var id = $('#confirmationModal').find('#hiddenField1').prop("value");
     var jqxhr = $.post("DeleteBuildRevisionParameters", {id: id}, "json");
     $.when(jqxhr).then(function (data) {
         var messageType = getAlertType(data.messageType);
@@ -186,7 +211,7 @@ function deleteBrp(id, build, revision, release, application) {
     messageComplete = messageComplete.replace("%REVISION%", revision);
     messageComplete = messageComplete.replace("%RELEASE%", release);
     messageComplete = messageComplete.replace("%APPLI%", application);
-    showModalConfirmation(deleteBrpHandlerClick, doc.getDocLabel("page_buildcontent", "button_delete"), messageComplete, id);
+    showModalConfirmation(deleteBrpHandlerClick, doc.getDocLabel("page_buildcontent", "button_delete"), messageComplete, id, "", "", "");
 }
 
 function saveNewBrpHandler() {
@@ -269,9 +294,15 @@ function CreateBrpClick() {
 
     // User that makes the creation is becoming the owner or the release.
     formAdd.find("#owner").prop("value", getUser().login);
-    // New release goes by default to the build/revision selected in filter combos.
-    var myBuild = $("#selectBuild option:selected").text();
-    var myRevision = $("#selectRevision option:selected").text();
+    // New release goes by default to the build/revision selected in filter combos. (except when ALL)
+    var myBuild = $("#selectBuild option:selected").val();
+    var myRevision = $("#selectRevision option:selected").val();
+    if (myBuild==='ALL') {
+        myBuild='NONE';
+    }
+    if (myRevision==='ALL') {
+        myRevision='NONE';
+    }
     formAdd.find("#build").val(myBuild);
     formAdd.find("#revision").val(myRevision);
 
@@ -327,6 +358,7 @@ function aoColumnsFunc() {
         {"data": null,
             "title": doc.getDocLabel("page_global", "columnAction"),
             "bSortable": false,
+            "sWidth": "80px",
             "bSearchable": false,
             "mRender": function (data, type, obj) {
                 var editBrp = '<button id="editBrp" onclick="editBrp(\'' + obj["id"] + '\');"\n\
@@ -343,48 +375,63 @@ function aoColumnsFunc() {
         },
         {"data": "build",
             "sName": "build",
+            "sWidth": "70px",
             "title": doc.getDocOnline("buildrevisionparameters", "Build")},
         {"data": "revision",
             "sName": "revision",
+            "sWidth": "70px",
             "title": doc.getDocOnline("buildrevisionparameters", "Revision")},
         {"data": "release",
             "sName": "release",
+            "sWidth": "100px",
             "title": doc.getDocOnline("buildrevisionparameters", "Release")},
         {"data": "application",
             "sName": "application",
+            "sWidth": "130px",
             "title": doc.getDocOnline("buildrevisionparameters", "application")},
         {"data": "project",
             "sName": "project",
+            "sWidth": "80px",
             "title": doc.getDocOnline("buildrevisionparameters", "project")},
         {"data": "ticketIdFixed",
             "sName": "ticketIdFixed",
+            "sWidth": "80px",
             "title": doc.getDocOnline("buildrevisionparameters", "TicketIDFixed")},
         {"data": "bugIdFixed",
             "sName": "bugIdFixed",
+            "sWidth": "80px",
             "title": doc.getDocOnline("buildrevisionparameters", "BugIDFixed")},
         {"data": "link",
             "sName": "link",
+            "sWidth": "250px",
             "title": doc.getDocOnline("buildrevisionparameters", "Link")},
         {"data": "releaseOwner",
             "sName": "releaseOwner",
+            "sWidth": "80px",
             "title": doc.getDocOnline("buildrevisionparameters", "ReleaseOwner")},
         {"data": "subject",
             "sName": "subject",
+            "sWidth": "500px",
             "title": doc.getDocOnline("buildrevisionparameters", "subject")},
         {"data": "datecre",
             "sName": "datecre",
+            "sWidth": "150px",
             "title": doc.getDocOnline("buildrevisionparameters", "datecre")},
         {"data": "jenkinsBuildId",
             "sName": "jenkinsBuildId",
+            "sWidth": "80px",
             "title": doc.getDocOnline("buildrevisionparameters", "jenkinsBuildId")},
         {"data": "mavenGroupId",
             "sName": "mavenGroupId",
+            "sWidth": "80px",
             "title": doc.getDocOnline("buildrevisionparameters", "mavenGroupId")},
         {"data": "mavenArtifactId",
             "sName": "mavenArtifactId",
+            "sWidth": "80px",
             "title": doc.getDocOnline("buildrevisionparameters", "mavenArtifactId")},
         {"data": "mavenVersion",
             "sName": "mavenVersion",
+            "sWidth": "80px",
             "title": doc.getDocOnline("buildrevisionparameters", "mavenVersion")}
     ];
     return aoColumns;

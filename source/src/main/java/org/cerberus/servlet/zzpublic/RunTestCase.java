@@ -329,7 +329,7 @@ public class RunTestCase extends HttpServlet {
             capabilities.add(sc);
 
             Session session = new Session();
-            session.setDefaultWait(20); //TODO:FN debug purposes
+            session.setDefaultWait(defaultWait); 
             session.setHost(tCExecution.getSeleniumIP());
             session.setPort(tCExecution.getPort());
             session.setCapabilities(capabilities);

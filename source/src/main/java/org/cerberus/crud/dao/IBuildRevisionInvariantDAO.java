@@ -17,10 +17,13 @@
  */
 package org.cerberus.crud.dao;
 
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.List;
 
 import org.cerberus.crud.entity.BuildRevisionInvariant;
 import org.cerberus.exception.CerberusException;
+import org.cerberus.util.answer.Answer;
 import org.cerberus.util.answer.AnswerItem;
 import org.cerberus.util.answer.AnswerList;
 
@@ -45,6 +48,7 @@ public interface IBuildRevisionInvariantDAO {
     /**
      *
      * @param system
+     * @param level
      * @param start
      * @param amount
      * @param column
@@ -53,7 +57,7 @@ public interface IBuildRevisionInvariantDAO {
      * @param individualSearch
      * @return
      */
-    AnswerList readBySystemByCriteria(String system, Integer level, int start, int amount, String column, String dir, String searchTerm, String individualSearch);
+    AnswerList readByVariousByCriteria(String system, Integer level, int start, int amount, String column, String dir, String searchTerm, String individualSearch);
 
     /**
      *
@@ -100,27 +104,51 @@ public interface IBuildRevisionInvariantDAO {
      *
      * @param buildRevisionInvariant
      * @return true if insert BuildRevisionInvariant successful
-     * @throws CerberusException if we did not manage to insert the
-     * BuildRevisionInvariant.
      */
-    public boolean insertBuildRevisionInvariant(BuildRevisionInvariant buildRevisionInvariant);
+    boolean insertBuildRevisionInvariant(BuildRevisionInvariant buildRevisionInvariant);
 
     /**
      * delete user from the database.
      *
-     * @param BuildRevisionInvariant
+     * @param buildRevisionInvariant
      * @return true if delete BuildRevisionInvariant successful
-     * @throws CerberusException if BuildRevisionInvariant could not be removed.
      */
-    public boolean deleteBuildRevisionInvariant(BuildRevisionInvariant buildRevisionInvariant);
+    boolean deleteBuildRevisionInvariant(BuildRevisionInvariant buildRevisionInvariant);
 
     /**
      * update user that correspond to the user.getUserID.
      *
-     * @param BuildRevisionInvariant
+     * @param buildRevisionInvariant
      * @return true if update BuildRevisionInvariant successful
-     * @throws CerberusException if the BuildRevisionInvariant could not be
-     * updated.
      */
-    public boolean updateBuildRevisionInvariant(BuildRevisionInvariant buildRevisionInvariant);
+    boolean updateBuildRevisionInvariant(BuildRevisionInvariant buildRevisionInvariant);
+
+    /**
+     *
+     * @param buildRevisionInvariant
+     * @return
+     */
+    Answer create(BuildRevisionInvariant buildRevisionInvariant);
+
+    /**
+     *
+     * @param buildRevisionInvariant
+     * @return
+     */
+    Answer delete(BuildRevisionInvariant buildRevisionInvariant);
+
+    /**
+     *
+     * @param buildRevisionInvariant
+     * @return
+     */
+    Answer update(BuildRevisionInvariant buildRevisionInvariant);
+
+    /**
+     *
+     * @param resultSet
+     * @return
+     * @throws SQLException
+     */
+    BuildRevisionInvariant loadFromResultSet(ResultSet resultSet) throws SQLException;
 }

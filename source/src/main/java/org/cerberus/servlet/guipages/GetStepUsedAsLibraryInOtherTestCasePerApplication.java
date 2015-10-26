@@ -84,7 +84,7 @@ public class GetStepUsedAsLibraryInOtherTestCasePerApplication extends HttpServl
                 for (TestCaseStep tcs : stepService.getStepLibraryBySystem(system)){
                         JSONArray row = new JSONArray();
                         StringBuilder testLink = new StringBuilder();
-                        testLink.append("<a href=\"Test.jsp?stestbox=");
+                        testLink.append("<a href=\"TestCaseList.jsp?test=");
                         testLink.append(tcs.getTest());
                         testLink.append("\">");
                         testLink.append(tcs.getTest());

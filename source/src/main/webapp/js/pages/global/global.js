@@ -390,11 +390,14 @@ function modalFormCleaner(event) {
  * @param {type} handlerClickOk - method triggered when the "ok" is clicked
  * @param {type} title - title to be displayed
  * @param {type} message -  message to be displayed
- * @param {type} hiddenField -hidden value that can be added to the confirmation modal. Useful when we want to delete an item, and we can specify it in this fiedl.
+ * @param {type} hiddenField1 -hidden value that can be added to the confirmation modal. Useful when we want to delete an item, and we can specify it in this field.
+ * @param {type} hiddenField2 -hidden value that can be added to the confirmation modal. Useful when we want to delete an item, and we can specify it in this field.
+ * @param {type} hiddenField3 -hidden value that can be added to the confirmation modal. Useful when we want to delete an item, and we can specify it in this field.
+ * @param {type} hiddenField4 -hidden value that can be added to the confirmation modal. Useful when we want to delete an item, and we can specify it in this field.
  * @returns {undefined}
  */
-function showModalConfirmation(handlerClickOk, title, message, hiddenField) {
-    setDataConfirmationModal(title, message, hiddenField);
+function showModalConfirmation(handlerClickOk, title, message, hiddenField1, hiddenField2, hiddenField3, hiddenField4) {
+    setDataConfirmationModal(title, message, hiddenField1, hiddenField2, hiddenField3, hiddenField4);
     $('#confirmationModal #confirmOk').click(handlerClickOk);
     clearResponseMessageMainPage();
     $('#confirmationModal').modal('show');
@@ -403,20 +406,32 @@ function showModalConfirmation(handlerClickOk, title, message, hiddenField) {
  * Method that cleans the confirmation modal after being closed.
  */
 function resetConfirmationModal() {
-    setDataConfirmationModal("", "", "");
+    setDataConfirmationModal("", "", "", "", "", "");
     $('#confirmationModal #confirmOk').unbind('click');
 }
 /**
  * Method that allows the specification of a confirmation modal.
  * @param {type} title -  title to be displayed
  * @param {type} message -  message to be displayed
- * @param {type} hiddenField - hidden value that can be added to the confirmation modal. Useful when we want to delete an item, and we can specify it in this fiedl.
+ * @param {type} hiddenField1 - hidden value that can be added to the confirmation modal. Useful when we want to delete an item, and we can specify it in this fiedl.
+ * @param {type} hiddenField2 - hidden value that can be added to the confirmation modal. Useful when we want to delete an item, and we can specify it in this fiedl.
+ * @param {type} hiddenField3 - hidden value that can be added to the confirmation modal. Useful when we want to delete an item, and we can specify it in this fiedl.
+ * @param {type} hiddenField4 - hidden value that can be added to the confirmation modal. Useful when we want to delete an item, and we can specify it in this fiedl.
  */
-function setDataConfirmationModal(title, message, hiddenField) {
+function setDataConfirmationModal(title, message, hiddenField1, hiddenField2, hiddenField3, hiddenField4) {
     $('#confirmationModalLabel').html(title);
     $('#modalBody').html(message);
-    if (hiddenField !== null) {
-        $('#confirmationModal #hiddenField').prop("value", hiddenField);
+    if (hiddenField1 !== null) {
+        $('#confirmationModal #hiddenField1').prop("value", hiddenField1);
+    }
+    if (hiddenField2 !== null) {
+        $('#confirmationModal #hiddenField2').prop("value", hiddenField2);
+    }
+    if (hiddenField3 !== null) {
+        $('#confirmationModal #hiddenField3').prop("value", hiddenField3);
+    }
+    if (hiddenField4 !== null) {
+        $('#confirmationModal #hiddenField4').prop("value", hiddenField4);
     }
 }
 
@@ -973,7 +988,15 @@ function bindToggleCollapse() {
 function drawURL(data) {
     return drawHyperlink(data, data);
 }
+
 function drawHyperlink(href, text) {
+    if (text !== '') {
+        return "<a href='" + href + "'>" + text + "</a>";//TODO:FN ver se tem caracters que precisam de ser encapsulados
+    }
+    return '';
+}
+
+function drawHyperlinkExternal(href, text) {
     if (text !== '') {
         return "<a target = '_blank' href='" + href + "'>" + text + "</a>";//TODO:FN ver se tem caracters que precisam de ser encapsulados
     }

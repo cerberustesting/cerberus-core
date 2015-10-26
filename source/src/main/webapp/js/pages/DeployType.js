@@ -56,7 +56,7 @@ function displayPageLabel() {
 }
 
 function deleteEntryHandlerClick() {
-    var deployType = $('#confirmationModal').find('#hiddenField').prop("value");
+    var deployType = $('#confirmationModal').find('#hiddenField1').prop("value");
     var jqxhr = $.post("DeleteDeployType", {deploytype: deployType}, "json");
     $.when(jqxhr).then(function (data) {
         var messageType = getAlertType(data.messageType);
@@ -84,7 +84,7 @@ function deleteEntry(entry) {
     var messageComplete = doc.getDocLabel("page_global", "deleteMessage");
     messageComplete = messageComplete.replace("%TABLE%", doc.getDocLabel("deploytype", "deploytype"));
     messageComplete = messageComplete.replace("%ENTRY%", entry);
-    showModalConfirmation(deleteEntryHandlerClick, doc.getDocLabel("page_deploytype", "button_delete"), messageComplete, entry);
+    showModalConfirmation(deleteEntryHandlerClick, doc.getDocLabel("page_deploytype", "button_delete"), messageComplete, entry, "", "", "");
 }
 
 function saveEntry(servletName, modalID, form) {

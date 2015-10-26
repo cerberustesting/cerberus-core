@@ -113,7 +113,7 @@ function CreateTestClick() {
 }
 
 function deleteEntryHandlerClick() {
-    var test = $('#confirmationModal').find('#hiddenField').prop("value");
+    var test = $('#confirmationModal').find('#hiddenField1').prop("value");
     var jqxhr = $.post("DeleteTest1", {test: test}, "json");
     $.when(jqxhr).then(function (data) {
         var messageType = getAlertType(data.messageType);
@@ -141,7 +141,7 @@ function deleteEntry(entry) {
     var messageComplete = doc.getDocLabel("page_global", "deleteMessage");
     messageComplete = messageComplete.replace("%TABLE%", doc.getDocLabel("test", "Test"));
     messageComplete = messageComplete.replace("%ENTRY%", entry);
-    showModalConfirmation(deleteEntryHandlerClick, doc.getDocLabel("page_test", "btn_delete"), messageComplete, entry);
+    showModalConfirmation(deleteEntryHandlerClick, doc.getDocLabel("page_test", "btn_delete"), messageComplete, entry, "", "", "");
 }
 
 function renderOptionsForTest(data) {
