@@ -177,10 +177,15 @@ function editApplicationModalCloseHandler() {
 
 function CreateApplicationClick() {
     clearResponseMessageMainPage();
+    
     // When creating a new application, System takes the default value of the 
     // system already selected in header.
     var formAdd = $('#addApplicationModal');
     formAdd.find("#system").prop("value", getUser().defaultSystem);
+    // Default to NONE on DeployType and Application Type.
+    formAdd.find("#type").val("NONE");
+    formAdd.find("#deploytype").val("NONE");
+   
     $('#addApplicationModal').modal('show');
 }
 
