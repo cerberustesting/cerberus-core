@@ -170,7 +170,7 @@ function aoColumnsFunc() {
             "title": doc.getDocOnline("page_global", "columnAction"),
             "mRender": function (data, type, obj) {
                 var testCaseLink = '<a id="testCaseLink" class="btn btn-primary btn-xs margin-right5"\n\
-                                    target="_blank" href="./TestCaseList.jsp?test=' + encodeURIComponent(obj["test"]) + '">\n\
+                                    href="./TestCaseList.jsp?test=' + encodeURIComponent(obj["test"]) + '">\n\
                                     <span class="glyphicon glyphicon-new-window"></span>\n\
                                     </a>';
 
