@@ -61,18 +61,26 @@ function getSubDataLabel(type) {
  * @param {String} selectName value name of the select tag in the html
  * @returns {void}
  */
-function displayInvariantList(selectName, idName) {
+function displayInvariantList(selectName, idName, defaultValue) {
     $.when($.getJSON("FindInvariantByID", "idName=" + idName)).then(function (data) {
         for (var option in data) {
             $("[name='" + selectName + "']").append($('<option></option>').text(data[option].value).val(data[option].value));
         }
+        
+        if (defaultValue !== undefined) {
+            $("[name='"+ selectName +"']").val(defaultValue);
+        }
     });
 }
 
-function displayInvariantListWithDesc(selectName, idName) {
+function displayInvariantListWithDesc(selectName, idName, defaultValue) {
     $.when($.getJSON("FindInvariantByID", "idName=" + idName)).then(function (data) {
         for (var option in data) {
             $("[name='" + selectName + "']").append($('<option></option>').text(data[option].value + " - " + data[option].description).val(data[option].value));
+        }
+                        
+        if (defaultValue !== undefined) {
+            $("[name='"+ selectName +"']").val(defaultValue);
         }
     });
 }
@@ -83,10 +91,14 @@ function displayInvariantListWithDesc(selectName, idName) {
  * @param {String} selectName value name of the select tag in the html
  * @returns {void}
  */
-function displayDeployTypeList(selectName) {
+function displayDeployTypeList(selectName, defaultValue) {
     $.when($.getJSON("ReadDeployType", "")).then(function (data) {
         for (var option in data.contentTable) {
             $("select[id='" + selectName + "']").append($('<option></option>').text(data.contentTable[option].deploytype + " - " + data.contentTable[option].description).val(data.contentTable[option].deploytype));
+        }
+                
+        if (defaultValue !== undefined) {
+            $("[name='"+ selectName +"']").val(defaultValue);
         }
     });
 }
@@ -98,7 +110,7 @@ function displayDeployTypeList(selectName) {
  * @param {String} system [optional] value name of the system in order to filter the application list
  * @returns {void}
  */
-function displayApplicationList(selectName, system) {
+function displayApplicationList(selectName, system, defaultValue) {
     var myData = "";
     if (system !== "") {
         myData = "system=" + system;
@@ -106,6 +118,10 @@ function displayApplicationList(selectName, system) {
     $.when($.getJSON("ReadApplication", myData)).then(function (data) {
         for (var option in data.contentTable) {
             $("[name='" + selectName + "']").append($('<option></option>').text(data.contentTable[option].application + " - " + data.contentTable[option].description).val(data.contentTable[option].application));
+        }
+                
+        if (defaultValue !== undefined) {
+            $("[name='"+ selectName +"']").val(defaultValue);
         }
     });
 }
@@ -116,11 +132,15 @@ function displayApplicationList(selectName, system) {
  * @param {String} selectName value name of the select tag in the html
  * @returns {void}
  */
-function displayProjectList(selectName) {
+function displayProjectList(selectName, defaultValue) {
     $.when($.getJSON("ReadProject", "")).then(function (data) {
         $("[name='" + selectName + "']").append($('<option></option>').text("NONE").val(""));
         for (var option in data.contentTable) {
             $("[name='" + selectName + "']").append($('<option></option>').text(data.contentTable[option].idProject + " - " + data.contentTable[option].description).val(data.contentTable[option].idProject));
+        }
+                        
+        if (defaultValue !== undefined) {
+            $("[name='"+ selectName +"']").val(defaultValue);
         }
     });
 }
@@ -133,7 +153,7 @@ function displayProjectList(selectName) {
  * @param {String} level value of the level of the build invariant
  * @returns {void}
  */
-function displayBuildList(selectName, system, level) {
+function displayBuildList(selectName, system, level, defaultValue) {
     var myData = "iSortCol_0=2"; // We sort by sequence.
     if (system !== "") {
         myData += "&system=" + system;
@@ -145,6 +165,10 @@ function displayBuildList(selectName, system, level) {
     $.when($.getJSON("ReadBuildRevisionInvariant", myData)).then(function (data) {
         for (var option in data.contentTable) {
             $("[name='" + selectName + "']").append($('<option></option>').text(data.contentTable[option].versionName).val(data.contentTable[option].versionName));
+        }
+                        
+        if (defaultValue !== undefined) {
+            $("[name='"+ selectName +"']").val(defaultValue);
         }
     });
 }
