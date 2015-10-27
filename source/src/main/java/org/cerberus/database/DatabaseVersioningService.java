@@ -4227,6 +4227,54 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         // New updated Documentation.
         //-- ------------------------ 643-644
         SQLS = new StringBuilder();
+        SQLS.append("SELECT 1 FROM dual;");
+        SQLInstruction.add(SQLS.toString());
+        SQLS = new StringBuilder();
+        SQLS.append("SELECT 1 FROM dual;");
+        SQLInstruction.add(SQLS.toString());
+
+        // Max size for screenshot
+        //-- ------------------------  645
+        SQLS = new StringBuilder();
+        SQLS.append("INSERT INTO `parameter` (`system`, `param`, `value`, `description`) VALUES ('', 'cerberus_screenshot_max_size', '1048576', 'Max size in bytes for a screenshot take while test case execution');");
+        SQLInstruction.add(SQLS.toString());
+
+        // New documentation entries for TestCaseList 
+        //-- ------------------------ 646
+        SQLS = new StringBuilder();
+        SQLS.append("SELECT 1 FROM dual;");
+        SQLInstruction.add(SQLS.toString());
+
+        // New documentation entries for header
+        //-- ------------------------ 647-649
+        SQLS = new StringBuilder();
+        SQLS.append("SELECT 1 FROM dual;");
+        SQLInstruction.add(SQLS.toString());
+        SQLS = new StringBuilder();
+        SQLS.append("SELECT 1 FROM dual;");
+        SQLInstruction.add(SQLS.toString());
+        SQLS = new StringBuilder();
+        SQLS.append("SELECT 1 FROM dual;");
+        SQLInstruction.add(SQLS.toString());
+
+        // Removed empty group.
+        //-- ------------------------ 650-651
+        SQLS = new StringBuilder();
+        SQLS.append("DELETE FROM `invariant` WHERE `idname`='GROUP' and`value`='';");
+        SQLInstruction.add(SQLS.toString());
+        SQLS = new StringBuilder();
+        SQLS.append("UPDATE testcase SET `group`='MANUAL' WHERE `group` = '' or `group` is null;");
+        SQLInstruction.add(SQLS.toString());
+
+        // Adding doc.
+        //-- ------------------------ 652
+        SQLS = new StringBuilder();
+        SQLS.append("SELECT 1 FROM dual;");
+        SQLInstruction.add(SQLS.toString());
+
+        // New updated Documentation.
+        //-- ------------------------ 652-653
+        SQLS = new StringBuilder();
         SQLS.append("DELETE FROM `documentation`;");
         SQLInstruction.add(SQLS.toString());
         SQLS = new StringBuilder();
@@ -4252,8 +4300,18 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLS.append(",('application','system','','fr','Système','Un <code class=\\'doc-crbvvoca\\'>système</code> est un groupe d\\'<code class=\\'doc-crbvvoca\\'>applications</code> pour lesquels il y a de temps en temps necessité de faire les changements en même temps.<br> La plupart du temps ces <code class=\\'doc-crbvvoca\\'>applications</code> partagent une même base de donnée et donc une structure de donnée unique.')");
         SQLS.append(",('application','type','','en','Type','The Type of the <code class=\\'doc-crbvvoca\\'>application</code> define whether the <code class=\\'doc-crbvvoca\\'>application</code> is a GUI, a Service or a Batch Treatment.<br>An automated <code class=\\'doc-crbvvoca\\'>testcase</code> based on a GUI <code class=\\'doc-crbvvoca\\'>application</code> will require a selenium server to execute.')");
         SQLS.append(",('application','type','','fr','Type','Le type de l\\'<code class=\\'doc-crbvvoca\\'>application</code> defini si l\\'<code class=\\'doc-crbvvoca\\'>application</code> est une interface graphique (GUI), un fournisseur de Service ou un traitement batch.<br>Un <code class=\\'doc-crbvvoca\\'>cas de test</code> automatisé basé sur une <code class=\\'doc-crbvvoca\\'>application</code> de type GUI necessitera un serveur Selenium pour s\\'executer.')");
+        SQLS.append(",('buildrevisioninvariant','level','','en','Level','')");
+        SQLS.append(",('buildrevisioninvariant','level','','fr','Niveau','')");
+        SQLS.append(",('buildrevisioninvariant','seq','','en','Sequence','')");
+        SQLS.append(",('buildrevisioninvariant','seq','','fr','Séquence','')");
+        SQLS.append(",('buildrevisioninvariant','system','','en','System','')");
+        SQLS.append(",('buildrevisioninvariant','system','','fr','Système','')");
+        SQLS.append(",('buildrevisioninvariant','versionName','','en','Version Name','')");
+        SQLS.append(",('buildrevisioninvariant','versionName','','fr','Nom de la Version','')");
         SQLS.append(",('buildrevisioninvariant','versionname01','','en','Build','')");
+        SQLS.append(",('buildrevisioninvariant','versionname01','','fr','Build','')");
         SQLS.append(",('buildrevisioninvariant','versionname02','','en','Revision','')");
+        SQLS.append(",('buildrevisioninvariant','versionname02','','fr','Revision','')");
         SQLS.append(",('buildrevisionparameters','application','','en','Application','')");
         SQLS.append(",('buildrevisionparameters','application','','fr','Application','')");
         SQLS.append(",('buildrevisionparameters','BugIDFixed','','en','Associated Bug ID','This is the bug ID which has been solved with the <code class=\\'doc-crbvvoca\\'>release</code>.')");
@@ -4369,7 +4427,9 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLS.append(",('invariant','environmentgp','','en','Env Gp','')");
         SQLS.append(",('invariant','FILTERNBDAYS','','en','Nb Days','Number of days to Filter the history table in the integration status.')");
         SQLS.append(",('invariant','GROUP','','en','Group','The group is a property of a <code class=\\'doc-crbvvoca\\'>test case</code> that can take the following values : <br><br><b>AUTOMATED</b> : The <code class=\\'doc-crbvvoca\\'>test case</code> is fully automated and does not require any manual action.<br><b>MANUAL</b> : The <code class=\\'doc-crbvvoca\\'>test case</code> has to be manually executed.<br><b>PRIVATE</b> : The <code class=\\'doc-crbvvoca\\'>test case</code> exist for technical reason and will never appear on the reporting area. For example : <code class=\\'doc-fixed\\'>Pre Testing</code> test cases that are used for login purpose should all be PRIVATE.<br><b>PROCESS</b> : The <code class=\\'doc-crbvvoca\\'>test case</code> is related to specific process and needs some intermediate batch treatment to be fully executed.<br><b>COMPARATIVE</b> : <code class=\\'doc-crbvvoca\\'>Test cases</code> that compare the results of 2 batch executions inside the database by SQL requests.')");
+        SQLS.append(",('invariant','GROUP','','fr','Groupe','')");
         SQLS.append(",('invariant','PRIORITY','','en','Priority','It is the priority level of the functionnality which is tested.')");
+        SQLS.append(",('invariant','PRIORITY','','fr','Priorité','')");
         SQLS.append(",('logevent','action','','en','Action','Type of the action performed')");
         SQLS.append(",('logevent','action','','fr','Action','Type de l\\'action effetué')");
         SQLS.append(",('logevent','localip','','en','Local IP','IP of the Cerberus server that provided the service.')");
@@ -4414,6 +4474,8 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLS.append(",('page_application','button_edit','','fr','Modifier l\\'Application','')");
         SQLS.append(",('page_application','title','','en','APPLICATION','This page can be used to manage the applications.')");
         SQLS.append(",('page_application','title','','fr','APPLICATION','Cette page permet de gérer et créer des applications.')");
+        SQLS.append(",('page_buildcontent','buttonLoadAll','','en','Load All Build','')");
+        SQLS.append(",('page_buildcontent','buttonLoadAll','','fr','Charger tous','')");
         SQLS.append(",('page_buildcontent','buttonLoadLatest','','en','Load latest Build','')");
         SQLS.append(",('page_buildcontent','buttonLoadLatest','','fr','Charger le dernier Build','')");
         SQLS.append(",('page_buildcontent','buttonLoadPending','','en','Load pending Build','')");
@@ -4435,7 +4497,15 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLS.append(",('page_buildcontent','standardfilters','','en','Standard Filters','')");
         SQLS.append(",('page_buildcontent','standardfilters','','fr','Standard Filters','')");
         SQLS.append(",('page_buildcontent','title','','en','BUILD CONTENT','This page can be used to manage the Build Content.')");
-        SQLS.append(",('page_buildcontent','title','','fr','BUILD CONTENT','This page can be used to manage the Build Content.')");
+        SQLS.append(",('page_buildcontent','title','','fr','CONTENU DES BUILDS','Cette page permet de gérer le contenu d\\'un build.')");
+        SQLS.append(",('page_buildrevdefinition','button_create','','en','Create new Build Revision Definition','')");
+        SQLS.append(",('page_buildrevdefinition','button_create','','fr','Créer une nouvelle definition de build ou revision','')");
+        SQLS.append(",('page_buildrevdefinition','button_delete','','en','Delete Build Revision Definition','')");
+        SQLS.append(",('page_buildrevdefinition','button_delete','','fr','Supprimer la definition de build ou revision','')");
+        SQLS.append(",('page_buildrevdefinition','button_edit','','en','Edit Build Revision Definition','')");
+        SQLS.append(",('page_buildrevdefinition','button_edit','','fr','Editer une nouvelle definition de build ou revision','')");
+        SQLS.append(",('page_buildrevdefinition','title','','en','BUILD REVISION DEFINITION','This page can be used to manage the definition of Builds and Revisions.')");
+        SQLS.append(",('page_buildrevdefinition','title','','fr','DEFINITION DES BUILDS REVISIONS','Cette page permet de gérer la definition d\\'un build.')");
         SQLS.append(",('page_deploytype','button_create','','en','Create new Deployment Type','')");
         SQLS.append(",('page_deploytype','button_create','','fr','Créer un nouveau Type de Deploiement','')");
         SQLS.append(",('page_deploytype','button_delete','','en','Delete Deployment Type','')");
@@ -4498,9 +4568,9 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLS.append(",('page_header','menuApplications','','en','Application','')");
         SQLS.append(",('page_header','menuApplications','','fr','Application','')");
         SQLS.append(",('page_header','menuBuildContent','','en','Build Content','')");
-        SQLS.append(",('page_header','menuBuildContent','','fr','Journal de Modifications des Revisions','')");
-        SQLS.append(",('page_header','menuBuildRevision','','en','Build/Rev Definition','')");
-        SQLS.append(",('page_header','menuBuildRevision','','fr','Gestion des Sprint/Revision','')");
+        SQLS.append(",('page_header','menuBuildContent','','fr','Contenu des Builds','')");
+        SQLS.append(",('page_header','menuBuildRevision','','en','Build Revision Definition','')");
+        SQLS.append(",('page_header','menuBuildRevision','','fr','Définition des Builds Revisions','')");
         SQLS.append(",('page_header','menuCreateTest','','en','Create Test','')");
         SQLS.append(",('page_header','menuCreateTest','','fr','Créér un Test','')");
         SQLS.append(",('page_header','menuCreateTestCase','','en','Create TestCase','')");
@@ -4511,8 +4581,8 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLS.append(",('page_header','menuDatabaseMaintenance','','fr','Maintenance de la base de données','')");
         SQLS.append(",('page_header','menuDeployType','','en','Deploiement Type','')");
         SQLS.append(",('page_header','menuDeployType','','fr','Type de Deploiement','')");
-        SQLS.append(",('page_header','menuEditTest','','en','Edit Test','')");
-        SQLS.append(",('page_header','menuEditTest','','fr','Editer un Test','')");
+        SQLS.append(",('page_header','menuEditTest','','en','Test','')");
+        SQLS.append(",('page_header','menuEditTest','','fr','Test','')");
         SQLS.append(",('page_header','menuEditTestCase','','en','Edit TestCase','')");
         SQLS.append(",('page_header','menuEditTestCase','','fr','Editer un Cas de Test','')");
         SQLS.append(",('page_header','menuEnvironmentManagement','','en','Environment Management','')");
@@ -4571,6 +4641,8 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLS.append(",('page_header','menuTestCampaign','','fr','Campagne de Test','')");
         SQLS.append(",('page_header','menuTestCase','','en','TestCase','')");
         SQLS.append(",('page_header','menuTestCase','','fr','Cas De Test','')");
+        SQLS.append(",('page_header','menuTestCaseList','','en','TestCase List','')");
+        SQLS.append(",('page_header','menuTestCaseList','','fr','Liste des Cas de Test','')");
         SQLS.append(",('page_header','menuTestData','','en','Test Data','')");
         SQLS.append(",('page_header','menuTestData','','fr','Données de Test','')");
         SQLS.append(",('page_header','menuTestDataLib','','en','Data Library','')");
@@ -4660,6 +4732,10 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLS.append(",('page_testcase','tooltip_step_used','','en','This step is being used by another step(s)!','')");
         SQLS.append(",('page_testcase','txt_property_not_defined','','en','** Property not defined **','')");
         SQLS.append(",('page_testcase','undefined_error_message','','en','There are undefined properties! Please check them before proceed.','')");
+        SQLS.append(",('page_testcaselist','filters','','en','Filters','Test filter')");
+        SQLS.append(",('page_testcaselist','filters','','fr','Filtres','Filtre des tests')");
+        SQLS.append(",('page_testcaselist','testcaselist','','en','Test Case List','List of all the test case of the selected test')");
+        SQLS.append(",('page_testcaselist','testcaselist','','fr','Liste des cas de test','Liste de tout les cas de test du test selectionné')");
         SQLS.append(",('page_testcasesearch','text','','en','Text','Insert here the text that will search against the following Fields of every <code class=\\'doc-crbvvoca\\'>test case</code> :<br>- Short Description,<br>- Detailed description / Value Expected,<br>- HowTo<br>- Comment<br><br>NB : Search is case insensitive.')");
         SQLS.append(",('page_testcase_m_addPicture','error_message_empty','','en','The URL value is empty!','')");
         SQLS.append(",('page_testcase_m_addPicture','lbl_feedurl','','en','Feed URL','')");
@@ -4756,6 +4832,8 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLS.append(",('testcase','BugID','','en','Bug ID','This is the bug ID that will fix the pending KO.')");
         SQLS.append(",('testcase','BugID','','fr','BugID','')");
         SQLS.append(",('testcase','Comment','','en','Comment','This is where to add any interesting comment about the <code class=\\'doc-crbvvoca\\'>test case</code>.')");
+        SQLS.append(",('testcase','countryList','','en','Country List','The list of countries where the test case is defined')");
+        SQLS.append(",('testcase','countryList','','fr','Liste des pays','La liste des pays sur lesquels le cas de test est défini')");
         SQLS.append(",('testcase','Creator','','en','Creator','This is the name of the Cerberus user who created the <code class=\\'doc-crbvvoca\\'>test case</code>.')");
         SQLS.append(",('testcase','Description','','en','Test case short description','It is a synthetic description of what the <code class=\\'doc-crbvvoca\\'>test case</code> do.')");
         SQLS.append(",('testcase','Description','','fr','Description','')");
@@ -4938,55 +5016,6 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLS.append(",('user','DefaultSystem','','en','Default System','This is the default <code class=\\'doc-crbvvoca\\'>system</code> the user works on the most. It is used to default the perimeter of <code class=\\'doc-crbvvoca\\'>test case</code> or <code class=\\'doc-crbvvoca\\'>applications</code> displayed on some Cerberus pages.')");
         SQLS.append(",('user','Team','','en','Team','This is the team of the user.')");
         SQLS.append(",('usergroup','GroupName','','en','Group Name','Authorities are managed by group. In order to be granted to a set of feature, you must belong to the corresponding group.<br>Every user can of course belong to as many group as necessary in order to get access to as many feature as required.<br>In order to get the full access to the system you must belong to every group.<br>Some groups are linked together on the test perimeter and integration perimeter.<br><br><b>Test perimeter :</b><br><br><code class=\\'doc-fixed\\'>TestRO</code>: Has read only access to the information related to test cases and also has access to execution reporting options.<br><br><code class=\\'doc-fixed\\'>Test</code>: Can modify non WORKING test cases but cannot delete test cases.<br><br><code class=\\'doc-fixed\\'>TestAdmin</code>: Can modify or delete any test case (including Pre Testing test cases). Can also create or delete a test.<br><br>The minimum group you need to belong is <code class=\\'doc-fixed\\'>TestRO</code> that will give you access in read only to all test data (including its execution reporting page).<br>If you want to be able to modify the testcases (except the WORKING ones), you need <code class=\\'doc-fixed\\'>Test</code> group on top of <code class=\\'doc-fixed\\'>TestRO</code> group.<br>If you want the full access to all testcase (including beeing able to delete any testcase), you will need <code class=\\'doc-fixed\\'>TestAdmin</code> on top of <code class=\\'doc-fixed\\'>TestRO</code> and <code class=\\'doc-fixed\\'>Test</code> group.<br><br><b>Test Execution perimeter :</b><br><br><code class=\\'doc-fixed\\'>RunTest</code>: Can run both Manual and Automated test cases from GUI.<br><br><b>Integration perimeter :</b><br><br><code class=\\'doc-fixed\\'>IntegratorRO</code>: Has access to the integration status.<br><br><code class=\\'doc-fixed\\'>Integrator</code>: Can add an application. Can change parameters of the environments.<br><br><code class=\\'doc-fixed\\'>IntegratorNewChain</code>: Can register the end of the chain execution. Has read only access to the other informations on the same page.<br><br><code class=\\'doc-fixed\\'>IntegratorDeploy</code>: Can disable or enable environments and register new build / revision.<br><br>The minimum group you need to belong is <code class=\\'doc-fixed\\'>IntegratorRO</code> that will give you access in read only to all environment data.<br>If you want to be able to modify the environment data, you need <code class=\\'doc-fixed\\'>Integrator</code> group on top of <code class=\\'doc-fixed\\'>IntegratorRO</code> group.<br><code class=\\'doc-fixed\\'>IntegratorNewChain</code> and <code class=\\'doc-fixed\\'>IntegratorDeploy</code> are used on top of <code class=\\'doc-fixed\\'>Integrator</code> Group to be able to create a new chain on an environment or perform a deploy operation.<br><br><b>Administration perimeter :</b><br><br><code class=\\'doc-fixed\\'>Administrator</code>: Can create, modify or delete users. Has access to log Event and Database Maintenance. Can change Parameter values.')");
-        SQLInstruction.add(SQLS.toString());
-
-        // Max size for screenshot
-        //-- ------------------------  645
-        SQLS = new StringBuilder();
-        SQLS.append("INSERT INTO `parameter` (`system`, `param`, `value`, `description`) VALUES ('', 'cerberus_screenshot_max_size', '1048576', 'Max size in bytes for a screenshot take while test case execution');");
-        SQLInstruction.add(SQLS.toString());
-
-        //New documentation entries for TestCaseList 
-        //-- ------------------------ 646
-        SQLS = new StringBuilder();
-        SQLS.append("INSERT INTO `documentation` VALUES ('invariant','GROUP','','fr','Groupe','')");
-        SQLS.append(",('invariant','PRIORITY','','fr','Priorité','')");
-        SQLS.append(",('testcase','countryList','','en','Country List','The list of countries where the test case is defined')");
-        SQLS.append(",('testcase','countryList','','fr','Liste des pays','La liste des pays sur lesquels le cas de test est défini')");
-        SQLS.append(",('page_testcaselist','filters','','en','Filters','Test filter')");
-        SQLS.append(",('page_testcaselist','filters','','fr','Filtres','Filtre des tests')");
-        SQLS.append(",('page_testcaselist','testcaselist','','en','Test Case List','List of all the test case of the selected test')");
-        SQLS.append(",('page_testcaselist','testcaselist','','fr','Liste des cas de test','Liste de tout les cas de test du test selectionné')");
-        SQLInstruction.add(SQLS.toString());
-
-        //New documentation entries for header
-        //-- ------------------------ 647-649
-        SQLS = new StringBuilder();
-        SQLS.append("INSERT INTO `documentation` VALUES ('page_header','menuTestCaseList','','en','TestCase List','')");
-        SQLS.append(",('page_header','menuTestCaseList','','fr','Liste des Cas de Test','')");
-        SQLInstruction.add(SQLS.toString());
-        SQLS = new StringBuilder();
-        SQLS.append("UPDATE `documentation` SET `DocLabel`='Test' WHERE `DocTable`='page_header' and`DocField`='menuEditTest' and`DocValue`='' and`Lang`='en';");
-        SQLInstruction.add(SQLS.toString());
-        SQLS = new StringBuilder();
-        SQLS.append("UPDATE `documentation` SET `DocLabel`='Test' WHERE `DocTable`='page_header' and`DocField`='menuEditTest' and`DocValue`='' and`Lang`='fr';");
-        SQLInstruction.add(SQLS.toString());
-
-        //Removed empty group.
-        //-- ------------------------ 650-651
-        SQLS = new StringBuilder();
-        SQLS.append("DELETE FROM `invariant` WHERE `idname`='GROUP' and`value`='';");
-        SQLInstruction.add(SQLS.toString());
-        SQLS = new StringBuilder();
-        SQLS.append("UPDATE testcase SET `group`='MANUAL' WHERE `group` = '' or `group` is null;");
-        SQLInstruction.add(SQLS.toString());
-
-        //Adding doc.
-        //-- ------------------------ 652
-        SQLS = new StringBuilder();
-        SQLS.append("INSERT INTO `documentation` (`DocTable`, `DocField`, `DocValue`, `Lang`, `DocLabel`, `DocDesc`) ");
-        SQLS.append(" VALUES ('page_buildcontent', 'buttonLoadAll', '', 'en', 'Load All Build', '') ");
-        SQLS.append(" ,('page_buildcontent', 'buttonLoadAll', '', 'fr', 'Charger tous', ''); ");
         SQLInstruction.add(SQLS.toString());
 
         return SQLInstruction;

@@ -55,7 +55,7 @@ function displayPageLabel() {
     $("[name='systemField']").html(doc.getDocOnline("buildrevisioninvariant", "system"));
     $("[name='levelField']").html(doc.getDocOnline("buildrevisioninvariant", "level"));
     $("[name='seqField']").html(doc.getDocOnline("buildrevisioninvariant", "seq"));
-    $("[name='versionnameField']").html(doc.getDocOnline("buildrevisioninvariant", "versionname"));
+    $("[name='versionnameField']").html(doc.getDocOnline("buildrevisioninvariant", "versionName"));
     displayInvariantList("system", "SYSTEM");
     $("[name='level']").append($('<option></option>').text("1").val("1"));
     $("[name='level']").append($('<option></option>').text("2").val("2"));
@@ -92,7 +92,7 @@ function deleteEntry(system, level, seq, versionname) {
     var doc = new Doc();
     var messageComplete = doc.getDocLabel("page_global", "deleteMessage");
     var entry = versionname + " (level : " + level + " sequence : " + seq + ")";
-    messageComplete = messageComplete.replace("%TABLE%", "Build Version");
+    messageComplete = messageComplete.replace("%TABLE%", "Build Revision Definition");
     messageComplete = messageComplete.replace("%ENTRY%", entry);
     showModalConfirmation(deleteEntryHandlerClick, doc.getDocLabel("page_buildrevdefinition", "button_delete"), messageComplete, system, level, seq, "");
 }
