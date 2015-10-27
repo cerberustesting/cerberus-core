@@ -468,38 +468,8 @@
     </servlet>
     <servlet>
         <servlet-name>DeleteProject</servlet-name>
-        <servlet-class>org.cerberus.servlet.project.DeleteProject</servlet-class></servlet>
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
+        <servlet-class>org.cerberus.servlet.project.DeleteProject</servlet-class>
+    </servlet>
     <servlet>
         <servlet-name>UpdateProject</servlet-name>
         <servlet-class>org.cerberus.servlet.project.UpdateProject</servlet-class>
@@ -910,70 +880,6 @@
     <servlet-mapping>
         <servlet-name>AddUser</servlet-name>
         <url-pattern>/AddUser</url-pattern>
-    </servlet-mapping>
-    <servlet-mapping>
-        <servlet-name>UpdateUser</servlet-name>
-        <url-pattern>/UpdateUser</url-pattern>
-    </servlet-mapping>
-    <servlet-mapping>
-        <servlet-name>UpdateMyUserSystem</servlet-name>
-        <url-pattern>/UpdateMyUserSystem</url-pattern>
-    </servlet-mapping>
-    <servlet-mapping>
-        <servlet-name>DeleteUser</servlet-name>
-        <url-pattern>/DeleteUser</url-pattern>
-    </servlet-mapping>
-    <servlet-mapping>
-        <servlet-name>ChangeUserPassword</servlet-name>
-        <url-pattern>/ChangeUserPassword</url-pattern>
-    </servlet-mapping>
-    <servlet-mapping>
-        <servlet-name>CreateTest</servlet-name>
-        <url-pattern>/CreateTest</url-pattern>
-    </servlet-mapping>
-    <servlet-mapping>
-        <servlet-name>DeleteTestCase</servlet-name>
-        <url-pattern>/DeleteTestCase</url-pattern>
-    </servlet-mapping>
-    <servlet-mapping>
-        <servlet-name>DeleteTestCase2</servlet-name>
-        <url-pattern>/DeleteTestCase2</url-pattern>
-    </servlet-mapping>
-    <servlet-mapping>
-        <servlet-name>CreateTestCase2</servlet-name>
-        <url-pattern>/CreateTestCase2</url-pattern>
-    </servlet-mapping>
-    <servlet-mapping>
-        <servlet-name>UpdateTestCase2</servlet-name>
-        <url-pattern>/UpdateTestCase2</url-pattern>
-    </servlet-mapping>
-    <servlet-mapping>
-        <servlet-name>ReadTestCase</servlet-name>
-        <url-pattern>/ReadTestCase</url-pattern>
-    </servlet-mapping>
-    <servlet-mapping>
-        <servlet-name>ImportSeleniumIDE</servlet-name>
-        <url-pattern>/ImportSeleniumIDE</url-pattern>
-    </servlet-mapping>
-    <servlet-mapping>
-        <servlet-name>TCEwwwDetail</servlet-name>
-        <url-pattern>/TCEwwwDetail</url-pattern>
-    </servlet-mapping>
-    <servlet-mapping>
-        <servlet-name>GenerateGraph</servlet-name>
-        <url-pattern>/GenerateGraph</url-pattern>
-    </servlet-mapping>
-    <servlet-mapping>
-        <servlet-name>GetReportData</servlet-name>
-        <url-pattern>/GetReportData</url-pattern>
-    </servlet-mapping>
-    <servlet-mapping>
-        <servlet-name>TestCaseActionExecutionDetail</servlet-name>
-        <url-pattern>/TestCaseActionExecutionDetail</url-pattern>
-    </servlet-mapping>
-    <servlet-mapping>
-        <servlet-name>GetConnectionPoolName</servlet-name>
-        <url-pattern>/GetConnectionPoolName</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
         <servlet-name>UpdateUser</servlet-name>
@@ -1718,6 +1624,7 @@
         <error-code>500</error-code>
         <location>/ErrorPages/Error.jsp?error=500</location>
     </error-page>
+    <!-- Start JAAS Configuration -->
     <security-role>
         <description>Readonly access to any test and testcase.</description>
         <role-name>TestRO</role-name>
@@ -2065,4 +1972,175 @@
             <description>IntegratorDeploy</description>
             <role-name>IntegratorDeploy</role-name>
         </auth-constraint>
-    </security-constraint></web-app>
+    </security-constraint>
+    <security-constraint>
+        <display-name>Administrator</display-name>
+        <web-resource-collection>
+            <web-resource-name>jsp</web-resource-name>
+            <description>jsp</description>
+            <url-pattern>/LogViewer.jsp</url-pattern>
+            <url-pattern>/Parameter.jsp</url-pattern>
+            <url-pattern>/UserManager.jsp</url-pattern>
+            <url-pattern>/InvariantPublic.jsp</url-pattern>
+            <url-pattern>/InvariantPrivate.jsp</url-pattern>
+            <url-pattern>/ExecutionThreadMonitoring.jsp</url-pattern>
+        </web-resource-collection>
+        <web-resource-collection>
+            <web-resource-name>servlet</web-resource-name>
+            <description>servlet</description>
+            <url-pattern>/GetParameter</url-pattern>
+            <url-pattern>/GetParameterSystem</url-pattern>
+            <url-pattern>/UpdateParameter</url-pattern>
+            <url-pattern>/GetUsers</url-pattern>
+            <url-pattern>/FindAllUsers</url-pattern>
+            <url-pattern>/AddUser</url-pattern>
+            <url-pattern>/UpdateUser</url-pattern>
+            <url-pattern>/DeleteUser</url-pattern>
+            <url-pattern>/ReadLogEvent</url-pattern>
+            <url-pattern>/FindAllInvariantPublic</url-pattern>
+            <url-pattern>/FindAllInvariantPrivate</url-pattern>
+            <url-pattern>/CreateInvariant</url-pattern>
+            <url-pattern>/UpdateInvariant</url-pattern>
+            <url-pattern>/DeleteInvariant</url-pattern>
+            <url-pattern>/DeleteApplication</url-pattern>
+            <url-pattern>/ExecutionThreadMonitoring</url-pattern>
+        </web-resource-collection>
+        <auth-constraint>
+            <description>Administrator</description>
+            <role-name>Administrator</role-name>
+        </auth-constraint>
+    </security-constraint>
+    <security-constraint>
+        <display-name>NONE</display-name>
+        <web-resource-collection>
+            <web-resource-name>jsp</web-resource-name>
+            <description>jsp</description>
+            <url-pattern>/DatabaseMaintenance.jsp</url-pattern>
+            <url-pattern>/Documentation.jsp</url-pattern>
+            <url-pattern>/Login.jsp</url-pattern>
+            <url-pattern>/Logout.jsp</url-pattern>
+            <url-pattern>/Error.jsp</url-pattern>
+            <url-pattern>/header.jsp</url-pattern>
+            <url-pattern>/function.jsp</url-pattern>
+            <url-pattern>/index1.jsp</url-pattern>
+            <url-pattern>/index2.jsp</url-pattern>
+            <url-pattern>/index3.jsp</url-pattern>
+        </web-resource-collection>
+        <web-resource-collection>
+            <web-resource-name>servlet</web-resource-name>
+            <description>servlet</description>
+            <url-pattern>/RunTestCase</url-pattern>
+            <url-pattern>/RunTestCaseManually</url-pattern>
+            <url-pattern>/SaveStatistic</url-pattern>
+            <url-pattern>/GetNumberOfExecutions</url-pattern>
+            <url-pattern>/ResultCI</url-pattern>
+            <url-pattern>/GetConnectionPoolName</url-pattern>
+            <url-pattern>/SaveManualExecution</url-pattern>
+            <url-pattern>/SaveManualExecutionPicture</url-pattern>
+            <url-pattern>/DocumentationField</url-pattern>
+            <url-pattern>/GetInvariantList</url-pattern>
+            <url-pattern>/GetCampaign</url-pattern>
+            <url-pattern>/GetTagExecutions</url-pattern>
+            <url-pattern>/GetCampaignExecutionsCommand</url-pattern>
+            <url-pattern>/ListCampaignParameter</url-pattern>
+            <url-pattern>/UpdateCampaign</url-pattern>
+            <url-pattern>/UpdateCampaignParameter</url-pattern>
+            <url-pattern>/AddCampaign</url-pattern>
+            <url-pattern>/AddCampaignContent</url-pattern>
+            <url-pattern>/AddCampaignParameter</url-pattern>
+            <url-pattern>/DeleteCampaign</url-pattern>
+            <url-pattern>/DeleteCampaignContent</url-pattern>
+            <url-pattern>/DeleteCampaignParameter</url-pattern>
+            <url-pattern>/GetTestBattery</url-pattern>
+            <url-pattern>/AddTestBattery</url-pattern>
+            <url-pattern>/AddTestBatteryContent</url-pattern>
+            <url-pattern>/DeleteTestBattery</url-pattern>
+            <url-pattern>/DeleteTestBatteryContent</url-pattern>
+            <url-pattern>/UpdateTestBattery</url-pattern>
+            <url-pattern>/importXML</url-pattern>
+            <url-pattern>/importFile</url-pattern>
+            <url-pattern>/NewRelease</url-pattern>
+            <url-pattern>/TestcaseListGrid</url-pattern>
+            <url-pattern>/CampaignExecutionRadarGraphByFunction</url-pattern>
+            <url-pattern>/CampaignExecutionStatusBarGraphByFunction</url-pattern>
+            <url-pattern>/CampaignExecutionReport</url-pattern>
+            <url-pattern>/CampaignExecutionGraphByStatus</url-pattern>
+            <url-pattern>/ExecuteNextInQueue</url-pattern>
+            <url-pattern>/ExecutionThreadReset</url-pattern>
+            <url-pattern>/VirtualProxy</url-pattern>
+            <url-pattern>/ReadDocumentation</url-pattern>
+            <url-pattern>/ReadCerberusInformation</url-pattern>
+            <url-pattern>/ReadTestCaseExecution</url-pattern>
+            <url-pattern>/ReadTag</url-pattern>
+            <url-pattern>/SaveManualExecutionPictureTest</url-pattern>
+            <url-pattern>/RunTestCaseAsync</url-pattern>
+        </web-resource-collection>
+    </security-constraint>
+    <security-constraint>
+        <display-name>ANY</display-name>
+        <web-resource-collection>
+            <web-resource-name>jsp</web-resource-name>
+            <description>jsp</description>
+            <url-pattern>/Homepage.jsp</url-pattern>
+            <url-pattern>/ChangePassword.jsp</url-pattern>
+        </web-resource-collection>
+        <web-resource-collection>
+            <web-resource-name>servlet</web-resource-name>
+            <description>servlet</description>
+            <url-pattern>/Homepage</url-pattern>
+            <url-pattern>/ReadMyUser</url-pattern>
+            <url-pattern>/ChangeUserPassword</url-pattern>
+            <url-pattern>/GeneratePerformanceString</url-pattern>
+            <url-pattern>/UpdateMyUser</url-pattern>
+            <url-pattern>/UpdateMyUserSystem</url-pattern>
+            <url-pattern>/UpdateMyUserReporting</url-pattern>
+            <url-pattern>/UpdateMyUserRobotPreference</url-pattern>
+        </web-resource-collection>
+        <auth-constraint>
+            <description/>
+            <role-name>TestRO</role-name>
+            <role-name>Test</role-name>
+            <role-name>TestAdmin</role-name>
+            <role-name>RunTest</role-name>
+            <role-name>TestDataManager</role-name>
+            <role-name>IntegratorRO</role-name>
+            <role-name>Integrator</role-name>
+            <role-name>IntegratorNewChain</role-name>
+            <role-name>IntegratorDeploy</role-name>
+            <role-name>Administrator</role-name>
+        </auth-constraint>
+    </security-constraint>
+    <login-config>
+        <auth-method>FORM</auth-method>
+        <!--        Default Realm defined on Cluster->Security
+        <realm-name>securityCerberusQA</realm-name>-->
+        <form-login-config>
+            <form-login-page>/Login.jsp</form-login-page>
+            <form-error-page>/Login.jsp?error=1</form-error-page>
+        </form-login-config>
+    </login-config>
+    <!--End JAAS Configuration -->
+    <context-param>
+        <param-name>contextConfigLocation</param-name>
+        <param-value>/WEB-INF/applicationContext.xml</param-value>
+    </context-param>
+    <context-param>
+        <param-name>log4jConfigLocation</param-name>
+        <param-value>/WEB-INF/log4j.properties</param-value>
+    </context-param>
+    <listener>
+        <listener-class>org.springframework.web.context.request.RequestContextListener</listener-class>
+    </listener>
+    <listener>
+        <listener-class>org.springframework.web.util.WebAppRootListener</listener-class>
+    </listener>
+    <listener>
+        <listener-class>org.springframework.web.util.Log4jConfigListener</listener-class>
+    </listener>
+    <listener>
+        <listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>
+    </listener>
+    <listener>
+        <listener-class>org.cerberus.crud.entity.SessionCounterListener</listener-class>
+    </listener>
+</web-app>
