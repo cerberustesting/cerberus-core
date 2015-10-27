@@ -44,7 +44,6 @@ import org.cerberus.crud.factory.IFactoryTCase;
 import org.cerberus.crud.factory.IFactoryTestCaseExecution;
 import org.cerberus.crud.service.IParameterService;
 import org.cerberus.crud.service.ITestCaseCountryService;
-import org.cerberus.crud.service.ITestCaseService;
 import org.cerberus.crud.service.impl.TestCaseCountryService;
 import org.cerberus.enums.MessageGeneralEnum;
 import org.cerberus.exception.CerberusException;
@@ -67,14 +66,10 @@ public class AsyncRequestProcessor implements Runnable {
 
     private AsyncContext asyncContext;
     private AsyncRequestParameters urlParameters;
-    private String result;
-
-    public String getResult() {
-        return result;
-    }
-
+     
     @Override
     public void run() {
+        String result;
         DateFormat df = new SimpleDateFormat(DateUtil.DATE_FORMAT_DISPLAY);
         String msg = "Async Supported? " + asyncContext.getRequest().isAsyncSupported();
         org.apache.log4j.Logger.getLogger(AsyncRequestProcessor.class.getName()).log(org.apache.log4j.Level.INFO, msg);
@@ -87,7 +82,7 @@ public class AsyncRequestProcessor implements Runnable {
                     + Thread.currentThread().getId() + " TEST = " + urlParameters.getTest() + "TESTCASE = " + urlParameters.getTestCase());
             //obtain the remaining parameters
             parseExecutionParameters(asyncContext.getRequest());
-            processing(df);
+            result = processing(df);
         } else {
             result = df.format(new Date()) + " - " + 0
                     + " [" + urlParameters.getTest()
@@ -98,13 +93,19 @@ public class AsyncRequestProcessor implements Runnable {
             org.apache.log4j.Logger.getLogger(AsyncRequestProcessor.class.getName()).log(org.apache.log4j.Level.FATAL, result);
         }
 
-        PrintWriter outResponse;
+        PrintWriter outResponse = null;
+        
         try {
             outResponse = asyncContext.getResponse().getWriter();
             asyncContext.getResponse().setContentType("text/plain");
-            outResponse.print(result);
+            outResponse.print(result);            
         } catch (IOException ex) {
             Logger.getLogger(AsyncRequestProcessor.class.getName()).log(Level.SEVERE, null, ex);
+            org.apache.log4j.Logger.getLogger(AsyncRequestProcessor.class.getName()).log(org.apache.log4j.Level.INFO, "Unable to output result " + ex.toString());
+        }finally{
+            if(outResponse != null){
+                outResponse.close();
+            }
         }
 
         //complete the processing
@@ -122,8 +123,8 @@ public class AsyncRequestProcessor implements Runnable {
     }
 
     // TODO:FN remove test debug
-    private void processing(DateFormat df) {
-
+    private String processing(DateFormat df) {
+        String result = "";
         ApplicationContext appContext = WebApplicationContextUtils.getWebApplicationContext(asyncContext.getRequest().getServletContext());
         ITestCaseCountryService tccService = appContext.getBean(TestCaseCountryService.class);
         
@@ -261,9 +262,9 @@ public class AsyncRequestProcessor implements Runnable {
                 org.apache.log4j.Logger.getLogger(AsyncRequestProcessor.class.getName()).log(org.apache.log4j.Level.ERROR, "Exception cleaning Memory: ", ex);
             }
         }
-
+        
         org.apache.log4j.Logger.getLogger(AsyncRequestProcessor.class.getName()).log(org.apache.log4j.Level.INFO, "Processing.. " + result);
-
+        return result;
     }
 
     private void parseMandatoryURLParameters(ServletRequest request) {

@@ -20,6 +20,7 @@ package org.cerberus.crud.dao;
 import java.util.List;
 import org.cerberus.crud.entity.CountryEnvParam;
 import org.cerberus.exception.CerberusException;
+import org.cerberus.util.answer.AnswerList;
 
 /**
  * @author bcivel
@@ -80,4 +81,6 @@ public interface ICountryEnvParamDAO {
     public Integer count(String searchTerm, String inds);
 
     public List<CountryEnvParam> findListByCriteria(String system);
+    
+    public AnswerList readActiveBySystem(String system);
 }

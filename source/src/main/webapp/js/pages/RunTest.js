@@ -26,10 +26,22 @@ $.when($.getScript("js/pages/global/global.js")).then(function () {
         displayFooter(doc);
         bindToggleCollapse();
         appendCountryList();
+        loadTestList();
         $("#system").multiselect();
 
         loadExecForm();
         loadRobotForm();
+        displayEnvList("environment", getUser().defaultSystem);
+
+        $('[name="envSettings"]').on("change", function () {
+            if (this.value === "auto") {
+                $("#envSettingsMan").hide();
+                $("#envSettingsAuto").show();
+            } else if (this.value === "manual") {
+                $("#envSettingsAuto").hide();
+                $("#envSettingsMan").show();
+            }
+        });
 
         $("#saveRobotPreferences").click(saveRobotPreferences);
         $("#saveExecutionParams").click(saveExecutionPreferences);
@@ -78,7 +90,7 @@ function loadRobotForm() {
     loadSelect("BROWSER", "browser", pref);
     $("[name=platform]").append($('<option></option>').text("Optional").val(""));
     loadSelect("PLATFORM", "platform", pref);
-    $("[name=screenSize").append($('<option></option>').text("Default (Client Full Screen)").val(""));
+    $("[name=screenSize]").append($('<option></option>').text("Default (Client Full Screen)").val(""));
     loadSelect("screensize", "screenSize", pref);
 
 }
@@ -86,7 +98,7 @@ function loadRobotForm() {
 function loadRobotInfo() {
     var value = "";
     var pref = JSON.parse(localStorage.getItem("robotSettings"));
-    
+
     if (this.value !== undefined) {
         value = $(this).val();
     } else if (pref !== null) {
@@ -140,6 +152,44 @@ function loadSelect(idName, selectName, pref) {
             }
             if (pref !== null) {
                 $("[name='" + selectName + "']").val(pref[selectName]);
+            }
+        }
+    });
+}
+
+function selectTest() {
+    $(this).parent().children("li").removeClass("selected");
+    $(this).addClass("selected");
+    $("#testCaseList").empty();
+    
+     $.ajax({
+        url: "ReadTestCase",
+        method: "GET",
+        data: {sEcho: 1, test: "Examples"},
+        dataType: "json",
+        async: true,
+        success: function (data) {
+            var testCaseList = $("#testCaseList");
+            
+            for (var index = 0; index < data.contentTable.length; index++) {
+                testCaseList.append($("<li></li>").addClass("list-group-item").text(data.contentTable[index].testCase + " [" + data.contentTable[index].application + "] :" + data.contentTable[index].shortDescription));
+            }
+        }
+    });
+}
+
+function loadTestList() {
+        $.ajax({
+        url: "ReadTest",
+        method: "GET",
+        data: {sEcho: 1},
+        dataType: "json",
+        async: true,
+        success: function (data) {
+            var testList = $("#testList");
+            
+            for (var index = 0; index < data.contentTable.length; index++) {
+                testList.append($("<li></li>").addClass("list-group-item").text(data.contentTable[index].test + " - " + data.contentTable[index].description).click(selectTest));
             }
         }
     });

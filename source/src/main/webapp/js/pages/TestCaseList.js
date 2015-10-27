@@ -490,7 +490,7 @@ function aoColumnsFunc(countries) {
                 var buttons = "";
 
                 var testCaseLink = '<a id="testCaseLink" class="btn btn-primary btn-xs margin-right5"\n\
-                                    target="_blank" href="TestCase.jsp?Test=' + encodeURIComponent(obj["test"]) + "&TestCase=" + encodeURIComponent(obj["testCase"]) + '&Load=Load">\n\
+                                    href="TestCase.jsp?Test=' + encodeURIComponent(obj["test"]) + "&TestCase=" + encodeURIComponent(obj["testCase"]) + '&Load=Load">\n\
                                     <span class="glyphicon glyphicon-new-window"></span>\n\
                                     </a>';
 

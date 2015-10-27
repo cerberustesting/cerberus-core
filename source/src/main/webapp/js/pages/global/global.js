@@ -59,20 +59,29 @@ function getSubDataLabel(type) {
  * Method that display a combo box in all the selectName tags with the value retrieved from the invariant list
  * @param {String} idName value that filters the invariants that will be retrieved
  * @param {String} selectName value name of the select tag in the html
+ * @param {String} defaultValue to be selected
  * @returns {void}
  */
-function displayInvariantList(selectName, idName) {
+function displayInvariantList(selectName, idName, defaultValue) {
     $.when($.getJSON("FindInvariantByID", "idName=" + idName)).then(function (data) {
         for (var option in data) {
             $("[name='" + selectName + "']").append($('<option></option>').text(data[option].value).val(data[option].value));
         }
+        
+        if (defaultValue !== undefined) {
+            $("[name='"+ selectName +"']").val(defaultValue);
+        }
     });
 }
 
-function displayInvariantListWithDesc(selectName, idName) {
+function displayInvariantListWithDesc(selectName, idName, defaultValue) {
     $.when($.getJSON("FindInvariantByID", "idName=" + idName)).then(function (data) {
         for (var option in data) {
             $("[name='" + selectName + "']").append($('<option></option>').text(data[option].value + " - " + data[option].description).val(data[option].value));
+        }
+                        
+        if (defaultValue !== undefined) {
+            $("[name='"+ selectName +"']").val(defaultValue);
         }
     });
 }
@@ -81,12 +90,17 @@ function displayInvariantListWithDesc(selectName, idName) {
 /**
  * Method that display a combo box in all the selectName tags with the value retrieved from the DeployType list
  * @param {String} selectName value name of the select tag in the html
+ * @param {String} defaultValue to be selected
  * @returns {void}
  */
-function displayDeployTypeList(selectName) {
+function displayDeployTypeList(selectName, defaultValue) {
     $.when($.getJSON("ReadDeployType", "")).then(function (data) {
         for (var option in data.contentTable) {
             $("select[id='" + selectName + "']").append($('<option></option>').text(data.contentTable[option].deploytype + " - " + data.contentTable[option].description).val(data.contentTable[option].deploytype));
+        }
+                
+        if (defaultValue !== undefined) {
+            $("[name='"+ selectName +"']").val(defaultValue);
         }
     });
 }
@@ -96,9 +110,10 @@ function displayDeployTypeList(selectName) {
  * Method that display a combo box in all the selectName tags with the value retrieved from the Application list
  * @param {String} selectName value name of the select tag in the html
  * @param {String} system [optional] value name of the system in order to filter the application list
+ * @param {String} defaultValue to be selected
  * @returns {void}
  */
-function displayApplicationList(selectName, system) {
+function displayApplicationList(selectName, system, defaultValue) {
     var myData = "";
     if (system !== "") {
         myData = "system=" + system;
@@ -107,6 +122,10 @@ function displayApplicationList(selectName, system) {
         for (var option in data.contentTable) {
             $("[name='" + selectName + "']").append($('<option></option>').text(data.contentTable[option].application + " - " + data.contentTable[option].description).val(data.contentTable[option].application));
         }
+                
+        if (defaultValue !== undefined) {
+            $("[name='"+ selectName +"']").val(defaultValue);
+        }
     });
 }
 
@@ -114,13 +133,18 @@ function displayApplicationList(selectName, system) {
 /**
  * Method that display a combo box in all the selectName tags with the value retrieved from the Project list
  * @param {String} selectName value name of the select tag in the html
+ * @param {String} defaultValue to be selected
  * @returns {void}
  */
-function displayProjectList(selectName) {
+function displayProjectList(selectName, defaultValue) {
     $.when($.getJSON("ReadProject", "")).then(function (data) {
         $("[name='" + selectName + "']").append($('<option></option>').text("NONE").val(""));
         for (var option in data.contentTable) {
             $("[name='" + selectName + "']").append($('<option></option>').text(data.contentTable[option].idProject + " - " + data.contentTable[option].description).val(data.contentTable[option].idProject));
+        }
+                        
+        if (defaultValue !== undefined) {
+            $("[name='"+ selectName +"']").val(defaultValue);
         }
     });
 }
@@ -131,9 +155,10 @@ function displayProjectList(selectName) {
  * @param {String} selectName value name of the select tag in the html
  * @param {String} system value of the system to filter the build.
  * @param {String} level value of the level of the build invariant
+ * @param {String} defaultValue to be selected
  * @returns {void}
  */
-function displayBuildList(selectName, system, level) {
+function displayBuildList(selectName, system, level, defaultValue) {
     var myData = "iSortCol_0=2"; // We sort by sequence.
     if (system !== "") {
         myData += "&system=" + system;
@@ -145,6 +170,30 @@ function displayBuildList(selectName, system, level) {
     $.when($.getJSON("ReadBuildRevisionInvariant", myData)).then(function (data) {
         for (var option in data.contentTable) {
             $("[name='" + selectName + "']").append($('<option></option>').text(data.contentTable[option].versionName).val(data.contentTable[option].versionName));
+        }
+                        
+        if (defaultValue !== undefined) {
+            $("[name='"+ selectName +"']").val(defaultValue);
+        }
+    });
+}
+
+/*****Environment LIST **********************************/
+/**
+ * Method that display a combo box in all the selectName tags with the value retrieved from the Environment list
+ * @param {String} selectName value name of the select tag in the html
+ * @param {String} system value of the system to filter the build.
+ * @param {String} defaultValue to be selected
+ * @returns {void}
+ */
+function displayEnvList(selectName, system, defaultValue) {
+    $.when($.getJSON("ReadEnvironment", "system=" + system)).then(function (data) {
+        for (var option in data.contentTable) {
+            $("[name='" + selectName + "']").append($('<option></option>').text(data.contentTable[option].environment).val(data.contentTable[option].environment));
+        }
+                        
+        if (defaultValue !== undefined) {
+            $("[name='"+ selectName +"']").val(defaultValue);
         }
     });
 }
@@ -979,7 +1028,7 @@ function bindToggleCollapse() {
         });
 
         if (localStorage.getItem(this.id) === "false") {
-            $(this).collapse();
+            $(this).collapse('hide');
         }
     });
 }

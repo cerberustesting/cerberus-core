@@ -38,12 +38,12 @@ function initBuildContentPage() {
     var urlBuild = GetURLParameter('build');
     var urlRevision = GetURLParameter('revision');
     console.log('URL - B : ' + urlBuild + ' R : ' + urlRevision);
-    if (urlBuild !== null) {
-        $('#selectBuild').val(urlBuild);
-    }
-    if (urlRevision !== null) {
-        $('#selectRevision').val(urlRevision);
-    }
+//    if (urlBuild !== null) {
+//        $('#selectBuild').val(urlBuild);
+//    }
+//    if (urlRevision !== null) {
+//        $('#selectRevision').val(urlRevision);
+//    }
 //    console.log('B : ' + urlBuild + ' R : ' + urlRevision);
     var table = loadBCTable();
     table.fnSort([11, 'desc']);
@@ -132,28 +132,54 @@ function displayPageLabel() {
     $("[name='mavenArtifactIdField']").html(doc.getDocOnline("buildrevisionparameters", "mavenArtifactId"));
     $("[name='mavenVersionField']").html(doc.getDocOnline("buildrevisionparameters", "mavenVersion"));
 
-    // Adding ALL entry in build combo (when selected, no filters are applied on build).
-    $("#selectBuild").append($('<option></option>').text("-- ALL --").val("ALL"));
-    // Adding all other entries.
-    displayBuildList("build", getUser().defaultSystem, "1");
-    // Adding ALL entry in revision combo (when selected, no filters are applied on revision).
-    $("#selectRevision").append($('<option></option>').text("-- ALL --").val("ALL"));
-    // Adding all other entries.
-    displayBuildList("revision", getUser().defaultSystem, "2");
+
+    var urlBuild = GetURLParameter('build');
+    var urlRevision = GetURLParameter('revision');
+
+    appendBuildList("build", "1", urlBuild);
+    appendBuildList("revision", "2", urlRevision);
     displayApplicationList("application", getUser().defaultSystem);
     displayProjectList("project");
     displayUserList("releaseowner");
     displayFooter(doc);
 }
 
+function appendBuildList(selectName, level, defaultValue) {
+    var select = $('[name="' + selectName + '"]');
+
+    $.ajax({
+        type: "GET",
+        url: "ReadBuildRevisionInvariant",
+        data: {iSortCol_0: "2", system: getUser().defaultSystem, level: level},
+        async: false,
+        dataType: 'json',
+        success: function (data) {
+            select.append($('<option></option>').text("-- ALL --").val("ALL"));
+            select.append($('<option></option>').text("NONE").val("NONE"));
+
+            for (var option in data.contentTable) {
+                select.append($('<option></option>').text(data.contentTable[option].versionName).val(data.contentTable[option].versionName));
+            }
+
+            if (defaultValue !== undefined) {
+                select.val(defaultValue);
+            }
+
+        },
+        error: function () {
+            showUnexpectedError();
+        }
+    });
+}
+
 function loadBCTable() {
-    var selectBuild = $("#selectBuild option:selected").val();
-    var selectRevision = $("#selectRevision option:selected").val();
+    var selectBuild = $("#selectBuild").val();
+    var selectRevision = $("#selectRevision").val();
 
     console.log('Chargement table B : ' + selectBuild + ' R : ' + selectRevision);
 
     var CallParam = 'build=' + encodeURIComponent(selectBuild) + '&revision=' + encodeURIComponent(selectRevision);
-    window.history.pushState('Tag', '', 'BuildContent.jsp?' + CallParam);
+    window.history.pushState('BuildContent', '', 'BuildContent.jsp?' + CallParam);
 
     //clear the old report content before reloading it
     $("#buildContentList").empty();
@@ -295,11 +321,11 @@ function CreateBrpClick() {
     // New release goes by default to the build/revision selected in filter combos. (except when ALL)
     var myBuild = $("#selectBuild option:selected").val();
     var myRevision = $("#selectRevision option:selected").val();
-    if (myBuild==='ALL') {
-        myBuild='NONE';
+    if (myBuild === 'ALL') {
+        myBuild = 'NONE';
     }
-    if (myRevision==='ALL') {
-        myRevision='NONE';
+    if (myRevision === 'ALL') {
+        myRevision = 'NONE';
     }
     formAdd.find("#build").val(myBuild);
     formAdd.find("#revision").val(myRevision);

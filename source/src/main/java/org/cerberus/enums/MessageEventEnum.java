@@ -136,6 +136,7 @@ public enum MessageEventEnum {
     ACTION_FAILED_TYPE(257, "FA", "Object and/or Property are ‘null’. Both are mandatory in order to perform the action type.", true, true ,true , MessageGeneralEnum.EXECUTION_FA_ACTION),
     ACTION_FAILED_DOUBLECLICK(258, "FA", "Object and Property are ‘null’. At least one is mandatory in order to perform the action double click.", true, true ,true , MessageGeneralEnum.EXECUTION_FA_ACTION),
     ACTION_FAILED_URLLOGIN(259, "FA", "Failed to open '%URL%'.", true, true ,true , MessageGeneralEnum.EXECUTION_FA_ACTION),
+    ACTION_FAILED_URLLOGIN_TIMEOUT(259, "FA", "Failed to open '%URL%'. Timeout exceeded: %TIMEOUT% seconds", true, true ,true , MessageGeneralEnum.EXECUTION_FA_ACTION),
     ACTION_FAILED_MOUSEOVER(260, "FA", "Object and property are ‘null’. At least one is mandatory in order to perform the action mouse over.", true, true ,true , MessageGeneralEnum.EXECUTION_FA_ACTION),
     ACTION_FAILED_MOUSEOVERANDWAIT_GENERIC(261, "FA", "Object is 'null'. This is mandatory in order to perform the action mouse over and wait.", true, true ,true , MessageGeneralEnum.EXECUTION_FA_ACTION),
     ACTION_FAILED_MOUSEOVERANDWAIT(262, "FA", "Mouse over '%ELEMENT%' but failed to wait '%TIME%' ms.", true, true ,true , MessageGeneralEnum.EXECUTION_FA_ACTION),
@@ -145,6 +146,7 @@ public enum MessageEventEnum {
     ACTION_FAILED_KEYPRESS_ENV_ERROR(264, "FA", "Environment configurations don't allow you to perform the KeyPress operation.", true, true ,true , MessageGeneralEnum.EXECUTION_FA_ACTION),   
     ACTION_FAILED_KEYPRESS_NOT_AVAILABLE(264, "FA", "KeyPress failed! %KEY% is not available.", true, true ,true , MessageGeneralEnum.EXECUTION_FA_ACTION),   
     ACTION_FAILED_OPENURL(265, "FA", "Failed to open '%URL%'.", true, true ,true , MessageGeneralEnum.EXECUTION_FA_ACTION),
+    ACTION_FAILED_OPENURL_TIMEOUT(265, "FA", "Failed to open '%URL%'. Timeout exceeded: %TIMEOUT% seconds", true, true ,true , MessageGeneralEnum.EXECUTION_FA_ACTION),
     ACTION_FAILED_SELECT(266, "FA", "Object and/or Property are ‘null’. Both are mandatory in order to perform the action type.", true, true ,true , MessageGeneralEnum.EXECUTION_FA_ACTION),
     ACTION_FAILED_CLICK_NO_SUCH_ELEMENT(267, "FA", "Failed to click because could not find element '%ELEMENT%'!", true, true ,true , MessageGeneralEnum.EXECUTION_FA_ACTION),
     ACTION_FAILED_DOUBLECLICK_NO_SUCH_ELEMENT(268, "FA", "Failed to double click because could not find element '%ELEMENT%'!", true, true ,true , MessageGeneralEnum.EXECUTION_FA_ACTION),
@@ -261,8 +263,8 @@ public enum MessageEventEnum {
     
     // *********** DATA OPERATION ***********
     DATA_OPERATION_OK(500, MessageCodeEnum.DATA_OPERATION_CODE_SUCCESS.getCode(), "%ITEM% - %OPERATION% was finished with success!", false, false ,false , MessageGeneralEnum.DATA_OPERATION_SUCCESS),    
-    DATA_OPERATION_NO_DATA_FOUND(500, MessageCodeEnum.DATA_OPERATION_CODE_SUCCESS.getCode(), "Could not find row.", true, true ,false , MessageGeneralEnum.EXECUTION_FA),
     DATA_OPERATION_WARNING_PARTIAL_RESULT(500, MessageCodeEnum.DATA_OPERATION_CODE_WARNING.getCode(), "Result may contain partial result. %DESCRIPTION%", false, false ,false , MessageGeneralEnum.DATA_OPERATION_WARNING)   , 
+    DATA_OPERATION_NO_DATA_FOUND(530, MessageCodeEnum.DATA_OPERATION_CODE_SUCCESS.getCode(), "Could not find row.", true, true ,false , MessageGeneralEnum.EXECUTION_FA),
     DATA_OPERATION_ERROR_EXPECTED(550, MessageCodeEnum.DATA_OPERATION_CODE_ERROR.getCode(), "%ITEM% - operation %OPERATION% failed to complete. %REASON%", false, false ,false , MessageGeneralEnum.DATA_OPERATION_ERROR),
     DATA_OPERATION_ERROR_DUPLICATE(551, MessageCodeEnum.DATA_OPERATION_CODE_ERROR.getCode(), "The %ITEM% that you are trying to %OPERATION% conflicts with an existing one! Please check for duplicates!", false, false ,false, MessageGeneralEnum.DATA_OPERATION_ERROR),
     DATA_OPERATION_ERROR_UNEXPECTED(552, MessageCodeEnum.DATA_OPERATION_CODE_ERROR.getCode(), "An unexpected problem occurred. %DESCRIPTION%", false, false ,false, MessageGeneralEnum.DATA_OPERATION_ERROR),

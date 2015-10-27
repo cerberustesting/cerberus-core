@@ -38,7 +38,7 @@ public class AppAsyncListener implements AsyncListener{
     @Override
     public void onComplete(AsyncEvent ae) throws IOException {
         System.out.println("AppAsyncListener onComplete");
-        org.apache.log4j.Logger.getLogger(AppAsyncListener.class.getName()).log(org.apache.log4j.Level.WARN, "AppAsyncListener onComplete");
+        org.apache.log4j.Logger.getLogger(AppAsyncListener.class.getName()).log(org.apache.log4j.Level.DEBUG, "AppAsyncListener onComplete");
         
     }
 
@@ -64,7 +64,7 @@ public class AppAsyncListener implements AsyncListener{
     @Override
     public void onStartAsync(AsyncEvent ae) throws IOException {
         System.out.println("AppAsyncListener onStartAsync");
-        org.apache.log4j.Logger.getLogger(AppAsyncListener.class.getName()).log(org.apache.log4j.Level.WARN, "AppAsyncListener onStartAsync");        
+        org.apache.log4j.Logger.getLogger(AppAsyncListener.class.getName()).log(org.apache.log4j.Level.DEBUG, "AppAsyncListener onStartAsync");        
     }
     
 }
