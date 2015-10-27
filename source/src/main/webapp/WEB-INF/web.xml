@@ -24,8 +24,8 @@
         <servlet-class>org.cerberus.servlet.zzpublic.RunTestCase</servlet-class>
     </servlet>
     <servlet>
-        <servlet-name>RunTestCaseCommandLine</servlet-name>
-        <servlet-class>org.cerberus.servlet.zzpublic.async.RunTestCaseCommandLine</servlet-class>
+        <servlet-name>RunTestCaseAsync</servlet-name>
+        <servlet-class>org.cerberus.servlet.zzpublic.async.RunTestCaseAsync</servlet-class>
         <async-supported>true</async-supported>
     </servlet>
     <servlet>
@@ -822,8 +822,8 @@
         <url-pattern>/RunTestCase</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
-        <servlet-name>RunTestCaseCommandLine</servlet-name>
-        <url-pattern>/RunTestCaseCommandLine</url-pattern>
+        <servlet-name>RunTestCaseAsync</servlet-name>
+        <url-pattern>/RunTestCaseAsync</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
         <servlet-name>RunTestCaseManually</servlet-name>
@@ -2073,7 +2073,7 @@
             <url-pattern>/ReadTestCaseExecution</url-pattern>
             <url-pattern>/ReadTag</url-pattern>
             <url-pattern>/SaveManualExecutionPictureTest</url-pattern>
-            <url-pattern>/RunTestCaseCommandLine</url-pattern>
+            <url-pattern>/RunTestCaseAsync</url-pattern>
         </web-resource-collection>
     </security-constraint>
     <security-constraint>
