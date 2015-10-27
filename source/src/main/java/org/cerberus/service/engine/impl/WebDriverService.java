@@ -78,7 +78,7 @@ public class WebDriverService implements IWebDriverService {
 
     private static final int TIMEOUT_MILLIS = 30000;
     private static final int TIMEOUT_WEBELEMENT = 45; //previous value was 300
-    private static final long TIMEOUT_URL = 100; //100seconds TODO:FN create a database parameter?
+    private static final long TIMEOUT_URL = 300; //300seconds TODO:FN create a database parameter?
     
     private By getBy(Identifier identifier) {
 
