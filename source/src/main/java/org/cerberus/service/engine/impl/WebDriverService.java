@@ -43,7 +43,7 @@ import org.cerberus.enums.MessageEventEnum;
 import org.cerberus.exception.CerberusEventException;
 import org.cerberus.log.MyLogger;
 import org.cerberus.service.engine.IWebDriverService;
-import org.cerberus.util.ParameterParserUtil;
+import org.cerberus.util.ParameterParserUtil; 
 import org.cerberus.util.StringUtil; 
 import org.openqa.selenium.Alert;
 import org.openqa.selenium.By;
@@ -63,6 +63,7 @@ import org.openqa.selenium.logging.LogEntries;
 import org.openqa.selenium.logging.LogEntry;
 import org.openqa.selenium.logging.Logs;
 import org.openqa.selenium.remote.Augmenter;
+import org.openqa.selenium.support.ui.ExpectedCondition;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.Select;
 import org.openqa.selenium.support.ui.WebDriverWait;
@@ -76,8 +77,9 @@ import org.springframework.stereotype.Service;
 public class WebDriverService implements IWebDriverService {
 
     private static final int TIMEOUT_MILLIS = 30000;
-    private static final int TIMEOUT_WEBELEMENT = 20; //previous value was 300
-
+    private static final int TIMEOUT_WEBELEMENT = 45; //previous value was 300
+    private static final long TIMEOUT_URL = 100; //100seconds TODO:FN create a database parameter?
+    
     private By getBy(Identifier identifier) {
 
         MyLogger.log(RunTestCaseService.class.getName(), Level.DEBUG, "Finding selenium Element : " + identifier.getLocator() + " by : " + identifier.getIdentifier());
@@ -122,11 +124,6 @@ public class WebDriverService implements IWebDriverService {
                 }
             } else {
                 element  = wait.until(ExpectedConditions.presenceOfElementLocated(locator));
-            }
-            MyLogger.log(WebDriverService.class.getName(), Level.DEBUG, "Finding Element : " + identifier.getIdentifier() + "=" + identifier.getLocator());
-            //TODO:FN remove debug messages
-            if(element == null){
-                MyLogger.log(WebDriverService.class.getName(), Level.WARN, "Element null !!!: " + identifier.getIdentifier() + "=" + identifier.getLocator());
             }
             return element;
         } catch (TimeoutException exception) {
@@ -705,26 +702,33 @@ public class WebDriverService implements IWebDriverService {
     public MessageEvent doSeleniumActionOpenURL(Session session, String host, Identifier identifier, boolean withBase
     ) {
         MessageEvent message;
-        String url = "null";
         try {
-            url = identifier.getLocator();
+            String url = identifier.getLocator();
             if (!StringUtil.isNull(url)) {
                 if (withBase) {
                     url = "http://" + host + url;
                 }
-                session.getDriver().get(url);
-
-                message = new MessageEvent(MessageEventEnum.ACTION_SUCCESS_OPENURL);
+                //session.getDriver().get(url);
+                try{                   
+                    waitForUrl(session, url);
+                    
+                    message = new MessageEvent(MessageEventEnum.ACTION_SUCCESS_OPENURL);
+                    message.setDescription(message.getDescription().replaceAll("%URL%", url));
+                }catch(TimeoutException ex){
+                    message = new MessageEvent(MessageEventEnum.ACTION_FAILED_OPENURL_TIMEOUT);
+                    message.setDescription(message.getDescription().replaceAll("%URL%", url).replace("%TIMEOUT%", String.valueOf(TIMEOUT_URL)));
+                    MyLogger.log(WebDriverService.class.getName(), Level.FATAL, "message: " + message.getDescription()  + " exception: "+ ex.toString());
+                }
+                
+            }else{
+                message = new MessageEvent(MessageEventEnum.ACTION_FAILED_OPENURL);
                 message.setDescription(message.getDescription().replaceAll("%URL%", url));
-                return message;
             }
         } catch (WebDriverException exception) {
             message = new MessageEvent(MessageEventEnum.ACTION_FAILED_SELENIUM_CONNECTIVITY);
             MyLogger.log(WebDriverService.class.getName(), Level.FATAL, exception.toString());
-            return message;
         }
-        message = new MessageEvent(MessageEventEnum.ACTION_FAILED_OPENURL);
-        message.setDescription(message.getDescription().replaceAll("%URL%", url));
+        
         return message;
     }
 
@@ -825,15 +829,21 @@ public class WebDriverService implements IWebDriverService {
 
         String url = "http://" + host + (host.endsWith("/") ? uri.replace("/", "") : uri);
         try {
-            session.getDriver().get(url);
-            message = new MessageEvent(MessageEventEnum.ACTION_SUCCESS_URLLOGIN);
-            message.setDescription(message.getDescription().replaceAll("%URL%", url));
-            return message;
+            //session.getDriver().get(url);
+            try{
+                waitForUrl(session, url);
+                message = new MessageEvent(MessageEventEnum.ACTION_SUCCESS_URLLOGIN);
+                message.setDescription(message.getDescription().replaceAll("%URL%", url));
+            }catch(TimeoutException ex){
+                message = new MessageEvent(MessageEventEnum.ACTION_FAILED_URLLOGIN_TIMEOUT);
+                message.setDescription(message.getDescription().replaceAll("%URL%", url).replace("%TIMEOUT%", String.valueOf(TIMEOUT_URL))  + " " + ex.getMessage() );            
+            }
+            
         } catch (Exception e) {
             message = new MessageEvent(MessageEventEnum.ACTION_FAILED_URLLOGIN);
-            message.setDescription(message.getDescription().replaceAll("%URL%", url) + " " + e.getMessage());
-            return message;
+            message.setDescription(message.getDescription().replaceAll("%URL%", url) + " " + e.getMessage());            
         }
+        return message;
     }
 
     @Override
@@ -973,6 +983,20 @@ public class WebDriverService implements IWebDriverService {
             MyLogger.log(WebDriverService.class.getName(), Level.FATAL, exception.toString());
             return message;
         }
+    }
+
+    private void waitForUrl(Session session, String url) throws TimeoutException{
+        //defines a time for which the page should wait - timeout is de default
+        WebDriverWait wait = new WebDriverWait(session.getDriver(), TIMEOUT_URL); 
+        session.getDriver().get(url);
+        final String urlToExpect = url;
+        //based on the example https://deors.wordpress.com/2013/01/11/webdriver-wait/
+        wait.until(new ExpectedCondition<Boolean>() {
+            @Override
+            public Boolean apply(WebDriver d) {
+                return d.getCurrentUrl().startsWith(urlToExpect);
+            }
+        });
     }
 
 }
