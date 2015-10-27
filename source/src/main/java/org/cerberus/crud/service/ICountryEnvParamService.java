@@ -22,6 +22,7 @@ package org.cerberus.crud.service;
 import java.util.List;
 import org.cerberus.crud.entity.CountryEnvParam;
 import org.cerberus.exception.CerberusException;
+import org.cerberus.util.answer.AnswerList;
 import org.json.JSONObject;
 
 /**
@@ -85,4 +86,6 @@ public interface ICountryEnvParamService {
     public Integer count(String searchTerm, String inds);
 
     public List<CountryEnvParam> findListByCriteria(String system);
+    
+    public AnswerList readActiveBySystem(String system);
 }

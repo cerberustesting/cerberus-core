@@ -31,6 +31,7 @@ import org.cerberus.crud.factory.IFactoryCountryEnvParam;
 import org.cerberus.crud.factory.IFactoryCountryEnvironmentApplication;
 import org.cerberus.crud.service.ICountryEnvParamService;
 import org.cerberus.crud.service.ICountryEnvironmentApplicationService;
+import org.cerberus.util.answer.AnswerList;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -127,5 +128,10 @@ public class CountryEnvParamService implements ICountryEnvParamService {
     @Override
     public List<CountryEnvParam> findListByCriteria(String system) {
         return countryEnvParamDao.findListByCriteria(system);
+    }
+    
+    @Override
+    public AnswerList readActiveBySystem(String system) {
+        return countryEnvParamDao.readActiveBySystem(system);
     }
 }

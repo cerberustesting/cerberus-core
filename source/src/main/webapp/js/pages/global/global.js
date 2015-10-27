@@ -59,6 +59,7 @@ function getSubDataLabel(type) {
  * Method that display a combo box in all the selectName tags with the value retrieved from the invariant list
  * @param {String} idName value that filters the invariants that will be retrieved
  * @param {String} selectName value name of the select tag in the html
+ * @param {String} defaultValue to be selected
  * @returns {void}
  */
 function displayInvariantList(selectName, idName, defaultValue) {
@@ -89,6 +90,7 @@ function displayInvariantListWithDesc(selectName, idName, defaultValue) {
 /**
  * Method that display a combo box in all the selectName tags with the value retrieved from the DeployType list
  * @param {String} selectName value name of the select tag in the html
+ * @param {String} defaultValue to be selected
  * @returns {void}
  */
 function displayDeployTypeList(selectName, defaultValue) {
@@ -108,6 +110,7 @@ function displayDeployTypeList(selectName, defaultValue) {
  * Method that display a combo box in all the selectName tags with the value retrieved from the Application list
  * @param {String} selectName value name of the select tag in the html
  * @param {String} system [optional] value name of the system in order to filter the application list
+ * @param {String} defaultValue to be selected
  * @returns {void}
  */
 function displayApplicationList(selectName, system, defaultValue) {
@@ -130,6 +133,7 @@ function displayApplicationList(selectName, system, defaultValue) {
 /**
  * Method that display a combo box in all the selectName tags with the value retrieved from the Project list
  * @param {String} selectName value name of the select tag in the html
+ * @param {String} defaultValue to be selected
  * @returns {void}
  */
 function displayProjectList(selectName, defaultValue) {
@@ -151,6 +155,7 @@ function displayProjectList(selectName, defaultValue) {
  * @param {String} selectName value name of the select tag in the html
  * @param {String} system value of the system to filter the build.
  * @param {String} level value of the level of the build invariant
+ * @param {String} defaultValue to be selected
  * @returns {void}
  */
 function displayBuildList(selectName, system, level, defaultValue) {
@@ -165,6 +170,26 @@ function displayBuildList(selectName, system, level, defaultValue) {
     $.when($.getJSON("ReadBuildRevisionInvariant", myData)).then(function (data) {
         for (var option in data.contentTable) {
             $("[name='" + selectName + "']").append($('<option></option>').text(data.contentTable[option].versionName).val(data.contentTable[option].versionName));
+        }
+                        
+        if (defaultValue !== undefined) {
+            $("[name='"+ selectName +"']").val(defaultValue);
+        }
+    });
+}
+
+/*****Environment LIST **********************************/
+/**
+ * Method that display a combo box in all the selectName tags with the value retrieved from the Environment list
+ * @param {String} selectName value name of the select tag in the html
+ * @param {String} system value of the system to filter the build.
+ * @param {String} defaultValue to be selected
+ * @returns {void}
+ */
+function displayEnvList(selectName, system, defaultValue) {
+    $.when($.getJSON("ReadEnvironment", "system=" + system)).then(function (data) {
+        for (var option in data.contentTable) {
+            $("[name='" + selectName + "']").append($('<option></option>').text(data.contentTable[option].environment).val(data.contentTable[option].environment));
         }
                         
         if (defaultValue !== undefined) {
@@ -1003,7 +1028,7 @@ function bindToggleCollapse() {
         });
 
         if (localStorage.getItem(this.id) === "false") {
-            $(this).collapse();
+            $(this).collapse('hide');
         }
     });
 }
