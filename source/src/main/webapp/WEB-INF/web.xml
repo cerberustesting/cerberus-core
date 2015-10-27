@@ -743,11 +743,11 @@
     </servlet>
     <servlet>
         <servlet-name>ExecutionThreadMonitoring</servlet-name>
-        <servlet-class>org.cerberus.service.executor.ExecutionThreadMonitoring</servlet-class>
+        <servlet-class>org.cerberus.servlet.information.ExecutionThreadMonitoring</servlet-class>
     </servlet>
     <servlet>
         <servlet-name>ExecutionThreadReset</servlet-name>
-        <servlet-class>org.cerberus.service.executor.ExecutionThreadReset</servlet-class>
+        <servlet-class>org.cerberus.servlet.execution.ExecutionThreadReset</servlet-class>
     </servlet>
     <servlet>
         <servlet-name>DeleteExecutionInQueue</servlet-name>

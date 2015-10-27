@@ -17,10 +17,9 @@
  * You should have received a copy of the GNU General Public License
  * along with Cerberus.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.cerberus.service.executor;
+package org.cerberus.servlet.information;
 
 import java.io.IOException;
-import java.io.PrintWriter;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.servlet.ServletException;
@@ -31,7 +30,6 @@ import javax.servlet.http.HttpServletResponse;
 import org.cerberus.crud.entity.ExecutionThreadPool;
 import org.cerberus.crud.entity.ExecutionUUID;
 import org.cerberus.crud.entity.SessionCounter;
-import org.cerberus.crud.entity.SessionCounterListener;
 import org.cerberus.crud.entity.TestCaseExecution;
 import org.json.JSONArray;
 import org.json.JSONException;

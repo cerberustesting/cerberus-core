@@ -203,9 +203,7 @@ function deleteBrpHandlerClick() {
 function deleteBrp(id, build, revision, release, application) {
     clearResponseMessageMainPage();
     var doc = new Doc();
-    var messageComplete = doc.getDocLabel("page_buildcontent", "deleteMessage");
-    messageComplete = "Do you want to delete release entry %ENTRY% ?<br> NB : It correspond to the release %RELEASE% of application %APPLI% of Build %BUILD% Revision %REVISION%."
-    messageComplete = doc.getDocLabel("page_buildcontent", "message_delete");
+    var messageComplete = doc.getDocLabel("page_buildcontent", "message_delete");
     messageComplete = messageComplete.replace("%ENTRY%", id);
     messageComplete = messageComplete.replace("%BUILD%", build);
     messageComplete = messageComplete.replace("%REVISION%", revision);

@@ -17,7 +17,7 @@
  * You should have received a copy of the GNU General Public License
  * along with Cerberus.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.cerberus.service.executor;
+package org.cerberus.servlet.execution;
 
 import java.io.IOException;
 import java.io.PrintWriter;
