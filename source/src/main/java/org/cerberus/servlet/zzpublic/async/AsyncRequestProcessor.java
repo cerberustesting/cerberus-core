@@ -109,7 +109,16 @@ public class AsyncRequestProcessor implements Runnable {
         }
 
         //complete the processing
-        asyncContext.complete();
+        try{
+            asyncContext.complete();
+        }catch(IllegalStateException ex){
+            String errorMessage = df.format(new Date()) + " [" + urlParameters.getTest()
+                        + "|" + urlParameters.getTestCase()
+                        + "|" + urlParameters.getCountry()
+                        + "|" + urlParameters.getEnvironment()
+                        + "] : Error while executing RunTestCase'" + ex.toString();
+            org.apache.log4j.Logger.getLogger(AsyncRequestProcessor.class.getName()).log(org.apache.log4j.Level.WARN, errorMessage);
+        }
         org.apache.log4j.Logger.getLogger(AsyncRequestProcessor.class.getName()).log(org.apache.log4j.Level.INFO, "Process complete");
 
     }
