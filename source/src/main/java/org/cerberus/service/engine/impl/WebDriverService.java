@@ -78,7 +78,7 @@ public class WebDriverService implements IWebDriverService {
 
     private static final int TIMEOUT_MILLIS = 30000;
     private static final int TIMEOUT_WEBELEMENT = 45; //previous value was 300
-    private static final long TIMEOUT_URL = 300; //300seconds TODO:FN create a database parameter?
+    //private static final long TIMEOUT_URL = 900; //900seconds TODO:FN create a database parameter?
     
     private By getBy(Identifier identifier) {
 
@@ -708,18 +708,10 @@ public class WebDriverService implements IWebDriverService {
                 if (withBase) {
                     url = "http://" + host + url;
                 }
-                //session.getDriver().get(url);
-                try{                   
-                    waitForUrl(session, url);
-                    
-                    message = new MessageEvent(MessageEventEnum.ACTION_SUCCESS_OPENURL);
-                    message.setDescription(message.getDescription().replaceAll("%URL%", url));
-                }catch(TimeoutException ex){
-                    message = new MessageEvent(MessageEventEnum.ACTION_FAILED_OPENURL_TIMEOUT);
-                    message.setDescription(message.getDescription().replaceAll("%URL%", url).replace("%TIMEOUT%", String.valueOf(TIMEOUT_URL)));
-                    MyLogger.log(WebDriverService.class.getName(), Level.FATAL, "message: " + message.getDescription()  + " exception: "+ ex.toString());
-                }
-                
+                session.getDriver().get(url);
+                message = new MessageEvent(MessageEventEnum.ACTION_SUCCESS_OPENURL);
+                message.setDescription(message.getDescription().replaceAll("%URL%", url));
+                                
             }else{
                 message = new MessageEvent(MessageEventEnum.ACTION_FAILED_OPENURL);
                 message.setDescription(message.getDescription().replaceAll("%URL%", url));
@@ -829,15 +821,9 @@ public class WebDriverService implements IWebDriverService {
 
         String url = "http://" + host + (host.endsWith("/") ? uri.replace("/", "") : uri);
         try {
-            //session.getDriver().get(url);
-            try{
-                waitForUrl(session, url);
-                message = new MessageEvent(MessageEventEnum.ACTION_SUCCESS_URLLOGIN);
-                message.setDescription(message.getDescription().replaceAll("%URL%", url));
-            }catch(TimeoutException ex){
-                message = new MessageEvent(MessageEventEnum.ACTION_FAILED_URLLOGIN_TIMEOUT);
-                message.setDescription(message.getDescription().replaceAll("%URL%", url).replace("%TIMEOUT%", String.valueOf(TIMEOUT_URL))  + " " + ex.getMessage() );            
-            }
+            session.getDriver().get(url);
+            message = new MessageEvent(MessageEventEnum.ACTION_SUCCESS_URLLOGIN);
+            message.setDescription(message.getDescription().replaceAll("%URL%", url));            
             
         } catch (Exception e) {
             message = new MessageEvent(MessageEventEnum.ACTION_FAILED_URLLOGIN);
@@ -984,19 +970,5 @@ public class WebDriverService implements IWebDriverService {
             return message;
         }
     }
-
-    private void waitForUrl(Session session, String url) throws TimeoutException{
-        //defines a time for which the page should wait - timeout is de default
-        WebDriverWait wait = new WebDriverWait(session.getDriver(), TIMEOUT_URL); 
-        session.getDriver().get(url);
-        final String urlToExpect = url;
-        //based on the example https://deors.wordpress.com/2013/01/11/webdriver-wait/
-        wait.until(new ExpectedCondition<Boolean>() {
-            @Override
-            public Boolean apply(WebDriver d) {
-                return d.getCurrentUrl().startsWith(urlToExpect);
-            }
-        });
-    }
-
+    
 }

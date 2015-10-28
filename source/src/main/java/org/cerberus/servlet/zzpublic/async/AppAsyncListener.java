@@ -39,6 +39,11 @@ public class AppAsyncListener implements AsyncListener{
     public void onComplete(AsyncEvent ae) throws IOException {
         System.out.println("AppAsyncListener onComplete");
         org.apache.log4j.Logger.getLogger(AppAsyncListener.class.getName()).log(org.apache.log4j.Level.DEBUG, "AppAsyncListener onComplete");
+        ServletResponse response = ae.getAsyncContext().getResponse();  
+        if(response.getWriter() != null){
+            response.getWriter().flush();
+            response.getWriter().close();
+        }
         
     }
 
