@@ -99,7 +99,7 @@ public class JenkinsDeploy extends HttpServlet {
             //send request to Jenkins
             Integer responseCode = session.getURL(final_url);
             session.closeSession();
-            if (responseCode != 200) {
+            if ((responseCode != 200) && (responseCode != 201)) {
                 out.print("ERROR Contacting Jenkins HTTP Response " + responseCode);
             } else {
                 out.print("Sent request : " + url);
