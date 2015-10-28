@@ -177,15 +177,15 @@
                                 lastBuild = countryEnvParam.getBuild();
                                 lastRev = countryEnvParam.getRevision();
                             } catch (CerberusException ex) {
-                                lastBuild = "NONE";
-                                lastRev = "NONE";
+                                lastBuild = "Empty";
+                                lastRev = "Empty";
                             }
 
                             IParameterService myParameterService = appContext.getBean(IParameterService.class);
 
                             String JenkinsURL = myParameterService.findParameterByKey("jenkins_deploy_pipeline_url", "").getValue();
 
-                            for (BuildRevisionParameters brp : buildRevisionParametersService.findBuildRevisionParametersFromMaxRevision(build, revision, lastBuild, lastRev)) {
+                            for (BuildRevisionParameters brp : buildRevisionParametersService.findBuildRevisionParametersFromMaxRevision(system, build, revision, lastBuild, lastRev)) {
 
                                 String final_JenkinsURL = JenkinsURL.replaceAll("%APPLI%", brp.getApplication());
             %>

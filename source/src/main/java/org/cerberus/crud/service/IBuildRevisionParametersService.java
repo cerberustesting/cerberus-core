@@ -29,7 +29,7 @@ import org.cerberus.util.answer.AnswerList;
 
 public interface IBuildRevisionParametersService {
 
-    List<BuildRevisionParameters> findBuildRevisionParametersFromMaxRevision(String build, String revision, String lastBuild, String lastRevision);
+    List<BuildRevisionParameters> findBuildRevisionParametersFromMaxRevision(String system, String build, String revision, String lastBuild, String lastRevision);
 
     public List<BuildRevisionParameters> findBuildRevisionParametersByCriteria(String application, String build, String revision);
 

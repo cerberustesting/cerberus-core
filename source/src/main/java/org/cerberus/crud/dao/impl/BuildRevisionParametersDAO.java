@@ -55,7 +55,7 @@ public class BuildRevisionParametersDAO implements IBuildRevisionParametersDAO {
     private DatabaseSpring databaseSpring;
 
     @Override
-    public List<BuildRevisionParameters> findBuildRevisionParametersFromMaxRevision(String build, String revision, String lastBuild, String lastRevision) {
+    public List<BuildRevisionParameters> findBuildRevisionParametersFromMaxRevision(String system, String build, String revision, String lastBuild, String lastRevision) {
         List<BuildRevisionParameters> list = null;
         String query = "SELECT * from ( "
                 + "SELECT Application, max(`Release`) rel "
@@ -70,7 +70,10 @@ public class BuildRevisionParametersDAO implements IBuildRevisionParametersDAO {
                 + " and `release` REGEXP '^-?[0-9]+$' "
                 + "GROUP BY Application  ORDER BY Application) as al "
                 + "JOIN buildrevisionparameters brp "
-                + " ON brp.application=al.application and brp.release=al.rel and brp.build = ?";
+                + " ON brp.application=al.application and brp.release=al.rel and brp.build = ? "
+                + "JOIN application app "
+                + " ON app.application=al.application "
+                + "WHERE app.`system` = ? ";
 
         Connection connection = this.databaseSpring.connect();
         try {
@@ -79,6 +82,7 @@ public class BuildRevisionParametersDAO implements IBuildRevisionParametersDAO {
                 preStat.setString(1, build);
                 preStat.setString(2, revision);
                 preStat.setString(3, build);
+                preStat.setString(4, system);
 
                 ResultSet resultSet = preStat.executeQuery();
                 try {
