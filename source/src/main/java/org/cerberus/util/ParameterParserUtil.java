@@ -28,12 +28,10 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import javax.servlet.http.HttpServletRequest;
 import org.apache.commons.lang3.StringEscapeUtils;
 
 import org.owasp.html.PolicyFactory;
 import org.owasp.html.Sanitizers;
-import static org.owasp.html.Sanitizers.LINKS;
 
 /**
  * Class used in jsp or servlet in order to centralize all the parameter

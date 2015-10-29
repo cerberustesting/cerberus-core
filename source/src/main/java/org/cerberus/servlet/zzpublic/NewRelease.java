@@ -43,6 +43,7 @@ import org.cerberus.crud.service.impl.LogEventService;
 import org.cerberus.crud.service.impl.ProjectService;
 import org.cerberus.crud.service.impl.UserService;
 import org.cerberus.util.ParameterParserUtil;
+import org.cerberus.util.StringUtil;
 import org.cerberus.version.Infos;
 import org.springframework.context.ApplicationContext;
 import org.springframework.web.context.support.WebApplicationContextUtils;
@@ -54,9 +55,8 @@ import org.springframework.web.context.support.WebApplicationContextUtils;
 public class NewRelease extends HttpServlet {
 
     /**
-     * Processes requests for both HTTP
-     * <code>GET</code> and
-     * <code>POST</code> methods.
+     * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
+     * methods.
      *
      * @param request servlet request
      * @param response servlet response
@@ -66,6 +66,8 @@ public class NewRelease extends HttpServlet {
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         PrintWriter out = response.getWriter();
+
+        String charset = request.getCharacterEncoding();
 
         ApplicationContext appContext = WebApplicationContextUtils.getWebApplicationContext(this.getServletContext());
 
@@ -80,19 +82,19 @@ public class NewRelease extends HttpServlet {
         IProjectService MyProjectService = appContext.getBean(ProjectService.class);
 
         // Parsing all parameters.
-        String application = ParameterParserUtil.parseStringParam(request.getParameter("application"), "");
-        String release = ParameterParserUtil.parseStringParam(request.getParameter("release"), "");
-        String project = ParameterParserUtil.parseStringParam(request.getParameter("project"), "");
-        String ticket = ParameterParserUtil.parseStringParam(request.getParameter("ticket"), "");
-        String bug = ParameterParserUtil.parseStringParam(request.getParameter("bug"), "");
-        String subject = ParameterParserUtil.parseStringParam(request.getParameter("subject"), "");
-        String owner = ParameterParserUtil.parseStringParam(request.getParameter("owner"), "");
-        String link = ParameterParserUtil.parseStringParam(request.getParameter("link"), "");
+        String application = ParameterParserUtil.parseStringParamAndDecode(request.getParameter("application"), "", charset);
+        String release = ParameterParserUtil.parseStringParamAndDecode(request.getParameter("release"), "", charset);
+        String project = ParameterParserUtil.parseStringParamAndDecode(request.getParameter("project"), "", charset);
+        String ticket = ParameterParserUtil.parseStringParamAndDecode(request.getParameter("ticket"), "", charset);
+        String bug = ParameterParserUtil.parseStringParamAndDecode(request.getParameter("bug"), "", charset);
+        String subject = ParameterParserUtil.parseStringParamAndDecode(request.getParameter("subject"), "", charset);
+        String owner = ParameterParserUtil.parseStringParamAndDecode(request.getParameter("owner"), "", charset);
+        String link = ParameterParserUtil.parseStringParamAndDecode(request.getParameter("link"), "", charset);
         // Those Parameters could be used later when Cerberus send the deploy request to Jenkins. 
-        String jenkinsbuildid = ParameterParserUtil.parseStringParam(request.getParameter("jenkinsbuildid"), "");
-        String mavengroupid = ParameterParserUtil.parseStringParam(request.getParameter("mavengroupid"), "");
-        String mavenartifactid = ParameterParserUtil.parseStringParam(request.getParameter("mavenartifactid"), "");
-        String mavenversion = ParameterParserUtil.parseStringParam(request.getParameter("mavenversion"), "");
+        String jenkinsbuildid = ParameterParserUtil.parseStringParamAndDecode(request.getParameter("jenkinsbuildid"), "", charset);
+        String mavengroupid = ParameterParserUtil.parseStringParamAndDecode(request.getParameter("mavengroupid"), "", charset);
+        String mavenartifactid = ParameterParserUtil.parseStringParamAndDecode(request.getParameter("mavenartifactid"), "", charset);
+        String mavenversion = ParameterParserUtil.parseStringParamAndDecode(request.getParameter("mavenversion"), "", charset);
 
         String helpMessage = "\nThis servlet is used to create or update a release entry in a 'NONE' build and 'NONE' revision.\n\nParameter list :\n"
                 + "- application [mandatory] : the application that produced the release. This parameter must match the application list in Cerberus. [" + application + "]\n"
@@ -138,6 +140,18 @@ public class NewRelease extends HttpServlet {
 
             // Starting the database update only when no blocking error has been detected.
             if (error == false) {
+
+                // In case the bugID is not defined, we try to guess it from the subject.
+                if (StringUtil.isNullOrEmpty(bug)) {
+                    String[] columns = subject.split("#");
+                    if (columns.length >= 2) {
+                        String[] columnsbis = columns[1].split(" ");
+                        if (columnsbis.length >= 1) {
+                            bug = columnsbis[0];
+                        }
+                    }
+                }
+
                 // Transaction and database update.
                 // Duplicate entry Verification. On the build/relivion not yet assigned (NONE/NONE),
                 //  we verify that the application + release has not been submitted yet.
@@ -205,7 +219,7 @@ public class NewRelease extends HttpServlet {
         } catch (Exception e) {
             Logger.getLogger(NewRelease.class.getName()).log(Level.SEVERE, Infos.getInstance().getProjectNameAndVersion() + " - Exception catched.", e);
             out.print("Error while inserting the release : ");
-            out.println(e.getMessage());
+            out.println(e.toString());
         } finally {
             out.close();
             try {
@@ -220,8 +234,7 @@ public class NewRelease extends HttpServlet {
 
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
     /**
-     * Handles the HTTP
-     * <code>GET</code> method.
+     * Handles the HTTP <code>GET</code> method.
      *
      * @param request servlet request
      * @param response servlet response
@@ -235,8 +248,7 @@ public class NewRelease extends HttpServlet {
     }
 
     /**
-     * Handles the HTTP
-     * <code>POST</code> method.
+     * Handles the HTTP <code>POST</code> method.
      *
      * @param request servlet request
      * @param response servlet response
