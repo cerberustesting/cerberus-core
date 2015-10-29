@@ -116,12 +116,14 @@ public interface ITestCaseDAO {
     AnswerList readTestCaseByStepsInLibrary(String test);
 
     public AnswerList readByTestByCriteria(String test, int start, int amount, String column, String dir, String searchTerm, String individualSearch);
-    
+
+    public AnswerList readByVariousCriteria(String[] test, String[] idProject);
+
     public AnswerItem readByKey(String test, String testCase);
-    
+
     public Answer update(TCase testCase);
-    
+
     public Answer create(TCase testCase);
-    
+
     public Answer delete(TCase testCase);
 }

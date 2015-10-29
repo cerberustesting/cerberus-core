@@ -19,12 +19,28 @@
             <h1 class="page-title-line">Run Test</h1>
             <div class="col-lg-9">
                 <div class="panel panel-default">
-                    <div class="panel-heading card" data-toggle="collapse" data-target="#testFilters">
+                    <div class="panel-heading card" data-toggle="collapse" data-target="#filtersPanel">
                         <span class="toggle glyphicon glyphicon-chevron-right pull-right"></span>
                         Filters
                     </div>
-                    <div class="panel-body collapse in" id="testFilters">
-                        <select class="form-control" multiple="multiple" id="system" ></select>  
+                    <div class="panel-body collapse in" id="filtersPanel">
+                        <form id="filters">
+                            <div class="row">
+                                <div class="form-group col-xs-2">
+                                    <label id="lbl_test" for="testFilter">Test</label>                                     
+                                    <select class="multiselectelement form-control" multiple="multiple" id="testFilter"></select>
+                                </div>
+<!--                                <div class="form-group col-xs-2">
+                                    <label id="lbl_system" for="systemFilter">System</label>                                     
+                                    <select class="multiselectelement form-control" multiple="multiple" id="systemFilter"></select>
+                                </div>-->
+                                <div class="form-group col-xs-2">
+                                    <label id="lbl_project" for="projectFilter">Project</label>
+                                    <select class="multiselectelement form-control" multiple="multiple" id="projectFilter"></select>
+                                </div>
+                                <button type="button" class="btn btn-primary" id="loadbutton">Load</button>
+                            </div>
+                        </form>
                     </div>
                 </div>
 
@@ -33,9 +49,14 @@
                         Choose Test
                     </div>
                     <div class="panel-body" id="chooseTest">
-                        <ul class="col-lg-3 list-group navlist" id="testList" style="max-height: 300px; overflow-y: scroll;"></ul>
-                        <ul class="col-lg-7 list-group navlist" id="testCaseList" style="margin-left: 10px; max-height: 300px; overflow-y: scroll;"></ul>
-                        <button class="col-lg-1">Add to queue</button>
+                        <!--                        <ul class="col-lg-3 list-group navlist" id="testList" style="max-height: 300px; overflow-y: scroll;"></ul>
+                                                <ul clss="col-lg-7 list-group navlist" id="testCaseList" style="margin-left: 10px; max-height: 300px; overflow-y: scroll;"></ul>-->
+                        <div class="row">
+                            <div class="form-group col-lg-9">
+                                <select multiple id="testCaseList" class="form-control" style="height: 300px;"></select>
+                            </div>
+                            <button type="button" class="btn btn-default" id="addQueue">Add to queue</button>
+                        </div>
                     </div>
                 </div>
                 <div class="panel panel-default">
@@ -222,21 +243,20 @@
                         </div>
                     </div>
                 </div>
+
+                <footer class="footer">
+                    <div class="container-fluid" id="footer"></div>
+                </footer>
             </div>
             <div class="col-lg-3 pull-right">
                 <div class="panel panel-default">
-                    <div class="panel-heading">
+                    <div class="panel-heading card" data-toggle="collapse" data-target="#queuePanel">
+                        <span class="toggle glyphicon glyphicon-chevron-right pull-right"></span>
                         Queue
                     </div>
 
-                    <div class="panel-body">
-                        <ul class="list-group">
-                            <li class="list-group-item"><span class="glyphicon glyphicon-remove" style="color: #D9534F;"></span><span style="margin-left: 5px;">Test - 0002A - This is the description</span></li>
-                            <li class="list-group-item"><span class="glyphicon glyphicon-remove" style="color: #D9534F;"></span><span style="margin-left: 5px;">Test - 0002A - This is the description</span></li>
-                            <li class="list-group-item"><span class="glyphicon glyphicon-remove" style="color: #D9534F;"></span><span style="margin-left: 5px;">Test - 0002A - This is the description</span></li>
-                            <li class="list-group-item"><span class="glyphicon glyphicon-remove" style="color: #D9534F;"></span><span style="margin-left: 5px;">Test - 0002A - This is the description</span></li>
-                            <li class="list-group-item"><span class="glyphicon glyphicon-remove" style="color: #D9534F;"></span><span style="margin-left: 5px;">Test - 0002A - This is the description</span></li>
-                        </ul>
+                    <div class="panel-body collapse in" id="queuePanel">
+                        <ul class="list-group" id="queue"></ul>
                     </div>
                 </div>
                 <p>Launching N tests on the environments : TATA, TITI, TOTO in the countries : FR, IT, BE on the browser : firefox, chrome, android</p>
@@ -244,10 +264,6 @@
                     <button type="button" class="btn btn-primary btn-lg btn-block">Run</button>
                 </div>
             </div>
-
-            <footer class="footer">
-                <div class="container-fluid" id="footer"></div>
-            </footer>
         </div>
     </body>
 </html>

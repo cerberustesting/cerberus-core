@@ -66,6 +66,10 @@ a {
     margin-left: 10px;
 }
 
+.delete {
+    color: #D9534F;
+}
+
 .modal-admin {
     max-width: 90%;
 }

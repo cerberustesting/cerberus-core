@@ -699,6 +699,99 @@ public class TestCaseDAO implements ITestCaseDAO {
         return list;
     }
 
+    @Override
+    public AnswerList readByVariousCriteria(String[] test, String[] idProject) {
+        AnswerList answer = new AnswerList();
+        MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
+        msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", ""));
+        List<TCase> testCaseList = new ArrayList<TCase>();
+
+        StringBuilder query = new StringBuilder();
+
+        query.append("SELECT * FROM testcase tc ");
+        query.append("LEFT JOIN application app ON tc.application = app.application ");
+        query.append("LEFT JOIN testbatterycontent tb ON tc.test = tb.test AND tc.testcase = tb.testcase ");
+        query.append("LEFT JOIN campaigncontent cc ON tb.testbattery = cc.testbattery ");
+        query.append("WHERE 1=1 ");
+        
+        if (test != null) {
+            query.append("AND tc.test IN (");
+            for (String stringItem : test) {
+                query.append("'");
+                query.append(stringItem);
+                query.append("',");
+            }
+            query.append("'')");
+        }
+        if (idProject != null) {
+            query.append("AND tc.Project IN (");
+            for (String stringItem : idProject) {
+                query.append("'");
+                query.append(stringItem);
+                query.append("',");
+            }
+            query.append("'')");
+        }
+        query.append("GROUP BY tc.test, tc.testcase ");
+
+        Connection connection = this.databaseSpring.connect();
+        try {
+            PreparedStatement preStat = connection.prepareStatement(query.toString());
+
+            try {
+                ResultSet resultSet = preStat.executeQuery();
+                try {
+                    //gets the data
+                    while (resultSet.next()) {
+                        testCaseList.add(this.loadFromResultSet(resultSet));
+                    }
+
+                    msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
+                    msg.setDescription(msg.getDescription().replace("%ITEM%", "TestCase").replace("%OPERATION%", "SELECT"));
+                    answer = new AnswerList(testCaseList, testCaseList.size());
+
+                } catch (SQLException exception) {
+                    LOG.error("Unable to execute query : " + exception.toString());
+                    msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
+                    msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", exception.toString()));
+
+                } finally {
+                    if (resultSet != null) {
+                        resultSet.close();
+                    }
+                }
+
+            } catch (SQLException exception) {
+                LOG.error("Unable to execute query : " + exception.toString());
+                msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
+                msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", exception.toString()));
+            } finally {
+                if (preStat != null) {
+                    preStat.close();
+                }
+            }
+
+        } catch (SQLException exception) {
+            LOG.error("Unable to execute query : " + exception.toString());
+            msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
+            msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", exception.toString()));
+        } finally {
+            try {
+                if (!this.databaseSpring.isOnTransaction()) {
+                    if (connection != null) {
+                        connection.close();
+                    }
+                }
+            } catch (SQLException exception) {
+                LOG.warn("Unable to close connection : " + exception.toString());
+            }
+        }
+
+        answer.setResultMessage(msg);
+        answer.setDataList(testCaseList);
+        return answer;
+    }
+
     /**
      * @since 0.9.1
      */
@@ -1788,7 +1881,7 @@ public class TestCaseDAO implements ITestCaseDAO {
         }
         return new Answer(msg);
     }
-    
+
     @Override
     public Answer delete(TCase testCase) {
         MessageEvent msg = null;

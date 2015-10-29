@@ -1028,7 +1028,8 @@ function bindToggleCollapse() {
         });
 
         if (localStorage.getItem(this.id) === "false") {
-            $(this).collapse('hide');
+            $(this).removeClass('in');
+            $(this).prev().find(".toggle").removeClass("glyphicon-chevron-right").addClass("glyphicon-chevron-down");
         }
     });
 }

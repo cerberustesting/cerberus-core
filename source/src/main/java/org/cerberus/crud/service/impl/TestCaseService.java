@@ -79,10 +79,10 @@ public class TestCaseService implements ITestCaseService {
     public TCase findTestCaseByKeyWithDependency(String test, String testCase) throws CerberusException {
         TCase newTcase;
         newTcase = findTestCaseByKey(test, testCase);
-        if(newTcase == null){
+        if (newTcase == null) {
             //TODO:FN temporary debug messages
             org.apache.log4j.Logger.getLogger(TestCaseService.class.getName()).log(org.apache.log4j.Level.ERROR, "test case is null - test: " + test + " testcase: " + testCase);
-        }else{        
+        } else {
             List<TestCaseCountry> testCaseCountry = testCaseCountryService.findTestCaseCountryByTestTestCase(test, testCase);
             List<TestCaseCountry> testCaseCountryToAdd = new ArrayList();
             for (TestCaseCountry tcc : testCaseCountry) {
@@ -165,6 +165,11 @@ public class TestCaseService implements ITestCaseService {
     @Override
     public List<TCase> findTestCaseByAllCriteria(TCase tCase, String text, String system) {
         return this.testCaseDao.findTestCaseByCriteria(tCase, text, system);
+    }
+
+    @Override
+    public AnswerList readByVariousCriteria(String[] test, String[] idProject) {
+        return testCaseDao.readByVariousCriteria(test, idProject);
     }
 
     /**
@@ -311,12 +316,12 @@ public class TestCaseService implements ITestCaseService {
     public Answer update(TCase testCase) {
         return testCaseDao.update(testCase);
     }
-    
+
     @Override
     public Answer create(TCase testCase) {
         return testCaseDao.create(testCase);
     }
-    
+
     @Override
     public Answer delete(TCase testCase) {
         return testCaseDao.delete(testCase);

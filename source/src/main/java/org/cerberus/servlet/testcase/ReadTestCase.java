@@ -22,6 +22,7 @@ package org.cerberus.servlet.testcase;
 import com.google.common.base.Strings;
 import com.google.gson.Gson;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import javax.servlet.ServletException;
@@ -77,7 +78,8 @@ public class ReadTestCase extends HttpServlet {
         String test = ParameterParserUtil.parseStringParam(request.getParameter("test"), "");
         String testCase = ParameterParserUtil.parseStringParam(request.getParameter("testCase"), "");
         boolean getMaxTC = ParameterParserUtil.parseBooleanParam(request.getParameter("getMaxTC"), false);
-
+        boolean filter = ParameterParserUtil.parseBooleanParam(request.getParameter("filter"), false);
+        
         // Default message to unexpected error.
         MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
         msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", ""));
@@ -97,6 +99,9 @@ public class ReadTestCase extends HttpServlet {
                 }
                 jsonResponse.put("maxTestCase", Integer.valueOf(max));
                 answer.setResultMessage(new MessageEvent(MessageEventEnum.DATA_OPERATION_OK));
+            } else if (sEcho == 0 && filter) {
+                answer = findTestCaseByVariousCriteria(appContext, request);
+                jsonResponse = (JSONObject) answer.getItem();
             }
 
             jsonResponse.put("messageType", answer.getResultMessage().getMessage().getCodeString());
@@ -171,9 +176,9 @@ public class ReadTestCase extends HttpServlet {
 
         String searchParameter = ParameterParserUtil.parseStringParam(request.getParameter("sSearch"), "");
         int columnToSortParameter = Integer.parseInt(ParameterParserUtil.parseStringParam(request.getParameter("iSortCol_0"), "0"));
-        String sColumns = ParameterParserUtil.parseStringParam(request.getParameter("sColumns"), "Application,Description,sort,type,system,subsystem,svnurl,bugtrackerurl,bugtrackernewurl,deploytype,mavengroupid");
+        String sColumns = ParameterParserUtil.parseStringParam(request.getParameter("sColumns"), "test,testcase,application,project,ticket,description,behaviororvalueexpected,readonly,bugtrackernewurl,deploytype,mavengroupid");
         String columnToSort[] = sColumns.split(",");
-        String columnName = columnToSort[columnToSortParameter];
+        String columnName = "testcase";
         String sort = ParameterParserUtil.parseStringParam(request.getParameter("sSortDir_0"), "asc");
         AnswerList testCaseList = testCaseService.readByTestByCriteria(test, startPosition, length, columnName, sort, searchParameter, "");
 
@@ -251,4 +256,27 @@ public class ReadTestCase extends HttpServlet {
         return item;
     }
 
+    private AnswerItem findTestCaseByVariousCriteria(ApplicationContext appContext, HttpServletRequest request) throws JSONException {
+        AnswerItem item = new AnswerItem();
+        JSONObject object = new JSONObject();
+        JSONArray dataArray = new JSONArray();
+        
+        String[] test = request.getParameterValues("test");
+        String[] idProject = request.getParameterValues("idProject");
+        
+        
+        testCaseService = appContext.getBean(TestCaseService.class);
+        AnswerList answer = testCaseService.readByVariousCriteria(test, idProject);
+
+        if (answer.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
+            for (TCase tc : (List<TCase>) answer.getDataList()) {
+                dataArray.put(convertTestCaseToJSONObject(tc));
+            }
+        }
+
+        object.put("contentTable", dataArray);
+        item.setItem(object);
+        item.setResultMessage(answer.getResultMessage());
+        return item;
+    }
 }

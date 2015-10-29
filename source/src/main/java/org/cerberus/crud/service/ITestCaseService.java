@@ -155,11 +155,13 @@ public interface ITestCaseService {
     AnswerList readTestCaseByStepsInLibrary(String test);
 
     public AnswerList readByTestByCriteria(String test, int start, int amount, String column, String dir, String searchTerm, String individualSearch);
-    
+
     public AnswerItem readByKey(String test, String testCase);
-    
+
+    public AnswerList readByVariousCriteria(String[] test, String[] idProject);
+
     public Answer update(TCase testCase);
-    
+
     public Answer create(TCase testCase);
 
     public Answer delete(TCase testCase);

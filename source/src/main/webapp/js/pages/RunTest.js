@@ -26,8 +26,12 @@ $.when($.getScript("js/pages/global/global.js")).then(function () {
         displayFooter(doc);
         bindToggleCollapse();
         appendCountryList();
-        loadTestList();
-        $("#system").multiselect();
+        loadMultiSelect("ReadTest", "sEcho=1", "#testFilter", "test", "test");
+        loadMultiSelect("ReadProject", "sEcho=1", "#projectFilter", "idProject", "idProject");
+
+
+        $("#loadbutton").click(loadTestCaseFromFilter);
+        $("#addQueue").click(addToQueue);
 
         loadExecForm();
         loadRobotForm();
@@ -48,6 +52,47 @@ $.when($.getScript("js/pages/global/global.js")).then(function () {
         $("#robotConfig").change(loadRobotInfo);
     });
 });
+
+function deleteRow() {
+    $(this).parent('li').remove();
+}
+
+function addToQueue() {
+    var select = $("#testCaseList option:selected");
+
+    select.each(function () {
+        var queue = $("#queue");
+        var removeBtn = $("<span></span>").addClass("glyphicon glyphicon-remove delete").click(deleteRow);
+        var item = $(this).data("item");
+
+        queue.append($('<li></li>').addClass("list-group-item").text(item.test + " - " + item.testCase).prepend(removeBtn).data("item", item));
+
+        $(this).remove();
+    });
+}
+
+function loadTestCaseFromFilter() {
+    console.log($("#filters").serialize());
+
+    $.ajax({
+        url: "ReadTestCase",
+        method: "GET",
+        data: "filter=true&" + $("#filters").serialize(),
+        datatype: "json",
+        async: true,
+        success: function (data) {
+            var testCaseList = $("#testCaseList");
+
+            testCaseList.empty();
+
+            for (var index = 0; index < data.contentTable.length; index++) {
+                var text = data.contentTable[index].test + " - " + data.contentTable[index].testCase + " [" + data.contentTable[index].application + "]: " + data.contentTable[index].shortDescription;
+
+                testCaseList.append($("<option></option>").text(text).val(data.contentTable[index].testCase).data("item", data.contentTable[index]));
+            }
+        }
+    });
+}
 
 function saveRobotPreferences() {
     var pref = convertSerialToJSONObject($("#robotSettingsForm").serialize());
@@ -157,40 +202,61 @@ function loadSelect(idName, selectName, pref) {
     });
 }
 
-function selectTest() {
-    $(this).parent().children("li").removeClass("selected");
-    $(this).addClass("selected");
-    $("#testCaseList").empty();
-    
-     $.ajax({
-        url: "ReadTestCase",
+function multiSelectConf(name) {
+    this.maxHeight = 150;
+    this.checkboxName = name;
+    this.buttonWidth = "100%";
+    this.enableFiltering = true;
+    this.enableCaseInsensitiveFiltering = true;            
+}
+
+function loadMultiSelect(url, urlParams, selectID, textItem, valueItem) {
+    $.ajax({
+        url: url,
         method: "GET",
-        data: {sEcho: 1, test: "Examples"},
+        data: urlParams,
         dataType: "json",
         async: true,
         success: function (data) {
-            var testCaseList = $("#testCaseList");
-            
+            var select = $(selectID);
+
             for (var index = 0; index < data.contentTable.length; index++) {
-                testCaseList.append($("<li></li>").addClass("list-group-item").text(data.contentTable[index].testCase + " [" + data.contentTable[index].application + "] :" + data.contentTable[index].shortDescription));
+                var text = data.contentTable[text];
+
+                select.append($("<option></option>").text(data.contentTable[index][textItem])
+                        .val(data.contentTable[index][valueItem])
+                        .data("item", data.contentTable[index]));
             }
+
+            select.multiselect(new multiSelectConf(valueItem));
+        },
+        error: function (e) {
+            showUnexpectedError();
         }
     });
 }
 
 function loadTestList() {
-        $.ajax({
+    $.ajax({
         url: "ReadTest",
         method: "GET",
         data: {sEcho: 1},
         dataType: "json",
         async: true,
         success: function (data) {
-            var testList = $("#testList");
-            
+            var testList = $("#testFilter");
+
             for (var index = 0; index < data.contentTable.length; index++) {
-                testList.append($("<li></li>").addClass("list-group-item").text(data.contentTable[index].test + " - " + data.contentTable[index].description).click(selectTest));
+                testList.append($("<option></option>").text(data.contentTable[index].test + " - " + data.contentTable[index].description).val(data.contentTable[index].test));
             }
+
+            testList.multiselect({
+                maxHeight: 150,
+                checkboxName: 'test',
+                buttonWidth: '100%',
+                enableFiltering: true,
+                enableCaseInsensitiveFiltering: true
+            });
         }
     });
 }
