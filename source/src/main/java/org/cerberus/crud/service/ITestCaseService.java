@@ -158,7 +158,7 @@ public interface ITestCaseService {
 
     public AnswerItem readByKey(String test, String testCase);
 
-    public AnswerList readByVariousCriteria(String[] test, String[] idProject);
+    public AnswerList readByVariousCriteria(String[] test, String[] idProject, String[] app, String[] creator, String[] implementer, String[] system);
 
     public Answer update(TCase testCase);
 

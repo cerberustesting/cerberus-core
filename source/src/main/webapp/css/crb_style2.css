@@ -68,6 +68,8 @@ a {
 
 .delete {
     color: #D9534F;
+    cursor: pointer;
+    margin-right: 5px;
 }
 
 .modal-admin {

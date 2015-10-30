@@ -54,7 +54,7 @@ function getDataTableLanguage() {
     };
     return res;
 }
-;
+
 /**
  * Load the documentation from the database in sessionStorage
  * @param {String} lang

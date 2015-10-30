@@ -26,12 +26,26 @@ $.when($.getScript("js/pages/global/global.js")).then(function () {
         displayFooter(doc);
         bindToggleCollapse();
         appendCountryList();
-        loadMultiSelect("ReadTest", "sEcho=1", "#testFilter", "test", "test");
-        loadMultiSelect("ReadProject", "sEcho=1", "#projectFilter", "idProject", "idProject");
+        loadMultiSelect("ReadTest", "sEcho=1", "test", "test", "test");
+        loadMultiSelect("ReadProject", "sEcho=1", "project", "idProject", "idProject");
+        loadMultiSelect("ReadApplication", "", "application", "application", "application");
+        loadMultiSelect("ReadUser", "", "creator", "login", "login");
+        loadMultiSelect("ReadUser", "", "implementer", "login", "login");
+        loadSystemMultiSelect();
 
 
         $("#loadbutton").click(loadTestCaseFromFilter);
+        $("#resetbutton").click(function () {
+            $(".multiselectelement").each(function () {
+                $(this).multiselect('deselectAll', false);
+                $(this).multiselect('updateButtonText');
+            });
+        });
         $("#addQueue").click(addToQueue);
+        $("#resetQueue").click(function (event) {
+            stopPropagation(event);
+           $("#queue").empty();
+        });
 
         loadExecForm();
         loadRobotForm();
@@ -65,15 +79,14 @@ function addToQueue() {
         var removeBtn = $("<span></span>").addClass("glyphicon glyphicon-remove delete").click(deleteRow);
         var item = $(this).data("item");
 
-        queue.append($('<li></li>').addClass("list-group-item").text(item.test + " - " + item.testCase).prepend(removeBtn).data("item", item));
+        queue.append($('<li></li>').addClass("list-group-item").text(item.test + " - " + item.testCase + " - " + item.shortDescription)
+                .prepend(removeBtn).data("item", item));
 
         $(this).remove();
     });
 }
 
 function loadTestCaseFromFilter() {
-    console.log($("#filters").serialize());
-
     $.ajax({
         url: "ReadTestCase",
         method: "GET",
@@ -88,7 +101,10 @@ function loadTestCaseFromFilter() {
             for (var index = 0; index < data.contentTable.length; index++) {
                 var text = data.contentTable[index].test + " - " + data.contentTable[index].testCase + " [" + data.contentTable[index].application + "]: " + data.contentTable[index].shortDescription;
 
-                testCaseList.append($("<option></option>").text(text).val(data.contentTable[index].testCase).data("item", data.contentTable[index]));
+                testCaseList.append($("<option></option>")
+                        .text(text)
+                        .val(data.contentTable[index].testCase)
+                        .data("item", data.contentTable[index]));
             }
         }
     });
@@ -207,10 +223,10 @@ function multiSelectConf(name) {
     this.checkboxName = name;
     this.buttonWidth = "100%";
     this.enableFiltering = true;
-    this.enableCaseInsensitiveFiltering = true;            
+    this.enableCaseInsensitiveFiltering = true;
 }
 
-function loadMultiSelect(url, urlParams, selectID, textItem, valueItem) {
+function loadMultiSelect(url, urlParams, selectName, textItem, valueItem) {
     $.ajax({
         url: url,
         method: "GET",
@@ -218,7 +234,7 @@ function loadMultiSelect(url, urlParams, selectID, textItem, valueItem) {
         dataType: "json",
         async: true,
         success: function (data) {
-            var select = $(selectID);
+            var select = $("#" + selectName + "Filter");
 
             for (var index = 0; index < data.contentTable.length; index++) {
                 var text = data.contentTable[text];
@@ -228,7 +244,7 @@ function loadMultiSelect(url, urlParams, selectID, textItem, valueItem) {
                         .data("item", data.contentTable[index]));
             }
 
-            select.multiselect(new multiSelectConf(valueItem));
+            select.multiselect(new multiSelectConf(selectName));
         },
         error: function (e) {
             showUnexpectedError();
@@ -236,29 +252,18 @@ function loadMultiSelect(url, urlParams, selectID, textItem, valueItem) {
     });
 }
 
-function loadTestList() {
-    $.ajax({
-        url: "ReadTest",
-        method: "GET",
-        data: {sEcho: 1},
-        dataType: "json",
-        async: true,
-        success: function (data) {
-            var testList = $("#testFilter");
+function loadSystemMultiSelect() {
+    var user = getUser();
+    var select = $("#systemFilter");
 
-            for (var index = 0; index < data.contentTable.length; index++) {
-                testList.append($("<option></option>").text(data.contentTable[index].test + " - " + data.contentTable[index].description).val(data.contentTable[index].test));
-            }
+    for (var index = 0; index < user.system.length; index++) {
+        var sys = user.system[index];
 
-            testList.multiselect({
-                maxHeight: 150,
-                checkboxName: 'test',
-                buttonWidth: '100%',
-                enableFiltering: true,
-                enableCaseInsensitiveFiltering: true
-            });
-        }
-    });
+        select.append($("<option></option>").text(sys)
+                .val(sys));
+    }
+
+    select.multiselect(new multiSelectConf("system"));
 }
 
 function appendCountryList() {

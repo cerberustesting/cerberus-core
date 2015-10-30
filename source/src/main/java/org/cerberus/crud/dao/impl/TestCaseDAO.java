@@ -699,8 +699,29 @@ public class TestCaseDAO implements ITestCaseDAO {
         return list;
     }
 
+    private String createInClauseFromList(String[] list, String column) {
+        StringBuilder query = new StringBuilder();
+        
+        if (list != null) {
+            query.append("AND ");
+            query.append(column);
+            query.append(" IN (");
+            int i = 0;
+            while (i < list.length - 1) {
+                query.append("'");
+                query.append(list[i]);
+                query.append("',");
+                i++;
+            }
+            query.append("'");
+            query.append(list[i]);
+            query.append("')");
+        }
+        return query.toString();
+    }
+
     @Override
-    public AnswerList readByVariousCriteria(String[] test, String[] idProject) {
+    public AnswerList readByVariousCriteria(String[] test, String[] idProject, String[] app, String[] creator, String[] implementer, String[] system) {
         AnswerList answer = new AnswerList();
         MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
         msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", ""));
@@ -713,25 +734,12 @@ public class TestCaseDAO implements ITestCaseDAO {
         query.append("LEFT JOIN testbatterycontent tb ON tc.test = tb.test AND tc.testcase = tb.testcase ");
         query.append("LEFT JOIN campaigncontent cc ON tb.testbattery = cc.testbattery ");
         query.append("WHERE 1=1 ");
-        
-        if (test != null) {
-            query.append("AND tc.test IN (");
-            for (String stringItem : test) {
-                query.append("'");
-                query.append(stringItem);
-                query.append("',");
-            }
-            query.append("'')");
-        }
-        if (idProject != null) {
-            query.append("AND tc.Project IN (");
-            for (String stringItem : idProject) {
-                query.append("'");
-                query.append(stringItem);
-                query.append("',");
-            }
-            query.append("'')");
-        }
+        query.append(createInClauseFromList(test, "tc.test"));
+        query.append(createInClauseFromList(idProject, "tc.idproject"));
+        query.append(createInClauseFromList(app, "tc.application"));
+        query.append(createInClauseFromList(creator, "tc.creator"));
+        query.append(createInClauseFromList(implementer, "tc.implementer"));
+        query.append(createInClauseFromList(system, "app.system"));
         query.append("GROUP BY tc.test, tc.testcase ");
 
         Connection connection = this.databaseSpring.connect();

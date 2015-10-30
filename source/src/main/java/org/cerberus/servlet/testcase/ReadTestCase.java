@@ -39,7 +39,6 @@ import org.cerberus.crud.service.impl.TestCaseCountryService;
 import org.cerberus.crud.service.impl.TestCaseService;
 import org.cerberus.enums.MessageEventEnum;
 import org.cerberus.util.ParameterParserUtil;
-import org.cerberus.util.answer.Answer;
 import org.cerberus.util.answer.AnswerItem;
 import org.cerberus.util.answer.AnswerList;
 import org.json.JSONArray;
@@ -263,10 +262,13 @@ public class ReadTestCase extends HttpServlet {
         
         String[] test = request.getParameterValues("test");
         String[] idProject = request.getParameterValues("idProject");
-        
+        String[] app = request.getParameterValues("application");
+        String[] creator = request.getParameterValues("creator");
+        String[] implementer = request.getParameterValues("implementer");
+        String[] system = request.getParameterValues("system");
         
         testCaseService = appContext.getBean(TestCaseService.class);
-        AnswerList answer = testCaseService.readByVariousCriteria(test, idProject);
+        AnswerList answer = testCaseService.readByVariousCriteria(test, idProject, app, creator, implementer, system);
 
         if (answer.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
             for (TCase tc : (List<TCase>) answer.getDataList()) {

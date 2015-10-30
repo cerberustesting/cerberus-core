@@ -117,7 +117,7 @@ public interface ITestCaseDAO {
 
     public AnswerList readByTestByCriteria(String test, int start, int amount, String column, String dir, String searchTerm, String individualSearch);
 
-    public AnswerList readByVariousCriteria(String[] test, String[] idProject);
+    public AnswerList readByVariousCriteria(String[] test, String[] idProject, String[] app, String[] creator, String[] implementer, String[] system);
 
     public AnswerItem readByKey(String test, String testCase);
 

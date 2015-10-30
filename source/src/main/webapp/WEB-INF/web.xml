@@ -315,6 +315,10 @@
         <servlet-class>org.cerberus.servlet.environment.GetEnvironmentAvailable</servlet-class>
     </servlet>
     <servlet>
+        <servlet-name>ReadEnvironment</servlet-name>
+        <servlet-class>org.cerberus.servlet.environment.ReadEnvironment</servlet-class>
+    </servlet>
+    <servlet>
         <servlet-name>UpdateApplication</servlet-name>
         <servlet-class>org.cerberus.servlet.application.UpdateApplication</servlet-class>
     </servlet>
@@ -1102,6 +1106,10 @@
         <url-pattern>/GetEnvironmentAvailable</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
+        <servlet-name>ReadEnvironment</servlet-name>
+        <url-pattern>/ReadEnvironment</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
         <servlet-name>UpdateApplication</servlet-name>
         <url-pattern>/UpdateApplication</url-pattern>
     </servlet-mapping>
@@ -1829,6 +1837,7 @@
             <web-resource-name>servlet</web-resource-name>
             <description>servlet</description>
             <url-pattern>/findEnvironmentByCriteria</url-pattern>
+            <url-pattern>/ReadEnvironment</url-pattern>
             <url-pattern>/RunManualTest</url-pattern>
             <url-pattern>/SetTagToExecution</url-pattern>
             <url-pattern>/FindExecutionInQueue</url-pattern>

@@ -30,16 +30,29 @@
                                     <label id="lbl_test" for="testFilter">Test</label>                                     
                                     <select class="multiselectelement form-control" multiple="multiple" id="testFilter"></select>
                                 </div>
-<!--                                <div class="form-group col-xs-2">
+                                <div class="form-group col-xs-2">
                                     <label id="lbl_system" for="systemFilter">System</label>                                     
                                     <select class="multiselectelement form-control" multiple="multiple" id="systemFilter"></select>
-                                </div>-->
+                                </div>
                                 <div class="form-group col-xs-2">
                                     <label id="lbl_project" for="projectFilter">Project</label>
                                     <select class="multiselectelement form-control" multiple="multiple" id="projectFilter"></select>
                                 </div>
-                                <button type="button" class="btn btn-primary" id="loadbutton">Load</button>
+                                <div class="form-group col-xs-2">
+                                    <label id="lbl_application" for="applicationFilter">Application</label>
+                                    <select class="multiselectelement form-control" multiple="" id="applicationFilter"></select>
+                                </div>
+                                <div class="form-group col-xs-2">
+                                    <label id="lbl_creator" for="creatorFilter">Creator</label>
+                                    <select class="multiselectelement form-control" multiple="" id="creatorFilter"></select>
+                                </div>
+                                <div class="form-group col-xs-2">
+                                    <label id="lbl_implementer" for="implementerFilter">Implementer</label>
+                                    <select class="multiselectelement form-control" multiple="" id="implementerFilter"></select>
+                                </div>
                             </div>
+                            <button type="button" class="btn btn-primary" id="loadbutton">Load</button>
+                            <button type="button" class="btn btn-default" id="resetbutton">Reset Filters</button>
                         </form>
                     </div>
                 </div>
@@ -252,6 +265,7 @@
                 <div class="panel panel-default">
                     <div class="panel-heading card" data-toggle="collapse" data-target="#queuePanel">
                         <span class="toggle glyphicon glyphicon-chevron-right pull-right"></span>
+                        <button class="btn btn-default btn-xs pull-right" id="resetQueue">Reset Queue</button>
                         Queue
                     </div>
 
