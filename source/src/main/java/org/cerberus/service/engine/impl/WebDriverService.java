@@ -63,7 +63,6 @@ import org.openqa.selenium.logging.LogEntries;
 import org.openqa.selenium.logging.LogEntry;
 import org.openqa.selenium.logging.Logs;
 import org.openqa.selenium.remote.Augmenter;
-import org.openqa.selenium.support.ui.ExpectedCondition;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.Select;
 import org.openqa.selenium.support.ui.WebDriverWait;
@@ -78,7 +77,6 @@ public class WebDriverService implements IWebDriverService {
 
     private static final int TIMEOUT_MILLIS = 30000;
     private static final int TIMEOUT_WEBELEMENT = 45; //previous value was 300
-    //private static final long TIMEOUT_URL = 900; //900seconds TODO:FN create a database parameter?
     
     private By getBy(Identifier identifier) {
 
@@ -109,7 +107,6 @@ public class WebDriverService implements IWebDriverService {
             throw new NoSuchElementException(identifier.getIdentifier());
         }
     }
-    //TODO:FN for debug purposes
     private WebElement getSeleniumElement(Session session, Identifier identifier, boolean visible, boolean clickable) {
         By locator = this.getBy(identifier);
         MyLogger.log(WebDriverService.class.getName(), Level.DEBUG, "Waiting for Element : " + identifier.getIdentifier() + "=" + identifier.getLocator());

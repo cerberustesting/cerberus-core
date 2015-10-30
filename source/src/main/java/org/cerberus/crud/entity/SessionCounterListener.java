@@ -19,14 +19,9 @@
  */
 package org.cerberus.crud.entity;
 
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
-import javax.annotation.PostConstruct;
 import javax.servlet.http.HttpSessionEvent;
 import javax.servlet.http.HttpSessionListener;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
 import org.springframework.web.context.support.WebApplicationContextUtils;
 
 /**
@@ -48,13 +43,6 @@ public class SessionCounterListener implements HttpSessionListener {
 
     @Override
     public void sessionDestroyed(HttpSessionEvent arg0) {
-        //TODO:FN remove log messaegs
-        org.apache.log4j.Logger.getLogger(SessionCounterListener.class.getName()).log(org.apache.log4j.Level.WARN, "DESTROY SESSION");
-        if(arg0.getSession() == null){
-            org.apache.log4j.Logger.getLogger(SessionCounterListener.class.getName()).log(org.apache.log4j.Level.FATAL, "SESSION IS NULL");
-        }else{
-            org.apache.log4j.Logger.getLogger(SessionCounterListener.class.getName()).log(org.apache.log4j.Level.FATAL, "SESSIONID " + (String) arg0.getSession().getId());
-        }
         String key = (String) arg0.getSession().getId();
         cs.destroyUser(key);
     }

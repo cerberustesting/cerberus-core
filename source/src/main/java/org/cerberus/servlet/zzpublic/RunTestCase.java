@@ -286,7 +286,7 @@ public class RunTestCase extends HttpServlet {
                         + "|" + testCase
                         + "|" + country
                         + "|" + environment
-                        + "] : Test Case is not selected for country!' " + ex.getMessage();
+                        + "] : Test Case is not selected for country!' ";
                 out.println(errorMessage);
             }
             //there is no need to lauch the execution if the test case does not exist for the country
@@ -361,23 +361,14 @@ public class RunTestCase extends HttpServlet {
 
                 while (tCExecution.getNumberOfRetries() >= 0 && !tCExecution.getResultMessage().getCodeString().equals("OK")) {
                     try {
-                        //TODO:FN remove log messaegs
-                        org.apache.log4j.Logger.getLogger(RunTestCase.class.getName()).log(org.apache.log4j.Level.WARN, "START!! " + tCExecution.getId());
+                        org.apache.log4j.Logger.getLogger(RunTestCase.class.getName()).log(org.apache.log4j.Level.DEBUG, "Start execution " + tCExecution.getId());
                         tCExecution = runTestCaseService.runTestCase(tCExecution);
                         tCExecution.decreaseNumberOfRetries();
                     } catch (Exception ex) {
                         org.apache.log4j.Logger.getLogger(RunTestCase.class.getName()).log(org.apache.log4j.Level.ERROR, "Error while executing RunTestCase ", ex);
-                        //MyLogger.log(RunTestCase.class.getName(), Level.FATAL, "Exception on testcase: " + tCExecution.getId() + "\nDetail: " + ex.getMessage() + "\n\n" + ex.toString());
                         break;
                     }
                 }
-            //TODO:FN debug purposes
-            /*if(session.getDriver() != null){                
-                 if(session.getDriver().getWindowHandles() !=  null && session.getDriver().getWindowHandles().size() > 0){
-                 org.apache.log4j.Logger.getLogger(RunTestCase.class.getName()).log(org.apache.log4j.Level.WARN, "WINDOW HANDLES PENDING: " + session.getDriver().getWindowHandles().size());
-                 }
-                 session.getDriver().quit();
-                 }*/
                 /**
                  * If execution from queue, remove it from the queue or update
                  * information in Queue
@@ -396,7 +387,6 @@ public class RunTestCase extends HttpServlet {
                     }
                 } catch (CerberusException ex) {
                     org.apache.log4j.Logger.getLogger(RunTestCase.class.getName()).log(org.apache.log4j.Level.ERROR, "Error while performin testcase in queue ", ex);
-                    //MyLogger.log(RunTestCase.class.getName(), Level.WARN, ex.getMessageError().getDescription());
                 }
 
                 /**
@@ -407,17 +397,14 @@ public class RunTestCase extends HttpServlet {
                     if (tCExecution.getId() == 0) {
                         executionUUIDObject.removeExecutionUUID(tCExecution.getExecutionUUID());
                         org.apache.log4j.Logger.getLogger(RunTestCase.class.getName()).log(org.apache.log4j.Level.DEBUG, "Clean ExecutionUUID");
-                        //MyLogger.log(RunTestCase.class.getName(), Level.DEBUG, "Clean ExecutionUUID");
 
                         if (eSResponse.getExecutionSOAPResponse(tCExecution.getExecutionUUID()) != null) {
                             eSResponse.removeExecutionSOAPResponse(tCExecution.getExecutionUUID());
-                            org.apache.log4j.Logger.getLogger(RunTestCase.class.getName()).log(org.apache.log4j.Level.DEBUG, "ExecutionSOAPResponse ExecutionUUID");
-                            //MyLogger.log(RunTestCase.class.getName(), Level.DEBUG, "Clean ExecutionSOAPResponse");
+                            org.apache.log4j.Logger.getLogger(RunTestCase.class.getName()).log(org.apache.log4j.Level.DEBUG, "ExecutionSOAPResponse ExecutionUUID");                        
                         }
                     }
                 } catch (Exception ex) {
                     org.apache.log4j.Logger.getLogger(RunTestCase.class.getName()).log(org.apache.log4j.Level.ERROR, "Exception cleaning Memory: ", ex);
-                    //MyLogger.log(RunTestCase.class.getName(), Level.FATAL, "Exception cleaning Memory: " + ex.toString());
                 }
 
                 long runID = tCExecution.getId();
