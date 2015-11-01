@@ -145,7 +145,7 @@ public class CountryEnvParam_logDAO implements ICountryEnvParam_logDAO {
             searchSQL.append(" or `Creator` like ?)");
         }
         if (!StringUtil.isNullOrEmpty(individualSearch)) {
-            searchSQL.append(" and (`").append(individualSearch).append("`)");
+            searchSQL.append(" and ( ? )");
         }
         if (!StringUtil.isNullOrEmpty(system)) {
             searchSQL.append(" and (`system` = ?)");
@@ -194,6 +194,9 @@ public class CountryEnvParam_logDAO implements ICountryEnvParam_logDAO {
                     preStat.setString(i++, "%" + searchTerm + "%");
                     preStat.setString(i++, "%" + searchTerm + "%");
                     preStat.setString(i++, "%" + searchTerm + "%");
+                }
+                if (!StringUtil.isNullOrEmpty(individualSearch)) {
+                    preStat.setString(i++, individualSearch);
                 }
                 if (!StringUtil.isNullOrEmpty(system)) {
                     preStat.setString(i++, system);

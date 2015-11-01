@@ -67,9 +67,9 @@ function displayInvariantList(selectName, idName, defaultValue) {
         for (var option in data) {
             $("[name='" + selectName + "']").append($('<option></option>').text(data[option].value).val(data[option].value));
         }
-        
+
         if (defaultValue !== undefined) {
-            $("[name='"+ selectName +"']").val(defaultValue);
+            $("[name='" + selectName + "']").val(defaultValue);
         }
     });
 }
@@ -79,9 +79,9 @@ function displayInvariantListWithDesc(selectName, idName, defaultValue) {
         for (var option in data) {
             $("[name='" + selectName + "']").append($('<option></option>').text(data[option].value + " - " + data[option].description).val(data[option].value));
         }
-                        
+
         if (defaultValue !== undefined) {
-            $("[name='"+ selectName +"']").val(defaultValue);
+            $("[name='" + selectName + "']").val(defaultValue);
         }
     });
 }
@@ -98,9 +98,9 @@ function displayDeployTypeList(selectName, defaultValue) {
         for (var option in data.contentTable) {
             $("select[id='" + selectName + "']").append($('<option></option>').text(data.contentTable[option].deploytype + " - " + data.contentTable[option].description).val(data.contentTable[option].deploytype));
         }
-                
+
         if (defaultValue !== undefined) {
-            $("[name='"+ selectName +"']").val(defaultValue);
+            $("[name='" + selectName + "']").val(defaultValue);
         }
     });
 }
@@ -122,9 +122,9 @@ function displayApplicationList(selectName, system, defaultValue) {
         for (var option in data.contentTable) {
             $("[name='" + selectName + "']").append($('<option></option>').text(data.contentTable[option].application + " - " + data.contentTable[option].description).val(data.contentTable[option].application));
         }
-                
+
         if (defaultValue !== undefined) {
-            $("[name='"+ selectName +"']").val(defaultValue);
+            $("[name='" + selectName + "']").val(defaultValue);
         }
     });
 }
@@ -142,9 +142,9 @@ function displayProjectList(selectName, defaultValue) {
         for (var option in data.contentTable) {
             $("[name='" + selectName + "']").append($('<option></option>').text(data.contentTable[option].idProject + " - " + data.contentTable[option].description).val(data.contentTable[option].idProject));
         }
-                        
+
         if (defaultValue !== undefined) {
-            $("[name='"+ selectName +"']").val(defaultValue);
+            $("[name='" + selectName + "']").val(defaultValue);
         }
     });
 }
@@ -171,9 +171,9 @@ function displayBuildList(selectName, system, level, defaultValue) {
         for (var option in data.contentTable) {
             $("[name='" + selectName + "']").append($('<option></option>').text(data.contentTable[option].versionName).val(data.contentTable[option].versionName));
         }
-                        
+
         if (defaultValue !== undefined) {
-            $("[name='"+ selectName +"']").val(defaultValue);
+            $("[name='" + selectName + "']").val(defaultValue);
         }
     });
 }
@@ -191,9 +191,9 @@ function displayEnvList(selectName, system, defaultValue) {
         for (var option in data.contentTable) {
             $("[name='" + selectName + "']").append($('<option></option>').text(data.contentTable[option].environment).val(data.contentTable[option].environment));
         }
-                        
+
         if (defaultValue !== undefined) {
-            $("[name='"+ selectName +"']").val(defaultValue);
+            $("[name='" + selectName + "']").val(defaultValue);
         }
     });
 }
@@ -965,14 +965,14 @@ function displayFooter(doc) {
     footerString = footerString.replace("%TIMING%", loadTime);
     footerBugString = footerBugString.replace("%LINK%", "https://github.com/vertigo17/Cerberus/issues/new?body=Cerberus%20Version%20:%20" + cerberusInformation.projectVersion);
     $("#footer").html(footerString + " - " + footerBugString);
-    
+
     console.info('toto');
     console.info(cerberusInformation.environment);
     // Backgroun color is light yellow if the environment is not production.
-    if ((cerberusInformation.environment !== "prd") && (cerberusInformation.environment !== "PROD") ) {
+    if ((cerberusInformation.environment !== "prd") && (cerberusInformation.environment !== "PROD")) {
         document.body.style.background = "#FFFFCC";
     }
-    
+
 }
 
 /**
@@ -1048,10 +1048,10 @@ function drawURL(data) {
 }
 
 function drawHyperlink(href, text) {
-    if (text !== '') {
+    if (text.indexOf("://") > -1) {
         return "<a href='" + href + "'>" + text + "</a>";//TODO:FN ver se tem caracters que precisam de ser encapsulados
     }
-    return '';
+    return text;
 }
 
 function drawHyperlinkExternal(href, text) {

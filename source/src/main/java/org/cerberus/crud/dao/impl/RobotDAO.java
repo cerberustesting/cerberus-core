@@ -207,7 +207,7 @@ public class RobotDAO implements IRobotDAO {
             searchSQL.append(" or `version` like ?)");
         }
         if (!StringUtil.isNullOrEmpty(individualSearch)) {
-            searchSQL.append(" and (`").append(individualSearch).append("`)");
+            searchSQL.append(" and ( ? )");
         }
         query.append(searchSQL);
 
@@ -229,15 +229,19 @@ public class RobotDAO implements IRobotDAO {
         try {
             PreparedStatement preStat = connection.prepareStatement(query.toString());
             try {
+                int i = 1;
                 if (!Strings.isNullOrEmpty(searchTerm)) {
-                    preStat.setString(1, "%" + searchTerm + "%");
-                    preStat.setString(2, "%" + searchTerm + "%");
-                    preStat.setString(3, "%" + searchTerm + "%");
-                    preStat.setString(4, "%" + searchTerm + "%");
-                    preStat.setString(5, "%" + searchTerm + "%");
-                    preStat.setString(6, "%" + searchTerm + "%");
-                    preStat.setString(7, "%" + searchTerm + "%");
-                    preStat.setString(8, "%" + searchTerm + "%");
+                    preStat.setString(i++, "%" + searchTerm + "%");
+                    preStat.setString(i++, "%" + searchTerm + "%");
+                    preStat.setString(i++, "%" + searchTerm + "%");
+                    preStat.setString(i++, "%" + searchTerm + "%");
+                    preStat.setString(i++, "%" + searchTerm + "%");
+                    preStat.setString(i++, "%" + searchTerm + "%");
+                    preStat.setString(i++, "%" + searchTerm + "%");
+                    preStat.setString(i++, "%" + searchTerm + "%");
+                }
+                if (!StringUtil.isNullOrEmpty(individualSearch)) {
+                    preStat.setString(i++, individualSearch);
                 }
                 ResultSet resultSet = preStat.executeQuery();
                 try {
@@ -258,6 +262,9 @@ public class RobotDAO implements IRobotDAO {
                         LOG.error("Partial Result in the query.");
                         msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_WARNING_PARTIAL_RESULT);
                         msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", "Maximum row reached : " + MAX_ROW_SELECTED));
+                        response = new AnswerList(robotList, nrTotalRows);
+                    } else if (robotList.size() <= 0) {
+                        msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_NO_DATA_FOUND);
                         response = new AnswerList(robotList, nrTotalRows);
                     } else {
                         msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);

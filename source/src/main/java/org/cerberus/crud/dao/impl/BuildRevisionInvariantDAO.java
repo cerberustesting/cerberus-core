@@ -136,13 +136,13 @@ public class BuildRevisionInvariantDAO implements IBuildRevisionInvariantDAO {
         if (!StringUtil.isNullOrEmpty(searchTerm)) {
             searchSQL.append(" and (`seq` like ?");
             searchSQL.append(" or `level` like ?");
-            searchSQL.append(" or `versionname` like ?)");
+            searchSQL.append(" or `versionname` like ? )");
         }
         if (!StringUtil.isNullOrEmpty(individualSearch)) {
-            searchSQL.append(" and (`?`)");
+            searchSQL.append(" and ( ? )");
         }
         if (!StringUtil.isNullOrEmpty(system)) {
-            searchSQL.append(" and (`System` like ?)");
+            searchSQL.append(" and (`System` like ? )");
         }
         if (level != -1) {
             searchSQL.append(" and (`level`= ?)");
@@ -201,6 +201,9 @@ public class BuildRevisionInvariantDAO implements IBuildRevisionInvariantDAO {
                         LOG.error("Partial Result in the query.");
                         msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_WARNING_PARTIAL_RESULT);
                         msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", "Maximum row reached : " + MAX_ROW_SELECTED));
+                        response = new AnswerList(briList, nrTotalRows);
+                    } else if (briList.size() <= 0) {
+                        msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_NO_DATA_FOUND);
                         response = new AnswerList(briList, nrTotalRows);
                     } else {
                         msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
@@ -595,7 +598,7 @@ public class BuildRevisionInvariantDAO implements IBuildRevisionInvariantDAO {
         }
         return new Answer(msg);
     }
-    
+
     @Override
     public Answer delete(BuildRevisionInvariant buildRevisionInvariant) {
         MessageEvent msg = null;

@@ -70,6 +70,11 @@ public class ApplicationService implements IApplicationService {
     }
 
     @Override
+    public AnswerItem readTestCaseCountersBySystemByStatus(String system) {
+        return this.ApplicationDAO.readTestCaseCountersBySystemByStatus(system);
+    }
+
+    @Override
     public boolean exist(String Application) {
         try {
             convert(readByKey(Application));
@@ -124,11 +129,6 @@ public class ApplicationService implements IApplicationService {
             return;
         }
         throw new CerberusException(new MessageGeneral(MessageGeneralEnum.DATA_OPERATION_ERROR));
-    }
-
-    @Override
-    public AnswerItem readTotalTCBySystemByStatus(String system) {
-        return  this.ApplicationDAO.readTotalTCBySystemByStatus(system);
     }
 
 }

@@ -507,9 +507,10 @@ public class BuildRevisionParametersDAO implements IBuildRevisionParametersDAO {
         try {
             PreparedStatement preStat = connection.prepareStatement(query.toString());
             try {
-                preStat.setString(1, system);
-                preStat.setString(2, system);
-                preStat.setString(3, system);
+                int i = 1;
+                preStat.setString(i++, system);
+                preStat.setString(i++, system);
+                preStat.setString(i++, system);
                 ResultSet resultSet = preStat.executeQuery();
                 try {
                     if (resultSet.first()) {
@@ -570,36 +571,36 @@ public class BuildRevisionParametersDAO implements IBuildRevisionParametersDAO {
         searchSQL.append(" where 1=1 ");
 
         if (!StringUtil.isNullOrEmpty(searchTerm)) {
-            searchSQL.append(" and (`id` like '%").append(searchTerm).append("%'");
-            searchSQL.append(" or `Build` like '%").append(searchTerm).append("%'");
-            searchSQL.append(" or `Revision` like '%").append(searchTerm).append("%'");
-            searchSQL.append(" or `Release` like '%").append(searchTerm).append("%'");
-            searchSQL.append(" or `Application` like '%").append(searchTerm).append("%'");
-            searchSQL.append(" or `Project` like '%").append(searchTerm).append("%'");
-            searchSQL.append(" or `TicketIDFixed` like '%").append(searchTerm).append("%'");
-            searchSQL.append(" or `BugIDFixed` like '%").append(searchTerm).append("%'");
-            searchSQL.append(" or `Link` like '%").append(searchTerm).append("%'");
-            searchSQL.append(" or `ReleaseOwner` like '%").append(searchTerm).append("%'");
-            searchSQL.append(" or `datecre` like '%").append(searchTerm).append("%')");
-            searchSQL.append(" or `jenkinsbuildid` like '%").append(searchTerm).append("%')");
-            searchSQL.append(" or `mavengroupid` like '%").append(searchTerm).append("%')");
-            searchSQL.append(" or `mavenartifactid` like '%").append(searchTerm).append("%')");
-            searchSQL.append(" or `mavenversion` like '%").append(searchTerm).append("%')");
+            searchSQL.append(" and (`id` like ?");
+            searchSQL.append(" or `Build` like ?");
+            searchSQL.append(" or `Revision` like ?");
+            searchSQL.append(" or `Release` like ?");
+            searchSQL.append(" or `Application` like ?");
+            searchSQL.append(" or `Project` like ?");
+            searchSQL.append(" or `TicketIDFixed` like ?");
+            searchSQL.append(" or `BugIDFixed` like ?");
+            searchSQL.append(" or `Link` like ?");
+            searchSQL.append(" or `ReleaseOwner` like ?");
+            searchSQL.append(" or `datecre` like ?");
+            searchSQL.append(" or `jenkinsbuildid` like ?");
+            searchSQL.append(" or `mavengroupid` like ?");
+            searchSQL.append(" or `mavenartifactid` like ?");
+            searchSQL.append(" or `mavenversion` like ? )");
         }
         if (!StringUtil.isNullOrEmpty(individualSearch)) {
-            searchSQL.append(" and (`").append(individualSearch).append("`)");
+            searchSQL.append(" and ( ? )");
         }
         if (!StringUtil.isNullOrEmpty(system)) {
-            searchSQL.append(" and application in (SELECT application FROM application WHERE `System` = '").append(system).append("' )");
+            searchSQL.append(" and application in (SELECT application FROM application WHERE `System` = ? )");
         }
         if (!StringUtil.isNullOrEmpty(application)) {
-            searchSQL.append(" and (`Application`='").append(application).append("' )");
+            searchSQL.append(" and (`Application`= ? )");
         }
         if (!StringUtil.isNullOrEmpty(build)) {
-            searchSQL.append(" and (`Build`='").append(build).append("' )");
+            searchSQL.append(" and (`Build`= ? )");
         }
         if (!StringUtil.isNullOrEmpty(revision)) {
-            searchSQL.append(" and (`Revision`='").append(revision).append("' )");
+            searchSQL.append(" and (`Revision`= ? )");
         }
         query.append(searchSQL);
 
@@ -621,6 +622,39 @@ public class BuildRevisionParametersDAO implements IBuildRevisionParametersDAO {
         try {
             PreparedStatement preStat = connection.prepareStatement(query.toString());
             try {
+                int i = 1;
+                if (!StringUtil.isNullOrEmpty(searchTerm)) {
+                    preStat.setString(i++, "%" + searchTerm + "%");
+                    preStat.setString(i++, "%" + searchTerm + "%");
+                    preStat.setString(i++, "%" + searchTerm + "%");
+                    preStat.setString(i++, "%" + searchTerm + "%");
+                    preStat.setString(i++, "%" + searchTerm + "%");
+                    preStat.setString(i++, "%" + searchTerm + "%");
+                    preStat.setString(i++, "%" + searchTerm + "%");
+                    preStat.setString(i++, "%" + searchTerm + "%");
+                    preStat.setString(i++, "%" + searchTerm + "%");
+                    preStat.setString(i++, "%" + searchTerm + "%");
+                    preStat.setString(i++, "%" + searchTerm + "%");
+                    preStat.setString(i++, "%" + searchTerm + "%");
+                    preStat.setString(i++, "%" + searchTerm + "%");
+                    preStat.setString(i++, "%" + searchTerm + "%");
+                    preStat.setString(i++, "%" + searchTerm + "%");
+                }
+                if (!StringUtil.isNullOrEmpty(individualSearch)) {
+                    preStat.setString(i++, individualSearch);
+                }
+                if (!StringUtil.isNullOrEmpty(system)) {
+                    preStat.setString(i++, system);
+                }
+                if (!StringUtil.isNullOrEmpty(application)) {
+                    preStat.setString(i++, application);
+                }
+                if (!StringUtil.isNullOrEmpty(build)) {
+                    preStat.setString(i++, build);
+                }
+                if (!StringUtil.isNullOrEmpty(revision)) {
+                    preStat.setString(i++, revision);
+                }
                 ResultSet resultSet = preStat.executeQuery();
                 try {
                     //gets the data
@@ -640,6 +674,9 @@ public class BuildRevisionParametersDAO implements IBuildRevisionParametersDAO {
                         LOG.error("Partial Result in the query.");
                         msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_WARNING_PARTIAL_RESULT);
                         msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", "Maximum row reached : " + MAX_ROW_SELECTED));
+                        response = new AnswerList(brpList, nrTotalRows);
+                    } else if (brpList.size() <= 0) {
+                        msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_NO_DATA_FOUND);
                         response = new AnswerList(brpList, nrTotalRows);
                     } else {
                         msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);

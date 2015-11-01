@@ -28,7 +28,7 @@ import java.util.List;
 import org.apache.log4j.Logger;
 import org.cerberus.crud.dao.IApplicationDAO;
 import org.cerberus.database.DatabaseSpring;
-import org.cerberus.crud.entity.Application; 
+import org.cerberus.crud.entity.Application;
 import org.cerberus.crud.entity.MessageEvent;
 import org.cerberus.enums.MessageEventEnum;
 import org.cerberus.crud.factory.IFactoryApplication;
@@ -119,88 +119,6 @@ public class ApplicationDAO implements IApplicationDAO {
         ans.setResultMessage(msg);
         return ans;
     }
-    
-    @Override
-    public AnswerItem readTotalTCBySystemByStatus(String system) {
-        AnswerItem response = new AnswerItem();
-        MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
-        msg.setDescription(msg.getDescription().replace("%ITEM%", "APPLICATION").replace("%OPERATION%", "SELECT TOTAL"));
-        
-
-        StringBuilder query = new StringBuilder();
-        query.append("SELECT a.application as ApplicationName, inv.`value` as `Status`, count(inv.`value`) as CountStatus ");
-        query.append("FROM application a ");
-        query.append("inner join testcase tc on a.application = tc.application ");
-        query.append("inner join invariant inv on tc.`Status` = inv.`value` ");
-        query.append("where a.system = ? ");
-        query.append("and inv.idname='TCSTATUS' and inv.gp1='Y' ");
-        query.append("group by a.application, inv.`value` ");
-        
-        HashMap<String, HashMap<String, Integer>> map  = new HashMap<String, HashMap<String, Integer>>();
-       
-         
-        Connection connection = this.databaseSpring.connect();
-        try {
-            PreparedStatement preStat = connection.prepareStatement(query.toString());
-            try {
-                preStat.setString(1, system);
-                 
-                ResultSet resultSet = preStat.executeQuery();
-                try {
-                    //gets the data
-                    while (resultSet.next()) {
-                        String appName = resultSet.getString("ApplicationName");
-                        String tcStatus = resultSet.getString("Status");
-                        int countStatus = resultSet.getInt("CountStatus");
-                        HashMap<String, Integer> totalsMap = map.get(appName);
-                        if(totalsMap == null){
-                            totalsMap = new HashMap<String, Integer>();                            
-                        }
-                        totalsMap.put(tcStatus, countStatus);
-                        map.put(appName, totalsMap);
-                    }
-                    
-                } catch (SQLException exception) {
-                    LOG.error("Unable to execute query : " + exception.toString());
-                    msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
-                    msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", exception.toString()));
-
-                } finally {
-                    if (resultSet != null) {
-                        resultSet.close();
-                    }
-                }
-
-            } catch (SQLException exception) {
-                LOG.error("Unable to execute query : " + exception.toString());
-                msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
-                msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", exception.toString()));
-            } finally {
-                if (preStat != null) {
-                    preStat.close();
-                }
-            }
-
-        } catch (SQLException exception) {
-            LOG.error("Unable to execute query : " + exception.toString());
-            msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
-            msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", exception.toString()));
-        } finally {
-            try {
-                if (!this.databaseSpring.isOnTransaction()) {
-                    if (connection != null) {
-                        connection.close();
-                    }
-                }
-            } catch (SQLException exception) {
-                LOG.warn("Unable to close connection : " + exception.toString());
-            }
-        }
-
-        response.setResultMessage(msg);
-        response.setItem(map);
-        return response;
-    }
 
     @Override
     public AnswerList readBySystemByCriteria(String system, int start, int amount, String column, String dir, String searchTerm, String individualSearch) {
@@ -231,10 +149,10 @@ public class ApplicationDAO implements IApplicationDAO {
             searchSQL.append(" or `mavengroupid` like ?)");
         }
         if (!StringUtil.isNullOrEmpty(individualSearch)) {
-            searchSQL.append(" and (`").append(individualSearch).append("`)");
+            searchSQL.append(" and (`?`)");
         }
         if (!StringUtil.isNullOrEmpty(system)) {
-            searchSQL.append(" and (`System`='").append(system).append("' )");
+            searchSQL.append(" and (`System` = ? )");
         }
         query.append(searchSQL);
 
@@ -256,19 +174,26 @@ public class ApplicationDAO implements IApplicationDAO {
         try {
             PreparedStatement preStat = connection.prepareStatement(query.toString());
             try {
-                 if (!StringUtil.isNullOrEmpty(searchTerm)) {
-                     preStat.setString(1, "%" + searchTerm + "%");
-                     preStat.setString(2, "%" + searchTerm + "%");
-                     preStat.setString(3, "%" + searchTerm + "%");
-                     preStat.setString(4, "%" + searchTerm + "%");
-                     preStat.setString(5, "%" + searchTerm + "%");
-                     preStat.setString(6, "%" + searchTerm + "%");
-                     preStat.setString(7, "%" + searchTerm + "%");
-                     preStat.setString(8, "%" + searchTerm + "%");
-                     preStat.setString(9, "%" + searchTerm + "%");
-                     preStat.setString(10, "%" + searchTerm + "%");
-                     preStat.setString(11, "%" + searchTerm + "%");
-                 }
+                int i = 1;
+                if (!StringUtil.isNullOrEmpty(searchTerm)) {
+                    preStat.setString(i++, "%" + searchTerm + "%");
+                    preStat.setString(i++, "%" + searchTerm + "%");
+                    preStat.setString(i++, "%" + searchTerm + "%");
+                    preStat.setString(i++, "%" + searchTerm + "%");
+                    preStat.setString(i++, "%" + searchTerm + "%");
+                    preStat.setString(i++, "%" + searchTerm + "%");
+                    preStat.setString(i++, "%" + searchTerm + "%");
+                    preStat.setString(i++, "%" + searchTerm + "%");
+                    preStat.setString(i++, "%" + searchTerm + "%");
+                    preStat.setString(i++, "%" + searchTerm + "%");
+                    preStat.setString(i++, "%" + searchTerm + "%");
+                }
+                if (!StringUtil.isNullOrEmpty(individualSearch)) {
+                    preStat.setString(i++, individualSearch);
+                }
+                if (!StringUtil.isNullOrEmpty(system)) {
+                    preStat.setString(i++, system);
+                }
                 ResultSet resultSet = preStat.executeQuery();
                 try {
                     //gets the data
@@ -288,6 +213,9 @@ public class ApplicationDAO implements IApplicationDAO {
                         LOG.error("Partial Result in the query.");
                         msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_WARNING_PARTIAL_RESULT);
                         msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", "Maximum row reached : " + MAX_ROW_SELECTED));
+                        response = new AnswerList(applicationList, nrTotalRows);
+                    } else if (applicationList.size() <= 0) {
+                        msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_NO_DATA_FOUND);
                         response = new AnswerList(applicationList, nrTotalRows);
                     } else {
                         msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
@@ -334,6 +262,95 @@ public class ApplicationDAO implements IApplicationDAO {
 
         response.setResultMessage(msg);
         response.setDataList(applicationList);
+        return response;
+    }
+
+    @Override
+    public AnswerItem readTestCaseCountersBySystemByStatus(String system) {
+        AnswerItem response = new AnswerItem();
+        MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
+        msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", ""));
+
+        StringBuilder query = new StringBuilder();
+        query.append("SELECT a.application as ApplicationName, inv.`value` as `Status`, count(inv.`value`) as CountStatus ");
+        query.append("FROM application a ");
+        query.append("inner join testcase tc on a.application = tc.application ");
+        query.append("inner join invariant inv on tc.`Status` = inv.`value` ");
+        query.append("where a.system = ? ");
+        query.append("and inv.idname='TCSTATUS' and inv.gp1='Y' ");
+        query.append("group by a.application, inv.`value` ");
+
+        HashMap<String, HashMap<String, Integer>> map = new HashMap<String, HashMap<String, Integer>>();
+
+        Connection connection = this.databaseSpring.connect();
+        try {
+            PreparedStatement preStat = connection.prepareStatement(query.toString());
+            try {
+                preStat.setString(1, system);
+
+                ResultSet resultSet = preStat.executeQuery();
+                try {
+                    //gets the data
+                    boolean has_data = false;
+                    while (resultSet.next()) {
+                        has_data = true;
+                        String appName = resultSet.getString("ApplicationName");
+                        String tcStatus = resultSet.getString("Status");
+                        int countStatus = resultSet.getInt("CountStatus");
+                        HashMap<String, Integer> totalsMap = map.get(appName);
+                        if (totalsMap == null) {
+                            totalsMap = new HashMap<String, Integer>();
+                        }
+                        totalsMap.put(tcStatus, countStatus);
+                        map.put(appName, totalsMap);
+                    }
+
+                    if (has_data) {
+                        msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
+                        msg.setDescription(msg.getDescription().replace("%ITEM%", "APPLICATION").replace("%OPERATION%", "SELECT TOTAL"));
+                    } else {
+                        msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_NO_DATA_FOUND);
+                    }
+
+                } catch (SQLException exception) {
+                    LOG.error("Unable to execute query : " + exception.toString());
+                    msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
+                    msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", exception.toString()));
+
+                } finally {
+                    if (resultSet != null) {
+                        resultSet.close();
+                    }
+                }
+
+            } catch (SQLException exception) {
+                LOG.error("Unable to execute query : " + exception.toString());
+                msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
+                msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", exception.toString()));
+            } finally {
+                if (preStat != null) {
+                    preStat.close();
+                }
+            }
+
+        } catch (SQLException exception) {
+            LOG.error("Unable to execute query : " + exception.toString());
+            msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
+            msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", exception.toString()));
+        } finally {
+            try {
+                if (!this.databaseSpring.isOnTransaction()) {
+                    if (connection != null) {
+                        connection.close();
+                    }
+                }
+            } catch (SQLException exception) {
+                LOG.warn("Unable to close connection : " + exception.toString());
+            }
+        }
+
+        response.setResultMessage(msg);
+        response.setItem(map);
         return response;
     }
 
@@ -396,7 +413,7 @@ public class ApplicationDAO implements IApplicationDAO {
         }
         return new Answer(msg);
     }
-    
+
     @Override
     public Answer delete(Application application) {
         MessageEvent msg = null;

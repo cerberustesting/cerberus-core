@@ -428,7 +428,11 @@ function aoColumnsFunc() {
         {"data": "link",
             "sName": "link",
             "sWidth": "250px",
-            "title": doc.getDocOnline("buildrevisionparameters", "Link")},
+            "title": doc.getDocOnline("buildrevisionparameters", "Link"),
+            "mRender": function (data, type, oObj) {
+                return drawURL(data);
+            }
+        },
         {"data": "releaseOwner",
             "sName": "releaseOwner",
             "sWidth": "80px",
