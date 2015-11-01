@@ -19,19 +19,28 @@
  */
 package org.cerberus.crud.factory;
 
-import org.cerberus.crud.entity.CountryEnvParam;
+import java.sql.Timestamp;
+import org.cerberus.crud.entity.CountryEnvParam_log;
 
 /**
- *
- * @author bcivel
+ * @author vertigo
  */
-public interface IFactoryCountryEnvParam {
+public interface IFactoryCountryEnvParam_log {
 
-    CountryEnvParam create(String system, String country, String environment, String description, String build, String revision, String chain,
-            String distribList, String eMailBodyRevision, String type, String eMailBodyChain,
-            String eMailBodyDisableEnvironment, boolean active, boolean maintenanceAct, String maintenanceStr, String maintenanceEnd);
-    
-    CountryEnvParam create(String system, String country, boolean active);
+    /**
+     * @param id
+     * @param description Description of the Application.
+     * @param country
+     * @param environment
+     * @param build
+     * @param revision
+     * @param chain
+     * @param system
+     * @param datecre
+     * @param creator
+     * @return
+     */
+    CountryEnvParam_log create(long id, String system, String country, String environment, String build, String revision,
+            int chain, String description, Timestamp datecre, String creator);
 
-    CountryEnvParam create(String system, String country, String env);
 }

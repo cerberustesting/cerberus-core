@@ -62,7 +62,7 @@ public class CountryEnvParamDAO implements ICountryEnvParamDAO {
         CountryEnvParam result = null;
         boolean throwex = false;
         StringBuilder query = new StringBuilder();
-        query.append("SELECT `system`, country, environment, Build, Revision,chain, distriblist, eMailBodyRevision, type,eMailBodyChain, eMailBodyDisableEnvironment,  active, maintenanceact, ");
+        query.append("SELECT `system`, country, environment, Description, Build, Revision,chain, distriblist, eMailBodyRevision, type,eMailBodyChain, eMailBodyDisableEnvironment,  active, maintenanceact, ");
         query.append("maintenancestr, maintenanceend FROM countryenvparam WHERE `system` = ? AND country = ? AND environment = ?");
 
         Connection connection = this.databaseSpring.connect();
@@ -111,6 +111,7 @@ public class CountryEnvParamDAO implements ICountryEnvParamDAO {
         String system = resultSet.getString("System");
         String count = resultSet.getString("Country");
         String env = resultSet.getString("Environment");
+        String description = resultSet.getString("Description");
         String build = resultSet.getString("Build");
         String revision = resultSet.getString("Revision");
         String chain = resultSet.getString("chain");
@@ -123,7 +124,7 @@ public class CountryEnvParamDAO implements ICountryEnvParamDAO {
         boolean maintenanceAct = StringUtil.parseBoolean(resultSet.getString("maintenanceact"));
         String maintenanceStr = resultSet.getString("maintenancestr");
         String maintenanceEnd = resultSet.getString("maintenanceend");
-        return factoryCountryEnvParam.create(system, count, env, build, revision, chain, distribList, eMailBodyRevision,
+        return factoryCountryEnvParam.create(system, count, env, description, build, revision, chain, distribList, eMailBodyRevision,
                 type, eMailBodyChain, eMailBodyDisableEnvironment, active, maintenanceAct, maintenanceStr, maintenanceEnd);
     }
 

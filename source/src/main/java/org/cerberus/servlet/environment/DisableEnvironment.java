@@ -109,8 +109,8 @@ public class DisableEnvironment extends HttpServlet {
 
 
                 String req_insert_log = "INSERT INTO  countryenvparam_log "
-                        + " ( `System`, `Country`, `Environment`, `Description`) "
-                        + " VALUES ('" + system + "', '" + country + "', '" + env + "', 'Disabled.') ";
+                        + " ( `System`, `Country`, `Environment`, `Description`, `Creator`) "
+                        + " VALUES ('" + system + "', '" + country + "', '" + env + "', 'Disabled.', '" + request.getUserPrincipal().getName() + "') ";
                 stmt.execute(req_insert_log);
             } finally {
                 stmt.close();

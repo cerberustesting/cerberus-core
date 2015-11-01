@@ -49,7 +49,7 @@ import org.owasp.html.Sanitizers;
 public class CreateBuildRevisionParameters extends HttpServlet {
 
     private final String OBJECT_NAME = "BuildRevisionParameters";
-    
+
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
      * methods.

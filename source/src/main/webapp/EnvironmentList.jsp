@@ -247,7 +247,7 @@
 
                     // Country - Environment Page List.
 
-                    PCE = "SELECT DISTINCT c.system, c.Country, c.Environment, c.Build, c.Revision, c.Chain, c.Active, c.Type, "
+                    PCE = "SELECT DISTINCT c.system, c.Country, c.Environment, c.Description, c.Build, c.Revision, c.Chain, c.Active, c.Type, "
                             + "c.DistribList, c.EMailBodyRevision, c.EmailBodyChain, i.gp1 "
                             + "FROM `countryenvparam` c "
                             + "left outer join invariant i  on Environment=i.value and i.idname='ENVIRONMENT' "
@@ -333,6 +333,7 @@
                             <td><%=docService.findLabelHTML("application", "system", "", myLang)%></td>
                             <td><%=docService.findLabelHTML("invariant", "country", "", myLang)%></td>
                             <td><%=docService.findLabelHTML("invariant", "environment", "", myLang)%></td>
+                            <td><%=docService.findLabelHTML("countryenvparam", "Description", "", myLang)%></td>
                             <td><%=docService.findLabelHTML("buildrevisioninvariant", "versionname01", "", myLang)%></td>
                             <td><%=docService.findLabelHTML("buildrevisioninvariant", "versionname02", "", myLang)%></td>
                             <td><%=docService.findLabelHTML("countryenvparam", "chain", "", myLang)%></td>
@@ -347,6 +348,7 @@
                             <td style="background-color:<%=color%>"><b><%=rsPCE.getString("c.system")%></b></td>
                             <td style="background-color:<%=color%>"><b><%=rsPCE.getString("c.Country")%></b></td>
                             <td style="background-color:<%=color%>"><b><%=rsPCE.getString("c.Environment")%></b></td>
+                            <td style="background-color:<%=color%>"><b><%=rsPCE.getString("c.Description")%></b></td>
                             <td style="background-color:<%=color%>"><%=Build != null ? Build : ""%></td>
                             <td style="background-color:<%=color%>"><%=Revision != null ? Revision : ""%></td>
                             <td style="background-color:<%=color%>"><%=rsPCE.getString("c.Chain") != null ? rsPCE.getString("c.Chain") : ""%></td>

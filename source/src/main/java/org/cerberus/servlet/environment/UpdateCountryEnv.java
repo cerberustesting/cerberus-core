@@ -83,6 +83,10 @@ public class UpdateCountryEnv extends HttpServlet {
             if (request.getParameter("distriblist") != null && request.getParameter("distriblist").compareTo("") != 0) {
                 distriblist = request.getParameter("distriblist");
             }
+            String description = "";
+            if (request.getParameter("description") != null && request.getParameter("description").compareTo("") != 0) {
+                description = request.getParameter("description");
+            }
             String bodydisenv = "";
             if (request.getParameter("bodydisenv") != null && request.getParameter("bodydisenv").compareTo("") != 0) {
                 bodydisenv = request.getParameter("bodydisenv");
@@ -103,7 +107,7 @@ public class UpdateCountryEnv extends HttpServlet {
                 String req_update_active = "UPDATE countryenvparam "
                         + " SET DistribList='" + distriblist + "' , EMailBodyRevision='" + bodyrev + "'"
                         + ", EMailBodyChain='" + bodychain + "', EMailBodyDisableEnvironment='" + bodydisenv + "' "
-                        + ", type='" + type + "'"
+                        + ", type='" + type + "', Description='" + description + "' "
                         + "WHERE `System`='" + system + "' and Country='" + country + "' and Environment='" + env + "'";
                 stmt.executeUpdate(req_update_active);
             } finally {

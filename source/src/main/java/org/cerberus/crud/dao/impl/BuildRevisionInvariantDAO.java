@@ -28,7 +28,6 @@ import java.util.List;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.cerberus.crud.dao.IBuildRevisionInvariantDAO;
-import org.cerberus.crud.entity.Application;
 import org.cerberus.database.DatabaseSpring;
 import org.cerberus.crud.entity.BuildRevisionInvariant;
 import org.cerberus.crud.entity.MessageEvent;
@@ -55,7 +54,7 @@ public class BuildRevisionInvariantDAO implements IBuildRevisionInvariantDAO {
     @Autowired
     private IFactoryBuildRevisionInvariant factoryBuildRevisionInvariant;
 
-    private static final Logger LOG = Logger.getLogger(ApplicationDAO.class);
+    private static final Logger LOG = Logger.getLogger(BuildRevisionInvariantDAO.class);
 
     private final String OBJECT_NAME = "BuildRevisionInvariant";
     private final String SQL_DUPLICATED_CODE = "23000";

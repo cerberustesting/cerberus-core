@@ -51,7 +51,7 @@ import org.springframework.web.context.support.WebApplicationContextUtils;
 public class UpdateBuildRevisionParameters extends HttpServlet {
 
     private final String OBJECT_NAME = "BuildRevisionParameters";
-    
+
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
      * methods.
@@ -133,28 +133,43 @@ public class UpdateBuildRevisionParameters extends HttpServlet {
                  * object exist, then we can update it.
                  */
                 BuildRevisionParameters brpData = (BuildRevisionParameters) resp.getItem();
-                brpData.setBuild(build);
-                brpData.setRevision(revision);
-                brpData.setRelease(release);
-                brpData.setApplication(application);
-                brpData.setProject(project);
-                brpData.setTicketIdFixed(ticketidfixed);
-                brpData.setBugIdFixed(bugidfixed);
-                brpData.setLink(link);
-                brpData.setReleaseOwner(releaseowner);
-                brpData.setSubject(subject);
-                brpData.setJenkinsBuildId(jenkinsbuildid);
-                brpData.setMavenGroupId(mavenGroupID);
-                brpData.setMavenArtifactId(mavenArtifactID);
-                brpData.setMavenVersion(mavenVersion);
-                ans = brpService.update(brpData);
-                
-                if (ans.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
-                    /**
-                     * Update was succesfull. Adding Log entry.
-                     */
-                    ILogEventService logEventService = appContext.getBean(LogEventService.class);
-                    logEventService.createPrivateCalls("/UpdateBuildRevisionParameters", "UPDATE", "Updated BuildRevisionParameters : ['" + brpid + "'|'" + build + "'|'" + revision + "'|'" + release + "']", request);
+
+                /**
+                 * Before updating, we check that the old entry can be modified.
+                 * If old entry point to a build/revision that already been
+                 * deployed, we cannot update it.
+                 */
+                if (brpService.check_buildRevisionAlreadyUsed(brpData.getApplication(), brpData.getBuild(), brpData.getRevision())) {
+                    msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_EXPECTED);
+                    msg.setDescription(msg.getDescription().replace("%ITEM%", OBJECT_NAME)
+                            .replace("%OPERATION%", "Update")
+                            .replace("%REASON%", "Could not update this release as its original build " + brpData.getBuild() + " revision " + brpData.getRevision() + " has already been deployed in an environment."));
+                    ans.setResultMessage(msg);
+                } else {
+
+                    brpData.setBuild(build);
+                    brpData.setRevision(revision);
+                    brpData.setRelease(release);
+                    brpData.setApplication(application);
+                    brpData.setProject(project);
+                    brpData.setTicketIdFixed(ticketidfixed);
+                    brpData.setBugIdFixed(bugidfixed);
+                    brpData.setLink(link);
+                    brpData.setReleaseOwner(releaseowner);
+                    brpData.setSubject(subject);
+                    brpData.setJenkinsBuildId(jenkinsbuildid);
+                    brpData.setMavenGroupId(mavenGroupID);
+                    brpData.setMavenArtifactId(mavenArtifactID);
+                    brpData.setMavenVersion(mavenVersion);
+                    ans = brpService.update(brpData);
+
+                    if (ans.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
+                        /**
+                         * Update was succesfull. Adding Log entry.
+                         */
+                        ILogEventService logEventService = appContext.getBean(LogEventService.class);
+                        logEventService.createPrivateCalls("/UpdateBuildRevisionParameters", "UPDATE", "Updated BuildRevisionParameters : ['" + brpid + "'|'" + build + "'|'" + revision + "'|'" + release + "']", request);
+                    }
                 }
             }
         }

@@ -36,6 +36,8 @@ public interface IFactoryApplication {
      * @param svnurl
      * @param deploytype
      * @param mavengroupid
+     * @param bugtrackerurl
+     * @param bugtrackernewurl
      * @return
      */
     Application create(String application, String description

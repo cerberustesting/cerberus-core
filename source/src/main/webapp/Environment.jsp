@@ -112,7 +112,7 @@
 
                         // Enrironment country Detail Page
 
-                        PCE = "SELECT DISTINCT c.system, c.Country, c.Environment, c.Build, c.Revision, c.Chain, c.Active, c.Type, "
+                        PCE = "SELECT DISTINCT c.system, c.Country, c.Environment, c.Description, c.Build, c.Revision, c.Chain, c.Active, c.Type, "
                                 + "c.DistribList, c.EMailBodyRevision, c.EmailBodyChain, c.EmailBodyDisableEnvironment, "
                                 + "c.maintenanceact, c.maintenancestr, c.maintenanceend "
                                 + "FROM `countryenvparam` c "
@@ -151,6 +151,7 @@
                             <td><%=docService.findLabelHTML("application", "system", "", myLang)%></td>
                             <td><%=docService.findLabelHTML("invariant", "country", "", myLang)%></td>
                             <td><%=docService.findLabelHTML("invariant", "environment", "", myLang)%></td>
+                            <td><%=docService.findLabelHTML("countryenvparam", "Description", "", myLang)%></td>
                             <td><%=docService.findLabelHTML("buildrevisioninvariant", "versionname01", "", myLang)%></td>
                             <td><%=docService.findLabelHTML("buildrevisioninvariant", "versionname02", "", myLang)%></td>
                             <td><%=docService.findLabelHTML("countryenvparam", "chain", "", myLang)%></td>
@@ -162,6 +163,7 @@
                             <td><b><%=rsPCE.getString("c.System")%></b></td>
                             <td><b><%=rsPCE.getString("c.Country")%></b></td>
                             <td><b><%=rsPCE.getString("c.Environment")%></b></td>
+                            <td><b><%=rsPCE.getString("c.Description")%></b></td>
                             <td><%=Build%></td>
                             <td><%=Revision%></td>
                             <td><%=rsPCE.getString("c.Chain").trim()%></td>
@@ -187,6 +189,7 @@
                             <td><%=docService.findLabelHTML("application", "system", "", myLang)%></td>
                             <td><%=docService.findLabelHTML("invariant", "country", "", myLang)%></td>
                             <td><%=docService.findLabelHTML("invariant", "environment", "", myLang)%></td>
+                            <td><%=docService.findLabelHTML("countryenvparam", "Description", "", myLang)%></td>
                             <td><%=docService.findLabelHTML("buildrevisioninvariant", "versionname01", "", myLang)%></td>
                             <td><%=docService.findLabelHTML("buildrevisioninvariant", "versionname02", "", myLang)%></td>
                             <td><%=docService.findLabelHTML("countryenvparam", "chain", "", myLang)%></td>
@@ -201,6 +204,7 @@
                             <td><%=myLinkBuild.getSystemLink()%></td>
                             <td><%=myLinkBuild.getCountryLink()%></td>
                             <td><%=myLinkBuild.getEnvironmentLink()%></td>
+                            <td><%=mycountEnvParam.getDescription()%></td>
                             <td><%=mycountEnvParam.getBuild()%></td>
                             <td><%=mycountEnvParam.getRevision()%></td>
                             <td><%=mycountEnvParam.getChain()%></td>
@@ -461,13 +465,14 @@
                                 <table border style="height:240px">
                                     <tr id="header" style="height:15px">
                                         <td><%=docService.findLabelHTML("countryenvparam_log", "datecre", "", myLang)%></td>
+                                        <td><%=docService.findLabelHTML("countryenvparam_log", "Creator", "", myLang)%></td>
                                         <td><%=docService.findLabelHTML("countryenvparam_log", "Description", "", myLang)%></td>
                                         <td><%=docService.findLabelHTML("buildrevisioninvariant", "versionname01", "", myLang)%></td>
                                         <td><%=docService.findLabelHTML("buildrevisioninvariant", "versionname02", "", myLang)%></td>
                                     </tr>
                                     <%
                                     	Statement stmtCEL = conn.createStatement();
-                                                                            String CEL = "SELECT DISTINCT DATE_FORMAT(l.datecre,'%Y-%m-%d %H:%i') datecre, l.id, l.Country, l.Environment, l.Build, l.Revision, l.Chain, l.Description "
+                                                                            String CEL = "SELECT DISTINCT DATE_FORMAT(l.datecre,'%Y-%m-%d %H:%i') datecre, l.id, l.Country, l.Environment, l.Build, l.Revision, l.Chain, l.Description , l.Creator "
                                                                                     + "FROM `countryenvparam_log` l "
                                                                                     + "WHERE 1=1 "
                                                                                     + " and `System`='" + MySystem + "' "
@@ -480,6 +485,7 @@
                                     %>
                                     <tr>
                                         <td style="width :150px;"><%=rsCEL.getString("datecre")%></td>
+                                        <td style="width :150px;"><%=rsCEL.getString("Creator")%></td>
                                         <td style="width :200px;"><%=rsCEL.getString("l.Description")%></td>
                                         <td style="width :70px;"><%=rsCEL.getString("l.Build") == null ? "" : rsCEL.getString("l.Build")%></td>
                                         <td style="width :70px;"><%=rsCEL.getString("l.Revision") == null ? "" : rsCEL.getString("l.Revision")%></td>
@@ -531,6 +537,14 @@
                     <td colspan="2">
                         Country Environment Information
                     </td>
+                </tr>
+                <tr>
+                    <td>
+                <ftxt><%=docService.findLabelHTML("countryenvparam", "Description", "", myLang)%></ftxt> 
+                </td>
+                <td>
+                    <input id="description" name="description" style="width: 200px" value="<%=rsPCE.getString("c.Description") == null ? "" : rsPCE.getString("c.Description")%>">
+                </td>
                 </tr>
                 <tr>
                     <td>

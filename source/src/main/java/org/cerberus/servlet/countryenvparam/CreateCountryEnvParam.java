@@ -65,6 +65,7 @@ public class CreateCountryEnvParam extends HttpServlet {
             final String system = policy.sanitize(request.getParameter("System"));
             final String country = policy.sanitize(request.getParameter("Country"));
             final String environment = policy.sanitize(request.getParameter("Environment"));
+            final String description = policy.sanitize(request.getParameter("Description"));
             final String build = policy.sanitize(request.getParameter("Build"));
             final String revision = policy.sanitize(request.getParameter("Revision"));
             final String chain = policy.sanitize(request.getParameter("Chain"));
@@ -82,7 +83,7 @@ public class CreateCountryEnvParam extends HttpServlet {
             final ICountryEnvParamService cepService = appContext.getBean(ICountryEnvParamService.class);
             final IFactoryCountryEnvParam factoryCep = appContext.getBean(IFactoryCountryEnvParam.class);
 
-            final CountryEnvParam cep = factoryCep.create(system, country, environment, build, revision, chain, distribList, emailBodyRevision, type, emailBodyChain, emailBodyDisableEnvironment, active, maintenanceAct, maintenanceStr, maintenanceEnd);
+            final CountryEnvParam cep = factoryCep.create(system, country, environment, description, build, revision, chain, distribList, emailBodyRevision, type, emailBodyChain, emailBodyDisableEnvironment, active, maintenanceAct, maintenanceStr, maintenanceEnd);
             cepService.create(cep);
 
             /**

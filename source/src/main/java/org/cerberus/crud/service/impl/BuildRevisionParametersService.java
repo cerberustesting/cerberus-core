@@ -24,9 +24,12 @@ import org.cerberus.crud.entity.BuildRevisionParameters;
 import org.cerberus.crud.service.IBuildRevisionParametersService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
 import java.util.List;
+import org.apache.log4j.Logger;
+import org.cerberus.crud.entity.MessageEvent;
 import org.cerberus.crud.entity.MessageGeneral;
+import org.cerberus.crud.service.IApplicationService;
+import org.cerberus.crud.service.ICountryEnvParam_logService;
 import org.cerberus.enums.MessageEventEnum;
 import org.cerberus.enums.MessageGeneralEnum;
 import org.cerberus.exception.CerberusException;
@@ -37,8 +40,18 @@ import org.cerberus.util.answer.AnswerList;
 @Service
 public class BuildRevisionParametersService implements IBuildRevisionParametersService {
 
+    private final String OBJECT_NAME = "BuildRevisionParameters";
+
+    private static final Logger LOG = Logger.getLogger("BuildRevisionParametersService");
+
     @Autowired
     IBuildRevisionParametersDAO buildRevisionParametersDAO;
+
+    @Autowired
+    IApplicationService applicationService;
+
+    @Autowired
+    ICountryEnvParam_logService countryEnvParamLogService;
 
     @Override
     public List<BuildRevisionParameters> findBuildRevisionParametersFromMaxRevision(String system, String build, String revision, String lastBuild, String lastRevision) {
@@ -89,7 +102,7 @@ public class BuildRevisionParametersService implements IBuildRevisionParametersS
     public AnswerItem readLastBySystem(String system) {
         return this.buildRevisionParametersDAO.readLastBySystem(system);
     }
-    
+
     @Override
     public AnswerList readByVarious1ByCriteria(String system, String application, String build, String revision, int start, int amount, String column, String dir, String searchTerm, String individualSearch) {
         return this.buildRevisionParametersDAO.readByVarious1ByCriteria(system, application, build, revision, start, amount, column, dir, searchTerm, individualSearch);
@@ -97,16 +110,71 @@ public class BuildRevisionParametersService implements IBuildRevisionParametersS
 
     @Override
     public Answer create(BuildRevisionParameters brp) {
+        Answer ans = new Answer();
+        MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
+        msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", ""));
+        ans.setResultMessage(msg);
+
+        /**
+         * Checking if the build Revision has already been deployed. If so the
+         * Create cannot be performed
+         */
+        if (check_buildRevisionAlreadyUsed(brp.getApplication(), brp.getBuild(), brp.getRevision())) {
+            msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_EXPECTED);
+            msg.setDescription(msg.getDescription().replace("%ITEM%", OBJECT_NAME)
+                    .replace("%OPERATION%", "Create")
+                    .replace("%REASON%", "Could not create this release as corresponding build " + brp.getBuild() + " revision " + brp.getRevision() + " has already been deployed in an environment."));
+            ans.setResultMessage(msg);
+            return ans;
+        }
+
         return buildRevisionParametersDAO.create(brp);
     }
 
     @Override
     public Answer delete(BuildRevisionParameters brp) {
+        Answer ans = new Answer();
+        MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
+        msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", ""));
+        ans.setResultMessage(msg);
+
+        /**
+         * Checking if the build Revision has already been deployed. If so the
+         * delete cannot be performed
+         */
+        if (check_buildRevisionAlreadyUsed(brp.getApplication(), brp.getBuild(), brp.getRevision())) {
+            msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_EXPECTED);
+            msg.setDescription(msg.getDescription().replace("%ITEM%", OBJECT_NAME)
+                    .replace("%OPERATION%", "Delete")
+                    .replace("%REASON%", "Could not delete this release as corresponding build " + brp.getBuild() + " revision " + brp.getRevision() + " has already been deployed in an environment."));
+            ans.setResultMessage(msg);
+            return ans;
+        }
+
         return buildRevisionParametersDAO.delete(brp);
     }
 
     @Override
     public Answer update(BuildRevisionParameters brp) {
+        Answer ans = new Answer();
+        MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
+        msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", ""));
+        ans.setResultMessage(msg);
+
+        /**
+         * Checking if the build Revision has already been deployed. If so the
+         * delete cannot be performed
+         */
+        if (check_buildRevisionAlreadyUsed(brp.getApplication(), brp.getBuild(), brp.getRevision())) {
+            msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_EXPECTED);
+            msg.setDescription(msg.getDescription().replace("%ITEM%", OBJECT_NAME)
+                    .replace("%OPERATION%", "Delete")
+                    .replace("%REASON%", "Could not update this release as corresponding build " + brp.getBuild() + " revision " + brp.getRevision() + " has already been deployed in an environment."));
+            // "Could not update this release to this new build revision values as it has already been deployed in an environment."
+            ans.setResultMessage(msg);
+            return ans;
+        }
+
         return buildRevisionParametersDAO.update(brp);
     }
 
@@ -135,6 +203,26 @@ public class BuildRevisionParametersService implements IBuildRevisionParametersS
             return;
         }
         throw new CerberusException(new MessageGeneral(MessageGeneralEnum.DATA_OPERATION_ERROR));
+    }
+
+    @Override
+    public boolean check_buildRevisionAlreadyUsed(String application, String build, String revision) {
+        try {
+            // First set is to get the system value
+            String system = "";
+            system = applicationService.convert(applicationService.readByKey(application)).getSystem();
+
+            // Then we check here inside countryenvparam_log table is the build revision has already been used.
+            AnswerList resp = countryEnvParamLogService.readByVariousByCriteria(system, null, null, build, revision, 0, 0, "id", "asc", null, null);
+            if (resp.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
+                return true;
+            } else {
+                return false;
+            }
+        } catch (CerberusException ex) {
+            LOG.error(ex);
+        }
+        return true;
     }
 
 }

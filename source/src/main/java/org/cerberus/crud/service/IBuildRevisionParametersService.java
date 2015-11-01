@@ -119,4 +119,17 @@ public interface IBuildRevisionParametersService {
      */
     void convert(Answer answer) throws CerberusException;
 
+    /**
+     * This service is used to control that a given build and revision is
+     * already used inside a system (ie a deploy has already been made on at
+     * least 1 environment).
+     *
+     * @param application
+     * @param build
+     * @param revision
+     * @return true if the build revision of the system is already used
+     * (deployed in any environment)
+     */
+    boolean check_buildRevisionAlreadyUsed(String application, String build, String revision);
+
 }

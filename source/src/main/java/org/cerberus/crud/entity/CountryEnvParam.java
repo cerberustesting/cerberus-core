@@ -26,6 +26,7 @@ public class CountryEnvParam {
     private String system;
     private String country;
     private String environment;
+    private String description;
     private String build;
     private String revision;
     private String chain;
@@ -38,6 +39,14 @@ public class CountryEnvParam {
     private boolean maintenanceAct;
     private String maintenanceStr;
     private String maintenanceEnd;
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
 
     public boolean isActive() {
         return active;

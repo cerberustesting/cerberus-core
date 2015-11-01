@@ -49,7 +49,7 @@ import org.springframework.web.context.support.WebApplicationContextUtils;
 public class DeleteBuildRevisionParameters extends HttpServlet {
 
     private final String OBJECT_NAME = "BuildRevisionParameters";
-    
+
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
      * methods.
@@ -124,7 +124,7 @@ public class DeleteBuildRevisionParameters extends HttpServlet {
                      * Delete was successful. Adding Log entry.
                      */
                     ILogEventService logEventService = appContext.getBean(LogEventService.class);
-                    logEventService.createPrivateCalls("/DeleteBuildRevisionParameters", "DELETE", "Delete BuildRevisionParameters : ['" + brpid + "'|'" + brpData.getRelease()+ "']", request);
+                    logEventService.createPrivateCalls("/DeleteBuildRevisionParameters", "DELETE", "Delete BuildRevisionParameters : ['" + brpid + "'|'" + brpData.getRelease() + "']", request);
                 }
             }
         }

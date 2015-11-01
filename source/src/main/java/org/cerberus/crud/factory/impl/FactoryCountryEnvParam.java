@@ -33,7 +33,7 @@ public class FactoryCountryEnvParam implements IFactoryCountryEnvParam {
     CountryEnvParam countryEnvParam;
     
     @Override
-    public CountryEnvParam create(String system, String country, String environment, String build, String revision, String chain,
+    public CountryEnvParam create(String system, String country, String environment, String description, String build, String revision, String chain,
     String distribList, String eMailBodyRevision, String type, String eMailBodyChain, 
     String eMailBodyDisableEnvironment, boolean active, boolean maintenanceAct, String maintenanceStr, 
     String maintenanceEnd) {
@@ -41,6 +41,7 @@ public class FactoryCountryEnvParam implements IFactoryCountryEnvParam {
         countryEnvParam.setSystem(system);
         countryEnvParam.setCountry(country);
         countryEnvParam.setEnvironment(environment);
+        countryEnvParam.setDescription(description);
         countryEnvParam.setBuild(build);
         countryEnvParam.setRevision(revision);
         countryEnvParam.setChain(chain);

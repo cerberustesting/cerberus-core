@@ -116,8 +116,8 @@ public class NewBuildRev extends HttpServlet {
                 stmt.executeUpdate(req_update_active);
 
                 String req_insert_log = "INSERT INTO  countryenvparam_log "
-                        + " ( `System`, `Country`, `Environment`, `Build`, `Revision`, `Description`) "
-                        + " VALUES ('" + system + "', '" + country + "', '" + env + "', '" + build + "', '" + rev + "', 'New Sprint Revision.') ";
+                        + " ( `System`, `Country`, `Environment`, `Build`, `Revision`, `Description`, `Creator`) "
+                        + " VALUES ('" + system + "', '" + country + "', '" + env + "', '" + build + "', '" + rev + "', 'New Sprint Revision.', '" + request.getUserPrincipal().getName() + "') ";
                 stmt.execute(req_insert_log);
             } finally {
                 stmt.close();
