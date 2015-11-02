@@ -2374,7 +2374,7 @@ function openRunManualPopin(test, testcase, env, country, idFromQueue, tag, brow
 function loadRunManualPopin(test, testcase, env, country, idFromQueue, tag, browser) {
 //    $('#popin').hide().empty();
     console.log(test);
-    $('#popin').load('TestCaseManualRun.jsp?Test=' + test.replace(new RegExp(' ', 'g'), '%20') + '&TestCase=' + testcase + '&Environment=' + env + '&Country=' + country + '&IdFromQueue=' + idFromQueue + '&Tag=' + tag.replace(new RegExp(' ', 'g'), '%20') + '&Browser=' + browser);
+    $('#popin').load('TestCaseManualRun.jsp?Test=' + test.replace(new RegExp(' ', 'g'), '%20') + '&TestCase=' + testcase + '&Environment=' + env + '&Country=' + country + '&IdFromQueue=' + idFromQueue + '&Tag=' + encodeURIComponent(tag) + '&Browser=' + browser);
 //    $('#popin').show();
 }
 
