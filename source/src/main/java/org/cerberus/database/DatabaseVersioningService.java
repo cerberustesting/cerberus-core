@@ -5030,7 +5030,7 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLS.append("ALTER TABLE `countryenvparam` ADD COLUMN `Description` VARCHAR(200) NOT NULL DEFAULT '' AFTER `Environment`;");
         SQLInstruction.add(SQLS.toString());
         SQLS = new StringBuilder();
-        SQLS.append("INSERT INTO `cerberus`.`documentation` (`DocTable`, `DocField`, `DocValue`, `Lang`, `DocLabel`, `DocDesc`) VALUES ");
+        SQLS.append("INSERT INTO `documentation` (`DocTable`, `DocField`, `DocValue`, `Lang`, `DocLabel`, `DocDesc`) VALUES ");
         SQLS.append("  ('countryenvparam', 'Description', '', 'en', 'Description', '') ");
         SQLS.append(" ,('countryenvparam', 'Description', '', 'fr', 'Description', '') ");
         SQLS.append(" ,('countryenvparam_log', 'Creator', '', 'en', 'User', '') ");
