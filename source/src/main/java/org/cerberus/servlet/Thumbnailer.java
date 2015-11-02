@@ -5,7 +5,7 @@ import com.mortennobel.imagescaling.ResampleOp;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.time.DateUtils;
-import org.cerberus.servlet.testcase.PictureConnector;
+import org.cerberus.servlet.crud.test.PictureConnector;
 
 import javax.imageio.ImageIO;
 import javax.servlet.ServletException;

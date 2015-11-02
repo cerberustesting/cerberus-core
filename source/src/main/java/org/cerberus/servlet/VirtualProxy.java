@@ -1,7 +1,7 @@
 package org.cerberus.servlet;
 
 import org.apache.commons.io.FilenameUtils;
-import org.cerberus.servlet.testcase.PictureConnector;
+import org.cerberus.servlet.crud.test.PictureConnector;
 
 import javax.servlet.ServletException;
 import javax.servlet.ServletOutputStream;
