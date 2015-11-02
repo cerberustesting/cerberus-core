@@ -259,9 +259,9 @@ function loadReportList() {
 
     if (selectTag !== "") {
         //configure and create the dataTable
-        var jqxhr = $.getJSON("ReadTestCaseExecution", "Tag=" + selectTag + "&" + statusFilter.serialize() + "&" + countryFilter.serialize());
+        var jqxhr = $.getJSON("ReadTestCaseExecution", "Tag=" + encodeURIComponent(selectTag) + "&" + statusFilter.serialize() + "&" + countryFilter.serialize());
         $.when(jqxhr).then(function (data) {
-            var request = "ReadTestCaseExecution?Tag=" + selectTag + "&" + statusFilter.serialize() + "&" + countryFilter.serialize();
+            var request = "ReadTestCaseExecution?Tag=" + encodeURIComponent(selectTag) + "&" + statusFilter.serialize() + "&" + countryFilter.serialize();
 
             var config = new TableConfigurationsServerSide("listTable", request, "testList", aoColumnsFunc(data.Columns));
             customConfig(config);
