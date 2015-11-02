@@ -55,7 +55,7 @@ function initPage() {
     appendCountryList();
     appendApplicationList();
     appendProjectList();
-    appendBuildRevList();
+    appendBuildRevList(getUser().defaultSystem);
     tinymce.init({
         selector: "textarea"
     });
@@ -101,14 +101,17 @@ function displayPageLabel(doc) {
     $("#testCaseListLabel").html(doc.getDocOnline("page_testcaselist", "testcaselist"));
 }
 
-function appendBuildRevList() {
-    var user = getUser();
+function appendBuildRevList(system, editData) {
 
-    var jqxhr = $.getJSON("GetBuildRevisionInvariant", "System=" + user.defaultSystem + "&level=1");
+    var jqxhr = $.getJSON("GetBuildRevisionInvariant", "System=" + system + "&level=1");
     $.when(jqxhr).then(function (data) {
         var fromBuild = $("[name=fromSprint]");
         var toBuild = $("[name=toSprint]");
         var targetBuild = $("[name=targetSprint]");
+        
+        fromBuild.empty();
+        toBuild.empty();
+        targetBuild.empty();
 
         fromBuild.append($('<option></option>').text("-----").val(""));
         toBuild.append($('<option></option>').text("-----").val(""));
@@ -119,12 +122,26 @@ function appendBuildRevList() {
             toBuild.append($('<option></option>').text(data.aaData[index].versionName).val(data.aaData[index].versionName));
             targetBuild.append($('<option></option>').text(data.aaData[index].versionName).val(data.aaData[index].versionName));
         }
+
+        if (editData !== undefined) {
+            var formEdit = $('#editEntryModal');
+
+            formEdit.find("#fromSprint").prop("value", editData.fromSprint);
+            formEdit.find("#toSprint").prop("value", editData.toSprint);
+            formEdit.find("#targetSprint").prop("value", editData.targetSprint);
+        }
+
     });
-    var jqxhr = $.getJSON("GetBuildRevisionInvariant", "System=" + user.defaultSystem + "&level=2");
+
+    var jqxhr = $.getJSON("GetBuildRevisionInvariant", "System=" + system + "&level=2");
     $.when(jqxhr).then(function (data) {
         var fromRev = $("[name=fromRev]");
         var toRev = $("[name=toRev]");
         var targetRev = $("[name=targetRev]");
+
+        fromRev.empty();
+        toRev.empty();
+        targetRev.empty();
 
         fromRev.append($('<option></option>').text("-----").val(""));
         toRev.append($('<option></option>').text("-----").val(""));
@@ -134,6 +151,14 @@ function appendBuildRevList() {
             fromRev.append($('<option></option>').text(data.aaData[index].versionName).val(data.aaData[index].versionName));
             toRev.append($('<option></option>').text(data.aaData[index].versionName).val(data.aaData[index].versionName));
             targetRev.append($('<option></option>').text(data.aaData[index].versionName).val(data.aaData[index].versionName));
+        }
+
+        if (editData !== undefined) {
+            var formEdit = $('#editEntryModal');         
+
+            formEdit.find("#fromRevision").prop("value", editData.fromRevision);
+            formEdit.find("#toRevision").prop("value", editData.toRevision);
+            formEdit.find("#targetRevision").prop("value", editData.targetRevision);
         }
     });
 }
@@ -367,9 +392,31 @@ function editEntry(testCase) {
 
         var formEdit = $('#editEntryModal');
         var testInfo = $.getJSON("ReadTest", "test=" + encodeURIComponent(test));
+        var appInfo = $.getJSON("ReadApplication", "application=" + encodeURIComponent(data.application));
+
         $.when(testInfo).then(function (data) {
             formEdit.find("#testDesc").prop("value", data.contentTable.description);
         });
+
+        $.when(appInfo).then(function (appData) {
+            var currentSys = getUser().defaultSystem;
+            var bugTrackerUrl = appData.contentTable.bugTrackerUrl;
+
+            appendBuildRevList(appData.contentTable.system, data);
+
+            if (appData.contentTable.system !== currentSys) {
+                formEdit.find("#application").prepend($('<option></option>').text(data.application).val(data.application));
+            }
+            formEdit.find("#application").prop("value", data.application);
+
+            if (data.bugID !== "" && bugTrackerUrl) {
+                bugTrackerUrl = bugTrackerUrl.replace("%BUGID%", data.bugID);
+            }
+
+            formEdit.find("#link").prop("href", bugTrackerUrl).text(bugTrackerUrl);
+
+        });
+
         //test info
         formEdit.find("#test").prop("value", data.test);
         formEdit.find("#testCase").prop("value", data.testCase);
@@ -384,7 +431,7 @@ function editEntry(testCase) {
         formEdit.find("#origin").prop("value", data.origin);
         formEdit.find("#refOrigin").prop("value", data.refOrigin);
         formEdit.find("#project").prop("value", data.project);
-        
+
         // test case parameters
         formEdit.find("#application").prop("value", data.application);
         formEdit.find("#group").prop("value", data.group);
@@ -403,14 +450,7 @@ function editEntry(testCase) {
         //activation criteria
         formEdit.find("#active").prop("value", data.active);
         formEdit.find("#bugId").prop("value", data.bugID);
-        formEdit.find("#link").prop("value", data.link);
         formEdit.find("#comment").prop("value", data.comment);
-        formEdit.find("#fromSprint").prop("value", data.fromSprint);
-        formEdit.find("#toSprint").prop("value", data.toSprint);
-        formEdit.find("#targetSprint").prop("value", data.targetSprint);
-        formEdit.find("#fromRevision").prop("value", data.fromSprint);
-        formEdit.find("#toRevision").prop("value", data.toRevision);
-        formEdit.find("#targetRevision").prop("value", data.targetRevision);
 
         formEdit.modal('show');
     });
