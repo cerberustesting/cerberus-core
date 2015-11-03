@@ -1947,7 +1947,7 @@
             <url-pattern>/CreateProject</url-pattern>
             <url-pattern>/DeleteProject</url-pattern>
             <url-pattern>/UpdateProject</url-pattern>
-            <url-pattern>/CreateBuildRevisionInvariant1</url-pattern>
+            <url-pattern>/CreateBuildRevisionInvariant</url-pattern>
             <url-pattern>/UpdateBuildRevisionInvariant</url-pattern>
             <url-pattern>/DeleteBuildRevisionInvariant</url-pattern>
             <url-pattern>/CreateBuildRevisionInvariant1</url-pattern>
