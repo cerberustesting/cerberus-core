@@ -38,51 +38,51 @@
     </servlet>
     <servlet>
         <servlet-name>GetTestCaseList</servlet-name>
-        <servlet-class>org.cerberus.servlet.testcase.GetTestCaseList</servlet-class>
+        <servlet-class>org.cerberus.servlet.crud.test.GetTestCaseList</servlet-class>
     </servlet>
     <servlet>
         <servlet-name>GetTestCase</servlet-name>
-        <servlet-class>org.cerberus.servlet.testcase.GetTestCase</servlet-class>
+        <servlet-class>org.cerberus.servlet.crud.test.GetTestCase</servlet-class>
     </servlet>
     <servlet>
         <servlet-name>DocumentationField</servlet-name>
-        <servlet-class>org.cerberus.servlet.documentation.DocumentationField</servlet-class>
+        <servlet-class>org.cerberus.servlet.crud.transversaltables.DocumentationField</servlet-class>
     </servlet>
     <servlet>
         <servlet-name>ReadDocumentation</servlet-name>
-        <servlet-class>org.cerberus.servlet.documentation.ReadDocumentation</servlet-class>
+        <servlet-class>org.cerberus.servlet.crud.transversaltables.ReadDocumentation</servlet-class>
     </servlet>
     <servlet>
         <servlet-name>importXML</servlet-name>
-        <servlet-class>org.cerberus.servlet.testcase.ImportSeleniumIDE</servlet-class>
+        <servlet-class>org.cerberus.servlet.crud.test.ImportSeleniumIDE</servlet-class>
     </servlet>
     <servlet>
         <servlet-name>importFile</servlet-name>
-        <servlet-class>org.cerberus.servlet.testcase.importFile</servlet-class>
+        <servlet-class>org.cerberus.servlet.crud.test.importFile</servlet-class>
     </servlet>
     <servlet>
         <servlet-name>AddTest</servlet-name>
-        <servlet-class>org.cerberus.servlet.testcase.TestcaseList</servlet-class>
+        <servlet-class>org.cerberus.servlet.crud.test.TestcaseList</servlet-class>
     </servlet>
     <servlet>
         <servlet-name>UpdateTest</servlet-name>
-        <servlet-class>org.cerberus.servlet.test.UpdateTest</servlet-class>
+        <servlet-class>org.cerberus.servlet.crud.test.UpdateTest</servlet-class>
     </servlet>
     <servlet>
         <servlet-name>DeleteTest1</servlet-name>
-        <servlet-class>org.cerberus.servlet.test.DeleteTest1</servlet-class>
+        <servlet-class>org.cerberus.servlet.crud.test.DeleteTest1</servlet-class>
     </servlet>
     <servlet>
         <servlet-name>UpdateTest1</servlet-name>
-        <servlet-class>org.cerberus.servlet.test.UpdateTest1</servlet-class>
+        <servlet-class>org.cerberus.servlet.crud.test.UpdateTest1</servlet-class>
     </servlet>
     <servlet>
         <servlet-name>CreateTest1</servlet-name>
-        <servlet-class>org.cerberus.servlet.test.CreateTest1</servlet-class>
+        <servlet-class>org.cerberus.servlet.crud.test.CreateTest1</servlet-class>
     </servlet>
     <servlet>
         <servlet-name>DeleteTest</servlet-name>
-        <servlet-class>org.cerberus.servlet.test.DeleteTest</servlet-class>
+        <servlet-class>org.cerberus.servlet.crud.test.DeleteTest</servlet-class>
     </servlet>
     <servlet>
         <servlet-name>ResultCI</servlet-name>
@@ -90,67 +90,67 @@
     </servlet>
     <servlet>
         <servlet-name>DuplicateTestCase</servlet-name>
-        <servlet-class>org.cerberus.servlet.testcase.DuplicateTestCase</servlet-class>
+        <servlet-class>org.cerberus.servlet.crud.test.DuplicateTestCase</servlet-class>
     </servlet>
     <servlet>
         <servlet-name>UpdateTestCase</servlet-name>
-        <servlet-class>org.cerberus.servlet.testcase.UpdateTestCase</servlet-class>
+        <servlet-class>org.cerberus.servlet.crud.test.UpdateTestCase</servlet-class>
     </servlet>
     <servlet>
         <servlet-name>CalculatePropertyForTestCase</servlet-name>
-        <servlet-class>org.cerberus.servlet.testcase.CalculatePropertyForTestCase</servlet-class>
+        <servlet-class>org.cerberus.servlet.crud.test.CalculatePropertyForTestCase</servlet-class>
     </servlet>
     <servlet>
         <servlet-name>TestcaseList</servlet-name>
-        <servlet-class>org.cerberus.servlet.testcase.TestcaseList</servlet-class>
+        <servlet-class>org.cerberus.servlet.crud.test.TestcaseList</servlet-class>
     </servlet>
     <servlet>
         <servlet-name>TestcaseListGrid</servlet-name>
-        <servlet-class>org.cerberus.servlet.testcase.TestcaseListGrid</servlet-class>
+        <servlet-class>org.cerberus.servlet.crud.test.TestcaseListGrid</servlet-class>
     </servlet>
     <servlet>
         <servlet-name>CreateTestCase</servlet-name>
-        <servlet-class>org.cerberus.servlet.testcase.CreateTestCase</servlet-class>
+        <servlet-class>org.cerberus.servlet.crud.test.CreateTestCase</servlet-class>
     </servlet>
     <servlet>
         <servlet-name>GetUsers</servlet-name>
-        <servlet-class>org.cerberus.servlet.user.GetUsers</servlet-class>
+        <servlet-class>org.cerberus.servlet.crud.usermanagement.GetUsers</servlet-class>
     </servlet>
     <servlet>
         <servlet-name>AddUser</servlet-name>
-        <servlet-class>org.cerberus.servlet.user.AddUser</servlet-class>
+        <servlet-class>org.cerberus.servlet.crud.usermanagement.AddUser</servlet-class>
     </servlet>
     <servlet>
         <servlet-name>UpdateUser</servlet-name>
-        <servlet-class>org.cerberus.servlet.user.UpdateUser</servlet-class>
+        <servlet-class>org.cerberus.servlet.crud.usermanagement.UpdateUser</servlet-class>
     </servlet>
     <servlet>
         <servlet-name>UpdateMyUserSystem</servlet-name>
-        <servlet-class>org.cerberus.servlet.user.UpdateMyUserSystem</servlet-class>
+        <servlet-class>org.cerberus.servlet.crud.usermanagement.UpdateMyUserSystem</servlet-class>
     </servlet>
     <servlet>
         <servlet-name>DeleteUser</servlet-name>
-        <servlet-class>org.cerberus.servlet.user.DeleteUser</servlet-class>
+        <servlet-class>org.cerberus.servlet.crud.usermanagement.DeleteUser</servlet-class>
     </servlet>
     <servlet>
         <servlet-name>ChangeUserPassword</servlet-name>
-        <servlet-class>org.cerberus.servlet.user.ChangeUserPassword</servlet-class>
+        <servlet-class>org.cerberus.servlet.crud.usermanagement.ChangeUserPassword</servlet-class>
     </servlet>
     <servlet>
         <servlet-name>CreateTest</servlet-name>
-        <servlet-class>org.cerberus.servlet.test.CreateTest</servlet-class>
+        <servlet-class>org.cerberus.servlet.crud.test.CreateTest</servlet-class>
     </servlet>
     <servlet>
         <servlet-name>DeleteTestCase</servlet-name>
-        <servlet-class>org.cerberus.servlet.testcase.DeleteTestCase</servlet-class>
+        <servlet-class>org.cerberus.servlet.crud.test.DeleteTestCase</servlet-class>
     </servlet>
     <servlet>
         <servlet-name>UpdateTestCaseDetail</servlet-name>
-        <servlet-class>org.cerberus.servlet.testcase.UpdateTestCaseDetail</servlet-class>
+        <servlet-class>org.cerberus.servlet.crud.test.UpdateTestCaseDetail</servlet-class>
     </servlet>
     <servlet>
         <servlet-name>ImportSeleniumIDE</servlet-name>
-        <servlet-class>org.cerberus.servlet.testcase.ImportSeleniumIDE</servlet-class>
+        <servlet-class>org.cerberus.servlet.crud.test.ImportSeleniumIDE</servlet-class>
     </servlet>
     <servlet>
         <servlet-name>TCEwwwDetail</servlet-name>
@@ -184,19 +184,19 @@
     </servlet>
     <servlet>
         <servlet-name>GetParameter</servlet-name>
-        <servlet-class>org.cerberus.servlet.parameter.GetParameter</servlet-class>
+        <servlet-class>org.cerberus.servlet.crud.transversaltables.GetParameter</servlet-class>
     </servlet>
     <servlet>
         <servlet-name>UpdateParameter</servlet-name>
-        <servlet-class>org.cerberus.servlet.parameter.UpdateParameter</servlet-class>
+        <servlet-class>org.cerberus.servlet.crud.transversaltables.UpdateParameter</servlet-class>
     </servlet>
     <servlet>
         <servlet-name>GetInvariantList</servlet-name>
-        <servlet-class>org.cerberus.servlet.invariant.GetInvariantList</servlet-class>
+        <servlet-class>org.cerberus.servlet.crud.transversaltables.GetInvariantList</servlet-class>
     </servlet>
     <servlet>
         <servlet-name>GetCampaign</servlet-name>
-        <servlet-class>org.cerberus.servlet.campaign.GetCampaign</servlet-class>
+        <servlet-class>org.cerberus.servlet.crud.testcampaign.GetCampaign</servlet-class>
     </servlet>
     <servlet>
         <servlet-name>GetTagExecutions</servlet-name>
@@ -204,11 +204,11 @@
     </servlet>
     <servlet>
         <servlet-name>ReadTestCaseExecution</servlet-name>
-        <servlet-class>org.cerberus.servlet.execution.ReadTestCaseExecution</servlet-class>
+        <servlet-class>org.cerberus.servlet.crud.testexecution.ReadTestCaseExecution</servlet-class>
     </servlet>
     <servlet>
         <servlet-name>ReadTag</servlet-name>
-        <servlet-class>org.cerberus.servlet.execution.ReadTag</servlet-class>
+        <servlet-class>org.cerberus.servlet.crud.testexecution.ReadTag</servlet-class>
     </servlet>
     <servlet>
         <servlet-name>GetCampaignExecutionsCommand</servlet-name>
@@ -216,127 +216,127 @@
     </servlet>
     <servlet>
         <servlet-name>ListCampaignParameter</servlet-name>
-        <servlet-class>org.cerberus.servlet.campaign.ListCampaignParameter</servlet-class>
+        <servlet-class>org.cerberus.servlet.crud.testcampaign.ListCampaignParameter</servlet-class>
     </servlet>
     <servlet>
         <servlet-name>UpdateCampaign</servlet-name>
-        <servlet-class>org.cerberus.servlet.campaign.UpdateCampaign</servlet-class>
+        <servlet-class>org.cerberus.servlet.crud.testcampaign.UpdateCampaign</servlet-class>
     </servlet>
     <servlet>
         <servlet-name>UpdateCampaignParameter</servlet-name>
-        <servlet-class>org.cerberus.servlet.campaign.UpdateCampaignParameter</servlet-class>
+        <servlet-class>org.cerberus.servlet.crud.testcampaign.UpdateCampaignParameter</servlet-class>
     </servlet>
     <servlet>
         <servlet-name>AddCampaign</servlet-name>
-        <servlet-class>org.cerberus.servlet.campaign.AddCampaign</servlet-class>
+        <servlet-class>org.cerberus.servlet.crud.testcampaign.AddCampaign</servlet-class>
     </servlet>
     <servlet>
         <servlet-name>AddCampaignParameter</servlet-name>
-        <servlet-class>org.cerberus.servlet.campaign.AddCampaignParameter</servlet-class>
+        <servlet-class>org.cerberus.servlet.crud.testcampaign.AddCampaignParameter</servlet-class>
     </servlet>
     <servlet>
         <servlet-name>AddCampaignContent</servlet-name>
-        <servlet-class>org.cerberus.servlet.campaign.AddCampaignContent</servlet-class>
+        <servlet-class>org.cerberus.servlet.crud.testcampaign.AddCampaignContent</servlet-class>
     </servlet>
     <servlet>
         <servlet-name>DeleteCampaign</servlet-name>
-        <servlet-class>org.cerberus.servlet.campaign.DeleteCampaign</servlet-class>
+        <servlet-class>org.cerberus.servlet.crud.testcampaign.DeleteCampaign</servlet-class>
     </servlet>
     <servlet>
         <servlet-name>DeleteCampaignParameter</servlet-name>
-        <servlet-class>org.cerberus.servlet.campaign.DeleteCampaignParameter</servlet-class>
+        <servlet-class>org.cerberus.servlet.crud.testcampaign.DeleteCampaignParameter</servlet-class>
     </servlet>
     <servlet>
         <servlet-name>DeleteCampaignContent</servlet-name>
-        <servlet-class>org.cerberus.servlet.campaign.DeleteCampaignContent</servlet-class>
+        <servlet-class>org.cerberus.servlet.crud.testcampaign.DeleteCampaignContent</servlet-class>
     </servlet>
     <servlet>
         <servlet-name>GetTestBattery</servlet-name>
-        <servlet-class>org.cerberus.servlet.testbattery.GetTestBattery</servlet-class>
+        <servlet-class>org.cerberus.servlet.crud.testcampaign.GetTestBattery</servlet-class>
     </servlet>
     <servlet>
         <servlet-name>AddTestBattery</servlet-name>
-        <servlet-class>org.cerberus.servlet.testbattery.AddTestBattery</servlet-class>
+        <servlet-class>org.cerberus.servlet.crud.testcampaign.AddTestBattery</servlet-class>
     </servlet>
     <servlet>
         <servlet-name>AddTestBatteryContent</servlet-name>
-        <servlet-class>org.cerberus.servlet.testbattery.AddTestBatteryContent</servlet-class>
+        <servlet-class>org.cerberus.servlet.crud.testcampaign.AddTestBatteryContent</servlet-class>
     </servlet>
     <servlet>
         <servlet-name>DeleteTestBattery</servlet-name>
-        <servlet-class>org.cerberus.servlet.testbattery.DeleteTestBattery</servlet-class>
+        <servlet-class>org.cerberus.servlet.crud.testcampaign.DeleteTestBattery</servlet-class>
     </servlet>
     <servlet>
         <servlet-name>DeleteTestBatteryContent</servlet-name>
-        <servlet-class>org.cerberus.servlet.testbattery.DeleteTestBatteryContent</servlet-class>
+        <servlet-class>org.cerberus.servlet.crud.testcampaign.DeleteTestBatteryContent</servlet-class>
     </servlet>
     <servlet>
         <servlet-name>UpdateTestBattery</servlet-name>
-        <servlet-class>org.cerberus.servlet.testbattery.UpdateTestBattery</servlet-class>
+        <servlet-class>org.cerberus.servlet.crud.testcampaign.UpdateTestBattery</servlet-class>
     </servlet>
     <servlet>
         <servlet-name>GetInvariantsForTest</servlet-name>
-        <servlet-class>org.cerberus.servlet.testcase.GetInvariantsForTest</servlet-class>
+        <servlet-class>org.cerberus.servlet.crud.test.GetInvariantsForTest</servlet-class>
     </servlet>
     <servlet>
         <servlet-name>GetCountryForTestCase</servlet-name>
-        <servlet-class>org.cerberus.servlet.testcase.GetCountryForTestCase</servlet-class>
+        <servlet-class>org.cerberus.servlet.crud.test.GetCountryForTestCase</servlet-class>
     </servlet>
     <servlet>
         <servlet-name>GetShortTests</servlet-name>
-        <servlet-class>org.cerberus.servlet.test.GetShortTests</servlet-class>
+        <servlet-class>org.cerberus.servlet.crud.test.GetShortTests</servlet-class>
     </servlet>
     <servlet>
         <servlet-name>ReadLogEvent</servlet-name>
-        <servlet-class>org.cerberus.servlet.log.ReadLogEvent</servlet-class>
+        <servlet-class>org.cerberus.servlet.crud.usermanagement.ReadLogEvent</servlet-class>
     </servlet>
     <servlet>
         <servlet-name>ReadDeployType</servlet-name>
-        <servlet-class>org.cerberus.servlet.application.ReadDeployType</servlet-class>
+        <servlet-class>org.cerberus.servlet.crud.countryenvironment.ReadDeployType</servlet-class>
     </servlet>
     <servlet>
         <servlet-name>CreateDeployType</servlet-name>
-        <servlet-class>org.cerberus.servlet.application.CreateDeployType</servlet-class>
+        <servlet-class>org.cerberus.servlet.crud.countryenvironment.CreateDeployType</servlet-class>
     </servlet>
     <servlet>
         <servlet-name>DeleteDeployType</servlet-name>
-        <servlet-class>org.cerberus.servlet.application.DeleteDeployType</servlet-class>
+        <servlet-class>org.cerberus.servlet.crud.countryenvironment.DeleteDeployType</servlet-class>
     </servlet>
     <servlet>
         <servlet-name>UpdateDeployType</servlet-name>
-        <servlet-class>org.cerberus.servlet.application.UpdateDeployType</servlet-class>
+        <servlet-class>org.cerberus.servlet.crud.countryenvironment.UpdateDeployType</servlet-class>
     </servlet>
     <servlet>
         <servlet-name>UpdateBuildRevisionParameter</servlet-name>
-        <servlet-class>org.cerberus.servlet.environment.UpdateBuildRevisionParameter</servlet-class>
+        <servlet-class>org.cerberus.servlet.crud.buildrevisionchange.UpdateBuildRevisionParameter</servlet-class>
     </servlet>
     <servlet>
         <servlet-name>GetEnvironmentAvailable</servlet-name>
-        <servlet-class>org.cerberus.servlet.environment.GetEnvironmentAvailable</servlet-class>
+        <servlet-class>org.cerberus.servlet.crud.countryenvironment.GetEnvironmentAvailable</servlet-class>
     </servlet>
     <servlet>
         <servlet-name>ReadEnvironment</servlet-name>
-        <servlet-class>org.cerberus.servlet.environment.ReadEnvironment</servlet-class>
+        <servlet-class>org.cerberus.servlet.crud.countryenvironment.ReadEnvironment</servlet-class>
     </servlet>
     <servlet>
         <servlet-name>UpdateApplication</servlet-name>
-        <servlet-class>org.cerberus.servlet.application.UpdateApplication</servlet-class>
+        <servlet-class>org.cerberus.servlet.crud.test.UpdateApplication</servlet-class>
     </servlet>
     <servlet>
         <servlet-name>ReadApplication</servlet-name>
-        <servlet-class>org.cerberus.servlet.application.ReadApplication</servlet-class>
+        <servlet-class>org.cerberus.servlet.crud.test.ReadApplication</servlet-class>
     </servlet>
     <servlet>
         <servlet-name>NewBuildRev</servlet-name>
-        <servlet-class>org.cerberus.servlet.environment.NewBuildRev</servlet-class>
+        <servlet-class>org.cerberus.servlet.crud.countryenvironment.NewBuildRev</servlet-class>
     </servlet>
     <servlet>
         <servlet-name>DisableEnvironment</servlet-name>
-        <servlet-class>org.cerberus.servlet.environment.DisableEnvironment</servlet-class>
+        <servlet-class>org.cerberus.servlet.crud.countryenvironment.DisableEnvironment</servlet-class>
     </servlet>
     <servlet>
         <servlet-name>NewChain</servlet-name>
-        <servlet-class>org.cerberus.servlet.environment.NewChain</servlet-class>
+        <servlet-class>org.cerberus.servlet.crud.countryenvironment.NewChain</servlet-class>
     </servlet>
     <servlet>
         <servlet-name>JenkinsDeploy</servlet-name>
@@ -344,23 +344,23 @@
     </servlet>
     <servlet>
         <servlet-name>UpdateCountryEnv</servlet-name>
-        <servlet-class>org.cerberus.servlet.environment.UpdateCountryEnv</servlet-class>
+        <servlet-class>org.cerberus.servlet.crud.countryenvironment.UpdateCountryEnv</servlet-class>
     </servlet>
     <servlet>
         <servlet-name>ExportListTestCase</servlet-name>
-        <servlet-class>org.cerberus.servlet.testcase.ExportListTestCase</servlet-class>
+        <servlet-class>org.cerberus.servlet.crud.test.ExportListTestCase</servlet-class>
     </servlet>
     <servlet>
         <servlet-name>GetBuildRevisionInvariant</servlet-name>
-        <servlet-class>org.cerberus.servlet.buildrevision.GetBuildRevisionInvariant</servlet-class>
+        <servlet-class>org.cerberus.servlet.crud.buildrevisionchange.GetBuildRevisionInvariant</servlet-class>
     </servlet>
     <servlet>
         <servlet-name>ReadBuildRevisionInvariant</servlet-name>
-        <servlet-class>org.cerberus.servlet.buildrevision.ReadBuildRevisionInvariant</servlet-class>
+        <servlet-class>org.cerberus.servlet.crud.buildrevisionchange.ReadBuildRevisionInvariant</servlet-class>
     </servlet>
     <servlet>
         <servlet-name>DeleteBuildRevisionInvariant</servlet-name>
-        <servlet-class>org.cerberus.servlet.buildrevision.DeleteBuildRevisionInvariant</servlet-class>
+        <servlet-class>org.cerberus.servlet.crud.buildrevisionchange.DeleteBuildRevisionInvariant</servlet-class>
     </servlet>
     <servlet>
         <servlet-name>ExecutionPerBuildRevision</servlet-name>
@@ -368,7 +368,7 @@
     </servlet>
     <servlet>
         <servlet-name>GetDataForTestCaseSearch</servlet-name>
-        <servlet-class>org.cerberus.servlet.testcase.GetDataForTestCaseSearch</servlet-class>
+        <servlet-class>org.cerberus.servlet.crud.test.GetDataForTestCaseSearch</servlet-class>
     </servlet>
     <servlet>
         <servlet-name>SearchManualTestCaseInformation</servlet-name>
@@ -380,27 +380,27 @@
     </servlet>
     <servlet>
         <servlet-name>GetParameterSystem</servlet-name>
-        <servlet-class>org.cerberus.servlet.parameter.GetParameterSystem</servlet-class>
+        <servlet-class>org.cerberus.servlet.crud.transversaltables.GetParameterSystem</servlet-class>
     </servlet>
     <servlet>
         <servlet-name>ImportTestCaseStep</servlet-name>
-        <servlet-class>org.cerberus.servlet.testcase.ImportTestCaseStep</servlet-class>
+        <servlet-class>org.cerberus.servlet.crud.test.ImportTestCaseStep</servlet-class>
     </servlet>
     <servlet>
         <servlet-name>CreateTestData</servlet-name>
-        <servlet-class>org.cerberus.servlet.testdata.CreateTestData</servlet-class>
+        <servlet-class>org.cerberus.servlet.crud.testdata.CreateTestData</servlet-class>
     </servlet>
     <servlet>
         <servlet-name>UpdateTestData</servlet-name>
-        <servlet-class>org.cerberus.servlet.testdata.UpdateTestData</servlet-class>
+        <servlet-class>org.cerberus.servlet.crud.testdata.UpdateTestData</servlet-class>
     </servlet>
     <servlet>
         <servlet-name>DeleteTestData</servlet-name>
-        <servlet-class>org.cerberus.servlet.testdata.DeleteTestData</servlet-class>
+        <servlet-class>org.cerberus.servlet.crud.testdata.DeleteTestData</servlet-class>
     </servlet>
     <servlet>
         <servlet-name>FindAllTestData</servlet-name>
-        <servlet-class>org.cerberus.servlet.testdata.FindAllTestData</servlet-class>
+        <servlet-class>org.cerberus.servlet.crud.testdata.FindAllTestData</servlet-class>
     </servlet>
     <servlet>
         <servlet-name>SaveManualExecutionPicture</servlet-name>
@@ -412,87 +412,87 @@
     </servlet>
     <servlet>
         <servlet-name>CreateSqlLibrary</servlet-name>
-        <servlet-class>org.cerberus.servlet.sqllibrary.CreateSqlLibrary</servlet-class>
+        <servlet-class>org.cerberus.servlet.crud.testdata.CreateSqlLibrary</servlet-class>
     </servlet>
     <servlet>
         <servlet-name>DeleteSqlLibrary</servlet-name>
-        <servlet-class>org.cerberus.servlet.sqllibrary.DeleteSqlLibrary</servlet-class>
+        <servlet-class>org.cerberus.servlet.crud.testdata.DeleteSqlLibrary</servlet-class>
     </servlet>
     <servlet>
         <servlet-name>FindAllSqlLibrary</servlet-name>
-        <servlet-class>org.cerberus.servlet.sqllibrary.FindAllSqlLibrary</servlet-class>
+        <servlet-class>org.cerberus.servlet.crud.testdata.FindAllSqlLibrary</servlet-class>
     </servlet>
     <servlet>
         <servlet-name>UpdateSqlLibrary</servlet-name>
-        <servlet-class>org.cerberus.servlet.sqllibrary.UpdateSqlLibrary</servlet-class>
+        <servlet-class>org.cerberus.servlet.crud.testdata.UpdateSqlLibrary</servlet-class>
     </servlet>
     <servlet>
         <servlet-name>FindAllInvariantPublic</servlet-name>
-        <servlet-class>org.cerberus.servlet.invariant.FindAllInvariantPublic</servlet-class>
+        <servlet-class>org.cerberus.servlet.crud.transversaltables.FindAllInvariantPublic</servlet-class>
     </servlet>
     <servlet>
         <servlet-name>FindAllInvariantPrivate</servlet-name>
-        <servlet-class>org.cerberus.servlet.invariant.FindAllInvariantPrivate</servlet-class>
+        <servlet-class>org.cerberus.servlet.crud.transversaltables.FindAllInvariantPrivate</servlet-class>
     </servlet>
     <servlet>
         <servlet-name>CreateSoapLibrary</servlet-name>
-        <servlet-class>org.cerberus.servlet.soaplibrary.CreateSoapLibrary</servlet-class>
+        <servlet-class>org.cerberus.servlet.crud.testdata.CreateSoapLibrary</servlet-class>
     </servlet>
     <servlet>
         <servlet-name>DeleteSoapLibrary</servlet-name>
-        <servlet-class>org.cerberus.servlet.soaplibrary.DeleteSoapLibrary</servlet-class>
+        <servlet-class>org.cerberus.servlet.crud.testdata.DeleteSoapLibrary</servlet-class>
     </servlet>
     <servlet>
         <servlet-name>FindAllSoapLibrary</servlet-name>
-        <servlet-class>org.cerberus.servlet.soaplibrary.FindAllSoapLibrary</servlet-class>
+        <servlet-class>org.cerberus.servlet.crud.testdata.FindAllSoapLibrary</servlet-class>
     </servlet>
     <servlet>
         <servlet-name>UpdateSoapLibrary</servlet-name>
-        <servlet-class>org.cerberus.servlet.soaplibrary.UpdateSoapLibrary</servlet-class>
+        <servlet-class>org.cerberus.servlet.crud.testdata.UpdateSoapLibrary</servlet-class>
     </servlet>
     <servlet>
         <servlet-name>CreateInvariant</servlet-name>
-        <servlet-class>org.cerberus.servlet.invariant.CreateInvariant</servlet-class>
+        <servlet-class>org.cerberus.servlet.crud.transversaltables.CreateInvariant</servlet-class>
     </servlet>
     <servlet>
         <servlet-name>UpdateInvariant</servlet-name>
-        <servlet-class>org.cerberus.servlet.invariant.UpdateInvariant</servlet-class>
+        <servlet-class>org.cerberus.servlet.crud.transversaltables.UpdateInvariant</servlet-class>
     </servlet>
     <servlet>
         <servlet-name>DeleteInvariant</servlet-name>
-        <servlet-class>org.cerberus.servlet.invariant.DeleteInvariant</servlet-class>
+        <servlet-class>org.cerberus.servlet.crud.transversaltables.DeleteInvariant</servlet-class>
     </servlet>
     <servlet>
         <servlet-name>ReadProject</servlet-name>
-        <servlet-class>org.cerberus.servlet.project.ReadProject</servlet-class>
+        <servlet-class>org.cerberus.servlet.crud.test.ReadProject</servlet-class>
     </servlet>
     <servlet>
         <servlet-name>CreateProject</servlet-name>
-        <servlet-class>org.cerberus.servlet.project.CreateProject</servlet-class>
+        <servlet-class>org.cerberus.servlet.crud.test.CreateProject</servlet-class>
     </servlet>
     <servlet>
         <servlet-name>DeleteProject</servlet-name>
-        <servlet-class>org.cerberus.servlet.project.DeleteProject</servlet-class>
+        <servlet-class>org.cerberus.servlet.crud.test.DeleteProject</servlet-class>
     </servlet>
     <servlet>
         <servlet-name>UpdateProject</servlet-name>
-        <servlet-class>org.cerberus.servlet.project.UpdateProject</servlet-class>
+        <servlet-class>org.cerberus.servlet.crud.test.UpdateProject</servlet-class>
     </servlet>
     <servlet>
         <servlet-name>CreateApplication</servlet-name>
-        <servlet-class>org.cerberus.servlet.application.CreateApplication</servlet-class>
+        <servlet-class>org.cerberus.servlet.crud.test.CreateApplication</servlet-class>
     </servlet>
     <servlet>
         <servlet-name>DeleteApplication</servlet-name>
-        <servlet-class>org.cerberus.servlet.application.DeleteApplication</servlet-class>
+        <servlet-class>org.cerberus.servlet.crud.test.DeleteApplication</servlet-class>
     </servlet>
     <servlet>
         <servlet-name>UpdateBuildRevisionInvariant</servlet-name>
-        <servlet-class>org.cerberus.servlet.buildrevision.UpdateBuildRevisionInvariant</servlet-class>
+        <servlet-class>org.cerberus.servlet.crud.buildrevisionchange.UpdateBuildRevisionInvariant</servlet-class>
     </servlet>
     <servlet>
         <servlet-name>CreateBuildRevisionInvariant</servlet-name>
-        <servlet-class>org.cerberus.servlet.buildrevision.CreateBuildRevisionInvariant</servlet-class>
+        <servlet-class>org.cerberus.servlet.crud.buildrevisionchange.CreateBuildRevisionInvariant</servlet-class>
     </servlet>
     <servlet>
         <servlet-name>FindTestImplementationStatusPerApplication</servlet-name>
@@ -504,35 +504,35 @@
     </servlet>
     <servlet>
         <servlet-name>CreateRobot</servlet-name>
-        <servlet-class>org.cerberus.servlet.robot.CreateRobot</servlet-class>
+        <servlet-class>org.cerberus.servlet.crud.testexecution.CreateRobot</servlet-class>
     </servlet>
     <servlet>
         <servlet-name>ReadRobot</servlet-name>
-        <servlet-class>org.cerberus.servlet.robot.ReadRobot</servlet-class>
+        <servlet-class>org.cerberus.servlet.crud.testexecution.ReadRobot</servlet-class>
     </servlet>
     <servlet>
         <servlet-name>DeleteRobot</servlet-name>
-        <servlet-class>org.cerberus.servlet.robot.DeleteRobot</servlet-class>
+        <servlet-class>org.cerberus.servlet.crud.testexecution.DeleteRobot</servlet-class>
     </servlet>
     <servlet>
         <servlet-name>UpdateRobot</servlet-name>
-        <servlet-class>org.cerberus.servlet.robot.UpdateRobot</servlet-class>
+        <servlet-class>org.cerberus.servlet.crud.testexecution.UpdateRobot</servlet-class>
     </servlet>
     <servlet>
         <servlet-name>GetTestBySystem</servlet-name>
-        <servlet-class>org.cerberus.servlet.test.GetTestBySystem</servlet-class>
+        <servlet-class>org.cerberus.servlet.crud.test.GetTestBySystem</servlet-class>
     </servlet>
     <servlet>
         <servlet-name>findEnvironmentByCriteria</servlet-name>
-        <servlet-class>org.cerberus.servlet.environment.findEnvironmentByCriteria</servlet-class>
+        <servlet-class>org.cerberus.servlet.crud.countryenvironment.findEnvironmentByCriteria</servlet-class>
     </servlet>
     <servlet>
         <servlet-name>FindInvariantByID</servlet-name>
-        <servlet-class>org.cerberus.servlet.invariant.FindInvariantByID</servlet-class>
+        <servlet-class>org.cerberus.servlet.crud.transversaltables.FindInvariantByID</servlet-class>
     </servlet>
     <servlet>
         <servlet-name>PictureConnector</servlet-name>
-        <servlet-class>org.cerberus.servlet.testcase.PictureConnector</servlet-class>
+        <servlet-class>org.cerberus.servlet.crud.test.PictureConnector</servlet-class>
     </servlet>
     <servlet>
         <servlet-name>Thumbnailer</servlet-name>
@@ -544,67 +544,67 @@
     </servlet>
     <servlet>
         <servlet-name>GetTestCaseForTest</servlet-name>
-        <servlet-class>org.cerberus.servlet.testcase.GetTestCaseForTest</servlet-class>
+        <servlet-class>org.cerberus.servlet.crud.test.GetTestCaseForTest</servlet-class>
     </servlet>
     <servlet>
         <servlet-name>UpdateMyUserRobotPreference</servlet-name>
-        <servlet-class>org.cerberus.servlet.user.UpdateMyUserRobotPreference</servlet-class>
+        <servlet-class>org.cerberus.servlet.crud.usermanagement.UpdateMyUserRobotPreference</servlet-class>
     </servlet>
     <servlet>
         <servlet-name>UpdateMyUserReporting</servlet-name>
-        <servlet-class>org.cerberus.servlet.user.UpdateMyUserReporting</servlet-class>
+        <servlet-class>org.cerberus.servlet.crud.usermanagement.UpdateMyUserReporting</servlet-class>
     </servlet>
     <servlet>
         <servlet-name>UpdateTestCaseField</servlet-name>
-        <servlet-class>org.cerberus.servlet.testcase.UpdateTestCaseField</servlet-class>
+        <servlet-class>org.cerberus.servlet.crud.test.UpdateTestCaseField</servlet-class>
     </servlet>
     <servlet>
         <servlet-name>GetPropertiesForTestCase</servlet-name>
-        <servlet-class>org.cerberus.servlet.testcase.GetPropertiesForTestCase</servlet-class>
+        <servlet-class>org.cerberus.servlet.crud.test.GetPropertiesForTestCase</servlet-class>
     </servlet>
     <servlet>
         <servlet-name>ImportPropertyOfATestCaseToAnOtherTestCase</servlet-name>
-        <servlet-class>org.cerberus.servlet.testcase.ImportPropertyOfATestCaseToAnOtherTestCase</servlet-class>
+        <servlet-class>org.cerberus.servlet.crud.test.ImportPropertyOfATestCaseToAnOtherTestCase</servlet-class>
     </servlet>
     <servlet>
         <servlet-name>CreateNotDefinedProperty</servlet-name>
-        <servlet-class>org.cerberus.servlet.testcase.CreateNotDefinedProperty</servlet-class>
+        <servlet-class>org.cerberus.servlet.crud.test.CreateNotDefinedProperty</servlet-class>
     </servlet>
     <servlet>
         <servlet-name>UseTestCaseStep</servlet-name>
-        <servlet-class>org.cerberus.servlet.testcase.UseTestCaseStep</servlet-class>
+        <servlet-class>org.cerberus.servlet.crud.test.UseTestCaseStep</servlet-class>
     </servlet>
     <servlet>
         <servlet-name>FindAllUsers</servlet-name>
-        <servlet-class>org.cerberus.servlet.user.FindAllUsers</servlet-class>
+        <servlet-class>org.cerberus.servlet.crud.usermanagement.FindAllUsers</servlet-class>
     </servlet>
     <servlet>
         <servlet-name>ReadUser</servlet-name>
-        <servlet-class>org.cerberus.servlet.user.ReadUser</servlet-class>
+        <servlet-class>org.cerberus.servlet.crud.usermanagement.ReadUser</servlet-class>
     </servlet>
     <servlet>
         <servlet-name>ExportTestCase</servlet-name>
-        <servlet-class>org.cerberus.servlet.testcase.ExportTestCase</servlet-class>
+        <servlet-class>org.cerberus.servlet.crud.test.ExportTestCase</servlet-class>
     </servlet>
     <servlet>
         <servlet-name>ImportTestCaseFromJson</servlet-name>
-        <servlet-class>org.cerberus.servlet.testcase.ImportTestCaseFromJson</servlet-class>
+        <servlet-class>org.cerberus.servlet.crud.test.ImportTestCaseFromJson</servlet-class>
     </servlet>
     <servlet>
         <servlet-name>CampaignExecutionReport</servlet-name>
-        <servlet-class>org.cerberus.servlet.campaign.CampaignExecutionReport</servlet-class>
+        <servlet-class>org.cerberus.servlet.crud.testcampaign.CampaignExecutionReport</servlet-class>
     </servlet>
     <servlet>
         <servlet-name>CampaignExecutionRadarGraphByFunction</servlet-name>
-        <servlet-class>org.cerberus.servlet.campaign.CampaignExecutionRadarGraphByFunction</servlet-class>
+        <servlet-class>org.cerberus.servlet.crud.testcampaign.CampaignExecutionRadarGraphByFunction</servlet-class>
     </servlet>
     <servlet>
         <servlet-name>CampaignExecutionStatusBarGraphByFunction</servlet-name>
-        <servlet-class>org.cerberus.servlet.campaign.CampaignExecutionStatusBarGraphByFunction</servlet-class>
+        <servlet-class>org.cerberus.servlet.crud.testcampaign.CampaignExecutionStatusBarGraphByFunction</servlet-class>
     </servlet>
     <servlet>
         <servlet-name>CampaignExecutionGraphByStatus</servlet-name>
-        <servlet-class>org.cerberus.servlet.campaign.CampaignExecutionGraphByStatus</servlet-class>
+        <servlet-class>org.cerberus.servlet.crud.testcampaign.CampaignExecutionGraphByStatus</servlet-class>
     </servlet>
     <servlet>
         <servlet-name>GetReport</servlet-name>
@@ -616,31 +616,31 @@
     </servlet>
     <servlet>
         <servlet-name>UpdateTestCaseWithDependencies</servlet-name>
-        <servlet-class>org.cerberus.servlet.testcase.UpdateTestCaseWithDependencies</servlet-class>
+        <servlet-class>org.cerberus.servlet.crud.test.UpdateTestCaseWithDependencies</servlet-class>
     </servlet>
     <servlet>
         <servlet-name>DeleteTestCaseFromTestPage</servlet-name>
-        <servlet-class>org.cerberus.servlet.testcase.DeleteTestCaseFromTestPage</servlet-class>
+        <servlet-class>org.cerberus.servlet.crud.test.DeleteTestCaseFromTestPage</servlet-class>
     </servlet>
     <servlet>
         <servlet-name>DeleteTestCase2</servlet-name>
-        <servlet-class>org.cerberus.servlet.testcase.DeleteTestCase2</servlet-class>
+        <servlet-class>org.cerberus.servlet.crud.test.DeleteTestCase2</servlet-class>
     </servlet>
     <servlet>
         <servlet-name>CreateTestCase2</servlet-name>
-        <servlet-class>org.cerberus.servlet.testcase.CreateTestCase2</servlet-class>
+        <servlet-class>org.cerberus.servlet.crud.test.CreateTestCase2</servlet-class>
     </servlet>
     <servlet>
         <servlet-name>UpdateTestCase2</servlet-name>
-        <servlet-class>org.cerberus.servlet.testcase.UpdateTestCase2</servlet-class>
+        <servlet-class>org.cerberus.servlet.crud.test.UpdateTestCase2</servlet-class>
     </servlet>
     <servlet>
         <servlet-name>ReadTest</servlet-name>
-        <servlet-class>org.cerberus.servlet.test.ReadTest</servlet-class>
+        <servlet-class>org.cerberus.servlet.crud.test.ReadTest</servlet-class>
     </servlet>
     <servlet>
         <servlet-name>ReadTestDataLib</servlet-name>
-        <servlet-class>org.cerberus.servlet.testdatalib.ReadTestDataLib</servlet-class>
+        <servlet-class>org.cerberus.servlet.crud.testdata.ReadTestDataLib</servlet-class>
     </servlet>
     <servlet>
         <servlet-name>RunManualTest</servlet-name>
@@ -648,12 +648,12 @@
     </servlet>
     <servlet>
         <servlet-name>GetStepInLibrary</servlet-name>
-        <servlet-class>org.cerberus.servlet.testcase.GetStepInLibrary</servlet-class>
+        <servlet-class>org.cerberus.servlet.crud.test.GetStepInLibrary</servlet-class>
     </servlet>
     <servlet>
         <description>Find execution that are in Execution Queue.</description>
         <servlet-name>FindExecutionInQueue</servlet-name>
-        <servlet-class>org.cerberus.servlet.execution.FindExecutionInQueue</servlet-class>
+        <servlet-class>org.cerberus.servlet.crud.testexecution.FindExecutionInQueue</servlet-class>
     </servlet>
     <servlet>
         <description>Add a test case to the execution queue.</description>
@@ -667,83 +667,83 @@
     </servlet>
     <servlet>
         <servlet-name>FindBuildContent</servlet-name>
-        <servlet-class>org.cerberus.servlet.buildcontent.FindBuildContent</servlet-class>
+        <servlet-class>org.cerberus.servlet.crud.buildrevisionchange.FindBuildContent</servlet-class>
     </servlet>
     <servlet>
         <servlet-name>AddBuildContent</servlet-name>
-        <servlet-class>org.cerberus.servlet.buildcontent.AddBuildContent</servlet-class>
+        <servlet-class>org.cerberus.servlet.crud.buildrevisionchange.AddBuildContent</servlet-class>
     </servlet>
     <servlet>
         <servlet-name>DeleteBuildContent</servlet-name>
-        <servlet-class>org.cerberus.servlet.buildcontent.DeleteBuildContent</servlet-class>
+        <servlet-class>org.cerberus.servlet.crud.buildrevisionchange.DeleteBuildContent</servlet-class>
     </servlet>
     <servlet>
         <servlet-name>DeleteBuildRevisionParameters</servlet-name>
-        <servlet-class>org.cerberus.servlet.buildcontent.DeleteBuildRevisionParameters</servlet-class>
+        <servlet-class>org.cerberus.servlet.crud.buildrevisionchange.DeleteBuildRevisionParameters</servlet-class>
     </servlet>
     <servlet>
         <servlet-name>ReadBuildRevisionParameters</servlet-name>
-        <servlet-class>org.cerberus.servlet.buildcontent.ReadBuildRevisionParameters</servlet-class>
+        <servlet-class>org.cerberus.servlet.crud.buildrevisionchange.ReadBuildRevisionParameters</servlet-class>
     </servlet>
     <servlet>
         <servlet-name>CreateBuildRevisionParameters</servlet-name>
-        <servlet-class>org.cerberus.servlet.buildcontent.CreateBuildRevisionParameters</servlet-class>
+        <servlet-class>org.cerberus.servlet.crud.buildrevisionchange.CreateBuildRevisionParameters</servlet-class>
     </servlet>
     <servlet>
         <servlet-name>UpdateBuildRevisionParameters</servlet-name>
-        <servlet-class>org.cerberus.servlet.buildcontent.UpdateBuildRevisionParameters</servlet-class>
+        <servlet-class>org.cerberus.servlet.crud.buildrevisionchange.UpdateBuildRevisionParameters</servlet-class>
     </servlet>
     <servlet>
         <servlet-name>UpdateBuildContent</servlet-name>
-        <servlet-class>org.cerberus.servlet.buildcontent.UpdateBuildContent</servlet-class>
+        <servlet-class>org.cerberus.servlet.crud.buildrevisionchange.UpdateBuildContent</servlet-class>
     </servlet>
     <servlet>
         <servlet-name>GetCountryEnvParamList</servlet-name>
-        <servlet-class>org.cerberus.servlet.countryenvparam.GetCountryEnvParamList</servlet-class>
+        <servlet-class>org.cerberus.servlet.crud.countryenvironment.GetCountryEnvParamList</servlet-class>
     </servlet>
     <servlet>
         <servlet-name>UpdateCountryEnvParam</servlet-name>
-        <servlet-class>org.cerberus.servlet.countryenvparam.UpdateCountryEnvParam</servlet-class>
+        <servlet-class>org.cerberus.servlet.crud.countryenvironment.UpdateCountryEnvParam</servlet-class>
     </servlet>
     <servlet>
         <servlet-name>CreateCountryEnvParam</servlet-name>
-        <servlet-class>org.cerberus.servlet.countryenvparam.CreateCountryEnvParam</servlet-class>
+        <servlet-class>org.cerberus.servlet.crud.countryenvironment.CreateCountryEnvParam</servlet-class>
     </servlet>
     <servlet>
         <servlet-name>DeleteCountryEnvParam</servlet-name>
-        <servlet-class>org.cerberus.servlet.countryenvparam.DeleteCountryEnvParam</servlet-class>
+        <servlet-class>org.cerberus.servlet.crud.countryenvironment.DeleteCountryEnvParam</servlet-class>
     </servlet>
     <servlet>
         <servlet-name>CreateCountryEnvironmentParameter</servlet-name>
-        <servlet-class>org.cerberus.servlet.countryenvironmentparameters.CreateCountryEnvironmentParameter</servlet-class>
+        <servlet-class>org.cerberus.servlet.crud.countryenvironment.CreateCountryEnvironmentParameter</servlet-class>
     </servlet>
     <servlet>
         <servlet-name>DeleteCountryEnvironmentParameter</servlet-name>
-        <servlet-class>org.cerberus.servlet.countryenvironmentparameters.DeleteCountryEnvironmentParameter</servlet-class>
+        <servlet-class>org.cerberus.servlet.crud.countryenvironment.DeleteCountryEnvironmentParameter</servlet-class>
     </servlet>
     <servlet>
         <servlet-name>GetCountryEnvironmentParameterList</servlet-name>
-        <servlet-class>org.cerberus.servlet.countryenvironmentparameters.GetCountryEnvironmentParameterList</servlet-class>
+        <servlet-class>org.cerberus.servlet.crud.countryenvironment.GetCountryEnvironmentParameterList</servlet-class>
     </servlet>
     <servlet>
         <servlet-name>UpdateCountryEnvironmentParameter</servlet-name>
-        <servlet-class>org.cerberus.servlet.countryenvironmentparameters.UpdateCountryEnvironmentParameter</servlet-class>
+        <servlet-class>org.cerberus.servlet.crud.countryenvironment.UpdateCountryEnvironmentParameter</servlet-class>
     </servlet>
     <servlet>
         <servlet-name>CreateCountryEnvironmentDatabase</servlet-name>
-        <servlet-class>org.cerberus.servlet.countryenvironmentdatabase.CreateCountryEnvironmentDatabase</servlet-class>
+        <servlet-class>org.cerberus.servlet.crud.countryenvironment.CreateCountryEnvironmentDatabase</servlet-class>
     </servlet>
     <servlet>
         <servlet-name>DeleteCountryEnvironmentDatabase</servlet-name>
-        <servlet-class>org.cerberus.servlet.countryenvironmentdatabase.DeleteCountryEnvironmentDatabase</servlet-class>
+        <servlet-class>org.cerberus.servlet.crud.countryenvironment.DeleteCountryEnvironmentDatabase</servlet-class>
     </servlet>
     <servlet>
         <servlet-name>FindCountryEnvironmentDatabase</servlet-name>
-        <servlet-class>org.cerberus.servlet.countryenvironmentdatabase.FindCountryEnvironmentDatabase</servlet-class>
+        <servlet-class>org.cerberus.servlet.crud.countryenvironment.FindCountryEnvironmentDatabase</servlet-class>
     </servlet>
     <servlet>
         <servlet-name>UpdateCountryEnvironmentDatabase</servlet-name>
-        <servlet-class>org.cerberus.servlet.countryenvironmentdatabase.UpdateCountryEnvironmentDatabase</servlet-class>
+        <servlet-class>org.cerberus.servlet.crud.countryenvironment.UpdateCountryEnvironmentDatabase</servlet-class>
     </servlet>
     <servlet>
         <servlet-name>ExecutionThreadMonitoring</servlet-name>
@@ -751,47 +751,47 @@
     </servlet>
     <servlet>
         <servlet-name>ExecutionThreadReset</servlet-name>
-        <servlet-class>org.cerberus.servlet.execution.ExecutionThreadReset</servlet-class>
+        <servlet-class>org.cerberus.servlet.crud.testexecution.ExecutionThreadReset</servlet-class>
     </servlet>
     <servlet>
         <servlet-name>DeleteExecutionInQueue</servlet-name>
-        <servlet-class>org.cerberus.servlet.execution.DeleteExecutionInQueue</servlet-class>
+        <servlet-class>org.cerberus.servlet.crud.testexecution.DeleteExecutionInQueue</servlet-class>
     </servlet>
     <servlet>
         <servlet-name>UpdateExecutionInQueue</servlet-name>
-        <servlet-class>org.cerberus.servlet.execution.UpdateExecutionInQueue</servlet-class>
+        <servlet-class>org.cerberus.servlet.crud.testexecution.UpdateExecutionInQueue</servlet-class>
     </servlet>
     <servlet>
         <servlet-name>SetTagToExecution</servlet-name>
-        <servlet-class>org.cerberus.servlet.execution.SetTagToExecution</servlet-class>
+        <servlet-class>org.cerberus.servlet.crud.testexecution.SetTagToExecution</servlet-class>
     </servlet>
     <servlet>
         <servlet-name>CreateTestDataLib</servlet-name>
-        <servlet-class>org.cerberus.servlet.testdatalib.CreateTestDataLib</servlet-class>
+        <servlet-class>org.cerberus.servlet.crud.testdata.CreateTestDataLib</servlet-class>
     </servlet>
     <servlet>
         <servlet-name>DeleteTestDataLib</servlet-name>
-        <servlet-class>org.cerberus.servlet.testdatalib.DeleteTestDataLib</servlet-class>
+        <servlet-class>org.cerberus.servlet.crud.testdata.DeleteTestDataLib</servlet-class>
     </servlet>
     <servlet>
         <servlet-name>UpdateTestDataLibData</servlet-name>
-        <servlet-class>org.cerberus.servlet.testdatalib.UpdateTestDataLibData</servlet-class>
+        <servlet-class>org.cerberus.servlet.crud.testdata.UpdateTestDataLibData</servlet-class>
     </servlet>
     <servlet>
         <servlet-name>UpdateTestDataLib</servlet-name>
-        <servlet-class>org.cerberus.servlet.testdatalib.UpdateTestDataLib</servlet-class>
+        <servlet-class>org.cerberus.servlet.crud.testdata.UpdateTestDataLib</servlet-class>
     </servlet>
     <servlet>
         <servlet-name>ImportTestDataLib</servlet-name>
-        <servlet-class>org.cerberus.servlet.testdatalib.ImportTestDataLib</servlet-class>
+        <servlet-class>org.cerberus.servlet.crud.testdata.ImportTestDataLib</servlet-class>
     </servlet>
     <servlet>
         <servlet-name>ReadTestDataLibData</servlet-name>
-        <servlet-class>org.cerberus.servlet.testdatalib.ReadTestDataLibData</servlet-class>
+        <servlet-class>org.cerberus.servlet.crud.testdata.ReadTestDataLibData</servlet-class>
     </servlet>
     <servlet>
         <servlet-name>ReadMyUser</servlet-name>
-        <servlet-class>org.cerberus.servlet.user.ReadMyUser</servlet-class>
+        <servlet-class>org.cerberus.servlet.crud.usermanagement.ReadMyUser</servlet-class>
     </servlet>
     <servlet>
         <servlet-name>ReadCerberusInformation</servlet-name>
@@ -799,15 +799,15 @@
     </servlet>
     <servlet>
         <servlet-name>ReadTestCaseStep</servlet-name>
-        <servlet-class>org.cerberus.servlet.testcase.ReadTestCaseStep</servlet-class>
+        <servlet-class>org.cerberus.servlet.crud.test.ReadTestCaseStep</servlet-class>
     </servlet>
     <servlet>
         <servlet-name>ReadTestCase</servlet-name>
-        <servlet-class>org.cerberus.servlet.testcase.ReadTestCase</servlet-class>
+        <servlet-class>org.cerberus.servlet.crud.test.ReadTestCase</servlet-class>
     </servlet>
     <servlet>
         <servlet-name>FindEnvironments</servlet-name>
-        <servlet-class>org.cerberus.servlet.environment.FindEnvironments</servlet-class>
+        <servlet-class>org.cerberus.servlet.crud.countryenvironment.FindEnvironments</servlet-class>
     </servlet>
     <servlet>
         <servlet-name>GeneratePerformanceString</servlet-name>
@@ -815,7 +815,7 @@
     </servlet>
     <servlet>
         <servlet-name>UpdateMyUser</servlet-name>
-        <servlet-class>org.cerberus.servlet.user.UpdateMyUser</servlet-class>
+        <servlet-class>org.cerberus.servlet.crud.usermanagement.UpdateMyUser</servlet-class>
     </servlet>
     <servlet-mapping>
         <servlet-name>ExecutionThreadMonitoring</servlet-name>

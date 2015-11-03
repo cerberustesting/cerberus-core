@@ -35,7 +35,6 @@ import org.cerberus.crud.service.IInvariantService;
 import org.cerberus.crud.service.impl.ApplicationService;
 import org.cerberus.crud.service.impl.InvariantService;
 import org.cerberus.enums.MessageEventEnum;
-import org.cerberus.servlet.application.ReadApplication;
 import org.cerberus.util.answer.AnswerItem;
 import org.cerberus.util.answer.AnswerList;
 import org.json.JSONArray;
@@ -92,7 +91,7 @@ public class Homepage extends HttpServlet {
             response.getWriter().print(jsonResponse.toString());
 
         } catch (JSONException e) {
-            org.apache.log4j.Logger.getLogger(ReadApplication.class.getName()).log(org.apache.log4j.Level.ERROR, null, e);
+            org.apache.log4j.Logger.getLogger(Homepage.class.getName()).log(org.apache.log4j.Level.ERROR, null, e);
             //returns a default error message with the json format that is able to be parsed by the client-side
             response.setContentType("application/json");
             MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
