@@ -56,24 +56,7 @@ public class IdentifierService implements IIdentifierService {
             identifier = strings[0];
             locator = strings[1];
         }
-        
-        org.apache.log4j.Logger.getLogger(IdentifierService.class.getName()).log(org.apache.log4j.Level.WARN, 
-                  "HERE IS IdentifierService: " + input);
-        if(identifier != null){
-            org.apache.log4j.Logger.getLogger(IdentifierService.class.getName()).log(org.apache.log4j.Level.WARN, 
-                  "Input: " + input + " - Identifier " + identifier);
-        }else{
-            org.apache.log4j.Logger.getLogger(IdentifierService.class.getName()).log(org.apache.log4j.Level.WARN, 
-                  "Input: " + input + " - Identifier is NULL! " );
-        }
-
-        if(locator != null){
-            org.apache.log4j.Logger.getLogger(IdentifierService.class.getName()).log(org.apache.log4j.Level.WARN, 
-                  "Locator : " + input + " - Locator " + locator);
-        }else{
-            org.apache.log4j.Logger.getLogger(IdentifierService.class.getName()).log(org.apache.log4j.Level.WARN, 
-                  "Locator : " + input + " - Locator is NULL! " );
-        }
+       
         result.setIdentifier(identifier);
         result.setLocator(locator);
         return result;

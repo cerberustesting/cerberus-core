@@ -81,24 +81,24 @@ public class CountryEnvParamDAO implements ICountryEnvParamDAO {
                         throwex = true;
                     }
                 } catch (SQLException exception) {
-                    MyLogger.log(CountryEnvironmentParametersDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
+                    MyLogger.log(CountryEnvParamDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
                 } finally {
                     resultSet.close();
                 }
             } catch (SQLException exception) {
-                MyLogger.log(CountryEnvironmentParametersDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
+                MyLogger.log(CountryEnvParamDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
             } finally {
                 preStat.close();
             }
         } catch (SQLException exception) {
-            MyLogger.log(CountryEnvironmentParametersDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
+            MyLogger.log(CountryEnvParamDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
         } finally {
             try {
                 if (connection != null) {
                     connection.close();
                 }
             } catch (SQLException e) {
-                MyLogger.log(CountryEnvironmentParametersDAO.class.getName(), Level.WARN, e.toString());
+                MyLogger.log(CountryEnvParamDAO.class.getName(), Level.WARN, e.toString());
             }
         }
         if (throwex) {
@@ -222,7 +222,7 @@ public class CountryEnvParamDAO implements ICountryEnvParamDAO {
         boolean throwex = false;
         StringBuilder query = new StringBuilder();
         query.append("SELECT `system`, `country`, `environment`, `Build`, `Revision`,`chain`, `distriblist`, `eMailBodyRevision`, `type`,`eMailBodyChain`, `eMailBodyDisableEnvironment`,  `active`, `maintenanceact`, ");
-        query.append(" `maintenancestr`, `maintenanceend` FROM countryenvparam WHERE `system` LIKE ? AND `country` LIKE ? ");
+        query.append(" `maintenancestr`, `maintenanceend`, `Description` FROM countryenvparam WHERE `system` LIKE ? AND `country` LIKE ? ");
         query.append("AND `environment` LIKE ? AND `build` LIKE ? AND `Revision` LIKE ? AND `chain` LIKE ? ");
         query.append("AND `distriblist` LIKE ? AND `eMailBodyRevision` LIKE ? AND `type` LIKE ? AND `eMailBodyChain` LIKE ? ");
         query.append("AND `eMailBodyDisableEnvironment` LIKE ? AND `active` LIKE ? AND `maintenanceact` LIKE ? AND `maintenancestr` LIKE ? ");
@@ -262,24 +262,24 @@ public class CountryEnvParamDAO implements ICountryEnvParamDAO {
                         result.add(this.loadCountryEnvParamFromResultSet(resultSet));
                     }
                 } catch (SQLException exception) {
-                    MyLogger.log(CountryEnvironmentParametersDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
+                    MyLogger.log(CountryEnvParamDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
                 } finally {
                     resultSet.close();
                 }
             } catch (SQLException exception) {
-                MyLogger.log(CountryEnvironmentParametersDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
+                MyLogger.log(CountryEnvParamDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
             } finally {
                 preStat.close();
             }
         } catch (SQLException exception) {
-            MyLogger.log(CountryEnvironmentParametersDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
+            MyLogger.log(CountryEnvParamDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
         } finally {
             try {
                 if (connection != null) {
                     connection.close();
                 }
             } catch (SQLException e) {
-                MyLogger.log(CountryEnvironmentParametersDAO.class.getName(), Level.WARN, e.toString());
+                MyLogger.log(CountryEnvParamDAO.class.getName(), Level.WARN, e.toString());
             }
         }
         if (throwex) {

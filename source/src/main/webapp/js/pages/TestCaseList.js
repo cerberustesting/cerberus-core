@@ -256,6 +256,8 @@ function loadTable() {
 function CreateTestCaseClick() {
     clearResponseMessageMainPage();
     var test = GetURLParameter('test');
+    var pref = JSON.parse(localStorage.getItem("createTC"));
+    var form = $("#addEntryModalForm");
 
     $.ajax({
         url: "ReadTestCase",
@@ -290,6 +292,29 @@ function CreateTestCaseClick() {
     }
 
     $('#addEntryModalForm #actProd option[value="N"]').attr("selected", "selected");
+
+    if (pref !== null) {
+        form.find("#origin").val(pref.origin);
+        form.find("#refOrigin").val(pref.refOrigin);
+        form.find(".countrycb").each(function () {
+            if (pref[$(this).prop("name")] !== "off") {
+                $(this).prop("checked", true);
+            } else {
+                $(this).prop("checked", false);
+            }
+        });
+        form.find("#project").val(pref.project);
+        form.find("#ticket").val(pref.ticket);
+        form.find("#function").val(pref.function);
+        form.find("#application").val(pref.application);
+        form.find("#status").val(pref.status);
+        form.find("#group").val(pref.group);
+        form.find("#priority").val(pref.priority);
+        form.find("#bugId").val(pref.bugId);
+        form.find("#activeQA").val(pref.activeQA);
+        form.find("#activeUAT").val(pref.activeUAT);
+        form.find("#activeProd").val(pref.activeProd);
+    }
 
     $('#addEntryModal').modal('show');
 }
@@ -337,6 +362,7 @@ function saveNewEntryHandler() {
         return;
 
     tinyMCE.triggerSave();
+    localStorage.setItem("createTC", JSON.stringify(convertSerialToJSONObject(formAdd.serialize())));
     showLoaderInModal('#addEntryModal');
     createEntry("CreateTestCase2", formAdd, "#testCaseTable");
 }
@@ -405,7 +431,9 @@ function editEntry(testCase) {
             appendBuildRevList(appData.contentTable.system, data);
 
             if (appData.contentTable.system !== currentSys) {
-                formEdit.find("#application").prepend($('<option></option>').text(data.application).val(data.application));
+                $("[name=application]").empty();
+                formEdit.find("#application").append($('<option></option>').text(data.application).val(data.application));
+                appendApplicationList(currentSys);
             }
             formEdit.find("#application").prop("value", data.application);
 
