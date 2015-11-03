@@ -363,6 +363,10 @@
         <servlet-class>org.cerberus.servlet.crud.buildrevisionchange.DeleteBuildRevisionInvariant</servlet-class>
     </servlet>
     <servlet>
+        <servlet-name>DeleteBuildRevisionInvariant1</servlet-name>
+        <servlet-class>org.cerberus.servlet.crud.buildrevisionchange.DeleteBuildRevisionInvariant1</servlet-class>
+    </servlet>
+    <servlet>
         <servlet-name>ExecutionPerBuildRevision</servlet-name>
         <servlet-class>org.cerberus.servlet.guipages.ExecutionPerBuildRevision</servlet-class>
     </servlet>
@@ -491,8 +495,16 @@
         <servlet-class>org.cerberus.servlet.crud.buildrevisionchange.UpdateBuildRevisionInvariant</servlet-class>
     </servlet>
     <servlet>
+        <servlet-name>UpdateBuildRevisionInvariant1</servlet-name>
+        <servlet-class>org.cerberus.servlet.crud.buildrevisionchange.UpdateBuildRevisionInvariant1</servlet-class>
+    </servlet>
+    <servlet>
         <servlet-name>CreateBuildRevisionInvariant</servlet-name>
         <servlet-class>org.cerberus.servlet.crud.buildrevisionchange.CreateBuildRevisionInvariant</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>CreateBuildRevisionInvariant1</servlet-name>
+        <servlet-class>org.cerberus.servlet.crud.buildrevisionchange.CreateBuildRevisionInvariant1</servlet-class>
     </servlet>
     <servlet>
         <servlet-name>FindTestImplementationStatusPerApplication</servlet-name>
@@ -1170,6 +1182,10 @@
         <url-pattern>/DeleteBuildRevisionInvariant</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
+        <servlet-name>DeleteBuildRevisionInvariant1</servlet-name>
+        <url-pattern>/DeleteBuildRevisionInvariant1</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
         <servlet-name>ExecutionPerBuildRevision</servlet-name>
         <url-pattern>/ExecutionPerBuildRevision</url-pattern>
     </servlet-mapping>
@@ -1298,8 +1314,16 @@
         <url-pattern>/UpdateBuildRevisionInvariant</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
+        <servlet-name>UpdateBuildRevisionInvariant1</servlet-name>
+        <url-pattern>/UpdateBuildRevisionInvariant1</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
         <servlet-name>CreateBuildRevisionInvariant</servlet-name>
         <url-pattern>/CreateBuildRevisionInvariant</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>CreateBuildRevisionInvariant1</servlet-name>
+        <url-pattern>/CreateBuildRevisionInvariant1</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
         <servlet-name>FindTestImplementationStatusPerApplication</servlet-name>
@@ -1876,7 +1900,6 @@
             <description>jsp</description>
             <url-pattern>/Application.jsp</url-pattern>
             <url-pattern>/BuildContent.jsp</url-pattern>
-            <url-pattern>/BuildContent_old.jsp</url-pattern>
             <url-pattern>/BuildRevDefinition.jsp</url-pattern>
             <url-pattern>/Environment.jsp</url-pattern>
             <url-pattern>/EnvironmentList.jsp</url-pattern>
@@ -1887,7 +1910,6 @@
             <url-pattern>/Robot.jsp</url-pattern>
             <url-pattern>/EnvironmentManagement.jsp</url-pattern>
             <url-pattern>/DeployType.jsp</url-pattern>
-            <url-pattern>/BuildContent_old2.jsp</url-pattern>
         </web-resource-collection>
         <web-resource-collection>
             <web-resource-name>servlet</web-resource-name>
@@ -1928,6 +1950,9 @@
             <url-pattern>/CreateBuildRevisionInvariant</url-pattern>
             <url-pattern>/UpdateBuildRevisionInvariant</url-pattern>
             <url-pattern>/DeleteBuildRevisionInvariant</url-pattern>
+            <url-pattern>/CreateBuildRevisionInvariant1</url-pattern>
+            <url-pattern>/UpdateBuildRevisionInvariant1</url-pattern>
+            <url-pattern>/DeleteBuildRevisionInvariant1</url-pattern>
             <url-pattern>/CreateRobot</url-pattern>
             <url-pattern>/DeleteRobot</url-pattern>
             <url-pattern>/UpdateRobot</url-pattern>
