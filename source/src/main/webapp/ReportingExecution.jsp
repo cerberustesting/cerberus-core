@@ -595,7 +595,6 @@
                     <%
                         options.clear();
                         List<Invariant> groupList = invariantService.findListOfInvariantById("GROUP");
-                        groupList.remove(0);
                         for (Invariant statusInv : groupList) {
                             if(!statusInv.getValue().isEmpty()){
                                 options.put(statusInv.getValue(), statusInv.getValue());
