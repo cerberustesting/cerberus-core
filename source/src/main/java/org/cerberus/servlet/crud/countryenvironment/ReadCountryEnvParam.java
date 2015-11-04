@@ -22,7 +22,6 @@ package org.cerberus.servlet.crud.countryenvironment;
 import com.google.common.base.Strings;
 import com.google.gson.Gson;
 import java.io.IOException;
-import java.io.PrintWriter;
 import java.util.HashMap;
 import java.util.List;
 import javax.servlet.ServletException;
@@ -32,7 +31,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import org.cerberus.crud.entity.CountryEnvParam;
 import org.cerberus.crud.entity.MessageEvent;
-import org.cerberus.crud.entity.Parameter;
 import org.cerberus.crud.service.ICountryEnvParamService;
 import org.cerberus.enums.MessageEventEnum;
 import org.cerberus.util.ParameterParserUtil;
@@ -48,8 +46,8 @@ import org.springframework.web.context.support.WebApplicationContextUtils;
  *
  * @author cerberus
  */
-@WebServlet(name = "ReadEnvironment", urlPatterns = {"/ReadEnvironment"})
-public class ReadEnvironment extends HttpServlet {
+@WebServlet(name = "ReadCountryEnvParam", urlPatterns = {"/ReadCountryEnvParam"})
+public class ReadCountryEnvParam extends HttpServlet {
 
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
@@ -66,12 +64,15 @@ public class ReadEnvironment extends HttpServlet {
 
         try {
             JSONObject jsonResponse = new JSONObject();
-            AnswerItem answer = new AnswerItem(new MessageEvent(MessageEventEnum.DATA_OPERATION_OK));
+            AnswerItem answer = new AnswerItem(new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED));
 
             String system = ParameterParserUtil.parseStringParam(request.getParameter("system"), "");
 
             if (!Strings.isNullOrEmpty(system)) {
                 answer = findActiveEnvironmentList(appContext, system);
+                jsonResponse = (JSONObject) answer.getItem();
+            } else {
+                answer = findCountryEnvParamList(appContext, request);
                 jsonResponse = (JSONObject) answer.getItem();
             }
 
@@ -80,7 +81,7 @@ public class ReadEnvironment extends HttpServlet {
             response.setContentType("application/json");
             response.getWriter().print(jsonResponse.toString());
         } catch (JSONException ex) {
-            org.apache.log4j.Logger.getLogger(ReadEnvironment.class.getName()).log(org.apache.log4j.Level.ERROR, null, ex);
+            org.apache.log4j.Logger.getLogger(ReadCountryEnvParam.class.getName()).log(org.apache.log4j.Level.ERROR, null, ex);
             //returns a default error message with the json format that is able to be parsed by the client-side
             response.setContentType("application/json");
             MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
@@ -161,5 +162,44 @@ public class ReadEnvironment extends HttpServlet {
     public String getServletInfo() {
         return "Short description";
     }// </editor-fold>
+
+    private AnswerItem findCountryEnvParamList(ApplicationContext appContext, HttpServletRequest request) throws JSONException {
+        AnswerItem item = new AnswerItem();
+        AnswerList answer = new AnswerList();
+        JSONObject resp = new JSONObject();
+
+        ICountryEnvParamService countryEnvParamService = appContext.getBean(ICountryEnvParamService.class);
+
+        int startPosition = Integer.valueOf(ParameterParserUtil.parseStringParam(request.getParameter("iDisplayStart"), "0"));
+        int length = Integer.valueOf(ParameterParserUtil.parseStringParam(request.getParameter("iDisplayLength"), "0"));
+
+        String searchParameter = ParameterParserUtil.parseStringParam(request.getParameter("sSearch"), "");
+        int columnToSortParameter = Integer.parseInt(ParameterParserUtil.parseStringParam(request.getParameter("iSortCol_0"), "0"));
+        String sColumns = ParameterParserUtil.parseStringParam(request.getParameter("sColumns"), "system,country,environment,description,build,revision,chain,disriblist,emailbodyrevision,type,emailbodychain,emailbodydisableenvironment,active,maintenanceact,maintenancestr,maintenanceeend");
+        String columnToSort[] = sColumns.split(",");
+        String columnName = columnToSort[columnToSortParameter];
+        String sort = ParameterParserUtil.parseStringParam(request.getParameter("sSortDir_0"), "asc");
+
+        answer = countryEnvParamService.readByCriteria(startPosition, length, columnName, sort, searchParameter, "");
+
+//        boolean userHasPermissions = request.isUserInRole("TestAdmin");
+
+        JSONArray jsonArray = new JSONArray();
+        if (answer.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {//the service was able to perform the query, then we should get all values
+            for (CountryEnvParam cep : (List<CountryEnvParam>) answer.getDataList()) {
+                jsonArray.put(convertCountryEnvParamtoJSONObject(cep));
+            }
+        }
+
+        resp.put("contentTable", jsonArray);
+//        resp.put("hasPermissions", userHasPermissions);
+        resp.put("iTotalRecords", answer.getTotalRows());
+        resp.put("iTotalDisplayRecords", answer.getTotalRows());
+
+        item.setItem(resp);
+        item.setResultMessage(answer.getResultMessage());
+        return item;
+
+    }
 
 }

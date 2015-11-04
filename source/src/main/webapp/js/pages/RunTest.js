@@ -22,6 +22,8 @@ $.when($.getScript("js/pages/global/global.js")).then(function () {
     $(document).ready(function () {
         var doc = new Doc();
 
+        oldPreferenceCompatibility();
+
         displayHeaderLabel(doc);
         displayFooter(doc);
         bindToggleCollapse();
@@ -44,7 +46,7 @@ $.when($.getScript("js/pages/global/global.js")).then(function () {
         $("#addQueue").click(addToQueue);
         $("#resetQueue").click(function (event) {
             stopPropagation(event);
-           $("#queue").empty();
+            $("#queue").empty();
         });
 
         loadExecForm();
@@ -66,6 +68,42 @@ $.when($.getScript("js/pages/global/global.js")).then(function () {
         $("#robotConfig").change(loadRobotInfo);
     });
 });
+
+
+function getCookie(cname) {
+    var name = cname + "=";
+    var ca = document.cookie.split(';');
+    for (var i = 0; i < ca.length; i++) {
+        var c = ca[i].trim();
+        if (c.indexOf(name) === 0)
+            var value = c.substring(name.length, c.length);
+            
+            document.cookie = cname + "=; expires=Thu, 01 Jan 1970 00:00:00 UTC"; 
+            return value;
+    }
+    return "";
+}
+
+function oldPreferenceCompatibility() {
+    if (localStorage.getItem("robotSettings") === null
+            && localStorage.getItem("executionSettings") === null) {
+
+        var execConfig = {
+            tag: getCookie("TagPreference"),
+            outputFormt: getCookie("OutputFormatPreference"),
+            verbose: getCookie("VerbosePreference"),
+            screenshot: getCookie("ScreenshotPreference"),
+            pageSource: getCookie("PageSourcePreference"),
+            seleniumLog: getCookie("SeleniumLogPreference"),
+            synchroneous: getCookie("SynchroneousPreference"),
+            timeout: getCookie("TimeoutPreference"),
+            retries: getCookie("ExecutionRetries"),
+            manualExecution: getCookie("ManualExecutionPreference")
+        };
+        
+        localStorage.setItem("executionSettings", JSON.stringify(execConfig));
+    }
+}
 
 function deleteRow() {
     $(this).parent('li').remove();

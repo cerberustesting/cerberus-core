@@ -315,8 +315,8 @@
         <servlet-class>org.cerberus.servlet.crud.countryenvironment.GetEnvironmentAvailable</servlet-class>
     </servlet>
     <servlet>
-        <servlet-name>ReadEnvironment</servlet-name>
-        <servlet-class>org.cerberus.servlet.crud.countryenvironment.ReadEnvironment</servlet-class>
+        <servlet-name>ReadCountryEnvParam</servlet-name>
+        <servlet-class>org.cerberus.servlet.crud.countryenvironment.ReadCountryEnvParam</servlet-class>
     </servlet>
     <servlet>
         <servlet-name>UpdateApplication</servlet-name>
@@ -1118,8 +1118,8 @@
         <url-pattern>/GetEnvironmentAvailable</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
-        <servlet-name>ReadEnvironment</servlet-name>
-        <url-pattern>/ReadEnvironment</url-pattern>
+        <servlet-name>ReadCountryEnvParam</servlet-name>
+        <url-pattern>/ReadCountryEnvParam</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
         <servlet-name>UpdateApplication</servlet-name>
@@ -1861,7 +1861,7 @@
             <web-resource-name>servlet</web-resource-name>
             <description>servlet</description>
             <url-pattern>/findEnvironmentByCriteria</url-pattern>
-            <url-pattern>/ReadEnvironment</url-pattern>
+            <url-pattern>/ReadCountryEnvParam</url-pattern>
             <url-pattern>/RunManualTest</url-pattern>
             <url-pattern>/SetTagToExecution</url-pattern>
             <url-pattern>/FindExecutionInQueue</url-pattern>
@@ -1950,9 +1950,6 @@
             <url-pattern>/CreateBuildRevisionInvariant</url-pattern>
             <url-pattern>/UpdateBuildRevisionInvariant</url-pattern>
             <url-pattern>/DeleteBuildRevisionInvariant</url-pattern>
-            <url-pattern>/CreateBuildRevisionInvariant1</url-pattern>
-            <url-pattern>/UpdateBuildRevisionInvariant1</url-pattern>
-            <url-pattern>/DeleteBuildRevisionInvariant1</url-pattern>
             <url-pattern>/CreateRobot</url-pattern>
             <url-pattern>/DeleteRobot</url-pattern>
             <url-pattern>/UpdateRobot</url-pattern>
@@ -1975,6 +1972,9 @@
             <url-pattern>/CreateBuildRevisionParameters</url-pattern>
             <url-pattern>/UpdateBuildRevisionParameters</url-pattern>
             <url-pattern>/ReadUser</url-pattern>
+            <url-pattern>/CreateBuildRevisionInvariant1</url-pattern>
+            <url-pattern>/UpdateBuildRevisionInvariant1</url-pattern>
+            <url-pattern>/DeleteBuildRevisionInvariant1</url-pattern>
         </web-resource-collection>
         <auth-constraint>
             <description>Integrator</description>

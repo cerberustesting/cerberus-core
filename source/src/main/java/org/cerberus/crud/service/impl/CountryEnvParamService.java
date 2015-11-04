@@ -134,4 +134,9 @@ public class CountryEnvParamService implements ICountryEnvParamService {
     public AnswerList readActiveBySystem(String system) {
         return countryEnvParamDao.readActiveBySystem(system);
     }
+    
+    @Override
+    public AnswerList readByCriteria(int start, int amount, String colName, String dir, String searchTerm, String individualSearch) {
+        return countryEnvParamDao.readByCriteria(start, amount, colName, dir, searchTerm, individualSearch);
+    }
 }

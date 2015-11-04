@@ -187,7 +187,7 @@ function displayBuildList(selectName, system, level, defaultValue) {
  * @returns {void}
  */
 function displayEnvList(selectName, system, defaultValue) {
-    $.when($.getJSON("ReadEnvironment", "system=" + system)).then(function (data) {
+    $.when($.getJSON("ReadCountryEnvParam", "system=" + system)).then(function (data) {
         for (var option in data.contentTable) {
             $("[name='" + selectName + "']").append($('<option></option>').text(data.contentTable[option].environment).val(data.contentTable[option].environment));
         }

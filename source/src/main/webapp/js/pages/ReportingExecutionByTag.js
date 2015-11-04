@@ -25,6 +25,15 @@ $.when($.getScript("js/pages/global/global.js")).then(function () {
 
         bindToggleCollapse();
 
+        $("#splitFilter input").click(function () {
+            //save the filter preferences in the session storage
+            var serial = $("#splitFilter input").serialize();
+            var obj = convertSerialToJSONObject(serial);
+            sessionStorage.setItem("splitFilter", JSON.stringify(obj));
+        });
+        
+        splitFilterPreferences();
+
         var urlTag = GetURLParameter('Tag');
         loadTagFilters(urlTag);
         $('body').tooltip({
@@ -58,7 +67,7 @@ function loadCountryFilter() {
             for (var i = 0; i < len; i++) {
                 var filter = JSON.parse(sessionStorage.getItem("countryFilter"));
                 var cb;
-                
+
                 //Load the filters depenbding on the preferences retrieved from session storage
                 if (filter !== null && !filter.hasOwnProperty(data[i].value)) {
                     cb = '<label class="checkbox-inline">\n\
@@ -79,6 +88,20 @@ function loadCountryFilter() {
             });
         }
     });
+}
+
+function splitFilterPreferences() {
+    var filter = JSON.parse(sessionStorage.getItem("splitFilter"));
+    
+    if (filter !== null) {
+        $("#splitFilter input").each(function () {
+            if (filter.hasOwnProperty($(this).prop("name"))) {
+                $(this).prop("checked", true);
+            } else {
+                $(this).prop("checked", false);
+            }
+        });
+    }
 }
 
 function displayPageLabel(doc) {
@@ -158,7 +181,7 @@ function generateBarTooltip(data, statusOrder) {
 
         if (data.total.hasOwnProperty(status)) {
             htmlRes += "<div>\n\
-                        <span class='color-box status" + status +"'></span>\n\
+                        <span class='color-box status" + status + "'></span>\n\
                         <strong> " + status + " : </strong>" + data.total[status] + "</div>";
         }
     }
@@ -347,7 +370,7 @@ function loadReportByStatusTable(data) {
 function loadReportByStatusChart(data) {
 
     var margin = {top: 20, right: 25, bottom: 20, left: 50};
-    
+
     var offsetW = document.getElementById('statusChart').offsetWidth;
     if (offsetW === 0) {
         offsetW = 300;
@@ -356,7 +379,7 @@ function loadReportByStatusChart(data) {
     if (offsetH === 0) {
         offsetH = 300;
     }
-    
+
     var width = offsetW - margin.left - margin.right;
     var height = offsetH - margin.top - margin.bottom;
     var radius = Math.min(width, height) / 2;
@@ -532,12 +555,12 @@ function createShortDescRow(row, data, index) {
 function generateTooltip(data) {
     var htmlRes;
 
-    htmlRes = '<div>Test ID : ' + data.ID + '</div>' +
-            '<div>Country : ' + data.Country + '</div>' +
-            '<div>Environment : ' + data.Environment + '</div>' +
-            '<div>Browser : ' + data.Browser + '</div>' +
-            '<div>Start : ' + data.Start + '</div>' +
-            '<div>End : ' + data.End + '</div>' +
+    htmlRes = '<div><span class=\'bold\'>Test ID :</span> ' + data.ID + '</div>' +
+            '<div><span class=\'bold\'>Country : </span>' + data.Country + '</div>' +
+            '<div><span class=\'bold\'>Environment : </span>' + data.Environment + '</div>' +
+            '<div><span class=\'bold\'>Browser : </span>' + data.Browser + '</div>' +
+            '<div><span class=\'bold\'>Start : </span>' + data.Start + '</div>' +
+            '<div><span class=\'bold\'>End : </span>' + data.End + '</div>' +
             '<div>' + data.ControlMessage + '</div>';
 
     return htmlRes;
