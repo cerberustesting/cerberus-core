@@ -22,28 +22,32 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.logging.Logger;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import org.apache.log4j.Level;
+import org.cerberus.crud.entity.Invariant;
 import org.cerberus.enums.MessageCodeEnum;
 import org.cerberus.crud.entity.MessageEvent;
 import org.cerberus.enums.MessageEventEnum;
 import org.cerberus.crud.entity.TestDataLib;
 import org.cerberus.crud.entity.TestDataLibData;
 import org.cerberus.exception.CerberusException;
-import org.cerberus.crud.factory.IFactoryLogEvent;
 import org.cerberus.crud.factory.IFactoryTestDataLib;
 import org.cerberus.crud.factory.IFactoryTestDataLibData;
-import org.cerberus.crud.factory.impl.FactoryLogEvent;
+import org.cerberus.crud.service.IInvariantService;
 import org.cerberus.log.MyLogger;
 import org.cerberus.crud.service.ILogEventService;
 import org.cerberus.crud.service.ITestDataLibService;
+import org.cerberus.crud.service.impl.InvariantService;
 import org.cerberus.crud.service.impl.LogEventService;
 import org.cerberus.util.StringUtil;
 import org.cerberus.util.answer.Answer;
+import org.cerberus.util.answer.AnswerItem;
+import org.cerberus.util.answer.AnswerList;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.springframework.beans.BeansException;
@@ -79,34 +83,51 @@ public class CreateTestDataLib extends HttpServlet {
 
                 ITestDataLibService libService = appContext.getBean(ITestDataLibService.class);
 
-                Answer ans = null;
+                Answer answer = null;
                 //create lib entries that represent combinations of environment+system+country
                 //at this point we don't know the ID, because it was not inserted yet in the database
                 List<TestDataLibData> subDataList = null;
 
-                rs = validate(request);
-                //check if data is valid
-                if (rs.getCodeString().equals(MessageCodeEnum.DATA_OPERATION_CODE_SUCCESS.getCode())) {
+                if(request.getParameter("name") != null){ //if name is not sent, it means that we are trying to create a new library
+                    rs = validate(request);
+                    //check if data is valid
+                    if (rs.getCodeString().equals(MessageCodeEnum.DATA_OPERATION_CODE_SUCCESS.getCode())) {
 
-                    List<TestDataLib> entries = extractTestDataLibEntries(appContext, request);
+                        List<TestDataLib> entries = extractTestDataLibEntries(appContext, request);
 
-                    if (hasSubDataEntries(request)) {
-                        subDataList = new ArrayList<TestDataLibData>();
-                        subDataList.addAll(extractTestDataLibDataSet(appContext, request));
-                        //Creates the entries and the subdata
-                        ans = libService.createTestDataLibBatch(entries, subDataList);
-                    } else {
-                        //Creates only the entries because no subdata was defined
-                        ans = libService.createTestDataLibBatch(entries);
+                        if (hasSubDataEntries(request)) {
+                            subDataList = new ArrayList<TestDataLibData>();
+                            subDataList.addAll(extractTestDataLibDataSet(appContext, request));
+                            //Creates the entries and the subdata
+                            answer = libService.createBatch(entries, subDataList);
+                        } else {
+                            //Creates only the entries because no subdata was defined
+                            answer = libService.createBatch(entries);
+                        }
+
+                        rs = answer.getResultMessage();
+
+                        //  Adding Log entry.
+                        if(answer.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())){
+                            ILogEventService logEventService = appContext.getBean(LogEventService.class);
+                            logEventService.createPrivateCalls("/CreateTestDataLib", "CREATE", "Create TestDataLib  : " + request.getParameter("Name"), request);
+                        }
                     }
-
-                    rs = ans.getResultMessage();
-
-                    //  Adding Log entry.
-                    if(ans.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())){
-                        ILogEventService logEventService = appContext.getBean(LogEventService.class);
-                        logEventService.createPrivateCalls("/CreateTestDataLib", "CREATE", "Create TestDataLib  : " + request.getParameter("Name"), request);
-                    }
+                }else{
+                    //no parameters means that we are loading data necessary to the create data lib option
+                    AnswerItem ansGroups = readDistinctGroups(appContext);
+                    jsonResponse  = (JSONObject) ansGroups.getItem();
+                    //include database lists
+                    jsonResponse.put("PROPERTYDATABASE", findInvariantListByIdName(appContext, "PROPERTYDATABASE"));
+                    //include testdatatypes                        
+                    jsonResponse.put("TESTDATATYPE", findInvariantListByIdName(appContext, "TESTDATATYPE"));
+                    //include systems                        
+                    jsonResponse.put("SYSTEM", findInvariantListByIdName(appContext, "SYSTEM"));
+                    //include environments
+                    jsonResponse.put("ENVIRONMENT", findInvariantListByIdName(appContext, "ENVIRONMENT"));
+                    //include countries
+                    jsonResponse.put("Country", findInvariantListByIdName(appContext, "Country"));
+                    rs = ansGroups.getResultMessage();
                 }
             } catch (CerberusException ex) {
                 MyLogger.log(CreateTestDataLib.class.getName(), Level.FATAL, "" + ex);
@@ -141,28 +162,28 @@ public class CreateTestDataLib extends HttpServlet {
     private List<TestDataLib> extractTestDataLibEntries(ApplicationContext appContext, HttpServletRequest request) {
 
         List<TestDataLib> combinations = new ArrayList<TestDataLib>();
-        TestDataLib lib = null;
+        TestDataLib lib;
         //common attributes
-        String name = request.getParameter("Name");
-        String type = request.getParameter("Type");
-        String group = request.getParameter("Group");
+        String name = request.getParameter("name");
+        String type = request.getParameter("type");
+        String group = request.getParameter("group");
 
         //check if the name is defined 
-        String description = request.getParameter("EntryDescription");
-        String system[] = request.getParameterValues("System");
-        boolean systemAll = Boolean.parseBoolean(request.getParameter("systemAll"));
-        String environment[] = request.getParameterValues("Environment");
-        boolean environmentAll = Boolean.parseBoolean(request.getParameter("environmentAll"));
+        String description = request.getParameter("libdescription");
+        String system[] = request.getParameterValues("system");
+        boolean systemAll = Boolean.parseBoolean(request.getParameter("systemall"));
+        String environment[] = request.getParameterValues("environment");
+        boolean environmentAll = Boolean.parseBoolean(request.getParameter("environmentall"));
 
-        String country[] = request.getParameterValues("Country");
-        boolean countryAll = Boolean.parseBoolean(request.getParameter("countryAll"));
+        String country[] = request.getParameterValues("country");
+        boolean countryAll = Boolean.parseBoolean(request.getParameter("countryall"));
 
-        String database = request.getParameter("Database");
-        String script = request.getParameter("Script");
+        String database = request.getParameter("database");
+        String script = request.getParameter("script");
 
-        String servicePath = request.getParameter("ServicePath");
-        String method = request.getParameter("Method");
-        String envelope = request.getParameter("Envelope");
+        String servicePath = request.getParameter("servicepath");
+        String method = request.getParameter("method");
+        String envelope = request.getParameter("envelope");
 
         IFactoryTestDataLib factoryLibService = appContext.getBean(IFactoryTestDataLib.class);
 
@@ -188,7 +209,7 @@ public class CreateTestDataLib extends HttpServlet {
         IFactoryTestDataLibData factorySubdataService = appContext.getBean(IFactoryTestDataLibData.class);
 
         List<TestDataLibData> listSubdata = new ArrayList<TestDataLibData>();
-        String type = request.getParameter("Type");
+        String type = request.getParameter("type");
         //as all fields (subadata, data, description) are mandatory  there will no problem
         //with accessing the following arrays
         String[] subdataEntries = request.getParameterValues("subdata");
@@ -270,7 +291,7 @@ public class CreateTestDataLib extends HttpServlet {
 
         StringBuilder errorMessage = new StringBuilder();
 
-        String name = request.getParameter("Name");
+        String name = request.getParameter("name");
         if (StringUtil.isNullOrEmpty(name)) {
             errorMessage.append("Please specify the name of the entry! ");
         }
@@ -313,5 +334,54 @@ public class CreateTestDataLib extends HttpServlet {
             }
         }
         return false;
+    }
+    
+     /**
+     * Auxiliary method that retrieves the list of groups that are currently defined for a type of testdatalib entries.
+     * @param appContext - context object used to get the required beans
+     * @param type - type that filters the list of groups that should be retrieved
+     * @return an object containing all the groups that belong to that type
+     * @throws JSONException 
+     */
+    private AnswerItem readDistinctGroups(ApplicationContext appContext) throws JSONException{
+        AnswerItem answerItem = new AnswerItem();
+        
+        ITestDataLibService testDataService = appContext.getBean(ITestDataLibService.class);
+         
+        JSONObject jsonObject = new JSONObject();               
+        AnswerList<String> ansList = testDataService.readDistinctGroups();
+        
+        if(ansList.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())){
+            //if the response is success then we can sent the data
+            jsonObject.put("GROUPS", ((List<String>) ansList.getDataList()).toArray());
+        }
+        answerItem.setResultMessage(ansList.getResultMessage());
+        answerItem.setItem(jsonObject);
+           
+        return answerItem;
+    }
+    /**
+     * Auxiliary method that search for the values for an invariant with basis in its name.
+     * @param appContext - context object used to get the required beans
+     * @param idName name of the invariant that is to be retrieved
+     * @return an object containing the invariant information
+     * @throws JSONException 
+     */
+    private JSONObject findInvariantListByIdName(ApplicationContext appContext, String idName) throws JSONException {
+        JSONObject object = new JSONObject();
+        try {
+            
+            IInvariantService invariantService = appContext.getBean(InvariantService.class);
+            
+            //gets the list of databases
+            for (Invariant myInvariant : invariantService.findListOfInvariantById(idName)) {
+                object.put(myInvariant.getValue(), myInvariant.getValue());
+                
+            }
+            
+        } catch (CerberusException ex) {
+            Logger.getLogger(CreateTestDataLib.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+        }
+        return object;
     }
 }

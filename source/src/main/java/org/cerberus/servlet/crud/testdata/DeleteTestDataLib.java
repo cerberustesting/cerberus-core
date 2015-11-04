@@ -27,8 +27,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import org.cerberus.crud.entity.MessageEvent;
 import org.cerberus.enums.MessageEventEnum; 
-import org.cerberus.crud.factory.IFactoryLogEvent;
-import org.cerberus.crud.factory.impl.FactoryLogEvent;
 import org.cerberus.crud.service.ILogEventService;
 import org.cerberus.crud.service.ITestDataLibService;
 import org.cerberus.crud.service.impl.LogEventService;
@@ -62,13 +60,13 @@ public class DeleteTestDataLib extends HttpServlet {
 
         try {
             //common attributes
-            int testDataLibID = Integer.parseInt(request.getParameter("id"));
+            int testDataLibID = Integer.parseInt(request.getParameter("testdatalibid"));
             
             ApplicationContext appContext = WebApplicationContextUtils.getWebApplicationContext(this.getServletContext());
 
             //removes the testdatalibentry
             ITestDataLibService libService = appContext.getBean(ITestDataLibService.class);
-            Answer answer = libService.deleteTestDataLib(testDataLibID);
+            Answer answer = libService.delete(testDataLibID);
 
             jsonResponse.put("messageType", answer.getResultMessage().getMessage().getCodeString());
             jsonResponse.put("message", answer.getResultMessage().getDescription());

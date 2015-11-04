@@ -29,7 +29,6 @@ import javax.servlet.http.HttpServletResponse;
 import org.cerberus.crud.entity.MessageEvent;
 import org.cerberus.enums.MessageEventEnum;
 import org.cerberus.crud.entity.TestDataLibData;
-import org.cerberus.crud.entity.TestDataLibDataUpdate;
 import org.cerberus.crud.factory.IFactoryLogEvent;
 import org.cerberus.crud.factory.IFactoryTestDataLibData;
 import org.cerberus.crud.factory.impl.FactoryLogEvent;
@@ -37,6 +36,7 @@ import org.cerberus.log.MyLogger;
 import org.cerberus.crud.service.ILogEventService;
 import org.cerberus.crud.service.ITestDataLibDataService;
 import org.cerberus.crud.service.impl.LogEventService;
+import org.cerberus.dto.TestDataLibDataUpdateDTO;
 import org.cerberus.util.answer.Answer;
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -93,7 +93,7 @@ public class UpdateTestDataLibData extends HttpServlet {
             }
 
             //updates the selected entries
-            ArrayList<TestDataLibDataUpdate> entriesToUpdate = new ArrayList<TestDataLibDataUpdate>();
+            ArrayList<TestDataLibDataUpdateDTO> entriesToUpdate = new ArrayList<TestDataLibDataUpdateDTO>();
             if (dataToEdit.has("update")) {
                 //subDataService.
                 JSONArray arrayToeditInsert = (JSONArray) dataToEdit.get("update");
@@ -103,7 +103,7 @@ public class UpdateTestDataLibData extends HttpServlet {
                     TestDataLibData item = factoryLibService.create(testDataLibID, type, obj.get("Subdata").toString(),
                             obj.get("Value").toString(),
                             obj.get("Description").toString());
-                    TestDataLibDataUpdate updateItem = new TestDataLibDataUpdate(item, obj.get("Subdata_original").toString());                            
+                    TestDataLibDataUpdateDTO updateItem = new TestDataLibDataUpdateDTO(item, obj.get("Subdata_original").toString());                            
                     entriesToUpdate.add(updateItem);
                 }
             }
@@ -123,7 +123,7 @@ public class UpdateTestDataLibData extends HttpServlet {
             }
 
             //performs the operations selected by the user
-            Answer answer = subDataService.cudTestDataLibData(testDataLibID, entriesToInsert, entriesToUpdate, entriesToRemove);
+            Answer answer = subDataService.createUpdateDelete(testDataLibID, entriesToInsert, entriesToUpdate, entriesToRemove);
 
             //  Adding Log entry.
             if(answer.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())){

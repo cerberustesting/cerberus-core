@@ -1301,7 +1301,7 @@ function setPropertyValuesAutoComplete(selector, source) {
  */
 function callbackAutoCompleteTestDataLibName(request, response) {
     $.ajax({
-        url: "ReadTestDataLib?action=2&testDataLib=" + request.term + "&limit=10",
+        url: "ReadTestDataLib?name=" + request.term + "&limit=10",
         dataType: "json",
         success: function(data) {
             response(data["data"]);
@@ -1320,7 +1320,7 @@ function createEntriesTable() {
     if (oTable === false) {
 
         //var configurations = new TableConfigurationsServerSide("listOfTestDataLib", "GetTestDataLib", "TestDataLib", aoColumnsFunc(propertyValue));
-        var configurations = new TableConfigurationsServerSide("listOfTestDataLib", "ReadTestDataLib", "TestDataLib", aoColumnsFunc());
+        var configurations = new TableConfigurationsServerSide("listOfTestDataLib", "ReadTestDataLib", "contentTable", aoColumnsFunc());
         configurations.scrollY = "460px";
         showLoaderInModal('#selectEntryFromListModal');
         $.when(createDataTable(configurations)).then(function() {
@@ -1334,68 +1334,67 @@ function createEntriesTable() {
  * @returns {aoColumnsFunc.aoColumns|Array}
  */
 function aoColumnsFunc() {
-    var doc = getDoc();
-    var docTestDataLib = doc.testdatalib;
-    var docModal = doc.page_testcase_m_listtestdatalib;
+    var doc = new Doc();
+    //TODO:FN rename translations
+    //var docTestDataLib = doc.testdatalib;
+    //var docModal = doc.page_testcase_m_listtestdatalib;
     var aoColumns = [];
     $("#listOfTestDataLib th").each(function(i) {
         switch (i) {
             case 0:
                 aoColumns.push({
                     className: "width150  center",
-                    "sName": "TestDataLibID",
+                    "data": "testDataLibID",                    
+                    "sName": "TestDataLibID",                    
                     "bSortable": false,
-                    "title": displayDocLink(docModal.actions),
+                    "title": doc.getDocLabel("page_testcase_m_listtestdatalib", "actions"),
                     "mRender": function(data, type, oObj) {
                         var selectElement = '<button id="selectEntry' + data + '"  onclick="selectEntry(this);" \n\
                                                 class="selectEntry btn btn-default btn-xs margin-right5" \n\
-                                            name="editTestDataLib" title="' + docModal.tooltip_choose_entry.docLabel + '" type="button">\n\
+                                            name="editTestDataLib" title="' + doc.getDocLabel("page_testcase_m_listtestdatalib", "tooltip_choose_entry") + '" type="button">\n\
                                             <span class="glyphicon glyphicon-hand-up"></span></button>';
                         return '<div class="btn-group center">' + selectElement + '</div>';
                     }});
                 break;
 
             case 1 :
-                aoColumns.push({className: "width250", "sName": "Name", "title": displayDocLink(docTestDataLib.name)});
+                aoColumns.push({className: "width250", "sName": "Name", "data":"name",  "title": doc.getDocLabel("testdatalib", "name")});
                 break;
             case 2 :
-                aoColumns.push({className: "width80", "sName": "System", "title": displayDocLink(docTestDataLib.system)});
+                aoColumns.push({className: "width80", "sName": "System", "data":"system", "title": doc.getDocLabel("testdatalib", "system")});
                 break;
             case 3 :
-                aoColumns.push({className: "width100", "sName": "Environment", "title": displayDocLink(docTestDataLib.environment)});
+                aoColumns.push({className: "width100", "sName": "Environment", "data":"environment", "title": doc.getDocLabel("testdatalib", "environment")});
                 break;
             case 4 :
-                aoColumns.push({className: "width80", "sName": "Country", "title": displayDocLink(docTestDataLib.country)});
+                aoColumns.push({className: "width80", "sName": "Country", "data":"country", "title": doc.getDocLabel("testdatalib", "country")});
                 break;
             case 5 :
-                aoColumns.push({className: "width100", "sName": "Group", "title": displayDocLink(docTestDataLib.group)});
+                aoColumns.push({className: "width100", "sName": "Group", "data":"group",  "title": doc.getDocLabel("testdatalib", "group")});
                 break;
             case 6 :
-                aoColumns.push({className: "width80", "sName": "Type", "title": displayDocLink(docTestDataLib.type)});
+                aoColumns.push({className: "width80", "sName": "Type", "data":"type",  "title": doc.getDocLabel("testdatalib", "type")});
                 break;
             case 7 :
-                aoColumns.push({className: "width100", "sName": "Database", "title": displayDocLink(docTestDataLib.database)});
+                aoColumns.push({className: "width100", "sName": "Database", "data":"database",  "title": doc.getDocLabel("testdatalib", "database")});
                 break;
             case 8 :
-                aoColumns.push({className: "width500", "sName": "Script", "title": displayDocLink(docTestDataLib.script)});
+                aoColumns.push({className: "width500", "sName": "Script", "data":"script", "title": doc.getDocLabel("testdatalib", "script")});
                 break;
             case 9 :
-                aoColumns.push({className: "width250", "sName": "ServicePath", "title": displayDocLink(docTestDataLib.servicepath),
+                aoColumns.push({className: "width250", "sName": "ServicePath", "data":"servicePath", "title": doc.getDocLabel("testdatalib", "servicepath"),
                     "mRender": function(data, type, oObj) {
-                        if (data !== '') {
-                            return "<a target = '_blank' href='" + data + "'>" + data + "</a>";//TODO:FN check the special characters that may be encapsulated
-                        }
-                        return '';
+                        return drawURL(data);//TODO:FN check the special characters that may be encapsulated                        
                     }});
                 break;
             case 10 :
-                aoColumns.push({className: "width250", "sName": "Method", "title": displayDocLink(docTestDataLib.method)});
+                aoColumns.push({className: "width250", "sName": "Method", "data":"method", "title": doc.getDocLabel("testdatalib", "method")});
                 break;
             case 11 :
-                aoColumns.push({className: "width500", "sName": "Envelope", "title": displayDocLink(docTestDataLib.envelope)});
+                aoColumns.push({className: "width500", "sName": "Envelope", "data":"envelope", "title": doc.getDocLabel("testdatalib", "envelope")});
                 break;
             case 12:
-                aoColumns.push({className: "width150", "sName": "Description", "title": displayDocLink(docTestDataLib.description)});
+                aoColumns.push({className: "width150", "sName": "Description", "data":"description",  "title": doc.getDocLabel("testdatalib", "description")});
                 break;
 
             default :

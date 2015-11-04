@@ -17,9 +17,10 @@
  * You should have received a copy of the GNU General Public License
  * along with Cerberus.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.cerberus.crud.entity;
+package org.cerberus.service.engine.testdata;
 
 import java.util.HashMap;
+import org.cerberus.crud.entity.TestDataLibData;
 import org.cerberus.util.answer.AnswerItem;
 
 /**

@@ -31,10 +31,10 @@ import org.cerberus.enums.MessageEventEnum;
 import org.cerberus.enums.MessageGeneralEnum;
 import org.cerberus.crud.entity.TestDataLib;
 import org.cerberus.crud.entity.TestDataLibData;
-import org.cerberus.crud.entity.TestDataLibResult;
-import org.cerberus.crud.entity.TestDataLibResultSOAP;
-import org.cerberus.crud.entity.TestDataLibResultSQL;
-import org.cerberus.crud.entity.TestDataLibResultStatic;
+import org.cerberus.service.engine.testdata.TestDataLibResult;
+import org.cerberus.service.engine.testdata.TestDataLibResultSOAP;
+import org.cerberus.service.engine.testdata.TestDataLibResultSQL;
+import org.cerberus.service.engine.testdata.TestDataLibResultStatic;
 import org.cerberus.enums.TestDataLibTypeEnum;
 import org.cerberus.exception.CerberusException;
 import org.cerberus.crud.factory.IFactoryTestDataLibData;
@@ -69,29 +69,29 @@ public class TestDataLibService implements ITestDataLibService {
     private IXmlUnitService xmlUnitService;
     
     @Override
-    public void createTestDataLib(TestDataLib testDataLib) throws CerberusException {
-        testDataLibDAO.createTestDataLib(testDataLib);
+    public void create(TestDataLib testDataLib) throws CerberusException {
+        testDataLibDAO.create(testDataLib);
     }
 
     @Override
-    public Answer updateTestDataLib(TestDataLib testDataLib){
-        return testDataLibDAO.updateTestDataLib(testDataLib);
+    public Answer update(TestDataLib testDataLib){
+        return testDataLibDAO.update(testDataLib);
     }
 
     @Override
-    public void deleteTestDataLib(TestDataLib testDataLib) throws CerberusException {
-        testDataLibDAO.deleteTestDataLib(testDataLib);
+    public Answer delete(TestDataLib testDataLib){
+        return testDataLibDAO.delete(testDataLib);
     }
     @Override
-    public Answer deleteTestDataLib(int testDataLibID){  
+    public Answer delete(int testDataLibID){  
         
         dbManager.beginTransaction();
         //deletes the testdatalib
-        Answer ansDelete = testDataLibDAO.deleteUnusedTestDataLib(testDataLibID);
+        Answer ansDelete = testDataLibDAO.deleteUnused(testDataLibID);
         //if everything went well, then we can delete all the subdata entries
         if(ansDelete.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())){
             //as we can create testdatalib without subdata it is possible that there this call will return 0, 
-            ansDelete = testDataLibDataDAO.deleteByTestDataLibID(testDataLibID);
+            ansDelete = testDataLibDataDAO.delete(testDataLibID);
         }
         if(ansDelete.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())){
             dbManager.commitTransaction();//if success 
@@ -102,33 +102,28 @@ public class TestDataLibService implements ITestDataLibService {
     }    
     
     @Override
-    public List<TestDataLib> findAllTestDataLib() {
-        return testDataLibDAO.findAllTestDataLib();
+    public AnswerList<TestDataLib> readAll() {
+        return testDataLibDAO.readAll();
     }
 
     @Override
-    public AnswerList findTestDataLibListByCriteria(int start, int amount, String column, String dir, String searchTerm, String individualSearch) {
-        return testDataLibDAO.findTestDataLibListByCriteria(start, amount, column, dir, searchTerm, individualSearch);
+    public AnswerList<TestDataLib> readByCriteria(int start, int amount, String column, String dir, String searchTerm, String individualSearch) {
+        return testDataLibDAO.readByCriteria(start, amount, column, dir, searchTerm, individualSearch);
     }
 
     @Override
-    public AnswerItem findTestDataLibByKey(String name, String system, String environment, String country) throws CerberusException {
-        return testDataLibDAO.findTestDataLibByKey(name, system, environment, country);
+    public AnswerItem<TestDataLib> readByKey(String name, String system, String environment, String country) {
+        return testDataLibDAO.readByKey(name, system, environment, country);
     }
     
     @Override
-    public AnswerItem findTestDataLibByKey(int testDatalib){
-        return testDataLibDAO.findTestDataLibByKey(testDatalib);
+    public AnswerItem<TestDataLib> readByKey(int testDatalib){
+        return testDataLibDAO.readByKey(testDatalib);
     }
 
     @Override
-    public Integer getNumberOfTestDataLibPerCriteria(String searchTerm, String inds) {
-        return testDataLibDAO.getNumberOfTestDataLibPerCriteria(searchTerm, inds);
-    }
-    
-    @Override
-    public AnswerList<String> getListOfGroupsPerType(String type){
-        return testDataLibDAO.getListOfGroupsPerType(type);
+    public AnswerList<String> readDistinctGroups(){
+        return testDataLibDAO.readDistinctGroups();
     }
 
     @Override
@@ -164,11 +159,11 @@ public class TestDataLibService implements ITestDataLibService {
     }
     
     @Override
-    public Answer createTestDataLib(TestDataLib testDataLib, List<TestDataLibData> subDataList) {
+    public Answer create(TestDataLib testDataLib, List<TestDataLibData> subDataList) {
         List<TestDataLibData> completeSubDataList = new ArrayList<TestDataLibData>();
         dbManager.beginTransaction();
         //creates the test data lib
-        Answer ansInsert = testDataLibDAO.createTestDataLib(testDataLib);
+        Answer ansInsert = testDataLibDAO.create(testDataLib);
         if(ansInsert.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())){
             //if success, then creates the entries
             if(subDataList != null && !subDataList.isEmpty()){            
@@ -178,7 +173,7 @@ public class TestDataLibService implements ITestDataLibService {
                     completeSubDataList.add(data);                
                 }            
 
-                ansInsert = testDataLibDataDAO.createTestDataLibDataBatch(completeSubDataList);
+                ansInsert = testDataLibDataDAO.createBatch(completeSubDataList);
             }
         }
         
@@ -196,9 +191,9 @@ public class TestDataLibService implements ITestDataLibService {
     }
 
     @Override
-    public Answer createTestDataLibBatch(List<TestDataLib> entries) throws CerberusException{
+    public Answer createBatch(List<TestDataLib> entries){
         dbManager.beginTransaction();
-        Answer ansInsert = testDataLibDAO.createTestDataLibBatch(entries);
+        Answer ansInsert = testDataLibDAO.createBatch(entries);
         
         if(ansInsert.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())){
             dbManager.commitTransaction();
@@ -209,11 +204,11 @@ public class TestDataLibService implements ITestDataLibService {
     }
 
     @Override
-    public Answer createTestDataLibBatch(List<TestDataLib> testDataLibList, List<TestDataLibData> subDataList){
+    public Answer createBatch(List<TestDataLib> testDataLibList, List<TestDataLibData> subDataList){
         List<TestDataLibData> completeSubDataList = new ArrayList<TestDataLibData>();
         dbManager.beginTransaction();
         //creates the entries 
-        Answer ansInsert = testDataLibDAO.createTestDataLibBatch(testDataLibList);
+        Answer ansInsert = testDataLibDAO.createBatch(testDataLibList);
         //if the insert went well then we can insert the subdataentries
         if(ansInsert.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())){
             if(subDataList != null && !subDataList.isEmpty()){
@@ -225,7 +220,7 @@ public class TestDataLibService implements ITestDataLibService {
                         completeSubDataList.add(data);                
                     }
                 }
-                ansInsert = testDataLibDataDAO.createTestDataLibDataBatch(completeSubDataList);                
+                ansInsert = testDataLibDataDAO.createBatch(completeSubDataList);                
             }
         } 
         
@@ -243,13 +238,13 @@ public class TestDataLibService implements ITestDataLibService {
     }
     
     @Override
-    public Answer createTestDataLibBatch(HashMap<TestDataLib, List<TestDataLibData>> entries){
+    public Answer createBatch(HashMap<TestDataLib, List<TestDataLibData>> entries){
         List<TestDataLibData> completeSubDataList = null;
         Answer ansInsert = new Answer(new MessageEvent(MessageEventEnum.DATA_OPERATION_OK));
         dbManager.beginTransaction();
         
         for (TestDataLib testDataLib : entries.keySet()) {
-            ansInsert = testDataLibDAO.createTestDataLib(testDataLib);
+            ansInsert = testDataLibDAO.create(testDataLib);
             completeSubDataList = new ArrayList<TestDataLibData>();
             if(ansInsert.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())){
                 //if success, then creates the entries
@@ -261,7 +256,7 @@ public class TestDataLibService implements ITestDataLibService {
                                 libData.getColumn(), libData.getParsingAnswer(), libData.getDescription());
                         completeSubDataList.add(data);
                     }
-                    ansInsert = testDataLibDataDAO.createTestDataLibDataBatch(completeSubDataList);
+                    ansInsert = testDataLibDataDAO.createBatch(completeSubDataList);
                 }
             }else{
                 break;
@@ -279,8 +274,8 @@ public class TestDataLibService implements ITestDataLibService {
  
     
     @Override
-    public AnswerList findTestDataLibNameList(String testDataLibName, int limit) {
-        return testDataLibDAO.findTestDataLibNameList(testDataLibName, limit);
+    public AnswerList<TestDataLib> readByName(String testDataLibName, int limit) {
+        return testDataLibDAO.readByName(testDataLibName, limit);
     }
 
     private AnswerItem fetchDataSQL(TestDataLib lib, int rowLimit, String propertyName) {

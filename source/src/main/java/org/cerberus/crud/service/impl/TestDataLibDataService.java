@@ -26,13 +26,14 @@ import org.cerberus.database.DatabaseSpring;
 import org.cerberus.crud.entity.MessageEvent;
 import org.cerberus.enums.MessageEventEnum;
 import org.cerberus.crud.entity.TestDataLibData;
-import org.cerberus.crud.entity.TestDataLibDataUpdate;
-import org.cerberus.crud.entity.TestDataLibResult;
+import org.cerberus.dto.TestDataLibDataUpdateDTO;
+import org.cerberus.service.engine.testdata.TestDataLibResult;
 import org.cerberus.exception.CerberusException;
 import org.cerberus.crud.service.ITestDataLibDataService;
 import org.cerberus.util.answer.Answer;
 import org.cerberus.util.answer.AnswerItem;
 import org.cerberus.util.answer.AnswerList;
+import org.cerberus.util.answer.MessageEventUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -45,51 +46,49 @@ public class TestDataLibDataService implements ITestDataLibDataService {
     private DatabaseSpring dbmanager;
 
     @Override
-    public void createTestDataLibData(TestDataLibData testDataLibData) throws CerberusException {
-        testDataLibDataDAO.createTestDataLibData(testDataLibData);
+    public Answer create(TestDataLibData testDataLibData) {
+        return testDataLibDataDAO.create(testDataLibData);
     }
 
     @Override
-    public void updateTestDataLibData(TestDataLibData testDataLibData) throws CerberusException {
-        testDataLibDataDAO.updateTestDataLibData(testDataLibData);
+    public Answer update(TestDataLibData testDataLibData){
+        return testDataLibDataDAO.update(testDataLibData);
     }
 
     @Override
-    public void deleteTestDataLibData(TestDataLibData testDataLibData) throws CerberusException {
-        testDataLibDataDAO.deleteTestDataLibData(testDataLibData);
+    public Answer delete(TestDataLibData testDataLibData){
+        return testDataLibDataDAO.delete(testDataLibData);
     }
     
     @Override
-    public void deleteByTestDataLibID(int testDataLibID) throws CerberusException{
-        testDataLibDataDAO.deleteByTestDataLibID(testDataLibID);
+    public Answer delete(int testDataLibID){
+        return testDataLibDataDAO.delete(testDataLibID);
     }
 
     @Override
-    public AnswerItem<TestDataLibData> findTestDataLibDataByKey(Integer testDataLibID, String subData){
-        return testDataLibDataDAO.findTestDataLibDataByKey(testDataLibID, subData);
+    public AnswerItem<TestDataLibData> readByKey(Integer testDataLibID, String subData){
+        return testDataLibDataDAO.readByKey(testDataLibID, subData);
     }
 
     @Override
-    public List<TestDataLibData> findAllTestDataLibData() {
-        return testDataLibDataDAO.findAllTestDataLibData();
+    public AnswerList<TestDataLibData> readAll() {
+        return testDataLibDataDAO.readAll();
     }
 
     @Override
-    public AnswerList findTestDataLibDataListByTestDataLib(Integer testDataLibID) {
-        return testDataLibDataDAO.findTestDataLibDataListByID(testDataLibID);
+    public AnswerList readById(Integer testDataLibID) {
+        return testDataLibDataDAO.readById(testDataLibID);
     }
 
     @Override
-    public List<TestDataLibData> findTestDataLibDataByCriteria(Integer testDataLibID, String subData, String value, String column, String parsingAnswer, String description) throws CerberusException {
-        return testDataLibDataDAO.findTestDataLibDataByCriteria(testDataLibID, subData, value, column, parsingAnswer, description);
+    public AnswerList<TestDataLibData> readByCriteria(Integer testDataLibID, String subData, String value, String column, String parsingAnswer, String description){
+        return testDataLibDataDAO.readByCriteria(testDataLibID, subData, value, column, parsingAnswer, description);
     }
 
     @Override
-    public void createTestDataLibDataBatch(List<TestDataLibData> subdataSet) throws CerberusException{
-        testDataLibDataDAO.createTestDataLibDataBatch(subdataSet);
+    public Answer createBatch(List<TestDataLibData> subdataSet) throws CerberusException{
+        return testDataLibDataDAO.createBatch(subdataSet);
     }
-
- 
 
     @Override
     public AnswerItem<String> fetchSubData(TestDataLibResult result, TestDataLibData subDataEntry) {
@@ -97,7 +96,7 @@ public class TestDataLibDataService implements ITestDataLibDataService {
     }
  
     @Override
-    public Answer cudTestDataLibData(int testDataLibID, ArrayList<TestDataLibData> entriesToInsert, ArrayList<TestDataLibDataUpdate> entriesToUpdate, 
+    public Answer createUpdateDelete(int testDataLibID, ArrayList<TestDataLibData> entriesToInsert, ArrayList<TestDataLibDataUpdateDTO> entriesToUpdate, 
             ArrayList<String> entriesToRemove) {
         
         dbmanager.beginTransaction();        
@@ -105,18 +104,16 @@ public class TestDataLibDataService implements ITestDataLibDataService {
         Answer answer = new Answer();
         
         if(entriesToInsert.size() > 0){
-            answer = testDataLibDataDAO.createTestDataLibDataBatch(entriesToInsert);
+            answer = testDataLibDataDAO.createBatch(entriesToInsert);
             if(!answer.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())){
                 //if the insert does not succeed, then the transaction should be aborted
                 dbmanager.abortTransaction();
                 return answer;           
             }
         }
-        
-        
-        
+                
         if(entriesToUpdate.size() > 0){
-            answer = testDataLibDataDAO.updateTestDataLibDataBatch(entriesToUpdate);
+            answer = testDataLibDataDAO.updateBatch(entriesToUpdate);
             if(!answer.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())){
                 //if the update does not succeed, then the transaction should be aborted
                 dbmanager.abortTransaction();
@@ -125,7 +122,7 @@ public class TestDataLibDataService implements ITestDataLibDataService {
         }
         
         if(entriesToRemove.size() > 0){
-            answer =  testDataLibDataDAO.deleteTestDataLibDataBatch(testDataLibID, entriesToRemove);
+            answer =  testDataLibDataDAO.deleteBatch(testDataLibID, entriesToRemove);
             if(!answer.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())){
                 //if the delete does not succeed, then the transaction should be aborted
                 dbmanager.abortTransaction();
@@ -135,22 +132,21 @@ public class TestDataLibDataService implements ITestDataLibDataService {
         
         dbmanager.commitTransaction();
         //if everything succeeds, then a success message is sent back
-        MessageEvent ms = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
-        ms.setDescription(ms.getDescription().replace("%ITEM%", "Test data lib data").replace("%OPERATION%", "Modification of the sub-data set "));
         
+        MessageEvent ms = MessageEventUtil.createUpdateSuccessMessageDAO("Sub-data set (for ID: " + testDataLibID + ") ");
         answer.setResultMessage(ms);
         return answer;
         
     }
 
     @Override
-    public AnswerList findTestDataLibDataByName(String testDataLibName) {
-        return testDataLibDataDAO.findTestDataLibDataByName(testDataLibName);
+    public AnswerList readByName(String testDataLibName) {
+        return testDataLibDataDAO.readByName(testDataLibName);
     }
 
     @Override
-    public AnswerList findTestDataLibSubData(String testDataLib, String nameToSearch, int limit) {
-        return testDataLibDataDAO.findTestDataLibSubData(testDataLib, nameToSearch, limit);
+    public AnswerList readByIdByName(String testDataLib, String nameToSearch, int limit) {
+        return testDataLibDataDAO.readByIdByName(testDataLib, nameToSearch, limit);
     }
  
 }

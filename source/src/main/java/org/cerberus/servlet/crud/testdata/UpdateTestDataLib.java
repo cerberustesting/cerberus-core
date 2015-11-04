@@ -30,12 +30,11 @@ import javax.servlet.http.HttpServletResponse;
 import org.cerberus.crud.entity.MessageEvent;
 import org.cerberus.enums.MessageEventEnum;
 import org.cerberus.crud.entity.TestDataLib; 
-import org.cerberus.crud.factory.IFactoryLogEvent;
 import org.cerberus.crud.factory.IFactoryTestDataLib;
-import org.cerberus.crud.factory.impl.FactoryLogEvent;
 import org.cerberus.crud.service.ILogEventService;
 import org.cerberus.crud.service.ITestDataLibService;
 import org.cerberus.crud.service.impl.LogEventService;
+import org.cerberus.util.ParameterParserUtil;
 import org.cerberus.util.answer.Answer;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -63,22 +62,22 @@ public class UpdateTestDataLib extends HttpServlet {
             throws ServletException, IOException {
         JSONObject jsonResponse = new JSONObject();
         try {
-            int testDataLibID = Integer.parseInt(request.getParameter("testDataLibIDEdit"));
-            String name = request.getParameter("NameEdit");
-            String type = request.getParameter("TypeEdit");
-            String group = request.getParameter("GroupEdit");
+            int testDataLibID = Integer.parseInt(request.getParameter("testdatalibid"));//this is must be defined
+            String name = request.getParameter("name"); //this is must be defined
+            String type = request.getParameter("type");//this is must be defined
+            String group = ParameterParserUtil.parseStringParam(request.getParameter("group"), "");
 
-            String description = request.getParameter("EntryDescriptionEdit");
-            String system = request.getParameter("System");
-            String environment = request.getParameter("Environment");
-            String country = request.getParameter("Country");
+            String description = ParameterParserUtil.parseStringParam(request.getParameter("libdescription"), "");
+            String system = ParameterParserUtil.parseStringParam(request.getParameter("system"), "");
+            String environment = ParameterParserUtil.parseStringParam(request.getParameter("environment"), "");
+            String country = ParameterParserUtil.parseStringParam(request.getParameter("country"),"");
 
-            String database = request.getParameter("DatabaseEdit");
-            String script = request.getParameter("ScriptEdit");
+            String database = ParameterParserUtil.parseStringParam(request.getParameter("database"), "");
+            String script = ParameterParserUtil.parseStringParam(request.getParameter("script"), "");
 
-            String servicePath = request.getParameter("ServicePathEdit");
-            String method = request.getParameter("MethodEdit");
-            String envelope = request.getParameter("EnvelopeEdit");
+            String servicePath = ParameterParserUtil.parseStringParam(request.getParameter("servicepath"), "");
+            String method = ParameterParserUtil.parseStringParam(request.getParameter("method"), "");
+            String envelope = ParameterParserUtil.parseStringParam(request.getParameter("envelope"), "");
 
             //specific attributes
             ApplicationContext appContext = WebApplicationContextUtils.getWebApplicationContext(this.getServletContext());
@@ -90,7 +89,7 @@ public class UpdateTestDataLib extends HttpServlet {
                     script, servicePath, method, envelope, description);
 
             //updates the testdatalib
-            Answer answer = libService.updateTestDataLib(lib);
+            Answer answer = libService.update(lib);
 
             //  Adding Log entry.
             if(answer.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())){

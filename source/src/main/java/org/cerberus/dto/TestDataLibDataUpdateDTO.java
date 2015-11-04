@@ -15,20 +15,22 @@
  * You should have received a copy of the GNU General Public License
  * along with Cerberus.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.cerberus.crud.entity;
+package org.cerberus.dto;
+
+import org.cerberus.crud.entity.TestDataLibData;
 
 /**
  * Auxiliary class that stores the values of a testdatalib (updated values) and the original key that is used as part of the 
  * primary key.
  * @author FNogueira
  */
-public class TestDataLibDataUpdate {
+public class TestDataLibDataUpdateDTO {
     
     private TestDataLibData modifiedObject;
     private String subDataOriginalKey;
 
 
-    public TestDataLibDataUpdate(TestDataLibData subDataObject, String subDataOriginalKey){
+    public TestDataLibDataUpdateDTO(TestDataLibData subDataObject, String subDataOriginalKey){
         this.modifiedObject = subDataObject;    
         this.subDataOriginalKey = subDataOriginalKey;
     }
