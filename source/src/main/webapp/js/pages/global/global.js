@@ -1049,7 +1049,7 @@ function drawURL(data) {
 
 function drawHyperlink(href, text) {
     if (text.indexOf("://") > -1) {
-        return "<a href='" + href + "'>" + text + "</a>";//TODO:FN ver se tem caracters que precisam de ser encapsulados
+        return "<a target=\"_blank\" href='" + href + "'>" + text + "</a>";//TODO:FN ver se tem caracters que precisam de ser encapsulados
     }
     return text;
 }
