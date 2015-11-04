@@ -58,6 +58,8 @@ public class RunTestCaseService implements IRunTestCaseService {
          *
          */
         try {
+            //TODO:FN debug messages to be removed
+            org.apache.log4j.Logger.getLogger(ExecutionStartService.class.getName()).log(org.apache.log4j.Level.DEBUG, "[DEBUG] START " + "__ID=" + tCExecution.getId());
             tCExecution = executionStartService.startExecution(tCExecution);
             MyLogger.log(ExecutionStartService.class.getName(), Level.INFO, "Execution Started : UUID=" + tCExecution.getExecutionUUID() + "__ID=" + tCExecution.getId());
 

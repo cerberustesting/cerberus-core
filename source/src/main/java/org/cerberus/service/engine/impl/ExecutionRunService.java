@@ -337,6 +337,10 @@ public class ExecutionRunService implements IExecutionRunService {
                 recorderService.recordSeleniumLogAndGetName(tCExecution);
             } catch (Exception ex) {
                 MyLogger.log(ExecutionRunService.class.getName(), Level.FATAL, "Exception Getting Selenium Logs " + tCExecution.getId() + " Exception :" + ex.toString());
+                //TODO:FN debug messages to be removed
+                org.apache.log4j.Logger.getLogger(ExecutionStartService.class.getName()).log(org.apache.log4j.Level.DEBUG, 
+                "[DEBUG] Failed to record selenium log and get name" + ex.getMessage());
+        
             }
 
             try {
@@ -344,6 +348,9 @@ public class ExecutionRunService implements IExecutionRunService {
                 MyLogger.log(ExecutionRunService.class.getName(), Level.INFO, "STOPPED!!  " + tCExecution.getId());
             } catch (Exception ex) {
                 MyLogger.log(ExecutionRunService.class.getName(), Level.FATAL, "Exception Stopping Test " + tCExecution.getId() + " Exception :" + ex.toString());
+                //TODO:FN debug messages to be removed
+                org.apache.log4j.Logger.getLogger(ExecutionStartService.class.getName()).log(org.apache.log4j.Level.DEBUG, 
+                "[DEBUG] Stop test case" + ex.getMessage());
             }
 
         } finally {
@@ -359,6 +366,9 @@ public class ExecutionRunService implements IExecutionRunService {
 
             } catch (Exception ex) {
                 MyLogger.log(ExecutionRunService.class.getName(), Level.FATAL, "Exception cleaning Memory: " + ex.toString());
+                 //TODO:FN debug messages to be removed
+                org.apache.log4j.Logger.getLogger(ExecutionStartService.class.getName()).log(org.apache.log4j.Level.DEBUG, 
+                "[DEBUG] Exception cleaning Memory:" + ex.getMessage());
             }
 
             MyLogger.log(ExecutionRunService.class.getName(), Level.INFO, "Execution Finished : UUID=" + tCExecution.getExecutionUUID()
@@ -368,7 +378,15 @@ public class ExecutionRunService implements IExecutionRunService {
                     + tCExecution.getTestCase() + "_" + tCExecution.gettCase().getShortDescription().replace(".", ""));
 
         }
-
+        //TODO:FN debug messages to be removed
+        if(tCExecution.getControlStatus().equals("PE")){
+            org.apache.log4j.Logger.getLogger(ExecutionStartService.class.getName()).log(org.apache.log4j.Level.DEBUG, 
+            "[DEBUG] EXECUTION FINISHED WITH PE ? " + "Execution Finished : UUID=" + tCExecution.getExecutionUUID()
+                    + "__ID=" + tCExecution.getId() + "__RC=" + tCExecution.getControlStatus() + "__"
+                    + "TestName=" + tCExecution.getEnvironment() + "." + tCExecution.getCountry() + "."
+                    + tCExecution.getBuild() + "." + tCExecution.getRevision() + "." + tCExecution.getTest() + "_"
+                    + tCExecution.getTestCase() + "_" + tCExecution.gettCase().getShortDescription().replace(".", ""));
+        }
         //Notify it's finnished
 //        WebsocketTest wst = new WebsocketTest();
 //        try {
@@ -389,6 +407,8 @@ public class ExecutionRunService implements IExecutionRunService {
          */
         MyLogger.log(ExecutionRunService.class.getName(), Level.DEBUG, tCExecution.getId() + " - Stop the execution " + tCExecution.getId() + " UUID:" + tCExecution.getExecutionUUID());
         try {
+            //TODO:FN debug messages to be removed
+            org.apache.log4j.Logger.getLogger(ExecutionStartService.class.getName()).log(org.apache.log4j.Level.DEBUG, "[DEBUG] STOP " + "__ID=" + tCExecution.getId());
             this.stopRunTestCase(tCExecution);
         } catch (Exception ex) {
             MyLogger.log(ExecutionRunService.class.getName(), Level.FATAL, "Exception Stopping Execution " + tCExecution.getId() + " Exception :" + ex.toString());
@@ -534,7 +554,7 @@ public class ExecutionRunService implements IExecutionRunService {
                      * Record Screenshot, PageSource
                      */
                     recorderService.recordExecutionInformation(testCaseStepActionExecution, null);
-
+                    
                     MyLogger.log(ExecutionRunService.class.getName(), Level.DEBUG, "Registering Action : " + testCaseStepActionExecution.getAction());
                     this.testCaseStepActionExecutionService.updateTestCaseStepActionExecution(testCaseStepActionExecution);
                     MyLogger.log(ExecutionRunService.class.getName(), Level.DEBUG, "Registered Action");
@@ -695,7 +715,13 @@ public class ExecutionRunService implements IExecutionRunService {
                 || tCExecution.getApplication().getType().equalsIgnoreCase("APK")) {
             try {
                 this.serverService.stopServer(tCExecution.getSession());
+                //TODO:FN debug messages to be removed
+                org.apache.log4j.Logger.getLogger(ExecutionStartService.class.getName()).log(org.apache.log4j.Level.DEBUG, 
+                        "[DEBUG] STOP SERVER " + "__ID=" + tCExecution.getId());
             } catch (UnreachableBrowserException exception) {
+                //TODO:FN debug messages to be removed
+                org.apache.log4j.Logger.getLogger(ExecutionStartService.class.getName()).log(org.apache.log4j.Level.DEBUG, 
+                        "[DEBUG] FAILED TO STOP " + "__ID=" + tCExecution.getId() + " " + exception.toString());
                 MyLogger.log(ExecutionRunService.class.getName(), Level.FATAL, "Selenium didn't manage to close browser - " + exception.toString());
             }
         }
