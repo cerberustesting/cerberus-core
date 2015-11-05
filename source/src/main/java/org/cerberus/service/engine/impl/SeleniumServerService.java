@@ -56,6 +56,7 @@ import org.openqa.selenium.Capabilities;
 import org.openqa.selenium.Dimension;
 import org.openqa.selenium.Point;
 import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebDriverException;
 import org.openqa.selenium.firefox.FirefoxDriver;
 import org.openqa.selenium.firefox.FirefoxProfile;
 import org.openqa.selenium.remote.CapabilityType;
@@ -148,6 +149,21 @@ public class SeleniumServerService implements ISeleniumServerService {
             MessageGeneral mes = new MessageGeneral(MessageGeneralEnum.VALIDATION_FAILED_SELENIUM_COULDNOTCONNECT);
             mes.setDescription(mes.getDescription().replace("%SSIP%", tCExecution.getSeleniumIP()));
             mes.setDescription(mes.getDescription().replace("%SSPORT%", tCExecution.getSeleniumPort()));
+            throw new CerberusException(mes);
+        }catch(WebDriverException webex){
+            MessageGeneral mes = new MessageGeneral(MessageGeneralEnum.EXECUTION_FA_SELENIUM);
+            StringBuilder errorMessage = new StringBuilder();
+            //TODO:FN debug messages to be removed
+            errorMessage.append("[DEBUG] WEB DRIVER EXCEPTION ");
+            errorMessage.append("__ID=").append(tCExecution.getId());
+            errorMessage.append("__TESTCASE=").append(testCaseDescription);
+            if(driver == null){
+                errorMessage.append("[driver is null]");
+            }
+            errorMessage.append("[Location: ").append(location).append("]");
+            errorMessage.append("[Exception: ").append(webex.toString()).append("]");
+            org.apache.log4j.Logger.getLogger(ExecutionStartService.class.getName()).log(org.apache.log4j.Level.DEBUG, errorMessage.toString());
+            mes.setDescription(mes.getDescription().replace("%MES%", webex.toString()));
             throw new CerberusException(mes);
         }catch (Exception exception) {
             MyLogger.log(Selenium.class.getName(), Level.ERROR, exception.toString());
