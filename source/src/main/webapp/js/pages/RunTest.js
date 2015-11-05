@@ -33,8 +33,12 @@ $.when($.getScript("js/pages/global/global.js")).then(function () {
         loadMultiSelect("ReadApplication", "", "application", "application", "application");
         loadMultiSelect("ReadUser", "", "creator", "login", "login");
         loadMultiSelect("ReadUser", "", "implementer", "login", "login");
+        loadMultiSelect("ReadTestBattery", "", "testBattery", "testbattery", "testbattery");
+        loadMultiSelect("ReadCampaign", "", "campaign", "campaign", "campaign");
+        loadInvariantMultiSelect("priority", "PRIORITY");
+        loadInvariantMultiSelect("group", "GROUP");
+        loadInvariantMultiSelect("status", "TCSTATUS");
         loadSystemMultiSelect();
-
 
         $("#loadbutton").click(loadTestCaseFromFilter);
         $("#resetbutton").click(function () {
@@ -77,9 +81,9 @@ function getCookie(cname) {
         var c = ca[i].trim();
         if (c.indexOf(name) === 0)
             var value = c.substring(name.length, c.length);
-            
-            document.cookie = cname + "=; expires=Thu, 01 Jan 1970 00:00:00 UTC"; 
-            return value;
+
+        document.cookie = cname + "=; expires=Thu, 01 Jan 1970 00:00:00 UTC";
+        return value;
     }
     return "";
 }
@@ -87,6 +91,17 @@ function getCookie(cname) {
 function oldPreferenceCompatibility() {
     if (localStorage.getItem("robotSettings") === null
             && localStorage.getItem("executionSettings") === null) {
+
+        var user = getUser();
+
+        var robotConfig = {
+            robotConfig: user.robot,
+            seleniumIP: user.robotHost,
+            seleniumPort: user.robotPort,
+            version: user.robotVersion,
+            platform: user.robotPlatform,
+            screenSize: getCookie("ExecutionScreenSize")
+        };
 
         var execConfig = {
             tag: getCookie("TagPreference"),
@@ -100,8 +115,9 @@ function oldPreferenceCompatibility() {
             retries: getCookie("ExecutionRetries"),
             manualExecution: getCookie("ManualExecutionPreference")
         };
-        
+
         localStorage.setItem("executionSettings", JSON.stringify(execConfig));
+        localStorage.setItem("robotSettings", JSON.stringify(robotConfig));
     }
 }
 
@@ -125,6 +141,7 @@ function addToQueue() {
 }
 
 function loadTestCaseFromFilter() {
+    showLoader("#chooseTest");
     $.ajax({
         url: "ReadTestCase",
         method: "GET",
@@ -144,6 +161,7 @@ function loadTestCaseFromFilter() {
                         .val(data.contentTable[index].testCase)
                         .data("item", data.contentTable[index]));
             }
+            hideLoader("#chooseTest");
         }
     });
 }
@@ -290,6 +308,30 @@ function loadMultiSelect(url, urlParams, selectName, textItem, valueItem) {
     });
 }
 
+function loadInvariantMultiSelect(selectName, idName) {
+      $.ajax({
+        url: "FindInvariantByID",
+        method: "GET",
+        data: {idName: idName},
+        dataType: "json",
+        async: true,
+        success: function (data) {
+            var select = $("#" + selectName + "Filter");
+
+            for (var option in data) {
+                select.append($("<option></option>").text(data[option].value)
+                        .val(data[option].value)
+                        .data("item", data[option]));
+            }
+
+            select.multiselect(new multiSelectConf(selectName));
+        },
+        error: function (e) {
+            showUnexpectedError();
+        }
+    });
+}
+
 function loadSystemMultiSelect() {
     var user = getUser();
     var select = $("#systemFilter");
@@ -300,7 +342,7 @@ function loadSystemMultiSelect() {
         select.append($("<option></option>").text(sys)
                 .val(sys));
     }
-
+    select.val(user.defaultSystem);
     select.multiselect(new multiSelectConf("system"));
 }
 

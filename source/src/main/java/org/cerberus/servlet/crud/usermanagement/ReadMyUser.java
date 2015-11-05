@@ -79,6 +79,12 @@ public class ReadMyUser extends HttpServlet {
             data.put("request", myUser.getRequest());
             data.put("email", myUser.getEmail());
             data.put("language", myUser.getLanguage());
+            data.put("robotHost", myUser.getRobotHost());
+            data.put("robotPort", myUser.getRobotPort());
+            data.put("robotPlatform", myUser.getRobotPort());
+            data.put("robotBrowser", myUser.getRobotPort());
+            data.put("robotVersion", myUser.getRobotPort());
+            data.put("robot", myUser.getRobot());
 
             JSONArray groups = new JSONArray();
             for (Group group : userGroupService.findGroupByKey(myUser.getLogin())) {

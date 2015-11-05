@@ -24,6 +24,7 @@ import org.cerberus.crud.entity.TestBattery;
 import org.cerberus.crud.entity.TestBatteryContent;
 import org.cerberus.crud.entity.TestBatteryContentWithDescription;
 import org.cerberus.exception.CerberusException;
+import org.cerberus.util.answer.AnswerList;
 
 /**
  *
@@ -61,5 +62,7 @@ public interface ITestBatteryService {
     List<TestBatteryContent> findTestBatteryContentsByCriteria(Integer testBatteryContentID, String testBattery, String test, String testCase) throws CerberusException;
 
     List<TestBattery> findTestBatteriesByTestCase(String test, String testCase) throws CerberusException;
+
+    public AnswerList readByCriteria(int startPosition, int length, String columnName, String sort, String searchParameter, String individualSearch);
 
 }

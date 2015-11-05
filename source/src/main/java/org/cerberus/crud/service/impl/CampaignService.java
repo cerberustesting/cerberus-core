@@ -30,6 +30,7 @@ import org.cerberus.crud.entity.CampaignContent;
 import org.cerberus.crud.entity.CampaignParameter;
 import org.cerberus.exception.CerberusException;
 import org.cerberus.crud.service.ICampaignService;
+import org.cerberus.util.answer.AnswerList;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -160,5 +161,10 @@ public class CampaignService implements ICampaignService {
             }
         }
         return result;
+    }
+
+    @Override
+    public AnswerList readByCriteria(int start, int amount, String colName, String dir, String searchParameter, String individualSearch) {
+        return campaignDAO.readByCriteria(start, amount, colName, dir, searchParameter, individualSearch);
     }
 }

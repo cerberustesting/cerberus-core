@@ -309,12 +309,12 @@ public class ReadTestCaseExecution extends HttpServlet {
                     } else {
                         ttcObject.put("test", testCaseWithExecution.getTest());
                         ttcObject.put("testCase", testCaseWithExecution.getTestCase());
-//                    ttcObject.put("function", testCaseWithExecution.getFunction());
+                        ttcObject.put("function", testCaseWithExecution.getFunction());
                         ttcObject.put("shortDesc", testCaseWithExecution.getShortDescription());
-//                    ttcObject.put("status", testCaseWithExecution.getStatus());
+                        ttcObject.put("status", testCaseWithExecution.getStatus());
                         ttcObject.put("application", testCaseWithExecution.getApplication());
-//                    ttcObject.put("bugId", testCaseWithExecution.getBugID());
-//                    ttcObject.put("comment", testCaseWithExecution.getComment());
+                        ttcObject.put("bugId", testCaseWithExecution.getBugID());
+                        ttcObject.put("comment", testCaseWithExecution.getComment());
                         execTab.put(execKey, execution);
                         ttcObject.put("execTab", execTab);
                     }
@@ -396,10 +396,10 @@ public class ReadTestCaseExecution extends HttpServlet {
             }
         }
         List<TestCaseWithExecution> result = new ArrayList<TestCaseWithExecution>(testCaseWithExecutionsList.values());
-        
+
         return result;
     }
-    
+
     private JSONObject testCaseExecutionToJSONObject(
             TestCaseWithExecution testCaseWithExecution) throws JSONException {
         JSONObject result = new JSONObject();

@@ -31,7 +31,7 @@ $.when($.getScript("js/pages/global/global.js")).then(function () {
             var obj = convertSerialToJSONObject(serial);
             sessionStorage.setItem("splitFilter", JSON.stringify(obj));
         });
-        
+
         splitFilterPreferences();
 
         var urlTag = GetURLParameter('Tag');
@@ -92,7 +92,7 @@ function loadCountryFilter() {
 
 function splitFilterPreferences() {
     var filter = JSON.parse(sessionStorage.getItem("splitFilter"));
-    
+
     if (filter !== null) {
         $("#splitFilter input").each(function () {
             if (filter.hasOwnProperty($(this).prop("name"))) {
@@ -149,16 +149,6 @@ function loadReport() {
 
     window.history.pushState('Tag', '', 'ReportingExecutionByTag.jsp?Tag=' + encodeURIComponent(selectTag));
 
-    //clear the old report content before reloading it
-    $("#ReportByStatusTable").empty();
-    $("#statusChart").empty();
-    $("#functionChart").empty();
-    $("#progressEnvCountryBrowser").empty();
-    if ($("#listTable_wrapper").hasClass("initialized")) {
-        $("#tableArea").empty();
-        $("#tableArea").html('<table id="listTable" class="table table-hover display" name="listTable">\n\
-                                            </table><div class="marginBottom20"></div>');
-    }
     if (selectTag !== "") {
         //handle the test case execution list display
         loadEnvCountryBrowserReport();
@@ -166,6 +156,11 @@ function loadReport() {
         //Retrieve data for charts and draw them
         var jqxhr = $.get("GetReportData", {CampaignName: "null", Tag: selectTag}, "json");
         $.when(jqxhr).then(function (data) {
+            //clear the old report content before redrawing it
+            $("#ReportByStatusTable").empty();
+            $("#statusChart").empty();
+            $("#functionChart").empty();
+            $("#progressEnvCountryBrowser").empty();
             loadReportByStatusTable(data);
             loadReportByFunctionChart(data);
         });
@@ -274,16 +269,16 @@ function loadReportList() {
     var statusFilter = $("#statusFilter input");
     var countryFilter = $("#countryFilter input");
 
-    if ($("#listTable_wrapper").hasClass("initialized")) {
-        $("#tableArea").empty();
-        $("#tableArea").html('<table id="listTable" class="table table-hover display" name="listTable">\n\
-                                            </table><div class="marginBottom20"></div>');
-    }
-
     if (selectTag !== "") {
         //configure and create the dataTable
         var jqxhr = $.getJSON("ReadTestCaseExecution", "Tag=" + encodeURIComponent(selectTag) + "&" + statusFilter.serialize() + "&" + countryFilter.serialize());
-        $.when(jqxhr).then(function (data) {
+        $.when(jqxhr).then(function (data) {            
+            if ($("#listTable_wrapper").hasClass("initialized")) {
+                $("#tableArea").empty();
+                $("#tableArea").html('<table id="listTable" class="table table-hover display" name="listTable">\n\
+                                            </table><div class="marginBottom20"></div>');
+            }
+
             var request = "ReadTestCaseExecution?Tag=" + encodeURIComponent(selectTag) + "&" + statusFilter.serialize() + "&" + countryFilter.serialize();
 
             var config = new TableConfigurationsServerSide("listTable", request, "testList", aoColumnsFunc(data.Columns));
@@ -555,7 +550,7 @@ function createShortDescRow(row, data, index) {
 function generateTooltip(data) {
     var htmlRes;
 
-    htmlRes = '<div><span class=\'bold\'>Test ID :</span> ' + data.ID + '</div>' +
+    htmlRes = '<div><span class=\'bold\'>Execution ID :</span> ' + data.ID + '</div>' +
             '<div><span class=\'bold\'>Country : </span>' + data.Country + '</div>' +
             '<div><span class=\'bold\'>Environment : </span>' + data.Environment + '</div>' +
             '<div><span class=\'bold\'>Browser : </span>' + data.Browser + '</div>' +

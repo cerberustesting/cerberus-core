@@ -27,6 +27,7 @@ import org.cerberus.crud.entity.TestBatteryContent;
 import org.cerberus.crud.entity.TestBatteryContentWithDescription;
 import org.cerberus.exception.CerberusException;
 import org.cerberus.crud.service.ITestBatteryService;
+import org.cerberus.util.answer.AnswerList;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -116,6 +117,11 @@ public class TestBatteryService implements ITestBatteryService {
     @Override
     public List<TestBattery> findTestBatteriesByTestCase(String test, String testCase) throws CerberusException {
         return testBatteryDAO.findTestBatteriesByTestCase(test, testCase);
+    }
+    
+    @Override
+    public AnswerList readByCriteria(int startPosition, int length, String columnName, String sort, String searchParameter, String individualSearch) {
+        return testBatteryDAO.readByCriteria(startPosition, length, columnName, sort, searchParameter, individualSearch);
     }
 
 }

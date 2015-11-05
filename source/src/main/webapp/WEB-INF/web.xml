@@ -199,6 +199,10 @@
         <servlet-class>org.cerberus.servlet.crud.testcampaign.GetCampaign</servlet-class>
     </servlet>
     <servlet>
+        <servlet-name>ReadCampaign</servlet-name>
+        <servlet-class>org.cerberus.servlet.crud.testcampaign.ReadCampaign</servlet-class>
+    </servlet>
+    <servlet>
         <servlet-name>GetTagExecutions</servlet-name>
         <servlet-class>org.cerberus.servlet.zzpublic.GetTagExecutions</servlet-class>
     </servlet>
@@ -253,6 +257,10 @@
     <servlet>
         <servlet-name>GetTestBattery</servlet-name>
         <servlet-class>org.cerberus.servlet.crud.testcampaign.GetTestBattery</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>ReadTestBattery</servlet-name>
+        <servlet-class>org.cerberus.servlet.crud.testcampaign.ReadTestBattery</servlet-class>
     </servlet>
     <servlet>
         <servlet-name>AddTestBattery</servlet-name>
@@ -1018,6 +1026,10 @@
         <url-pattern>/GetCampaign</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
+        <servlet-name>ReadCampaign</servlet-name>
+        <url-pattern>/ReadCampaign</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
         <servlet-name>GetTagExecutions</servlet-name>
         <url-pattern>/GetTagExecutions</url-pattern>
     </servlet-mapping>
@@ -1072,6 +1084,10 @@
     <servlet-mapping>
         <servlet-name>GetTestBattery</servlet-name>
         <url-pattern>/GetTestBattery</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>ReadTestBattery</servlet-name>
+        <url-pattern>/ReadTestBattery</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
         <servlet-name>AddTestBattery</servlet-name>
@@ -2074,6 +2090,7 @@
             <url-pattern>/DocumentationField</url-pattern>
             <url-pattern>/GetInvariantList</url-pattern>
             <url-pattern>/GetCampaign</url-pattern>
+            <url-pattern>/ReadCampaign</url-pattern>
             <url-pattern>/GetTagExecutions</url-pattern>
             <url-pattern>/GetCampaignExecutionsCommand</url-pattern>
             <url-pattern>/ListCampaignParameter</url-pattern>
@@ -2086,6 +2103,7 @@
             <url-pattern>/DeleteCampaignContent</url-pattern>
             <url-pattern>/DeleteCampaignParameter</url-pattern>
             <url-pattern>/GetTestBattery</url-pattern>
+            <url-pattern>/ReadTestBattery</url-pattern>
             <url-pattern>/AddTestBattery</url-pattern>
             <url-pattern>/AddTestBatteryContent</url-pattern>
             <url-pattern>/DeleteTestBattery</url-pattern>
