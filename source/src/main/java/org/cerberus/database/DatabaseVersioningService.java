@@ -5038,6 +5038,15 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLInstruction.add(SQLS.toString());
 
         
+        // Documentation for ReportExecutionByTag summaryTable and export data
+        //-- ------------------------ 657
+        SQLS = new StringBuilder();
+        SQLS.append("INSERT INTO `documentation` VALUES ");
+        SQLS.append(" ('page_reportbytag', 'summary_table','','en','Summary Table', \"Summary of the total and percentages values for each result code (OK, KO, FA, NA, NE, PE, CA). Table is sorted by Application, Country and Environment.\") "); 
+        SQLS.append(", ('page_global', 'export_data','','en','Export Data', \"\") "); 
+        SQLS.append(", ('page_global', 'btn_export','','en','Export', \"\") "); 
+        SQLS.append(", ('page_reportbytag', 'btn_select_table','','en','Select table', \"\") "); 
+        SQLInstruction.add(SQLS.toString());
         return SQLInstruction;
     }
 

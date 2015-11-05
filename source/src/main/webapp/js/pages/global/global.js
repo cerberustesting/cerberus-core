@@ -740,9 +740,10 @@ function createDataTableWithPermissions(tableConfigurations, callbackfunction) {
  * Creates a datatable that is server-side processed.
  * @param {type} tableConfigurations set of configurations that define how data is retrieved and presented
  * @param {Function} callback callback function to be called after each row is created
+ * @param {Function} userCallbackFunction function to can be called after the data was loaded (is optional)* 
  * @return {Object} Return the dataTable object to use the api
  */
-function createDataTable(tableConfigurations, callback) {
+function createDataTable(tableConfigurations, callback, userCallbackFunction) {
     var domConf = 'Cl<"showInlineElement pull-left marginLeft5"f>rti<"marginTop5"p>';
     if (!tableConfigurations.showColvis) {
         domConf = 'l<"showInlineElement pull-left marginLeft5"f>rti<"marginTop5"p>';
@@ -784,7 +785,10 @@ function createDataTable(tableConfigurations, callback) {
                 "data": aoData,
                 "success": function (json) {
                     returnMessageHandler(json);
-                    fnCallback(json);
+                    fnCallback(json);                    
+                    if(Boolean(userCallbackFunction)){
+                        userCallbackFunction(json);
+                    }
                 },
                 "error": function (e) {
                     showUnexpectedError();
