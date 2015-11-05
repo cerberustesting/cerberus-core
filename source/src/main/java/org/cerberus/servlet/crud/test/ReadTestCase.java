@@ -266,9 +266,14 @@ public class ReadTestCase extends HttpServlet {
         String[] creator = request.getParameterValues("creator");
         String[] implementer = request.getParameterValues("implementer");
         String[] system = request.getParameterValues("system");
+        String[] testBattery = request.getParameterValues("testBattery");
+        String[] campaign = request.getParameterValues("campaign");
+        String[] priority = request.getParameterValues("priority");
+        String[] group = request.getParameterValues("group");
+        String[] status = request.getParameterValues("status");
         
         testCaseService = appContext.getBean(TestCaseService.class);
-        AnswerList answer = testCaseService.readByVariousCriteria(test, idProject, app, creator, implementer, system);
+        AnswerList answer = testCaseService.readByVariousCriteria(test, idProject, app, creator, implementer, system, testBattery, campaign, priority, group, status);
 
         if (answer.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
             for (TCase tc : (List<TCase>) answer.getDataList()) {

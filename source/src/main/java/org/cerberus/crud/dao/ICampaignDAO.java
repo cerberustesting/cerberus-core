@@ -23,6 +23,7 @@ import java.util.List;
 import org.cerberus.dto.TestCaseWithExecution;
 import org.cerberus.crud.entity.Campaign;
 import org.cerberus.exception.CerberusException;
+import org.cerberus.util.answer.AnswerList;
 
 /**
  *
@@ -45,4 +46,6 @@ public interface ICampaignDAO {
     List<Campaign> findCampaignByCriteria(Integer campaignID, String campaign, String description) throws CerberusException;
 
     List<TestCaseWithExecution> getCampaignTestCaseExecutionForEnvCountriesBrowserTag(String tag) throws CerberusException;
+
+    public AnswerList readByCriteria(int start, int amount, String colName, String dir, String searchParameter, String individualSearch);
 }

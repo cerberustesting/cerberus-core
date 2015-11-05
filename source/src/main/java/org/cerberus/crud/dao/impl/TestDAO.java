@@ -62,7 +62,7 @@ public class TestDAO implements ITestDAO {
     @Autowired
     private IFactoryTest factoryTest;
 
-    private static final Logger LOG = Logger.getLogger(LogEventDAO.class);
+    private static final Logger LOG = Logger.getLogger(Test.class);
 
     private final String SQL_DUPLICATED_CODE = "23000";
     private final int MAX_ROW_SELECTED = 100000;

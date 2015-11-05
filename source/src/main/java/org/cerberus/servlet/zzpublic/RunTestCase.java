@@ -291,6 +291,8 @@ public class RunTestCase extends HttpServlet {
             }
             //there is no need to lauch the execution if the test case does not exist for the country
             if (exists) {
+                //TODO:FN debug messages to be removed
+                org.apache.log4j.Logger.getLogger(RunTestCase.class.getName()).log(org.apache.log4j.Level.DEBUG, "[DEBUG] STARTED: Test " + test + "-" + testCase);
 
                 IRunTestCaseService runTestCaseService = appContext.getBean(RunTestCaseService.class);
                 IFactoryTCase factoryTCase = appContext.getBean(IFactoryTCase.class);

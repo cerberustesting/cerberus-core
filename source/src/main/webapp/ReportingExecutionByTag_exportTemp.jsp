@@ -114,46 +114,76 @@
                 <div class="col-lg-12" id="summaryTableArea">
                     <div class="panel panel-default">
                         <div class="panel-heading card" data-toggle="collapse" data-target="#summaryTablePanel">
-                            <label id="summaryTableTitle">Summary Table</label>
+                            <label id="envCountryBrowser">Summary Table</label>
                             <span class="toggle glyphicon glyphicon-chevron-right pull-right"></span>
                         </div>
                         <div class="panel-body collapse in" id="summaryTablePanel">
-                            <button type="button" class="btn btn-default pull-right marginBottom20" onclick="selectTableToCopy()" id="selectTableButton">
-                                <span class="glyphicon glyphicon-indent-right"></span><span id="selectTableButtonText">Select table</span></button>
-                            
+                            <!--<label id="summaryAndExportTableLabel" class="bold"></label>-->
                             <table id="summaryTable" name="summaryTable" 
                                    class="table table-hover display">
-                                <thead id="summaryTableHeader">
+                                <thead>
                                     <tr>
-                                        <td id="summaryTableHeaderApplication" style="text-align: center" class="width130 center-text">Application</td>
-                                        <td id="summaryTableHeaderCountry" style="text-align: center">Country</td>
-                                        <td id="summaryTableHeaderEnvironment" class="width80">Environment</td>
-                                        <td style="text-align: center">OK</td>
-                                        <td style="text-align: center">KO</td>
-                                        <td style="text-align: center">FA</td>
-                                        <td style="text-align: center">NA</td>
-                                        <td style="text-align: center">NE</td>
-                                        <td style="text-align: center">PE</td>
-                                        <td style="text-align: center">CA</td>
-                                        <td style="text-align: center">NOT OK</td>
-                                        <td style="text-align: center">TOTAL</td>
-                                        <td style="text-align: center">% OK</td>
-                                        <td style="text-align: center">% KO</td>
-                                        <td style="text-align: center">% FA</td>
-                                        <td style="text-align: center">% NA</td>
-                                        <td style="text-align: center">% NE</td>
-                                        <td style="text-align: center">% PE</td>
-                                        <td style="text-align: center">% CA</td>
-                                        <td class="width80" style="text-align: center">% NOT OK</td>
+                                        <th style="text-align: center" class="width130 center-text">Application</th>
+                                        <th style="text-align: center">Country</th>
+                                        <th class="width80">Environment</th>
+                                        <th style="text-align: center">OK</th>
+                                        <th style="text-align: center">KO</th>
+                                        <th style="text-align: center">NA</th>
+                                        <th style="text-align: center">NE</th>
+                                        <th style="text-align: center">PE</th>
+                                        <th style="text-align: center">FA</th>
+                                        <th style="text-align: center">CA</th>
+                                        <th style="text-align: center">NOT OK</th>
+                                        <th style="text-align: center">TOTAL</th>
+                                        <th style="text-align: center">% OK</th>
+                                        <th style="text-align: center">% KO</th>
+                                        <th style="text-align: center">% NA</th>
+                                        <th style="text-align: center">% NE</th>
+                                        <th style="text-align: center">% PE</th>
+                                        <th style="text-align: center">% FA</th>
+                                        <th style="text-align: center">% CA</th>
+                                        <th class="width80" style="text-align: center">% NOT OK</th>
                                     </tr>                                    
                                 </thead>
-                                <tbody id="summaryTableBody"></tbody>
+                                <tbody id="summaryAndExportTableBody"></tbody>
                             </table>
 
                         </div>
                     </div>
                 </div>
             </div>
+            <div class="row">
+                <div class="col-lg-12" id="exportDataPanel">
+                    <div class="panel panel-default">
+                        <div class="panel-heading card" data-toggle="collapse" data-target="#exportData">
+                            <label id="exportDataLabel"><span class="glyphicon glyphicon-export"></span>Export Data</label>
+                            <span class="toggle glyphicon glyphicon-chevron-right pull-right"></span>
+                        </div>                         
+                        <div class="panel-body collapse in" id="exportData">                              
+                            <div class="checkbox-inline">
+                                <label><input type="checkbox" name="exportReportByStatus" id="exportReportByStatus" value="chart" checked="checked"/>Report by Status</label>
+                            </div>
+                            <div class="checkbox-inline">
+                                <label><input type="checkbox" name="exportSummayTable" id="exportSummayTable" value="summary" checked="checked"/>Summary Table</label>
+                            </div>
+                            <div class="checkbox-inline">
+                                <label><input type="checkbox" name="exportList" id="exportList" checked="checked" value="list" />List</label>                                
+                            </div>
+                            <div class="radio-inline marginLeft5">
+                                <label><input type="radio" name="exportOption" id="exportListAll" value="all" checked="checked/">All data</label>
+                            </div>
+                            <div class="radio-inline">
+                                <label><input type="radio" name="exportOption" id="exportListFiltered" value="filter"/>Filtered list</label>
+                            </div>
+
+                            <button type="button" class="btn btn-default pull-right" onclick="exportReport()" id="exportDataButton"><span class="glyphicon glyphicon-export"></span>Export</button>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+           
+            
             <div class="row">
                 <div class="col-lg-12" id="ListPanel">
                     <div class="panel panel-default">

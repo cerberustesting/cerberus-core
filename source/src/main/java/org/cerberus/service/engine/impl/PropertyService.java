@@ -18,21 +18,21 @@
  * along with Cerberus.  If not, see <http://www.gnu.org/licenses/>.
  */
 package org.cerberus.service.engine.impl;
- 
+
 import org.cerberus.enums.PropertyTypeEnum;
 import org.cerberus.enums.SystemPropertyEnum;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
-import java.util.logging.Logger; 
+import java.util.logging.Logger;
 import java.util.regex.Pattern;
 import org.apache.log4j.Level;
 import org.cerberus.crud.entity.Identifier;
 import org.cerberus.crud.entity.TestCaseSubDataAccessProperty;
 import org.cerberus.crud.entity.MessageEvent;
 import org.cerberus.enums.MessageEventEnum;
-import org.cerberus.crud.entity.MessageGeneral;  
+import org.cerberus.crud.entity.MessageGeneral;
 import org.cerberus.crud.entity.Property;
 import org.cerberus.crud.entity.SoapLibrary;
 import org.cerberus.crud.entity.TestCaseCountryProperties;
@@ -42,7 +42,7 @@ import org.cerberus.crud.entity.TestCaseStepActionExecution;
 import org.cerberus.crud.entity.TestCaseStepExecution;
 import org.cerberus.crud.entity.TestDataLib;
 import org.cerberus.crud.entity.TestDataLibData;
-import org.cerberus.crud.entity.TestDataLibResult;
+import org.cerberus.service.engine.testdata.TestDataLibResult;
 import org.cerberus.enums.TestDataLibTypeEnum;
 import org.cerberus.exception.CerberusEventException;
 import org.cerberus.exception.CerberusException;
@@ -65,7 +65,7 @@ import org.cerberus.service.engine.IXmlUnitService;
 import org.cerberus.util.DateUtil;
 import org.cerberus.util.ParameterParserUtil;
 import org.cerberus.util.StringUtil;
-import org.cerberus.util.answer.AnswerItem; 
+import org.cerberus.util.answer.AnswerItem;
 import org.openqa.selenium.NoSuchElementException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -80,7 +80,7 @@ import org.springframework.stereotype.Service;
 public class PropertyService implements IPropertyService {
 
     private static final org.apache.log4j.Logger LOG = org.apache.log4j.Logger.getLogger(PropertyService.class);
-    
+
     @Autowired
     private IWebDriverService webdriverService;
     @Autowired
@@ -109,10 +109,10 @@ public class PropertyService implements IPropertyService {
     private IJsonService jsonService;
     @Autowired
     private IIdentifierService identifierService;
-    
+
     private static final Pattern GETFROMDATALIB_PATTERN = Pattern.compile("^[_A-Za-z0-9]+\\([_A-Za-z0-9]+\\)$");
     private static final String GETFROMDATALIB_SPLIT = "\\s+|\\(\\s*|\\)";
-    
+
     private String replaceWithCalculatedProperty(String stringToReplace, TestCaseExecution tCExecution) {
         for (TestCaseExecutionData tced : tCExecution.getTestCaseExecutionDataList()) {
             stringToReplace = StringUtil.replaceAllProperties(stringToReplace, "%" + tced.getProperty() + "%", tced.getValue());
@@ -120,7 +120,7 @@ public class PropertyService implements IPropertyService {
         return stringToReplace;
     }
 
-    private void calculateProperty(TestCaseExecutionData testCaseExecutionData, TestCaseStepActionExecution testCaseStepActionExecution, 
+    private void calculateProperty(TestCaseExecutionData testCaseExecutionData, TestCaseStepActionExecution testCaseStepActionExecution,
             TestCaseCountryProperties testCaseCountryProperty, boolean forceRecalculation) {
         testCaseExecutionData.setStart(new Date().getTime());
         MessageEvent res;
@@ -169,13 +169,13 @@ public class PropertyService implements IPropertyService {
             testCaseExecutionData = this.getFromJson(testCaseExecutionData, forceRecalculation);
         } else if (testCaseCountryProperty.getType().equals(PropertyTypeEnum.EXECUTE_SOAP_FROM_LIB.getPropertyName())) {
             testCaseExecutionData = this.executeSoapFromLib(testCaseExecutionData, tCExecution, testCaseCountryProperty, forceRecalculation);
-        } else if (testCaseCountryProperty.getType().equals(PropertyTypeEnum.GET_FROM_DATALIB.getPropertyName())){ 
+        } else if (testCaseCountryProperty.getType().equals(PropertyTypeEnum.GET_FROM_DATALIB.getPropertyName())) {
             testCaseExecutionData = this.getFromDataLib(testCaseExecutionData, tCExecution, testCaseStepActionExecution, testCaseCountryProperty, forceRecalculation);
         } else if (testCaseCountryProperty.getType().equals(PropertyTypeEnum.GET_DIFFERENCES_FROM_XML.getPropertyName())) {
             testCaseExecutionData = this.getDifferencesFromXml(testCaseExecutionData, tCExecution, testCaseCountryProperty, forceRecalculation);
-        } else if(testCaseCountryProperty.getType().equals(PropertyTypeEnum.ACCESS_SUBDATA.getPropertyName())){
+        } else if (testCaseCountryProperty.getType().equals(PropertyTypeEnum.ACCESS_SUBDATA.getPropertyName())) {
             testCaseExecutionData = accessSubData(testCaseCountryProperty, tCExecution, testCaseStepActionExecution, forceRecalculation, testCaseExecutionData);
-        }else {
+        } else {
             res = new MessageEvent(MessageEventEnum.PROPERTY_FAILED_UNKNOWNPROPERTY);
             res.setDescription(res.getDescription().replaceAll("%PROPERTY%", testCaseCountryProperty.getType()));
             testCaseExecutionData.setPropertyResultMessage(res);
@@ -184,69 +184,70 @@ public class PropertyService implements IPropertyService {
         testCaseExecutionData.setEnd(new Date().getTime());
     }
     /**
-     * Auxiliary method that calculates the access to a sub-data entry value. E.g., Entry(Name).
+     * Auxiliary method that calculates the access to a sub-data entry value.
+     * E.g., Entry(Name).
+     *
      * @param testCaseCountryProperty
      * @param tCExecution
      * @param testCaseStepActionExecution
      * @param forceRecalculation
      * @param testCaseExecutionData
      * @return
-     * @throws NumberFormatException 
+     * @throws NumberFormatException
      */
-    private TestCaseExecutionData accessSubData(TestCaseCountryProperties testCaseCountryProperty, TestCaseExecution tCExecution, TestCaseStepActionExecution
-            testCaseStepActionExecution, boolean forceRecalculation, TestCaseExecutionData testCaseExecutionData) throws NumberFormatException {
+    private TestCaseExecutionData accessSubData(TestCaseCountryProperties testCaseCountryProperty, TestCaseExecution tCExecution, TestCaseStepActionExecution testCaseStepActionExecution, boolean forceRecalculation, TestCaseExecutionData testCaseExecutionData) throws NumberFormatException {
 
         MessageEvent res;
 
-        TestCaseCountryProperties inner = ((TestCaseSubDataAccessProperty)testCaseCountryProperty).getPropertyLibEntry();
-        
+        TestCaseCountryProperties inner = ((TestCaseSubDataAccessProperty) testCaseCountryProperty).getPropertyLibEntry();
+
         //creates an auxiliary object that will store the value for computation
-        TestCaseExecutionData tecdAuxiliary = factoryTestCaseExecutionData.create(tCExecution.getId(),  inner.getProperty(), inner.getType(),  
-                inner.getValue1(),  inner.getValue2(), new MessageEvent(MessageEventEnum.PROPERTY_SUCCESS_GETFROMDATALIB));
-        
+        TestCaseExecutionData tecdAuxiliary = factoryTestCaseExecutionData.create(tCExecution.getId(), inner.getProperty(), inner.getType(),
+                inner.getValue1(), inner.getValue2(), new MessageEvent(MessageEventEnum.PROPERTY_SUCCESS_GETFROMDATALIB));
+
         //the testdatalibrary needs to be re-calculated
-        if(testCaseCountryProperty.getValue1().isEmpty() || forceRecalculation){//if empty, it means that the testdatalib was not retrieved yet
+        if (testCaseCountryProperty.getValue1().isEmpty() || forceRecalculation) {//if empty, it means that the testdatalib was not retrieved yet
             tecdAuxiliary.setPropertyResultMessage(new MessageEvent(MessageEventEnum.PROPERTY_PENDING));
             //needs to calculate the entry lib in order to retrieve the subdata
             //we force calculation because if the this line is reached, it means that the property does not exist.
             //or that exists but we are forcing it to be re-calculated
-            tecdAuxiliary = getFromDataLib(tecdAuxiliary, tCExecution, testCaseStepActionExecution, inner, forceRecalculation); 
-            
+            tecdAuxiliary = getFromDataLib(tecdAuxiliary, tCExecution, testCaseStepActionExecution, inner, forceRecalculation);
+
             //adds the property to the data list
-            tCExecution.getTestCaseExecutionDataList().add(tecdAuxiliary); 
-                        
+            tCExecution.getTestCaseExecutionDataList().add(tecdAuxiliary);
+
             try {
                 testCaseExecutionDataService.insertOrUpdateTestCaseExecutionData(tecdAuxiliary);
             } catch (CerberusException cex) {
                 LOG.error(cex.getMessage(), cex);
             }
-            
+
             //the value for value 1 for the subdata access proprerty is the id of the library entry
             testCaseExecutionData.setValue1(tecdAuxiliary.getValue());
-        } 
-        
-        if(tecdAuxiliary.getPropertyResultMessage().getCode() == MessageEventEnum.PROPERTY_SUCCESS_GETFROMDATALIB.getCode()){
+        }
+
+        if (tecdAuxiliary.getPropertyResultMessage().getCode() == MessageEventEnum.PROPERTY_SUCCESS_GETFROMDATALIB.getCode()) {
             //check if it should get the testdatalib subdata entry
             //if the property that is being calculated is the value from a subdata entry, then we need to calculate it e.g., format: Entry(Key)
             //if(eachTccp instanceof TestCaseSubDataAccessProperty){
             //after calculating the property base we can access the subdata entry
             calculateSubDataEntry(tCExecution, testCaseExecutionData, inner.getProperty());//calculates the subdata entry
-        }else{
+        } else {
             //if the getFromDataLib does not succeed than it means that we are not able to perform the sub-data access 
-            if(tecdAuxiliary.getPropertyResultMessage().getCode() == MessageEventEnum.TESTDATALIB_NOT_FOUND_ERROR.getCode() 
+            if (tecdAuxiliary.getPropertyResultMessage().getCode() == MessageEventEnum.TESTDATALIB_NOT_FOUND_ERROR.getCode()
                     || tecdAuxiliary.getPropertyResultMessage().getCode() == MessageEventEnum.PROPERTY_FAILED_GETFROMDATALIB_GENERIC.getCode() //same code as PROPERTY_FAILED_GETFROMDATALIB_NODATA
-                    || tecdAuxiliary.getPropertyResultMessage().getCode() == MessageEventEnum.ACTION_FAILED_CALLSOAP.getCode()){ //error related with the soap call 
+                    || tecdAuxiliary.getPropertyResultMessage().getCode() == MessageEventEnum.ACTION_FAILED_CALLSOAP.getCode()) { //error related with the soap call 
                 //redefinition of the error message
-                res = new MessageEvent(MessageEventEnum.PROPERTY_FAILED_SUBDATAACCESS); 
+                res = new MessageEvent(MessageEventEnum.PROPERTY_FAILED_SUBDATAACCESS);
                 res.setDescription(res.getDescription().replaceAll("%SUBDATAACCCESS%", testCaseCountryProperty.getProperty()));
                 res.setDescription(res.getDescription().replaceAll("%PROPERTY%", inner.getProperty()));
-                testCaseExecutionData.setPropertyResultMessage(res);               
-            }else{                
+                testCaseExecutionData.setPropertyResultMessage(res);
+            } else {
                 //the result message is the same returned by the getFromDataLib operation
-                testCaseExecutionData.setPropertyResultMessage(tecdAuxiliary.getPropertyResultMessage());            
+                testCaseExecutionData.setPropertyResultMessage(tecdAuxiliary.getPropertyResultMessage());
             }
         }
-        
+
         return testCaseExecutionData;
     }
 
@@ -299,7 +300,7 @@ public class PropertyService implements IPropertyService {
                 LOG.debug("Property " + internalProperty + " need calculation of these properties " + linkedProperties);
             }
         }
-         
+
         //list of getFromDataLib properties that failed
         List<TestCaseExecutionData> failedCalls = new ArrayList<TestCaseExecutionData>();
         /**
@@ -319,16 +320,16 @@ public class PropertyService implements IPropertyService {
             }
 
             List<TestCaseExecutionData> dataList = tCExecution.getTestCaseExecutionDataList();
-                        
-            if(eachTccp instanceof TestCaseSubDataAccessProperty){
-                tecd = getSubDataExecutionDataFromList(dataList, eachTccp, tecd, forceCalculation);                 
-            }else{
+
+            if (eachTccp instanceof TestCaseSubDataAccessProperty) {
+                tecd = getSubDataExecutionDataFromList(dataList, eachTccp, tecd, forceCalculation);
+            } else {
                 /*  First check if property has already been calculated 
                  *  if action is calculateProperty, then set isKnownData to false. 
-                 */                
+                 */
                 tecd = getExecutionDataFromList(dataList, eachTccp, forceCalculation, tecd);
             }
-            
+
             /**
              * If testcasecountryproperty not defined, set ExecutionData with
              * the same resultMessage
@@ -341,11 +342,11 @@ public class PropertyService implements IPropertyService {
              */
             if (tecd.getPropertyResultMessage().getCode() == MessageEventEnum.PROPERTY_PENDING.getCode()) {
                 //if the internal property that we want to calculate has a getFromDataLib that lauched an error
-                MessageEvent mes = containsFailedInnerProperties(internalProperties, tecd, failedCalls); 
+                MessageEvent mes = containsFailedInnerProperties(internalProperties, tecd, failedCalls);
                 //if the property does not contain failed inner properties than it can be calculated
-                if(mes.getCode() == MessageEventEnum.PROPERTY_SUCCESS.getCode()){
+                if (mes.getCode() == MessageEventEnum.PROPERTY_SUCCESS.getCode()) {
                     calculateProperty(tecd, testCaseStepActionExecution, eachTccp, forceCalculation);
-                }else{
+                } else {
                     //this is an internal property, and an error was found while calculating a getFromDataLib entry                    
                     tecd.setPropertyResultMessage(mes);
                 }
@@ -356,19 +357,19 @@ public class PropertyService implements IPropertyService {
                     LOG.error(cex.getMessage(), cex);
                 }
             }
-            
+
             //if is not a system property, then check if it was calculated with success
             //system properties are decoded before these instructions or (when using calculateProperty)
             //in the calculateProperty action, therefore these are not properties that would stop/fail the execution
-            if(!SystemPropertyEnum.contains(tecd.getProperty())){
+            if (!SystemPropertyEnum.contains(tecd.getProperty())) {
                 //if the property result message indicates that we need to stop the test action, then the action is notified               
                 //or if the property was not successfully calculated, either because it was not defined for the country or because it does not exist
                 //then we notify the execution
-                if(tecd.getPropertyResultMessage().isStopTest() || 
-                        tecd.getPropertyResultMessage().getCode() == MessageEventEnum.PROPERTY_FAILED_NO_PROPERTY_DEFINITION.getCode()){
+                if (tecd.getPropertyResultMessage().isStopTest()
+                        || tecd.getPropertyResultMessage().getCode() == MessageEventEnum.PROPERTY_FAILED_NO_PROPERTY_DEFINITION.getCode()) {
                     testCaseStepActionExecution.setStopExecution(tecd.isStopExecution());
                     testCaseStepActionExecution.setActionResultMessage(tecd.getPropertyResultMessage());
-                    testCaseStepActionExecution.setExecutionResultMessage(new MessageGeneral(tecd.getPropertyResultMessage().getMessage()));      
+                    testCaseStepActionExecution.setExecutionResultMessage(new MessageGeneral(tecd.getPropertyResultMessage().getMessage()));
                 }
             }
             /**
@@ -376,8 +377,7 @@ public class PropertyService implements IPropertyService {
              * TestCaseExecution
              */
             tCExecution.getTestCaseExecutionDataList().add(tecd);
-            MyLogger.log(PropertyService.class.getName(), Level.DEBUG, "Update data list: " + eachTccp.getProperty()+":" +eachTccp.getValue1() + ":" +tecd.getValue());                
-            
+            MyLogger.log(PropertyService.class.getName(), Level.DEBUG, "Update data list: " + eachTccp.getProperty() + ":" + eachTccp.getValue1() + ":" + tecd.getValue());
 
             /**
              * After calculation, replace properties by value calculated
@@ -385,11 +385,11 @@ public class PropertyService implements IPropertyService {
             stringToDecode = StringUtil.replaceAllProperties(stringToDecode, "%" + eachTccp.getProperty() + "%", tecd.getValue());
             //if a getFromDataLib fails or a property that tries to make a subdata access fails
             //then all properties that use it (as inner properties) should fail and its calculation should not proceed
-            if(tecd.getPropertyResultMessage().getCode() == MessageEventEnum.TESTDATALIB_NOT_FOUND_ERROR.getCode() //lib was not found
+            if (tecd.getPropertyResultMessage().getCode() == MessageEventEnum.TESTDATALIB_NOT_FOUND_ERROR.getCode() //lib was not found
                     || tecd.getPropertyResultMessage().getCode() == MessageEventEnum.PROPERTY_FAILED_SUBDATAACCESS.getCode() //a problem occurred while accesing a sub-data entry
                     || tecd.getPropertyResultMessage().getCode() == MessageEventEnum.PROPERTY_FAILED_GETFROMDATALIBDATA_INVALID_COLUMN.getCode() //a problem occurred while accesing a sub-data entry
                     || tecd.getPropertyResultMessage().getCode() == MessageEventEnum.PROPERTY_FAILED_GETFROMDATALIB_GENERIC.getCode()//the same code as PROPERTY_FAILED_GETFROMDATALIB_NODATA
-                    || tecd.getPropertyResultMessage().getCode() == MessageEventEnum.PROPERTY_FAILED_GETFROMDATALIBDATA_XMLEXCEPTION.getCode()){ //the same code as PROPERTY_FAILED_GETFROMDATALIBDATA_XML_NOTFOUND and PROPERTY_FAILED_GETFROMDATALIBDATA_CHECK_XPATH
+                    || tecd.getPropertyResultMessage().getCode() == MessageEventEnum.PROPERTY_FAILED_GETFROMDATALIBDATA_XMLEXCEPTION.getCode()) { //the same code as PROPERTY_FAILED_GETFROMDATALIBDATA_XML_NOTFOUND and PROPERTY_FAILED_GETFROMDATALIBDATA_CHECK_XPATH
                 //if is to stop the calculating process 
                 failedCalls.add(tecd);
             }
@@ -399,42 +399,50 @@ public class PropertyService implements IPropertyService {
         }
         return stringToDecode;
     }
+
     /**
-     * Auxiliary method that verifies if a property, which belongs to the list of internal properties, uses a property that failed to be calculated.
-     * @param internalProperties list of internal properties 
+     * Auxiliary method that verifies if a property, which belongs to the list
+     * of internal properties, uses a property that failed to be calculated.
+     *
+     * @param internalProperties list of internal properties
      * @param tecd property that is being evaluated
-     * @param failedCalls list of properties that were not calculated with success, only the ones related to getFromDataLib calls are being considered.
+     * @param failedCalls list of properties that were not calculated with
+     * success, only the ones related to getFromDataLib calls are being
+     * considered.
      * @return message indicating success or error
      */
     private MessageEvent containsFailedInnerProperties(List<String> internalProperties, TestCaseExecutionData tecd, List<TestCaseExecutionData> failedCalls) {
-        
-        MessageEvent mes  = new MessageEvent(MessageEventEnum.PROPERTY_SUCCESS);
+
+        MessageEvent mes = new MessageEvent(MessageEventEnum.PROPERTY_SUCCESS);
         StringBuilder errorMessage = new StringBuilder();
-        if(internalProperties.contains(tecd.getProperty()) && failedCalls.size() > 0){            
+        if (internalProperties.contains(tecd.getProperty()) && failedCalls.size() > 0) {
             //check if the internal property contains some property that failed
-            for(TestCaseExecutionData failedData : failedCalls){
-                if(tecd.getValue1().contains("%" + failedData.getProperty() + "%") ||
-                        tecd.getValue2().contains("%" + failedData.getProperty() + "%")){
+            for (TestCaseExecutionData failedData : failedCalls) {
+                if (tecd.getValue1().contains("%" + failedData.getProperty() + "%")
+                        || tecd.getValue2().contains("%" + failedData.getProperty() + "%")) {
                     //this is an internal property
                     errorMessage.append("[").append(failedData.getProperty()).append("]");
                 }
             }
         }
-        if(errorMessage.length() > 0){
+        if (errorMessage.length() > 0) {
             mes = new MessageEvent(MessageEventEnum.PROPERTY_FAILED_INNERPROPERTY_GETFROMDATALIB_NOTFOUND);
-            mes.setDescription(mes.getDescription().replace("%PROPERTY%", tecd.getProperty()).replace("%ITEM%",  errorMessage.toString()));
+            mes.setDescription(mes.getDescription().replace("%PROPERTY%", tecd.getProperty()).replace("%ITEM%", errorMessage.toString()));
         }
         return mes;
     }
+
     /**
      * Auxiliary method that returns the execution data for a property.
+     *
      * @param dataList list of execution data
-     * @param eachTccp property to be calculated 
-     * @param forceCalculation indicates whether a property must be re-calculated if it was already computed in previous steps
+     * @param eachTccp property to be calculated
+     * @param forceCalculation indicates whether a property must be
+     * re-calculated if it was already computed in previous steps
      * @param tecd execution data for the property
-     * @return  the updated execution data for the property
+     * @return the updated execution data for the property
      */
-    private TestCaseExecutionData getExecutionDataFromList(List<TestCaseExecutionData> dataList, TestCaseCountryProperties eachTccp, boolean forceCalculation, 
+    private TestCaseExecutionData getExecutionDataFromList(List<TestCaseExecutionData> dataList, TestCaseCountryProperties eachTccp, boolean forceCalculation,
             TestCaseExecutionData tecd) {
         for (int iterator = 0; iterator < dataList.size(); iterator++) {
             if (dataList.get(iterator).getProperty().equalsIgnoreCase(eachTccp.getProperty())) {
@@ -451,64 +459,70 @@ public class PropertyService implements IPropertyService {
         }
         return tecd;
     }
+
     /**
-     * Auxiliary method that checks if the property holds the library for the sub-data access was already calculated.
+     * Auxiliary method that checks if the property holds the library for the
+     * sub-data access was already calculated.
+     *
      * @param dataList list of execution data
-     * @param eachTccp property to be calculated 
+     * @param eachTccp property to be calculated
      * @param tecd execution data for the property
-     * @param forceRecalculation indicates whether a property must be re-calculated if it was already computed in previous steps
+     * @param forceRecalculation indicates whether a property must be
+     * re-calculated if it was already computed in previous steps
      * @return the updated execution data for the property
      */
     private TestCaseExecutionData getSubDataExecutionDataFromList(List<TestCaseExecutionData> dataList, TestCaseCountryProperties eachTccp, TestCaseExecutionData tecd, boolean forceRecalculation) {
-        
-        TestCaseSubDataAccessProperty eachTccpSubData = (TestCaseSubDataAccessProperty)eachTccp;
-        
+
+        TestCaseSubDataAccessProperty eachTccpSubData = (TestCaseSubDataAccessProperty) eachTccp;
+
         String libName = eachTccpSubData.getLibraryValue();
-        
+
         //if we need to recalculate 
-        
         for (TestCaseExecutionData item : dataList) {
-            if (item.getProperty().equalsIgnoreCase(tecd.getProperty())) {          
+            if (item.getProperty().equalsIgnoreCase(tecd.getProperty())) {
                 if (LOG.isDebugEnabled()) {
                     LOG.debug("Property " + eachTccp + " was already calculated");
                 }
-                if(forceRecalculation){
+                if (forceRecalculation) {
                     dataList.remove(item);
                     break;
-                }else{
+                } else {
                     //value exists in the data list
                     eachTccp.setResult(item.getPropertyResultMessage());
                     tecd.setValue1(item.getValue1());
-                    tecd.setValue(item.getValue());  
+                    tecd.setValue(item.getValue());
                     return tecd;
                 }
-                
-            }            
+
+            }
         }
-        
+
         for (TestCaseExecutionData item : dataList) {
             if (item.getProperty().equalsIgnoreCase(libName)) {
                 //id da library                 
                 tecd.setValue1(item.getValue1()); //value1 is the value determined by the previous calculation (if it happened) 
                 eachTccp.setValue1(item.getProperty()); //property name used to retrieve the data from the execution
-                
+
                 if (LOG.isDebugEnabled()) {
                     LOG.debug("Property " + eachTccp + " was already calculated");
                 }
-                if(forceRecalculation){
+                if (forceRecalculation) {
                     dataList.remove(item);
                 }
                 break;
-            }            
+            }
         }
-        
+
         return tecd;
     }
-    /** 
+
+    /**
      * Calculates the sub-data entry value for a test data library.
+     *
      * @param tCExecution execution environment
-     * @param tecd data execution for the sub-data access property 
-     * @param keyDataList key used to retrieve the information from the library that was previously calculated.
+     * @param tecd data execution for the sub-data access property
+     * @param keyDataList key used to retrieve the information from the library
+     * that was previously calculated.
      */
     private void calculateSubDataEntry(TestCaseExecution tCExecution, TestCaseExecutionData tecd, String keyDataList) {
         //we are going to retrieve the subdata entry
@@ -516,28 +530,28 @@ public class PropertyService implements IPropertyService {
         //gets the value for the library entry with basis on
         //the subdataentry specified
         HashMap<String, TestDataLibResult> currentListResults = tCExecution.getDataLibraryExecutionDataList();
-        
+
         TestDataLibResult result = currentListResults.get(keyDataList);
         String subDataValue = result.getValue(tecd.getValue2()); //temporary use of the value2
-        
+
         String value = "";
         MessageEvent res = new MessageEvent(MessageEventEnum.PROPERTY_SUCCESS_GETFROMDATALIBDATA);
-        if(subDataValue == null){
+        if (subDataValue == null) {
             //the entry does not exist yet so we need to calculate it
             //gets the entry that we want to collect 
             TestDataLibData subDataEntry;
-            
-            AnswerItem ansSubDataEntry = testDataLibDataService.findTestDataLibDataByKey(Integer.parseInt(tecd.getValue1()), tecd.getValue2());
+
+            AnswerItem ansSubDataEntry = testDataLibDataService.readByKey(Integer.parseInt(tecd.getValue1()), tecd.getValue2());
             subDataEntry = (TestDataLibData) ansSubDataEntry.getItem();
-            if(subDataEntry != null){
+            if (subDataEntry != null) {
                 //extract the subdata entry value
                 AnswerItem ansFetchData = testDataLibDataService.fetchSubData(result, subDataEntry);
                 value = (String) ansFetchData.getItem();
-                if(value == null){
+                if (value == null) {
                     //if value is null then the key was valid but 
                     res = ansFetchData.getResultMessage();
                 }
-            }else{
+            } else {
                 res = ansSubDataEntry.getResultMessage();
             }
         }
@@ -545,15 +559,15 @@ public class PropertyService implements IPropertyService {
         //retrieved the information
         //we add the entry value into the execution data
         tecd.setValue(value);
-        
+
         //updates the result data
         tCExecution.getDataLibraryExecutionDataList().put(keyDataList, result);
         //updates the execution data list
         //tCExecution.setDataLibraryExecutionDataList(currentListResults);
-        
+
         tecd.setPropertyResultMessage(res);
     }
-                        
+
     @Override
     public List<TestCaseCountryProperties> getListOfPropertiesLinkedToProperty(String test, String testCase, String country, String property, String usedTest, String usedTestCase, List<String> crossedProperties, List<TestCaseCountryProperties> propertieOfTestcase) {
         List<TestCaseCountryProperties> result = new ArrayList();
@@ -571,7 +585,7 @@ public class PropertyService implements IPropertyService {
          */
         AnswerItem ansSearch = findMatchingTestCaseCountryProperty(property, country, propertieOfTestcase);
         testCaseCountryProperty = (TestCaseCountryProperties) ansSearch.getItem();
-        
+
         if (testCaseCountryProperty == null) {
             //if the property does not exists, then a dummy property with the error message is defined and returned to the TC's execution
             MessageEvent msg = ansSearch.getResultMessage();
@@ -579,7 +593,7 @@ public class PropertyService implements IPropertyService {
             tccpToReturn.setProperty(property);
             tccpToReturn.setResult(msg);
             result.add(tccpToReturn);
-            
+
             if (LOG.isDebugEnabled()) {
                 LOG.debug("Property " + property + " not defined : " + msg.getDescription());
             }
@@ -591,33 +605,33 @@ public class PropertyService implements IPropertyService {
          */
         List<String> allProperties = new ArrayList();
 
-        if(testCaseCountryProperty.getType().equals(PropertyTypeEnum.EXECUTE_SQL.getPropertyName()) || 
-                testCaseCountryProperty.getType().equals(PropertyTypeEnum.EXECUTE_SQL_FROM_LIB.getPropertyName())) {
-            
+        if (testCaseCountryProperty.getType().equals(PropertyTypeEnum.EXECUTE_SQL.getPropertyName())
+                || testCaseCountryProperty.getType().equals(PropertyTypeEnum.EXECUTE_SQL_FROM_LIB.getPropertyName())) {
+
             List<String> propertiesSql = new ArrayList();
             //check the properties specified in the test
-            for (String propSqlName : StringUtil.getAllProperties(testCaseCountryProperty.getValue1())){
+            for (String propSqlName : StringUtil.getAllProperties(testCaseCountryProperty.getValue1())) {
                 for (TestCaseCountryProperties pr : propertieOfTestcase) {
-                    if(pr.getProperty().equals(propSqlName)) {
+                    if (pr.getProperty().equals(propSqlName)) {
                         propertiesSql.add(propSqlName);
                         break;
-                    }   
+                    }
                 }
             }
             allProperties.addAll(propertiesSql);
-        }else{
+        } else {
             allProperties.addAll(StringUtil.getAllProperties(testCaseCountryProperty.getValue1()));
             allProperties.addAll(StringUtil.getAllProperties(testCaseCountryProperty.getValue2()));
-        } 
+        }
 
         for (String internalProperty : allProperties) {
             result.addAll(getListOfPropertiesLinkedToProperty(test, testCase, country, internalProperty, usedTest, usedTestCase, crossedProperties, propertieOfTestcase));
         }
         result.add(testCaseCountryProperty);
-        
+
         return result;
     }
-            
+
     private String decodeValue(String stringToDecode, TestCaseExecution tCExecution) {
         /**
          * Trying to replace by system environment variables .
@@ -634,7 +648,7 @@ public class PropertyService implements IPropertyService {
         stringToDecode = StringUtil.replaceAllProperties(stringToDecode, "%SYS_SSPORT%", tCExecution.getSeleniumPort());
         stringToDecode = StringUtil.replaceAllProperties(stringToDecode, "%SYS_TAG%", tCExecution.getTag());
         stringToDecode = StringUtil.replaceAllProperties(stringToDecode, "%SYS_EXECUTIONID%", String.valueOf(tCExecution.getId()));
-        
+
         /**
          * Trying to replace date variables .
          */
@@ -652,16 +666,16 @@ public class PropertyService implements IPropertyService {
         stringToDecode = StringUtil.replaceAllProperties(stringToDecode, "%SYS_YESTERDAY-HH%", DateUtil.getYesterdayFormat("HH"));
         stringToDecode = StringUtil.replaceAllProperties(stringToDecode, "%SYS_YESTERDAY-mm%", DateUtil.getYesterdayFormat("mm"));
         stringToDecode = StringUtil.replaceAllProperties(stringToDecode, "%SYS_YESTERDAY-ss%", DateUtil.getYesterdayFormat("ss"));
-        
+
         /**
          * Trying to replace timing variables .
          */
         stringToDecode = StringUtil.replaceAllProperties(stringToDecode, "%SYS_ELAPSED-EXESTART%", "To Be Implemented");
         stringToDecode = StringUtil.replaceAllProperties(stringToDecode, "%SYS_ELAPSED-STEPSTART%", "To Be Implemented");
-        
+
         return stringToDecode;
     }
-    
+
     private TestCaseExecutionData executeSqlFromLib(TestCaseExecutionData testCaseExecutionData, TestCaseCountryProperties testCaseCountryProperty, TestCaseExecution tCExecution, boolean forceCalculation) {
         try {
             String script = this.sqlLibraryService.findSqlLibraryByKey(testCaseExecutionData.getValue1()).getScript();
@@ -809,12 +823,12 @@ public class PropertyService implements IPropertyService {
             if (valueFromHTML != null) {
                 testCaseExecutionData.setValue(valueFromHTML);
                 res = new MessageEvent(MessageEventEnum.PROPERTY_SUCCESS_GETATTRIBUTEFROMHTML);
+                res.setDescription(res.getDescription().replaceAll("%VALUE%", valueFromHTML));
             } else {
                 res = new MessageEvent(MessageEventEnum.PROPERTY_FAILED_HTML_ATTRIBUTEDONOTEXIST);
             }
             res.setDescription(res.getDescription().replaceAll("%ELEMENT%", testCaseExecutionData.getValue1()));
-            res.setDescription(res.getDescription().replaceAll("%ATTRIBUTE%", testCaseExecutionData.getValue2()));
-            res.setDescription(res.getDescription().replaceAll("%VALUE%", valueFromHTML));
+            res.setDescription(res.getDescription().replaceAll("%ATTRIBUTE%", testCaseExecutionData.getValue2()));           
 
         } catch (NoSuchElementException exception) {
             MyLogger.log(PropertyService.class
@@ -834,10 +848,10 @@ public class PropertyService implements IPropertyService {
                 String attachement = "";//TODO implement this feature
                 //TODO implement the executeSoapFromLib
                 /*if (!testCaseExecutionData.getValue2().isEmpty()){
-                    attachement = testCaseExecutionData.getValue2();
-                }else{
-                    attachement = soapLib.getAttachmentUrl();
-                }*/
+                 attachement = testCaseExecutionData.getValue2();
+                 }else{
+                 attachement = soapLib.getAttachmentUrl();
+                 }*/
                 soapService.callSOAPAndStoreResponseInMemory(tCExecution.getExecutionUUID(), soapLib.getEnvelope(), soapLib.getServicePath(), soapLib.getMethod(), attachement, false);
                 String result = xmlUnitService.getFromXml(tCExecution.getExecutionUUID(), null, soapLib.getParsingAnswer());
                 if (result != null) {
@@ -1006,7 +1020,7 @@ public class PropertyService implements IPropertyService {
 
             }
         } catch (Exception exception) {
-            if (LOG.isDebugEnabled()){
+            if (LOG.isDebugEnabled()) {
                 LOG.error(exception.toString());
             }
             MessageEvent res = new MessageEvent(MessageEventEnum.PROPERTY_FAILED_GETFROMJSON_PARAMETERNOTFOUND);
@@ -1017,94 +1031,93 @@ public class PropertyService implements IPropertyService {
         }
         return testCaseExecutionData;
     }
-    
-     private TestCaseExecutionData getFromDataLib(TestCaseExecutionData testCaseExecutionData, TestCaseExecution tCExecution, 
-            TestCaseStepActionExecution testCaseStepActionExecution, TestCaseCountryProperties testCaseCountryProperty,  boolean forceRecalculation) {
-        
+
+    private TestCaseExecutionData getFromDataLib(TestCaseExecutionData testCaseExecutionData, TestCaseExecution tCExecution,
+            TestCaseStepActionExecution testCaseStepActionExecution, TestCaseCountryProperties testCaseCountryProperty, boolean forceRecalculation) {
+
         MessageEvent res = new MessageEvent(MessageEventEnum.PROPERTY_SUCCESS_GETFROMDATALIB);
-        try {
-            
-            HashMap<String, TestDataLibResult> currentListResults = tCExecution.getDataLibraryExecutionDataList();
-            if(currentListResults  == null){
-                currentListResults = new HashMap<String, TestDataLibResult>();
-            }
-            TestDataLib lib;
-            TestDataLibResult result; 
-            AnswerItem answer = testDataLibService.findTestDataLibByKey(testCaseExecutionData.getValue1(), 
-                    tCExecution.getCountryEnvironmentApplication().getSystem(), tCExecution.getCountryEnvironmentApplication().getEnvironment(),
-                    tCExecution.getCountryEnvironmentApplication().getCountry());
-                      
-            lib = (TestDataLib)answer.getItem();
-            if(lib != null){
-                 //if the property was defined for all systems, then the query returned an empty value
-                if(StringUtil.isNullOrEmpty(lib.getSystem())){
+
+        HashMap<String, TestDataLibResult> currentListResults = tCExecution.getDataLibraryExecutionDataList();
+        if (currentListResults == null) {
+            currentListResults = new HashMap<String, TestDataLibResult>();
+        }
+        TestDataLib lib;
+        TestDataLibResult result;
+        AnswerItem answer = testDataLibService.readByKey(testCaseExecutionData.getValue1(),
+                tCExecution.getCountryEnvironmentApplication().getSystem(), tCExecution.getCountryEnvironmentApplication().getEnvironment(),
+                tCExecution.getCountryEnvironmentApplication().getCountry());
+
+        if (answer.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
+            lib = (TestDataLib) answer.getItem();
+            if (lib != null) {
+                //if the property was defined for all systems, then the query returned an empty value
+                if (StringUtil.isNullOrEmpty(lib.getSystem())) {
                     lib.setSystem(tCExecution.getCountryEnvironmentApplication().getSystem());
                 }
                 //if the property was defined for all environments, then the query returned an empty value
-                if(StringUtil.isNullOrEmpty(lib.getEnvironment())){
+                if (StringUtil.isNullOrEmpty(lib.getEnvironment())) {
                     lib.setEnvironment(tCExecution.getCountryEnvironmentApplication().getEnvironment());
                 }
                 //if the property was defined for all countries, then the query returned an empty value
-                if(StringUtil.isNullOrEmpty(lib.getCountry())){
+                if (StringUtil.isNullOrEmpty(lib.getCountry())) {
                     lib.setCountry(tCExecution.getCountryEnvironmentApplication().getCountry());
                 }
-                
-                AnswerItem serviceAnswer; 
+
+                AnswerItem serviceAnswer;
                 //result = currentListResults.get(String.valueOf(lib.getTestDataLibID()));                 
-                result = currentListResults.get(testCaseCountryProperty.getProperty());                 
+                result = currentListResults.get(testCaseCountryProperty.getProperty());
                 //if is force calculation, then the entry will be recalculated
-                if(forceRecalculation || (!forceRecalculation && result == null)){
-                    
-                    if(forceRecalculation && result != null){
+                if (forceRecalculation || (!forceRecalculation && result == null)) {
+
+                    if (forceRecalculation && result != null) {
                         currentListResults.remove(testCaseCountryProperty.getProperty());//removes the result when we are recalculating
                     }
-                    
+
                     //check if there are properties defined in the data specification
                     calculateInnerProperties(lib, testCaseStepActionExecution);
                     //we need to recalculate the result for the lib
-                    serviceAnswer = testDataLibService.fetchData(lib, testCaseCountryProperty.getRowLimit(), testCaseCountryProperty.getNature());                 
-                    
-                    if(serviceAnswer.getResultMessage().getCode() != MessageEventEnum.PROPERTY_SUCCESS.getCode()){
+                    serviceAnswer = testDataLibService.fetchData(lib, testCaseCountryProperty.getRowLimit(), testCaseCountryProperty.getNature());
+
+                    if (serviceAnswer.getResultMessage().getCode() != MessageEventEnum.PROPERTY_SUCCESS.getCode()) {
                         //if the fetch data fails then we will get the message and show it
                         res = serviceAnswer.getResultMessage();
                     }
-                    result = (TestDataLibResult)serviceAnswer.getItem(); //test data library returned by the service
+                    result = (TestDataLibResult) serviceAnswer.getItem(); //test data library returned by the service
                 }
-                
-                if(result != null){
+
+                if (result != null) {
                     //retrieves the information
                     //fetches the empty value as the default  one                     
-                    AnswerItem ansSubDataEntry = testDataLibDataService.findTestDataLibDataByKey(result.getTestDataLibID(), "");
-                    TestDataLibData subDataEntry = (TestDataLibData)ansSubDataEntry.getItem();
-                    
-                    if(subDataEntry != null){                        
+                    AnswerItem ansSubDataEntry = testDataLibDataService.readByKey(result.getTestDataLibID(), "");
+                    TestDataLibData subDataEntry = (TestDataLibData) ansSubDataEntry.getItem();
+
+                    if (subDataEntry != null) {
                         AnswerItem ansFetchData = testDataLibDataService.fetchSubData(result, subDataEntry);
                         String value = (String) ansFetchData.getItem();
-                        if(value == null){
+                        if (value == null) {
                             //if value is null then something happene while retrieving the sub-data entry value
                             res = ansFetchData.getResultMessage();
-                        }else{
+                        } else {
                             testCaseExecutionData.setValue(value); //TODO:FN tem que ser outra coisa
                             testCaseExecutionData.setValue1(String.valueOf(lib.getTestDataLibID().toString()));
                         }
-                        
-                    }else{ //no empty value is defined
+
+                    } else { //no empty value is defined
                         //we add the entry value into the execution data 
-                        testCaseExecutionData.setValue(String.valueOf(lib.getTestDataLibID().toString())); 
+                        testCaseExecutionData.setValue(String.valueOf(lib.getTestDataLibID().toString()));
                         testCaseExecutionData.setValue1(String.valueOf(lib.getTestDataLibID().toString()));
                     }
                     //updates the result data
                     currentListResults.put(testCaseCountryProperty.getProperty(), result);
                     //updates the execution data list
                     tCExecution.setDataLibraryExecutionDataList(currentListResults);
-                }                
-            }else{
+                }
+            } else {
                 //if the library was not available or does not exist
-                res = answer.getResultMessage();                
+                res = answer.getResultMessage();
             }
-                
-        } catch (CerberusException ex) {
-            MyLogger.log(PropertyService.class.getName(), Level.DEBUG, ex.toString());
+
+        } else {
             res = new MessageEvent(MessageEventEnum.PROPERTY_FAILED_GETFROMDATALIB);
         }
         res.setDescription(res.getDescription().replaceAll("%VALUE1%", testCaseExecutionData.getValue1()));
@@ -1112,15 +1125,17 @@ public class PropertyService implements IPropertyService {
 
         return testCaseExecutionData;
     }
-    
-     /**
-      * Auxiliary method that calculates the inner properties that are defined in a test data library entry
-      * @param lib - test data library entry
-      * @param testCaseStepActionExecution  step action execution
-      */
+
+    /**
+     * Auxiliary method that calculates the inner properties that are defined in
+     * a test data library entry
+     *
+     * @param lib - test data library entry
+     * @param testCaseStepActionExecution step action execution
+     */
     private void calculateInnerProperties(TestDataLib lib, TestCaseStepActionExecution testCaseStepActionExecution) {
         try {
-            if(lib.getType().equals(TestDataLibTypeEnum.SOAP.getCode())){            
+            if (lib.getType().equals(TestDataLibTypeEnum.SOAP.getCode())) {
                 //check if the servicepath contains properties that neeed to be calculated
                 String decodedServicePath = getValue(lib.getServicePath(), testCaseStepActionExecution, false);
                 lib.setServicePath(decodedServicePath);
@@ -1129,36 +1144,39 @@ public class PropertyService implements IPropertyService {
                 lib.setMethod(decodedMethod);
                 //check if the envelope contains properties that neeed to be calculated
                 String decodedEnvelope = getValue(lib.getEnvelope(), testCaseStepActionExecution, false);
-                lib.setEnvelope(decodedEnvelope);                                
-                
-            }else if(lib.getType().equals(TestDataLibTypeEnum.SQL.getCode())){
+                lib.setEnvelope(decodedEnvelope);
+
+            } else if (lib.getType().equals(TestDataLibTypeEnum.SQL.getCode())) {
                 //check if the script contains properties that neeed to be calculated
                 String decodedScript = getValue(lib.getScript(), testCaseStepActionExecution, false);
                 lib.setScript(decodedScript);
-                
+
             }
         } catch (CerberusEventException cex) {
-            Logger.getLogger(PropertyService.class.getName()).log(java.util.logging.Level.SEVERE, "calculateInnerProperties", cex);               		
+            Logger.getLogger(PropertyService.class.getName()).log(java.util.logging.Level.SEVERE, "calculateInnerProperties", cex);
         }
     }
-   
+
     /**
-     * Auxiliary method that verifies if a property is defined in the scope of the test case.
+     * Auxiliary method that verifies if a property is defined in the scope of
+     * the test case.
+     *
      * @param property - property name
      * @param country - country were the property was implemented
      * @param propertieOfTestcase - list of properties defined for the test case
-     * @return an AnswerItem that contains the property in case of success, and null otherwise. also it returns a message indicating error or success.
+     * @return an AnswerItem that contains the property in case of success, and
+     * null otherwise. also it returns a message indicating error or success.
      */
     private AnswerItem<TestCaseCountryProperties> findMatchingTestCaseCountryProperty(String property, String country, List<TestCaseCountryProperties> propertieOfTestcase) {
-        
+
         AnswerItem<TestCaseCountryProperties> item = new AnswerItem<TestCaseCountryProperties>();
         boolean propertyDefined = false;
         item.setResultMessage(new MessageEvent(MessageEventEnum.PROPERTY_SUCCESS));
-        
+
         TestCaseCountryProperties testCaseCountryProperty = null;
         //searches for properties that match the propertyname (even if they use the getFromDataLib syntax)
-        for (TestCaseCountryProperties tccp : propertieOfTestcase) {                
-            if(tccp.getProperty().equals(property)){
+        for (TestCaseCountryProperties tccp : propertieOfTestcase) {
+            if (tccp.getProperty().equals(property)) {
                 //property is defined
                 propertyDefined = true;
                 //check if is defined for country
@@ -1171,31 +1189,31 @@ public class PropertyService implements IPropertyService {
                     break;
                 }
             }
-        }       
+        }
 
         //if the property was not found, with the explicit name, and if it uses the syntax getFromDataLib then we will check for 
         //entry names + subdata entry names that match the property name
-        if(testCaseCountryProperty == null){
+        if (testCaseCountryProperty == null) {
             //check property format
             //uses get from datalib syntax    
             boolean getFromDataLibSyntax = GETFROMDATALIB_PATTERN.matcher(property).find();
- 
-            if(getFromDataLibSyntax){
-                String [] parts = property.split(GETFROMDATALIB_SPLIT);
+
+            if (getFromDataLibSyntax) {
+                String[] parts = property.split(GETFROMDATALIB_SPLIT);
                 String libName = parts[0];
                 String subdataName = parts[1];
 
-                for (TestCaseCountryProperties tccp : propertieOfTestcase) {  
+                for (TestCaseCountryProperties tccp : propertieOfTestcase) {
                     //check if there is a property that matches the lib name, when the syntax used is Entry(Name)
-                    if(tccp.getType().equals(PropertyTypeEnum.GET_FROM_DATALIB.getPropertyName()) && tccp.getProperty().equals(libName)){
+                    if (tccp.getType().equals(PropertyTypeEnum.GET_FROM_DATALIB.getPropertyName()) && tccp.getProperty().equals(libName)) {
                         //property is defined
                         propertyDefined = true;
                         if (tccp.getCountry().equals(country)) {
                             //if is a sub data access then we create a auxiliary property
                             testCaseCountryProperty = factoryTCCountryProperties.create(tccp, property, libName, subdataName);
                             //property needs to be calculated
-                            testCaseCountryProperty.setResult(new  MessageEvent(MessageEventEnum.PROPERTY_PENDING));    
-                            
+                            testCaseCountryProperty.setResult(new MessageEvent(MessageEventEnum.PROPERTY_PENDING));
+
                             if (LOG.isDebugEnabled()) {
                                 LOG.debug("Property found :" + tccp + " Test Data Library subdata access syntax");
                             }
@@ -1205,12 +1223,12 @@ public class PropertyService implements IPropertyService {
                 }
             }
         }
-         
+
         /**
          * If property defined on another Country, set a specific message. If
          * property is not defined at all, trigger the end of the testcase.
          */
-        if(testCaseCountryProperty == null){
+        if (testCaseCountryProperty == null) {
             MessageEvent msg = new MessageEvent(MessageEventEnum.PROPERTY_FAILED_NO_PROPERTY_DEFINITION);
             if (!propertyDefined) {
                 msg = new MessageEvent(MessageEventEnum.PROPERTY_FAILED_UNKNOWNPROPERTY);
@@ -1223,7 +1241,7 @@ public class PropertyService implements IPropertyService {
             }
         }
         item.setItem(testCaseCountryProperty);
-        return item; 
+        return item;
     }
- 
+
 }

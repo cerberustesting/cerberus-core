@@ -313,6 +313,12 @@ table.display  th, #listOfTestDataLib td , #viewTestDataLibDataEntriesTable td{ 
     padding-top: 6px;
 }
 
+#summaryTableHeader td{
+    font-weight: bold;
+    background-color: rgba(66,139,202,0.2);
+    border:0;
+}
+
 
 /*
  * Sort arrow icon positioning

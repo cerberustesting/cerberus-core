@@ -199,6 +199,10 @@
         <servlet-class>org.cerberus.servlet.crud.testcampaign.GetCampaign</servlet-class>
     </servlet>
     <servlet>
+        <servlet-name>ReadCampaign</servlet-name>
+        <servlet-class>org.cerberus.servlet.crud.testcampaign.ReadCampaign</servlet-class>
+    </servlet>
+    <servlet>
         <servlet-name>GetTagExecutions</servlet-name>
         <servlet-class>org.cerberus.servlet.zzpublic.GetTagExecutions</servlet-class>
     </servlet>
@@ -253,6 +257,10 @@
     <servlet>
         <servlet-name>GetTestBattery</servlet-name>
         <servlet-class>org.cerberus.servlet.crud.testcampaign.GetTestBattery</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>ReadTestBattery</servlet-name>
+        <servlet-class>org.cerberus.servlet.crud.testcampaign.ReadTestBattery</servlet-class>
     </servlet>
     <servlet>
         <servlet-name>AddTestBattery</servlet-name>
@@ -315,8 +323,8 @@
         <servlet-class>org.cerberus.servlet.crud.countryenvironment.GetEnvironmentAvailable</servlet-class>
     </servlet>
     <servlet>
-        <servlet-name>ReadEnvironment</servlet-name>
-        <servlet-class>org.cerberus.servlet.crud.countryenvironment.ReadEnvironment</servlet-class>
+        <servlet-name>ReadCountryEnvParam</servlet-name>
+        <servlet-class>org.cerberus.servlet.crud.countryenvironment.ReadCountryEnvParam</servlet-class>
     </servlet>
     <servlet>
         <servlet-name>UpdateApplication</servlet-name>
@@ -1018,6 +1026,10 @@
         <url-pattern>/GetCampaign</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
+        <servlet-name>ReadCampaign</servlet-name>
+        <url-pattern>/ReadCampaign</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
         <servlet-name>GetTagExecutions</servlet-name>
         <url-pattern>/GetTagExecutions</url-pattern>
     </servlet-mapping>
@@ -1074,6 +1086,10 @@
         <url-pattern>/GetTestBattery</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
+        <servlet-name>ReadTestBattery</servlet-name>
+        <url-pattern>/ReadTestBattery</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
         <servlet-name>AddTestBattery</servlet-name>
         <url-pattern>/AddTestBattery</url-pattern>
     </servlet-mapping>
@@ -1118,8 +1134,8 @@
         <url-pattern>/GetEnvironmentAvailable</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
-        <servlet-name>ReadEnvironment</servlet-name>
-        <url-pattern>/ReadEnvironment</url-pattern>
+        <servlet-name>ReadCountryEnvParam</servlet-name>
+        <url-pattern>/ReadCountryEnvParam</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
         <servlet-name>UpdateApplication</servlet-name>
@@ -1861,7 +1877,7 @@
             <web-resource-name>servlet</web-resource-name>
             <description>servlet</description>
             <url-pattern>/findEnvironmentByCriteria</url-pattern>
-            <url-pattern>/ReadEnvironment</url-pattern>
+            <url-pattern>/ReadCountryEnvParam</url-pattern>
             <url-pattern>/RunManualTest</url-pattern>
             <url-pattern>/SetTagToExecution</url-pattern>
             <url-pattern>/FindExecutionInQueue</url-pattern>
@@ -1950,9 +1966,6 @@
             <url-pattern>/CreateBuildRevisionInvariant</url-pattern>
             <url-pattern>/UpdateBuildRevisionInvariant</url-pattern>
             <url-pattern>/DeleteBuildRevisionInvariant</url-pattern>
-            <url-pattern>/CreateBuildRevisionInvariant1</url-pattern>
-            <url-pattern>/UpdateBuildRevisionInvariant1</url-pattern>
-            <url-pattern>/DeleteBuildRevisionInvariant1</url-pattern>
             <url-pattern>/CreateRobot</url-pattern>
             <url-pattern>/DeleteRobot</url-pattern>
             <url-pattern>/UpdateRobot</url-pattern>
@@ -1975,6 +1988,9 @@
             <url-pattern>/CreateBuildRevisionParameters</url-pattern>
             <url-pattern>/UpdateBuildRevisionParameters</url-pattern>
             <url-pattern>/ReadUser</url-pattern>
+            <url-pattern>/CreateBuildRevisionInvariant1</url-pattern>
+            <url-pattern>/UpdateBuildRevisionInvariant1</url-pattern>
+            <url-pattern>/DeleteBuildRevisionInvariant1</url-pattern>
         </web-resource-collection>
         <auth-constraint>
             <description>Integrator</description>
@@ -2074,6 +2090,7 @@
             <url-pattern>/DocumentationField</url-pattern>
             <url-pattern>/GetInvariantList</url-pattern>
             <url-pattern>/GetCampaign</url-pattern>
+            <url-pattern>/ReadCampaign</url-pattern>
             <url-pattern>/GetTagExecutions</url-pattern>
             <url-pattern>/GetCampaignExecutionsCommand</url-pattern>
             <url-pattern>/ListCampaignParameter</url-pattern>
@@ -2086,6 +2103,7 @@
             <url-pattern>/DeleteCampaignContent</url-pattern>
             <url-pattern>/DeleteCampaignParameter</url-pattern>
             <url-pattern>/GetTestBattery</url-pattern>
+            <url-pattern>/ReadTestBattery</url-pattern>
             <url-pattern>/AddTestBattery</url-pattern>
             <url-pattern>/AddTestBatteryContent</url-pattern>
             <url-pattern>/DeleteTestBattery</url-pattern>

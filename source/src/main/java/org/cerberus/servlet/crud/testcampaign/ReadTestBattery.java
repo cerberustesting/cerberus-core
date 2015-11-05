@@ -17,37 +17,35 @@
  * You should have received a copy of the GNU General Public License
  * along with Cerberus.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.cerberus.servlet.crud.testdata;
+package org.cerberus.servlet.crud.testcampaign;
 
+import com.google.gson.Gson;
 import java.io.IOException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import java.util.List;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import org.cerberus.crud.entity.MessageEvent;
+import org.cerberus.crud.entity.TestBattery;
+import org.cerberus.crud.service.ITestBatteryService;
 import org.cerberus.enums.MessageEventEnum;
-import org.cerberus.crud.entity.TestDataLib; 
-import org.cerberus.crud.factory.IFactoryTestDataLib;
-import org.cerberus.crud.service.ILogEventService;
-import org.cerberus.crud.service.ITestDataLibService;
-import org.cerberus.crud.service.impl.LogEventService;
 import org.cerberus.util.ParameterParserUtil;
-import org.cerberus.util.answer.Answer;
+import org.cerberus.util.answer.AnswerItem;
+import org.cerberus.util.answer.AnswerList;
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.springframework.context.ApplicationContext;
 import org.springframework.web.context.support.WebApplicationContextUtils;
 
 /**
- * Handles the UPDATE operation for test data lib entries.
  *
- * @author FNogueira
+ * @author cerberus
  */
-@WebServlet(name = "UpdateTestDataLib", urlPatterns = {"/UpdateTestDataLib"})
-public class UpdateTestDataLib extends HttpServlet {
+@WebServlet(name = "ReadTestBattery", urlPatterns = {"/ReadTestBattery"})
+public class ReadTestBattery extends HttpServlet {
 
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
@@ -60,52 +58,21 @@ public class UpdateTestDataLib extends HttpServlet {
      */
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        JSONObject jsonResponse = new JSONObject();
+        ApplicationContext appContext = WebApplicationContextUtils.getWebApplicationContext(this.getServletContext());
+
         try {
-            int testDataLibID = Integer.parseInt(request.getParameter("testdatalibid"));//this is must be defined
-            String name = request.getParameter("name"); //this is must be defined
-            String type = request.getParameter("type");//this is must be defined
-            String group = ParameterParserUtil.parseStringParam(request.getParameter("group"), "");
+            JSONObject jsonResponse = new JSONObject();
+            AnswerItem answer = new AnswerItem(new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED));
 
-            String description = ParameterParserUtil.parseStringParam(request.getParameter("libdescription"), "");
-            String system = ParameterParserUtil.parseStringParam(request.getParameter("system"), "");
-            String environment = ParameterParserUtil.parseStringParam(request.getParameter("environment"), "");
-            String country = ParameterParserUtil.parseStringParam(request.getParameter("country"),"");
+            answer = findTestBatteryList(appContext, request);
+            jsonResponse = (JSONObject) answer.getItem();
 
-            String database = ParameterParserUtil.parseStringParam(request.getParameter("database"), "");
-            String script = ParameterParserUtil.parseStringParam(request.getParameter("script"), "");
-
-            String servicePath = ParameterParserUtil.parseStringParam(request.getParameter("servicepath"), "");
-            String method = ParameterParserUtil.parseStringParam(request.getParameter("method"), "");
-            String envelope = ParameterParserUtil.parseStringParam(request.getParameter("envelope"), "");
-
-            //specific attributes
-            ApplicationContext appContext = WebApplicationContextUtils.getWebApplicationContext(this.getServletContext());
-            IFactoryTestDataLib factoryLibService = appContext.getBean(IFactoryTestDataLib.class);
-
-            ITestDataLibService libService = appContext.getBean(ITestDataLibService.class);
-
-            TestDataLib lib = factoryLibService.create(testDataLibID, name, system, environment, country, group, type, database,
-                    script, servicePath, method, envelope, description);
-
-            //updates the testdatalib
-            Answer answer = libService.update(lib);
-
-            //  Adding Log entry.
-            if(answer.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())){
-                ILogEventService logEventService = appContext.getBean(LogEventService.class);
-                logEventService.createPrivateCalls("/UpdateTestDataLib", "UPDATE", "Update TestDataLib:  id: " + testDataLibID + " name: " + name, request);
-            }
-            
             jsonResponse.put("messageType", answer.getResultMessage().getMessage().getCodeString());
             jsonResponse.put("message", answer.getResultMessage().getDescription());
-
             response.setContentType("application/json");
-            response.getWriter().print(jsonResponse);
-            response.getWriter().flush();
-
+            response.getWriter().print(jsonResponse.toString());
         } catch (JSONException ex) {
-            Logger.getLogger(UpdateTestDataLib.class.getName()).log(Level.SEVERE, null, ex);
+            org.apache.log4j.Logger.getLogger(ReadTestBattery.class.getName()).log(org.apache.log4j.Level.ERROR, null, ex);
             //returns a default error message with the json format that is able to be parsed by the client-side
             response.setContentType("application/json");
             MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
@@ -116,8 +83,8 @@ public class UpdateTestDataLib extends HttpServlet {
                     + "<a href=\"https://github.com/vertigo17/Cerberus/issues/\" target=\"_blank\">here</a>"));
             errorMessage.append("'}");
             response.getWriter().print(errorMessage.toString());
-        }
 
+        }
     }
 
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
@@ -158,5 +125,49 @@ public class UpdateTestDataLib extends HttpServlet {
     public String getServletInfo() {
         return "Short description";
     }// </editor-fold>
+
+    private AnswerItem findTestBatteryList(ApplicationContext appContext, HttpServletRequest request) throws JSONException {
+        AnswerItem item = new AnswerItem();
+        AnswerList answer = new AnswerList();
+        JSONObject resp = new JSONObject();
+
+        ITestBatteryService testBatteryService = appContext.getBean(ITestBatteryService.class);
+
+        int startPosition = Integer.valueOf(ParameterParserUtil.parseStringParam(request.getParameter("iDisplayStart"), "0"));
+        int length = Integer.valueOf(ParameterParserUtil.parseStringParam(request.getParameter("iDisplayLength"), "0"));
+
+        String searchParameter = ParameterParserUtil.parseStringParam(request.getParameter("sSearch"), "");
+        int columnToSortParameter = Integer.parseInt(ParameterParserUtil.parseStringParam(request.getParameter("iSortCol_0"), "0"));
+        String sColumns = ParameterParserUtil.parseStringParam(request.getParameter("sColumns"), "testbatteryid, testbattery, Description");
+        String columnToSort[] = sColumns.split(",");
+        String columnName = columnToSort[columnToSortParameter];
+        String sort = ParameterParserUtil.parseStringParam(request.getParameter("sSortDir_0"), "asc");
+
+        answer = testBatteryService.readByCriteria(startPosition, length, columnName, sort, searchParameter, "");
+
+//        boolean userHasPermissions = request.isUserInRole("TestAdmin");
+        JSONArray jsonArray = new JSONArray();
+        if (answer.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {//the service was able to perform the query, then we should get all values
+            for (TestBattery testBattery : (List<TestBattery>) answer.getDataList()) {
+                jsonArray.put(convertTestBatterytoJSONObject(testBattery));
+            }
+        }
+
+        resp.put("contentTable", jsonArray);
+//        resp.put("hasPermissions", userHasPermissions);
+        resp.put("iTotalRecords", answer.getTotalRows());
+        resp.put("iTotalDisplayRecords", answer.getTotalRows());
+
+        item.setItem(resp);
+        item.setResultMessage(answer.getResultMessage());
+
+        return item;
+    }
+
+    private JSONObject convertTestBatterytoJSONObject(TestBattery testBattery) throws JSONException {
+        Gson gson = new Gson();
+        JSONObject result = new JSONObject(gson.toJson(testBattery));
+        return result;
+    }
 
 }

@@ -34,8 +34,6 @@ import org.cerberus.crud.entity.MessageEvent;
 import org.cerberus.enums.MessageEventEnum;
 import org.cerberus.crud.entity.TestDataLib;
 import org.cerberus.crud.entity.TestDataLibData; 
-import org.cerberus.crud.factory.IFactoryLogEvent;
-import org.cerberus.crud.factory.impl.FactoryLogEvent;
 import org.cerberus.crud.service.IImportFileService;
 import org.cerberus.crud.service.IImportFileService.XMLHandlerEnumType;
 import org.cerberus.crud.service.ILogEventService;
@@ -90,7 +88,7 @@ public class ImportTestDataLib extends HttpServlet {
 
                 //creates the testdatalib data that was imported from file
                 ITestDataLibService libService = appContext.getBean(ITestDataLibService.class);
-                answer = libService.createTestDataLibBatch(map);
+                answer = libService.createBatch(map);
 
                 if (answer.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
                     msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_IMPORT_OK);

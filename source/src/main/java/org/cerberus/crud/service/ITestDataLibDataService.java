@@ -20,8 +20,8 @@ package org.cerberus.crud.service;
 import java.util.ArrayList;
 import java.util.List; 
 import org.cerberus.crud.entity.TestDataLibData;
-import org.cerberus.crud.entity.TestDataLibDataUpdate;
-import org.cerberus.crud.entity.TestDataLibResult;
+import org.cerberus.dto.TestDataLibDataUpdateDTO;
+import org.cerberus.service.engine.testdata.TestDataLibResult;
 import org.cerberus.exception.CerberusException;
 import org.cerberus.util.answer.Answer;
 import org.cerberus.util.answer.AnswerItem;
@@ -30,68 +30,70 @@ import org.cerberus.util.answer.AnswerList;
 /**
  *
  * @author bcivel
+ * @author FNogueira
  */
 public interface ITestDataLibDataService {
 
     /**
      *
      * @param testDataLibData TestDataLib to insert
-     * @throws CerberusException
      */
-    void createTestDataLibData(TestDataLibData testDataLibData) throws CerberusException;
+    Answer create(TestDataLibData testDataLibData);
 
     /**
      *
      * @param testDataLibData TestData to update using the key
-     * @throws CerberusException
      */
-    void updateTestDataLibData(TestDataLibData testDataLibData) throws CerberusException;
+    Answer update(TestDataLibData testDataLibData);
 
     /**
      *
      * @param testDataLibData
-     * @throws CerberusException
      */
-    void deleteTestDataLibData(TestDataLibData testDataLibData) throws CerberusException;
+    Answer delete(TestDataLibData testDataLibData);
 
     /**
      *
      * @param testDataLibID
      * @param subData
      * @return
-     * @throws org.cerberus.exception.CerberusException
      */
-    AnswerItem<TestDataLibData> findTestDataLibDataByKey(Integer testDataLibID, String subData);
+    AnswerItem<TestDataLibData> readByKey(Integer testDataLibID, String subData);
 
     /**
      *
      * @return All TestDataLibData
      */
-    List<TestDataLibData> findAllTestDataLibData();
+    AnswerList<TestDataLibData> readAll();
 
     /**
      *
      * @param testDataLibID
      * @return
      */
-    AnswerList findTestDataLibDataListByTestDataLib(Integer testDataLibID);
+    AnswerList<TestDataLibData> readById(Integer testDataLibID);
 
     /**
      *
      * @param testDataLibID
+     * @param subData
+     * @param value
+     * @param column
+     * @param parsingAnswer
+     * @param description
      * @return
      */
-    List<TestDataLibData> findTestDataLibDataByCriteria(Integer testDataLibID, String subData, String value, String column, String parsingAnswer, String description) throws CerberusException;
+    AnswerList<TestDataLibData> readByCriteria(Integer testDataLibID, String subData, String value, String column, String parsingAnswer, String description);
     /**
      * Creates several TestDataLibData entries
      * @param subdataSet - entries to insert
      * @throws CerberusException 
      */
-    public void createTestDataLibDataBatch(List<TestDataLibData> subdataSet) throws CerberusException;
+    Answer createBatch(List<TestDataLibData> subdataSet) throws CerberusException;
 
-    public AnswerItem<String> fetchSubData(TestDataLibResult result, TestDataLibData subDataEntry);
+    AnswerItem<String> fetchSubData(TestDataLibResult result, TestDataLibData subDataEntry);
 
-    public void deleteByTestDataLibID(int testDataLibID) throws CerberusException;
+    Answer delete(int testDataLibID);
 
 
     /**
@@ -102,14 +104,14 @@ public interface ITestDataLibDataService {
      * @param entriesToRemove
      * @return
      */
-    public Answer cudTestDataLibData(int testDataLibID, ArrayList<TestDataLibData> entriesToInsert, ArrayList<TestDataLibDataUpdate> entriesToUpdate, ArrayList<String> entriesToRemove);
+    Answer createUpdateDelete(int testDataLibID, ArrayList<TestDataLibData> entriesToInsert, ArrayList<TestDataLibDataUpdateDTO> entriesToUpdate, ArrayList<String> entriesToRemove);
 
     /**
      *
      * @param testDataLibName
      * @return
      */
-    public AnswerList findTestDataLibDataByName(String testDataLibName); 
+    AnswerList readByName(String testDataLibName); 
 
     /**
      *
@@ -118,6 +120,6 @@ public interface ITestDataLibDataService {
      * @param limit
      * @return
      */
-    public AnswerList findTestDataLibSubData(String testDataLib, String nameToSearch, int limit);
+    AnswerList readByIdByName(String testDataLib, String nameToSearch, int limit);
     
 }

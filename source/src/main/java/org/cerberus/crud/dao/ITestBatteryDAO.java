@@ -22,6 +22,7 @@ package org.cerberus.crud.dao;
 import java.util.List;
 import org.cerberus.crud.entity.TestBattery;
 import org.cerberus.exception.CerberusException;
+import org.cerberus.util.answer.AnswerList;
 
 /**
  *
@@ -47,4 +48,6 @@ public interface ITestBatteryDAO {
     List<TestBattery> findTestBatteryByCriteria(Integer testBatteryID, String testBattery, String Description) throws CerberusException;
 
     List<TestBattery> findTestBatteriesByTestCase(String test, String testCase) throws CerberusException;
+
+    public AnswerList readByCriteria(int startPosition, int length, String columnName, String sort, String searchParameter, String individualSearch);
 }

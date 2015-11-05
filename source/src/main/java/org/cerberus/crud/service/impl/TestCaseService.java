@@ -168,8 +168,9 @@ public class TestCaseService implements ITestCaseService {
     }
 
     @Override
-    public AnswerList readByVariousCriteria(String[] test, String[] idProject, String[] app, String[] creator, String[] implementer, String[] system) {
-        return testCaseDao.readByVariousCriteria(test, idProject, app, creator, implementer, system);
+    public AnswerList readByVariousCriteria(String[] test, String[] idProject, String[] app, String[] creator, String[] implementer, String[] system,
+                                            String[] testBattery, String[] campaign, String[] priority, String[] group, String[] status) {
+        return testCaseDao.readByVariousCriteria(test, idProject, app, creator, implementer, system, testBattery, campaign, priority, group, status);
     }
 
     /**

@@ -721,7 +721,8 @@ public class TestCaseDAO implements ITestCaseDAO {
     }
 
     @Override
-    public AnswerList readByVariousCriteria(String[] test, String[] idProject, String[] app, String[] creator, String[] implementer, String[] system) {
+    public AnswerList readByVariousCriteria(String[] test, String[] idProject, String[] app, String[] creator, String[] implementer, String[] system,
+                                            String[] testBattery, String[] campaign, String[] priority, String[] group, String[] status) {
         AnswerList answer = new AnswerList();
         MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
         msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", ""));
@@ -740,6 +741,11 @@ public class TestCaseDAO implements ITestCaseDAO {
         query.append(createInClauseFromList(creator, "tc.creator"));
         query.append(createInClauseFromList(implementer, "tc.implementer"));
         query.append(createInClauseFromList(system, "app.system"));
+        query.append(createInClauseFromList(testBattery, "tb.testbattery"));
+        query.append(createInClauseFromList(campaign, "cc.campaign"));
+        query.append(createInClauseFromList(priority, "tc.priority"));
+        query.append(createInClauseFromList(group, "tc.group"));
+        query.append(createInClauseFromList(status, "tc.status"));
         query.append("GROUP BY tc.test, tc.testcase ");
 
         Connection connection = this.databaseSpring.connect();

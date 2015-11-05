@@ -19,13 +19,16 @@
  */
 package org.cerberus.servlet.crud.testexecution;
 
+import com.google.gson.Gson;
 import java.io.IOException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.TreeMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.servlet.ServletException;
@@ -34,17 +37,20 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import org.cerberus.crud.entity.Invariant;
-import org.cerberus.dto.TestCaseWithExecution;
 import org.cerberus.crud.entity.MessageEvent;
 import org.cerberus.crud.entity.TestCaseExecution;
+import org.cerberus.crud.service.IExportDataService;
 import org.cerberus.crud.service.IInvariantService;
-import org.cerberus.enums.MessageEventEnum;
-import org.cerberus.exception.CerberusException;
 import org.cerberus.crud.service.ITestCaseExecutionInQueueService;
 import org.cerberus.crud.service.ITestCaseExecutionService;
 import org.cerberus.crud.service.impl.InvariantService;
+import org.cerberus.dto.SummaryStatisticsDTO;
+import org.cerberus.dto.TestCaseWithExecution;
+import org.cerberus.enums.MessageEventEnum;
+import org.cerberus.exception.CerberusException;
 import org.cerberus.servlet.crud.testcampaign.CampaignExecutionReport;
 import org.cerberus.util.ParameterParserUtil;
+import org.cerberus.util.answer.Answer;
 import org.cerberus.util.answer.AnswerItem;
 import org.cerberus.util.answer.AnswerList;
 import org.json.JSONArray;
@@ -86,8 +92,11 @@ public class ReadTestCaseExecution extends HttpServlet {
             String Tag = ParameterParserUtil.parseStringParam(request.getParameter("Tag"), "");
             String test = ParameterParserUtil.parseStringParam(request.getParameter("test"), "");
             String testCase = ParameterParserUtil.parseStringParam(request.getParameter("testCase"), "");
-
-            if (sEcho == 0 && !Tag.equals("")) {
+            List<String> exportOptions = readExportOptions(request);
+            if (!exportOptions.isEmpty()) { //export options were selected 
+                answer = exportExecutionByTag(appContext, Tag, exportOptions);
+                jsonResponse = (JSONObject) answer.getItem();
+            } else if (sEcho == 0 && !Tag.equals("")) {
                 answer = findExecutionColumns(appContext, request, Tag);
                 jsonResponse = (JSONObject) answer.getItem();
             } else if (sEcho != 0 && !Tag.equals("")) {
@@ -266,29 +275,15 @@ public class ReadTestCaseExecution extends HttpServlet {
         String columnName = columnToSort[columnToSortParameter];
         String sort = ParameterParserUtil.parseStringParam(request.getParameter("sSortDir_0"), "asc");
 
-        /**
-         * Get list of execution by tag, env, country, browser
-         */
-        testCaseExecution = testCaseExecService.readByTagByCriteria(Tag, startPosition, length, columnName, sort, searchParameter, "");
-        List<TestCaseWithExecution> testCaseWithExecutions = testCaseExecution.getDataList();
-
-        /**
-         * Get list of Execution in Queue by Tag
-         */
-        testCaseExecutionInQueue = testCaseExecutionInQueueService.readByTagByCriteria(Tag, startPosition, length, columnName, sort, searchParameter, "");
-        List<TestCaseWithExecution> testCaseWithExecutionsInQueue = testCaseExecutionInQueue.getDataList();
-
-        /**
-         * Feed hash map with execution from the two list (to get only one by
-         * test,testcase,country,env,browser)
-         */
-        testCaseWithExecutions = hashExecution(testCaseWithExecutions, testCaseWithExecutionsInQueue);
+        List<TestCaseWithExecution> testCaseWithExecutions = readExecutionByTagList(appContext, Tag, startPosition, length, columnName, sort, searchParameter);
 
         JSONArray executionList = new JSONArray();
         JSONObject statusFilter = getStatusList(request);
         JSONObject countryFilter = getCountryList(request, appContext);
         LinkedHashMap<String, JSONObject> ttc = new LinkedHashMap<String, JSONObject>();
 
+        //object containing the summary data
+        HashMap<String, SummaryStatisticsDTO> summaryMap = new HashMap<String, SummaryStatisticsDTO>();
         for (TestCaseWithExecution testCaseWithExecution : testCaseWithExecutions) {
             try {
                 String controlStatus = testCaseWithExecution.getControlStatus();
@@ -309,17 +304,38 @@ public class ReadTestCaseExecution extends HttpServlet {
                     } else {
                         ttcObject.put("test", testCaseWithExecution.getTest());
                         ttcObject.put("testCase", testCaseWithExecution.getTestCase());
-//                    ttcObject.put("function", testCaseWithExecution.getFunction());
+                        ttcObject.put("function", testCaseWithExecution.getFunction());
                         ttcObject.put("shortDesc", testCaseWithExecution.getShortDescription());
-//                    ttcObject.put("status", testCaseWithExecution.getStatus());
+                        ttcObject.put("status", testCaseWithExecution.getStatus());
                         ttcObject.put("application", testCaseWithExecution.getApplication());
-//                    ttcObject.put("bugId", testCaseWithExecution.getBugID());
-//                    ttcObject.put("comment", testCaseWithExecution.getComment());
+                        ttcObject.put("bugId", testCaseWithExecution.getBugID());
+                        ttcObject.put("comment", testCaseWithExecution.getComment());
                         execTab.put(execKey, execution);
                         ttcObject.put("execTab", execTab);
                     }
                     ttc.put(testCaseWithExecution.getTest() + "_" + testCaseWithExecution.getTestCase(), ttcObject);
                 }
+
+                //summary data
+                //check if the country and application shows
+                String keySummaryTable = testCaseWithExecution.getApplication() + " "
+                        + testCaseWithExecution.getCountry() + " " + testCaseWithExecution.getEnvironment();
+                SummaryStatisticsDTO stats;
+
+                String status = testCaseWithExecution.getControlStatus();
+
+                if (summaryMap.containsKey(keySummaryTable)) {
+                    stats = summaryMap.get(keySummaryTable);
+                } else {
+                    stats = new SummaryStatisticsDTO();
+                    stats.setApplication(testCaseWithExecution.getApplication());
+                    stats.setCountry(testCaseWithExecution.getCountry());
+                    stats.setEnvironment(testCaseWithExecution.getEnvironment());
+                }
+
+                stats.updateStatisticByStatus(status);
+                summaryMap.put(keySummaryTable, stats); //updates the map
+
             } catch (JSONException ex) {
                 Logger.getLogger(CampaignExecutionReport.class.getName()).log(Level.SEVERE, null, ex);
             }
@@ -329,6 +345,10 @@ public class ReadTestCaseExecution extends HttpServlet {
         jsonResponse.put("testList", ttc.values());
         jsonResponse.put("iTotalRecords", ttc.size());
         jsonResponse.put("iTotalDisplayRecords", ttc.size());
+
+        //adds the summary information
+        JSONArray data = extractSummaryData(summaryMap);
+        jsonResponse.put("summaryTable", data);
 
         answer.setItem(jsonResponse);
         answer.setResultMessage(new MessageEvent(MessageEventEnum.DATA_OPERATION_OK));
@@ -396,10 +416,10 @@ public class ReadTestCaseExecution extends HttpServlet {
             }
         }
         List<TestCaseWithExecution> result = new ArrayList<TestCaseWithExecution>(testCaseWithExecutionsList.values());
-        
+
         return result;
     }
-    
+
     private JSONObject testCaseExecutionToJSONObject(
             TestCaseWithExecution testCaseWithExecution) throws JSONException {
         JSONObject result = new JSONObject();
@@ -437,4 +457,126 @@ public class ReadTestCaseExecution extends HttpServlet {
 
         return result;
     }
+
+    private List<String> readExportOptions(HttpServletRequest request) {
+        List<String> exportOptions = new ArrayList<String>();
+        String reportByStatus = request.getParameter("exportReportByStatus");
+        if (reportByStatus != null) {
+            exportOptions.add(reportByStatus);
+        }
+
+        String exportSummayTable = request.getParameter("exportSummayTable");
+        if (exportSummayTable != null) {
+            exportOptions.add(exportSummayTable);
+        }
+        String exportList = request.getParameter("exportList");
+        if (exportList != null) {
+            exportOptions.add(exportList);
+            //check if ist to export all or filtered data
+            String type = ParameterParserUtil.parseStringParam(request.getParameter("exportOption"), "");
+            exportOptions.add(type);
+
+        }
+
+        return exportOptions;
+    }
+
+    private AnswerItem exportExecutionByTag(ApplicationContext appContext, String Tag, List<String> exportOptions) {
+        AnswerItem answer = new AnswerItem();
+        MessageEvent msg;
+        try {
+
+            //statusExecutionID instead of ID because in dao, an alias is created for that column
+            List<TestCaseWithExecution> testCaseWithExecutions = readExecutionByTagList(appContext, Tag, 0, -1, "statusExecutionID", "asc", "");
+
+            IExportDataService exportService = appContext.getBean(IExportDataService.class);
+
+            Answer answerExport = exportService.exportTestCaseExecutionByTag(testCaseWithExecutions, Tag, exportOptions);
+
+            msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
+
+        } catch (ParseException ex) {
+            Logger.getLogger(ReadTestCaseExecution.class.getName()).log(Level.SEVERE, null, ex);
+            msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
+            msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", "Unable to export data. Problem occurred while parsing data.")); //TODO:FN refazer esta enum           
+
+        } catch (CerberusException ex) {
+            Logger.getLogger(ReadTestCaseExecution.class.getName()).log(Level.SEVERE, null, ex);
+            msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
+            msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", "Unable to export data. Problem occurred while parsing data.")); //TODO:FN refazer esta enum
+        }
+        answer.setResultMessage(msg);
+        return answer;
+    }
+
+    private JSONArray extractSummaryData(HashMap<String, SummaryStatisticsDTO> summaryMap) {
+        JSONArray data = new JSONArray();
+        int okTotal = 0;
+        int koTotal = 0;
+        int naTotal = 0;
+        int neTotal = 0;
+        int peTotal = 0;
+        int faTotal = 0;
+        int caTotal = 0;
+        Gson gson = new Gson();
+        //sort keys
+        TreeMap<String, SummaryStatisticsDTO> sortedKeys = new TreeMap<String, SummaryStatisticsDTO>(summaryMap);
+        for (String key : sortedKeys.keySet()) {
+            SummaryStatisticsDTO sumStats = summaryMap.get(key);
+            //percentage values
+            okTotal += sumStats.getOk();
+            koTotal += sumStats.getKo();
+            naTotal += sumStats.getNa();
+            neTotal += sumStats.getNe();
+            peTotal += sumStats.getPe();
+            faTotal += sumStats.getFa();
+            caTotal += sumStats.getCa();
+            data.put(gson.toJson(sumStats));
+        }
+        SummaryStatisticsDTO sumGlobal = new SummaryStatisticsDTO();
+        sumGlobal.setApplication("Total");
+        sumGlobal.setOk(okTotal);
+        sumGlobal.setKo(koTotal);
+        sumGlobal.setNa(naTotal);
+        sumGlobal.setNe(neTotal);
+        sumGlobal.setPe(peTotal);
+        sumGlobal.setFa(faTotal);
+        sumGlobal.setCa(caTotal);
+
+        int notOkTotal = koTotal + naTotal + peTotal + faTotal + caTotal + neTotal;
+        sumGlobal.setNotOkTotal(notOkTotal);
+
+        int totalGlobal = notOkTotal + okTotal;
+        sumGlobal.setTotal(totalGlobal);
+
+        sumGlobal.updatePercentageStatistics();
+        data.put(gson.toJson(sumGlobal));
+        return data;
+    }
+
+    private List<TestCaseWithExecution> readExecutionByTagList(ApplicationContext appContext, String Tag, int startPosition, int length, String columnName, String sort, String searchParameter) throws ParseException, CerberusException {
+        AnswerList testCaseExecution;
+        AnswerList testCaseExecutionInQueue;
+
+        ITestCaseExecutionService testCaseExecService = appContext.getBean(ITestCaseExecutionService.class);
+
+        ITestCaseExecutionInQueueService testCaseExecutionInQueueService = appContext.getBean(ITestCaseExecutionInQueueService.class);
+        /**
+         * Get list of execution by tag, env, country, browser
+         */
+        testCaseExecution = testCaseExecService.readByTagByCriteria(Tag, startPosition, length, columnName, sort, searchParameter, "");
+        List<TestCaseWithExecution> testCaseWithExecutions = testCaseExecution.getDataList();
+        /**
+         * Get list of Execution in Queue by Tag
+         */
+        testCaseExecutionInQueue = testCaseExecutionInQueueService.readByTagByCriteria(Tag, startPosition, length, columnName, sort, searchParameter, "");
+        List<TestCaseWithExecution> testCaseWithExecutionsInQueue = testCaseExecutionInQueue.getDataList();
+        /**
+         * Feed hash map with execution from the two list (to get only one by
+         * test,testcase,country,env,browser)
+         */
+        testCaseWithExecutions = hashExecution(testCaseWithExecutions, testCaseWithExecutionsInQueue);
+        return testCaseWithExecutions;
+    }
+
 }

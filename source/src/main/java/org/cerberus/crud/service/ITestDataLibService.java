@@ -29,6 +29,7 @@ import org.cerberus.util.answer.AnswerList;
 /**
  *
  * @author bcivel
+ * @author FNogueira
  */
 public interface ITestDataLibService {
 
@@ -37,27 +38,27 @@ public interface ITestDataLibService {
      * @param testDataLib TestDataLib to insert
      * @throws CerberusException
      */
-    void createTestDataLib(TestDataLib testDataLib) throws CerberusException;
+    void create(TestDataLib testDataLib) throws CerberusException;
 
     /**
      *
      * @param testDataLib TestData to update using the key
      * @return
      */
-    Answer updateTestDataLib(TestDataLib testDataLib);
+    Answer update(TestDataLib testDataLib);
 
     /**
      *
      * @param testDataLib
-     * @throws CerberusException
+     * @return 
      */
-    void deleteTestDataLib(TestDataLib testDataLib) throws CerberusException;
+    Answer delete(TestDataLib testDataLib);
 
     /**
      *
      * @return All TestDataLib
      */
-    List<TestDataLib> findAllTestDataLib();
+    AnswerList<TestDataLib> readAll();
 
     /**
      *
@@ -70,7 +71,7 @@ public interface ITestDataLibService {
      * resultSet
      * @return
      */
-    AnswerList findTestDataLibListByCriteria(int start, int amount, String column, String dir, String searchTerm, String individualSearch);
+    AnswerList<TestDataLib> readByCriteria(int start, int amount, String column, String dir, String searchTerm, String individualSearch);
     /**
      * 
      * @param name
@@ -78,24 +79,16 @@ public interface ITestDataLibService {
      * @param environment
      * @param country
      * @return 
-     * @throws org.cerberus.exception.CerberusException 
      */
-    AnswerItem findTestDataLibByKey(String name, String system, String environment, String country) throws CerberusException;
+    AnswerItem<TestDataLib> readByKey(String name, String system, String environment, String country);
     
-    AnswerItem findTestDataLibByKey(int testDatalib);
-    /**
-     * 
-     * @param searchTerm words to be searched in every column (Exemple : article)
-     * @param inds part of the script to add to where clause (Exemple : `type` = 'Article')
-     * @return The number of records for these criterias
-     */
-    Integer getNumberOfTestDataLibPerCriteria(String searchTerm, String inds);
+    AnswerItem<TestDataLib> readByKey(int testDatalib);
+ 
     /**
      * Auxiliary method that retrieves all the group names that were already defined for a type.
-     * @param type STATIC or SQL or SOAP
      * @return list of group values for the type
      */
-    AnswerList<String> getListOfGroupsPerType(String type);
+    AnswerList<String> readDistinctGroups();
     /**
      * Gets the rawData associated to the library; for SQL and SOAP, the corresponding instructions will be executed in order to retrieve the data 
      * from the database and webservice.
@@ -111,7 +104,7 @@ public interface ITestDataLibService {
      * @param testDataLibID - id of the entry that we want to remove
      * @return an answer indicating the status of the operation
      */
-    Answer deleteTestDataLib(int testDataLibID);
+    Answer delete(int testDataLibID);
 
     /**
      * Creates the test data lib entries for the com
@@ -119,10 +112,16 @@ public interface ITestDataLibService {
      * @param subDataList subdata entries that were defined in the add window, which are associated with each entry in the list testDataLibList
      * @return an answer indicating the status of the operation
      */
-    Answer createTestDataLibBatch(List<TestDataLib> testDataLibList, List<TestDataLibData> subDataList);
-    Answer createTestDataLib(TestDataLib testDataLib, List<TestDataLibData> subDataList);
-    Answer createTestDataLibBatch(List<TestDataLib> entries)throws CerberusException;
-    Answer createTestDataLibBatch(HashMap<TestDataLib, List<TestDataLibData>> entries);
+    Answer createBatch(List<TestDataLib> testDataLibList, List<TestDataLibData> subDataList);
+    Answer create(TestDataLib testDataLib, List<TestDataLibData> subDataList);
+    Answer createBatch(List<TestDataLib> entries);
+    Answer createBatch(HashMap<TestDataLib, List<TestDataLibData>> entries);
     
-    AnswerList findTestDataLibNameList(String testDataLibName, int limit);
+    /**
+     *
+     * @param testDataLibName
+     * @param limit
+     * @return
+     */
+    AnswerList<TestDataLib> readByName(String testDataLibName, int limit);
 }

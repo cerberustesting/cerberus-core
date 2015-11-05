@@ -17,23 +17,20 @@
  * You should have received a copy of the GNU General Public License
  * along with Cerberus.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.cerberus.servlet.crud.countryenvironment;
+package org.cerberus.servlet.crud.testcampaign;
 
-import com.google.common.base.Strings;
 import com.google.gson.Gson;
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.util.HashMap;
 import java.util.List;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import org.cerberus.crud.entity.CountryEnvParam;
+import org.cerberus.crud.entity.Campaign;
 import org.cerberus.crud.entity.MessageEvent;
-import org.cerberus.crud.entity.Parameter;
-import org.cerberus.crud.service.ICountryEnvParamService;
+import org.cerberus.crud.service.ICampaignService;
 import org.cerberus.enums.MessageEventEnum;
 import org.cerberus.util.ParameterParserUtil;
 import org.cerberus.util.answer.AnswerItem;
@@ -48,8 +45,8 @@ import org.springframework.web.context.support.WebApplicationContextUtils;
  *
  * @author cerberus
  */
-@WebServlet(name = "ReadEnvironment", urlPatterns = {"/ReadEnvironment"})
-public class ReadEnvironment extends HttpServlet {
+@WebServlet(name = "ReadCampaign", urlPatterns = {"/ReadCampaign"})
+public class ReadCampaign extends HttpServlet {
 
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
@@ -66,21 +63,17 @@ public class ReadEnvironment extends HttpServlet {
 
         try {
             JSONObject jsonResponse = new JSONObject();
-            AnswerItem answer = new AnswerItem(new MessageEvent(MessageEventEnum.DATA_OPERATION_OK));
+            AnswerItem answer = new AnswerItem(new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED));
 
-            String system = ParameterParserUtil.parseStringParam(request.getParameter("system"), "");
-
-            if (!Strings.isNullOrEmpty(system)) {
-                answer = findActiveEnvironmentList(appContext, system);
-                jsonResponse = (JSONObject) answer.getItem();
-            }
+            answer = findCampaignList(appContext, request);
+            jsonResponse = (JSONObject) answer.getItem();
 
             jsonResponse.put("messageType", answer.getResultMessage().getMessage().getCodeString());
             jsonResponse.put("message", answer.getResultMessage().getDescription());
             response.setContentType("application/json");
             response.getWriter().print(jsonResponse.toString());
         } catch (JSONException ex) {
-            org.apache.log4j.Logger.getLogger(ReadEnvironment.class.getName()).log(org.apache.log4j.Level.ERROR, null, ex);
+            org.apache.log4j.Logger.getLogger(ReadTestBattery.class.getName()).log(org.apache.log4j.Level.ERROR, null, ex);
             //returns a default error message with the json format that is able to be parsed by the client-side
             response.setContentType("application/json");
             MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
@@ -95,35 +88,7 @@ public class ReadEnvironment extends HttpServlet {
         }
     }
 
-    private JSONObject convertCountryEnvParamtoJSONObject(CountryEnvParam cep) throws JSONException {
-        Gson gson = new Gson();
-        JSONObject result = new JSONObject(gson.toJson(cep));
-        return result;
-    }
-
-    private AnswerItem findActiveEnvironmentList(ApplicationContext appContext, String system) throws JSONException {
-        AnswerItem item = new AnswerItem();
-        AnswerList answer = new AnswerList();
-        JSONObject resp = new JSONObject();
-
-        ICountryEnvParamService countryEnvParamService = appContext.getBean(ICountryEnvParamService.class);
-
-        answer = countryEnvParamService.readActiveBySystem(system);
-
-        if (answer.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
-            HashMap<String, JSONObject> map = new HashMap<String, JSONObject>();
-            for (CountryEnvParam cep : (List<CountryEnvParam>) answer.getDataList()) {
-                map.put(cep.getEnvironment(), convertCountryEnvParamtoJSONObject(cep));
-            }
-            resp.put("contentTable", map.values());
-        }
-
-        item.setItem(resp);
-        item.setResultMessage(answer.getResultMessage());
-        return item;
-    }
-
-// <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
+    // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
     /**
      * Handles the HTTP <code>GET</code> method.
      *
@@ -162,4 +127,47 @@ public class ReadEnvironment extends HttpServlet {
         return "Short description";
     }// </editor-fold>
 
+    private AnswerItem findCampaignList(ApplicationContext appContext, HttpServletRequest request) throws JSONException {
+           AnswerItem item = new AnswerItem();
+        AnswerList answer = new AnswerList();
+        JSONObject resp = new JSONObject();
+
+        ICampaignService testBatteryService = appContext.getBean(ICampaignService.class);
+
+        int startPosition = Integer.valueOf(ParameterParserUtil.parseStringParam(request.getParameter("iDisplayStart"), "0"));
+        int length = Integer.valueOf(ParameterParserUtil.parseStringParam(request.getParameter("iDisplayLength"), "0"));
+
+        String searchParameter = ParameterParserUtil.parseStringParam(request.getParameter("sSearch"), "");
+        int columnToSortParameter = Integer.parseInt(ParameterParserUtil.parseStringParam(request.getParameter("iSortCol_0"), "0"));
+        String sColumns = ParameterParserUtil.parseStringParam(request.getParameter("sColumns"), "campaignid, campaign, Description");
+        String columnToSort[] = sColumns.split(",");
+        String columnName = columnToSort[columnToSortParameter];
+        String sort = ParameterParserUtil.parseStringParam(request.getParameter("sSortDir_0"), "asc");
+
+        answer = testBatteryService.readByCriteria(startPosition, length, columnName, sort, searchParameter, "");
+
+//        boolean userHasPermissions = request.isUserInRole("TestAdmin");
+        JSONArray jsonArray = new JSONArray();
+        if (answer.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {//the service was able to perform the query, then we should get all values
+            for (Campaign campaign : (List<Campaign>) answer.getDataList()) {
+                jsonArray.put(convertCampaigntoJSONObject(campaign));
+            }
+        }
+
+        resp.put("contentTable", jsonArray);
+//        resp.put("hasPermissions", userHasPermissions);
+        resp.put("iTotalRecords", answer.getTotalRows());
+        resp.put("iTotalDisplayRecords", answer.getTotalRows());
+
+        item.setItem(resp);
+        item.setResultMessage(answer.getResultMessage());
+
+        return item;
+    }
+
+    private JSONObject convertCampaigntoJSONObject(Campaign campaign) throws JSONException {
+        Gson gson = new Gson();
+        JSONObject result = new JSONObject(gson.toJson(campaign));
+        return result;
+    }
 }

@@ -42,7 +42,8 @@
         <websocket.version>1.0</websocket.version>
         <gson.version>2.3.1</gson.version>
         <jsonxpath.version>1.2.0</jsonxpath.version>
-
+        <poi.version>3.13</poi.version>
+        
         <!-- Maven plugin version -->
         <maven-compiler-plugin.version>2.3.2</maven-compiler-plugin.version>
         <maven-surefire-plugin.version>2.10</maven-surefire-plugin.version>
@@ -230,7 +231,16 @@
             <artifactId>json-path</artifactId>
             <version>${jsonxpath.version}</version>
         </dependency>
-        
+        <dependency>
+            <groupId>org.apache.poi</groupId>
+            <artifactId>poi</artifactId>
+            <version>${poi.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.poi</groupId>
+            <artifactId>poi-ooxml</artifactId>
+            <version>${poi.version}</version>
+        </dependency>
 
 
         <!-- Provided scope -->

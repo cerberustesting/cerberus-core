@@ -88,4 +88,6 @@ public interface ICountryEnvParamService {
     public List<CountryEnvParam> findListByCriteria(String system);
     
     public AnswerList readActiveBySystem(String system);
+
+    public AnswerList readByCriteria(int startPosition, int length, String columnName, String sort, String searchParameter, String string);
 }

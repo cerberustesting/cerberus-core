@@ -27,6 +27,7 @@ import org.cerberus.crud.entity.CampaignContent;
 import org.cerberus.crud.entity.CampaignParameter;
 import org.cerberus.crud.entity.TestCaseExecution;
 import org.cerberus.exception.CerberusException;
+import org.cerberus.util.answer.AnswerList;
 
 /**
  *
@@ -81,4 +82,6 @@ public interface ICampaignService {
     List<TestCaseWithExecution> getCampaignTestCaseExecutionForEnvCountriesBrowserTag(String tag) throws CerberusException;
     
     List<String> findCountries(String campaignName) throws CerberusException;
+
+    public AnswerList readByCriteria(int start, int amount, String colName, String dir, String searchParameter, String individualSearch);
 }

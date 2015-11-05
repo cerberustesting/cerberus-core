@@ -27,6 +27,7 @@ import org.cerberus.util.answer.AnswerList;
 /**
  *
  * @author bcivel
+ * @author FNogueira
  */
 public interface ITestDataLibDAO {
 
@@ -35,32 +36,32 @@ public interface ITestDataLibDAO {
      * @param testDataLib
      * @return 
      */
-    Answer createTestDataLib(TestDataLib testDataLib);
+    Answer create(TestDataLib testDataLib);
 
     /**
      *
      * @param testDataLib
      * @return 
      */
-    Answer updateTestDataLib(TestDataLib testDataLib);
+    Answer update(TestDataLib testDataLib);
 
     /**
      *
      * @param testDataLib
-     * @throws CerberusException
+     * @return 
      */
-    void deleteTestDataLib(TestDataLib testDataLib) throws CerberusException;
+    Answer delete(TestDataLib testDataLib);
     /**
      * Deletes a testdatalib with basis on the unique identifier
      * @param testDataLibID - test data lib entry
      * @return 
      */
-     Answer deleteUnusedTestDataLib(int testDataLibID);
+     Answer deleteUnused(int testDataLibID);
     /**
      *
      * @return All TestData
      */
-    List<TestDataLib> findAllTestDataLib();
+    AnswerList<TestDataLib> readAll();
 
     /**
      *
@@ -73,7 +74,7 @@ public interface ITestDataLibDAO {
      * resultSet
      * @return
      */
-    AnswerList findTestDataLibListByCriteria(int start, int amount, String column, String dir, String searchTerm, String individualSearch);
+    AnswerList<TestDataLib> readByCriteria(int start, int amount, String column, String dir, String searchTerm, String individualSearch);
 
     /**
      *
@@ -82,24 +83,15 @@ public interface ITestDataLibDAO {
      * @param environment
      * @param country
      * @return
-     * @throws org.cerberus.exception.CerberusException
      */
-    AnswerItem findTestDataLibByKey(String name, String system, String environment, String country) throws CerberusException;
+    AnswerItem<TestDataLib> readByKey(String name, String system, String environment, String country);
 
-    AnswerItem findTestDataLibByKey(int testDataLibID);
-    /**
-     *
-     * @param searchTerm words to be searched in every column (Exemple :
-     * article)
-     * @param inds part of the script to add to where clause (Exemple : `type` =
-     * 'Article')
-     * @return The number of records for these criterias
-     */
-    Integer getNumberOfTestDataLibPerCriteria(String searchTerm, String inds);
+    AnswerItem<TestDataLib> readByKey(int testDataLibID);
+  
     
-    AnswerList<String> getListOfGroupsPerType(String type); 
+    AnswerList<String> readDistinctGroups(); 
 
-    Answer createTestDataLibBatch(List<TestDataLib> testDataLibEntries);
+    Answer createBatch(List<TestDataLib> testDataLibEntries);
 
-    AnswerList findTestDataLibNameList(String testDataLibName, int limit);
+    AnswerList<TestDataLib> readByName(String testDataLibName, int limit);
 }

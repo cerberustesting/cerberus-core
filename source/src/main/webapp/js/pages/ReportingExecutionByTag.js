@@ -19,11 +19,20 @@
  */
 /* global handleErrorAjaxAfterTimeout */
 
-$.when($.getScript("js/pages/global/global.js")).then(function () {
-    $(document).ready(function () {
+$.when($.getScript("js/pages/global/global.js")).then(function() {
+    $(document).ready(function() {
         initPage();
 
         bindToggleCollapse();
+
+        $("#splitFilter input").click(function() {
+            //save the filter preferences in the session storage
+            var serial = $("#splitFilter input").serialize();
+            var obj = convertSerialToJSONObject(serial);
+            sessionStorage.setItem("splitFilter", JSON.stringify(obj));
+        });
+
+        splitFilterPreferences();
 
         var urlTag = GetURLParameter('Tag');
         loadTagFilters(urlTag);
@@ -44,6 +53,16 @@ function initPage() {
     displayPageLabel(doc);
     displayFooter(doc);
     loadCountryFilter();
+    $("#exportList").change(controlExportRadioButtons);
+    loadSummaryTableOptions();
+}
+function loadSummaryTableOptions() {
+    if (document.queryCommandSupported('Copy')) {
+        $("#copyButton").html("Copy to Clipboard");
+    } else {
+        $("#copyButton").html("Select table");
+    }
+
 }
 
 function loadCountryFilter() {
@@ -51,14 +70,14 @@ function loadCountryFilter() {
         data: {idName: "COUNTRY"},
         async: false,
         dataType: 'json',
-        success: function (data) {
+        success: function(data) {
             var countryFilter = $("#countryFilter");
             var len = data.length;
 
             for (var i = 0; i < len; i++) {
                 var filter = JSON.parse(sessionStorage.getItem("countryFilter"));
                 var cb;
-                
+
                 //Load the filters depenbding on the preferences retrieved from session storage
                 if (filter !== null && !filter.hasOwnProperty(data[i].value)) {
                     cb = '<label class="checkbox-inline">\n\
@@ -71,7 +90,7 @@ function loadCountryFilter() {
                 }
                 countryFilter.append(cb);
             }
-            $("#countryFilter input").on("click", function () {
+            $("#countryFilter input").on("click", function() {
                 //save the filter preferences in the session storage
                 var serial = $("#countryFilter input").serialize();
                 var obj = convertSerialToJSONObject(serial);
@@ -81,6 +100,35 @@ function loadCountryFilter() {
     });
 }
 
+function splitFilterPreferences() {
+    var filter = JSON.parse(sessionStorage.getItem("splitFilter"));
+
+    if (filter !== null) {
+        $("#splitFilter input").each(function() {
+            if (filter.hasOwnProperty($(this).prop("name"))) {
+                $(this).prop("checked", true);
+            } else {
+                $(this).prop("checked", false);
+            }
+        });
+    }
+}
+
+function displaySummaryTableLabel(doc) {
+    $("#summaryTableTitle").html(doc.getDocOnline("page_reportbytag", "summary_table"));
+    //summary table header    
+    $("#summaryTableHeaderApplication").html(doc.getDocOnline("application", "Application"));
+    $("#summaryTableHeaderCountry").html(doc.getDocOnline("invariant", "COUNTRY"));
+    $("#summaryTableHeaderEnvironment").html(doc.getDocOnline("invariant", "ENVIRONMENT"));
+    
+    $("#selectTableButtonText").html(doc.getDocOnline("page_reportbytag", "btn_select_table"));
+  
+}
+
+function displayExportDataLabel(doc) {
+    //$("#exportDataLabel").html(doc.getDocOnline("page_global", "export_data")); //export panel //TODO:FN remove comments after development
+    //$("#exportDataButton").html(doc.getDocOnline("page_global", "btn_export")); //button export //TODO:FN remove comments after development
+}
 function displayPageLabel(doc) {
     $("#pageTitle").html(doc.getDocLabel("page_reportbytag", "title"));
     $("#title").html(doc.getDocOnline("page_reportbytag", "title"));
@@ -89,6 +137,8 @@ function displayPageLabel(doc) {
     $("#filters").html(doc.getDocOnline("page_reportbytag", "filters"));
     $("#reportStatus").html(doc.getDocOnline("page_reportbytag", "report_status"));
     $("#reportFunction").html(doc.getDocOnline("page_reportbytag", "report_function"));
+    displaySummaryTableLabel(doc);
+    displayExportDataLabel(doc);
     $("#envCountryBrowser").html(doc.getDocOnline("page_reportbytag", "report_envcountrybrowser"));
     $("#List").html(doc.getDocOnline("page_reportbytag", "report_list"));
     $("#statusLabel").html(doc.getDocLabel("testcase", "Status") + " :");
@@ -96,7 +146,7 @@ function displayPageLabel(doc) {
 
 function loadTagFilters(urlTag) {
     var jqxhr = $.get("ReadTag", "", "json");
-    $.when(jqxhr).then(function (data) {
+    $.when(jqxhr).then(function(data) {
         var messageType = getAlertType(data.messageType);
         if (messageType === "success") {
             var index;
@@ -126,23 +176,18 @@ function loadReport() {
 
     window.history.pushState('Tag', '', 'ReportingExecutionByTag.jsp?Tag=' + encodeURIComponent(selectTag));
 
-    //clear the old report content before reloading it
-    $("#ReportByStatusTable").empty();
-    $("#statusChart").empty();
-    $("#functionChart").empty();
-    $("#progressEnvCountryBrowser").empty();
-    if ($("#listTable_wrapper").hasClass("initialized")) {
-        $("#tableArea").empty();
-        $("#tableArea").html('<table id="listTable" class="table table-hover display" name="listTable">\n\
-                                            </table><div class="marginBottom20"></div>');
-    }
     if (selectTag !== "") {
         //handle the test case execution list display
         loadEnvCountryBrowserReport();
         loadReportList();
         //Retrieve data for charts and draw them
         var jqxhr = $.get("GetReportData", {CampaignName: "null", Tag: selectTag}, "json");
-        $.when(jqxhr).then(function (data) {
+        $.when(jqxhr).then(function(data) {
+            //clear the old report content before redrawing it
+            $("#ReportByStatusTable").empty();
+            $("#statusChart").empty();
+            $("#functionChart").empty();
+            $("#progressEnvCountryBrowser").empty();
             loadReportByStatusTable(data);
             loadReportByFunctionChart(data);
         });
@@ -158,7 +203,7 @@ function generateBarTooltip(data, statusOrder) {
 
         if (data.total.hasOwnProperty(status)) {
             htmlRes += "<div>\n\
-                        <span class='color-box status" + status +"'></span>\n\
+                        <span class='color-box status" + status + "'></span>\n\
                         <strong> " + status + " : </strong>" + data.total[status] + "</div>";
         }
     }
@@ -173,7 +218,7 @@ function buildBar(tag, obj) {
         data: {barData: true, Tag: tag, env: obj.env, country: obj.country, browser: obj.browser, app: obj.application},
         async: true,
         dataType: 'json',
-        success: function (data) {
+        success: function(data) {
             $("#totalExec").html(data.totalReport);
             var buildBar;
             var statusOrder = ["OK", "KO", "FA", "NA", "NE", "PE", "CA"];
@@ -202,7 +247,7 @@ function buildBar(tag, obj) {
             buildBar += '</div>';
             $("#progressEnvCountryBrowser").append(buildBar);
         },
-        error: function () {
+        error: function() {
             showUnexpectedError();
         }
     });
@@ -233,14 +278,14 @@ function loadEnvCountryBrowserReport() {
         data: {split: true, Tag: tag, env: params.env, country: params.country, browser: params.browser, app: params.app},
         async: true,
         dataType: 'json',
-        success: function (json) {
+        success: function(json) {
             var len = json.contentTable.length;
             for (var index = 0; index < len; index++) {
                 //draw a progress bar for each combo retrieved
                 buildBar(tag, json.contentTable[index]);
             }
         },
-        error: function () {
+        error: function() {
             showUnexpectedError();
         }
     });
@@ -251,23 +296,24 @@ function loadReportList() {
     var statusFilter = $("#statusFilter input");
     var countryFilter = $("#countryFilter input");
 
-    if ($("#listTable_wrapper").hasClass("initialized")) {
-        $("#tableArea").empty();
-        $("#tableArea").html('<table id="listTable" class="table table-hover display" name="listTable">\n\
-                                            </table><div class="marginBottom20"></div>');
-    }
-
     if (selectTag !== "") {
         //configure and create the dataTable
         var jqxhr = $.getJSON("ReadTestCaseExecution", "Tag=" + encodeURIComponent(selectTag) + "&" + statusFilter.serialize() + "&" + countryFilter.serialize());
-        $.when(jqxhr).then(function (data) {
+        $.when(jqxhr).then(function(data) {
+            if ($("#listTable_wrapper").hasClass("initialized")) {
+                $("#tableArea").empty();
+                $("#tableArea").html('<table id="listTable" class="table table-hover display" name="listTable">\n\
+                                            </table><div class="marginBottom20"></div>');
+            }
+
             var request = "ReadTestCaseExecution?Tag=" + encodeURIComponent(selectTag) + "&" + statusFilter.serialize() + "&" + countryFilter.serialize();
 
             var config = new TableConfigurationsServerSide("listTable", request, "testList", aoColumnsFunc(data.Columns));
             customConfig(config);
-
-            var table = createDataTable(config, createShortDescRow);
-
+            //adds a loader to a table 
+            showLoader($("#summaryTablePanel"));
+            //var table = createDataTable(config, createShortDescRow);
+            createDataTable(config, createShortDescRow, createSummaryTable);
             $('#listTable_wrapper').not('.initialized').addClass('initialized');
 
         });
@@ -347,7 +393,7 @@ function loadReportByStatusTable(data) {
 function loadReportByStatusChart(data) {
 
     var margin = {top: 20, right: 25, bottom: 20, left: 50};
-    
+
     var offsetW = document.getElementById('statusChart').offsetWidth;
     if (offsetW === 0) {
         offsetW = 300;
@@ -356,7 +402,7 @@ function loadReportByStatusChart(data) {
     if (offsetH === 0) {
         offsetH = 300;
     }
-    
+
     var width = offsetW - margin.left - margin.right;
     var height = offsetH - margin.top - margin.bottom;
     var radius = Math.min(width, height) / 2;
@@ -372,7 +418,7 @@ function loadReportByStatusChart(data) {
             .outerRadius(radius);
 
     var pie = d3.layout.pie()
-            .value(function (d) {
+            .value(function(d) {
                 return d.value;
             })
             .sort(null);
@@ -382,7 +428,7 @@ function loadReportByStatusChart(data) {
             .enter()
             .append('path')
             .attr('d', arc)
-            .attr('fill', function (d, i) {
+            .attr('fill', function(d, i) {
                 return d.data.color;
             });
 }
@@ -419,7 +465,7 @@ function loadReportByFunctionChart(dataset) {
     var tip = d3.tip()
             .attr('class', 'd3-tip')
             .offset([-10, 0])
-            .html(function (d) {
+            .html(function(d) {
                 var res = "<strong>Function :</strong> <span style='color:red'>" + d.name + "</span>";
                 var len = d.chartData.length;
 
@@ -439,7 +485,7 @@ function loadReportByFunctionChart(dataset) {
     svg.call(tip);
 
 
-    data.forEach(function (d) {
+    data.forEach(function(d) {
         var y0 = 0;
         d.chartData = [];
         for (var status in d) {
@@ -450,10 +496,10 @@ function loadReportByFunctionChart(dataset) {
         d.totalTests = d.chartData[d.chartData.length - 1].y1;
     });
 
-    x.domain(data.map(function (d) {
+    x.domain(data.map(function(d) {
         return d.name;
     }));
-    y.domain([0, d3.max(data, function (d) {
+    y.domain([0, d3.max(data, function(d) {
             return d.totalTests;
         })]);
 
@@ -482,7 +528,7 @@ function loadReportByFunctionChart(dataset) {
             .data(data)
             .enter().append("g")
             .attr("class", "g")
-            .attr("transform", function (d) {
+            .attr("transform", function(d) {
                 return "translate(" + x(d.name) + ",0)";
             });
 
@@ -491,20 +537,129 @@ function loadReportByFunctionChart(dataset) {
             .on('mouseout', tip.hide);
 
     name.selectAll("rect")
-            .data(function (d) {
+            .data(function(d) {
                 return d.chartData;
             })
             .enter().append("rect")
             .attr("width", x.rangeBand())
-            .attr("y", function (d) {
+            .attr("y", function(d) {
                 return y(d.y1);
             })
-            .attr("height", function (d) {
+            .attr("height", function(d) {
                 return y(d.y0) - y(d.y1);
             })
-            .style("fill", function (d) {
+            .style("fill", function(d) {
                 return d.color;
             });
+}
+
+/*** EXPORT OPTIONS***/
+
+function exportReport() {
+    //open file chooser and then export
+    var selectTag = $("#selectTag option:selected").text();
+    var statusFilter = $("#statusFilter input");
+    var countryFilter = $("#countryFilter input");
+    var exportDataFilter = $("#exportData input");
+
+    var jqxhr = $.getJSON("ReadTestCaseExecution", "Tag=" + selectTag + "&" + statusFilter.serialize() +
+            "&" + countryFilter.serialize() + "&" + exportDataFilter.serialize());
+    $.when(jqxhr).then(function(data) {
+        alert(data);
+    });
+}
+
+function controlExportRadioButtons() {
+    //control radiobuttons
+    console.log("mudou ");
+    var isChecked = $(this).prop("checked");
+    if (isChecked) {
+        $("input[name='exportOption']").prop("disabled", false);
+    } else {
+        $("input[name='exportOption']").prop("disabled", true);
+    }
+}
+
+/*** SUMMARY TABLE options ****/
+
+
+/**
+ * Creates a summary table from data retrieved from server.
+ * @param {type} data
+ * @returns {undefined}
+ */
+function createSummaryTable(data) {
+    //cleans the data that was already added
+    $("#summaryTableBody tr").remove();
+    //TODO:FN verifies if table is empty?
+    $.when($.each(data.summaryTable, function(idx, obj) {
+        var row = jQuery.parseJSON(obj);
+        //creates a new row
+        //numbers are aligned to right
+        var $tr = $('<tr>').append(
+                $('<td>').text(row.application),
+                $('<td>').text(row.country),
+                $('<td>').text(row.environment),
+                $('<td>').text(row.ok).css("text-align", "right"),
+                $('<td>').text(row.ko).css("text-align", "right"),
+                $('<td>').text(row.fa).css("text-align", "right"),
+                $('<td>').text(row.na).css("text-align", "right"),
+                $('<td>').text(row.ne).css("text-align", "right"),
+                $('<td>').text(row.pe).css("text-align", "right"),
+                $('<td>').text(row.ca).css("text-align", "right"),
+                $('<td>').text(row.notOkTotal).css("text-align", "right"),
+                $('<td>').text(row.total).css("text-align", "right"),
+                $('<td>').text(row.percOk + "%").css("text-align", "right"),
+                $('<td>').text(row.percKo + "%").css("text-align", "right"),
+                $('<td>').text(row.percFa + "%").css("text-align", "right"),
+                $('<td>').text(row.percNa + "%").css("text-align", "right"),
+                $('<td>').text(row.percNe + "%").css("text-align", "right"),
+                $('<td>').text(row.percPe + "%").css("text-align", "right"),
+                $('<td>').text(row.percCa + "%").css("text-align", "right"),
+                $('<td>').text(row.percNotOkTotal + "%").css("text-align", "right"));
+        if (row.application === "Total") {
+            $($tr).addClass("summaryTotal");
+        } else {
+            if (row.percOk === 100) {
+                $($tr).addClass("summary100");
+            }
+        }
+        $("#summaryTableBody").append($tr);
+
+
+    })).then(function() {
+        hideLoader($("#summaryTablePanel"));
+        //alternate colors
+        $("#summaryTableBody tr:odd").css("background-color", "rgba(225,231,243,0.2)");
+        //if the row is the summary total, then it will have the background color blue
+        $("#summaryTableBody tr.summaryTotal").css("background-color", "rgba(66,139,202,0.2)").css("font-weight", "900");
+        //if the row has 100% ok, then it will have the background color green
+        $("#summaryTableBody tr.summary100").css("background-color", "rgba(92,184,0,0.2)");
+
+    });
+}
+function selectTableToCopy() {
+
+    var el = document.getElementById('summaryTable');
+
+    var body = document.body, range, sel;
+    if (document.createRange && window.getSelection) {
+        range = document.createRange();
+        sel = window.getSelection();
+        sel.removeAllRanges();
+        try {
+            range.selectNodeContents(el);
+            sel.addRange(range);
+        } catch (e) {
+            range.selectNode(el);
+            sel.addRange(range);
+        }
+
+    } else if (body.createTextRange) {
+        range = body.createTextRange();
+        range.moveToElementText(el);
+        range.select();
+    }
 }
 
 /*
@@ -532,12 +687,12 @@ function createShortDescRow(row, data, index) {
 function generateTooltip(data) {
     var htmlRes;
 
-    htmlRes = '<div>Test ID : ' + data.ID + '</div>' +
-            '<div>Country : ' + data.Country + '</div>' +
-            '<div>Environment : ' + data.Environment + '</div>' +
-            '<div>Browser : ' + data.Browser + '</div>' +
-            '<div>Start : ' + data.Start + '</div>' +
-            '<div>End : ' + data.End + '</div>' +
+    htmlRes = '<div><span class=\'bold\'>Execution ID :</span> ' + data.ID + '</div>' +
+            '<div><span class=\'bold\'>Country : </span>' + data.Country + '</div>' +
+            '<div><span class=\'bold\'>Environment : </span>' + data.Environment + '</div>' +
+            '<div><span class=\'bold\'>Browser : </span>' + data.Browser + '</div>' +
+            '<div><span class=\'bold\'>Start : </span>' + data.Start + '</div>' +
+            '<div><span class=\'bold\'>End : </span>' + data.End + '</div>' +
             '<div>' + data.ControlMessage + '</div>';
 
     return htmlRes;
@@ -564,7 +719,7 @@ function aoColumnsFunc(Columns) {
             "sName": "testCase",
             "sWidth": testCaseInfoWidth + "%",
             "title": doc.getDocOnline("testcase", "TestCase"),
-            "mRender": function (data, type, obj, meta) {
+            "mRender": function(data, type, obj, meta) {
                 var result = "<a href='./TestCase.jsp?Test=" + encodeURIComponent(obj.test) + "&TestCase=" + encodeURIComponent(obj.testCase) + "&Load=Load'>" + obj.testCase + "</a>";
                 return result;
             }
@@ -584,7 +739,7 @@ function aoColumnsFunc(Columns) {
             "bSortable": false,
             "bSearchable": false,
             "sWidth": testExecWidth + "%",
-            "data": function (row, type, val, meta) {
+            "data": function(row, type, val, meta) {
                 var dataTitle = meta.settings.aoColumns[meta.col].sTitle;
                 if (row.hasOwnProperty("execTab") && row["execTab"].hasOwnProperty(dataTitle)) {
                     return row["execTab"][dataTitle];
@@ -593,7 +748,7 @@ function aoColumnsFunc(Columns) {
                 }
             },
             "sClass": "center",
-            "mRender": function (data) {
+            "mRender": function(data) {
                 if (data !== "") {
                     var executionLink = generateExecutionLink(data.ControlStatus, data.ID);
                     var glyphClass = getRowClass(data.ControlStatus);
@@ -619,8 +774,8 @@ function customConfig(config) {
     var doc = new Doc();
     var customColvisConfig = {"buttonText": doc.getDocLabel("dataTable", "colVis"),
         "exclude": [0, 1, 2],
-        "stateChange": function (iColumn, bVisible) {
-            $('.shortDesc').each(function () {
+        "stateChange": function(iColumn, bVisible) {
+            $('.shortDesc').each(function() {
                 $(this).attr('colspan', '3');
             });
         }
@@ -667,7 +822,7 @@ function generateExecutionLink(status, id) {
 }
 
 function wrap(text, width) {
-    text.each(function () {
+    text.each(function() {
         var text = d3.select(this),
                 words = text.text().split(/\s+/).reverse(),
                 word,

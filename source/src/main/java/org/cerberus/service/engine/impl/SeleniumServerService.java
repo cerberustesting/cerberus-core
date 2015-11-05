@@ -20,9 +20,11 @@
 package org.cerberus.service.engine.impl;
 
 import io.appium.java_client.AppiumDriver;
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.StringWriter;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -31,6 +33,7 @@ import org.apache.commons.io.IOUtils;
 import org.apache.http.HttpHost;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
+import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.message.BasicHttpEntityEnclosingRequest;
 import org.apache.log4j.Level;
@@ -53,6 +56,7 @@ import org.openqa.selenium.Capabilities;
 import org.openqa.selenium.Dimension;
 import org.openqa.selenium.Point;
 import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebDriverException;
 import org.openqa.selenium.firefox.FirefoxDriver;
 import org.openqa.selenium.firefox.FirefoxProfile;
 import org.openqa.selenium.remote.CapabilityType;
@@ -80,6 +84,9 @@ public class SeleniumServerService implements ISeleniumServerService {
     public void startServer(TestCaseExecution tCExecution) throws CerberusException {
         //message used for log purposes 
         String testCaseDescription = "[" + tCExecution.getTest() + " - " + tCExecution.getTestCase() + "]";
+        WebDriver driver = null;
+        //TODO:FN temporary log messages to be removed
+        String location = "Begin";
         try {
             
             /**
@@ -87,16 +94,17 @@ public class SeleniumServerService implements ISeleniumServerService {
              */
             MyLogger.log(SeleniumServerService.class.getName(), Level.INFO, testCaseDescription + "Set Capabilities");
             DesiredCapabilities caps = this.setCapabilities(tCExecution);
+            location = "After DesiredCapabilities";
 
             /**
              * SetUp Driver
              */
             MyLogger.log(SeleniumServerService.class.getName(), Level.INFO, testCaseDescription + "Set Driver");
-            WebDriver driver = null;
+            
             AppiumDriver appiumDriver = null;
             if (tCExecution.getApplication().getType().equalsIgnoreCase("GUI")) {
                 driver = new RemoteWebDriver(new URL("http://" + tCExecution.getSession().getHost() + ":" + tCExecution.getSession().getPort() + "/wd/hub"), caps);               
-
+                location = "After Create Driver";
             } else if (tCExecution.getApplication().getType().equalsIgnoreCase("APK")) {
                 appiumDriver = new AppiumDriver(new URL("http://" + tCExecution.getSession().getHost() + ":" + tCExecution.getSession().getPort() + "/wd/hub"), caps);
                 driver = (WebDriver) appiumDriver;                
@@ -104,14 +112,16 @@ public class SeleniumServerService implements ISeleniumServerService {
             
             tCExecution.getSession().setDriver(driver);
             tCExecution.getSession().setAppiumDriver(appiumDriver);
-
+            
             /**
              * If Gui application, maximize window Get IP of Node in case of
              * remote Server
              */
             if (tCExecution.getApplication().getType().equalsIgnoreCase("GUI")) {
                 driver.manage().window().maximize();
+                location = "After maximize()";
                 getIPOfNode(tCExecution);
+                location = "After getIPOfNode";
 
                 /**
                  * If screenSize is defined, set the size of the screen.
@@ -122,6 +132,7 @@ public class SeleniumServerService implements ISeleniumServerService {
                     setScreenSize(driver, screenWidth, screenLength);
                 }
                 tCExecution.setScreenSize(getScreenSize(driver));
+                location = "After set screen";
             }
             tCExecution.getSession().setStarted(true);
             
@@ -139,10 +150,39 @@ public class SeleniumServerService implements ISeleniumServerService {
             mes.setDescription(mes.getDescription().replace("%SSIP%", tCExecution.getSeleniumIP()));
             mes.setDescription(mes.getDescription().replace("%SSPORT%", tCExecution.getSeleniumPort()));
             throw new CerberusException(mes);
+        }catch(WebDriverException webex){
+            MessageGeneral mes = new MessageGeneral(MessageGeneralEnum.EXECUTION_FA_SELENIUM);
+            StringBuilder errorMessage = new StringBuilder();
+            //TODO:FN debug messages to be removed
+            errorMessage.append("[DEBUG] WEB DRIVER EXCEPTION ");
+            errorMessage.append("__ID=").append(tCExecution.getId());
+            errorMessage.append("__TESTCASE=").append(testCaseDescription);
+            if(driver == null){
+                errorMessage.append("[driver is null]");
+            }
+            errorMessage.append("[Location: ").append(location).append("]");
+            errorMessage.append("[Exception: ").append(webex.toString()).append("]");
+            org.apache.log4j.Logger.getLogger(ExecutionStartService.class.getName()).log(org.apache.log4j.Level.DEBUG, errorMessage.toString());
+            mes.setDescription(mes.getDescription().replace("%MES%", webex.toString()));
+            throw new CerberusException(mes);
         }catch (Exception exception) {
             MyLogger.log(Selenium.class.getName(), Level.ERROR, exception.toString());
             MessageGeneral mes = new MessageGeneral(MessageGeneralEnum.EXECUTION_FA_SELENIUM);
+            StringBuilder errorMessage = new StringBuilder();
+            //TODO:FN debug messages to be removed
+            errorMessage.append("[DEBUG] COULD NOT START SELENIUM ");
+            errorMessage.append("__ID=").append(tCExecution.getId());
+            errorMessage.append("__TESTCASE=").append(testCaseDescription);
+            if(driver == null){
+                errorMessage.append("[driver is null]");
+            }
+            errorMessage.append("[Location: ").append(location).append("]");
+            errorMessage.append("[Exception: ").append(exception.toString()).append("]");
+            org.apache.log4j.Logger.getLogger(ExecutionStartService.class.getName()).log(org.apache.log4j.Level.DEBUG, errorMessage.toString());
+            
+            
             mes.setDescription(mes.getDescription().replace("%MES%", exception.toString()));
+            
             throw new CerberusException(mes);
         }
     }
@@ -304,9 +344,15 @@ public class SeleniumServerService implements ISeleniumServerService {
                 Thread.sleep(2000);
             } catch (InterruptedException ex) {
                 Logger.getLogger(SeleniumServerService.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+                //TODO:FN debug messages to be removed
+                org.apache.log4j.Logger.getLogger(ExecutionStartService.class.getName()).log(org.apache.log4j.Level.DEBUG, 
+                        "[DEBUG] STOP SERVER InterruptedException + " + "__ID=" + ex.getMessage());
             }
             Logger.getLogger(SeleniumServerService.class.getName()).log(java.util.logging.Level.INFO, "Stop Selenium Server");
             session.getDriver().quit();
+            //TODO:FN debug messages to be removed
+            org.apache.log4j.Logger.getLogger(ExecutionStartService.class.getName()).log(org.apache.log4j.Level.DEBUG, 
+                        "[DEBUG] STOP SERVER AFTER DRIVER QUIT ");
             return true;
         }
         return false;
@@ -314,8 +360,28 @@ public class SeleniumServerService implements ISeleniumServerService {
 
     private static void getIPOfNode(TestCaseExecution tCExecution) {
         try {
+            //TODO:FN temporary fix
             Session session = tCExecution.getSession();
-            HttpCommandExecutor ce = (HttpCommandExecutor) ((RemoteWebDriver) session.getDriver()).getCommandExecutor();
+            SessionId sessionId = ((RemoteWebDriver) session.getDriver()).getSessionId();
+            
+            URL url = new URL("http://" + session.getHost() + ":" + session.getPort() + "/grid/api/testsession?session=" + sessionId);
+            
+            BasicHttpEntityEnclosingRequest request = new BasicHttpEntityEnclosingRequest("POST", url.toExternalForm());
+            DefaultHttpClient client = new DefaultHttpClient();
+            HttpHost host = new HttpHost(url.getHost(), url.getPort());
+            
+            HttpResponse response = client.execute(host, request);
+            if (!response.getStatusLine().toString().contains("403")) {
+                JSONObject object = parseHttpResponse(response);
+
+                URL nodeUrl = new URL(object.getString("proxyId"));
+                if ((nodeUrl.getHost() != null) && (nodeUrl.getPort() != -1)) {
+                    tCExecution.setIp(nodeUrl.getHost());
+                    tCExecution.setPort(String.valueOf(nodeUrl.getPort()));
+                }
+            }    
+
+            /*HttpCommandExecutor ce = (HttpCommandExecutor) ((RemoteWebDriver) session.getDriver()).getCommandExecutor();
             SessionId sessionId = ((RemoteWebDriver) session.getDriver()).getSessionId();
             String hostName = ce.getAddressOfRemoteServer().getHost();
             int port = ce.getAddressOfRemoteServer().getPort();
@@ -323,8 +389,8 @@ public class SeleniumServerService implements ISeleniumServerService {
             HttpClient client = HttpClientBuilder.create().build();
             URL sessionURL = new URL("http://" + session.getHost() + ":" + session.getPort() + "/grid/api/testsession?session=" + sessionId);
             BasicHttpEntityEnclosingRequest r = new BasicHttpEntityEnclosingRequest("POST", sessionURL.toExternalForm());
-            HttpResponse response = client.execute(host, r);
-            if (!response.getStatusLine().toString().contains("403")) {
+            HttpResponse response = client.execute(host, r);*/
+            /*if (!response.getStatusLine().toString().contains("403")) {
                 InputStream contents = response.getEntity().getContent();
                 StringWriter writer = new StringWriter();
                 IOUtils.copy(contents, writer, "UTF8");
@@ -334,15 +400,36 @@ public class SeleniumServerService implements ISeleniumServerService {
                     tCExecution.setIp(myURL.getHost());
                     tCExecution.setPort(String.valueOf(myURL.getPort()));
                 }
-            }
+                
+                
+            }*/
 
         } catch (IOException ex) {
             Logger.getLogger(SeleniumServerService.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            //TODO:FN debug messages to be removed
+            org.apache.log4j.Logger.getLogger(SeleniumServerService.class.getName()).log(org.apache.log4j.Level.DEBUG, 
+                        "IOException parseHTTPResponse  " + tCExecution.getTest() + ":" + tCExecution.getTestCase() + ": ex" +ex.getMessage());
+
         } catch (JSONException ex) {
             Logger.getLogger(SeleniumServerService.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            //TODO:FN debug messages to be removed
+            org.apache.log4j.Logger.getLogger(SeleniumServerService.class.getName()).log(org.apache.log4j.Level.DEBUG, 
+                        "JSONExecption parseHTTPResponse  " + tCExecution.getTest() + ":" + tCExecution.getTestCase() + ": ex" +ex.getMessage());
         }
     }
+    
+    private static JSONObject parseHttpResponse(HttpResponse response) throws JSONException, IOException{
+        BufferedReader rd = new BufferedReader(new InputStreamReader(response.getEntity().getContent())); 
+        StringBuilder s = new StringBuilder(); 
+        String line; 
+        while ((line = rd.readLine()) != null) { 
+            s.append(line); 
+        } 
+        rd.close(); 
+        JSONObject objToReturn = new JSONObject(s.toString()); 
+        return objToReturn; 
 
+    }
     public DesiredCapabilities setCapabilityBrowser(DesiredCapabilities capabilities, String browser, TestCaseExecution tCExecution) throws CerberusException {
         try {
             if (browser.equalsIgnoreCase("firefox")) {
