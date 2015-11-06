@@ -213,13 +213,15 @@ public class CreateTestDataLib extends HttpServlet {
         //as all fields (subadata, data, description) are mandatory  there will no problem
         //with accessing the following arrays
         String[] subdataEntries = request.getParameterValues("subdata");
-        String[] subdataValues = request.getParameterValues("data");
+        String[] subdataValues = request.getParameterValues("value");
+        String[] subdataColumns = request.getParameterValues("column");
+        String[] subdataParsingAnswer = request.getParameterValues("parsinganswer");
         String[] subdataDescriptions = request.getParameterValues("description");
 
         TestDataLibData subData;
 
         for (int i = 0; i < subdataEntries.length; i++) {
-            subData = factorySubdataService.create(-1, type, subdataEntries[i], subdataValues[i], subdataDescriptions[i]);
+            subData = factorySubdataService.create(-1, subdataEntries[i], subdataValues[i], subdataColumns[i], subdataParsingAnswer[i], subdataDescriptions[i]);
             listSubdata.add(subData);
         }
 

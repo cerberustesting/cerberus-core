@@ -29,9 +29,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.cerberus.crud.entity.MessageEvent;
 import org.cerberus.enums.MessageEventEnum;
 import org.cerberus.crud.entity.TestDataLibData;
-import org.cerberus.crud.factory.IFactoryLogEvent;
 import org.cerberus.crud.factory.IFactoryTestDataLibData;
-import org.cerberus.crud.factory.impl.FactoryLogEvent;
 import org.cerberus.log.MyLogger;
 import org.cerberus.crud.service.ILogEventService;
 import org.cerberus.crud.service.ITestDataLibDataService;
@@ -68,8 +66,8 @@ public class UpdateTestDataLibData extends HttpServlet {
             //try {
             //removes all the subdata for the testdatalibentry
             //common attributes
-            int testDataLibID = Integer.parseInt(request.getParameter("id"));
-            String type = request.getParameter("type");
+            int testDataLibID = Integer.parseInt(request.getParameter("testdatalibid"));
+            
             String data = request.getParameter("data");
 
             JSONObject dataToEdit = new JSONObject(data);
@@ -88,7 +86,7 @@ public class UpdateTestDataLibData extends HttpServlet {
                 for (int i = 0; i < arrayToRemove.length(); i++) {
                     //removes the testdatalibentry
                     obj = arrayToRemove.getJSONObject(i);
-                    entriesToRemove.add(obj.get("Subdata").toString());
+                    entriesToRemove.add(obj.get("subdata").toString());
                 }
             }
 
@@ -100,10 +98,13 @@ public class UpdateTestDataLibData extends HttpServlet {
                 for (int i = 0; i < arrayToeditInsert.length(); i++) {
                     //TestDataLibData subData = subDataService.createTestDataLibData();
                     obj = arrayToeditInsert.getJSONObject(i);
-                    TestDataLibData item = factoryLibService.create(testDataLibID, type, obj.get("Subdata").toString(),
-                            obj.get("Value").toString(),
-                            obj.get("Description").toString());
-                    TestDataLibDataUpdateDTO updateItem = new TestDataLibDataUpdateDTO(item, obj.get("Subdata_original").toString());                            
+                   TestDataLibData item = factoryLibService.create(testDataLibID, obj.get("subdata").toString(),
+                            obj.get("value").toString(),
+                            obj.get("column").toString(),
+                            obj.get("parsinganswer").toString(),
+                            obj.get("description").toString());
+            
+                    TestDataLibDataUpdateDTO updateItem = new TestDataLibDataUpdateDTO(item, obj.get("subdata_original").toString());                            
                     entriesToUpdate.add(updateItem);
                 }
             }
@@ -114,9 +115,11 @@ public class UpdateTestDataLibData extends HttpServlet {
                 JSONArray arrayToeditInsert = (JSONArray) dataToEdit.get("insert");
                 for (int i = 0; i < arrayToeditInsert.length(); i++) {
                     obj = arrayToeditInsert.getJSONObject(i);
-                    TestDataLibData item = factoryLibService.create(testDataLibID, type, obj.get("Subdata").toString(),
-                            obj.get("Value").toString(),
-                            obj.get("Description").toString());
+                    TestDataLibData item = factoryLibService.create(testDataLibID, obj.get("subdata").toString(),
+                            obj.get("value").toString(),
+                            obj.get("column").toString(),
+                            obj.get("parsinganswer").toString(),
+                            obj.get("description").toString());
                     entriesToInsert.add(item);
                 }
 
@@ -128,7 +131,6 @@ public class UpdateTestDataLibData extends HttpServlet {
             //  Adding Log entry.
             if(answer.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())){
                 ILogEventService logEventService = appContext.getBean(LogEventService.class);
-                IFactoryLogEvent factoryLogEvent = appContext.getBean(FactoryLogEvent.class);
                 logEventService.createPrivateCalls("/UpdateTestDataLibData", "UPDATE", "Update TestDataLibData entries for id: " + testDataLibID, request);
             }
             jsonResponse.put("messageType", answer.getResultMessage().getMessage().getCodeString());
@@ -150,6 +152,7 @@ public class UpdateTestDataLibData extends HttpServlet {
                     + "<a href=\"https://github.com/vertigo17/Cerberus/issues/\" target=\"_blank\">here</a>"));
             errorMessage.append("'}");
             response.getWriter().print(errorMessage.toString());
+            response.getWriter().flush();
         }
 
     }

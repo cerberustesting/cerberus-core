@@ -133,7 +133,7 @@ public class TestDataLibDataService implements ITestDataLibDataService {
         dbmanager.commitTransaction();
         //if everything succeeds, then a success message is sent back
         
-        MessageEvent ms = MessageEventUtil.createUpdateSuccessMessageDAO("Sub-data set (for ID: " + testDataLibID + ") ");
+        MessageEvent ms = MessageEventUtil.createUpdateSuccessMessageDAO("Sub-data set ");
         answer.setResultMessage(ms);
         return answer;
         
