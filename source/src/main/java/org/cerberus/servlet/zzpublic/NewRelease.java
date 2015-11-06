@@ -54,6 +54,8 @@ import org.springframework.web.context.support.WebApplicationContextUtils;
 @WebServlet(name = "NewRelease", urlPatterns = {"/NewRelease"})
 public class NewRelease extends HttpServlet {
 
+    private static final org.apache.log4j.Logger LOG = org.apache.log4j.Logger.getLogger("NewRelease");
+
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
      * methods.
@@ -129,8 +131,12 @@ public class NewRelease extends HttpServlet {
             }
 
             // Checking the parameter validity. If owner has been entered, does it exist ?
-            if (!owner.equalsIgnoreCase("") && !MyUserService.isUserExist(owner)) {
-                out.println("Warning - User does not exist : " + owner);
+            if (!owner.equalsIgnoreCase("")) {
+                if (MyUserService.isUserExist(owner)) {
+                    owner = MyUserService.findUserByKey(owner).getLogin(); // We get the exact name from Cerberus.
+                } else {
+                    out.println("Warning - User does not exist : " + owner);
+                }
             }
 
             // Checking the parameter validity. If project has been entered, does it exist ?
@@ -141,13 +147,17 @@ public class NewRelease extends HttpServlet {
             // Starting the database update only when no blocking error has been detected.
             if (error == false) {
 
-                // In case the bugID is not defined, we try to guess it from the subject.
+                // In case the bugID is not defined, we try to guess it from the subject. should be between # and a space or CR.
                 if (StringUtil.isNullOrEmpty(bug)) {
                     String[] columns = subject.split("#");
                     if (columns.length >= 2) {
-                        String[] columnsbis = columns[1].split(" ");
-                        if (columnsbis.length >= 1) {
-                            bug = columnsbis[0];
+                        for (int i = 1; i < columns.length; i++) {
+                            String[] columnsbis = columns[i].split(" ");
+                            if (columnsbis.length >= 1) {
+                                if (!columnsbis[0].contains(";")) { // Bug number should not include ;
+                                    bug = columnsbis[0];
+                                }
+                            }
                         }
                     }
                 }
