@@ -184,8 +184,12 @@
                             IParameterService myParameterService = appContext.getBean(IParameterService.class);
 
                             String JenkinsURL = myParameterService.findParameterByKey("jenkins_deploy_pipeline_url", "").getValue();
-
-                            for (BuildRevisionParameters brp : buildRevisionParametersService.findBuildRevisionParametersFromMaxRevision(system, build, revision, lastBuild, lastRev)) {
+                            
+                            List<BuildRevisionParameters> myList = null;
+                            // We start by build Revision that have continious integration.
+                            try{
+                                myList = buildRevisionParametersService.convert(buildRevisionParametersService.readMaxSVNReleasePerApplication(system, build, revision, lastBuild, lastRev));
+                            for (BuildRevisionParameters brp : myList) {
 
                                 String final_JenkinsURL = JenkinsURL.replaceAll("%APPLI%", brp.getApplication());
             %>
@@ -207,6 +211,9 @@
             </tr>
             <%
             	}
+                            } catch (CerberusException ex) {
+                            }
+                            
             %>
         </table>
         <br>

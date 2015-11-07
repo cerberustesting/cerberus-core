@@ -30,8 +30,6 @@ import org.cerberus.util.answer.AnswerList;
 
 public interface IBuildRevisionParametersDAO {
 
-    List<BuildRevisionParameters> findBuildRevisionParametersFromMaxRevision(String system, String build, String revision, String lastBuild, String lastRevision);
-
     public List<BuildRevisionParameters> findBuildRevisionParametersByCriteria(String system, String build, String revision);
 
     String getMaxBuildBySystem(String system);
@@ -75,6 +73,20 @@ public interface IBuildRevisionParametersDAO {
      * @return
      */
     AnswerList readByVarious1ByCriteria(String system, String application, String build, String revision, int start, int amount, String column, String dir, String searchTerm, String individualSearch);
+
+    /**
+     *
+     * @param system
+     * @param build
+     * @param revision
+     * @param lastBuild
+     * @param lastRevision
+     * @return for each application included in the build content between
+     * lastbuild / lastrevision and build / revision, we return the release that
+     * correspond to the max svn number. This is returned only if jenkinsbuildid
+     * fiels if feed.
+     */
+    AnswerList readMaxSVNReleasePerApplication(String system, String build, String revision, String lastBuild, String lastRevision);
 
     /**
      *

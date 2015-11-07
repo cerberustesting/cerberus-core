@@ -66,7 +66,7 @@ function deleteEntryHandlerClick() {
     var system = $('#confirmationModal').find('#hiddenField1').prop("value");
     var level = $('#confirmationModal').find('#hiddenField2').prop("value");
     var seq = $('#confirmationModal').find('#hiddenField3').prop("value");
-    var jqxhr = $.post("DeleteBuildRevisionInvariant1", {system: encodeURIComponent(system),level: encodeURIComponent(level),seq: encodeURIComponent(seq)}, "json");
+    var jqxhr = $.post("DeleteBuildRevisionInvariant", {system: encodeURIComponent(system),level: encodeURIComponent(level),seq: encodeURIComponent(seq)}, "json");
     $.when(jqxhr).then(function (data) {
         var messageType = getAlertType(data.messageType);
         if (messageType === "success") {
@@ -126,7 +126,7 @@ function saveNewEntryHandler() {
         return;
 
     showLoaderInModal('#addEntryModal');
-    createEntry("CreateBuildRevisionInvariant1", formAdd, "#buildrevdefinitionsTable");
+    createEntry("CreateBuildRevisionInvariant", formAdd, "#buildrevdefinitionsTable");
 
 }
 
@@ -135,7 +135,7 @@ function saveUpdateEntryHandler() {
     var formEdit = $('#editEntryModal #editEntryModalForm');
 
     showLoaderInModal('#editEntryModal');
-    updateEntry("UpdateBuildRevisionInvariant1", formEdit, "#buildrevdefinitionsTable");
+    updateEntry("UpdateBuildRevisionInvariant", formEdit, "#buildrevdefinitionsTable");
 }
 
 function buttonCloseHandler(event) {
