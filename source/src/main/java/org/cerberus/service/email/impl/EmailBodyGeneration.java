@@ -145,8 +145,10 @@ public class EmailBodyGeneration implements IEmailBodyGeneration {
                 if (rsBC.getString("Project") != null) {
                     Project = rsBC.getString("Project");
                 }
-                if (rsBC.getString("p.VCCode") != null) {
+                if (!StringUtil.isNullOrEmpty(rsBC.getString("p.VCCode"))) {
                     ProjectVC = Project + " (" + rsBC.getString("p.VCCode") + ")";
+                }else{
+                    ProjectVC = Project;
                 }
 
                 buildContentTable = buildContentTable + "<tr style=\"background-color:" + bckColor + "; font-size:80%\"><td>"
