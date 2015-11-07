@@ -5047,6 +5047,25 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLS.append(", ('page_global', 'btn_export','','en','Export', \"\") "); 
         SQLS.append(", ('page_reportbytag', 'btn_select_table','','en','Select table', \"\") "); 
         SQLInstruction.add(SQLS.toString());
+        
+        
+        
+        // Documentation for the test data library 
+        //-- ------------------------ 658
+        SQLS = new StringBuilder();
+        SQLS.append("INSERT INTO `documentation` VALUES ");
+        SQLS.append(" ('page_testdatalib_m_createlib', 'tooltip_defaultsubdata','','en','This is the default sub-data entry. It is created by default when a library is created.', \"\") "); 
+        SQLS.append(", ('page_testdatalib_m_createupdatelib', 'title_soap_configurations','','en','SOAP configurations', \"\") "); 
+        SQLS.append(", ('page_testdatalib_m_createupdatelib', 'title_sql_configurations','','en','SQL configurations', \"\") "); 
+        SQLS.append(", ('page_testdatalib_m_managetestdatalibdata', 'tooltip_defaultsubdata','','en','This is the default sub-data entry. It cannot be deleted nor its name can be modified.', \"\") "); 
+        SQLInstruction.add(SQLS.toString());
+        
+        // Documentation update
+        //-- ------------------------ 659
+        SQLS = new StringBuilder();
+        SQLS.append("UPDATE `documentation` SET `DocTable`='testdatalibdata' WHERE `DocTable`='testdatalibdata1' and`DocField`='parsingAnswer' and`DocValue`='' and`Lang`='en'");
+        SQLInstruction.add(SQLS.toString());
+        
         return SQLInstruction;
     }
 

@@ -23,7 +23,7 @@
                         <!-- tabs definition-->
                         <ul id="tabs" class="nav nav-tabs" data-tabs="tabs">
                             <li class="active"><a data-toggle="tab" id="tab1Text" href="#tabs-1">Entry</a></li>
-                            <li><a data-toggle="tab" href="#tabs-2" id="tab2Text">Sub data (0 entries) </a></li>
+                            <li><a data-toggle="tab" href="#tabs-2" id="tab2Text">Sub data (1 entries) </a></li>
                         </ul>
                         <div class="tab-content">   
                             <div class="center marginTop25 tab-pane fade in active" id="tabs-1">
@@ -155,12 +155,21 @@
                                                     <tr>
                                                         <th></th>
                                                         <th id="subdataHeader" class="text-center">Sub-data</th>
-                                                        <th id="dataHeader" class="text-center">Value</th>
+                                                        <th id="valueHeader" class="text-center">Value</th>
+                                                        <th id="columnHeader" class="text-center">Column</th>
+                                                        <th id="parsingAnswerHeader" class="text-center">Parsing Answer</th>
                                                         <th id="descriptionHeader" class="text-center">Description</th>
                                                     </tr>
                                                 </thead>
                                                 <tbody id="addSubDataTableBody">
-                                                    
+                                                    <tr id="unmutableRow">
+                                                        <td><div class="nomarginbottom marginTop5"><button class="pull-left btn btn-default btn-xs"  id="unmutableRowNotEditable" disabled="disabled"><span class="glyphicon glyphicon-minus"></span></button></div></td>
+                                                        <td><div class="nomarginbottom form-group form-group-sm"><input id="defaultSubData" value="" class="subDataClass form-control" name="subdata" readonly="readonly"/></div></td>
+                                                        <td class="text-center"><div class="nomarginbottom form-group form-group-sm"><input id="defaultSubDataValue"  name="value"  class="dataClass form-control input-xs" /></div></td>
+                                                        <td class="text-center"><div class="nomarginbottom form-group form-group-sm"><input id="defaultSubDataColumn" name="column" class="dataClass form-control input-xs" /></div></td>
+                                                        <td class="text-center"><div class="nomarginbottom form-group form-group-sm"><input id="defaultSubDataParsingAnswer" name="parsinganswer" class="dataClass form-control input-xs" /></div></td>
+                                                        <td class="text-center"><div class="nomarginbottom form-group form-group-sm"><input id="defaultSubDataDescription"  name="description"  class="descriptionClass form-control input-xs" /></div></td>
+                                                    </tr>
                                                 </tbody>
                                             </table>
                                             <div class="nomargintop">

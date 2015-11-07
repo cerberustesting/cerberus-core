@@ -26,13 +26,10 @@ import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest; 
-import javax.servlet.http.HttpServletResponse;
-import org.cerberus.crud.entity.MessageEvent;
+import javax.servlet.http.HttpServletResponse; 
 import org.cerberus.crud.entity.TestDataLibData;
 import org.cerberus.crud.service.ITestDataLibDataService;
-import org.cerberus.dto.TestDataLibDataDTO;
-import org.cerberus.enums.MessageEventEnum;
-import org.cerberus.enums.TestDataLibTypeEnum;
+import org.cerberus.dto.TestDataLibDataDTO;  
 import org.cerberus.util.answer.AnswerItem; 
 import org.cerberus.util.answer.AnswerList; 
 import org.cerberus.util.answer.AnswerUtil;
@@ -70,11 +67,11 @@ public class ReadTestDataLibData extends HttpServlet {
             
             String testDataLibID = request.getParameter("testdatalibid");
             String testDataLibName = request.getParameter("name");
-            String testDatalibType = request.getParameter("type");//TODO:FN ver este valor
+
             if (testDataLibID != null) {
                 //returns sub-data entries with basis on the name
                 int testDatalib = Integer.parseInt(testDataLibID);
-                answer = readById(appContext, testDatalib, testDatalibType);
+                answer = readById(appContext, testDatalib);
                 jsonResponse = (JSONObject) answer.getItem();   
             } else if (testDataLibName != null) {
                 //return sub-data entries with basis on the name
@@ -139,7 +136,7 @@ public class ReadTestDataLibData extends HttpServlet {
         return "Short description";
     }// </editor-fold>
 
-    private AnswerItem readById(ApplicationContext appContext, int testDatalib, String testDatalibType) throws JSONException {
+    private AnswerItem readById(ApplicationContext appContext, int testDatalib) throws JSONException {
         JSONObject jsonResponse = new JSONObject();
         ITestDataLibDataService testDataLibDataService = appContext.getBean(ITestDataLibDataService.class);
         AnswerList answer = testDataLibDataService.readById(testDatalib);
@@ -148,7 +145,7 @@ public class ReadTestDataLibData extends HttpServlet {
         JSONArray jsonArray = new JSONArray();
 
         for (TestDataLibData subdata : (List<TestDataLibData>) answer.getDataList()) {
-            jsonArray.put(convertTestDataLibDataToJSONObject(subdata, testDatalibType));
+            jsonArray.put(convertTestDataLibDataToJSONObject(subdata));
         }
 
         jsonResponse.put("contentTable", jsonArray);
@@ -160,21 +157,10 @@ public class ReadTestDataLibData extends HttpServlet {
         return item;
     }
 
-    private JSONArray convertTestDataLibDataToJSONObject(TestDataLibData subdata, String testDataLibType) {
-        JSONArray result = new JSONArray();
-        result.put(subdata.getTestDataLibID());
-        result.put(subdata.getSubData());
-        if (testDataLibType.equals(TestDataLibTypeEnum.STATIC.getCode())) {
-            result.put(subdata.getValue());
-        } else if (testDataLibType.equals(TestDataLibTypeEnum.SQL.getCode())) {
-            result.put(subdata.getColumn());
-        } else if (testDataLibType.equals(TestDataLibTypeEnum.SOAP.getCode())) {
-            result.put(subdata.getParsingAnswer());
-        } else {
-            result.put("");
-        }
-        result.put(subdata.getDescription());
-
+    private JSONObject convertTestDataLibDataToJSONObject(TestDataLibData subdata) throws JSONException {
+        Gson gson = new Gson();
+        JSONObject result = new JSONObject(gson.toJson(subdata));
+        
         return result;
     }
 
