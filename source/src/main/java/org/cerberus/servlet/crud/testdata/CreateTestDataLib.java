@@ -110,7 +110,7 @@ public class CreateTestDataLib extends HttpServlet {
                         //  Adding Log entry.
                         if(answer.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())){
                             ILogEventService logEventService = appContext.getBean(LogEventService.class);
-                            logEventService.createPrivateCalls("/CreateTestDataLib", "CREATE", "Create TestDataLib  : " + request.getParameter("Name"), request);
+                            logEventService.createPrivateCalls("/CreateTestDataLib", "CREATE", "Create TestDataLib  : " + request.getParameter("name"), request);
                         }
                     }
                 }else{

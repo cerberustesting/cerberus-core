@@ -90,6 +90,17 @@ public interface IBuildRevisionParametersDAO {
 
     /**
      *
+     * @param system
+     * @param build
+     * @param revision
+     * @param lastBuild
+     * @param lastRevision
+     * @return
+     */
+    AnswerList readNonSVNRelease(String system, String build, String revision, String lastBuild, String lastRevision);
+
+    /**
+     *
      * @param brp
      * @return
      */

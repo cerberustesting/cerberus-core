@@ -19,7 +19,6 @@ package org.cerberus.crud.dao;
 
 import java.util.List;
 import org.cerberus.crud.entity.TestDataLib;
-import org.cerberus.exception.CerberusException;
 import org.cerberus.util.answer.Answer;
 import org.cerberus.util.answer.AnswerItem;
 import org.cerberus.util.answer.AnswerList;
@@ -33,30 +32,29 @@ public interface ITestDataLibDAO {
 
     /**
      *
-     * @param testDataLib
-     * @return 
+     * @param name
+     * @param system
+     * @param environment
+     * @param country
+     * @return
      */
-    Answer create(TestDataLib testDataLib);
+    AnswerItem<TestDataLib> readByKey(String name, String system, String environment, String country);
 
     /**
      *
-     * @param testDataLib
-     * @return 
+     * @param testDataLibID
+     * @return
      */
-    Answer update(TestDataLib testDataLib);
+    AnswerItem<TestDataLib> readByKey(int testDataLibID);
 
     /**
      *
-     * @param testDataLib
-     * @return 
+     * @param testDataLibName
+     * @param limit
+     * @return
      */
-    Answer delete(TestDataLib testDataLib);
-    /**
-     * Deletes a testdatalib with basis on the unique identifier
-     * @param testDataLibID - test data lib entry
-     * @return 
-     */
-     Answer deleteUnused(int testDataLibID);
+    AnswerList<TestDataLib> readByName(String testDataLibName, int limit);
+
     /**
      *
      * @return All TestData
@@ -78,20 +76,44 @@ public interface ITestDataLibDAO {
 
     /**
      *
-     * @param name
-     * @param system
-     * @param environment
-     * @param country
      * @return
      */
-    AnswerItem<TestDataLib> readByKey(String name, String system, String environment, String country);
+    AnswerList<String> readDistinctGroups();
 
-    AnswerItem<TestDataLib> readByKey(int testDataLibID);
-  
-    
-    AnswerList<String> readDistinctGroups(); 
+    /**
+     *
+     * @param testDataLib
+     * @return
+     */
+    Answer create(TestDataLib testDataLib);
 
+    /**
+     *
+     * @param testDataLib
+     * @return
+     */
+    Answer delete(TestDataLib testDataLib);
+
+    /**
+     *
+     * @param testDataLib
+     * @return
+     */
+    Answer update(TestDataLib testDataLib);
+
+    /**
+     * Deletes a testdatalib with basis on the unique identifier
+     *
+     * @param testDataLibID - test data lib entry
+     * @return
+     */
+    Answer deleteUnused(int testDataLibID);
+
+    /**
+     *
+     * @param testDataLibEntries
+     * @return
+     */
     Answer createBatch(List<TestDataLib> testDataLibEntries);
 
-    AnswerList<TestDataLib> readByName(String testDataLibName, int limit);
 }

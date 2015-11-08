@@ -970,9 +970,7 @@ function displayFooter(doc) {
     footerBugString = footerBugString.replace("%LINK%", "https://github.com/vertigo17/Cerberus/issues/new?body=Cerberus%20Version%20:%20" + cerberusInformation.projectVersion);
     $("#footer").html(footerString + " - " + footerBugString);
 
-    console.info('toto');
-    console.info(cerberusInformation.environment);
-    // Backgroun color is light yellow if the environment is not production.
+    // Background color is light yellow if the environment is not production.
     if ((cerberusInformation.environment !== "prd") && (cerberusInformation.environment !== "PROD")) {
         document.body.style.background = "#FFFFCC";
     }

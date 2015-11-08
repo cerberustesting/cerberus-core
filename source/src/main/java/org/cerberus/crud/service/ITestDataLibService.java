@@ -20,7 +20,7 @@ package org.cerberus.crud.service;
 import java.util.HashMap;
 import java.util.List;
 import org.cerberus.crud.entity.TestDataLib;
-import org.cerberus.crud.entity.TestDataLibData; 
+import org.cerberus.crud.entity.TestDataLibData;
 import org.cerberus.exception.CerberusException;
 import org.cerberus.util.answer.Answer;
 import org.cerberus.util.answer.AnswerItem;
@@ -35,24 +35,28 @@ public interface ITestDataLibService {
 
     /**
      *
-     * @param testDataLib TestDataLib to insert
-     * @throws CerberusException
-     */
-    void create(TestDataLib testDataLib) throws CerberusException;
-
-    /**
-     *
-     * @param testDataLib TestData to update using the key
+     * @param name
+     * @param system
+     * @param environment
+     * @param country
      * @return
      */
-    Answer update(TestDataLib testDataLib);
+    AnswerItem<TestDataLib> readByKey(String name, String system, String environment, String country);
 
     /**
      *
-     * @param testDataLib
-     * @return 
+     * @param testDatalib
+     * @return
      */
-    Answer delete(TestDataLib testDataLib);
+    AnswerItem<TestDataLib> readByKey(int testDatalib);
+
+    /**
+     *
+     * @param testDataLibName
+     * @param limit
+     * @return
+     */
+    AnswerList<TestDataLib> readByName(String testDataLibName, int limit);
 
     /**
      *
@@ -72,26 +76,81 @@ public interface ITestDataLibService {
      * @return
      */
     AnswerList<TestDataLib> readByCriteria(int start, int amount, String column, String dir, String searchTerm, String individualSearch);
+
     /**
-     * 
-     * @param name
-     * @param system
-     * @param environment
-     * @param country
-     * @return 
-     */
-    AnswerItem<TestDataLib> readByKey(String name, String system, String environment, String country);
-    
-    AnswerItem<TestDataLib> readByKey(int testDatalib);
- 
-    /**
-     * Auxiliary method that retrieves all the group names that were already defined for a type.
+     * Auxiliary method that retrieves all the group names that were already
+     * defined for a type.
+     *
      * @return list of group values for the type
      */
     AnswerList<String> readDistinctGroups();
+
     /**
-     * Gets the rawData associated to the library; for SQL and SOAP, the corresponding instructions will be executed in order to retrieve the data 
+     *
+     * @param testDataLib TestDataLib to insert
+     * @throws CerberusException
+     */
+    void create(TestDataLib testDataLib) throws CerberusException;
+
+    /**
+     *
+     * @param testDataLib
+     * @param subDataList
+     * @return
+     */
+    Answer create(TestDataLib testDataLib, List<TestDataLibData> subDataList);
+
+    /**
+     *
+     * @param entries
+     * @return
+     */
+    Answer createBatch(List<TestDataLib> entries);
+
+    /**
+     *
+     * @param entries
+     * @return
+     */
+    Answer createBatch(HashMap<TestDataLib, List<TestDataLibData>> entries);
+
+    /**
+     * Creates the test data lib entries for the com
+     *
+     * @param testDataLibList combinations of entries that
+     * @param subDataList subdata entries that were defined in the add window,
+     * which are associated with each entry in the list testDataLibList
+     * @return an answer indicating the status of the operation
+     */
+    Answer createBatch(List<TestDataLib> testDataLibList, List<TestDataLibData> subDataList);
+
+    /**
+     *
+     * @param testDataLib
+     * @return
+     */
+    Answer delete(TestDataLib testDataLib);
+
+    /**
+     * Deletes a testdatalib with basis on the id.
+     *
+     * @param testDataLibID - id of the entry that we want to remove
+     * @return an answer indicating the status of the operation
+     */
+    Answer delete(int testDataLibID);
+
+    /**
+     *
+     * @param testDataLib TestData to update using the key
+     * @return
+     */
+    Answer update(TestDataLib testDataLib);
+
+    /**
+     * Gets the rawData associated to the library; for SQL and SOAP, the
+     * corresponding instructions will be executed in order to retrieve the data
      * from the database and webservice.
+     *
      * @param lib testdatalib entry
      * @param rowLimit
      * @param propertyName
@@ -99,29 +158,4 @@ public interface ITestDataLibService {
      */
     AnswerItem fetchData(TestDataLib lib, int rowLimit, String propertyName);
 
-    /**
-     * Deletes a testdatalib with basis on the id.
-     * @param testDataLibID - id of the entry that we want to remove
-     * @return an answer indicating the status of the operation
-     */
-    Answer delete(int testDataLibID);
-
-    /**
-     * Creates the test data lib entries for the com
-     * @param testDataLibList combinations of entries that 
-     * @param subDataList subdata entries that were defined in the add window, which are associated with each entry in the list testDataLibList
-     * @return an answer indicating the status of the operation
-     */
-    Answer createBatch(List<TestDataLib> testDataLibList, List<TestDataLibData> subDataList);
-    Answer create(TestDataLib testDataLib, List<TestDataLibData> subDataList);
-    Answer createBatch(List<TestDataLib> entries);
-    Answer createBatch(HashMap<TestDataLib, List<TestDataLibData>> entries);
-    
-    /**
-     *
-     * @param testDataLibName
-     * @param limit
-     * @return
-     */
-    AnswerList<TestDataLib> readByName(String testDataLibName, int limit);
 }

@@ -685,8 +685,12 @@ public class BuildRevisionParametersDAO implements IBuildRevisionParametersDAO {
         query.append(" and bri.`system` = ? ");
         query.append(" and bri.`level` = 2");
         query.append(" and build = ? ");
-        if (lastBuild.equalsIgnoreCase(build)) {
-            query.append(" and bri.seq > (select seq from buildrevisioninvariant where `system` = ? and `level` = 2 and `versionname` = ? ) "); // lastRevision
+        if (lastBuild.equalsIgnoreCase(build)) { // If last version is on the same build.
+            if (lastRevision.equalsIgnoreCase(revision)) { // Same build and revision some we filter only the current content.
+                query.append(" and bri.seq >= (select seq from buildrevisioninvariant where `system` = ? and `level` = 2 and `versionname` = ? ) "); // lastRevision
+            } else { // 2 different revisions inside the same build, we take the content between the 2.
+                query.append(" and bri.seq > (select seq from buildrevisioninvariant where `system` = ? and `level` = 2 and `versionname` = ? ) "); // lastRevision
+            }
         }
         query.append(" and bri.seq <= (select seq from buildrevisioninvariant where `system` = ? and `level` = 2 and `versionname` = ? )"); // revision
         query.append(" and `release` REGEXP '^-?[0-9]+$' "); // Release needs to be an svn number
@@ -722,6 +726,125 @@ public class BuildRevisionParametersDAO implements IBuildRevisionParametersDAO {
                     //gets the data
                     while (resultSet.next()) {
                         brpList.add(this.loadFromResultSet(resultSet));
+                    }
+
+                    //get the total number of rows
+                    resultSet = preStat.executeQuery("SELECT FOUND_ROWS()");
+                    int nrTotalRows = 0;
+
+                    if (resultSet != null && resultSet.next()) {
+                        nrTotalRows = resultSet.getInt(1);
+                    }
+
+                    if (brpList.size() >= MAX_ROW_SELECTED) { // Result of SQl was limited by MAX_ROW_SELECTED constrain. That means that we may miss some lines in the resultList.
+                        LOG.error("Partial Result in the query.");
+                        msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_WARNING_PARTIAL_RESULT);
+                        msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", "Maximum row reached : " + MAX_ROW_SELECTED));
+                        response = new AnswerList(brpList, nrTotalRows);
+                    } else if (brpList.size() <= 0) {
+                        msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_NO_DATA_FOUND);
+                        response = new AnswerList(brpList, nrTotalRows);
+                    } else {
+                        msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
+                        msg.setDescription(msg.getDescription().replace("%ITEM%", OBJECT_NAME).replace("%OPERATION%", "SELECT"));
+                        response = new AnswerList(brpList, nrTotalRows);
+                    }
+
+                } catch (SQLException exception) {
+                    LOG.error("Unable to execute query : " + exception.toString());
+                    msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
+                    msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", exception.toString()));
+
+                } finally {
+                    if (resultSet != null) {
+                        resultSet.close();
+                    }
+                }
+
+            } catch (SQLException exception) {
+                LOG.error("Unable to execute query : " + exception.toString());
+                msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
+                msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", exception.toString()));
+            } finally {
+                if (preStat != null) {
+                    preStat.close();
+                }
+            }
+
+        } catch (SQLException exception) {
+            LOG.error("Unable to execute query : " + exception.toString());
+            msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
+            msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", exception.toString()));
+        } finally {
+            try {
+                if (!this.databaseSpring.isOnTransaction()) {
+                    if (connection != null) {
+                        connection.close();
+                    }
+                }
+            } catch (SQLException exception) {
+                LOG.warn("Unable to close connection : " + exception.toString());
+            }
+        }
+
+        response.setResultMessage(msg);
+        response.setDataList(brpList);
+        return response;
+    }
+
+    @Override
+    public AnswerList readNonSVNRelease(String system, String build, String revision, String lastBuild, String lastRevision) {
+        AnswerList response = new AnswerList();
+        MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
+        msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", ""));
+        List<BuildRevisionParameters> brpList = new ArrayList<BuildRevisionParameters>();
+        StringBuilder searchSQL = new StringBuilder();
+
+        StringBuilder query = new StringBuilder();
+        //SQL_CALC_FOUND_ROWS allows to retrieve the total number of columns by disrearding the limit clauses that 
+        //were applied -- used for pagination p
+        query.append("SELECT distinct Application, `Release` rel, link  ");
+        query.append(" from buildrevisionparameters brp ");
+        query.append("join buildrevisioninvariant bri on bri.versionname = brp.revision ");
+        query.append(" where 1=1 ");
+        query.append(" and bri.`system` = ? ");
+        query.append(" and bri.`level` = 2");
+        query.append(" and build = ? ");
+        if (lastBuild.equalsIgnoreCase(build)) {
+            if (lastRevision.equalsIgnoreCase(revision)) { // Same build and revision some we filter only the current content.
+                query.append(" and bri.seq >= (select seq from buildrevisioninvariant where `system` = ? and `level` = 2 and `versionname` = ? ) "); // lastRevision
+            } else { // 2 different revisions inside the same build, we take the content between the 2.
+                query.append(" and bri.seq > (select seq from buildrevisioninvariant where `system` = ? and `level` = 2 and `versionname` = ? ) "); // lastRevision
+            }
+        }
+        query.append(" and bri.seq <= (select seq from buildrevisioninvariant where `system` = ? and `level` = 2 and `versionname` = ? )"); // revision
+        query.append("  and link is not null and length(trim(link))>0 "); // Release Link for instal instructions needs to exist.
+        query.append("   GROUP BY Application, `Release`, link  ORDER BY Application, `Release`, link;   ");
+
+        // Debug message on SQL.
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("SQL : " + query.toString());
+        }
+        Connection connection = this.databaseSpring.connect();
+        try {
+            PreparedStatement preStat = connection.prepareStatement(query.toString());
+            try {
+                int i = 1;
+                preStat.setString(i++, system);
+                preStat.setString(i++, build);
+                if (lastBuild.equalsIgnoreCase(build)) {
+                    preStat.setString(i++, system);
+                    preStat.setString(i++, lastRevision);
+                }
+                preStat.setString(i++, system);
+                preStat.setString(i++, revision);
+                ResultSet resultSet = preStat.executeQuery();
+                try {
+                    //gets the data
+                    while (resultSet.next()) {
+                        BuildRevisionParameters newBRP;
+                        newBRP = factoryBuildRevisionParameters.create(0, "", "", ParameterParserUtil.parseStringParam(resultSet.getString("rel"), ""), ParameterParserUtil.parseStringParam(resultSet.getString("application"), ""), "", "", "", ParameterParserUtil.parseStringParam(resultSet.getString("link"), ""), "", "", null, null, null, null, null);
+                        brpList.add(newBRP);
                     }
 
                     //get the total number of rows

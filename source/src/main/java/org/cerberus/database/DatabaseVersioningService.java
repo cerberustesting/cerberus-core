@@ -5037,35 +5037,42 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLS.append(" ,('countryenvparam_log', 'Creator', '', 'fr', 'Utilisateur', '') ");
         SQLInstruction.add(SQLS.toString());
 
-        
         // Documentation for ReportExecutionByTag summaryTable and export data
         //-- ------------------------ 657
         SQLS = new StringBuilder();
         SQLS.append("INSERT INTO `documentation` VALUES ");
-        SQLS.append(" ('page_reportbytag', 'summary_table','','en','Summary Table', \"Summary of the total and percentages values for each result code (OK, KO, FA, NA, NE, PE, CA). Table is sorted by Application, Country and Environment.\") "); 
-        SQLS.append(", ('page_global', 'export_data','','en','Export Data', \"\") "); 
-        SQLS.append(", ('page_global', 'btn_export','','en','Export', \"\") "); 
-        SQLS.append(", ('page_reportbytag', 'btn_select_table','','en','Select table', \"\") "); 
+        SQLS.append(" ('page_reportbytag', 'summary_table','','en','Summary Table', \"Summary of the total and percentages values for each result code (OK, KO, FA, NA, NE, PE, CA). Table is sorted by Application, Country and Environment.\") ");
+        SQLS.append(", ('page_global', 'export_data','','en','Export Data', \"\") ");
+        SQLS.append(", ('page_global', 'btn_export','','en','Export', \"\") ");
+        SQLS.append(", ('page_reportbytag', 'btn_select_table','','en','Select table', \"\") ");
         SQLInstruction.add(SQLS.toString());
-        
-        
-        
+
         // Documentation for the test data library 
         //-- ------------------------ 658
         SQLS = new StringBuilder();
         SQLS.append("INSERT INTO `documentation` VALUES ");
-        SQLS.append(" ('page_testdatalib_m_createlib', 'tooltip_defaultsubdata','','en','This is the default sub-data entry. It is created by default when a library is created.', \"\") "); 
-        SQLS.append(", ('page_testdatalib_m_createupdatelib', 'title_soap_configurations','','en','SOAP configurations', \"\") "); 
-        SQLS.append(", ('page_testdatalib_m_createupdatelib', 'title_sql_configurations','','en','SQL configurations', \"\") "); 
-        SQLS.append(", ('page_testdatalib_m_managetestdatalibdata', 'tooltip_defaultsubdata','','en','This is the default sub-data entry. It cannot be deleted nor its name can be modified.', \"\") "); 
+        SQLS.append(" ('page_testdatalib_m_createlib', 'tooltip_defaultsubdata','','en','This is the default sub-data entry. It is created by default when a library is created.', \"\") ");
+        SQLS.append(", ('page_testdatalib_m_createupdatelib', 'title_soap_configurations','','en','SOAP configurations', \"\") ");
+        SQLS.append(", ('page_testdatalib_m_createupdatelib', 'title_sql_configurations','','en','SQL configurations', \"\") ");
+        SQLS.append(", ('page_testdatalib_m_managetestdatalibdata', 'tooltip_defaultsubdata','','en','This is the default sub-data entry. It cannot be deleted nor its name can be modified.', \"\") ");
         SQLInstruction.add(SQLS.toString());
-        
+
         // Documentation update
         //-- ------------------------ 659
         SQLS = new StringBuilder();
         SQLS.append("UPDATE `documentation` SET `DocTable`='testdatalibdata' WHERE `DocTable`='testdatalibdata1' and`DocField`='parsingAnswer' and`DocValue`='' and`Lang`='en'");
         SQLInstruction.add(SQLS.toString());
-        
+
+        // Adding Technical Key to testdatalibdata table
+        //-- ------------------------ 660
+        SQLS = new StringBuilder();
+        SQLS.append("ALTER TABLE `testdatalibdata` ");
+        SQLS.append(" ADD COLUMN `TestDataLibDataID` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT FIRST, ");
+        SQLS.append(" DROP PRIMARY KEY, ");
+        SQLS.append(" ADD PRIMARY KEY (`TestDataLibDataID`), ");
+        SQLS.append(" ADD UNIQUE INDEX `IX_testdatalibdata_01` (`TestDataLibID` ASC, `SubData` ASC); ");
+        SQLInstruction.add(SQLS.toString());
+
         return SQLInstruction;
     }
 

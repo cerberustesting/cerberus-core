@@ -108,6 +108,11 @@ public class BuildRevisionParametersService implements IBuildRevisionParametersS
     }
 
     @Override
+    public AnswerList readNonSVNRelease(String system, String build, String revision, String lastBuild, String lastRevision) {
+        return this.buildRevisionParametersDAO.readNonSVNRelease(system, build, revision, lastBuild, lastRevision);
+    }
+
+    @Override
     public Answer create(BuildRevisionParameters brp) {
         Answer ans = new Answer();
         MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
