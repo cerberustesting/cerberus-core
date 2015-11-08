@@ -21,7 +21,7 @@
 <%@page import="org.cerberus.crud.entity.UserSystem"%>
 <%@page import="org.apache.log4j.Level"%>
 <%@page import="org.cerberus.log.MyLogger"%>
-<%@page import="org.cerberus.crud.service.IDatabaseVersioningService"%>
+<%@page import="org.cerberus.database.IDatabaseVersioningService"%>
 <%@page import="org.cerberus.crud.entity.Invariant"%>
 <%@page import="org.cerberus.crud.service.IInvariantService"%>
 <%@page import="org.cerberus.crud.service.IUserService"%>

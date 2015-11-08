@@ -25,7 +25,6 @@ import java.util.ArrayList;
 import org.apache.log4j.Level;
 import org.cerberus.crud.entity.MyVersion;
 import org.cerberus.log.MyLogger;
-import org.cerberus.crud.service.IDatabaseVersioningService;
 import org.cerberus.crud.service.IMyVersionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;

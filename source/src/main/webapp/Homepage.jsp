@@ -24,7 +24,7 @@
 <%@page import="org.cerberus.crud.entity.Invariant"%>
 <%@page import="java.util.List"%>
 <%@page import="org.cerberus.crud.service.IInvariantService"%>
-<%@page import="org.cerberus.crud.service.IDatabaseVersioningService"%>
+<%@page import="org.cerberus.database.IDatabaseVersioningService"%>
 
 <%@page contentType="text/html" pageEncoding="UTF-8"%><!DOCTYPE HTML>
 <!DOCTYPE html>
