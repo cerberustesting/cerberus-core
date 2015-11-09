@@ -36,7 +36,6 @@ import org.cerberus.service.engine.testdata.TestDataLibResultSOAP;
 import org.cerberus.service.engine.testdata.TestDataLibResultSQL;
 import org.cerberus.service.engine.testdata.TestDataLibResultStatic;
 import org.cerberus.enums.TestDataLibTypeEnum;
-import org.cerberus.exception.CerberusException;
 import org.cerberus.crud.factory.IFactoryTestDataLibData;
 import org.cerberus.log.MyLogger;
 import org.cerberus.crud.service.ITestDataLibService;
@@ -99,7 +98,7 @@ public class TestDataLibService implements ITestDataLibService {
     }
 
     @Override
-    public void create(TestDataLib testDataLib) throws CerberusException {
+    public void create(TestDataLib testDataLib){
         testDataLibDAO.create(testDataLib);
     }
 
