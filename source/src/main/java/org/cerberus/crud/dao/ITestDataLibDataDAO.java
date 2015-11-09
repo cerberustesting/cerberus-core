@@ -20,7 +20,6 @@ package org.cerberus.crud.dao;
 import java.util.ArrayList;
 import java.util.List;
 import org.cerberus.crud.entity.TestDataLibData;
-import org.cerberus.dto.TestDataLibDataUpdateDTO;
 import org.cerberus.util.answer.Answer;
 import org.cerberus.util.answer.AnswerItem;
 import org.cerberus.util.answer.AnswerList;
@@ -59,22 +58,22 @@ public interface ITestDataLibDataDAO {
      * @param subData
      * @return
      */
-    AnswerItem<TestDataLibData> readByKey(Integer testDataLibID, String subData);
+    AnswerItem readByKey(Integer testDataLibID, String subData);
 
     /**
      *
      * @return All TestData
      */
-    AnswerList<TestDataLibData> readAll();
+    AnswerList readAll();
 
     /**
      *
      * @param testDataLibID resultSet
      * @return
      */
-    AnswerList<TestDataLibData> readById(Integer testDataLibID);
+    AnswerList readById(Integer testDataLibID);
 
-    AnswerList<TestDataLibData> readByCriteria(Integer testDataLibID, String subData, String value, String column, String parsingAnswer, String description) ;
+    AnswerList readByCriteria(int start, int amount, String colName, String dir, String searchTerm, String individualSearch) ;
 
     
     /**
@@ -95,7 +94,7 @@ public interface ITestDataLibDataDAO {
      * @param entriesToUpdate - entries to update
      * @return  Answer indicating the status of the operation
      */
-    public Answer updateBatch(ArrayList<TestDataLibDataUpdateDTO> entriesToUpdate);
+    public Answer updateBatch(ArrayList<TestDataLibData> entriesToUpdate);
     /**
      * Batch that deletes several records in the table TestDataLibData.
      * @param testDataLibIdForData - testdatalibID associated with the entries that will be removed. This is part of the PK.
@@ -108,13 +107,6 @@ public interface ITestDataLibDataDAO {
      * @param testDataLibName - entry name used to filter the subdata entries
      * @return  Answer indicating the status of the operation
      */
-    public AnswerList<TestDataLibData> readByName(String testDataLibName);
-    /**
-     * Finds all subdata entries (testdatalibdata) that are associated with an entry name (testdatalib).
-     * @param testDataLib - entry name used to filter the subdata entries
-     * @param nameToSearch - value used to filter the subdata entries 
-     * @param limit - number of records retrieved
-     * @return Answer indicating the status of the operation and the list with the subdata entries that match the criteria.
-     */
-    public AnswerList<TestDataLibData> readByIdByName(String testDataLib, String nameToSearch, int limit);
+    public AnswerList readByName(String testDataLibName);
+ 
 }

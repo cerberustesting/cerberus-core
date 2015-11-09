@@ -20,7 +20,6 @@
 package org.cerberus.crud.factory.impl;
 
 import org.cerberus.crud.entity.TestDataLibData;
-import org.cerberus.enums.TestDataLibTypeEnum;
 import org.cerberus.crud.factory.IFactoryTestDataLibData;
 import org.springframework.stereotype.Service;
 
@@ -32,7 +31,7 @@ import org.springframework.stereotype.Service;
 public class FactoryTestDataLibData implements IFactoryTestDataLibData {
 
     @Override
-    public TestDataLibData create(Integer testDataLibID, String subData, String value, String column,
+    public TestDataLibData create(Integer testDataLibDataID, Integer testDataLibID, String subData, String value, String column,
             String parsingAnswer, String description) {
         TestDataLibData newData = new TestDataLibData();
         newData.setTestDataLibID(testDataLibID);

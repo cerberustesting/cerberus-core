@@ -22,6 +22,7 @@ package org.cerberus.crud.entity;
  * @author vertigo17
  */
 public class TestDataLibData {
+    private Integer testDataLibDataID;
 
     private Integer testDataLibID;
     private String subData;
@@ -30,6 +31,15 @@ public class TestDataLibData {
     private String parsingAnswer;
     private String description;
 
+    
+    public Integer getTestDataLibDataID() {
+        return testDataLibDataID;
+    }
+
+    public void setTestDataLibDataID(Integer testDataLibDataID) {
+        this.testDataLibDataID = testDataLibDataID;
+    }
+    
     public Integer getTestDataLibID() {
         return testDataLibID;
     }

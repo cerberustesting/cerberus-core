@@ -19,10 +19,8 @@ package org.cerberus.crud.service;
 
 import java.util.ArrayList;
 import java.util.List; 
-import org.cerberus.crud.entity.TestDataLibData;
-import org.cerberus.dto.TestDataLibDataUpdateDTO;
+import org.cerberus.crud.entity.TestDataLibData; 
 import org.cerberus.service.engine.testdata.TestDataLibResult;
-import org.cerberus.exception.CerberusException;
 import org.cerberus.util.answer.Answer;
 import org.cerberus.util.answer.AnswerItem;
 import org.cerberus.util.answer.AnswerList;
@@ -37,18 +35,21 @@ public interface ITestDataLibDataService {
     /**
      *
      * @param testDataLibData TestDataLib to insert
+     * @return 
      */
     Answer create(TestDataLibData testDataLibData);
 
     /**
      *
      * @param testDataLibData TestData to update using the key
+     * @return 
      */
     Answer update(TestDataLibData testDataLibData);
 
     /**
      *
      * @param testDataLibData
+     * @return 
      */
     Answer delete(TestDataLibData testDataLibData);
 
@@ -58,38 +59,38 @@ public interface ITestDataLibDataService {
      * @param subData
      * @return
      */
-    AnswerItem<TestDataLibData> readByKey(Integer testDataLibID, String subData);
+    AnswerItem readByKey(Integer testDataLibID, String subData);
 
     /**
      *
      * @return All TestDataLibData
      */
-    AnswerList<TestDataLibData> readAll();
+    AnswerList readAll();
 
     /**
      *
      * @param testDataLibID
      * @return
      */
-    AnswerList<TestDataLibData> readById(Integer testDataLibID);
+    AnswerList readById(Integer testDataLibID);
 
     /**
-     *
-     * @param testDataLibID
-     * @param subData
-     * @param value
-     * @param column
-     * @param parsingAnswer
-     * @param description
-     * @return
+     * 
+     * @param start
+     * @param amount
+     * @param colName
+     * @param dir
+     * @param searchTerm
+     * @param individualSearch
+     * @return 
      */
-    AnswerList<TestDataLibData> readByCriteria(Integer testDataLibID, String subData, String value, String column, String parsingAnswer, String description);
+    public AnswerList readByCriteria(int start, int amount, String colName, String dir, String searchTerm, String individualSearch);
     /**
      * Creates several TestDataLibData entries
      * @param subdataSet - entries to insert
-     * @throws CerberusException 
+     * @return 
      */
-    Answer createBatch(List<TestDataLibData> subdataSet) throws CerberusException;
+    Answer createBatch(List<TestDataLibData> subdataSet);
 
     AnswerItem<String> fetchSubData(TestDataLibResult result, TestDataLibData subDataEntry);
 
@@ -104,7 +105,7 @@ public interface ITestDataLibDataService {
      * @param entriesToRemove
      * @return
      */
-    Answer createUpdateDelete(int testDataLibID, ArrayList<TestDataLibData> entriesToInsert, ArrayList<TestDataLibDataUpdateDTO> entriesToUpdate, ArrayList<String> entriesToRemove);
+    Answer createUpdateDelete(int testDataLibID, ArrayList<TestDataLibData> entriesToInsert, ArrayList<TestDataLibData> entriesToUpdate, ArrayList<String> entriesToRemove);
 
     /**
      *
@@ -112,14 +113,6 @@ public interface ITestDataLibDataService {
      * @return
      */
     AnswerList readByName(String testDataLibName); 
-
-    /**
-     *
-     * @param testDataLib
-     * @param nameToSearch
-     * @param limit
-     * @return
-     */
-    AnswerList readByIdByName(String testDataLib, String nameToSearch, int limit);
+ 
     
 }

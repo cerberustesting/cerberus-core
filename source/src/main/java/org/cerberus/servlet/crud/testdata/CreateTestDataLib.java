@@ -113,22 +113,7 @@ public class CreateTestDataLib extends HttpServlet {
                             logEventService.createPrivateCalls("/CreateTestDataLib", "CREATE", "Create TestDataLib  : " + request.getParameter("name"), request);
                         }
                     }
-                }else{
-                    //no parameters means that we are loading data necessary to the create data lib option
-                    AnswerItem ansGroups = readDistinctGroups(appContext);
-                    jsonResponse  = (JSONObject) ansGroups.getItem();
-                    //include database lists
-                    jsonResponse.put("PROPERTYDATABASE", findInvariantListByIdName(appContext, "PROPERTYDATABASE"));
-                    //include testdatatypes                        
-                    jsonResponse.put("TESTDATATYPE", findInvariantListByIdName(appContext, "TESTDATATYPE"));
-                    //include systems                        
-                    jsonResponse.put("SYSTEM", findInvariantListByIdName(appContext, "SYSTEM"));
-                    //include environments
-                    jsonResponse.put("ENVIRONMENT", findInvariantListByIdName(appContext, "ENVIRONMENT"));
-                    //include countries
-                    jsonResponse.put("Country", findInvariantListByIdName(appContext, "Country"));
-                    rs = ansGroups.getResultMessage();
-                }
+                } 
             } catch (CerberusException ex) {
                 MyLogger.log(CreateTestDataLib.class.getName(), Level.FATAL, "" + ex);
                 rs = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
@@ -221,7 +206,7 @@ public class CreateTestDataLib extends HttpServlet {
         TestDataLibData subData;
 
         for (int i = 0; i < subdataEntries.length; i++) {
-            subData = factorySubdataService.create(-1, subdataEntries[i], subdataValues[i], subdataColumns[i], subdataParsingAnswer[i], subdataDescriptions[i]);
+            subData = factorySubdataService.create(-1, -1, subdataEntries[i], subdataValues[i], subdataColumns[i], subdataParsingAnswer[i], subdataDescriptions[i]);
             listSubdata.add(subData);
         }
 

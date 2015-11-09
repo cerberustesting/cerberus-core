@@ -38,14 +38,14 @@ public interface ITestDataLibDAO {
      * @param country
      * @return
      */
-    AnswerItem<TestDataLib> readByKey(String name, String system, String environment, String country);
+    AnswerItem readByKey(String name, String system, String environment, String country);
 
     /**
      *
      * @param testDataLibID
      * @return
      */
-    AnswerItem<TestDataLib> readByKey(int testDataLibID);
+    AnswerItem readByKey(int testDataLibID);
 
     /**
      *
@@ -53,32 +53,32 @@ public interface ITestDataLibDAO {
      * @param limit
      * @return
      */
-    AnswerList<TestDataLib> readByName(String testDataLibName, int limit);
+    AnswerList readNameListByName(String testDataLibName, int limit);
 
     /**
      *
      * @return All TestData
      */
-    AnswerList<TestDataLib> readAll();
+    AnswerList readAll();
 
     /**
      *
      * @param start first row of the resultSet
      * @param amount number of row of the resultSet
-     * @param column order the resultSet by this column
+     * @param colName order the resultSet by this column
      * @param dir Asc or desc, information for the order by command
      * @param searchTerm search term on all the column of the resultSet
      * @param individualSearch search term on a dedicated column of the
      * resultSet
      * @return
      */
-    AnswerList<TestDataLib> readByCriteria(int start, int amount, String column, String dir, String searchTerm, String individualSearch);
+    AnswerList readByCriteria(int start, int amount, String colName, String dir, String searchTerm, String individualSearch);
 
     /**
      *
      * @return
      */
-    AnswerList<String> readDistinctGroups();
+    AnswerList readDistinctGroups();
 
     /**
      *

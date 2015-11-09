@@ -26,9 +26,7 @@ import org.cerberus.database.DatabaseSpring;
 import org.cerberus.crud.entity.MessageEvent;
 import org.cerberus.enums.MessageEventEnum;
 import org.cerberus.crud.entity.TestDataLibData;
-import org.cerberus.dto.TestDataLibDataUpdateDTO;
-import org.cerberus.service.engine.testdata.TestDataLibResult;
-import org.cerberus.exception.CerberusException;
+import org.cerberus.service.engine.testdata.TestDataLibResult; 
 import org.cerberus.crud.service.ITestDataLibDataService;
 import org.cerberus.util.answer.Answer;
 import org.cerberus.util.answer.AnswerItem;
@@ -66,12 +64,12 @@ public class TestDataLibDataService implements ITestDataLibDataService {
     }
 
     @Override
-    public AnswerItem<TestDataLibData> readByKey(Integer testDataLibID, String subData){
+    public AnswerItem readByKey(Integer testDataLibID, String subData){
         return testDataLibDataDAO.readByKey(testDataLibID, subData);
     }
 
     @Override
-    public AnswerList<TestDataLibData> readAll() {
+    public AnswerList readAll() {
         return testDataLibDataDAO.readAll();
     }
 
@@ -81,12 +79,12 @@ public class TestDataLibDataService implements ITestDataLibDataService {
     }
 
     @Override
-    public AnswerList<TestDataLibData> readByCriteria(Integer testDataLibID, String subData, String value, String column, String parsingAnswer, String description){
-        return testDataLibDataDAO.readByCriteria(testDataLibID, subData, value, column, parsingAnswer, description);
+    public AnswerList readByCriteria(int start, int amount, String colName, String dir, String searchTerm, String individualSearch){
+        return testDataLibDataDAO.readByCriteria(start, amount, colName, dir, searchTerm, individualSearch);
     }
 
     @Override
-    public Answer createBatch(List<TestDataLibData> subdataSet) throws CerberusException{
+    public Answer createBatch(List<TestDataLibData> subdataSet){
         return testDataLibDataDAO.createBatch(subdataSet);
     }
 
@@ -96,7 +94,7 @@ public class TestDataLibDataService implements ITestDataLibDataService {
     }
  
     @Override
-    public Answer createUpdateDelete(int testDataLibID, ArrayList<TestDataLibData> entriesToInsert, ArrayList<TestDataLibDataUpdateDTO> entriesToUpdate, 
+    public Answer createUpdateDelete(int testDataLibID, ArrayList<TestDataLibData> entriesToInsert, ArrayList<TestDataLibData> entriesToUpdate, 
             ArrayList<String> entriesToRemove) {
         
         dbmanager.beginTransaction();        
@@ -143,10 +141,6 @@ public class TestDataLibDataService implements ITestDataLibDataService {
     public AnswerList readByName(String testDataLibName) {
         return testDataLibDataDAO.readByName(testDataLibName);
     }
-
-    @Override
-    public AnswerList readByIdByName(String testDataLib, String nameToSearch, int limit) {
-        return testDataLibDataDAO.readByIdByName(testDataLib, nameToSearch, limit);
-    }
+ 
  
 }

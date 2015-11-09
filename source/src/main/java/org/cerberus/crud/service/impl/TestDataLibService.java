@@ -69,27 +69,27 @@ public class TestDataLibService implements ITestDataLibService {
     private IXmlUnitService xmlUnitService;
 
     @Override
-    public AnswerItem<TestDataLib> readByKey(String name, String system, String environment, String country) {
+    public AnswerItem readByKey(String name, String system, String environment, String country) {
         return testDataLibDAO.readByKey(name, system, environment, country);
     }
 
     @Override
-    public AnswerItem<TestDataLib> readByKey(int testDatalib) {
+    public AnswerItem readByKey(int testDatalib) {
         return testDataLibDAO.readByKey(testDatalib);
     }
 
     @Override
-    public AnswerList<TestDataLib> readByName(String testDataLibName, int limit) {
-        return testDataLibDAO.readByName(testDataLibName, limit);
+    public AnswerList readNameListByName(String testDataLibName, int limit) {
+        return testDataLibDAO.readNameListByName(testDataLibName, limit);
     }
 
     @Override
-    public AnswerList<TestDataLib> readAll() {
+    public AnswerList readAll() {
         return testDataLibDAO.readAll();
     }
 
     @Override
-    public AnswerList<TestDataLib> readByCriteria(int start, int amount, String column, String dir, String searchTerm, String individualSearch) {
+    public AnswerList readByCriteria(int start, int amount, String column, String dir, String searchTerm, String individualSearch) {
         return testDataLibDAO.readByCriteria(start, amount, column, dir, searchTerm, individualSearch);
     }
 
@@ -113,7 +113,7 @@ public class TestDataLibService implements ITestDataLibService {
             //if success, then creates the entries
             if (subDataList != null && !subDataList.isEmpty()) {
                 for (TestDataLibData libData : subDataList) {
-                    TestDataLibData data = testDataLibDataFactory.create(testDataLib.getTestDataLibID(), libData.getSubData(), libData.getValue(),
+                    TestDataLibData data = testDataLibDataFactory.create(-1, testDataLib.getTestDataLibID(), libData.getSubData(), libData.getValue(),
                             libData.getColumn(), libData.getParsingAnswer(), libData.getDescription());
                     completeSubDataList.add(data);
                 }
@@ -160,7 +160,7 @@ public class TestDataLibService implements ITestDataLibService {
                 for (TestDataLib lib : testDataLibList) {
                     for (TestDataLibData libData : subDataList) {
                         //recreates the testdatalib elements because at first they don't have the testdatalib id that is part of its primary key
-                        TestDataLibData data = testDataLibDataFactory.create(lib.getTestDataLibID(), libData.getSubData(), libData.getValue(),
+                        TestDataLibData data = testDataLibDataFactory.create(-1, lib.getTestDataLibID(), libData.getSubData(), libData.getValue(),
                                 libData.getColumn(), libData.getParsingAnswer(), libData.getDescription());
                         completeSubDataList.add(data);
                     }
@@ -197,7 +197,7 @@ public class TestDataLibService implements ITestDataLibService {
                 List<TestDataLibData> subDataList = (List<TestDataLibData>) entries.get(testDataLib);
                 if (subDataList != null && !subDataList.isEmpty()) {
                     for (TestDataLibData libData : subDataList) {
-                        TestDataLibData data = testDataLibDataFactory.create(testDataLib.getTestDataLibID(), libData.getSubData(), libData.getValue(),
+                        TestDataLibData data = testDataLibDataFactory.create(-1, testDataLib.getTestDataLibID(), libData.getSubData(), libData.getValue(),
                                 libData.getColumn(), libData.getParsingAnswer(), libData.getDescription());
                         completeSubDataList.add(data);
                     }

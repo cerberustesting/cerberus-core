@@ -41,14 +41,14 @@ public interface ITestDataLibService {
      * @param country
      * @return
      */
-    AnswerItem<TestDataLib> readByKey(String name, String system, String environment, String country);
+    AnswerItem readByKey(String name, String system, String environment, String country);
 
     /**
      *
      * @param testDatalib
      * @return
      */
-    AnswerItem<TestDataLib> readByKey(int testDatalib);
+    AnswerItem readByKey(int testDatalib);
 
     /**
      *
@@ -56,13 +56,13 @@ public interface ITestDataLibService {
      * @param limit
      * @return
      */
-    AnswerList<TestDataLib> readByName(String testDataLibName, int limit);
+    AnswerList readNameListByName(String testDataLibName, int limit);
 
     /**
      *
      * @return All TestDataLib
      */
-    AnswerList<TestDataLib> readAll();
+    AnswerList readAll();
 
     /**
      *
@@ -75,7 +75,7 @@ public interface ITestDataLibService {
      * resultSet
      * @return
      */
-    AnswerList<TestDataLib> readByCriteria(int start, int amount, String column, String dir, String searchTerm, String individualSearch);
+    AnswerList readByCriteria(int start, int amount, String column, String dir, String searchTerm, String individualSearch);
 
     /**
      * Auxiliary method that retrieves all the group names that were already
@@ -83,7 +83,7 @@ public interface ITestDataLibService {
      *
      * @return list of group values for the type
      */
-    AnswerList<String> readDistinctGroups();
+    AnswerList readDistinctGroups();
 
     /**
      *

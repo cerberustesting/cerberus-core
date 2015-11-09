@@ -84,27 +84,8 @@ public class TestDataLibDAO implements ITestDataLibDAO {
                         result = this.loadFromResultSet(resultSet);
                         msg = MessageEventUtil.createSelectSuccessMessageDAO(OBJECT_NAME);
                     } else {
-
-                        //check if property is defined for other countries
-                        String countQuery = "SELECT count(*) FROM testdatalib where `name` LIKE ?";
-                        preStat = connection.prepareStatement(countQuery);
-                        preStat.setString(1, name);
-                        resultSet = preStat.executeQuery();
-                        int nrTotalRows = 0;
-                        if (resultSet != null && resultSet.next()) {
-                            nrTotalRows = resultSet.getInt(1);
-                        }
-
-                        //specific messages
-                        if (nrTotalRows > 0) {
-                            msg = new MessageEvent(MessageEventEnum.TESTDATALIB_NOT_FOUND_ERROR);
-                            msg.setDescription(msg.getDescription().replace("%ITEM%", name).replace("%COUNTRY%", country).
-                                    replace("%ENVIRONMENT%", environment).replace("%SYSTEM%", system));
-                        } else {
-                            //the specified library is not valid
-                            msg = new MessageEvent(MessageEventEnum.PROPERTY_FAILED_GETFROMDATALIB);
-                            msg.setDescription(msg.getDescription().replace("%VALUE1%", name));
-                        }
+                        msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_NO_DATA_FOUND);
+                        
                     }
                 } catch (SQLException exception) {
                     MyLogger.log(TestDataLibDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
@@ -217,7 +198,7 @@ public class TestDataLibDAO implements ITestDataLibDAO {
      * @return
      */
     @Override
-    public AnswerList<TestDataLib> readByName(String testDataLibName, int limit) {
+    public AnswerList readNameListByName(String testDataLibName, int limit) {
         AnswerList answer = new AnswerList();
         MessageEvent msg;
         List<String> namesList = new ArrayList<String>();
@@ -241,7 +222,11 @@ public class TestDataLibDAO implements ITestDataLibDAO {
                         String name = resultSet.getString("Name");
                         namesList.add(name);
                     }
-                    msg = MessageEventUtil.createSelectSuccessMessageDAO(OBJECT_NAME);
+                    if(namesList.isEmpty()){
+                        msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_NO_DATA_FOUND);
+                    }else{
+                        msg = MessageEventUtil.createSelectSuccessMessageDAO(OBJECT_NAME);
+                    }
 
                 } catch (SQLException exception) {
                     MyLogger.log(TestDataLibDataDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
@@ -284,7 +269,7 @@ public class TestDataLibDAO implements ITestDataLibDAO {
     }
 
     @Override
-    public AnswerList<TestDataLib> readAll() {
+    public AnswerList readAll() {
         AnswerList answer = new AnswerList();
         MessageEvent msg;
 
@@ -342,7 +327,7 @@ public class TestDataLibDAO implements ITestDataLibDAO {
     }
 
     @Override
-    public AnswerList<TestDataLib> readByCriteria(int start, int amount, String column, String dir, String searchTerm, String individualSearch) {
+    public AnswerList readByCriteria(int start, int amount, String colName, String dir, String searchTerm, String individualSearch) {
 
         AnswerList answer = new AnswerList();
         MessageEvent msg;
@@ -408,7 +393,7 @@ public class TestDataLibDAO implements ITestDataLibDAO {
 
         query.append(searchSQL);
         query.append("order by `");
-        query.append(column);
+        query.append(colName);
         query.append("` ");
         query.append(dir);
 
@@ -439,6 +424,8 @@ public class TestDataLibDAO implements ITestDataLibDAO {
                         MyLogger.log(TestDataLibDAO.class.getName(), Level.INFO, "Partial Result in the query.");
                         msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_WARNING_PARTIAL_RESULT);
                         msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", "Maximum row reached : " + MAX_ROW_SELECTED));
+                    } else if (testDataLibList.isEmpty()) {
+                        msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_NO_DATA_FOUND);                        
                     } else {
                         msg = MessageEventUtil.createSelectSuccessMessageDAO(OBJECT_NAME);
                     }
@@ -483,8 +470,8 @@ public class TestDataLibDAO implements ITestDataLibDAO {
     }
 
     @Override
-    public AnswerList<String> readDistinctGroups() {
-        AnswerList<String> answerList = new AnswerList<String>();
+    public AnswerList readDistinctGroups() {
+        AnswerList answerList = new AnswerList();
         ArrayList<String> listOfGroups = new ArrayList<String>();
         MessageEvent msg;
 
@@ -500,7 +487,11 @@ public class TestDataLibDAO implements ITestDataLibDAO {
                     while (resultSet.next()) {
                         listOfGroups.add(resultSet.getString(1));
                     }
-                    msg = MessageEventUtil.createSelectSuccessMessageDAO("GROUPS");
+                    if(listOfGroups.isEmpty()){
+                        msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_NO_DATA_FOUND);
+                    }else{
+                        msg = MessageEventUtil.createSelectSuccessMessageDAO("GROUPS");
+                    }
 
                 } catch (SQLException exception) {
                     MyLogger.log(TestDataLibDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
@@ -905,7 +896,7 @@ public class TestDataLibDAO implements ITestDataLibDAO {
         return answer;
     }
 
-    private TestDataLib loadFromResultSet(ResultSet resultSet) throws SQLException {
+    public TestDataLib loadFromResultSet(ResultSet resultSet) throws SQLException {
         Integer testDataLibID = resultSet.getInt("testDataLibID");
         String name = resultSet.getString("name");
         String system = ParameterParserUtil.returnEmptyStringIfNull(resultSet.getString("system"));

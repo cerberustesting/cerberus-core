@@ -326,7 +326,7 @@ function renderOptionsForTestDataManager(data) {
             contentToAdd += "</button></div>";
 
             $("#listOfTestDataLib_wrapper div.ColVis").before(contentToAdd);
-            $('#createLibButton').click(createLibButtonClick);
+            $('#createLibButton').click(createLibButtonClickHandler);
 
             $('#importDataButton').click(function() {
                 var translations = {};
@@ -493,12 +493,12 @@ function uploadTestDataLibFromXMLFile() {
 /**
  * Handles the click on the create new lib
  */
-function createLibButtonClick() {
+function createLibButtonClickHandler() {
     //clearResponseMessageMainPage();
     //showLoaderInModal("#addTestDataLibModal");
 
     //retrieves the data from the server that allows the creation of a new library (groups, database,...)
-    var jqxhr = $.getJSON("CreateTestDataLib", "");
+    var jqxhr = $.getJSON("", "");//TODO:FN misssing the servlet name
     $.when(jqxhr).then(function(data) {
         var doc = new Doc();
         $('#addTestDataLibModal').modal('show');

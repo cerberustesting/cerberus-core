@@ -263,7 +263,7 @@ public class ReadTestDataLib extends HttpServlet {
         JSONObject object = new JSONObject();         
         
         ITestDataLibService testDataService = appContext.getBean(ITestDataLibService.class);
-        AnswerList ansList = testDataService.readByName(nameToSearch, limit);
+        AnswerList ansList = testDataService.readNameListByName(nameToSearch, limit);
         
         object.put("data", ansList.getDataList()); 
         

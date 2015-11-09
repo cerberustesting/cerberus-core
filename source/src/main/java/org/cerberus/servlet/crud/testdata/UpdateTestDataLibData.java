@@ -34,7 +34,6 @@ import org.cerberus.log.MyLogger;
 import org.cerberus.crud.service.ILogEventService;
 import org.cerberus.crud.service.ITestDataLibDataService;
 import org.cerberus.crud.service.impl.LogEventService;
-import org.cerberus.dto.TestDataLibDataUpdateDTO;
 import org.cerberus.util.answer.Answer;
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -91,20 +90,22 @@ public class UpdateTestDataLibData extends HttpServlet {
             }
 
             //updates the selected entries
-            ArrayList<TestDataLibDataUpdateDTO> entriesToUpdate = new ArrayList<TestDataLibDataUpdateDTO>();
+            ArrayList<TestDataLibData> entriesToUpdate = new ArrayList<TestDataLibData>();
             if (dataToEdit.has("update")) {
                 //subDataService.
                 JSONArray arrayToeditInsert = (JSONArray) dataToEdit.get("update");
                 for (int i = 0; i < arrayToeditInsert.length(); i++) {
                     //TestDataLibData subData = subDataService.createTestDataLibData();
                     obj = arrayToeditInsert.getJSONObject(i);
-                   TestDataLibData item = factoryLibService.create(testDataLibID, obj.get("subdata").toString(),
+                    int testDataLibDataId = Integer.parseInt(obj.get("testdatalibdataid").toString());
+                    TestDataLibData updateItem = factoryLibService.create(testDataLibDataId, 
+                            testDataLibID, 
+                            obj.get("subdata").toString(),
                             obj.get("value").toString(),
                             obj.get("column").toString(),
                             obj.get("parsinganswer").toString(),
                             obj.get("description").toString());
             
-                    TestDataLibDataUpdateDTO updateItem = new TestDataLibDataUpdateDTO(item, obj.get("subdata_original").toString());                            
                     entriesToUpdate.add(updateItem);
                 }
             }
@@ -115,7 +116,9 @@ public class UpdateTestDataLibData extends HttpServlet {
                 JSONArray arrayToeditInsert = (JSONArray) dataToEdit.get("insert");
                 for (int i = 0; i < arrayToeditInsert.length(); i++) {
                     obj = arrayToeditInsert.getJSONObject(i);
-                    TestDataLibData item = factoryLibService.create(testDataLibID, obj.get("subdata").toString(),
+                    TestDataLibData item = factoryLibService.create(-1, 
+                            testDataLibID, 
+                            obj.get("subdata").toString(),
                             obj.get("value").toString(),
                             obj.get("column").toString(),
                             obj.get("parsinganswer").toString(),
