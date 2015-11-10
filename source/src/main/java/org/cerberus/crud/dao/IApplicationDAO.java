@@ -88,7 +88,7 @@ public interface IApplicationDAO {
      *
      * @return 
      */
-    List<String> readDistinctSystem();
+    AnswerList readDistinctSystem();
 
     /**
      * Uses data of ResultSet to create object {@link Application}
