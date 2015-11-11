@@ -22,7 +22,7 @@
     <servlet>
         <servlet-name>RunTestCase</servlet-name>
         <servlet-class>org.cerberus.servlet.zzpublic.RunTestCase</servlet-class>
-    </servlet>    
+    </servlet>
     <servlet>
         <servlet-name>RunTestCaseManually</servlet-name>
         <servlet-class>org.cerberus.servlet.zzpublic.RunTestCaseManually</servlet-class>
@@ -796,6 +796,10 @@
         <servlet-name>UpdateMyUser</servlet-name>
         <servlet-class>org.cerberus.servlet.crud.usermanagement.UpdateMyUser</servlet-class>
     </servlet>
+    <servlet>
+        <servlet-name>ReadInvariant</servlet-name>
+        <servlet-class>org.cerberus.servlet.crud.transversaltables.ReadInvariant</servlet-class>
+    </servlet>
     <servlet-mapping>
         <servlet-name>ExecutionThreadMonitoring</servlet-name>
         <url-pattern>/ExecutionThreadMonitoring</url-pattern>
@@ -803,7 +807,7 @@
     <servlet-mapping>
         <servlet-name>RunTestCase</servlet-name>
         <url-pattern>/RunTestCase</url-pattern>
-    </servlet-mapping>   
+    </servlet-mapping>
     <servlet-mapping>
         <servlet-name>RunTestCaseManually</servlet-name>
         <url-pattern>/RunTestCaseManually</url-pattern>
@@ -1572,6 +1576,10 @@
         <servlet-name>UpdateMyUser</servlet-name>
         <url-pattern>/UpdateMyUser</url-pattern>
     </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>ReadInvariant</servlet-name>
+        <url-pattern>/ReadInvariant</url-pattern>
+    </servlet-mapping>
     <session-config>
         <session-timeout>60</session-timeout>
     </session-config>
@@ -2036,6 +2044,7 @@
             <url-pattern>/SaveManualExecutionPictureTest</url-pattern>
             <url-pattern>/ReadCampaign</url-pattern>
             <url-pattern>/ReadTestBattery</url-pattern>
+            <url-pattern>/ReadInvariant</url-pattern>            
         </web-resource-collection>
     </security-constraint>
     <security-constraint>

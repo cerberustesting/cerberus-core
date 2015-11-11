@@ -22,7 +22,6 @@ package org.cerberus.servlet.crud.testdata;
 import com.google.gson.Gson; 
 import java.io.IOException;
 import java.util.List;
-import java.util.logging.Logger;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -39,7 +38,6 @@ import org.cerberus.crud.service.impl.InvariantService;
 import org.cerberus.dto.TestCaseListDTO;
 import org.cerberus.dto.TestListDTO;
 import org.cerberus.enums.MessageEventEnum;
-import org.cerberus.exception.CerberusException;
 import org.cerberus.util.ParameterParserUtil;
 import org.cerberus.util.answer.AnswerItem;
 import org.cerberus.util.answer.AnswerList;
@@ -85,6 +83,7 @@ public class ReadTestDataLib extends HttpServlet {
             String name = request.getParameter("name");
             String country = request.getParameter("country");
             String limit = request.getParameter("limit");
+            
             if(testDataLibId != null || name != null || country != null || limit != null){
                 //validates parameters and performs the specific action
                 if(testDataLibId != null){
@@ -93,48 +92,34 @@ public class ReadTestDataLib extends HttpServlet {
                         //if the country and name are defined then we are trying to obtain
                         //the test cases that use the library
                         answer = getTestCasesUsingTestDataLib(appContext, libID, name, country); 
-                        jsonResponse = (JSONObject) answer.getItem();
-                    }else{
+                        //jsonResponse = (JSONObject) answer.getItem();
+                    }else {
                         
                         //we are editing the test data library
                         answer = findTestDataLibByID(appContext, libID);
                         //load the test data library
-                        jsonResponse = (JSONObject)answer.getItem();
-                        
-                        //get the groups to fill the select component
-                        answer  = readDistinctGroups(appContext); 
-                        JSONObject jsonGroups = (JSONObject) answer.getItem();
-                        jsonResponse.put("GROUPS", jsonGroups);
-                        
-                        //retrieves the list of databases available                      
-                        jsonResponse.put("PROPERTYDATABASE", findInvariantListByIdName(appContext, "PROPERTYDATABASE"));
-                        //loadst the testdata types
-                        jsonResponse.put("TESTDATATYPE", findInvariantListByIdName(appContext, "TESTDATATYPE"));
-                        //include systems                        
-                        jsonResponse.put("SYSTEM", findInvariantListByIdName(appContext, "SYSTEM"));
-                        //include environments
-                        jsonResponse.put("ENVIRONMENT", findInvariantListByIdName(appContext, "ENVIRONMENT"));
-                        //include countries
-                        jsonResponse.put("Country", findInvariantListByIdName(appContext, "Country"));
-                        
-                    }
-                    
-                    
+                        //jsonResponse = (JSONObject)answer.getItem();                        
+                    }   
                     
                 }else if(name != null && limit != null){
                     //autocomplete
                     int nrRows = Integer.parseInt(limit);
                     answer = findTestDataLibNameList(appContext, name,nrRows);
-                    jsonResponse = (JSONObject) answer.getItem();
-                }                
+                    //jsonResponse = (JSONObject) answer.getItem();
+                }               
             }else{
+                if(request.getParameter("groups") != null){
+                    answer = findDistinctGroups(appContext);
+                    //jsonResponse = (JSONObject)answer.getItem();
+                } else{
                 //no parameters, then performs the readAll
                  //select all entries for the testdatalib
-                answer = findTestDataLibList(appContext, request);
-                jsonResponse = (JSONObject)answer.getItem();                         
+                    answer = findTestDataLibList(appContext, request);
+                    //jsonResponse = (JSONObject)answer.getItem();                         
+                }
             }
             
-            
+            jsonResponse = (JSONObject)answer.getItem();
             jsonResponse.put("messageType", answer.getResultMessage().getMessage().getCodeString());
             jsonResponse.put("message", answer.getResultMessage().getDescription());         
             
@@ -337,7 +322,7 @@ public class ReadTestDataLib extends HttpServlet {
      * @return an object containing all the groups that belong to that type
      * @throws JSONException 
      */
-    private AnswerItem readDistinctGroups(ApplicationContext appContext) throws JSONException{
+    private AnswerItem findDistinctGroups(ApplicationContext appContext) throws JSONException{
         AnswerItem answerItem = new AnswerItem();
         
         ITestDataLibService testDataService = appContext.getBean(ITestDataLibService.class);
@@ -347,7 +332,7 @@ public class ReadTestDataLib extends HttpServlet {
         
         if(ansList.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())){
             //if the response is success then we can sent the data
-            jsonObject.put("GROUPS", ((List<String>) ansList.getDataList()).toArray());
+            jsonObject.put("contentTable", ((List<String>) ansList.getDataList()).toArray());
         }
         answerItem.setResultMessage(ansList.getResultMessage());
         answerItem.setItem(jsonObject);
@@ -365,19 +350,15 @@ public class ReadTestDataLib extends HttpServlet {
      */
     private JSONObject findInvariantListByIdName(ApplicationContext appContext, String idName) throws JSONException {
         JSONObject object = new JSONObject();
-        try {
-            
-            IInvariantService invariantService = appContext.getBean(InvariantService.class);
-            
-            //gets the list of databases
-            for (Invariant myInvariant : invariantService.findListOfInvariantById(idName)) {
-                object.put(myInvariant.getValue(), myInvariant.getValue());
-                
-            }
-            
-        } catch (CerberusException ex) {
-            Logger.getLogger(ReadTestDataLib.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+        IInvariantService invariantService = appContext.getBean(InvariantService.class);
+        AnswerList answer = invariantService.readByIdname(idName); //TODO: handle if data is not returned
+        //gets the list of databases
+        for (Invariant myInvariant : (List<Invariant>) answer.getDataList()) {
+            object.put(myInvariant.getValue(), myInvariant.getValue());
         }
+            
         return object;
     }
+
+     
 }

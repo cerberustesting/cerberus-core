@@ -47,38 +47,38 @@
 <%@page import="org.cerberus.crud.service.IDeployTypeService" %>
 <%@page import="org.cerberus.crud.entity.DeployType" %>
 <%!String ComboInvariant(ApplicationContext appContext, String HTMLComboName, String HTMLComboStyle, String HTMLId, String HTMLClass, String combonumber, String value, String HTMLOnChange, String firstOption) {
-        try {
-            IInvariantService invFunctionService = appContext.getBean(IInvariantService.class);
-            List<Invariant> invFunctionList = invFunctionService.findListOfInvariantById(combonumber);
-            String ret = "<select id=\"" + HTMLId + "\" class=\"" + HTMLClass + "\" style=\"" + HTMLComboStyle + "\" name=\"" + HTMLComboName + "\"";
-            if (HTMLOnChange.compareToIgnoreCase("") != 0) {
-                ret = ret + " onchange=\"" + HTMLOnChange + "\"";
-            }
-            ret = ret + ">";
-            if (firstOption != null) {
-                ret = ret + "<option value=\"" + firstOption + "\">--" + firstOption + "--</option>";
-            }
-            for (Invariant invFunction : invFunctionList) {
-                ret = ret + "<option value=\"" + invFunction.getValue() + "\"";
-                if ((value != null) && (value.compareTo(invFunction.getValue()) == 0)) {
-                    ret = ret + " SELECTED ";
-                }
-                ret = ret + ">" + invFunction.getValue();
-                ret = ret + "</option>";
-            }
-            ret = ret + "</select>";
 
-            return ret;
+        IInvariantService invFunctionService = appContext.getBean(IInvariantService.class);
+        AnswerList answer = invFunctionService.readByIdname(combonumber);
+        List<Invariant> invFunctionList = (List<Invariant>)answer.getDataList();
 
-        } catch (CerberusException e) {
-            return e.toString();
+        String ret = "<select id=\"" + HTMLId + "\" class=\"" + HTMLClass + "\" style=\"" + HTMLComboStyle + "\" name=\"" + HTMLComboName + "\"";
+        if (HTMLOnChange.compareToIgnoreCase("") != 0) {
+            ret = ret + " onchange=\"" + HTMLOnChange + "\"";
         }
+        ret = ret + ">";
+        if (firstOption != null) {
+            ret = ret + "<option value=\"" + firstOption + "\">--" + firstOption + "--</option>";
+        }
+        for (Invariant invFunction : invFunctionList) {
+            ret = ret + "<option value=\"" + invFunction.getValue() + "\"";
+            if ((value != null) && (value.compareTo(invFunction.getValue()) == 0)) {
+                ret = ret + " SELECTED ";
+            }
+            ret = ret + ">" + invFunction.getValue();
+            ret = ret + "</option>";
+        }
+        ret = ret + "</select>";
+
+        return ret;
     }
 
     String ComboInvariantAjax(ApplicationContext appContext, String HTMLComboName, String HTMLComboStyle, String HTMLId, String HTMLrel, String combonumber, String value, String HTMLOnChange, boolean emptyfirstoption) {
         try {
             IInvariantService invFunctionService = appContext.getBean(IInvariantService.class);
-            List<Invariant> invFunctionList = invFunctionService.findListOfInvariantById(combonumber);
+            AnswerList answer = invFunctionService.readByIdname(combonumber);
+            List<Invariant> invFunctionList = (List<Invariant>)answer.getDataList();
+            
 
             String ret = "<select id=\"" + HTMLId + "\" rel=\"" + HTMLrel + "\" style=\"" + HTMLComboStyle + "\" name=\"" + HTMLComboName + "\"";
             if (HTMLOnChange.compareToIgnoreCase("") != 0) {
@@ -106,7 +106,8 @@
     String ComboInvariantMultipleAjax(ApplicationContext appContext, String HTMLComboName, String HTMLComboStyle, String HTMLId, String HTMLrel, String combonumber, String value, String HTMLOnChange, boolean emptyfirstoption) {
         try {
             IInvariantService invFunctionService = appContext.getBean(IInvariantService.class);
-            List<Invariant> invFunctionList = invFunctionService.findListOfInvariantById(combonumber);
+            AnswerList answer = invFunctionService.readByIdname(combonumber);
+            List<Invariant> invFunctionList = (List<Invariant>)answer.getDataList(); 
 
             String ret = "<select id=\"" + HTMLId + "\" rel=\"" + HTMLrel + "\" style=\"" + HTMLComboStyle + "\" name=\"" + HTMLComboName + "\"";
             if (HTMLOnChange.compareToIgnoreCase("") != 0) {

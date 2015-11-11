@@ -252,7 +252,8 @@ public class UpdateTestCase2 extends HttpServlet {
         AnswerList answer = testCaseCountryService.readByTestTestCase(tc.getTest(), tc.getTestCase());
         List<TestCaseCountry> tcCountry = answer.getDataList();
 
-        for (Invariant country : invariantService.findListOfInvariantById("COUNTRY")) {
+        answer = invariantService.readByIdname("COUNTRY"); //TODO: handle if the response does not turn ok
+        for (Invariant country : (List<Invariant>)answer.getDataList()) {
             countryList.put(country.getValue(), ParameterParserUtil.parseStringParam(request.getParameter(country.getValue()), ""));
         }
 

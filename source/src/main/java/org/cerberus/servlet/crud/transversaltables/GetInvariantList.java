@@ -20,23 +20,23 @@
 package org.cerberus.servlet.crud.transversaltables;
 
 import java.io.IOException;
-
+import java.util.List;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-
 import org.apache.log4j.Level;
 import org.cerberus.crud.entity.Invariant;
-import org.cerberus.exception.CerberusException;
-import org.cerberus.log.MyLogger;
 import org.cerberus.crud.service.IInvariantService;
 import org.cerberus.crud.service.impl.InvariantService;
+import org.cerberus.exception.CerberusException;
+import org.cerberus.log.MyLogger;
 import org.cerberus.util.ParameterParserUtil;
+import org.cerberus.util.answer.AnswerList;
 import org.json.JSONArray;
 import org.json.JSONException;
-import org.json.JSONObject; 
+import org.json.JSONObject;
 import org.springframework.context.ApplicationContext;
 import org.springframework.web.context.support.WebApplicationContextUtils;
 
@@ -55,36 +55,35 @@ public class GetInvariantList extends HttpServlet {
 
         ApplicationContext appContext = WebApplicationContextUtils.getWebApplicationContext(this.getServletContext());
         IInvariantService invariantService = appContext.getBean(InvariantService.class);
-        
+
         JSONObject jsonResponse = new JSONObject();
-        
+
         String action = request.getParameter("action");
+
         try {
-            try {
-                 if(request.getParameter("action") != null){
+            if (request.getParameter("action") != null) {
                     //gets a list of invariants in the same call, it can be useful if we want to
-                     //retrieve all the information in one client call
-                    if("getNInvariant".equals(action)){
-                        //gets a list of invariants
-                        JSONObject listOfInvariants = new JSONObject(idName);
-                        for(int i = 0; i < listOfInvariants.length(); i++){
-                            String invariantName = (String)listOfInvariants.get(String.valueOf(i));
-                            JSONArray array = new JSONArray();
-                            for (Invariant myInvariant : invariantService.findListOfInvariantById(invariantName)) {
-                                array.put(myInvariant.getValue());
-                            }
-                            jsonResponse.put(invariantName, array);
-                        }                        
-                    }    
-                }else{
-                    //gets one item
-                    for (Invariant myInvariant : invariantService.findListOfInvariantById(idName)) {
-                        jsonResponse.put(myInvariant.getValue(), myInvariant.getValue());
+                //retrieve all the information in one client call
+                if ("getNInvariant".equals(action)) {
+                    //gets a list of invariants
+                    JSONObject listOfInvariants = new JSONObject(idName);
+                    for (int i = 0; i < listOfInvariants.length(); i++) {
+                        String invariantName = (String) listOfInvariants.get(String.valueOf(i));
+                        JSONArray array = new JSONArray();
+                        AnswerList answer = invariantService.readByIdname(invariantName); //TODO: handle if the response does not turn ok
+                        for (Invariant myInvariant : (List<Invariant>) answer.getDataList()) {
+                            array.put(myInvariant.getValue());
+                        }
+                        jsonResponse.put(invariantName, array);
                     }
                 }
-            } catch (CerberusException ex) {
-                response.setContentType("text/html");
-                response.getWriter().print(ex.getMessageError().getDescription());
+            } else {
+                    //gets one item
+
+                AnswerList answer = invariantService.readByIdname(idName); //TODO: handle if the response does not turn ok
+                for (Invariant myInvariant : (List<Invariant>) answer.getDataList()) {
+                    jsonResponse.put(myInvariant.getValue(), myInvariant.getValue());
+                }
             }
             response.setContentType("application/json");
             response.getWriter().print(jsonResponse.toString());

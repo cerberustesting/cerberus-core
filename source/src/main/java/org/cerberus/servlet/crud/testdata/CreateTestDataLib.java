@@ -22,14 +22,12 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import java.util.logging.Logger;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import org.apache.log4j.Level;
-import org.cerberus.crud.entity.Invariant;
 import org.cerberus.enums.MessageCodeEnum;
 import org.cerberus.crud.entity.MessageEvent;
 import org.cerberus.enums.MessageEventEnum;
@@ -38,11 +36,9 @@ import org.cerberus.crud.entity.TestDataLibData;
 import org.cerberus.exception.CerberusException;
 import org.cerberus.crud.factory.IFactoryTestDataLib;
 import org.cerberus.crud.factory.IFactoryTestDataLibData;
-import org.cerberus.crud.service.IInvariantService;
 import org.cerberus.log.MyLogger;
 import org.cerberus.crud.service.ILogEventService;
 import org.cerberus.crud.service.ITestDataLibService;
-import org.cerberus.crud.service.impl.InvariantService;
 import org.cerberus.crud.service.impl.LogEventService;
 import org.cerberus.util.StringUtil;
 import org.cerberus.util.answer.Answer;
@@ -346,29 +342,5 @@ public class CreateTestDataLib extends HttpServlet {
         answerItem.setItem(jsonObject);
            
         return answerItem;
-    }
-    /**
-     * Auxiliary method that search for the values for an invariant with basis in its name.
-     * @param appContext - context object used to get the required beans
-     * @param idName name of the invariant that is to be retrieved
-     * @return an object containing the invariant information
-     * @throws JSONException 
-     */
-    private JSONObject findInvariantListByIdName(ApplicationContext appContext, String idName) throws JSONException {
-        JSONObject object = new JSONObject();
-        try {
-            
-            IInvariantService invariantService = appContext.getBean(InvariantService.class);
-            
-            //gets the list of databases
-            for (Invariant myInvariant : invariantService.findListOfInvariantById(idName)) {
-                object.put(myInvariant.getValue(), myInvariant.getValue());
-                
-            }
-            
-        } catch (CerberusException ex) {
-            Logger.getLogger(CreateTestDataLib.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        }
-        return object;
     }
 }

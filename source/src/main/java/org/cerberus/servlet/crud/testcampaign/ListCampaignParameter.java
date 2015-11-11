@@ -27,8 +27,9 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import org.cerberus.crud.entity.Invariant;
-import org.cerberus.exception.CerberusException;
 import org.cerberus.crud.service.IInvariantService;
+import org.cerberus.exception.CerberusException;
+import org.cerberus.util.answer.AnswerList;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -51,18 +52,20 @@ public class ListCampaignParameter extends HttpServlet {
         ApplicationContext appContext = WebApplicationContextUtils.getWebApplicationContext(this.getServletContext());
         invariantService = appContext.getBean(IInvariantService.class);
         PolicyFactory policy = Sanitizers.FORMATTING.and(Sanitizers.LINKS);
-
+        AnswerList answer;
         String invariant = policy.sanitize(request.getParameter("invariant"));
 
         JSONObject jsonResponse = new JSONObject();
         try {
             if (invariant == null || "".equals(invariant.trim())) {
-                List<Invariant> campagneParametersInvariantList = invariantService.findListOfInvariantById("CAMPAIGN_PARAMETER");
+                answer = invariantService.readByIdname("CAMPAIGN_PARAMETER"); //TODO: handle if the response does not turn ok
+                List<Invariant> campagneParametersInvariantList = (List<Invariant>)answer.getDataList();
                 if (campagneParametersInvariantList != null && campagneParametersInvariantList.size() > 0) {
                     jsonResponse.put("CampaignsParameters", convertInvariantsListToJsonArray(campagneParametersInvariantList));
                 }
             } else {
-                List<Invariant> parameterValueList = invariantService.findListOfInvariantById(invariant);
+                answer = invariantService.readByIdname(invariant); //TODO: handle if the response does not turn ok
+                List<Invariant> parameterValueList =  (List<Invariant>)answer.getDataList();
                 if (parameterValueList != null && parameterValueList.size() > 0) {
                     jsonResponse.put("ParameterValues", convertInvariantsListToJsonArray(parameterValueList));
                 }

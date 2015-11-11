@@ -27,11 +27,8 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import org.apache.log4j.Level;
-import org.apache.log4j.Logger;
-import org.cerberus.database.DatabaseSpring;
+import org.cerberus.crud.entity.Invariant;
 import org.cerberus.crud.entity.MessageGeneral;
-import org.cerberus.enums.MessageGeneralEnum;
 import org.cerberus.crud.entity.TCase;
 import org.cerberus.crud.entity.Test;
 import org.cerberus.crud.entity.TestCaseCountry;
@@ -39,9 +36,6 @@ import org.cerberus.crud.entity.TestCaseCountryProperties;
 import org.cerberus.crud.entity.TestCaseStep;
 import org.cerberus.crud.entity.TestCaseStepAction;
 import org.cerberus.crud.entity.TestCaseStepActionControl;
-import org.cerberus.exception.CerberusException;
-import org.cerberus.crud.factory.IFactoryLogEvent;
-import org.cerberus.crud.factory.impl.FactoryLogEvent;
 import org.cerberus.crud.service.IInvariantService;
 import org.cerberus.crud.service.ILogEventService;
 import org.cerberus.crud.service.ITestCaseCountryPropertiesService;
@@ -52,7 +46,10 @@ import org.cerberus.crud.service.ITestCaseStepActionService;
 import org.cerberus.crud.service.ITestCaseStepService;
 import org.cerberus.crud.service.ITestService;
 import org.cerberus.crud.service.impl.LogEventService;
-import org.cerberus.crud.service.impl.UserService;
+import org.cerberus.database.DatabaseSpring;
+import org.cerberus.enums.MessageGeneralEnum;
+import org.cerberus.exception.CerberusException;
+import org.cerberus.util.answer.AnswerList;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.web.context.support.WebApplicationContextUtils;
@@ -116,7 +113,9 @@ public class DuplicateTestCase extends HttpServlet {
                 newTc.setTest(newTest);
                 newTc.setTestCase(newTestCase);
                 newTc.setCreator(request.getUserPrincipal().getName());
-                newTc.setStatus(invariantService.findListOfInvariantById("TCSTATUS").get(0).getValue());
+                AnswerList answer = invariantService.readByIdname("TCSTATUS"); //TODO: handle if the response does not turn ok
+                List<Invariant>list = (List<Invariant>)answer.getDataList();
+                newTc.setStatus(list.get(0).getValue());
                 testCaseService.createTestCase(newTc);
 
                 /**

@@ -88,7 +88,8 @@
         <%@ include file="include/header.jsp" %>
         <%
             IInvariantService invariantService = appContext.getBean(IInvariantService.class);
-            List<Invariant> invariants = invariantService.findListOfInvariantById("BROWSER");
+            AnswerList answerBrowser = invariantService.readByIdname("BROWSER");
+            List<Invariant> invariants = (List<Invariant>)answerBrowser.getDataList();
         %>
         <div id="searchTestCase">
             <div class="fields" style="margin-left: 15px">

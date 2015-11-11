@@ -21,6 +21,7 @@ package org.cerberus.servlet.crud.transversaltables;
 
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.util.List;
 import java.util.logging.Logger;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -28,12 +29,13 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import org.apache.log4j.Level;
 import org.cerberus.crud.entity.Invariant;
-import org.cerberus.exception.CerberusException;
-import org.cerberus.log.MyLogger;
 import org.cerberus.crud.service.IInvariantService;
 import org.cerberus.crud.service.ITestCaseService;
 import org.cerberus.crud.service.impl.InvariantService;
+import org.cerberus.exception.CerberusException;
+import org.cerberus.log.MyLogger;
 import org.cerberus.servlet.crud.test.GetShortTests;
+import org.cerberus.util.answer.AnswerList;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -66,7 +68,8 @@ public class FindInvariantByID extends HttpServlet {
         IInvariantService invariantService = appContext.getBean(InvariantService.class);
 
         JSONArray array = new JSONArray();
-        for (Invariant myInvariant : invariantService.findListOfInvariantById(idName)) {
+        AnswerList answer = invariantService.readByIdname("COUNTRY"); //TODO: handle if the response does not turn ok
+        for (Invariant myInvariant : (List<Invariant>)answer.getDataList()) {
             JSONObject jsonObject = new JSONObject();
             jsonObject.put("value", myInvariant.getValue());
             jsonObject.put("description", myInvariant.getDescription());

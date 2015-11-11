@@ -1,35 +1,35 @@
 package org.cerberus.servlet.reporting;
 
+import java.io.IOException;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.*;
+import javax.servlet.ServletException;
+import javax.servlet.annotation.WebServlet;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import org.apache.log4j.Logger;
 import org.cerberus.crud.entity.Application;
 import org.cerberus.crud.entity.Invariant;
 import org.cerberus.crud.entity.TCase;
 import org.cerberus.crud.entity.TestCaseExecution;
-import org.cerberus.exception.CerberusException;
 import org.cerberus.crud.factory.IFactoryTCase;
 import org.cerberus.crud.factory.impl.FactoryTCase;
+import org.cerberus.crud.service.IApplicationService;
+import org.cerberus.crud.service.IInvariantService;
+import org.cerberus.crud.service.ITestCaseCountryService;
+import org.cerberus.crud.service.ITestCaseExecutionService;
+import org.cerberus.crud.service.ITestCaseService;
+import org.cerberus.exception.CerberusException;
 import org.cerberus.util.StringUtil;
+import org.cerberus.util.answer.AnswerList;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Component;
 import org.springframework.web.context.support.WebApplicationContextUtils;
-
-import javax.servlet.ServletException;
-import javax.servlet.annotation.WebServlet;
-import javax.servlet.http.HttpServlet;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.util.*;
-import org.cerberus.crud.service.IApplicationService;
-import org.cerberus.crud.service.IInvariantService;
-import org.cerberus.crud.service.ITestCaseCountryService;
-import org.cerberus.crud.service.ITestCaseExecutionService;
-import org.cerberus.crud.service.ITestCaseService;
 
 /**
  * Build data for detail table and calculate data dor statistics tables
@@ -82,11 +82,14 @@ public class GetReport extends HttpServlet {
         Map<String, Map<String, Integer>> mapStatus = new LinkedHashMap<String, Map<String, Integer>>();
         try {
             //Get invariant for know the columns
-            List<Invariant> tceStatus = invariantService.findListOfInvariantById("TCESTATUS");
-            List<Invariant> tcGroups = invariantService.findListOfInvariantById("GROUP");
+            AnswerList answer = invariantService.readByIdname("TCESTATUS"); //TODO: handle if the response does not turn ok
+            List<Invariant> tceStatus = (List<Invariant>) answer.getDataList();
+            answer = invariantService.readByIdname("GROUP"); //TODO: handle if the response does not turn ok
+            List<Invariant> tcGroups = (List<Invariant>) answer.getDataList();
             //removed first item because is empty
             tcGroups.remove(0);
-            List<Invariant> tcStatus = invariantService.findListOfInvariantById("TCSTATUS");
+            answer = invariantService.readByIdname("TCSTATUS"); //TODO: handle if the response does not turn ok
+            List<Invariant> tcStatus = (List<Invariant>) answer.getDataList();
 
             //Build data for detail table and calculate data dor statistics tables
             this.calculateStatistics(list, countries, browsers, tceStatus, mapTests, mapGroups, mapStatus, data, environment,
@@ -108,8 +111,6 @@ public class GetReport extends HttpServlet {
 
         } catch (JSONException e) {
             LOG.error("Unable to build JSON response due to exception", e);
-        } catch (CerberusException e) {
-            LOG.error("Unable to find Invariant", e);
         }
     }
 

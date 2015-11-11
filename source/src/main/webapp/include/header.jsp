@@ -17,6 +17,8 @@
   ~ You should have received a copy of the GNU General Public License
   ~ along with Cerberus.  If not, see <http://www.gnu.org/licenses/>.
 --%>
+<%@page import="org.cerberus.util.answer.AnswerList"%>
+<%@page import="org.cerberus.util.answer.AnswerItem"%>
 <%@page import="java.util.Set"%>
 <%@page import="org.cerberus.crud.entity.UserSystem"%>
 <%@page import="org.apache.log4j.Level"%>
@@ -210,7 +212,8 @@
                 %>                
                 <select id="MySystem" style="" name="MySystem" onchange="document.SysFilter.submit()">
                     <%
-                        List<Invariant> MyInvariantList = myInvariantService.findListOfInvariantById("SYSTEM");
+                        AnswerList answer = myInvariantService.readByIdname("SYSTEM");
+                        List<Invariant> MyInvariantList = (List<Invariant>)answer.getDataList();
                         for (Invariant myInvariant : MyInvariantList) {
                     %>
                     <option value="<%=myInvariant.getValue()%>"<% if (MySystem.equalsIgnoreCase(myInvariant.getValue())) {

@@ -34,14 +34,16 @@ public interface IInvariantService {
 
     public Invariant findInvariantByIdSort(String idName, Integer sort) throws CerberusException;
 
-    public List<Invariant> findListOfInvariantById(String idName) throws CerberusException;
+    public AnswerList readByIdname(String idName);
 
-    public AnswerList<Invariant> findInvariantByIdGp1(String idName, String gp);
+    public AnswerList findInvariantByIdGp1(String idName, String gp);
 
-    public List<Invariant> findInvariantPublicListByCriteria(int start, int amount, String column, String dir, String searchTerm, String individualSearch);
+    public List<Invariant> readByPublicByCriteria(int start, int amount, String column, String dir, String searchTerm, String individualSearch);
 
-    public List<Invariant> findInvariantPrivateListByCriteria(int start, int amount, String column, String dir, String searchTerm, String individualSearch);
+    public List<Invariant> readByPrivateByCriteria(int start, int amount, String column, String dir, String searchTerm, String individualSearch);
 
+    public AnswerList readByCriteria(int start, int amount, String column, String dir, String searchTerm, String individualSearch);
+    
     public Integer getNumberOfPrivateInvariant(String searchTerm);
 
     public Integer getNumberOfPublicInvariant(String searchTerm);

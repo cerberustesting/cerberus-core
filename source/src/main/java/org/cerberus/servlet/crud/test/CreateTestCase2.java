@@ -222,8 +222,8 @@ public class CreateTestCase2 extends HttpServlet {
         IInvariantService invariantService = appContext.getBean(InvariantService.class);
 
         ITestCaseCountryService testCaseCountryService = appContext.getBean(TestCaseCountryService.class);
-
-        for (Invariant country : invariantService.findListOfInvariantById("COUNTRY")) {
+        AnswerList answer = invariantService.readByIdname("COUNTRY"); //TODO: handle if the response does not turn ok
+        for (Invariant country : (List<Invariant>)answer.getDataList()) {
             countryList.put(country.getValue(), ParameterParserUtil.parseStringParam(request.getParameter(country.getValue()), "off"));
         }
 
