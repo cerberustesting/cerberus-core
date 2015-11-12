@@ -103,7 +103,7 @@ function displayPageLabel(doc) {
 
 function appendBuildRevList(system, editData) {
 
-    var jqxhr = $.getJSON("GetBuildRevisionInvariant", "System=" + system + "&level=1");
+    var jqxhr = $.getJSON("ReadBuildRevisionInvariant", "System=" + system + "&level=1");
     $.when(jqxhr).then(function (data) {
         var fromBuild = $("[name=fromSprint]");
         var toBuild = $("[name=toSprint]");
@@ -133,7 +133,7 @@ function appendBuildRevList(system, editData) {
 
     });
 
-    var jqxhr = $.getJSON("GetBuildRevisionInvariant", "System=" + system + "&level=2");
+    var jqxhr = $.getJSON("ReadBuildRevisionInvariant", "System=" + system + "&level=2");
     $.when(jqxhr).then(function (data) {
         var fromRev = $("[name=fromRev]");
         var toRev = $("[name=toRev]");
