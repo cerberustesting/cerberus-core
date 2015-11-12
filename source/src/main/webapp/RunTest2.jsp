@@ -300,7 +300,7 @@
                     </div>
 
                     <div class="panel-body collapse in" id="queuePanel">
-                        <ul class="list-group" id="queue"></ul>
+                        <ul class="list-group" id="queue" style="height: 1245px; overflow: hidden; overflow-y: scroll;border: 1px solid #CCC; border-radius: 4px;"></ul>
                     </div>
                 </div>
                 <p>Launching N tests on the environments : TATA, TITI, TOTO in the countries : FR, IT, BE on the browser : firefox, chrome, android</p>

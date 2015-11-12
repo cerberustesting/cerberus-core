@@ -21,6 +21,7 @@
 $.when($.getScript("js/pages/global/global.js")).then(function () {
     $(document).ready(function () {
         var doc = new Doc();
+        var user = getUser();
 
         oldPreferenceCompatibility();
 
@@ -28,17 +29,29 @@ $.when($.getScript("js/pages/global/global.js")).then(function () {
         displayFooter(doc);
         bindToggleCollapse();
         appendCountryList();
-        loadMultiSelect("ReadTest", "sEcho=1", "test", "test", "test");
-        loadMultiSelect("ReadProject", "sEcho=1", "project", "idProject", "idProject");
-        loadMultiSelect("ReadApplication", "", "application", "application", "application");
-        loadMultiSelect("ReadUser", "", "creator", "login", "login");
-        loadMultiSelect("ReadUser", "", "implementer", "login", "login");
-        loadMultiSelect("ReadTestBattery", "", "testBattery", "testbattery", "testbattery");
-        loadMultiSelect("ReadCampaign", "", "campaign", "campaign", "campaign");
-        loadInvariantMultiSelect("priority", "PRIORITY");
-        loadInvariantMultiSelect("group", "GROUP");
-        loadInvariantMultiSelect("status", "TCSTATUS");
-        loadSystemMultiSelect();
+
+//        loadSystemMultiSelect();
+        $.when(
+                loadMultiSelect("ReadTest", "sEcho=1", "test", ["test"], "test"),
+                loadMultiSelect("ReadProject", "sEcho=1", "project", ["idProject"], "idProject"),
+                loadMultiSelect("ReadApplication", "", "application", ["application", "system"], "application", true),
+                loadMultiSelect("ReadUser", "", "creator", ["login"], "login"),
+                loadMultiSelect("ReadUser", "", "implementer", ["login"], "login"),
+                loadMultiSelect("ReadTestBattery", "", "testBattery", ["testbattery"], "testbattery"),
+                loadMultiSelect("ReadCampaign", "", "campaign", ["campaign"], "campaign"),
+                loadMultiSelect("ReadBuildRevisionInvariant", "level=1", "targetSprint", ["versionName", "system"], "versionName"),
+                loadMultiSelect("ReadBuildRevisionInvariant", "level=2", "targetRev", ["versionName", "system"], "versionName"),
+                loadInvariantMultiSelect("priority", "PRIORITY"),
+                loadInvariantMultiSelect("group", "GROUP"),
+                loadInvariantMultiSelect("status", "TCSTATUS")
+                ).then(loadSystemMultiSelect);
+
+
+        $("#filters select").on("change", function () {
+            updateMultiSelect("application", "system", $("#systemFilter").val());
+            updateMultiSelect("targetSprint", "system", $("#systemFilter").val());
+            updateMultiSelect("targetRev", "system", $("#systemFilter").val());
+        });
 
         $("#loadbutton").click(loadTestCaseFromFilter);
         $("#resetbutton").click(function () {
@@ -70,8 +83,11 @@ $.when($.getScript("js/pages/global/global.js")).then(function () {
         $("#saveRobotPreferences").click(saveRobotPreferences);
         $("#saveExecutionParams").click(saveExecutionPreferences);
         $("#robotConfig").change(loadRobotInfo);
+
+        loadTestCaseFromFilter();
     });
 });
+
 
 
 function getCookie(cname) {
@@ -282,8 +298,21 @@ function multiSelectConf(name) {
     this.enableCaseInsensitiveFiltering = true;
 }
 
-function loadMultiSelect(url, urlParams, selectName, textItem, valueItem) {
-    $.ajax({
+function updateMultiSelect(selectName, dataToCheck, valueList) {
+    $("#" + selectName + "Filter option").each(function () {
+        if (valueList !== null && valueList.indexOf($(this).data("item")[dataToCheck]) === -1) {
+            $(this).prop("checked", false);
+            $(this).prop("disabled", true);
+        } else {
+            $(this).prop("disabled", false);
+        }
+    });
+
+    $("#" + selectName + "Filter").multiselect('rebuild');
+}
+
+function loadMultiSelect(url, urlParams, selectName, textItem, valueItem, isUpdate) {
+    var jqXHR = $.ajax({
         url: url,
         method: "GET",
         data: urlParams,
@@ -293,9 +322,11 @@ function loadMultiSelect(url, urlParams, selectName, textItem, valueItem) {
             var select = $("#" + selectName + "Filter");
 
             for (var index = 0; index < data.contentTable.length; index++) {
-                var text = data.contentTable[text];
+                var text = textItem.map(function (item) {
+                    return data.contentTable[index][item];
+                }).join(" - ");
 
-                select.append($("<option></option>").text(data.contentTable[index][textItem])
+                select.append($("<option></option>").text(text)
                         .val(data.contentTable[index][valueItem])
                         .data("item", data.contentTable[index]));
             }
@@ -306,10 +337,12 @@ function loadMultiSelect(url, urlParams, selectName, textItem, valueItem) {
             showUnexpectedError();
         }
     });
+
+    return jqXHR;
 }
 
 function loadInvariantMultiSelect(selectName, idName) {
-      $.ajax({
+    var jqXHR = $.ajax({
         url: "FindInvariantByID",
         method: "GET",
         data: {idName: idName},
@@ -330,6 +363,7 @@ function loadInvariantMultiSelect(selectName, idName) {
             showUnexpectedError();
         }
     });
+    return jqXHR;
 }
 
 function loadSystemMultiSelect() {
@@ -342,8 +376,11 @@ function loadSystemMultiSelect() {
         select.append($("<option></option>").text(sys)
                 .val(sys));
     }
-    select.val(user.defaultSystem);
     select.multiselect(new multiSelectConf("system"));
+    select.multiselect('select', user.defaultSystem);
+    updateMultiSelect("application", "system", select.val());
+    updateMultiSelect("targetSprint", "system", select.val());
+    updateMultiSelect("targetRev", "system", select.val());
 }
 
 function appendCountryList() {
