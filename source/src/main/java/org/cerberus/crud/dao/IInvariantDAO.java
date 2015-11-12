@@ -17,7 +17,6 @@
  */
 package org.cerberus.crud.dao;
 
-import java.util.List;
 import org.cerberus.crud.entity.Invariant;
 import org.cerberus.exception.CerberusException;
 import org.cerberus.util.answer.AnswerList;
@@ -31,21 +30,21 @@ import org.cerberus.util.answer.AnswerList;
  */
 public interface IInvariantDAO {
 
-    Invariant findInvariantByIdValue(String idName, String value) throws CerberusException;
+    Invariant readByKey(String idName, String value) throws CerberusException;
 
-    Invariant findInvariantByIdSort(String idName, Integer sort) throws CerberusException;
+    Invariant readByIdnameBySort(String idName, Integer sort) throws CerberusException;
 
-    List<Invariant> findListOfInvariantById(String idName) throws CerberusException;
+    AnswerList readByIdname(String idName);
 
-    AnswerList<Invariant> findInvariantByIdGp1(String idName, String gp);
+    AnswerList readByIdnameByGp1(String idName, String gp);
 
-    public List<Invariant> findInvariantListByCriteria(int start, int amount, String column, String dir, String searchTerm, String individualSearch, String PublicPrivateFilter);
+    public AnswerList readByCriteria(int start, int amount, String column, String dir, String searchTerm, String individualSearch, String PublicPrivateFilter);
 
     public Integer getNumberOfInvariant(String searchTerm, String PublicPrivateFilter) throws CerberusException;
 
-    public void createInvariant(Invariant invariant) throws CerberusException;
+    public void create(Invariant invariant) throws CerberusException;
 
-    public void deleteInvariant(Invariant invariant) throws CerberusException;
+    public void delete(Invariant invariant) throws CerberusException;
 
-    public void updateInvariant(Invariant invariant) throws CerberusException;
+    public void update(Invariant invariant) throws CerberusException;
 }

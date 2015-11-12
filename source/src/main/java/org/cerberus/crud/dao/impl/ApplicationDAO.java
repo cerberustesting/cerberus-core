@@ -507,8 +507,10 @@ public class ApplicationDAO implements IApplicationDAO {
     }
 
     @Override
-    public List<String> readDistinctSystem() {
-        List<String> list = null;
+    public AnswerList readDistinctSystem() {
+        MessageEvent msg;
+        AnswerList answer = new AnswerList();
+        List<String> list = new ArrayList<String>();
         final String query = "SELECT DISTINCT a.system FROM application a ORDER BY a.system ASC";
 
         // Debug message on SQL.
@@ -522,22 +524,38 @@ public class ApplicationDAO implements IApplicationDAO {
 
                 ResultSet resultSet = preStat.executeQuery();
                 try {
-                    list = new ArrayList<String>();
+                    
                     while (resultSet.next()) {
                         list.add(resultSet.getString("system"));
                     }
+                    if(list.isEmpty()){
+                        msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_NO_DATA_FOUND);
+                    }else{
+                        msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
+                    }
                 } catch (SQLException exception) {
                     LOG.error("Unable to execute query : " + exception.toString());
+                    msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
+                    msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", exception.toString()));
+                    list.clear();
                 } finally {
-                    resultSet.close();
+                    if(resultSet != null){
+                        resultSet.close();
+                    }
                 }
             } catch (SQLException exception) {
                 LOG.error("Unable to execute query : " + exception.toString());
+                msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
+                msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", exception.toString()));
             } finally {
-                preStat.close();
+                if(preStat != null){
+                    preStat.close();
+                }
             }
         } catch (SQLException exception) {
             LOG.error("Unable to execute query : " + exception.toString());
+            msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
+            msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", exception.toString()));
         } finally {
             try {
                 if (connection != null) {
@@ -547,7 +565,11 @@ public class ApplicationDAO implements IApplicationDAO {
                 LOG.warn("Unable to close connection : " + exception.toString());
             }
         }
-        return list;
+        
+        answer.setTotalRows(list.size());
+        answer.setDataList(list);
+        answer.setResultMessage(msg);
+        return answer;
     }
 
     @Override

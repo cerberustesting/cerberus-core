@@ -37,7 +37,7 @@ function initBuildContentPage() {
     //if the build or revision is passed as a url parameter, then it loads the table
     var urlBuild = GetURLParameter('build');
     var urlRevision = GetURLParameter('revision');
-    console.log('URL - B : ' + urlBuild + ' R : ' + urlRevision);
+
 //    if (urlBuild !== null) {
 //        $('#selectBuild').val(urlBuild);
 //    }
@@ -175,8 +175,6 @@ function appendBuildList(selectName, level, defaultValue) {
 function loadBCTable() {
     var selectBuild = $("#selectBuild").val();
     var selectRevision = $("#selectRevision").val();
-
-    console.log('Chargement table B : ' + selectBuild + ' R : ' + selectRevision);
 
     var CallParam = 'build=' + encodeURIComponent(selectBuild) + '&revision=' + encodeURIComponent(selectRevision);
     window.history.pushState('BuildContent', '', 'BuildContent.jsp?' + CallParam);

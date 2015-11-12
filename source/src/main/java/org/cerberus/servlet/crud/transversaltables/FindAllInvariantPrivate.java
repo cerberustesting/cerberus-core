@@ -129,7 +129,7 @@ public class FindAllInvariantPrivate extends HttpServlet {
             ApplicationContext appContext = WebApplicationContextUtils.getWebApplicationContext(this.getServletContext());
             IInvariantService invariantService = appContext.getBean(IInvariantService.class);
 
-            List<Invariant> invariantList = invariantService.findInvariantPrivateListByCriteria(start, amount, colName, dir, searchTerm, inds);
+            List<Invariant> invariantList = invariantService.readByPrivateByCriteria(start, amount, colName, dir, searchTerm, inds);
 
             JSONObject jsonResponse = new JSONObject();
 

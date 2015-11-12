@@ -29,8 +29,6 @@ import org.cerberus.util.answer.AnswerList;
 
 public interface IBuildRevisionParametersService {
 
-    List<BuildRevisionParameters> findBuildRevisionParametersFromMaxRevision(String system, String build, String revision, String lastBuild, String lastRevision);
-
     public List<BuildRevisionParameters> findBuildRevisionParametersByCriteria(String application, String build, String revision);
 
     String getMaxBuildBySystem(String system);
@@ -74,6 +72,28 @@ public interface IBuildRevisionParametersService {
      * @return
      */
     AnswerList readByVarious1ByCriteria(String system, String application, String build, String revision, int start, int amount, String column, String dir, String searchTerm, String individualSearch);
+
+    /**
+     *
+     * @param system
+     * @param build
+     * @param revision
+     * @param lastBuild
+     * @param lastRevision
+     * @return
+     */
+    AnswerList readMaxSVNReleasePerApplication(String system, String build, String revision, String lastBuild, String lastRevision);
+
+    /**
+     *
+     * @param system
+     * @param build
+     * @param revision
+     * @param lastBuild
+     * @param lastRevision
+     * @return
+     */
+    AnswerList readNonSVNRelease(String system, String build, String revision, String lastBuild, String lastRevision);
 
     /**
      *

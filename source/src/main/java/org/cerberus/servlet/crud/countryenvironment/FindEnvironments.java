@@ -20,26 +20,27 @@
 
 package org.cerberus.servlet.crud.countryenvironment;
 
-import org.apache.log4j.Logger;
-import org.cerberus.crud.entity.CountryEnvParam;
-import org.cerberus.crud.entity.Invariant;
-import org.cerberus.exception.CerberusException;
-import org.cerberus.crud.service.ICountryEnvParamService;
-import org.cerberus.crud.service.IInvariantService;
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
-import org.springframework.context.ApplicationContext;
-import org.springframework.web.context.support.WebApplicationContextUtils;
-
+import java.io.IOException;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
+import org.apache.log4j.Logger;
+import org.cerberus.crud.entity.CountryEnvParam;
+import org.cerberus.crud.entity.Invariant;
+import org.cerberus.crud.service.ICountryEnvParamService;
+import org.cerberus.crud.service.IInvariantService;
+import org.cerberus.exception.CerberusException;
+import org.cerberus.util.answer.AnswerList;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+import org.springframework.context.ApplicationContext;
+import org.springframework.web.context.support.WebApplicationContextUtils;
 
 @WebServlet(name = "FindEnvironments", urlPatterns = {"/FindEnvironments"})
 public class FindEnvironments extends HttpServlet {
@@ -82,7 +83,8 @@ public class FindEnvironments extends HttpServlet {
         JSONObject jsonResponse = new JSONObject();
         try {
             Map<String, String> mapEnvGroup = new HashMap<String, String>();
-            for (Invariant inv : invariantService.findListOfInvariantById("ENVIRONMENT")) {
+            AnswerList answer = invariantService.readByIdname("ENVIRONMENT"); //TODO: handle if the response does not turn ok
+            for (Invariant inv : (List<Invariant>)answer.getDataList()) {
                 mapEnvGroup.put(inv.getValue(), inv.getGp1());
             }
 

@@ -18,28 +18,35 @@
 package org.cerberus.servlet.crud.buildrevisionchange;
 
 import java.io.IOException;
-import java.io.PrintWriter;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.servlet.ServletException;
+import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import org.cerberus.crud.entity.BuildRevisionInvariant;
+import org.cerberus.crud.entity.MessageEvent;
+import org.cerberus.enums.MessageEventEnum;
 import org.cerberus.exception.CerberusException;
 import org.cerberus.crud.factory.IFactoryBuildRevisionInvariant;
-import org.cerberus.crud.factory.IFactoryLogEvent;
-import org.cerberus.crud.factory.impl.FactoryLogEvent;
 import org.cerberus.crud.service.IBuildRevisionInvariantService;
 import org.cerberus.crud.service.ILogEventService;
 import org.cerberus.crud.service.impl.LogEventService;
+import org.cerberus.util.StringUtil;
+import org.cerberus.util.answer.Answer;
+import org.json.JSONException;
+import org.json.JSONObject;
 import org.springframework.context.ApplicationContext;
 import org.springframework.web.context.support.WebApplicationContextUtils;
+import org.owasp.html.PolicyFactory;
+import org.owasp.html.Sanitizers;
 
 /**
  *
  * @author bcivel
  */
+@WebServlet(name = "CreateBuildRevisionInvariant", urlPatterns = {"/CreateBuildRevisionInvariant"})
 public class CreateBuildRevisionInvariant extends HttpServlet {
 
     /**
@@ -50,34 +57,94 @@ public class CreateBuildRevisionInvariant extends HttpServlet {
      * @param response servlet response
      * @throws ServletException if a servlet-specific error occurs
      * @throws IOException if an I/O error occurs
+     * @throws org.cerberus.exception.CerberusException
+     * @throws org.json.JSONException
      */
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException, CerberusException {
-        response.setContentType("text/html;charset=UTF-8");
-        PrintWriter out = response.getWriter();
-        try {
-            String system = request.getParameter("System");
-            Integer level = Integer.valueOf(request.getParameter("Level"));
-            Integer seq = Integer.valueOf(request.getParameter("Seq"));
-            String versionName = request.getParameter("VersionName");
+            throws ServletException, IOException, CerberusException, JSONException {
+        JSONObject jsonResponse = new JSONObject();
+        Answer ans = new Answer();
+        MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
+        msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", ""));
+        ans.setResultMessage(msg);
+        PolicyFactory policy = Sanitizers.FORMATTING.and(Sanitizers.LINKS);
 
+        response.setContentType("application/json");
+
+        /**
+         * Parsing and securing all required parameters.
+         */
+        String system = policy.sanitize(request.getParameter("system"));
+        String versionName = policy.sanitize(request.getParameter("versionname"));
+        Integer seq = -1;
+        boolean seq_error = false;
+        try {
+            if (request.getParameter("seq") != null && !request.getParameter("seq").equals("")) {
+                seq = Integer.valueOf(policy.sanitize(request.getParameter("seq")));
+            }
+        } catch (Exception ex) {
+            seq_error = true;
+        }
+        Integer level = -1;
+        boolean level_error = false;
+        try {
+            if (request.getParameter("level") != null && !request.getParameter("level").equals("")) {
+                level = Integer.valueOf(policy.sanitize(request.getParameter("level")));
+            }
+        } catch (Exception ex) {
+            level_error = true;
+        }
+
+        /**
+         * Checking all constrains before calling the services.
+         */
+        if (StringUtil.isNullOrEmpty(system)) {
+            msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_EXPECTED);
+            msg.setDescription(msg.getDescription().replace("%ITEM%", "BuildRevisionInvariant")
+                    .replace("%OPERATION%", "Create")
+                    .replace("%REASON%", "System name is missing!"));
+            ans.setResultMessage(msg);
+        } else if (level_error) {
+            msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_EXPECTED);
+            msg.setDescription(msg.getDescription().replace("%ITEM%", "BuildRevisionInvariant")
+                    .replace("%OPERATION%", "Create")
+                    .replace("%REASON%", "Could not manage to convert level to an integer value!"));
+            ans.setResultMessage(msg);
+        } else if (seq_error) {
+            msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_EXPECTED);
+            msg.setDescription(msg.getDescription().replace("%ITEM%", "BuildRevisionInvariant")
+                    .replace("%OPERATION%", "Create")
+                    .replace("%REASON%", "Could not manage to convert sequence to an integer value!"));
+            ans.setResultMessage(msg);
+        } else {
+            /**
+             * All data seems cleans so we can call the services.
+             */
             ApplicationContext appContext = WebApplicationContextUtils.getWebApplicationContext(this.getServletContext());
             IBuildRevisionInvariantService buildRevisionInvariantService = appContext.getBean(IBuildRevisionInvariantService.class);
             IFactoryBuildRevisionInvariant factoryBuildRevisionInvariant = appContext.getBean(IFactoryBuildRevisionInvariant.class);
 
             BuildRevisionInvariant buildRevisionInvariantData = factoryBuildRevisionInvariant.create(system, level, seq, versionName);
-            buildRevisionInvariantService.insertBuildRevisionInvariant(buildRevisionInvariantData);
+            ans = buildRevisionInvariantService.create(buildRevisionInvariantData);
 
-            /**
-             * Adding Log entry.
-             */
-            ILogEventService logEventService = appContext.getBean(LogEventService.class);
-            logEventService.createPrivateCalls("/CreateBuildRevisionInvariant", "CREATE", "Create Build Revision Invariant : ['" + system + "'|'" + level + "'|'" + seq + "'] " + versionName, request);
-
-            response.sendRedirect("InvariantPublic.jsp");
-        } finally {
-            out.close();
+            if (ans.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
+                /**
+                 * Object created. Adding Log entry.
+                 */
+                ILogEventService logEventService = appContext.getBean(LogEventService.class);
+                logEventService.createPrivateCalls("/CreateBuildRevisionInvariant", "CREATE", "Create BuildRevisionInvariant : ['" + system + "'|'" + level + "'|'" + seq + "']", request);
+            }
         }
+
+        /**
+         * Formating and returning the json result.
+         */
+        jsonResponse.put("messageType", ans.getResultMessage().getMessage().getCodeString());
+        jsonResponse.put("message", ans.getResultMessage().getDescription());
+
+        response.getWriter().print(jsonResponse);
+        response.getWriter().flush();
+
     }
 
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
@@ -96,6 +163,8 @@ public class CreateBuildRevisionInvariant extends HttpServlet {
             processRequest(request, response);
         } catch (CerberusException ex) {
             Logger.getLogger(CreateBuildRevisionInvariant.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (JSONException ex) {
+            Logger.getLogger(CreateBuildRevisionInvariant.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
 
@@ -113,6 +182,8 @@ public class CreateBuildRevisionInvariant extends HttpServlet {
         try {
             processRequest(request, response);
         } catch (CerberusException ex) {
+            Logger.getLogger(CreateBuildRevisionInvariant.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (JSONException ex) {
             Logger.getLogger(CreateBuildRevisionInvariant.class.getName()).log(Level.SEVERE, null, ex);
         }
     }

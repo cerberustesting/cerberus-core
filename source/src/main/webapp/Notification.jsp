@@ -167,7 +167,7 @@
             <tr>
                 <td colspan="3" style="background-color: lightyellow; text-align: center">Application to deploy.</td>
             </tr>
-            <tr><td>Application</td><td>Release</td><td>Deploy with Jenkins</td><td>View the Jenkins Pipe</td></tr>
+            <tr><td>Application</td><td>Release</td><td>Deploy Links</td><td>View the Jenkins Pipe</td></tr>
             <%
             	String lastBuild;
                             String lastRev;
@@ -184,8 +184,12 @@
                             IParameterService myParameterService = appContext.getBean(IParameterService.class);
 
                             String JenkinsURL = myParameterService.findParameterByKey("jenkins_deploy_pipeline_url", "").getValue();
-
-                            for (BuildRevisionParameters brp : buildRevisionParametersService.findBuildRevisionParametersFromMaxRevision(system, build, revision, lastBuild, lastRev)) {
+                            
+                            List<BuildRevisionParameters> myList = null;
+                            // We start by build Revision that have continious integration.
+                            try{
+                                myList = buildRevisionParametersService.convert(buildRevisionParametersService.readMaxSVNReleasePerApplication(system, build, revision, lastBuild, lastRev));
+                            for (BuildRevisionParameters brp : myList) {
 
                                 String final_JenkinsURL = JenkinsURL.replaceAll("%APPLI%", brp.getApplication());
             %>
@@ -207,6 +211,27 @@
             </tr>
             <%
             	}
+                            } catch (CerberusException ex) {
+                            }
+                            // We continue with release that have manual instruction in link.
+                            myList = null;
+                            try{
+                                myList = buildRevisionParametersService.convert(buildRevisionParametersService.readNonSVNRelease(system, build, revision, lastBuild, lastRev));
+                            for (BuildRevisionParameters brp : myList) {
+
+                                String final_JenkinsURL = JenkinsURL.replaceAll("%APPLI%", brp.getApplication());
+            %>
+            <tr>
+                <td><%=brp.getApplication()%></td>
+                <td><%=brp.getRelease()%></td>
+                <td><a href='<%=brp.getLink()%>' target='_blank'>INSTRUCTIONS </a></td>
+                <td></td>
+            </tr>
+            <%
+            	}
+                            } catch (CerberusException ex) {
+                            }
+                            
             %>
         </table>
         <br>
@@ -237,7 +262,7 @@
 
         <%
         	} catch (Exception e) {
-                                MyLogger.log("Notification.jsp", Level.FATAL, Infos.getInstance().getProjectNameAndVersion() + " - Exception catched." + e.toString());
+                                MyLogger.log("Notification.jsp", Level.FATAL, Infos.getInstance().getProjectNameAndVersion() + " - Exception catched. " + e.toString());
                                 out.println("<br> error message : " + e.getMessage() + " " + e.toString() + "<br>");
 
                             }

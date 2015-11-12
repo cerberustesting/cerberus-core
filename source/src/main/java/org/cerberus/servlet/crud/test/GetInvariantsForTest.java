@@ -75,7 +75,7 @@ public class GetInvariantsForTest extends HttpServlet {
 
             HashMap<String,List<String>> invariants = new HashMap<String,List<String>>();
             
-            for (Invariant myInvariant : invariantService.findInvariantPrivateListByCriteria(0, 0, "sort", "ASC", "%", "idname "+SqlUtil.getInSQLClause(values))) {
+            for (Invariant myInvariant : invariantService.readByPrivateByCriteria(0, 0, "sort", "ASC", "%", "idname "+SqlUtil.getInSQLClause(values))) {
                 if(invariants.containsKey(myInvariant.getIdName())) {
                     invariants.get(myInvariant.getIdName()).add(myInvariant.getValue());
                 } else {
@@ -85,7 +85,7 @@ public class GetInvariantsForTest extends HttpServlet {
                 }
             }
 
-            for (Invariant myInvariant : invariantService.findInvariantPublicListByCriteria(0, 0, "sort", "ASC", "%", "idname "+SqlUtil.getInSQLClause(values))) {
+            for (Invariant myInvariant : invariantService.readByPublicByCriteria(0, 0, "sort", "ASC", "%", "idname "+SqlUtil.getInSQLClause(values))) {
                 if(invariants.containsKey(myInvariant.getIdName())) {
                     invariants.get(myInvariant.getIdName()).add(myInvariant.getValue());
                 } else {

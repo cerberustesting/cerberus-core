@@ -46,17 +46,11 @@ public class BuildRevisionParametersService implements IBuildRevisionParametersS
 
     @Autowired
     IBuildRevisionParametersDAO buildRevisionParametersDAO;
-
     @Autowired
     IApplicationService applicationService;
-
     @Autowired
     ICountryEnvParam_logService countryEnvParamLogService;
 
-    @Override
-    public List<BuildRevisionParameters> findBuildRevisionParametersFromMaxRevision(String system, String build, String revision, String lastBuild, String lastRevision) {
-        return this.buildRevisionParametersDAO.findBuildRevisionParametersFromMaxRevision(system, build, revision, lastBuild, lastRevision);
-    }
 
     @Override
     public List<BuildRevisionParameters> findBuildRevisionParametersByCriteria(String system, String build, String revision) {
@@ -106,6 +100,16 @@ public class BuildRevisionParametersService implements IBuildRevisionParametersS
     @Override
     public AnswerList readByVarious1ByCriteria(String system, String application, String build, String revision, int start, int amount, String column, String dir, String searchTerm, String individualSearch) {
         return this.buildRevisionParametersDAO.readByVarious1ByCriteria(system, application, build, revision, start, amount, column, dir, searchTerm, individualSearch);
+    }
+
+    @Override
+    public AnswerList readMaxSVNReleasePerApplication(String system, String build, String revision, String lastBuild, String lastRevision) {
+        return this.buildRevisionParametersDAO.readMaxSVNReleasePerApplication(system, build, revision, lastBuild, lastRevision);
+    }
+
+    @Override
+    public AnswerList readNonSVNRelease(String system, String build, String revision, String lastBuild, String lastRevision) {
+        return this.buildRevisionParametersDAO.readNonSVNRelease(system, build, revision, lastBuild, lastRevision);
     }
 
     @Override

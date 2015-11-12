@@ -143,7 +143,8 @@
             browser= $('#Browser').val();
             var status = [
             <%
-                for (Invariant status : invariantService.findListOfInvariantById("TCESTATUS")){
+                AnswerList answerStatus = invariantService.readByIdname("TCESTATUS");
+                for (Invariant status : (List<Invariant>)answerStatus.getDataList()){
                     out.print("'" + status.getValue() + "',");
                 }
             %>
@@ -509,7 +510,8 @@
                 <div>
                     <%
                         options.clear();
-                        for (Invariant systemInv : invariantService.findListOfInvariantById("SYSTEM")) {
+                        AnswerList answerSystem = invariantService.readByIdname("SYSTEM");
+                        for (Invariant systemInv : (List<Invariant>)answerSystem.getDataList()) {
                             options.put(systemInv.getValue(), systemInv.getValue());
                         }
                     %>
@@ -559,7 +561,8 @@
                 <div>
                     <%
                         options.clear();
-                        for (Invariant statusInv : invariantService.findListOfInvariantById("PRIORITY")) {
+                        AnswerList ansPriority = invariantService.readByIdname("PRIORITY");
+                        for (Invariant statusInv : (List<Invariant>) ansPriority.getDataList()) {
                             options.put(statusInv.getValue(), statusInv.getValue());
                         }
                     %>
@@ -576,7 +579,8 @@
                 <div>
                     <%
                         options.clear();
-                        List<Invariant> statusList = invariantService.findListOfInvariantById("TCSTATUS");
+                        AnswerList ansStatus = invariantService.readByIdname("TCSTATUS");
+                        List<Invariant> statusList = (List<Invariant>) ansStatus.getDataList();
                         for (Invariant statusInv : statusList) {
                             options.put(statusInv.getValue(), statusInv.getValue());
                         }
@@ -594,7 +598,8 @@
                 <div>
                     <%
                         options.clear();
-                        List<Invariant> groupList = invariantService.findListOfInvariantById("GROUP");
+                        AnswerList ansGroup = invariantService.readByIdname("GROUP");
+                        List<Invariant> groupList = (List<Invariant>)ansGroup.getDataList();
                         for (Invariant statusInv : groupList) {
                             if(!statusInv.getValue().isEmpty()){
                                 options.put(statusInv.getValue(), statusInv.getValue());
@@ -692,7 +697,8 @@
             <div>
                 <%
                     options.clear();
-                    for (Invariant statusInv : invariantService.findListOfInvariantById("ENVIRONMENT")) {
+                    AnswerList ansEnv = invariantService.readByIdname("ENVIRONMENT");
+                    for (Invariant statusInv : (List<Invariant>)ansEnv.getDataList()) {
                         options.put(statusInv.getValue(), statusInv.getValue());
                     }
                 %>
@@ -775,7 +781,8 @@
             <div>
                 <%
                     options.clear();
-                    for (Invariant countryInv : invariantService.findListOfInvariantById("COUNTRY")) {
+                    AnswerList ansCountry = invariantService.readByIdname("COUNTRY");
+                    for (Invariant countryInv :  (List<Invariant>)ansCountry.getDataList()) {
                         options.put(countryInv.getValue(), countryInv.getValue() + " - " + countryInv.getDescription());
                     }
                 %>
@@ -791,7 +798,8 @@
             <div>
                 <%
                     options.clear();
-                    for (Invariant browserInv : invariantService.findListOfInvariantById("BROWSER")) {
+                    AnswerList ansBrowser = invariantService.readByIdname("BROWSER");
+                    for (Invariant browserInv : (List<Invariant>)ansBrowser.getDataList()) {
                         options.put(browserInv.getValue(), browserInv.getValue());
                     }
                 %>

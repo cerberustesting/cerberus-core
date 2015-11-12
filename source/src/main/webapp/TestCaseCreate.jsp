@@ -181,7 +181,8 @@
                                                     <select id="createOrigine" style="width: 100px;" name="createOrigine" onchange="SetCookie('TestPageCreateOrigin', this.value) ">
                                                         <option value="All">-- Origin --</option>
                                                         <%
-                                                            for (Invariant inv : invariantService.findListOfInvariantById("ORIGIN")) {
+                                                            AnswerList answerOrigin = invariantService.readByIdname("ORIGIN");
+                                                            for (Invariant inv : (List<Invariant>)answerOrigin.getDataList()) {
                                                         %>
                                                         <option value="<%=inv.getValue()%>"><%=inv.getValue()%></option>
                                                         <%
@@ -216,7 +217,8 @@
                                                             <td class="wob" style="width: 150px"><%out.print(docService.findLabelHTML("invariant", "GROUP", "Group", myLang));%></td>
                                                             <td class="wob" style="width: 150px"><%out.print(docService.findLabelHTML("testcase", "status", "Status", myLang));%></td>
                                                             <%
-                                                                List<Invariant> invariantList = invariantService.findListOfInvariantById("COUNTRY");
+                                                                AnswerList answerPriority = invariantService.readByIdname("COUNTRY");
+                                                                List<Invariant> invariantList = (List<Invariant>)answerPriority.getDataList();
                                                                 for (Invariant inv : invariantList) {
                                                             %>
                                                             <td class="wob" style="font-size : x-small ; width: 20px; text-align: center"><%=inv.getValue()%> <input type="hidden" name="testcase_country_all" value="<%=inv.getValue()%>"></td>

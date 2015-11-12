@@ -44,38 +44,51 @@ public class InvariantService implements IInvariantService {
 
     @Override
     public Invariant findInvariantByIdValue(String idName, String value) throws CerberusException {
-        return invariantDao.findInvariantByIdValue(idName, value);
+        return invariantDao.readByKey(idName, value);
     }
 
     @Override
     public Invariant findInvariantByIdSort(String idName, Integer sort) throws CerberusException {
-        return invariantDao.findInvariantByIdSort(idName, sort);
+        return invariantDao.readByIdnameBySort(idName, sort);
     }
 
     @Override
-    public List<Invariant> findListOfInvariantById(String idName) throws CerberusException {
-        return invariantDao.findListOfInvariantById(idName);
+    public AnswerList readByIdname(String idName) {
+        return invariantDao.readByIdname(idName);
     }
 
     @Override
-    public AnswerList<Invariant> findInvariantByIdGp1(String idName, String gp) {
-        return invariantDao.findInvariantByIdGp1(idName, gp);
+    public AnswerList findInvariantByIdGp1(String idName, String gp) {
+        return invariantDao.readByIdnameByGp1(idName, gp);
     }
 
     @Override
-    public List<Invariant> findInvariantPublicListByCriteria(int start, int amount, String column, String dir, String searchTerm, String individualSearch) {
+    public List<Invariant> readByPublicByCriteria(int start, int amount, String column, String dir, String searchTerm, String individualSearch) {
         // We first get the list of all Public invariant from the invariant table.
         String searchSQL = this.getPublicPrivateFilter("INVARIANTPUBLIC");
         // Then, we build the list of invariant entry based on the filter.
-        return invariantDao.findInvariantListByCriteria(start, amount, column, dir, searchTerm, individualSearch, searchSQL);
+        
+        //TODO this method should return a AnswerList, after complete refactoring this method should be changed
+        AnswerList answer = invariantDao.readByCriteria(start, amount, column, dir, searchTerm, individualSearch, searchSQL);
+        
+        return answer.getDataList();
     }
 
     @Override
-    public List<Invariant> findInvariantPrivateListByCriteria(int start, int amount, String column, String dir, String searchTerm, String individualSearch) {
+    public List<Invariant> readByPrivateByCriteria(int start, int amount, String column, String dir, String searchTerm, String individualSearch) {
         // We first get the list of all Private invariant from the invariant table.
         String searchSQL = this.getPublicPrivateFilter("INVARIANTPRIVATE");
         // Then, we build the list of invariant entry based on the filter.
-        return invariantDao.findInvariantListByCriteria(start, amount, column, dir, searchTerm, individualSearch, searchSQL);
+        //TODO this method should return a AnswerList, after complete refactoring this method should be changed
+        AnswerList answer = invariantDao.readByCriteria(start, amount, column, dir, searchTerm, individualSearch, searchSQL);
+        
+        return answer.getDataList();                
+    }
+    
+    @Override
+    public AnswerList readByCriteria(int start, int amount, String column, String dir, String searchTerm, String individualSearch) {
+        //gets all invariants
+        return invariantDao.readByCriteria(start, amount, column, dir, searchTerm, individualSearch, "");//no filter public or private is sent        
     }
 
     @Override
@@ -112,33 +125,33 @@ public class InvariantService implements IInvariantService {
 
     @Override
     public void createInvariant(Invariant invariant) throws CerberusException {
-        invariantDao.createInvariant(invariant);
+        invariantDao.create(invariant);
     }
 
     @Override
     public void deleteInvariant(Invariant invariant) throws CerberusException {
-        invariantDao.deleteInvariant(invariant);
+        invariantDao.delete(invariant);
     }
 
     @Override
     public void updateInvariant(Invariant invariant) throws CerberusException {
-        invariantDao.updateInvariant(invariant);
+        invariantDao.update(invariant);
     }
 
     @Override
     public String getPublicPrivateFilter(String filter) {
         String searchSQL = " 1=0 ";
-        try {
-            List<Invariant> invPrivate = this.findListOfInvariantById(filter);
-            List<String> idnameList = null;
-            idnameList = new ArrayList<String>();
-            for (Invariant toto : invPrivate) {
-                idnameList.add(toto.getValue());
-            }
-            searchSQL = SqlUtil.createWhereInClause("idname", idnameList, true);
-        } catch (CerberusException ex) {
-            Logger.getLogger(InvariantService.class.getName()).log(Level.SEVERE, null, ex);
+
+        AnswerList answer = this.readByIdname(filter);
+        List<Invariant> invPrivate = answer.getDataList();
+
+        List<String> idnameList = null;
+        idnameList = new ArrayList<String>();
+        for (Invariant toto : invPrivate) {
+            idnameList.add(toto.getValue());
         }
+        searchSQL = SqlUtil.createWhereInClause("idname", idnameList, true);
+
         return searchSQL;
     }
 }

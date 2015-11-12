@@ -163,7 +163,11 @@
                         <option value="ALL">-- ALL --</option>
                         <%
                             List<String> envGroupList = new ArrayList<String>();
-                            for (Invariant inv : invariantService.findListOfInvariantById("ENVIRONMENT")) {
+                            
+                            AnswerList answer = invariantService.readByIdname("ENVIRONMENT");
+                            List<Invariant> envList = (List<Invariant>)answer.getDataList(); 
+                            
+                            for (Invariant inv : envList) {
                         %>
                         <option value="<%=inv.getValue()%>"><%=inv.getValue()%></option>
                         <%

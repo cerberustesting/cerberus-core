@@ -98,7 +98,8 @@
                                 <div style="clear:both">
                                     <%
                                         options.clear();
-                                        for (String system : applicationService.readDistinctSystem()) {
+                                        AnswerList ansDistSystem = applicationService.readDistinctSystem();
+                                        for (String system : (List<String>) ansDistSystem.getDataList()) {
                                             options.put(system, system);
                                         }
                                     %>
@@ -136,7 +137,9 @@
                                 <div style="clear:both">
                                     <%
                                         options.clear();
-                                        for (Invariant invPriority : invariantService.findListOfInvariantById("PRIORITY")) {
+                                        AnswerList ansPriority = invariantService.readByIdname("PRIORITY");
+                                        
+                                        for (Invariant invPriority :  (List<Invariant>)ansPriority.getDataList()) {
                                             options.put(invPriority.getValue(), invPriority.getValue());
                                         }
                                     %>
@@ -149,7 +152,8 @@
                                 <div style="clear:both">
                                     <%
                                         options.clear();
-                                        for (Invariant statusInv : invariantService.findListOfInvariantById("TCSTATUS")) {
+                                        AnswerList ansStatus = invariantService.readByIdname("TCSTATUS");
+                                        for (Invariant statusInv : (List<Invariant>)ansStatus.getDataList()) {
                                             options.put(statusInv.getValue(), statusInv.getValue());
                                         }
                                     %>
@@ -162,7 +166,8 @@
                                 <div style="clear:both">
                                     <%
                                         options.clear();
-                                        for (Invariant invGroup : invariantService.findListOfInvariantById("GROUP")) {
+                                        AnswerList ansGroup = invariantService.readByIdname("GROUP");
+                                        for (Invariant invGroup : (List<Invariant>)ansGroup.getDataList()) {
                                             if (invGroup.getValue() != null && !"".equals(invGroup.getValue().trim())) {
                                                 options.put(invGroup.getValue(), invGroup.getValue());
                                             }

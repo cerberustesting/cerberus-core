@@ -375,16 +375,13 @@ public class ReadTestCaseExecution extends HttpServlet {
 
     private JSONObject getCountryList(HttpServletRequest request, ApplicationContext appContext) {
         JSONObject countryList = new JSONObject();
-
-        IInvariantService invariantService = appContext.getBean(InvariantService.class);
-
-        try {
-            for (Invariant country : invariantService.findListOfInvariantById("COUNTRY")) {
+        try{
+            IInvariantService invariantService = appContext.getBean(InvariantService.class);
+            AnswerList answer = invariantService.readByIdname("COUNTRY"); //TODO: handle if the response does not turn ok
+            for (Invariant country : (List<Invariant>)answer.getDataList()) {
                 countryList.put(country.getValue(), ParameterParserUtil.parseStringParam(request.getParameter(country.getValue()), "off"));
-            }
+            } 
         } catch (JSONException ex) {
-            Logger.getLogger(ReadTestCaseExecution.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (CerberusException ex) {
             Logger.getLogger(ReadTestCaseExecution.class.getName()).log(Level.SEVERE, null, ex);
         }
 

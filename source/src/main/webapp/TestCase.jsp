@@ -527,7 +527,8 @@
                 }
 
                 Test testObject = testService.findTestByKey(test);
-                List<Invariant> countryListInvariant = invariantService.findListOfInvariantById("COUNTRY");
+                AnswerList answerCountry = invariantService.readByIdname("COUNTRY");
+                List<Invariant> countryListInvariant = (List<Invariant>)answerCountry.getDataList();
                 List<String> countryListTestcase = testCaseCountryService.findListOfCountryByTestTestCase(test, testcase);
                 TestCaseExecution tce = testCaseExecutionService.findLastTestCaseExecutionNotPE(test, testcase);
                 List<BuildRevisionInvariant> listBuildRev = buildRevisionInvariantService.findAllBuildRevisionInvariantBySystemLevel(MySystem, 1);

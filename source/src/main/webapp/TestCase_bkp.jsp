@@ -258,7 +258,9 @@
             <br>
             <%if (!test.equals("%%") && !testcase.equals("%%")) {
                     TCase tcase = testCaseService.findTestCaseByKey(test, testcase);
-                    List<Invariant> countryListInvariant = invariantService.findListOfInvariantById("COUNTRY");
+                    AnswerList answer = invariantService.readByIdname("COUNTRY");
+                    
+                    List<Invariant> countryListInvariant = (List<Invariant>)answer.getDataList(); 
                     List<String> countryListTestcase = testCaseCountryService.findListOfCountryByTestTestCase(test, testcase);
                     TestCaseExecution tce = testCaseExecutionService.findLastTestCaseExecutionNotPE(test, testcase);
                     List<BuildRevisionInvariant> listBuildRev = buildRevisionInvariantService.findAllBuildRevisionInvariantBySystemLevel(MySystem, 1);

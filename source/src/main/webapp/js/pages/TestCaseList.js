@@ -103,7 +103,7 @@ function displayPageLabel(doc) {
 
 function appendBuildRevList(system, editData) {
 
-    var jqxhr = $.getJSON("ReadBuildRevisionInvariant", "System=" + system + "&level=1");
+    var jqxhr = $.getJSON("ReadBuildRevisionInvariant", "system=" + system + "&level=1");
     $.when(jqxhr).then(function (data) {
         var fromBuild = $("[name=fromSprint]");
         var toBuild = $("[name=toSprint]");
@@ -117,10 +117,10 @@ function appendBuildRevList(system, editData) {
         toBuild.append($('<option></option>').text("-----").val(""));
         targetBuild.append($('<option></option>').text("-----").val(""));
 
-        for (var index = 0; index < data.aaData.length; index++) {
-            fromBuild.append($('<option></option>').text(data.aaData[index].versionName).val(data.aaData[index].versionName));
-            toBuild.append($('<option></option>').text(data.aaData[index].versionName).val(data.aaData[index].versionName));
-            targetBuild.append($('<option></option>').text(data.aaData[index].versionName).val(data.aaData[index].versionName));
+        for (var index = 0; index < data.contentTable.length; index++) {
+            fromBuild.append($('<option></option>').text(data.contentTable[index].versionName).val(data.contentTable[index].versionName));
+            toBuild.append($('<option></option>').text(data.contentTable[index].versionName).val(data.contentTable[index].versionName));
+            targetBuild.append($('<option></option>').text(data.contentTable[index].versionName).val(data.contentTable[index].versionName));
         }
 
         if (editData !== undefined) {
@@ -133,7 +133,7 @@ function appendBuildRevList(system, editData) {
 
     });
 
-    var jqxhr = $.getJSON("ReadBuildRevisionInvariant", "System=" + system + "&level=2");
+    var jqxhr = $.getJSON("ReadBuildRevisionInvariant", "system=" + system + "&level=2");
     $.when(jqxhr).then(function (data) {
         var fromRev = $("[name=fromRev]");
         var toRev = $("[name=toRev]");
@@ -147,10 +147,10 @@ function appendBuildRevList(system, editData) {
         toRev.append($('<option></option>').text("-----").val(""));
         targetRev.append($('<option></option>').text("-----").val(""));
 
-        for (var index = 0; index < data.aaData.length; index++) {
-            fromRev.append($('<option></option>').text(data.aaData[index].versionName).val(data.aaData[index].versionName));
-            toRev.append($('<option></option>').text(data.aaData[index].versionName).val(data.aaData[index].versionName));
-            targetRev.append($('<option></option>').text(data.aaData[index].versionName).val(data.aaData[index].versionName));
+        for (var index = 0; index < data.contentTable.length; index++) {
+            fromRev.append($('<option></option>').text(data.contentTable[index].versionName).val(data.contentTable[index].versionName));
+            toRev.append($('<option></option>').text(data.contentTable[index].versionName).val(data.contentTable[index].versionName));
+            targetRev.append($('<option></option>').text(data.contentTable[index].versionName).val(data.contentTable[index].versionName));
         }
 
         if (editData !== undefined) {

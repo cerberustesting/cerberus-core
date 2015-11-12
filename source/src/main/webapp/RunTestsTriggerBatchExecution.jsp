@@ -94,8 +94,9 @@
                 IParameterService myParameterService = appContext.getBean(IParameterService.class);
                 IInvariantService invariantService = appContext.getBean(IInvariantService.class);
                 ICountryEnvParamService cepService = appContext.getBean(ICountryEnvParamService.class);
-
-                List<Invariant> countryListInvariant = invariantService.findListOfInvariantById("COUNTRY");
+                
+                AnswerList answerCountry = invariantService.readByIdname("COUNTRY");
+                List<Invariant> countryListInvariant = (List<Invariant>)answerCountry.getDataList();
                 String myLang = request.getAttribute("MyLang").toString();
 
                 try {

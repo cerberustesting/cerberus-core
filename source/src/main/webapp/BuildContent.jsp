@@ -37,7 +37,7 @@
             <h1 class="page-title-line" id="title">Build Content</h1>
 
             <div class="row">
-                <div class="col-lg-6" id="FiltersPanel">
+                <div class="col-lg-9" id="FiltersPanel">
                     <div class="panel panel-default">
                         <div class="panel-heading card">
                             <span class="fa fa-tag fa-fw"></span>
@@ -45,25 +45,26 @@
                         </div>
                         <div class="panel-body">
                             <div class="form-inline">
+                                <button type="button" class="btn btn-default" id="btnLoadAll" onclick="setAll()" name="btnLoadAll">Load All Build</button>
+                                <button type="button" class="btn btn-default" id="btnLoadPending" onclick="setPending()" name="btnLoadPending">Load Pending Build</button>
+                                <button type="button" class="btn btn-default" id="btnLoadLatest" onclick="setLatest()" name="btnLoadLatest">Load Latest Build</button>
                                 <label for="selectBuild" name="buildField">Build :</label>
-                                <select class="form-control" id="selectBuild" name="build" style="width: 20%"></select>
+                                <select class="form-control" id="selectBuild" name="build" style="width: 15%"></select>
                                 <label for="selectRevision" name="revisionField">Revision :</label>
-                                <select class="form-control" id="selectRevision" name="revision" style="width: 20%"></select>
+                                <select class="form-control" id="selectRevision" name="revision" style="width: 15%"></select>
                                 <button type="button" class="btn btn-default" id="btnLoad" onclick="loadBCTable()" name="btnLoad">Load</button>
                             </div>
                         </div>
                     </div>
                 </div>
-                <div class="col-lg-6" id="FiltersPanel">
+                <div class="col-lg-3" id="FiltersPanel" hidden>
                     <div class="panel panel-default">
                         <div class="panel-heading card">
                             <label id="shortcuts" name="shortcutsField">Standard Filters</label>
                         </div>
                         <div class="panel-body">
                             <div class="form-inline">
-                                <button type="button" class="btn btn-default" id="btnLoadAll" onclick="setAll()" name="btnLoadAll">Load All Build</button>
-                                <button type="button" class="btn btn-default" id="btnLoadPending" onclick="setPending()" name="btnLoadPending">Load Pending Build</button>
-                                <button type="button" class="btn btn-default" id="btnLoadLatest" onclick="setLatest()" name="btnLoadLatest">Load Latest Build</button>
+                                <button type="button" class="btn btn-default" id="btnViewInstall" onclick="" name="btnViewInstall">Preview Install instructions</button>
                             </div>
                         </div>
                     </div>
@@ -73,7 +74,7 @@
 
             <div class="panel panel-default">
                 <div class="panel-heading card">
-                            <label id="shortcuts" name="listField">Build Content List</label>
+                    <label id="shortcuts" name="listField">Build Content List</label>
                 </div>
                 <div class="panel-body" id="buildContentList">
                     <table id="buildrevisionparametersTable" class="table table-hover display" name="buildrevisionparametersTable"></table>

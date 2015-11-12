@@ -28,6 +28,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import org.cerberus.crud.entity.Group;
+import org.cerberus.crud.entity.Invariant;
 import org.cerberus.crud.entity.TCase;
 import org.cerberus.crud.entity.Test;
 import org.cerberus.crud.entity.TestCaseCountry;
@@ -58,6 +59,7 @@ import org.cerberus.crud.service.impl.TestCaseStepActionControlService;
 import org.cerberus.crud.service.impl.TestCaseStepActionService;
 import org.cerberus.enums.MessageGeneralEnum;
 import org.cerberus.exception.CerberusException;
+import org.cerberus.util.answer.AnswerList;
 import org.springframework.context.ApplicationContext;
 import org.springframework.web.context.support.WebApplicationContextUtils;
 import org.springframework.web.util.HtmlUtils;
@@ -137,7 +139,8 @@ public class UpdateTestCaseWithDependencies extends HttpServlet {
          */
         if (duplicate) {
             tc.setCreator(user.getLogin());
-            tc.setStatus(invariantService.findListOfInvariantById("TCSTATUS").get(0).getValue());
+            AnswerList answer = invariantService.readByIdname("TCSTATUS"); //TODO: handle if the response does not turn ok
+            tc.setStatus(((List<Invariant>)answer.getDataList()).get(0).getValue());
         }
 
         /**

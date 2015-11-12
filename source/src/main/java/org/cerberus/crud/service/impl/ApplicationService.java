@@ -100,7 +100,7 @@ public class ApplicationService implements IApplicationService {
     }
 
     @Override
-    public List<String> readDistinctSystem() {
+    public AnswerList readDistinctSystem() {
         return this.ApplicationDAO.readDistinctSystem();
     }
 

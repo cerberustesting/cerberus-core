@@ -21,6 +21,7 @@
 package org.cerberus.servlet.crud.test;
 
 import java.io.IOException;
+import java.util.List;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -38,6 +39,7 @@ import org.cerberus.crud.service.ICampaignService;
 import org.cerberus.crud.service.IInvariantService;
 import org.cerberus.crud.service.ITestBatteryService;
 import org.cerberus.crud.service.ITestCaseService;
+import org.cerberus.util.answer.AnswerList;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -114,7 +116,8 @@ public class GetDataForTestCaseSearch extends HttpServlet {
             jsonResponse.put(data);
 
             JSONArray env = new JSONArray();
-            for (Invariant i : invariantService.findListOfInvariantById("ENVIRONMENT")) {
+            AnswerList answer = invariantService.readByIdname("ENVIRONMENT"); //TODO: handle if the response does not turn ok
+            for (Invariant i : (List<Invariant>)answer.getDataList()) {
                 env.put(i.getValue());
             }
             data = new JSONObject();
@@ -123,7 +126,8 @@ public class GetDataForTestCaseSearch extends HttpServlet {
             jsonResponse.put(data);
 
             JSONArray country = new JSONArray();
-            for (Invariant i : invariantService.findListOfInvariantById("COUNTRY")) {
+            answer = invariantService.readByIdname("COUNTRY"); //TODO: handle if the response does not turn ok
+            for (Invariant i : (List<Invariant>)answer.getDataList()) {
                 country.put(i.getValue());
             }
             data = new JSONObject();

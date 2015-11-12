@@ -31,6 +31,7 @@ import org.cerberus.crud.service.IApplicationService;
 import org.cerberus.crud.service.IParameterService;
 import org.cerberus.service.email.IEmailBodyGeneration;
 import org.cerberus.util.SqlUtil;
+import org.cerberus.util.StringUtil;
 import org.cerberus.version.Infos;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -132,8 +133,8 @@ public class EmailBodyGeneration implements IEmailBodyGeneration {
                 } else {
                     releaseOwner = rsBC.getString("ReleaseOwner");
                 }
-                if (rsBC.getString("Link") != null) {
-                    release = "<a href=\"" + rsBC.getString("Link") + "\">" + release + "</a>";
+                if (!StringUtil.isNullOrEmpty(rsBC.getString("Link"))) {
+                    release = "<a target=\"_blank\" href=\"" + rsBC.getString("Link") + "\">" + release + "</a>";
                 }
                 if (rsBC.getString("BugIDFixed") != null) {
                     BugIDFixed = rsBC.getString("BugIDFixed");
@@ -144,17 +145,23 @@ public class EmailBodyGeneration implements IEmailBodyGeneration {
                 if (rsBC.getString("Project") != null) {
                     Project = rsBC.getString("Project");
                 }
-                if (rsBC.getString("p.VCCode") != null) {
+                if (!StringUtil.isNullOrEmpty(rsBC.getString("p.VCCode"))) {
                     ProjectVC = Project + " (" + rsBC.getString("p.VCCode") + ")";
+                }else{
+                    ProjectVC = Project;
                 }
 
                 buildContentTable = buildContentTable + "<tr style=\"background-color:" + bckColor + "; font-size:80%\"><td>"
                         + contentBuild + "/" + contentRev + "</td><td>"
                         + contentAppli + "</td><td>"
                         + subject + "</td><td>"
-                        + ProjectVC + "</td><td>"
-                        + "<a href=\"" + contentBugURL.replace("%BUGID%", BugIDFixed) + "\">" + BugIDFixed + "</a></td><td>"
-                        + TicketIDFixed + "</td><td>"
+                        + ProjectVC + "</td><td>";
+                if (StringUtil.isNullOrEmpty(contentBugURL)) {
+                    buildContentTable = buildContentTable + BugIDFixed + "</td><td>";
+                } else {
+                    buildContentTable = buildContentTable + "<a target=\"_blank\" href=\"" + contentBugURL.replace("%BUGID%", BugIDFixed) + "\">" + BugIDFixed + "</a></td><td>";
+                }
+                buildContentTable = buildContentTable + TicketIDFixed + "</td><td>"
                         + releaseOwner + "</td><td>"
                         + release + "</td></tr>";
             } while (rsBC.next());
@@ -269,9 +276,9 @@ public class EmailBodyGeneration implements IEmailBodyGeneration {
             if (rsBC.first()) {
 
                 if (country.equalsIgnoreCase("ALL")) {
-                    TestRecapTable = "Here is the Test Execution Recap accross all countries for <a href=\"" + Cerberus_URL_ALL + "\">" + build + "/" + revision + "</a> :";
+                    TestRecapTable = "Here is the Test Execution Recap accross all countries for <a target=\"_blank\" href=\"" + Cerberus_URL_ALL + "\">" + build + "/" + revision + "</a> :";
                 } else {
-                    TestRecapTable = "Here is the Test Execution Recap for your country for <a href=\"" + Cerberus_URL + "\">" + build + "/" + revision + "</a> :";
+                    TestRecapTable = "Here is the Test Execution Recap for your country for <a target=\"_blank\" href=\"" + Cerberus_URL + "\">" + build + "/" + revision + "</a> :";
                 }
                 TestRecapTable = TestRecapTable + "<table>";
                 TestRecapTable = TestRecapTable + "<tr style=\"background-color:#cad3f1; font-style:bold\">"
@@ -325,9 +332,9 @@ public class EmailBodyGeneration implements IEmailBodyGeneration {
 
             } else {
                 if (country.equalsIgnoreCase("ALL")) {
-                    TestRecapTable = "Unfortunatly, no test have been executed for any country for <a href=\"" + Cerberus_URL_ALL + "\">" + build + "/" + revision + "</a> :-(<br><br>";
+                    TestRecapTable = "Unfortunatly, no test have been executed for any country for <a target=\"_blank\" href=\"" + Cerberus_URL_ALL + "\">" + build + "/" + revision + "</a> :-(<br><br>";
                 } else {
-                    TestRecapTable = "Unfortunatly, no test have been executed for your country for <a href=\"" + Cerberus_URL + "\">" + build + "/" + revision + "</a> :-(<br><br>";
+                    TestRecapTable = "Unfortunatly, no test have been executed for your country for <a target=\"_blank\" href=\"" + Cerberus_URL + "\">" + build + "/" + revision + "</a> :-(<br><br>";
                 }
             }
 

@@ -118,7 +118,7 @@ public interface IApplicationService {
      *
      * @return @since 0.9.1
      */
-    List<String> readDistinctSystem();
+    AnswerList readDistinctSystem();
 
     /**
      *

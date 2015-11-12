@@ -20,7 +20,7 @@
 <%@page import="org.cerberus.crud.entity.Application"%>
 <%@page import="org.cerberus.crud.service.IDocumentationService"%>
 <%@page import="org.cerberus.crud.service.IApplicationService"%>
-<%@page import="org.cerberus.crud.service.IDatabaseVersioningService"%>
+<%@page import="org.cerberus.database.IDatabaseVersioningService"%>
 <% Date DatePageStart = new Date();%>
 
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
