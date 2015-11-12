@@ -85,13 +85,13 @@ public class SeleniumServerService implements ISeleniumServerService {
             /**
              * SetUp Capabilities
              */
-            MyLogger.log(SeleniumServerService.class.getName(), Level.INFO, testCaseDescription + "Set Capabilities");
+            MyLogger.log(SeleniumServerService.class.getName(), Level.DEBUG, testCaseDescription + "Set Capabilities");
             DesiredCapabilities caps = this.setCapabilities(tCExecution);
 
             /**
              * SetUp Driver
              */
-            MyLogger.log(SeleniumServerService.class.getName(), Level.INFO, testCaseDescription + "Set Driver");
+            MyLogger.log(SeleniumServerService.class.getName(), Level.DEBUG, testCaseDescription + "Set Driver");
             WebDriver driver = null;
             AppiumDriver appiumDriver = null;
             if (tCExecution.getApplication().getType().equalsIgnoreCase("GUI")) {

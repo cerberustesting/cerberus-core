@@ -337,7 +337,6 @@ public class ExecutionRunService implements IExecutionRunService {
                 recorderService.recordSeleniumLogAndGetName(tCExecution);
             } catch (Exception ex) {
                 MyLogger.log(ExecutionRunService.class.getName(), Level.FATAL, "Exception Getting Selenium Logs " + tCExecution.getId() + " Exception :" + ex.toString());
-                //TODO:FN debug messages to be removed
                 org.apache.log4j.Logger.getLogger(ExecutionStartService.class.getName()).log(org.apache.log4j.Level.DEBUG, 
                 "[DEBUG] Failed to record selenium log and get name" + ex.getMessage());
         
@@ -345,10 +344,8 @@ public class ExecutionRunService implements IExecutionRunService {
 
             try {
                 tCExecution = this.stopTestCase(tCExecution);
-                MyLogger.log(ExecutionRunService.class.getName(), Level.INFO, "STOPPED!!  " + tCExecution.getId());
             } catch (Exception ex) {
                 MyLogger.log(ExecutionRunService.class.getName(), Level.FATAL, "Exception Stopping Test " + tCExecution.getId() + " Exception :" + ex.toString());
-                //TODO:FN debug messages to be removed
                 org.apache.log4j.Logger.getLogger(ExecutionStartService.class.getName()).log(org.apache.log4j.Level.DEBUG, 
                 "[DEBUG] Stop test case" + ex.getMessage());
             }
