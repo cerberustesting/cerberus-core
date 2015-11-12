@@ -19,6 +19,7 @@
  */
 package org.cerberus.crud.dao.impl;
 
+import com.google.common.base.Strings;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -60,7 +61,10 @@ public class CampaignDAO implements ICampaignDAO {
     private IApplicationDAO applicationDAO;
 
     private static final Logger LOG = Logger.getLogger(CampaignDAO.class);
-    private final int MAX_ROW_SELECTED = 10000;
+
+    private final String OBJECT_NAME = "Campaign";
+    private final String SQL_DUPLICATED_CODE = "23000";
+    private final int MAX_ROW_SELECTED = 100000;
 
     @Override
     public List<Campaign> findAll() throws CerberusException {
@@ -474,8 +478,8 @@ public class CampaignDAO implements ICampaignDAO {
 
         return testCaseWithExecution;
     }
-    
-        @Override
+
+    @Override
     public AnswerList readByCriteria(int start, int amount, String colName, String dir, String searchTerm, String individualSearch) {
         AnswerList response = new AnswerList();
         MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
@@ -491,12 +495,12 @@ public class CampaignDAO implements ICampaignDAO {
         searchSQL.append(" where 1=1 ");
 
         if (!StringUtil.isNullOrEmpty(searchTerm)) {
-            searchSQL.append(" and (`campaignid` like '%").append(searchTerm).append("%'");
-            searchSQL.append(" or `campaign` like '%").append(searchTerm).append("%'");
-            searchSQL.append(" or `description` like '%").append(searchTerm).append("%')");
+            searchSQL.append(" and (`campaignid` like ?");
+            searchSQL.append(" or `campaign` like ?");
+            searchSQL.append(" or `description` like ?)");
         }
         if (!StringUtil.isNullOrEmpty(individualSearch)) {
-            searchSQL.append(" and (`").append(individualSearch).append("`)");
+            searchSQL.append(" and ( ? )");
         }
         query.append(searchSQL);
 
@@ -513,6 +517,16 @@ public class CampaignDAO implements ICampaignDAO {
         try {
             PreparedStatement preStat = connection.prepareStatement(query.toString());
             try {
+                int i = 1;
+                if (!Strings.isNullOrEmpty(searchTerm)) {
+                    preStat.setString(i++, "%" + searchTerm + "%");
+                    preStat.setString(i++, "%" + searchTerm + "%");
+                    preStat.setString(i++, "%" + searchTerm + "%");
+                }
+                if (!StringUtil.isNullOrEmpty(individualSearch)) {
+                    preStat.setString(i++, individualSearch);
+                }
+
                 ResultSet resultSet = preStat.executeQuery();
                 try {
                     //gets the data
@@ -535,7 +549,7 @@ public class CampaignDAO implements ICampaignDAO {
                         response = new AnswerList(campaignList, nrTotalRows);
                     } else {
                         msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
-                        msg.setDescription(msg.getDescription().replace("%ITEM%", "Campaign").replace("%OPERATION%", "SELECT"));
+                        msg.setDescription(msg.getDescription().replace("%ITEM%", OBJECT_NAME).replace("%OPERATION%", "SELECT"));
                         response = new AnswerList(campaignList, nrTotalRows);
                     }
 

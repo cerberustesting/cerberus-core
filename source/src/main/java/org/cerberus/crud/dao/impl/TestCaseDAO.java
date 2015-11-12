@@ -18,6 +18,7 @@
  */
 package org.cerberus.crud.dao.impl;
 
+import com.google.common.base.Strings;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -36,8 +37,6 @@ import org.cerberus.crud.entity.TestCase;
 import org.cerberus.exception.CerberusException;
 import org.cerberus.crud.factory.IFactoryTCase;
 import org.cerberus.log.MyLogger;
-import org.cerberus.crud.service.impl.ApplicationService;
-import org.cerberus.crud.service.impl.InvariantService;
 import org.cerberus.enums.MessageEventEnum;
 import org.cerberus.util.ParameterParserUtil;
 import org.cerberus.util.StringUtil;
@@ -66,15 +65,12 @@ public class TestCaseDAO implements ITestCaseDAO {
     private DatabaseSpring databaseSpring;
     @Autowired
     private IFactoryTCase factoryTestCase;
-    @Autowired
-    private ApplicationService applicationService;
-    @Autowired
-    private InvariantService invariantService;
-
-    private final int MAX_ROW_SELECTED = 100000;
-    private final String SQL_DUPLICATED_CODE = "23000";
 
     private static final Logger LOG = Logger.getLogger(TestCaseDAO.class);
+
+    private final String OBJECT_NAME = "TestCase";
+    private final String SQL_DUPLICATED_CODE = "23000";
+    private final int MAX_ROW_SELECTED = 100000;
 
     /**
      * Get summary information of all test cases of one group.
@@ -145,20 +141,20 @@ public class TestCaseDAO implements ITestCaseDAO {
         searchSQL.append("WHERE 1=1 AND test = ?");
 
         if (!StringUtil.isNullOrEmpty(searchTerm)) {
-            searchSQL.append(" and (`testcase` like '%").append(searchTerm).append("%'");
-            searchSQL.append(" or `application` like '%").append(searchTerm).append("%'");
-            searchSQL.append(" or `project` like '%").append(searchTerm).append("%'");
-            searchSQL.append(" or `creator` like '%").append(searchTerm).append("%'");
-            searchSQL.append(" or `lastmodifier` like '%").append(searchTerm).append("%'");
-            searchSQL.append(" or `tcactive` like '%").append(searchTerm).append("%'");
-            searchSQL.append(" or `status` like '%").append(searchTerm).append("%'");
-            searchSQL.append(" or `group` like '%").append(searchTerm).append("%'");
-            searchSQL.append(" or `priority` like '%").append(searchTerm).append("%'");
-            searchSQL.append(" or `tcdatecrea` like '%").append(searchTerm).append("%'");
-            searchSQL.append(" or `description` like '%").append(searchTerm).append("%')");
+            searchSQL.append(" and (`testcase` like ?");
+            searchSQL.append(" or `application` like ?");
+            searchSQL.append(" or `project` like ?");
+            searchSQL.append(" or `creator` like ?");
+            searchSQL.append(" or `lastmodifier` like ?");
+            searchSQL.append(" or `tcactive` like ?");
+            searchSQL.append(" or `status` like ?");
+            searchSQL.append(" or `group` like ?");
+            searchSQL.append(" or `priority` like ?");
+            searchSQL.append(" or `tcdatecrea` like ?");
+            searchSQL.append(" or `description` like ?)");
         }
         if (!StringUtil.isNullOrEmpty(individualSearch)) {
-            searchSQL.append(" and (`").append(individualSearch).append("`)");
+            searchSQL.append(" and ( ? )");
         }
         query.append(searchSQL);
 
@@ -176,8 +172,26 @@ public class TestCaseDAO implements ITestCaseDAO {
         try {
             PreparedStatement preStat = connection.prepareStatement(query.toString());
 
-            preStat.setString(1, test);
             try {
+                int i = 1;
+                preStat.setString(i++, test);
+                if (!Strings.isNullOrEmpty(searchTerm)) {
+                    preStat.setString(i++, "%" + searchTerm + "%");
+                    preStat.setString(i++, "%" + searchTerm + "%");
+                    preStat.setString(i++, "%" + searchTerm + "%");
+                    preStat.setString(i++, "%" + searchTerm + "%");
+                    preStat.setString(i++, "%" + searchTerm + "%");
+                    preStat.setString(i++, "%" + searchTerm + "%");
+                    preStat.setString(i++, "%" + searchTerm + "%");
+                    preStat.setString(i++, "%" + searchTerm + "%");
+                    preStat.setString(i++, "%" + searchTerm + "%");
+                    preStat.setString(i++, "%" + searchTerm + "%");
+                    preStat.setString(i++, "%" + searchTerm + "%");
+                }
+                if (!StringUtil.isNullOrEmpty(individualSearch)) {
+                    preStat.setString(i++, individualSearch);
+                }
+
                 ResultSet resultSet = preStat.executeQuery();
                 try {
                     //gets the data
@@ -194,7 +208,7 @@ public class TestCaseDAO implements ITestCaseDAO {
                     }
 
                     msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
-                    msg.setDescription(msg.getDescription().replace("%ITEM%", "TestCase").replace("%OPERATION%", "SELECT"));
+                    msg.setDescription(msg.getDescription().replace("%ITEM%", OBJECT_NAME).replace("%OPERATION%", "SELECT"));
                     answer = new AnswerList(testCaseList, nrTotalRows);
 
                 } catch (SQLException exception) {
@@ -701,7 +715,7 @@ public class TestCaseDAO implements ITestCaseDAO {
 
     private String createInClauseFromList(String[] list, String column) {
         StringBuilder query = new StringBuilder();
-        
+
         if (list != null) {
             query.append("AND ");
             query.append(column);
@@ -722,7 +736,7 @@ public class TestCaseDAO implements ITestCaseDAO {
 
     @Override
     public AnswerList readByVariousCriteria(String[] test, String[] idProject, String[] app, String[] creator, String[] implementer, String[] system,
-                                            String[] testBattery, String[] campaign, String[] priority, String[] group, String[] status) {
+            String[] testBattery, String[] campaign, String[] priority, String[] group, String[] status) {
         AnswerList answer = new AnswerList();
         MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
         msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", ""));
@@ -761,7 +775,7 @@ public class TestCaseDAO implements ITestCaseDAO {
                     }
 
                     msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
-                    msg.setDescription(msg.getDescription().replace("%ITEM%", "TestCase").replace("%OPERATION%", "SELECT"));
+                    msg.setDescription(msg.getDescription().replace("%ITEM%", OBJECT_NAME).replace("%OPERATION%", "SELECT"));
                     answer = new AnswerList(testCaseList, testCaseList.size());
 
                 } catch (SQLException exception) {
@@ -1685,7 +1699,7 @@ public class TestCaseDAO implements ITestCaseDAO {
                     if (resultSet.first()) {
                         result = loadFromResultSet(resultSet);
                         msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
-                        msg.setDescription(msg.getDescription().replace("%ITEM%", "Test case").replace("%OPERATION%", "SELECT"));
+                        msg.setDescription(msg.getDescription().replace("%ITEM%", OBJECT_NAME).replace("%OPERATION%", "SELECT"));
                         ans.setItem(result);
                     } else {
                         msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_NO_DATA_FOUND);
@@ -1789,7 +1803,7 @@ public class TestCaseDAO implements ITestCaseDAO {
 
                 preStat.executeUpdate();
                 msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
-                msg.setDescription(msg.getDescription().replace("%ITEM%", "TestCase").replace("%OPERATION%", "UPDATE"));
+                msg.setDescription(msg.getDescription().replace("%ITEM%", OBJECT_NAME).replace("%OPERATION%", "UPDATE"));
             } catch (SQLException exception) {
                 LOG.error("Unable to execute query : " + exception.toString());
                 msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
@@ -1865,14 +1879,14 @@ public class TestCaseDAO implements ITestCaseDAO {
 
                 preStat.executeUpdate();
                 msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
-                msg.setDescription(msg.getDescription().replace("%ITEM%", "TestCase").replace("%OPERATION%", "INSERT"));
+                msg.setDescription(msg.getDescription().replace("%ITEM%", OBJECT_NAME).replace("%OPERATION%", "INSERT"));
 
             } catch (SQLException exception) {
                 LOG.error("Unable to execute query : " + exception.toString());
 
                 if (exception.getSQLState().equals(SQL_DUPLICATED_CODE)) { //23000 is the sql state for duplicate entries
                     msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_DUPLICATE);
-                    msg.setDescription(msg.getDescription().replace("%ITEM%", "TestCase").replace("%OPERATION%", "INSERT"));
+                    msg.setDescription(msg.getDescription().replace("%ITEM%", OBJECT_NAME).replace("%OPERATION%", "INSERT"));
                 } else {
                     msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
                     msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", exception.toString()));
@@ -1910,7 +1924,7 @@ public class TestCaseDAO implements ITestCaseDAO {
 
                 preStat.executeUpdate();
                 msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
-                msg.setDescription(msg.getDescription().replace("%ITEM%", "TestCase").replace("%OPERATION%", "DELETE"));
+                msg.setDescription(msg.getDescription().replace("%ITEM%", OBJECT_NAME).replace("%OPERATION%", "DELETE"));
             } catch (SQLException exception) {
                 LOG.error("Unable to execute query : " + exception.toString());
                 msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);

@@ -19,6 +19,7 @@
  */
 package org.cerberus.crud.dao.impl;
 
+import com.google.common.base.Strings;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -54,9 +55,13 @@ public class TestBatteryDAO implements ITestBatteryDAO {
     private DatabaseSpring databaseSpring;
     @Autowired
     private IFactoryTestBattery factoryTestBattery;
-    private static final Logger LOG = Logger.getLogger(TestBattery.class);
+    
+    private static final Logger LOG = Logger.getLogger(TestBatteryDAO.class);
+
+    private final String OBJECT_NAME = "TestBattery";
     private final String SQL_DUPLICATED_CODE = "23000";
-    private final int MAX_ROW_SELECTED = 10000;
+    private final int MAX_ROW_SELECTED = 100000;
+
 
     @Override
     public List<TestBattery> findAll() throws CerberusException {
@@ -71,7 +76,7 @@ public class TestBatteryDAO implements ITestBatteryDAO {
                 ResultSet resultSet = preStat.executeQuery();
                 try {
                     while (resultSet.next()) {
-                        testBatteryList.add(this.loadTestBatteryFromResultSet(resultSet));
+                        testBatteryList.add(this.loadFromResultSet(resultSet));
                     }
                 } catch (SQLException exception) {
                     MyLogger.log(TestBatteryDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
@@ -117,7 +122,7 @@ public class TestBatteryDAO implements ITestBatteryDAO {
                 ResultSet resultSet = preStat.executeQuery();
                 try {
                     if (resultSet.first()) {
-                        testBattery = this.loadTestBatteryFromResultSet(resultSet);
+                        testBattery = this.loadFromResultSet(resultSet);
                     }
                 } catch (SQLException exception) {
                     MyLogger.log(TestBatteryDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
@@ -160,7 +165,7 @@ public class TestBatteryDAO implements ITestBatteryDAO {
                 ResultSet resultSet = preStat.executeQuery();
                 try {
                     if (resultSet.first()) {
-                        testBatteryResult = this.loadTestBatteryFromResultSet(resultSet);
+                        testBatteryResult = this.loadFromResultSet(resultSet);
                     }
                 } catch (SQLException exception) {
                     MyLogger.log(TestBatteryDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
@@ -203,7 +208,7 @@ public class TestBatteryDAO implements ITestBatteryDAO {
                 ResultSet resultSet = preStat.executeQuery();
                 try {
                     while (resultSet.next()) {
-                        testBatteryList.add(this.loadTestBatteryFromResultSet(resultSet));
+                        testBatteryList.add(this.loadFromResultSet(resultSet));
                     }
                 } catch (SQLException exception) {
                     MyLogger.log(TestBatteryDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
@@ -272,7 +277,7 @@ public class TestBatteryDAO implements ITestBatteryDAO {
                 ResultSet resultSet = preStat.executeQuery();
                 try {
                     while (resultSet.next()) {
-                        testBatteriesList.add(this.loadTestBatteryFromResultSet(resultSet));
+                        testBatteriesList.add(this.loadFromResultSet(resultSet));
                     }
                 } catch (SQLException exception) {
                     MyLogger.log(TestBatteryDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
@@ -367,7 +372,7 @@ public class TestBatteryDAO implements ITestBatteryDAO {
         return false;
     }
 
-    private TestBattery loadTestBatteryFromResultSet(ResultSet rs) throws SQLException {
+    private TestBattery loadFromResultSet(ResultSet rs) throws SQLException {
         Integer testbatteryID = ParameterParserUtil.parseIntegerParam(rs.getString("testbatteryID"), -1);
         String testbattery = ParameterParserUtil.parseStringParam(rs.getString("testbattery"), "");
         String description = ParameterParserUtil.parseStringParam(rs.getString("description"), "");
@@ -420,7 +425,7 @@ public class TestBatteryDAO implements ITestBatteryDAO {
                 ResultSet resultSet = preStat.executeQuery();
                 try {
                     while (resultSet.next()) {
-                        testBatteriesList.add(this.loadTestBatteryFromResultSet(resultSet));
+                        testBatteriesList.add(this.loadFromResultSet(resultSet));
                     }
                 } catch (SQLException exception) {
                     MyLogger.log(TestBatteryContentDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
@@ -468,12 +473,12 @@ public class TestBatteryDAO implements ITestBatteryDAO {
         searchSQL.append(" where 1=1 ");
 
         if (!StringUtil.isNullOrEmpty(searchTerm)) {
-            searchSQL.append(" and (`testbatteryid` like '%").append(searchTerm).append("%'");
-            searchSQL.append(" or `testbattery` like '%").append(searchTerm).append("%'");
-            searchSQL.append(" or `description` like '%").append(searchTerm).append("%')");
+            searchSQL.append(" and (`testbatteryid` like ?");
+            searchSQL.append(" or `testbattery` like ?");
+            searchSQL.append(" or `description` like ?)");
         }
         if (!StringUtil.isNullOrEmpty(individualSearch)) {
-            searchSQL.append(" and (`").append(individualSearch).append("`)");
+            searchSQL.append(" and ( ? )");
         }
         query.append(searchSQL);
 
@@ -490,11 +495,21 @@ public class TestBatteryDAO implements ITestBatteryDAO {
         try {
             PreparedStatement preStat = connection.prepareStatement(query.toString());
             try {
+                int i = 1;
+                if (!Strings.isNullOrEmpty(searchTerm)) {
+                    preStat.setString(i++, "%" + searchTerm + "%");
+                    preStat.setString(i++, "%" + searchTerm + "%");
+                    preStat.setString(i++, "%" + searchTerm + "%");
+                }
+                if (!StringUtil.isNullOrEmpty(individualSearch)) {
+                    preStat.setString(i++, individualSearch);
+                }
+                
                 ResultSet resultSet = preStat.executeQuery();
                 try {
                     //gets the data
                     while (resultSet.next()) {
-                        testBatteryList.add(this.loadTestBatteryFromResultSet(resultSet));
+                        testBatteryList.add(this.loadFromResultSet(resultSet));
                     }
 
                     //get the total number of rows
@@ -512,7 +527,7 @@ public class TestBatteryDAO implements ITestBatteryDAO {
                         response = new AnswerList(testBatteryList, nrTotalRows);
                     } else {
                         msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
-                        msg.setDescription(msg.getDescription().replace("%ITEM%", "TestBattery").replace("%OPERATION%", "SELECT"));
+                        msg.setDescription(msg.getDescription().replace("%ITEM%", OBJECT_NAME).replace("%OPERATION%", "SELECT"));
                         response = new AnswerList(testBatteryList, nrTotalRows);
                     }
 

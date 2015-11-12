@@ -17,6 +17,7 @@
  */
 package org.cerberus.crud.dao.impl;
 
+import com.google.common.base.Strings;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -62,8 +63,9 @@ public class TestDAO implements ITestDAO {
     @Autowired
     private IFactoryTest factoryTest;
 
-    private static final Logger LOG = Logger.getLogger(Test.class);
+    private static final Logger LOG = Logger.getLogger(TestDAO.class);
 
+    private final String OBJECT_NAME = "Test";
     private final String SQL_DUPLICATED_CODE = "23000";
     private final int MAX_ROW_SELECTED = 100000;
 
@@ -100,9 +102,9 @@ public class TestDAO implements ITestDAO {
                 ResultSet resultSet = preStat.executeQuery();
                 try {
                     if (resultSet.first()) {
-                        result = loadTestFromResultSet(resultSet);
+                        result = loadFromResultSet(resultSet);
                         msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
-                        msg.setDescription(msg.getDescription().replace("%ITEM%", "Test").replace("%OPERATION%", "SELECT"));
+                        msg.setDescription(msg.getDescription().replace("%ITEM%", OBJECT_NAME).replace("%OPERATION%", "SELECT"));
                         ans.setItem(result);
                     } else {
                         msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_NO_DATA_FOUND);
@@ -195,7 +197,7 @@ public class TestDAO implements ITestDAO {
                 try {
                     while (resultSet.next()) {
                         if (resultSet != null) {
-                            result.add(this.loadTestFromResultSet(resultSet));
+                            result.add(this.loadFromResultSet(resultSet));
                         }
                     }
                 } catch (SQLException exception) {
@@ -282,14 +284,14 @@ public class TestDAO implements ITestDAO {
 
                 preStat.executeUpdate();
                 msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
-                msg.setDescription(msg.getDescription().replace("%ITEM%", "Test").replace("%OPERATION%", "INSERT"));
+                msg.setDescription(msg.getDescription().replace("%ITEM%", OBJECT_NAME).replace("%OPERATION%", "INSERT"));
 
             } catch (SQLException exception) {
                 LOG.error("Unable to execute query : " + exception.toString());
 
                 if (exception.getSQLState().equals(SQL_DUPLICATED_CODE)) { //23000 is the sql state for duplicate entries
                     msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_DUPLICATE);
-                    msg.setDescription(msg.getDescription().replace("%ITEM%", "Test").replace("%OPERATION%", "INSERT"));
+                    msg.setDescription(msg.getDescription().replace("%ITEM%", OBJECT_NAME).replace("%OPERATION%", "INSERT"));
                 } else {
                     msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
                     msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", exception.toString()));
@@ -358,7 +360,7 @@ public class TestDAO implements ITestDAO {
 
                 preStat.executeUpdate();
                 msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
-                msg.setDescription(msg.getDescription().replace("%ITEM%", "Test").replace("%OPERATION%", "DELETE"));
+                msg.setDescription(msg.getDescription().replace("%ITEM%", OBJECT_NAME).replace("%OPERATION%", "DELETE"));
             } catch (SQLException exception) {
                 LOG.error("Unable to execute query : " + exception.toString());
                 msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
@@ -398,7 +400,7 @@ public class TestDAO implements ITestDAO {
 
                 preStat.executeUpdate();
                 msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
-                msg.setDescription(msg.getDescription().replace("%ITEM%", "Test").replace("%OPERATION%", "UPDATE"));
+                msg.setDescription(msg.getDescription().replace("%ITEM%", OBJECT_NAME).replace("%OPERATION%", "UPDATE"));
             } catch (SQLException exception) {
                 LOG.error("Unable to execute query : " + exception.toString());
                 msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
@@ -422,7 +424,7 @@ public class TestDAO implements ITestDAO {
         return new Answer(msg);
     }
 
-    private Test loadTestFromResultSet(ResultSet resultSet) throws SQLException {
+    private Test loadFromResultSet(ResultSet resultSet) throws SQLException {
         if (resultSet == null) {
             return null;
         }
@@ -458,7 +460,7 @@ public class TestDAO implements ITestDAO {
 
                 try {
                     if (resultSet.next()) {
-                        result = loadTestFromResultSet(resultSet);
+                        result = loadFromResultSet(resultSet);
                     }
 
                 } catch (SQLException exception) {
@@ -510,7 +512,7 @@ public class TestDAO implements ITestDAO {
                 result = new ArrayList<Test>();
                 try {
                     while (resultSet.next()) {
-                        result.add(this.loadTestFromResultSet(resultSet));
+                        result.add(this.loadFromResultSet(resultSet));
                     }
                 } catch (SQLException exception) {
                     MyLogger.log(TestDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
@@ -552,14 +554,14 @@ public class TestDAO implements ITestDAO {
         searchSQL.append(" where 1=1 ");
 
         if (!StringUtil.isNullOrEmpty(searchTerm)) {
-            searchSQL.append(" and (`test` like '%").append(searchTerm).append("%'");
-            searchSQL.append(" or `description` like '%").append(searchTerm).append("%'");
-            searchSQL.append(" or `active` like '%").append(searchTerm).append("%'");
-            searchSQL.append(" or `automated` like '%").append(searchTerm).append("%'");
-            searchSQL.append(" or `tdatecrea` like '%").append(searchTerm).append("%')");
+            searchSQL.append(" and (`test` like ?");
+            searchSQL.append(" or `description` like ?");
+            searchSQL.append(" or `active` like ?");
+            searchSQL.append(" or `automated` like ?");
+            searchSQL.append(" or `tdatecrea` like ?)");
         }
         if (!StringUtil.isNullOrEmpty(individualSearch)) {
-            searchSQL.append(" and (`").append(individualSearch).append("`)");
+            searchSQL.append(" and ( ? )");
         }
         query.append(searchSQL);
 
@@ -576,11 +578,23 @@ public class TestDAO implements ITestDAO {
         try {
             PreparedStatement preStat = connection.prepareStatement(query.toString());
             try {
+                int i = 1;
+                if (!Strings.isNullOrEmpty(searchTerm)) {
+                    preStat.setString(i++, "%" + searchTerm + "%");
+                    preStat.setString(i++, "%" + searchTerm + "%");
+                    preStat.setString(i++, "%" + searchTerm + "%");
+                    preStat.setString(i++, "%" + searchTerm + "%");
+                    preStat.setString(i++, "%" + searchTerm + "%");
+                }
+                if (!StringUtil.isNullOrEmpty(individualSearch)) {
+                    preStat.setString(i++, individualSearch);
+                }
+
                 ResultSet resultSet = preStat.executeQuery();
                 try {
                     //gets the data
                     while (resultSet.next()) {
-                        testList.add(this.loadTestFromResultSet(resultSet));
+                        testList.add(this.loadFromResultSet(resultSet));
                     }
 
                     //get the total number of rows
@@ -598,7 +612,7 @@ public class TestDAO implements ITestDAO {
                         response = new AnswerList(testList, nrTotalRows);
                     } else {
                         msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
-                        msg.setDescription(msg.getDescription().replace("%ITEM%", "Test").replace("%OPERATION%", "SELECT"));
+                        msg.setDescription(msg.getDescription().replace("%ITEM%", OBJECT_NAME).replace("%OPERATION%", "SELECT"));
                         response = new AnswerList(testList, nrTotalRows);
                     }
 
