@@ -1751,6 +1751,9 @@
             <url-pattern>/UpdateTestCaseField</url-pattern>
             <url-pattern>/UpdateTestCase2</url-pattern>
             <url-pattern>/CreateTestCase2</url-pattern>
+            <url-pattern>/ReadBuildRevisionInvariant</url-pattern>
+            <url-pattern>/ReadProject</url-pattern>
+            <url-pattern>/ReadApplication</url-pattern>
         </web-resource-collection>
         <auth-constraint>
             <description>Test</description>
@@ -1865,11 +1868,8 @@
             <url-pattern>/GetCountryEnvParamList</url-pattern>
             <url-pattern>/GetCountryEnvironmentParameterList</url-pattern>
             <url-pattern>/FindEnvironments</url-pattern>
-            <url-pattern>/ReadProject</url-pattern>
             <url-pattern>/ReadDeployType</url-pattern>
             <url-pattern>/ReadBuildRevisionParameters</url-pattern>
-            <url-pattern>/ReadBuildRevisionInvariant</url-pattern>
-            <url-pattern>/ReadApplication</url-pattern>
             <url-pattern>/ReadRobot</url-pattern>
         </web-resource-collection>
         <auth-constraint>
