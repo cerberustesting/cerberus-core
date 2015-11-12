@@ -36,6 +36,7 @@ import org.cerberus.crud.service.ILogEventService;
 import org.cerberus.crud.service.ITestService;
 import org.cerberus.crud.service.impl.LogEventService;
 import org.cerberus.enums.MessageEventEnum;
+import org.cerberus.util.ParameterParserUtil;
 import org.cerberus.util.answer.Answer;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -59,6 +60,7 @@ public class CreateTest1 extends HttpServlet {
      * @param response servlet response
      * @throws ServletException if a servlet-specific error occurs
      * @throws IOException if an I/O error occurs
+     * @throws org.json.JSONException
      */
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException, JSONException {
@@ -74,10 +76,10 @@ public class CreateTest1 extends HttpServlet {
         /**
          * Parsing and securing all required parameters.
          */
-        String test = policy.sanitize(request.getParameter("test"));
-        String active = policy.sanitize(request.getParameter("Active"));
-        String automated = policy.sanitize(request.getParameter("Automated"));
-        String description = policy.sanitize(request.getParameter("Description"));
+        String test = ParameterParserUtil.ParseStringParamAndSanitize(request.getParameter("test"), "");
+        String active = ParameterParserUtil.ParseStringParamAndSanitize(request.getParameter("Active"), "");
+        String automated = ParameterParserUtil.ParseStringParamAndSanitize(request.getParameter("Automated"), "");
+        String description = ParameterParserUtil.ParseStringParamAndSanitize(request.getParameter("Description"), "");
 
         /**
          * Checking all constrains before calling the services.

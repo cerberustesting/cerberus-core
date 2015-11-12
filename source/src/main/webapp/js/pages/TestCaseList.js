@@ -103,7 +103,7 @@ function displayPageLabel(doc) {
 
 function appendBuildRevList(system, editData) {
 
-    var jqxhr = $.getJSON("ReadBuildRevisionInvariant", "system=" + system + "&level=1");
+    var jqxhr = $.getJSON("ReadBuildRevisionInvariant", "system=" + encodeURIComponent(system) + "&level=1");
     $.when(jqxhr).then(function (data) {
         var fromBuild = $("[name=fromSprint]");
         var toBuild = $("[name=toSprint]");
@@ -133,7 +133,7 @@ function appendBuildRevList(system, editData) {
 
     });
 
-    var jqxhr = $.getJSON("ReadBuildRevisionInvariant", "system=" + system + "&level=2");
+    var jqxhr = $.getJSON("ReadBuildRevisionInvariant", "system=" + encodeURIComponent(system) + "&level=2");
     $.when(jqxhr).then(function (data) {
         var fromRev = $("[name=fromRev]");
         var toRev = $("[name=toRev]");
@@ -180,7 +180,7 @@ function appendCountryList() {
 function appendApplicationList() {
     var user = getUser();
 
-    var jqxhr = $.getJSON("ReadApplication", "system=" + user.defaultSystem);
+    var jqxhr = $.getJSON("ReadApplication", "system=" + encodeURIComponent(user.defaultSystem));
     $.when(jqxhr).then(function (data) {
         var applicationList = $("[name=application]");
 
@@ -245,7 +245,7 @@ function loadTable() {
         var jqxhr = $.getJSON("FindInvariantByID", "idName=COUNTRY");
 
         $.when(jqxhr).then(function (data) {
-            var config = new TableConfigurationsServerSide("testCaseTable", "ReadTestCase?test=" + selectTest, "contentTable", aoColumnsFunc(data));
+            var config = new TableConfigurationsServerSide("testCaseTable", "ReadTestCase?test=" + encodeURIComponent(selectTest), "contentTable", aoColumnsFunc(data));
 
             var table = createDataTableWithPermissions(config, renderOptionsForTestCaseList);
             table.fnSort([1, 'asc']);
@@ -262,7 +262,7 @@ function CreateTestCaseClick() {
     $.ajax({
         url: "ReadTestCase",
         method: "GET",
-        data: {test: test, getMaxTC: true},
+        data: {test: encodeURIComponent(test), getMaxTC: true},
         dataType: "json",
         success: function (data) {
             var testCaseNumber = data.maxTestCase + 1;
@@ -563,7 +563,7 @@ function aoColumnsFunc(countries) {
                                     </a>';
 
                 if (data.canDelete || (data.canCreate && data.status !== "WORKING")) {
-                    var editEntry = '<button id="editEntry" onclick="editEntry(\'' + obj["testCase"] + '\');"\n\
+                    var editEntry = '<button id="editEntry" onclick="editEntry(\'' + escapeHtml(obj["testCase"]) + '\');"\n\
                                 class="editEntry btn btn-default btn-xs margin-right5" \n\
                                 name="editEntry" title="' + "edit test case" + '" type="button">\n\
                                 <span class="glyphicon glyphicon-pencil"></span></button>';
@@ -572,7 +572,7 @@ function aoColumnsFunc(countries) {
                 }
 
                 if (data.canDelete) {
-                    var deleteEntry = '<button id="deleteEntry" onclick="deleteEntry(\'' + obj["testCase"] + '\');"\n\
+                    var deleteEntry = '<button id="deleteEntry" onclick="deleteEntry(\'' + escapeHtml(obj["testCase"]) + '\');"\n\
                                         class="deleteEntry btn btn-default btn-xs margin-right5" \n\
                                         name="deleteEntry" title="' + "delete test case" + '" type="button">\n\
                                         <span class="glyphicon glyphicon-trash"></span></button>';

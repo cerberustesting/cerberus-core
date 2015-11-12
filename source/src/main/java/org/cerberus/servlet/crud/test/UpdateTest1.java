@@ -34,6 +34,7 @@ import org.cerberus.crud.service.ILogEventService;
 import org.cerberus.crud.service.ITestService;
 import org.cerberus.crud.service.impl.LogEventService;
 import org.cerberus.enums.MessageEventEnum;
+import org.cerberus.util.ParameterParserUtil;
 import org.cerberus.util.StringUtil;
 import org.cerberus.util.answer.Answer;
 import org.cerberus.util.answer.AnswerItem;
@@ -74,10 +75,10 @@ public class UpdateTest1 extends HttpServlet {
         /**
          * Parsing and securing all required parameters.
          */
-        String test = policy.sanitize(request.getParameter("test"));
-        String description = policy.sanitize(request.getParameter("Description"));
-        String active = policy.sanitize(request.getParameter("Active"));
-        String automated = policy.sanitize(request.getParameter("Automated"));
+        String test = ParameterParserUtil.ParseStringParamAndSanitize(request.getParameter("test"), "");
+        String description = ParameterParserUtil.ParseStringParamAndSanitize(request.getParameter("Description"), "");
+        String active = ParameterParserUtil.ParseStringParamAndSanitize(request.getParameter("Active"), "");
+        String automated = ParameterParserUtil.ParseStringParamAndSanitize(request.getParameter("Automated"), "");
 
         /**
          * Checking all constrains before calling the services.

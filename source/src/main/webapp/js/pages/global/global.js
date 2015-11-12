@@ -785,8 +785,8 @@ function createDataTable(tableConfigurations, callback, userCallbackFunction) {
                 "data": aoData,
                 "success": function (json) {
                     returnMessageHandler(json);
-                    fnCallback(json);                    
-                    if(Boolean(userCallbackFunction)){
+                    fnCallback(json);
+                    if (Boolean(userCallbackFunction)) {
                         userCallbackFunction(json);
                     }
                 },
@@ -1078,5 +1078,6 @@ function loadSelectElement(data, element, includeEmpty, includeEmptyText) {
 function escapeHtml(unsafe) {
     return unsafe
             .replace(/"/g, "&quot;")
+            .replace(/\\/g, '\\\\')
             .replace(/'/g, "\\'");
 }

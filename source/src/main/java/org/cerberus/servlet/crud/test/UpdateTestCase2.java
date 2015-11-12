@@ -21,8 +21,7 @@ package org.cerberus.servlet.crud.test;
 
 import com.google.common.base.Strings;
 import java.io.IOException;
-import java.io.PrintWriter;
-import java.util.ArrayList;
+import java.io.UnsupportedEncodingException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -73,6 +72,8 @@ public class UpdateTestCase2 extends HttpServlet {
      * @param response servlet response
      * @throws ServletException if a servlet-specific error occurs
      * @throws IOException if an I/O error occurs
+     * @throws org.json.JSONException
+     * @throws org.cerberus.exception.CerberusException
      */
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException, JSONException, CerberusException {
@@ -88,12 +89,12 @@ public class UpdateTestCase2 extends HttpServlet {
         /**
          * Parsing and securing all required parameters.
          */
-        String test = policy.sanitize(request.getParameter("test"));
-        String testCase = policy.sanitize(request.getParameter("testCase"));
-        String active = policy.sanitize(request.getParameter("active"));
-        String tcDateCrea = policy.sanitize(request.getParameter("tcDateCrea"));
-        String country = policy.sanitize(request.getParameter("country"));
-        String state = policy.sanitize(request.getParameter("state"));
+        String test = ParameterParserUtil.ParseStringParamAndSanitize(request.getParameter("test"), "");
+        String testCase = ParameterParserUtil.ParseStringParamAndSanitize(request.getParameter("testCase"), "");
+        String active = ParameterParserUtil.ParseStringParamAndSanitize(request.getParameter("active"), "");
+        String tcDateCrea = ParameterParserUtil.ParseStringParamAndSanitize(request.getParameter("tcDateCrea"), "");
+        String country = ParameterParserUtil.ParseStringParamAndSanitize(request.getParameter("country"), "");
+        String state = ParameterParserUtil.ParseStringParamAndSanitize(request.getParameter("state"), "");
 
         /**
          * Checking all constrains before calling the services.
@@ -206,44 +207,44 @@ public class UpdateTestCase2 extends HttpServlet {
         return "Short description";
     }// </editor-fold>
 
-    private TCase getInfo(HttpServletRequest request, TCase tc) throws CerberusException, JSONException {
-        tc.setTest(ParameterParserUtil.parseStringParam(request.getParameter("test"), tc.getTest()));
-        tc.setTestCase(ParameterParserUtil.parseStringParam(request.getParameter("testCase"), tc.getTestCase()));
-        tc.setImplementer(ParameterParserUtil.parseStringParam(request.getParameter("imlementer"), tc.getImplementer()));
+    private TCase getInfo(HttpServletRequest request, TCase tc) throws CerberusException, JSONException, UnsupportedEncodingException {
+        tc.setTest(ParameterParserUtil.ParseStringParamAndSanitize(request.getParameter("test"), tc.getTest()));
+        tc.setTestCase(ParameterParserUtil.ParseStringParamAndSanitize(request.getParameter("testCase"), tc.getTestCase()));
+        tc.setImplementer(ParameterParserUtil.ParseStringParamAndSanitize(request.getParameter("imlementer"), tc.getImplementer()));
         tc.setLastModifier(request.getUserPrincipal().getName());
         if (!Strings.isNullOrEmpty(request.getParameter("project"))) {
-            tc.setProject(request.getParameter("project"));
+            tc.setProject(ParameterParserUtil.ParseStringParamAndSanitize(request.getParameter("project"), tc.getProject()));
         } else if (request.getParameter("project") != null && request.getParameter("project").isEmpty()) {
             tc.setProject(null);
         } else {
             tc.setProject(tc.getProject());
         }
-        tc.setTicket(ParameterParserUtil.parseStringParam(request.getParameter("ticket"), tc.getTicket()));
-        tc.setApplication(ParameterParserUtil.parseStringParam(request.getParameter("application"), tc.getApplication()));
-        tc.setRunQA(ParameterParserUtil.parseStringParam(request.getParameter("activeQA"), tc.getRunQA()));
-        tc.setRunUAT(ParameterParserUtil.parseStringParam(request.getParameter("activeUAT"), tc.getRunUAT()));
-        tc.setRunPROD(ParameterParserUtil.parseStringParam(request.getParameter("activeProd"), tc.getRunPROD()));
+        tc.setTicket(ParameterParserUtil.ParseStringParamAndSanitize(request.getParameter("ticket"), tc.getTicket()));
+        tc.setApplication(ParameterParserUtil.ParseStringParamAndSanitize(request.getParameter("application"), tc.getApplication()));
+        tc.setRunQA(ParameterParserUtil.ParseStringParamAndSanitize(request.getParameter("activeQA"), tc.getRunQA()));
+        tc.setRunUAT(ParameterParserUtil.ParseStringParamAndSanitize(request.getParameter("activeUAT"), tc.getRunUAT()));
+        tc.setRunPROD(ParameterParserUtil.ParseStringParamAndSanitize(request.getParameter("activeProd"), tc.getRunPROD()));
         tc.setPriority(ParameterParserUtil.parseIntegerParam(request.getParameter("priority"), tc.getPriority()));
-        tc.setOrigin(ParameterParserUtil.parseStringParam(request.getParameter("origin"), tc.getOrigin()));
-        tc.setGroup(ParameterParserUtil.parseStringParam(request.getParameter("group"), tc.getGroup()));
-        tc.setStatus(ParameterParserUtil.parseStringParam(request.getParameter("status"), tc.getStatus()));
-        tc.setShortDescription(ParameterParserUtil.parseStringParam(request.getParameter("shortDesc"), tc.getShortDescription()));
-        tc.setDescription(ParameterParserUtil.parseStringParam(request.getParameter("behaviorOrValueExpected"), tc.getDescription()));
-        tc.setHowTo(ParameterParserUtil.parseStringParam(request.getParameter("howTo"), tc.getHowTo()));
-        tc.setActive(ParameterParserUtil.parseStringParam(request.getParameter("active"), tc.getActive()));
-        tc.setFromSprint(ParameterParserUtil.parseStringParam(request.getParameter("fromSprint"), tc.getFromSprint()));
-        tc.setFromRevision(ParameterParserUtil.parseStringParam(request.getParameter("fromRev"), tc.getFromRevision()));
-        tc.setToSprint(ParameterParserUtil.parseStringParam(request.getParameter("toSprint"), tc.getToSprint()));
-        tc.setToRevision(ParameterParserUtil.parseStringParam(request.getParameter("toRev"), tc.getToRevision()));
-        tc.setBugID(ParameterParserUtil.parseStringParam(request.getParameter("bugId"), tc.getBugID()));
-        tc.setTargetSprint(ParameterParserUtil.parseStringParam(request.getParameter("targetSprint"), tc.getTargetSprint()));
-        tc.setTargetRevision(ParameterParserUtil.parseStringParam(request.getParameter("targetRev"), tc.getTargetRevision()));
-        tc.setComment(ParameterParserUtil.parseStringParam(request.getParameter("comment"), tc.getComment()));
-        tc.setFunction(ParameterParserUtil.parseStringParam(request.getParameter("function"), tc.getFunction()));
+        tc.setOrigin(ParameterParserUtil.ParseStringParamAndSanitize(request.getParameter("origin"), tc.getOrigin()));
+        tc.setGroup(ParameterParserUtil.ParseStringParamAndSanitize(request.getParameter("group"), tc.getGroup()));
+        tc.setStatus(ParameterParserUtil.ParseStringParamAndSanitize(request.getParameter("status"), tc.getStatus()));
+        tc.setShortDescription(ParameterParserUtil.ParseStringParamAndSanitize(request.getParameter("shortDesc"), tc.getShortDescription()));
+        tc.setDescription(ParameterParserUtil.ParseStringParamAndSanitize(request.getParameter("behaviorOrValueExpected"), tc.getDescription()));
+        tc.setHowTo(ParameterParserUtil.ParseStringParamAndSanitize(request.getParameter("howTo"), tc.getHowTo()));
+        tc.setActive(ParameterParserUtil.ParseStringParamAndSanitize(request.getParameter("active"), tc.getActive()));
+        tc.setFromSprint(ParameterParserUtil.ParseStringParamAndSanitize(request.getParameter("fromSprint"), tc.getFromSprint()));
+        tc.setFromRevision(ParameterParserUtil.ParseStringParamAndSanitize(request.getParameter("fromRev"), tc.getFromRevision()));
+        tc.setToSprint(ParameterParserUtil.ParseStringParamAndSanitize(request.getParameter("toSprint"), tc.getToSprint()));
+        tc.setToRevision(ParameterParserUtil.ParseStringParamAndSanitize(request.getParameter("toRev"), tc.getToRevision()));
+        tc.setBugID(ParameterParserUtil.ParseStringParamAndSanitize(request.getParameter("bugId"), tc.getBugID()));
+        tc.setTargetSprint(ParameterParserUtil.ParseStringParamAndSanitize(request.getParameter("targetSprint"), tc.getTargetSprint()));
+        tc.setTargetRevision(ParameterParserUtil.ParseStringParamAndSanitize(request.getParameter("targetRev"), tc.getTargetRevision()));
+        tc.setComment(ParameterParserUtil.ParseStringParamAndSanitize(request.getParameter("comment"), tc.getComment()));
+        tc.setFunction(ParameterParserUtil.ParseStringParamAndSanitize(request.getParameter("function"), tc.getFunction()));
         return tc;
     }
 
-    private void getCountryList(TCase tc, HttpServletRequest request) throws CerberusException, JSONException {
+    private void getCountryList(TCase tc, HttpServletRequest request) throws CerberusException, JSONException, UnsupportedEncodingException {
         Map<String, String> countryList = new HashMap<String, String>();
         ApplicationContext appContext = WebApplicationContextUtils.getWebApplicationContext(this.getServletContext());
         IInvariantService invariantService = appContext.getBean(InvariantService.class);
@@ -254,7 +255,7 @@ public class UpdateTestCase2 extends HttpServlet {
 
         answer = invariantService.readByIdname("COUNTRY"); //TODO: handle if the response does not turn ok
         for (Invariant country : (List<Invariant>)answer.getDataList()) {
-            countryList.put(country.getValue(), ParameterParserUtil.parseStringParam(request.getParameter(country.getValue()), ""));
+            countryList.put(country.getValue(), ParameterParserUtil.ParseStringParamAndSanitize(request.getParameter(country.getValue()), ""));
         }
 
         for (TestCaseCountry countryDB : tcCountry) {

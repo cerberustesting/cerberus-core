@@ -60,7 +60,7 @@ public class TestCaseCountryDAO implements ITestCaseCountryDAO {
     @Autowired
     private IFactoryTestCaseCountry factoryTestCaseCountry;
 
-    private static final Logger LOG = Logger.getLogger(LogEventDAO.class);
+    private static final Logger LOG = Logger.getLogger(TestCaseCountryDAO.class);
 
     /**
      * Short one line description.
@@ -260,9 +260,7 @@ public class TestCaseCountryDAO implements ITestCaseCountryDAO {
         query.append("SELECT * FROM testcasecountry WHERE test = ?");
 
         if (!Strings.isNullOrEmpty(testCase)) {
-            query.append(" AND testcase = '");
-            query.append(testCase);
-            query.append("'");
+            query.append(" AND testcase = ?");
         }
 
         Connection connection = this.databaseSpring.connect();
@@ -271,6 +269,9 @@ public class TestCaseCountryDAO implements ITestCaseCountryDAO {
 
             try {
                 preStat.setString(1, test);
+                if (!Strings.isNullOrEmpty(testCase)) {
+                    preStat.setString(2, testCase);
+                }
                 ResultSet resultSet = preStat.executeQuery();
                 try {
                     //gets the data

@@ -92,7 +92,7 @@ function saveUpdateEntryHandler() {
 
 function editEntry(test) {
     clearResponseMessageMainPage();
-    var jqxhr = $.getJSON("ReadTest", "test=" + test);
+    var jqxhr = $.getJSON("ReadTest", "test=" + encodeURIComponent(test));
     $.when(jqxhr).then(function (data) {
         var obj = data["contentTable"];
 
@@ -175,11 +175,11 @@ function aoColumnsFunc() {
                                     </a>';
 
                 if (data["hasPermissions"]) {
-                    var editEntry = '<button id="editEntry" onclick="editEntry(\'' + obj["test"] + '\');"\n\
+                    var editEntry = '<button id="editEntry" onclick="editEntry(\'' + escapeHtml(obj["test"]) + '\');"\n\
                                 class="editEntry btn btn-default btn-xs margin-right5" \n\
                                 name="editEntry" title="' + doc.getDocLabel("page_test", "btn_edit") + '" type="button">\n\
                                 <span class="glyphicon glyphicon-pencil"></span></button>';
-                    var deleteEntry = '<button id="deleteEntry" onclick="deleteEntry(\'' + obj["test"] + '\');" \n\
+                    var deleteEntry = '<button id="deleteEntry" onclick="deleteEntry(\'' + escapeHtml(obj["test"]) + '\');" \n\
                                 class="deleteEntry btn btn-default btn-xs margin-right5" \n\
                                 name="deleteEntry" title="' + doc.getDocLabel("page_test", "btn_delete") + '" type="button">\n\
                                 <span class="glyphicon glyphicon-trash"></span></button>';

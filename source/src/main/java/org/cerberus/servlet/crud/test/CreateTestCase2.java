@@ -20,7 +20,7 @@
 package org.cerberus.servlet.crud.test;
 
 import java.io.IOException;
-import java.io.PrintWriter;
+import java.io.UnsupportedEncodingException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -84,8 +84,8 @@ public class CreateTestCase2 extends HttpServlet {
         /**
          * Parsing and securing all required parameters.
          */
-        String test = policy.sanitize(request.getParameter("test"));
-        String testcase = policy.sanitize(request.getParameter("testCase"));
+        String test = ParameterParserUtil.ParseStringParamAndSanitize(request.getParameter("test"), "");
+        String testcase = ParameterParserUtil.ParseStringParamAndSanitize(request.getParameter("testCase"), "");
 
         /**
          * Checking all constrains before calling the services.
@@ -216,7 +216,7 @@ public class CreateTestCase2 extends HttpServlet {
         return tc;
     }
 
-    private void getCountryList(TCase tc, HttpServletRequest request) throws CerberusException, JSONException {
+    private void getCountryList(TCase tc, HttpServletRequest request) throws CerberusException, JSONException, UnsupportedEncodingException {
         Map<String, String> countryList = new HashMap<String, String>();
         ApplicationContext appContext = WebApplicationContextUtils.getWebApplicationContext(this.getServletContext());
         IInvariantService invariantService = appContext.getBean(InvariantService.class);
@@ -224,7 +224,7 @@ public class CreateTestCase2 extends HttpServlet {
         ITestCaseCountryService testCaseCountryService = appContext.getBean(TestCaseCountryService.class);
         AnswerList answer = invariantService.readByIdname("COUNTRY"); //TODO: handle if the response does not turn ok
         for (Invariant country : (List<Invariant>)answer.getDataList()) {
-            countryList.put(country.getValue(), ParameterParserUtil.parseStringParam(request.getParameter(country.getValue()), "off"));
+            countryList.put(country.getValue(), ParameterParserUtil.ParseStringParamAndSanitize(request.getParameter(country.getValue()), "off"));
         }
 
         for (Map.Entry<String, String> country : countryList.entrySet()) {
