@@ -528,6 +528,7 @@ public class ReadTestCaseExecution extends HttpServlet {
             peTotal += sumStats.getPe();
             faTotal += sumStats.getFa();
             caTotal += sumStats.getCa();
+            sumStats.updatePercentageStatistics();
             data.put(gson.toJson(sumStats));
         }
         SummaryStatisticsDTO sumGlobal = new SummaryStatisticsDTO();
