@@ -27,17 +27,22 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import org.apache.commons.lang3.StringEscapeUtils;
 import org.cerberus.crud.entity.MessageEvent;
-import org.cerberus.enums.MessageEventEnum;
-import org.cerberus.crud.entity.TestDataLib; 
+import org.cerberus.crud.entity.TestDataLib;
 import org.cerberus.crud.factory.IFactoryTestDataLib;
 import org.cerberus.crud.service.ILogEventService;
 import org.cerberus.crud.service.ITestDataLibService;
 import org.cerberus.crud.service.impl.LogEventService;
-import org.cerberus.util.ParameterParserUtil;
+import org.cerberus.enums.MessageEventEnum;
+import org.cerberus.util.StringUtil;
 import org.cerberus.util.answer.Answer;
+import org.cerberus.util.answer.AnswerItem;
+import org.cerberus.util.answer.AnswerUtil;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.owasp.html.PolicyFactory;
+import org.owasp.html.Sanitizers;
 import org.springframework.context.ApplicationContext;
 import org.springframework.web.context.support.WebApplicationContextUtils;
 
@@ -61,61 +66,124 @@ public class UpdateTestDataLib extends HttpServlet {
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         JSONObject jsonResponse = new JSONObject();
+        Answer ans = new Answer();
+        MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
+        msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", ""));
+        ans.setResultMessage(msg);
+        PolicyFactory policy = Sanitizers.FORMATTING.and(Sanitizers.LINKS);
+
+        response.setContentType("application/json");
+
+        /**
+         * Parsing and securing all required parameters.
+         */
+        String name = policy.sanitize(request.getParameter("name")); //this is mandatory
+        String type = policy.sanitize(request.getParameter("type"));
+        String group = policy.sanitize(request.getParameter("group"));
+
+        String description = policy.sanitize(request.getParameter("libdescription"));
+        String system = policy.sanitize(request.getParameter("system"));
+        String environment = policy.sanitize(request.getParameter("environment"));
+        String country = policy.sanitize(request.getParameter("country"));
+
+        String database = policy.sanitize(request.getParameter("database"));
+        String script = policy.sanitize(request.getParameter("script"));
+
+        String servicePath = policy.sanitize(request.getParameter("servicepath"));
+        String method = policy.sanitize(request.getParameter("method"));
+        String envelope = StringEscapeUtils.escapeXml11(request.getParameter("envelope"));
+
+        Integer testdatalibid = 0;
+        boolean testdatalibid_error = true;
         try {
-            int testDataLibID = Integer.parseInt(request.getParameter("testdatalibid"));//this is must be defined
-            String name = request.getParameter("name"); //this is must be defined
-            String type = request.getParameter("type");//this is must be defined
-            String group = ParameterParserUtil.parseStringParam(request.getParameter("group"), "");
-
-            String description = ParameterParserUtil.parseStringParam(request.getParameter("libdescription"), "");
-            String system = ParameterParserUtil.parseStringParam(request.getParameter("system"), "");
-            String environment = ParameterParserUtil.parseStringParam(request.getParameter("environment"), "");
-            String country = ParameterParserUtil.parseStringParam(request.getParameter("country"),"");
-
-            String database = ParameterParserUtil.parseStringParam(request.getParameter("database"), "");
-            String script = ParameterParserUtil.parseStringParam(request.getParameter("script"), "");
-
-            String servicePath = ParameterParserUtil.parseStringParam(request.getParameter("servicepath"), "");
-            String method = ParameterParserUtil.parseStringParam(request.getParameter("method"), "");
-            String envelope = ParameterParserUtil.parseStringParam(request.getParameter("envelope"), "");
-
-            //specific attributes
-            ApplicationContext appContext = WebApplicationContextUtils.getWebApplicationContext(this.getServletContext());
-            IFactoryTestDataLib factoryLibService = appContext.getBean(IFactoryTestDataLib.class);
-
-            ITestDataLibService libService = appContext.getBean(ITestDataLibService.class);
-
-            TestDataLib lib = factoryLibService.create(testDataLibID, name, system, environment, country, group, type, database,
-                    script, servicePath, method, envelope, description);
-
-            //updates the testdatalib
-            Answer answer = libService.update(lib);
-
-            //  Adding Log entry.
-            if(answer.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())){
-                ILogEventService logEventService = appContext.getBean(LogEventService.class);
-                logEventService.createPrivateCalls("/UpdateTestDataLib", "UPDATE", "Update TestDataLib:  id: " + testDataLibID + " name: " + name, request);
+            if (request.getParameter("testdatalibid") != null && !request.getParameter("testdatalibid").isEmpty()) {
+                testdatalibid = Integer.valueOf(request.getParameter("testdatalibid"));
+                testdatalibid_error = false;
             }
-            
-            jsonResponse.put("messageType", answer.getResultMessage().getMessage().getCodeString());
-            jsonResponse.put("message", answer.getResultMessage().getDescription());
+        } catch (NumberFormatException ex) {
+            testdatalibid_error = true;
+            Logger.getLogger(UpdateTestDataLib.class.getName()).log(Level.SEVERE, null, ex);
+        }
 
-            response.setContentType("application/json");
+        try {
+            /**
+             * Checking all constrains before calling the services.
+             */
+
+            if (StringUtil.isNullOrEmpty(name)) {
+                msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_EXPECTED);
+                msg.setDescription(msg.getDescription().replace("%ITEM%", "Test data library")
+                        .replace("%OPERATION%", "Update")
+                        .replace("%REASON%", "Test data library name is missing."));
+                ans.setResultMessage(msg);
+            } else if (testdatalibid_error) {
+                msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_EXPECTED);
+                msg.setDescription(msg.getDescription().replace("%ITEM%", "Test data library")
+                        .replace("%OPERATION%", "Update")
+                        .replace("%REASON%", "Could not manage to convert testdatalibid to an integer value or testdatalibid is missing."));
+                ans.setResultMessage(msg);
+            } else {
+                /**
+                 * All data seems cleans so we can call the services.
+                 */
+                //specific attributes
+                ApplicationContext appContext = WebApplicationContextUtils.getWebApplicationContext(this.getServletContext());
+                ITestDataLibService libService = appContext.getBean(ITestDataLibService.class);
+
+                AnswerItem resp = libService.readByKey(testdatalibid);
+                if (!(resp.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode()))) {
+                    /**
+                     * Object could not be found. We stop here and report the
+                     * error.
+                     */
+                    msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_EXPECTED);
+                    msg.setDescription(msg.getDescription().replace("%ITEM%", "Robot")
+                            .replace("%OPERATION%", "Update")
+                            .replace("%REASON%", "Robot does not exist."));
+                    ans.setResultMessage(msg);
+
+                } else {
+                    /**
+                     * The service was able to perform the query and confirm the
+                     * object exist, then we can update it.
+                     */
+                    TestDataLib lib = (TestDataLib) resp.getItem();
+                    lib.setName(name);
+                    lib.setType(type);
+                    lib.setGroup(group);
+                    lib.setDescription(description);
+                    lib.setSystem(system);
+                    lib.setEnvironment(environment);
+                    lib.setCountry(country);
+                    lib.setDatabase(database);
+                    lib.setScript(script);
+                    lib.setServicePath(servicePath);
+                    lib.setMethod(method);
+                    lib.setEnvelope(envelope);
+
+                    ans = libService.update(lib);
+
+                    if (ans.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
+                        /**
+                         * Update operation finished with success, then the logging entry must be added.
+                         */
+                        ILogEventService logEventService = appContext.getBean(LogEventService.class);
+                        logEventService.createPrivateCalls("/UpdateTestDataLib", "UPDATE", "Update TestDataLib - id: " + testdatalibid + " name: " + name + " system: "
+                                + system + " environment: " + environment + " country: " + country, request);
+                    }
+                }
+
+            }
+            jsonResponse.put("messageType", ans.getResultMessage().getMessage().getCodeString());
+            jsonResponse.put("message", ans.getResultMessage().getDescription());
+
             response.getWriter().print(jsonResponse);
             response.getWriter().flush();
 
         } catch (JSONException ex) {
             Logger.getLogger(UpdateTestDataLib.class.getName()).log(Level.SEVERE, null, ex);
             //returns a default error message with the json format that is able to be parsed by the client-side
-            response.setContentType("application/json");
-            MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
-            StringBuilder errorMessage = new StringBuilder();
-            errorMessage.append("{'messageType':'").append(msg.getCode()).append("', ");
-            errorMessage.append(" 'message': '");
-            errorMessage.append(msg.getDescription().replace("%DESCRIPTION%", "Unable to check the status of your request! Try later or - Open a bug or ask for any new feature \n"
-                    + "<a href=\"https://github.com/vertigo17/Cerberus/issues/\" target=\"_blank\">here</a>"));
-            errorMessage.append("'}");
-            response.getWriter().print(errorMessage.toString());
+            response.getWriter().print(AnswerUtil.createGenericErrorAnswer());
         }
 
     }

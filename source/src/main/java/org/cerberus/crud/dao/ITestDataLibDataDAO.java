@@ -19,6 +19,7 @@ package org.cerberus.crud.dao;
 
 import java.util.ArrayList;
 import java.util.List;
+import org.cerberus.crud.entity.TestDataLib;
 import org.cerberus.crud.entity.TestDataLibData;
 import org.cerberus.util.answer.Answer;
 import org.cerberus.util.answer.AnswerItem;
@@ -51,7 +52,20 @@ public interface ITestDataLibDataDAO {
      * @return 
      */
     Answer delete(TestDataLibData testDataLibData);
-
+    /**
+     * Deletes all testdatalibdata records that belong to a testdatalib.
+     * @param testDataLibID - remove all entries that belong to a testdatalib entry.
+     * @return Answer indicating the status of the operation
+     */
+    public Answer delete(TestDataLib testDataLibID);
+    
+    /**
+     * Batch that deletes several records in the table TestDataLibData.
+     * @param subdataSet
+     * @return 
+     */
+    public Answer delete(List<TestDataLibData> subdataSet); 
+    
     /**
      *
      * @param testDataLibID
@@ -59,54 +73,42 @@ public interface ITestDataLibDataDAO {
      * @return
      */
     AnswerItem readByKey(Integer testDataLibID, String subData);
-
-    /**
-     *
-     * @return All TestData
-     */
-    AnswerList readAll();
-
     /**
      *
      * @param testDataLibID resultSet
      * @return
      */
-    AnswerList readById(Integer testDataLibID);
+    AnswerList readByKey(Integer testDataLibID);
 
     AnswerList readByCriteria(int start, int amount, String colName, String dir, String searchTerm, String individualSearch) ;
-
-    
     /**
-     * Deletes all testdatalibdata records that belong to a testdatalib.
-     * @param testDataLibID - testdatalibid used to filter the rows that will be removed.
-     * @return Answer indicating the status of the operation
+     *
+     * @return All TestData
      */
-    public Answer delete(int testDataLibID);
+    AnswerList readAll();
+    
+    
  
     /**
      * Batch that inserts several records in the table TestDataLibData
      * @param subdataSet - entries to insert
      * @return Answer indicating the status of the operation
      */
-    public Answer createBatch(List<TestDataLibData> subdataSet); 
+    public Answer create(List<TestDataLibData> subdataSet); 
     /**
      * Batch that updates several records in the table TestDataLibData.
      * @param entriesToUpdate - entries to update
      * @return  Answer indicating the status of the operation
      */
-    public Answer updateBatch(ArrayList<TestDataLibData> entriesToUpdate);
-    /**
-     * Batch that deletes several records in the table TestDataLibData.
-     * @param testDataLibIdForData - testdatalibID associated with the entries that will be removed. This is part of the PK.
-     * @param entriesToRemove - subdata names for the records that should be removed
-     * @return  Answer indicating the status of the operation
-     */
-    public Answer deleteBatch(int testDataLibIdForData, ArrayList<String> entriesToRemove);
+    public Answer update(ArrayList<TestDataLibData> entriesToUpdate);
+    
     /**
      * Finds all subdata entries (testdatalibdata) that are associated with an entry name (testdatalib).
      * @param testDataLibName - entry name used to filter the subdata entries
      * @return  Answer indicating the status of the operation
      */
     public AnswerList readByName(String testDataLibName);
+
+    public AnswerItem readByKeyTech(Integer testDataLibDataID);
  
 }

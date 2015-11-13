@@ -17,7 +17,6 @@
  */
 package org.cerberus.crud.dao;
 
-import java.util.List;
 import org.cerberus.crud.entity.TestDataLib;
 import org.cerberus.util.answer.Answer;
 import org.cerberus.util.answer.AnswerItem;
@@ -100,20 +99,5 @@ public interface ITestDataLibDAO {
      * @return
      */
     Answer update(TestDataLib testDataLib);
-
-    /**
-     * Deletes a testdatalib with basis on the unique identifier
-     *
-     * @param testDataLibID - test data lib entry
-     * @return
-     */
-    Answer deleteUnused(int testDataLibID);
-
-    /**
-     *
-     * @param testDataLibEntries
-     * @return
-     */
-    Answer createBatch(List<TestDataLib> testDataLibEntries);
 
 }

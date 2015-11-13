@@ -18,8 +18,9 @@
 package org.cerberus.crud.service;
 
 import java.util.ArrayList;
-import java.util.List; 
-import org.cerberus.crud.entity.TestDataLibData; 
+import java.util.List;
+import org.cerberus.crud.entity.TestDataLib;
+import org.cerberus.crud.entity.TestDataLibData;
 import org.cerberus.service.engine.testdata.TestDataLibResult;
 import org.cerberus.util.answer.Answer;
 import org.cerberus.util.answer.AnswerItem;
@@ -35,23 +36,51 @@ public interface ITestDataLibDataService {
     /**
      *
      * @param testDataLibData TestDataLib to insert
-     * @return 
+     * @return
      */
     Answer create(TestDataLibData testDataLibData);
 
     /**
+     * Creates several TestDataLibData entries
+     *
+     * @param completeSubDataList - entries to insert
+     * @return
+     */
+    Answer create(List<TestDataLibData> completeSubDataList);
+
+    /**
      *
      * @param testDataLibData TestData to update using the key
-     * @return 
+     * @return
      */
     Answer update(TestDataLibData testDataLibData);
 
     /**
      *
      * @param testDataLibData
-     * @return 
+     * @return
      */
     Answer delete(TestDataLibData testDataLibData);
+
+    /**
+     * Deletes all sub-data entries that belong to a testdatalibrary entry
+     *
+     * @param testDataLib
+     * @return
+     */
+     public Answer delete(TestDataLib testDataLib);
+
+    /**
+     * Method that performs a CUD of operations in one set of testdatalibrary
+     * entries
+     *
+     * @param testDataLibID
+     * @param entriesToInsert
+     * @param entriesToUpdate
+     * @param entriesToRemove
+     * @return
+     */
+    Answer createUpdateDelete(ArrayList<TestDataLibData> entriesToInsert, ArrayList<TestDataLibData> entriesToUpdate, ArrayList<TestDataLibData> entriesToRemove);
 
     /**
      *
@@ -62,57 +91,48 @@ public interface ITestDataLibDataService {
     AnswerItem readByKey(Integer testDataLibID, String subData);
 
     /**
+     * Reads a list with basis on the test data library id
+     * @param testDataLibID
+     * @return
+     */
+    AnswerList readByKey(Integer testDataLibID);
+    
+    /**
+     * Returns the subdata entry that matches a specific technical key.
+     * @param testDataLibDataID
+     * @return 
+     */
+    AnswerItem readByKeyTech(Integer testDataLibDataID);
+    
+    /**
      *
      * @return All TestDataLibData
      */
     AnswerList readAll();
 
-    /**
-     *
-     * @param testDataLibID
-     * @return
-     */
-    AnswerList readById(Integer testDataLibID);
 
     /**
-     * 
+     *
      * @param start
      * @param amount
      * @param colName
      * @param dir
      * @param searchTerm
      * @param individualSearch
-     * @return 
-     */
-    public AnswerList readByCriteria(int start, int amount, String colName, String dir, String searchTerm, String individualSearch);
-    /**
-     * Creates several TestDataLibData entries
-     * @param subdataSet - entries to insert
-     * @return 
-     */
-    Answer createBatch(List<TestDataLibData> subdataSet);
-
-    AnswerItem<String> fetchSubData(TestDataLibResult result, TestDataLibData subDataEntry);
-
-    Answer delete(int testDataLibID);
-
-
-    /**
-     *
-     * @param testDataLibID
-     * @param entriesToInsert
-     * @param entriesToUpdate
-     * @param entriesToRemove
      * @return
      */
-    Answer createUpdateDelete(int testDataLibID, ArrayList<TestDataLibData> entriesToInsert, ArrayList<TestDataLibData> entriesToUpdate, ArrayList<String> entriesToRemove);
+    AnswerList readByCriteria(int start, int amount, String colName, String dir, String searchTerm, String individualSearch);
 
     /**
+     * Reads all test data library entries that match a specific name.
      *
      * @param testDataLibName
      * @return
      */
-    AnswerList readByName(String testDataLibName); 
- 
-    
+    AnswerList readByName(String testDataLibName);
+
+    Answer validate(List<TestDataLibData> subDataList);
+
+    AnswerItem<String> fetchSubData(TestDataLibResult result, TestDataLibData subDataEntry);
+
 }

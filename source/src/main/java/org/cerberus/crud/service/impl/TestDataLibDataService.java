@@ -20,14 +20,17 @@
 package org.cerberus.crud.service.impl;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import org.cerberus.crud.dao.ITestDataLibDataDAO;
-import org.cerberus.database.DatabaseSpring;
 import org.cerberus.crud.entity.MessageEvent;
+import org.cerberus.crud.entity.TestDataLib;
+import org.cerberus.crud.entity.TestDataLibData; 
+import org.cerberus.crud.service.ITestDataLibDataService; 
+import org.cerberus.database.DatabaseSpring; 
 import org.cerberus.enums.MessageEventEnum;
-import org.cerberus.crud.entity.TestDataLibData;
-import org.cerberus.service.engine.testdata.TestDataLibResult; 
-import org.cerberus.crud.service.ITestDataLibDataService;
+import org.cerberus.service.engine.testdata.TestDataLibResult;
 import org.cerberus.util.answer.Answer;
 import org.cerberus.util.answer.AnswerItem;
 import org.cerberus.util.answer.AnswerList;
@@ -59,8 +62,8 @@ public class TestDataLibDataService implements ITestDataLibDataService {
     }
     
     @Override
-    public Answer delete(int testDataLibID){
-        return testDataLibDataDAO.delete(testDataLibID);
+    public Answer delete(TestDataLib testDataLib){
+        return testDataLibDataDAO.delete(testDataLib);
     }
 
     @Override
@@ -74,44 +77,40 @@ public class TestDataLibDataService implements ITestDataLibDataService {
     }
 
     @Override
-    public AnswerList readById(Integer testDataLibID) {
-        return testDataLibDataDAO.readById(testDataLibID);
+    public AnswerList readByKey(Integer testDataLibID) {
+        return testDataLibDataDAO.readByKey(testDataLibID);
     }
-
+   
     @Override
     public AnswerList readByCriteria(int start, int amount, String colName, String dir, String searchTerm, String individualSearch){
         return testDataLibDataDAO.readByCriteria(start, amount, colName, dir, searchTerm, individualSearch);
     }
-
-    @Override
-    public Answer createBatch(List<TestDataLibData> subdataSet){
-        return testDataLibDataDAO.createBatch(subdataSet);
-    }
-
+ 
     @Override
     public AnswerItem<String> fetchSubData(TestDataLibResult result, TestDataLibData subDataEntry) {
         return result.getValue(subDataEntry);
     }
  
     @Override
-    public Answer createUpdateDelete(int testDataLibID, ArrayList<TestDataLibData> entriesToInsert, ArrayList<TestDataLibData> entriesToUpdate, 
-            ArrayList<String> entriesToRemove) {
+    public Answer createUpdateDelete(ArrayList<TestDataLibData> entriesToInsert, ArrayList<TestDataLibData> entriesToUpdate, 
+            ArrayList<TestDataLibData> entriesToRemove) {
         
         dbmanager.beginTransaction();        
         
         Answer answer = new Answer();
-        
-        if(entriesToInsert.size() > 0){
-            answer = testDataLibDataDAO.createBatch(entriesToInsert);
+        //first we delete to avoid errors related to duplicate keys
+        if(entriesToRemove.size() > 0){
+            //gets the list of entries to remove
+            answer =  testDataLibDataDAO.delete(entriesToRemove);
             if(!answer.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())){
-                //if the insert does not succeed, then the transaction should be aborted
+                //if the delete does not succeed, then the transaction should be aborted
                 dbmanager.abortTransaction();
                 return answer;           
             }
         }
                 
         if(entriesToUpdate.size() > 0){
-            answer = testDataLibDataDAO.updateBatch(entriesToUpdate);
+            answer = testDataLibDataDAO.update(entriesToUpdate);
             if(!answer.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())){
                 //if the update does not succeed, then the transaction should be aborted
                 dbmanager.abortTransaction();
@@ -119,10 +118,10 @@ public class TestDataLibDataService implements ITestDataLibDataService {
             }
         }
         
-        if(entriesToRemove.size() > 0){
-            answer =  testDataLibDataDAO.deleteBatch(testDataLibID, entriesToRemove);
+        if(entriesToInsert.size() > 0){
+            answer = testDataLibDataDAO.create(entriesToInsert);
             if(!answer.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())){
-                //if the delete does not succeed, then the transaction should be aborted
+                //if the insert does not succeed, then the transaction should be aborted
                 dbmanager.abortTransaction();
                 return answer;           
             }
@@ -141,6 +140,47 @@ public class TestDataLibDataService implements ITestDataLibDataService {
     public AnswerList readByName(String testDataLibName) {
         return testDataLibDataDAO.readByName(testDataLibName);
     }
- 
- 
+
+    @Override
+    public Answer create(List<TestDataLibData> completeSubDataList) {
+        return testDataLibDataDAO.create(completeSubDataList);
+    }
+    
+    @Override
+    public Answer validate(List<TestDataLibData> subDataList) {
+        
+        Answer ans = new Answer(new MessageEvent(MessageEventEnum.DATA_OPERATION_VALIDATIONS_OK));
+        //check if the entries are duplicated 
+        if(subDataList.size() > 1){            
+            //check if the entries are duplicated 
+            boolean hasDuplicates = containsDuplicates(subDataList);
+            if(hasDuplicates){
+                MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_VALIDATIONS_ERROR);
+                msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", "You have entries with duplicated names."));
+                ans.setResultMessage(msg);
+                return ans;
+            }
+        }
+        
+        return ans;
+    }
+    private boolean containsDuplicates(List<TestDataLibData> subDataList){
+        Set<String> entries = new HashSet<String>();
+
+        //if is not valid then creates a new message
+        for(TestDataLibData subData : subDataList){
+            if (entries.contains(subData.getSubData())) {
+                return false; //not ok
+            }
+            
+            entries.add(subData.getSubData());
+        }
+        
+        return true;
+    }
+
+    @Override
+    public AnswerItem readByKeyTech(Integer testDataLibDataID) {
+        return testDataLibDataDAO.readByKeyTech(testDataLibDataID);
+    }
 }

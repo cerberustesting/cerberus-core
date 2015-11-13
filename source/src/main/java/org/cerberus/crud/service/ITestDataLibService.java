@@ -100,45 +100,14 @@ public interface ITestDataLibService {
      */
     Answer create(TestDataLib testDataLib, List<TestDataLibData> subDataList);
 
+    Answer create(HashMap<TestDataLib, List<TestDataLibData>> entries);
     /**
-     *
-     * @param entries
-     * @return
-     */
-    Answer createBatch(List<TestDataLib> entries);
-
-    /**
-     *
-     * @param entries
-     * @return
-     */
-    Answer createBatch(HashMap<TestDataLib, List<TestDataLibData>> entries);
-
-    /**
-     * Creates the test data lib entries for the com
-     *
-     * @param testDataLibList combinations of entries that
-     * @param subDataList subdata entries that were defined in the add window,
-     * which are associated with each entry in the list testDataLibList
-     * @return an answer indicating the status of the operation
-     */
-    Answer createBatch(List<TestDataLib> testDataLibList, List<TestDataLibData> subDataList);
-
-    /**
-     *
+     * Deletes a testdatalib entry
      * @param testDataLib
      * @return
      */
     Answer delete(TestDataLib testDataLib);
-
-    /**
-     * Deletes a testdatalib with basis on the id.
-     *
-     * @param testDataLibID - id of the entry that we want to remove
-     * @return an answer indicating the status of the operation
-     */
-    Answer delete(int testDataLibID);
-
+ 
     /**
      *
      * @param testDataLib TestData to update using the key

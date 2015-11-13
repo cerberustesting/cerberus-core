@@ -23,25 +23,24 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import org.apache.log4j.Level;
-import org.cerberus.crud.dao.ITestDataLibDAO;
-import org.cerberus.crud.dao.ITestDataLibDataDAO;
-import org.cerberus.database.DatabaseSpring;
+import org.cerberus.crud.dao.ITestDataLibDAO; 
 import org.cerberus.crud.entity.MessageEvent;
-import org.cerberus.enums.MessageEventEnum;
-import org.cerberus.enums.MessageGeneralEnum;
 import org.cerberus.crud.entity.TestDataLib;
 import org.cerberus.crud.entity.TestDataLibData;
+import org.cerberus.crud.factory.IFactoryTestDataLibData;
+import org.cerberus.crud.service.ITestDataLibDataService;
+import org.cerberus.crud.service.ITestDataLibService;
+import org.cerberus.database.DatabaseSpring;
+import org.cerberus.enums.MessageEventEnum;
+import org.cerberus.enums.TestDataLibTypeEnum;
+import org.cerberus.log.MyLogger;
+import org.cerberus.service.engine.ISQLService;
+import org.cerberus.service.engine.ISoapService;
+import org.cerberus.service.engine.IXmlUnitService;
 import org.cerberus.service.engine.testdata.TestDataLibResult;
 import org.cerberus.service.engine.testdata.TestDataLibResultSOAP;
 import org.cerberus.service.engine.testdata.TestDataLibResultSQL;
 import org.cerberus.service.engine.testdata.TestDataLibResultStatic;
-import org.cerberus.enums.TestDataLibTypeEnum;
-import org.cerberus.crud.factory.IFactoryTestDataLibData;
-import org.cerberus.log.MyLogger;
-import org.cerberus.crud.service.ITestDataLibService;
-import org.cerberus.service.engine.ISQLService;
-import org.cerberus.service.engine.ISoapService;
-import org.cerberus.service.engine.IXmlUnitService;
 import org.cerberus.util.answer.Answer;
 import org.cerberus.util.answer.AnswerItem;
 import org.cerberus.util.answer.AnswerList;
@@ -57,8 +56,6 @@ public class TestDataLibService implements ITestDataLibService {
     @Autowired
     ITestDataLibDAO testDataLibDAO;
     @Autowired
-    ITestDataLibDataDAO testDataLibDataDAO;
-    @Autowired
     IFactoryTestDataLibData testDataLibDataFactory;
     @Autowired
     private ISoapService soapService;
@@ -66,6 +63,8 @@ public class TestDataLibService implements ITestDataLibService {
     private ISQLService sQLService;
     @Autowired
     private IXmlUnitService xmlUnitService;
+    @Autowired
+    private ITestDataLibDataService testDataLibDataService;
 
     @Override
     public AnswerItem readByKey(String name, String system, String environment, String country) {
@@ -105,85 +104,47 @@ public class TestDataLibService implements ITestDataLibService {
     @Override
     public Answer create(TestDataLib testDataLib, List<TestDataLibData> subDataList) {
         List<TestDataLibData> completeSubDataList = new ArrayList<TestDataLibData>();
+        
+        //validates if the subdata are not duplicated
+        Answer answer = testDataLibDataService.validate(completeSubDataList);
+        
+        if(answer.isCodeEquals(MessageEventEnum.DATA_OPERATION_VALIDATIONS_ERROR.getCode())){
+            return answer;
+        }
+        //if not then we can start the insert
         dbManager.beginTransaction();
         //creates the test data lib
-        Answer ansInsert = testDataLibDAO.create(testDataLib);
-        if (ansInsert.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
+        answer = testDataLibDAO.create(testDataLib);
+        if (answer.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
             //if success, then creates the entries
-            if (subDataList != null && !subDataList.isEmpty()) {
+            if (subDataList != null && !subDataList.isEmpty()) {                
                 for (TestDataLibData libData : subDataList) {
                     TestDataLibData data = testDataLibDataFactory.create(-1, testDataLib.getTestDataLibID(), libData.getSubData(), libData.getValue(),
                             libData.getColumn(), libData.getParsingAnswer(), libData.getDescription());
                     completeSubDataList.add(data);
                 }
 
-                ansInsert = testDataLibDataDAO.createBatch(completeSubDataList);
+                answer = testDataLibDataService.create(completeSubDataList);
             }
         }
 
-        MessageEvent msg;
-        if (ansInsert.getResultMessage().getCode() == MessageGeneralEnum.DATA_OPERATION_SUCCESS.getCode()) {
+        if (answer.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
             dbManager.commitTransaction();
-            msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
-            msg.setDescription(msg.getDescription().replace("%ITEM%", "Test Data Lib and  and Subdata entries ").replace("%OPERATION%", "INSERT"));
-            ansInsert.setResultMessage(msg);
-        } else {
-            dbManager.abortTransaction();
-        }
-
-        return ansInsert;
-    }
-
-    @Override
-    public Answer createBatch(List<TestDataLib> entries) {
-        dbManager.beginTransaction();
-        Answer ansInsert = testDataLibDAO.createBatch(entries);
-
-        if (ansInsert.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
-            dbManager.commitTransaction();
-        } else {
-            dbManager.abortTransaction();
-        }
-        return ansInsert;
-    }
-
-    @Override
-    public Answer createBatch(List<TestDataLib> testDataLibList, List<TestDataLibData> subDataList) {
-        List<TestDataLibData> completeSubDataList = new ArrayList<TestDataLibData>();
-        dbManager.beginTransaction();
-        //creates the entries 
-        Answer ansInsert = testDataLibDAO.createBatch(testDataLibList);
-        //if the insert went well then we can insert the subdataentries
-        if (ansInsert.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
-            if (subDataList != null && !subDataList.isEmpty()) {
-                for (TestDataLib lib : testDataLibList) {
-                    for (TestDataLibData libData : subDataList) {
-                        //recreates the testdatalib elements because at first they don't have the testdatalib id that is part of its primary key
-                        TestDataLibData data = testDataLibDataFactory.create(-1, lib.getTestDataLibID(), libData.getSubData(), libData.getValue(),
-                                libData.getColumn(), libData.getParsingAnswer(), libData.getDescription());
-                        completeSubDataList.add(data);
-                    }
-                }
-                ansInsert = testDataLibDataDAO.createBatch(completeSubDataList);
-            }
-        }
-
-        if (ansInsert.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
-            dbManager.commitTransaction();
-            //we will replace the last success message for the following one
             MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
-            msg.setDescription(msg.getDescription().replace("%ITEM%", "Test Data Lib and Subdata ").replace("%OPERATION%", "INSERT"));
-            ansInsert.setResultMessage(msg);
-        } else {//if an error had occurred then we will propagate its message
+            msg.setDescription(msg.getDescription().replace("%ITEM%", "Test Data Lib and  and Subdata entries ").replace("%OPERATION%", "INSERT"));
+            answer.setResultMessage(msg);
+        } else {
             dbManager.abortTransaction();
         }
-
-        return ansInsert;
+    
+        return answer;
     }
-
+    
     @Override
-    public Answer createBatch(HashMap<TestDataLib, List<TestDataLibData>> entries) {
-        List<TestDataLibData> completeSubDataList = null;
+    public Answer create(HashMap<TestDataLib, List<TestDataLibData>> entries) {
+        
+        List<TestDataLibData> completeSubDataList;
+        
         Answer ansInsert = new Answer(new MessageEvent(MessageEventEnum.DATA_OPERATION_OK));
         dbManager.beginTransaction();
 
@@ -200,7 +161,7 @@ public class TestDataLibService implements ITestDataLibService {
                                 libData.getColumn(), libData.getParsingAnswer(), libData.getDescription());
                         completeSubDataList.add(data);
                     }
-                    ansInsert = testDataLibDataDAO.createBatch(completeSubDataList);
+                    ansInsert = testDataLibDataService.create(completeSubDataList);
                 }
             } else {
                 break;
@@ -215,22 +176,17 @@ public class TestDataLibService implements ITestDataLibService {
         return ansInsert;
 
     }
-
+   
     @Override
     public Answer delete(TestDataLib testDataLib) {
-        return testDataLibDAO.delete(testDataLib);
-    }
-
-    @Override
-    public Answer delete(int testDataLibID) {
 
         dbManager.beginTransaction();
         //deletes the testdatalib
-        Answer ansDelete = testDataLibDAO.deleteUnused(testDataLibID);
+        Answer ansDelete = testDataLibDAO.delete(testDataLib);
         //if everything went well, then we can delete all the subdata entries
         if (ansDelete.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
             //as we can create testdatalib without subdata it is possible that there this call will return 0, 
-            ansDelete = testDataLibDataDAO.delete(testDataLibID);
+            ansDelete = testDataLibDataService.delete(testDataLib);
         }
         if (ansDelete.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
             dbManager.commitTransaction();//if success 
