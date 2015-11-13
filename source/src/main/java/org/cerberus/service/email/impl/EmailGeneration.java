@@ -100,18 +100,21 @@ public class EmailGeneration implements IEmailGeneration {
             String lastRev = myCountryEnvParam.getRevision();
 
             content = emailBodyGeneration.GenerateBuildContentTable(system, build, revision, lastBuild, lastRev, conn);
+            content = content.replace("$", " ");
             body = body.replaceAll("%BUILDCONTENT%", content);
 
             content = emailBodyGeneration.GenerateTestRecapTable(system, build, revision, country, conn);
+            content = content.replace("$", " ");
             body = body.replaceAll("%TESTRECAP%", content);
 
             content = emailBodyGeneration.GenerateTestRecapTable(system, build, revision, "ALL", conn);
+            content = content.replace("$", " ");
             body = body.replaceAll("%TESTRECAPALL%", content);
             //End
 
             result = to + "///" + cc + "///" + subject + "///" + body + "///" + build + "///" + revision;
 
-        } catch (CerberusException e) {
+        } catch (Exception e) {
             Logger.getLogger(EmailGeneration.class.getName()).log(Level.SEVERE, Infos.getInstance().getProjectNameAndVersion() + " - Exception catched.", e);
         } finally {
             try {
