@@ -61,6 +61,10 @@ public class TestCaseCountryDAO implements ITestCaseCountryDAO {
     private IFactoryTestCaseCountry factoryTestCaseCountry;
 
     private static final Logger LOG = Logger.getLogger(TestCaseCountryDAO.class);
+    
+    private final String OBJECT_NAME = "TestCaseCountry";
+    private final String SQL_DUPLICATED_CODE = "23000";
+    private final int MAX_ROW_SELECTED = 100000;
 
     /**
      * Short one line description.
@@ -280,7 +284,7 @@ public class TestCaseCountryDAO implements ITestCaseCountryDAO {
                     }
 
                     msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
-                    msg.setDescription(msg.getDescription().replace("%ITEM%", "Test").replace("%OPERATION%", "SELECT"));
+                    msg.setDescription(msg.getDescription().replace("%ITEM%", OBJECT_NAME).replace("%OPERATION%", "SELECT"));
                     answer = new AnswerList(testCaseCountryList, testCaseCountryList.size());
 
                 } catch (SQLException exception) {
@@ -354,7 +358,7 @@ public class TestCaseCountryDAO implements ITestCaseCountryDAO {
                     if (resultSet.first()) {
                         result = loadFromResultSet(resultSet);
                         msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
-                        msg.setDescription(msg.getDescription().replace("%ITEM%", "TestCaseCountry").replace("%OPERATION%", "SELECT"));
+                        msg.setDescription(msg.getDescription().replace("%ITEM%", OBJECT_NAME).replace("%OPERATION%", "SELECT"));
                         answer.setItem(result);
                     } else {
                         msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_NO_DATA_FOUND);
