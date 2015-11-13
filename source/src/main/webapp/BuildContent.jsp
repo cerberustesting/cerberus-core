@@ -45,14 +45,20 @@
                         </div>
                         <div class="panel-body">
                             <div class="form-inline">
-                                <button type="button" class="btn btn-default" id="btnLoadAll" onclick="setAll()" name="btnLoadAll">Load All Build</button>
-                                <button type="button" class="btn btn-default" id="btnLoadPending" onclick="setPending()" name="btnLoadPending">Load Pending Build</button>
-                                <button type="button" class="btn btn-default" id="btnLoadLatest" onclick="setLatest()" name="btnLoadLatest">Load Latest Build</button>
-                                <label for="selectBuild" name="buildField">Build :</label>
-                                <select class="form-control" id="selectBuild" name="build" style="width: 15%"></select>
-                                <label for="selectRevision" name="revisionField">Revision :</label>
-                                <select class="form-control" id="selectRevision" name="revision" style="width: 15%"></select>
-                                <button type="button" class="btn btn-default" id="btnLoad" onclick="loadBCTable()" name="btnLoad">Load</button>
+                                <div class="marginBottom10">
+                                    <label for="selectApplication" name="applicationField">Application :</label>
+                                    <select class="form-control" id="selectApplication" name="application" style="width: 25%"></select>
+                                    <label for="selectBuild" name="buildField">Build :</label>
+                                    <select class="form-control" id="selectBuild" name="build" style="width: 10%"></select>
+                                    <label for="selectRevision" name="revisionField">Revision :</label>
+                                    <select class="form-control" id="selectRevision" name="revision" style="width: 10%"></select>
+                                    <button type="button" class="btn btn-default" id="btnLoad" onclick="loadBCTable()" name="btnLoad">Load</button>
+                                </div>
+                                <div class="marginLeft5">
+                                    <button type="button" class="btn btn-default" id="btnLoadAll" onclick="setAll()" name="btnLoadAll">Load All Build</button>
+                                    <button type="button" class="btn btn-default" id="btnLoadPending" onclick="setPending()" name="btnLoadPending">Load Pending Build</button>
+                                    <button type="button" class="btn btn-default" id="btnLoadLatest" onclick="setLatest()" name="btnLoadLatest">Load Latest Build</button>
+                                </div>
                             </div>
                         </div>
                     </div>

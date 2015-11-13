@@ -53,9 +53,11 @@ function initBuildContentPage() {
 function setPending() {
     var myBuild = "NONE";
     var myRevision = "NONE";
+    var myAplication = "ALL";
 
     $('#selectBuild').val(myBuild);
     $('#selectRevision').val(myRevision);
+    $('#selectApplication').val(myAplication);
     // We refresh the list.
     loadBCTable();
 }
@@ -63,9 +65,11 @@ function setPending() {
 function setAll() {
     var myBuild = "ALL";
     var myRevision = "ALL";
+    var myAplication = "ALL";
 
     $('#selectBuild').val(myBuild);
     $('#selectRevision').val(myRevision);
+    $('#selectApplication').val(myAplication);
     // We refresh the list.
     loadBCTable();
 }
@@ -133,12 +137,13 @@ function displayPageLabel() {
     $("[name='mavenVersionField']").html(doc.getDocOnline("buildrevisionparameters", "mavenVersion"));
 
 
-    var urlBuild = GetURLParameter('build');
-    var urlRevision = GetURLParameter('revision');
-
+    var urlBuild = GetURLParameter('build'); // Feed Build combo with Build list.
     appendBuildList("build", "1", urlBuild);
+    var urlRevision = GetURLParameter('revision'); // Feed Revision combo with Revision list.
     appendBuildList("revision", "2", urlRevision);
-    displayApplicationList("application", getUser().defaultSystem);
+    displayApplicationList("application", getUser().defaultSystem); // Feed Application combo with application list.
+    var select = $('#selectApplication');
+    select.append($('<option></option>').text("-- ALL --").val("ALL"));
     displayProjectList("project");
     displayUserList("releaseowner");
     displayFooter(doc);
@@ -175,8 +180,9 @@ function appendBuildList(selectName, level, defaultValue) {
 function loadBCTable() {
     var selectBuild = $("#selectBuild").val();
     var selectRevision = $("#selectRevision").val();
+    var selectApplication = $("#selectApplication").val();
 
-    var CallParam = 'build=' + encodeURIComponent(selectBuild) + '&revision=' + encodeURIComponent(selectRevision);
+    var CallParam = 'build=' + encodeURIComponent(selectBuild) + '&revision=' + encodeURIComponent(selectRevision)+ '&application=' + encodeURIComponent(selectApplication);
     window.history.pushState('BuildContent', '', 'BuildContent.jsp?' + CallParam);
 
     //clear the old report content before reloading it
@@ -192,6 +198,9 @@ function loadBCTable() {
         }
         if (selectBuild !== 'ALL') {
             param = param + "&build=" + selectBuild;
+        }
+        if (selectApplication !== 'ALL') {
+            param = param + "&application=" + selectApplication;
         }
 
         var configurations = new TableConfigurationsServerSide("buildrevisionparametersTable", "ReadBuildRevisionParameters" + param, "contentTable", aoColumnsFunc());
