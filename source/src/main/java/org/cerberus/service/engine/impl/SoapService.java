@@ -40,6 +40,7 @@ import javax.xml.soap.SOAPConnectionFactory;
 import javax.xml.soap.SOAPConstants;
 import javax.xml.soap.SOAPException;
 import javax.xml.soap.SOAPMessage;
+import org.apache.commons.lang3.StringEscapeUtils;
 import org.apache.log4j.Level;
 import org.cerberus.crud.entity.ExecutionSOAPResponse;
 import org.cerberus.crud.entity.MessageEvent;
@@ -69,7 +70,7 @@ public class SoapService implements ISoapService {
 
     @Override
     public SOAPMessage createSoapRequest(String envelope, String method) throws SOAPException, IOException, SAXException, ParserConfigurationException {
-        String unescapedEnvelope = HtmlUtils.htmlUnescape(envelope);
+        String unescapedEnvelope = StringEscapeUtils.unescapeXml(envelope);
 
         MimeHeaders headers = new MimeHeaders();
         headers.addHeader("SOAPAction", method);

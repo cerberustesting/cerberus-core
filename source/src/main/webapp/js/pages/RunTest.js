@@ -31,6 +31,7 @@ $.when($.getScript("js/pages/global/global.js")).then(function () {
         appendCountryList();
 
 //        loadSystemMultiSelect();
+        showLoader("#filtersPanel");
         $.when(
                 loadMultiSelect("ReadTest", "sEcho=1", "test", ["test"], "test"),
                 loadMultiSelect("ReadProject", "sEcho=1", "project", ["idProject"], "idProject"),
@@ -44,7 +45,11 @@ $.when($.getScript("js/pages/global/global.js")).then(function () {
                 loadInvariantMultiSelect("priority", "PRIORITY"),
                 loadInvariantMultiSelect("group", "GROUP"),
                 loadInvariantMultiSelect("status", "TCSTATUS")
-                ).then(loadSystemMultiSelect);
+                ).then(function () {
+            hideLoader("#filtersPanel");
+            loadSystemMultiSelect();
+            loadTestCaseFromFilter();
+        });
 
 
         $("#filters select").on("change", function () {
@@ -61,6 +66,7 @@ $.when($.getScript("js/pages/global/global.js")).then(function () {
             });
         });
         $("#addQueue").click(addToQueue);
+        $("#addAllQueue").click(addAllQueue);
         $("#resetQueue").click(function (event) {
             stopPropagation(event);
             $("#queue").empty();
@@ -84,7 +90,6 @@ $.when($.getScript("js/pages/global/global.js")).then(function () {
         $("#saveExecutionParams").click(saveExecutionPreferences);
         $("#robotConfig").change(loadRobotInfo);
 
-        loadTestCaseFromFilter();
     });
 });
 
@@ -139,6 +144,21 @@ function oldPreferenceCompatibility() {
 
 function deleteRow() {
     $(this).parent('li').remove();
+}
+
+function addAllQueue() {
+    var select = $("#testCaseList option");
+
+    select.each(function () {
+        var queue = $("#queue");
+        var removeBtn = $("<span></span>").addClass("glyphicon glyphicon-remove delete").click(deleteRow);
+        var item = $(this).data("item");
+
+        queue.append($('<li></li>').addClass("list-group-item").text(item.test + " - " + item.testCase + " - " + item.shortDescription)
+                .prepend(removeBtn).data("item", item));
+
+        $(this).remove();
+    });
 }
 
 function addToQueue() {

@@ -26,13 +26,18 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import org.cerberus.crud.entity.MessageEvent;
-import org.cerberus.enums.MessageEventEnum; 
+import org.cerberus.crud.entity.TestDataLib;
 import org.cerberus.crud.service.ILogEventService;
 import org.cerberus.crud.service.ITestDataLibService;
 import org.cerberus.crud.service.impl.LogEventService;
+import org.cerberus.enums.MessageEventEnum;
 import org.cerberus.util.answer.Answer;
+import org.cerberus.util.answer.AnswerItem;
+import org.cerberus.util.answer.AnswerUtil;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.owasp.html.PolicyFactory;
+import org.owasp.html.Sanitizers;
 import org.springframework.context.ApplicationContext;
 import org.springframework.web.context.support.WebApplicationContextUtils;
 
@@ -57,43 +62,91 @@ public class DeleteTestDataLib extends HttpServlet {
             throws ServletException, IOException {
 
         JSONObject jsonResponse = new JSONObject();
+        Answer ans = new Answer();
+        MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
+        msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", ""));
+        ans.setResultMessage(msg);
+
+        response.setContentType("application/json");
+
+        /**
+         * Parsing and securing all required parameters.
+         */
+        Integer key = 0;
+        boolean testdatalibid_error = true;
+        try {
+            if (request.getParameter("testdatalibid") != null && !request.getParameter("testdatalibid").isEmpty()) {
+                key = Integer.valueOf(request.getParameter("testdatalibid"));
+                testdatalibid_error = false;
+            }
+        } catch (NumberFormatException ex) {
+            testdatalibid_error = true;
+            org.apache.log4j.Logger.getLogger(DeleteTestDataLib.class.getName()).log(org.apache.log4j.Level.ERROR, null, ex);
+        }
+
+        /**
+         * Checking all constrains before calling the services.
+         */
+        if (testdatalibid_error) {
+            msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_EXPECTED);
+            msg.setDescription(msg.getDescription().replace("%ITEM%", "Test Data Library")
+                    .replace("%OPERATION%", "Delete")
+                    .replace("%REASON%", "Test data library (testdatalibid) is missing."));
+            ans.setResultMessage(msg);
+        } else {
+            /**
+             * All data seems cleans so we can call the services.
+             */
+            ApplicationContext appContext = WebApplicationContextUtils.getWebApplicationContext(this.getServletContext());
+            ITestDataLibService libService = appContext.getBean(ITestDataLibService.class);
+
+            AnswerItem resp = libService.readByKey(key);
+            
+            if (!(resp.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode()))) {
+                /**
+                 * Object could not be found. We stop here and report the error.
+                 */
+                msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_EXPECTED);
+                msg.setDescription(msg.getDescription().replace("%ITEM%", "Test Data Library")
+                        .replace("%OPERATION%", "Delete")
+                        .replace("%REASON%", "Test Data Library does not exist."));
+                ans.setResultMessage(msg);
+            } else {
+                /**
+                 * The service was able to perform the query and confirm the
+                 * object exist, then we can delete it.
+                 */
+
+                TestDataLib lib = (TestDataLib) resp.getItem();
+                ans = libService.delete(lib);
+                /**
+                 * Delete was perform with success. Adding Log entry.
+                 */
+                if (ans.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
+                    ILogEventService logEventService = appContext.getBean(LogEventService.class);
+                    logEventService.createPrivateCalls("/DeleteTestDataLib", "DELETE", "Delete TestDataLib : " + key, request);
+                }
+
+            }
+
+        }
 
         try {
-            //common attributes
-            int testDataLibID = Integer.parseInt(request.getParameter("testdatalibid"));
-            
-            ApplicationContext appContext = WebApplicationContextUtils.getWebApplicationContext(this.getServletContext());
+            /**
+             * Formating and returning the json result.
+             */
+            jsonResponse.put("messageType", ans.getResultMessage().getMessage().getCodeString());
+            jsonResponse.put("message", ans.getResultMessage().getDescription());
 
-            //removes the testdatalibentry
-            ITestDataLibService libService = appContext.getBean(ITestDataLibService.class);
-            Answer answer = libService.delete(testDataLibID);
-
-            jsonResponse.put("messageType", answer.getResultMessage().getMessage().getCodeString());
-            jsonResponse.put("message", answer.getResultMessage().getDescription());
-
-            //  Adding Log entry.
-            if(answer.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())){
-                ILogEventService logEventService = appContext.getBean(LogEventService.class);
-                logEventService.createPrivateCalls("/DeleteTestDataLib", "DELETE", "Delete TestDataLib : " + testDataLibID, request);
-            }
-            response.setContentType("application/json");
-            response.getWriter().print(jsonResponse);
+            response.getWriter().print(jsonResponse.toString());
             response.getWriter().flush();
 
         } catch (JSONException ex) {
             org.apache.log4j.Logger.getLogger(DeleteTestDataLib.class.getName()).log(org.apache.log4j.Level.ERROR, null, ex);
-            //returns a default error message with the json format that is able to be parsed by the client-side
             response.setContentType("application/json");
-            MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
-            StringBuilder errorMessage = new StringBuilder();
-            errorMessage.append("{'messageType':'").append(msg.getCode()).append("', ");
-            errorMessage.append(" 'message': '");
-            errorMessage.append(msg.getDescription().replace("%DESCRIPTION%", "Unable to check the status of your request! Try later or - Open a bug or ask for any new feature \n"
-                    + "<a href=\"https://github.com/vertigo17/Cerberus/issues/\" target=\"_blank\">here</a>"));
-            errorMessage.append("'}");
-            response.getWriter().print(errorMessage.toString());
+            response.getWriter().print(AnswerUtil.createGenericErrorAnswer());
+            response.getWriter().flush();
         }
-
     }
 
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">

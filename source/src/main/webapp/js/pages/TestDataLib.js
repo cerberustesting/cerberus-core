@@ -51,7 +51,10 @@ $.when($.getScript("js/pages/global/global.js")).then(function() {
         /*****************************************************************************/
         //adds a new run in the edit window
         $("#editSubData_addRow").click(function() {
-            $('#editSubDataTableBody').append('<tr class="trData" id="row' + (j + 1) + '" data-operation="insert">\n\\n\
+            //gets the id from the first row
+            var testdatalibid = $("#editSubDataTableBody tr[data-operation='update']:first").attr("testdatalibid");
+
+            $('#editSubDataTableBody').append('<tr class="trData" id="row' + (j + 1) + '" testdatalibid="' + testdatalibid + '" data-operation="insert" >\n\\n\
                 <td ><div class="nomarginbottom marginTop5"> <button onclick="editDeleteRowTestDataLibData(this)" class="delete_row pull-left btn btn-default btn-xs manageRowsFont"><span class="glyphicon glyphicon-trash"></span></button></div></td>\n\
                 <td><div class="nomarginbottom form-group form-group-sm"><input name="subdata" type="text" class="subDataClass form-control input-xs"   /></div></td>\n\
                 <td><div class="nomarginbottom form-group form-group-sm"><input name="value" type="text" class="dataClass form-control input-xs"  /></div></td>\n\\n\
@@ -136,7 +139,6 @@ $.when($.getScript("js/pages/global/global.js")).then(function() {
 
 
         //creates the main table and draws the management buttons if the user has the permissions
-        //TODO:FN refactoring in next iteration
         $.when(createDataTableWithPermissions(configurations, renderOptionsForTestDataManager)).then(function() {
             $("#listOfTestDataLib_wrapper div.ColVis .ColVis_MasterButton").addClass("btn btn-default");
         });
@@ -173,7 +175,10 @@ function displayUpdateTestDataLibLabels(doc) {
     //title 
     $("#editTestDataLibTitle").text(doc.getDocLabel("page_testdatalib_m_updatelib", "title"));
     //content
-
+    
+    $("#lbl_id_edit").html(doc.getDocOnline("testdatalib", "testdatalibid")); //id
+    $("#lbl_name_edit").html(doc.getDocOnline("testdatalib", "name")); //name
+    
     $("#lbl_type_edit").html(doc.getDocOnline("testdatalib", "type"));
     $("#lbl_system_edit").html(doc.getDocOnline("testdatalib", "system"));
     $("#lbl_environment_edit").html(doc.getDocOnline("testdatalib", "environment"));
@@ -389,14 +394,7 @@ function saveNewTestDataLibHandler() {
     //end client-side validation        
 
 
-    var isSystemAll = $("#addTestDataLibModal input[type='checkbox'][value='multiselect-all-system']").is(":checked");
-    var isEnvironmentAll = $("#addTestDataLibModal input[type='checkbox'][value='multiselect-all-environment']").is(":checked");
-    var isCountryAll = $("#addTestDataLibModal input[type='checkbox'][value='multiselect-all-country']").is(":checked");
-
-    $('#addTestDataLibModal #systemall').prop("value", isSystemAll);
-    $('#addTestDataLibModal #environmentall').prop("value", isEnvironmentAll);
-    $('#addTestDataLibModal #countryall').prop("value", isCountryAll);
-
+    
     showLoaderInModal('#addTestDataLibModal');
     var jqxhr = $.post("CreateTestDataLib", formAdd.serialize());
     $.when(jqxhr).then(function(data) {
@@ -525,7 +523,7 @@ function createLibButtonClickHandler() {
 
 
         var doc = new Doc();
-        $('#addTestDataLibModal').modal('show');
+        
 
         //when creating the testdatalibrary entry the static is the default select
         loadSelectElement(testDataTypeList, $('#addTestDataLibModal #type'));
@@ -548,13 +546,16 @@ function createLibButtonClickHandler() {
 
         $.when(jqxhrGroups).then(function(groupsData) {
             //loads the distinct groups
-            var groupList = groupsData["contentTable"];
+            var groupList = groupsData["contentTable"]
+            console.log(groupList);
             loadSelectElement(groupList, $('#addTestDataLibModal #group'), true,
                     doc.getDocLabel("page_testdatalib_m_createlib", "lbl_dropdown_help"));
 
             $('#addTestDataLibModal #group option:first-child').attr("selected", "selected");
             $('#addTestDataLibModal #group option:first').addClass("emptySelectOption");
             $('#addTestDataLibModal #group').change();
+            
+            $('#addTestDataLibModal').modal('show');
         });
 
 
@@ -617,17 +618,21 @@ function saveChangesSubDataClickHandler() {
     //selects the elements that were marked as to remove
     $("#editSubDataTableBody tr[data-operation='remove']").each(function() {
         var item = {};
-        var subData = $(this).find("td:nth-child(2) input").prop("value");
-        item ["subdata"] = subData;
-        item ["subdata_original"] = $(this).find("td:nth-child(2) input").attr("data-original-value"); //allows the modification of the key
-
+        item ["testdatalibdataid"] = $(this).prop("id");
+        item ["testdatalibid"] = $(this).attr("testdatalibid");
+        item ["subdata"] = $(this).find("td:nth-child(2) input").prop("value");
+        item ["value"] = $(this).find("td:nth-child(3) input").prop("value");
+        item ["column"] = $(this).find("td:nth-child(4) input").prop("value");
+        item ["parsinganswer"] = $(this).find("td:nth-child(5) input").prop("value");
+        item ["description"] = $(this).find("td:nth-child(6) input").prop("value");
         removeObjects.push(item);
     });
     //gets the elements that will be updated
     $("#editSubDataTableBody tr[data-operation='update']").each(function() {
         var item = {};
+        item ["testdatalibdataid"] = $(this).prop("id");
+        item ["testdatalibid"] = $(this).attr("testdatalibid");
         item ["subdata"] = $(this).find("td:nth-child(2) input").prop("value");
-        item ["subdata_original"] = $(this).find("td:nth-child(2) input").attr("data-original-value"); //allows the modification of the key
         item ["value"] = $(this).find("td:nth-child(3) input").prop("value");
         item ["column"] = $(this).find("td:nth-child(4) input").prop("value");
         item ["parsinganswer"] = $(this).find("td:nth-child(5) input").prop("value");
@@ -639,6 +644,8 @@ function saveChangesSubDataClickHandler() {
     //gets the elements that should be inserted
     $("#editSubDataTableBody tr[data-operation='insert']").each(function() {
         var item = {};
+        item ["testdatalibdataid"] = -1;
+        item ["testdatalibid"] =$(this).attr("testdatalibid");
         item ["subdata"] = $(this).find("td:nth-child(2) input").prop("value");
         item ["value"] = $(this).find("td:nth-child(3) input").prop("value");
         item ["column"] = $(this).find("td:nth-child(4) input").prop("value");
@@ -664,41 +671,10 @@ function saveChangesSubDataClickHandler() {
             }
         }
 
-        var foundRowToRemove = false;
-        var rowToRemove = null;
-        var subdataOriginalValue = "";
-        for (var i in removeObjects) {
-            if (removeObjects[i]["subdata"] === item ["subdata"]) {
-                //the user is trying to insert an entry that already exists and was marked to be removed, 
-                //an update should be performed instead
-                foundRowToRemove = true;
-                rowToRemove = removeObjects[i];
-                subdataOriginalValue = removeObjects[i]["subdata_original"];
-                break;
-            }
-        }
-
-        var istoUpdate = false;
-        if (foundRowToRemove) {
-            var index = removeObjects.indexOf(rowToRemove);
-
-            if (index > -1) {
-                removeObjects.splice(index, 1);
-                istoUpdate = true;
-            }
-        }
-
         if (foundRepeated) {
             return resultInsert = false;
-        } else {
-            if (istoUpdate) {
-                item["subdata_original"] = subdataOriginalValue;
-                updateObjects.push(item);
-            } else {
-                insertObjects.push(item);
-            }
-
         }
+        insertObjects.push(item);
     });
 
     if (!resultInsert) {
@@ -715,9 +691,8 @@ function saveChangesSubDataClickHandler() {
         dataArray["insert"] = insertObjects;
     }
 
-    var testDataLibID = $('#manageTestDataLibDataModal').find("#testDataLibID").attr("value");
     showLoaderInModal('#manageTestDataLibDataModal');
-    var jqxhr = $.post("UpdateTestDataLibData", {testdatalibid: testDataLibID, data: JSON.stringify(dataArray)}, "json");
+    var jqxhr = $.post("UpdateTestDataLibData", {data: JSON.stringify(dataArray)}, "json");
     $.when(jqxhr).then(function(data) {
         hideLoaderInModal('#manageTestDataLibDataModal');
         console.log("data" + data);
@@ -913,7 +888,7 @@ function editTestDataLib(testDataLibID) {
     clearResponseMessageMainPage();
     //load the data from the row 
     var jqxhr = $.getJSON("ReadTestDataLib", "testdatalibid=" + testDataLibID);
-    
+
     $.when(jqxhr).then(function(data) {
 
         var obj = data["testDataLib"];
@@ -925,12 +900,12 @@ function editTestDataLib(testDataLibID) {
         $('#editTestDataLibModal #servicepath').prop("value", obj.servicePath);
         $('#editTestDataLibModal #method').prop("value", obj.method);
         $('#editTestDataLibModal #envelope').prop("value", obj.envelope);
-        
-        
+
+
         var jqxhrInvariant = $.getJSON("ReadInvariant", "");
-        
+
         $.when(jqxhrInvariant).then(function(invariantData) {
-            
+
             var systemsList = [];
             var environmentList = [];
             var countryList = [];
@@ -952,8 +927,8 @@ function editTestDataLib(testDataLibID) {
                     testDataTypeList.push(obj.value);
                 }
             });
-            
-            
+
+
             //load TYPE
             loadSelectElement(testDataTypeList, $('#editTestDataLibModal #type'), false, '');
             $('#editTestDataLibModal #type option[value="' + obj.type + '"]').attr("selected", "selected");
@@ -981,12 +956,12 @@ function editTestDataLib(testDataLibID) {
             //Country
             loadSelectElement(countryList, $('#editTestDataLibModal #country'), true, '');
             $('#editTestDataLibModal #country').find('option[value="' + obj.country + '"]').prop("selected", true);
-         
+
             //database
             loadSelectElement(databaseList, $('#editTestDataLibModal #database'), true, '');
             $('#editTestDataLibModal #database').find('option[value="' + obj.database + '"]:first').prop("selected", "selected");
-            
-            
+
+
             //loads groups from database
             var jqxhrGroups = $.getJSON("ReadTestDataLib", "groups");
             $.when(jqxhrGroups).then(function(groupsData) {
@@ -1001,12 +976,12 @@ function editTestDataLib(testDataLibID) {
                 $('#editTestDataLibModal #groupedit').change();
             });
 
-            
+
             //after everything. then shows the modal
             $('#editTestDataLibModal').modal('show');
         });
 
-       
+
 
 
     }).fail(handleErrorAjaxAfterTimeout);
@@ -1065,7 +1040,7 @@ function getTestCasesUsing(testDataLibID, name, country) {
 
 }
 
-function appendNewSubDataRow(rowId, subData, value, column, parsingAnswer, description) {
+function appendNewSubDataRow(rowtestDataLibDataId, testDataLibId, subData, value, column, parsingAnswer, description) {
     var doc = new Doc();
     var isReadOnly = '';
     var onClickEvent = 'onclick="editDeleteRowTestDataLibData(this)"';
@@ -1078,12 +1053,12 @@ function appendNewSubDataRow(rowId, subData, value, column, parsingAnswer, descr
         buttonStyle = "minus";
     }
     //for each subdata entry adds a new row
-    $('#editSubDataTableBody').append('<tr id="' + rowId + '" data-operation="update"> \n\
+    $('#editSubDataTableBody').append('<tr id="' + rowtestDataLibDataId + '" testdatalibid="' + testDataLibId + '" data-operation="update"> \n\
         <td><div class="nomarginbottom marginTop5"> \n\
         <button ' + onClickEvent + ' ' + buttonTitle + '\n\
 class="delete_row pull-left btn btn-default btn-xs manageRowsFont"><span class="glyphicon glyphicon-' + buttonStyle + '"></span></button></div></td>\n\
         <td><div class="nomarginbottom form-group form-group-sm">\n\
-        <input ' + isReadOnly + ' name="subdata" type="text" class="subDataClass form-control input-xs" data-original-value="' + subData + '" value="' + subData + '"/><span></span></div></td>\n\\n\
+        <input ' + isReadOnly + ' name="subdata" type="text" class="subDataClass form-control input-xs" value="' + subData + '"/><span></span></div></td>\n\\n\
         <td><div class="nomarginbottom form-group form-group-sm"><input name="value" type="text" class="dataClass form-control input-xs" value="' + value + '" /></div></td>\n\\n\
         <td><div class="nomarginbottom form-group form-group-sm"><input name="column" type="text" class="dataClass form-control input-xs" value="' + column + '" /></div></td>\n\
         <td><div class="nomarginbottom form-group form-group-sm"><input name="parsingAnswer" type="text" class="dataClass form-control input-xs" value="' + parsingAnswer + '" /></div></td>\n\
@@ -1130,11 +1105,9 @@ function editSubData(testDataLibID) {
 
     $.when(jqxhr).then(function(result) {
         $.each(result["contentTable"], function(idx, obj) {
-            appendNewSubDataRow((obj.testDataLibID + obj.subData), obj.subData, obj.value, obj.column, obj.parsingAnswer, obj.description);
+            appendNewSubDataRow(obj.testDataLibDataID, obj.testDataLibID, obj.subData, obj.value, obj.column, obj.parsingAnswer, obj.description);
         });
-
-        //sets the values
-        $('#manageTestDataLibDataModal').find("#testDataLibID").attr("value", testDataLibID);
+        //show modal
         $('#manageTestDataLibDataModal').modal('show');
 
     }).fail(handleErrorAjaxAfterTimeout);
@@ -1142,45 +1115,6 @@ function editSubData(testDataLibID) {
 
 
 //https://datatables.net/examples/api/show_hide.html
-
-/*function loadSystems(parent, data) {
- loadSelectElement(data, parent.find("#system"), false);
- parent.find("#system").multiselect({
- maxHeight: 150,
- checkboxName: 'system',
- buttonWidth: '100%',
- includeSelectAllOption: true,
- enableFiltering: true,
- enableCaseInsensitiveFiltering: true,
- selectAllValue: 'multiselect-all-system',
- });
- }*/
-/*function loadEnvironments(parent, data) {
- loadSelectElement(data, parent.find("#environment"), false);
- parent.find("#environment").multiselect({
- maxHeight: 150,
- checkboxName: 'environment',
- buttonWidth: '100%',
- includeSelectAllOption: true,
- enableFiltering: true,
- enableCaseInsensitiveFiltering: true,
- selectAllValue: 'multiselect-all-environment',
- });
- }*/
-/*function loadCountries(parent, data) {
- loadSelectElement(data, parent.find("#country"), false);
- parent.find("#country").multiselect({
- maxHeight: 150,
- checkboxName: 'country',
- buttonWidth: '100%',
- includeSelectAllOption: true,
- enableFiltering: true,
- enableCaseInsensitiveFiltering: true,
- selectAllValue: 'multiselect-all-country',
- });
- }*/
-
-
 
 
 function loadSelectElement(data, element, includeEmpty, includeEmptyText) {

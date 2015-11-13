@@ -24,17 +24,15 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
-import org.apache.commons.codec.language.bm.Lang;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.log4j.Level;
 import org.cerberus.crud.dao.ITestDataLibDataDAO;
 import org.cerberus.crud.entity.MessageEvent;
+import org.cerberus.crud.entity.TestDataLib;
 import org.cerberus.crud.entity.TestDataLibData;
 import org.cerberus.crud.factory.IFactoryTestDataLibData;
 import org.cerberus.database.DatabaseSpring;
-import org.cerberus.dto.TestDataLibDataDTO;
 import org.cerberus.enums.MessageEventEnum;
-import org.cerberus.enums.TestDataLibTypeEnum;
 import org.cerberus.log.MyLogger;
 import org.cerberus.util.ParameterParserUtil;
 import org.cerberus.util.answer.Answer;
@@ -121,12 +119,12 @@ public class TestDataLibDataDAO implements ITestDataLibDataDAO {
     }
 
     @Override
-    public AnswerList<TestDataLibData> readById(Integer testDataLibID) {
+    public AnswerList<TestDataLibData> readByKey(Integer testDataLibID) {
         List<TestDataLibData> testDataLibListData = new ArrayList<TestDataLibData>();
         AnswerList answer = new AnswerList();
         MessageEvent msg;
         StringBuilder query = new StringBuilder();
-        query.append("SELECT * FROM testdatalibdata where `testDataLibID` = ? ;");
+        query.append("SELECT * FROM testdatalibdata where `testDataLibID` = ? ");
 
         Connection connection = this.databaseSpring.connect();
         try {
@@ -494,7 +492,8 @@ public class TestDataLibDataDAO implements ITestDataLibDataDAO {
         MessageEvent msg;
 
         StringBuilder query = new StringBuilder();
-        query.append("update testdatalibdata set `value`= ?, `column`= ? , `parsinganswer`= ? , `description`= ? where `testdatalibID`= ? and `subdata`=? ");
+        query.append("update testdatalibdata set `value`= ?, `column`= ? , `parsinganswer`= ? , `description`= ? where "
+                + "`testdatalibdataid`= ? ");
 
         Connection connection = this.databaseSpring.connect();
         try {
@@ -504,11 +503,16 @@ public class TestDataLibDataDAO implements ITestDataLibDataDAO {
                 preStat.setString(2, testDataLibData.getColumn());
                 preStat.setString(3, testDataLibData.getParsingAnswer());
                 preStat.setString(4, testDataLibData.getDescription());
-                preStat.setInt(5, testDataLibData.getTestDataLibID());
-                preStat.setString(6, testDataLibData.getSubData());
+                preStat.setInt(5, testDataLibData.getTestDataLibDataID());
 
-                preStat.executeUpdate();
-                msg = MessageEventUtil.createUpdateSuccessMessageDAO(OBJECT_NAME);
+                int totalRows = preStat.executeUpdate();
+                
+                if (totalRows == 0) {
+                    msg = MessageEventUtil.createUpdateExpectedErrorMessageDAO(OBJECT_NAME, " Sub-data can't be updated");
+                } else {
+                    msg = MessageEventUtil.createUpdateSuccessMessageDAO(OBJECT_NAME);
+                }
+
 
             } catch (SQLException exception) {
                 MyLogger.log(TestDataLibDataDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
@@ -542,18 +546,17 @@ public class TestDataLibDataDAO implements ITestDataLibDataDAO {
         MessageEvent msg = null;
         StringBuilder query = new StringBuilder();
 
-        query.append("delete from testdatalibdata where `testdatalibID`=? and `subdata` LIKE ? ");
+        query.append("delete from testdatalibdata where `testdatalibdataid`=? ");
         //TODO:FN this delete should be analysed in order to avaoid delete sub-data entries that are being used by test cases
 
         Connection connection = this.databaseSpring.connect();
         try {
             PreparedStatement preStat = connection.prepareStatement(query.toString());
             try {
-                preStat.setInt(1, testDataLibData.getTestDataLibID());
-                preStat.setString(2, ParameterParserUtil.returnEmptyStringIfNull(testDataLibData.getSubData()));
-                preStat.setInt(3, testDataLibData.getTestDataLibID());
-
+                preStat.setInt(1, testDataLibData.getTestDataLibDataID());
+                
                 int totalRows = preStat.executeUpdate();
+                
                 if (totalRows == 0) {
                     msg = MessageEventUtil.createDeleteExpectedErrorMessageDAO(OBJECT_NAME, " Sub-data can't be deleted.");
                 } else {
@@ -588,7 +591,7 @@ public class TestDataLibDataDAO implements ITestDataLibDataDAO {
     }
 
     @Override
-    public Answer delete(int testDataLibID) {
+    public Answer delete(TestDataLib testDataLib) {
         MessageEvent msg = null;
         String query = "delete from testdatalibdata where `testdatalibID`= ? ";
 
@@ -596,7 +599,7 @@ public class TestDataLibDataDAO implements ITestDataLibDataDAO {
         try {
             PreparedStatement preStat = connection.prepareStatement(query);
             try {
-                preStat.setInt(1, testDataLibID);
+                preStat.setInt(1, testDataLib.getTestDataLibID());
                 preStat.executeUpdate(); //as the testdatalib may not contain subdata entries, it is possible that this statement returs 0
                 msg = MessageEventUtil.createDeleteSuccessMessageDAO(OBJECT_NAME);
 
@@ -626,7 +629,7 @@ public class TestDataLibDataDAO implements ITestDataLibDataDAO {
     }
 
     @Override
-    public Answer createBatch(List<TestDataLibData> subdataSet) {
+    public Answer create(List<TestDataLibData> subdataSet) {
         Answer answer = new Answer();
         StringBuilder query = new StringBuilder();
         query.append("INSERT INTO testdatalibdata (`TestDataLibID`, `subData`, `value`, `column`, `parsinganswer`, `description`) ");
@@ -693,11 +696,11 @@ public class TestDataLibDataDAO implements ITestDataLibDataDAO {
     }
 
     @Override
-    public Answer updateBatch(ArrayList<TestDataLibData> entriesToUpdate) {
+    public Answer update(ArrayList<TestDataLibData> entriesToUpdate) {
         Answer answer = new Answer();
         StringBuilder query = new StringBuilder();
         query.append("update testdatalibdata set `subdata` = ?, `value`= ?, `column`= ? , `parsinganswer`= ? , "
-                + "`description`= ? where `testdatalibID`= ? and `subdata` LIKE ?  ");
+                + "`description`= ? where `testdatalibdataid`= ? ");
         //TODO:FN for now it is not being verified if the testdatalib is used by tests
         MessageEvent msg = null;
 
@@ -711,7 +714,7 @@ public class TestDataLibDataDAO implements ITestDataLibDataDAO {
                     preStat.setString(3, ParameterParserUtil.returnEmptyStringIfNull(subdata.getColumn()));
                     preStat.setString(4, ParameterParserUtil.returnEmptyStringIfNull(subdata.getParsingAnswer()));
                     preStat.setString(5, ParameterParserUtil.returnEmptyStringIfNull(subdata.getDescription()));
-                    preStat.setInt(6, subdata.getTestDataLibID());
+                    preStat.setInt(6, subdata.getTestDataLibDataID());
                     
                     preStat.addBatch();
                 }
@@ -751,23 +754,21 @@ public class TestDataLibDataDAO implements ITestDataLibDataDAO {
         answer.setResultMessage(msg);
         return answer;
     }
-
+ 
     @Override
-    public Answer deleteBatch(int testDataLibIdForData, ArrayList<String> entriesToRemove) {
+    public Answer delete(List<TestDataLibData> subdataSet) {
         Answer answer = new Answer();
         MessageEvent msg;
         StringBuilder query = new StringBuilder();
 
-        query.append("delete from testdatalibdata where testdataLibID = ? and ");
-        query.append("`subdata` LIKE ? "); //TODO:FN for now it is not being verified if the testdatalib is used by tests
+        query.append("delete from testdatalibdata where testDataLibDataID = ? "); //TODO:FN for now it is not being verified if the testdatalib is used by tests
 
         Connection connection = this.databaseSpring.connect();
         try {
             PreparedStatement preStat = connection.prepareStatement(query.toString());
             try {
-                for (String subdata : entriesToRemove) {
-                    preStat.setInt(1, testDataLibIdForData);
-                    preStat.setString(2, ParameterParserUtil.returnEmptyStringIfNull(subdata));
+                for (TestDataLibData subdata : subdataSet) {
+                    preStat.setInt(1, subdata.getTestDataLibDataID());
                     preStat.addBatch();
                 }
                 //executes the query                
@@ -806,9 +807,67 @@ public class TestDataLibDataDAO implements ITestDataLibDataDAO {
         }
 
         answer.setResultMessage(msg);
+        return answer;    }
+
+    @Override
+    public AnswerItem readByKeyTech(Integer testDataLibDataID) {
+        AnswerItem answer = new AnswerItem();
+        MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
+
+        TestDataLibData result = null;
+        final String query = "SELECT * FROM testdatalibdata where `testdatalibdataid`=? ";
+
+        Connection connection = this.databaseSpring.connect();
+        try {
+            PreparedStatement preStat = connection.prepareStatement(query);
+            preStat.setInt(1, testDataLibDataID);
+            try {
+                ResultSet resultSet = preStat.executeQuery();
+                try {
+                    if (resultSet.first()) {
+                        result = this.loadFromResultSet(resultSet);
+                    } else {
+                        //specific message for gefromdatalib
+                        msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_NO_DATA_FOUND);
+                    }
+                } catch (SQLException exception) {
+                    MyLogger.log(TestDataLibDataDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
+                    msg = MessageEventUtil.createSelectUnexpectedErrorMessageDAO();
+
+                } finally {
+                    if (resultSet != null) {
+                        resultSet.close();
+                    }
+                }
+            } catch (SQLException exception) {
+                MyLogger.log(TestDataLibDataDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
+                msg = MessageEventUtil.createSelectUnexpectedErrorMessageDAO();
+
+            } finally {
+                if (preStat != null) {
+                    preStat.close();
+                }
+            }
+        } catch (SQLException exception) {
+            MyLogger.log(TestDataLibDataDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
+            msg = MessageEventUtil.createSelectUnexpectedErrorMessageDAO();
+
+        } finally {
+            try {
+                if (!this.databaseSpring.isOnTransaction()) {
+                    if (connection != null) {
+                        connection.close();
+                    }
+                }
+            } catch (SQLException ex) {
+                MyLogger.log(TestDataLibDataDAO.class.getName(), Level.ERROR, "Unable to execute query : " + ex.toString());
+            }
+        }
+        answer.setResultMessage(msg);
+        answer.setItem(result);
         return answer;
     }
-
+    
     public TestDataLibData loadFromResultSet(ResultSet resultSet) throws SQLException {
         Integer testDataLibDataID = resultSet.getInt("TestDataLibDataID");
         Integer testDataLibID = resultSet.getInt("TestDataLibID");

@@ -55,13 +55,12 @@ public class TestBatteryDAO implements ITestBatteryDAO {
     private DatabaseSpring databaseSpring;
     @Autowired
     private IFactoryTestBattery factoryTestBattery;
-    
+
     private static final Logger LOG = Logger.getLogger(TestBatteryDAO.class);
 
     private final String OBJECT_NAME = "TestBattery";
     private final String SQL_DUPLICATED_CODE = "23000";
     private final int MAX_ROW_SELECTED = 100000;
-
 
     @Override
     public List<TestBattery> findAll() throws CerberusException {
@@ -504,7 +503,7 @@ public class TestBatteryDAO implements ITestBatteryDAO {
                 if (!StringUtil.isNullOrEmpty(individualSearch)) {
                     preStat.setString(i++, individualSearch);
                 }
-                
+
                 ResultSet resultSet = preStat.executeQuery();
                 try {
                     //gets the data
@@ -524,6 +523,9 @@ public class TestBatteryDAO implements ITestBatteryDAO {
                         LOG.error("Partial Result in the query.");
                         msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_WARNING_PARTIAL_RESULT);
                         msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", "Maximum row reached : " + MAX_ROW_SELECTED));
+                        response = new AnswerList(testBatteryList, nrTotalRows);
+                    } else if (testBatteryList.size() <= 0) {
+                        msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_NO_DATA_FOUND);
                         response = new AnswerList(testBatteryList, nrTotalRows);
                     } else {
                         msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);

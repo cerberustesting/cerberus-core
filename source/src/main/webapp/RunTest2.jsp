@@ -92,13 +92,18 @@
                         Choose Test
                     </div>
                     <div class="panel-body" id="chooseTest">
-                        <!--                        <ul class="col-lg-3 list-group navlist" id="testList" style="max-height: 300px; overflow-y: scroll;"></ul>
-                                                <ul clss="col-lg-7 list-group navlist" id="testCaseList" style="margin-left: 10px; max-height: 300px; overflow-y: scroll;"></ul>-->
                         <div class="row">
                             <div class="form-group col-lg-9">
                                 <select multiple id="testCaseList" class="form-control" style="height: 300px;"></select>
                             </div>
-                            <button type="button" class="btn btn-default" id="addQueue">Add to queue</button>
+                            <div class="col-lg-3">
+                                <div class="row" style="margin-top: 100px;">
+                                    <button type="button" class="btn btn-default" id="addQueue"> > </button>
+                                </div>
+                                <div class="row" style="margin-top: 5px;">
+                                    <button type="button" class="btn btn-default" id="addAllQueue"> >> </button>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>

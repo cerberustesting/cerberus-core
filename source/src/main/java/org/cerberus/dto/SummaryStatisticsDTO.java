@@ -19,8 +19,6 @@
  */
 package org.cerberus.dto;
 
-import java.text.DecimalFormat;
-
  /**
      * Class that creates a row with statistics (total values and percentage values)
      */
@@ -64,50 +62,38 @@ public class SummaryStatisticsDTO {
         }
 
         public void updateStatisticByStatus(String status) {
-            DecimalFormat twoDForm = new DecimalFormat("#.##");
-            
             this.total++;
             if (status.equalsIgnoreCase("OK")) {
                 this.ok++;
-                this.percOk = Float.valueOf(twoDForm.format((float)(this.ok * 100)/this.total));
             } else if (status.equalsIgnoreCase("KO")) {
                 this.ko++;
-                this.percKo = Float.valueOf(twoDForm.format((float)(this.ko * 100)/this.total));
                 this.notOkTotal++;
             } else if (status.equalsIgnoreCase("NA")) {
                 this.na++;
-                this.percNa = Float.valueOf(twoDForm.format((float)(this.na * 100)/this.total));
                 this.notOkTotal++;                
             } else if (status.equalsIgnoreCase("NE")) {
                 this.ne++;
-                this.percNe = Float.valueOf(twoDForm.format((float)(this.ne * 100)/this.total));
                 this.notOkTotal++;                
             } else if (status.equalsIgnoreCase("PE")) {
                 this.pe++;
-                this.percPe = Float.valueOf(twoDForm.format((float)(this.pe * 100)/this.total));
                 this.notOkTotal++;                
             } else if (status.equalsIgnoreCase("FA")) {
                 this.fa++;
-                this.percFa = Float.valueOf(twoDForm.format((float)(this.fa * 100)/this.total));
                 this.notOkTotal++;                
             } else if (status.equalsIgnoreCase("CA")) {
                 this.ca++;
-                this.percCa = Float.valueOf(twoDForm.format((float)(this.ca * 100)/this.total));
                 this.notOkTotal++;
-            }
-            this.percNotOkTotal  = Math.round((float)(this.notOkTotal *100)/this.total);
-            
+            }            
         }
         public void updatePercentageStatistics() {
-            DecimalFormat twoDForm = new DecimalFormat("#.##");
-            this.percOk = Float.valueOf(twoDForm.format((float)(this.ok * 100)/this.total));         
-            this.percKo = Float.valueOf(twoDForm.format((float)(this.ko * 100)/this.total));         
-            this.percFa = Float.valueOf(twoDForm.format((float)(this.fa * 100)/this.total));         
-            this.percNa = Float.valueOf(twoDForm.format((float)(this.na * 100)/this.total));         
-            this.percNe = Float.valueOf(twoDForm.format((float)(this.ne * 100)/this.total));         
-            this.percPe = Float.valueOf(twoDForm.format((float)(this.pe * 100)/this.total));         
-            this.percCa = Float.valueOf(twoDForm.format((float)(this.ca * 100)/this.total));         
-            this.percNotOkTotal  = Math.round(((float)(this.notOkTotal*100)/this.total));
+            this.percOk = (float)Math.round(((float)(this.ok * 100)/this.total) * 10) / 10;         
+            this.percKo = (float)Math.round(((float)(this.ko * 100)/this.total) * 10) / 10;         
+            this.percFa = (float)Math.round(((float)(this.fa * 100)/this.total) * 10) / 10;         
+            this.percNa = (float)Math.round(((float)(this.na * 100)/this.total) * 10) / 10;         
+            this.percNe = (float)Math.round(((float)(this.ne * 100)/this.total) * 10) / 10;         
+            this.percPe = (float)Math.round(((float)(this.pe * 100)/this.total) * 10) / 10;         
+            this.percCa = (float)Math.round(((float)(this.ca * 100)/this.total) * 10) / 10;         
+            this.percNotOkTotal  = (float)Math.round(((float)(this.notOkTotal*100)/this.total) * 10) / 10;
         }
         
         

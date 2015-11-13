@@ -59,30 +59,17 @@
                                 <div class="row" style="margin-top:10px">
                                     <div class="form-group col-xs-4">
                                         <label id="lbl_system" for="system">System</label>
-                                        <!--<input type="hidden" id="systemall" name="systemall"  value="false" />
-                                        <select class="multiselectelement form-control" multiple="multiple" id="system" >
-                                        </select>-->
                                         <select id="system" name="system" class="form-control">
                                         </select>
 
                                     </div>        
                                     <div class="form-group col-xs-4">
                                         <label id="lbl_environment" for="environment">Environment</label>
-                                        <!--<input type="hidden" id="environmentall" name="environmentall"  value="false" />
-                                        <div>
-                                            <select class="multiselectelement form-control" multiple="multiple" id="environment">
-                                            </select>  
-                                        </div>-->
                                         <select id="environment" name="environment" class="form-control">
                                         </select>
                                     </div>    
                                     <div class="form-group col-xs-4">
                                         <label id="lbl_country" for="country">Country</label>
-                                        <!--<input type="hidden" id="countryall" name="countryall" value="false" />
-                                        <div>
-                                            <select class="multiselectelement form-control" multiple="multiple" id="country">
-                                            </select>  
-                                        </div>    -->
                                         <select id="country" name="country" class="form-control">
                                         </select>
                                     </div>    
@@ -96,33 +83,6 @@
                                                   class="form-control"></textarea> 
                                     </div>
                                 </div>           
-                                <!--SQL-->
-                                <div class="row" >
-                                    <div class="col-xs-12" id="sqlConfigurationsPanel">
-                                        <div class="panel panel-default">
-                                            <div class="panel-heading card" data-toggle="collapse" data-target="#panelSQL">
-                                                <label id="sqlConfigurationsLbl">SQL Configurations </label>
-                                                <span class="toggle glyphicon glyphicon-chevron-right pull-right"></span>
-                                            </div>
-                                            <div id="panelSQL" class="panel-body collapse">
-                                                <div class="row form-group  col-xs-6"> 
-                                                    <label id="lbl_database" for="database">Database</label> 
-                                                    <select class="form-control" id="database" name="database">
-                                                    </select> 
-                                                </div>    
-                                                <div class="row">
-                                                    <div class="form-group col-xs-12"> 
-                                                        <label id="lbl_script" for="script">Script</label> 
-                                                        <textarea id="Script" name="script" 
-                                                                  class="form-control"></textarea>     
-                                                    </div>                       
-                                                </div>
-
-                                            </div> 
-                                        </div>
-                                    </div>
-                                </div>
-
                                 <!--SOAP-->
                                 <div class="row" >
                                     <div class="col-xs-12" id="soapConfigurationsPanel">
@@ -147,6 +107,32 @@
                                                     <textarea id="envelope" name="envelope" 
                                                               class="form-control"></textarea>     
                                                 </div> 
+                                            </div> 
+                                        </div>
+                                    </div>
+                                </div>
+                                <!--SQL-->
+                                <div class="row" >
+                                    <div class="col-xs-12" id="sqlConfigurationsPanel">
+                                        <div class="panel panel-default">
+                                            <div class="panel-heading card" data-toggle="collapse" data-target="#panelSQL">
+                                                <label id="sqlConfigurationsLbl">SQL Configurations </label>
+                                                <span class="toggle glyphicon glyphicon-chevron-right pull-right"></span>
+                                            </div>
+                                            <div id="panelSQL" class="panel-body collapse">
+                                                <div class="row form-group  col-xs-6"> 
+                                                    <label id="lbl_database" for="database">Database</label> 
+                                                    <select class="form-control" id="database" name="database">
+                                                    </select> 
+                                                </div>    
+                                                <div class="row">
+                                                    <div class="form-group col-xs-12"> 
+                                                        <label id="lbl_script" for="script">Script</label> 
+                                                        <textarea id="Script" name="script" 
+                                                                  class="form-control"></textarea>     
+                                                    </div>                       
+                                                </div>
+
                                             </div> 
                                         </div>
                                     </div>

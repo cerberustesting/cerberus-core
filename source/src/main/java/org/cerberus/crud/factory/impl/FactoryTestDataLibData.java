@@ -34,6 +34,7 @@ public class FactoryTestDataLibData implements IFactoryTestDataLibData {
     public TestDataLibData create(Integer testDataLibDataID, Integer testDataLibID, String subData, String value, String column,
             String parsingAnswer, String description) {
         TestDataLibData newData = new TestDataLibData();
+        newData.setTestDataLibDataID(testDataLibDataID);
         newData.setTestDataLibID(testDataLibID);
         newData.setSubData(subData);
         newData.setValue(value);
