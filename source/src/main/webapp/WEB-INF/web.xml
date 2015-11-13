@@ -1654,14 +1654,11 @@
             <url-pattern>/ReportingExecution.jsp</url-pattern>
             <url-pattern>/ReportingExecutionTime.jsp</url-pattern>
             <url-pattern>/ReportingExecutionByTag.jsp</url-pattern>
-            <url-pattern>/ReportingExecutionByTag2.jsp</url-pattern>
             <url-pattern>/ExecutionPending.jsp</url-pattern>
             <url-pattern>/Test.jsp</url-pattern>
             <url-pattern>/Test2.jsp</url-pattern>
             <url-pattern>/TestCase.jsp</url-pattern>
             <url-pattern>/TestCaseList.jsp</url-pattern>
-            <url-pattern>/TestCaseOld.jsp</url-pattern>
-            <url-pattern>/TestCase_bkp.jsp</url-pattern>
             <url-pattern>/TestCaseSearch.jsp</url-pattern>
             <url-pattern>/TestCaseSearchNew.jsp</url-pattern>
             <url-pattern>/TestBattery.jsp</url-pattern>
@@ -1670,7 +1667,6 @@
             <url-pattern>/TestCampaign.jsp</url-pattern>
             <url-pattern>/ViewProperty.jsp</url-pattern>
             <url-pattern>/TestPerApplication.jsp</url-pattern>
-            <url-pattern>/CampaignReportByTag.jsp</url-pattern>
             <url-pattern>/ReadTestCaseStep</url-pattern>
             <url-pattern>/TestCase_new_prototype.jsp</url-pattern>
         </web-resource-collection>
@@ -1712,7 +1708,6 @@
             <description>jsp</description>
             <url-pattern>/SqlLib.jsp</url-pattern>
             <url-pattern>/TestCaseCreate.jsp</url-pattern>
-            <url-pattern>/ImportHTML.jsp</url-pattern>
             <url-pattern>/TestCaseImport.jsp</url-pattern>
             <url-pattern>/ImportTestCase.jsp</url-pattern>
             <url-pattern>/TestData.jsp</url-pattern>
@@ -1849,7 +1844,6 @@
             <url-pattern>/BuildRevDefinition.jsp</url-pattern>
             <url-pattern>/Environment.jsp</url-pattern>
             <url-pattern>/EnvironmentList.jsp</url-pattern>
-            <url-pattern>/EnvironmentListV2.jsp</url-pattern>
             <url-pattern>/IntegrationStatus.jsp</url-pattern>
             <url-pattern>/Notification.jsp</url-pattern>
             <url-pattern>/Project.jsp</url-pattern>
