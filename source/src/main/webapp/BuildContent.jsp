@@ -31,13 +31,14 @@
         <div class="container-fluid center" id="page-layout">
             <%@ include file="include/messagesArea.html"%>
             <%@ include file="include/utils/modal-confirmation.html"%>
-            <%@ include file="include/buildcontent/addBuildContent.html"%> 
-            <%@ include file="include/buildcontent/editBuildContent.html"%> 
+            <%@ include file="include/buildcontent/addBuildContent.html"%>
+            <%@ include file="include/buildcontent/editBuildContent.html"%>
+            <%@ include file="include/buildcontent/listInstallInstructions.html"%>
 
             <h1 class="page-title-line" id="title">Build Content</h1>
 
             <div class="row">
-                <div class="col-lg-9" id="FiltersPanel">
+                <div class="col-lg-12" id="FiltersPanel">
                     <div class="panel panel-default">
                         <div class="panel-heading card">
                             <span class="fa fa-tag fa-fw"></span>
@@ -53,24 +54,13 @@
                                     <label for="selectRevision" name="revisionField">Revision :</label>
                                     <select class="form-control" id="selectRevision" name="revision" style="width: 10%"></select>
                                     <button type="button" class="btn btn-default" id="btnLoad" onclick="loadBCTable()" name="btnLoad">Load</button>
+                                    <button type="button" class="btn btn-default" id="btnViewInstall" onclick="displayInstallInstructions()" name="btnViewInstall">Preview Install instructions</button>
                                 </div>
                                 <div class="marginLeft5">
                                     <button type="button" class="btn btn-default" id="btnLoadAll" onclick="setAll()" name="btnLoadAll">Load All Build</button>
                                     <button type="button" class="btn btn-default" id="btnLoadPending" onclick="setPending()" name="btnLoadPending">Load Pending Build</button>
                                     <button type="button" class="btn btn-default" id="btnLoadLatest" onclick="setLatest()" name="btnLoadLatest">Load Latest Build</button>
                                 </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-lg-3" id="FiltersPanel" hidden>
-                    <div class="panel panel-default">
-                        <div class="panel-heading card">
-                            <label id="shortcuts" name="shortcutsField">Standard Filters</label>
-                        </div>
-                        <div class="panel-body">
-                            <div class="form-inline">
-                                <button type="button" class="btn btn-default" id="btnViewInstall" onclick="" name="btnViewInstall">Preview Install instructions</button>
                             </div>
                         </div>
                     </div>

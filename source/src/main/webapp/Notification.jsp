@@ -163,6 +163,11 @@
             </tr>
         </table>
         <br>
+        <% // We disply the install instructions only if the event is to deploy a new build / revision.
+                        if (!StringUtil.isNullOrEmpty(event)) {
+
+                            if (event.equals("newbuildrevision")) {
+        %>
         <table border>
             <tr>
                 <td colspan="3" style="background-color: lightyellow; text-align: center">Application to deploy.</td>
@@ -234,6 +239,10 @@
                             
             %>
         </table>
+        <%
+                            }
+                        }
+        %>
         <br>
 
         <form method="get" name="doEvent" action="<%=formAction%>">

@@ -48,7 +48,18 @@ function initBuildContentPage() {
     var table = loadBCTable();
     table.fnSort([11, 'desc']);
 
+    $('#listInstallInstructions').on('hidden.bs.modal', listInstallInstructionsModalCloseHandler);
+
+
 }
+
+/**
+ * Handler that cleans the modal for editing subdata when it is closed.
+ */
+function listInstallInstructionsModalCloseHandler() {
+    $('#installInstructionsTableBody tr').remove();
+}
+
 
 function setPending() {
     var myBuild = "NONE";
@@ -182,7 +193,7 @@ function loadBCTable() {
     var selectRevision = $("#selectRevision").val();
     var selectApplication = $("#selectApplication").val();
 
-    var CallParam = 'build=' + encodeURIComponent(selectBuild) + '&revision=' + encodeURIComponent(selectRevision)+ '&application=' + encodeURIComponent(selectApplication);
+    var CallParam = 'build=' + encodeURIComponent(selectBuild) + '&revision=' + encodeURIComponent(selectRevision) + '&application=' + encodeURIComponent(selectApplication);
     window.history.pushState('BuildContent', '', 'BuildContent.jsp?' + CallParam);
 
     //clear the old report content before reloading it
@@ -382,6 +393,62 @@ function renderOptionsForBrp(data) {
         }
     }
 }
+
+function displayInstallInstructions() {
+    clearResponseMessageMainPage();
+
+    var selectBuild = $("#selectBuild").val();
+    var selectRevision = $("#selectRevision").val();
+
+    if ((selectBuild === 'ALL') || (selectRevision === 'ALL') || (selectBuild === 'NONE') || (selectRevision === 'NONE')) {
+        var localMessage = new Message("danger", "Please specify a build and a revision to get the installation instructions!");
+        console.warn(localMessage.message);
+        showMessage(localMessage, null);
+
+    } else {
+
+        $("#listInstallInstructionsModalLabel1").html("Build : " + selectBuild + " / Revision : " + selectRevision);
+        var formEdit = $('#listInstallInstructions');
+
+        var jqxhr = $.getJSON("ReadBuildRevisionParameters", "system=" + getUser().defaultSystem + "&build=" + selectBuild + "&revision=" + selectRevision + "&getSVNRelease");
+        $.when(jqxhr).then(function (result) {
+            $.each(result["contentTable"], function (idx, obj) {
+                appendNewInstallRow(obj.application, obj.release, "", obj.mavenVersion);
+            });
+        }).fail(handleErrorAjaxAfterTimeout);
+
+        var jqxhr = $.getJSON("ReadBuildRevisionParameters", "system=" + getUser().defaultSystem + "&build=" + selectBuild + "&revision=" + selectRevision + "&getNonSVNRelease");
+        $.when(jqxhr).then(function (result) {
+            $.each(result["contentTable"], function (idx, obj) {
+                appendNewInstallRow(obj.application, obj.release, obj.link, "");
+            });
+        }).fail(handleErrorAjaxAfterTimeout);
+
+        formEdit.modal('show');
+    }
+}
+
+function appendNewInstallRow(application, release, link, version) {
+    var doc = new Doc();
+    if ((version === null) || (version === "undefined") || (version === ""))
+        version = "";
+    var link_html = "";
+    if (link === "") {
+        link_html = "";
+    } else {
+        link_html = '<a target="_blank" href="' + link + '">link</a>';
+    }
+    //for each install instructions adds a new row
+    $('#installInstructionsTableBody').append('<tr> \n\
+        <td><div class="nomarginbottom form-group form-group-sm">\n\
+        <input readonly name="application" type="text" class="releaseClass form-control input-xs" value="' + application + '"/><span></span></div></td>\n\\n\
+        <td><div class="nomarginbottom form-group form-group-sm">\n\
+        <input readonly name="release" type="text" class="releaseClass form-control input-xs" value="' + release + '"/><span></span></div></td>\n\\n\
+        <td style="text-align:center"><div class="nomarginbottom form-group form-group-sm">' + link_html + '</div></td>\n\\n\
+        <td><div class="nomarginbottom form-group form-group-sm">\n\n\
+        <input readonly name="version" type="text" class="releaseClass form-control input-xs" value="' + version + '" /></div></td></tr>');
+}
+
 
 function aoColumnsFunc() {
     var doc = new Doc();
