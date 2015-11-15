@@ -28,61 +28,94 @@ import org.cerberus.util.answer.AnswerList;
 public interface ICountryEnvParamDAO {
 
     CountryEnvParam findCountryEnvParamByKey(String system, String country, String environment) throws CerberusException;
-    
+
     List<CountryEnvParam> findCountryEnvParamByCriteria(CountryEnvParam countryEnvParam) throws CerberusException;
-    
+
     /**
      * Find all countryEnvParam by System
+     *
      * @param system
      * @return
-     * @throws CerberusException 
+     * @throws CerberusException
      */
     List<CountryEnvParam> findAll(String system) throws CerberusException;
-    
+
     /**
      * Update countryEnvParam
+     *
      * @param cep
-     * @throws CerberusException 
+     * @throws CerberusException
      */
     void update(CountryEnvParam cep) throws CerberusException;
-    
+
     /**
      * Delete countryEnvParam
+     *
      * @param cep
-     * @throws CerberusException 
+     * @throws CerberusException
      */
     void delete(CountryEnvParam cep) throws CerberusException;
-    
+
     /**
      * Create countryEnvParam
+     *
      * @param cep
-     * @throws CerberusException 
+     * @throws CerberusException
      */
     void create(CountryEnvParam cep) throws CerberusException;
 
     /**
-     * 
+     *
      * @param start
      * @param amount
      * @param column
      * @param dir
      * @param searchTerm
      * @param individualSearch
-     * @return 
+     * @return
      */
     public List<CountryEnvParam> findListByCriteria(String system, int start, int amount, String column, String dir, String searchTerm, String individualSearch);
 
     /**
-     * 
+     *
      * @param searchTerm
      * @param inds
-     * @return 
+     * @return
      */
     public Integer count(String searchTerm, String inds);
 
     public List<CountryEnvParam> findListByCriteria(String system);
-    
+
+    /**
+     *
+     * @param system
+     * @return
+     */
     public AnswerList readActiveBySystem(String system);
 
+    /**
+     *
+     * @param startPosition
+     * @param length
+     * @param columnName
+     * @param sort
+     * @param searchParameter
+     * @param string
+     * @return
+     */
     public AnswerList readByCriteria(int startPosition, int length, String columnName, String sort, String searchParameter, String string);
+
+    /**
+     *
+     * @param system
+     * @param active
+     * @param startPosition
+     * @param length
+     * @param columnName
+     * @param sort
+     * @param searchParameter
+     * @param string
+     * @return
+     */
+    public AnswerList readByVariousByCriteria(String system, String active, int startPosition, int length, String columnName, String sort, String searchParameter, String string);
 }

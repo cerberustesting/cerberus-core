@@ -19,11 +19,11 @@
  */
 package org.cerberus.servlet.crud.countryenvironment;
 
-import com.google.common.base.Strings;
 import com.google.gson.Gson;
 import java.io.IOException;
-import java.util.HashMap;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -33,12 +33,15 @@ import org.cerberus.crud.entity.CountryEnvParam;
 import org.cerberus.crud.entity.MessageEvent;
 import org.cerberus.crud.service.ICountryEnvParamService;
 import org.cerberus.enums.MessageEventEnum;
+import org.cerberus.exception.CerberusException;
 import org.cerberus.util.ParameterParserUtil;
 import org.cerberus.util.answer.AnswerItem;
 import org.cerberus.util.answer.AnswerList;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.owasp.html.PolicyFactory;
+import org.owasp.html.Sanitizers;
 import org.springframework.context.ApplicationContext;
 import org.springframework.web.context.support.WebApplicationContextUtils;
 
@@ -49,6 +52,9 @@ import org.springframework.web.context.support.WebApplicationContextUtils;
 @WebServlet(name = "ReadCountryEnvParam", urlPatterns = {"/ReadCountryEnvParam"})
 public class ReadCountryEnvParam extends HttpServlet {
 
+    private ICountryEnvParamService cepService;
+    private final String OBJECT_NAME = "ReadCountryEnvParam";
+
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
      * methods.
@@ -57,71 +63,56 @@ public class ReadCountryEnvParam extends HttpServlet {
      * @param response servlet response
      * @throws ServletException if a servlet-specific error occurs
      * @throws IOException if an I/O error occurs
+     * @throws org.cerberus.exception.CerberusException
      */
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException {
+            throws ServletException, IOException, CerberusException {
+        String echo = request.getParameter("sEcho");
         ApplicationContext appContext = WebApplicationContextUtils.getWebApplicationContext(this.getServletContext());
+        PolicyFactory policy = Sanitizers.FORMATTING.and(Sanitizers.LINKS);
+
+        response.setContentType("application/json");
+
+        // Default message to unexpected error.
+        MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
+        msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", ""));
+
+        /**
+         * Parsing and securing all required parameters.
+         */
+        String system = policy.sanitize(request.getParameter("system"));
+        String active = policy.sanitize(request.getParameter("active"));
+
+        // Init Answer with potencial error from Parsing parameter.
+        AnswerItem answer = new AnswerItem(msg);
 
         try {
             JSONObject jsonResponse = new JSONObject();
-            AnswerItem answer = new AnswerItem(new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED));
-
-            String system = ParameterParserUtil.parseStringParam(request.getParameter("system"), "");
-
-            if (!Strings.isNullOrEmpty(system)) {
-                answer = findActiveEnvironmentList(appContext, system);
-                jsonResponse = (JSONObject) answer.getItem();
-            } else {
-                answer = findCountryEnvParamList(appContext, request);
+            if (false) {
+//                answer = findEnvironmentList(appContext, system);
+//                jsonResponse = (JSONObject) answer.getItem();
+            } else { // Default behaviour, we return the list of objects.
+                answer = findCountryEnvParamList(request.getParameter("system"), request.getParameter("active"), appContext, request);
                 jsonResponse = (JSONObject) answer.getItem();
             }
-
             jsonResponse.put("messageType", answer.getResultMessage().getMessage().getCodeString());
             jsonResponse.put("message", answer.getResultMessage().getDescription());
-            response.setContentType("application/json");
+            jsonResponse.put("sEcho", echo);
+
             response.getWriter().print(jsonResponse.toString());
-        } catch (JSONException ex) {
-            org.apache.log4j.Logger.getLogger(ReadCountryEnvParam.class.getName()).log(org.apache.log4j.Level.ERROR, null, ex);
+
+        } catch (JSONException e) {
+            org.apache.log4j.Logger.getLogger(ReadCountryEnvParam.class.getName()).log(org.apache.log4j.Level.ERROR, null, e);
             //returns a default error message with the json format that is able to be parsed by the client-side
             response.setContentType("application/json");
-            MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
+            msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
             StringBuilder errorMessage = new StringBuilder();
-            errorMessage.append("{'messageType':'").append(msg.getCode()).append("', ");
-            errorMessage.append(" 'message': '");
-            errorMessage.append(msg.getDescription().replace("%DESCRIPTION%", "Unable to check the status of your request! Try later or - Open a bug or ask for any new feature \n"
-                    + "<a href=\"https://github.com/vertigo17/Cerberus/issues/\" target=\"_blank\">here</a>"));
-            errorMessage.append("'}");
+            errorMessage.append("{\"messageType\":\"").append(msg.getCode()).append("\",");
+            errorMessage.append("\"message\":\"");
+            errorMessage.append(msg.getDescription().replace("%DESCRIPTION%", "Unable to check the status of your request! Try later or open a bug."));
+            errorMessage.append("\"}");
             response.getWriter().print(errorMessage.toString());
-
         }
-    }
-
-    private JSONObject convertCountryEnvParamtoJSONObject(CountryEnvParam cep) throws JSONException {
-        Gson gson = new Gson();
-        JSONObject result = new JSONObject(gson.toJson(cep));
-        return result;
-    }
-
-    private AnswerItem findActiveEnvironmentList(ApplicationContext appContext, String system) throws JSONException {
-        AnswerItem item = new AnswerItem();
-        AnswerList answer = new AnswerList();
-        JSONObject resp = new JSONObject();
-
-        ICountryEnvParamService countryEnvParamService = appContext.getBean(ICountryEnvParamService.class);
-
-        answer = countryEnvParamService.readActiveBySystem(system);
-
-        if (answer.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
-            HashMap<String, JSONObject> map = new HashMap<String, JSONObject>();
-            for (CountryEnvParam cep : (List<CountryEnvParam>) answer.getDataList()) {
-                map.put(cep.getEnvironment(), convertCountryEnvParamtoJSONObject(cep));
-            }
-            resp.put("contentTable", map.values());
-        }
-
-        item.setItem(resp);
-        item.setResultMessage(answer.getResultMessage());
-        return item;
     }
 
 // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
@@ -136,7 +127,11 @@ public class ReadCountryEnvParam extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        processRequest(request, response);
+        try {
+            processRequest(request, response);
+        } catch (CerberusException ex) {
+            Logger.getLogger(ReadCountryEnvParam.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
 
     /**
@@ -150,7 +145,11 @@ public class ReadCountryEnvParam extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        processRequest(request, response);
+        try {
+            processRequest(request, response);
+        } catch (CerberusException ex) {
+            Logger.getLogger(ReadCountryEnvParam.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
 
     /**
@@ -163,15 +162,15 @@ public class ReadCountryEnvParam extends HttpServlet {
         return "Short description";
     }// </editor-fold>
 
-    private AnswerItem findCountryEnvParamList(ApplicationContext appContext, HttpServletRequest request) throws JSONException {
-        AnswerItem item = new AnswerItem();
-        AnswerList answer = new AnswerList();
-        JSONObject resp = new JSONObject();
+    private AnswerItem findCountryEnvParamList(String system, String active, ApplicationContext appContext, HttpServletRequest request) throws JSONException {
 
-        ICountryEnvParamService countryEnvParamService = appContext.getBean(ICountryEnvParamService.class);
+        AnswerItem item = new AnswerItem();
+        JSONObject jsonResponse = new JSONObject();
+        cepService = appContext.getBean(ICountryEnvParamService.class);
 
         int startPosition = Integer.valueOf(ParameterParserUtil.parseStringParam(request.getParameter("iDisplayStart"), "0"));
         int length = Integer.valueOf(ParameterParserUtil.parseStringParam(request.getParameter("iDisplayLength"), "0"));
+        /*int sEcho  = Integer.valueOf(request.getParameter("sEcho"));*/
 
         String searchParameter = ParameterParserUtil.parseStringParam(request.getParameter("sSearch"), "");
         int columnToSortParameter = Integer.parseInt(ParameterParserUtil.parseStringParam(request.getParameter("iSortCol_0"), "0"));
@@ -179,27 +178,31 @@ public class ReadCountryEnvParam extends HttpServlet {
         String columnToSort[] = sColumns.split(",");
         String columnName = columnToSort[columnToSortParameter];
         String sort = ParameterParserUtil.parseStringParam(request.getParameter("sSortDir_0"), "asc");
-
-        answer = countryEnvParamService.readByCriteria(startPosition, length, columnName, sort, searchParameter, "");
-
-//        boolean userHasPermissions = request.isUserInRole("TestAdmin");
+        AnswerList resp = cepService.readByVariousByCriteria(system, active, startPosition, length, columnName, sort, searchParameter, "");
 
         JSONArray jsonArray = new JSONArray();
-        if (answer.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {//the service was able to perform the query, then we should get all values
-            for (CountryEnvParam cep : (List<CountryEnvParam>) answer.getDataList()) {
+        boolean userHasPermissions = request.isUserInRole("IntegratorRO");
+        if (resp.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {//the service was able to perform the query, then we should get all values
+            for (CountryEnvParam cep : (List<CountryEnvParam>) resp.getDataList()) {
                 jsonArray.put(convertCountryEnvParamtoJSONObject(cep));
             }
         }
 
-        resp.put("contentTable", jsonArray);
-//        resp.put("hasPermissions", userHasPermissions);
-        resp.put("iTotalRecords", answer.getTotalRows());
-        resp.put("iTotalDisplayRecords", answer.getTotalRows());
+        jsonResponse.put("hasPermissions", userHasPermissions);
+        jsonResponse.put("contentTable", jsonArray);
+        jsonResponse.put("iTotalRecords", resp.getTotalRows());
+        jsonResponse.put("iTotalDisplayRecords", resp.getTotalRows());
 
-        item.setItem(resp);
-        item.setResultMessage(answer.getResultMessage());
+        item.setItem(jsonResponse);
+        item.setResultMessage(resp.getResultMessage());
         return item;
 
+    }
+
+    private JSONObject convertCountryEnvParamtoJSONObject(CountryEnvParam cep) throws JSONException {
+        Gson gson = new Gson();
+        JSONObject result = new JSONObject(gson.toJson(cep));
+        return result;
     }
 
 }
