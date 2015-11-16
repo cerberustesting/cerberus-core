@@ -1233,7 +1233,7 @@
             var pl = pla.options[pla.selectedIndex].value;
             $("#recordButtonDiv").append('<img id="loader" src="images/loading.gif">');
             var xhttp = new XMLHttpRequest();
-            xhttp.open("GET", "UpdateUserRobotPreference?ss_ip=" + ip + "&ss_p=" + p + "&browser=" + b + "&version=" + v + "&platform=" + pl, false);
+            xhttp.open("GET", "UpdateMyUserRobotPreference?ss_ip=" + ip + "&ss_p=" + p + "&browser=" + b + "&version=" + v + "&platform=" + pl, false);
             xhttp.send();
             var xmlDoc = xhttp.responseText;
 
