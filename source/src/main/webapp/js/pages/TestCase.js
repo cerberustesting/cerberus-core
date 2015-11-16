@@ -737,9 +737,9 @@ function loadStep() {
                     if ($(buttonElement).hasClass("property_missing")) {
                         type = 1;
                     }
-                    
-                }else if ($(actionPropertyElement).prev("button").length === 1) {
-                    buttonElement = $(actionPropertyElement).prev("button");                    
+
+                } else if ($(actionPropertyElement).prev("button").length === 1) {
+                    buttonElement = $(actionPropertyElement).prev("button");
                     if ($(buttonElement).hasClass("property_tooverride")) {
                         type = 2;
                         dataTest = $(actionPropertyElement).attr("data-usestep-test");
@@ -751,7 +751,7 @@ function loadStep() {
 
                     }
                 }
-                if(type !== 0){
+                if (type !== 0) {
                     //get the values that indicate the source of the property, e.g., data-usestep-testcase="0001A" data-usestep-test="_IMPORTED_STEPS
                     var propertyBtnAction = new PropertyButtonAction(type, $(buttonElement).attr("title"), dataTest, dataTestCase);
                     action.setPropertyButtonAction(propertyBtnAction);
@@ -1335,7 +1335,7 @@ function drawPropertySymbolHandler() {
     //2 - override
     //3 - overidden
     var type = 0;
-    if (propertyValue && propertyValue !== "" && isNaN(propertyValue)) {
+    if (propertyValue && propertyValue !== "") {
         //var jinput = $(this);
         $(element).css({"width": "60%"});
         var toolTipMessage = "";
@@ -1986,6 +1986,35 @@ function addPictureClickHandler() {
         $('#addPictureModal').modal('hide');
     }
 
+}
+
+/**
+ * 
+ * @param {type} img
+ * @param {type} checkbox
+ * @param {type} row
+ * @param {type} initClassName
+ * @returns {undefined}
+ */
+function checkDeleteBox(img, checkbox, row, initClassName) {
+    console.log(document.getElementById(checkbox).checked);
+    if (document.getElementById(checkbox).checked === false) {
+        document.getElementById(checkbox).checked = true;
+        document.getElementById(row).className = 'RowToDelete';
+        document.getElementById(img).src = 'images/ko.png';
+        $("div[data-associatedaction='" + row + "']").each(function(index, field) {
+            $(field).attr('class', 'RowToDelete');
+            $(field).find("img[src='images/bin.png']").attr('src', 'images/ko.png');
+        });
+    } else {
+        document.getElementById(checkbox).checked = false;
+        document.getElementById(row).className = initClassName;
+        document.getElementById(img).src = 'images/bin.png';
+        $("div[data-associatedaction='" + row + "']").each(function(index, field) {
+            $(field).attr('class', initClassName);
+            $(field).find("img[src='images/ko.png']").attr('src', 'images/bin.png');
+        });
+    }
 }
 /**
  * Show modal listing the test cases that use the step

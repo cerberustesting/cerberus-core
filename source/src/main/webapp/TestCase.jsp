@@ -145,6 +145,16 @@
                 $("#UpdateTestCase").submit(function() {
                     $('#howtoDetail').val($('#howto').elrte('val'));
                     $('#valueDetail').val($('#value').elrte('val'));
+                     /*temporary workaround for issue #611*/
+                    var stepNumbersValid = validateStepNumbers();
+
+                    if(!stepNumbersValid){
+                        //TODO: add translation in future refactoring
+                        alert("You have steps with the same number. Please check the step numbers before proceed!!");
+                        return false;
+                    }else{
+                        
+                    }
                 });
             });</script>
         <script>
@@ -2309,29 +2319,7 @@
 
             }
 
-            function checkDeleteBox(img, checkbox, row, initClassName) {
-                console.log(document.getElementById(checkbox).checked);
-                if (document.getElementById(checkbox).checked === false) {
-                    document.getElementById(checkbox).checked = true;
-                    document.getElementById(row).className = 'RowToDelete';
-                    document.getElementById(img).src = 'images/ko.png';
-                    $("div[data-associatedaction='" + row + "']").each(function(index, field) {
-                        $(field).attr('class', 'RowToDelete');
-                        $(field).find("img[src='images/bin.png']").attr('src', 'images/ko.png');
-                    });
-
-
-                } else {
-                    document.getElementById(checkbox).checked = false;
-                    document.getElementById(row).className = initClassName;
-                    document.getElementById(img).src = 'images/bin.png';
-                    $("div[data-associatedaction='" + row + "']").each(function(index, field) {
-                        $(field).attr('class', initClassName);
-                        $(field).find("img[src='images/ko.png']").attr('src', 'images/bin.png');
-                    });
-                }
-
-            }</script>
+            </script>
         <script type="text/javascript">
     $(document).ready(function() {
         var cookies = GetCookie('TestCaseDisplayStepLibrary');

@@ -502,6 +502,7 @@ public class UpdateTestCaseWithDependencies extends HttpServlet {
 
                             tcStep.setTestCaseStepAction(actions);
                         }else{
+                            
                             tcStep.setTestCaseStepAction(getTestCaseStepActionFromParameter(request, appContext, test, testCase, inc));
                         }
 
@@ -511,6 +512,16 @@ public class UpdateTestCaseWithDependencies extends HttpServlet {
                         tcStep.setUseStepTestCase("");
                         tcStep.setUseStepStep(-1);
                         
+                        //updates the test step action list with the new step
+                        List<TestCaseStepAction> actionsForStep = tcStep.getTestCaseStepAction();
+                        for(TestCaseStepAction ac : actionsForStep){
+                            List<TestCaseStepActionControl> actionControlList = ac.getTestCaseStepActionControl();
+                            for(TestCaseStepActionControl acControl : actionControlList){
+                                acControl.setStep(step);
+                            }
+                            ac.setStep(step);
+                        }
+                        //update the step associated with the actions that are now the new actions
                     } else {
                         TestCaseStep tcs = null;
                         if (useStepStep != -1 && !useStepTest.equals("") && !useStepTestCase.equals("")) {
@@ -542,6 +553,15 @@ public class UpdateTestCaseWithDependencies extends HttpServlet {
                                 tcStep.setUseStepTestCase(tcs.getUseStepTestCase());
                                 tcStep.setUseStepStep(tcs.getUseStepStep());
                                 tcStep.setTestCaseStepAction(getTestCaseStepActionFromParameter(request, appContext, test, testCase, inc));
+                                
+                                List<TestCaseStepAction> actionsForStep = tcStep.getTestCaseStepAction();
+                                for(TestCaseStepAction ac : actionsForStep){
+                                    List<TestCaseStepActionControl> actionControlList = ac.getTestCaseStepActionControl();
+                                    for(TestCaseStepActionControl acControl : actionControlList){
+                                        acControl.setStep(step);
+                                    }
+                                    ac.setStep(step);
+                                }
                             }
                         }
                         
@@ -565,6 +585,8 @@ public class UpdateTestCaseWithDependencies extends HttpServlet {
                     } else {
                         tcStep.setIsStepInUseByOtherTestCase(false);
                     }
+                    
+                    
                     testCaseStep.add(tcStep);
                     //System.out.print("FromPage" + tcStep.toString());
                 }
