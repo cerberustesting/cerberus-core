@@ -147,6 +147,13 @@ $.when($.getScript("js/pages/global/global.js")).then(function() {
 
         //saves the steps that useStep, to restore purposes
         saveUseStepInfo();
+        //avoids automatica save when user presses enter
+        $(window).keydown(function(event){
+            if(event.keyCode === 13) {
+              event.preventDefault();
+              return false;
+            }
+        });
     });
 
 });
@@ -1988,6 +1995,30 @@ function addPictureClickHandler() {
 
 }
 
+/**
+ * Auxiliary function that verifies if the 
+ * @returns {undefined}
+ */
+function saveAsClickHandler(){
+    var test = $("#inputAddTestInSelectTest").attr("value"); 
+    var testCase = $("#inputAddTestCaseInSelectTestCase").attr("value");
+    if(test !=='' && testCase === ''){
+        //TODO: translations and new GUI standars (alert messages)
+        alert("'Save as' operation: Test case parameter is mandatory!");
+        return false;        
+    }else if(test === '' && testCase !== ''){
+        //if test is empty then we are creating a test case in the same test, we need to check if it was not
+        //already created
+        var foundTestCase = $("#informationTestCase option[value='" + testCase + "']").length > 1;
+        if(foundTestCase){
+            alert("'Save as' operation: Test case you are trying to insert already exists in the current test!");
+            return false;
+        }
+
+    }
+    
+    return $('#UpdateTestCase').submit();
+}
 /**
  * 
  * @param {type} img

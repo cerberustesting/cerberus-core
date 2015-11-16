@@ -142,7 +142,7 @@
                 if (!bool) {
                     $('#generalparameter').hide();
                 }
-                $("#UpdateTestCase").submit(function() {
+                $("#UpdateTestCase").submit(function() {                    
                     $('#howtoDetail').val($('#howto').elrte('val'));
                     $('#valueDetail').val($('#value').elrte('val'));
                      /*temporary workaround for issue #611*/
@@ -666,7 +666,7 @@
                                 <% }%>
                                 <input type="button" id="exportTC" name="exportTC" value="exportTestCase" onclick="javascript:exportTestCase('<%=test%>', '<%=testcase%>', 'TestCase.jsp')">
                                 <input type="button" id="saveAs" name="saveAs" value="Save As" onclick="javascript:enableDuplicateField()">
-                                <input type="button" style="display:none" id="FirstSaveChanges" name="SaveChanges" value="Save Changes" onclick="$('#UpdateTestCase').submit();">
+                                <input type="button" style="display:none" id="FirstSaveChanges" name="SaveChanges" value="Save Changes" onclick="return saveAsClickHandler();">
                                 <div id="deleteTCDiv">
                                 </div>
 
