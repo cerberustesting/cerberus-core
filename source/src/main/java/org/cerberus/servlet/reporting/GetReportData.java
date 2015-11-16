@@ -19,6 +19,7 @@
  */
 package org.cerberus.servlet.reporting;
 
+import com.google.gson.Gson;
 import java.io.IOException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -26,6 +27,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.TreeMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.servlet.ServletException;
@@ -38,13 +40,12 @@ import org.cerberus.exception.CerberusException;
 import org.cerberus.crud.service.ICampaignService;
 import org.cerberus.crud.service.ITestCaseExecutionInQueueService;
 import org.cerberus.crud.service.ITestCaseExecutionService;
+import org.cerberus.dto.SummaryStatisticsDTO;
 import org.cerberus.util.ParameterParserUtil;
 import org.cerberus.util.answer.AnswerList;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.owasp.html.PolicyFactory;
-import org.owasp.html.Sanitizers;
 import org.springframework.context.ApplicationContext;
 import org.springframework.web.context.support.WebApplicationContextUtils;
 
@@ -72,12 +73,9 @@ public class GetReportData extends HttpServlet {
         ITestCaseExecutionService testCaseExecutionService = appContext.getBean(ITestCaseExecutionService.class);
         ITestCaseExecutionInQueueService testCaseExecutionInQueueService = appContext.getBean(ITestCaseExecutionInQueueService.class);
 
-        PolicyFactory policy = Sanitizers.FORMATTING.and(Sanitizers.LINKS);
         JSONObject jsonResult = new JSONObject();
-
         String tag = request.getParameter("Tag");
         boolean split = ParameterParserUtil.parseBooleanParam(request.getParameter("split"), false);
-        boolean barData = ParameterParserUtil.parseBooleanParam(request.getParameter("barData"), false);
 
         /**
          * Get list of execution by tag, env, country, browser
@@ -95,7 +93,7 @@ public class GetReportData extends HttpServlet {
          */
         testCaseWithExecutions = hashExecution(testCaseWithExecutions, testCaseWithExecutionsInQueue);
 
-        if (!split && !barData) {
+        if (!split) {
 
             HashMap<String, JSONObject> axisMap = new HashMap<String, JSONObject>();
 
@@ -131,7 +129,7 @@ public class GetReportData extends HttpServlet {
 
             jsonResult.put("axis", axisMap.values());
             jsonResult.put("tag", tag);
-        } else if (split && !barData) {
+        } else if (split) {
             boolean env = ParameterParserUtil.parseBooleanParam(request.getParameter("env"), false);
             boolean country = ParameterParserUtil.parseBooleanParam(request.getParameter("country"), false);
             boolean browser = ParameterParserUtil.parseBooleanParam(request.getParameter("browser"), false);
@@ -152,7 +150,7 @@ public class GetReportData extends HttpServlet {
                         + column.getApplication();
                 testCaseWithExecutionsList.put(key, column);
             }
-            
+
             for (TestCaseWithExecution column : columnInQueue) {
                 String key = column.getBrowser()
                         + column.getCountry()
@@ -162,24 +160,21 @@ public class GetReportData extends HttpServlet {
             }
 
             List<TestCaseWithExecution> res = new ArrayList<TestCaseWithExecution>(testCaseWithExecutionsList.values());
-            JSONArray col = new JSONArray();
-             for (TestCaseWithExecution column : res) {
-                 JSONObject tmp = new JSONObject();
-                 tmp.put("env", column.getEnvironment());
-                 tmp.put("country", column.getCountry());
-                 tmp.put("browser", column.getBrowser());
-                 tmp.put("application", column.getApplication());
-                 col.put(tmp);
-             }
 
-            jsonResult.put("contentTable", col);
-        } else if (barData && !split) {
-            String env = ParameterParserUtil.parseStringParam(request.getParameter("env"), "");
-            String country = ParameterParserUtil.parseStringParam(request.getParameter("country"), "");
-            String browser = ParameterParserUtil.parseStringParam(request.getParameter("browser"), "");
-            String app = ParameterParserUtil.parseStringParam(request.getParameter("app"), "");
-            
-            jsonResult.put("contentTable", getStatByEnvCountryBrowser(testCaseWithExecutions, env, country, browser, app));
+            HashMap<String, SummaryStatisticsDTO> statMap = new HashMap<String, SummaryStatisticsDTO>();
+            for (TestCaseWithExecution column : res) {
+                SummaryStatisticsDTO stat = new SummaryStatisticsDTO();
+                stat.setEnvironment(column.getEnvironment());
+                stat.setCountry(column.getCountry());
+                stat.setBrowser(column.getBrowser());
+                stat.setApplication(column.getApplication());
+
+                statMap.put(column.getEnvironment() + "_" + column.getCountry() + "_" + column.getBrowser() + "_" + column.getApplication(),
+                        stat);
+            }
+
+            jsonResult.put("contentTable", getStatByEnvCountryBrowser(testCaseWithExecutions, statMap, env, country, browser, app));
+
         }
 
         response.setContentType("application/json");
@@ -270,46 +265,47 @@ public class GetReportData extends HttpServlet {
         return result;
     }
 
-    private JSONObject getStatByEnvCountryBrowser(List<TestCaseWithExecution> testCaseWithExecutions, String env, String country, String browser, String app) throws JSONException {
-        JSONObject response = new JSONObject();
-        JSONObject total = new JSONObject();
-        int totalExec = 0;
-        int totalReport = 0;
-        total.put("OK", 0);
-        total.put("KO", 0);
-        total.put("FA", 0);
-        total.put("CA", 0);
-        total.put("NA", 0);
-        total.put("NE", 0);
-        total.put("PE", 0);
-
+    private JSONObject getStatByEnvCountryBrowser(List<TestCaseWithExecution> testCaseWithExecutions, HashMap<String, SummaryStatisticsDTO> statMap, boolean env, boolean country, boolean browser, boolean app) throws JSONException {
+        SummaryStatisticsDTO total = new SummaryStatisticsDTO();
+        total.setEnvironment("Total");
+        
         for (TestCaseWithExecution testCaseWithExecution : testCaseWithExecutions) {
-            boolean filter = true;
-            totalExec++;
-            if (!env.equals("") && !env.equals(testCaseWithExecution.getEnvironment())) {
-                filter = false;
-            }
-            if (!country.equals("") && !country.equals(testCaseWithExecution.getCountry())) {
-                filter = false;
-            }
-            if (!browser.equals("") && !browser.equals(testCaseWithExecution.getBrowser())) {
-                filter = false;
-            }
-            if (!app.equals("") && !app.equals(testCaseWithExecution.getApplication())) {
-                filter = false;
-            }
-            if (filter) {
-                totalReport++;
-                String controlStatus = testCaseWithExecution.getControlStatus();
-                int prec = total.getInt(controlStatus);
-                total.put(controlStatus, prec + 1);
-            }
-        }
-        response.put("total", total);
-        response.put("totalExec", totalExec);
-        response.put("totalReport", totalReport);
+            StringBuilder key = new StringBuilder();
 
-        return response;
+            key.append((env) ? testCaseWithExecution.getEnvironment() : "");
+            key.append("_");
+            key.append((country) ? testCaseWithExecution.getCountry() : "");
+            key.append("_");
+            key.append((browser) ? testCaseWithExecution.getBrowser() : "");
+            key.append("_");
+            key.append((app) ? testCaseWithExecution.getApplication() : "");
+
+            if (statMap.containsKey(key.toString())) {
+                statMap.get(key.toString()).updateStatisticByStatus(testCaseWithExecution.getControlStatus());
+            }
+            total.updateStatisticByStatus(testCaseWithExecution.getControlStatus());
+        }
+        
+        return extractSummaryData(statMap, total);
+    }
+
+    private JSONObject extractSummaryData(HashMap<String, SummaryStatisticsDTO> summaryMap, SummaryStatisticsDTO total) throws JSONException {
+        JSONObject extract = new JSONObject();
+        JSONArray dataArray = new JSONArray();
+        Gson gson = new Gson();
+        //sort keys
+        TreeMap<String, SummaryStatisticsDTO> sortedKeys = new TreeMap<String, SummaryStatisticsDTO>(summaryMap);
+        for (String key : sortedKeys.keySet()) {
+            SummaryStatisticsDTO sumStats = summaryMap.get(key);
+            //percentage values
+            sumStats.updatePercentageStatistics();
+            dataArray.put(new JSONObject(gson.toJson(sumStats)));
+        }
+        total.updatePercentageStatistics();
+
+        extract.put("split", dataArray);
+        extract.put("total", new JSONObject(gson.toJson(total)));
+        return extract;
     }
 
     private String getColor(String controlStatus) {

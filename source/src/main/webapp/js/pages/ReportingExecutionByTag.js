@@ -19,13 +19,13 @@
  */
 /* global handleErrorAjaxAfterTimeout */
 
-$.when($.getScript("js/pages/global/global.js")).then(function() {
-    $(document).ready(function() {
+$.when($.getScript("js/pages/global/global.js")).then(function () {
+    $(document).ready(function () {
         initPage();
 
         bindToggleCollapse();
 
-        $("#splitFilter input").click(function() {
+        $("#splitFilter input").click(function () {
             //save the filter preferences in the session storage
             var serial = $("#splitFilter input").serialize();
             var obj = convertSerialToJSONObject(serial);
@@ -33,6 +33,20 @@ $.when($.getScript("js/pages/global/global.js")).then(function() {
         });
 
         splitFilterPreferences();
+
+        $("#reportByEnvCountryBrowser .nav li").on("click", function (event) {
+            stopPropagation(event);
+            $(this).parent().find(".active").removeClass("active");
+            $(this).addClass("active");
+            console.log($(this).prop("id"));
+            if ($(this).prop("id") === "tab") {
+                $("#progressEnvCountryBrowser").hide();
+                $("#summaryTableDiv").show();
+            } else if ($(this).prop("id") === "graph") {
+                $("#progressEnvCountryBrowser").show();
+                $("#summaryTableDiv").hide();
+            }
+        });
 
         var urlTag = GetURLParameter('Tag');
         loadTagFilters(urlTag);
@@ -70,7 +84,7 @@ function loadCountryFilter() {
         data: {idName: "COUNTRY"},
         async: false,
         dataType: 'json',
-        success: function(data) {
+        success: function (data) {
             var countryFilter = $("#countryFilter");
             var len = data.length;
 
@@ -90,7 +104,7 @@ function loadCountryFilter() {
                 }
                 countryFilter.append(cb);
             }
-            $("#countryFilter input").on("click", function() {
+            $("#countryFilter input").on("click", function () {
                 //save the filter preferences in the session storage
                 var serial = $("#countryFilter input").serialize();
                 var obj = convertSerialToJSONObject(serial);
@@ -104,7 +118,7 @@ function splitFilterPreferences() {
     var filter = JSON.parse(sessionStorage.getItem("splitFilter"));
 
     if (filter !== null) {
-        $("#splitFilter input").each(function() {
+        $("#splitFilter input").each(function () {
             if (filter.hasOwnProperty($(this).prop("name"))) {
                 $(this).prop("checked", true);
             } else {
@@ -120,9 +134,9 @@ function displaySummaryTableLabel(doc) {
     $("#summaryTableHeaderApplication").html(doc.getDocOnline("application", "Application"));
     $("#summaryTableHeaderCountry").html(doc.getDocOnline("invariant", "COUNTRY"));
     $("#summaryTableHeaderEnvironment").html(doc.getDocOnline("invariant", "ENVIRONMENT"));
-    
+
     $("#selectTableButtonText").html(doc.getDocOnline("page_reportbytag", "btn_select_table"));
-  
+
 }
 
 function displayExportDataLabel(doc) {
@@ -146,7 +160,7 @@ function displayPageLabel(doc) {
 
 function loadTagFilters(urlTag) {
     var jqxhr = $.get("ReadTag", "", "json");
-    $.when(jqxhr).then(function(data) {
+    $.when(jqxhr).then(function (data) {
         var messageType = getAlertType(data.messageType);
         if (messageType === "success") {
             var index;
@@ -182,12 +196,11 @@ function loadReport() {
         loadReportList();
         //Retrieve data for charts and draw them
         var jqxhr = $.get("GetReportData", {CampaignName: "null", Tag: selectTag}, "json");
-        $.when(jqxhr).then(function(data) {
+        $.when(jqxhr).then(function (data) {
             //clear the old report content before redrawing it
             $("#ReportByStatusTable").empty();
             $("#statusChart").empty();
             $("#functionChart").empty();
-            $("#progressEnvCountryBrowser").empty();
             loadReportByStatusTable(data);
             loadReportByFunctionChart(data);
         });
@@ -201,56 +214,40 @@ function generateBarTooltip(data, statusOrder) {
     for (var index = 0; index < len; index++) {
         var status = statusOrder[index];
 
-        if (data.total.hasOwnProperty(status)) {
+        if (data.hasOwnProperty(status)) {
             htmlRes += "<div>\n\
                         <span class='color-box status" + status + "'></span>\n\
-                        <strong> " + status + " : </strong>" + data.total[status] + "</div>";
+                        <strong> " + status + " : </strong>" + data[status] + "</div>";
         }
     }
     htmlRes += '</div>';
     return htmlRes;
 }
 
-function buildBar(tag, obj) {
-    $.ajax({
-        type: "GET",
-        url: "GetReportData",
-        data: {barData: true, Tag: tag, env: obj.env, country: obj.country, browser: obj.browser, app: obj.application},
-        async: true,
-        dataType: 'json',
-        success: function(data) {
-            $("#totalExec").html(data.totalReport);
-            var buildBar;
-            var statusOrder = ["OK", "KO", "FA", "NA", "NE", "PE", "CA"];
-            var len = statusOrder.length;
-            var key = obj.env + " " + obj.country + " " + obj.browser + " " + obj.application;
-            var tooltip = generateBarTooltip(data.contentTable, statusOrder);
+function buildBar(obj) {
+    var buildBar;
+    var statusOrder = ["OK", "KO", "FA", "NA", "NE", "PE", "CA"];
+    var len = statusOrder.length;
+    var key = obj.environment + " " + obj.country + " " + obj.browser + " " + obj.application;
+    var tooltip = generateBarTooltip(obj, statusOrder);
 
-            buildBar = '<div>' + key + '<div class="pull-right" style="display: inline;">Total executions : ' + data.contentTable.totalReport + '</div>\n\
+    buildBar = '<div>' + key + '<div class="pull-right" style="display: inline;">Total executions : ' + obj.total + '</div>\n\
                                                         </div><div class="progress" data-toggle="tooltip" data-html="true" title="' + tooltip + '">';
 
-            for (var i = 0; i < len; i++) {
-                var status = statusOrder[i];
-                if (data.contentTable.total[status] !== 0) {
-                    var percent = (data.contentTable.total[status] / data.contentTable.totalReport) * 100;
-                    var roundPercent = Math.round(percent * 10) / 10;
+    for (var i = 0; i < len; i++) {
+        var status = statusOrder[i];
 
-                    buildBar += '<div class="progress-bar status' + status + '" \n\
+        if (obj[status] !== 0) {
+            var percent = (obj[status] / obj.total) * 100;
+            var roundPercent = Math.round(percent * 10) / 10;
+
+            buildBar += '<div class="progress-bar status' + status + '" \n\
                                     role="progressbar" \n\
-                                    aria-valuenow="60" \n\
-                                    aria-value="0" \n\
-                                    aria-valuemax="100" \n\
                                     style="width:' + percent + '%;">' + roundPercent + '%</div>';
-                }
-                $('#EnvCountryBrowser' + status + ' .value').html(data.contentTable.total[status]);
-            }
-            buildBar += '</div>';
-            $("#progressEnvCountryBrowser").append(buildBar);
-        },
-        error: function() {
-            showUnexpectedError();
         }
-    });
+    }
+    buildBar += '</div>';
+    $("#progressEnvCountryBrowser").append(buildBar);
 }
 
 function loadEnvCountryBrowserReport() {
@@ -278,14 +275,15 @@ function loadEnvCountryBrowserReport() {
         data: {split: true, Tag: tag, env: params.env, country: params.country, browser: params.browser, app: params.app},
         async: true,
         dataType: 'json',
-        success: function(json) {
-            var len = json.contentTable.length;
+        success: function (json) {
+            var len = json.contentTable.split.length;
+            createSummaryTable(json.contentTable);
             for (var index = 0; index < len; index++) {
                 //draw a progress bar for each combo retrieved
-                buildBar(tag, json.contentTable[index]);
+                buildBar(json.contentTable.split[index]);
             }
         },
-        error: function() {
+        error: function () {
             showUnexpectedError();
         }
     });
@@ -299,7 +297,7 @@ function loadReportList() {
     if (selectTag !== "") {
         //configure and create the dataTable
         var jqxhr = $.getJSON("ReadTestCaseExecution", "Tag=" + encodeURIComponent(selectTag) + "&" + statusFilter.serialize() + "&" + countryFilter.serialize());
-        $.when(jqxhr).then(function(data) {
+        $.when(jqxhr).then(function (data) {
             if ($("#listTable_wrapper").hasClass("initialized")) {
                 $("#tableArea").empty();
                 $("#tableArea").html('<table id="listTable" class="table table-hover display" name="listTable">\n\
@@ -311,9 +309,9 @@ function loadReportList() {
             var config = new TableConfigurationsServerSide("listTable", request, "testList", aoColumnsFunc(data.Columns));
             customConfig(config);
             //adds a loader to a table 
-            showLoader($("#summaryTablePanel"));
+            showLoader($("#reportEnvCountryBrowser"));
             //var table = createDataTable(config, createShortDescRow);
-            createDataTable(config, createShortDescRow, createSummaryTable);
+            createDataTable(config, createShortDescRow);
             $('#listTable_wrapper').not('.initialized').addClass('initialized');
 
         });
@@ -418,7 +416,7 @@ function loadReportByStatusChart(data) {
             .outerRadius(radius);
 
     var pie = d3.layout.pie()
-            .value(function(d) {
+            .value(function (d) {
                 return d.value;
             })
             .sort(null);
@@ -428,7 +426,7 @@ function loadReportByStatusChart(data) {
             .enter()
             .append('path')
             .attr('d', arc)
-            .attr('fill', function(d, i) {
+            .attr('fill', function (d, i) {
                 return d.data.color;
             });
 }
@@ -465,7 +463,7 @@ function loadReportByFunctionChart(dataset) {
     var tip = d3.tip()
             .attr('class', 'd3-tip')
             .offset([-10, 0])
-            .html(function(d) {
+            .html(function (d) {
                 var res = "<strong>Function :</strong> <span style='color:red'>" + d.name + "</span>";
                 var len = d.chartData.length;
 
@@ -485,7 +483,7 @@ function loadReportByFunctionChart(dataset) {
     svg.call(tip);
 
 
-    data.forEach(function(d) {
+    data.forEach(function (d) {
         var y0 = 0;
         d.chartData = [];
         for (var status in d) {
@@ -496,10 +494,10 @@ function loadReportByFunctionChart(dataset) {
         d.totalTests = d.chartData[d.chartData.length - 1].y1;
     });
 
-    x.domain(data.map(function(d) {
+    x.domain(data.map(function (d) {
         return d.name;
     }));
-    y.domain([0, d3.max(data, function(d) {
+    y.domain([0, d3.max(data, function (d) {
             return d.totalTests;
         })]);
 
@@ -528,7 +526,7 @@ function loadReportByFunctionChart(dataset) {
             .data(data)
             .enter().append("g")
             .attr("class", "g")
-            .attr("transform", function(d) {
+            .attr("transform", function (d) {
                 return "translate(" + x(d.name) + ",0)";
             });
 
@@ -537,18 +535,18 @@ function loadReportByFunctionChart(dataset) {
             .on('mouseout', tip.hide);
 
     name.selectAll("rect")
-            .data(function(d) {
+            .data(function (d) {
                 return d.chartData;
             })
             .enter().append("rect")
             .attr("width", x.rangeBand())
-            .attr("y", function(d) {
+            .attr("y", function (d) {
                 return y(d.y1);
             })
-            .attr("height", function(d) {
+            .attr("height", function (d) {
                 return y(d.y0) - y(d.y1);
             })
-            .style("fill", function(d) {
+            .style("fill", function (d) {
                 return d.color;
             });
 }
@@ -564,7 +562,7 @@ function exportReport() {
 
     var jqxhr = $.getJSON("ReadTestCaseExecution", "Tag=" + selectTag + "&" + statusFilter.serialize() +
             "&" + countryFilter.serialize() + "&" + exportDataFilter.serialize());
-    $.when(jqxhr).then(function(data) {
+    $.when(jqxhr).then(function (data) {
         alert(data);
     });
 }
@@ -582,6 +580,36 @@ function controlExportRadioButtons() {
 
 /*** SUMMARY TABLE options ****/
 
+/**
+ * Create a row for the summaryTable
+ * @param {JSONObject} row containing the data of the row
+ * @returns {jQuery} the jquery object row
+ */
+function createRow(row) {
+    var $tr = $('<tr>').append(
+            $('<td>').text(row.environment),
+            $('<td>').text(row.country),
+            $('<td>').text(row.browser),
+            $('<td>').text(row.application),
+            $('<td>').text(row.OK).css("text-align", "right"),
+            $('<td>').text(row.KO).css("text-align", "right"),
+            $('<td>').text(row.FA).css("text-align", "right"),
+            $('<td>').text(row.NA).css("text-align", "right"),
+            $('<td>').text(row.NE).css("text-align", "right"),
+            $('<td>').text(row.PE).css("text-align", "right"),
+            $('<td>').text(row.CA).css("text-align", "right"),
+            $('<td>').text(row.notOKTotal).css("text-align", "right"),
+            $('<td>').text(row.total).css("text-align", "right"),
+            $('<td>').text(row.percOK + "%").css("text-align", "right"),
+            $('<td>').text(row.percKO + "%").css("text-align", "right"),
+            $('<td>').text(row.percFA + "%").css("text-align", "right"),
+            $('<td>').text(row.percNA + "%").css("text-align", "right"),
+            $('<td>').text(row.percNE + "%").css("text-align", "right"),
+            $('<td>').text(row.percPE + "%").css("text-align", "right"),
+            $('<td>').text(row.percCA + "%").css("text-align", "right"),
+            $('<td>').text(row.percNotOKTotal + "%").css("text-align", "right"));
+    return $tr;
+}
 
 /**
  * Creates a summary table from data retrieved from server.
@@ -592,43 +620,22 @@ function createSummaryTable(data) {
     //cleans the data that was already added
     $("#summaryTableBody tr").remove();
     //TODO:FN verifies if table is empty?
-    $.when($.each(data.summaryTable, function(idx, obj) {
-        var row = jQuery.parseJSON(obj);
+    $.when($.each(data.split, function (idx, obj) {
         //creates a new row
         //numbers are aligned to right
-        var $tr = $('<tr>').append(
-                $('<td>').text(row.application),
-                $('<td>').text(row.country),
-                $('<td>').text(row.environment),
-                $('<td>').text(row.ok).css("text-align", "right"),
-                $('<td>').text(row.ko).css("text-align", "right"),
-                $('<td>').text(row.fa).css("text-align", "right"),
-                $('<td>').text(row.na).css("text-align", "right"),
-                $('<td>').text(row.ne).css("text-align", "right"),
-                $('<td>').text(row.pe).css("text-align", "right"),
-                $('<td>').text(row.ca).css("text-align", "right"),
-                $('<td>').text(row.notOkTotal).css("text-align", "right"),
-                $('<td>').text(row.total).css("text-align", "right"),
-                $('<td>').text(row.percOk + "%").css("text-align", "right"),
-                $('<td>').text(row.percKo + "%").css("text-align", "right"),
-                $('<td>').text(row.percFa + "%").css("text-align", "right"),
-                $('<td>').text(row.percNa + "%").css("text-align", "right"),
-                $('<td>').text(row.percNe + "%").css("text-align", "right"),
-                $('<td>').text(row.percPe + "%").css("text-align", "right"),
-                $('<td>').text(row.percCa + "%").css("text-align", "right"),
-                $('<td>').text(row.percNotOkTotal + "%").css("text-align", "right"));
-        if (row.application === "Total") {
-            $($tr).addClass("summaryTotal");
-        } else {
-            if (row.percOk === 100) {
-                $($tr).addClass("summary100");
-            }
+        var $tr = createRow(obj);
+        if (obj.percOK === 100) {
+            $($tr).addClass("summary100");
         }
         $("#summaryTableBody").append($tr);
 
 
-    })).then(function() {
-        hideLoader($("#summaryTablePanel"));
+    })).then(function () {
+        var $total = createRow(data.total);
+        $total.addClass("summaryTotal");
+        
+        $("#summaryTableBody").append($total);
+        hideLoader($("#reportEnvCountryBrowser"));
         //alternate colors
         $("#summaryTableBody tr:odd").css("background-color", "rgba(225,231,243,0.2)");
         //if the row is the summary total, then it will have the background color blue
@@ -719,7 +726,7 @@ function aoColumnsFunc(Columns) {
             "sName": "testCase",
             "sWidth": testCaseInfoWidth + "%",
             "title": doc.getDocOnline("testcase", "TestCase"),
-            "mRender": function(data, type, obj, meta) {
+            "mRender": function (data, type, obj, meta) {
                 var result = "<a href='./TestCase.jsp?Test=" + encodeURIComponent(obj.test) + "&TestCase=" + encodeURIComponent(obj.testCase) + "&Load=Load'>" + obj.testCase + "</a>";
                 return result;
             }
@@ -739,7 +746,7 @@ function aoColumnsFunc(Columns) {
             "bSortable": false,
             "bSearchable": false,
             "sWidth": testExecWidth + "%",
-            "data": function(row, type, val, meta) {
+            "data": function (row, type, val, meta) {
                 var dataTitle = meta.settings.aoColumns[meta.col].sTitle;
                 if (row.hasOwnProperty("execTab") && row["execTab"].hasOwnProperty(dataTitle)) {
                     return row["execTab"][dataTitle];
@@ -748,7 +755,7 @@ function aoColumnsFunc(Columns) {
                 }
             },
             "sClass": "center",
-            "mRender": function(data) {
+            "mRender": function (data) {
                 if (data !== "") {
                     var executionLink = generateExecutionLink(data.ControlStatus, data.ID);
                     var glyphClass = getRowClass(data.ControlStatus);
@@ -774,8 +781,8 @@ function customConfig(config) {
     var doc = new Doc();
     var customColvisConfig = {"buttonText": doc.getDocLabel("dataTable", "colVis"),
         "exclude": [0, 1, 2],
-        "stateChange": function(iColumn, bVisible) {
-            $('.shortDesc').each(function() {
+        "stateChange": function (iColumn, bVisible) {
+            $('.shortDesc').each(function () {
                 $(this).attr('colspan', '3');
             });
         }
@@ -822,7 +829,7 @@ function generateExecutionLink(status, id) {
 }
 
 function wrap(text, width) {
-    text.each(function() {
+    text.each(function () {
         var text = d3.select(this),
                 words = text.text().split(/\s+/).reverse(),
                 word,

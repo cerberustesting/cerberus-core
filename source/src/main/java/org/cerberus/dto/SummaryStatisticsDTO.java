@@ -27,73 +27,75 @@ public class SummaryStatisticsDTO {
         private String application;
         private String country;
         private String environment;
-        private int ok;
-        private int ko;
-        private int fa;
-        private int na;
-        private int ne;
-        private int pe;
-        private int ca;
+        private String browser;
+        private int OK;
+        private int KO;
+        private int FA;
+        private int NA;
+        private int NE;
+        private int PE;
+        private int CA;
         private int total;
-        private int notOkTotal;
-        private float percOk;
-        private float percKo;
-        private float percNa;
-        private float percNe;
-        private float percPe;
-        private float percFa;
-        private float percCa;
-        private float percNotOkTotal;
+        private int notOKTotal;
+        private float percOK;
+        private float percKO;
+        private float percNA;
+        private float percNE;
+        private float percPE;
+        private float percFA;
+        private float percCA;
+        private float percNotOKTotal;
 
         
         public SummaryStatisticsDTO() {
             this.application = "";
             this.country = "";
             this.environment = "";
-            this.ok = 0;
-            this.ko = 0;
-            this.fa = 0;
-            this.na = 0;
-            this.ne = 0;
-            this.pe = 0;            
-            this.ca = 0;
+            this.browser = "";
+            this.OK = 0;
+            this.KO = 0;
+            this.FA = 0;
+            this.NA = 0;
+            this.NE = 0;
+            this.PE = 0;            
+            this.CA = 0;
             this.total = 0;
-            this.notOkTotal = 0;
+            this.notOKTotal = 0;
         }
 
         public void updateStatisticByStatus(String status) {
             this.total++;
             if (status.equalsIgnoreCase("OK")) {
-                this.ok++;
+                this.OK++;
             } else if (status.equalsIgnoreCase("KO")) {
-                this.ko++;
-                this.notOkTotal++;
+                this.KO++;
+                this.notOKTotal++;
             } else if (status.equalsIgnoreCase("NA")) {
-                this.na++;
-                this.notOkTotal++;                
+                this.NA++;
+                this.notOKTotal++;                
             } else if (status.equalsIgnoreCase("NE")) {
-                this.ne++;
-                this.notOkTotal++;                
+                this.NE++;
+                this.notOKTotal++;                
             } else if (status.equalsIgnoreCase("PE")) {
-                this.pe++;
-                this.notOkTotal++;                
+                this.PE++;
+                this.notOKTotal++;                
             } else if (status.equalsIgnoreCase("FA")) {
-                this.fa++;
-                this.notOkTotal++;                
+                this.FA++;
+                this.notOKTotal++;                
             } else if (status.equalsIgnoreCase("CA")) {
-                this.ca++;
-                this.notOkTotal++;
+                this.CA++;
+                this.notOKTotal++;
             }            
         }
         public void updatePercentageStatistics() {
-            this.percOk = (float)Math.round(((float)(this.ok * 100)/this.total) * 10) / 10;         
-            this.percKo = (float)Math.round(((float)(this.ko * 100)/this.total) * 10) / 10;         
-            this.percFa = (float)Math.round(((float)(this.fa * 100)/this.total) * 10) / 10;         
-            this.percNa = (float)Math.round(((float)(this.na * 100)/this.total) * 10) / 10;         
-            this.percNe = (float)Math.round(((float)(this.ne * 100)/this.total) * 10) / 10;         
-            this.percPe = (float)Math.round(((float)(this.pe * 100)/this.total) * 10) / 10;         
-            this.percCa = (float)Math.round(((float)(this.ca * 100)/this.total) * 10) / 10;         
-            this.percNotOkTotal  = (float)Math.round(((float)(this.notOkTotal*100)/this.total) * 10) / 10;
+            this.percOK = (float)Math.round(((float)(this.OK * 100)/this.total) * 10) / 10;         
+            this.percKO = (float)Math.round(((float)(this.KO * 100)/this.total) * 10) / 10;         
+            this.percFA = (float)Math.round(((float)(this.FA * 100)/this.total) * 10) / 10;         
+            this.percNA = (float)Math.round(((float)(this.NA * 100)/this.total) * 10) / 10;         
+            this.percNE = (float)Math.round(((float)(this.NE * 100)/this.total) * 10) / 10;         
+            this.percPE = (float)Math.round(((float)(this.PE * 100)/this.total) * 10) / 10;         
+            this.percCA = (float)Math.round(((float)(this.CA * 100)/this.total) * 10) / 10;         
+            this.percNotOKTotal  = (float)Math.round(((float)(this.notOKTotal*100)/this.total) * 10) / 10;
         }
         
         
@@ -109,53 +111,57 @@ public class SummaryStatisticsDTO {
             return environment;
         }
         
+        public String getBrowser() {
+            return browser;
+        }
+        
         public int getOk() {
-            return ok;
+            return OK;
         }
 
         public void setOk(int ok) {
-            this.ok = ok;
+            this.OK = ok;
         }
 
         public int getKo() {
-            return ko;
+            return KO;
         }
 
         public void setKo(int ko) {
-            this.ko = ko;
+            this.KO = ko;
         }
 
         public int getNa() {
-            return na;
+            return NA;
         }
 
         public void setNa(int na) {
-            this.na = na;
+            this.NA = na;
         }
 
         public int getPe() {
-            return pe;
+            return PE;
         }
 
         public void setPe(int pe) {
-            this.pe = pe;
+            this.PE = pe;
         }
 
         public int getFa() {
-            return fa;
+            return FA;
         }
 
         public void setFa(int fa) {
-            this.fa = fa;
+            this.FA = fa;
         }
 
         public int getNe() {
-            return ne;
+            return NE;
         }
 
 
         public int getCa() {
-            return ca;
+            return CA;
         }
         
         public int getTotal() {
@@ -163,74 +169,74 @@ public class SummaryStatisticsDTO {
         }
 
         public int getNotOkTotal() {
-            return notOkTotal;
+            return notOKTotal;
         }
         
         public float getPercOk() {
-            return percOk;
+            return percOK;
         }
 
         public float getPercKo() {
-            return percKo;
+            return percKO;
         }
 
         public float getPercNa() {
-            return percNa;
+            return percNA;
         }
 
         public float getPercNe() {
-            return percNe;
+            return percNE;
         }
         
         public float getPercPe() {
-            return percPe;
+            return percPE;
         }
 
         public float getPercFa() {
-            return percFa;
+            return percFA;
         }
 
         public float getPercCa() {
-            return percCa;
+            return percCA;
         }
 
         public float getPercNotOkTotal() {
-            return percNotOkTotal;
+            return percNotOKTotal;
         }
         public void setTotal(int total) {
             this.total = total;
         }
 
         public void setNotOkTotal(int notOkTotal) {
-            this.notOkTotal = notOkTotal;
+            this.notOKTotal = notOkTotal;
         }
 
         public void setPercOk(float percOk) {
-            this.percOk = percOk;
+            this.percOK = percOk;
         }
 
         public void setPercKo(float percKo) {
-            this.percKo = percKo;
+            this.percKO = percKo;
         }
 
         public void setPercNa(float percNa) {
-            this.percNa = percNa;
+            this.percNA = percNa;
         }
 
         public void setPercPe(float percPe) {
-            this.percPe = percPe;
+            this.percPE = percPe;
         }
 
         public void setPercFa(float percFa) {
-            this.percFa = percFa;
+            this.percFA = percFa;
         }
 
         public void setPercCa(float percCa) {
-            this.percCa = percCa;
+            this.percCA = percCa;
         }
 
         public void setPercNotOkTotal(float percNotOkTotal) {
-            this.percNotOkTotal = percNotOkTotal;
+            this.percNotOKTotal = percNotOkTotal;
         }
         
         public void setApplication(String application) {
@@ -245,11 +251,15 @@ public class SummaryStatisticsDTO {
             this.environment = environment;
         }
         
+        public void setBrowser(String browser) {
+            this.browser = browser;
+        }
+        
         public void setNe(int ne) {
-            this.ne = ne;
+            this.NE = ne;
         }
 
         public void setCa(int ca) {
-            this.ca = ca;
+            this.CA = ca;
         }
     }
