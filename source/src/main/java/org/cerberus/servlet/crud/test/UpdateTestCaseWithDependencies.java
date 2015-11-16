@@ -264,7 +264,7 @@ public class UpdateTestCaseWithDependencies extends HttpServlet {
          * For the list of testcasestep verify it exists. If it does not exists
          * > create it If it exist, verify if it's the
          */
-        List<TestCaseStep> tcsFromPage = getTestCaseStepFromParameter(request, appContext, test, testCase);
+        List<TestCaseStep> tcsFromPage = getTestCaseStepFromParameter(request, appContext, test, testCase, duplicate);
         List<TestCaseStepAction> tcsaFromPage = new ArrayList();
         List<TestCaseStepActionControl> tcsacFromPage = new ArrayList();
 
@@ -450,7 +450,7 @@ public class UpdateTestCaseWithDependencies extends HttpServlet {
         return testCaseCountryProp;
     }
 
-    private List<TestCaseStep> getTestCaseStepFromParameter(HttpServletRequest request, ApplicationContext appContext, String test, String testCase) {
+    private List<TestCaseStep> getTestCaseStepFromParameter(HttpServletRequest request, ApplicationContext appContext, String test, String testCase, boolean duplicate) {
         List<TestCaseStep> testCaseStep = new ArrayList();
         ITestCaseStepService tcsService = appContext.getBean(ITestCaseStepService.class);
         String[] testcase_step_increment = getParameterValuesIfExists(request, "step_increment");
@@ -473,7 +473,7 @@ public class UpdateTestCaseWithDependencies extends HttpServlet {
                 if (delete == null) {
                     TestCaseStep tcStep = testCaseStepFactory.create(test, testCase, step, desc, useStep == null ? "N" : useStep, useStepTest, useStepTestCase, useStepStep, inLibrary == null ? "N" : inLibrary);
                     /* Take action and control only if not use step*/
-                    if (useStep == null) {
+                    if (useStep == null || useStep.equals("N")) {
                         String isToCopySteps = getParameterIfExists(request, "isToCopySteps_" + inc);
                         if(isToCopySteps != null && isToCopySteps.equals("Y")){
                             // TODO:FN the information about the useStep should be cleared?
@@ -499,31 +499,53 @@ public class UpdateTestCaseWithDependencies extends HttpServlet {
                                 }
                                 act.setTestCaseStepActionControl(updatedControlsPerAction);
                             }
+
                             tcStep.setTestCaseStepAction(actions);
                         }else{
                             tcStep.setTestCaseStepAction(getTestCaseStepActionFromParameter(request, appContext, test, testCase, inc));
                         }
+
+                        //clears the information about the usestep
+                        tcStep.setUseStep("N");
+                        tcStep.setUseStepTest("");
+                        tcStep.setUseStepTestCase("");
+                        tcStep.setUseStepStep(-1);
+                        
                     } else {
                         TestCaseStep tcs = null;
                         if (useStepStep != -1 && !useStepTest.equals("") && !useStepTestCase.equals("")) {
                             /* If use step, verify if used step alread use another one */
-                            if(useStepChanged != null && useStepChanged.equals("Y")){                                                          
-                                //save the same info that was displayed
-                                tcs = tcsService.findTestCaseStep(useStepTest, useStepTestCase, useStepStep);                          
+                            if((useStepChanged != null && useStepChanged.equals("Y")) || duplicate){ //if it is to duplicate then we need to get the new step information                                                      
+                                //save the information about the test + testcase + step that was used to duplicate the test
+                                tcs = tcsService.findTestCaseStep(useStepTest, useStepTestCase, useStepStep);                                                          
+                                if(tcs != null){
+                                    tcStep.setUseStepTest(tcs.getTest());
+                                    tcStep.setUseStepTestCase(tcs.getTestCase());
+                                    tcStep.setUseStepStep(tcs.getStep());
+                                }
                             }else{
+                                //if there was no changes then it uses the same information
                                 tcs = tcsService.findTestCaseStep(test, testCase, Integer.parseInt(inc));   
-                            }
+                                if(tcs != null){
+                                    tcStep.setUseStepTest(tcs.getUseStepTest());
+                                    tcStep.setUseStepTestCase(tcs.getUseStepTestCase());
+                                    tcStep.setUseStepStep(tcs.getUseStepStep());
+                                }
+                            }    
+                           
                         }else{
-                            //does not defines a valid step, then keep has it was
+                            //does not defines a valid step, then keep as it was before
                             tcs = tcsService.findTestCaseStep(test, testCase, Integer.parseInt(inc));   
-                        }
-                        
-                        if(tcs != null){
-                            if (tcs.getUseStep().equals("Y") || (useStepChanged != null && useStepChanged.equals("N"))) {
+                            if(tcs != null){
+                                tcStep.setUseStep("N");
                                 tcStep.setUseStepTest(tcs.getUseStepTest());
                                 tcStep.setUseStepTestCase(tcs.getUseStepTestCase());
                                 tcStep.setUseStepStep(tcs.getUseStepStep());
+                                tcStep.setTestCaseStepAction(getTestCaseStepActionFromParameter(request, appContext, test, testCase, inc));
                             }
+                        }
+                        
+                        if(tcs != null){
                             /**
                              * If description is empty, take the one from the
                              * use step

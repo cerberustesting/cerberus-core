@@ -1863,7 +1863,7 @@ function addTestCasePropertiesNew(tableau, row_number, size, size2) {
 function submitTestCaseModificationNew(anchor) {
     var form = $("#UpdateTestCase");
     var allControlsToDelete = 0;
-
+    
     var actionsToDelete = $("input[data-action='delete_action']:checked");
     if (actionsToDelete.length > 0) {
         for (var i = 0; i < actionsToDelete.length; i++) {
@@ -2182,7 +2182,7 @@ function addTCSCNew(rowID, obj) {
             .attr('name', 'stepAnchor_step' + nextIncStep);
     $('#StepFirstLineDiv' + nextIncStep).find('input[data-id="step_delete_template"]')
             .attr('name', 'step_delete_' + nextIncStep)
-            .attr('id', 'step_delete_' + nextIncStep);
+            .attr('id', 'step_delete_' + nextIncStep).attr('style', 'display:none');
     $('#StepFirstLineDiv' + nextIncStep).find('img[data-id="step_img_delete"]')
             .attr('id', 'img_delete_step_' + nextIncStep)
             .attr('onclick', 'checkDeleteBox(\'img_delete_step_' + nextIncStep + '\', \'step_delete_' + nextIncStep + '\',\'StepFirstLineDiv' + nextIncStep + '\', \'StepHeaderDiv\')');
@@ -2215,7 +2215,7 @@ function addTCSCNew(rowID, obj) {
             .attr('onclick', 'addTCSCNew(\'StepsEndDiv' + nextIncStep + '\', this)')
             .attr('id', 'addStepButton' + nextIncStep);
 
-    $("#step_useStep_" + nextIncStep).change(useStepChangeHandler);
+    $("#step_useStep_" + nextIncStep).change(useStepChangeHandlerNew);
     callEvent();
 
 

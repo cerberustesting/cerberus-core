@@ -1116,10 +1116,12 @@
                                             <div id="StepUseStepDiv" style="float:left">UseStep
                                                 <input type="checkbox" id="step_useStep_<%=incrementStep%>" name="step_useStep_<%=incrementStep%>" data-step-number="<%=incrementStep%>" style="margin-top:12.5px;font-weight: bold; width:20px" 
                                                        <% if (tcs.getUseStep().equals("Y")) {%>
-                                                       checked
-                                                       <%}%>
-                                                       value="Y"
-                                                       <%if (tcs.getInLibrary().equals("Y")) {%>
+                                                       checked value="Y"
+                                                       <%}else{%>
+                                                            value="N"
+                                                       <%
+                                                       }   
+                                                        if (tcs.getInLibrary().equals("Y")) {%>
                                                            disabled="disabled" title ='This step uses another step!'
                                                        <%}%>> 
                                                 <input type="hidden" name="initUseStep_<%=incrementStep%>"
@@ -1178,7 +1180,7 @@
                                             <div id="StepUseStepTestCaseDiv<%=incrementStep%>" style="float:left;width:10%">
                                                 <select name="step_useStepTestCase_<%=incrementStep%>" style="width: 100%;margin-top:7.5px;font-weight: bold;" 
                                                         OnChange="findStepBySystemTestTestCase($('#step_useStepTest_<%=incrementStep%>'), this, '<%=MySystem%>', 
-                                                                    $('#step_useStepStep_<%=incrementStep%>'), $('#load_step_inLibrary_<%=incrementStep%>'), '')"
+                                                                    $('#step_useStepStep_<%=incrementStep%>'), $('#load_step_inLibrary_<%=incrementStep%>'), '', false)"
                                                         id="step_useStepTestCase_<%=incrementStep%>">
                                                     <%  if (tcs.getUseStepTestCase().equals("")) { %>
                                                     <option style="width: 400px" value="">---</option>

@@ -20,7 +20,6 @@
 package org.cerberus.servlet.crud.test;
 
 import java.io.IOException;
-import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.List;
 import javax.servlet.ServletException;
@@ -31,9 +30,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.cerberus.crud.entity.MessageEvent;
 import org.cerberus.enums.MessageEventEnum;
 import org.cerberus.crud.entity.TestCaseCountryProperties;
-import org.cerberus.crud.factory.IFactoryLogEvent;
 import org.cerberus.crud.factory.IFactoryTestCaseCountryProperties;
-import org.cerberus.crud.factory.impl.FactoryLogEvent;
 import org.cerberus.crud.factory.impl.FactoryTestCaseCountryProperties;
 import org.cerberus.crud.service.IDocumentationService;
 import org.cerberus.crud.service.ILogEventService;
