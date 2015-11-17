@@ -715,43 +715,7 @@ public class WebDriverService implements IWebDriverService {
     public MessageEvent doSeleniumActionWait(Session session, Identifier identifier) {
         MessageEvent message;
         try {
-            int time = 30;
-            WebDriverWait wait = new WebDriverWait(session.getDriver(), time);
-//            ExpectedCondition<Boolean> pageLoadCondition = new ExpectedCondition<Boolean>() {
-//               public Boolean apply(WebDriver driver) {
-//                  //return (Boolean)(((JavascriptExecutor)driver).executeScript("return jQuery.active == 0"));
-//                  // return (Boolean)(((JavascriptExecutor)driver).executeScript("return Ajax.activeRequestCount == 0"));
-//                }
-//            };
-//            wait.until(pageLoadCondition);
-
-            // wait for jQuery to load
-            ExpectedCondition<Boolean> jQueryLoad = new ExpectedCondition<Boolean>() {
-                @Override
-                public Boolean apply(WebDriver driver) {
-                    try {
-                        //return ((Long) ((JavascriptExecutor) driver).executeScript("return jQuery.active") == 0);
-                        return (Boolean) ((JavascriptExecutor) driver).executeScript("return (window.jQuery != null) && (jQuery.active === 0);");
-                    } catch (Exception e) {
-                        // no jQuery present
-                        return true;
-                    }
-                }
-            };
-
-            // wait for Javascript to load
-            /*ExpectedCondition<Boolean> jsLoad = new ExpectedCondition<Boolean>() {
-                @Override
-                public Boolean apply(WebDriver driver) {
-                    return ((JavascriptExecutor)driver).executeScript("return document.readyState")
-                            .toString().equals("complete");
-                }
-            };*/
-            //wait for the page to see if it is complete
-            wait.until(jQueryLoad);
-            //wait.until(jsLoad);
-            
-            wait = new WebDriverWait(session.getDriver(), TIMEOUT_WEBELEMENT);
+            WebDriverWait wait = new WebDriverWait(session.getDriver(), TIMEOUT_WEBELEMENT);
             wait.until(ExpectedConditions.presenceOfElementLocated(this.getBy(identifier)));
             message = new MessageEvent(MessageEventEnum.ACTION_SUCCESS_WAIT_ELEMENT);
             message.setDescription(message.getDescription().replaceAll("%ELEMENT%", identifier.getIdentifier() + "=" + identifier.getLocator()));
