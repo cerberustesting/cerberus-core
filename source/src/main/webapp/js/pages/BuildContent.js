@@ -182,9 +182,7 @@ function appendBuildList(selectName, level, defaultValue) {
             }
 
         },
-        error: function () {
-            showUnexpectedError();
-        }
+        error: showUnexpectedError
     });
 }
 

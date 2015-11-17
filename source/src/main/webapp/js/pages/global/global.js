@@ -207,7 +207,7 @@ function displayEnvList(selectName, system, defaultValue) {
 function displayUserList(selectName) {
     var myData = "iSortCol_0=1"; // We sort by login.
     $("[name='" + selectName + "']").append($('<option></option>').text("NONE").val(""));
-    $.when($.getJSON("ReadUser", myData)).then(function (data) {
+    $.when($.getJSON("ReadUserPublic", myData)).then(function (data) {
         for (var option in data.contentTable) {
             $("[name='" + selectName + "']").append($('<option></option>').text(data.contentTable[option].login + " - " + data.contentTable[option].name).val(data.contentTable[option].login));
         }
@@ -646,11 +646,16 @@ function returnMessageHandler(response) {
     }
 }
 
-function showUnexpectedError() {
+function showUnexpectedError(jqXHR, textStatus, errorThrown) {
     clearResponseMessageMainPage();
     var type = getAlertType("KO");
-    var message = "ERROR - An unexpected error occured, the servlet may not be available. Please check if your session is still active";
-
+    var message = "";
+    if (textStatus !== undefined && errorThrown !== undefined) {
+        message = textStatus.toUpperCase() + " - " + errorThrown;
+    } else {
+        message = "ERROR - An unexpected error occured, the servlet may not be available. Please check if your session is still active";
+    }
+    console.log(message);
     showMessageMainPage(type, message);
 }
 
@@ -704,9 +709,7 @@ function createDataTableWithPermissions(tableConfigurations, callbackfunction) {
                     returnMessageHandler(json);
                     fnCallback(json);
                 },
-                "error": function (e) {
-                    showUnexpectedError();
-                }
+                "error": showUnexpectedError
             });
             $.when(oSettings.jqXHR).then(function (data) {
                 //updates the table with basis on the permissions that the current user has
@@ -790,9 +793,7 @@ function createDataTable(tableConfigurations, callback, userCallbackFunction) {
                         userCallbackFunction(json);
                     }
                 },
-                "error": function (e) {
-                    showUnexpectedError();
-                }
+                error: showUnexpectedError
             });
         };
     } else {

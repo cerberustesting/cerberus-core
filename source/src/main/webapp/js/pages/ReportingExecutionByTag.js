@@ -251,6 +251,8 @@ function buildBar(obj) {
 }
 
 function loadEnvCountryBrowserReport() {
+    //adds a loader to a table 
+    showLoader($("#reportEnvCountryBrowser"));
     var tag = GetURLParameter('Tag');
     $("#progressEnvCountryBrowser").empty();
     var params = convertSerialToJSONObject($("#splitFilter input").serialize());
@@ -281,11 +283,10 @@ function loadEnvCountryBrowserReport() {
             for (var index = 0; index < len; index++) {
                 //draw a progress bar for each combo retrieved
                 buildBar(json.contentTable.split[index]);
+                hideLoader($("#reportEnvCountryBrowser"));
             }
         },
-        error: function () {
-            showUnexpectedError();
-        }
+        error: showUnexpectedError
     });
 }
 
@@ -308,8 +309,7 @@ function loadReportList() {
 
             var config = new TableConfigurationsServerSide("listTable", request, "testList", aoColumnsFunc(data.Columns));
             customConfig(config);
-            //adds a loader to a table 
-            showLoader($("#reportEnvCountryBrowser"));
+
             //var table = createDataTable(config, createShortDescRow);
             createDataTable(config, createShortDescRow);
             $('#listTable_wrapper').not('.initialized').addClass('initialized');
@@ -633,9 +633,8 @@ function createSummaryTable(data) {
     })).then(function () {
         var $total = createRow(data.total);
         $total.addClass("summaryTotal");
-        
+
         $("#summaryTableBody").append($total);
-        hideLoader($("#reportEnvCountryBrowser"));
         //alternate colors
         $("#summaryTableBody tr:odd").css("background-color", "rgba(225,231,243,0.2)");
         //if the row is the summary total, then it will have the background color blue
