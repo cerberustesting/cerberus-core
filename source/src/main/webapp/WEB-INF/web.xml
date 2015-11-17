@@ -1757,6 +1757,7 @@
             <url-pattern>/ReadBuildRevisionInvariant</url-pattern>
             <url-pattern>/ReadProject</url-pattern>
             <url-pattern>/ReadApplication</url-pattern>
+            <url-pattern>/ReadUserPublic</url-pattern>
         </web-resource-collection>
         <auth-constraint>
             <description>Test</description>

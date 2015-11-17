@@ -38,7 +38,7 @@ $.when($.getScript("js/pages/global/global.js")).then(function () {
             stopPropagation(event);
             $(this).parent().find(".active").removeClass("active");
             $(this).addClass("active");
-            console.log($(this).prop("id"));
+
             if ($(this).prop("id") === "tab") {
                 $("#progressEnvCountryBrowser").hide();
                 $("#summaryTableDiv").show();
