@@ -93,7 +93,7 @@
                                     <%
                                         options.clear();
                                         AnswerList answerDistinctSystem = applicationService.readDistinctSystem();
-                                        for (String system : (List<String>)answerDistinctSystem) {
+                                        for (String system : (List<String>)answerDistinctSystem.getDataList()) {
                                             options.put(system, system);
                                         }
                                     %>
