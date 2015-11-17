@@ -204,7 +204,7 @@ public class ReadBuildRevisionParameters extends HttpServlet {
         AnswerList resp = brpService.readByVarious1ByCriteria(system, application, build, revision, startPosition, length, columnName, sort, searchParameter, "");
 
         JSONArray jsonArray = new JSONArray();
-        boolean userHasPermissions = request.isUserInRole("IntegratorRO");
+        boolean userHasPermissions = request.isUserInRole("Integrator");
         if (resp.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {//the service was able to perform the query, then we should get all values
             for (BuildRevisionParameters brp : (List<BuildRevisionParameters>) resp.getDataList()) {
                 jsonArray.put(convertBuildRevisionParametersToJSONObject(brp));
