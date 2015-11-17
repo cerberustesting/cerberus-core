@@ -578,6 +578,10 @@
         <servlet-class>org.cerberus.servlet.crud.usermanagement.ReadUser</servlet-class>
     </servlet>
     <servlet>
+        <servlet-name>ReadUserPublic</servlet-name>
+        <servlet-class>org.cerberus.servlet.crud.usermanagement.ReadUserPublic</servlet-class>
+    </servlet>
+    <servlet>
         <servlet-name>ExportTestCase</servlet-name>
         <servlet-class>org.cerberus.servlet.crud.test.ExportTestCase</servlet-class>
     </servlet>
@@ -1367,6 +1371,10 @@
     <servlet-mapping>
         <servlet-name>ReadUser</servlet-name>
         <url-pattern>/ReadUser</url-pattern>
+    </servlet-mapping>
+        <servlet-mapping>
+        <servlet-name>ReadUserPublic</servlet-name>
+        <url-pattern>/ReadUserPublic</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
         <servlet-name>ExportTestCase</servlet-name>
