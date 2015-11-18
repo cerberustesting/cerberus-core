@@ -92,7 +92,6 @@ public class ReadTestCase extends HttpServlet {
                 jsonResponse = (JSONObject) answer.getItem();
             } else if (sEcho == 0 && !Strings.isNullOrEmpty(test) && getMaxTC) {
                 testCaseService = appContext.getBean(TestCaseService.class);
-                System.out.println(test);
                 String max = testCaseService.getMaxNumberTestCase(test);
                 if (max == null) {
                     max = "0";
