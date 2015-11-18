@@ -1757,7 +1757,6 @@
             <url-pattern>/ReadBuildRevisionInvariant</url-pattern>
             <url-pattern>/ReadProject</url-pattern>
             <url-pattern>/ReadApplication</url-pattern>
-            <url-pattern>/ReadUserPublic</url-pattern>
         </web-resource-collection>
         <auth-constraint>
             <description>Test</description>
@@ -2069,6 +2068,7 @@
             <url-pattern>/UpdateMyUserSystem</url-pattern>
             <url-pattern>/UpdateMyUserReporting</url-pattern>
             <url-pattern>/UpdateMyUserRobotPreference</url-pattern>
+            <url-pattern>/ReadUserPublic</url-pattern>
         </web-resource-collection>
         <auth-constraint>
             <description/>
