@@ -678,7 +678,8 @@ public class BuildRevisionParametersDAO implements IBuildRevisionParametersDAO {
         //SQL_CALC_FOUND_ROWS allows to retrieve the total number of columns by disrearding the limit clauses that 
         //were applied -- used for pagination p
         query.append("SELECT * from ( ");
-        query.append("SELECT Application, max(`Release`) rel ");
+        query.append("SELECT Application, max(`rel1`) rel FROM (");
+        query.append("SELECT Application, CAST(`Release` AS UNSIGNED) rel1 ");
         query.append(" from buildrevisionparameters brp ");
         query.append("join buildrevisioninvariant bri on bri.versionname = brp.revision ");
         query.append(" where 1=1 ");
@@ -695,6 +696,7 @@ public class BuildRevisionParametersDAO implements IBuildRevisionParametersDAO {
         query.append(" and bri.seq <= (select seq from buildrevisioninvariant where `system` = ? and `level` = 2 and `versionname` = ? )"); // revision
         query.append(" and `release` REGEXP '^-?[0-9]+$' "); // Release needs to be an svn number
         query.append(" and jenkinsbuildid is not null and jenkinsbuildid != '' "); // We need to have a jenkinsBuildID
+        query.append("   ORDER BY Application ) as al1 ");
         query.append("   GROUP BY Application  ORDER BY Application) as al ");
         query.append("JOIN buildrevisionparameters brp ");
         query.append("  ON brp.application=al.application and brp.release=al.rel and brp.build = ? ");
