@@ -1859,10 +1859,40 @@ function addTestCasePropertiesNew(tableau, row_number, size, size2) {
     document.getElementById(tableau).appendChild(TR);
 
 }
-
+/**
+ * Function that validates that there are not steps with the same number, upon saving.
+ * @returns {Boolean}
+ */
+function validateStepNumbers(){
+    var arrayValues = [];
+    //check the step numbers are not repeated and if they are not marked to be delete
+    var containsRepeated = 0;
+    $.each($("div[id='StepNumberDiv']"), function(idx, obj){
+        if(!$(this).parent("div[id*='StepFirstLineDiv']").hasClass("RowToDelete")){  //if the step step is not marked to be removed, then we can check if has a repeated number
+            var inputElement = $(this).find("input[name*='step_number_'][data-fieldtype='stepNumber']");
+            if(inputElement.length> 0 )    
+                if(arrayValues.indexOf($(inputElement).prop("value")) < 0){
+                    arrayValues.push($(inputElement).prop("value"));
+                }else{
+                    containsRepeated++;
+                }                
+            }
+    });
+    return containsRepeated === 0;
+}
 function submitTestCaseModificationNew(anchor) {
+       
     var form = $("#UpdateTestCase");
     var allControlsToDelete = 0;
+
+    /*temporary workaround for issue #611*/
+    var stepNumbersValid = validateStepNumbers();
+
+    if(!stepNumbersValid){
+        //TODO: add translation in future refactoring
+        alert("You have steps with the same number. Please check the step numbers before proceed!!");
+        return false;
+    }
 
     var actionsToDelete = $("input[data-action='delete_action']:checked");
     if (actionsToDelete.length > 0) {
@@ -2182,7 +2212,7 @@ function addTCSCNew(rowID, obj) {
             .attr('name', 'stepAnchor_step' + nextIncStep);
     $('#StepFirstLineDiv' + nextIncStep).find('input[data-id="step_delete_template"]')
             .attr('name', 'step_delete_' + nextIncStep)
-            .attr('id', 'step_delete_' + nextIncStep);
+            .attr('id', 'step_delete_' + nextIncStep).attr('style', 'display:none');
     $('#StepFirstLineDiv' + nextIncStep).find('img[data-id="step_img_delete"]')
             .attr('id', 'img_delete_step_' + nextIncStep)
             .attr('onclick', 'checkDeleteBox(\'img_delete_step_' + nextIncStep + '\', \'step_delete_' + nextIncStep + '\',\'StepFirstLineDiv' + nextIncStep + '\', \'StepHeaderDiv\')');
@@ -2215,7 +2245,7 @@ function addTCSCNew(rowID, obj) {
             .attr('onclick', 'addTCSCNew(\'StepsEndDiv' + nextIncStep + '\', this)')
             .attr('id', 'addStepButton' + nextIncStep);
 
-    $("#step_useStep_" + nextIncStep).change(useStepChangeHandler);
+    $("#step_useStep_" + nextIncStep).change(useStepChangeHandlerNew);
     callEvent();
 
 

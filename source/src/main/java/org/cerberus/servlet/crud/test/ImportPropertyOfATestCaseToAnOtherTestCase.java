@@ -144,6 +144,10 @@ public class ImportPropertyOfATestCaseToAnOtherTestCase extends HttpServlet {
                             logEventService.createPrivateCalls( "/ImportPropertyOfATestCaseToAnOtherTestCase", "CREATE", "Override from imported test step: " + propertyName, request);
                         }                        
                     }
+                }else{
+                    rs = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_EXPECTED);
+                    rs.setDescription(rs.getDescription().replace("%ITEM%", "Property ").replace("%OPERATION%", "CREATE").replace("%REASON%", "Property was not imported. Please check if is"
+                            + " correctly defined on the imported step."));
                 }
                 
             }else{

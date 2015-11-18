@@ -74,7 +74,7 @@ public class ReadTestCase extends HttpServlet {
         AnswerItem answer = new AnswerItem(new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED));
 
         int sEcho = Integer.valueOf(ParameterParserUtil.parseStringParam(request.getParameter("sEcho"), "0"));
-        String test = ParameterParserUtil.parseStringParam(request.getParameter("test"), "");
+        String test = ParameterParserUtil.ParseStringParamAndSanitize(request.getParameter("test"), "");
         String testCase = ParameterParserUtil.parseStringParam(request.getParameter("testCase"), "");
         boolean getMaxTC = ParameterParserUtil.parseBooleanParam(request.getParameter("getMaxTC"), false);
         boolean filter = ParameterParserUtil.parseBooleanParam(request.getParameter("filter"), false);

@@ -76,9 +76,13 @@
             <div class="row">
                 <div class="col-lg-12" id="reportByEnvCountryBrowser">
                     <div class="panel panel-default">
-                        <div class="panel-heading card" data-toggle="collapse" data-target="#reportEnvCountryBrowser">
+                        <div class="panel-heading card clearfix" data-toggle="collapse" data-target="#reportEnvCountryBrowser">
                             <label id="envCountryBrowser">Report by EnvCountryBrowser</label>
                             <span class="toggle glyphicon glyphicon-chevron-right pull-right"></span>
+                            <ul class="nav nav-tabs pull-right">
+                                <li class="active" id="graph"><a>Graph</a></li>
+                                <li class="" id="tab"><a>Tab</a></li>
+                            </ul>
                         </div>
                         <div class="panel-body collapse in" id="reportEnvCountryBrowser">
                             <label id="splitLabel" class="bold">Split by :</label>
@@ -104,52 +108,37 @@
                             <div id="progressEnvCountryBrowser">
 
                             </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            
-            
-            <div class="row">
-                <div class="col-lg-12" id="summaryTableArea">
-                    <div class="panel panel-default">
-                        <div class="panel-heading card" data-toggle="collapse" data-target="#summaryTablePanel">
-                            <label id="summaryTableTitle">Summary Table</label>
-                            <span class="toggle glyphicon glyphicon-chevron-right pull-right"></span>
-                        </div>
-                        <div class="panel-body collapse in" id="summaryTablePanel">
-                            <button type="button" class="btn btn-default pull-right marginBottom20" onclick="selectTableToCopy()" id="selectTableButton">
-                                <span class="glyphicon glyphicon-indent-right"></span><span id="selectTableButtonText">Select table</span></button>
-                            
-                            <table id="summaryTable" name="summaryTable" 
-                                   class="table table-hover display">
-                                <thead id="summaryTableHeader">
-                                    <tr>
-                                        <td id="summaryTableHeaderApplication" style="text-align: center" class="width130 center-text">Application</td>
-                                        <td id="summaryTableHeaderCountry" style="text-align: center">Country</td>
-                                        <td id="summaryTableHeaderEnvironment" class="width80">Environment</td>
-                                        <td style="text-align: center">OK</td>
-                                        <td style="text-align: center">KO</td>
-                                        <td style="text-align: center">FA</td>
-                                        <td style="text-align: center">NA</td>
-                                        <td style="text-align: center">NE</td>
-                                        <td style="text-align: center">PE</td>
-                                        <td style="text-align: center">CA</td>
-                                        <td style="text-align: center">NOT OK</td>
-                                        <td style="text-align: center">TOTAL</td>
-                                        <td style="text-align: center">% OK</td>
-                                        <td style="text-align: center">% KO</td>
-                                        <td style="text-align: center">% FA</td>
-                                        <td style="text-align: center">% NA</td>
-                                        <td style="text-align: center">% NE</td>
-                                        <td style="text-align: center">% PE</td>
-                                        <td style="text-align: center">% CA</td>
-                                        <td class="width80" style="text-align: center">% NOT OK</td>
-                                    </tr>                                    
-                                </thead>
-                                <tbody id="summaryTableBody"></tbody>
-                            </table>
+                            <div id="summaryTableDiv" style="display: none;">
 
+                                <table id="summaryTable" name="summaryTable" class="table table-hover display">
+                                    <thead id="summaryTableHeader">
+                                        <tr>
+                                            <td id="summaryTableHeaderEnvironment" class="width80">Environment</td>
+                                            <td id="summaryTableHeaderCountry" style="text-align: center">Country</td>
+                                            <td id="summaryTableHeaderEnvironment" class="width80">Browser</td>
+                                            <td id="summaryTableHeaderApplication" style="text-align: center" class="width130 center-text">Application</td>
+                                            <td style="text-align: center">OK</td>
+                                            <td style="text-align: center">KO</td>
+                                            <td style="text-align: center">FA</td>
+                                            <td style="text-align: center">NA</td>
+                                            <td style="text-align: center">NE</td>
+                                            <td style="text-align: center">PE</td>
+                                            <td style="text-align: center">CA</td>
+                                            <td style="text-align: center">NOT OK</td>
+                                            <td style="text-align: center">TOTAL</td>
+                                            <td style="text-align: center">% OK</td>
+                                            <td style="text-align: center">% KO</td>
+                                            <td style="text-align: center">% FA</td>
+                                            <td style="text-align: center">% NA</td>
+                                            <td style="text-align: center">% NE</td>
+                                            <td style="text-align: center">% PE</td>
+                                            <td style="text-align: center">% CA</td>
+                                            <td class="width80" style="text-align: center">% NOT OK</td>
+                                        </tr>                                    
+                                    </thead>
+                                    <tbody id="summaryTableBody"></tbody>
+                                </table>
+                            </div>
                         </div>
                     </div>
                 </div>

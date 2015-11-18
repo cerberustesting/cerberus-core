@@ -19,16 +19,13 @@
  */
 package org.cerberus.servlet.crud.testexecution;
 
-import com.google.gson.Gson;
 import java.io.IOException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.TreeMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.servlet.ServletException;
@@ -44,7 +41,6 @@ import org.cerberus.crud.service.IInvariantService;
 import org.cerberus.crud.service.ITestCaseExecutionInQueueService;
 import org.cerberus.crud.service.ITestCaseExecutionService;
 import org.cerberus.crud.service.impl.InvariantService;
-import org.cerberus.dto.SummaryStatisticsDTO;
 import org.cerberus.dto.TestCaseWithExecution;
 import org.cerberus.enums.MessageEventEnum;
 import org.cerberus.exception.CerberusException;
@@ -256,14 +252,6 @@ public class ReadTestCaseExecution extends HttpServlet {
     private AnswerItem findExecutionList(ApplicationContext appContext, HttpServletRequest request, String Tag)
             throws CerberusException, ParseException, JSONException {
         AnswerItem answer = new AnswerItem(new MessageEvent(MessageEventEnum.DATA_OPERATION_OK));
-        AnswerList testCaseExecution = new AnswerList();
-        AnswerList testCaseExecutionInQueue = new AnswerList();
-
-        ITestCaseExecutionService testCaseExecService = appContext
-                .getBean(ITestCaseExecutionService.class);
-
-        ITestCaseExecutionInQueueService testCaseExecutionInQueueService = appContext
-                .getBean(ITestCaseExecutionInQueueService.class);
 
         int startPosition = Integer.valueOf(ParameterParserUtil.parseStringParam(request.getParameter("iDisplayStart"), "0"));
         int length = Integer.valueOf(ParameterParserUtil.parseStringParam(request.getParameter("iDisplayLength"), "0"));
@@ -282,8 +270,6 @@ public class ReadTestCaseExecution extends HttpServlet {
         JSONObject countryFilter = getCountryList(request, appContext);
         LinkedHashMap<String, JSONObject> ttc = new LinkedHashMap<String, JSONObject>();
 
-        //object containing the summary data
-        HashMap<String, SummaryStatisticsDTO> summaryMap = new HashMap<String, SummaryStatisticsDTO>();
         for (TestCaseWithExecution testCaseWithExecution : testCaseWithExecutions) {
             try {
                 String controlStatus = testCaseWithExecution.getControlStatus();
@@ -315,27 +301,6 @@ public class ReadTestCaseExecution extends HttpServlet {
                     }
                     ttc.put(testCaseWithExecution.getTest() + "_" + testCaseWithExecution.getTestCase(), ttcObject);
                 }
-
-                //summary data
-                //check if the country and application shows
-                String keySummaryTable = testCaseWithExecution.getApplication() + " "
-                        + testCaseWithExecution.getCountry() + " " + testCaseWithExecution.getEnvironment();
-                SummaryStatisticsDTO stats;
-
-                String status = testCaseWithExecution.getControlStatus();
-
-                if (summaryMap.containsKey(keySummaryTable)) {
-                    stats = summaryMap.get(keySummaryTable);
-                } else {
-                    stats = new SummaryStatisticsDTO();
-                    stats.setApplication(testCaseWithExecution.getApplication());
-                    stats.setCountry(testCaseWithExecution.getCountry());
-                    stats.setEnvironment(testCaseWithExecution.getEnvironment());
-                }
-
-                stats.updateStatisticByStatus(status);
-                summaryMap.put(keySummaryTable, stats); //updates the map
-
             } catch (JSONException ex) {
                 Logger.getLogger(CampaignExecutionReport.class.getName()).log(Level.SEVERE, null, ex);
             }
@@ -345,10 +310,6 @@ public class ReadTestCaseExecution extends HttpServlet {
         jsonResponse.put("testList", ttc.values());
         jsonResponse.put("iTotalRecords", ttc.size());
         jsonResponse.put("iTotalDisplayRecords", ttc.size());
-
-        //adds the summary information
-        JSONArray data = extractSummaryData(summaryMap);
-        jsonResponse.put("summaryTable", data);
 
         answer.setItem(jsonResponse);
         answer.setResultMessage(new MessageEvent(MessageEventEnum.DATA_OPERATION_OK));
@@ -504,52 +465,6 @@ public class ReadTestCaseExecution extends HttpServlet {
         }
         answer.setResultMessage(msg);
         return answer;
-    }
-
-    private JSONArray extractSummaryData(HashMap<String, SummaryStatisticsDTO> summaryMap) {
-        JSONArray data = new JSONArray();
-        int okTotal = 0;
-        int koTotal = 0;
-        int naTotal = 0;
-        int neTotal = 0;
-        int peTotal = 0;
-        int faTotal = 0;
-        int caTotal = 0;
-        Gson gson = new Gson();
-        //sort keys
-        TreeMap<String, SummaryStatisticsDTO> sortedKeys = new TreeMap<String, SummaryStatisticsDTO>(summaryMap);
-        for (String key : sortedKeys.keySet()) {
-            SummaryStatisticsDTO sumStats = summaryMap.get(key);
-            //percentage values
-            okTotal += sumStats.getOk();
-            koTotal += sumStats.getKo();
-            naTotal += sumStats.getNa();
-            neTotal += sumStats.getNe();
-            peTotal += sumStats.getPe();
-            faTotal += sumStats.getFa();
-            caTotal += sumStats.getCa();
-            sumStats.updatePercentageStatistics();
-            data.put(gson.toJson(sumStats));
-        }
-        SummaryStatisticsDTO sumGlobal = new SummaryStatisticsDTO();
-        sumGlobal.setApplication("Total");
-        sumGlobal.setOk(okTotal);
-        sumGlobal.setKo(koTotal);
-        sumGlobal.setNa(naTotal);
-        sumGlobal.setNe(neTotal);
-        sumGlobal.setPe(peTotal);
-        sumGlobal.setFa(faTotal);
-        sumGlobal.setCa(caTotal);
-
-        int notOkTotal = koTotal + naTotal + peTotal + faTotal + caTotal + neTotal;
-        sumGlobal.setNotOkTotal(notOkTotal);
-
-        int totalGlobal = notOkTotal + okTotal;
-        sumGlobal.setTotal(totalGlobal);
-
-        sumGlobal.updatePercentageStatistics();
-        data.put(gson.toJson(sumGlobal));
-        return data;
     }
 
     private List<TestCaseWithExecution> readExecutionByTagList(ApplicationContext appContext, String Tag, int startPosition, int length, String columnName, String sort, String searchParameter) throws ParseException, CerberusException {

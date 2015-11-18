@@ -202,7 +202,7 @@ public class TestDataLibDAO implements ITestDataLibDAO {
         query.append("select distinct(`name`) ");
         query.append("from testdatalib where `name` like ? ");
         query.append(" order by `name`  ");
-
+        query.append(" limit ? ");
         if ((limit <= 0) || (limit >= MAX_ROW_SELECTED)) {
             limit = MAX_ROW_SELECTED;
         } 

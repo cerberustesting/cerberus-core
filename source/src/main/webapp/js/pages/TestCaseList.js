@@ -282,9 +282,7 @@ function CreateTestCaseClick() {
 
             $('#addEntryModalForm #testCase').val(tcnumber);
         },
-        error: function (e) {
-            showUnexpectedError();
-        }
+        error: showUnexpectedError
     });
 
     if (test !== "") {
@@ -506,9 +504,7 @@ function setActive(checkbox) {
             //show message in the main page
             showMessageMainPage(messageType, data.message);
         },
-        error: function (e) {
-            showUnexpectedError();
-        }
+        error: showUnexpectedError
     });
 }
 
@@ -535,9 +531,7 @@ function setCountry(checkbox) {
             //show message in the main page
             showMessageMainPage(messageType, data.message);
         },
-        error: function (e) {
-            showUnexpectedError();
-        }
+        error: showUnexpectedError
     });
 }
 

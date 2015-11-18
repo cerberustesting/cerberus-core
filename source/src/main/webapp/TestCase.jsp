@@ -142,9 +142,19 @@
                 if (!bool) {
                     $('#generalparameter').hide();
                 }
-                $("#UpdateTestCase").submit(function() {
+                $("#UpdateTestCase").submit(function() {                    
                     $('#howtoDetail').val($('#howto').elrte('val'));
                     $('#valueDetail').val($('#value').elrte('val'));
+                     /*temporary workaround for issue #611*/
+                    var stepNumbersValid = validateStepNumbers();
+
+                    if(!stepNumbersValid){
+                        //TODO: add translation in future refactoring
+                        alert("You have steps with the same number. Please check the step numbers before proceed!!");
+                        return false;
+                    }else{
+                        
+                    }
                 });
             });</script>
         <script>
@@ -656,7 +666,7 @@
                                 <% }%>
                                 <input type="button" id="exportTC" name="exportTC" value="exportTestCase" onclick="javascript:exportTestCase('<%=test%>', '<%=testcase%>', 'TestCase.jsp')">
                                 <input type="button" id="saveAs" name="saveAs" value="Save As" onclick="javascript:enableDuplicateField()">
-                                <input type="button" style="display:none" id="FirstSaveChanges" name="SaveChanges" value="Save Changes" onclick="$('#UpdateTestCase').submit();">
+                                <input type="button" style="display:none" id="FirstSaveChanges" name="SaveChanges" value="Save Changes" onclick="return saveAsClickHandler();">
                                 <div id="deleteTCDiv">
                                 </div>
 
@@ -1116,10 +1126,12 @@
                                             <div id="StepUseStepDiv" style="float:left">UseStep
                                                 <input type="checkbox" id="step_useStep_<%=incrementStep%>" name="step_useStep_<%=incrementStep%>" data-step-number="<%=incrementStep%>" style="margin-top:12.5px;font-weight: bold; width:20px" 
                                                        <% if (tcs.getUseStep().equals("Y")) {%>
-                                                       checked
-                                                       <%}%>
-                                                       value="Y"
-                                                       <%if (tcs.getInLibrary().equals("Y")) {%>
+                                                       checked value="Y"
+                                                       <%}else{%>
+                                                            value="N"
+                                                       <%
+                                                       }   
+                                                        if (tcs.getInLibrary().equals("Y")) {%>
                                                            disabled="disabled" title ='This step uses another step!'
                                                        <%}%>> 
                                                 <input type="hidden" name="initUseStep_<%=incrementStep%>"
@@ -1178,7 +1190,7 @@
                                             <div id="StepUseStepTestCaseDiv<%=incrementStep%>" style="float:left;width:10%">
                                                 <select name="step_useStepTestCase_<%=incrementStep%>" style="width: 100%;margin-top:7.5px;font-weight: bold;" 
                                                         OnChange="findStepBySystemTestTestCase($('#step_useStepTest_<%=incrementStep%>'), this, '<%=MySystem%>', 
-                                                                    $('#step_useStepStep_<%=incrementStep%>'), $('#load_step_inLibrary_<%=incrementStep%>'), '')"
+                                                                    $('#step_useStepStep_<%=incrementStep%>'), $('#load_step_inLibrary_<%=incrementStep%>'), '', false)"
                                                         id="step_useStepTestCase_<%=incrementStep%>">
                                                     <%  if (tcs.getUseStepTestCase().equals("")) { %>
                                                     <option style="width: 400px" value="">---</option>
@@ -2307,29 +2319,7 @@
 
             }
 
-            function checkDeleteBox(img, checkbox, row, initClassName) {
-                console.log(document.getElementById(checkbox).checked);
-                if (document.getElementById(checkbox).checked === false) {
-                    document.getElementById(checkbox).checked = true;
-                    document.getElementById(row).className = 'RowToDelete';
-                    document.getElementById(img).src = 'images/ko.png';
-                    $("div[data-associatedaction='" + row + "']").each(function(index, field) {
-                        $(field).attr('class', 'RowToDelete');
-                        $(field).find("img[src='images/bin.png']").attr('src', 'images/ko.png');
-                    });
-
-
-                } else {
-                    document.getElementById(checkbox).checked = false;
-                    document.getElementById(row).className = initClassName;
-                    document.getElementById(img).src = 'images/bin.png';
-                    $("div[data-associatedaction='" + row + "']").each(function(index, field) {
-                        $(field).attr('class', initClassName);
-                        $(field).find("img[src='images/ko.png']").attr('src', 'images/bin.png');
-                    });
-                }
-
-            }</script>
+            </script>
         <script type="text/javascript">
     $(document).ready(function() {
         var cookies = GetCookie('TestCaseDisplayStepLibrary');

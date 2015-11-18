@@ -98,7 +98,7 @@ $.when($.getScript("js/pages/global/global.js")).then(function () {
                     oTable.fnAddData(result["aaData"]);
                 }
             }
-            
+
 
         }).fail(handleErrorAjaxAfterTimeout);
 
@@ -188,64 +188,43 @@ function generateTagLink(tagName) {
     return link;
 }
 
-function generateTooltip(data, statusOrder) {
+function generateTooltip(data, statusOrder, tag) {
     var htmlRes;
     var len = statusOrder.length;
 
-    htmlRes = "<div class='tag-tooltip'><strong>Tag : </strong>" + data.tag;
+    htmlRes = "<div class='tag-tooltip'><strong>Tag : </strong>" + tag;
     for (var index = 0; index < len; index++) {
         var status = statusOrder[index];
 
-        if (data.total.hasOwnProperty(status)) {
-            data.total[status].percent = (data.total[status].value / data.total.totalTest) * 100;
-            data.total[status].roundPercent = Math.round(((data.total[status].value / data.total.totalTest) * 100) * 10) / 10;
-
-
+        if (data.hasOwnProperty(status)) {
             htmlRes += "<div>\n\
-                        <span class='color-box' style='background-color: " + data.total[status].color + ";'></span>\n\
-                        <strong> " + status + " : </strong>" + data.total[status].roundPercent + "%</div>";
+                        <span class='color-box status" + status + "'></span>\n\
+                        <strong> " + status + " : </strong>" + data[status] + "</div>";
         }
     }
     htmlRes += '</div>';
     return htmlRes;
 }
 
-function generateProgressBar(statusObj) {
-    var bar = '<div class="progress-bar" \n\
-                role="progressbar" \n\
-                aria-valuenow="60" \n\
-                aria-value="0" \n\
-                aria-valuemax="100" \n\
-                style="width:' + statusObj.percent + '%;background-color:' + statusObj.color + '">' + statusObj.roundPercent + '%</div>';
-
-    return bar;
-}
-
-function getTotalExec(execData) {
-    var total = 0;
-
-    for (var key in execData) {
-        total += execData[key].value;
-    }
-
-    execData.totalTest = total;
-}
-
-function generateTagReport(data) {
+function generateTagReport(data, tag) {
     var reportArea = $("#tagExecStatus");
     var statusOrder = ["OK", "KO", "FA", "NA", "NE", "PE", "CA"];
-    getTotalExec(data.total);
     var buildBar;
-    var tooltip = generateTooltip(data, statusOrder);
+    var tooltip = generateTooltip(data, statusOrder, tag);
     var len = statusOrder.length;
 
-    buildBar = '<div>' + generateTagLink(data.tag) + '<div class="pull-right" style="display: inline;">Total executions : ' + data.total.totalTest + '</div>\n\
+    buildBar = '<div>' + generateTagLink(tag) + '<div class="pull-right" style="display: inline;">Total executions : ' + data.total + '</div>\n\
                                                         </div><div class="progress" data-toggle="tooltip" data-html="true" title="' + tooltip + '">';
     for (var index = 0; index < len; index++) {
         var status = statusOrder[index];
 
-        if (data.total.hasOwnProperty(status)) {
-            buildBar += generateProgressBar(data.total[status]);
+        if (data.hasOwnProperty(status)) {
+            var percent = (data[status] / data.total) * 100;
+            var roundPercent = Math.round(percent * 10) / 10;
+
+            buildBar += '<div class="progress-bar status'+ status +'" \n\
+                role="progressbar" \n\
+                style="width:' + percent + '%">' + roundPercent + '%</div>';
         }
     }
     buildBar += '</div>';
@@ -267,30 +246,12 @@ function loadTagExec() {
         $.ajax({
             type: "GET",
             url: "GetReportData",
-            data: {CampaignName: "null", Tag: tagName},
+            data: {split: true, Tag: tagName},
+            tag: tagName,
             async: true,
             dataType: 'json',
             success: function (data) {
-                var tagData = {};
-                var total = {};
-                var dataLen = data.axis.length;
-                
-                for (var index = 0; index < dataLen; index++) {
-                    for (var key in data.axis[index]) {
-                        if (key !== "name") {
-                            if (total.hasOwnProperty(key)) {
-                                total[key].value += data.axis[index][key].value;
-                            } else {
-                                total[key] = {"value": data.axis[index][key].value,
-                                    "color": data.axis[index][key].color};
-                            }
-                        }
-                    }
-                }
-
-                tagData.tag = data.tag;
-                tagData.total = total;
-                generateTagReport(tagData);
+                generateTagReport(data.contentTable.total, this.tag);
             }
         });
     }
@@ -304,13 +265,13 @@ function aoColumnsFunc() {
         {"data": "Application", "bSortable": true, "sName": "Application", "title": displayDocLink(doc.application.Application),
             "mRender": function (data, type, oObj) {
                 var href = "TestPerApplication.jsp?Application=" + data;
-                
+
                 return "<a href='" + href + "'>" + data + "</a>";
             }
         },
         {"data": "Total", "bSortable": true, "sName": "Total", "title": "Total"}
     ];
-    
+
     for (var s = 0; s < statusLen; s++) {
         var obj = {
             "data": status[s].value,
@@ -320,6 +281,6 @@ function aoColumnsFunc() {
         };
         aoColumns.push(obj);
     }
-    
+
     return aoColumns;
 }

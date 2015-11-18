@@ -64,6 +64,7 @@ import org.openqa.selenium.logging.LogEntries;
 import org.openqa.selenium.logging.LogEntry;
 import org.openqa.selenium.logging.Logs;
 import org.openqa.selenium.remote.Augmenter;
+import org.openqa.selenium.support.ui.ExpectedCondition;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.Select;
 import org.openqa.selenium.support.ui.WebDriverWait;
@@ -452,8 +453,8 @@ public class WebDriverService implements IWebDriverService {
                     message = new MessageEvent(MessageEventEnum.ACTION_SUCCESS_CLICK);
                     message.setDescription(message.getDescription().replaceAll("%ELEMENT%", identifier.getIdentifier() + "=" + identifier.getLocator()));
                     return message;
-                }  
-            }  
+                }
+            }
 
             return answer.getResultMessage();
         } catch (NoSuchElementException exception) {
@@ -478,14 +479,14 @@ public class WebDriverService implements IWebDriverService {
             if (answer.isCodeEquals(MessageEventEnum.ACTION_SUCCESS_WAIT_ELEMENT.getCode())) {
                 WebElement webElement = (WebElement) answer.getItem();
                 if (webElement != null) {
-                    Actions actions = new Actions(session.getDriver());                    
+                    Actions actions = new Actions(session.getDriver());
                     actions.clickAndHold(webElement);
                     actions.build().perform();
                     message = new MessageEvent(MessageEventEnum.ACTION_SUCCESS_MOUSEDOWN);
                     message.setDescription(message.getDescription().replaceAll("%ELEMENT%", identifier.getIdentifier() + "=" + identifier.getLocator()));
                     return message;
                 }
-            } 
+            }
 
             return answer.getResultMessage();
         } catch (NoSuchElementException exception) {
@@ -514,9 +515,9 @@ public class WebDriverService implements IWebDriverService {
                     message = new MessageEvent(MessageEventEnum.ACTION_SUCCESS_MOUSEUP);
                     message.setDescription(message.getDescription().replaceAll("%ELEMENT%", identifier.getIdentifier() + "=" + identifier.getLocator()));
                     return message;
-                } 
+                }
             }
-            
+
             return answer.getResultMessage();
         } catch (NoSuchElementException exception) {
             message = new MessageEvent(MessageEventEnum.ACTION_FAILED_MOUSEUP_NO_SUCH_ELEMENT);
@@ -628,9 +629,9 @@ public class WebDriverService implements IWebDriverService {
                     message = new MessageEvent(MessageEventEnum.ACTION_SUCCESS_DOUBLECLICK);
                     message.setDescription(message.getDescription().replaceAll("%ELEMENT%", identifier.getIdentifier() + "=" + identifier.getLocator()));
                     return message;
-                } 
+                }
             }
-            
+
             message = answer.getResultMessage();
             return message;
         } catch (NoSuchElementException exception) {
@@ -652,7 +653,7 @@ public class WebDriverService implements IWebDriverService {
             AnswerItem answer = this.getSeleniumElement(session, identifier, true, true);
             if (answer.isCodeEquals(MessageEventEnum.ACTION_SUCCESS_WAIT_ELEMENT.getCode())) {
                 WebElement webElement = (WebElement) answer.getItem();
-                if(webElement != null){
+                if (webElement != null) {
                     webElement.clear();
                     if (!StringUtil.isNull(property)) {
                         webElement.sendKeys(property);
@@ -666,7 +667,7 @@ public class WebDriverService implements IWebDriverService {
                     }
                     return message;
                 }
-            } 
+            }
             return answer.getResultMessage();
         } catch (NoSuchElementException exception) {
             message = new MessageEvent(MessageEventEnum.ACTION_FAILED_TYPE_NO_SUCH_ELEMENT);
@@ -687,7 +688,7 @@ public class WebDriverService implements IWebDriverService {
             AnswerItem answer = this.getSeleniumElement(session, identifier, true, true);
             if (answer.isCodeEquals(MessageEventEnum.ACTION_SUCCESS_WAIT_ELEMENT.getCode())) {
                 WebElement menuHoverLink = (WebElement) answer.getItem();
-                if(menuHoverLink != null){
+                if (menuHoverLink != null) {
                     Actions actions = new Actions(session.getDriver());
                     actions.moveToElement(menuHoverLink);
                     actions.build().perform();
@@ -696,7 +697,7 @@ public class WebDriverService implements IWebDriverService {
                     return message;
                 }
             }
-            
+
             return answer.getResultMessage();
         } catch (NoSuchElementException exception) {
             message = new MessageEvent(MessageEventEnum.ACTION_FAILED_MOUSEOVER_NO_SUCH_ELEMENT);
@@ -737,20 +738,20 @@ public class WebDriverService implements IWebDriverService {
         MessageEvent message;
         try {
             if (!StringUtil.isNullOrEmpty(identifier.getLocator())) {
-                AnswerItem answer =  this.getSeleniumElement(session, identifier, true, true);
+                AnswerItem answer = this.getSeleniumElement(session, identifier, true, true);
                 if (answer.isCodeEquals(MessageEventEnum.ACTION_SUCCESS_WAIT_ELEMENT.getCode())) {
                     WebElement webElement = (WebElement) answer.getItem();
-                    if(webElement != null){                        
+                    if (webElement != null) {
                         webElement.sendKeys(Keys.valueOf(property));
                         message = new MessageEvent(MessageEventEnum.ACTION_SUCCESS_KEYPRESS);
                         message.setDescription(message.getDescription().replaceAll("%ELEMENT%", identifier.getIdentifier() + "=" + identifier.getLocator()));
                         message.setDescription(message.getDescription().replaceAll("%DATA%", property));
                         return message;
                     }
-                    
+
                 }
                 return answer.getResultMessage();
-                
+
             } else {
                 try {
                     System.setProperty("java.awt.headless", "false");
@@ -830,7 +831,7 @@ public class WebDriverService implements IWebDriverService {
                 AnswerItem answer = this.getSeleniumElement(session, object, true, true);
                 if (answer.isCodeEquals(MessageEventEnum.ACTION_SUCCESS_WAIT_ELEMENT.getCode())) {
                     WebElement webElement = (WebElement) answer.getItem();
-                    if(webElement != null){
+                    if (webElement != null) {
                         select = new Select(webElement);
                         this.selectRequestedOption(select, property, object.getIdentifier() + "=" + object.getLocator());
                         message = new MessageEvent(MessageEventEnum.ACTION_SUCCESS_SELECT);
@@ -839,15 +840,15 @@ public class WebDriverService implements IWebDriverService {
                         return message;
                     }
                 }
-                
-                return answer.getResultMessage();                
+
+                return answer.getResultMessage();
             } catch (NoSuchElementException exception) {
                 message = new MessageEvent(MessageEventEnum.ACTION_FAILED_SELECT_NO_SUCH_ELEMENT);
                 message.setDescription(message.getDescription().replaceAll("%ELEMENT%", object.getIdentifier() + "=" + object.getLocator()));
                 MyLogger.log(WebDriverService.class.getName(), Level.DEBUG, exception.toString());
                 return message;
-            }            
-            
+            }
+
         } catch (CerberusEventException ex) {
             Logger.getLogger(WebDriverService.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
             return ex.getMessageError();
@@ -942,19 +943,19 @@ public class WebDriverService implements IWebDriverService {
         MessageEvent message;
         try {
             AnswerItem answer = this.getSeleniumElement(session, identifier, false, false);
-            
+
             if (answer.isCodeEquals(MessageEventEnum.ACTION_SUCCESS_WAIT_ELEMENT.getCode())) {
                 WebElement webElement = (WebElement) answer.getItem();
-                if(webElement != null){
+                if (webElement != null) {
                     session.getDriver().switchTo().frame(webElement);
                     message = new MessageEvent(MessageEventEnum.ACTION_SUCCESS_FOCUSTOIFRAME);
                     message.setDescription(message.getDescription().replaceAll("%IFRAME%", identifier.getIdentifier() + "=" + identifier.getLocator()));
                     return message;
                 }
-                
+
             }
-            
-           return answer.getResultMessage();
+
+            return answer.getResultMessage();
         } catch (NoSuchElementException exception) {
             message = new MessageEvent(MessageEventEnum.ACTION_FAILED_FOCUS_NO_SUCH_ELEMENT);
             message.setDescription(message.getDescription().replaceAll("%IFRAME%", identifier.getIdentifier() + "=" + identifier.getLocator()));
@@ -966,7 +967,7 @@ public class WebDriverService implements IWebDriverService {
             MyLogger
                     .log(WebDriverService.class
                             .getName(), Level.FATAL, exception.toString());
-           
+
         }
         return message;
     }
@@ -993,11 +994,11 @@ public class WebDriverService implements IWebDriverService {
     public MessageEvent doSeleniumActionMouseDownMouseUp(Session session, Identifier identifier) {
         MessageEvent message;
         try {
-            AnswerItem answer =this.getSeleniumElement(session, identifier, true, false);
-            
+            AnswerItem answer = this.getSeleniumElement(session, identifier, true, false);
+
             if (answer.isCodeEquals(MessageEventEnum.ACTION_SUCCESS_WAIT_ELEMENT.getCode())) {
                 WebElement webElement = (WebElement) answer.getItem();
-                if(webElement != null){
+                if (webElement != null) {
                     Actions actions = new Actions(session.getDriver());
                     actions.clickAndHold(webElement);
                     actions.build().perform();
@@ -1006,10 +1007,10 @@ public class WebDriverService implements IWebDriverService {
                 }
             }
             /*Actions actions = new Actions(session.getDriver());
-            actions.clickAndHold(this.getSeleniumElement(session, identifier, true, false));
-            actions.build().perform();
-            actions.release(this.getSeleniumElement(session, identifier, true, false));
-            actions.build().perform();*/
+             actions.clickAndHold(this.getSeleniumElement(session, identifier, true, false));
+             actions.build().perform();
+             actions.release(this.getSeleniumElement(session, identifier, true, false));
+             actions.build().perform();*/
             message = new MessageEvent(MessageEventEnum.ACTION_SUCCESS_MOUSEDOWN);
             message.setDescription(message.getDescription().replaceAll("%ELEMENT%", identifier.getIdentifier() + "=" + identifier.getLocator()));
             return message;
@@ -1083,7 +1084,7 @@ public class WebDriverService implements IWebDriverService {
             AnswerItem answer = this.getSeleniumElement(session, identifier, true, true);
             if (answer.isCodeEquals(MessageEventEnum.ACTION_SUCCESS_WAIT_ELEMENT.getCode())) {
                 WebElement webElement = (WebElement) answer.getItem();
-                if(webElement != null){
+                if (webElement != null) {
                     Actions actions = new Actions(session.getDriver());
                     actions.contextClick(webElement);
                     actions.build().perform();
@@ -1092,7 +1093,7 @@ public class WebDriverService implements IWebDriverService {
                     return message;
                 }
             }
-           
+
             return answer.getResultMessage();
         } catch (NoSuchElementException exception) {
             message = new MessageEvent(MessageEventEnum.ACTION_FAILED_RIGHTCLICK_NO_SUCH_ELEMENT);
