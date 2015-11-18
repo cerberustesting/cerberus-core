@@ -59,7 +59,7 @@ public class UserDAO implements IUserDAO {
     @Autowired
     private IFactoryUser factoryUser;
 
-    private static final Logger LOG = Logger.getLogger(ApplicationDAO.class);
+    private static final Logger LOG = Logger.getLogger(UserDAO.class);
 
     private final String OBJECT_NAME = "User";
     private final String SQL_DUPLICATED_CODE = "23000";

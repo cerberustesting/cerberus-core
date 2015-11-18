@@ -524,13 +524,13 @@ public class ApplicationDAO implements IApplicationDAO {
 
                 ResultSet resultSet = preStat.executeQuery();
                 try {
-                    
+
                     while (resultSet.next()) {
                         list.add(resultSet.getString("system"));
                     }
-                    if(list.isEmpty()){
+                    if (list.isEmpty()) {
                         msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_NO_DATA_FOUND);
-                    }else{
+                    } else {
                         msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
                     }
                 } catch (SQLException exception) {
@@ -539,7 +539,7 @@ public class ApplicationDAO implements IApplicationDAO {
                     msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", exception.toString()));
                     list.clear();
                 } finally {
-                    if(resultSet != null){
+                    if (resultSet != null) {
                         resultSet.close();
                     }
                 }
@@ -548,7 +548,7 @@ public class ApplicationDAO implements IApplicationDAO {
                 msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
                 msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", exception.toString()));
             } finally {
-                if(preStat != null){
+                if (preStat != null) {
                     preStat.close();
                 }
             }
@@ -565,7 +565,7 @@ public class ApplicationDAO implements IApplicationDAO {
                 LOG.warn("Unable to close connection : " + exception.toString());
             }
         }
-        
+
         answer.setTotalRows(list.size());
         answer.setDataList(list);
         answer.setResultMessage(msg);
