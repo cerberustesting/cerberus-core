@@ -901,7 +901,8 @@ function editTestDataLib(testDataLibID) {
         $('#editTestDataLibModal #method').prop("value", obj.method);
         $('#editTestDataLibModal #envelope').prop("value", obj.envelope);
 
-
+        $('#editTestDataLibModal #script').prop("value", obj.script);
+        
         var jqxhrInvariant = $.getJSON("ReadInvariant", "");
 
         $.when(jqxhrInvariant).then(function(invariantData) {
