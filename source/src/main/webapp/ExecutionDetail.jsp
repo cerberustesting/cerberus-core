@@ -17,6 +17,9 @@
   ~ You should have received a copy of the GNU General Public License
   ~ along with Cerberus.  If not, see <http://www.gnu.org/licenses/>.
 --%>
+<%@page import="org.eclipse.jetty.util.ajax.JSON"%>
+<%@page import="org.json.JSONException"%>
+<%@page import="org.json.JSONObject"%>
 <%@page import="org.apache.commons.lang3.StringEscapeUtils"%>
 <%@page import="org.cerberus.crud.entity.TestCaseExecutionwwwSum"%>
 <%@page import="org.cerberus.crud.service.ITestCaseExecutionwwwSumService"%>
@@ -534,7 +537,36 @@
                                         <td style="width:1%">&nbsp;&nbsp;&nbsp;&nbsp;</td>
                                         <td style="width:1%" class="<%=myActionData.getReturnCode()%>">>></td>
                                         <td colspan="9" class="<%=myActionData.getReturnCode()%>F">
-<code><pre><i><span id="ACTMES-<%=myStep + "-" + myActionData.getSequence()%>"><%=StringUtil.replaceUrlByLinkInString(myActionData.getReturnMessage())%></span></i></pre></code></td>
+                                        <%
+                                                //TODO:FN to refactor while converting the page -- this should be in a servlet or javascript file
+                                                String returnMessage = myActionData.getReturnMessage();
+                                                if(returnMessage.startsWith("{")){
+                                                    try{
+                                                        JSONObject desc = new JSONObject(returnMessage);
+                                                        String type = desc.get("type").toString();
+                                                        StringBuilder finalMessage = new StringBuilder();
+                                                        if(type.equals("SOAP")){
+                                                            finalMessage.append(desc.get("description").toString());
+                                                            if(!StringUtil.isNullOrEmpty(desc.get("request").toString())){
+                                                                finalMessage.append(" <a target='_blank' href='").append(PictureURL);
+                                                                finalMessage.append(desc.get("request").toString()).append("'>SOAP request </a>");
+                                                            }
+                                                            if(!StringUtil.isNullOrEmpty(desc.get("response").toString())){
+                                                                finalMessage.append(" <a target='_blank' href='").append(PictureURL);
+                                                                finalMessage.append(desc.get("response").toString()).append("'>SOAP response</a>");
+                                                            }
+                                                            
+                                                        }
+                                                        
+                                                        returnMessage = finalMessage.toString();
+                                                    }catch(JSONException ex){
+                                                        //there is no need to parse 
+                                                        
+                                                    }
+                                                }
+                                        %>
+<code><pre><i><span id="ACTMES-<%=myStep + "-" + myActionData.getSequence()%>"><%=StringUtil.replaceUrlByLinkInString(returnMessage)%></span>
+</i></pre></code></td>
                                     </tr>
                                     
                                     <tr>
@@ -629,7 +661,20 @@
                             <td><code><pre><b><i><span id="PROPVAL-<%=myData.getProperty()%>"><%=StringUtil.textToHtmlConvertingURLsToLinks(myData.getValue())%></span></i></b></pre></code></td>
                             <td style="font-size: x-small"><%=myData.getType()%></td>
                             <td style="font-size: x-small"><code><pre><%=StringUtil.textToHtmlConvertingURLsToLinks(myData.getValue1())%> / <%=myData.getValue2()%></pre></code></td>
-                            <td><code><pre><span id="PROPMES-<%=myData.getProperty()%>"><%=StringUtil.textToHtmlConvertingURLsToLinks(myData.getrMessage())%></span></pre></code></td>
+                            <% 
+                            String propMessage = myData.getrMessage();
+                            //TODO this should handled differently, in the servlet or javascript file
+                            if(propMessage.startsWith("{")){
+                                    try{
+                                        JSONObject desc = new JSONObject(propMessage);
+                                        propMessage = desc.get("description").toString();
+                                    }catch(JSONException ex){
+                                        //there is no need to parse 
+                                        //add some recovery code?
+                                    }
+                                }
+                            %>
+                            <td><code><pre><span id="PROPMES-<%=myData.getProperty()%>"><%=StringUtil.textToHtmlConvertingURLsToLinks(propMessage)%></span></pre></code></td>
                         </tr>
                         <%
                             }

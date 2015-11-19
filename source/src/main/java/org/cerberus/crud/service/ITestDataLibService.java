@@ -122,9 +122,9 @@ public interface ITestDataLibService {
      *
      * @param lib testdatalib entry
      * @param rowLimit
-     * @param propertyName
+     * @param propertyNature
      * @return the result data for the library entry
      */
-    AnswerItem fetchData(TestDataLib lib, int rowLimit, String propertyName);
+    AnswerItem fetchData(TestDataLib lib, int rowLimit, String propertyNature);
 
 }

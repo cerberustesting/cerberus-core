@@ -20,12 +20,10 @@
 package org.cerberus.service.engine.impl;
 
 import com.mysql.jdbc.StringUtils;
-import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.logging.Logger;
@@ -52,7 +50,6 @@ import org.cerberus.log.MyLogger;
 import org.cerberus.service.engine.ISoapService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.web.util.HtmlUtils;
 import org.xml.sax.SAXException;
 
 /**
@@ -120,7 +117,7 @@ public class SoapService implements ISoapService {
                 
                 executionSOAPResponse.setExecutionSOAPResponse(uuid, result);
                 if(isToSaveRequest){
-                    executionSOAPResponse.setExecutionSOAPResponse(uuid + "_request", envelope); //stores the envelope which is useful for debugging purposes
+                    executionSOAPResponse.setExecutionSOAPResponse(uuid + "_request", StringEscapeUtils.unescapeXml(envelope)); //stores the envelope which is useful for debugging purposes
                 }
                 
                 message = new MessageEvent(MessageEventEnum.ACTION_SUCCESS_CALLSOAP);

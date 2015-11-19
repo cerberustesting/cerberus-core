@@ -19,8 +19,10 @@
  */
 package org.cerberus.util.answer;
 
+import java.util.HashMap;
 import org.cerberus.crud.entity.MessageEvent;
 import org.cerberus.enums.MessageEventEnum;
+import org.json.JSONObject;
 
 /**
  * Auxiliary class that provides common methods to handle messages.
@@ -104,5 +106,12 @@ public class MessageEventUtil {
         msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", "Unable to retrieve data!"));
         return msg;
     }
-
+    public static MessageEvent createMessageDescriptionJSONFormat(MessageEventEnum messageType, 
+            HashMap<String, String> data) {
+        MessageEvent message = new MessageEvent(messageType);
+        
+        JSONObject obj = new JSONObject(data);
+        message.setDescription(obj.toString());
+        return message;
+    }
 }
