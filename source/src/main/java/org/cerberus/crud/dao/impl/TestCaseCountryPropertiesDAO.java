@@ -537,7 +537,7 @@ public class TestCaseCountryPropertiesDAO implements ITestCaseCountryPropertiesD
     @Override
     public AnswerList findTestCaseCountryPropertiesByValue1(int testDataLib, String name, String country, String propertyType) {
         AnswerList ansList = new AnswerList();
-        MessageEvent rs = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
+        MessageEvent rs;
         List<TestListDTO> listOfTests = new ArrayList<TestListDTO>();
         StringBuilder query = new StringBuilder();
 //        query.append("select count(*) as total, tccp.*, t.Description as testDescription, tc.Description as testCaseDescription, tc.Application, tc.TcActive as Active, tc.`Group`, ");
@@ -643,8 +643,12 @@ public class TestCaseCountryPropertiesDAO implements ITestCaseCountryPropertiesD
                             cases.setPropertiesList(auxiliaryMap.get(list.getTest() + ":" + cases.getTestCaseNumber()));
                         }
                     }
-                    
-                    rs.setDescription(rs.getDescription().replace("%ITEM%", "Test Cases that use property").replace("%OPERATION%", "SELECT"));
+                    if(listOfTests.isEmpty()){
+                        rs = new MessageEvent(MessageEventEnum.DATA_OPERATION_NO_DATA_FOUND);
+                    }else{
+                        rs = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
+                        rs.setDescription(rs.getDescription().replace("%ITEM%", "List of Test Cases").replace("%OPERATION%", "Select"));                        
+                    }
                     
                 }catch (SQLException exception) {
                     MyLogger.log(TestCaseCountryPropertiesDAO.class.getName(), Level.ERROR, "Unable to execute query : "+exception.toString());
