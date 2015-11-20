@@ -16,6 +16,7 @@
     <body>
         <%@ include file="include/header.html"%>
         <div class="container-fluid center" id="page-layout">
+            <%@ include file="include/messagesArea.html"%>
             <h1 class="page-title-line">Run Test</h1>
             <div class="col-lg-9">
                 <div class="panel panel-default">
@@ -24,15 +25,20 @@
                         Filters
                     </div>
                     <div class="panel-body collapse in" id="filtersPanel">
+                        <div class="row">
+                            <div class="form-group col-lg-9">
+                                <label class="control-label" for="typeSelect">Type of selection</label>
+                                <select class="form-control input-sm" id="typeSelect">
+                                    <option value="filters">Select a list of test</option>
+                                    <option value="campaign">Select a campaign</option>
+                                </select>
+                            </div>
+                        </div>
                         <form id="filters">
                             <div class="row">
                                 <div class="form-group col-xs-2">
                                     <label id="lbl_test" for="testFilter">Test</label>                                     
                                     <select class="multiselectelement form-control" multiple="multiple" id="testFilter"></select>
-                                </div>
-                                <div class="form-group col-xs-2">
-                                    <label id="lbl_system" for="systemFilter">System</label>                                     
-                                    <select class="multiselectelement form-control" multiple="multiple" id="systemFilter"></select>
                                 </div>
                                 <div class="form-group col-xs-2">
                                     <label id="lbl_project" for="projectFilter">Project</label>
@@ -50,15 +56,19 @@
                                     <label id="lbl_implementer" for="implementerFilter">Implementer</label>
                                     <select class="multiselectelement form-control" multiple="" id="implementerFilter"></select>
                                 </div>
+                                <div class="form-group col-xs-2">
+                                    <label id="lbl_group" for="groupFilter">Group</label>                                     
+                                    <select class="multiselectelement form-control" multiple="multiple" id="groupFilter"></select>
+                                </div>
                             </div>
                             <div class="row">
                                 <div class="form-group col-xs-2">
-                                    <label id="lbl_testBattery" for="testBatteryFilter">Test Battery</label>                                     
-                                    <select class="multiselectelement form-control" multiple="multiple" id="testBatteryFilter"></select>
-                                </div>
-                                <div class="form-group col-xs-2">
                                     <label id="lbl_campaign" for="campaignFilter">Campaign</label>                                     
                                     <select class="multiselectelement form-control" multiple="multiple" id="campaignFilter"></select>
+                                </div>
+                                <div class="form-group col-xs-2">
+                                    <label id="lbl_testBattery" for="testBatteryFilter">Test Battery</label>                                     
+                                    <select class="multiselectelement form-control" multiple="multiple" id="testBatteryFilter"></select>
                                 </div>
                                 <div class="form-group col-xs-2">
                                     <label id="lbl_priority" for="priorityFilter">Priority</label>                                     
@@ -69,21 +79,23 @@
                                     <select class="multiselectelement form-control" multiple="multiple" id="statusFilter"></select>
                                 </div>
                                 <div class="form-group col-xs-2">
-                                    <label id="lbl_group" for="groupFilter">Group</label>                                     
-                                    <select class="multiselectelement form-control" multiple="multiple" id="groupFilter"></select>
+                                    <label id="lbl_targetRev" for="targetRevFilter">Target Revision</label>                                     
+                                    <select class="multiselectelement form-control" multiple="multiple" id="targetRevFilter"></select>
                                 </div>
                                 <div class="form-group col-xs-2">
                                     <label id="lbl_targetSprint" for="targetSprintFilter">Target Sprint</label>                                     
                                     <select class="multiselectelement form-control" multiple="multiple" id="targetSprintFilter"></select>
                                 </div>
-                                <div class="form-group col-xs-2">
-                                    <label id="lbl_targetRev" for="targetRevFilter">Target Revision</label>                                     
-                                    <select class="multiselectelement form-control" multiple="multiple" id="targetRevFilter"></select>
-                                </div>
                             </div>
-                            <button type="button" class="btn btn-primary" id="loadbutton">Load</button>
-                            <button type="button" class="btn btn-default" id="resetbutton">Reset Filters</button>
                         </form>
+                        <form id="campaignSelection" style="display: none;">
+                            <div class="form-group col-lg-9">
+                                <label id="lbl_campaignSelection" for="campaignSelect">Select a campaign</label>
+                                <select class="form-control input-sm" id="campaignSelect"></select>
+                            </div>
+                        </form>
+                        <button type="button" class="btn btn-primary" id="loadbutton">Load</button>
+                        <button type="button" class="btn btn-default" id="resetbutton">Reset Filters</button>
                     </div>
                 </div>
 
@@ -103,16 +115,10 @@
                                 <div class="row" style="margin-top: 5px;">
                                     <button type="button" class="btn btn-default" id="addAllQueue"> >> </button>
                                 </div>
+                                <div><p id="error"></p></div>
                             </div>
                         </div>
-                    </div>
-                </div>
-                <div class="panel panel-default">
-                    <div class="panel-heading">
-                        Environment and country settings
-                    </div>
-                    <div class="panel-body" id="envCountrySettings">
-                        <div class="row">
+                         <div class="row">
                             <div class="col-lg-6">
                                 <label class="bold">Environment :</label>
                                 <label class="radio-inline">
@@ -128,7 +134,7 @@
                                     <div class="form-group">
                                         <label for="myhost" class="col-sm-3 control-label bold">My Host</label>
                                         <div class="col-sm-9">
-                                            <select type="text" class="form-control input-sm" id="myhost" name="myhost"></select>
+                                            <input type="text" class="form-control input-sm" id="myhost" name="myhost"/>
                                         </div>
                                     </div>
                                     <div class="form-group">
@@ -158,7 +164,7 @@
                         </div>
                     </div>
                 </div>
-
+                
                 <div class="row">
                     <div class="col-lg-6">
                         <div class="panel panel-default">
@@ -305,7 +311,8 @@
                     </div>
 
                     <div class="panel-body collapse in" id="queuePanel">
-                        <ul class="list-group" id="queue" style="height: 1245px; overflow: hidden; overflow-y: scroll;border: 1px solid #CCC; border-radius: 4px;"></ul>
+                        <div><p id="notValid"></p></div>
+                        <ul class="list-group" id="queue" style="height: 1200px; overflow: hidden; overflow-y: scroll;border: 1px solid #CCC; border-radius: 4px;"></ul>
                     </div>
                 </div>
                 <p>Launching N tests on the environments : TATA, TITI, TOTO in the countries : FR, IT, BE on the browser : firefox, chrome, android</p>

@@ -61,7 +61,7 @@
 
         </style>
         <div class="container-fluid center" id="page-layout">
-
+            <%@ include file="include/messagesArea.html"%>
             <h1 class="page-title-line" id="title">Welcome to Cerberus Application</h1>
             <div id="homeTableDiv" class="panel panel-default">
                 <div class="panel-heading card" data-toggle="collapse" data-target="#applicationPanel">
