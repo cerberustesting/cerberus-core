@@ -29,7 +29,6 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import org.cerberus.crud.dao.ITestCaseCountryDAO;
 import org.cerberus.dto.ExecutionValidator;
 import org.cerberus.dto.service.IExecutionValidatorService;
 import org.json.JSONArray;
@@ -44,8 +43,6 @@ import org.springframework.web.context.support.WebApplicationContextUtils;
  */
 @WebServlet(name = "GetExecutionQueue", urlPatterns = {"/GetExecutionQueue"})
 public class GetExecutionQueue extends HttpServlet {
-
-    private ITestCaseCountryDAO testCaseCountryDAO;
 
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
@@ -66,6 +63,7 @@ public class GetExecutionQueue extends HttpServlet {
         JSONArray testCaseList = new JSONArray(request.getParameter("testcase"));
         JSONArray environmentList = new JSONArray(request.getParameter("environment"));
         JSONArray countryList = new JSONArray(request.getParameter("countries"));
+        String system = request.getParameter("system");
         List<ExecutionValidator> inQueue = new ArrayList<ExecutionValidator>();
 
         for (int iterTC = 0; iterTC < testCaseList.length(); iterTC++) {
@@ -84,6 +82,7 @@ public class GetExecutionQueue extends HttpServlet {
                     toAdd.setApplication(testCase.getString("application"));
                     toAdd.setCountry(Country);
                     toAdd.setEnvironment(env.getString("env"));
+                    toAdd.setSystem(system);
 
                     execValidatorService.validateExecution(toAdd);
                     inQueue.add(toAdd);

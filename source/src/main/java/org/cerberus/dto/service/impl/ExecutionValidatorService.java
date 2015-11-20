@@ -19,6 +19,7 @@
  */
 package org.cerberus.dto.service.impl;
 
+import org.cerberus.crud.dao.ICountryEnvironmentParametersDAO;
 import org.cerberus.crud.dao.ITestCaseCountryDAO;
 import org.cerberus.dto.ExecutionValidator;
 import org.cerberus.dto.service.IExecutionValidatorService;
@@ -32,21 +33,27 @@ import org.springframework.stereotype.Service;
  */
 @Service
 public class ExecutionValidatorService implements IExecutionValidatorService {
-    
+
+    @Autowired
+    ICountryEnvironmentParametersDAO countryEnvironmentParametersDAO;
+
     @Autowired
     ITestCaseCountryDAO testCaseCountryDAO;
-    
+
     @Override
     public void validateExecution(ExecutionValidator execution) {
         if (!this.checkTestCaseCountry(execution.getTest(), execution.getTestCase(), execution.getCountry())) {
             execution.setValid(false);
             execution.setMessage("This TestCase is not defined for this country");
+        } else if (!this.checkCountryEnvParam(execution.getSystem(), execution.getCountry(), execution.getEnvironment(), execution.getApplication())) {
+            execution.setValid(false);
+            execution.setMessage("The application of the Test Case is not set for this environment");
         } else {
             execution.setValid(true);
             execution.setMessage("This TestCase is set to run with this configuration");
         }
     }
-    
+
     private boolean checkTestCaseCountry(String test, String testCase, String country) {
         try {
             testCaseCountryDAO.findTestCaseCountryByKey(test, testCase, country);
@@ -55,5 +62,14 @@ public class ExecutionValidatorService implements IExecutionValidatorService {
             return false;
         }
     }
-    
+
+    private boolean checkCountryEnvParam(String system, String country, String environment, String application) {
+        try {
+            countryEnvironmentParametersDAO.findCountryEnvironmentParameterByKey(system, country, environment, application);
+            return true;
+        } catch (CerberusException ce) {
+            return false;
+        }
+    }
+
 }

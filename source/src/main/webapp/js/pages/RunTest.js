@@ -204,7 +204,8 @@ function checkExecution(event) {
         $.ajax({
             url: "GetExecutionQueue",
             method: "POST",
-            data: {"testcase": JSON.stringify(testcase),
+            data: {"system": getUser().defaultSystem,
+                "testcase": JSON.stringify(testcase),
                 "environment": JSON.stringify(environment),
                 "countries": JSON.stringify(countries)},
             success: function (data) {

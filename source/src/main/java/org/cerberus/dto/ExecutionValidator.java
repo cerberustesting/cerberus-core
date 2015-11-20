@@ -30,6 +30,7 @@ public class ExecutionValidator {
     private String country;
     private String environment;
     private String application;
+    private String system;
     private boolean valid;
     private String message;
 
@@ -51,6 +52,10 @@ public class ExecutionValidator {
 
     public void setApplication(String application) {
         this.application = application;
+    }
+    
+    public void setSystem(String system) {
+        this.system = system;
     }
     
     public void setValid(boolean bool) {
@@ -81,6 +86,10 @@ public class ExecutionValidator {
         return this.application;
     }
     
+    public String getSystem() {
+        return this.system;
+    }
+    
     public boolean isValid() {
         return this.valid;
     }
@@ -88,5 +97,5 @@ public class ExecutionValidator {
     public String getMessage() {
         return this.message;
     }
-
+    
 }

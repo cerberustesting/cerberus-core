@@ -27,5 +27,5 @@ import org.cerberus.dto.ExecutionValidator;
  */
 public interface IExecutionValidatorService {
     
-    public void validateExecution(ExecutionValidator execution);
+    void validateExecution(ExecutionValidator execution);
 }
