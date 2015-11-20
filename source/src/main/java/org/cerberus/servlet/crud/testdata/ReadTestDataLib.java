@@ -334,10 +334,9 @@ public class ReadTestDataLib extends HttpServlet {
                 //test case details
                 object.put(jsonArray);
             }
-
-            response.put("TestCasesList", object);
         }
-
+        
+        response.put("TestCasesList", object);
         ansItem.setItem(response);
         ansItem.setResultMessage(ansList.getResultMessage());
         return ansItem;
