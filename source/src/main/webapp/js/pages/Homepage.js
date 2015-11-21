@@ -222,7 +222,7 @@ function generateTagReport(data, tag) {
             var percent = (data[status] / data.total) * 100;
             var roundPercent = Math.round(percent * 10) / 10;
 
-            buildBar += '<div class="progress-bar status'+ status +'" \n\
+            buildBar += '<div class="progress-bar status' + status + '" \n\
                 role="progressbar" \n\
                 style="width:' + percent + '%">' + roundPercent + '%</div>';
         }
@@ -252,7 +252,8 @@ function loadTagExec() {
             dataType: 'json',
             success: function (data) {
                 generateTagReport(data.contentTable.total, this.tag);
-            }
+            },
+            error: showUnexpectedError
         });
     }
 }

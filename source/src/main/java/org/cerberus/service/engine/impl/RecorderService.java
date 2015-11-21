@@ -36,14 +36,15 @@ import org.cerberus.crud.entity.Parameter;
 import org.cerberus.crud.entity.TestCaseExecution;
 import org.cerberus.crud.entity.TestCaseStepActionControlExecution;
 import org.cerberus.crud.entity.TestCaseStepActionExecution;
-import org.cerberus.service.engine.testdata.TestDataLibResult;
-import org.cerberus.service.engine.testdata.TestDataLibResultSOAP;
 import org.cerberus.crud.service.IParameterService;
 import org.cerberus.enums.TestDataLibTypeEnum;
 import org.cerberus.exception.CerberusException;
 import org.cerberus.log.MyLogger;
 import org.cerberus.service.engine.IRecorderService;
+import org.cerberus.service.engine.testdata.TestDataLibResult;
+import org.cerberus.service.engine.testdata.TestDataLibResultSOAP;
 import org.cerberus.util.FileUtil;
+import org.cerberus.util.StringUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -366,7 +367,9 @@ public class RecorderService implements IRecorderService {
         }
 
         if (testCaseStepActionExecution.getActionResultMessage().isGetPageSource()) {
-            if (testCaseStepActionExecution.getAction().contains("callSoap")) {
+            //TODO: to be updated / ensures that the old actions callSoap and callSoapWithBase are still saving the xml file
+            if (testCaseStepActionExecution.getAction().equals("callSoap") || 
+                    testCaseStepActionExecution.getAction().equals("callSoapWithBase")) {
                 String screenshotPath = recordXMLAndGetName(testCaseStepActionExecution.getTestCaseStepExecution().gettCExecution(), testCaseStepActionExecution, controlNumber);
                 testCaseStepActionExecution.setScreenshotFilename(screenshotPath);
             }
@@ -392,38 +395,52 @@ public class RecorderService implements IRecorderService {
             String controlString = controlNumber.equals(0) ? null : String.valueOf(controlNumber);
             
             
-            StringBuilder url = new StringBuilder();
             for(TestDataLibResult result : itValues){
                 //xml that was retrieved during execution will be saved for debug purposes
                 if(result.getType().equals(TestDataLibTypeEnum.SOAP.getCode())){
-
-                    String responseKeyID = ((TestDataLibResultSOAP)result).getSoapResponseKey();
+                    TestDataLibResultSOAP soapCallToBeSaved = ((TestDataLibResultSOAP)result);
+                    String responseKeyID = soapCallToBeSaved.getSoapResponseKey();
                     //if the key is still in the execution data, we must remove it
                     if(eSResponse.getExecutionSOAPResponse(responseKeyID) != null){
                         //gets the xml associated with the entry
-                        String xml = eSResponse.getExecutionSOAPResponse(responseKeyID); 
+                        String soapResponse = eSResponse.getExecutionSOAPResponse(responseKeyID); 
                         String envelope = eSResponse.getExecutionSOAPResponse(responseKeyID + "_request"); 
                         //the XML execution is available in the entry
                         try {
+                            //name of the generated files
+                            String fileName, requestFileName;
+                            String descId = Long.toString(testCaseStepActionExecution.getTestCaseStepExecution().gettCExecution().getId());
+                            
+                            if((StringUtil.isNullOrEmpty(testCaseStepActionExecution.getProperty()) && testCaseStepActionExecution.getAction().startsWith("callSoap")) || 
+                                    !testCaseStepActionExecution.getAction().startsWith("callSoap")){ 
+                                //if the response name is not defined then we need to define it
+                                fileName = FileUtil.generateScreenshotFilename(test, testCase, step, sequence, controlString, null,  "xml") ;
+                                requestFileName = fileName.replace(".xml", "_request.xml");
+                                //updates the return message with the new generated file name
+                                String returnMessage = testCaseStepActionExecution.getReturnMessage().replace("%REQUEST_NAME%" , 
+                                    descId + File.separator + requestFileName).replace("%RESPONSE_NAME%", descId + File.separator + fileName);
+                                testCaseStepActionExecution.setReturnMessage(returnMessage);
+                            }else{
+                                fileName = testCaseStepActionExecution.getProperty() + ".xml";
+                                requestFileName = testCaseStepActionExecution.getProperty() + "_request.xml";
+                            }     
+                            
                             String path = parameterService.findParameterByKey("cerberus_picture_path", "").getValue() + executionId + File.separator;
-                            String fileName = FileUtil.generateScreenshotFilename(test, testCase, step, sequence, controlString, null,  "xml") ;
-                            String requestFileName = fileName.replace(".xml", "_request.xml");
+                            //name of the requested file
+                                                        
+                            //saves the xml file when is the getPageSource option is activated
+                            if (testCaseStepActionExecution.getActionResultMessage().isGetPageSource()) {
+                                testCaseStepActionExecution.setScreenshotFilename(descId + File.separator + fileName);
+                            }
                             
-                            url.append(testCaseStepActionExecution.getActionResultMessage().getDescription());
-                            url.append(" <a target='_blank' href='");
-                            url.append(path).append(requestFileName).append("'> SOAP request </a>");
-                            url.append(" | <a target='_blank' href='");
-                            url.append(path).append(fileName).append("'> SOAP response </a>");
                             
-                            testCaseStepActionExecution.getActionResultMessage().setDescription(url.toString());
-                            testCaseStepActionExecution.setReturnMessage(url.toString());
-                            
+                            //save the request and response files
                             recordFile(path, requestFileName, envelope);
-                            recordFile(path, fileName, xml);
+                            recordFile(path, fileName, soapResponse);
                         } catch (CerberusException ex) {
                             MyLogger.log(RecorderService.class.getName(), Level.DEBUG, "XML file was not saved due to unexpected error." + ex.toString());
                         }
-                                
+                        
                         
                         //after saving then remove it from the list
                         eSResponse.removeExecutionSOAPResponse(responseKeyID);

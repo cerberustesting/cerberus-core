@@ -65,7 +65,7 @@ public class TestDataLibService implements ITestDataLibService {
     private IXmlUnitService xmlUnitService;
     @Autowired
     private ITestDataLibDataService testDataLibDataService;
-
+    
     @Override
     public AnswerItem readByKey(String name, String system, String environment, String country) {
         return testDataLibDAO.readByKey(name, system, environment, country);
@@ -202,7 +202,7 @@ public class TestDataLibService implements ITestDataLibService {
     }
 
     @Override
-    public AnswerItem fetchData(TestDataLib lib, int rowLimit, String propertyName) {
+    public AnswerItem fetchData(TestDataLib lib, int rowLimit, String propertyNature) {
         AnswerItem answer = new AnswerItem();
         MessageEvent msg = new MessageEvent(MessageEventEnum.PROPERTY_SUCCESS);
         TestDataLibResult result = null;
@@ -211,7 +211,7 @@ public class TestDataLibService implements ITestDataLibService {
             result = fetchDataStatic(lib);
 
         } else if (lib.getType().equals(TestDataLibTypeEnum.SQL.getCode())) {
-            AnswerItem sqlResult = fetchDataSQL(lib, rowLimit, propertyName);
+            AnswerItem sqlResult = fetchDataSQL(lib, rowLimit, propertyNature);
             result = (TestDataLibResult) sqlResult.getItem();
             msg = sqlResult.getResultMessage();
 
@@ -233,13 +233,13 @@ public class TestDataLibService implements ITestDataLibService {
         return result;
     }
 
-    private AnswerItem fetchDataSQL(TestDataLib lib, int rowLimit, String propertyName) {
+    private AnswerItem fetchDataSQL(TestDataLib lib, int rowLimit, String propertyNature) {
         AnswerItem answer;
         MessageEvent msg = new MessageEvent(MessageEventEnum.PROPERTY_SUCCESS);
         TestDataLibResult result = null;
         //sql data needs to collect the values for the n columns
         answer = sQLService.calculateOnDatabaseNColumns(lib.getScript(), lib.getDatabase(),
-                lib.getSystem(), lib.getCountry(), lib.getEnvironment(), rowLimit, propertyName);
+                lib.getSystem(), lib.getCountry(), lib.getEnvironment(), rowLimit, propertyNature);
 
         MyLogger.log(TestDataLibService.class.getName(), Level.INFO, "Test data libs ervice SQL " + lib.getScript());
 

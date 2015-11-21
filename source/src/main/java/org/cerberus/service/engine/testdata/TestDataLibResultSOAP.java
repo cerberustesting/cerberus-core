@@ -37,26 +37,12 @@ public class TestDataLibResultSOAP extends TestDataLibResult {
     public Document rawData;
     private String soapResponseKey;
 
-    public String getSoapResponseKey() {
-        return soapResponseKey;
-    }
+   
 
-    public void setSoapResponseKey(String soapResponseKey) {
-        this.soapResponseKey = soapResponseKey;
-    }
-
-    
-    
     public TestDataLibResultSOAP(){
         this.type = TestDataLibTypeEnum.SOAP.getCode();
     }
-    public Document getData() {
-        return rawData;
-    }
 
-    public void setData(Document data) {
-        this.rawData = data;
-    }
 
     @Override
     public AnswerItem<String> getValue(TestDataLibData entry) {
@@ -105,6 +91,20 @@ public class TestDataLibResultSOAP extends TestDataLibResult {
         
         return ansGetValue;
     }
+    public Document getData() {
+        return rawData;
+    }
+
+    public void setData(Document data) {
+        this.rawData = data;
+    }
     
+    public String getSoapResponseKey() {
+        return soapResponseKey;
+    }
+
+    public void setSoapResponseKey(String soapResponseKey) {
+        this.soapResponseKey = soapResponseKey;
+    }
     
 }

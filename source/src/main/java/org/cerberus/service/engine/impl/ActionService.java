@@ -19,7 +19,9 @@
  */
 package org.cerberus.service.engine.impl;
 
+import java.io.File;
 import java.util.Date;
+import java.util.HashMap;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.cerberus.crud.entity.Identifier;
@@ -46,6 +48,8 @@ import org.cerberus.service.engine.ISoapService;
 import org.cerberus.service.engine.IWebDriverService;
 import org.cerberus.service.engine.IXmlUnitService;
 import org.cerberus.util.StringUtil;
+import org.cerberus.util.answer.Answer;
+import org.cerberus.util.answer.MessageEventUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -183,7 +187,14 @@ public class ActionService implements IActionService {
             res = this.doActionMakeSoapCall(testCaseStepActionExecution, object, property, true);
 
         } else if (testCaseStepActionExecution.getAction().equals("callSoap")) {
-            res = this.doActionMakeSoapCall(testCaseStepActionExecution, object, property, false);
+            res = this.doActionMakeSoapCall(testCaseStepActionExecution, object, property, false); 
+            
+
+        } else if (testCaseStepActionExecution.getAction().equals("callSoapWithBase1")) {
+            res = this.doActionCallSoapFromDataLib(testCaseStepActionExecution, object, property);
+
+        } else if (testCaseStepActionExecution.getAction().equals("callSoap1")) {
+            res = this.doActionCallSoapFromDataLib(testCaseStepActionExecution, object, property);
 
         } else if (testCaseStepActionExecution.getAction().equals("mouseDownMouseUp")) {
             res = this.doActionMouseDownMouseUp(tCExecution, object, property);
@@ -997,4 +1008,34 @@ public class ActionService implements IActionService {
         }
     }
 
+    private MessageEvent doActionCallSoapFromDataLib(TestCaseStepActionExecution testCaseStepActionExecution,
+            String object, String property) {
+        MessageEvent message;
+        Answer ansCallSoap = propertyService.callSoapProperty(testCaseStepActionExecution, object);
+
+        if (ansCallSoap.isCodeEquals(MessageEventEnum.PROPERTY_SUCCESS.getCode())) {
+            HashMap<String, String> options = new HashMap<String, String>();
+            options.put("type", "SOAP");
+            options.put("description", MessageEventEnum.ACTION_SUCCESS_CALLSOAP.getDescription().
+                    replaceAll("%SOAPNAME%", object));
+
+            if(StringUtil.isNullOrEmpty(property)){
+                options.put("request", "%REQUEST_NAME%");
+                options.put("response", "%RESPONSE_NAME%");
+            }else{
+                String descId = String.valueOf(testCaseStepActionExecution.getTestCaseStepExecution().gettCExecution().getId());
+                options.put("request", descId + File.separator + property + "_request.xml");
+                options.put("response", descId + File.separator + property + ".xml");
+            }
+            
+            message = MessageEventUtil.createMessageDescriptionJSONFormat(MessageEventEnum.ACTION_SUCCESS_CALLSOAP, options);
+        } else {
+            message = new MessageEvent(MessageEventEnum.ACTION_FAILED_CALLSOAP);
+            message.setDescription(message.getDescription().replaceAll("%SOAPNAME%", object));
+            message.setDescription(message.getDescription().replaceAll("%DESCRIPTION%",
+                    ansCallSoap.getResultMessage().getDescription()));
+        }
+
+        return message;
+    }
 }

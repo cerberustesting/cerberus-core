@@ -86,6 +86,7 @@ public enum MessageEventEnum {
     PROPERTY_FAILED_GETFROMDATALIB(192, "FA", "Failed to get Data from '%VALUE1%' because could not find the library entry!. ", true, false, false, MessageGeneralEnum.EXECUTION_FA),
     PROPERTY_FAILED_GETFROMDATALIB_NODATA(192, "FA", "No data found for SQL test data library entry '%ENTRY%'! Database: %DATABASE%, SQL %SQL%", true, false, false, MessageGeneralEnum.EXECUTION_FA),
     PROPERTY_FAILED_GETFROMDATALIB_GENERIC(192, "FA", "An error occurred while calculating the SQL from test data library entry '%ENTRY%'! Database: %DATABASE%, SQL %SQL%", true, false, false, MessageGeneralEnum.EXECUTION_FA),
+    PROPERTY_FAILED_GETFROMDATALIB_NOTSOAP(192, "FA", "The library entry '%ENTRY%' is currently not of type SOAP!", true, false, false, MessageGeneralEnum.EXECUTION_FA),
     PROPERTY_FAILED_GETFROMDATALIBDATA(193, "FA", "Failed to get Data from '%VALUE1%' because could not find '%VALUE2%'!", true, false, false, MessageGeneralEnum.EXECUTION_FA),
     PROPERTY_FAILED_INNERPROPERTY_GETFROMDATALIB_NOTFOUND(194, "FA", "Failed to execute because inner property '%PROPERTY%' "
             + " accesses invalid test data library entries: %ITEM%. ", true, false, false, MessageGeneralEnum.EXECUTION_FA),
