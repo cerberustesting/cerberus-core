@@ -679,13 +679,13 @@ public class BuildRevisionParametersDAO implements IBuildRevisionParametersDAO {
         //were applied -- used for pagination p
         query.append("SELECT * from ( ");
         query.append("SELECT Application, max(`rel1`) rel FROM (");
-        query.append("SELECT Application, CAST(`Release` AS UNSIGNED) rel1 ");
-        query.append(" from buildrevisionparameters brp ");
-        query.append("join buildrevisioninvariant bri on bri.versionname = brp.revision ");
-        query.append(" where 1=1 ");
-        query.append(" and bri.`system` = ? ");
-        query.append(" and bri.`level` = 2");
-        query.append(" and build = ? ");
+        query.append("SELECT brp.Application, CAST(`Release` AS UNSIGNED) rel1 ");
+        query.append(" FROM buildrevisionparameters brp ");
+        query.append("JOIN application a on a.application = brp.application ");
+        query.append("JOIN buildrevisioninvariant bri on bri.versionname = brp.revision and bri.`system` = ? and bri.`level` = 2 ");
+        query.append(" WHERE 1=1 ");
+        query.append(" and a.`system` = ? ");
+        query.append(" and brp.build = ? ");
         if (lastBuild.equalsIgnoreCase(build)) { // If last version is on the same build.
             if (lastRevision.equalsIgnoreCase(revision)) { // Same build and revision some we filter only the current content.
                 query.append(" and bri.seq >= (select seq from buildrevisioninvariant where `system` = ? and `level` = 2 and `versionname` = ? ) "); // lastRevision
@@ -696,7 +696,7 @@ public class BuildRevisionParametersDAO implements IBuildRevisionParametersDAO {
         query.append(" and bri.seq <= (select seq from buildrevisioninvariant where `system` = ? and `level` = 2 and `versionname` = ? )"); // revision
         query.append(" and `release` REGEXP '^-?[0-9]+$' "); // Release needs to be an svn number
         query.append(" and jenkinsbuildid is not null and jenkinsbuildid != '' "); // We need to have a jenkinsBuildID
-        query.append("   ORDER BY Application ) as al1 ");
+        query.append("   ORDER BY brp.Application ) as al1 ");
         query.append("   GROUP BY Application  ORDER BY Application) as al ");
         query.append("JOIN buildrevisionparameters brp ");
         query.append("  ON brp.application=al.application and brp.release=al.rel and brp.build = ? ");
@@ -713,6 +713,7 @@ public class BuildRevisionParametersDAO implements IBuildRevisionParametersDAO {
             PreparedStatement preStat = connection.prepareStatement(query.toString());
             try {
                 int i = 1;
+                preStat.setString(i++, system);
                 preStat.setString(i++, system);
                 preStat.setString(i++, build);
                 if (lastBuild.equalsIgnoreCase(build)) {
@@ -805,13 +806,14 @@ public class BuildRevisionParametersDAO implements IBuildRevisionParametersDAO {
         StringBuilder query = new StringBuilder();
         //SQL_CALC_FOUND_ROWS allows to retrieve the total number of columns by disrearding the limit clauses that 
         //were applied -- used for pagination p
-        query.append("SELECT distinct Application, `Release` rel, link  ");
-        query.append(" from buildrevisionparameters brp ");
-        query.append("join buildrevisioninvariant bri on bri.versionname = brp.revision ");
-        query.append(" where 1=1 ");
-        query.append(" and bri.`system` = ? ");
-        query.append(" and bri.`level` = 2");
-        query.append(" and build = ? ");
+        query.append("SELECT * from ( ");
+        query.append("SELECT distinct brp.Application, `Release` rel, link, max(id) maxid ");
+        query.append(" FROM buildrevisionparameters brp ");
+        query.append("JOIN application a on a.application = brp.application ");
+        query.append("JOIN buildrevisioninvariant bri ON bri.versionname = brp.revision and bri.`system` = ? and bri.`level` = 2 ");
+        query.append(" WHERE 1=1 ");
+        query.append(" and a.`system` = ? ");
+        query.append(" and brp.build = ? ");
         if (lastBuild.equalsIgnoreCase(build)) {
             if (lastRevision.equalsIgnoreCase(revision)) { // Same build and revision some we filter only the current content.
                 query.append(" and bri.seq >= (select seq from buildrevisioninvariant where `system` = ? and `level` = 2 and `versionname` = ? ) "); // lastRevision
@@ -821,7 +823,12 @@ public class BuildRevisionParametersDAO implements IBuildRevisionParametersDAO {
         }
         query.append(" and bri.seq <= (select seq from buildrevisioninvariant where `system` = ? and `level` = 2 and `versionname` = ? )"); // revision
         query.append("  and link is not null and length(trim(link))>0 "); // Release Link for instal instructions needs to exist.
-        query.append("   GROUP BY Application, `Release`, link  ORDER BY Application, `Release`, link;   ");
+        query.append("   GROUP BY brp.Application, `Release`, link  ORDER BY Application, `Release`, link ");
+        query.append(") as toto ");
+        query.append(" JOIN buildrevisionparameters brp   ON brp.id = toto.maxid ");
+        query.append(" JOIN buildrevisioninvariant bri1 on bri1.versionname = brp.build  and bri1.`system` = ?  and bri1.`level` = 1 ");
+        query.append(" JOIN buildrevisioninvariant bri2 on bri2.versionname = brp.revision  and bri2.`system` = ?  and bri2.`level` = 2 ");
+        query.append(" ORDER BY bri1.seq asc , bri2.seq asc , brp.Application asc;");
 
         // Debug message on SQL.
         if (LOG.isDebugEnabled()) {
@@ -833,19 +840,27 @@ public class BuildRevisionParametersDAO implements IBuildRevisionParametersDAO {
             try {
                 int i = 1;
                 preStat.setString(i++, system);
+                preStat.setString(i++, system);
                 preStat.setString(i++, build);
                 if (lastBuild.equalsIgnoreCase(build)) {
-                    preStat.setString(i++, system);
-                    preStat.setString(i++, lastRevision);
+                    if (lastRevision.equalsIgnoreCase(revision)) { // Same build and revision some we filter only the current content.
+                        preStat.setString(i++, system);
+                        preStat.setString(i++, lastRevision);
+                    } else { // 2 different revisions inside the same build, we take the content between the 2.
+                        preStat.setString(i++, system);
+                        preStat.setString(i++, lastRevision);
+                    }
                 }
                 preStat.setString(i++, system);
                 preStat.setString(i++, revision);
+                preStat.setString(i++, system);
+                preStat.setString(i++, system);
                 ResultSet resultSet = preStat.executeQuery();
                 try {
                     //gets the data
                     while (resultSet.next()) {
                         BuildRevisionParameters newBRP;
-                        newBRP = factoryBuildRevisionParameters.create(0, "", "", ParameterParserUtil.parseStringParam(resultSet.getString("rel"), ""), ParameterParserUtil.parseStringParam(resultSet.getString("application"), ""), "", "", "", ParameterParserUtil.parseStringParam(resultSet.getString("link"), ""), "", "", null, null, null, null, null);
+                        newBRP = factoryBuildRevisionParameters.create(ParameterParserUtil.parseIntegerParam(resultSet.getString("maxid"), 0), ParameterParserUtil.parseStringParam(resultSet.getString("build"), ""), ParameterParserUtil.parseStringParam(resultSet.getString("revision"), ""), ParameterParserUtil.parseStringParam(resultSet.getString("rel"), ""), ParameterParserUtil.parseStringParam(resultSet.getString("application"), ""), "", "", "", ParameterParserUtil.parseStringParam(resultSet.getString("link"), ""), "", "", null, null, null, null, null);
                         brpList.add(newBRP);
                     }
 

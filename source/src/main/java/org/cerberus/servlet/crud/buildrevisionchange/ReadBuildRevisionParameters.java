@@ -20,6 +20,7 @@
 package org.cerberus.servlet.crud.buildrevisionchange;
 
 import com.google.gson.Gson;
+import com.mysql.jdbc.StringUtils;
 import java.io.IOException;
 import java.util.List;
 import java.util.logging.Logger;
@@ -37,6 +38,7 @@ import org.cerberus.enums.MessageEventEnum;
 import org.cerberus.exception.CerberusException;
 import org.cerberus.crud.service.impl.BuildRevisionParametersService;
 import org.cerberus.util.ParameterParserUtil;
+import org.cerberus.util.StringUtil;
 import org.cerberus.util.answer.AnswerItem;
 import org.cerberus.util.answer.AnswerList;
 import org.json.JSONArray;
@@ -109,10 +111,10 @@ public class ReadBuildRevisionParameters extends HttpServlet {
                 answer = findlastBuildRevisionParametersBySystem(appContext, request.getParameter("system"));
                 jsonResponse = (JSONObject) answer.getItem();
             } else if ((request.getParameter("system") != null) && (request.getParameter("build") != null) && (request.getParameter("revision") != null) && (request.getParameter("getSVNRelease") != null)) { // getSVNRelease parameter trigger the list of SVN Release inside he build per Application.
-                answer = findSVNBuildRevisionParametersBySystem(appContext, request.getParameter("system"), request.getParameter("build"), request.getParameter("revision"));
+                answer = findSVNBuildRevisionParametersBySystem(appContext, request.getParameter("system"), request.getParameter("build"), request.getParameter("revision"), request.getParameter("lastbuild"), request.getParameter("lastrevision"));
                 jsonResponse = (JSONObject) answer.getItem();
             } else if ((request.getParameter("system") != null) && (request.getParameter("build") != null) && (request.getParameter("revision") != null) && (request.getParameter("getNonSVNRelease") != null)) { // getNonSVNRelease parameter trigger the list of Manual Release with corresponding links.
-                answer = findManualBuildRevisionParametersBySystem(appContext, request.getParameter("system"), request.getParameter("build"), request.getParameter("revision"));
+                answer = findManualBuildRevisionParametersBySystem(appContext, request.getParameter("system"), request.getParameter("build"), request.getParameter("revision"), request.getParameter("lastbuild"), request.getParameter("lastrevision"));
                 jsonResponse = (JSONObject) answer.getItem();
             } else { // Default behaviour, we return the list of objects.
                 answer = findBuildRevisionParametersList(request.getParameter("system"), request.getParameter("build"), request.getParameter("revision"), request.getParameter("application"), appContext, request, response);
@@ -265,13 +267,20 @@ public class ReadBuildRevisionParameters extends HttpServlet {
         return item;
     }
 
-    private AnswerItem findSVNBuildRevisionParametersBySystem(ApplicationContext appContext, String system, String build, String revision) throws JSONException {
+    private AnswerItem findSVNBuildRevisionParametersBySystem(ApplicationContext appContext, String system, String build, String revision, String lastbuild, String lastrevision) throws JSONException {
 
         AnswerItem item = new AnswerItem();
         JSONObject jsonResponse = new JSONObject();
         brpService = appContext.getBean(BuildRevisionParametersService.class);
 
-        AnswerList resp = brpService.readMaxSVNReleasePerApplication(system, build, revision, build, revision);
+        if (StringUtil.isNullOrEmpty(lastbuild)) {
+            lastbuild = build;
+        }
+        if (StringUtil.isNullOrEmpty(lastrevision)) {
+            lastrevision = revision;
+        }
+
+        AnswerList resp = brpService.readMaxSVNReleasePerApplication(system, build, revision, lastbuild, lastrevision);
 
         JSONArray jsonArray = new JSONArray();
         if (resp.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {//the service was able to perform the query, then we should get all values
@@ -289,13 +298,20 @@ public class ReadBuildRevisionParameters extends HttpServlet {
         return item;
     }
 
-        private AnswerItem findManualBuildRevisionParametersBySystem(ApplicationContext appContext, String system, String build, String revision) throws JSONException {
+    private AnswerItem findManualBuildRevisionParametersBySystem(ApplicationContext appContext, String system, String build, String revision, String lastbuild, String lastrevision) throws JSONException {
 
         AnswerItem item = new AnswerItem();
         JSONObject jsonResponse = new JSONObject();
         brpService = appContext.getBean(BuildRevisionParametersService.class);
 
-        AnswerList resp = brpService.readNonSVNRelease(system, build, revision, build, revision);
+        if (StringUtil.isNullOrEmpty(lastbuild)) {
+            lastbuild = build;
+        }
+        if (StringUtil.isNullOrEmpty(lastrevision)) {
+            lastrevision = revision;
+        }
+
+        AnswerList resp = brpService.readNonSVNRelease(system, build, revision, lastbuild, lastrevision);
 
         JSONArray jsonArray = new JSONArray();
         if (resp.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {//the service was able to perform the query, then we should get all values
@@ -313,7 +329,6 @@ public class ReadBuildRevisionParameters extends HttpServlet {
         return item;
     }
 
-    
     private JSONObject convertBuildRevisionParametersToJSONObject(BuildRevisionParameters brp) throws JSONException {
 
         Gson gson = new Gson();

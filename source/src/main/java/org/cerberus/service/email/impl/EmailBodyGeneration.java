@@ -60,7 +60,6 @@ public class EmailBodyGeneration implements IEmailBodyGeneration {
             String bugURL = "";
 
             List<Application> appliList = applicationService.convert(applicationService.readBySystem(system));
-            String inSQL = SqlUtil.getInSQLClause(appliList);
 
             buildContentTable = "Here are the last modifications since last change (" + lastBuild + "/" + lastRevision + ") :";
             buildContentTable = buildContentTable + "<table>";
@@ -74,11 +73,11 @@ public class EmailBodyGeneration implements IEmailBodyGeneration {
                     .append(" left outer join project p on p.idproject=b.project ")
                     .append(" left outer join user u on u.Login=b.ReleaseOwner ")
                     .append(" left outer join application a on a.application=b.application ")
-                    .append(" where build = '").append(build).append("' ")
-                    .append(" and a.application ").append(inSQL)
-                    .append(this.latestBuildOrEmpty(lastBuild, build, lastRevision))
-                    .append(" and revision <= '").append(revision).append("'")
-                    .append(" order by b.Build, b.Revision, b.Application, b.Project,")
+                    .append(" join buildrevisioninvariant bri on bri.versionname = b.revision and bri.`system` = '").append(system).append("'  and bri.`level` = 2 ")
+                    .append(" where build = '").append(build).append("' and a.system = '").append(system).append("' ")
+                    .append(" and bri.seq > (select seq from buildrevisioninvariant where `system` = '").append(system).append("' and `level` = 2 and `versionname` = '").append(lastRevision).append("' )  ")
+                    .append(" and bri.seq <= (select seq from buildrevisioninvariant where `system` = '").append(system).append("' and `level` = 2 and `versionname` = '").append(revision).append("' )  ")
+                    .append(" order by b.Build, bri.seq, b.Application, b.Project,")
                     .append(" b.TicketIDFixed, b.BugIDFixed, b.Release").toString();
 
             Logger.getLogger(EmailBodyGeneration.class.getName()).log(Level.DEBUG, Infos.getInstance().getProjectNameAndVersion() + " - SQL : " + contentSQL);
@@ -352,11 +351,4 @@ public class EmailBodyGeneration implements IEmailBodyGeneration {
 
     }
 
-    private String latestBuildOrEmpty(String lastBuild, String build, String lastRevision) {
-        if (lastBuild != null && lastBuild.equalsIgnoreCase(build)) {
-            return new StringBuffer(" and revision > '").append(lastRevision).append("'").toString();
-        }
-
-        return "";
-    }
 }

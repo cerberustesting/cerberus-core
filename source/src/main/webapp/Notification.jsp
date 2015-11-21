@@ -172,7 +172,7 @@
             <tr>
                 <td colspan="3" style="background-color: lightyellow; text-align: center">Application to deploy.</td>
             </tr>
-            <tr><td>Application</td><td>Release</td><td>Deploy Links</td><td>View the Jenkins Pipe</td></tr>
+            <tr><td>Build</td><td>Revision</td><td>Application</td><td>Release</td><td>Deploy Links</td><td>View the Jenkins Pipe</td></tr>
             <%
             	String lastBuild;
                             String lastRev;
@@ -199,6 +199,8 @@
                                 String final_JenkinsURL = JenkinsURL.replaceAll("%APPLI%", brp.getApplication());
             %>
             <tr>
+                <td><%=brp.getBuild()%></td>
+                <td><%=brp.getRevision()%></td>
                 <td><%=brp.getApplication()%></td>
                 <td><%=brp.getRelease()%></td>
                 <td><%
@@ -207,7 +209,7 @@
                                     for (String JenkinsAgent : countryEnvDeployTypeService.findJenkinsAgentByKey(system, country, env, app.getDeploytype())) {
                                         String DeployURL = "JenkinsDeploy?application=" + brp.getApplication() + "&jenkinsagent=" + JenkinsAgent + "&country=" + country + "&deploytype=" + app.getDeploytype() + "&release=" + brp.getRelease() + "&jenkinsbuildid=" + brp.getJenkinsBuildId();
                 %>
-                        <a href='<%=DeployURL%>' target='_blank'><%=JenkinsAgent%></a>
+                        <a href='<%=DeployURL%>' target='_blank'><%=JenkinsAgent%></a><br>
                     <%
                     	}
                     %>
@@ -227,6 +229,8 @@
                                 String final_JenkinsURL = JenkinsURL.replaceAll("%APPLI%", brp.getApplication());
             %>
             <tr>
+                <td><%=brp.getBuild()%></td>
+                <td><%=brp.getRevision()%></td>
                 <td><%=brp.getApplication()%></td>
                 <td><%=brp.getRelease()%></td>
                 <td><a href='<%=brp.getLink()%>' target='_blank'>INSTRUCTIONS </a></td>
