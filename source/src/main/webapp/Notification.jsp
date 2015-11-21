@@ -209,7 +209,7 @@
                                     for (String JenkinsAgent : countryEnvDeployTypeService.findJenkinsAgentByKey(system, country, env, app.getDeploytype())) {
                                         String DeployURL = "JenkinsDeploy?application=" + brp.getApplication() + "&jenkinsagent=" + JenkinsAgent + "&country=" + country + "&deploytype=" + app.getDeploytype() + "&release=" + brp.getRelease() + "&jenkinsbuildid=" + brp.getJenkinsBuildId();
                 %>
-                        <a href='<%=DeployURL%>' target='_blank'><%=JenkinsAgent%></a><br>
+                        <a href='<%=DeployURL%>' target='_blank'><%=JenkinsAgent%> <input type="checkbox" name="checklist"></a><br>
                     <%
                     	}
                     %>
@@ -233,7 +233,7 @@
                 <td><%=brp.getRevision()%></td>
                 <td><%=brp.getApplication()%></td>
                 <td><%=brp.getRelease()%></td>
-                <td><a href='<%=brp.getLink()%>' target='_blank'>INSTRUCTIONS </a></td>
+                <td><a href='<%=brp.getLink()%>' target='_blank'>INSTRUCTIONS <input type="checkbox" name="checklist"></a></td>
                 <td></td>
             </tr>
             <%
