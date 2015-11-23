@@ -65,9 +65,9 @@ $.when($.getScript("js/pages/global/global.js")).then(function () {
         $("#resetQueue").click(function (event) {
             stopPropagation(event);
             $("#queue").empty();
+            $("#notValidList").empty();
             updateValidNumber();
             updateNotValidNumber();
-            $("#notValidList").empty();
             $("#notValid").hide();
         });
         $("#notValidNumber").click(function () {
@@ -110,19 +110,81 @@ function typeSelectHandler() {
     }
 }
 
-function getCookie(cname) {
-    var name = cname + "=";
-    var ca = document.cookie.split(';');
-    for (var i = 0; i < ca.length; i++) {
-        var c = ca[i].trim();
-        if (c.indexOf(name) === 0)
-            var value = c.substring(name.length, c.length);
+function loadTestCaseFromFilter() {
+    if ($("#typeSelect").val() === "filters") {
+        showLoader("#chooseTest");
+        $.ajax({
+            url: "ReadTestCase",
+            method: "GET",
+            data: "filter=true&" + $("#filters").serialize() + "&system=" + getUser().defaultSystem,
+            datatype: "json",
+            async: true,
+            success: function (data) {
+                var testCaseList = $("#testCaseList");
 
-        document.cookie = cname + "=; expires=Thu, 01 Jan 1970 00:00:00 UTC";
-        return value;
+                testCaseList.empty();
+
+                for (var index = 0; index < data.contentTable.length; index++) {
+                    var text = data.contentTable[index].test + " - " + data.contentTable[index].testCase + " [" + data.contentTable[index].application + "]: " + data.contentTable[index].shortDescription;
+
+                    testCaseList.append($("<option></option>")
+                            .text(text)
+                            .val(data.contentTable[index].testCase)
+                            .data("item", data.contentTable[index]));
+                }
+                hideLoader("#chooseTest");
+            }
+        });
     }
-    return "";
 }
+
+function loadSelect(idName, selectName, pref) {
+    $.ajax({
+        url: "FindInvariantByID",
+        method: "GET",
+        data: {idName: idName},
+        dataType: "json",
+        async: true,
+        success: function (data) {
+            for (var option in data) {
+                $("[name='" + selectName + "']").append($('<option></option>').text(data[option].value + " - " + data[option].description).val(data[option].value));
+            }
+            if (pref !== null) {
+                $("[name='" + selectName + "']").val(pref[selectName]);
+            }
+        }
+    });
+}
+
+//function updateMultiSelect(selectName, dataToCheck, valueList) {
+//    $("#" + selectName + "Filter option").each(function () {
+//        if (valueList !== null && valueList.indexOf($(this).data("item")[dataToCheck]) === -1) {
+//            $(this).prop("checked", false);
+//            $(this).prop("disabled", true);
+//        } else {
+//            $(this).prop("disabled", false);
+//        }
+//    });
+//
+//    $("#" + selectName + "Filter").multiselect('rebuild');
+//}
+
+function appendCountryList() {
+    var jqxhr = $.getJSON("FindInvariantByID", "idName=COUNTRY");
+    $.when(jqxhr).then(function (data) {
+        var countryList = $("[name=countryList]");
+
+        for (var index = 0; index < data.length; index++) {
+            var country = data[index].value;
+
+            countryList.append('<label class="checkbox-inline">\n\
+                                <input class="countrycb" type="checkbox" name="' + country + '"/>' + country + '\
+                                </label>');
+        }
+    });
+}
+
+/** UTILITY FUNCTIONS FOR QUEUE **/
 
 function deleteRow(row) {
     row.parent('li').remove();
@@ -251,137 +313,17 @@ function checkExecution(event) {
     }
 }
 
-function loadTestCaseFromFilter() {
-    if ($("#typeSelect").val() === "filters") {
-        showLoader("#chooseTest");
-        $.ajax({
-            url: "ReadTestCase",
-            method: "GET",
-            data: "filter=true&" + $("#filters").serialize() + "&system=" + getUser().defaultSystem,
-            datatype: "json",
-            async: true,
-            success: function (data) {
-                var testCaseList = $("#testCaseList");
+/** UTILITY FUNCTIONS FOR FILTERS **/
 
-                testCaseList.empty();
+function appendCampaignList() {
+    var jqxhr = $.getJSON("ReadCampaign");
+    $.when(jqxhr).then(function (data) {
+        var campaignList = $("#campaignSelect");
 
-                for (var index = 0; index < data.contentTable.length; index++) {
-                    var text = data.contentTable[index].test + " - " + data.contentTable[index].testCase + " [" + data.contentTable[index].application + "]: " + data.contentTable[index].shortDescription;
-
-                    testCaseList.append($("<option></option>")
-                            .text(text)
-                            .val(data.contentTable[index].testCase)
-                            .data("item", data.contentTable[index]));
-                }
-                hideLoader("#chooseTest");
-            }
-        });
-    }
-}
-
-function saveRobotPreferences() {
-    var pref = convertSerialToJSONObject($("#robotSettingsForm").serialize());
-    localStorage.setItem("robotSettings", JSON.stringify(pref));
-}
-
-function saveExecutionPreferences() {
-    var pref = convertSerialToJSONObject($("#executionSettingsForm").serialize());
-    localStorage.setItem("executionSettings", JSON.stringify(pref));
-}
-
-function loadExecForm() {
-    var pref = JSON.parse(localStorage.getItem("executionSettings"));
-
-    if (pref !== null) {
-        $("#tag").val(pref.tag);
-        $("#timeout").val(pref.timeout);
-    }
-
-    loadSelect("OUTPUTFORMAT", "outputFormat", pref);
-    loadSelect("VERBOSE", "verbose", pref);
-    loadSelect("SCREENSHOT", "screenshot", pref);
-    loadSelect("SELENIUMLOG", "seleniumLog", pref);
-    loadSelect("MANUALEXECUTION", "manualExecution", pref);
-    loadSelect("PAGESOURCE", "pageSource", pref);
-    loadSelect("SYNCHRONEOUS", "synchroneous", pref);
-    loadSelect("RETRIES", "retries", pref);
-}
-
-function loadRobotForm() {
-    var pref = JSON.parse(localStorage.getItem("robotSettings"));
-
-    if (pref !== null) {
-        $("#seleniumIP").val(pref.seleniumIP);
-        $("#seleniumPort").val(pref.seleniumPort);
-        $("#version").val(pref.version);
-    }
-
-    appendRobotList(pref);
-    loadSelect("BROWSER", "browser", pref);
-    $("[name=platform]").append($('<option></option>').text("Optional").val(""));
-    loadSelect("PLATFORM", "platform", pref);
-    $("[name=screenSize]").append($('<option></option>').text("Default (Client Full Screen)").val(""));
-    loadSelect("screensize", "screenSize", pref);
-}
-
-function loadRobotInfo() {
-    var value = "";
-    var pref = JSON.parse(localStorage.getItem("robotSettings"));
-
-    if (this.value !== undefined) {
-        value = $(this).val();
-    } else if (pref !== null) {
-        value = pref.robotConfig;
-    }
-
-    if (value !== "") {
-        $.ajax({
-            url: "ReadRobot",
-            method: "GET",
-            data: {robotid: value},
-            dataType: "json",
-            async: true,
-            success: function (data) {
-                $("#seleniumIP").val(data.contentTable.host).attr("readonly", true);
-                $("#seleniumPort").val(data.contentTable.port).attr("readonly", true);
-                $("#browser").val(data.contentTable.browser).attr("readonly", true);
-                $("#version").val(data.contentTable.version).attr("readonly", true);
-                $("#platform").val(data.contentTable.platform).attr("readonly", true);
-                $("#screenSize").val("").attr("readonly", true);
-            }
-        });
-    } else {
-        if (pref !== null) {
-            for (var key in pref) {
-                if (key !== "robotConfig") {
-                    $("#" + key).attr("readonly", false).val(pref[key]);
-                }
-            }
-        } else {
-            $("#seleniumIP").attr("readonly", false).val("");
-            $("#seleniumPort").attr("readonly", false).val("");
-            $("#browser").attr("readonly", false).val("");
-            $("#version").attr("readonly", false).val("");
-            $("#platform").attr("readonly", false).val("");
-            $("#screenSize").attr("readonly", false).val("");
-        }
-    }
-}
-
-function loadSelect(idName, selectName, pref) {
-    $.ajax({
-        url: "FindInvariantByID",
-        method: "GET",
-        data: {idName: idName},
-        dataType: "json",
-        async: true,
-        success: function (data) {
-            for (var option in data) {
-                $("[name='" + selectName + "']").append($('<option></option>').text(data[option].value + " - " + data[option].description).val(data[option].value));
-            }
-            if (pref !== null) {
-                $("[name='" + selectName + "']").val(pref[selectName]);
-            }
+        campaignList.append($('<option></option>').text(""));
+        for (var index = 0; index < data.contentTable.length; index++) {
+            campaignList.append($('<option></option>').text(data.contentTable[index].campaign + " - " + data.contentTable[index].description)
+                    .val(data.contentTable[index].campaign));
         }
     });
 }
@@ -393,19 +335,6 @@ function multiSelectConf(name) {
     this.enableFiltering = true;
     this.enableCaseInsensitiveFiltering = true;
 }
-
-//function updateMultiSelect(selectName, dataToCheck, valueList) {
-//    $("#" + selectName + "Filter option").each(function () {
-//        if (valueList !== null && valueList.indexOf($(this).data("item")[dataToCheck]) === -1) {
-//            $(this).prop("checked", false);
-//            $(this).prop("disabled", true);
-//        } else {
-//            $(this).prop("disabled", false);
-//        }
-//    });
-//
-//    $("#" + selectName + "Filter").multiselect('rebuild');
-//}
 
 function loadMultiSelect(url, urlParams, selectName, textItem, valueItem, isUpdate) {
     var jqXHR = $.ajax({
@@ -458,33 +387,7 @@ function loadInvariantMultiSelect(selectName, idName) {
     return jqXHR;
 }
 
-function appendCampaignList() {
-    var jqxhr = $.getJSON("ReadCampaign");
-    $.when(jqxhr).then(function (data) {
-        var campaignList = $("#campaignSelect");
-
-        campaignList.append($('<option></option>').text(""));
-        for (var index = 0; index < data.contentTable.length; index++) {
-            campaignList.append($('<option></option>').text(data.contentTable[index].campaign + " - " + data.contentTable[index].description)
-                    .val(data.contentTable[index].campaign));
-        }
-    });
-}
-
-function appendCountryList() {
-    var jqxhr = $.getJSON("FindInvariantByID", "idName=COUNTRY");
-    $.when(jqxhr).then(function (data) {
-        var countryList = $("[name=countryList]");
-
-        for (var index = 0; index < data.length; index++) {
-            var country = data[index].value;
-
-            countryList.append('<label class="checkbox-inline">\n\
-                                <input class="countrycb" type="checkbox" name="' + country + '"/>' + country + '\
-                                </label>');
-        }
-    });
-}
+/** FUNCTIONS TO HANDLE ROBOT/EXECUTION PREFERENCES **/
 
 function appendRobotList(pref) {
     var jqxhr = $.getJSON("ReadRobot");
@@ -503,7 +406,110 @@ function appendRobotList(pref) {
     });
 }
 
-/** UTILITY FONCTIONS TO MIGRATE THE PREFERENCES **/
+function loadRobotInfo() {
+    var value = "";
+    var pref = JSON.parse(localStorage.getItem("robotSettings"));
+
+    if (this.value !== undefined) {
+        value = $(this).val();
+    } else if (pref !== null) {
+        value = pref.robotConfig;
+    }
+
+    if (value !== "") {
+        $.ajax({
+            url: "ReadRobot",
+            method: "GET",
+            data: {robotid: value},
+            dataType: "json",
+            async: true,
+            success: function (data) {
+                $("#seleniumIP").val(data.contentTable.host).attr("readonly", true);
+                $("#seleniumPort").val(data.contentTable.port).attr("readonly", true);
+                $("#browser").val(data.contentTable.browser).attr("readonly", true);
+                $("#version").val(data.contentTable.version).attr("readonly", true);
+                $("#platform").val(data.contentTable.platform).attr("readonly", true);
+                $("#screenSize").val("").attr("readonly", true);
+            }
+        });
+    } else {
+        if (pref !== null) {
+            for (var key in pref) {
+                if (key !== "robotConfig") {
+                    $("#" + key).attr("readonly", false).val(pref[key]);
+                }
+            }
+        } else {
+            $("#seleniumIP").attr("readonly", false).val("");
+            $("#seleniumPort").attr("readonly", false).val("");
+            $("#browser").attr("readonly", false).val("");
+            $("#version").attr("readonly", false).val("");
+            $("#platform").attr("readonly", false).val("");
+            $("#screenSize").attr("readonly", false).val("");
+        }
+    }
+}
+
+function saveRobotPreferences() {
+    var pref = convertSerialToJSONObject($("#robotSettingsForm").serialize());
+    localStorage.setItem("robotSettings", JSON.stringify(pref));
+}
+
+function saveExecutionPreferences() {
+    var pref = convertSerialToJSONObject($("#executionSettingsForm").serialize());
+    localStorage.setItem("executionSettings", JSON.stringify(pref));
+}
+
+function loadExecForm() {
+    var pref = JSON.parse(localStorage.getItem("executionSettings"));
+
+    if (pref !== null) {
+        $("#tag").val(pref.tag);
+        $("#timeout").val(pref.timeout);
+    }
+
+    loadSelect("OUTPUTFORMAT", "outputFormat", pref);
+    loadSelect("VERBOSE", "verbose", pref);
+    loadSelect("SCREENSHOT", "screenshot", pref);
+    loadSelect("SELENIUMLOG", "seleniumLog", pref);
+    loadSelect("MANUALEXECUTION", "manualExecution", pref);
+    loadSelect("PAGESOURCE", "pageSource", pref);
+    loadSelect("SYNCHRONEOUS", "synchroneous", pref);
+    loadSelect("RETRIES", "retries", pref);
+}
+
+function loadRobotForm() {
+    var pref = JSON.parse(localStorage.getItem("robotSettings"));
+
+    if (pref !== null) {
+        $("#seleniumIP").val(pref.seleniumIP);
+        $("#seleniumPort").val(pref.seleniumPort);
+        $("#version").val(pref.version);
+    }
+
+    appendRobotList(pref);
+    loadSelect("BROWSER", "browser", pref);
+    $("[name=platform]").append($('<option></option>').text("Optional").val(""));
+    loadSelect("PLATFORM", "platform", pref);
+    $("[name=screenSize]").append($('<option></option>').text("Default (Client Full Screen)").val(""));
+    loadSelect("screensize", "screenSize", pref);
+}
+
+/** UTILITY FUNCTIONS TO MIGRATE THE PREFERENCES !!!TO DELETE AFTER THE PAGE IS LIVE FOR A FEW DAYS!!!  **/
+
+function getCookie(cname) {
+    var name = cname + "=";
+    var ca = document.cookie.split(';');
+    for (var i = 0; i < ca.length; i++) {
+        var c = ca[i].trim();
+        if (c.indexOf(name) === 0)
+            var value = c.substring(name.length, c.length);
+
+        document.cookie = cname + "=; expires=Thu, 01 Jan 1970 00:00:00 UTC";
+        return value;
+    }
+    return "";
+}
 
 function oldPreferenceCompatibility() {
     if (localStorage.getItem("robotSettings") === null

@@ -903,7 +903,7 @@ public class TestCaseExecutionDAO implements ITestCaseExecutionDAO {
 
         final StringBuffer query = new StringBuffer();
 
-        query.append("SELECT SQL_CALC_FOUND_ROWS * FROM ");
+        query.append("SELECT * FROM ");
         query.append("( select tc.*, tce.Start, tce.End, tce.ID as statusExecutionID, tce.ControlStatus, tce.ControlMessage, tce.Environment, tce.Country, tce.Browser ");
         query.append("from testcase tc ");
         query.append("left join testcaseexecution tce ");
@@ -957,15 +957,15 @@ public class TestCaseExecutionDAO implements ITestCaseExecutionDAO {
                         testCaseWithExecutionList.add(this.loadTestCaseWithExecutionFromResultSet(resultSet));
                     }
 
-                    resultSet = preStat.executeQuery("SELECT FOUND_ROWS()");
-                    int nrTotalRows = 0;
-
-                    if (resultSet != null && resultSet.next()) {
-                        nrTotalRows = resultSet.getInt(1);
-                    }
+//                    resultSet = preStat.executeQuery("SELECT FOUND_ROWS()");
+//                    int nrTotalRows = 0;
+//
+//                    if (resultSet != null && resultSet.next()) {
+//                        nrTotalRows = resultSet.getInt(1);
+//                    }
 
                     msg.setDescription(msg.getDescription().replace("%ITEM%", "TestCaseExecution").replace("%OPERATION%", "SELECT"));
-                    answer = new AnswerList(testCaseWithExecutionList, nrTotalRows);
+                    answer = new AnswerList(testCaseWithExecutionList, testCaseWithExecutionList.size());
                 } catch (SQLException exception) {
                     MyLogger.log(TestCaseExecutionDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
                     msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);

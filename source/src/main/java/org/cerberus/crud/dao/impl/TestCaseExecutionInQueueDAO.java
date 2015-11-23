@@ -730,7 +730,7 @@ public class TestCaseExecutionInQueueDAO implements ITestCaseExecutionInQueueDAO
         MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
         AnswerList answer = new AnswerList();
         StringBuilder gSearch = new StringBuilder();
-        final StringBuffer query = new StringBuffer("SELECT SQL_CALC_FOUND_ROWS * FROM ( select tc.*, RequestDate as Start, '' as End, tce.ID as statusExecutionID, 'NE' as ControlStatus, 'Not Executed' as ControlMessage, tce.Environment, tce.Country, tce.Browser ")
+        final StringBuffer query = new StringBuffer("SELECT * FROM ( select tc.*, RequestDate as Start, '' as End, tce.ID as statusExecutionID, 'NE' as ControlStatus, 'Not Executed' as ControlMessage, tce.Environment, tce.Country, tce.Browser ")
                 .append("from testcase tc ")
                 .append("left join testcaseexecutionqueue tce ")
                 .append("on tce.Test = tc.Test ")
@@ -776,15 +776,15 @@ public class TestCaseExecutionInQueueDAO implements ITestCaseExecutionInQueueDAO
                         testCaseWithExecutionList.add(campaignDAO.loadTestCaseWithExecutionFromResultSet(resultSet));
                     }
 
-                    resultSet = preStat.executeQuery("SELECT FOUND_ROWS()");
-                    int nrTotalRows = 0;
-
-                    if (resultSet != null && resultSet.next()) {
-                        nrTotalRows = resultSet.getInt(1);
-                    }
+//                    resultSet = preStat.executeQuery("SELECT FOUND_ROWS()");
+//                    int nrTotalRows = 0;
+//
+//                    if (resultSet != null && resultSet.next()) {
+//                        nrTotalRows = resultSet.getInt(1);
+//                    }
 
                     msg.setDescription(msg.getDescription().replace("%ITEM%", "TestCaseExecutionInQueue").replace("%OPERATION%", "SELECT"));
-                    answer = new AnswerList(testCaseWithExecutionList, nrTotalRows);
+                    answer = new AnswerList(testCaseWithExecutionList, testCaseWithExecutionList.size());
                 } catch (SQLException exception) {
                     LOG.error("Unable to execute query : " + exception.toString());
                     msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
