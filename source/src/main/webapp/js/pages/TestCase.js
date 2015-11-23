@@ -2001,7 +2001,7 @@ function addPictureClickHandler() {
  */
 function saveAsClickHandler(){
     var test = $("#inputAddTestInSelectTest").attr("value"); 
-    var testCase = $("#inputAddTestCaseInSelectTestCase").attr("value");
+    var testCase = $("#inputAddTestCaseInSelectTestCase").attr("value").trim();
     if(test !=='' && testCase === ''){
         //TODO: translations and new GUI standars (alert messages)
         alert("'Save as' operation: Test case parameter is mandatory!");

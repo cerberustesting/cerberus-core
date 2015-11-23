@@ -2235,12 +2235,22 @@
             ;</script>
 
         <script type="text/javascript">
-            function addOptionInSelect(newElementId, selectElementId) {
-                var option = document.createElement('option');
-                option.innerHTML = document.getElementById(newElementId).value;
-                option.value = document.getElementById(newElementId).value;
-                document.getElementById(selectElementId).appendChild(option);
-                document.getElementById(selectElementId).value = document.getElementById(newElementId).value;
+            function addOptionInSelect(newElementId, selectElementId) {                
+                var newValue = $("#" + newElementId).attr("value").trim();
+                var notFound = $("#" + selectElementId + " option[value='" + newValue + "']").length === 0;
+                if(notFound){                   
+                    //it only creates if the text inserted is different of empty
+                    if(newValue !== ''){
+                        var option = document.createElement('option');
+                        option.innerHTML = newValue;
+                        option.value = newValue;
+                        document.getElementById(selectElementId).appendChild(option);
+                        document.getElementById(selectElementId).value = newValue;
+                    }
+                }else{//already exists  
+                    $("#" + selectElementId + " option[value='" + newValue + "']").attr("selected", "selected");
+                    document.getElementById(selectElementId).value = newValue;
+                }
             }
         </script>
         <script>
