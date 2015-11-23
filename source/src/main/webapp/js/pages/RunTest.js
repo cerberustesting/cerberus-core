@@ -64,8 +64,14 @@ $.when($.getScript("js/pages/global/global.js")).then(function () {
         $("#addAllQueue").click({"select": "#testCaseList option"}, checkExecution);
         $("#resetQueue").click(function (event) {
             stopPropagation(event);
-            $("#notValid").empty();
             $("#queue").empty();
+            updateValidNumber();
+            updateNotValidNumber();
+            $("#notValidList").empty();
+            $("#notValid").hide();
+        });
+        $("#notValidNumber").click(function () {
+            $("#notValidTC").modal("show");
         });
 
         loadExecForm();
@@ -118,8 +124,8 @@ function getCookie(cname) {
     return "";
 }
 
-function deleteRow() {
-    $(this).parent('li').remove();
+function deleteRow(row) {
+    row.parent('li').remove();
 }
 
 function getCountries() {
@@ -157,10 +163,39 @@ function getEnvironment() {
     return envList;
 }
 
+function notValidHandler(list) {
+    if (list.length !== 0) {
+        var queue = $("#notValidList");
+
+        for (var index = 0; index < list.length; index++) {
+            var execution = list[index];
+
+            queue.append($('<li></li>').addClass("list-group-item").append($("<div></div>").text(execution.test + " - " + execution.testcase + " - " +
+                    execution.env + " - " + execution.country)).append($("<div></div>").text(execution.message).addClass("error-msg")).data("item", execution));
+
+        }
+
+        updateNotValidNumber();
+        $("#notValid").show();
+    }
+}
+
+function updateNotValidNumber() {
+    $("#notValidNumber").text($("#notValidList li").length);
+}
+
+function updateValidNumber() {
+    $("#validNumber").text($("#queue li").length);
+}
+
 function addToQueue(executionList) {
     var notValidList = [];
     var queue = $("#queue");
-    var removeBtn = $("<span></span>").addClass("glyphicon glyphicon-remove delete").click(deleteRow);
+    var removeBtn = $("<span></span>").addClass("glyphicon glyphicon-remove delete").click(function () {
+        deleteRow($(this));
+        updateValidNumber();
+    });
+    var valid = 0;
 
     for (var index = 0; index < executionList.length; index++) {
         var execution = executionList[index];
@@ -169,14 +204,14 @@ function addToQueue(executionList) {
             queue.append($('<li></li>').addClass("list-group-item").text(execution.test + " - " + execution.testcase + " - " +
                     execution.env + " - " + execution.country)
                     .prepend(removeBtn.clone(true)).data("item", execution));
+            valid++;
         } else {
             notValidList.push(execution);
         }
     }
+    updateValidNumber();
 
-    if (notValidList.length !== 0) {
-        $("#notValid").text("!!! There is " + notValidList.length + " that couldn't be added to the queue !!!");
-    }
+    notValidHandler(notValidList);
 }
 
 function checkExecution(event) {

@@ -719,6 +719,10 @@ ul.nav li.dropdown:hover > ul.dropdown-menu {
     text-align: center;
 }
 
+.error-msg {
+    color: #D9534F;
+}
+
 .sqlLib {
     display: inline-block;
     *display: inline;

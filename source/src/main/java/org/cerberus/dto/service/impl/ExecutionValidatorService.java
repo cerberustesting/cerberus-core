@@ -19,6 +19,7 @@
  */
 package org.cerberus.dto.service.impl;
 
+import java.util.List;
 import org.cerberus.crud.dao.ICountryEnvironmentParametersDAO;
 import org.cerberus.crud.dao.ITestCaseCountryDAO;
 import org.cerberus.dto.ExecutionValidator;
@@ -39,18 +40,26 @@ public class ExecutionValidatorService implements IExecutionValidatorService {
 
     @Autowired
     ITestCaseCountryDAO testCaseCountryDAO;
+    
+     private static final String TEST_CASE_COUNTRY_ERROR = "This Test Case is not defined for this country";
+     private static final String COUNTRY_ENV_PARAM_APPLICATION_ERROR = "The application of the Test Case is not set for this environment";
+     private static final String TEST_CASE_EXECUTION_OK = "This Test Case is set to run with this configuration";
 
     @Override
-    public void validateExecution(ExecutionValidator execution) {
-        if (!this.checkTestCaseCountry(execution.getTest(), execution.getTestCase(), execution.getCountry())) {
-            execution.setValid(false);
-            execution.setMessage("This TestCase is not defined for this country");
-        } else if (!this.checkCountryEnvParam(execution.getSystem(), execution.getCountry(), execution.getEnvironment(), execution.getApplication())) {
-            execution.setValid(false);
-            execution.setMessage("The application of the Test Case is not set for this environment");
-        } else {
-            execution.setValid(true);
-            execution.setMessage("This TestCase is set to run with this configuration");
+    public void validateExecution(ExecutionValidator execution, List<ExecutionValidator> notValidList) {
+        if (!this.checkInNotValidList(execution, notValidList)) {
+            if (!this.checkTestCaseCountry(execution.getTest(), execution.getTestCase(), execution.getCountry())) {
+                execution.setValid(false);
+                execution.setMessage(TEST_CASE_COUNTRY_ERROR);
+                notValidList.add(execution);
+            } else if (!this.checkCountryEnvParam(execution.getSystem(), execution.getCountry(), execution.getEnvironment(), execution.getApplication())) {
+                execution.setValid(false);
+                execution.setMessage(COUNTRY_ENV_PARAM_APPLICATION_ERROR);
+                notValidList.add(execution);
+            } else {
+                execution.setValid(true);
+                execution.setMessage(TEST_CASE_EXECUTION_OK);
+            }
         }
     }
 
@@ -70,6 +79,29 @@ public class ExecutionValidatorService implements IExecutionValidatorService {
         } catch (CerberusException ce) {
             return false;
         }
+    }
+
+    private boolean checkInNotValidList(ExecutionValidator execution, List<ExecutionValidator> notValidList) {
+        for (ExecutionValidator notValid : notValidList) {
+            if (execution.getTest().equals(notValid.getTest())
+                    && execution.getTestCase().equals(notValid.getTestCase())
+                    && execution.getCountry().equals(notValid.getCountry())
+                    && notValid.getMessage().equals(TEST_CASE_COUNTRY_ERROR)) {
+                execution.setValid(false);
+                execution.setMessage(TEST_CASE_COUNTRY_ERROR);
+                return true;
+            } else if (execution.getApplication().equals(notValid.getApplication())
+                    && execution.getEnvironment().equals(notValid.getEnvironment())
+                    && execution.getCountry().equals(notValid.getCountry())
+                    && execution.getSystem().equals(notValid.getSystem())
+                    && notValid.getMessage().equals(COUNTRY_ENV_PARAM_APPLICATION_ERROR)) {
+                
+                execution.setValid(false);
+                execution.setMessage(COUNTRY_ENV_PARAM_APPLICATION_ERROR);
+                return true;
+            }
+        }
+        return false;
     }
 
 }

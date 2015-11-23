@@ -19,6 +19,7 @@
  */
 package org.cerberus.dto.service;
 
+import java.util.List;
 import org.cerberus.dto.ExecutionValidator;
 
 /**
@@ -27,5 +28,5 @@ import org.cerberus.dto.ExecutionValidator;
  */
 public interface IExecutionValidatorService {
     
-    void validateExecution(ExecutionValidator execution);
+    void validateExecution(ExecutionValidator execution, List<ExecutionValidator> notValidList);
 }

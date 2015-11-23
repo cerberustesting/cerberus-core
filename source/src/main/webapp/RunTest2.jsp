@@ -17,6 +17,7 @@
         <%@ include file="include/header.html"%>
         <div class="container-fluid center" id="page-layout">
             <%@ include file="include/messagesArea.html"%>
+            <%@ include file="include/runtest/TestCaseNotValid.html"%>
             <h1 class="page-title-line">Run Test</h1>
             <div class="col-lg-9">
                 <div class="panel panel-default">
@@ -24,7 +25,7 @@
                         <span class="toggle glyphicon glyphicon-chevron-right pull-right"></span>
                         Filters
                     </div>
-                    <div class="panel-body collapse in" id="filtersPanel">
+                    <div class="panel-body collapse" id="filtersPanel">
                         <div class="row">
                             <div class="form-group col-lg-9">
                                 <label class="control-label" for="typeSelect">Type of selection</label>
@@ -115,10 +116,10 @@
                                 <div class="row" style="margin-top: 5px;">
                                     <button type="button" class="btn btn-default" id="addAllQueue"> >> </button>
                                 </div>
-                                <div><p id="error"></p></div>
+                                <div id="error" class="error-msg"></div>
                             </div>
                         </div>
-                         <div class="row">
+                        <div class="row">
                             <div class="col-lg-6">
                                 <label class="bold">Environment :</label>
                                 <label class="radio-inline">
@@ -164,7 +165,7 @@
                         </div>
                     </div>
                 </div>
-                
+
                 <div class="row">
                     <div class="col-lg-6">
                         <div class="panel panel-default">
@@ -311,7 +312,14 @@
                     </div>
 
                     <div class="panel-body collapse in" id="queuePanel">
-                        <div><p id="notValid"></p></div>
+                        <li class="list-group-item list-group-item-danger" style="display: none;" id="notValid">
+                            <span class="badge" id="notValidNumber" style="cursor: pointer;"></span>
+                            Some executions couldn't be added to the queue
+                        </li>
+                        <li class="list-group-item list-group-item-info" id="valid">
+                            <span class="badge" id="validNumber">0</span>
+                            Test Cases in queue
+                        </li>
                         <ul class="list-group" id="queue" style="height: 1200px; overflow: hidden; overflow-y: scroll;border: 1px solid #CCC; border-radius: 4px;"></ul>
                     </div>
                 </div>

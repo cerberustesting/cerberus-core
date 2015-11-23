@@ -65,6 +65,7 @@ public class GetExecutionQueue extends HttpServlet {
         JSONArray countryList = new JSONArray(request.getParameter("countries"));
         String system = request.getParameter("system");
         List<ExecutionValidator> inQueue = new ArrayList<ExecutionValidator>();
+        List<ExecutionValidator> notValid = new ArrayList<ExecutionValidator>();
 
         for (int iterTC = 0; iterTC < testCaseList.length(); iterTC++) {
             JSONObject testCase = testCaseList.getJSONObject(iterTC);
@@ -84,7 +85,7 @@ public class GetExecutionQueue extends HttpServlet {
                     toAdd.setEnvironment(env.getString("env"));
                     toAdd.setSystem(system);
 
-                    execValidatorService.validateExecution(toAdd);
+                    execValidatorService.validateExecution(toAdd, notValid);
                     inQueue.add(toAdd);
                 }
             }
