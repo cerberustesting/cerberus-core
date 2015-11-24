@@ -26,15 +26,20 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import org.apache.log4j.Level;
+import org.apache.log4j.Logger;
 import org.cerberus.crud.dao.ICampaignContentDAO;
 import org.cerberus.database.DatabaseSpring;
 import org.cerberus.crud.entity.CampaignContent;
+import org.cerberus.crud.entity.MessageEvent;
 import org.cerberus.crud.entity.MessageGeneral;
 import org.cerberus.enums.MessageGeneralEnum;
 import org.cerberus.exception.CerberusException;
 import org.cerberus.crud.factory.IFactoryCampaignContent;
+import org.cerberus.enums.MessageEventEnum;
 import org.cerberus.log.MyLogger;
 import org.cerberus.util.ParameterParserUtil;
+import org.cerberus.util.StringUtil;
+import org.cerberus.util.answer.AnswerList;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
@@ -50,6 +55,12 @@ public class CampaignContentDAO implements ICampaignContentDAO {
     @Autowired
     private IFactoryCampaignContent factoryCampaignContent;
 
+    private static final Logger LOG = Logger.getLogger(CampaignContentDAO.class);
+
+    private final String OBJECT_NAME = "CampaignContent";
+    private final String SQL_DUPLICATED_CODE = "23000";
+    private final int MAX_ROW_SELECTED = 100000;
+
     @Override
     public List<CampaignContent> findAll() throws CerberusException {
         boolean throwEx = false;
@@ -63,7 +74,7 @@ public class CampaignContentDAO implements ICampaignContentDAO {
                 ResultSet resultSet = preStat.executeQuery();
                 try {
                     while (resultSet.next()) {
-                        campaignContentList.add(this.loadCampaignContentFromResultSet(resultSet));
+                        campaignContentList.add(this.loadFromResultSet(resultSet));
                     }
                 } catch (SQLException exception) {
                     MyLogger.log(CampaignContentDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
@@ -109,7 +120,7 @@ public class CampaignContentDAO implements ICampaignContentDAO {
                 ResultSet resultSet = preStat.executeQuery();
                 try {
                     if (resultSet.first()) {
-                        campaignContent = this.loadCampaignContentFromResultSet(resultSet);
+                        campaignContent = this.loadFromResultSet(resultSet);
                     }
                 } catch (SQLException exception) {
                     MyLogger.log(CampaignContentDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
@@ -152,7 +163,7 @@ public class CampaignContentDAO implements ICampaignContentDAO {
                 ResultSet resultSet = preStat.executeQuery();
                 try {
                     while (resultSet.next()) {
-                        campaignContentList.add(this.loadCampaignContentFromResultSet(resultSet));
+                        campaignContentList.add(this.loadFromResultSet(resultSet));
                     }
                 } catch (SQLException exception) {
                     MyLogger.log(CampaignContentDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
@@ -198,7 +209,7 @@ public class CampaignContentDAO implements ICampaignContentDAO {
                 ResultSet resultSet = preStat.executeQuery();
                 try {
                     while (resultSet.next()) {
-                        campaignContentList.add(this.loadCampaignContentFromResultSet(resultSet));
+                        campaignContentList.add(this.loadFromResultSet(resultSet));
                     }
                 } catch (SQLException exception) {
                     MyLogger.log(CampaignContentDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
@@ -268,7 +279,7 @@ public class CampaignContentDAO implements ICampaignContentDAO {
                 ResultSet resultSet = preStat.executeQuery();
                 try {
                     while (resultSet.next()) {
-                        campaignContentsList.add(this.loadCampaignContentFromResultSet(resultSet));
+                        campaignContentsList.add(this.loadFromResultSet(resultSet));
                     }
                 } catch (SQLException exception) {
                     MyLogger.log(CampaignContentDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
@@ -393,12 +404,141 @@ public class CampaignContentDAO implements ICampaignContentDAO {
         return false;
     }
 
-    private CampaignContent loadCampaignContentFromResultSet(ResultSet rs) throws SQLException {
+    private CampaignContent loadFromResultSet(ResultSet rs) throws SQLException {
         Integer campaigncontentID = ParameterParserUtil.parseIntegerParam(rs.getString("campaigncontentID"), -1);
         String testbattery = ParameterParserUtil.parseStringParam(rs.getString("testbattery"), "");
         String campaign = ParameterParserUtil.parseStringParam(rs.getString("campaign"), "");
 
         return factoryCampaignContent.create(campaigncontentID, testbattery, campaign);
+    }
+
+    @Override
+    public AnswerList readByCampaignByCriteria(String campaign, int start, int amount, String column, String dir, String searchTerm, String individualSearch) {
+        AnswerList response = new AnswerList();
+        MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
+        msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", ""));
+        List<CampaignContent> campaignContentList = new ArrayList<CampaignContent>();
+        StringBuilder searchSQL = new StringBuilder();
+
+        StringBuilder query = new StringBuilder();
+        //SQL_CALC_FOUND_ROWS allows to retrieve the total number of columns by disrearding the limit clauses that 
+        //were applied -- used for pagination p
+        query.append("SELECT SQL_CALC_FOUND_ROWS * FROM campaigncontent ");
+
+        searchSQL.append(" where 1=1 ");
+
+        if (!StringUtil.isNullOrEmpty(searchTerm)) {
+            searchSQL.append(" and (`campaigncontentid` like ?");
+            searchSQL.append(" or `campaign` like ?");
+            searchSQL.append(" or `testbattery` like ?)");
+        }
+        if (!StringUtil.isNullOrEmpty(individualSearch)) {
+            searchSQL.append(" and (`?`)");
+        }
+        if (!StringUtil.isNullOrEmpty(campaign)) {
+            searchSQL.append(" and (`campaign` = ? )");
+        }
+        query.append(searchSQL);
+
+        if (!StringUtil.isNullOrEmpty(column)) {
+            query.append(" order by `").append(column).append("` ").append(dir);
+        }
+
+        if ((amount <= 0) || (amount >= MAX_ROW_SELECTED)) {
+            query.append(" limit ").append(start).append(" , ").append(MAX_ROW_SELECTED);
+        } else {
+            query.append(" limit ").append(start).append(" , ").append(amount);
+        }
+
+        // Debug message on SQL.
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("SQL : " + query.toString());
+        }
+        Connection connection = this.databaseSpring.connect();
+        try {
+            PreparedStatement preStat = connection.prepareStatement(query.toString());
+            try {
+                int i = 1;
+                if (!StringUtil.isNullOrEmpty(searchTerm)) {
+                    preStat.setString(i++, "%" + searchTerm + "%");
+                    preStat.setString(i++, "%" + searchTerm + "%");
+                    preStat.setString(i++, "%" + searchTerm + "%");
+                }
+                if (!StringUtil.isNullOrEmpty(individualSearch)) {
+                    preStat.setString(i++, individualSearch);
+                }
+                if (!StringUtil.isNullOrEmpty(campaign)) {
+                    preStat.setString(i++, campaign);
+                }
+                ResultSet resultSet = preStat.executeQuery();
+                try {
+                    //gets the data
+                    while (resultSet.next()) {
+                        campaignContentList.add(this.loadFromResultSet(resultSet));
+                    }
+
+                    //get the total number of rows
+                    resultSet = preStat.executeQuery("SELECT FOUND_ROWS()");
+                    int nrTotalRows = 0;
+
+                    if (resultSet != null && resultSet.next()) {
+                        nrTotalRows = resultSet.getInt(1);
+                    }
+
+                    if (campaignContentList.size() >= MAX_ROW_SELECTED) { // Result of SQl was limited by MAX_ROW_SELECTED constrain. That means that we may miss some lines in the resultList.
+                        LOG.error("Partial Result in the query.");
+                        msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_WARNING_PARTIAL_RESULT);
+                        msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", "Maximum row reached : " + MAX_ROW_SELECTED));
+                        response = new AnswerList(campaignContentList, nrTotalRows);
+                    } else if (campaignContentList.size() <= 0) {
+                        msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_NO_DATA_FOUND);
+                        response = new AnswerList(campaignContentList, nrTotalRows);
+                    } else {
+                        msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
+                        msg.setDescription(msg.getDescription().replace("%ITEM%", OBJECT_NAME).replace("%OPERATION%", "SELECT"));
+                        response = new AnswerList(campaignContentList, nrTotalRows);
+                    }
+
+                } catch (SQLException exception) {
+                    LOG.error("Unable to execute query : " + exception.toString());
+                    msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
+                    msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", exception.toString()));
+
+                } finally {
+                    if (resultSet != null) {
+                        resultSet.close();
+                    }
+                }
+
+            } catch (SQLException exception) {
+                LOG.error("Unable to execute query : " + exception.toString());
+                msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
+                msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", exception.toString()));
+            } finally {
+                if (preStat != null) {
+                    preStat.close();
+                }
+            }
+
+        } catch (SQLException exception) {
+            LOG.error("Unable to execute query : " + exception.toString());
+            msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
+            msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", exception.toString()));
+        } finally {
+            try {
+                if (!this.databaseSpring.isOnTransaction()) {
+                    if (connection != null) {
+                        connection.close();
+                    }
+                }
+            } catch (SQLException exception) {
+                LOG.warn("Unable to close connection : " + exception.toString());
+            }
+        }
+
+        response.setResultMessage(msg);
+        response.setDataList(campaignContentList);
+        return response;
     }
 
 }

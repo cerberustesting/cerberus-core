@@ -22,6 +22,7 @@ package org.cerberus.crud.dao;
 import java.util.List;
 import org.cerberus.crud.entity.CampaignParameter;
 import org.cerberus.exception.CerberusException;
+import org.cerberus.util.answer.AnswerList;
 
 /**
  *
@@ -42,4 +43,6 @@ public interface ICampaignParameterDAO {
     boolean deleteCampaignParameter(CampaignParameter campaignParameter);
 
     List<CampaignParameter> findCampaignParameterByCriteria(Integer campaignparameterID, String campaign, String parameter, String value) throws CerberusException;
+
+    public AnswerList readByCampaignByCriteria(String campaign, int startPosition, int length, String columnName, String sort, String searchParameter, String string);
 }

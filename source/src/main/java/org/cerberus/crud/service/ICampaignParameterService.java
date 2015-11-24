@@ -17,35 +17,16 @@
  * You should have received a copy of the GNU General Public License
  * along with Cerberus.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.cerberus.crud.dao;
+package org.cerberus.crud.service;
 
-import java.util.List;
-import org.cerberus.crud.entity.CampaignContent;
-import org.cerberus.exception.CerberusException;
 import org.cerberus.util.answer.AnswerList;
 
 /**
  *
- * @author memiks
+ * @author cerberus
  */
-public interface ICampaignContentDAO {
-
-
-    List<CampaignContent> findAll() throws CerberusException;
-
-    CampaignContent findCampaignContentByKey(Integer campaignID) throws CerberusException;
-
-    List<CampaignContent> findCampaignContentByCampaignName(String campaign) throws CerberusException;
-
-    List<CampaignContent> findCampaignContentsByTestBattery(String testBattery) throws CerberusException;
-
-    boolean updateCampaignContent(CampaignContent campaign);
-
-    boolean createCampaignContent(CampaignContent campaign);
-
-    boolean deleteCampaignContent(CampaignContent campaignContent);
-
-    List<CampaignContent> findCampaignContentByCriteria(String campaign, Integer campaignContentID, String testBattery) throws CerberusException;
+public interface ICampaignParameterService {
     
     AnswerList readByCampaignByCriteria(String campaign, int startPosition, int length, String columnName, String sort, String searchParameter, String string);
+    
 }

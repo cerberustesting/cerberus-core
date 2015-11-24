@@ -23,6 +23,7 @@ import org.cerberus.crud.entity.TestBatteryContent;
 import java.util.List;
 import org.cerberus.crud.entity.TestBatteryContentWithDescription;
 import org.cerberus.exception.CerberusException;
+import org.cerberus.util.answer.AnswerList;
 
 /**
  *
@@ -52,4 +53,7 @@ public interface ITestBatteryContentDAO {
     boolean deleteTestBatteryContent(TestBatteryContent testBatteryContent);
 
     List<TestBatteryContent> findTestBatteryContentsByCriteria(Integer testBatteryContentID, String testBattery, String test, String testCase) throws CerberusException;
+
+    AnswerList readByTestBatteryByCriteria(String testBattery, int startPosition, int length, String columnName, String sort, String searchParameter, String string);
+    
 }
