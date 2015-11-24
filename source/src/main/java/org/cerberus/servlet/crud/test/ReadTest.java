@@ -79,6 +79,9 @@ public class ReadTest extends HttpServlet {
         if (!test.equals("")) {
             answer = findTestByKey(appContext, test);
             jsonResponse = (JSONObject) answer.getItem();
+        } else if (!system.equals("")) {
+            answer = findTestBySystem(appContext, system);
+            jsonResponse = (JSONObject) answer.getItem();
         } else {
             answer = findTestList(appContext, request);
             jsonResponse = (JSONObject) answer.getItem();
@@ -201,6 +204,31 @@ public class ReadTest extends HttpServlet {
         answer.setItem(jsonResponse);
         answer.setResultMessage(answer.getResultMessage());
 
+        return answer;
+    }
+
+    private AnswerItem findTestBySystem(ApplicationContext appContext, String system) throws JSONException {
+        AnswerItem answer = new AnswerItem(new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED));
+        AnswerList testList = new AnswerList();
+        JSONObject jsonResponse = new JSONObject();
+
+        testService = appContext.getBean(TestService.class);
+
+        testList = testService.readDistinctBySystem(system);
+
+        JSONArray jsonArray = new JSONArray();
+        if (testList.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {//the service was able to perform the query, then we should get all values
+            for (Test test : (List<Test>) testList.getDataList()) {
+                jsonArray.put(convertTestToJSONObject(test));
+            }
+        }
+
+        jsonResponse.put("contentTable", jsonArray);
+        jsonResponse.put("iTotalRecords", testList.getTotalRows());
+        jsonResponse.put("iTotalDisplayRecords", testList.getTotalRows());
+
+        answer.setItem(jsonResponse);
+        answer.setResultMessage(testList.getResultMessage());
         return answer;
     }
 

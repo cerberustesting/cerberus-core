@@ -299,6 +299,26 @@
                     </div>
                 </div>
 
+                <form method="post" action="AddToExecutionQueue" id="AddToExecutionQueue">
+                    <input type="hidden" name="manualURL" id="manualURLATQ">
+                    <input type="hidden" name="manualRobot" id="manualRobotATQ">
+                    <input type="hidden" name="ss_ip" id="ss_ipATQ">
+                    <input type="hidden" name="ss_p" id="ss_pATQ">
+                    <input type="hidden" name="version" id="versionATQ">
+                    <input type="hidden" name="platform" id="platformATQ">
+                    <input type="hidden" name="Tag" id="tagATQ">
+                    <input type="hidden" name="outputformat" id="outputformatATQ">
+                    <input type="hidden" name="verbose" id="verboseATQ">
+                    <input type="hidden" name="screenshot" id="screenshotATQ">
+                    <input type="hidden" name="pageSource" id="pageSourceATQ">
+                    <input type="hidden" name="seleniumLog" id="seleniumLogATQ">
+                    <input type="hidden" name="synchroneous" id="synchroneousATQ">
+                    <input type="hidden" name="timeout" id="timeoutATQ">
+                    <input type="hidden" name="retries" id="retriesATQ">
+                    <input type="hidden" name="manualExecution" id="manualExecutionATQ">
+                    <input type="hidden" name="statusPage" id="statusPageATQ">
+                </form>
+                
                 <footer class="footer">
                     <div class="container-fluid" id="footer"></div>
                 </footer>
@@ -320,12 +340,12 @@
                             <span class="badge" id="validNumber">0</span>
                             Test Cases in queue
                         </li>
-                        <ul class="list-group" id="queue" style="height: 1200px; overflow: hidden; overflow-y: scroll;border: 1px solid #CCC; border-radius: 4px;"></ul>
+                        <ul class="list-group" id="queue" style="height: 870px; overflow: hidden; overflow-y: scroll;border: 1px solid #CCC; border-radius: 4px;"></ul>
                     </div>
                 </div>
                 <p>Launching N tests on the environments : TATA, TITI, TOTO in the countries : FR, IT, BE on the browser : firefox, chrome, android</p>
                 <div style="padding-top: 15px;">
-                    <button type="button" class="btn btn-primary btn-lg btn-block">Run</button>
+                    <button type="button" class="btn btn-primary btn-lg btn-block" id="run">Run</button>
                 </div>
             </div>
         </div>

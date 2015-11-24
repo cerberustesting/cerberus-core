@@ -71,6 +71,8 @@ public interface ITestService {
 
     public AnswerItem readByKey(String test);
 
+    public AnswerList readDistinctBySystem(String system);
+    
     public AnswerList readByCriteria(int start, int amount, String colName, String dir, String searchTerm, String individualSearch);
 
     public Answer create(Test test);

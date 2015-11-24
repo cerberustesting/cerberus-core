@@ -33,7 +33,7 @@ $.when($.getScript("js/pages/global/global.js")).then(function () {
         typeSelectHandler();
         showLoader("#filtersPanel");
         $.when(
-                loadMultiSelect("ReadTest", "sEcho=1", "test", ["test"], "test"),
+                loadMultiSelect("ReadTest", "system=" + system, "test", ["test", "description"], "test"),
                 loadMultiSelect("ReadProject", "sEcho=1", "project", ["idProject"], "idProject"),
                 loadMultiSelect("ReadApplication", "system=" + system, "application", ["application"], "application", true),
                 loadMultiSelect("ReadUserPublic", "", "creator", ["login"], "login"),
@@ -53,6 +53,7 @@ $.when($.getScript("js/pages/global/global.js")).then(function () {
         });
 
         $("#typeSelect").on("change", typeSelectHandler);
+        $("#run").click(sendForm);
         $("#loadbutton").click(loadTestCaseFromFilter);
         $("#resetbutton").click(function () {
             $(".multiselectelement").each(function () {
@@ -184,6 +185,84 @@ function appendCountryList() {
     });
 }
 
+/** FORM SENDING UTILITY FUNCTIONS (VALID FOR SERVLET ADDTOEXECUTIONQUEUE) **/
+
+function checkForms() {
+    var type;
+    var message;
+
+    if ($("#queue li").length === 0) {
+        type = getAlertType("KO");
+        message = "Please, select at least one valid testcase.";
+        showMessageMainPage(type, message);
+        return false;
+    } else if ($("#browser").val() === null) {
+        type = getAlertType("KO");
+        message = "Please, select at least one browser.";
+        showMessageMainPage(type, message);
+        return false;
+    }
+    return true;
+}
+
+function sendForm() {
+    if (checkForms()) {
+        var $form = $("#AddToExecutionQueue");
+        var countries = getCountries();
+        var env = getEnvironment();
+        var $input = $('<input>').prop("type", "hidden");
+        var browser = $("#browser").val() ? $("#browser").val() : [];
+        var testcases = $("#queue li");
+
+        testcases.each(function () {
+            var testcase = $(this).data("item");
+            $form.append($input.clone().prop("name", "SelectedTest").val("Test=" + encodeURIComponent(testcase.test) + "&TestCase=" + encodeURIComponent(testcase.testcase)));
+        });
+
+        for (var index = 0; index < countries.length; index++) {
+            $form.append($input.clone().prop("name", "Country").val(countries[index]));
+        }
+        for (var index = 0; index < env.length; index++) {
+            $form.append($input.clone().prop("name", "Environment").val(env[index]["env"]));
+        }
+        for (var index = 0; index < browser.length; index++) {
+            $form.append($input.clone().prop("name", "Browser").val(browser[index]));
+        }
+
+        $("#manualURLATQ").val("N");
+        setRobotForm($form, $input);
+        setExecForm();
+        $form.submit();
+    }
+}
+
+function setRobotForm($form, $input) {
+    if ($("#robotConfig").val() === "") {
+        $("#manualRobotATQ").val("Y");
+        $("#ss_ipATQ").val($("#seleniumIP").val());
+        $("#ss_pATQ").val($("#seleniumPort").val());
+        $("#versionATQ").val($("#version").val());
+        $("#platformATQ").val($("#platform").val());
+    } else {
+        $("#manualRobotATQ").val("N");
+        $form.append($input.clone().prop("name", "robot").val($("#robotConfig").val()));
+    }
+}
+
+function setExecForm() {
+    $("#tagATQ").val($("#tag").val());
+    $("#outputformatATQ").val($("#outputFormat").val());
+    $("#verboseATQ").val($("#verbose").val());
+    $("#screenshotATQ").val($("#screenshot").val());
+    $("#pageSourceATQ").val($("#pageSource").val());
+    $("#seleniumLogATQ").val($("#seleniumLog").val());
+    $("#synchroneousATQ").val($("#synchroneous").val());
+    $("#timeoutATQ").val($("#timeout").val());
+    $("#retriesATQ").val($("#retries").val());
+    $("#manualExecutionATQ").val($("#manualExecution").val());
+    $("#statusPageATQ").val("");
+}
+
 /** UTILITY FUNCTIONS FOR QUEUE **/
 
 function deleteRow(row) {
@@ -257,7 +336,6 @@ function addToQueue(executionList) {
         deleteRow($(this));
         updateValidNumber();
     });
-    var valid = 0;
 
     for (var index = 0; index < executionList.length; index++) {
         var execution = executionList[index];
@@ -266,7 +344,6 @@ function addToQueue(executionList) {
             queue.append($('<li></li>').addClass("list-group-item").text(execution.test + " - " + execution.testcase + " - " +
                     execution.env + " - " + execution.country)
                     .prepend(removeBtn.clone(true)).data("item", execution));
-            valid++;
         } else {
             notValidList.push(execution);
         }
@@ -396,7 +473,7 @@ function appendRobotList(pref) {
 
         robotList.append($('<option></option>').text("Custom configuration").val(""));
         for (var index = 0; index < data.contentTable.length; index++) {
-            robotList.append($('<option></option>').text(data.contentTable[index].robot).val(data.contentTable[index].robotID));
+            robotList.append($('<option></option>').text(data.contentTable[index].robot).val(data.contentTable[index].robot));
         }
 
         if (pref !== null) {
