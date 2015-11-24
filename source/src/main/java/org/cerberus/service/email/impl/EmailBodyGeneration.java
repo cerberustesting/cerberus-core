@@ -77,7 +77,7 @@ public class EmailBodyGeneration implements IEmailBodyGeneration {
                     .append(" where build = '").append(build).append("' and a.system = '").append(system).append("' ")
                     .append(" and bri.seq > (select seq from buildrevisioninvariant where `system` = '").append(system).append("' and `level` = 2 and `versionname` = '").append(lastRevision).append("' )  ")
                     .append(" and bri.seq <= (select seq from buildrevisioninvariant where `system` = '").append(system).append("' and `level` = 2 and `versionname` = '").append(revision).append("' )  ")
-                    .append(" order by b.Build, bri.seq, b.Application, b.Project,")
+                    .append(" order by b.Build, bri.seq, b.Application, b.datecre,")
                     .append(" b.TicketIDFixed, b.BugIDFixed, b.Release").toString();
 
             Logger.getLogger(EmailBodyGeneration.class.getName()).log(Level.DEBUG, Infos.getInstance().getProjectNameAndVersion() + " - SQL : " + contentSQL);
