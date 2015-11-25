@@ -67,10 +67,15 @@ public class TestDataLibService implements ITestDataLibService {
     private ITestDataLibDataService testDataLibDataService;
     
     @Override
+    public AnswerItem readByNameBySystemByEnvironmentByCountry(String name, String system, String environment, String country) {
+        return testDataLibDAO.readByNameBySystemByEnvironmentByCountry(name, system, environment, country);
+    }
+    
+    @Override
     public AnswerItem readByKey(String name, String system, String environment, String country) {
         return testDataLibDAO.readByKey(name, system, environment, country);
     }
-
+    
     @Override
     public AnswerItem readByKey(int testDatalib) {
         return testDataLibDAO.readByKey(testDatalib);
@@ -206,7 +211,7 @@ public class TestDataLibService implements ITestDataLibService {
         AnswerItem answer = new AnswerItem();
         MessageEvent msg = new MessageEvent(MessageEventEnum.PROPERTY_SUCCESS);
         TestDataLibResult result = null;
-
+      
         if (lib.getType().equals(TestDataLibTypeEnum.STATIC.getCode())) {
             result = fetchDataStatic(lib);
 
@@ -224,7 +229,7 @@ public class TestDataLibService implements ITestDataLibService {
         answer.setResultMessage(msg);
         return answer;
     }
-
+    
     private TestDataLibResult fetchDataStatic(TestDataLib lib) {
         //static data does need pre processing to retrieve the subdataentries
         TestDataLibResult result = new TestDataLibResultStatic();
@@ -290,6 +295,42 @@ public class TestDataLibService implements ITestDataLibService {
         }
         answer.setItem(result);
         answer.setResultMessage(msg);
+        return answer;
+    }
+
+    @Override
+    public Answer duplicate(TestDataLib lib) {
+        Answer answer;
+        int originalID = lib.getTestDataLibID();
+        dbManager.beginTransaction();
+        //get all records from testdatalibdata that belong to the the lib that we are trying to duplicate
+        
+        answer = testDataLibDAO.create(lib);
+
+        if (answer.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
+            answer = testDataLibDataService.readByKey(originalID);
+            if(answer.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())){
+                //if there were no problems retrieving the sub-data list
+                //gets the subdatalist
+                List<TestDataLibData> originalList = (List<TestDataLibData>)((AnswerList)answer).getDataList();
+                List<TestDataLibData> newList = new ArrayList<TestDataLibData>();
+                if (originalList != null && !originalList.isEmpty()) {
+                    for (TestDataLibData libData : originalList) {
+                        TestDataLibData data = testDataLibDataFactory.create(-1, lib.getTestDataLibID(), libData.getSubData(), libData.getValue(),
+                                libData.getColumn(), libData.getParsingAnswer(), libData.getDescription());
+                        newList.add(data);
+                    }
+                    answer = testDataLibDataService.create(newList);
+                }            
+            }            
+        } 
+        
+        if (answer.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
+            dbManager.commitTransaction();
+        } else {
+            dbManager.abortTransaction();
+        }
+        
         return answer;
     }
 }

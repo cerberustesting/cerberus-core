@@ -215,9 +215,18 @@ public class ReadTestDataLib extends HttpServlet {
      * @return JSON object
      * @throws JSONException
      */
-    private JSONObject convertTestDataLibToJSONObject(TestDataLib testDataLib, boolean unescapeXML) throws JSONException {
+    private JSONObject convertTestDataLibToJSONObject(TestDataLib testDataLib, boolean unescapeContent) throws JSONException {
 
-        if (unescapeXML) {
+        if (unescapeContent) {
+            //general            
+            testDataLib.setDescription(StringEscapeUtils.unescapeHtml4(testDataLib.getDescription()));
+            
+            //SQL
+            testDataLib.setScript(StringEscapeUtils.unescapeHtml4(testDataLib.getScript()));
+            
+            //SOAP
+            testDataLib.setServicePath(StringEscapeUtils.unescapeHtml4(testDataLib.getServicePath()));
+            testDataLib.setMethod(StringEscapeUtils.unescapeHtml4(testDataLib.getMethod()));
             testDataLib.setEnvelope(StringEscapeUtils.unescapeXml(testDataLib.getEnvelope()));
         }
 

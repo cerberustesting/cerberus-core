@@ -5072,6 +5072,14 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLS.append(" ADD UNIQUE INDEX `IX_testdatalibdata_01` (`TestDataLibID` ASC, `SubData` ASC); ");
         SQLInstruction.add(SQLS.toString());
 
+         // Documentation for duplicate test data library entry
+        //-- ------------------------ 664
+        SQLS = new StringBuilder();
+        SQLS.append("INSERT INTO `documentation` VALUES ");
+        SQLS.append(" ('page_testdatalib', 'tooltip_duplicateEntry','','en','Duplicate this entry.', \"\") ");
+        SQLS.append(", ('page_testdatalib_m_duplicatelib', 'title','','en','Duplicate Test Data Library', \"\") "); 
+        SQLInstruction.add(SQLS.toString());        
+        
         return SQLInstruction;
     }
 

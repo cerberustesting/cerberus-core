@@ -18,8 +18,6 @@
 package org.cerberus.servlet.crud.testdata;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -27,31 +25,30 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import org.apache.commons.lang3.StringEscapeUtils;
 import org.cerberus.crud.entity.MessageEvent;
-import org.cerberus.enums.MessageEventEnum;
 import org.cerberus.crud.entity.TestDataLib;
-import org.cerberus.crud.entity.TestDataLibData;
 import org.cerberus.crud.factory.IFactoryTestDataLib;
-import org.cerberus.crud.factory.IFactoryTestDataLibData;
 import org.cerberus.crud.service.ILogEventService;
 import org.cerberus.crud.service.ITestDataLibService;
 import org.cerberus.crud.service.impl.LogEventService;
+import org.cerberus.enums.MessageEventEnum;
 import org.cerberus.util.StringUtil;
 import org.cerberus.util.answer.Answer;
+import org.cerberus.util.answer.AnswerItem;
 import org.cerberus.util.answer.AnswerUtil;
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.owasp.html.PolicyFactory;
-import org.owasp.html.Sanitizers;
 import org.springframework.context.ApplicationContext;
 import org.springframework.web.context.support.WebApplicationContextUtils;
+import org.owasp.html.PolicyFactory;
+import org.owasp.html.Sanitizers;
 
 /**
  * Servlet responsible for handling the creation of new test data lib entries
  *
  * @author FNogueira
  */
-@WebServlet(name = "CreateTestDataLib", urlPatterns = {"/CreateTestDataLib"})
-public class CreateTestDataLib extends HttpServlet {
+@WebServlet(name = "DuplicateTestDataLib", urlPatterns = {"/DuplicateTestDataLib"})
+public class DuplicateTestDataLib extends HttpServlet {
 
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
@@ -70,13 +67,24 @@ public class CreateTestDataLib extends HttpServlet {
         MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
         msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", ""));
         ans.setResultMessage(msg);
-        PolicyFactory policy = Sanitizers.FORMATTING.and(Sanitizers.LINKS);
 
         response.setContentType("application/json");
 
         /**
          * Parsing and securing all required parameters.
          */
+        Integer testdatalibid = 0;
+        boolean testdatalibid_error = true;
+        try {
+            if (request.getParameter("testdatalibid") != null && !request.getParameter("testdatalibid").isEmpty()) {
+                testdatalibid = Integer.valueOf(request.getParameter("testdatalibid"));
+                testdatalibid_error = false;
+            }
+        } catch (NumberFormatException ex) {
+            testdatalibid_error = true;
+            org.apache.log4j.Logger.getLogger(DuplicateTestDataLib.class.getName()).log(org.apache.log4j.Level.ERROR, null, ex); 
+        }
+        PolicyFactory policy = Sanitizers.FORMATTING.and(Sanitizers.LINKS);
         String name = policy.sanitize(request.getParameter("name"));
         String type = policy.sanitize(request.getParameter("type"));
         String group = policy.sanitize(request.getParameter("group"));
@@ -84,6 +92,8 @@ public class CreateTestDataLib extends HttpServlet {
         String environment = policy.sanitize(request.getParameter("environment"));
         String country = policy.sanitize(request.getParameter("country"));
         String database = policy.sanitize(request.getParameter("database"));
+        
+        
         String description = StringEscapeUtils.escapeHtml4(request.getParameter("libdescription")); 
         String script = StringEscapeUtils.escapeHtml4(request.getParameter("script"));
         String servicePath = StringEscapeUtils.escapeHtml4(request.getParameter("servicepath"));
@@ -99,27 +109,39 @@ public class CreateTestDataLib extends HttpServlet {
                     .replace("%OPERATION%", "Create")
                     .replace("%REASON%", "Test data library name is missing! "));
             ans.setResultMessage(msg);
+        }else if (testdatalibid_error) {
+                msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_EXPECTED);
+                msg.setDescription(msg.getDescription().replace("%ITEM%", "Test data library")
+                        .replace("%OPERATION%", "Update")
+                        .replace("%REASON%", "Could not manage to convert testdatalibid to an integer value or testdatalibid is missing."));
+                ans.setResultMessage(msg);
         }else {
-            /**
-             * All data seems cleans so we can call the services.
-             */
+            //data is valid, then we can call the servicesl
             ApplicationContext appContext = WebApplicationContextUtils.getWebApplicationContext(this.getServletContext());
             ITestDataLibService libService = appContext.getBean(ITestDataLibService.class);
             IFactoryTestDataLib factoryLibService = appContext.getBean(IFactoryTestDataLib.class);
             
-            TestDataLib lib = factoryLibService.create(name, system, environment, country, group, 
+            TestDataLib lib = factoryLibService.create(testdatalibid, name, system, environment, country, group, 
                     type, database, script, servicePath, method, envelope, description);
-            List<TestDataLibData> subDataList  = new ArrayList<TestDataLibData>();
-            subDataList.addAll(extractTestDataLibDataSet(appContext, request, policy));
-            //Creates the entries and the subdata list
-            ans = libService.create(lib, subDataList);             
             
-            /**
-            * Object created. Adding Log entry.
-            */
-            if(ans.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())){
-                ILogEventService logEventService = appContext.getBean(LogEventService.class);
-                logEventService.createPrivateCalls("/CreateTestDataLib", "CREATE", "Create TestDataLib  : " + request.getParameter("name"), request);
+            AnswerItem existsAnswer = libService.readByKey(lib.getName(), lib.getSystem(), lib.getEnvironment(), lib.getCountry());
+            
+            if(!existsAnswer.isCodeEquals(MessageEventEnum.DATA_OPERATION_NO_DATA_FOUND.getCode())){
+                msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_EXPECTED);
+                msg.setDescription(msg.getDescription().replace("%ITEM%", "Test Data Library")
+                    .replace("%OPERATION%", "Duplicate")
+                    .replace("%REASON%", "The test data library that you are trying to create already exists!"));
+                ans.setResultMessage(msg);
+                
+            }else {
+                 //data was not found, it means that the we can duplicate the entry
+                ans = libService.duplicate(lib);       
+                
+                //Object created. Adding Log entry.
+                if(ans.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())){
+                    ILogEventService logEventService = appContext.getBean(LogEventService.class);
+                    logEventService.createPrivateCalls("/DuplicateTestDataLib", "DUPLICATE", "Duplicate with id:  : " + testdatalibid, request);
+                }
             }
         }
 
@@ -133,45 +155,13 @@ public class CreateTestDataLib extends HttpServlet {
             response.getWriter().print(jsonResponse);
             response.getWriter().flush();
         } catch (JSONException ex) {
-            org.apache.log4j.Logger.getLogger(CreateTestDataLib.class.getName()).log(org.apache.log4j.Level.ERROR, null, ex); 
+            org.apache.log4j.Logger.getLogger(DuplicateTestDataLib.class.getName()).log(org.apache.log4j.Level.ERROR, null, ex); 
             response.getWriter().print(AnswerUtil.createGenericErrorAnswer());  
             response.getWriter().flush();
         }
 
 
     }
-
-
-    private List<TestDataLibData> extractTestDataLibDataSet(ApplicationContext appContext, HttpServletRequest request, PolicyFactory policy){
-        //now we can insert the testdatalibdata that was specified in the insert page
-        //we can have several tesdatalibdata
-        IFactoryTestDataLibData factorySubdataService = appContext.getBean(IFactoryTestDataLibData.class);
-
-        List<TestDataLibData> listSubdata = new ArrayList<TestDataLibData>();
-        //as all fields (subadata, data, description) are mandatory  there will no problem
-        //with accessing the following arrays
-        String[] subdataEntries = request.getParameterValues("subdata");
-        String[] subdataValues = request.getParameterValues("value");
-        String[] subdataColumns = request.getParameterValues("column");
-        String[] subdataParsingAnswer = request.getParameterValues("parsinganswer");
-        String[] subdataDescriptions = request.getParameterValues("description");
-
-        TestDataLibData subData;
-
-        for (int i = 0; i < subdataEntries.length; i++) {
-            subData = factorySubdataService.create(null, null, //ids are not available yet
-                    policy.sanitize(subdataEntries[i]), 
-                    policy.sanitize(subdataValues[i]), 
-                    policy.sanitize(subdataColumns[i]), 
-                    policy.sanitize(subdataParsingAnswer[i]),
-                    policy.sanitize(subdataDescriptions[i]));
-            listSubdata.add(subData);
-        }
-
-        return listSubdata;
-
-    }
-
     
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
 

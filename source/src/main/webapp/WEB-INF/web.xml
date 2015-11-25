@@ -753,6 +753,10 @@
         <servlet-class>org.cerberus.servlet.crud.testdata.CreateTestDataLib</servlet-class>
     </servlet>
     <servlet>
+        <servlet-name>DuplicateTestDataLib</servlet-name>
+        <servlet-class>org.cerberus.servlet.crud.testdata.DuplicateTestDataLib</servlet-class>
+    </servlet>
+    <servlet>
         <servlet-name>DeleteTestDataLib</servlet-name>
         <servlet-class>org.cerberus.servlet.crud.testdata.DeleteTestDataLib</servlet-class>
     </servlet>
@@ -1533,6 +1537,10 @@
         <url-pattern>/CreateTestDataLib</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
+        <servlet-name>DuplicateTestDataLib</servlet-name>
+        <url-pattern>/DuplicateTestDataLib</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
         <servlet-name>DeleteTestDataLib</servlet-name>
         <url-pattern>/DeleteTestDataLib</url-pattern>
     </servlet-mapping>
@@ -1829,6 +1837,7 @@
             <web-resource-name>servlet</web-resource-name>
             <description>servlet</description>
             <url-pattern>/CreateTestDataLib</url-pattern>
+            <url-pattern>/DuplicateTestDataLib</url-pattern>
             <url-pattern>/ImportTestDataLib</url-pattern>
             <url-pattern>/DeleteTestDataLib</url-pattern>
             <url-pattern>/UpdateTestDataLibData</url-pattern>

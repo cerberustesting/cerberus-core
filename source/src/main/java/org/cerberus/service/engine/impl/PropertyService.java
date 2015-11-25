@@ -25,6 +25,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.logging.Logger;
 import java.util.regex.Pattern;
+import org.apache.commons.lang3.StringEscapeUtils;
 import org.apache.log4j.Level;
 import org.cerberus.crud.entity.Identifier;
 import org.cerberus.crud.entity.MessageEvent;
@@ -544,7 +545,7 @@ public class PropertyService implements IPropertyService {
             //the entry does not exist yet so we need to calculate it
             //gets the entry that we want to collect 
             TestDataLibData subDataEntry;
-
+            
             AnswerItem ansSubDataEntry = testDataLibDataService.readByKey(Integer.parseInt(tecd.getValue1()), tecd.getValue2());
             subDataEntry = (TestDataLibData) ansSubDataEntry.getItem();
             if (subDataEntry != null) {
@@ -1047,12 +1048,14 @@ public class PropertyService implements IPropertyService {
         }
         TestDataLib lib;
         TestDataLibResult result;
-        AnswerItem answer = testDataLibService.readByKey(testCaseExecutionData.getValue1(),
+        AnswerItem answer = testDataLibService.readByNameBySystemByEnvironmentByCountry(testCaseExecutionData.getValue1(),
                 tCExecution.getCountryEnvironmentApplication().getSystem(), tCExecution.getCountryEnvironmentApplication().getEnvironment(),
                 tCExecution.getCountryEnvironmentApplication().getCountry());
-
+        
         if (answer.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
             lib = (TestDataLib) answer.getItem();
+
+            unescapeTestDataLibrary(lib);
             //if the property was defined for all systems, then the query returned an empty value
             if (StringUtil.isNullOrEmpty(lib.getSystem())) {
                 lib.setSystem(tCExecution.getCountryEnvironmentApplication().getSystem());
@@ -1277,10 +1280,13 @@ public class PropertyService implements IPropertyService {
             String libName = currentProperty.getValue1();           
             String system = testCaseExecution.getApplication().getSystem();
             String environment = testCaseExecution.getEnvironment();
-            AnswerItem answerLib = testDataLibService.readByKey(libName, system, environment, country);
+            
+            AnswerItem answerLib = testDataLibService.readByNameBySystemByEnvironmentByCountry(libName, system, environment, country);
             
             if(answerLib.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())){
                 TestDataLib lib = (TestDataLib) answerLib.getItem();
+                //unescape all attributes that were escaped: description, script, method, servicepath and envelope
+                unescapeTestDataLibrary(lib);                
                 if(lib.getType().equals(TestDataLibTypeEnum.SOAP.getCode())){
                     //now we can call the soap entry
                     calculateInnerProperties(lib, testCaseStepActionExecution);
@@ -1350,4 +1356,15 @@ public class PropertyService implements IPropertyService {
         return msg;
     }
 
+    private void unescapeTestDataLibrary(TestDataLib lib) {
+        //unescape all data  
+        lib.setDescription(StringEscapeUtils.unescapeHtml4(lib.getDescription()));
+        //SQL
+        lib.setScript(StringEscapeUtils.unescapeHtml4(lib.getScript()));
+
+        //SOAP
+        lib.setServicePath(StringEscapeUtils.unescapeHtml4(lib.getServicePath()));
+        lib.setMethod(StringEscapeUtils.unescapeHtml4(lib.getMethod()));
+        lib.setEnvelope(StringEscapeUtils.unescapeXml(lib.getEnvelope()));
+    }
 }

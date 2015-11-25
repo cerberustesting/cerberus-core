@@ -84,12 +84,15 @@ $.when($.getScript("js/pages/global/global.js")).then(function() {
         /**
          * Disables the group text box when the users selects an existing group
          */
-        $("#group").change(groupChangeHandler);
+        $("#group").change(groupChangeHandler); //create modal
         /**
          * Disables the group text box when the users selects an existing group
          */
-        $("#groupedit").change(groupChangeHandler);
-
+        $("#groupedit").change(groupChangeHandler); //edit modal
+        /**
+         * Disables the group text box when the users selects an existing group - duplicate modal
+         */
+        $("#groupduplicate").change(groupChangeHandler);
         /*****************************************************************************/
         /*
          * Handles the change of the type when adding a new test data lib entry
@@ -112,7 +115,16 @@ $.when($.getScript("js/pages/global/global.js")).then(function() {
                 $("#panelSOAPEdit").collapse("show");
             }
         });
-
+        /*
+         * Handles the change of the type select  when editing a test data lib entry
+         */
+        $('#duplicateTestDataLibModal #type').change(function() {
+            if ($(this).val() === "SQL") {
+                $("#panelSQLDuplicate").collapse("show");
+            } else if ($(this).val() === "SOAP") {
+                $("#panelSOAPDuplicate").collapse("show");
+            }
+        });
         /**
          * Method that saves new test data lib entry
          */
@@ -123,13 +135,22 @@ $.when($.getScript("js/pages/global/global.js")).then(function() {
          * Save changes performed in the subdata list
          */
         $("#saveChangesSubData").click(saveChangesSubDataClickHandler);
-
+        /**
+         * Save changes performing during Duplicate operation
+         */
+        $("#saveDuplicateTestDataLib").click(saveDuplicateTestDataLibClickHandler);
+        
+        /**
+         * Method that saves new test data lib entry
+         */
+        $("#addTestDataLibButton").click(saveNewTestDataLibHandler);
         /*
          * Specification of the methods that handle the bs.modal close.
          */
         $('#testCaseListModal').on('hidden.bs.modal', testCaseListModalCloseHandler);
         $('#manageTestDataLibDataModal').on('hidden.bs.modal', editTestDataLibDataModalCloseHandler);
         $('#editTestDataLibModal').on('hidden.bs.modal', editTestDataLibModalCloseHandler);
+        $('#duplicateTestDataLibModal').on('hidden.bs.modal', duplicateTestDataLibModalCloseHandler);
         $('#addTestDataLibModal').on('hidden.bs.modal', addTestDataLibModalCloseHandler);
         $('#testCaseListModal').on('hidden.bs.modal', testCaseListModalCloseHandler);
 
@@ -157,9 +178,10 @@ function displayPageLabel() {
     $("#pageTitle").html(doc.getDocLabel("page_testdatalib", "page_title"));
     $("#title").html(doc.getDocOnline("page_testdatalib", "title"));
 //    
-//    //set translations for create testdatalib modal
+    //set translations for all modals required by TestDataLib page
     displayCreateTestDataLibLabels(doc);
     displayUpdateTestDataLibLabels(doc);
+    displayDuplicateTestDataLibLabels(doc);
     displayManageTestDataLibDataLabels(doc);
     displayListTestCasesLabels(doc);
     displayListTestDataLibDataLabels(doc);
@@ -167,7 +189,7 @@ function displayPageLabel() {
 }
 
 /**
- * Applies the translations for the get list of test cases modal.
+ * Applies the translations for the modal that updates a test data lib entry
  * @param {type} doc object that contains Cerberus' documentation 
  */
 function displayUpdateTestDataLibLabels(doc) {
@@ -203,8 +225,48 @@ function displayUpdateTestDataLibLabels(doc) {
     $("#lbl_enter_group_edit").html(doc.getDocOnline("page_testdatalib_m_createupdatelib", "lbl_enter_group"));
 }
 
+
 /**
- * Applies the translations for the get list of test cases modal.
+ * Applies the translations for the modal that duplicates a test data lib entry.
+ * @param {type} doc object that contains Cerberus' documentation 
+ */
+function displayDuplicateTestDataLibLabels(doc) {
+
+    //title 
+    $("#duplicateTestDataLibTitle").text(doc.getDocLabel("page_testdatalib_m_duplicatelib", "title"));
+    
+    //content    
+    $("#lbl_id_duplicate").html(doc.getDocOnline("testdatalib", "testdatalibid")); //id
+    $("#lbl_name_duplicate").html(doc.getDocOnline("testdatalib", "name")); //name
+    
+    $("#lbl_type_duplicate").html(doc.getDocOnline("testdatalib", "type"));
+    $("#lbl_system_duplicate").html(doc.getDocOnline("testdatalib", "system"));
+    $("#lbl_environment_duplicate").html(doc.getDocOnline("testdatalib", "environment"));
+    $("#lbl_country_duplicate").html(doc.getDocOnline("testdatalib", "country"));
+    //panels
+    //soap and sql specific configurations
+    $("#sqlConfigurationsLbl_duplicate").html(doc.getDocOnline("page_testdatalib_m_createupdatelib", "title_sql_configurations"));
+    $("#soapConfigurationsLbl_duplicate").html(doc.getDocOnline("page_testdatalib_m_createupdatelib", "title_soap_configurations"));
+
+    $("#lbl_description_duplicate").html(doc.getDocOnline("testdatalib", "description"));
+    $("#lbl_database_duplicate").html(doc.getDocOnline("testdatalib", "database"));
+    $("#lbl_script_duplicate").html(doc.getDocOnline("testdatalib", "script"));
+    $("#lbl_service_path_duplicate").html(doc.getDocOnline("testdatalib", "servicepath"));
+    $("#lbl_method_duplicate").html(doc.getDocOnline("testdatalib", "method"));
+    $("#lbl_envelope_duplicate").html(doc.getDocOnline("testdatalib", "envelope"));
+    
+    //auxiliar for group edition
+    $("#lbl_choose_group_duplicate").html(doc.getDocOnline("page_testdatalib_m_createupdatelib", "lbl_choose_group"));
+    $("#lbl_enter_group_duplicate").html(doc.getDocOnline("page_testdatalib_m_createupdatelib", "lbl_enter_group"));
+    
+    //buttons    
+    $("#cancelDuplicateTestDataLib").text(doc.getDocLabel("page_global", "btn_cancel"));
+    $("#saveDuplicateTestDataLib").text(doc.getDocLabel("page_global", "buttonAdd"));
+
+}
+
+/**
+ * Applies the translations for the modal that allows the management of the sub-data entries for a test data library entry.
  * @param {type} doc object that contains Cerberus' documentation 
  */
 function displayManageTestDataLibDataLabels(doc) {
@@ -225,7 +287,7 @@ function displayManageTestDataLibDataLabels(doc) {
 }
 
 /**
- * Applies the translations for the get list of test cases modal.
+ * Applies the translations for the modal that displays all sub-data entries for a test data library entry.
  * @param {type} doc object that contains Cerberus' documentation 
  */
 function displayListTestDataLibDataLabels(doc) {
@@ -429,9 +491,15 @@ function editTestDataLibDataModalCloseHandler() {
  */
 function editTestDataLibModalCloseHandler() {
     $('#editTestDataLibModal #editTestLibData')[0].reset();
-    //resets the hidden value
-    $('#editTestDataLibModal').find("#databaseedithidden").prop("value", "");
     clearResponseMessage($('#editTestDataLibModal'));
+}
+
+/**
+ * Handler that cleans the modal for editing a testdatalib entry when it is closed
+ */
+function duplicateTestDataLibModalCloseHandler() {
+    $('#duplicateTestDataLibModal #duplicateTestLibData')[0].reset();
+    clearResponseMessage($('#duplicateTestDataLibModal'));
 }
 
 /**
@@ -780,6 +848,8 @@ function groupChangeHandler() {
     var suffix = "";
     if ($(this).prop("id") === "groupedit") {
         suffix = "edit";
+    }if ($(this).prop("id") === "groupduplicate") {
+        suffix = "duplicate";
     }
     if ($(this).val() !== '') {
         $(this).removeClass("emptySelectOption");
@@ -1114,6 +1184,140 @@ function editSubData(testDataLibID) {
     }).fail(handleErrorAjaxAfterTimeout);
 }
 
+/**
+ * Function that allows the user to duplicate a testdatalibrary entry
+ * @param {type} testDataLibID
+ * @returns {undefined}
+ */
+function duplicateEntry(testDataLibID){
+    
+     clearResponseMessageMainPage();
+    //load the data from the row 
+    var jqxhr = $.getJSON("ReadTestDataLib", "testdatalibid=" + testDataLibID);
+
+    $.when(jqxhr).then(function(data) {
+
+        var obj = data["testDataLib"];
+
+        $('#duplicateTestDataLibModal #testdatalibid').prop("value", testDataLibID);
+        $('#duplicateTestDataLibModal #name').prop("value", obj.name);
+        $('#duplicateTestDataLibModal #libdescription').prop("value", obj.description);
+        //loads the information for soap entries
+        $('#duplicateTestDataLibModal #servicepath').prop("value", obj.servicePath);
+        $('#duplicateTestDataLibModal #method').prop("value", obj.method);
+        $('#duplicateTestDataLibModal #envelope').prop("value", obj.envelope);
+
+        $('#duplicateTestDataLibModal #script').prop("value", obj.script);
+        
+        var jqxhrInvariant = $.getJSON("ReadInvariant", "");
+
+        $.when(jqxhrInvariant).then(function(invariantData) {
+
+            var systemsList = [];
+            var environmentList = [];
+            var countryList = [];
+            var databaseList = [];
+            var testDataTypeList = [];
+
+            //gets all invariants required for load this modal
+            $.each(invariantData["contentTable"], function(idx, obj) {
+                //extract all invariants that are needed for the page
+                if (obj.idName === 'SYSTEM') {
+                    systemsList.push(obj.value);
+                } else if (obj.idName === 'ENVIRONMENT') {
+                    environmentList.push(obj.value);
+                } else if (obj.idName === 'COUNTRY') {
+                    countryList.push(obj.value);
+                } else if (obj.idName === 'PROPERTYDATABASE') {
+                    databaseList.push(obj.value);
+                } else if (obj.idName === 'TESTDATATYPE') {
+                    testDataTypeList.push(obj.value);
+                }
+            });
+
+
+            //load TYPE
+            loadSelectElement(testDataTypeList, $('#duplicateTestDataLibModal #type'), false, '');
+            $('#duplicateTestDataLibModal #type option[value="' + obj.type + '"]').attr("selected", "selected");
+
+            if (obj.type === "SQL") {
+                $("#panelSQLDuplicate").collapse("show");
+                $("#panelSOAPDuplicate").collapse("hide");
+            } else if (obj.type === "SOAP") {
+                $("#panelSOAPDuplicate").collapse("show");
+                $("#panelSQLDuplicate").collapse("hide");
+            } else {
+                //hide all if the type is static
+                $("#panelSQLDuplicate").collapse("hide");
+                $("#panelSOAPDuplicate").collapse("hide");
+            }
+
+            //SYSTEM
+            loadSelectElement(systemsList, $('#duplicateTestDataLibModal #system'), true, '');
+            $('#duplicateTestDataLibModal #system').find('option[value="' + obj.system + '"]').prop("selected", true);
+
+            //ENVIRONMENT
+            loadSelectElement(environmentList, $('#duplicateTestDataLibModal #environment'), true, '');
+            $('#duplicateTestDataLibModal #environment').find('option[value="' + obj.environment + '"]').prop("selected", true);
+
+            //Country
+            loadSelectElement(countryList, $('#duplicateTestDataLibModal #country'), true, '');
+            $('#duplicateTestDataLibModal #country').find('option[value="' + obj.country + '"]').prop("selected", true);
+
+            //database
+            loadSelectElement(databaseList, $('#duplicateTestDataLibModal #database'), true, '');
+            $('#duplicateTestDataLibModal #database').find('option[value="' + obj.database + '"]:first').prop("selected", "selected");
+
+
+            //loads groups from database
+            var jqxhrGroups = $.getJSON("ReadTestDataLib", "groups");
+            $.when(jqxhrGroups).then(function(groupsData) {
+                //load distinct groups
+                var doc = new Doc();
+                loadSelectElement(groupsData["contentTable"], $('#duplicateTestDataLibModal #groupduplicate'), true,
+                        doc.getDocLabel("page_testdatalib_m_createlib", "lbl_dropdown_help"));
+                //selects the group entered by the user
+
+                $('#duplicateTestDataLibModal #groupduplicate').find('option[value="' + obj.group + '"]:first').prop("selected", "selected");
+                $('#duplicateTestDataLibModal #groupduplicate').find('option:first').addClass("emptySelectOption");
+                $('#duplicateTestDataLibModal #groupduplicate').change();
+            });
+
+
+            //after everything. then shows the modal
+            $("#duplicateTestDataLibModal").modal("show");
+
+        });
+    }).fail(handleErrorAjaxAfterTimeout);
+
+}
+
+/**
+ * Duplicates an entry
+ * @returns {undefined}
+ */
+function saveDuplicateTestDataLibClickHandler(){
+    var formEdit = $('#duplicateTestDataLibModal').find('form#duplicateTestLibData');
+    showLoaderInModal('#duplicateTestDataLibModal');
+
+    var jqxhr = $.post("DuplicateTestDataLib", formEdit.serialize(), "json");
+    $.when(jqxhr).then(function(data) {
+        // unblock when remote call returns 
+        hideLoaderInModal('#duplicateTestDataLibModal');
+        if (getAlertType(data.messageType) === "success") {
+            var oTable = $("#listOfTestDataLib").dataTable();
+            oTable.fnDraw(true);
+            $('#duplicateTestDataLibModal').modal('hide');
+            showMessage(data);
+
+        } else {
+            showMessage(data, $('#duplicateTestDataLibModal'));
+        }
+    }).fail(handleErrorAjaxAfterTimeout);    
+    
+}
+
+
 
 //https://datatables.net/examples/api/show_hide.html
 
@@ -1195,7 +1399,11 @@ function aoColumnsFuncTestDataLib(tableId) {
                             name="editTestDataLib" title="' + doc.getDocLabel("page_testdatalib", "tooltip_editsubdata") + '" type="button" onclick="editSubData(' + data + ')">\n\
                             <span class="glyphicon glyphicon-list-alt"></span></button>';
 
-                            return '<div class="center btn-group width250">' + editElement + deleteElement + viewDataElement + viewTestCase + '</div>';
+                            var duplicateEntryElement = '<button  class="btn btn-primary btn-xs margin-right5" \n\
+                            name="duplicateTestDataLib" title="' + doc.getDocLabel("page_testdatalib", "tooltip_duplicateEntry")  + '"\n\
+                                 type="button" onclick="duplicateEntry(' + data + ')">D</button>'; //TODO check if we can add this glyphicon glyphicon-duplicate
+
+                            return '<div class="center btn-group width250">' + editElement + deleteElement + duplicateEntryElement + viewDataElement + viewTestCase + '</div>';
                         } else {
                             var viewDataElement = '<button  class="viewSubDataEntries btn  btn-primary btn-xs margin-right5" \n\
                             name="viewSubDataEntries" title="' + doc.getDocLabel("page_testdatalib", "tooltip_viewsubdata") + '" type="button" onclick="viewSubDataEntries(' + data + ', \'' + oObj.type + '\')">\n\

@@ -56,7 +56,7 @@ public class TestDataLibDAO implements ITestDataLibDAO {
     private final int MAX_ROW_SELECTED = 10000000;
 
     @Override
-    public AnswerItem<TestDataLib> readByKey(String name, String system, String environment, String country) {
+    public AnswerItem readByNameBySystemByEnvironmentByCountry(String name, String system, String environment, String country) {
         AnswerItem answer = new AnswerItem();
         TestDataLib result = null;
         MessageEvent msg;
@@ -122,7 +122,75 @@ public class TestDataLibDAO implements ITestDataLibDAO {
         answer.setResultMessage(msg);
         return answer;
     }
+    
+    
+    @Override
+    public AnswerItem readByKey(String name, String system, String environment, String country) {
+        AnswerItem answer = new AnswerItem();
+        TestDataLib result = null;
+        MessageEvent msg;
 
+        final String query = new StringBuilder("SELECT * FROM testdatalib where `name` LIKE ?")
+                .append(" and `system` = ? ")
+                .append(" and `environment` = ? ")
+                .append(" and `country` = ? ")
+                .append(" order by `name` DESC, system DESC, environment DESC, country DESC")
+                .append(" limit 1").toString();
+
+        Connection connection = this.databaseSpring.connect();
+        try {
+            PreparedStatement preStat = connection.prepareStatement(query);
+            preStat.setString(1, name);
+            preStat.setString(2, ParameterParserUtil.returnEmptyStringIfNull(system));
+            preStat.setString(3, ParameterParserUtil.returnEmptyStringIfNull(environment));
+            preStat.setString(4, ParameterParserUtil.returnEmptyStringIfNull(country));
+            try {
+                ResultSet resultSet = preStat.executeQuery();
+                try {
+                    if (resultSet.first()) {
+                        result = this.loadFromResultSet(resultSet);
+                        msg = MessageEventUtil.createSelectSuccessMessageDAO(OBJECT_NAME);
+                    } else {
+                        msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_NO_DATA_FOUND);
+                        
+                    }
+                } catch (SQLException exception) {
+                    MyLogger.log(TestDataLibDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
+                    msg = MessageEventUtil.createSelectUnexpectedErrorMessageDAO();
+
+                } finally {
+                    if (resultSet != null) {
+                        resultSet.close();
+                    }
+                }
+            } catch (SQLException exception) {
+                MyLogger.log(TestDataLibDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
+                msg = MessageEventUtil.createSelectUnexpectedErrorMessageDAO();
+
+            } finally {
+                if (preStat != null) {
+                    preStat.close();
+                }
+            }
+        } catch (SQLException exception) {
+            MyLogger.log(TestDataLibDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
+            msg = MessageEventUtil.createSelectUnexpectedErrorMessageDAO();
+
+        } finally {
+            try {
+                if (!this.databaseSpring.isOnTransaction()) {
+                    if (connection != null) {
+                        connection.close();
+                    }
+                }
+            } catch (SQLException ex) {
+                MyLogger.log(TestDataLibDAO.class.getName(), Level.ERROR, "Unable to execute query : " + ex.toString());
+            }
+        }
+        answer.setItem(result);
+        answer.setResultMessage(msg);
+        return answer;
+    }
     @Override
     public AnswerItem<TestDataLib> readByKey(int testDataLibID) {
         AnswerItem answer = new AnswerItem();

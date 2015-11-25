@@ -34,7 +34,6 @@ import org.cerberus.crud.service.ILogEventService;
 import org.cerberus.crud.service.ITestDataLibDataService;
 import org.cerberus.crud.service.impl.LogEventService;
 import org.cerberus.enums.MessageEventEnum;
-import org.cerberus.log.MyLogger;
 import org.cerberus.util.StringUtil;
 import org.cerberus.util.answer.Answer;
 import org.cerberus.util.answer.AnswerList;

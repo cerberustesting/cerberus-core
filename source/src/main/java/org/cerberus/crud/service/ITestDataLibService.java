@@ -41,8 +41,16 @@ public interface ITestDataLibService {
      * @param country
      * @return
      */
+    AnswerItem readByNameBySystemByEnvironmentByCountry(String name, String system, String environment, String country);
+    /**
+     * 
+     * @param name
+     * @param system
+     * @param environment
+     * @param country
+     * @return 
+     */
     AnswerItem readByKey(String name, String system, String environment, String country);
-
     /**
      *
      * @param testDatalib
@@ -127,4 +135,5 @@ public interface ITestDataLibService {
      */
     AnswerItem fetchData(TestDataLib lib, int rowLimit, String propertyNature);
 
+    Answer duplicate(TestDataLib lib);
 }

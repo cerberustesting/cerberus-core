@@ -32,11 +32,11 @@
 
         <div id="page-layout" class="container-fluid center">
             <%@ include file="include/messagesArea.html"%>
-            <%@ include file="include/utils/modal-confirmation.html"%>
-            
+            <%@ include file="include/utils/modal-confirmation.html"%>            
             <%@ include file="include/testdatalib/manageTestDataLibData.html"%>
             <%@ include file="include/testdatalib/createTestDataLib.html"%>       
             <%@ include file="include/testdatalib/updateTestDataLib.html"%>       
+            <%@ include file="include/testdatalib/duplicateTestDataLib.html"%>       
             <%@ include file="include/testdatalib/listTestDataLibData.html"%>       
             <%@ include file="include/testdatalib/listTestCase.html"%>       
             <%@ include file="include/utils/modal-upload.html"%>       
@@ -49,7 +49,7 @@
                 <table  class="table table-hover display" id="listOfTestDataLib" name="listOfTestDataLib">
                     <thead>
                         <tr>
-                            <th id="testdatalibFirstColumnHeader"> Edit | Delete | Subdata  |Test Cases </th> 
+                            <th id="testdatalibFirstColumnHeader"> Actions </th> 
                             <th>Name</th>
                             <th>System</th>
                             <th>Environment</th>

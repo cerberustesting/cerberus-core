@@ -1,15 +1,15 @@
 <!-- Edit test data lib-->
-<div data-backdrop="static" class="modal fade center width1400" id="editTestDataLibModal" tabindex="-1" role="dialog" aria-labelledby="editTestDataLibModalLabel" aria-hidden="true">
+<div data-backdrop="static" class="modal fade center width1400" id="duplicateTestDataLibModal" tabindex="-1" role="dialog" aria-labelledby="duplicateTestDataLibModalLabel" aria-hidden="true">
     <div class="modal-dialog nomargintop nomarginbottom width1400">
         <div class="modal-content">
             <div class="modal-header">
                 <button type="button" class="close margin-right25" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                <h4 class="modal-title" id="editTestDataLibModalLabel"><span id="editTestDataLibTitle">Edit Test Data Lib: </span> <span id="NameEdit" ></span> </h4>
+                <h4 class="modal-title" id="duplicateTestDataLibModalLabel"><span id="duplicateTestDataLibTitle">Duplicate Test Data Library</span> <span id="NameEdit" ></span> </h4>
 
             </div>
             <div class="modal-body"> 
                 <div class="center container ">
-                    <form id="editTestLibData" role="form" >
+                    <form id="duplicateTestLibData" role="form" >
                         <div id="DialogMessagesAreaEdit" class="width800">
                             <div class="alert" id="DialogMessagesAlertEdit"  style="display:none;">
                                 <strong><span class="alert-description" id="DialogAlertDescriptionEdit"></span></strong>
@@ -20,21 +20,21 @@
                         </div>
                         <!-- type and system-->
                         <div class="row">
-                            <div class="form-group col-xs-2">
+                             <div class="form-group col-xs-2">
                                 <label id="lbl_id_edit" for="testdatalibid">ID</label>
                                 <div>
                                     <input id="testdatalibid" name="testdatalibid" class="form-control" readonly="readonly"/>     
                                 </div>
                             </div> 
-                            <div class="form-group col-xs-4">
-                                <label id="lbl_name_edit" for="name">Name</label>
+                            <div class="form-group col-xs-4">                                
+                                <label id="lbl_name_duplicate" for="name">Name</label>
                                 <div>
-                                    <input id="name" name="name" class="form-control" readonly="readonly" />     
+                                    <input id="name" name="name" class="form-control"  />     
                                 </div>
                             </div> 
 
                             <div class="form-group col-xs-6">
-                                <label id="lbl_type_edit" for="type">Type</label>
+                                <label id="lbl_type_duplicate" for="type">Type</label>
                                 <div>
                                     <select class="form-control" id="type" name="type">
                                     </select>  
@@ -42,36 +42,36 @@
                             </div> 
 
                         </div>    
-                        <!--group infomation -->
+                        <!--group information -->
                         <div class="row">
                             <div class="form-group col-xs-6">
-                                <label id="lbl_choose_group_edit" for="groupedit">Choose an existing group</label>
+                                <label id="lbl_choose_group_duplicate" for="groupduplicate">Choose an existing group</label>
                                 <span>
-                                    <select class="form-control"  id="groupedit" name="group">                                                
+                                    <select class="form-control"  id="groupduplicate" name="group">                                                
                                     </select>
                                 </span>                                         
                             </div> 
                             <div class="form-group col-xs-6">
-                                <label id="lbl_enter_group_edit"  for="groupinputedit">or enter new group</label>
-                                <input id="groupinputedit" name="group" class="form-control" />     
+                                <label id="lbl_enter_group_duplicate"  for="groupinputduplicate">or enter new group</label>
+                                <input id="groupinputduplicate" name="group" class="form-control" />     
                             </div>                  
                         </div>
                         <!--environment + country-->
                         <div class="row">
                             <div class="form-group col-xs-4">
-                                <label id="lbl_system_edit" for="system">System</label>
+                                <label id="lbl_system_duplicate" for="system">System</label>
                                 <select class="form-control" id="system" name="system">
                                 </select>      
                             </div>         
                             <div class="form-group col-xs-4">
-                                <label id="lbl_environment_edit"  for="environment">Environment</label>
+                                <label id="lbl_environment_duplicate"  for="environment">Environment</label>
                                 <div>
                                     <select class="form-control" id="environment" name="environment">
                                     </select>  
                                 </div>
                             </div> 
                             <div class="form-group col-xs-4">
-                                <label id="lbl_country_edit" for="country">Country</label>
+                                <label id="lbl_country_duplicate" for="country">Country</label>
                                 <div>
                                     <select class="form-control"  id="country" name="country">
                                     </select>  
@@ -83,7 +83,7 @@
                         <!--description-->
                         <div class="row">
                             <div class="form-group col-xs-12">
-                                <label id="lbl_description_edit" for="libdescription">Description</label>
+                                <label id="lbl_description_duplicate" for="libdescription">Description</label>
                                 <textarea id="libdescription" name="libdescription" class="form-control"></textarea> 
                             </div>
                         </div>  
@@ -91,23 +91,23 @@
                         <div class="row" >
                             <div class="col-xs-12" id="soapConfigurationsPanelEdit">
                                 <div class="panel panel-default">
-                                    <div class="panel-heading card" data-toggle="collapse" data-target="#panelSOAPEdit">
-                                        <label id="soapConfigurationsLbl_edit">SOAP Configurations </label>
+                                    <div class="panel-heading card" data-toggle="collapse" data-target="#panelSOAPDuplicate">
+                                        <label id="soapConfigurationsLbl_duplicate">SOAP Configurations </label>
                                         <span class="toggle glyphicon glyphicon-chevron-right pull-right"></span>
                                     </div>
-                                    <div id="panelSOAPEdit" class="panel-body collapse">
+                                    <div id="panelSOAPDuplicate" class="panel-body collapse">
                                         <div class="row">
                                             <div class="form-group col-xs-6" >
-                                                <label id="lbl_service_path_edit" for="servicepath">Service Path</label>
+                                                <label id="lbl_service_path_duplicate" for="servicepath">Service Path</label>
                                                 <input id="servicepath" name="servicepath"  class="form-control" maxlength="250"  />  
                                             </div>
                                             <div class="form-group col-xs-6">
-                                                <label id="lbl_method_edit" for="method">Method</label>
+                                                <label id="lbl_method_duplicate" for="method">Method</label>
                                                 <input id="method" name="method" class="form-control" maxlength="45"  />
                                             </div>
                                         </div>    
                                         <div class="form-group">
-                                            <label id="lbl_envelope_edit" for="envelope">Envelope</label>                    
+                                            <label id="lbl_envelope_duplicate" for="envelope">Envelope</label>                    
                                             <textarea id="envelope" name="envelope" 
                                                       class="form-control"></textarea>     
                                         </div> 
@@ -119,19 +119,19 @@
                         <div class="row" >
                             <div class="col-xs-12" id="sqlConfigurationsPanelEdit">
                                 <div class="panel panel-default">
-                                    <div class="panel-heading card" data-toggle="collapse" data-target="#panelSQLEdit">
-                                        <label id="sqlConfigurationsLbl_edit">SQL Configurations </label>
+                                    <div class="panel-heading card" data-toggle="collapse" data-target="#panelSQLDuplicate">
+                                        <label id="sqlConfigurationsLbl_duplicate">SQL Configurations </label>
                                         <span class="toggle glyphicon glyphicon-chevron-right pull-right"></span>
                                     </div>
-                                    <div id="panelSQLEdit" class="panel-body collapse">
+                                    <div id="panelSQLDuplicate" class="panel-body collapse">
                                         <div class="row form-group  col-xs-6"> 
-                                            <label id="lbl_database_edit" for="database">Database</label> 
+                                            <label id="lbl_database_duplicate" for="database">Database</label> 
                                             <select class="form-control" id="database" name="database">
                                             </select> 
                                         </div>    
                                         <div class="row">
                                             <div class="form-group col-xs-12"> 
-                                                <label id="lbl_script_edit" for="script">Script</label> 
+                                                <label id="lbl_script_duplicate" for="script">Script</label> 
                                                 <textarea id="script" name="script" 
                                                           class="form-control"></textarea>     
                                             </div>                       
@@ -148,8 +148,8 @@
                 </div> 
             </div>
             <div class="modal-footer">
-                <button type="button" id="cancelTestDataLib" class="btn btn-default" data-dismiss="modal">Cancel</button>
-                <button type="button" id="saveTestDataLib" class="btn btn-primary margin-right25">Save Changes</button>
+                <button type="button" id="cancelDuplicateTestDataLib" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                <button type="button" id="saveDuplicateTestDataLib" class="btn btn-primary margin-right25">Save Changes</button>
             </div>
         </div>
     </div>

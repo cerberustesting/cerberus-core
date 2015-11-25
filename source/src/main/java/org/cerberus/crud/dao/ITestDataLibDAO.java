@@ -37,8 +37,8 @@ public interface ITestDataLibDAO {
      * @param country
      * @return
      */
+    AnswerItem readByNameBySystemByEnvironmentByCountry(String name, String system, String environment, String country);
     AnswerItem readByKey(String name, String system, String environment, String country);
-
     /**
      *
      * @param testDataLibID

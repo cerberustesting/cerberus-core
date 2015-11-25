@@ -30,7 +30,6 @@ import javax.servlet.http.HttpServletResponse;
 import org.cerberus.crud.entity.MessageEvent;
 import org.cerberus.crud.entity.TestDataLibData;
 import org.cerberus.crud.service.ITestDataLibDataService;  
-import org.cerberus.dto.TestDataLibDataDTO;  
 import org.cerberus.enums.MessageEventEnum; 
 import org.cerberus.util.answer.AnswerItem; 
 import org.cerberus.util.answer.AnswerList; 
@@ -81,7 +80,7 @@ public class ReadTestDataLibData extends HttpServlet {
         boolean testdatalibid_error = true;
         try {
             if (request.getParameter("testdatalibid") != null && !request.getParameter("testdatalibid").isEmpty()) {
-                testdatalibid = Integer.valueOf(policy.sanitize(request.getParameter("testdatalibid")));
+                testdatalibid = Integer.valueOf(request.getParameter("testdatalibid"));
                 testdatalibid_error = false;
             }
         } catch (NumberFormatException ex) {
@@ -181,7 +180,7 @@ public class ReadTestDataLibData extends HttpServlet {
 
         return item;
     }
-
+    
     private JSONObject convertTestDataLibDataToJSONObject(TestDataLibData subdata) throws JSONException {
         Gson gson = new Gson();
         JSONObject result = new JSONObject(gson.toJson(subdata));
@@ -197,7 +196,7 @@ public class ReadTestDataLibData extends HttpServlet {
         //retrieves the data for the entry
         JSONArray jsonArray = new JSONArray();
 
-        for (TestDataLibDataDTO subdata : (List<TestDataLibDataDTO>) answer.getDataList()) {
+        for (TestDataLibData subdata : (List<TestDataLibData>) answer.getDataList()) {
             jsonArray.put(convertTestDataLibDataToJSONObject(subdata));
         }
 
@@ -212,12 +211,7 @@ public class ReadTestDataLibData extends HttpServlet {
         return item;
     }
 
-    private JSONObject convertTestDataLibDataToJSONObject(TestDataLibDataDTO subdata) throws JSONException {
-        Gson gson = new Gson();
-        JSONObject result = new JSONObject(gson.toJson(subdata));
-        return result;
-    }
-    
+     
     private AnswerItem readAll(ApplicationContext appContext) throws JSONException {
         JSONObject jsonResponse = new JSONObject();
         ITestDataLibDataService testDataLibDataService = appContext.getBean(ITestDataLibDataService.class);

@@ -30,7 +30,6 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.commons.lang3.StringEscapeUtils;
 import org.cerberus.crud.entity.MessageEvent;
 import org.cerberus.crud.entity.TestDataLib;
-import org.cerberus.crud.factory.IFactoryTestDataLib;
 import org.cerberus.crud.service.ILogEventService;
 import org.cerberus.crud.service.ITestDataLibService;
 import org.cerberus.crud.service.impl.LogEventService;
@@ -81,16 +80,16 @@ public class UpdateTestDataLib extends HttpServlet {
         String type = policy.sanitize(request.getParameter("type"));
         String group = policy.sanitize(request.getParameter("group"));
 
-        String description = policy.sanitize(request.getParameter("libdescription"));
+        String description = StringEscapeUtils.escapeHtml4(request.getParameter("libdescription"));
         String system = policy.sanitize(request.getParameter("system"));
         String environment = policy.sanitize(request.getParameter("environment"));
         String country = policy.sanitize(request.getParameter("country"));
 
         String database = policy.sanitize(request.getParameter("database"));
-        String script = policy.sanitize(request.getParameter("script"));
-
-        String servicePath = policy.sanitize(request.getParameter("servicepath"));
-        String method = policy.sanitize(request.getParameter("method"));
+        String script = StringEscapeUtils.escapeHtml4(request.getParameter("script"));
+    
+        String servicePath = StringEscapeUtils.escapeHtml4(request.getParameter("servicepath"));
+        String method = StringEscapeUtils.escapeHtml4(request.getParameter("method"));
         String envelope = StringEscapeUtils.escapeXml11(request.getParameter("envelope"));
 
         Integer testdatalibid = 0;
