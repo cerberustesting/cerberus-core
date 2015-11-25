@@ -20,6 +20,7 @@
 package org.cerberus.servlet.crud.test;
 
 import java.io.IOException;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.servlet.ServletException;
@@ -29,10 +30,14 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import org.cerberus.crud.entity.MessageEvent;
 import org.cerberus.crud.entity.TCase;
+import org.cerberus.crud.entity.TestCaseStep;
 import org.cerberus.crud.service.ILogEventService;
 import org.cerberus.crud.service.ITestCaseService;
+import org.cerberus.crud.service.ITestCaseStepService;
 import org.cerberus.crud.service.impl.LogEventService;
 import org.cerberus.enums.MessageEventEnum;
+import org.cerberus.exception.CerberusException;
+import org.cerberus.util.ParameterParserUtil;
 import org.cerberus.util.StringUtil;
 import org.cerberus.util.answer.Answer;
 import org.cerberus.util.answer.AnswerItem;
@@ -60,7 +65,7 @@ public class DeleteTestCase2 extends HttpServlet {
      * @throws IOException if an I/O error occurs
      */
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException, JSONException {
+            throws ServletException, IOException, JSONException, CerberusException {
         JSONObject jsonResponse = new JSONObject();
         Answer ans = new Answer();
         MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
@@ -73,8 +78,8 @@ public class DeleteTestCase2 extends HttpServlet {
         /**
          * Parsing and securing all required parameters.
          */
-        String test = policy.sanitize(request.getParameter("test"));
-        String testCase = policy.sanitize(request.getParameter("testCase")); 
+        String test = ParameterParserUtil.ParseStringParamAndSanitize(request.getParameter("test"), "");
+        String testCase = ParameterParserUtil.ParseStringParamAndSanitize(request.getParameter("testCase"), "");
 
         /**
          * Checking all constrains before calling the services.
@@ -91,6 +96,7 @@ public class DeleteTestCase2 extends HttpServlet {
              */
             ApplicationContext appContext = WebApplicationContextUtils.getWebApplicationContext(this.getServletContext());
             ITestCaseService testCaseService = appContext.getBean(ITestCaseService.class);
+            ITestCaseStepService testCaseStepService = appContext.getBean(ITestCaseStepService.class);
 
             AnswerItem resp = testCaseService.readByKey(test, testCase);
             if (!(resp.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode()))) {
@@ -109,7 +115,16 @@ public class DeleteTestCase2 extends HttpServlet {
                  * object exist, then we can delete it.
                  */
                 TCase testCaseData = (TCase) resp.getItem();
-                ans = testCaseService.delete(testCaseData);
+                List<TestCaseStep> tcsList = testCaseStepService.getTestCaseStepUsingTestCaseInParamter(testCaseData.getTest(), testCaseData.getTestCase());
+                if (tcsList != null && !tcsList.isEmpty()) {
+                    msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_EXPECTED);
+                    msg.setDescription(msg.getDescription().replace("%ITEM%", "TestCase")
+                            .replace("%OPERATION%", "Delete")
+                            .replace("%REASON%", "You're trying to delete a testcase which have some step used in other tests. Please remove the link before deleting this testcase."));
+                    ans.setResultMessage(msg);
+                } else {
+                    ans = testCaseService.delete(testCaseData);
+                }
 
                 if (ans.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
                     /**
@@ -147,6 +162,8 @@ public class DeleteTestCase2 extends HttpServlet {
             processRequest(request, response);
         } catch (JSONException ex) {
             Logger.getLogger(DeleteTestCase2.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (CerberusException ex) {
+            Logger.getLogger(DeleteTestCase2.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
 
@@ -164,6 +181,8 @@ public class DeleteTestCase2 extends HttpServlet {
         try {
             processRequest(request, response);
         } catch (JSONException ex) {
+            Logger.getLogger(DeleteTestCase2.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (CerberusException ex) {
             Logger.getLogger(DeleteTestCase2.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
