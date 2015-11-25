@@ -64,7 +64,6 @@ import org.openqa.selenium.logging.LogEntries;
 import org.openqa.selenium.logging.LogEntry;
 import org.openqa.selenium.logging.Logs;
 import org.openqa.selenium.remote.Augmenter;
-import org.openqa.selenium.support.ui.ExpectedCondition;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.Select;
 import org.openqa.selenium.support.ui.WebDriverWait;
@@ -78,7 +77,7 @@ import org.springframework.stereotype.Service;
 public class WebDriverService implements IWebDriverService {
 
     private static final int TIMEOUT_MILLIS = 30000;
-    private static final int TIMEOUT_WEBELEMENT = 45; //previous value was 300
+    private static final int TIMEOUT_WEBELEMENT = 300;
 
     private By getBy(Identifier identifier) {
 
@@ -1106,5 +1105,5 @@ public class WebDriverService implements IWebDriverService {
             return message;
         }
     }
-
+   
 }
