@@ -53,16 +53,30 @@ $.when($.getScript("js/pages/global/global.js")).then(function () {
         });
 
         $("#typeSelect").on("change", typeSelectHandler);
+
         $("#run").click(sendForm);
-        $("#loadbutton").click(loadTestCaseFromFilter);
+
+        $("#loadbutton").click(function () {
+            var value = $("#typeSelect").val();
+            if (value === "filters") {
+                loadTestCaseFromFilter();
+            } else if (value === "campaign") {
+                var campaign = $("#campaignSelect").val();
+                loadCampaignContent(campaign);
+                loadCampaignParameter(campaign);
+            }
+        });
+
         $("#resetbutton").click(function () {
             $(".multiselectelement").each(function () {
                 $(this).multiselect('deselectAll', false);
                 $(this).multiselect('updateButtonText');
             });
         });
+
         $("#addQueue").click({"select": "#testCaseList option:selected"}, checkExecution);
         $("#addAllQueue").click({"select": "#testCaseList option"}, checkExecution);
+
         $("#resetQueue").click(function (event) {
             stopPropagation(event);
             $("#queue").empty();
@@ -71,6 +85,7 @@ $.when($.getScript("js/pages/global/global.js")).then(function () {
             updateNotValidNumber();
             $("#notValid").hide();
         });
+
         $("#notValidNumber").click(function () {
             $("#notValidTC").modal("show");
         });
@@ -91,7 +106,9 @@ $.when($.getScript("js/pages/global/global.js")).then(function () {
 
         $("#saveRobotPreferences").click(saveRobotPreferences);
         $("#saveExecutionParams").click(saveExecutionPreferences);
-        $("#robotConfig").change(loadRobotInfo);
+        $("#robotConfig").change(function () {
+            loadRobotInfo($(this).val());
+        });
 
     });
 });
@@ -112,47 +129,27 @@ function typeSelectHandler() {
 }
 
 function loadTestCaseFromFilter() {
-    if ($("#typeSelect").val() === "filters") {
-        showLoader("#chooseTest");
-        $.ajax({
-            url: "ReadTestCase",
-            method: "GET",
-            data: "filter=true&" + $("#filters").serialize() + "&system=" + getUser().defaultSystem,
-            datatype: "json",
-            async: true,
-            success: function (data) {
-                var testCaseList = $("#testCaseList");
-
-                testCaseList.empty();
-
-                for (var index = 0; index < data.contentTable.length; index++) {
-                    var text = data.contentTable[index].test + " - " + data.contentTable[index].testCase + " [" + data.contentTable[index].application + "]: " + data.contentTable[index].shortDescription;
-
-                    testCaseList.append($("<option></option>")
-                            .text(text)
-                            .val(data.contentTable[index].testCase)
-                            .data("item", data.contentTable[index]));
-                }
-                hideLoader("#chooseTest");
-            }
-        });
-    }
-}
-
-function loadSelect(idName, selectName, pref) {
+    showLoader("#chooseTest");
     $.ajax({
-        url: "FindInvariantByID",
+        url: "ReadTestCase",
         method: "GET",
-        data: {idName: idName},
-        dataType: "json",
+        data: "filter=true&" + $("#filters").serialize() + "&system=" + getUser().defaultSystem,
+        datatype: "json",
         async: true,
         success: function (data) {
-            for (var option in data) {
-                $("[name='" + selectName + "']").append($('<option></option>').text(data[option].value + " - " + data[option].description).val(data[option].value));
+            var testCaseList = $("#testCaseList");
+
+            testCaseList.empty();
+
+            for (var index = 0; index < data.contentTable.length; index++) {
+                var text = data.contentTable[index].test + " - " + data.contentTable[index].testCase + " [" + data.contentTable[index].application + "]: " + data.contentTable[index].shortDescription;
+
+                testCaseList.append($("<option></option>")
+                        .text(text)
+                        .val(data.contentTable[index].testCase)
+                        .data("item", data.contentTable[index]));
             }
-            if (pref !== null) {
-                $("[name='" + selectName + "']").val(pref[selectName]);
-            }
+            hideLoader("#chooseTest");
         }
     });
 }
@@ -181,6 +178,50 @@ function appendCountryList() {
             countryList.append('<label class="checkbox-inline">\n\
                                 <input class="countrycb" type="checkbox" name="' + country + '"/>' + country + '\
                                 </label>');
+        }
+    });
+}
+
+/** UTILITY FUNCTIONS FOR CAMPAIGN LAUNCHING **/
+
+function loadCampaignContent() {
+//    showLoader("#chooseTest");
+//    $.ajax({
+//        url: "ReadTestCase",
+//        method: "GET",
+//        data: "filter=true&" + $("#filters").serialize() + "&system=" + getUser().defaultSystem,
+//        datatype: "json",
+//        async: true,
+//        success: function (data) {
+//            hideLoader("#chooseTest");
+//        }
+//    });
+}
+
+function loadCampaignParameter(campaign) {
+    $.ajax({
+        url: "ReadCampaignParameter",
+        method: "GET",
+        data: {campaign: campaign},
+        datatype: "json",
+        async: true,
+        success: function (data) {
+            var browser = [];
+            var env = [];
+            var countries = [];
+
+            for (var index = 0; index < data.contentTable.length; index++) {
+                var type = data.contentTable[index].parameter;
+                var value = data.contentTable[index].value;
+
+                if (type === "BROWSER") {
+                    browser.push(value);
+                } else if (type === "ENVIRONMENT") {
+                    env.push(value);
+                } else if (type === "COUNTRY") {
+                    countries.push(value);
+                }
+            }
         }
     });
 }
@@ -466,63 +507,74 @@ function loadInvariantMultiSelect(selectName, idName) {
 
 /** FUNCTIONS TO HANDLE ROBOT/EXECUTION PREFERENCES **/
 
-function appendRobotList(pref) {
-    var jqxhr = $.getJSON("ReadRobot");
-    $.when(jqxhr).then(function (data) {
+function loadSelect(idName, selectName) {
+    var jqXHR = $.ajax({
+        url: "FindInvariantByID",
+        method: "GET",
+        data: {idName: idName},
+        dataType: "json",
+        async: true,
+        success: function (data) {
+            for (var option in data) {
+                $("[name='" + selectName + "']").append($('<option></option>').text(data[option].value + " - " + data[option].description).val(data[option].value));
+            }
+        }
+    });
+
+    return jqXHR;
+}
+
+function appendRobotList() {
+    var jqXHR = $.getJSON("ReadRobot");
+    $.when(jqXHR).then(function (data) {
         var robotList = $("#robotConfig");
 
         robotList.append($('<option></option>').text("Custom configuration").val(""));
         for (var index = 0; index < data.contentTable.length; index++) {
-            robotList.append($('<option></option>').text(data.contentTable[index].robot).val(data.contentTable[index].robot));
-        }
-
-        if (pref !== null) {
-            robotList.val(pref["robotConfig"]);
-            loadRobotInfo();
+            robotList.append($('<option></option>').text(data.contentTable[index].robot).val(data.contentTable[index].robotID));
         }
     });
+
+    return jqXHR;
 }
 
-function loadRobotInfo() {
-    var value = "";
-    var pref = JSON.parse(localStorage.getItem("robotSettings"));
+function loadRobotInfo(robotID) {
 
-    if (this.value !== undefined) {
-        value = $(this).val();
-    } else if (pref !== null) {
-        value = pref.robotConfig;
-    }
-
-    if (value !== "") {
+    if (robotID !== "") {
         $.ajax({
             url: "ReadRobot",
             method: "GET",
-            data: {robotid: value},
+            data: {robotid: robotID},
             dataType: "json",
             async: true,
             success: function (data) {
-                $("#seleniumIP").val(data.contentTable.host).attr("readonly", true);
-                $("#seleniumPort").val(data.contentTable.port).attr("readonly", true);
-                $("#browser").val(data.contentTable.browser).attr("readonly", true);
-                $("#version").val(data.contentTable.version).attr("readonly", true);
-                $("#platform").val(data.contentTable.platform).attr("readonly", true);
-                $("#screenSize").val("").attr("readonly", true);
+                disableRobotFields();
+                $("#seleniumIP").val(data.contentTable.host);
+                $("#seleniumPort").val(data.contentTable.port);
+                $("#browser").val(data.contentTable.browser);
+                $("#version").val(data.contentTable.version);
+                $("#platform").val(data.contentTable.platform);
+                $("#screenSize").val("");
             }
         });
     } else {
-        if (pref !== null) {
-            for (var key in pref) {
-                if (key !== "robotConfig") {
-                    $("#" + key).attr("readonly", false).val(pref[key]);
-                }
-            }
+        var pref = JSON.parse(localStorage.getItem("robotSettings"));
+        enableRobotFields();
+        if (pref !== null && pref.robotConfig === "") {
+            $("#robotConfig").val(pref.robotConfig);
+            $("#seleniumIP").val(pref.seleniumIP);
+            $("#seleniumPort").val(pref.seleniumPort);
+            $("#version").val(pref.version);
+            $("#browser").val(pref.browser);
+            $("#platform").val(pref.platform);
+            $("#screenSize").val(pref.screenSize);
         } else {
-            $("#seleniumIP").attr("readonly", false).val("");
-            $("#seleniumPort").attr("readonly", false).val("");
-            $("#browser").attr("readonly", false).val("");
-            $("#version").attr("readonly", false).val("");
-            $("#platform").attr("readonly", false).val("");
-            $("#screenSize").attr("readonly", false).val("");
+            $("#seleniumIP").val("");
+            $("#seleniumPort").val("");
+            $("#browser").val([]);
+            $("#version").val("");
+            $("#platform").val("");
+            $("#screenSize").val("");
         }
     }
 }
@@ -538,38 +590,86 @@ function saveExecutionPreferences() {
 }
 
 function loadExecForm() {
+    $.when(
+            loadSelect("OUTPUTFORMAT", "outputFormat"),
+            loadSelect("VERBOSE", "verbose"),
+            loadSelect("SCREENSHOT", "screenshot"),
+            loadSelect("SELENIUMLOG", "seleniumLog"),
+            loadSelect("MANUALEXECUTION", "manualExecution"),
+            loadSelect("PAGESOURCE", "pageSource"),
+            loadSelect("SYNCHRONEOUS", "synchroneous"),
+            loadSelect("RETRIES", "retries")
+            ).then(function () {
+        applyExecPref();
+    });
+}
+
+function loadRobotForm() {
+    $.when(
+            appendRobotList(),
+            loadSelect("BROWSER", "browser"),
+            $("[name=platform]").append($('<option></option>').text("Optional").val("")),
+            loadSelect("PLATFORM", "platform"),
+            $("[name=screenSize]").append($('<option></option>').text("Default (Client Full Screen)").val("")),
+            loadSelect("screensize", "screenSize")
+            ).then(function () {
+        applyRobotPref();
+    });
+}
+
+function applyExecPref() {
     var pref = JSON.parse(localStorage.getItem("executionSettings"));
 
     if (pref !== null) {
         $("#tag").val(pref.tag);
+        $("#outputFormat").val(pref.outputFormat);
+        $("#verbose").val(pref.verbose);
+        $("#screenshot").val(pref.screenshot);
+        $("#pageSource").val(pref.pageSource);
+        $("#seleniumLog").val(pref.seleniumLog);
+        $("#synchroneous").val(pref.synchroneous);
         $("#timeout").val(pref.timeout);
+        $("#retries").val(pref.retries);
+        $("#manualExecution").val(pref.manualExecution);
     }
-
-    loadSelect("OUTPUTFORMAT", "outputFormat", pref);
-    loadSelect("VERBOSE", "verbose", pref);
-    loadSelect("SCREENSHOT", "screenshot", pref);
-    loadSelect("SELENIUMLOG", "seleniumLog", pref);
-    loadSelect("MANUALEXECUTION", "manualExecution", pref);
-    loadSelect("PAGESOURCE", "pageSource", pref);
-    loadSelect("SYNCHRONEOUS", "synchroneous", pref);
-    loadSelect("RETRIES", "retries", pref);
 }
 
-function loadRobotForm() {
+function applyRobotPref() {
     var pref = JSON.parse(localStorage.getItem("robotSettings"));
 
     if (pref !== null) {
-        $("#seleniumIP").val(pref.seleniumIP);
-        $("#seleniumPort").val(pref.seleniumPort);
-        $("#version").val(pref.version);
+        if (pref.robotConfig === "") {
+            enableRobotFields();
+            $("#robotConfig").val(pref.robotConfig);
+            $("#seleniumIP").val(pref.seleniumIP);
+            $("#seleniumPort").val(pref.seleniumPort);
+            $("#version").val(pref.version);
+            $("#browser").val(pref.browser);
+            $("#platform").val(pref.platform);
+            $("#screenSize").val(pref.screenSize);
+        } else {
+            $("#robotConfig").val(pref.robotConfig);
+            loadRobotInfo(pref.robotConfig);
+        }
     }
+}
 
-    appendRobotList(pref);
-    loadSelect("BROWSER", "browser", pref);
-    $("[name=platform]").append($('<option></option>').text("Optional").val(""));
-    loadSelect("PLATFORM", "platform", pref);
-    $("[name=screenSize]").append($('<option></option>').text("Default (Client Full Screen)").val(""));
-    loadSelect("screensize", "screenSize", pref);
+function disableRobotFields() {
+    $("#seleniumIP").prop("readonly", true);
+    $("#seleniumPort").prop("readonly", true);
+    $("#browser").prop("disabled", "disabled");
+    $("#version").prop("readonly", true);
+    $("#platform").prop("disabled", "disabled");
+    $("#screenSize").prop("disabled", "disabled");
+}
+
+function enableRobotFields() {
+    $("#seleniumIP").prop("readonly", false);
+    $("#seleniumPort").prop("readonly", false);
+    $("#browser").prop("disabled", false);
+    $("#version").prop("readonly", false);
+    $("#platform").prop("disabled", false);
+    $("#screenSize").prop("disabled", false);
 }
 
 /** UTILITY FUNCTIONS TO MIGRATE THE PREFERENCES !!!TO DELETE AFTER THE PAGE IS LIVE FOR A FEW DAYS!!!  **/
