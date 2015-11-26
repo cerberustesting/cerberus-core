@@ -60,14 +60,14 @@
                                         </div>    
                                     </div>-->
                                     <div class="col-xs-3">
-                                        <label>Test</label>
+                                        <label><span id="test_lbl">Test</span></label>
                                         <div id="testFilters">  
                                             <select class="multiselectelement form-control" multiple="multiple" id="test">
                                             </select>
                                         </div>    
                                     </div>
                                     <div class="col-xs-3">
-                                        <label>Application</label>
+                                        <label><span id="application_lbl">Application</span></label>
                                         <div id="applicationFilters">  
                                             <select class="multiselectelement form-control" multiple="multiple" id="application">
                                             </select>
@@ -119,14 +119,14 @@
                             <div class="row marginBottom20">
                                 <div class="col-xs-12">                                    
                                     <div class="col-xs-3">
-                                        <label>Target Sprint</label>
+                                        <label><span id="targetsprint_lbl">Target Sprint</span></label>
                                         <div id="targetsprintFilters">                                                
                                             <select class="multiselectelement form-control" multiple="multiple" id="targetsprint">
                                             </select>
                                         </div>
                                     </div>
                                     <div class="col-xs-3">
-                                        <label>Target Revision</label>
+                                        <label><span id="targetrevision_lbl">Target Revision</span></label>
                                         <div id="targetrevisionFilters">                                                
                                             <select class="multiselectelement form-control" multiple="multiple" id="targetrevision">
                                             </select>
@@ -134,14 +134,14 @@
                                     </div>
 
                                     <div class="col-xs-3">
-                                        <label>Creator</label>
+                                        <label><span id="creator_lbl">Creator</span></label>
                                         <div id="creatorFilters">                                                
                                             <select class="multiselectelement form-control" multiple="multiple" id="creator">
                                             </select>
                                         </div>
                                     </div>
                                     <div class="col-xs-3">                                    
-                                        <label>Implementer</label>
+                                        <label><span id="implementer_lbl">Implementer</span></label>
                                         <div id="implementerFilters">                                                
                                             <select class="multiselectelement form-control" multiple="multiple" id="implementer">
                                             </select> 
@@ -157,28 +157,28 @@
                                 </div>
                                 <div class="col-xs-12">
                                     <div class="col-xs-3">
-                                            <label>Environment</label>
+                                            <label><span id="environment_lbl">Environment</span> <span class="glyphicon glyphicon-star favorite"></span></label>
                                             <div id="environmentFilters">                                                
                                                 <select class="multiselectelement form-control" multiple="multiple" id="environment">
                                                 </select> 
                                             </div>
                                         </div>
                                         <div class="col-xs-3">
-                                            <label>Build</label>
+                                            <label><span id="build_lbl">Build</span></label>
                                             <div id="buildFilters">                                                
                                                 <select class="multiselectelement form-control" multiple="multiple" id="build">
                                                 </select> 
                                             </div>
                                         </div>
                                         <div class="col-xs-3">
-                                            <label>Revision</label>
+                                            <label><span id="revision_lbl">Revision</span></label>
                                             <div id="revisionFilters">                                                
                                                 <select class="multiselectelement form-control" multiple="multiple" id="revision">
                                                 </select> 
                                             </div>
                                         </div>
                                         <div class="col-xs-3">
-                                            <label>Comment</label>
+                                            <label><span id="comment_lbl">Comment</span> <span class="glyphicon glyphicon-star favorite"></span></label>
                                             <div id="commentFilters">                                                
                                                 <input  id="comment" name="comment" class="form-control"/>
                                             </div>
@@ -190,26 +190,26 @@
                                     <div class="col-xs-3">
                                         <label><span id="ip_lbl">IP</span> <span class="glyphicon glyphicon-star favorite"></span></label>
                                             <div id="ipFilters">                                                
-                                                <input  id="ip" name="ip" class="form-control"/>
+                                                <input  id="ip" name="ip" class="form-control" maxlenght="150"/>
                                             </div>
                                         </div>
                                         <div class="col-xs-3">
                                             <label><span id="port_lbl">Port</span> <span class="glyphicon glyphicon-star favorite"></span></label>
                                             <div id="portFilters">                                                
-                                                <input  id="port" name="port" class="form-control"/>
+                                                <input  id="port" name="port" class="form-control" maxlenght="45"/>
                                             </div>
                                         </div>
 
                                         <div class="col-xs-3">
                                             <label><span id="tag_lbl">Tag</span> <span class="glyphicon glyphicon-star favorite"></span></label>
                                             <div id="tagFilters">                                                
-                                                <input  id="tag" name="tag" class="form-control"/>
+                                                <input  id="tag" name="tag" class="form-control" maxlenght="50"/>
                                             </div>
                                         </div>
                                         <div class="col-xs-3">                                    
                                             <label><span id="browserversion_lbl">Browser version</span> <span class="glyphicon glyphicon-star favorite"></span></label>
                                             <div id="browserversionFilters">                                                
-                                                <input  id="browserversion" name="browserversion" class="form-control"/>
+                                                <input  id="browserversion" name="browserversion" class="form-control" maxlenght="200"/>
                                             </div>
                                         </div>
                                 </div>
@@ -244,7 +244,7 @@
                                 <button type="button" class="btn btn-primary" id="searchExecutionsButton">Search</button>
                                 <button type="button" class="btn btn-default" id="resetButton">Reset</button>
                             </div>                                
-                            <div class="marginTop20 pull-right">   
+                            <div class="marginTop20 pull-right">                                   
                                 <button type="button" class="btn btn-default" id="selectFiltersButton">Apply my default filters</button>
                                 <button type="button" class="btn btn-default" id="setFiltersButton">Set as my default filter</button>
                             </div>
@@ -258,12 +258,14 @@
 
             <div class="row">
                 <div class="col-xs-12" id="ListPanel">
+                    
                     <div class="panel panel-default">
                         <div class="panel-heading card">
                             <span class="glyphicon glyphicon-list"></span>
                             <label id="resultList">List</label>
                         </div>
-                        <div class="panel-body" id="listReport">
+                        <button type="button" class="btn btn-default pull-right marginRight5 marginTop5" id="getURLButton" disabled="disabled">Get URL for quick access</button>
+                        <div class="panel-body marginTop25" id="listReport">                            
                             <div id="tabsContainer" class="center container ">
                                 <ul id="tabs" class="nav nav-tabs" data-tabs="tabs">
                                 <li class="active"><a data-toggle="tab" id="tab1Text" href="#tabs-1">Table</a></li>

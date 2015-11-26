@@ -17,34 +17,39 @@
  * You should have received a copy of the GNU General Public License
  * along with Cerberus.  If not, see <http://www.gnu.org/licenses/>.
  */
-$.when($.getScript("js/pages/global/global.js")).then(function () {
-    $(document).ready(function () {
+$.when($.getScript("js/pages/global/global.js")).then(function() {
+    $(document).ready(function() {
         initPage();
     });
 });
 
-function initPage(){
+function initPage() {
     var doc = new Doc();
 
     displayHeaderLabel(doc);
-    /*displayPageLabel(doc);*/
+    displayPageLabel(doc);
     displayFooter(doc);
     //create handlers for buttons
     $("#searchExecutionsButton").click(searchExecutionsClickHandler);
     $("#resetButton").click(resetClickHandler);
     $("#selectFiltersButton").click(selectFiltersClickHandler);
     $("#setFiltersButton").click(setFiltersClickHandler);
+    $("#getURLButton").click(getURLClickHandler);
     
     loadFilters();
     //$("#exportList").change(controlExportRadioButtons);
     //loadSummaryTableOptions();
 }
 
-function parseReportingFavoriteURLFormat(favorite){
-    console.log("Favorite " + favorite);
+function displayPageLabel(doc) {
+    //TODO define translations in database versionining service
+}
+
+function parseReportingFavoriteURLFormat(favorite) {
+
     var res = favorite.split("&");
     var favoriteObj = {};
-    
+
     var country = [];
     var project = [];
     var tcactive = [];
@@ -53,72 +58,160 @@ function parseReportingFavoriteURLFormat(favorite){
     var environment = [];
     var priority = [];
     var browser = [];
-    
-    $.each(res, function(idx, obj){
-        if(obj.indexOf("Ip=") > -1){
+
+    $.each(res, function(idx, obj) {
+        if (obj.indexOf("Ip=") > -1) {
             favoriteObj["ip"] = obj.replace("Ip=", "");
-        }else if(obj.indexOf("Port=") > -1){
-            favoriteObj["port"] = obj.replace("Port=", "");
-        }else if(obj.indexOf("Tag=") > -1){
-            favoriteObj["tag"] = obj.replace("Tag=", "");
-        }else if(obj.indexOf("Comment=") > -1){
-            favoriteObj["comment"] = obj.replace("Comment=", "");
-        }else if(obj.indexOf("BrowserFullVersion=") > -1){
-            favoriteObj["browserfullversion"] = obj.replace("BrowserFullVersion=", "");
-        }else if(obj.indexOf("Country=") > -1){
+        } else if (obj.indexOf("Port=") > -1) {
+            favoriteObj["p"] = obj.replace("Port=", "");
+        } else if (obj.indexOf("Tag=") > -1) {
+            favoriteObj["t"] = obj.replace("Tag=", "");
+        } else if (obj.indexOf("Comment=") > -1) {
+            favoriteObj["cm"] = obj.replace("Comment=", "");
+        } else if (obj.indexOf("BrowserFullVersion=") > -1) {
+            favoriteObj["bv"] = obj.replace("BrowserFullVersion=", "");
+        } else if (obj.indexOf("Country=") > -1) {
             country.push(obj.replace("Country=", ""));
-        }else if(obj.indexOf("Project=") > -1){
+        } else if (obj.indexOf("Project=") > -1) {
             project.push(obj.replace("Project=", ""));
-        }else if(obj.indexOf("TcActive=") > -1){
+        } else if (obj.indexOf("TcActive=") > -1) {
             tcactive.push(obj.replace("TcActive=", ""));
-        }else if(obj.indexOf("Status=") > -1){
+        } else if (obj.indexOf("Status=") > -1) {
             tcstatus.push(obj.replace("Status=", ""));
-        }else if(obj.indexOf("Group=") > -1){
+        } else if (obj.indexOf("Group=") > -1) {
             group.push(obj.replace("Group=", ""));
-        }else if(obj.indexOf("Environment=") > -1){
+        } else if (obj.indexOf("Environment=") > -1) {
             environment.push(obj.replace("Environment=", ""));
-        }else if(obj.indexOf("Priority=") > -1){
+        } else if (obj.indexOf("Priority=") > -1) {
             priority.push(obj.replace("Priority=", ""));
-        }else if(obj.indexOf("Browser=") > -1){
+        } else if (obj.indexOf("Browser=") > -1) {
             browser.push(obj.replace("Browser=", ""));
         }
-        
+
     });
-    
+
     //filters with more than one value
-    favoriteObj["country"] = country;
-    favoriteObj["project"] = project;
-    favoriteObj["tcactive"] = tcactive;    
-    favoriteObj["tcstatus"] = tcstatus;
-    favoriteObj["group"] = group;
-    favoriteObj["environment"] = environment;
-    favoriteObj["priority"] = priority;
-    favoriteObj["browser"] = browser;
+    favoriteObj["co"] = country;
+    favoriteObj["prj"] = project;
+    favoriteObj["a"] = tcactive;
+    favoriteObj["s"] = tcstatus;
+    favoriteObj["g"] = group;
+    favoriteObj["e"] = environment;
+    favoriteObj["pr"] = priority;
+    favoriteObj["b"] = browser;
 
     return favoriteObj;
 }
 
-function loadFilters(){
-   
-    var user = JSON.parse(sessionStorage.getItem("user"));
-    var favorite = user.reportingFavorite;
-    //check if the reporting favorite is json 
-    var favoriteJSON = {};
-    
-    if(favorite !== ''){
-        try {
-            favoriteJSON = JSON.parse(favorite);
-        } catch (e) {
-            //it is not json, so we need to parse all data retrieved
-            favoriteJSON = parseReportingFavoriteURLFormat(favorite);
+function loadPreferences() {
+    var preferences = {};
+
+    //check if the user is senting parameters through url, if not then the reportingFavorite values should be used
+
+    var urlValues = $.getUrlVars();
+
+    if (urlValues !== null && urlValues.length > 0) {
+        preferences = extractPreferencesFromURL(urlValues);
+    } else {
+        //no URL parameters were defined then we use the information associated with user profile
+        var user = JSON.parse(sessionStorage.getItem("user"));
+        var favorite = user.reportingFavorite;
+        //check if the reporting favorite is json 
+
+
+        if (favorite !== '') {
+            try {
+                preferences = JSON.parse(favorite);
+            } catch (e) {
+                //it is not json, so we need to parse all data retrieved
+                preferences = parseReportingFavoriteURLFormat(favorite);
+            }
         }
-    }        
+    }
+    return preferences;
+}
+
+function extractPreferencesFromURL(urlValues) {
+    var preferences = {};
+ 
+    //filters that should have one value only - we select the last one
+    if(Boolean(urlValues["cm"])){
+        var size = urlValues["cm"].length;
+        var lastValue = urlValues["cm"][size-1];
+        preferences["cm"] = lastValue;
+    }
     
-   
+    if(Boolean(urlValues["ip"])){
+        var size = urlValues["ip"].length;
+        var lastValue = urlValues["ip"][size-1];
+        preferences["ip"] = lastValue;
+    }
+    
+    if(Boolean(urlValues["p"])){
+        var size = urlValues["p"].length;
+        var lastValue = urlValues["p"][size-1];
+        preferences["p"] = lastValue;
+    }
+    
+    if(Boolean(urlValues["t"])){
+        var size = urlValues["t"].length;
+        var lastValue = urlValues["t"][size-1];
+        preferences["t"] = lastValue;
+    }
+    
+    if(Boolean(urlValues["br"])){
+        var size = urlValues["br"].length;
+        var lastValue = urlValues["br"][size-1];
+        preferences["br"] = lastValue;
+    }
+    //filters with more than one value
+    //country
+    if(Boolean(urlValues["co"])){
+        preferences["co"] = urlValues["co"];
+    }
+    //project
+    if(Boolean(urlValues["prj"])){
+        preferences["prj"] = urlValues["prj"];
+    }
+    //active
+    if(Boolean(urlValues["a"])){
+        preferences["a"] = urlValues["a"];    
+    }
+    //status
+    if(Boolean(urlValues["s"])){
+        preferences["s"] = urlValues["s"];
+    }
+    //group
+    if(Boolean(urlValues["g"])){
+        preferences["g"] = urlValues["g"];
+    }
+    //environment
+    if(Boolean(urlValues["e"])){
+        preferences["e"] = urlValues["e"];
+    }
+    //priority
+    if(Boolean(urlValues["pr"])){
+        preferences["pr"] = urlValues["pr"];
+    }
+    //browser
+    if(Boolean(urlValues["b"])){
+        preferences["b"] = urlValues["b"];
+    }
+    //execution status
+    if(Boolean(urlValues["es"])){
+        preferences["es"] = urlValues["es"];
+    }
+    
+    return preferences;
+}
+function loadFilters() {
+
+    var preferences = loadPreferences();
+
     var system = $("#MySystem").val();
-    
+
     //loads all invariants 
-     var jqxhr = $.getJSON("ReadInvariant", "");
+    var jqxhr = $.getJSON("ReadInvariant", "");
     $.when(jqxhr).then(function(data) {
         //var systemsList = [];
         var environmentList = [];
@@ -132,50 +225,50 @@ function loadFilters(){
         $.each(data["contentTable"], function(idx, obj) {
             //extract all invariants that are needed for the page
             var element = {value: obj.value, description: obj.description};
-            /*if (obj.idName === 'SYSTEM') {
-                systemsList.push(obj.value);
-            } else */
+            /*if (obj.idName === 'SYSTEM') {l
+             systemsList.push(obj.value);
+             } else */
             if (obj.idName === 'ENVIRONMENT') {
                 environmentList.push(obj.value);
             } else if (obj.idName === 'COUNTRY') {
-                if(favoriteJSON.hasOwnProperty("country") && favoriteJSON.country.indexOf(obj.value) >-1 ){
-                    element["checked"] = "checked";                    
-                } 
+                if (preferences.hasOwnProperty("co") && preferences.co.indexOf(obj.value) > -1) {
+                    element["checked"] = "checked";
+                }
                 countryList.push(element);
-            } else if(obj.idName === 'BROWSER'){
+            } else if (obj.idName === 'BROWSER') {
                 browserList.push(element);
-                if(favoriteJSON.hasOwnProperty("browser") && favoriteJSON.browser.indexOf(obj.value) >-1 ){
-                    element["checked"] = "checked";                    
-                } 
-            }else if(obj.idName === 'PRIORITY'){                
+                if (preferences.hasOwnProperty("b") && preferences.b.indexOf(obj.value) > -1) {
+                    element["checked"] = "checked";
+                }
+            } else if (obj.idName === 'PRIORITY') {
                 priorityList.push(element);
-                if(favoriteJSON.hasOwnProperty("priority") && favoriteJSON.priority.indexOf(obj.value) >-1 ){
-                    element["checked"] = "checked";                    
-                } 
-            }else if(obj.idName === 'TCSTATUS'){                
+                if (preferences.hasOwnProperty("pr") && preferences.pr.indexOf(obj.value) > -1) {
+                    element["checked"] = "checked";
+                }
+            } else if (obj.idName === 'TCSTATUS') {
                 tcStatusList.push(element);
-                if(favoriteJSON.hasOwnProperty("tcstatus") && favoriteJSON.tcstatus.indexOf(obj.value) >-1 ){
-                    element["checked"] = "checked";                    
-                } 
-            }else if(obj.idName === 'GROUP'){                
+                if (preferences.hasOwnProperty("s") && preferences.s.indexOf(obj.value) > -1) {
+                    element["checked"] = "checked";
+                }
+            } else if (obj.idName === 'GROUP') {
                 groupList.push(element);
-                if(favoriteJSON.hasOwnProperty("group") && favoriteJSON.group.indexOf(obj.value) >-1 ){
-                    element["checked"] = "checked";                    
-                } 
-            }else if(obj.idName === 'TCACTIVE'){                
+                if (preferences.hasOwnProperty("g") && preferences.g.indexOf(obj.value) > -1) {
+                    element["checked"] = "checked";
+                }
+            } else if (obj.idName === 'TCACTIVE') {
                 activeList.push(element);
-                if(favoriteJSON.hasOwnProperty("tcactive") && favoriteJSON.tcactive.indexOf(obj.value) >-1 ){
-                    element["checked"] = "checked";                    
-                } 
-            }else if(obj.idName === 'TCESTATUS'){
+                if (preferences.hasOwnProperty("a") && preferences.a.indexOf(obj.value) > -1) {
+                    element["checked"] = "checked";
+                }
+            } else if (obj.idName === 'TCESTATUS') {
                 executionStatusList.push(element);
-                if(favoriteJSON.hasOwnProperty("tcestatus") && favoriteJSON.tcestatus.indexOf(obj.value) >-1 ){
-                    element["checked"] = "checked";                    
-                } 
+                if (preferences.hasOwnProperty("es") && preferences.es.indexOf(obj.value) > -1) {
+                    element["checked"] = "checked";
+                }
             }
-            
+
         });
-        
+
         //loadSystems(systemsList);
         //checkboxes
         loadCountryFilter(countryList);
@@ -185,149 +278,149 @@ function loadFilters(){
         loadTCStatusFilter(tcStatusList);
         loadGroupFilter(groupList);
         loadTestCaseExecutionStatus(executionStatusList);
-        
-        //text
-        console.log("fav" + favoriteJSON);
+
         //comment
-        loadTextComponent("#comment", favoriteJSON.comment);
+        loadTextComponent("#comment", preferences.cm);
         //ip
-        loadTextComponent("#ip", favoriteJSON.ip);
+        loadTextComponent("#ip", preferences.ip);
         //port
-        loadTextComponent("#port", favoriteJSON.port);
+        loadTextComponent("#port", preferences.p);
         //tag
-        loadTextComponent("#tag", favoriteJSON.tag);
+        loadTextComponent("#tag", preferences.t);
         //browser version
-        loadTextComponent("#browserfullversion", favoriteJSON.browserfullversion);
-        
+        loadTextComponent("#browserversion", preferences.br);
+
         //multiselect components
-        loadEnvironments(environmentList);
+        loadEnvironments(environmentList, preferences.e);
         readAndLoadApplication(system);
         readAndLoadTest(system);
     });
     readAndLoadCreatorImplementer();
     readAndLoadTargetRevisionAndSprint(system);
-    readAndLoadProject();
+    readAndLoadProject(preferences.prj);
 
 }
 
-function loadTextComponent(element, text){
-    console.log(text)
-    if(Boolean(text) && text.trim() !== ''){
-        $(element).attr("value", text);
+function loadTextComponent(element, text) {
+    if (typeof text !== 'undefined') {
+        $(element).prop("value", text);
+    } else {
+        $(element).prop("value", "");
     }
 }
 
-function readAndLoadTest(selectedSystem){
+function readAndLoadTest(selectedSystem) {
     var jqxhr = $.getJSON("ReadTest", "system=" + selectedSystem);
     var testList = [];
     $.when(jqxhr).then(function(data) {
-        $.each(data["contentTable"], function(idx, obj){
+        $.each(data["contentTable"], function(idx, obj) {
             //loads all the tests retrieved 
             var element = {test: obj.test, description: obj.description};
             testList.push(element);
         });
-        loadTests(testList);        
+        loadTests(testList);
     });
 }
 /*function readAndLoadTest(selectedSystems){
-    var parameters = "";
-    if(selectedSystems.length > 0){
-        parameters = "system=" + selectedSystems.join("&system="); 
-    }
-    
-    var jqxhr = $.getJSON("ReadTest", parameters);
-    var testList = [];
-    $.when(jqxhr).then(function(data) {
-        $.each(data["contentTable"], function(idx, obj){
-            //loads all the tests retrieved 
-            var element = {test: obj.test, description: obj.description};
-            testList.push(element);
-        });
-        loadTests(testList);        
-    });
-*/
+ var parameters = "";
+ if(selectedSystems.length > 0){
+ parameters = "system=" + selectedSystems.join("&system="); 
+ }
+ 
+ var jqxhr = $.getJSON("ReadTest", parameters);
+ var testList = [];
+ $.when(jqxhr).then(function(data) {
+ $.each(data["contentTable"], function(idx, obj){
+ //loads all the tests retrieved 
+ var element = {test: obj.test, description: obj.description};
+ testList.push(element);
+ });
+ loadTests(testList);        
+ });
+ */
 
 /*function readAndLoadApplication(selectedSystems){
-    var jqxhr = $.getJSON("ReadApplication", "");
-    var applicationsList = [];
-    $.when(jqxhr).then(function(data) {
-        $.each(data["contentTable"], function(idx, obj){
-            //if the application belongs to one of the selected system
-            //or if the systems are not filtered then add to the list of applications
-            if((selectedSystems.length !== 0 && selectedSystems.indexOf(obj.system) > -1) || selectedSystems.length === 0){ 
-                //console.log("obj.application " + obj.application);
-                var element = {application: obj.application, system: obj.system};
-                applicationsList.push(element);
-            }
-        });
-        loadApplications(applicationsList);
-        
-    });
-}*/
-function readAndLoadApplication(selectedSystem){
+ var jqxhr = $.getJSON("ReadApplication", "");
+ var applicationsList = [];
+ $.when(jqxhr).then(function(data) {
+ $.each(data["contentTable"], function(idx, obj){
+ //if the application belongs to one of the selected system
+ //or if the systems are not filtered then add to the list of applications
+ if((selectedSystems.length !== 0 && selectedSystems.indexOf(obj.system) > -1) || selectedSystems.length === 0){ 
+ //console.log("obj.application " + obj.application);
+ var element = {application: obj.application, system: obj.system};
+ applicationsList.push(element);
+ }
+ });
+ loadApplications(applicationsList);
+ 
+ });
+ }*/
+function readAndLoadApplication(selectedSystem) {
     var jqxhr = $.getJSON("ReadApplication", "system=" + selectedSystem);
     var applicationsList = [];
     $.when(jqxhr).then(function(data) {
-        $.each(data["contentTable"], function(idx, obj){
+        $.each(data["contentTable"], function(idx, obj) {
             var element = {application: obj.application, system: obj.system};
             applicationsList.push(element);
 
         });
         loadApplications(applicationsList);
-        
+
     });
 }
 
-function readAndLoadProject(){
+function readAndLoadProject(projectsToSelect) {
     var jqxhr = $.getJSON("ReadProject", "");
-    
+
     $.when(jqxhr).then(function(data) {
         var projectList = [];
-        
-        $.each(data["contentTable"], function(idx, obj){
+
+        $.each(data["contentTable"], function(idx, obj) {
             var element = {idProject: obj.idProject, description: obj.description};
             projectList.push(element);
         });
         loadProjects(projectList);
+        loadMultiselectOptions("project", projectsToSelect);
     });
 }
 
-function readAndLoadCreatorImplementer(){
+function readAndLoadCreatorImplementer() {
     //loads the creator and implementer
     var jqxhr = $.getJSON("ReadUserPublic", "");
     $.when(jqxhr).then(function(data) {
         //console.log("data " + data["contentTable"]);
         var loginList = [];
-        $.each(data["contentTable"], function(idx, obj){
+        $.each(data["contentTable"], function(idx, obj) {
             loginList.push(obj.login);
         });
         loadCreators(loginList);
         loadImplementers(loginList);
     });
-        
+
 }
-function readAndLoadTargetRevisionAndSprint(system){
-    
+function readAndLoadTargetRevisionAndSprint(system) {
+
     var jqxhr = $.getJSON("ReadBuildRevisionInvariant", "system=" + system);
-    $.when(jqxhr).then(function (data) {
-        
+    $.when(jqxhr).then(function(data) {
+
         var buildList = [];
         var revisionList = [];
         ///console.log(data)
-        $.each(data["contentTable"], function(idx, obj){
-            if(obj.level === 1){ //build
+        $.each(data["contentTable"], function(idx, obj) {
+            if (obj.level === 1) { //build
                 buildList.push(obj.versionName);
-            }else if(obj.level === 2){ //revision
+            } else if (obj.level === 2) { //revision
                 revisionList.push(obj.versionName);
             }
         });
         loadBuilds(buildList);
         loadTargetSprint(buildList);
-        loadRevisions(revisionList);     
+        loadRevisions(revisionList);
         loadTargetRevision(revisionList)
     });
 
-    
+
 }
 
 
@@ -335,50 +428,160 @@ function readAndLoadTargetRevisionAndSprint(system){
 /**
  * Search and reset handlers
  */
-function searchExecutionsClickHandler(){
+function searchExecutionsClickHandler() {
     alert("search for executions");
     //form to serialize
     //executionReportingForm
 }
 
-function resetClickHandler(){
-    alert("search for executions");
-    
+/**
+ * Auxiliary method that removes all selections and text from the form
+ * @returns {undefined}
+ */
+function resetClickHandler() {
+
+    //remove any selection from any checkbox that has the attribute checked
+    $("input[name='tcstatus']").removeAttr("checked");
+    $("input[name='group']").removeAttr("checked");
+    $("input[name='tcactive']").removeAttr("checked");
+    $("input[name='priority']").removeAttr("checked");
+    $("input[name='country']").removeAttr("checked");
+    $("input[name='browser']").removeAttr("checked");
+    $("input[name='tcestatus']").removeAttr("checked");
+
+    clearMultiselectSelection("#test");
+    clearMultiselectSelection("#application");
+    clearMultiselectSelection("#project");
+    clearMultiselectSelection("#targetsprint");
+    clearMultiselectSelection("#targetrevision");
+    clearMultiselectSelection("#environment");
+    clearMultiselectSelection("#build");
+    clearMultiselectSelection("#revision");
+    clearMultiselectSelection("#creator");
+    clearMultiselectSelection("#implementer");
+
+    loadTextComponent("#comment", "");
+    loadTextComponent("#ip", "");
+    loadTextComponent("#port", "");
+    loadTextComponent("#tag", "");
+    loadTextComponent("#browserversion", "");
+
 }
 
 /**
  * Filters' handlers
  */
 
+function getURLClickHandler() {
+    //get list of parameters
+    var urlParameters = "";
+    //TODO:FN finish these parameters
+    window.open("ReportExecution_temp.jsp" + urlParameters, '_blank');
+}
 
+function setFiltersClickHandler() {
 
-function setFiltersClickHandler(){
-    // var jqxhr = $.getJSON("ReadBuildRevisionInvariant", "system=" + system);
-    var user = JSON.parse(sessionStorage.getItem("user"));
-    alert("clicou");
-    var jqxhr = $.ajax({
-        type: "POST",
-        url: "UpdateMyUserReporting1",
-        //dataType: 'json',
-        //data: {reporting: data, login: user.login}
-        data: {login: user.login}
-    });
-    
+    var form = $('#executionReportingForm');
+
+    var jqxhr = $.post("UpdateMyUserReporting1", form.serialize(), "json");
     $.when(jqxhr).then(function(data) {
-        console.log("data" + data);
-    });
+        var dataJson = JSON.parse(data);
+        var code = getAlertType(dataJson.messageType);
+        if (code === "success") {
+            //if the update succeed then sends a message to the user
+            if (dataJson.hasOwnProperty("preferences")) {
+                var preferences = dataJson.preferences;
+                var user = JSON.parse(sessionStorage.getItem("user"));
+                user.reportingFavorite = JSON.stringify(preferences);
+                sessionStorage.setItem("user", JSON.stringify(user));
+            }
+        }
+        showMessageMainPage(code, dataJson.message);
+
+    }).fail(handleErrorAjaxAfterTimeout);
 }
 
-function selectFiltersClickHandler(){
-    
+/**
+ * Method that applies the user prefereces in the form.
+ * @returns {undefined}
+ */
+function selectFiltersClickHandler() {
+    var user = JSON.parse(sessionStorage.getItem("user"));
+    var preferences = JSON.parse(user.reportingFavorite);
+
+    //multiselect
+    //project
+    loadMultiselectOptions("project", preferences.prj);
+    //environment
+    loadMultiselectOptions("environment", preferences.e);
+
+    //checkboxes
+    //tc status
+    loadCheckboxValuesSelection("tcstatus", preferences.s);
+    //group
+    loadCheckboxValuesSelection("group", preferences.g);
+    //active
+    loadCheckboxValuesSelection("tcactive", preferences.a);
+    //priority
+    loadCheckboxValuesSelection("priority", preferences.pr);
+    //country
+    loadCheckboxValuesSelection("country", preferences.co);
+    //browser
+    loadCheckboxValuesSelection("browser", preferences.b);
+    //execution status
+    loadCheckboxValuesSelection("tcestatus", preferences.es);
+
+    //free text 
+    //comment
+    loadTextComponent("#comment", preferences.cm);
+    //ip
+    loadTextComponent("#ip", preferences.ip);
+    //port
+    loadTextComponent("#port", preferences.p);
+    //tag
+    loadTextComponent("#tag", preferences.t);
+    //browser version
+    loadTextComponent("#browserversion", preferences.br);
+
 }
 
-function loadTests(data){
-    $("#test").empty();    
+function loadMultiselectOptions(elementid, listToSelect) {
+    //clears the set of options in the multiselect
+
+    clearMultiselectSelection("#" + elementid);
+
+    if (typeof listToSelect !== 'undefined') {
+        for (var i = 0; i < listToSelect.length; i++) {
+            $("#" + elementid).multiselect().find(":checkbox[value='" + listToSelect[i] + "']").prop("checked", "checked").attr("checked", "checked");
+            $("#" + elementid + " option[value='" + listToSelect[i] + "']").attr("selected", "selected").prop("selected", "selected");
+        }
+        $("#" + elementid).multiselect("refresh");
+    }
+}
+
+function loadCheckboxValuesSelection(group, listToSelect) {
+    //clears the set of checkboxes
+    $("input[name='" + group + "']").removeProp("checked");
+
+    if (typeof listToSelect !== 'undefined') {
+        $("input[name='" + group + "']").each(function() {
+            var value = $(this).prop("value");
+            if (listToSelect.indexOf(value) > -1) {
+                $(this).prop("checked", "checked");
+            }
+        });
+    }
+}
+function clearMultiselectSelection(elementID) {
+    $(elementID).multiselect("clearSelection");
+    //$(elementID).multiselect( 'refresh' );
+}
+function loadTests(data) {
+    $("#test").empty();
     $.each(data, function(idx, obj) {
-        $("#test").append("<option value='" + obj.test + "'>" + obj.test + " - " +obj.description+ "</option>");
+        $("#test").append("<option value='" + obj.test + "'>" + obj.test + " - " + obj.description + "</option>");
     });
-    
+
     $("#test").multiselect({
         maxHeight: 150,
         checkboxName: 'test',
@@ -391,7 +594,7 @@ function loadTests(data){
 }
 function loadSystems(data) {
     loadSelectElement(data, $("#system"), false);
-     $("#system").multiselect({
+    $("#system").multiselect({
         maxHeight: 150,
         checkboxName: 'system',
         buttonWidth: '100%',
@@ -402,9 +605,9 @@ function loadSystems(data) {
     });
 }
 
-function loadCreators(data){
+function loadCreators(data) {
     loadSelectElement(data, $("#creator"), false);
-     $("#creator").multiselect({
+    $("#creator").multiselect({
         maxHeight: 150,
         checkboxName: 'creator',
         buttonWidth: '100%',
@@ -415,9 +618,9 @@ function loadCreators(data){
     });
 }
 
-function loadImplementers(data){
+function loadImplementers(data) {
     loadSelectElement(data, $("#implementer"), false);
-     $("#implementer").multiselect({
+    $("#implementer").multiselect({
         maxHeight: 150,
         checkboxName: 'implementer',
         buttonWidth: '100%',
@@ -428,9 +631,9 @@ function loadImplementers(data){
     });
 }
 
-function loadEnvironments(data){
+function loadEnvironments(data, environmentsToSelect) {
     loadSelectElement(data, $("#environment"), false);
-     $("#environment").multiselect({
+    $("#environment").multiselect({
         maxHeight: 150,
         checkboxName: 'environment',
         buttonWidth: '100%',
@@ -439,11 +642,12 @@ function loadEnvironments(data){
         enableCaseInsensitiveFiltering: true,
         selectAllValue: 'multiselect-all-environment',
     });
+    loadMultiselectOptions("environment", environmentsToSelect);
 }
 
-function loadBuilds(data){
+function loadBuilds(data) {
     loadSelectElement(data, $("#build"), false);
-     $("#build").multiselect({
+    $("#build").multiselect({
         maxHeight: 150,
         checkboxName: 'build',
         buttonWidth: '100%',
@@ -454,9 +658,9 @@ function loadBuilds(data){
     });
 }
 
-function loadRevisions(data){
+function loadRevisions(data) {
     loadSelectElement(data, $("#revision"), false);
-     $("#revision").multiselect({
+    $("#revision").multiselect({
         maxHeight: 150,
         checkboxName: 'revision',
         buttonWidth: '100%',
@@ -467,9 +671,9 @@ function loadRevisions(data){
     });
 }
 
-function loadRevisions(data){
+function loadRevisions(data) {
     loadSelectElement(data, $("#revision"), false);
-     $("#revision").multiselect({
+    $("#revision").multiselect({
         maxHeight: 150,
         checkboxName: 'revision',
         buttonWidth: '100%',
@@ -480,13 +684,13 @@ function loadRevisions(data){
     });
 }
 
-function loadApplications(data){
-    
-    $("#application").empty();    
+function loadApplications(data) {
+
+    $("#application").empty();
     $.each(data, function(idx, obj) {
         $("#application").append("<option value='" + obj.application + "'>" + obj.application + "</option>");
     });
-    
+
     $("#application").multiselect({
         maxHeight: 150,
         checkboxName: 'application',
@@ -498,13 +702,13 @@ function loadApplications(data){
     });
 }
 
-function loadProjects(data){
-    
-    $("#project").empty();    
+function loadProjects(data) {
+
+    $("#project").empty();
     $.each(data, function(idx, obj) {
-        $("#project").append("<option value='" + obj.idProject + "'>" + obj.idProject + " - " +obj.description + "</option>");
+        $("#project").append("<option value='" + obj.idProject + "'>" + obj.idProject + " - " + obj.description + "</option>");
     });
-    
+
     $("#project").multiselect({
         maxHeight: 150,
         checkboxName: 'project',
@@ -515,9 +719,9 @@ function loadProjects(data){
         selectAllValue: 'multiselect-all-project',
     });
 }
-function loadTargetSprint(data){
+function loadTargetSprint(data) {
     loadSelectElement(data, $("#targetsprint"), false);
-     $("#targetsprint").multiselect({
+    $("#targetsprint").multiselect({
         maxHeight: 150,
         checkboxName: 'targetsprint',
         buttonWidth: '100%',
@@ -527,60 +731,101 @@ function loadTargetSprint(data){
         selectAllValue: 'multiselect-all-targetsprint',
     });
 }
-function loadTargetRevision(data){
+function loadTargetRevision(data) {
     loadSelectElement(data, $("#targetrevision"), false);
-     $("#targetrevision").multiselect({
+    $("#targetrevision").multiselect({
         maxHeight: 150,
         checkboxName: 'targetrevision',
         buttonWidth: '100%',
         includeSelectAllOption: true,
         enableFiltering: true,
         enableCaseInsensitiveFiltering: true,
-        selectAllValue: 'multiselect-all-targetrevision',       
+        selectAllValue: 'multiselect-all-targetrevision',
     });
 }
 
-function loadTestCaseExecutionStatus(list){
+function loadTestCaseExecutionStatus(list) {
     //should load filters according to the preferences of the user    
-    loadFilter(list, $("#tcestatusFilters"), "tcestatus");    
+    loadFilter(list, $("#tcestatusFilters"), "tcestatus");
 }
-function loadActiveFilter(list){
+function loadActiveFilter(list) {
     //should load filters according to the preferences of the user    
-    loadFilter(list, $("#tcactiveFilters"), "tcactive");    
-}
- 
-function loadGroupFilter(list){
-    //should load filters according to the preferences of the user    
-    loadFilter(list, $("#groupFilters"), "group");    
+    loadFilter(list, $("#tcactiveFilters"), "tcactive");
 }
 
-function loadTCStatusFilter(list){
+function loadGroupFilter(list) {
     //should load filters according to the preferences of the user    
-    loadFilter(list, $("#tcStatusFilters"), "tcstatus");    
+    loadFilter(list, $("#groupFilters"), "group");
 }
 
-function loadPriorityFilter(list){
+function loadTCStatusFilter(list) {
     //should load filters according to the preferences of the user    
-    loadFilter(list, $("#priorityFilters"), "priority");    
+    loadFilter(list, $("#tcStatusFilters"), "tcstatus");
 }
-function loadCountryFilter(list){
+
+function loadPriorityFilter(list) {
+    //should load filters according to the preferences of the user    
+    loadFilter(list, $("#priorityFilters"), "priority");
+}
+function loadCountryFilter(list) {
     //should load filters according to the preferences of the user    
     loadFilter(list, $("#countryFilters"), "country");
-} 
+}
 
-function loadBrowserFilter(list){
+function loadBrowserFilter(list) {
     //should load filters according to the preferences of the user    
     loadFilter(list, $("#browserFilters"), "browser");
-    
-} 
 
-function loadFilter(list, element, name){
-    
-    $.each(list, function(idx, obj){
-        var checked = obj.hasOwnProperty("checked") ? ' checked="checked" ': "";
-        var cb =  '<label title="' + obj.description + '"  class="checkbox-inline">\n\
-                        <input title="' + obj.description + '"  type="checkbox" name="' + name + '" id="' + obj.value 
-                +  '" ' + checked + ' value="' + obj.value +'"/>' + obj.value + '</label>';
+}
+
+function loadFilter(list, element, name) {
+
+    $.each(list, function(idx, obj) {
+        var checked = obj.hasOwnProperty("checked") ? ' checked="checked" ' : "";
+        var cb = '<label title="' + obj.description + '"  class="checkbox-inline">\n\
+                        <input title="' + obj.description + '"  type="checkbox" name="' + name + '" id="' + obj.value
+                + '" ' + checked + ' value="' + obj.value + '"/>' + obj.value + '</label>';
         $(element).append(cb);
     });
 }
+
+$.extend({
+    getUrlVars: function() {
+        var vars = [], hash;
+        var hashes = window.location.href.slice(window.location.href.indexOf('?') + 1).split('&');
+        for (var i = 0; i < hashes.length; i++){
+            
+            hash = hashes[i].split('=');
+            if(hash.length > 1){
+                var values = [];
+
+                if (vars.indexOf(hash[0]) > -1) { //hash already exists
+                    values = vars[hash[0]];
+                } else {
+                    vars.push(hash[0]);
+                }
+
+                values.push(hash[1]);
+                vars[hash[0]] = values;
+            }
+        }
+           
+
+        return vars;
+    },
+    getUrlVar: function(name) {
+        return $.getUrlVars()[name];
+    },
+    /*getUrlVarsByname: function(name){
+     var vars = $.getUrlVars();
+     var varsByName = [];
+     $.each(vars, function(idx, obj){
+     console.log("idx " + idx + " obj " + obj );
+     if(obj === name){
+     varsByName.push(vars[obj]);
+     }
+     });
+     
+     return varsByName;
+     }*/
+});
