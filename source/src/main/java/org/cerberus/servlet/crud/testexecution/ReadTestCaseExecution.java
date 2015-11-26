@@ -36,7 +36,6 @@ import javax.servlet.http.HttpServletResponse;
 import org.cerberus.crud.entity.Invariant;
 import org.cerberus.crud.entity.MessageEvent;
 import org.cerberus.crud.entity.TestCaseExecution;
-import org.cerberus.crud.service.IExportDataService;
 import org.cerberus.crud.service.IInvariantService;
 import org.cerberus.crud.service.ITestCaseExecutionInQueueService;
 import org.cerberus.crud.service.ITestCaseExecutionService;
@@ -46,7 +45,6 @@ import org.cerberus.enums.MessageEventEnum;
 import org.cerberus.exception.CerberusException;
 import org.cerberus.servlet.crud.testcampaign.CampaignExecutionReport;
 import org.cerberus.util.ParameterParserUtil;
-import org.cerberus.util.answer.Answer;
 import org.cerberus.util.answer.AnswerItem;
 import org.cerberus.util.answer.AnswerList;
 import org.json.JSONArray;
@@ -88,11 +86,7 @@ public class ReadTestCaseExecution extends HttpServlet {
             String Tag = ParameterParserUtil.parseStringParam(request.getParameter("Tag"), "");
             String test = ParameterParserUtil.parseStringParam(request.getParameter("test"), "");
             String testCase = ParameterParserUtil.parseStringParam(request.getParameter("testCase"), "");
-            List<String> exportOptions = readExportOptions(request);
-            if (!exportOptions.isEmpty()) { //export options were selected 
-                answer = exportExecutionByTag(appContext, Tag, exportOptions);
-                jsonResponse = (JSONObject) answer.getItem();
-            } else if (sEcho == 0 && !Tag.equals("")) {
+            if (sEcho == 0 && !Tag.equals("")) {
                 answer = findExecutionColumns(appContext, request, Tag);
                 jsonResponse = (JSONObject) answer.getItem();
             } else if (sEcho != 0 && !Tag.equals("")) {
@@ -414,57 +408,6 @@ public class ReadTestCaseExecution extends HttpServlet {
         result.put("ShortDescription", testCaseWithExecution.getShortDescription());
 
         return result;
-    }
-
-    private List<String> readExportOptions(HttpServletRequest request) {
-        List<String> exportOptions = new ArrayList<String>();
-        String reportByStatus = request.getParameter("exportReportByStatus");
-        if (reportByStatus != null) {
-            exportOptions.add(reportByStatus);
-        }
-
-        String exportSummayTable = request.getParameter("exportSummayTable");
-        if (exportSummayTable != null) {
-            exportOptions.add(exportSummayTable);
-        }
-        String exportList = request.getParameter("exportList");
-        if (exportList != null) {
-            exportOptions.add(exportList);
-            //check if ist to export all or filtered data
-            String type = ParameterParserUtil.parseStringParam(request.getParameter("exportOption"), "");
-            exportOptions.add(type);
-
-        }
-
-        return exportOptions;
-    }
-
-    private AnswerItem exportExecutionByTag(ApplicationContext appContext, String Tag, List<String> exportOptions) {
-        AnswerItem answer = new AnswerItem();
-        MessageEvent msg;
-        try {
-
-            //statusExecutionID instead of ID because in dao, an alias is created for that column
-            List<TestCaseWithExecution> testCaseWithExecutions = readExecutionByTagList(appContext, Tag, 0, -1, "statusExecutionID", "asc", "");
-
-            IExportDataService exportService = appContext.getBean(IExportDataService.class);
-
-            Answer answerExport = exportService.exportTestCaseExecutionByTag(testCaseWithExecutions, Tag, exportOptions);
-
-            msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
-
-        } catch (ParseException ex) {
-            Logger.getLogger(ReadTestCaseExecution.class.getName()).log(Level.SEVERE, null, ex);
-            msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
-            msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", "Unable to export data. Problem occurred while parsing data.")); //TODO:FN refazer esta enum           
-
-        } catch (CerberusException ex) {
-            Logger.getLogger(ReadTestCaseExecution.class.getName()).log(Level.SEVERE, null, ex);
-            msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
-            msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", "Unable to export data. Problem occurred while parsing data.")); //TODO:FN refazer esta enum
-        }
-        answer.setResultMessage(msg);
-        return answer;
     }
 
     private List<TestCaseWithExecution> readExecutionByTagList(ApplicationContext appContext, String Tag, int startPosition, int length, String columnName, String sort, String searchParameter) throws ParseException, CerberusException {
