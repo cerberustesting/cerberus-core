@@ -294,7 +294,7 @@ function readAndLoadProject(){
 
 function readAndLoadCreatorImplementer(){
     //loads the creator and implementer
-    var jqxhr = $.getJSON("ReadUser", "");
+    var jqxhr = $.getJSON("ReadUserPublic", "");
     $.when(jqxhr).then(function(data) {
         //console.log("data " + data["contentTable"]);
         var loginList = [];
