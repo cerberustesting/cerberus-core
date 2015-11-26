@@ -29,8 +29,14 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import org.cerberus.crud.entity.Application;
+import org.cerberus.crud.entity.Invariant;
+import org.cerberus.crud.entity.TestCaseExecution;
+import org.cerberus.crud.service.IApplicationService;
+import org.cerberus.crud.service.IInvariantService;
 import org.cerberus.dto.ExecutionValidator;
 import org.cerberus.dto.service.IExecutionValidatorService;
+import org.cerberus.exception.CerberusException;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -55,10 +61,12 @@ public class GetExecutionQueue extends HttpServlet {
      * @throws org.json.JSONException
      */
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException, JSONException {
+            throws ServletException, IOException, JSONException, CerberusException {
         ApplicationContext appContext = WebApplicationContextUtils.getWebApplicationContext(this.getServletContext());
 
         IExecutionValidatorService execValidatorService = appContext.getBean(IExecutionValidatorService.class);
+        IApplicationService applicationService = appContext.getBean(IApplicationService.class);
+        IInvariantService invariantService = appContext.getBean(IInvariantService.class);
 
         JSONArray testCaseList = new JSONArray(request.getParameter("testcase"));
         JSONArray environmentList = new JSONArray(request.getParameter("environment"));
@@ -69,22 +77,34 @@ public class GetExecutionQueue extends HttpServlet {
 
         for (int iterTC = 0; iterTC < testCaseList.length(); iterTC++) {
             JSONObject testCase = testCaseList.getJSONObject(iterTC);
-
+            Application application = new Application();
+            application.setApplication(testCase.getString("application"));
+            application.setSystem(system);
+//            application = (Application) applicationService.readByKey(testCase.getString("application")).getItem();
+            
             for (int iterEnv = 0; iterEnv < environmentList.length(); iterEnv++) {
                 JSONObject env = environmentList.getJSONObject(iterEnv);
 
+                Invariant envDataObj = invariantService.findInvariantByIdValue("ENVIRONMENT", env.getString("env"));
+                
                 for (int iterCountry = 0; iterCountry < countryList.length(); iterCountry++) {
                     String Country = countryList.getString(iterCountry);
 
                     ExecutionValidator toAdd = new ExecutionValidator();
+                    TestCaseExecution execution = new TestCaseExecution();
+                    
+                    execution.setTest(testCase.getString("test"));
+                    execution.setTestCase(testCase.getString("testcase"));
+                    execution.setApplication(application);
+                    execution.setCountry(Country);
+                    execution.setEnvironment(env.getString("env"));
+                    execution.setEnvironmentDataObj(envDataObj);
 
-                    toAdd.setTest(testCase.getString("test"));
-                    toAdd.setTestCase(testCase.getString("testcase"));
-                    toAdd.setApplication(testCase.getString("application"));
-                    toAdd.setCountry(Country);
-                    toAdd.setEnvironment(env.getString("env"));
-                    toAdd.setSystem(system);
-
+                    toAdd.setRunQA(testCase.getString("runQA"));
+                    toAdd.setRunUAT(testCase.getString("runUAT"));
+                    toAdd.setRunPROD(testCase.getString("runPROD"));
+                    toAdd.setExecution(execution);
+                    
                     execValidatorService.validateExecution(toAdd, notValid);
                     inQueue.add(toAdd);
                 }
@@ -95,10 +115,10 @@ public class GetExecutionQueue extends HttpServlet {
         for (ExecutionValidator tce : inQueue) {
             JSONObject exec = new JSONObject();
 
-            exec.put("test", tce.getTest());
-            exec.put("testcase", tce.getTestCase());
-            exec.put("env", tce.getEnvironment());
-            exec.put("country", tce.getCountry());
+            exec.put("test", tce.getExecution().getTest());
+            exec.put("testcase", tce.getExecution().getTestCase());
+            exec.put("env", tce.getExecution().getEnvironment());
+            exec.put("country", tce.getExecution().getCountry());
             exec.put("isValid", tce.isValid());
             exec.put("message", tce.getMessage());
             answer.put(exec);
@@ -126,6 +146,8 @@ public class GetExecutionQueue extends HttpServlet {
             processRequest(request, response);
         } catch (JSONException ex) {
             Logger.getLogger(GetExecutionQueue.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (CerberusException ex) {
+            Logger.getLogger(GetExecutionQueue.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
 
@@ -143,6 +165,8 @@ public class GetExecutionQueue extends HttpServlet {
         try {
             processRequest(request, response);
         } catch (JSONException ex) {
+            Logger.getLogger(GetExecutionQueue.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (CerberusException ex) {
             Logger.getLogger(GetExecutionQueue.class.getName()).log(Level.SEVERE, null, ex);
         }
     }

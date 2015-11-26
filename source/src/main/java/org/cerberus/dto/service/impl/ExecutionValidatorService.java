@@ -21,7 +21,10 @@ package org.cerberus.dto.service.impl;
 
 import java.util.List;
 import org.cerberus.crud.dao.ICountryEnvironmentParametersDAO;
+import org.cerberus.crud.dao.IInvariantDAO;
 import org.cerberus.crud.dao.ITestCaseCountryDAO;
+import org.cerberus.crud.entity.Invariant;
+import org.cerberus.crud.entity.TestCaseExecution;
 import org.cerberus.dto.ExecutionValidator;
 import org.cerberus.dto.service.IExecutionValidatorService;
 import org.cerberus.exception.CerberusException;
@@ -41,24 +44,38 @@ public class ExecutionValidatorService implements IExecutionValidatorService {
     @Autowired
     ITestCaseCountryDAO testCaseCountryDAO;
     
+    @Autowired
+    IInvariantDAO invariantDAO;
+    
      private static final String TEST_CASE_COUNTRY_ERROR = "This Test Case is not defined for this country";
      private static final String COUNTRY_ENV_PARAM_APPLICATION_ERROR = "The application of the Test Case is not set for this environment";
+     private static final String RUN_QA_NOT_DEFINED = "This Test Case is not defined to run on the QA environment";
+     private static final String RUN_UAT_NOT_DEFINED = "This Test Case is not defined to run on the UAT environment";
+     private static final String RUN_PROD_NOT_DEFINED = "This Test Case is not defined to run on the PROD environment";
      private static final String TEST_CASE_EXECUTION_OK = "This Test Case is set to run with this configuration";
 
     @Override
-    public void validateExecution(ExecutionValidator execution, List<ExecutionValidator> notValidList) {
-        if (!this.checkInNotValidList(execution, notValidList)) {
+    public void validateExecution(ExecutionValidator execValidator, List<ExecutionValidator> notValidList) {
+        TestCaseExecution execution = execValidator.getExecution();
+        
+        {
+        }
+        
+        if (!this.checkInNotValidList(execValidator, notValidList)) {
             if (!this.checkTestCaseCountry(execution.getTest(), execution.getTestCase(), execution.getCountry())) {
-                execution.setValid(false);
-                execution.setMessage(TEST_CASE_COUNTRY_ERROR);
-                notValidList.add(execution);
-            } else if (!this.checkCountryEnvParam(execution.getSystem(), execution.getCountry(), execution.getEnvironment(), execution.getApplication())) {
-                execution.setValid(false);
-                execution.setMessage(COUNTRY_ENV_PARAM_APPLICATION_ERROR);
-                notValidList.add(execution);
+                execValidator.setValid(false);
+                execValidator.setMessage(TEST_CASE_COUNTRY_ERROR);
+                notValidList.add(execValidator);
+            } else if (!this.checkCountryEnvParam(execution.getApplication().getSystem(), execution.getCountry(), execution.getEnvironment(), execution.getApplication().getApplication())) {
+                execValidator.setValid(false);
+                execValidator.setMessage(COUNTRY_ENV_PARAM_APPLICATION_ERROR);
+                notValidList.add(execValidator);
+            } else if (!this.checkRunEnvironment(execution.getEnvironmentDataObj(), execValidator)) {
+                execValidator.setValid(false);
+                notValidList.add(execValidator);
             } else {
-                execution.setValid(true);
-                execution.setMessage(TEST_CASE_EXECUTION_OK);
+                execValidator.setValid(true);
+                execValidator.setMessage(TEST_CASE_EXECUTION_OK);
             }
         }
     }
@@ -80,24 +97,42 @@ public class ExecutionValidatorService implements IExecutionValidatorService {
             return false;
         }
     }
+    
+    private boolean checkRunEnvironment(Invariant environment, ExecutionValidator execValidator) {
+        if (environment.getGp1().equals("QA") && !execValidator.getRunQA()) {
+            execValidator.setMessage(RUN_QA_NOT_DEFINED);
+            return false;
+        } else if (environment.getGp1().equals("UAT") && !execValidator.getRunUAT()) {
+            execValidator.setMessage(RUN_UAT_NOT_DEFINED);
+            return false;
+        } else if (environment.getGp1().equals("PROD") && !execValidator.getRunPROD()) {
+            execValidator.setMessage(RUN_PROD_NOT_DEFINED);
+            return false;
+        }
+        return true;
+    }
 
-    private boolean checkInNotValidList(ExecutionValidator execution, List<ExecutionValidator> notValidList) {
+    private boolean checkInNotValidList(ExecutionValidator execValidator, List<ExecutionValidator> notValidList) {
+        TestCaseExecution execution = execValidator.getExecution();
+        
         for (ExecutionValidator notValid : notValidList) {
-            if (execution.getTest().equals(notValid.getTest())
-                    && execution.getTestCase().equals(notValid.getTestCase())
-                    && execution.getCountry().equals(notValid.getCountry())
+            TestCaseExecution execNotValid = notValid.getExecution();
+            
+            if (execution.getTest().equals(execNotValid.getTest())
+                    && execution.getTestCase().equals(execNotValid.getTestCase())
+                    && execution.getCountry().equals(execNotValid.getCountry())
                     && notValid.getMessage().equals(TEST_CASE_COUNTRY_ERROR)) {
-                execution.setValid(false);
-                execution.setMessage(TEST_CASE_COUNTRY_ERROR);
+                execValidator.setValid(false);
+                execValidator.setMessage(TEST_CASE_COUNTRY_ERROR);
                 return true;
-            } else if (execution.getApplication().equals(notValid.getApplication())
-                    && execution.getEnvironment().equals(notValid.getEnvironment())
-                    && execution.getCountry().equals(notValid.getCountry())
-                    && execution.getSystem().equals(notValid.getSystem())
+            } else if (execution.getApplication().equals(execNotValid.getApplication())
+                    && execution.getEnvironment().equals(execNotValid.getEnvironment())
+                    && execution.getCountry().equals(execNotValid.getCountry())
+                    && execution.getApplication().getSystem().equals(execNotValid.getApplication().getSystem())
                     && notValid.getMessage().equals(COUNTRY_ENV_PARAM_APPLICATION_ERROR)) {
                 
-                execution.setValid(false);
-                execution.setMessage(COUNTRY_ENV_PARAM_APPLICATION_ERROR);
+                execValidator.setValid(false);
+                execValidator.setMessage(COUNTRY_ENV_PARAM_APPLICATION_ERROR);
                 return true;
             }
         }
