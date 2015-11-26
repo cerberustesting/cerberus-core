@@ -116,6 +116,13 @@ $.when($.getScript("js/pages/global/global.js")).then(function () {
 function typeSelectHandler() {
     var value = $("#typeSelect").val();
     if (value === "filters") {
+        
+        $("#envSettingsAuto select").prop("disabled", false).val("");
+        
+        $("#countryList input.countrycb").each(function () {
+            $(this).prop("disabled", false).prop("checked", false);
+        });
+        
         $("#campaignSelection").hide();
         $("#filters").show();
         $("#resetbutton").show();
@@ -222,6 +229,19 @@ function loadCampaignParameter(campaign) {
                     countries.push(value);
                 }
             }
+            
+            $("#envSettingsAuto select").prop("disabled", "disabled").val(env);
+            
+            $("#countryList input.countrycb").each(function () {
+                var country = $(this).prop("name");
+                
+               $(this).prop("disabled", "disabled");
+               if (countries.indexOf(country) !== -1) {
+                   $(this).prop("checked", true);
+               } else {
+                   $(this).prop("checked", false);
+               }
+            });
         }
     });
 }
@@ -403,9 +423,13 @@ function checkExecution(event) {
     select.each(function () {
         var item = $(this).data("item");
 
+        console.log(item);
         testcase.push({"test": item.test,
             "testcase": item.testCase,
-            "application": item.application});
+            "application": item.application,
+            "runQA": item.runQA,
+            "runUAT": item.runUAT,
+            "runPROD": item.runPROD});
     });
 
     $("#error").empty();

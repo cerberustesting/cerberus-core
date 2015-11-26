@@ -550,6 +550,10 @@
         <servlet-class>org.cerberus.servlet.crud.usermanagement.UpdateMyUserReporting</servlet-class>
     </servlet>
     <servlet>
+        <servlet-name>UpdateMyUserReporting1</servlet-name>
+        <servlet-class>org.cerberus.servlet.crud.usermanagement.UpdateMyUserReporting1</servlet-class>
+    </servlet>
+    <servlet>
         <servlet-name>UpdateTestCaseField</servlet-name>
         <servlet-class>org.cerberus.servlet.crud.test.UpdateTestCaseField</servlet-class>
     </servlet>
@@ -1349,6 +1353,10 @@
         <url-pattern>/UpdateMyUserReporting</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
+        <servlet-name>UpdateMyUserReporting1</servlet-name>
+        <url-pattern>/UpdateMyUserReporting1</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
         <servlet-name>UpdateTestCaseField</servlet-name>
         <url-pattern>/UpdateTestCaseField</url-pattern>
     </servlet-mapping>
@@ -2076,6 +2084,7 @@
             <url-pattern>/UpdateMyUser</url-pattern>
             <url-pattern>/UpdateMyUserSystem</url-pattern>
             <url-pattern>/UpdateMyUserReporting</url-pattern>
+            <url-pattern>/UpdateMyUserReporting1</url-pattern>
             <url-pattern>/UpdateMyUserRobotPreference</url-pattern>
             <url-pattern>/ReadUserPublic</url-pattern>
         </web-resource-collection>

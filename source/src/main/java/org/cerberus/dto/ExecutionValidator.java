@@ -19,83 +19,67 @@
  */
 package org.cerberus.dto;
 
+import org.cerberus.crud.entity.TestCaseExecution;
+
 /**
  *
  * @author cerberus
  */
 public class ExecutionValidator {
 
-    private String test;
-    private String testCase;
-    private String country;
-    private String environment;
-    private String application;
-    private String system;
+    private TestCaseExecution execution;
+    private boolean runQA;
+    private boolean runUAT;
+    private boolean runPROD;
     private boolean valid;
     private String message;
 
-    public void setTest(String test) {
-        this.test = test;
+    public void setExecution(TestCaseExecution execution) {
+        this.execution = execution;
     }
 
-    public void setTestCase(String testCase) {
-        this.testCase = testCase;
+    public void setRunQA(String runQA) {
+        this.runQA = runQA.equals("Y");
     }
 
-    public void setCountry(String country) {
-        this.country = country;
+    public void setRunUAT(String runUAT) {
+        this.runUAT = runUAT.equals("Y");
     }
 
-    public void setEnvironment(String environment) {
-        this.environment = environment;
+    public void setRunPROD(String runPROD) {
+        this.runPROD = runPROD.equals("Y");
     }
 
-    public void setApplication(String application) {
-        this.application = application;
-    }
-    
-    public void setSystem(String system) {
-        this.system = system;
-    }
-    
     public void setValid(boolean bool) {
         this.valid = bool;
     }
-    
+
     public void setMessage(String message) {
         this.message = message;
     }
 
-    public String getTest() {
-        return this.test;
+    public TestCaseExecution getExecution() {
+        return this.execution;
     }
 
-    public String getTestCase() {
-        return this.testCase;
-    }
-
-    public String getCountry() {
-        return this.country;
-    }
-
-    public String getEnvironment() {
-        return this.environment;
-    }
-
-    public String getApplication() {
-        return this.application;
+    public boolean getRunQA() {
+        return this.runQA;
     }
     
-    public String getSystem() {
-        return this.system;
+    public boolean getRunUAT() {
+        return this.runUAT;
+    }
+    
+    public boolean getRunPROD() {
+        return this.runPROD;
     }
     
     public boolean isValid() {
         return this.valid;
     }
-    
+
     public String getMessage() {
         return this.message;
     }
-    
+
 }
