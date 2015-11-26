@@ -596,3 +596,14 @@ img.selectedPicture{
     max-height: 400px; 
     max-width: 600px;
 }
+
+.filterReportingExecution{
+    margin-bottom: 10px;
+    margin-left:15px;
+}
+.favorite{
+    color: #DAA520;
+}
+.mandatory{
+    color: #8B0404;
+}
