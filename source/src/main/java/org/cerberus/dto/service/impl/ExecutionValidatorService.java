@@ -58,20 +58,17 @@ public class ExecutionValidatorService implements IExecutionValidatorService {
     public void validateExecution(ExecutionValidator execValidator, List<ExecutionValidator> notValidList) {
         TestCaseExecution execution = execValidator.getExecution();
         
-        {
-        }
-        
         if (!this.checkInNotValidList(execValidator, notValidList)) {
             if (!this.checkTestCaseCountry(execution.getTest(), execution.getTestCase(), execution.getCountry())) {
                 execValidator.setValid(false);
                 execValidator.setMessage(TEST_CASE_COUNTRY_ERROR);
                 notValidList.add(execValidator);
+            } else if (!this.checkRunEnvironment(execution.getEnvironmentDataObj(), execValidator)) {
+                execValidator.setValid(false);
+                notValidList.add(execValidator);
             } else if (!this.checkCountryEnvParam(execution.getApplication().getSystem(), execution.getCountry(), execution.getEnvironment(), execution.getApplication().getApplication())) {
                 execValidator.setValid(false);
                 execValidator.setMessage(COUNTRY_ENV_PARAM_APPLICATION_ERROR);
-                notValidList.add(execValidator);
-            } else if (!this.checkRunEnvironment(execution.getEnvironmentDataObj(), execValidator)) {
-                execValidator.setValid(false);
                 notValidList.add(execValidator);
             } else {
                 execValidator.setValid(true);

@@ -95,7 +95,7 @@
                                 <select class="form-control input-sm" id="campaignSelect"></select>
                             </div>
                         </form>
-                        <button type="button" class="btn btn-primary" id="loadbutton">Load</button>
+                        <button type="button" class="btn btn-primary" id="loadbutton">Search</button>
                         <button type="button" class="btn btn-default" id="resetbutton">Reset Filters</button>
                     </div>
                 </div>
@@ -106,10 +106,10 @@
                     </div>
                     <div class="panel-body" id="chooseTest">
                         <div class="row">
-                            <div class="form-group col-lg-9">
+                            <div class="form-group col-lg-11">
                                 <select multiple id="testCaseList" class="form-control" style="height: 300px;"></select>
                             </div>
-                            <div class="col-lg-3">
+                            <div class="col-lg-1">
                                 <div class="row" style="margin-top: 100px;">
                                     <button type="button" class="btn btn-default" id="addQueue"> > </button>
                                 </div>
@@ -318,12 +318,20 @@
                     <input type="hidden" name="manualExecution" id="manualExecutionATQ">
                     <input type="hidden" name="statusPage" id="statusPageATQ">
                 </form>
-                
+
                 <footer class="footer">
                     <div class="container-fluid" id="footer"></div>
                 </footer>
             </div>
             <div class="col-lg-3 pull-right">
+                <li class="list-group-item list-group-item-danger" style="display: none;" id="notValid">
+                    <span class="badge" id="notValidNumber" style="cursor: pointer;"></span>
+                    Some executions couldn't be added to the queue
+                </li>
+                <li class="list-group-item list-group-item-info" id="valid">
+                    <span class="badge" id="validNumber">0</span>
+                    Test Cases in queue
+                </li>
                 <div class="panel panel-default">
                     <div class="panel-heading card" data-toggle="collapse" data-target="#queuePanel">
                         <span class="toggle glyphicon glyphicon-chevron-right pull-right"></span>
@@ -332,14 +340,6 @@
                     </div>
 
                     <div class="panel-body collapse in" id="queuePanel">
-                        <li class="list-group-item list-group-item-danger" style="display: none;" id="notValid">
-                            <span class="badge" id="notValidNumber" style="cursor: pointer;"></span>
-                            Some executions couldn't be added to the queue
-                        </li>
-                        <li class="list-group-item list-group-item-info" id="valid">
-                            <span class="badge" id="validNumber">0</span>
-                            Test Cases in queue
-                        </li>
                         <ul class="list-group" id="queue" style="height: 870px; overflow: hidden; overflow-y: scroll;border: 1px solid #CCC; border-radius: 4px;"></ul>
                     </div>
                 </div>

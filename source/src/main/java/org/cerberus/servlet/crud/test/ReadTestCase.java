@@ -30,9 +30,12 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import org.cerberus.crud.entity.CampaignContent;
 import org.cerberus.crud.entity.MessageEvent;
 import org.cerberus.crud.entity.TCase;
+import org.cerberus.crud.entity.TestBattery;
 import org.cerberus.crud.entity.TestCaseCountry;
+import org.cerberus.crud.service.ICampaignContentService;
 import org.cerberus.crud.service.ITestCaseCountryService;
 import org.cerberus.crud.service.ITestCaseService;
 import org.cerberus.crud.service.impl.TestCaseCountryService;
@@ -76,9 +79,10 @@ public class ReadTestCase extends HttpServlet {
         int sEcho = Integer.valueOf(ParameterParserUtil.parseStringParam(request.getParameter("sEcho"), "0"));
         String test = ParameterParserUtil.ParseStringParamAndSanitize(request.getParameter("test"), "");
         String testCase = ParameterParserUtil.parseStringParam(request.getParameter("testCase"), "");
+        String campaign = ParameterParserUtil.parseStringParam(request.getParameter("campaign"), "");
         boolean getMaxTC = ParameterParserUtil.parseBooleanParam(request.getParameter("getMaxTC"), false);
         boolean filter = ParameterParserUtil.parseBooleanParam(request.getParameter("filter"), false);
-        
+
         // Default message to unexpected error.
         MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
         msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", ""));
@@ -100,6 +104,9 @@ public class ReadTestCase extends HttpServlet {
                 answer.setResultMessage(new MessageEvent(MessageEventEnum.DATA_OPERATION_OK));
             } else if (sEcho == 0 && filter) {
                 answer = findTestCaseByVariousCriteria(appContext, request);
+                jsonResponse = (JSONObject) answer.getItem();
+            } else if (sEcho == 0 && !Strings.isNullOrEmpty(campaign)) {
+                answer = findTestCaseByCampaign(appContext, campaign);
                 jsonResponse = (JSONObject) answer.getItem();
             }
 
@@ -259,7 +266,7 @@ public class ReadTestCase extends HttpServlet {
         AnswerItem item = new AnswerItem();
         JSONObject object = new JSONObject();
         JSONArray dataArray = new JSONArray();
-        
+
         String[] test = request.getParameterValues("test");
         String[] idProject = request.getParameterValues("idProject");
         String[] app = request.getParameterValues("application");
@@ -271,7 +278,7 @@ public class ReadTestCase extends HttpServlet {
         String[] priority = request.getParameterValues("priority");
         String[] group = request.getParameterValues("group");
         String[] status = request.getParameterValues("status");
-        
+
         testCaseService = appContext.getBean(TestCaseService.class);
         AnswerList answer = testCaseService.readByVariousCriteria(test, idProject, app, creator, implementer, system, testBattery, campaign, priority, group, status);
 
@@ -285,5 +292,35 @@ public class ReadTestCase extends HttpServlet {
         item.setItem(object);
         item.setResultMessage(answer.getResultMessage());
         return item;
+    }
+
+    private AnswerItem findTestCaseByCampaign(ApplicationContext appContext, String campaign) throws JSONException {
+        AnswerItem answer = new AnswerItem();
+        JSONObject jsonResponse = new JSONObject();
+        JSONArray dataArray = new JSONArray();
+
+        ICampaignContentService campaignContentService = appContext.getBean(ICampaignContentService.class);
+        testCaseService = appContext.getBean(TestCaseService.class);
+
+        AnswerList testBatteryAnswer = campaignContentService.readByCampaignByCriteria(campaign, 0, 0, "testbattery", "asc", "", "");
+        List<CampaignContent> testBatteryList = testBatteryAnswer.getDataList();
+        String[] testBattery = new String[testBatteryList.size()];
+
+        for (int index = 0; index < testBatteryList.size(); index++) {
+            testBattery[index] = testBatteryList.get(index).getTestbattery();
+        }
+
+        AnswerList resp = testCaseService.readByVariousCriteria(null, null, null, null, null, null, testBattery, null, null, null, null);
+
+        if (resp.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
+            for (TCase tc : (List<TCase>) resp.getDataList()) {
+                dataArray.put(convertTestCaseToJSONObject(tc));
+            }
+        }
+
+        jsonResponse.put("contentTable", dataArray);
+        answer.setItem(jsonResponse);
+        answer.setResultMessage(resp.getResultMessage());
+        return answer;
     }
 }

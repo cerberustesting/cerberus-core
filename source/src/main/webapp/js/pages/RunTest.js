@@ -116,13 +116,13 @@ $.when($.getScript("js/pages/global/global.js")).then(function () {
 function typeSelectHandler() {
     var value = $("#typeSelect").val();
     if (value === "filters") {
-        
+
         $("#envSettingsAuto select").prop("disabled", false).val("");
-        
+
         $("#countryList input.countrycb").each(function () {
             $(this).prop("disabled", false).prop("checked", false);
         });
-        
+
         $("#campaignSelection").hide();
         $("#filters").show();
         $("#resetbutton").show();
@@ -191,18 +191,30 @@ function appendCountryList() {
 
 /** UTILITY FUNCTIONS FOR CAMPAIGN LAUNCHING **/
 
-function loadCampaignContent() {
-//    showLoader("#chooseTest");
-//    $.ajax({
-//        url: "ReadTestCase",
-//        method: "GET",
-//        data: "filter=true&" + $("#filters").serialize() + "&system=" + getUser().defaultSystem,
-//        datatype: "json",
-//        async: true,
-//        success: function (data) {
-//            hideLoader("#chooseTest");
-//        }
-//    });
+function loadCampaignContent(campaign) {
+    showLoader("#chooseTest");
+    $.ajax({
+        url: "ReadTestCase",
+        method: "GET",
+        data: {campaign: campaign},
+        datatype: "json",
+        async: true,
+        success: function (data) {
+            var testCaseList = $("#testCaseList");
+
+            testCaseList.empty();
+
+            for (var index = 0; index < data.contentTable.length; index++) {
+                var text = data.contentTable[index].test + " - " + data.contentTable[index].testCase + " [" + data.contentTable[index].application + "]: " + data.contentTable[index].shortDescription;
+
+                testCaseList.append($("<option></option>")
+                        .text(text)
+                        .val(data.contentTable[index].testCase)
+                        .data("item", data.contentTable[index]));
+            }
+            hideLoader("#chooseTest");
+        }
+    });
 }
 
 function loadCampaignParameter(campaign) {
@@ -229,18 +241,18 @@ function loadCampaignParameter(campaign) {
                     countries.push(value);
                 }
             }
-            
+
             $("#envSettingsAuto select").prop("disabled", "disabled").val(env);
-            
+
             $("#countryList input.countrycb").each(function () {
                 var country = $(this).prop("name");
-                
-               $(this).prop("disabled", "disabled");
-               if (countries.indexOf(country) !== -1) {
-                   $(this).prop("checked", true);
-               } else {
-                   $(this).prop("checked", false);
-               }
+
+                $(this).prop("disabled", "disabled");
+                if (countries.indexOf(country) !== -1) {
+                    $(this).prop("checked", true);
+                } else {
+                    $(this).prop("checked", false);
+                }
             });
         }
     });
@@ -357,7 +369,11 @@ function getEnvironment() {
             }
         }
     } else if (settings === "manual") {
-        var env = {"env": "MANUAL"};
+        var env = {"env": "MANUAL",
+            "host": $("#myhost").val(),
+            "url": $("#mycontextroot").val(),
+            "loginurl": $("#myloginrelativeurl").val(),
+            "envdata": $("#myenvdata").val()};
 
         envList.push(env);
     }
@@ -423,7 +439,6 @@ function checkExecution(event) {
     select.each(function () {
         var item = $(this).data("item");
 
-        console.log(item);
         testcase.push({"test": item.test,
             "testcase": item.testCase,
             "application": item.application,
