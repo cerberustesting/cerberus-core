@@ -92,7 +92,6 @@ $.when($.getScript("js/pages/global/global.js")).then(function () {
 
         loadExecForm();
         loadRobotForm();
-        displayEnvList("environment", system);
 
         $('[name="envSettings"]').on("change", function () {
             if (this.value === "auto") {
@@ -123,6 +122,9 @@ function typeSelectHandler() {
             $(this).prop("disabled", false).prop("checked", false);
         });
 
+        $("#testCaseList").prop("disabled", false);
+        $("#envSettingsAuto select").empty();
+        displayEnvList("environment", "");
         $("#campaignSelection").hide();
         $("#filters").show();
         $("#resetbutton").show();
@@ -132,6 +134,8 @@ function typeSelectHandler() {
         $("#resetbutton").hide();
         $("#campaignSelection").show();
         $("#testCaseList").empty();
+        $("#envSettingsAuto select").empty();
+        displayEnvList("environment", "");
     }
 }
 
@@ -202,7 +206,7 @@ function loadCampaignContent(campaign) {
         success: function (data) {
             var testCaseList = $("#testCaseList");
 
-            testCaseList.empty();
+            testCaseList.empty().prop("disabled", "disabled");
 
             for (var index = 0; index < data.contentTable.length; index++) {
                 var text = data.contentTable[index].test + " - " + data.contentTable[index].testCase + " [" + data.contentTable[index].application + "]: " + data.contentTable[index].shortDescription;
@@ -210,6 +214,7 @@ function loadCampaignContent(campaign) {
                 testCaseList.append($("<option></option>")
                         .text(text)
                         .val(data.contentTable[index].testCase)
+                        .prop("selected", true)
                         .data("item", data.contentTable[index]));
             }
             hideLoader("#chooseTest");
