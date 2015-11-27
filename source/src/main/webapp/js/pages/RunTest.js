@@ -135,7 +135,7 @@ function typeSelectHandler() {
         $("#campaignSelection").show();
         $("#testCaseList").empty();
         $("#envSettingsAuto select").empty();
-        displayEnvList("environment", "");
+        displayUniqueEnvList("environment");
     }
 }
 

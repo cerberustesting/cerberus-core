@@ -198,6 +198,24 @@ function displayEnvList(selectName, system, defaultValue) {
     });
 }
 
+/**
+ * Method that display a combo box in all the selectName tags with the value retrieved from the Environment list
+ * @param {String} selectName value name of the select tag in the html
+ * @param {String} defaultValue to be selected
+ * @returns {void}
+ */
+function displayUniqueEnvList(selectName, defaultValue) {
+    $.when($.getJSON("ReadCountryEnvParam", "unique=true&active=Y")).then(function (data) {
+        for (var option in data.contentTable) {
+            $("[name='" + selectName + "']").append($('<option></option>').text(data.contentTable[option].environment).val(data.contentTable[option].environment));
+        }
+
+        if (defaultValue !== undefined) {
+            $("[name='" + selectName + "']").val(defaultValue);
+        }
+    });
+}
+
 /*****User LIST **********************************/
 /**
  * Method that display a combo box in all the selectName tags with the value retrieved from the user list

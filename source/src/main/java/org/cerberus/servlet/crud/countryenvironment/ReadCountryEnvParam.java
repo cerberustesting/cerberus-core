@@ -21,6 +21,7 @@ package org.cerberus.servlet.crud.countryenvironment;
 
 import com.google.gson.Gson;
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -82,15 +83,16 @@ public class ReadCountryEnvParam extends HttpServlet {
          */
         String system = policy.sanitize(request.getParameter("system"));
         String active = policy.sanitize(request.getParameter("active"));
-
+        boolean unique = ParameterParserUtil.parseBooleanParam(request.getParameter("unique"), false);
+        
         // Init Answer with potencial error from Parsing parameter.
         AnswerItem answer = new AnswerItem(msg);
 
         try {
             JSONObject jsonResponse = new JSONObject();
-            if (false) {
-//                answer = findEnvironmentList(appContext, system);
-//                jsonResponse = (JSONObject) answer.getItem();
+            if (unique) {
+                answer = findUniqueEnvironmentList(appContext, active);
+                jsonResponse = (JSONObject) answer.getItem();
             } else { // Default behaviour, we return the list of objects.
                 answer = findCountryEnvParamList(request.getParameter("system"), request.getParameter("active"), appContext, request);
                 jsonResponse = (JSONObject) answer.getItem();
@@ -203,6 +205,37 @@ public class ReadCountryEnvParam extends HttpServlet {
         Gson gson = new Gson();
         JSONObject result = new JSONObject(gson.toJson(cep));
         return result;
+    }
+
+    private AnswerItem findUniqueEnvironmentList(ApplicationContext appContext, String active) throws JSONException {
+        AnswerItem item = new AnswerItem();
+        JSONObject jsonResponse = new JSONObject();
+        cepService = appContext.getBean(ICountryEnvParamService.class);
+
+        AnswerList resp = cepService.readByVariousByCriteria("", active, 0, 0, "system", "asc", "", "");
+
+        
+        
+        JSONArray jsonArray = new JSONArray();
+        if (resp.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {//the service was able to perform the query, then we should get all values
+            HashMap<String, CountryEnvParam> hash = new HashMap<String, CountryEnvParam>();
+            
+            for (CountryEnvParam cep : (List<CountryEnvParam>) resp.getDataList()) {
+                hash.put(cep.getEnvironment(), cep);
+            }
+            
+            for (CountryEnvParam cep : hash.values()) {
+                jsonArray.put(convertCountryEnvParamtoJSONObject(cep));
+            }
+        }
+
+        jsonResponse.put("contentTable", jsonArray);
+        jsonResponse.put("iTotalRecords", resp.getTotalRows());
+        jsonResponse.put("iTotalDisplayRecords", resp.getTotalRows());
+
+        item.setItem(jsonResponse);
+        item.setResultMessage(resp.getResultMessage());
+        return item;
     }
 
 }
