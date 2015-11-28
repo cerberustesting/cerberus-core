@@ -1,0 +1,120 @@
+<!--Add a Build Content -->
+<div data-backdrop="static" class="modal fade center" id="addBrpModal" tabindex="-1" role="dialog" aria-labelledby="addBrpModalLabel" aria-hidden="true">
+    <div class="modal-dialog nomargintop nomarginbottom">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title" id="addBrpModalLabel" name="createBrpField">Create Build Content</h4>
+            </div>
+            <div class="modal-body">
+
+                <!--add form-->
+                <form id="addBrpModalForm" name="addBrpModalForm"  title="Add Aplication" role="form">
+                    <div class="container-fluid center">
+                         <!-- messages area-->
+                         <div id="DialogMessagesArea">
+                            <div class="alert" id="DialogMessagesAlert"  style="display:none;">
+                                <strong><span class="alert-description" id="DialogAlertDescription"></span></strong>
+                                <button type="button" class="close" data-hide="alert"  aria-hidden="true">
+                                    <span class="glyphicon glyphicon-remove alert-right alert-close pull-right"></span>
+                                </button>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="form-group col-xs-3">
+                                <label for="id" name="idField">Build Content ID</label>
+                                <input type="text" class="form-control" name="id" id="id" aria-describedby="basic-addon1" readonly>
+                            </div>
+                            <div class="form-group col-xs-9">
+                                <label for="datecre" name="datecreField">Creation Date</label>
+                                <input type="text" class="form-control" name="datecre" id="datecre" aria-describedby="basic-addon1" readonly>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="form-group col-xs-6">
+                                <label for="build" name="buildField">Build</label>
+                                <select class="form-control"  id="build" name="build">
+                                </select>
+                            </div>
+                            <div class="form-group col-xs-6">
+                                <label for="revision" name="revisionField">Revision</label>
+                                <select class="form-control"  id="revision" name="revision">
+                                </select>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="form-group col-xs-6">
+                                <label for="application" name="applicationField">Application</label>
+                                <select class="form-control"  id="application" name="application">
+                                </select>
+                            </div>
+                            <div class="form-group col-xs-6">
+                                <label for="release" name="releaseField">Release</label>
+                                <input type="text" class="form-control" name="release" id="release" aria-describedby="basic-addon1" maxlength="40">
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="form-group col-xs-6">
+                                <label for="owner" name="ownerField">Owner</label>
+                                <select class="form-control"  id="owner" name="releaseowner">
+                                </select>
+                            </div>
+                            <div class="form-group col-xs-6">
+                                <label for="project" name="projectField">Project</label>
+                                <select class="form-control"  id="project" name="project">
+                                </select>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="form-group col-xs-6">
+                                <label for="ticketIdFixed" name="ticketIdFixedField">Ticket ID</label>
+                                <input type="text" class="form-control" name="ticketidfixed" id="ticketIdFixed" aria-describedby="basic-addon1" maxlength="45">
+                            </div>
+                            <div class="form-group col-xs-6">
+                                <label for="bugIdFixed" name="bugIdFixedField">Bug ID</label>
+                                <input type="text" class="form-control" name="bugidfixed" id="bugIdFixed" aria-describedby="basic-addon1" maxlength="45">
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="form-group col-xs-12">
+                                <label for="link" name="linkField">Link</label>
+                                <input type="text" class="form-control" name="link" id="link" aria-describedby="basic-addon1" maxlength="300">
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="form-group col-xs-12">
+                                <label for="subject" name="subjectField">Subject</label>
+                                <textarea id="subject" name="subject"
+                                          class="form-control" maxlength="1000"></textarea> 
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="form-group col-xs-6">
+                                <label for="jenkinsBuildId" name="jenkinsBuildIdField">Jenkins Build ID</label>
+                                <input type="text" class="form-control" name="jenkinsbuildid" id="jenkinsBuildId" aria-describedby="basic-addon1" maxlength="200" readonly>
+                            </div>
+                            <div class="form-group col-xs-6">
+                                <label for="mavenGroupId" name="mavenGroupIdField">Maven Group ID</label>
+                                <input type="text" class="form-control" name="mavengroupid" id="mavenGroupId" aria-describedby="basic-addon1" maxlength="200" readonly>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="form-group col-xs-6">
+                                <label for="mavenArtifactId" name="mavenArtifactIdField">Maven Artifact ID</label>
+                                <input type="text" class="form-control" name="mavenartifactid" id="mavenArtifactId" aria-describedby="basic-addon1" maxlength="200" readonly>
+                            </div>
+                            <div class="form-group col-xs-6">
+                                <label for="mavenVersion" name="mavenVersionField">Maven Version</label>
+                                <input type="text" class="form-control" name="mavenversion" id="mavenVersion" aria-describedby="basic-addon1" maxlength="200" readonly>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal" name="buttonClose">Close</button>
+                <button type="button" id="addBrpButton" class="btn btn-primary" name="buttonAdd">Save</button>
+            </div>
+        </div>
+    </div>
+</div>
