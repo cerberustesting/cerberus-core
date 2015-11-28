@@ -120,10 +120,6 @@ public class ReadBuildRevisionInvariant extends HttpServlet {
             if ((request.getParameter("system") != null) && (request.getParameter("level") != null) && !(lvlid_error) && (request.getParameter("seq") != null) && !(seqid_error)) { // ID parameter is specified so we return the unique record of object.
                 answer = findBuildRevisionInvariantByKey(system, lvlid, seqid, appContext);
                 jsonResponse = (JSONObject) answer.getItem();
-            } else if (request.getParameter("system") != null && request.getParameter("level") == null && request.getParameter("seq") == null) { 
-                //return all invariants per system
-                answer = findBuildRevisionInvariantBySystem(system, appContext);
-                jsonResponse = (JSONObject) answer.getItem();
             } else { // Default behaviour, we return the list of objects.
                 answer = findBuildRevisionInvariantList(system, lvlid, appContext, request, response);
                 jsonResponse = (JSONObject) answer.getItem();
@@ -261,35 +257,5 @@ public class ReadBuildRevisionInvariant extends HttpServlet {
         return result;
     }
 
-    private AnswerItem findBuildRevisionInvariantBySystem(String system, ApplicationContext appContext) throws JSONException {
-        AnswerItem item = new AnswerItem();
-        JSONObject object = new JSONObject();
-
-        IBuildRevisionInvariantService libService = appContext.getBean(IBuildRevisionInvariantService.class);
-        MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
-
-        //TODO: after conversion of services and dao this method should handle an answerlist, instead of the exception
-        //the great number of dependencies was the reason why it is not converted yet
-        try{
-            List<BuildRevisionInvariant> list  = libService.findAllBuildRevisionInvariantBySystem(system);
-            //BuildRevisionInvariant bri = (BuildRevisionInvariant) answer.getItem();
-            JSONArray jsonArray = new JSONArray();
-
-            for (BuildRevisionInvariant bri : list) {
-                jsonArray.put(convertBuildRevisionInvariantToJSONObject(bri));
-            }            
-            object.put("contentTable", jsonArray);
-            
-        }catch(CerberusException ex){
-            msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
-            msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", ex.toString()));
-        }
-
-
-        item.setItem(object);
-        item.setResultMessage(msg);
-
-        return item;
-    }
 
 }
