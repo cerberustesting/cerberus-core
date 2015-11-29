@@ -54,7 +54,7 @@
                                     <select class="form-control" id="selectBuild" name="build" style="width: 10%"></select>
                                     <label for="selectRevision" name="revisionField">Revision :</label>
                                     <select class="form-control" id="selectRevision" name="revision" style="width: 10%"></select>
-                                    <button type="button" class="btn btn-default" id="btnLoad" onclick="loadBCTable()" name="btnLoad">Load</button>
+                                    <button type="button" class="btn btn-default" id="btnLoad" onclick="loadEnvTable()" name="btnLoad">Load</button>
                                 </div>
                             </div>
                         </div>
@@ -65,10 +65,10 @@
 
             <div class="panel panel-default">
                 <div class="panel-heading card">
-                    <label id="shortcuts" name="listField">Build Content List</label>
+                    <label id="shortcuts" name="listField">Environment List</label>
                 </div>
-                <div class="panel-body" id="buildContentList">
-                    <table id="buildrevisionparametersTable" class="table table-hover display" name="buildrevisionparametersTable"></table>
+                <div class="panel-body" id="environmentList">
+                    <table id="environmentsTable" class="table table-hover display" name="environmentsTable"></table>
                     <div class="marginBottom20"></div>
                 </div>
             </div>

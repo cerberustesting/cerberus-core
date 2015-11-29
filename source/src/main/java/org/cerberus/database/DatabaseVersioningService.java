@@ -4274,6 +4274,64 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         // New updated Documentation.
         //-- ------------------------ 652-653
         SQLS = new StringBuilder();
+        SQLS.append("SELECT 1 FROM dual;");
+        SQLInstruction.add(SQLS.toString());
+        SQLS = new StringBuilder();
+        SQLS.append("SELECT 1 FROM dual;");
+        SQLInstruction.add(SQLS.toString());
+
+        // Adding Creator column into countryenvparam_log table, adding an index based on Build Revision and adding a Description field in countryenvparam table.
+        //-- ------------------------ 654-656
+        SQLS = new StringBuilder();
+        SQLS.append("ALTER TABLE `countryenvparam_log` ADD COLUMN `Creator` VARCHAR(10) NULL DEFAULT NULL AFTER `datecre`;");
+        SQLInstruction.add(SQLS.toString());
+        SQLS = new StringBuilder();
+        SQLS.append("ALTER TABLE `countryenvparam_log` ADD INDEX `FK_countryenvparam_log_02_IX` (`system` ASC, `Build` ASC, `Revision` ASC );");
+        SQLInstruction.add(SQLS.toString());
+        SQLS = new StringBuilder();
+        SQLS.append("ALTER TABLE `countryenvparam` ADD COLUMN `Description` VARCHAR(200) NOT NULL DEFAULT '' AFTER `Environment`;");
+        SQLInstruction.add(SQLS.toString());
+        SQLS = new StringBuilder();
+        SQLS.append("SELECT 1 FROM dual;");
+        SQLInstruction.add(SQLS.toString());
+
+        // Documentation for ReportExecutionByTag summaryTable and export data
+        //-- ------------------------ 657
+        SQLS = new StringBuilder();
+        SQLS.append("SELECT 1 FROM dual;");
+        SQLInstruction.add(SQLS.toString());
+
+        // Documentation for the test data library 
+        //-- ------------------------ 658
+        SQLS = new StringBuilder();
+        SQLS.append("SELECT 1 FROM dual;");
+        SQLInstruction.add(SQLS.toString());
+
+        // Documentation update
+        //-- ------------------------ 659
+        SQLS = new StringBuilder();
+        SQLS.append("SELECT 1 FROM dual;");
+        SQLInstruction.add(SQLS.toString());
+
+        // Adding Technical Key to testdatalibdata table
+        //-- ------------------------ 660
+        SQLS = new StringBuilder();
+        SQLS.append("ALTER TABLE `testdatalibdata` ");
+        SQLS.append(" ADD COLUMN `TestDataLibDataID` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT FIRST, ");
+        SQLS.append(" DROP PRIMARY KEY, ");
+        SQLS.append(" ADD PRIMARY KEY (`TestDataLibDataID`), ");
+        SQLS.append(" ADD UNIQUE INDEX `IX_testdatalibdata_01` (`TestDataLibID` ASC, `SubData` ASC); ");
+        SQLInstruction.add(SQLS.toString());
+
+        // Documentation for duplicate test data library entry
+        //-- ------------------------ 664
+        SQLS = new StringBuilder();
+        SQLS.append("SELECT 1 FROM dual;");
+        SQLInstruction.add(SQLS.toString());
+
+        // New updated Documentation.
+        //-- ------------------------ 665-666
+        SQLS = new StringBuilder();
         SQLS.append("DELETE FROM `documentation`;");
         SQLInstruction.add(SQLS.toString());
         SQLS = new StringBuilder();
@@ -4350,17 +4408,35 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLS.append(",('countryenvironmentparameters','URL','','en','URL','Root URL used to access the application. Equivalent to context root.<br>This path will always be added to the information specified in the testcase.<br><br>Example :<br><doc class=\"examples\"><table cellspacing=0 cellpadding=3><th class=\\'ex\\'>URL</th><th class=\\'ex\\'>Description</th><tr><td class=\\'ex\\'><code class=\\'doc-url\\'>/Cerberus-1.0.1-SNAPSHOT/</code></td><td class=\\'ex\\'>When opening <code class=\\'doc-url\\'>login.jsp</code>, Cerberus will open <code class=\\'doc-url\\'>/Cerberus-1.0.1-SNAPSHOT/login.jsp</code> URL</td></tr></table></doc>')");
         SQLS.append(",('countryenvironmentparameters','URLLOGIN','','en','URLLOGIN','Path to login page. This path is used only when calling the <code class=\\'doc-action\\'>openUrlLogin</code> Action.')");
         SQLS.append(",('countryenvparam','active','','en','Active','Define if the <code class=\\'doc-crbvvoca\\'>environment</code> is active or not. A <code class=\\'doc-crbvvoca\\'>test case</code> cannot be executed against an <code class=\\'doc-crbvvoca\\'>environment</code> that is not  active.')");
+        SQLS.append(",('countryenvparam','active','','fr','Actif','')");
         SQLS.append(",('countryenvparam','chain','','en','Chain','')");
+        SQLS.append(",('countryenvparam','chain','','fr','Chaine','')");
+        SQLS.append(",('countryenvparam','Description','','en','Description','')");
+        SQLS.append(",('countryenvparam','Description','','fr','Description','')");
         SQLS.append(",('countryenvparam','DistribList','','en','Recipent list of Notification Email','This is the list of email adresses that will receive the notification on any environment event.<br><br>In case that value is not feeded, the following parameters are used (depending on the related event) :<br><code class=\\'doc-parameter\\'>integration_notification_disableenvironment_to</code><br><code class=\\'doc-parameter\\'>integration_notification_newbuildrevision_to</code><br><code class=\\'doc-parameter\\'>integration_notification_newchain_to</code>')");
+        SQLS.append(",('countryenvparam','DistribList','','fr','Emails des destinataires','')");
         SQLS.append(",('countryenvparam','EMailBodyChain','','en','EMail Body on New Chain Executed Event','This is the Body of the mail that will be generated when a new Treatment has been executed on the <code class=\\'doc-crbvvoca\\'>environment</code>.<br><br><table cellspacing=0 cellpadding=3><th class=\\'ex\\' colspan=\\'2\\'>The following variable can be used</th><tr><td class=\\'ex\\'><code class=\\'doc-variable\\'>%SYSTEM%</code></td><td class=\\'ex\\'>System value</td></tr><tr><td class=\\'ex\\'><code class=\\'doc-variable\\'>%COUNTRY%</code></td><td class=\\'ex\\'>Country code</td></tr><tr><td class=\\'ex\\'><code class=\\'doc-variable\\'>%ENV%</code></td><td class=\\'ex\\'>Environment code</td></tr><tr><td class=\\'ex\\'><code class=\\'doc-variable\\'>%BUILD%</code></td><td class=\\'ex\\'>Current Build version name</td></tr><tr><td class=\\'ex\\'><code class=\\'doc-variable\\'>%REVISION%</code></td><td class=\\'ex\\'>Current Revision version name</td></tr><tr><td class=\\'ex\\'><code class=\\'doc-variable\\'>%CHAIN%</code></td><td class=\\'ex\\'>Chain value that has been executed</td></tr></table><br>In case that value is not feeded, the following parameter is used :<br><code class=\\'doc-parameter\\'>integration_notification_newchain_body</code>')");
+        SQLS.append(",('countryenvparam','EMailBodyChain','','fr','Corps du message en cas de nouvelle Chaine','')");
         SQLS.append(",('countryenvparam','EMailBodyDisableEnvironment','','en','EMail Body on Disable Environment Event','This is the Body of the mail that will be generated when <code class=\\'doc-crbvvoca\\'>environment</code> is disabled for installation purpose.<br><br><table cellspacing=0 cellpadding=3><th class=\\'ex\\' colspan=\\'2\\'>The following variable can be used</th><tr><td class=\\'ex\\'><code class=\\'doc-variable\\'>%SYSTEM%</code></td><td class=\\'ex\\'>System value</td></tr><tr><td class=\\'ex\\'><code class=\\'doc-variable\\'>%COUNTRY%</code></td><td class=\\'ex\\'>Country code</td></tr><tr><td class=\\'ex\\'><code class=\\'doc-variable\\'>%ENV%</code></td><td class=\\'ex\\'>Environment code</td></tr><tr><td class=\\'ex\\'><code class=\\'doc-variable\\'>%BUILD%</code></td><td class=\\'ex\\'>Current Build version name</td></tr><tr><td class=\\'ex\\'><code class=\\'doc-variable\\'>%REVISION%</code></td><td class=\\'ex\\'>Current Revision version name</td></tr></table><br>In case that value is not feeded, the following parameter is used :<br><code class=\\'doc-parameter\\'>integration_notification_disableenvironment_body</code>')");
+        SQLS.append(",('countryenvparam','EMailBodyDisableEnvironment','','fr','Corps du message en cas de désactivation','')");
         SQLS.append(",('countryenvparam','EMailBodyRevision','','en','EMail Body on New Build/Revision Event','This is the Body of the mail that will be generated when a new Build/Revision is installed on the <code class=\\'doc-crbvvoca\\'>environment</code>.<br><br><table cellspacing=0 cellpadding=3><th class=\\'ex\\' colspan=\\'2\\'>The following variable can be used</th><tr><td class=\\'ex\\'><code class=\\'doc-variable\\'>%SYSTEM%</code></td><td class=\\'ex\\'>System value</td></tr><tr><td class=\\'ex\\'><code class=\\'doc-variable\\'>%COUNTRY%</code></td><td class=\\'ex\\'>Country code</td></tr><tr><td class=\\'ex\\'><code class=\\'doc-variable\\'>%ENV%</code></td><td class=\\'ex\\'>Environment code</td></tr><tr><td class=\\'ex\\'><code class=\\'doc-variable\\'>%BUILD%</code></td><td class=\\'ex\\'>Current Build version name</td></tr><tr><td class=\\'ex\\'><code class=\\'doc-variable\\'>%REVISION%</code></td><td class=\\'ex\\'>Current Revision version name</td></tr><tr><td class=\\'ex\\'><code class=\\'doc-variable\\'>%BUILDCONTENT%</code></td><td class=\\'ex\\'>Detailed content of the sprint/revision.<br>That include the list of release of every application.</td></tr><tr><td class=\\'ex\\'><code class=\\'doc-variable\\'>%TESTRECAP%</code></td><td class=\\'ex\\'>A summary of test cases executed for that build and revision for the country.</td></tr><tr><td class=\\'ex\\'><code class=\\'doc-variable\\'>%TESTRECAPALL%</code></td><td class=\\'ex\\'>A summary of test cases executed for that build and revision for all the countries.</td></tr></table><br><br>In case that value is not feeded, the following parameter is used :<br><code class=\\'doc-parameter\\'>integration_notification_newbuildrevision_body</code>')");
+        SQLS.append(",('countryenvparam','EMailBodyRevision','','fr','Corps du message en cas de nouvelle Revision','')");
         SQLS.append(",('countryenvparam','maintenanceact','','en','Maintenance Activation','This is the activation flag of the daily maintenance period.<br>In case the flag is activated, start and end times needs to be specified.<br>During a maintenance period, the <code class=\\'doc-crbvvoca\\'>environment</code> is considered as disable and Cerberus will prevent the test case from beeing executed.')");
+        SQLS.append(",('countryenvparam','maintenanceact','','fr','Activation de la plage de maintenance','')");
         SQLS.append(",('countryenvparam','maintenanceend','','en','Maintenance End Time','This is the time when the daily maintenance period ends.<br>If start time is before end time then, any test execution request submitted between start and end will be discarded with an explicit error message that will report the maintenance period and time of the submission.<br>If start is after end then any test execution request submitted between end and start will be possible. All the overs will be discarded with an explicit error message that will report the maintenance period and time of the submission.<br><br>Examples :<br><doc class=\"examples\"><table cellspacing=0 cellpadding=3><th class=\\'ex\\'>flag</th><th class=\\'ex\\'>start</th><th class=\\'ex\\'>end</th><th class=\\'ex\\'>Result</th><tr><td class=\\'ex\\'>Yes</td><td class=\\'ex\\'>23:00:00</td><td class=\\'ex\\'><b>23:30:00</b></td><td class=\\'ex\\'>Any execution between 23H00 and 23H30 will be discarded.</td></tr><tr><td class=\\'ex\\'>Yes</td><td class=\\'ex\\'>23:00:00</td><td class=\\'ex\\'><b>02:30:00</b></td><td class=\\'ex\\'>Any execution between 23H00 and 2H30 will be discarded.</td></tr><tr><td class=\\'ex\\'>No</td><td class=\\'ex\\'>23:00:00</td><td class=\\'ex\\'><b>23:30:00</b></td><td class=\\'ex\\'>All executions will be authorised.</td></tr></table></doc>')");
+        SQLS.append(",('countryenvparam','maintenanceend','','fr','Heure de fin de la plage de maintenance','')");
         SQLS.append(",('countryenvparam','maintenancestr','','en','Maintenance Start Time','This is the time when the daily maintenance period starts.<br>If start is before end then, any test execution request submitted between start and end will be discarded with an explicit error message that will report the maintenance period and time of the submission.<br>If start is after end then any test execution request submitted between end and start will be possible. All the overs will be discarded with an explicit error message that will report the maintenance period and time of the submission.<br><br>Examples :<br><doc class=\"examples\"><table cellspacing=0 cellpadding=3><th class=\\'ex\\'>flag</th><th class=\\'ex\\'>start</th><th class=\\'ex\\'>end</th><th class=\\'ex\\'>Result</th><tr><td class=\\'ex\\'>Yes</td><td class=\\'ex\\'><b>23:00:00</b></td><td class=\\'ex\\'>23:30:00</td><td class=\\'ex\\'>Any execution between 23H00 and 23H30 will be discarded.</td></tr><tr><td class=\\'ex\\'>Yes</td><td class=\\'ex\\'><b>23:00:00</b></td><td class=\\'ex\\'>02:30:00</td><td class=\\'ex\\'>Any execution between 23H00 and 2H30 will be discarded.</td></tr><tr><td class=\\'ex\\'>No</td><td class=\\'ex\\'><b>23:00:00</b></td><td class=\\'ex\\'>23:30:00</td><td class=\\'ex\\'>All executions will be authorised.</td></tr></table></doc>')");
+        SQLS.append(",('countryenvparam','maintenancestr','','fr','Heure de début de la plage de maintenance','')");
+        SQLS.append(",('countryenvparam','system','','en','System','')");
+        SQLS.append(",('countryenvparam','system','','fr','Système','')");
         SQLS.append(",('countryenvparam','Type','','en','Type','The type of the <code class=\\'doc-crbvvoca\\'>environment</code> define what is the <code class=\\'doc-crbvvoca\\'>environment</code> used for.<br><br><p>\\'STD\\' Standard Testing is allowed in the <code class=\\'doc-crbvvoca\\'>environment</code>.</p><p>\\'COMPARISON\\' Only Comparison test case is allowed to be executed on the <code class=\\'doc-crbvvoca\\'>environment</code>. No other test cases is allowed to execute. This is to avoid modifying any data on the <code class=\\'doc-crbvvoca\\'>environment</code> and not beeing able to analyse easilly the differences between 2 Build/Revisions.</p>')");
+        SQLS.append(",('countryenvparam','Type','','fr','Type','')");
+        SQLS.append(",('countryenvparam_log','Creator','','en','User','')");
+        SQLS.append(",('countryenvparam_log','Creator','','fr','Utilisateur','')");
         SQLS.append(",('countryenvparam_log','datecre','','en','Date & Time','')");
+        SQLS.append(",('countryenvparam_log','datecre','','fr','Date & Heure','')");
         SQLS.append(",('countryenvparam_log','Description','','en','Description','')");
+        SQLS.append(",('countryenvparam_log','Description','','fr','Description','')");
         SQLS.append(",('dataTable','colVis','','en','Show/Hide columns','')");
         SQLS.append(",('dataTable','colVis','','fr','Afficher/Cacher les colonnes','')");
         SQLS.append(",('dataTable','sEmptyTable','','en','No data available in table','')");
@@ -4422,13 +4498,17 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLS.append(",('host','Server','','en','Server','This is used to define different host on different server for resilence purpose. You can use that for PRIMARY and BACKUP access.')");
         SQLS.append(",('host','Session','','en','Session','')");
         SQLS.append(",('invariant','COUNTRY','','en','Country','A <code class=\\'doc-crbvvoca\\'>country</code> is a declination of a <code class=\\'doc-crbvvoca\\'>system</code> in an <code class=\\'doc-crbvvoca\\'>environment</code> with a specific configuration.<br>This is called <code class=\\'doc-crbvvoca\\'>country</code> because for <code class=\\'doc-crbvvoca\\'>systems</code> that support multiple countries, every <code class=\\'doc-crbvvoca\\'>country</code> is deployed on different <code class=\\'doc-crbvvoca\\'>environments</code>. Each of them can have the same version of the <code class=\\'doc-crbvvoca\\'>application</code> but with different configuration. As a consequence, some <code class=\\'doc-crbvvoca\\'>test case</code> may or may not be relevant on that <code class=\\'doc-crbvvoca\\'>country</code>.')");
+        SQLS.append(",('invariant','COUNTRY','','fr','Pays','Un <code class=\\'doc-crbvvoca\\'>pays</code> est une declinaison d\\'un <code class=\\'doc-crbvvoca\\'>système</code> dans un <code class=\\'doc-crbvvoca\\'>environnement</code> avec une configuration specifique.<br>Ca porte le nom de <code class=\\'doc-crbvvoca\\'>pays</code> car pour les <code class=\\'doc-crbvvoca\\'>systèmes</code> qui supportent plusieurs pays, chaque <code class=\\'doc-crbvvoca\\'>pays</code> est deployé sur un <code class=\\'doc-crbvvoca\\'>environnement</code> different. Chacun d\\'entre eux peut avoir la même version de l\\'<code class=\\'doc-crbvvoca\\'>application</code> mais avec differentes configuration. En conséquence, certain <code class=\\'doc-crbvvoca\\'>cas de test</code> peuvent ou non etre pertinant sur ce <code class=\\'doc-crbvvoca\\'>pays</code>.')");
         SQLS.append(",('invariant','ENVIRONMENT','','en','Environment','')");
+        SQLS.append(",('invariant','ENVIRONMENT','','fr','Environnement','')");
         SQLS.append(",('invariant','environmentgp','','en','Env Gp','')");
         SQLS.append(",('invariant','FILTERNBDAYS','','en','Nb Days','Number of days to Filter the history table in the integration status.')");
         SQLS.append(",('invariant','GROUP','','en','Group','The group is a property of a <code class=\\'doc-crbvvoca\\'>test case</code> that can take the following values : <br><br><b>AUTOMATED</b> : The <code class=\\'doc-crbvvoca\\'>test case</code> is fully automated and does not require any manual action.<br><b>MANUAL</b> : The <code class=\\'doc-crbvvoca\\'>test case</code> has to be manually executed.<br><b>PRIVATE</b> : The <code class=\\'doc-crbvvoca\\'>test case</code> exist for technical reason and will never appear on the reporting area. For example : <code class=\\'doc-fixed\\'>Pre Testing</code> test cases that are used for login purpose should all be PRIVATE.<br><b>PROCESS</b> : The <code class=\\'doc-crbvvoca\\'>test case</code> is related to specific process and needs some intermediate batch treatment to be fully executed.<br><b>COMPARATIVE</b> : <code class=\\'doc-crbvvoca\\'>Test cases</code> that compare the results of 2 batch executions inside the database by SQL requests.')");
         SQLS.append(",('invariant','GROUP','','fr','Groupe','')");
         SQLS.append(",('invariant','PRIORITY','','en','Priority','It is the priority level of the functionnality which is tested.')");
         SQLS.append(",('invariant','PRIORITY','','fr','Priorité','')");
+        SQLS.append(",('invariant','SYSTEM','','en','System','')");
+        SQLS.append(",('invariant','SYSTEM','','fr','Système','')");
         SQLS.append(",('logevent','action','','en','Action','Type of the action performed')");
         SQLS.append(",('logevent','action','','fr','Action','Type de l\\'action effetué')");
         SQLS.append(",('logevent','localip','','en','Local IP','IP of the Cerberus server that provided the service.')");
@@ -4513,6 +4593,16 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLS.append(",('page_deploytype','button_edit','','fr','Modifier le Type de Deploiement','')");
         SQLS.append(",('page_deploytype','title','','en','DEPLOYMENT TYPE','This page can be used in order to manage the deployment types.')");
         SQLS.append(",('page_deploytype','title','','fr','TYPE DE DEPLOIEMENT','Cette page permet de gérer et créer des types de deploiements.')");
+        SQLS.append(",('page_environent','message_delete','','en','Do you want to delete environment %ENVIRONMENT% from country %COUNTRY% and system %SYSTEM% ?',NULL)");
+        SQLS.append(",('page_environent','message_delete','','fr','Confirmez vous la suppression de l\\'environnement %ENVIRONMENT% du pays %COUNTRY% du système %SYSTEM% ?',NULL)");
+        SQLS.append(",('page_environment','button_create','','en','Create a new Environment','')");
+        SQLS.append(",('page_environment','button_create','','fr','Créer un nouvel Environnement','')");
+        SQLS.append(",('page_environment','button_delete','','en','Delete Environment','')");
+        SQLS.append(",('page_environment','button_delete','','fr','Supprimer l\\'Environnement','')");
+        SQLS.append(",('page_environment','button_edit','','en','Edit Environment','')");
+        SQLS.append(",('page_environment','button_edit','','fr','Modifier l\\'Environnement','')");
+        SQLS.append(",('page_environment','title','','en','ENVIRONMENT','This page can be used to manage the environments.')");
+        SQLS.append(",('page_environment','title','','fr','ENVIRONNEMENT','Cette page permet de gérer et créer des environnements.')");
         SQLS.append(",('page_executiondetail','buildrevision','','en','BuildRev','Build and Revision of the <code class=\\'doc-crbvvoca\\'>environment</code> of the <code class=\\'doc-crbvvoca\\'>system</code> of the <code class=\\'doc-crbvvoca\\'>application</code> that has been tested.')");
         SQLS.append(",('page_executiondetail','buildrevisionlink','','en','BuildRev Linked','Build and Revision of the <code class=\\'doc-crbvvoca\\'>environment</code> of the linked <code class=\\'doc-crbvvoca\\'>system</code>. The linked systems are defined in the \\'Environment Dependancy\\' section of the <code class=\\'doc-crbvvoca\\'>environment</code> page.')");
         SQLS.append(",('page_executiondetail','SeleniumLog','','en','Selenium Log','Link to the selenium log file')");
@@ -4530,6 +4620,7 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLS.append(",('page_global','btn_add','','fr','Ajouter','')");
         SQLS.append(",('page_global','btn_cancel','','en','Cancel','')");
         SQLS.append(",('page_global','btn_cancel','','fr','Annuler','')");
+        SQLS.append(",('page_global','btn_export','','en','Export','')");
         SQLS.append(",('page_global','buttonAdd','','en','Save','')");
         SQLS.append(",('page_global','buttonAdd','','fr','Sauvegarder','')");
         SQLS.append(",('page_global','buttonClose','','en','Close','')");
@@ -4544,6 +4635,9 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLS.append(",('page_global','columnAction','','fr','Actions','')");
         SQLS.append(",('page_global','deleteMessage','','en','Do you want to delete %ENTRY% %TABLE% ?','')");
         SQLS.append(",('page_global','deleteMessage','','fr','Voulez vous supprimer le %TABLE% %ENTRY% ?','')");
+        SQLS.append(",('page_global','export_data','','en','Export Data','')");
+        SQLS.append(",('page_global','filters','','en','Filters','')");
+        SQLS.append(",('page_global','filters','','fr','Filtres','')");
         SQLS.append(",('page_global','footer_bug','','en','Open a bug or ask for any new feature <a target=\"_blank\"  href=\"%LINK%\">here</a>.','')");
         SQLS.append(",('page_global','footer_bug','','fr','Ouvrir un bug ou envoyer une demande d\\'évolution <a target=\"_blank\"  href=\"%LINK%\">ici</a>.','')");
         SQLS.append(",('page_global','footer_text','','en','Page started generating on %DATE% by %VERSION% in %ENV% and took %TIMING%ms','')");
@@ -4670,6 +4764,7 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLS.append(",('page_project','button_edit','','fr','Modifier le Projet','')");
         SQLS.append(",('page_project','title','','en','PROJECT','This page can be used in order to manage the projets.')");
         SQLS.append(",('page_project','title','','fr','PROJET','Cette page permet de gérer et créer des projets.')");
+        SQLS.append(",('page_reportbytag','btn_select_table','','en','Select table','')");
         SQLS.append(",('page_reportbytag','button_load','','en','Load','')");
         SQLS.append(",('page_reportbytag','button_load','','fr','Charger','')");
         SQLS.append(",('page_reportbytag','button_reload','','en','Reload','')");
@@ -4684,6 +4779,7 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLS.append(",('page_reportbytag','report_list','','fr','Liste','Une liste de toute les executions de cas de test par environnement, pays et navigateur')");
         SQLS.append(",('page_reportbytag','report_status','','en','Report by Status','A report containing the number of execution for each status with their percentage and a chart associated')");
         SQLS.append(",('page_reportbytag','report_status','','fr','Rapport par Status','Rapport contenant le nombre d\\'execution pour chaque status avec leur pourcentage et un graphique associé')");
+        SQLS.append(",('page_reportbytag','summary_table','','en','Summary Table','Summary of the total and percentages values for each result code (OK, KO, FA, NA, NE, PE, CA). Table is sorted by Application, Country and Environment.')");
         SQLS.append(",('page_reportbytag','title','','en','Execution reporting by tag','This page generate a report of all the execution for a choosen tag')");
         SQLS.append(",('page_reportbytag','title','','fr','Rapport d\\'execution par Tag','Cette page génère un rapport de toutes les executions pour un tag choisi')");
         SQLS.append(",('page_robot','button_create','','en','Create new Robot','')");
@@ -4752,6 +4848,7 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLS.append(",('page_testdatalib','page_title','','en','Test Data Library','')");
         SQLS.append(",('page_testdatalib','title','','en','Test Data Library','<p>The <u>Test Data Library</u> is a repository of test data that centralises and eases the Test Data Management process. Additionally, it eases the creation of test cases because it allows the reuse of data that is recurrently defined. </p> <p>Cerberus allows the definition of three types of entries: <b>STATIC</b>, <b>SQL</b> and <b>SOAP</b>.</p><p>The definition of each library entry comprises two steps: <ul><li>The definition of the library entry. </li><li>The definition of its sub-data entries.</li></ul></p>')");
         SQLS.append(",('page_testdatalib','tooltip_delete','','en','Delete entry.','')");
+        SQLS.append(",('page_testdatalib','tooltip_duplicateEntry','','en','Duplicate this entry.','')");
         SQLS.append(",('page_testdatalib','tooltip_editentry','','en','Edit entry.','')");
         SQLS.append(",('page_testdatalib','tooltip_editsubdata','','en','Edit sub-data entries.','')");
         SQLS.append(",('page_testdatalib','tooltip_gettestcases','','en','Get list of test cases that use this entry.','')");
@@ -4767,8 +4864,12 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLS.append(",('page_testdatalib_m_createlib','m_tab2_text','','en','Sub-data ','')");
         SQLS.append(",('page_testdatalib_m_createlib','m_tab2_text_entries','','en','entries','')");
         SQLS.append(",('page_testdatalib_m_createlib','title','','en','Create New Test Data Library Entry','')");
+        SQLS.append(",('page_testdatalib_m_createlib','tooltip_defaultsubdata','','en','This is the default sub-data entry. It is created by default when a library is created.','')");
         SQLS.append(",('page_testdatalib_m_createupdatelib','lbl_choose_group','','en','Choose an existing group','<p>Group is a name that associates entries that are at some extent correlated. This options allows the user to select a name that was previously used to group other library entries from the selected type.</p> ')");
         SQLS.append(",('page_testdatalib_m_createupdatelib','lbl_enter_group','','en','or enter new group','<p>Group is a name that associates entries that are at some extent correlated. This options allows the user to enter a new name that can be used to group entries from the selected type.</p> ')");
+        SQLS.append(",('page_testdatalib_m_createupdatelib','title_soap_configurations','','en','SOAP configurations','')");
+        SQLS.append(",('page_testdatalib_m_createupdatelib','title_sql_configurations','','en','SQL configurations','')");
+        SQLS.append(",('page_testdatalib_m_duplicatelib','title','','en','Duplicate Test Data Library','')");
         SQLS.append(",('page_testdatalib_m_gettestcases','group_title','','en','Test cases affected by this entry','')");
         SQLS.append(",('page_testdatalib_m_gettestcases','nrProperties','','en','#properties:','')");
         SQLS.append(",('page_testdatalib_m_gettestcases','nrTestCases','','en','#test cases:','')");
@@ -4779,6 +4880,7 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLS.append(",('page_testdatalib_m_managetestdatalibdata','link_add_new','','en','Add new sub-data','')");
         SQLS.append(",('page_testdatalib_m_managetestdatalibdata','link_add_new_title','','en','Add a new row in the list of sub-data entries.','')");
         SQLS.append(",('page_testdatalib_m_managetestdatalibdata','title','','en','Manage list of sub-data entries','')");
+        SQLS.append(",('page_testdatalib_m_managetestdatalibdata','tooltip_defaultsubdata','','en','This is the default sub-data entry. It cannot be deleted nor its name can be modified.','')");
         SQLS.append(",('page_testdatalib_m_updatelib','title','','en','Edit Test Data Library Entry','')");
         SQLS.append(",('page_testdatalib_m_upload','btn_cancel','','en','Cancel','')");
         SQLS.append(",('page_testdatalib_m_upload','btn_choose','','en','Choose XML file','')");
@@ -5009,77 +5111,14 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLS.append(",('testdatalib','type','','en','Type','<p>Entry Type - Cerberus allows the definition of three types: STATIC, SQL and SOAP.</p><table border=\\'1\\'> <tr><th class=\\'ex\\'>Type</th><th class=\\'ex\\'>Description</th></tr> <tr><td>STATIC</td><td>Static test data - in each execution the values used by the test cases do not vary.</td></tr> <tr><td>SQL</td><td> Test data obtained from a SQL execution – values depend on what is stored in the database.</td></tr> <tr><td>SOAP</td><td>Test data obtained from a SOAP call – values depend on the web service implementation.</td></tr> </table>')");
         SQLS.append(",('testdatalibdata','column','','en','Column','<p>Column name representing the value that should be obtained after executing a SQL instruction (select).</p>')");
         SQLS.append(",('testdatalibdata','description','','en','Description','<p>Textual description for the sub-data entry.</p>')");
+        SQLS.append(",('testdatalibdata','parsingAnswer','','en','Parsing Answer','<p>XPath expression that allows the user to parse data from the SOAP response.</p>')");
         SQLS.append(",('testdatalibdata','subData','','en','Sub-data ','<p>Unique name for a sub-data entry. For a test data library entry, this value should be unique.</p>')");
         SQLS.append(",('testdatalibdata','value','','en','Value','<p>STATIC value.</p>')");
-        SQLS.append(",('testdatalibdata1','parsingAnswer','','en','Parsing Answer','<p>XPath expression that allows the user to parse data from the SOAP response.</p>')");
         SQLS.append(",('user','DefaultSystem','','en','Default System','This is the default <code class=\\'doc-crbvvoca\\'>system</code> the user works on the most. It is used to default the perimeter of <code class=\\'doc-crbvvoca\\'>test case</code> or <code class=\\'doc-crbvvoca\\'>applications</code> displayed on some Cerberus pages.')");
         SQLS.append(",('user','Team','','en','Team','This is the team of the user.')");
         SQLS.append(",('usergroup','GroupName','','en','Group Name','Authorities are managed by group. In order to be granted to a set of feature, you must belong to the corresponding group.<br>Every user can of course belong to as many group as necessary in order to get access to as many feature as required.<br>In order to get the full access to the system you must belong to every group.<br>Some groups are linked together on the test perimeter and integration perimeter.<br><br><b>Test perimeter :</b><br><br><code class=\\'doc-fixed\\'>TestRO</code>: Has read only access to the information related to test cases and also has access to execution reporting options.<br><br><code class=\\'doc-fixed\\'>Test</code>: Can modify non WORKING test cases but cannot delete test cases.<br><br><code class=\\'doc-fixed\\'>TestAdmin</code>: Can modify or delete any test case (including Pre Testing test cases). Can also create or delete a test.<br><br>The minimum group you need to belong is <code class=\\'doc-fixed\\'>TestRO</code> that will give you access in read only to all test data (including its execution reporting page).<br>If you want to be able to modify the testcases (except the WORKING ones), you need <code class=\\'doc-fixed\\'>Test</code> group on top of <code class=\\'doc-fixed\\'>TestRO</code> group.<br>If you want the full access to all testcase (including beeing able to delete any testcase), you will need <code class=\\'doc-fixed\\'>TestAdmin</code> on top of <code class=\\'doc-fixed\\'>TestRO</code> and <code class=\\'doc-fixed\\'>Test</code> group.<br><br><b>Test Execution perimeter :</b><br><br><code class=\\'doc-fixed\\'>RunTest</code>: Can run both Manual and Automated test cases from GUI.<br><br><b>Integration perimeter :</b><br><br><code class=\\'doc-fixed\\'>IntegratorRO</code>: Has access to the integration status.<br><br><code class=\\'doc-fixed\\'>Integrator</code>: Can add an application. Can change parameters of the environments.<br><br><code class=\\'doc-fixed\\'>IntegratorNewChain</code>: Can register the end of the chain execution. Has read only access to the other informations on the same page.<br><br><code class=\\'doc-fixed\\'>IntegratorDeploy</code>: Can disable or enable environments and register new build / revision.<br><br>The minimum group you need to belong is <code class=\\'doc-fixed\\'>IntegratorRO</code> that will give you access in read only to all environment data.<br>If you want to be able to modify the environment data, you need <code class=\\'doc-fixed\\'>Integrator</code> group on top of <code class=\\'doc-fixed\\'>IntegratorRO</code> group.<br><code class=\\'doc-fixed\\'>IntegratorNewChain</code> and <code class=\\'doc-fixed\\'>IntegratorDeploy</code> are used on top of <code class=\\'doc-fixed\\'>Integrator</code> Group to be able to create a new chain on an environment or perform a deploy operation.<br><br><b>Administration perimeter :</b><br><br><code class=\\'doc-fixed\\'>Administrator</code>: Can create, modify or delete users. Has access to log Event and Database Maintenance. Can change Parameter values.')");
         SQLInstruction.add(SQLS.toString());
 
-        // Adding Creator column into countryenvparam_log table, adding an index based on Build Revision and adding a Description field in countryenvparam table.
-        //-- ------------------------ 654-656
-        SQLS = new StringBuilder();
-        SQLS.append("ALTER TABLE `countryenvparam_log` ADD COLUMN `Creator` VARCHAR(10) NULL DEFAULT NULL AFTER `datecre`;");
-        SQLInstruction.add(SQLS.toString());
-        SQLS = new StringBuilder();
-        SQLS.append("ALTER TABLE `countryenvparam_log` ADD INDEX `FK_countryenvparam_log_02_IX` (`system` ASC, `Build` ASC, `Revision` ASC );");
-        SQLInstruction.add(SQLS.toString());
-        SQLS = new StringBuilder();
-        SQLS.append("ALTER TABLE `countryenvparam` ADD COLUMN `Description` VARCHAR(200) NOT NULL DEFAULT '' AFTER `Environment`;");
-        SQLInstruction.add(SQLS.toString());
-        SQLS = new StringBuilder();
-        SQLS.append("INSERT INTO `documentation` (`DocTable`, `DocField`, `DocValue`, `Lang`, `DocLabel`, `DocDesc`) VALUES ");
-        SQLS.append("  ('countryenvparam', 'Description', '', 'en', 'Description', '') ");
-        SQLS.append(" ,('countryenvparam', 'Description', '', 'fr', 'Description', '') ");
-        SQLS.append(" ,('countryenvparam_log', 'Creator', '', 'en', 'User', '') ");
-        SQLS.append(" ,('countryenvparam_log', 'Creator', '', 'fr', 'Utilisateur', '') ");
-        SQLInstruction.add(SQLS.toString());
-
-        // Documentation for ReportExecutionByTag summaryTable and export data
-        //-- ------------------------ 657
-        SQLS = new StringBuilder();
-        SQLS.append("INSERT INTO `documentation` VALUES ");
-        SQLS.append(" ('page_reportbytag', 'summary_table','','en','Summary Table', \"Summary of the total and percentages values for each result code (OK, KO, FA, NA, NE, PE, CA). Table is sorted by Application, Country and Environment.\") ");
-        SQLS.append(", ('page_global', 'export_data','','en','Export Data', \"\") ");
-        SQLS.append(", ('page_global', 'btn_export','','en','Export', \"\") ");
-        SQLS.append(", ('page_reportbytag', 'btn_select_table','','en','Select table', \"\") ");
-        SQLInstruction.add(SQLS.toString());
-
-        // Documentation for the test data library 
-        //-- ------------------------ 658
-        SQLS = new StringBuilder();
-        SQLS.append("INSERT INTO `documentation` VALUES ");
-        SQLS.append(" ('page_testdatalib_m_createlib', 'tooltip_defaultsubdata','','en','This is the default sub-data entry. It is created by default when a library is created.', \"\") ");
-        SQLS.append(", ('page_testdatalib_m_createupdatelib', 'title_soap_configurations','','en','SOAP configurations', \"\") ");
-        SQLS.append(", ('page_testdatalib_m_createupdatelib', 'title_sql_configurations','','en','SQL configurations', \"\") ");
-        SQLS.append(", ('page_testdatalib_m_managetestdatalibdata', 'tooltip_defaultsubdata','','en','This is the default sub-data entry. It cannot be deleted nor its name can be modified.', \"\") ");
-        SQLInstruction.add(SQLS.toString());
-
-        // Documentation update
-        //-- ------------------------ 659
-        SQLS = new StringBuilder();
-        SQLS.append("UPDATE `documentation` SET `DocTable`='testdatalibdata' WHERE `DocTable`='testdatalibdata1' and`DocField`='parsingAnswer' and`DocValue`='' and`Lang`='en'");
-        SQLInstruction.add(SQLS.toString());
-
-        // Adding Technical Key to testdatalibdata table
-        //-- ------------------------ 660
-        SQLS = new StringBuilder();
-        SQLS.append("ALTER TABLE `testdatalibdata` ");
-        SQLS.append(" ADD COLUMN `TestDataLibDataID` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT FIRST, ");
-        SQLS.append(" DROP PRIMARY KEY, ");
-        SQLS.append(" ADD PRIMARY KEY (`TestDataLibDataID`), ");
-        SQLS.append(" ADD UNIQUE INDEX `IX_testdatalibdata_01` (`TestDataLibID` ASC, `SubData` ASC); ");
-        SQLInstruction.add(SQLS.toString());
-
-         // Documentation for duplicate test data library entry
-        //-- ------------------------ 664
-        SQLS = new StringBuilder();
-        SQLS.append("INSERT INTO `documentation` VALUES ");
-        SQLS.append(" ('page_testdatalib', 'tooltip_duplicateEntry','','en','Duplicate this entry.', \"\") ");
-        SQLS.append(", ('page_testdatalib_m_duplicatelib', 'title','','en','Duplicate Test Data Library', \"\") "); 
-        SQLInstruction.add(SQLS.toString());        
-        
         return SQLInstruction;
     }
 

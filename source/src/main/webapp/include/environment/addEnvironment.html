@@ -1,15 +1,15 @@
-<!--Add a Build Content -->
-<div data-backdrop="static" class="modal fade center" id="addBrpModal" tabindex="-1" role="dialog" aria-labelledby="addBrpModalLabel" aria-hidden="true">
-    <div class="modal-dialog nomargintop nomarginbottom">
-        <div class="modal-content">
+<!--Add an Environment  -->
+<div data-backdrop="static" class="modal fade center width800" id="addEnvModal" tabindex="-1" role="dialog" aria-labelledby="addEnvModalLabel" aria-hidden="true">
+    <div class="modal-dialog nomargintop nomarginbottom width800">
+        <div class="modal-content width800">
             <div class="modal-header">
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                <h4 class="modal-title" id="addBrpModalLabel" name="createBrpField">Create Build Content</h4>
+                <h4 class="modal-title" id="addEnvModalLabel" name="createEnvField">Create Environment</h4>
             </div>
             <div class="modal-body">
 
                 <!--add form-->
-                <form id="addBrpModalForm" name="addBrpModalForm"  title="Add Aplication" role="form">
+                <form id="addEnvModalForm" name="addEnvModalForm"  title="Add Environment" role="form">
                     <div class="container-fluid center">
                          <!-- messages area-->
                          <div id="DialogMessagesArea">
@@ -21,13 +21,23 @@
                             </div>
                         </div>
                         <div class="row">
-                            <div class="form-group col-xs-3">
-                                <label for="id" name="idField">Build Content ID</label>
-                                <input type="text" class="form-control" name="id" id="id" aria-describedby="basic-addon1" readonly>
+                            <div class="form-group col-xs-6">
+                                <label for="system" name="systemField">System</label>
+                                <input type="text" class="form-control" name="system" id="system" aria-describedby="basic-addon1" readonly>
                             </div>
-                            <div class="form-group col-xs-9">
-                                <label for="datecre" name="datecreField">Creation Date</label>
-                                <input type="text" class="form-control" name="datecre" id="datecre" aria-describedby="basic-addon1" readonly>
+                            <div class="form-group col-xs-3">
+                                <label for="country" name="countryField">Country</label>
+                                <input type="text" class="form-control" name="country" id="country" aria-describedby="basic-addon1" readonly>
+                            </div>
+                            <div class="form-group col-xs-3">
+                                <label for="environment" name="environmentField">Environment</label>
+                                <input type="text" class="form-control" name="environment" id="environment" aria-describedby="basic-addon1" readonly>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="form-group col-xs-12">
+                                <label for="description" name="descriptionField">Description</label>
+                                <input type="text" class="form-control" name="description" id="description" aria-describedby="basic-addon1">
                             </div>
                         </div>
                         <div class="row">
@@ -39,29 +49,6 @@
                             <div class="form-group col-xs-6">
                                 <label for="revision" name="revisionField">Revision</label>
                                 <select class="form-control"  id="revision" name="revision">
-                                </select>
-                            </div>
-                        </div>
-                        <div class="row">
-                            <div class="form-group col-xs-6">
-                                <label for="application" name="applicationField">Application</label>
-                                <select class="form-control"  id="application" name="application">
-                                </select>
-                            </div>
-                            <div class="form-group col-xs-6">
-                                <label for="release" name="releaseField">Release</label>
-                                <input type="text" class="form-control" name="release" id="release" aria-describedby="basic-addon1" maxlength="40">
-                            </div>
-                        </div>
-                        <div class="row">
-                            <div class="form-group col-xs-6">
-                                <label for="owner" name="ownerField">Owner</label>
-                                <select class="form-control"  id="owner" name="releaseowner">
-                                </select>
-                            </div>
-                            <div class="form-group col-xs-6">
-                                <label for="project" name="projectField">Project</label>
-                                <select class="form-control"  id="project" name="project">
                                 </select>
                             </div>
                         </div>
@@ -113,7 +100,7 @@
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-default" data-dismiss="modal" name="buttonClose">Close</button>
-                <button type="button" id="addBrpButton" class="btn btn-primary" name="buttonAdd">Save</button>
+                <button type="button" id="addEnvButton" class="btn btn-primary" name="buttonAdd">Save</button>
             </div>
         </div>
     </div>

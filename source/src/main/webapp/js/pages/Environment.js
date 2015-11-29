@@ -27,18 +27,18 @@ $.when($.getScript("js/pages/global/global.js")).then(function () {
 function initBuildContentPage() {
     displayPageLabel();
     // handle the click for specific action buttons
-    $("#addBrpButton").click(saveNewBrpHandler);
-    $("#editBrpButton").click(saveUpdateBrpHandler);
+    $("#addEnvButton").click(saveNewEnvHandler);
+    $("#editEnvButton").click(saveUpdateEnvHandler);
 
     //clear the modals fields when closed
-    $('#addBrpModal').on('hidden.bs.modal', addBrpModalCloseHandler);
-    $('#editBrpModal').on('hidden.bs.modal', editBrpModalCloseHandler);
+    $('#addEnvModal').on('hidden.bs.modal', addEnvModalCloseHandler);
+    $('#editEnvModal').on('hidden.bs.modal', editEnvModalCloseHandler);
 
     //if the build or revision is passed as a url parameter, then it loads the table
     var urlBuild = GetURLParameter('build');
     var urlRevision = GetURLParameter('revision');
 
-    var table = loadBCTable();
+    var table = loadEnvTable();
     table.fnSort([3, 'asc']);
 
 }
@@ -47,26 +47,23 @@ function displayPageLabel() {
     var doc = new Doc();
 
     displayHeaderLabel(doc);
-    $("#pageTitle").html(doc.getDocLabel("page_buildcontent", "title"));
-    $("#title").html(doc.getDocOnline("page_buildcontent", "title"));
-    $("[name='createBrpField']").html(doc.getDocLabel("page_buildcontent", "button_create"));
-    $("[name='confirmationField']").html(doc.getDocLabel("page_buildcontent", "button_delete"));
-    $("[name='editBrpField']").html(doc.getDocLabel("page_buildcontent", "button_edit"));
+    $("#pageTitle").html(doc.getDocLabel("page_environment", "title"));
+    $("#title").html(doc.getDocOnline("page_environment", "title"));
+    $("[name='createEnvField']").html(doc.getDocLabel("page_environment", "button_create"));
+    $("[name='confirmationField']").html(doc.getDocLabel("page_environment", "button_delete"));
+    $("[name='editEnvField']").html(doc.getDocLabel("page_environment", "button_edit"));
     $("[name='buttonAdd']").html(doc.getDocLabel("page_global", "buttonAdd"));
     $("[name='buttonClose']").html(doc.getDocLabel("page_global", "buttonClose"));
     $("[name='buttonConfirm']").html(doc.getDocLabel("page_global", "buttonConfirm"));
     $("[name='buttonDismiss']").html(doc.getDocLabel("page_global", "buttonDismiss"));
-    $("[name='filtersField']").html(doc.getDocOnline("page_buildcontent", "filters"));
-    $("[name='shortcutsField']").html(doc.getDocOnline("page_buildcontent", "standardfilters"));
-    $("[name='listField']").html(doc.getDocOnline("page_buildcontent", "list"));
+    $("[name='filtersField']").html(doc.getDocOnline("page_global", "filters"));
     $("[name='btnLoad']").html(doc.getDocLabel("page_global", "buttonLoad"));
-    $("[name='btnLoadPending']").html(doc.getDocLabel("page_buildcontent", "buttonLoadPending"));
-    $("[name='btnLoadLatest']").html(doc.getDocLabel("page_buildcontent", "buttonLoadLatest"));
-    $("[name='btnLoadAll']").html(doc.getDocLabel("page_buildcontent", "buttonLoadAll"));
 
-    $("[name='idField']").html(doc.getDocOnline("buildrevisionparameters", "id"));
-    $("[name='buildField']").html(doc.getDocOnline("buildrevisionparameters", "Build"));
-    $("[name='revisionField']").html(doc.getDocOnline("buildrevisionparameters", "Revision"));
+    $("[name='countryField']").html(doc.getDocOnline("invariant", "COUNTRY"));
+    $("[name='environmentField']").html(doc.getDocOnline("invariant", "ENVIRONMENT"));
+    $("[name='buildField']").html(doc.getDocOnline("buildrevisioninvariant", "versionname01"));
+    $("[name='revisionField']").html(doc.getDocOnline("buildrevisioninvariant", "versionname02"));
+
     $("[name='datecreField']").html(doc.getDocOnline("buildrevisionparameters", "datecre"));
     $("[name='applicationField']").html(doc.getDocOnline("buildrevisionparameters", "application"));
     $("[name='releaseField']").html(doc.getDocOnline("buildrevisionparameters", "Release"));
@@ -124,45 +121,51 @@ function appendBuildList(selectName, level, defaultValue) {
     });
 }
 
-function loadBCTable() {
+function loadEnvTable() {
+    var selectCountry = $("#selectCountry").val();
+    var selectEnvironment = $("#selectEnvironment").val();
     var selectBuild = $("#selectBuild").val();
     var selectRevision = $("#selectRevision").val();
-    var selectApplication = $("#selectApplication").val();
 
-    var CallParam = 'build=' + encodeURIComponent(selectBuild) + '&revision=' + encodeURIComponent(selectRevision) + '&application=' + encodeURIComponent(selectApplication);
+    var CallParam = 'country=' + encodeURIComponent(selectCountry) + '&environment=' + encodeURIComponent(selectEnvironment) + '&build=' + encodeURIComponent(selectBuild) + '&revision=' + encodeURIComponent(selectRevision);
     window.history.pushState('Environment', '', 'Environment1.jsp?' + CallParam);
 
     //clear the old report content before reloading it
-    $("#buildContentList").empty();
-    $("#buildContentList").html('<table id="buildrevisionparametersTable" class="table table-hover display" name="buildrevisionparametersTable">\n\
+    $("#environmentList").empty();
+    $("#environmentList").html('<table id="environmentsTable" class="table table-hover display" name="environmentsTable">\n\
                                             </table><div class="marginBottom20"></div>');
 
     //configure and create the dataTable
     var param = "?system=" + getUser().defaultSystem;
-    if (selectRevision !== 'ALL') {
-        param = param + "&revision=" + selectRevision;
+    if (selectEnvironment !== 'ALL') {
+        param = param + "&environment=" + selectEnvironment;
+    }
+    if (selectCountry !== 'ALL') {
+        param = param + "&country=" + selectCountry;
     }
     if (selectBuild !== 'ALL') {
         param = param + "&build=" + selectBuild;
     }
-    if (selectApplication !== 'ALL') {
-        param = param + "&application=" + selectApplication;
+    if (selectRevision !== 'ALL') {
+        param = param + "&revision=" + selectRevision;
     }
 
-    var configurations = new TableConfigurationsServerSide("buildrevisionparametersTable", "ReadCountryEnvParam" + param, "contentTable", aoColumnsFunc());
+    var configurations = new TableConfigurationsServerSide("environmentsTable", "ReadCountryEnvParam" + param, "contentTable", aoColumnsFunc());
 
-    var table = createDataTableWithPermissions(configurations, renderOptionsForBrp);
+    var table = createDataTableWithPermissions(configurations, renderOptionsForEnv);
     return table;
 }
 
-function deleteBrpHandlerClick() {
-    var id = $('#confirmationModal').find('#hiddenField1').prop("value");
-    var jqxhr = $.post("DeleteBuildRevisionParameters", {id: id}, "json");
+function deleteEnvHandlerClick() {
+    var system = $('#confirmationModal').find('#hiddenField1').prop("value");
+    var country = $('#confirmationModal').find('#hiddenField2').prop("value");
+    var environment = $('#confirmationModal').find('#hiddenField3').prop("value");
+    var jqxhr = $.post("DeleteCountryEnvParam", {system: system, country: country, environment: environment}, "json");
     $.when(jqxhr).then(function (data) {
         var messageType = getAlertType(data.messageType);
         if (messageType === "success") {
             //redraw the datatable
-            var oTable = $("#buildrevisionparametersTable").dataTable();
+            var oTable = $("#environmentsTable").dataTable();
             oTable.fnDraw(true);
             var info = oTable.fnGetData().length;
 
@@ -178,28 +181,26 @@ function deleteBrpHandlerClick() {
     }).fail(handleErrorAjaxAfterTimeout);
 }
 
-function deleteBrp(id, build, revision, release, application) {
+function deleteEnv(system, country, environment) {
     clearResponseMessageMainPage();
     var doc = new Doc();
-    var messageComplete = doc.getDocLabel("page_buildcontent", "message_delete");
-    messageComplete = messageComplete.replace("%ENTRY%", id);
-    messageComplete = messageComplete.replace("%BUILD%", build);
-    messageComplete = messageComplete.replace("%REVISION%", revision);
-    messageComplete = messageComplete.replace("%RELEASE%", release);
-    messageComplete = messageComplete.replace("%APPLI%", application);
-    showModalConfirmation(deleteBrpHandlerClick, doc.getDocLabel("page_buildcontent", "button_delete"), messageComplete, id, "", "", "");
+    var messageComplete = doc.getDocLabel("page_environent", "message_delete");
+    messageComplete = messageComplete.replace("%SYSTEM%", system);
+    messageComplete = messageComplete.replace("%COUNTRY%", country);
+    messageComplete = messageComplete.replace("%ENVIRONMENT%", environment);
+    showModalConfirmation(deleteEnvHandlerClick, doc.getDocLabel("page_environment", "button_delete"), messageComplete, system, country, environment, "");
 }
 
-function saveNewBrpHandler() {
-    clearResponseMessage($('#addBrpModal'));
-    var formAdd = $("#addBrpModal #addBrpModalForm");
+function saveNewEnvHandler() {
+    clearResponseMessage($('#addEnvModal'));
+    var formAdd = $("#addEnvModal #addEnvModalForm");
 
     var nameElement = formAdd.find("#build");
     var nameElementEmpty = nameElement.prop("value") === '';
     if (nameElementEmpty) {
         var localMessage = new Message("danger", "Please specify the name of the build!");
         nameElement.parents("div.form-group").addClass("has-error");
-        showMessage(localMessage, $('#addBrpModal'));
+        showMessage(localMessage, $('#addEnvModal'));
     } else {
         nameElement.parents("div.form-group").removeClass("has-error");
     }
@@ -208,92 +209,92 @@ function saveNewBrpHandler() {
     if (nameElementEmpty)
         return;
 
-    showLoaderInModal('#addBrpModal');
+    showLoaderInModal('#addEnvModal');
     var jqxhr = $.post("CreateBuildRevisionParameters", formAdd.serialize());
     $.when(jqxhr).then(function (data) {
-        hideLoaderInModal('#addBrpModal');
+        hideLoaderInModal('#addEnvModal');
         console.log(data.messageType);
         if (getAlertType(data.messageType) === 'success') {
-            var oTable = $("#buildrevisionparametersTable").dataTable();
+            var oTable = $("#environmentsTable").dataTable();
             oTable.fnDraw(true);
             showMessage(data);
-            $('#addBrpModal').modal('hide');
+            $('#addEnvModal').modal('hide');
         } else {
-            showMessage(data, $('#addBrpModal'));
+            showMessage(data, $('#addEnvModal'));
         }
     }).fail(handleErrorAjaxAfterTimeout);
 }
 
-function saveUpdateBrpHandler() {
-    clearResponseMessage($('#editBrpModal'));
-    var formEdit = $('#editBrpModal #editBrpModalForm');
-    showLoaderInModal('#editBrpModal');
+function saveUpdateEnvHandler() {
+    clearResponseMessage($('#editEnvModal'));
+    var formEdit = $('#editEnvModal #editEnvModalForm');
+    showLoaderInModal('#editEnvModal');
 
     var jqxhr = $.post("UpdateBuildRevisionParameters", formEdit.serialize(), "json");
     $.when(jqxhr).then(function (data) {
         // unblock when remote call returns 
-        hideLoaderInModal('#editBrpModal');
+        hideLoaderInModal('#editEnvModal');
         if (getAlertType(data.messageType) === "success") {
-            var oTable = $("#buildrevisionparametersTable").dataTable();
+            var oTable = $("#environmentsTable").dataTable();
             oTable.fnDraw(true);
-            $('#editBrpModal').modal('hide');
+            $('#editEnvModal').modal('hide');
             showMessage(data);
 
         } else {
-            showMessage(data, $('#editBrpModal'));
+            showMessage(data, $('#editEnvModal'));
         }
     }).fail(handleErrorAjaxAfterTimeout);
 }
 
-function addBrpModalCloseHandler() {
+function addEnvModalCloseHandler() {
     // reset form values
-    $('#addBrpModal #addBrpModalForm')[0].reset();
+    $('#addEnvModal #addEnvModalForm')[0].reset();
     // remove all errors on the form fields
     $(this).find('div.has-error').removeClass("has-error");
     // clear the response messages of the modal
-    clearResponseMessage($('#addBrpModal'));
+    clearResponseMessage($('#addEnvModal'));
 }
 
-function editBrpModalCloseHandler() {
+function editEnvModalCloseHandler() {
     // reset form values
-    $('#editBrpModal #editBrpModalForm')[0].reset();
+    $('#editEnvModal #editEnvModalForm')[0].reset();
     // remove all errors on the form fields
     $(this).find('div.has-error').removeClass("has-error");
     // clear the response messages of the modal
-    clearResponseMessage($('#editBrpModal'));
+    clearResponseMessage($('#editEnvModal'));
 }
 
-function CreateBrpClick() {
+function CreateEnvClick() {
     clearResponseMessageMainPage();
     // When creating a new item, Define here the default value.
-    var formAdd = $('#addBrpModal');
+    var formAdd = $('#addEnvModal');
 
     // User that makes the creation is becoming the owner or the release.
-    formAdd.find("#owner").prop("value", getUser().login);
+    formAdd.find("#system").prop("value", getUser().defaultSystem);
     // New release goes by default to the build/revision selected in filter combos. (except when ALL)
-    var myBuild = $("#selectBuild option:selected").val();
-    var myRevision = $("#selectRevision option:selected").val();
-    if (myBuild === 'ALL') {
-        myBuild = 'NONE';
+    var myCountry = $("#selectCountry option:selected").val();
+    var myEnvironment = $("#selectEnvironment option:selected").val();
+    if (myCountry === 'ALL') {
+        myCountry = 'NONE';
     }
-    if (myRevision === 'ALL') {
-        myRevision = 'NONE';
+    if (myEnvironment === 'ALL') {
+        myEnvironment = 'NONE';
     }
-    formAdd.find("#build").val(myBuild);
-    formAdd.find("#revision").val(myRevision);
+    formAdd.find("#country").val(myCountry);
+    formAdd.find("#environment").val(myEnvironment);
 
-    $('#addBrpModal').modal('show');
+    $('#addEnvModal').modal('show');
 }
 
-function editBrp(id) {
+function editEnv(system, country, environment) {
     clearResponseMessageMainPage();
-    var jqxhr = $.getJSON("ReadBuildRevisionParameters", "id=" + id);
+    var jqxhr = $.getJSON("ReadCountryEnvParam", "system=" + system + "&country=" + country + "&environment=" + environment);
     $.when(jqxhr).then(function (data) {
         var obj = data["contentTable"];
 
-        var formEdit = $('#editBrpModal');
+        var formEdit = $('#editEnvModal');
 
-        formEdit.find("#id").prop("value", id);
+        formEdit.find("#id").prop("value", system);
         formEdit.find("#build").prop("value", obj["build"]);
         formEdit.find("#revision").prop("value", obj["revision"]);
         formEdit.find("#datecre").prop("value", obj["datecre"]);
@@ -314,16 +315,16 @@ function editBrp(id) {
     });
 }
 
-function renderOptionsForBrp(data) {
+function renderOptionsForEnv(data) {
     var doc = new Doc();
-    //check if user has permissions to perform the add and import operations
+    //check if user has permissions to perform the add operations
     if (data["hasPermissions"]) {
-        if ($("#createBrpButton").length === 0) {
-            var contentToAdd = "<div class='marginBottom10'><button id='createBrpButton' type='button' class='btn btn-default'>\n\
-            " + doc.getDocLabel("page_buildcontent", "button_create") + "</button></div>";
+        if ($("#createEnvButton").length === 0) {
+            var contentToAdd = "<div class='marginBottom10'><button id='createEnvButton' type='button' class='btn btn-default'>\n\
+            " + doc.getDocLabel("page_environment", "button_create") + "</button></div>";
 
-            $("#buildrevisionparametersTable_wrapper div.ColVis").before(contentToAdd);
-            $('#buildContentList #createBrpButton').click(CreateBrpClick);
+            $("#environmentsTable_wrapper div.ColVis").before(contentToAdd);
+            $('#environmentList #createEnvButton').click(CreateEnvClick);
         }
     }
 }
@@ -339,82 +340,66 @@ function aoColumnsFunc() {
             "sWidth": "80px",
             "bSearchable": false,
             "mRender": function (data, type, obj) {
-                var editBrp = '<button id="editBrp" onclick="editBrp(\'' + obj["id"] + '\');"\n\
-                                class="editBrp btn btn-default btn-xs margin-right5" \n\
-                                name="editBrp" title="\'' + doc.getDocLabel("page_buildcontent", "button_edit") + '\'" type="button">\n\
+                var editEnv = '<button id="editEnv" onclick="editEnv(\'' + obj["system"] + '\',\'' + obj["country"] + '\',\'' + obj["environment"] + '\');"\n\
+                                class="editEnv btn btn-default btn-xs margin-right5" \n\
+                                name="editEnv" title="\'' + doc.getDocLabel("page_environment", "button_edit") + '\'" type="button">\n\
                                 <span class="glyphicon glyphicon-pencil"></span></button>';
-                var deleteBrp = '<button id="deleteBrp" onclick="deleteBrp(\'' + obj["id"] + '\',\'' + obj["build"] + '\',\'' + obj["revision"] + '\',\'' + obj["release"] + '\',\'' + obj["application"] + '\');" \n\
-                                class="deleteBrp btn btn-default btn-xs margin-right5" \n\
-                                name="deleteBrp" title="\'' + doc.getDocLabel("page_buildcontent", "button_delete") + '\'" type="button">\n\
+                var deleteEnv = '<button id="deleteEnv" onclick="deleteEnv(\'' + obj["system"] + '\',\'' + obj["country"] + '\',\'' + obj["environment"] + '\');" \n\
+                                class="deleteEnv btn btn-default btn-xs margin-right5" \n\
+                                name="deleteEnv" title="\'' + doc.getDocLabel("page_environment", "button_delete") + '\'" type="button">\n\
                                 <span class="glyphicon glyphicon-trash"></span></button>';
 
-                return '<div class="center btn-group width150">' + editBrp + deleteBrp + '</div>';
+                return '<div class="center btn-group width150">' + editEnv + deleteEnv + '</div>';
             }
         },
         {"data": "system",
             "sName": "system",
             "sWidth": "100px",
-            "title": doc.getDocOnline("countryEnvParam", "system")},
+            "title": doc.getDocOnline("invariant", "SYSTEM")},
         {"data": "country",
             "sName": "country",
             "sWidth": "70px",
-            "title": doc.getDocOnline("buildrevisionparameters", "Country")},
+            "title": doc.getDocOnline("invariant", "COUNTRY")},
         {"data": "environment",
             "sName": "environment",
             "sWidth": "100px",
-            "title": doc.getDocOnline("buildrevisionparameters", "Environment")},
+            "title": doc.getDocOnline("invariant", "ENVIRONMENT")},
         {"data": "description",
             "sName": "description",
             "sWidth": "150px",
-            "title": doc.getDocOnline("buildrevisionparameters", "Description")},
+            "title": doc.getDocOnline("countryenvparam", "Description")},
         {"data": "active",
             "sName": "active",
             "sWidth": "80px",
-            "title": doc.getDocOnline("buildrevisionparameters", "active")},
+            "title": doc.getDocOnline("countryenvparam", "active")},
         {"data": "build",
             "sName": "build",
             "sWidth": "80px",
-            "title": doc.getDocOnline("buildrevisionparameters", "Build")},
+            "title": doc.getDocOnline("buildrevisioninvariant", "versionname01")},
         {"data": "revision",
             "sName": "revision",
             "sWidth": "80px",
-            "title": doc.getDocOnline("buildrevisionparameters", "Revision")},
+            "title": doc.getDocOnline("buildrevisioninvariant", "versionname02")},
         {"data": "chain",
             "sName": "chain",
             "sWidth": "80px",
-            "title": doc.getDocOnline("buildrevisionparameters", "Chain")},
+            "title": doc.getDocOnline("countryenvparam", "chain")},
         {"data": "type",
             "sName": "type",
             "sWidth": "80px",
-            "title": doc.getDocOnline("buildrevisionparameters", "Type")},
-        {"data": "distribList",
-            "sName": "distribList",
-            "sWidth": "150px",
-            "title": doc.getDocOnline("buildrevisionparameters", "distribList")},
-        {"data": "eMailBodyRevision",
-            "sName": "eMailBodyRevision",
-            "sWidth": "200px",
-            "title": doc.getDocOnline("buildrevisionparameters", "EMailBodyRevision")},
-        {"data": "eMailBodyChain",
-            "sName": "eMailBodyChain",
-            "sWidth": "200px",
-            "title": doc.getDocOnline("buildrevisionparameters", "eMailBodyChain")},
-        {"data": "eMailBodyDisableEnvironment",
-            "sName": "eMailBodyDisableEnvironment",
-            "sWidth": "200px",
-            "title": doc.getDocOnline("buildrevisionparameters", "eMailBodyDisableEnvironment")},
+            "title": doc.getDocOnline("countryenvparam", "Type")},
         {"data": "maintenanceAct",
             "sName": "maintenanceAct",
             "sWidth": "80px",
-            "title": doc.getDocOnline("buildrevisionparameters", "maintenanceAct")},
+            "title": doc.getDocOnline("countryenvparam", "maintenanceact")},
         {"data": "maintenanceStr",
             "sName": "maintenanceStr",
             "sWidth": "80px",
-            "title": doc.getDocOnline("buildrevisionparameters", "maintenanceStr")},
+            "title": doc.getDocOnline("countryenvparam", "maintenancestr")},
         {"data": "maintenanceEnd",
             "sName": "maintenanceEnd",
             "sWidth": "80px",
-            "title": doc.getDocOnline("buildrevisionparameters", "maintenanceEnd")}
+            "title": doc.getDocOnline("countryenvparam", "maintenanceend")}
     ];
     return aoColumns;
 }
