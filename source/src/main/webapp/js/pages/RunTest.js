@@ -52,20 +52,26 @@ $.when($.getScript("js/pages/global/global.js")).then(function () {
             }
         });
 
-        $("#typeSelect").on("change", typeSelectHandler);
+        $("[name='typeSelect']").on("change", typeSelectHandler);
 
-        $("#run").click(sendForm);
+        $("#run").click(sendForm_bis);
 
-        $("#loadbutton").click(function () {
-            var value = $("#typeSelect").val();
-            if (value === "filters") {
-                loadTestCaseFromFilter();
-            } else if (value === "campaign") {
-                var campaign = $("#campaignSelect").val();
-                loadCampaignContent(campaign);
-                loadCampaignParameter(campaign);
-            }
+        $("#loadFiltersBtn").click(function () {
+//            var value = $("[name='typeSelect']:checked").val();
+//            if (value === "filters") {
+            loadTestCaseFromFilter();
+//            } else if (value === "campaign") {
+//                var campaign = $("#campaignSelect").val();
+//                loadCampaignContent(campaign);
+//                loadCampaignParameter(campaign);
+//            }
         });
+
+        $("#loadCampaignBtn").click(function () {
+            var campaign = $("#campaignSelect").val();
+            loadCampaignContent(campaign);
+            loadCampaignParameter(campaign);
+        })
 
         $("#resetbutton").click(function () {
             $(".multiselectelement").each(function () {
@@ -74,8 +80,11 @@ $.when($.getScript("js/pages/global/global.js")).then(function () {
             });
         });
 
-        $("#addQueue").click({"select": "#testCaseList option:selected"}, checkExecution);
-        $("#addAllQueue").click({"select": "#testCaseList option"}, checkExecution);
+        $("#addQueue").click(checkExecution);
+
+        $("#selectAll").click(function () {
+           $("#testCaseList option").prop("selected", "selected");
+        });
 
         $("#resetQueue").click(function (event) {
             stopPropagation(event);
@@ -113,7 +122,8 @@ $.when($.getScript("js/pages/global/global.js")).then(function () {
 });
 
 function typeSelectHandler() {
-    var value = $("#typeSelect").val();
+    var value = $("[name='typeSelect']:checked").val();
+    console.log(value);
     if (value === "filters") {
 
         $("#envSettingsAuto select").prop("disabled", false).val("");
@@ -128,10 +138,10 @@ function typeSelectHandler() {
         $("#campaignSelection").hide();
         $("#filters").show();
         $("#resetbutton").show();
+        $("#filtersPanelContainer").show();
         loadTestCaseFromFilter();
     } else if (value === "campaign") {
-        $("#filters").hide();
-        $("#resetbutton").hide();
+        $("#filtersPanelContainer").hide();
         $("#campaignSelection").show();
         $("#testCaseList").empty();
         $("#envSettingsAuto select").empty();
@@ -196,30 +206,32 @@ function appendCountryList() {
 /** UTILITY FUNCTIONS FOR CAMPAIGN LAUNCHING **/
 
 function loadCampaignContent(campaign) {
-    showLoader("#chooseTest");
-    $.ajax({
-        url: "ReadTestCase",
-        method: "GET",
-        data: {campaign: campaign},
-        datatype: "json",
-        async: true,
-        success: function (data) {
-            var testCaseList = $("#testCaseList");
+    if (campaign !== "") {
+        showLoader("#chooseTest");
+        $.ajax({
+            url: "ReadTestCase",
+            method: "GET",
+            data: {campaign: campaign},
+            datatype: "json",
+            async: true,
+            success: function (data) {
+                var testCaseList = $("#testCaseList");
 
-            testCaseList.empty().prop("disabled", "disabled");
+                testCaseList.empty().prop("disabled", "disabled");
 
-            for (var index = 0; index < data.contentTable.length; index++) {
-                var text = data.contentTable[index].test + " - " + data.contentTable[index].testCase + " [" + data.contentTable[index].application + "]: " + data.contentTable[index].shortDescription;
+                for (var index = 0; index < data.contentTable.length; index++) {
+                    var text = data.contentTable[index].test + " - " + data.contentTable[index].testCase + " [" + data.contentTable[index].application + "]: " + data.contentTable[index].shortDescription;
 
-                testCaseList.append($("<option></option>")
-                        .text(text)
-                        .val(data.contentTable[index].testCase)
-                        .prop("selected", true)
-                        .data("item", data.contentTable[index]));
+                    testCaseList.append($("<option></option>")
+                            .text(text)
+                            .val(data.contentTable[index].testCase)
+                            .prop("selected", true)
+                            .data("item", data.contentTable[index]));
+                }
+                hideLoader("#chooseTest");
             }
-            hideLoader("#chooseTest");
-        }
-    });
+        });
+    }
 }
 
 function loadCampaignParameter(campaign) {
@@ -285,6 +297,7 @@ function checkForms() {
 
 function sendForm() {
     if (checkForms()) {
+        console.log("STARTED GENERATIONG FORM");
         var $form = $("#AddToExecutionQueue");
         var countries = getCountries();
         var env = getEnvironment();
@@ -310,7 +323,39 @@ function sendForm() {
         $("#manualURLATQ").val("N");
         setRobotForm($form, $input);
         setExecForm();
+        console.log("SUBMIT");
         $form.submit();
+    }
+}
+
+function sendForm_bis() {
+    if (checkForms()) {
+        var executionList = $("#queue li");
+        var executionArray = [];
+        var browsers = $("#browser").val() ? $("#browser").val() : [];
+        var robotSettings = convertSerialToJSONObject($("#robotSettingsForm").serialize());
+        var execSettings = convertSerialToJSONObject($("#executionSettingsForm").serialize());
+
+        executionList.each(function () {
+            var data = $(this).data("item");
+            executionArray.push(data);
+        });
+
+        console.log(robotSettings);
+        console.log(execSettings);
+        console.log(browsers);
+        console.log(executionArray);
+
+//        $.ajax({
+//            "url": "AddToExecutionQueue2",
+//            method: "GET",
+////            data: {campaign: campaign},
+//            async: true,
+//            success: function (data) {
+//                
+//            },
+//            error: showUnexpectedError
+//        });
     }
 }
 
@@ -435,10 +480,11 @@ function addToQueue(executionList) {
     notValidHandler(notValidList);
 }
 
-function checkExecution(event) {
-    var select = $(event.data.select);
+function checkExecution() {
+    var select = $("#testCaseList option:selected");
     var environment = getEnvironment();
     var countries = getCountries();
+    var browser = $("#browser").val() ? $("#browser").val() : [];
     var testcase = [];
 
     select.each(function () {
@@ -460,14 +506,17 @@ function checkExecution(event) {
     } else if (countries.length === 0) {
         $("#error").text("!!! Please, select at least 1 Country !!!");
     } else {
+        showLoader("#queuePanel");
         $.ajax({
             url: "GetExecutionQueue",
             method: "POST",
-            data: {"system": getUser().defaultSystem,
+            data: {
                 "testcase": JSON.stringify(testcase),
                 "environment": JSON.stringify(environment),
-                "countries": JSON.stringify(countries)},
+                "countries": JSON.stringify(countries),
+                "browsers": JSON.stringify(browser)},
             success: function (data) {
+                hideLoader("#queuePanel");
                 addToQueue(data.contentTable);
             },
             error: showUnexpectedError
@@ -498,7 +547,7 @@ function multiSelectConf(name) {
     this.enableCaseInsensitiveFiltering = true;
 }
 
-function loadMultiSelect(url, urlParams, selectName, textItem, valueItem, isUpdate) {
+function loadMultiSelect(url, urlParams, selectName, textItem, valueItem) {
     var jqXHR = $.ajax({
         url: url,
         method: "GET",
