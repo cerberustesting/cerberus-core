@@ -71,16 +71,13 @@ public class GetExecutionQueue extends HttpServlet {
         JSONArray testCaseList = new JSONArray(request.getParameter("testcase"));
         JSONArray environmentList = new JSONArray(request.getParameter("environment"));
         JSONArray countryList = new JSONArray(request.getParameter("countries"));
-        String system = request.getParameter("system");
         List<ExecutionValidator> inQueue = new ArrayList<ExecutionValidator>();
         List<ExecutionValidator> notValid = new ArrayList<ExecutionValidator>();
 
         for (int iterTC = 0; iterTC < testCaseList.length(); iterTC++) {
             JSONObject testCase = testCaseList.getJSONObject(iterTC);
             Application application = new Application();
-            application.setApplication(testCase.getString("application"));
-            application.setSystem(system);
-//            application = (Application) applicationService.readByKey(testCase.getString("application")).getItem();
+            application = (Application) applicationService.readByKey(testCase.getString("application")).getItem();
             
             for (int iterEnv = 0; iterEnv < environmentList.length(); iterEnv++) {
                 JSONObject env = environmentList.getJSONObject(iterEnv);

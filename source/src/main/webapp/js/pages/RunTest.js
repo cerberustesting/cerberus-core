@@ -124,7 +124,7 @@ function typeSelectHandler() {
 
         $("#testCaseList").prop("disabled", false);
         $("#envSettingsAuto select").empty();
-        displayEnvList("environment", "");
+        displayEnvList("environment", getUser().defaultSystem);
         $("#campaignSelection").hide();
         $("#filters").show();
         $("#resetbutton").show();
