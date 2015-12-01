@@ -68,6 +68,7 @@ public enum MessageGeneralEnum {
     VALIDATION_FAILED_URL_MALFORMED(86, "", "URL '%URL%' is not correct and cannot be handled by Cerberus."),
     VALIDATION_FAILED_TEST_NOT_FOUND(87, "", "Test '%TEST%' does not exist."),
     VALIDATION_FAILED_TEST_NOTACTIVE(88, "", "The test '%TEST%' isn't active."),
+    VALIDATION_SUCCEEDED(89, "", "The validation succeeded"),
 
     EXECUTION_PE_TESTSTARTED(5, "PE", "Test started..."),
     EXECUTION_PE_CHECKINGPARAMETERS(5, "PE", "Checking parameters..."),

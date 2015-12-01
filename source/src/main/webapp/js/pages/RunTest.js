@@ -33,9 +33,9 @@ $.when($.getScript("js/pages/global/global.js")).then(function () {
         typeSelectHandler();
         showLoader("#filtersPanel");
         $.when(
-                loadMultiSelect("ReadTest", "system=" + system, "test", ["test", "description"], "test"),
+                loadMultiSelect("ReadTest", "system=" + system, "test", ["test", "description"]),
                 loadMultiSelect("ReadProject", "sEcho=1", "project", ["idProject"], "idProject"),
-                loadMultiSelect("ReadApplication", "system=" + system, "application", ["application"], "application", true),
+                loadMultiSelect("ReadApplication", "system=" + system, "application", ["application"], "application"),
                 loadMultiSelect("ReadUserPublic", "", "creator", ["login"], "login"),
                 loadMultiSelect("ReadUserPublic", "", "implementer", ["login"], "login"),
                 loadMultiSelect("ReadTestBattery", "", "testBattery", ["testbattery"], "testbattery"),
@@ -54,24 +54,15 @@ $.when($.getScript("js/pages/global/global.js")).then(function () {
 
         $("[name='typeSelect']").on("change", typeSelectHandler);
 
-        $("#run").click(sendForm_bis);
+        $("#run").click(sendForm);
 
-        $("#loadFiltersBtn").click(function () {
-//            var value = $("[name='typeSelect']:checked").val();
-//            if (value === "filters") {
-            loadTestCaseFromFilter();
-//            } else if (value === "campaign") {
-//                var campaign = $("#campaignSelect").val();
-//                loadCampaignContent(campaign);
-//                loadCampaignParameter(campaign);
-//            }
-        });
+        $("#loadFiltersBtn").click(loadTestCaseFromFilter);
 
         $("#loadCampaignBtn").click(function () {
             var campaign = $("#campaignSelect").val();
             loadCampaignContent(campaign);
             loadCampaignParameter(campaign);
-        })
+        });
 
         $("#resetbutton").click(function () {
             $(".multiselectelement").each(function () {
@@ -510,7 +501,8 @@ function checkExecution() {
         $.ajax({
             url: "GetExecutionQueue",
             method: "POST",
-            data: {
+            data: { "check": true,
+                "push": false,
                 "testcase": JSON.stringify(testcase),
                 "environment": JSON.stringify(environment),
                 "countries": JSON.stringify(countries),

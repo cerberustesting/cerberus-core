@@ -71,7 +71,7 @@ public class ExecutionCheckService implements IExecutionCheckService {
              */
             if (this.checkTestCaseActive(tCExecution.gettCase())
                     && this.checkTestActive(tCExecution.getTestObj())
-                    && this.checkTestCaseNotManual(tCExecution.gettCase())
+                    && this.checkTestCaseNotManual(tCExecution)
                     && this.checkTypeEnvironment(tCExecution)
                     && this.checkCountry(tCExecution)
                     && this.checkMaintenanceTime(tCExecution)) {
@@ -82,7 +82,7 @@ public class ExecutionCheckService implements IExecutionCheckService {
              * Automatic application connectivity parameter (from database)
              */
             if (this.checkEnvironmentActive(tCExecution.getCountryEnvParam())
-                    && this.checkTestCaseNotManual(tCExecution.gettCase())
+                    && this.checkTestCaseNotManual(tCExecution)
                     && this.checkRangeBuildRevision(tCExecution)
                     && this.checkTargetBuildRevision(tCExecution)
                     && this.checkActiveEnvironmentGroup(tCExecution)
@@ -132,15 +132,21 @@ public class ExecutionCheckService implements IExecutionCheckService {
         return false;
     }
 
-    private boolean checkTestCaseNotManual(TCase testCase) {
+    private boolean checkTestCaseNotManual(TestCaseExecution tCExecution) {
         if (LOG.isDebugEnabled()) {
             LOG.debug("Checking if testcase is not MANUAL");
         }
-        if (!(testCase.getGroup().equals("MANUAL"))) {
-            return true;
+//        if ("N".equals(tCExecution.getManualExecution()) && !(tCExecution.gettCase().getGroup().equals("MANUAL"))) {
+//            return true;
+//        }
+//        message = new MessageGeneral(MessageGeneralEnum.VALIDATION_FAILED_TESTCASE_ISMANUAL);
+//        return false;
+//        
+        if ("N".equals(tCExecution.getManualExecution()) && tCExecution.gettCase().getGroup().equals("MANUAL")) {
+            message = new MessageGeneral(MessageGeneralEnum.VALIDATION_FAILED_TESTCASE_ISMANUAL);
+            return false;
         }
-        message = new MessageGeneral(MessageGeneralEnum.VALIDATION_FAILED_TESTCASE_ISMANUAL);
-        return false;
+        return true;
     }
 
     private boolean checkTypeEnvironment(TestCaseExecution tCExecution) {
