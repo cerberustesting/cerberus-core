@@ -125,7 +125,7 @@ function typeSelectHandler() {
 
         $("#testCaseList").prop("disabled", false);
         $("#envSettingsAuto select").empty();
-        displayEnvList("environment", getUser().defaultSystem);
+        displayUniqueEnvList("environment", getUser().defaultSystem);
         $("#campaignSelection").hide();
         $("#filters").show();
         $("#resetbutton").show();
@@ -136,7 +136,7 @@ function typeSelectHandler() {
         $("#campaignSelection").show();
         $("#testCaseList").empty();
         $("#envSettingsAuto select").empty();
-        displayUniqueEnvList("environment");
+        displayUniqueEnvList("environment", "");
     }
 }
 

@@ -32,3 +32,17 @@
 #tagSettings {
     margin-right: 5px;
 }
+
+.removeTag {
+    cursor: pointer;
+}
+
+.modal-title-line {
+    border-bottom: 2px solid #3D3D3D;
+    color: #3D3D3D;
+    font-weight: 900;
+    margin-bottom: 20px;
+    padding-bottom: 10px;
+    margin-top: 10px;
+    text-transform: uppercase;
+}

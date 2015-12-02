@@ -204,7 +204,7 @@ function displayEnvList(selectName, system, defaultValue) {
  * @param {String} defaultValue to be selected
  * @returns {void}
  */
-function displayUniqueEnvList(selectName, defaultValue) {
+function displayUniqueEnvList(selectName, system ,defaultValue) {
     $.when($.getJSON("ReadCountryEnvParam", "unique=true&active=Y")).then(function (data) {
         for (var option in data.contentTable) {
             $("[name='" + selectName + "']").append($('<option></option>').text(data.contentTable[option].environment).val(data.contentTable[option].environment));

@@ -30,16 +30,21 @@ $.when($.getScript("js/pages/global/global.js")).then(function () {
 
         $("#tagSettingsModal").on('hidden.bs.modal', modalCloseHandler);
 
-        $("#addTag").on('click', function () {
+        $("#selectTag").on('change', function () {
             var tagListForm = $("#tagList");
-            var selectedTag = $("#selectTag option:selected").text();
+            var selectedTag = $("#selectTag").val();
 
             if (selectedTag !== "") {
                 tagListForm.append('<div class="input-group">\n\
-                                    <span class="input-group-addon"><span class="glyphicon glyphicon-remove"></span></span>\n\
+                                    <span class="input-group-addon removeTag"><span class="glyphicon glyphicon-remove"></span></span>\n\
                                     <input type="tag" name="tag" class="form-control" id="tag" value="' + selectedTag + '" readonly>\n\
                                     </div>');
             }
+            $("#selectTag").val("");
+            
+            $(".removeTag").on('click', function () {
+                $(this).parent().remove();
+            });
         });
 
         $("#saveTagList").on('click', function () {
@@ -113,7 +118,6 @@ function displayPageLabel() {
     $("#lastTagExec").html(doc.getDocOnline("homepage", "lastTagExecution"));
     $("#tagSettingsLabel").html(doc.getDocLabel("homepage", "btn_settings"));
     $("#modalTitle").html(doc.getDocLabel("homepage", "modal_title"));
-    $("#addTag").html(doc.getDocLabel("homepage", "btn_addTag"));
     $("#testCaseStatusByApp").html(doc.getDocOnline("homepage", "testCaseStatusByApp"));
     $("#title").html(doc.getDocLabel("homepage", "title"));
     displayFooter(doc);
