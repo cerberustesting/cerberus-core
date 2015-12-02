@@ -54,7 +54,7 @@ $.when($.getScript("js/pages/global/global.js")).then(function () {
 
         $("[name='typeSelect']").on("change", typeSelectHandler);
 
-        $("#run").click(sendForm);
+        $("#run").click(sendForm_bis);
 
         $("#loadFiltersBtn").click(loadTestCaseFromFilter);
 
@@ -321,6 +321,7 @@ function sendForm() {
 
 function sendForm_bis() {
     if (checkForms()) {
+        var data = {};
         var executionList = $("#queue li");
         var executionArray = [];
         var browsers = $("#browser").val() ? $("#browser").val() : [];
@@ -336,17 +337,29 @@ function sendForm_bis() {
         console.log(execSettings);
         console.log(browsers);
         console.log(executionArray);
+        
+        for (var key in robotSettings) {
+            data[key] = robotSettings[key];
+        }
+        for (var key in execSettings) {
+            data[key] = execSettings[key];
+        }
+//        data.push("browsers", browsers);
+//        data.push("toAddList", executionArray);
+        data.browsers = JSON.stringify(browsers);
+        data.toAddList = JSON.stringify(executionArray);
+        data.push = true;
 
-//        $.ajax({
-//            "url": "AddToExecutionQueue2",
-//            method: "GET",
-////            data: {campaign: campaign},
-//            async: true,
-//            success: function (data) {
-//                
-//            },
-//            error: showUnexpectedError
-//        });
+        $.ajax({
+            "url": "GetExecutionQueue",
+            method: "POST",
+            data: data,
+            async: true,
+            success: function (data) {
+                console.log("SUCCESS");
+            },
+            error: showUnexpectedError
+        });
     }
 }
 
@@ -676,13 +689,13 @@ function saveExecutionPreferences() {
 
 function loadExecForm() {
     $.when(
-            loadSelect("OUTPUTFORMAT", "outputFormat"),
-            loadSelect("VERBOSE", "verbose"),
-            loadSelect("SCREENSHOT", "screenshot"),
-            loadSelect("SELENIUMLOG", "seleniumLog"),
+            loadSelect("OUTPUTFORMAT", "OutputFormat"),
+            loadSelect("VERBOSE", "Verbose"),
+            loadSelect("SCREENSHOT", "Screenshot"),
+            loadSelect("SELENIUMLOG", "SeleniumLog"),
             loadSelect("MANUALEXECUTION", "manualExecution"),
-            loadSelect("PAGESOURCE", "pageSource"),
-            loadSelect("SYNCHRONEOUS", "synchroneous"),
+            loadSelect("PAGESOURCE", "PageSource"),
+            loadSelect("SYNCHRONEOUS", "Synchroneous"),
             loadSelect("RETRIES", "retries")
             ).then(function () {
         applyExecPref();
@@ -694,7 +707,7 @@ function loadRobotForm() {
             appendRobotList(),
             loadSelect("BROWSER", "browser"),
             $("[name=platform]").append($('<option></option>').text("Optional").val("")),
-            loadSelect("PLATFORM", "platform"),
+            loadSelect("PLATFORM", "Platform"),
             $("[name=screenSize]").append($('<option></option>').text("Default (Client Full Screen)").val("")),
             loadSelect("screensize", "screenSize")
             ).then(function () {

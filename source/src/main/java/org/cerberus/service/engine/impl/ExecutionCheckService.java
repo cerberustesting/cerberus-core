@@ -136,12 +136,7 @@ public class ExecutionCheckService implements IExecutionCheckService {
         if (LOG.isDebugEnabled()) {
             LOG.debug("Checking if testcase is not MANUAL");
         }
-//        if ("N".equals(tCExecution.getManualExecution()) && !(tCExecution.gettCase().getGroup().equals("MANUAL"))) {
-//            return true;
-//        }
-//        message = new MessageGeneral(MessageGeneralEnum.VALIDATION_FAILED_TESTCASE_ISMANUAL);
-//        return false;
-//        
+        
         if ("N".equals(tCExecution.getManualExecution()) && tCExecution.gettCase().getGroup().equals("MANUAL")) {
             message = new MessageGeneral(MessageGeneralEnum.VALIDATION_FAILED_TESTCASE_ISMANUAL);
             return false;

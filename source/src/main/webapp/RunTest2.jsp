@@ -202,13 +202,13 @@
                                     <div class="form-group">
                                         <label for="seleniumIP" class="col-sm-3 control-label bold">Selenium Server IP</label>
                                         <div class="col-sm-9">
-                                            <input type="text" class="form-control input-sm" id="seleniumIP" name="seleniumIP"/>
+                                            <input type="text" class="form-control input-sm" id="seleniumIP" name="ss_ip"/>
                                         </div>
                                     </div>
                                     <div class="form-group">
                                         <label for="seleniumPort" class="col-sm-3 control-label bold">Selenium Server Port</label>
                                         <div class="col-sm-9">
-                                            <input type="text" class="form-control input-sm" id="seleniumPort" name="seleniumPort"/>
+                                            <input type="text" class="form-control input-sm" id="seleniumPort" name="ss_p"/>
                                         </div>
                                     </div>
                                     <div class="form-group">
@@ -220,13 +220,13 @@
                                     <div class="form-group">
                                         <label for="version" class="col-sm-3 control-label">Version (Optional)</label>
                                         <div class="col-sm-9">
-                                            <input type="text" class="form-control input-sm" id="version" name="version"/>
+                                            <input type="text" class="form-control input-sm" id="version" name="BrowserVersion"/>
                                         </div>
                                     </div>
                                     <div class="form-group">
                                         <label for="platform" class="col-sm-3 control-label">Platform (Optional)</label>
                                         <div class="col-sm-9">
-                                            <select class="form-control input-sm" id="platform" name="platform"></select>
+                                            <select class="form-control input-sm" id="platform" name="Platform"></select>
                                         </div>
                                     </div>
                                     <div class="form-group">
@@ -252,43 +252,43 @@
                                     <div class="form-group">
                                         <label for="tag" class="col-sm-3 control-label bold">Tag</label>
                                         <div class="col-sm-9">
-                                            <input type="text" class="form-control input-sm" id="tag" name="tag"/>
+                                            <input type="text" class="form-control input-sm" id="tag" name="Tag"/>
                                         </div>
                                     </div>
                                     <div class="form-group">
                                         <label for="outputFormat" class="col-sm-3 control-label bold">Output Format</label>
                                         <div class="col-sm-9">
-                                            <select class="form-control input-sm" id="outputFormat" name="outputFormat"></select>
+                                            <select class="form-control input-sm" id="outputFormat" name="OutputFormat"></select>
                                         </div>
                                     </div>
                                     <div class="form-group">
                                         <label for="verbose" class="col-sm-3 control-label bold">Verbose</label>
                                         <div class="col-sm-9">
-                                            <select class="form-control input-sm" id="verbose" name="verbose"></select>
+                                            <select class="form-control input-sm" id="verbose" name="Verbose"></select>
                                         </div>
                                     </div>
                                     <div class="form-group">
                                         <label for="screenshot" class="col-sm-3 control-label bold">Screenshot</label>
                                         <div class="col-sm-9">
-                                            <select class="form-control input-sm" id="screenshot" name="screenshot"></select>
+                                            <select class="form-control input-sm" id="screenshot" name="Screenshot"></select>
                                         </div>
                                     </div>
                                     <div class="form-group">
                                         <label for="pageSource" class="col-sm-3 control-label bold">Page Source</label>
                                         <div class="col-sm-9">
-                                            <select class="form-control input-sm" id="pageSource" name="pageSource"></select>
+                                            <select class="form-control input-sm" id="pageSource" name="PageSource"></select>
                                         </div>
                                     </div>
                                     <div class="form-group">
                                         <label for="seleniumLog" class="col-sm-3 control-label bold">Selenium Log</label>
                                         <div class="col-sm-9">
-                                            <select class="form-control input-sm" id="seleniumLog" name="seleniumLog"></select>
+                                            <select class="form-control input-sm" id="seleniumLog" name="SeleniumLog"></select>
                                         </div>
                                     </div>
                                     <div class="form-group">
                                         <label for="synchroneous" class="col-sm-3 control-label bold">Synchroneous</label>
                                         <div class="col-sm-9">
-                                            <select class="form-control input-sm" id="synchroneous" name="synchroneous"></select>
+                                            <select class="form-control input-sm" id="synchroneous" name="Synchroneous"></select>
                                         </div>
                                     </div>
                                     <div class="form-group">

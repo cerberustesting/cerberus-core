@@ -91,7 +91,7 @@ public class ReadCountryEnvParam extends HttpServlet {
         try {
             JSONObject jsonResponse = new JSONObject();
             if (unique) {
-                answer = findUniqueEnvironmentList(appContext, active);
+                answer = findUniqueEnvironmentList(appContext, system, active);
                 jsonResponse = (JSONObject) answer.getItem();
             } else { // Default behaviour, we return the list of objects.
                 answer = findCountryEnvParamList(request.getParameter("system"), request.getParameter("active"), appContext, request);
@@ -207,14 +207,12 @@ public class ReadCountryEnvParam extends HttpServlet {
         return result;
     }
 
-    private AnswerItem findUniqueEnvironmentList(ApplicationContext appContext, String active) throws JSONException {
+    private AnswerItem findUniqueEnvironmentList(ApplicationContext appContext, String system, String active) throws JSONException {
         AnswerItem item = new AnswerItem();
         JSONObject jsonResponse = new JSONObject();
         cepService = appContext.getBean(ICountryEnvParamService.class);
 
-        AnswerList resp = cepService.readByVariousByCriteria("", active, 0, 0, "system", "asc", "", "");
-
-        
+        AnswerList resp = cepService.readByVariousByCriteria(system, active, 0, 0, "system", "asc", "", "");
         
         JSONArray jsonArray = new JSONArray();
         if (resp.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {//the service was able to perform the query, then we should get all values
