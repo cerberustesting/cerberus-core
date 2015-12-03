@@ -54,7 +54,7 @@ $.when($.getScript("js/pages/global/global.js")).then(function () {
 
         $("[name='typeSelect']").on("change", typeSelectHandler);
 
-        $("#run").click(sendForm_bis);
+        $("#run").click(sendForm);
 
         $("#loadFiltersBtn").click(loadTestCaseFromFilter);
 
@@ -74,7 +74,8 @@ $.when($.getScript("js/pages/global/global.js")).then(function () {
         $("#addQueue").click(checkExecution);
 
         $("#selectAll").click(function () {
-           $("#testCaseList option").prop("selected", "selected");
+            $("#testCaseList option").prop("selected", "selected");
+            updatePotentialNumber();
         });
 
         $("#resetQueue").click(function (event) {
@@ -109,6 +110,9 @@ $.when($.getScript("js/pages/global/global.js")).then(function () {
             loadRobotInfo($(this).val());
         });
 
+        $("#testCaseList").on("change", updatePotentialNumber);
+        $("#envSettingsAuto select").on("change", updatePotentialNumber);
+
     });
 });
 
@@ -138,6 +142,7 @@ function typeSelectHandler() {
         $("#envSettingsAuto select").empty();
         displayUniqueEnvList("environment", "");
     }
+    updatePotentialNumber();
 }
 
 function loadTestCaseFromFilter() {
@@ -166,19 +171,6 @@ function loadTestCaseFromFilter() {
     });
 }
 
-//function updateMultiSelect(selectName, dataToCheck, valueList) {
-//    $("#" + selectName + "Filter option").each(function () {
-//        if (valueList !== null && valueList.indexOf($(this).data("item")[dataToCheck]) === -1) {
-//            $(this).prop("checked", false);
-//            $(this).prop("disabled", true);
-//        } else {
-//            $(this).prop("disabled", false);
-//        }
-//    });
-//
-//    $("#" + selectName + "Filter").multiselect('rebuild');
-//}
-
 function appendCountryList() {
     var jqxhr = $.getJSON("FindInvariantByID", "idName=COUNTRY");
     $.when(jqxhr).then(function (data) {
@@ -191,6 +183,9 @@ function appendCountryList() {
                                 <input class="countrycb" type="checkbox" name="' + country + '"/>' + country + '\
                                 </label>');
         }
+        $("#countryList input.countrycb").each(function () {
+            $(this).on("change", updatePotentialNumber);
+        });
     });
 }
 
@@ -219,6 +214,7 @@ function loadCampaignContent(campaign) {
                             .prop("selected", true)
                             .data("item", data.contentTable[index]));
                 }
+                updatePotentialNumber();
                 hideLoader("#chooseTest");
             }
         });
@@ -282,44 +278,16 @@ function checkForms() {
         message = "Please, select at least one browser.";
         showMessageMainPage(type, message);
         return false;
+    } else if ($("#queue li").length > 1 && $("#tag").val() === "") {
+        type = getAlertType("KO");
+        message = "Please, indicate a tag for your execution.";
+        showMessageMainPage(type, message);
+        return false;
     }
     return true;
 }
 
 function sendForm() {
-    if (checkForms()) {
-        console.log("STARTED GENERATIONG FORM");
-        var $form = $("#AddToExecutionQueue");
-        var countries = getCountries();
-        var env = getEnvironment();
-        var $input = $('<input>').prop("type", "hidden");
-        var browser = $("#browser").val() ? $("#browser").val() : [];
-        var testcases = $("#queue li");
-
-        testcases.each(function () {
-            var testcase = $(this).data("item");
-            $form.append($input.clone().prop("name", "SelectedTest").val("Test=" + encodeURIComponent(testcase.test) + "&TestCase=" + encodeURIComponent(testcase.testcase)));
-        });
-
-        for (var index = 0; index < countries.length; index++) {
-            $form.append($input.clone().prop("name", "Country").val(countries[index]));
-        }
-        for (var index = 0; index < env.length; index++) {
-            $form.append($input.clone().prop("name", "Environment").val(env[index]["env"]));
-        }
-        for (var index = 0; index < browser.length; index++) {
-            $form.append($input.clone().prop("name", "Browser").val(browser[index]));
-        }
-
-        $("#manualURLATQ").val("N");
-        setRobotForm($form, $input);
-        setExecForm();
-        console.log("SUBMIT");
-        $form.submit();
-    }
-}
-
-function sendForm_bis() {
     if (checkForms()) {
         var data = {};
         var executionList = $("#queue li");
@@ -333,61 +301,80 @@ function sendForm_bis() {
             executionArray.push(data);
         });
 
-        console.log(robotSettings);
-        console.log(execSettings);
-        console.log(browsers);
-        console.log(executionArray);
-        
-        for (var key in robotSettings) {
-            data[key] = robotSettings[key];
-        }
-        for (var key in execSettings) {
-            data[key] = execSettings[key];
-        }
-//        data.push("browsers", browsers);
-//        data.push("toAddList", executionArray);
-        data.browsers = JSON.stringify(browsers);
-        data.toAddList = JSON.stringify(executionArray);
-        data.push = true;
+        if (executionArray.length === 1) {
+            //Call RunTestCase
+            setData(executionArray);
+            $("#RunTestCase").submit();
+        } else if (executionArray.length > 1) {
 
-        $.ajax({
-            "url": "GetExecutionQueue",
-            method: "POST",
-            data: data,
-            async: true,
-            success: function (data) {
-                console.log("SUCCESS");
-            },
-            error: showUnexpectedError
-        });
+            for (var key in robotSettings) {
+                data[key] = robotSettings[key];
+            }
+            for (var key in execSettings) {
+                data[key] = execSettings[key];
+            }
+            
+            if ($('input[name="envSettings"]:checked').val() === "manual") {
+                data.ManualHost = $("#myhost").val();
+                data.ManualContextRoot = $("#mycontextroot").val();
+                data.ManualLoginRelativeURL = $("#myloginrelativeurl").val();
+                data.ManualEnvData = $("#myenvdata").val();
+            }
+            
+            data.browsers = JSON.stringify(browsers);
+            data.toAddList = JSON.stringify(executionArray);
+            data.push = true;
+
+            $.ajax({
+                url: "GetExecutionQueue",
+                method: "POST",
+                data: data,
+                async: true,
+                success: function (data) {
+                    if (data.redirect) {
+                        window.location.replace(data.redirect);
+                    }
+                },
+                error: showUnexpectedError
+            });
+        }
     }
 }
 
-function setRobotForm($form, $input) {
-    if ($("#robotConfig").val() === "") {
-        $("#manualRobotATQ").val("Y");
-        $("#ss_ipATQ").val($("#seleniumIP").val());
-        $("#ss_pATQ").val($("#seleniumPort").val());
-        $("#versionATQ").val($("#version").val());
-        $("#platformATQ").val($("#platform").val());
+function setData(executionArray) {
+    var browser = $("#browser").val() ? $("#browser").val() : [""];
+    var settings = $('input[name="envSettings"]:checked').val();
+
+    if (settings === "auto") {
+        $("#manualURLATQ").val("false");
+        $("#envATQ").val(executionArray[0].env);
     } else {
-        $("#manualRobotATQ").val("N");
-        $form.append($input.clone().prop("name", "robot").val($("#robotConfig").val()));
+        $("#manualURLATQ").val("true");
     }
-}
 
-function setExecForm() {
-    $("#tagATQ").val($("#tag").val());
+    $("#testATQ").val(executionArray[0].test);
+    $("#testcaseATQ").val(executionArray[0].testcase);
+    $("#countryATQ").val(executionArray[0].country);
+    $("#browserATQ").val(browser[0]);
+    $("#myhostATQ").val($("#myhost").val());
+    $("#mycontextrootATQ").val($("#mycontextroot").val());
+    $("#myloginrelativeurlATQ").val($("#myloginrelativeurl").val());
+    $("#myenvdataATQ").val($("#myenvdata").val());
     $("#outputformatATQ").val($("#outputFormat").val());
-    $("#verboseATQ").val($("#verbose").val());
     $("#screenshotATQ").val($("#screenshot").val());
+    $("#verboseATQ").val($("#verbose").val());
+    $("#timeoutATQ").val($("#timeout").val());
+    $("#synchroneousATQ").val($("#synchroneous").val());
     $("#pageSourceATQ").val($("#pageSource").val());
     $("#seleniumLogATQ").val($("#seleniumLog").val());
-    $("#synchroneousATQ").val($("#synchroneous").val());
-    $("#timeoutATQ").val($("#timeout").val());
-    $("#retriesATQ").val($("#retries").val());
     $("#manualExecutionATQ").val($("#manualExecution").val());
-    $("#statusPageATQ").val("");
+    $("#retriesATQ").val($("#retries").val());
+    $("#screenSizeATQ").val($("#screenSize").val());
+    $("#manualRobotATQ").val($("#robotConfig").val());
+    $("#ss_ipATQ").val($("#seleniumIP").val());
+    $("#ss_pATQ").val($("#seleniumPort").val());
+    $("#versionATQ").val($("#browserVersion").val());
+    $("#platformATQ").val($("#platform").val());
 }
 
 /** UTILITY FUNCTIONS FOR QUEUE **/
@@ -417,19 +404,11 @@ function getEnvironment() {
 
         if (envListAuto !== null) {
             for (var index = 0; index < envListAuto.length; index++) {
-                var env = {"env": envListAuto[index]};
-
-                envList.push(env);
+                envList.push(envListAuto[index]);
             }
         }
     } else if (settings === "manual") {
-        var env = {"env": "MANUAL",
-            "host": $("#myhost").val(),
-            "url": $("#mycontextroot").val(),
-            "loginurl": $("#myloginrelativeurl").val(),
-            "envdata": $("#myenvdata").val()};
-
-        envList.push(env);
+        envList.push("MANUAL");
     }
 
     return envList;
@@ -458,6 +437,15 @@ function updateNotValidNumber() {
 
 function updateValidNumber() {
     $("#validNumber").text($("#queue li").length);
+}
+
+function updatePotentialNumber() {
+    var testCaseSelected = $("#testCaseList option:selected").length;
+    var envSelected = $("#envSettingsAuto select option:selected").length;
+    var countrySelected = getCountries().length;
+    var result = testCaseSelected * envSelected * countrySelected;
+
+    $("#potentialNumber").text(result);
 }
 
 function addToQueue(executionList) {
@@ -514,7 +502,7 @@ function checkExecution() {
         $.ajax({
             url: "GetExecutionQueue",
             method: "POST",
-            data: { "check": true,
+            data: {"check": true,
                 "push": false,
                 "testcase": JSON.stringify(testcase),
                 "environment": JSON.stringify(environment),

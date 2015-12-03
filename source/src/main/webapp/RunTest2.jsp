@@ -177,6 +177,10 @@
                                 <div id="countryList" name="countryList" style="padding-top: 4%;"></div>
                             </div>
                         </div>
+                        <li class="list-group-item list-group-item-info col-lg-offset-3 col-lg-6" id="potential" style="margin-top: 25px;">
+                            <span class="badge" id="potentialNumber">0</span>
+                            Potential additions to the queue
+                        </li>
                         <div class="row">
                             <div class="col-lg-offset-3 col-lg-6 text-center" style="margin-top: 25px;">
                                 <button type="button" class="btn btn-primary" id="addQueue"> Add selection to queue </button>
@@ -318,9 +322,18 @@
                     </div>
                 </div>
 
-                <form method="post" action="AddToExecutionQueue" id="AddToExecutionQueue">
+                <form method="get" action="RunTestCase" id="RunTestCase">
+                    <input type="hidden" name="Test" id="testATQ">
+                    <input type="hidden" name="TestCase" id="testcaseATQ">
+                    <input type="hidden" name="Country" id="countryATQ">
+                    <input type="hidden" name="Environment" id="envATQ">
+                    <input type="hidden" name="Browser" id="browserATQ">
                     <input type="hidden" name="manualURL" id="manualURLATQ">
-                    <input type="hidden" name="manualRobot" id="manualRobotATQ">
+                    <input type="hidden" name="myhost" id="myhostATQ">
+                    <input type="hidden" name="mycontextroot" id="mycontextrootATQ">
+                    <input type="hidden" name="myloginrelativeurl" id="myloginrelativeurlATQ">
+                    <input type="hidden" name="myenvdata" id="myenvdataATQ">
+                    <input type="hidden" name="robot" id="manualRobotATQ">
                     <input type="hidden" name="ss_ip" id="ss_ipATQ">
                     <input type="hidden" name="ss_p" id="ss_pATQ">
                     <input type="hidden" name="version" id="versionATQ">
@@ -335,7 +348,7 @@
                     <input type="hidden" name="timeout" id="timeoutATQ">
                     <input type="hidden" name="retries" id="retriesATQ">
                     <input type="hidden" name="manualExecution" id="manualExecutionATQ">
-                    <input type="hidden" name="statusPage" id="statusPageATQ">
+                    <input type="hidden" name="statusPage" id="screenSizeATQ">
                 </form>
 
                 <footer class="footer">
@@ -347,9 +360,9 @@
                     <span class="badge" id="notValidNumber" style="cursor: pointer;"></span>
                     Some executions couldn't be added to the queue
                 </li>
-                <li class="list-group-item list-group-item-info" id="valid">
+                <li class="list-group-item list-group-item-success" id="valid">
                     <span class="badge" id="validNumber">0</span>
-                    Test Cases in queue
+                    Executions in queue
                 </li>
                 <div class="panel panel-default">
                     <div class="panel-heading card" data-toggle="collapse" data-target="#queuePanel">
@@ -362,7 +375,6 @@
                         <ul class="list-group" id="queue" style="height: 870px; overflow: hidden; overflow-y: scroll;border: 1px solid #CCC; border-radius: 4px;"></ul>
                     </div>
                 </div>
-                <p>Launching N tests on the environments : TATA, TITI, TOTO in the countries : FR, IT, BE on the browser : firefox, chrome, android</p>
                 <div style="padding-top: 15px;">
                     <button type="button" class="btn btn-primary btn-lg btn-block" id="run">Run</button>
                 </div>

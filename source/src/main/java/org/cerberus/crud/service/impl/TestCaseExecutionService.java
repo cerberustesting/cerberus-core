@@ -150,17 +150,17 @@ public class TestCaseExecutionService implements ITestCaseExecutionService {
     }
 
     @Override
-    public List<TestCaseExecution> createAllTestCaseExecution(List<TCase> testCaseList, List<CountryEnvParam> envList, List<String> countryList) {
+    public List<TestCaseExecution> createAllTestCaseExecution(List<TCase> testCaseList, List<String> envList, List<String> countryList) {
         List<TestCaseExecution> result = new ArrayList<TestCaseExecution>();
         
         for (TCase tc : testCaseList) {
-            for (CountryEnvParam cep : envList) {
+            for (String environment : envList) {
                 for (String country : countryList) {
                     TestCaseExecution execution = new TestCaseExecution();
                     
                     execution.setTest(tc.getTest());
                     execution.setTestCase(tc.getTestCase());
-                    execution.setEnvironment(cep.getEnvironment());
+                    execution.setEnvironment(environment);
                     execution.setCountry(country);
                     result.add(execution);
                 }

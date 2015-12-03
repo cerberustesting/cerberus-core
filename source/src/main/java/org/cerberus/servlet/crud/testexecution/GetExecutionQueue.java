@@ -31,7 +31,6 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import org.apache.log4j.Logger;
-import org.cerberus.crud.entity.CountryEnvParam;
 import org.cerberus.crud.entity.MessageEvent;
 import org.cerberus.crud.entity.MessageGeneral;
 import org.cerberus.crud.entity.TCase;
@@ -54,6 +53,7 @@ import org.cerberus.exception.FactoryCreationException;
 import org.cerberus.service.engine.IExecutionCheckService;
 import org.cerberus.service.executor.ExecutionThreadPoolService;
 import org.cerberus.util.ParameterParserUtil;
+import org.cerberus.util.StringUtil;
 import org.cerberus.util.answer.AnswerItem;
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -119,7 +119,7 @@ public class GetExecutionQueue extends HttpServlet {
      */
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException, JSONException, CerberusException {
-        AnswerItem answer = new AnswerItem();
+        AnswerItem answer = new AnswerItem(new MessageEvent(MessageEventEnum.DATA_OPERATION_OK));
         JSONObject jsonResponse = new JSONObject();
         ApplicationContext appContext = WebApplicationContextUtils.getWebApplicationContext(this.getServletContext());
 
@@ -139,8 +139,11 @@ public class GetExecutionQueue extends HttpServlet {
             JSONArray environmentList = new JSONArray(request.getParameter("environment"));
             JSONArray countryList = new JSONArray(request.getParameter("countries"));
 
+            /**
+             * Creating all the list from the JSON to call the services
+             */
             List<TCase> TCList = new ArrayList<TCase>();
-            List<CountryEnvParam> envList = new ArrayList<CountryEnvParam>();
+            List<String> envList = new ArrayList<String>();
             List<String> countries = new ArrayList<String>();
 
             for (int index = 0; index < testCaseList.length(); index++) {
@@ -153,11 +156,9 @@ public class GetExecutionQueue extends HttpServlet {
             }
 
             for (int index = 0; index < environmentList.length(); index++) {
-                JSONObject envJson = environmentList.getJSONObject(index);
-                CountryEnvParam cep = new CountryEnvParam();
+                String environment = environmentList.getString(index);
 
-                cep.setEnvironment(envJson.getString("env"));
-                envList.add(cep);
+                envList.add(environment);
             }
 
             for (int index = 0; index < countryList.length(); index++) {
@@ -231,6 +232,10 @@ public class GetExecutionQueue extends HttpServlet {
                 execution.setBrowser("firefox");
 
                 if (exception == false) {
+                    /**
+                     * Checking the execution as it would be checked in the
+                     * engine
+                     */
                     MessageGeneral message = execCheckService.checkTestCaseExecution(execution);
                     if (!(message.equals(new MessageGeneral(MessageGeneralEnum.EXECUTION_PE_CHECKINGPARAMETERS)))) {
                         validator.setValid(false);
@@ -265,6 +270,7 @@ public class GetExecutionQueue extends HttpServlet {
             IFactoryTestCaseExecutionInQueue inQueueFactoryService = appContext.getBean(IFactoryTestCaseExecutionInQueue.class);
             ITestCaseExecutionInQueueService inQueueService = appContext.getBean(ITestCaseExecutionInQueueService.class);
             long defaultWait = Long.parseLong(parameterService.findParameterByKey("selenium_defaultWait", "").getValue());
+            int addedToQueue = 0;
             JSONArray toAddList = new JSONArray(request.getParameter("toAddList"));
             JSONArray browsers = new JSONArray(request.getParameter("browsers"));
             Date requestDate = new Date();
@@ -304,7 +310,9 @@ public class GetExecutionQueue extends HttpServlet {
                 if (toAdd.getString("env").equals("MANUAL")) {
                     manualURL = true;
                 }
-
+                /**
+                 * Creating executions for each browser
+                 */
                 for (int iterBrowser = 0; iterBrowser < browsers.length(); iterBrowser++) {
                     String browser = browsers.getString(iterBrowser);
 
@@ -335,13 +343,23 @@ public class GetExecutionQueue extends HttpServlet {
                                 requestDate,
                                 retries,
                                 manualExecution);
+                        /**
+                         * Insert the Execution in the Queue
+                         */
                         inQueueService.insert(tceiq);
+                        addedToQueue++;
                     } catch (FactoryCreationException ex) {
+                        String errorMessage = "Unable to feed the execution queue due to " + ex.getMessage();
                         LOG.error("Unable to create TestCaseExecutionInQueue : " + ex.toString());
+                        answer.setResultMessage(new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED));
+                        answer.getResultMessage().setDescription(errorMessage);
                     }
                 }
             }
 
+            /**
+             * Trigger the execution
+             */
             try {
                 executionThreadService.searchExecutionInQueueTableAndTriggerExecution();
             } catch (CerberusException ex) {
@@ -360,8 +378,10 @@ public class GetExecutionQueue extends HttpServlet {
                 answer.setResultMessage(new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED));
                 answer.getResultMessage().setDescription(errorMessage);
             }
-//            jsonResponse.put("messageType", answer.getResultMessage().getMessage().getCodeString());
-//            jsonResponse.put("message", answer.getResultMessage().getDescription());
+            jsonResponse.put("messageType", answer.getResultMessage().getMessage().getCodeString());
+            jsonResponse.put("message", answer.getResultMessage().getDescription());
+            jsonResponse.put("addedToQueue", addedToQueue);
+            jsonResponse.put("redirect", "ReportingExecutionByTag.jsp?enc=1&Tag=" + StringUtil.encodeAsJavaScriptURIComponent(tag));
         }
 
         response.setContentType("application/json");

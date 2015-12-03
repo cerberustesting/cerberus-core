@@ -131,5 +131,5 @@ public interface ITestCaseExecutionService {
 
     public AnswerList readDistinctColumnByTag(String tag, boolean env, boolean country, boolean browser, boolean app);
 
-    List<TestCaseExecution> createAllTestCaseExecution(List<TCase> testCaseList, List<CountryEnvParam> envList, List<String> country);
+    List<TestCaseExecution> createAllTestCaseExecution(List<TCase> testCaseList, List<String> envList, List<String> country);
 }
