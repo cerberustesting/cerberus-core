@@ -20,6 +20,7 @@
 package org.cerberus.util;
 
 import java.util.List;
+import org.apache.commons.lang3.StringUtils;
 
 /**
  *
@@ -87,5 +88,21 @@ public class SqlUtil {
         }
 
         return stringBuilder.toString();
+    }
+    /**
+     * Generates an IN (?, ?) clause. The IN clause uses the ? wildcard to represent each parameter included in the IN's set.
+     * @param field
+     * @param list
+     * @return 
+     */
+     public static String generateInClause(String field, List<String> list){
+        StringBuilder clause = new StringBuilder();
+        if(list != null && list.size() > 0){
+            clause.append(field).append( " in (");            
+            clause.append(StringUtils.repeat("?, ", list.size()));
+            clause.append(") ");
+        }
+        
+        return clause.toString().replace("?, )", "?)");
     }
 }

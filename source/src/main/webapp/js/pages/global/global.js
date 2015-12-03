@@ -592,17 +592,23 @@ function TableConfigurationsClientSide(divId, data, aoColumnsFunction, defineLen
     this.aaData = data;
     if (defineLenghtMenu) {
         this.lengthMenu = [10, 25, 50, 100];
+        this.lengthChange = true;
+        this.paginate = false;
+        this.displayLength = 10;
+        this.paginationType = "full_numbers";
+    }else{
+        this.paginate = false;
+        this.lengthChange = false;
+        this.displayLength = "All";
     }
     this.processing = false;
     this.serverSide = false;
     //not mandatory properties, and default values
     this.searchText = "";
     this.searchMenu = "";
-    this.tableWidth = "1500px";
-    this.displayLength = 10;
-    this.bJQueryUI = true; //Enable jQuery UI ThemeRoller support (required as ThemeRoller requires some slightly different and additional mark-up from what DataTables has traditionally used
-    this.paginate = true;
-    this.paginationType = "full_numbers";
+    this.tableWidth = "1500px";    
+    this.bJQueryUI = true; //Enable jQuery UI ThemeRoller support (required as ThemeRoller requires some slightly different and additional mark-up from what DataTables has traditionally used    
+    
     //Enable or disable automatic column width calculation. This can be disabled as an optimisation (it takes some time to calculate the widths) if the tables widths are passed in using aoColumns.
     this.autoWidth = false;
     //Enable or disable state saving. When enabled a cookie will be used to save table display information such as pagination information, display length, filtering and sorting. As such when the end user reloads the page the display will match what they had previously set up
@@ -630,6 +636,7 @@ function TableConfigurationsServerSide(divId, ajaxSource, ajaxProp, aoColumnsFun
     this.processing = true;
     this.serverSide = true;
     this.lengthMenu = [10, 25, 50, 100];
+    this.lengthChange = true;
     //not mandatory properties, and default values
     this.searchText = "";
     this.searchMenu = "";
@@ -702,7 +709,7 @@ function createDataTableWithPermissions(tableConfigurations, callbackfunction) {
     configs["columns"] = tableConfigurations.aoColumnsFunction;
     configs["colVis"] = tableConfigurations.lang.colVis;
     configs["scrollX"] = tableConfigurations.scrollX;
-    configs["lengthChange"] = true;
+    configs["lengthChange"] = tableConfigurations.lengthChange;
     configs["orderClasses"] = tableConfigurations.orderClasses;
     configs["bDeferRender"] = tableConfigurations.bDeferRender;
 
@@ -788,7 +795,7 @@ function createDataTable(tableConfigurations, callback, userCallbackFunction) {
     configs["language"] = tableConfigurations.lang.table;
     configs["columns"] = tableConfigurations.aoColumnsFunction;
     configs["colVis"] = tableConfigurations.lang.colVis;
-    configs["lengthChange"] = true;
+    configs["lengthChange"] = tableConfigurations.lengthChange;
     configs["lengthMenu"] = tableConfigurations.lengthMenu;
     configs["createdRow"] = callback;
     configs["orderClasses"] = tableConfigurations.orderClasses;
@@ -1100,3 +1107,70 @@ function escapeHtml(unsafe) {
             .replace(/\\/g, '\\\\')
             .replace(/'/g, "\\'");
 }
+
+function generateExecutionLink(status, id) {
+    var result = "";
+    if (status === "NE") {
+        result = "./RunTests.jsp?queuedExecution=" + id;
+    } else {
+        result = "./ExecutionDetail.jsp?id_tc=" + id;
+    }
+    return result;
+}
+
+
+function getRowClass(status) {
+    var rowClass = [];
+
+    rowClass["panel"] = "panel" + status;
+    if (status === "OK") {
+        rowClass["glyph"] = "glyphicon glyphicon-ok";
+    } else if (status === "KO") {
+        rowClass["glyph"] = "glyphicon glyphicon-remove";
+    } else if (status === "FA") {
+        rowClass["glyph"] = "fa fa-bug";
+    } else if (status === "CA") {
+        rowClass["glyph"] = "fa fa-life-ring";
+    } else if (status === "PE") {
+        rowClass["glyph"] = "fa fa-hourglass-half";
+    } else if (status === "NE") {
+        rowClass["glyph"] = "fa fa-clock-o";
+    } else if (status === "NA") {
+        rowClass["glyph"] = "fa fa-question";
+    } else {
+        rowClass["glyph"] = "";
+    }
+    return rowClass;
+}
+/**
+ * Function that allows us to retrieve all url parameters. Also, it groups values by parameter name. E.g., ?country=BE&country=CH
+ * @param {type} param
+ */
+$.extend({
+    getUrlVars: function() {
+        var vars = [], hash;
+        var hashes = window.location.href.slice(window.location.href.indexOf('?') + 1).split('&');
+        for (var i = 0; i < hashes.length; i++) {
+
+            hash = hashes[i].split('=');
+            if (hash.length > 1) {
+                var values = [];
+
+                if (vars.indexOf(hash[0]) > -1) { //hash already exists
+                    values = vars[hash[0]];
+                } else {
+                    vars.push(hash[0]);
+                }
+
+                values.push(hash[1]);
+                vars[hash[0]] = values;
+            }
+        }
+
+
+        return vars;
+    },
+    getUrlVar: function(name) {
+        return $.getUrlVars()[name];
+    }
+});

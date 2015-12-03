@@ -17,9 +17,25 @@
  * You should have received a copy of the GNU General Public License
  * along with Cerberus.  If not, see <http://www.gnu.org/licenses/>.
  */
+
+var globalGroupList;
+var globalTCStatusList;
+var globalControlStatusList;
 $.when($.getScript("js/pages/global/global.js")).then(function() {
     $(document).ready(function() {
         initPage();
+        $('a[id="tab4Text"]').on('shown.bs.tab', function (e) {
+            //need to redraw the table to avoid problems with misaliged columns
+            if ($.fn.DataTable.isDataTable('#statisticsPerTCGroup')) {
+                $('#statisticsPerTCGroup').dataTable().fnDraw(true);
+            }
+        });
+        $('a[id="tab3Text"]').on('shown.bs.tab', function (e) {
+            //need to redraw the table to avoid problems with misaliged columns
+            if ($.fn.DataTable.isDataTable('#statisticsPerTCStatus')) {
+                $('#statisticsPerTCStatus').dataTable().fnDraw(true);
+            }
+        });
     });
 });
 
@@ -35,14 +51,14 @@ function initPage() {
     $("#selectFiltersButton").click(selectFiltersClickHandler);
     $("#setFiltersButton").click(setFiltersClickHandler);
     $("#getURLButton").click(getURLClickHandler);
-    
+
     loadFilters();
     //$("#exportList").change(controlExportRadioButtons);
     //loadSummaryTableOptions();
 }
 
 function displayPageLabel(doc) {
-    //TODO define translations in database versionining service
+    //TODO:FN define translations in database versionining service
 }
 
 function parseReportingFavoriteURLFormat(favorite) {
@@ -133,75 +149,75 @@ function loadPreferences() {
 
 function extractPreferencesFromURL(urlValues) {
     var preferences = {};
- 
+
     //filters that should have one value only - we select the last one
-    if(Boolean(urlValues["cm"])){
+    if (Boolean(urlValues["cm"])) {
         var size = urlValues["cm"].length;
-        var lastValue = urlValues["cm"][size-1];
+        var lastValue = urlValues["cm"][size - 1];
         preferences["cm"] = lastValue;
     }
-    
-    if(Boolean(urlValues["ip"])){
+
+    if (Boolean(urlValues["ip"])) {
         var size = urlValues["ip"].length;
-        var lastValue = urlValues["ip"][size-1];
+        var lastValue = urlValues["ip"][size - 1];
         preferences["ip"] = lastValue;
     }
-    
-    if(Boolean(urlValues["p"])){
+
+    if (Boolean(urlValues["p"])) {
         var size = urlValues["p"].length;
-        var lastValue = urlValues["p"][size-1];
+        var lastValue = urlValues["p"][size - 1];
         preferences["p"] = lastValue;
     }
-    
-    if(Boolean(urlValues["t"])){
+
+    if (Boolean(urlValues["t"])) {
         var size = urlValues["t"].length;
-        var lastValue = urlValues["t"][size-1];
+        var lastValue = urlValues["t"][size - 1];
         preferences["t"] = lastValue;
     }
-    
-    if(Boolean(urlValues["br"])){
+
+    if (Boolean(urlValues["br"])) {
         var size = urlValues["br"].length;
-        var lastValue = urlValues["br"][size-1];
+        var lastValue = urlValues["br"][size - 1];
         preferences["br"] = lastValue;
     }
     //filters with more than one value
     //country
-    if(Boolean(urlValues["co"])){
+    if (Boolean(urlValues["co"])) {
         preferences["co"] = urlValues["co"];
     }
     //project
-    if(Boolean(urlValues["prj"])){
+    if (Boolean(urlValues["prj"])) {
         preferences["prj"] = urlValues["prj"];
     }
     //active
-    if(Boolean(urlValues["a"])){
-        preferences["a"] = urlValues["a"];    
+    if (Boolean(urlValues["a"])) {
+        preferences["a"] = urlValues["a"];
     }
     //status
-    if(Boolean(urlValues["s"])){
+    if (Boolean(urlValues["s"])) {
         preferences["s"] = urlValues["s"];
     }
     //group
-    if(Boolean(urlValues["g"])){
+    if (Boolean(urlValues["g"])) {
         preferences["g"] = urlValues["g"];
     }
     //environment
-    if(Boolean(urlValues["e"])){
+    if (Boolean(urlValues["e"])) {
         preferences["e"] = urlValues["e"];
     }
     //priority
-    if(Boolean(urlValues["pr"])){
+    if (Boolean(urlValues["pr"])) {
         preferences["pr"] = urlValues["pr"];
     }
     //browser
-    if(Boolean(urlValues["b"])){
+    if (Boolean(urlValues["b"])) {
         preferences["b"] = urlValues["b"];
     }
     //execution status
-    if(Boolean(urlValues["es"])){
+    if (Boolean(urlValues["es"])) {
         preferences["es"] = urlValues["es"];
     }
-    
+
     return preferences;
 }
 function loadFilters() {
@@ -276,9 +292,13 @@ function loadFilters() {
         loadPriorityFilter(priorityList);
         loadActiveFilter(activeList);
         loadTCStatusFilter(tcStatusList);
+        globalTCStatusList = tcStatusList;
         loadGroupFilter(groupList);
+        globalGroupList = groupList;
         loadTestCaseExecutionStatus(executionStatusList);
-
+        //TODO: load this list globalControlStatusList to create the statistics
+        
+        //
         //comment
         loadTextComponent("#comment", preferences.cm);
         //ip
@@ -429,11 +449,391 @@ function readAndLoadTargetRevisionAndSprint(system) {
  * Search and reset handlers
  */
 function searchExecutionsClickHandler() {
-    alert("search for executions");
     //form to serialize
-    //executionReportingForm
+    var form = $('#executionReportingForm');
+
+    var countriesSelected = [];
+    $("input[type='checkbox'][name='country']").each(function(idx, obj) {
+        if ($(this).prop("checked")) {
+            countriesSelected.push($(this).val());
+        }
+    });
+    countriesSelected.sort();
+
+    var browsersSelected = [];
+    $("input[type='checkbox'][name='browser']").each(function(idx, obj) {
+        if ($(this).prop("checked")) {
+            browsersSelected.push($(this).val());
+        }
+    });
+    browsersSelected.sort();
+
+    if (browsersSelected.length === 0 || countriesSelected.lenght === 0) {
+        showMessageMainPage("danger", "Browser and Country are mandatory filters!"); //TODO add translations
+        return;
+    }
+    var system = $("#MySystem").val();
+    //sends the system and all information available in the form
+    var jqxhr = $.post("ReadTestCaseExecution", "system=" + system + "&" + form.serialize(), "json");//TODO:FN add getreport_1 to the servlet
+
+    $.when(jqxhr).then(function(result) {
+        //check how many countries should be displayed
+        $('#executionTable').removeClass("invisible");
+
+
+        if ($.fn.DataTable.isDataTable('#executionTable')) {
+            //    $('#executionTable').dataTable().fnClearTable();
+            //$("#executionTable th[class='dynamicHeader']").remove();
+            $('#executionTable').dataTable().fnDestroy(true);
+            reconstructTable();
+        }
+
+        //adds the header columns based on the countries and browser selected
+
+        addCountryandBrowserColumnHeaders(countriesSelected, browsersSelected);
+        var configurations = new TableConfigurationsClientSide("executionTable", result["contentTable"],
+                aoColumnsFuncReportExecution("executionTable", countriesSelected, browsersSelected));
+
+
+        configurations.scrollX = true;
+        createDataTable(configurations);
+
+        createSummaryTables(result["contentTable"], countriesSelected, browsersSelected);
+
+        //enables the get url button
+        $("#getURLButton").removeProp("disabled");
+    });
 }
 
+function createSummaryTables(data, countriesSelected, browsersSelected) {
+    var recordsPerGroup = [];
+    var recordsPerTCStatus = [];
+
+    $.each(data, function(idx, row) {
+        var testName = row.test;
+        var groupName = row.group;
+        var tcStatusName = row.status;
+
+        var elementGroup = null, elementTCstatus = null;
+
+        $.each(recordsPerGroup, function(idxTest, testObject) {
+
+            if (testObject.test === testName) {
+                elementGroup = testObject;
+                $.each(testObject.data, function(idxGroup, groupObject) {
+                    groupObject.total++;
+                    testObject.data[idxGroup] = groupObject;
+                    recordsPerGroup[idxTest] = testObject;
+                    return;
+                });
+
+            }
+        });
+
+        $.each(recordsPerTCStatus, function(idxTest, testObject) {
+            if (testObject.test === testName) {
+                elementTCstatus = testObject;
+                $.each(testObject.data, function(idxStatus, tcStatusObj) {
+                    tcStatusObj.total++;
+                    testObject.data[idxStatus] = tcStatusObj;
+                    recordsPerTCStatus[idxTest] = testObject;
+                    return;
+                });
+
+            }
+        });
+
+
+
+        if (elementGroup === null) {
+            var groupSet = [];
+            var eGroup = {name: groupName, total: 1};
+            groupSet.push(eGroup);
+            elementGroup = {test: testName, data: groupSet};
+            recordsPerGroup.push(elementGroup);
+        }
+
+        if (elementTCstatus === null) {
+            var tcStatusSet = [];
+            var eTcStatus = {name: tcStatusName, total: 1};
+            tcStatusSet.push(eTcStatus);
+            elementTCstatus = {test: testName, data: tcStatusSet};
+            recordsPerTCStatus.push(elementTCstatus);
+
+        }
+
+        //TODO implement statistics per control status
+    });
+
+    /*drawTotalsPerExecutionStatus(recordsPerGroup);*/
+    //TODO: check if there are problems when we click the search
+    drawTotalsPerTCStatus(recordsPerTCStatus);
+    drawTotalsPerGroup(recordsPerGroup);
+}
+function drawTotalsPerGroup(data) {
+    var dataSet = getStatisticsDataSet(data, globalGroupList);
+    var dataSetTable = dataSet["dataSetTable"];
+
+    if ($.fn.DataTable.isDataTable('#statisticsPerTCGroup')) {
+        $('#statisticsPerTCGroup').dataTable().fnDestroy(true);
+        recreateGroupTable();
+    }
+
+    
+    var configurations = new TableConfigurationsClientSide("statisticsPerTCGroup", dataSetTable, aoColumnsFuncAux(globalGroupList));
+
+    configurations.scrollX = true;
+    createDataTable(configurations);
+    //addColumnHeaders(globalGroupList, "statisticsPerTCGroupHeader");
+
+    var totalTests = [];
+    totalTests = dataSet["totalTestsData"];
+    //add total tests to foot
+    var $tr = $('<tr>');
+    $tr.addClass("summaryTotal");
+    $.each(totalTests, function(idx, totalValue) {
+        var $td = $('<td>');
+        $td.text(totalValue);
+        $td.addClass("width150");
+        $tr.append($td);
+    });
+
+    $('#statisticsPerTCGroupFoot').append($tr);
+    $('#statisticsPerTCGroupFoot td:first').addClass("width200");
+    $('#statisticsPerTCGroup').removeAttr('style');
+}
+
+
+
+function recreateGroupTable() {
+    var htmlToAppend = '<table id="statisticsPerTCGroup" class="table table-hover display">';
+    htmlToAppend += '<thead id="statisticsPerTCGroupHeader"></thead>';
+    htmlToAppend += '<tbody></tbody><tfoot id="statisticsPerTCGroupFoot"></tfoot></table>';
+    $("#statisticsPerTCGroupArea").append(htmlToAppend);
+}
+function recreateTCStatusTable() {
+    var htmlToAppend = '<table id="statisticsPerTCStatus" class="table table-hover display">';
+    htmlToAppend += '<thead id="statisticsPerTCStatusHeader"></thead>';
+    htmlToAppend += '<tbody></tbody><tfoot id="statisticsPerTCStatusFoot"></tfoot></table>';
+    $("#statisticsPerTCStatusArea").append(htmlToAppend);
+}
+function drawTotalsPerTCStatus(data) {
+    var dataSet = getStatisticsDataSet(data, globalTCStatusList);
+    var dataSetTable = dataSet["dataSetTable"];
+
+    if ($.fn.DataTable.isDataTable('#statisticsPerTCStatus')) {
+        $('#statisticsPerTCStatus').dataTable().fnDestroy(true);
+        recreateTCStatusTable();
+    }
+
+    
+    var configurations = new TableConfigurationsClientSide("statisticsPerTCStatus", dataSetTable, aoColumnsFuncAux(globalTCStatusList));
+
+    configurations.scrollX = true;
+    createDataTable(configurations);
+    //addColumnHeaders(globalGroupList, "statisticsPerTCGroupHeader");
+
+    var totalTests = [];
+    totalTests = dataSet["totalTestsData"];
+    //add total tests to foot
+    var $tr = $('<tr>');
+    $tr.addClass("summaryTotal");
+    $.each(totalTests, function(idx, totalValue) {
+        var $td = $('<td>');
+        $td.text(totalValue);
+        $td.addClass("width150");
+        $tr.append($td);
+    });
+
+    $('#statisticsPerTCStatusFoot').append($tr);
+    $('#statisticsPerTCStatusFoot td:first').addClass("width200");
+    $('#statisticsPerTCStatus').removeAttr('style');
+
+}
+function drawTotalsPerExecutionStatus(data) {
+//TODO: implement this
+}
+
+function getStatisticsDataSet(dataSet, globalList) {
+    var dataSetTable = [];
+    var row = 0;
+    var totalTests = {};
+    totalTests["total"]  = "Total"; //add translations
+    //Add header
+    $.each(dataSet, function(idx, testObj) {
+        var rowData = {};
+
+        var totalRow = 0;
+        rowData["test"] = testObj.test;
+        $.each(globalList, function(idx, item) {
+            if (!totalTests.hasOwnProperty(item.value)) {
+                totalTests[item.value] = 0;
+            }
+            var found = false;
+            var total = -1;
+            $.each(testObj.data, function(idxGroup, statistic) {
+                if (statistic.name === item.value) {
+                    totalRow += statistic.total;
+                    total = statistic.total;
+                    found = true;
+
+
+                }
+            });
+            if (!found) {
+                total = 0;
+            }
+            rowData[item.value] = total;
+            totalTests[item.value] += total;
+            //totalTests["globalTotal"] += total;
+        });
+        rowData["totalRow"] = totalRow;
+        dataSetTable.push(rowData);
+        row++;
+    });
+
+    var data = {dataSetTable: dataSetTable, totalTestsData: totalTests};
+    return data;
+}
+
+function aoColumnsFuncAux(globalList) {
+    var aoColumns = [];
+    aoColumns.push({className: "width200", "sName": "test", "data": "test", "title": "Test"});
+    $.each(globalList, function(idx, obj) {
+        aoColumns.push({className: "width150", "sName": obj.value, "data": obj.value, "title": obj.value});
+    });
+    aoColumns.push({className: "width150", "sName": "totalRow", "data": "totalRow", "title": "Total"});
+    return aoColumns;
+}
+//TODO:DELETE
+function drawStatisticsTable2(dataSet, globalList, tableID) {
+    $("#" + tableID).empty();
+    //draw header
+    globalList.sort();
+    var $thead = $('<thead>');
+    var $tr = $('<tr>');
+    var $th = $('<th>');
+    $th.text("Test"); //TODO: add translation
+    $tr.append($th);
+    var totalTests = [];
+
+    $.each(globalList, function(idx, item) {
+        $th = $('<th>');
+        $th.addClass("width150");
+        $th.text(item.value);
+        $tr.append($th);
+        totalTests[item.value] = 0;
+    });
+    totalTests["globalTotal"] = 0;
+
+
+    $th = $('<th>');
+    $th.text("Total"); //TODO: add translation
+    $tr.append($th);
+
+
+    $thead.append($tr);
+    $("#" + tableID).append($thead);
+
+
+    $.each(dataSet, function(idx, testObj) {
+        var $tr = $('<tr>');
+        var $td = $('<td>');
+
+        $td.text(testObj.test);
+
+        $tr.append($td);
+        var totalRow = 0;
+
+        $.each(globalList, function(idx, item) {
+            $td = $('<td>');
+            var found = false;
+            $.each(testObj.data, function(idxGroup, statistic) {
+                if (statistic.name === item.value) {
+                    totalRow += statistic.total;
+                    $td.text(statistic.total);
+                    found = true;
+                    totalTests[statistic.name] += statistic.total;
+                    totalTests["globalTotal"] += statistic.total;
+                }
+            });
+            if (!found) {
+                $td.text("0");
+            }
+            $tr.append($td);
+
+        });
+
+        $td = $('<td>');
+        $td.text(totalRow);
+
+        $tr.append($td);
+        $("#" + tableID).append($tr);
+    });
+
+    $tr = $('<tr>');
+    var $td = $('<td>');
+    $td.text("Total"); //translations
+    $tr.append($td);
+    $.each(globalList, function(idx, tcStatusObj) {
+        $td = $('<td>');
+        $td.text(totalTests[tcStatusObj.value]);
+        $tr.append($td);
+    });
+    $td = $('<td>');
+    $td.text(totalTests["globalTotal"]); //TODO: add translations
+    $tr.append($td);
+
+    $("#" + tableID).append($tr);
+}
+function reconstructTable() {
+    /*var tableHTML = $('<table id="executionTable" class="table table-hover display invisible" name="executionTable">');
+     tableHTML += $('<table id="executionTable" class="table table-hover display invisible" name="executionTable">');*/
+    var $tableHTML = $("<table>");
+    var $rowHTML = $("<tr>");
+    $tableHTML.prop("id", "executionTable");
+    $tableHTML.attr("id", "executionTable");
+    $tableHTML.addClass("table");
+    $tableHTML.addClass("table-hover");
+    $tableHTML.addClass("display");
+
+    var $theadHTML = $('<thead>');
+    $theadHTML.prop("id", "executionTableHeader");
+    $theadHTML.attr("id", "executionTableHeader");
+    $theadHTML.prop("name", "executionTableHeader");
+    $theadHTML.attr("name", "executionTableHeader");
+    $theadHTML.append($('<th>').text("Test"));
+    $theadHTML.append($('<th>').text("TestCase"));
+    $theadHTML.append($('<th>').text("Application"));
+    $theadHTML.append($('<th>').text("Ticket"));
+    $theadHTML.append($('<th>').text("Bug ID"));
+    $theadHTML.append($('<th>').text("Ticket"));
+    $theadHTML.append($('<th>').text("Group"));
+    $theadHTML.append($('<th>').text("Priority"));
+    $theadHTML.append($('<th>').attr("id", "headerStatus").prop("id", "headerStatus").text("Status"));
+    $rowHTML.append($theadHTML);
+    $tableHTML.append($rowHTML);
+    $("#tableArea div[id = 'afterTableDiv']").before($tableHTML);
+}
+
+function addCountryandBrowserColumnHeaders(countriesSelected, browsersSelected) {
+    var currentTD = $('table[name="executionTable"] #headerStatus');
+
+    $.each(countriesSelected, function(idx, obj) {
+        $.each(browsersSelected, function(idx2, obj2) {
+            var $newTd = $('<th class="dynamicHeader">');
+            var $divNewTD = $('<div>').text(obj + "-" + obj2);
+            $divNewTD.css("width", "70px");
+            $divNewTD.css("max-width", "70px");
+
+            $newTd.append($divNewTD);
+
+            currentTD.after($newTd);
+            currentTD = $newTd;
+
+        });
+    });
+}
 /**
  * Auxiliary method that removes all selections and text from the form
  * @returns {undefined}
@@ -465,6 +865,8 @@ function resetClickHandler() {
     loadTextComponent("#port", "");
     loadTextComponent("#tag", "");
     loadTextComponent("#browserversion", "");
+    loadTextComponent("#bugid", "");
+    loadTextComponent("#ticked", "");
 
 }
 
@@ -475,7 +877,7 @@ function resetClickHandler() {
 function getURLClickHandler() {
     //get list of parameters
     var urlParameters = "";
-    //TODO:FN finish these parameters
+    //TODO finish these parameters, include application, test, and others?
     window.open("ReportExecution_temp.jsp" + urlParameters, '_blank');
 }
 
@@ -789,43 +1191,103 @@ function loadFilter(list, element, name) {
     });
 }
 
-$.extend({
-    getUrlVars: function() {
-        var vars = [], hash;
-        var hashes = window.location.href.slice(window.location.href.indexOf('?') + 1).split('&');
-        for (var i = 0; i < hashes.length; i++){
-            
-            hash = hashes[i].split('=');
-            if(hash.length > 1){
-                var values = [];
 
-                if (vars.indexOf(hash[0]) > -1) { //hash already exists
-                    values = vars[hash[0]];
-                } else {
-                    vars.push(hash[0]);
-                }
 
-                values.push(hash[1]);
-                vars[hash[0]] = values;
-            }
+/*Functions for table*/
+function aoColumnsFuncReportExecution(tableId, countryList, browserList) {
+    var doc = new Doc();
+    //doc.getDocOnline("testdatalib", "name")
+    var aoColumns = [];
+    $("#" + tableId + " th ").each(function(i) {
+        switch (i) {
+            case 0:
+                aoColumns.push({className: "width350", "sName": "test", "data": "test", "title": "Test",
+                    "mRender": function(data, type, oObj) {
+                        return "<div>" + oObj.test + " " + drawHyperlinkExternal("TestCaseList.jsp?test=" + encodeURIComponent(oObj.test),
+                                '<span title="Open list of test cases for this test" class="glyphicon glyphicon-new-window"></span>') + "</div>";
+                    }});
+                break;
+            case 1 :
+                aoColumns.push({className: "width100", "sName": "testCase", "data": "testCase", "title": "Test Case",
+                    "mRender": function(data, type, oObj) {
+                        return "<div>" + oObj.testCase + " " + drawHyperlinkExternal("TestCase.jsp?Test=" + encodeURIComponent(oObj.test) + "&TestCase=" +
+                                encodeURIComponent(oObj.testCase) + "&Load=Load", '<span title="Open Test Case" class="glyphicon glyphicon-new-window"></span>') + "</div>";
+                    }});
+                break;
+            case 2 :
+                aoColumns.push({className: "width130", "sName": "application", "data": "application", "title": "Application",
+                    "mRender": function(data, type, oObj) {
+                        if (!jQuery.isEmptyObject(oObj.application)) {
+                            return "<div> " + oObj.application + " " + drawHyperlinkExternal("TestPerApplication.jsp?Application=" + encodeURIComponent(oObj.application),
+                                    '<span title="Open list of test cases for this application." class="glyphicon glyphicon-new-window"></span>'.trim()) + "</div>";
+                        }
+                        return "";
+                    }});
+                break;
+            case 3 :
+                aoColumns.push({className: "width80", "sName": "bugId", "data": "bugId", "title": "Bug ID"});
+                break;
+            case 4 :
+                aoColumns.push({className: "width80", "sName": "ticket", "data": "ticket", "title": "Ticket"});
+                break;
+            case 5 :
+                aoColumns.push({className: "width80", "sName": "group", "data": "group", "title": "Group"});
+                break;
+            case 6 :
+                aoColumns.push({className: "width80", "sName": "priority", "data": "priority", "title": "Priority"});
+                break;
+            case 7 :
+                aoColumns.push({className: "width80", "sName": "status", "data": "status", "title": "Status"});
+                break;
+
         }
-           
+    });
+    //adds each column for each pair country-browser
+    $.each(countryList, function(idx, country) {
+        $.each(browserList, function(idx2, browser) {
+            var key = country + " " + browser;
+            aoColumns.push({className: "dynamicHeader width100", "sName": key, "data": key, "title": key,
+                "mRender": function(data, type, oObj) {
 
-        return vars;
-    },
-    getUrlVar: function(name) {
-        return $.getUrlVars()[name];
-    },
-    /*getUrlVarsByname: function(name){
-     var vars = $.getUrlVars();
-     var varsByName = [];
-     $.each(vars, function(idx, obj){
-     console.log("idx " + idx + " obj " + obj );
-     if(obj === name){
-     varsByName.push(vars[obj]);
-     }
-     });
-     
-     return varsByName;
-     }*/
-});
+                    if (!jQuery.isEmptyObject(oObj.execTab[key])) {
+                        var rowDetails = oObj.execTab[key];
+                        if (rowDetails.Country === country && rowDetails.Browser) {
+                            var executionLink = generateExecutionLink(rowDetails.ControlStatus, rowDetails.ID);
+                            var glyphClass = getRowClass(rowDetails.ControlStatus);
+                            var tooltip = generateTooltip(rowDetails);
+                            var cell = '<div class="progress-bar status' + rowDetails.ControlStatus + '" \n\
+                                    role="progressbar" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100" style="width: 100%;cursor: pointer; height: 40px;" \n\
+                                    data-toggle="tooltip" data-html="true" title="' + tooltip + '"\n\
+                                    onclick="window.open(\'' + executionLink + '\')">\n\
+                                    <span class="' + glyphClass.glyph + ' marginRight5"></span>\n\
+                                     <span>' + rowDetails.ControlStatus + '<span></div>';
+                            return cell;
+                        } else {
+                            return "";
+                        }
+
+                    }
+                    return "";
+                }});
+        });
+    });
+
+    return aoColumns;
+
+}
+
+
+
+function generateTooltip(data) {
+    var htmlRes;
+
+    htmlRes = '<div><span class=\'bold\'>Execution ID :</span> ' + data.ID + '</div>' +
+            '<div><span class=\'bold\'>Country : </span>' + data.Country + '</div>' +
+            '<div><span class=\'bold\'>Environment : </span>' + data.Environment + '</div>' +
+            '<div><span class=\'bold\'>Browser : </span>' + data.Browser + '</div>' +
+            '<div><span class=\'bold\'>Start : </span>' + data.Start + '</div>' +
+            '<div><span class=\'bold\'>End : </span>' + data.End + '</div>' +
+            '<div>' + data.ControlMessage + '</div>';
+
+    return htmlRes;
+}

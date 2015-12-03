@@ -23,6 +23,7 @@ import java.io.IOException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -33,6 +34,7 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import org.apache.commons.lang3.StringEscapeUtils;
 import org.cerberus.crud.entity.Invariant;
 import org.cerberus.crud.entity.MessageEvent;
 import org.cerberus.crud.entity.TestCaseExecution;
@@ -86,13 +88,19 @@ public class ReadTestCaseExecution extends HttpServlet {
             String Tag = ParameterParserUtil.parseStringParam(request.getParameter("Tag"), "");
             String test = ParameterParserUtil.parseStringParam(request.getParameter("test"), "");
             String testCase = ParameterParserUtil.parseStringParam(request.getParameter("testCase"), "");
+            String system  = ParameterParserUtil.parseStringParam(request.getParameter("system"), "");
+            
             if (sEcho == 0 && !Tag.equals("")) {
                 answer = findExecutionColumns(appContext, request, Tag);
                 jsonResponse = (JSONObject) answer.getItem();
             } else if (sEcho != 0 && !Tag.equals("")) {
                 answer = findExecutionList(appContext, request, Tag);
                 jsonResponse = (JSONObject) answer.getItem();
-            } else if (!test.equals("") && !testCase.equals("")) {
+            }else if(!system.isEmpty()) {
+                //find execution by system, the remaining parameters are parsed after avoiding the extra processing
+                answer = findExecutionListBySystem(system, appContext, request);
+                jsonResponse = (JSONObject) answer.getItem();
+            }else if (!test.equals("") && !testCase.equals("")) {
                 TestCaseExecution lastExec = testCaseExecutionService.findLastTestCaseExecutionNotPE(test, testCase);
                 JSONObject result = new JSONObject();
                 result.put("id", lastExec.getId());
@@ -433,6 +441,137 @@ public class ReadTestCaseExecution extends HttpServlet {
          */
         testCaseWithExecutions = hashExecution(testCaseWithExecutions, testCaseWithExecutionsInQueue);
         return testCaseWithExecutions;
+    }
+
+    private AnswerItem findExecutionListBySystem(String system, ApplicationContext appContext, HttpServletRequest request) 
+            throws ParseException, JSONException {
+        AnswerItem answer = new AnswerItem(new MessageEvent(MessageEventEnum.DATA_OPERATION_OK));
+
+       /**
+         * Parse all parameters used in the search.
+         */
+        String charset = request.getCharacterEncoding();
+        /**
+         * Parse parameters - list of values
+         */
+        
+        List<String> testList = ParameterParserUtil.parseListParamAndDecode(request.getParameterValues("test"), null, charset);
+        List<String> applicationList = ParameterParserUtil.parseListParamAndDecode(request.getParameterValues("application"), null, charset);
+        List<String> projectList = ParameterParserUtil.parseListParamAndDecode(request.getParameterValues("project"), null, charset);
+        
+        List<String> tcstatusList = ParameterParserUtil.parseListParamAndDecode(request.getParameterValues("tcstatus"), null, charset);
+        List<String> groupList = ParameterParserUtil.parseListParamAndDecode(request.getParameterValues("group"), null, charset);
+        List<String> tcactiveList = ParameterParserUtil.parseListParamAndDecode(request.getParameterValues("tcactive"), null, charset);
+        List<String> priorityList = ParameterParserUtil.parseListParamAndDecode(request.getParameterValues("priority"), null, charset);
+        
+        List<String> targetsprintList = ParameterParserUtil.parseListParamAndDecode(request.getParameterValues("targetsprint"), null, charset);
+        List<String> targetrevisionList = ParameterParserUtil.parseListParamAndDecode(request.getParameterValues("targetrevision"), null, charset);
+        List<String> creatorList = ParameterParserUtil.parseListParamAndDecode(request.getParameterValues("creator"), null, charset);
+        List<String> implementerList = ParameterParserUtil.parseListParamAndDecode(request.getParameterValues("implementer"), null, charset);
+                
+        List<String> environmentList = ParameterParserUtil.parseListParamAndDecode(request.getParameterValues("environment"), null, charset);
+        List<String> buildList = ParameterParserUtil.parseListParamAndDecode(request.getParameterValues("build"), null, charset);
+        List<String> revisionList = ParameterParserUtil.parseListParamAndDecode(request.getParameterValues("revision"), null, charset);
+        
+        
+        List<String> countryList = ParameterParserUtil.parseListParamAndDecode(request.getParameterValues("country"), null, charset);
+        List<String> browserList = ParameterParserUtil.parseListParamAndDecode(request.getParameterValues("browser"), null, charset);
+        List<String> tcestatusList = ParameterParserUtil.parseListParamAndDecode(request.getParameterValues("tcestatus"), null, charset);
+        
+        //Sorts the lists 
+        if(countryList != null){
+            Collections.sort(countryList);
+        }
+        if(browserList != null){
+            Collections.sort(browserList);
+        }
+                       
+        /**
+         * Parse parameters - free text
+         */
+        String bugid = StringEscapeUtils.escapeHtml4(request.getParameter("bugid"));
+        String ticket = StringEscapeUtils.escapeHtml4(request.getParameter("ticket"));
+        String ip = StringEscapeUtils.escapeHtml4(request.getParameter("ip"));
+        String port = StringEscapeUtils.escapeHtml4(request.getParameter("port"));
+        String tag = StringEscapeUtils.escapeHtml4(request.getParameter("tag"));
+        String browserversion = StringEscapeUtils.escapeHtml4(request.getParameter("browserversion"));
+        String comment = StringEscapeUtils.escapeHtml4(request.getParameter("comment")); 
+        
+        /**
+         * Gets regular executions (not in queue)
+         */
+        AnswerList answerExecutions = testCaseExecutionService.readBySystemByVarious(system, testList, applicationList, projectList, tcstatusList, groupList, tcactiveList, priorityList, 
+                    targetsprintList, targetrevisionList, creatorList, implementerList, buildList, revisionList,
+                    environmentList, countryList, browserList, tcestatusList, ip, port, tag, browserversion, comment, bugid, ticket);
+        
+        List<TestCaseWithExecution> testCaseWithExecutions =  (List<TestCaseWithExecution>)answerExecutions.getDataList();
+
+        
+        /**
+         * Get list of Execution in Queue by Tag
+         */
+        ITestCaseExecutionInQueueService testCaseExecutionInQueueService = appContext.getBean(ITestCaseExecutionInQueueService.class);
+        AnswerList answerExecutionsInQueue  = testCaseExecutionInQueueService.readBySystemByVarious(system, testList, applicationList, projectList, tcstatusList, groupList, tcactiveList, priorityList, 
+                    targetsprintList, targetrevisionList, creatorList, implementerList, buildList, revisionList,
+                    environmentList, countryList, browserList, tcestatusList, ip, port, tag, browserversion, comment, bugid, ticket);
+        List<TestCaseWithExecution> testCaseWithExecutionsInQueue =  (List<TestCaseWithExecution>)answerExecutionsInQueue.getDataList();
+        
+        
+        /**
+         * Merge Test Case Executions
+         */
+        List<TestCaseWithExecution> allTestCaseWithExecutions = hashExecution(testCaseWithExecutions, testCaseWithExecutionsInQueue);
+        
+        JSONArray executionList = new JSONArray();
+        LinkedHashMap<String, JSONObject> ttc = new LinkedHashMap<String, JSONObject>();
+
+        
+        
+        for (TestCaseWithExecution testCaseWithExecution : allTestCaseWithExecutions) {
+            try {
+                JSONObject execution = testCaseExecutionToJSONObject(testCaseWithExecution);
+                String execKey = testCaseWithExecution.getCountry() + " " + testCaseWithExecution.getBrowser(); //the key is country and browser
+                String testCaseKey = testCaseWithExecution.getTest() + "_" + testCaseWithExecution.getTestCase();
+                JSONObject execTab = new JSONObject();
+
+                executionList.put(testCaseExecutionToJSONObject(testCaseWithExecution));
+                JSONObject ttcObject = new JSONObject();
+
+                if (ttc.containsKey(testCaseKey)) {
+                    ttcObject = ttc.get(testCaseKey);
+                    execTab = ttcObject.getJSONObject("execTab");
+                    execTab.put(execKey, execution);
+                    ttcObject.put("execTab", execTab);
+                } else {
+                    ttcObject.put("test", testCaseWithExecution.getTest());
+                    ttcObject.put("testCase", testCaseWithExecution.getTestCase());
+                    ttcObject.put("function", testCaseWithExecution.getFunction());
+                    ttcObject.put("shortDesc", testCaseWithExecution.getShortDescription());
+                    ttcObject.put("status", testCaseWithExecution.getStatus());
+                    ttcObject.put("application", testCaseWithExecution.getApplication());
+                    ttcObject.put("bugId", testCaseWithExecution.getBugID());
+                    ttcObject.put("ticket", testCaseWithExecution.getTicket());
+                    ttcObject.put("comment", testCaseWithExecution.getComment());
+                    ttcObject.put("priority", testCaseWithExecution.getPriority());
+                    ttcObject.put("status", testCaseWithExecution.getStatus());
+                    ttcObject.put("group", testCaseWithExecution.getGroup());
+                    execTab.put(execKey, execution);
+                    ttcObject.put("execTab", execTab);
+                }
+                ttc.put(testCaseWithExecution.getTest() + "_" + testCaseWithExecution.getTestCase(), ttcObject);
+            } catch (JSONException ex) {
+                Logger.getLogger(ReadTestCaseExecution.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
+
+        JSONObject jsonResponse = new JSONObject();
+        jsonResponse.put("contentTable", ttc.values());
+        jsonResponse.put("iTotalRecords", ttc.size());
+        jsonResponse.put("iTotalDisplayRecords", ttc.size());
+
+        answer.setItem(jsonResponse);
+        answer.setResultMessage(new MessageEvent(MessageEventEnum.DATA_OPERATION_OK));
+        return answer;
     }
 
 }

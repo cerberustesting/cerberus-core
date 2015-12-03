@@ -26,7 +26,6 @@ import org.apache.log4j.Level;
 import org.cerberus.crud.dao.ITestCaseExecutionDAO;
 import org.cerberus.crud.entity.CountryEnvParam;
 import org.cerberus.crud.entity.TCase;
-import org.cerberus.dto.TestCaseWithExecution;
 import org.cerberus.crud.entity.TestCaseExecution;
 import org.cerberus.exception.CerberusException;
 import org.cerberus.log.MyLogger;
@@ -168,5 +167,16 @@ public class TestCaseExecutionService implements ITestCaseExecutionService {
         }
         
         return result;
+    }
+    @Override
+    public AnswerList readBySystemByVarious(String system, List<String> testList, List<String> applicationList, List<String> projectList, List<String> tcstatusList, 
+            List<String> groupList, List<String> tcactiveList, List<String> priorityList, List<String> targetsprintList, List<String> targetrevisionList, 
+            List<String> creatorList, List<String> implementerList, List<String> buildList, List<String> revisionList, List<String> environmentList,
+            List<String> countryList, List<String> browserList, List<String> tcestatusList, String ip, String port, String tag, String browserversion, 
+            String comment, String bugid, String ticket) {
+        
+        return testCaseExecutionDao.readBySystemByVarious(system, testList, applicationList, projectList, tcstatusList, groupList, tcactiveList, priorityList, targetsprintList, 
+                targetrevisionList, creatorList, implementerList, buildList, revisionList, environmentList, countryList, browserList, tcestatusList, 
+                ip, port, tag, browserversion, comment, bugid, ticket);
     }
 }

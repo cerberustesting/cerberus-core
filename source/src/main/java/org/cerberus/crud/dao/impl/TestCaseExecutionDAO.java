@@ -24,24 +24,26 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.sql.Timestamp;
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Level;
-
 import org.apache.log4j.Logger;
 import org.cerberus.crud.dao.IApplicationDAO;
 import org.cerberus.crud.dao.ITestCaseExecutionDAO;
-import org.cerberus.database.DatabaseSpring;
-import org.cerberus.dto.TestCaseWithExecution;
 import org.cerberus.crud.entity.Application;
 import org.cerberus.crud.entity.MessageEvent;
-import org.cerberus.enums.MessageEventEnum;
 import org.cerberus.crud.entity.MessageGeneral;
-import org.cerberus.enums.MessageGeneralEnum;
 import org.cerberus.crud.entity.TestCaseExecution;
-import org.cerberus.exception.CerberusException;
 import org.cerberus.crud.factory.IFactoryTestCaseExecution;
+import org.cerberus.database.DatabaseSpring;
+import org.cerberus.dto.TestCaseWithExecution;
+import org.cerberus.enums.MessageEventEnum;
+import org.cerberus.enums.MessageGeneralEnum;
+import org.cerberus.exception.CerberusException;
 import org.cerberus.log.MyLogger;
 import org.cerberus.util.ParameterParserUtil;
+import org.cerberus.util.SqlUtil;
 import org.cerberus.util.StringUtil;
 import org.cerberus.util.answer.AnswerList;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -1249,4 +1251,330 @@ public class TestCaseExecutionDAO implements ITestCaseExecutionDAO {
 
         return testCaseWithExecution;
     }
+
+    @Override
+    public AnswerList readBySystemByVarious(String system, List<String> testList, List<String> applicationList, List<String> projectList, List<String> tcstatusList, 
+            List<String> groupList, List<String> tcactiveList, List<String> priorityList, List<String> targetsprintList, List<String> targetrevisionList, 
+            List<String> creatorList, List<String> implementerList, List<String> buildList, List<String> revisionList, List<String> environmentList,
+            List<String> countryList, List<String> browserList, List<String> tcestatusList, String ip, String port, String tag, String browserversion, 
+            String comment, String bugid, String ticket) {
+        
+        AnswerList answer = new AnswerList();
+        MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
+        List<TestCaseWithExecution> tceList = new ArrayList<TestCaseWithExecution>();
+        List<String> whereClauses = new LinkedList<String>();
+        
+        StringBuilder query = new StringBuilder();
+        
+        int paramNumber = 0;
+        
+        query.append(" select t.ID as statusExecutionID, t.* from ( ");
+        query.append(" select tce.*, tc.Project, tc.Ticket, tc.Description, tc.BehaviorOrValueExpected, ");
+        query.append(" tc.Priority, tc.`Group`, tc.Origine, tc.RefOrigine, tc.HowTo, tc.`Comment`, ");
+        query.append(" tc.FromBuild, tc.FromRev, tc.ToBuild, tc.ToRev, tc.BugID, tc.TargetBuild, ");
+        query.append(" tc.TargetRev, tc.Creator, tc.Implementer, tc.LastModifier, tc.activeQA, ");
+        query.append(" tc.activeUAT, tc.activePROD, tc.`function`, tc.TcActive, ");
+        query.append(" a.sort, a.`type`, a.`system`, a.SubSystem, a.svnurl, a.deploytype, ");
+        query.append(" a.mavengroupid, a.BugTrackerUrl, a.BugTrackerNewUrl ");
+        query.append(" from testcaseexecution tce ");
+        query.append(" inner join testcase tc on tce.test = tc.test and tce.testcase = tc.testcase ");
+        query.append(" inner join application a on tce.application = a.application ");
+   
+        
+        String testClause = SqlUtil.generateInClause("tce.test", testList);
+        if(!StringUtil.isNullOrEmpty(testClause)){
+            whereClauses.add(testClause);
+        }
+        
+        String applicationClause = SqlUtil.generateInClause("tce.application", applicationList);
+        if(!StringUtil.isNullOrEmpty(applicationClause)){
+            whereClauses.add(applicationClause);
+        }
+        
+        String projectClause = SqlUtil.generateInClause("tc.project", projectList);
+        if(!StringUtil.isNullOrEmpty(projectClause)){
+            whereClauses.add(projectClause);
+        }
+        //test case status: working, fully_implemented, ...
+        String tcsClause = SqlUtil.generateInClause("tce.status", tcstatusList);
+        if(!StringUtil.isNullOrEmpty(tcsClause)){
+            whereClauses.add(tcsClause);
+        }
+        
+        //group 
+        String groupClause = SqlUtil.generateInClause("tc.group", groupList);
+        if(!StringUtil.isNullOrEmpty(groupClause)){
+            whereClauses.add(groupClause);
+        }
+        //test case active
+        String tcactiveClause = SqlUtil.generateInClause("tc.tcactive", tcactiveList);
+        if(!StringUtil.isNullOrEmpty(tcactiveClause)){
+            whereClauses.add(tcactiveClause);
+        }
+        
+        //test case active
+        String priorityClause = SqlUtil.generateInClause("tc.Priority", priorityList);
+        if(!StringUtil.isNullOrEmpty(priorityClause)){
+            whereClauses.add(priorityClause);
+        }
+        
+        //target sprint
+        String targetsprintClause = SqlUtil.generateInClause("tc.TargetBuild", targetsprintList);
+        if(!StringUtil.isNullOrEmpty(targetsprintClause)){
+            whereClauses.add(targetsprintClause);
+        }
+        
+        //target revision
+        String targetrevisionClause = SqlUtil.generateInClause("tc.TargetRev", targetrevisionList);
+        if(!StringUtil.isNullOrEmpty(targetrevisionClause)){
+            whereClauses.add(targetrevisionClause);
+        }
+        
+        //creator
+        String creatorClause = SqlUtil.generateInClause("tc.Creator", creatorList);
+        if(!StringUtil.isNullOrEmpty(creatorClause)){
+            whereClauses.add(creatorClause);
+        }
+        
+        //implementer
+        String implementerClause = SqlUtil.generateInClause("tc.Implementer", implementerList);
+        if(!StringUtil.isNullOrEmpty(implementerClause)){
+            whereClauses.add(implementerClause);
+        }
+        
+        //build
+        String buildClause = SqlUtil.generateInClause("tce.Build", buildList);
+        if(!StringUtil.isNullOrEmpty(buildClause)){
+            whereClauses.add(buildClause);
+        }
+        //revision
+        String revisionClause = SqlUtil.generateInClause("tce.Revision", revisionList);
+        if(!StringUtil.isNullOrEmpty(revisionClause)){
+            whereClauses.add(revisionClause);
+        }
+        //environment
+        String environmentClause = SqlUtil.generateInClause("tce.Environment", environmentList);
+        if(!StringUtil.isNullOrEmpty(environmentClause)){
+            whereClauses.add(environmentClause);
+        }
+        //country
+        String countryClause = SqlUtil.generateInClause("tce.Country", countryList);
+        if(!StringUtil.isNullOrEmpty(countryClause)){
+            whereClauses.add(countryClause);
+        }
+        //browser
+        String browserClause = SqlUtil.generateInClause("tce.Browser", browserList);
+        if(!StringUtil.isNullOrEmpty(browserClause)){
+            whereClauses.add(browserClause);
+        }
+        //test case execution
+        String tcestatusClause = SqlUtil.generateInClause("tce.ControlStatus", tcestatusList);
+        if(!StringUtil.isNullOrEmpty(tcestatusClause)){
+            whereClauses.add(tcestatusClause);
+        }
+        
+        if(!StringUtil.isNullOrEmpty(system)){
+            whereClauses.add(" a.system like ? ");
+        }
+        if(!StringUtil.isNullOrEmpty(ip)){
+            whereClauses.add(" tce.IP like ? ");
+        }
+        if(!StringUtil.isNullOrEmpty(port)){
+            whereClauses.add(" tce.port like ? ");
+        }
+        if(!StringUtil.isNullOrEmpty(tag)){
+            whereClauses.add(" tce.tag like ? ");
+        }
+        if(!StringUtil.isNullOrEmpty(browserversion)){
+            whereClauses.add(" tce.browserfullversion like ? ");
+        }
+        if(!StringUtil.isNullOrEmpty(comment)){
+            whereClauses.add(" tce.comment like ? ");
+        }
+        if(!StringUtil.isNullOrEmpty(bugid)){
+            whereClauses.add(" tc.BugID like ? ");
+        }
+        if(!StringUtil.isNullOrEmpty(ticket)){
+            whereClauses.add(" tc.Ticket like ? ");
+        }
+        
+        if(whereClauses.size() > 0 ){
+            query.append("where ");
+            String joined = StringUtils.join(whereClauses, " and "); 
+            query.append(joined);
+        }
+        
+        query.append(" order by tce.ID desc ");
+        query.append(" ) as t group by t.test, t.testcase, t.environment, t.browser, t.country");
+        Connection connection = this.databaseSpring.connect();
+
+        try {
+            PreparedStatement preStat = connection.prepareStatement(query.toString());
+            if(testList != null){
+                for(String param : testList){
+                    preStat.setString(++paramNumber, param);
+                }
+            }
+            if(applicationList != null){
+                for(String param : applicationList){
+                    preStat.setString(++paramNumber, param);
+                }
+            }
+            if(projectList != null){
+                for(String param : projectList){
+                    preStat.setString(++paramNumber, param);
+                }
+            }
+            if(tcstatusList != null){
+                for(String param : tcstatusList){
+                    preStat.setString(++paramNumber, param);
+                }
+            } 
+            if(groupList != null){
+                for(String param : groupList){
+                    preStat.setString(++paramNumber, param);
+                }
+            }
+            
+            if(tcactiveList != null){
+                for(String param : tcactiveList){
+                    preStat.setString(++paramNumber, param);
+                }
+            }
+            if(priorityList != null){
+                for(String param : priorityList){
+                    preStat.setString(++paramNumber, param);
+                }
+            }
+            if(targetsprintList != null){
+                for(String param : targetsprintList){
+                    preStat.setString(++paramNumber, param);
+                }
+            }
+            if(targetrevisionList != null){
+                for(String param : targetrevisionList){
+                    preStat.setString(++paramNumber, param);
+                }
+            }
+            if(creatorList != null){
+                for(String param : creatorList){
+                    preStat.setString(++paramNumber, param);
+                }
+            }
+            if(implementerList != null){
+                for(String param : implementerList){
+                    preStat.setString(++paramNumber, param);
+                }
+            }
+            if(buildList != null){
+                for(String param : buildList){
+                    preStat.setString(++paramNumber, param);
+                }
+            }
+            if(revisionList != null){
+                for(String param : revisionList){
+                    preStat.setString(++paramNumber, param);
+                }
+            }
+            //environment
+            if(environmentList != null){
+                for(String param : environmentList){
+                    preStat.setString(++paramNumber, param);
+                }
+            }
+            //country
+            if(countryList != null){
+                for(String param : countryList){
+                    preStat.setString(++paramNumber, param);
+                }
+            }
+            //browser            
+            if(browserList != null){
+                for(String param : browserList){
+                    preStat.setString(++paramNumber, param);
+                }
+            }
+            //controlstatus
+            if(tcestatusList != null){
+                for(String param : tcestatusList){
+                    preStat.setString(++paramNumber, param);
+                }
+            }
+            
+            if(!StringUtil.isNullOrEmpty(system)){
+                preStat.setString(++paramNumber, system);
+            }
+            
+            if(!StringUtil.isNullOrEmpty(ip)){
+                preStat.setString(++paramNumber, "%" + ip + "%");
+            }
+            if(!StringUtil.isNullOrEmpty(port)){
+                preStat.setString(++paramNumber, "%" +port + "%");
+            }
+            if(!StringUtil.isNullOrEmpty(tag)){
+                preStat.setString(++paramNumber, "%" + tag + "%");
+            }
+            if(!StringUtil.isNullOrEmpty(browserversion)){
+                preStat.setString(++paramNumber, "%" + browserversion + "%");
+            }
+            if(!StringUtil.isNullOrEmpty(comment)){
+                preStat.setString(++paramNumber, "%" + comment + "%");
+            }
+            if(!StringUtil.isNullOrEmpty(bugid)){
+                preStat.setString(++paramNumber, "%" + bugid + "%");
+            }
+            if(!StringUtil.isNullOrEmpty(ticket)){
+                preStat.setString(++paramNumber, "%" + ticket + "%");
+            }
+            
+            try {
+                ResultSet resultSet = preStat.executeQuery();
+                try {
+                    while (resultSet.next()) {
+                        tceList.add(loadTestCaseWithExecutionFromResultSet(resultSet));
+                    }
+                    if(tceList.isEmpty()){
+                        msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_NO_DATA_FOUND);
+                    }else{
+                        msg.setDescription(msg.getDescription().replace("%ITEM%", "TestCaseExecution").replace("%OPERATION%", "SELECT"));
+                    }
+                                        
+                } catch (SQLException exception) {
+                    MyLogger.log(TestCaseExecutionInQueueDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
+                    msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
+                    msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", "Unable to retrieve the list of entries!"));
+                    tceList.clear();
+                } finally {
+                    if (resultSet != null) {
+                        resultSet.close();
+                    }
+                }
+            } catch (SQLException ex) {
+                MyLogger.log(TestCaseExecutionDataDAO.class.getName(), Level.ERROR, "Unable to execute query : " + ex.toString());
+                msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
+                msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", "Unable to retrieve the list of entries!"));
+            } finally {
+                if (preStat != null) {
+                    preStat.close();
+                }
+            }
+        } catch (SQLException ex) {
+            MyLogger.log(TestCaseExecutionDataDAO.class.getName(), Level.WARN, ex.toString());
+            msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
+            msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", "Unable to retrieve the list of entries!"));
+        } finally {
+            try {
+                if (connection != null) {
+                    connection.close();
+                }
+            } catch (SQLException ex) {
+                MyLogger.log(TestCaseExecutionDAO.class.getName(), Level.ERROR, "Unable to execute query : " + ex.toString());
+            }
+        }
+        answer.setTotalRows(tceList.size());
+        answer.setDataList(tceList);
+        answer.setResultMessage(msg);
+        return answer;
+    }
+   
 }
