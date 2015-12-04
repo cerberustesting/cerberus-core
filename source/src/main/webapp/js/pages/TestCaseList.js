@@ -469,7 +469,7 @@ function editEntry(testCase) {
         for (var country in data.countryList) {
             $('#countryList input[name="' + data.countryList[country] + '"]').prop("checked", true);
         }
-        formEdit.find("#shortDesc").prop("value", data.shortDesc);
+        formEdit.find("#shortDesc").prop("value", data.shortDescription);
         tinyMCE.get('behaviorOrValueExpected1').setContent(data.description);
         tinyMCE.get('howTo1').setContent(data.howTo);
 
