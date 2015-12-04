@@ -664,6 +664,10 @@
         <servlet-class>org.cerberus.servlet.zzpublic.AddToExecutionQueue</servlet-class>
     </servlet>
     <servlet>
+        <servlet-name>GetExecutionQueue</servlet-name>
+        <servlet-class>org.cerberus.servlet.crud.testexecution.GetExecutionQueue</servlet-class>
+    </servlet>
+    <servlet>
         <description>Execute the next record from the execution queue.</description>
         <servlet-name>ExecuteNextInQueue</servlet-name>
         <servlet-class>org.cerberus.servlet.zzpublic.ExecuteNextInQueue</servlet-class>
@@ -1384,7 +1388,7 @@
         <servlet-name>ReadUser</servlet-name>
         <url-pattern>/ReadUser</url-pattern>
     </servlet-mapping>
-        <servlet-mapping>
+    <servlet-mapping>
         <servlet-name>ReadUserPublic</servlet-name>
         <url-pattern>/ReadUserPublic</url-pattern>
     </servlet-mapping>
@@ -1451,6 +1455,10 @@
     <servlet-mapping>
         <servlet-name>AddToExecutionQueue</servlet-name>
         <url-pattern>/AddToExecutionQueue</url-pattern>
+    </servlet-mapping>
+        <servlet-mapping>
+        <servlet-name>GetExecutionQueue</servlet-name>
+        <url-pattern>/GetExecutionQueue</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
         <servlet-name>ExecuteNextInQueue</servlet-name>
@@ -1832,7 +1840,9 @@
             <url-pattern>/DeleteExecutionInQueue</url-pattern>
             <url-pattern>/UpdateExecutionInQueue</url-pattern>
             <url-pattern>/AddToExecutionQueue</url-pattern>
+            <url-pattern>/GetExecutionQueue</url-pattern>
             <url-pattern>/ReadCountryEnvParam</url-pattern>
+            <url-pattern>/ReadRobot</url-pattern>
         </web-resource-collection>
         <auth-constraint>
             <description>RunTest</description>
@@ -1889,7 +1899,6 @@
             <url-pattern>/FindEnvironments</url-pattern>
             <url-pattern>/ReadDeployType</url-pattern>
             <url-pattern>/ReadBuildRevisionParameters</url-pattern>
-            <url-pattern>/ReadRobot</url-pattern>
         </web-resource-collection>
         <auth-constraint>
             <description>IntegratorRO</description>

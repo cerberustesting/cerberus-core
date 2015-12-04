@@ -33,7 +33,7 @@ $.when($.getScript("js/pages/global/global.js")).then(function () {
         typeSelectHandler();
         showLoader("#filtersPanel");
         $.when(
-                loadMultiSelect("ReadTest", "system=" + system, "test", ["test", "description"]),
+                loadMultiSelect("ReadTest", "system=" + system, "test", ["test", "description"], "test"),
                 loadMultiSelect("ReadProject", "sEcho=1", "project", ["idProject"], "idProject"),
                 loadMultiSelect("ReadApplication", "system=" + system, "application", ["application"], "application"),
                 loadMultiSelect("ReadUserPublic", "", "creator", ["login"], "login"),

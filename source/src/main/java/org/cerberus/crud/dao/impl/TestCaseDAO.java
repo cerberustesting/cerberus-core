@@ -759,7 +759,7 @@ public class TestCaseDAO implements ITestCaseDAO {
         query.append("LEFT JOIN campaigncontent cc ON tb.testbattery = cc.testbattery ");
         query.append("WHERE 1=1 AND tc.tcactive = 'Y' ");
         query.append(createInClauseFromList(test, "tc.test"));
-        query.append(createInClauseFromList(idProject, "tc.idproject"));
+        query.append(createInClauseFromList(idProject, "tc.project"));
         query.append(createInClauseFromList(app, "tc.application"));
         query.append(createInClauseFromList(creator, "tc.creator"));
         query.append(createInClauseFromList(implementer, "tc.implementer"));

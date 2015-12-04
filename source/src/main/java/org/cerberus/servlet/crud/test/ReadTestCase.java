@@ -268,7 +268,7 @@ public class ReadTestCase extends HttpServlet {
         JSONArray dataArray = new JSONArray();
 
         String[] test = request.getParameterValues("test");
-        String[] idProject = request.getParameterValues("idProject");
+        String[] idProject = request.getParameterValues("project");
         String[] app = request.getParameterValues("application");
         String[] creator = request.getParameterValues("creator");
         String[] implementer = request.getParameterValues("implementer");
