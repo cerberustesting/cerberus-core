@@ -1716,6 +1716,7 @@
             <url-pattern>/ExecutionPerBuildRevision.jsp</url-pattern>
             <url-pattern>/NetworkTraficDetail.jsp</url-pattern>
             <url-pattern>/ReportingExecution.jsp</url-pattern>
+            <url-pattern>/ReportingExecution1.jsp</url-pattern>
             <url-pattern>/ReportingExecutionTime.jsp</url-pattern>
             <url-pattern>/ReportingExecutionByTag.jsp</url-pattern>
             <url-pattern>/ExecutionPending.jsp</url-pattern>
