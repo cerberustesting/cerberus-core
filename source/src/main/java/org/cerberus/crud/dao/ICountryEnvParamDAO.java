@@ -20,6 +20,8 @@ package org.cerberus.crud.dao;
 import java.util.List;
 import org.cerberus.crud.entity.CountryEnvParam;
 import org.cerberus.exception.CerberusException;
+import org.cerberus.util.answer.Answer;
+import org.cerberus.util.answer.AnswerItem;
 import org.cerberus.util.answer.AnswerList;
 
 /**
@@ -46,7 +48,7 @@ public interface ICountryEnvParamDAO {
      * @param cep
      * @throws CerberusException
      */
-    void update(CountryEnvParam cep) throws CerberusException;
+    void update_deprecated(CountryEnvParam cep) throws CerberusException;
 
     /**
      * Delete countryEnvParam
@@ -54,7 +56,7 @@ public interface ICountryEnvParamDAO {
      * @param cep
      * @throws CerberusException
      */
-    void delete(CountryEnvParam cep) throws CerberusException;
+    void delete_deprecated(CountryEnvParam cep) throws CerberusException;
 
     /**
      * Create countryEnvParam
@@ -62,7 +64,7 @@ public interface ICountryEnvParamDAO {
      * @param cep
      * @throws CerberusException
      */
-    void create(CountryEnvParam cep) throws CerberusException;
+    void create_deprecated(CountryEnvParam cep) throws CerberusException;
 
     /**
      *
@@ -89,6 +91,15 @@ public interface ICountryEnvParamDAO {
     /**
      *
      * @param system
+     * @param country
+     * @param environment
+     * @return
+     */
+    public AnswerItem readByKey(String system, String country, String environment);
+
+    /**
+     *
+     * @param system
      * @return
      */
     public AnswerList readActiveBySystem(String system);
@@ -108,6 +119,10 @@ public interface ICountryEnvParamDAO {
     /**
      *
      * @param system
+     * @param country
+     * @param environment
+     * @param build
+     * @param revision
      * @param active
      * @param startPosition
      * @param length
@@ -117,5 +132,27 @@ public interface ICountryEnvParamDAO {
      * @param string
      * @return
      */
-    public AnswerList readByVariousByCriteria(String system, String active, int startPosition, int length, String columnName, String sort, String searchParameter, String string);
+    public AnswerList readByVariousByCriteria(String system, String country, String environment, String build, String revision, String active, int startPosition, int length, String columnName, String sort, String searchParameter, String string);
+
+    /**
+     *
+     * @param cep
+     * @return
+     */
+    Answer create(CountryEnvParam cep);
+
+    /**
+     *
+     * @param cep
+     * @return
+     */
+    Answer delete(CountryEnvParam cep);
+
+    /**
+     *
+     * @param cep
+     * @return
+     */
+    Answer update(CountryEnvParam cep);
+
 }

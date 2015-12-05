@@ -19,6 +19,7 @@
  */
 package org.cerberus.crud.factory;
 
+import java.sql.Timestamp;
 import org.cerberus.crud.entity.TestDataLib;
 
 /**
@@ -42,15 +43,16 @@ public interface IFactoryTestDataLib {
      * @param method
      * @param envelope
      * @param description
+     * @param creator
+     * @param Created
+     * @param LastModifier
+     * @param LastModified
      * @return a TestData
      */
     TestDataLib create(Integer testDataLibID, String name, String system, String environment,
             String country, String group, String type,
             String database, String script, String servicePath,
-            String method, String envelope, String description);
-    
-    TestDataLib create(String name, String system, String environment,
-            String country, String group, String type,
-            String database, String script, String servicePath,
-            String method, String envelope, String description);
+            String method, String envelope, String description,
+            String creator, Timestamp Created, String LastModifier, Timestamp LastModified);
+
 }

@@ -70,7 +70,7 @@ public class DeleteCountryEnvParam extends HttpServlet {
         String env = id.split("Env&#61;")[1].split("&amp;")[0];
 
         response.setContentType("text/html");
-            cepService.delete(factoryCep.create(system, country, env));
+            cepService.delete_deprecated(factoryCep.create(system, country, env));
         } catch (CerberusException ex) {
              Logger.getLogger(DeleteCountryEnvParam.class.getName()).log(Level.SEVERE, null, ex);
         }

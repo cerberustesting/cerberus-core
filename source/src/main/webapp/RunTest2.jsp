@@ -16,7 +16,7 @@
     <body>
         <%@ include file="include/header.html"%>
         <div class="container-fluid center" id="page-layout">
-            <div class="alert alert-warning"><strong>BETA</strong> This page is in beta, some features may not be avalaible or fully functionnal </div>
+            <div class="alert alert-warning"><strong>BETA</strong> This page is in beta, some features may not be available or fully functional </div>
             <%@ include file="include/messagesArea.html"%>
             <%@ include file="include/runtest/TestCaseNotValid.html"%>
             <h1 class="page-title-line">Run Test</h1>

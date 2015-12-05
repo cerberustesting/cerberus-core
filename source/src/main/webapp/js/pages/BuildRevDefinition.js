@@ -90,7 +90,7 @@ function deleteEntryHandlerClick() {
 function deleteEntry(system, level, seq, versionname) {
     clearResponseMessageMainPage();
     var doc = new Doc();
-    var messageComplete = doc.getDocLabel("page_global", "deleteMessage");
+    var messageComplete = doc.getDocLabel("page_global", "message_delete");
     var entry = versionname + " (level : " + level + " sequence : " + seq + ")";
     messageComplete = messageComplete.replace("%TABLE%", "Build Revision Definition");
     messageComplete = messageComplete.replace("%ENTRY%", entry);

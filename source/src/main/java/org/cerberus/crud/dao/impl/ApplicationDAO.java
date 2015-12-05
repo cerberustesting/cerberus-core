@@ -56,7 +56,6 @@ public class ApplicationDAO implements IApplicationDAO {
     private DatabaseSpring databaseSpring;
     @Autowired
     private IFactoryApplication factoryApplication;
-    private IInvariantService invariantService;
 
     private static final Logger LOG = Logger.getLogger(ApplicationDAO.class);
 

@@ -17,6 +17,8 @@
  */
 package org.cerberus.crud.entity;
 
+import java.sql.Timestamp;
+
 /**
  *
  * @author vertigo17
@@ -36,6 +38,10 @@ public class TestDataLib {
     private String method;
     private String envelope;
     private String description;
+    private String creator;
+    private Timestamp created;
+    private String lastModifier;
+    private Timestamp lastModified;
 
     public Integer getTestDataLibID() {
         return testDataLibID;
@@ -139,6 +145,38 @@ public class TestDataLib {
 
     public void setDescription(String description) {
         this.description = description;
+    }
+
+    public String getCreator() {
+        return creator;
+    }
+
+    public void setCreator(String creator) {
+        this.creator = creator;
+    }
+
+    public Timestamp getCreated() {
+        return created;
+    }
+
+    public void setCreated(Timestamp Created) {
+        this.created = Created;
+    }
+
+    public String getLastModifier() {
+        return lastModifier;
+    }
+
+    public void setLastModifier(String lastModifier) {
+        this.lastModifier = lastModifier;
+    }
+
+    public Timestamp getLastModified() {
+        return lastModified;
+    }
+
+    public void setLastModified(Timestamp LastModified) {
+        this.lastModified = LastModified;
     }
 
 }

@@ -84,7 +84,7 @@ public class CreateCountryEnvParam extends HttpServlet {
             final IFactoryCountryEnvParam factoryCep = appContext.getBean(IFactoryCountryEnvParam.class);
 
             final CountryEnvParam cep = factoryCep.create(system, country, environment, description, build, revision, chain, distribList, emailBodyRevision, type, emailBodyChain, emailBodyDisableEnvironment, active, maintenanceAct, maintenanceStr, maintenanceEnd);
-            cepService.create(cep);
+            cepService.create_deprecated(cep);
 
             /**
              * Adding Log entry.

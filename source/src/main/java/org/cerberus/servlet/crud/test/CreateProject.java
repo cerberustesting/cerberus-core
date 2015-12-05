@@ -77,10 +77,10 @@ public class CreateProject extends HttpServlet {
         /**
          * Parsing and securing all required parameters.
          */
-        String idProject = ParameterParserUtil.ParseStringParamAndSanitize(request.getParameter("idProject"), "");
-        String code = ParameterParserUtil.ParseStringParamAndSanitize(request.getParameter("VCCode"), "");
-        String description = ParameterParserUtil.ParseStringParamAndSanitize(request.getParameter("Description"), "");
-        String active = ParameterParserUtil.ParseStringParamAndSanitize(request.getParameter("Active"), "");
+        String idProject = ParameterParserUtil.parseStringParamAndSanitize(request.getParameter("idProject"), "");
+        String code = ParameterParserUtil.parseStringParamAndSanitize(request.getParameter("VCCode"), "");
+        String description = ParameterParserUtil.parseStringParamAndSanitize(request.getParameter("Description"), "");
+        String active = ParameterParserUtil.parseStringParamAndSanitize(request.getParameter("Active"), "");
 
         /**
          * Checking all constrains before calling the services.

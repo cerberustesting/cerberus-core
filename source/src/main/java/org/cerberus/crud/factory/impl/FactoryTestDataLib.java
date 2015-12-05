@@ -19,7 +19,8 @@
  */
 package org.cerberus.crud.factory.impl;
 
-import org.cerberus.crud.entity.TestDataLib; 
+import java.sql.Timestamp;
+import org.cerberus.crud.entity.TestDataLib;
 import org.cerberus.crud.factory.IFactoryTestDataLib;
 import org.springframework.stereotype.Service;
 
@@ -31,45 +32,15 @@ import org.springframework.stereotype.Service;
 public class FactoryTestDataLib implements IFactoryTestDataLib {
 
     @Override
-    public TestDataLib create(Integer testDataLibID, String name, String system, String environment, 
+    public TestDataLib create(Integer testDataLibID, String name, String system, String environment,
             String country, String group, String type, String database,
             String script, String servicePath, String method,
-            String envelope, String description) {
-        
-        TestDataLib newData = createObject(name, system, environment, country, group, type, database, script, servicePath, method, envelope, description);
-        
-        if(newData != null){
-            newData.setTestDataLibID(testDataLibID);
-        }
-        return newData;
-    }
+            String envelope, String description, String creator, Timestamp created,
+            String LastModifier, Timestamp lastModified) {
 
-    @Override
-    public TestDataLib create(String name, String system, String environment, String country,
-            String group, String type, String database, String script, String servicePath, String method, String envelope, String description) {
-            return createObject(name, system, environment, country, group, type, database, script, servicePath, method, envelope, description); 
-    }
-    /**
-     * Auxiliary method that creates an object TestDataLib
-     * @param name
-     * @param system
-     * @param environment
-     * @param country
-     * @param group
-     * @param type
-     * @param database
-     * @param script
-     * @param servicePath
-     * @param method
-     * @param envelope
-     * @param description
-     * @return 
-     */
-    private TestDataLib createObject(String name, String system, String environment, String country,
-            String group, String type, String database, String script, String servicePath, String method, String envelope, String description){
-            
         TestDataLib newData = new TestDataLib();
 
+        newData.setTestDataLibID(testDataLibID);
         newData.setType(type);
         newData.setName(name);
         newData.setSystem(system);
@@ -83,7 +54,12 @@ public class FactoryTestDataLib implements IFactoryTestDataLib {
         newData.setMethod(method);
         newData.setEnvelope(envelope);
         newData.setDescription(description);
+        newData.setCreator(creator);
+        newData.setCreated(created);
+        newData.setLastModifier(LastModifier);
+        newData.setLastModified(lastModified);
         return newData;
+
     }
 
 }

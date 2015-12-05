@@ -402,8 +402,7 @@ function deleteEntryHandlerClick() {
 function deleteEntry(entry) {
     clearResponseMessageMainPage();
     var doc = new Doc();
-    var messageComplete = doc.getDocLabel("page_global", "deleteMessage");
-    messageComplete = messageComplete.replace("%TABLE%", "TestCase");
+    var messageComplete = doc.getDocLabel("page_testcase", "message_delete");
     messageComplete = messageComplete.replace("%ENTRY%", entry);
     showModalConfirmation(deleteEntryHandlerClick, "Delete", messageComplete, entry, "", "", "");
 }

@@ -78,8 +78,8 @@ public class DeleteTestCase2 extends HttpServlet {
         /**
          * Parsing and securing all required parameters.
          */
-        String test = ParameterParserUtil.ParseStringParamAndSanitize(request.getParameter("test"), "");
-        String testCase = ParameterParserUtil.ParseStringParamAndSanitize(request.getParameter("testCase"), "");
+        String test = ParameterParserUtil.parseStringParamAndSanitize(request.getParameter("test"), "");
+        String testCase = ParameterParserUtil.parseStringParamAndSanitize(request.getParameter("testCase"), "");
 
         /**
          * Checking all constrains before calling the services.

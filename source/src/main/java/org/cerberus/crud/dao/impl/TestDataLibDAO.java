@@ -21,6 +21,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
 import org.apache.log4j.Level;
@@ -83,7 +84,7 @@ public class TestDataLibDAO implements ITestDataLibDAO {
                         msg = MessageEventUtil.createSelectSuccessMessageDAO(OBJECT_NAME);
                     } else {
                         msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_NO_DATA_FOUND);
-                        
+
                     }
                 } catch (SQLException exception) {
                     MyLogger.log(TestDataLibDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
@@ -122,8 +123,7 @@ public class TestDataLibDAO implements ITestDataLibDAO {
         answer.setResultMessage(msg);
         return answer;
     }
-    
-    
+
     @Override
     public AnswerItem readByKey(String name, String system, String environment, String country) {
         AnswerItem answer = new AnswerItem();
@@ -152,7 +152,7 @@ public class TestDataLibDAO implements ITestDataLibDAO {
                         msg = MessageEventUtil.createSelectSuccessMessageDAO(OBJECT_NAME);
                     } else {
                         msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_NO_DATA_FOUND);
-                        
+
                     }
                 } catch (SQLException exception) {
                     MyLogger.log(TestDataLibDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
@@ -191,6 +191,7 @@ public class TestDataLibDAO implements ITestDataLibDAO {
         answer.setResultMessage(msg);
         return answer;
     }
+
     @Override
     public AnswerItem<TestDataLib> readByKey(int testDataLibID) {
         AnswerItem answer = new AnswerItem();
@@ -273,8 +274,8 @@ public class TestDataLibDAO implements ITestDataLibDAO {
         query.append(" limit ? ");
         if ((limit <= 0) || (limit >= MAX_ROW_SELECTED)) {
             limit = MAX_ROW_SELECTED;
-        } 
-        
+        }
+
         Connection connection = this.databaseSpring.connect();
         try {
             PreparedStatement preStat = connection.prepareStatement(query.toString());
@@ -288,10 +289,10 @@ public class TestDataLibDAO implements ITestDataLibDAO {
                         String name = resultSet.getString("Name");
                         namesList.add(name);
                     }
-                    
-                    if(namesList.isEmpty()){
+
+                    if (namesList.isEmpty()) {
                         msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_NO_DATA_FOUND);
-                    }else{
+                    } else {
                         msg = MessageEventUtil.createSelectSuccessMessageDAO(OBJECT_NAME);
                     }
 
@@ -353,9 +354,9 @@ public class TestDataLibDAO implements ITestDataLibDAO {
                     while (resultSet.next()) {
                         list.add(this.loadFromResultSet(resultSet));
                     }
-                    if(list.isEmpty()){
+                    if (list.isEmpty()) {
                         msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_NO_DATA_FOUND);
-                    }else{
+                    } else {
                         msg = MessageEventUtil.createSelectSuccessMessageDAO(OBJECT_NAME);
                     }
                 } catch (SQLException exception) {
@@ -412,42 +413,18 @@ public class TestDataLibDAO implements ITestDataLibDAO {
         //were applied -- used for pagination p
         query.append("SELECT SQL_CALC_FOUND_ROWS * FROM testdatalib ");
 
-        gSearch.append(" where (`name` like '%");
-        gSearch.append(searchTerm);
-        gSearch.append("%'");
-        gSearch.append(" or `group` like '%");
-        gSearch.append(searchTerm);
-        gSearch.append("%'");
-        gSearch.append(" or `type` like '%");
-        gSearch.append(searchTerm);
-        gSearch.append("%'");
-        gSearch.append(" or `database` like '%");
-        gSearch.append(searchTerm);
-        gSearch.append("%'");
-        gSearch.append(" or `script` like '%");
-        gSearch.append(searchTerm);
-        gSearch.append("%'");
-        gSearch.append(" or `servicepath` like '%");
-        gSearch.append(searchTerm);
-        gSearch.append("%'");
-        gSearch.append(" or `method` like '%");
-        gSearch.append(searchTerm);
-        gSearch.append("%'");
-        gSearch.append(" or `envelope` like '%");
-        gSearch.append(searchTerm);
-        gSearch.append("%'");
-        gSearch.append(" or `description` like '%");
-        gSearch.append(searchTerm);
-        gSearch.append("%'");
-        gSearch.append(" or `system` like '%");
-        gSearch.append(searchTerm);
-        gSearch.append("%'");
-        gSearch.append(" or `environment` like '%");
-        gSearch.append(searchTerm);
-        gSearch.append("%'");
-        gSearch.append(" or `country` like '%");
-        gSearch.append(searchTerm);
-        gSearch.append("%') ");
+        gSearch.append(" where (`name` like '%").append(searchTerm).append("%'");
+        gSearch.append(" or `group` like '%").append(searchTerm).append("%'");
+        gSearch.append(" or `type` like '%").append(searchTerm).append("%'");
+        gSearch.append(" or `database` like '%").append(searchTerm).append("%'");
+        gSearch.append(" or `script` like '%").append(searchTerm).append("%'");
+        gSearch.append(" or `servicepath` like '%").append(searchTerm).append("%'");
+        gSearch.append(" or `method` like '%").append(searchTerm).append("%'");
+        gSearch.append(" or `envelope` like '%").append(searchTerm).append("%'");
+        gSearch.append(" or `description` like '%").append(searchTerm).append("%'");
+        gSearch.append(" or `system` like '%").append(searchTerm).append("%'");
+        gSearch.append(" or `environment` like '%").append(searchTerm).append("%'");
+        gSearch.append(" or `country` like '%").append(searchTerm).append("%') ");
 
         if (!searchTerm.equals("") && !individualSearch.equals("")) {
             searchSQL.append(gSearch.toString());
@@ -495,7 +472,7 @@ public class TestDataLibDAO implements ITestDataLibDAO {
                         msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_WARNING_PARTIAL_RESULT);
                         msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", "Maximum row reached : " + MAX_ROW_SELECTED));
                     } else if (testDataLibList.isEmpty()) {
-                        msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_NO_DATA_FOUND);                        
+                        msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_NO_DATA_FOUND);
                     } else {
                         msg = MessageEventUtil.createSelectSuccessMessageDAO(OBJECT_NAME);
                     }
@@ -557,9 +534,9 @@ public class TestDataLibDAO implements ITestDataLibDAO {
                     while (resultSet.next()) {
                         listOfGroups.add(resultSet.getString(1));
                     }
-                    if(listOfGroups.isEmpty()){
+                    if (listOfGroups.isEmpty()) {
                         msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_NO_DATA_FOUND);
-                    }else{
+                    } else {
                         msg = MessageEventUtil.createSelectSuccessMessageDAO("GROUPS");
                     }
 
@@ -606,8 +583,8 @@ public class TestDataLibDAO implements ITestDataLibDAO {
         Answer answer = new Answer();
         StringBuilder query = new StringBuilder();
         query.append("INSERT INTO testdatalib (`name`, `system`, `environment`, `country`, `group`, `type`, `database`, "
-                + "`script`, `servicePath`, `method`, `envelope`, `description`) ");
-        query.append("VALUES (?,?,?,?,?,?,?,?,?,?,?,?)");
+                + "`script`, `servicePath`, `method`, `envelope`, `description`, `creator`) ");
+        query.append("VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?)");
 
         Connection connection = this.databaseSpring.connect();
         try {
@@ -625,6 +602,7 @@ public class TestDataLibDAO implements ITestDataLibDAO {
                 preStat.setString(10, ParameterParserUtil.returnEmptyStringIfNull(testDataLib.getMethod()));
                 preStat.setString(11, testDataLib.getEnvelope()); //is the one that allows null values
                 preStat.setString(12, ParameterParserUtil.returnEmptyStringIfNull(testDataLib.getDescription()));
+                preStat.setString(13, ParameterParserUtil.returnEmptyStringIfNull(testDataLib.getCreator()));
 
                 preStat.executeUpdate();
 
@@ -688,7 +666,7 @@ public class TestDataLibDAO implements ITestDataLibDAO {
             PreparedStatement preStat = connection.prepareStatement(query.toString());
             try {
                 preStat.setInt(1, testDataLib.getTestDataLibID());
-                
+
                 int rowsDeleted = preStat.executeUpdate();
 
                 if (rowsDeleted == 0) {
@@ -730,7 +708,7 @@ public class TestDataLibDAO implements ITestDataLibDAO {
         Answer answer = new Answer();
         MessageEvent msg;
         String query = "update testdatalib set `type`=?, `group`= ?, `system`=?, `environment`=?, `country`=?, `database`= ? , `script`= ? , "
-                + "`servicepath`= ? , `method`= ? , `envelope`= ? , `description`= ? where "
+                + "`servicepath`= ? , `method`= ? , `envelope`= ? , `description`= ? , `LastModifier`= ?, `LastModified` = NOW() where "
                 + "`TestDataLibID`= ?";
         Connection connection = this.databaseSpring.connect();
         try {
@@ -748,7 +726,8 @@ public class TestDataLibDAO implements ITestDataLibDAO {
                 preStat.setString(9, testDataLib.getMethod());
                 preStat.setString(10, testDataLib.getEnvelope());
                 preStat.setString(11, testDataLib.getDescription());
-                preStat.setInt(12, testDataLib.getTestDataLibID());
+                preStat.setString(12, testDataLib.getLastModifier());
+                preStat.setInt(13, testDataLib.getTestDataLibID());
 
                 int rowsUpdated = preStat.executeUpdate();
 
@@ -791,7 +770,6 @@ public class TestDataLibDAO implements ITestDataLibDAO {
         return answer;
     }
 
-    
     public TestDataLib loadFromResultSet(ResultSet resultSet) throws SQLException {
         Integer testDataLibID = resultSet.getInt("testDataLibID");
         String name = resultSet.getString("name");
@@ -806,8 +784,13 @@ public class TestDataLibDAO implements ITestDataLibDAO {
         String method = ParameterParserUtil.returnEmptyStringIfNull(resultSet.getString("method"));
         String envelope = ParameterParserUtil.returnEmptyStringIfNull(resultSet.getString("envelope"));
         String description = ParameterParserUtil.returnEmptyStringIfNull(resultSet.getString("description"));
+        String creator = ParameterParserUtil.returnEmptyStringIfNull(resultSet.getString("Creator"));
+        Timestamp created = resultSet.getTimestamp("Created");
+        String lastModifier = ParameterParserUtil.returnEmptyStringIfNull(resultSet.getString("LastModifier"));
+        Timestamp lastModified = resultSet.getTimestamp("LastModified");
 
-        return factoryTestDataLib.create(testDataLibID, name, system, environment, country, group, type, database, script, servicePath, method, envelope, description);
+        return factoryTestDataLib.create(testDataLibID, name, system, environment, country, group, type, database, script, servicePath,
+                method, envelope, description, creator, created, lastModifier, lastModified);
     }
 
 }

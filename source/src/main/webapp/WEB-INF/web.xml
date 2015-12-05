@@ -198,6 +198,10 @@
         <servlet-class>org.cerberus.servlet.crud.testcampaign.ReadCampaign</servlet-class>
     </servlet>
     <servlet>
+        <servlet-name>ReadCampaignParameter</servlet-name>
+        <servlet-class>org.cerberus.servlet.crud.testcampaign.ReadCampaignParameter</servlet-class>
+    </servlet>
+    <servlet>
         <servlet-name>GetTagExecutions</servlet-name>
         <servlet-class>org.cerberus.servlet.zzpublic.GetTagExecutions</servlet-class>
     </servlet>
@@ -705,6 +709,18 @@
         <servlet-class>org.cerberus.servlet.crud.countryenvironment.DeleteCountryEnvParam</servlet-class>
     </servlet>
     <servlet>
+        <servlet-name>UpdateCountryEnvParam1</servlet-name>
+        <servlet-class>org.cerberus.servlet.crud.countryenvironment.UpdateCountryEnvParam1</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>CreateCountryEnvParam1</servlet-name>
+        <servlet-class>org.cerberus.servlet.crud.countryenvironment.CreateCountryEnvParam1</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>DeleteCountryEnvParam1</servlet-name>
+        <servlet-class>org.cerberus.servlet.crud.countryenvironment.DeleteCountryEnvParam1</servlet-class>
+    </servlet>
+    <servlet>
         <servlet-name>CreateCountryEnvironmentParameter</servlet-name>
         <servlet-class>org.cerberus.servlet.crud.countryenvironment.CreateCountryEnvironmentParameter</servlet-class>
     </servlet>
@@ -1003,6 +1019,10 @@
     <servlet-mapping>
         <servlet-name>ReadCampaign</servlet-name>
         <url-pattern>/ReadCampaign</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>ReadCampaignParameter</servlet-name>
+        <url-pattern>/ReadCampaignParameter</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
         <servlet-name>GetTagExecutions</servlet-name>
@@ -1501,6 +1521,18 @@
         <url-pattern>/DeleteCountryEnvParam</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
+        <servlet-name>UpdateCountryEnvParam1</servlet-name>
+        <url-pattern>/UpdateCountryEnvParam1</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>CreateCountryEnvParam1</servlet-name>
+        <url-pattern>/CreateCountryEnvParam1</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>DeleteCountryEnvParam1</servlet-name>
+        <url-pattern>/DeleteCountryEnvParam1</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
         <servlet-name>CreateCountryEnvironmentParameter</servlet-name>
         <url-pattern>/CreateCountryEnvironmentParameter</url-pattern>
     </servlet-mapping>
@@ -1825,7 +1857,6 @@
             <url-pattern>/RunTests.jsp</url-pattern>
             <url-pattern>/RunTestsSearchFilters.jsp</url-pattern>
             <url-pattern>/RunTestsSearchResult.jsp</url-pattern>
-            <url-pattern>/RunTestsManually.jsp</url-pattern>
             <url-pattern>/TestCaseManualRun.jsp</url-pattern>
             <url-pattern>/RunTestsTriggerBatchExecution.jsp</url-pattern>
             <url-pattern>/RunTest2.jsp</url-pattern>
@@ -1878,6 +1909,7 @@
             <url-pattern>/BuildContent.jsp</url-pattern>
             <url-pattern>/BuildRevDefinition.jsp</url-pattern>
             <url-pattern>/Environment.jsp</url-pattern>
+            <url-pattern>/Environment1.jsp</url-pattern>
             <url-pattern>/EnvironmentList.jsp</url-pattern>
             <url-pattern>/IntegrationStatus.jsp</url-pattern>
             <url-pattern>/Notification.jsp</url-pattern>
@@ -1925,6 +1957,9 @@
             <url-pattern>/CreateCountryEnvParam</url-pattern>
             <url-pattern>/UpdateCountryEnvParam</url-pattern>
             <url-pattern>/DeleteCountryEnvParam</url-pattern>
+            <url-pattern>/CreateCountryEnvParam1</url-pattern>
+            <url-pattern>/UpdateCountryEnvParam1</url-pattern>
+            <url-pattern>/DeleteCountryEnvParam1</url-pattern>
             <url-pattern>/CreateCountryEnvironmentParameter</url-pattern>
             <url-pattern>/UpdateCountryEnvironmentParameter</url-pattern>
             <url-pattern>/DeleteCountryEnvironmentParameter</url-pattern>
@@ -2071,6 +2106,7 @@
             <url-pattern>/ReadTag</url-pattern>
             <url-pattern>/SaveManualExecutionPictureTest</url-pattern>
             <url-pattern>/ReadCampaign</url-pattern>
+            <url-pattern>/ReadCampaignParameter</url-pattern>
             <url-pattern>/ReadTestBattery</url-pattern>
             <url-pattern>/ReadInvariant</url-pattern>            
         </web-resource-collection>

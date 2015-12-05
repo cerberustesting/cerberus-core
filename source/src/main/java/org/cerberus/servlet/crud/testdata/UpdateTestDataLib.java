@@ -159,6 +159,7 @@ public class UpdateTestDataLib extends HttpServlet {
                     lib.setServicePath(servicePath);
                     lib.setMethod(method);
                     lib.setEnvelope(envelope);
+                    lib.setLastModifier(request.getRemoteUser());
 
                     ans = libService.update(lib);
 

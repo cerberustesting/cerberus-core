@@ -18,21 +18,21 @@
  * along with Cerberus.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-$.when($.getScript("js/pages/global/global.js")).then(function() {
+$.when($.getScript("js/pages/global/global.js")).then(function () {
     /**
      * Document ready methods
      */
 
     displayPageLabel();
 
-    $(function() {
+    $(function () {
 
 
         var i = 0;
         var j = 0;
         /*****************************************************************************/
         //adds new rows to the subdata table
-        $("#newSubData_addRow").click(function() {
+        $("#newSubData_addRow").click(function () {
 
             $('#addSubDataTableBody').append('<tr class="trData" id="row' + (i + 1) + '">\n\\n\
                 <td ><div class="nomarginbottom marginTop5"> <button onclick="deleteRowTestDataLibData(this)" class="delete_row pull-left btn btn-default btn-xs manageRowsFont"><span class="glyphicon glyphicon-trash"></span></button></div></td>\n\
@@ -50,7 +50,7 @@ $.when($.getScript("js/pages/global/global.js")).then(function() {
         });
         /*****************************************************************************/
         //adds a new run in the edit window
-        $("#editSubData_addRow").click(function() {
+        $("#editSubData_addRow").click(function () {
             //gets the id from the first row
             var testdatalibid = $("#editSubDataTableBody tr[data-operation='update']:first").attr("testdatalibid");
 
@@ -69,7 +69,7 @@ $.when($.getScript("js/pages/global/global.js")).then(function() {
 
         /*****************************************************************************/
         //delete all subdata rows     
-        $("#newSubData_deleteAll").click(function() {
+        $("#newSubData_deleteAll").click(function () {
             removeAllEntries("addSubDataTable");
             updateSubDataTabLabel();
         });
@@ -97,7 +97,7 @@ $.when($.getScript("js/pages/global/global.js")).then(function() {
         /*
          * Handles the change of the type when adding a new test data lib entry
          */
-        $('#addTestDataLibModal #type').change(function() {
+        $('#addTestDataLibModal #type').change(function () {
             if ($(this).val() === "SQL") {
                 $("#panelSQL").collapse("show");
             } else if ($(this).val() === "SOAP") {
@@ -108,7 +108,7 @@ $.when($.getScript("js/pages/global/global.js")).then(function() {
         /*
          * Handles the change of the type select  when editing a test data lib entry
          */
-        $('#editTestDataLibModal #type').change(function() {
+        $('#editTestDataLibModal #type').change(function () {
             if ($(this).val() === "SQL") {
                 $("#panelSQLEdit").collapse("show");
             } else if ($(this).val() === "SOAP") {
@@ -118,7 +118,7 @@ $.when($.getScript("js/pages/global/global.js")).then(function() {
         /*
          * Handles the change of the type select  when editing a test data lib entry
          */
-        $('#duplicateTestDataLibModal #type').change(function() {
+        $('#duplicateTestDataLibModal #type').change(function () {
             if ($(this).val() === "SQL") {
                 $("#panelSQLDuplicate").collapse("show");
             } else if ($(this).val() === "SOAP") {
@@ -139,7 +139,7 @@ $.when($.getScript("js/pages/global/global.js")).then(function() {
          * Save changes performing during Duplicate operation
          */
         $("#saveDuplicateTestDataLib").click(saveDuplicateTestDataLibClickHandler);
-        
+
         /**
          * Method that saves new test data lib entry
          */
@@ -160,7 +160,7 @@ $.when($.getScript("js/pages/global/global.js")).then(function() {
 
 
         //creates the main table and draws the management buttons if the user has the permissions
-        $.when(createDataTableWithPermissions(configurations, renderOptionsForTestDataManager)).then(function() {
+        $.when(createDataTableWithPermissions(configurations, renderOptionsForTestDataManager)).then(function () {
             $("#listOfTestDataLib_wrapper div.ColVis .ColVis_MasterButton").addClass("btn btn-default");
         });
     })
@@ -197,10 +197,10 @@ function displayUpdateTestDataLibLabels(doc) {
     //title 
     $("#editTestDataLibTitle").text(doc.getDocLabel("page_testdatalib_m_updatelib", "title"));
     //content
-    
+
     $("#lbl_id_edit").html(doc.getDocOnline("testdatalib", "testdatalibid")); //id
     $("#lbl_name_edit").html(doc.getDocOnline("testdatalib", "name")); //name
-    
+
     $("#lbl_type_edit").html(doc.getDocOnline("testdatalib", "type"));
     $("#lbl_system_edit").html(doc.getDocOnline("testdatalib", "system"));
     $("#lbl_environment_edit").html(doc.getDocOnline("testdatalib", "environment"));
@@ -234,11 +234,11 @@ function displayDuplicateTestDataLibLabels(doc) {
 
     //title 
     $("#duplicateTestDataLibTitle").text(doc.getDocLabel("page_testdatalib_m_duplicatelib", "title"));
-    
+
     //content    
     $("#lbl_id_duplicate").html(doc.getDocOnline("testdatalib", "testdatalibid")); //id
     $("#lbl_name_duplicate").html(doc.getDocOnline("testdatalib", "name")); //name
-    
+
     $("#lbl_type_duplicate").html(doc.getDocOnline("testdatalib", "type"));
     $("#lbl_system_duplicate").html(doc.getDocOnline("testdatalib", "system"));
     $("#lbl_environment_duplicate").html(doc.getDocOnline("testdatalib", "environment"));
@@ -254,11 +254,11 @@ function displayDuplicateTestDataLibLabels(doc) {
     $("#lbl_service_path_duplicate").html(doc.getDocOnline("testdatalib", "servicepath"));
     $("#lbl_method_duplicate").html(doc.getDocOnline("testdatalib", "method"));
     $("#lbl_envelope_duplicate").html(doc.getDocOnline("testdatalib", "envelope"));
-    
+
     //auxiliar for group edition
     $("#lbl_choose_group_duplicate").html(doc.getDocOnline("page_testdatalib_m_createupdatelib", "lbl_choose_group"));
     $("#lbl_enter_group_duplicate").html(doc.getDocOnline("page_testdatalib_m_createupdatelib", "lbl_enter_group"));
-    
+
     //buttons    
     $("#cancelDuplicateTestDataLib").text(doc.getDocLabel("page_global", "btn_cancel"));
     $("#saveDuplicateTestDataLib").text(doc.getDocLabel("page_global", "buttonAdd"));
@@ -395,7 +395,7 @@ function renderOptionsForTestDataManager(data) {
             $("#listOfTestDataLib_wrapper div.ColVis").before(contentToAdd);
             $('#createLibButton').click(createLibButtonClickHandler);
 
-            $('#importDataButton').click(function() {
+            $('#importDataButton').click(function () {
                 var translations = {};
                 //I defined specific translations for this upload modal
                 translations["modalUploadLabel"] = doc.getDocLabel("page_testdatalib_m_upload", "title");
@@ -456,10 +456,10 @@ function saveNewTestDataLibHandler() {
     //end client-side validation        
 
 
-    
+
     showLoaderInModal('#addTestDataLibModal');
     var jqxhr = $.post("CreateTestDataLib", formAdd.serialize());
-    $.when(jqxhr).then(function(data) {
+    $.when(jqxhr).then(function (data) {
         hideLoaderInModal('#addTestDataLibModal');
 
         if (getAlertType(data.messageType) === 'success') {
@@ -473,7 +473,7 @@ function saveNewTestDataLibHandler() {
         } else {
             showMessage(data, $('#addTestDataLibModal'));
         }
-    }).fail(handleErrorAjaxAfterTimeout).then(function() {
+    }).fail(handleErrorAjaxAfterTimeout).then(function () {
         hideLoaderInModal('#addTestDataLibModal');
     });
 
@@ -508,7 +508,7 @@ function duplicateTestDataLibModalCloseHandler() {
 function deleteTestDataLibHandlerClick() {
     var testDataLibID = $('#confirmationModal').find('#hiddenField1').prop("value");
     var jqxhr = $.post("DeleteTestDataLib", {testdatalibid: testDataLibID}, "json");
-    $.when(jqxhr).then(function(data) {
+    $.when(jqxhr).then(function (data) {
         var messageType = getAlertType(data.messageType);
         if (messageType === "success") {
             //redraw the datatable
@@ -547,7 +547,7 @@ function uploadTestDataLibFromXMLFile() {
 
     });
 
-    $.when(jqxhr).then(function(data) {
+    $.when(jqxhr).then(function (data) {
         hideLoaderInModal("#modalUpload");
         var oTable = $("#listOfTestDataLib").dataTable();
         oTable.fnDraw(true);
@@ -566,7 +566,7 @@ function createLibButtonClickHandler() {
     //retrieves the data from the server that allows the creation of a new library (groups, database,...)
     var jqxhr = $.getJSON("ReadInvariant", "");
 
-    $.when(jqxhr).then(function(data) {
+    $.when(jqxhr).then(function (data) {
         var systemsList = [];
         var environmentList = [];
         var countryList = [];
@@ -574,7 +574,7 @@ function createLibButtonClickHandler() {
         var testDataTypeList = [];
 
 
-        $.each(data["contentTable"], function(idx, obj) {
+        $.each(data["contentTable"], function (idx, obj) {
             //extract all invariants that are needed for the page
             if (obj.idName === 'SYSTEM') {
                 systemsList.push(obj.value);
@@ -591,7 +591,7 @@ function createLibButtonClickHandler() {
 
 
         var doc = new Doc();
-        
+
 
         //when creating the testdatalibrary entry the static is the default select
         loadSelectElement(testDataTypeList, $('#addTestDataLibModal #type'));
@@ -612,7 +612,7 @@ function createLibButtonClickHandler() {
 
         var jqxhrGroups = $.getJSON("ReadTestDataLib", "groups");
 
-        $.when(jqxhrGroups).then(function(groupsData) {
+        $.when(jqxhrGroups).then(function (groupsData) {
             //loads the distinct groups
             var groupList = groupsData["contentTable"]
             console.log(groupList);
@@ -622,7 +622,7 @@ function createLibButtonClickHandler() {
             $('#addTestDataLibModal #group option:first-child').attr("selected", "selected");
             $('#addTestDataLibModal #group option:first').addClass("emptySelectOption");
             $('#addTestDataLibModal #group').change();
-            
+
             $('#addTestDataLibModal').modal('show');
         });
 
@@ -684,7 +684,7 @@ function saveChangesSubDataClickHandler() {
     }
 
     //selects the elements that were marked as to remove
-    $("#editSubDataTableBody tr[data-operation='remove']").each(function() {
+    $("#editSubDataTableBody tr[data-operation='remove']").each(function () {
         var item = {};
         item ["testdatalibdataid"] = $(this).prop("id");
         item ["testdatalibid"] = $(this).attr("testdatalibid");
@@ -696,7 +696,7 @@ function saveChangesSubDataClickHandler() {
         removeObjects.push(item);
     });
     //gets the elements that will be updated
-    $("#editSubDataTableBody tr[data-operation='update']").each(function() {
+    $("#editSubDataTableBody tr[data-operation='update']").each(function () {
         var item = {};
         item ["testdatalibdataid"] = $(this).prop("id");
         item ["testdatalibid"] = $(this).attr("testdatalibid");
@@ -710,10 +710,10 @@ function saveChangesSubDataClickHandler() {
 
     var resultInsert = true;
     //gets the elements that should be inserted
-    $("#editSubDataTableBody tr[data-operation='insert']").each(function() {
+    $("#editSubDataTableBody tr[data-operation='insert']").each(function () {
         var item = {};
         item ["testdatalibdataid"] = -1;
-        item ["testdatalibid"] =$(this).attr("testdatalibid");
+        item ["testdatalibid"] = $(this).attr("testdatalibid");
         item ["subdata"] = $(this).find("td:nth-child(2) input").prop("value");
         item ["value"] = $(this).find("td:nth-child(3) input").prop("value");
         item ["column"] = $(this).find("td:nth-child(4) input").prop("value");
@@ -761,7 +761,7 @@ function saveChangesSubDataClickHandler() {
 
     showLoaderInModal('#manageTestDataLibDataModal');
     var jqxhr = $.post("UpdateTestDataLibData", {data: JSON.stringify(dataArray)}, "json");
-    $.when(jqxhr).then(function(data) {
+    $.when(jqxhr).then(function (data) {
         hideLoaderInModal('#manageTestDataLibDataModal');
         console.log("data" + data);
         if (getAlertType(data.messageType) === 'success') {
@@ -778,7 +778,7 @@ function saveTestDataLibClickHandler() {
     showLoaderInModal('#editTestDataLibModal');
 
     var jqxhr = $.post("UpdateTestDataLib", formEdit.serialize(), "json");
-    $.when(jqxhr).then(function(data) {
+    $.when(jqxhr).then(function (data) {
         // unblock when remote call returns 
         hideLoaderInModal('#editTestDataLibModal');
         if (getAlertType(data.messageType) === "success") {
@@ -803,7 +803,7 @@ function validateSubDataEntriesRepeated(dialog, tableBody, checkOnesMarkedToRemo
     var arrayValues = [];
 
     //client-side validation 
-    var elementsWithRepeatedSubdata = $("#" + tableBody + " tr td:nth-child(2) input").filter(function() {
+    var elementsWithRepeatedSubdata = $("#" + tableBody + " tr td:nth-child(2) input").filter(function () {
         var repeatedCount = 0;
         var parent = $(this).parents("div.form-group").addClass('has-error');
 
@@ -848,7 +848,8 @@ function groupChangeHandler() {
     var suffix = "";
     if ($(this).prop("id") === "groupedit") {
         suffix = "edit";
-    }if ($(this).prop("id") === "groupduplicate") {
+    }
+    if ($(this).prop("id") === "groupduplicate") {
         suffix = "duplicate";
     }
     if ($(this).val() !== '') {
@@ -941,15 +942,8 @@ function deleteTestDataLib(testDataLibID, name, system, environment, country, ty
     var environmentLabel = environment === '' ? doc.getDocLabel("page_global", "lbl_all") : environment;
     var countryLabel = country === '' ? doc.getDocLabel("page_global", "lbl_all") : country;
 
-    var deleteMessage = " TestDataLib: <ul><li>ID: " +
-            testDataLibID +
-            "</li><li>" + doc.getDocLabel("testdatalib", "name") + ": " + name +
-            "</li><li>" + doc.getDocLabel("testdatalib", "type") + ": " + type +
-            " </li><li>" + doc.getDocLabel("testdatalib", "system") + ": " + systemLabel +
-            "</li><li> " + doc.getDocLabel("testdatalib", "environment") + ": " + environmentLabel +
-            " </li><li>" + doc.getDocLabel("testdatalib", "country") + ":" + countryLabel +
-            "</li> </ul>" + doc.getDocLabel("page_testdatalib_delete", "subdata_msg");
-    var messageComplete = doc.getDocLabel("page_global", "deleteMessage").replace("%ENTRY%", deleteMessage).replace("%TABLE%", "");
+    var messageComplete = doc.getDocLabel("page_testdatalib", "message_delete").replace("%ENTRY%", name).replace("%ID%", testDataLibID).replace("%SYSTEM%", systemLabel)
+            .replace("%ENVIRONMENT%", environmentLabel).replace("%COUNTRY%", countryLabel);
     showModalConfirmation(deleteTestDataLibHandlerClick, doc.getDocLabel("page_testdatalib_delete", "title"), messageComplete, testDataLibID, "", "", "");
 
 }
@@ -959,7 +953,7 @@ function editTestDataLib(testDataLibID) {
     //load the data from the row 
     var jqxhr = $.getJSON("ReadTestDataLib", "testdatalibid=" + testDataLibID);
 
-    $.when(jqxhr).then(function(data) {
+    $.when(jqxhr).then(function (data) {
 
         var obj = data["testDataLib"];
 
@@ -972,10 +966,10 @@ function editTestDataLib(testDataLibID) {
         $('#editTestDataLibModal #envelope').prop("value", obj.envelope);
 
         $('#editTestDataLibModal #script').prop("value", obj.script);
-        
+
         var jqxhrInvariant = $.getJSON("ReadInvariant", "");
 
-        $.when(jqxhrInvariant).then(function(invariantData) {
+        $.when(jqxhrInvariant).then(function (invariantData) {
 
             var systemsList = [];
             var environmentList = [];
@@ -984,7 +978,7 @@ function editTestDataLib(testDataLibID) {
             var testDataTypeList = [];
 
 
-            $.each(invariantData["contentTable"], function(idx, obj) {
+            $.each(invariantData["contentTable"], function (idx, obj) {
                 //extract all invariants that are needed for the page
                 if (obj.idName === 'SYSTEM') {
                     systemsList.push(obj.value);
@@ -1035,7 +1029,7 @@ function editTestDataLib(testDataLibID) {
 
             //loads groups from database
             var jqxhrGroups = $.getJSON("ReadTestDataLib", "groups");
-            $.when(jqxhrGroups).then(function(groupsData) {
+            $.when(jqxhrGroups).then(function (groupsData) {
                 //load distinct groups
                 var doc = new Doc();
                 loadSelectElement(groupsData["contentTable"], $('#editTestDataLibModal #groupedit'), true,
@@ -1047,6 +1041,10 @@ function editTestDataLib(testDataLibID) {
                 $('#editTestDataLibModal #groupedit').change();
             });
 
+            $('#editTestDataLibModal #created').prop("value", obj.created);
+            $('#editTestDataLibModal #creator').prop("value", obj.creator);
+            $('#editTestDataLibModal #lastModified').prop("value", obj.lastModified);
+            $('#editTestDataLibModal #lastModifier').prop("value", obj.lastModifier);
 
             //after everything. then shows the modal
             $('#editTestDataLibModal').modal('show');
@@ -1071,12 +1069,12 @@ function getTestCasesUsing(testDataLibID, name, country) {
 
     var doc = new Doc();
 
-    $.when(jqxhr).then(function(result) {
+    $.when(jqxhr).then(function (result) {
 
         $('#testCaseListModal #totalTestCases').text(doc.getDocLabel("page_testdatalib_m_gettestcases", "nrTests") + " " + result["TestCasesList"].length);
         var htmlContent = "";
 
-        $.each(result["TestCasesList"], function(idx, obj) {
+        $.each(result["TestCasesList"], function (idx, obj) {
 
             var item = '<b><a class="list-group-item ListItem" data-remote="true" href="#sub_cat' + idx + '" id="cat' + idx + '" data-toggle="collapse" \n\
             data-parent="#sub_cat' + idx + '"><span class="pull-left">' + obj[0] + '</span>\n\
@@ -1087,7 +1085,7 @@ function getTestCasesUsing(testDataLibID, name, country) {
             htmlContent += '<div class="collapse list-group-submenu" id="sub_cat' + idx + '">';
 
 
-            $.each(obj[3], function(idx2, obj2) {
+            $.each(obj[3], function (idx2, obj2) {
                 var hrefTest = 'TestCase.jsp?Test=' + obj[0] + '&TestCase=' + obj2.TestCaseNumber;
                 htmlContent += '<span class="list-group-item sub-item ListItem" data-parent="#sub_cat' + idx + '" style="padding-left: 78px;">';
                 htmlContent += '<span class="pull-left"><a href="' + hrefTest + '" target="_blank">' + obj2.TestCaseNumber + '- ' + obj2.TestCaseDescription + '</a></span>';
@@ -1142,7 +1140,7 @@ function viewSubDataEntries(testDataLibID) {
 
     var jqxhr = $.getJSON("ReadTestDataLibData", "testdatalibid=" + testDataLibID);
 
-    $.when(jqxhr).then(function(result) {
+    $.when(jqxhr).then(function (result) {
         var configurations = new TableConfigurationsClientSide("viewTestDataLibDataEntriesTable", result["contentTable"], aoColumnsViewTestDataLibData(), true);
         configurations.tableWidth = "550px";
 
@@ -1174,8 +1172,8 @@ function editSubData(testDataLibID) {
 
     var jqxhr = $.getJSON("ReadTestDataLibData", "testdatalibid=" + testDataLibID);
 
-    $.when(jqxhr).then(function(result) {
-        $.each(result["contentTable"], function(idx, obj) {
+    $.when(jqxhr).then(function (result) {
+        $.each(result["contentTable"], function (idx, obj) {
             appendNewSubDataRow(obj.testDataLibDataID, obj.testDataLibID, obj.subData, obj.value, obj.column, obj.parsingAnswer, obj.description);
         });
         //show modal
@@ -1189,13 +1187,13 @@ function editSubData(testDataLibID) {
  * @param {type} testDataLibID
  * @returns {undefined}
  */
-function duplicateEntry(testDataLibID){
-    
-     clearResponseMessageMainPage();
+function duplicateEntry(testDataLibID) {
+
+    clearResponseMessageMainPage();
     //load the data from the row 
     var jqxhr = $.getJSON("ReadTestDataLib", "testdatalibid=" + testDataLibID);
 
-    $.when(jqxhr).then(function(data) {
+    $.when(jqxhr).then(function (data) {
 
         var obj = data["testDataLib"];
 
@@ -1208,10 +1206,10 @@ function duplicateEntry(testDataLibID){
         $('#duplicateTestDataLibModal #envelope').prop("value", obj.envelope);
 
         $('#duplicateTestDataLibModal #script').prop("value", obj.script);
-        
+
         var jqxhrInvariant = $.getJSON("ReadInvariant", "");
 
-        $.when(jqxhrInvariant).then(function(invariantData) {
+        $.when(jqxhrInvariant).then(function (invariantData) {
 
             var systemsList = [];
             var environmentList = [];
@@ -1220,7 +1218,7 @@ function duplicateEntry(testDataLibID){
             var testDataTypeList = [];
 
             //gets all invariants required for load this modal
-            $.each(invariantData["contentTable"], function(idx, obj) {
+            $.each(invariantData["contentTable"], function (idx, obj) {
                 //extract all invariants that are needed for the page
                 if (obj.idName === 'SYSTEM') {
                     systemsList.push(obj.value);
@@ -1271,7 +1269,7 @@ function duplicateEntry(testDataLibID){
 
             //loads groups from database
             var jqxhrGroups = $.getJSON("ReadTestDataLib", "groups");
-            $.when(jqxhrGroups).then(function(groupsData) {
+            $.when(jqxhrGroups).then(function (groupsData) {
                 //load distinct groups
                 var doc = new Doc();
                 loadSelectElement(groupsData["contentTable"], $('#duplicateTestDataLibModal #groupduplicate'), true,
@@ -1296,12 +1294,12 @@ function duplicateEntry(testDataLibID){
  * Duplicates an entry
  * @returns {undefined}
  */
-function saveDuplicateTestDataLibClickHandler(){
+function saveDuplicateTestDataLibClickHandler() {
     var formEdit = $('#duplicateTestDataLibModal').find('form#duplicateTestLibData');
     showLoaderInModal('#duplicateTestDataLibModal');
 
     var jqxhr = $.post("DuplicateTestDataLib", formEdit.serialize(), "json");
-    $.when(jqxhr).then(function(data) {
+    $.when(jqxhr).then(function (data) {
         // unblock when remote call returns 
         hideLoaderInModal('#duplicateTestDataLibModal');
         if (getAlertType(data.messageType) === "success") {
@@ -1313,8 +1311,8 @@ function saveDuplicateTestDataLibClickHandler(){
         } else {
             showMessage(data, $('#duplicateTestDataLibModal'));
         }
-    }).fail(handleErrorAjaxAfterTimeout);    
-    
+    }).fail(handleErrorAjaxAfterTimeout);
+
 }
 
 
@@ -1328,7 +1326,7 @@ function loadSelectElement(data, element, includeEmpty, includeEmptyText) {
         $(element).append("<option value=''>" + includeEmptyText + "</option>");
     }
     data.sort();
-    $.each(data, function(idx, obj) {
+    $.each(data, function (idx, obj) {
         $(element).append("<option value='" + obj + "'>" + obj + "</option>");
     });
 }
@@ -1336,7 +1334,7 @@ function loadSelectElement(data, element, includeEmpty, includeEmptyText) {
 function aoColumnsViewTestDataLibData() {
     var doc = new Doc();
     var aoColumns = [];
-    $("#viewTestDataLibDataEntriesTable th").each(function(i) {
+    $("#viewTestDataLibDataEntriesTable th").each(function (i) {
         switch (i) {
             case 0 :
                 aoColumns.push({className: "width80", "sName": "TestDataLibID", "data": "testDataLibID", "title": doc.getDocOnline("testdatalib", "testdatalibid")});
@@ -1367,7 +1365,7 @@ function aoColumnsFuncTestDataLib(tableId) {
     var doc = new Doc();
 
     var aoColumns = [];
-    $("#listOfTestDataLib th").each(function(i) {
+    $("#listOfTestDataLib th").each(function (i) {
         switch (i) {
             case 0:
                 aoColumns.push({
@@ -1376,7 +1374,7 @@ function aoColumnsFuncTestDataLib(tableId) {
                     "data": "testDataLibID",
                     "bSortable": false,
                     "title": doc.getDocLabel("testdatalib", "actions"),
-                    "mRender": function(data, type, oObj) {
+                    "mRender": function (data, type, oObj) {
                         var hasPermissions = $("#" + tableId).attr("hasPermissions");
                         var viewTestCase = '<button  class="getTestCasesUsing btn  btn-default btn-xs margin-right5" \n\
                             name="getTestCasesUsing" title="' + doc.getDocLabel("page_testdatalib", "tooltip_gettestcases") + '" type="button" \n\
@@ -1400,7 +1398,7 @@ function aoColumnsFuncTestDataLib(tableId) {
                             <span class="glyphicon glyphicon-list-alt"></span></button>';
 
                             var duplicateEntryElement = '<button  class="btn btn-primary btn-xs margin-right5" \n\
-                            name="duplicateTestDataLib" title="' + doc.getDocLabel("page_testdatalib", "tooltip_duplicateEntry")  + '"\n\
+                            name="duplicateTestDataLib" title="' + doc.getDocLabel("page_testdatalib", "tooltip_duplicateEntry") + '"\n\
                                  type="button" onclick="duplicateEntry(' + data + ')">D</button>'; //TODO check if we can add this glyphicon glyphicon-duplicate
 
                             return '<div class="center btn-group width250">' + editElement + deleteElement + duplicateEntryElement + viewDataElement + viewTestCase + '</div>';
@@ -1442,7 +1440,7 @@ function aoColumnsFuncTestDataLib(tableId) {
                 break;
             case 9 :
                 aoColumns.push({className: "width250", "sName": "ServicePath", "data": "servicePath", "title": doc.getDocOnline("testdatalib", "servicepath"),
-                    "mRender": function(data, type, oObj) {
+                    "mRender": function (data, type, oObj) {
                         return drawURL(data);
                     }});
                 break;

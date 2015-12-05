@@ -1,7 +1,7 @@
 <!--Add an Environment  -->
-<div data-backdrop="static" class="modal fade center width800" id="addEnvModal" tabindex="-1" role="dialog" aria-labelledby="addEnvModalLabel" aria-hidden="true">
-    <div class="modal-dialog nomargintop nomarginbottom width800">
-        <div class="modal-content width800">
+<div data-backdrop="static" class="modal fade center" id="addEnvModal" tabindex="-1" role="dialog" aria-labelledby="addEnvModalLabel" aria-hidden="true">
+    <div class="modal-dialog nomargintop nomarginbottom">
+        <div class="modal-content">
             <div class="modal-header">
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
                 <h4 class="modal-title" id="addEnvModalLabel" name="createEnvField">Create Environment</h4>
@@ -11,8 +11,8 @@
                 <!--add form-->
                 <form id="addEnvModalForm" name="addEnvModalForm"  title="Add Environment" role="form">
                     <div class="container-fluid center">
-                         <!-- messages area-->
-                         <div id="DialogMessagesArea">
+                        <!-- messages area-->
+                        <div id="DialogMessagesArea">
                             <div class="alert" id="DialogMessagesAlert"  style="display:none;">
                                 <strong><span class="alert-description" id="DialogAlertDescription"></span></strong>
                                 <button type="button" class="close" data-hide="alert"  aria-hidden="true">
@@ -23,76 +23,92 @@
                         <div class="row">
                             <div class="form-group col-xs-6">
                                 <label for="system" name="systemField">System</label>
-                                <input type="text" class="form-control" name="system" id="system" aria-describedby="basic-addon1" readonly>
+                                <select class="form-control"  id="system" name="system">
+                                </select>
                             </div>
                             <div class="form-group col-xs-3">
                                 <label for="country" name="countryField">Country</label>
-                                <input type="text" class="form-control" name="country" id="country" aria-describedby="basic-addon1" readonly>
+                                <select class="form-control"  id="country" name="country">
+                                </select>
                             </div>
                             <div class="form-group col-xs-3">
                                 <label for="environment" name="environmentField">Environment</label>
-                                <input type="text" class="form-control" name="environment" id="environment" aria-describedby="basic-addon1" readonly>
+                                <select class="form-control"  id="environment" name="environment">
+                                </select>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="form-group col-xs-6">
+                                <label for="type" name="typeField">Type</label>
+                                <select class="form-control"  id="type" name="type">
+                                </select>
+                            </div>
+                            <div class="form-group col-xs-6">
+                                <label for="active" name="activeField">Active</label>
+                                <br><input type="checkbox" checked="" id="activeNew" name="activeNew" class="activecb" disabled="" >
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="form-group col-xs-4">
+                                <label for="build" name="buildField">Build</label>
+                                <input type="text" class="form-control" name="buildNew" id="buildNew" aria-describedby="basic-addon1" readonly>
+                            </div>
+                            <div class="form-group col-xs-4">
+                                <label for="revision" name="revisionField">Revision</label>
+                                <input type="text" class="form-control" name="revisionNew" id="revisionNew" aria-describedby="basic-addon1" readonly>
+                            </div>
+                            <div class="form-group col-xs-4">
+                                <label for="chain" name="chainField">Chain</label>
+                                <input type="text" class="form-control" name="chainNew" id="chainNew" aria-describedby="basic-addon1" readonly>
                             </div>
                         </div>
                         <div class="row">
                             <div class="form-group col-xs-12">
                                 <label for="description" name="descriptionField">Description</label>
-                                <input type="text" class="form-control" name="description" id="description" aria-describedby="basic-addon1">
-                            </div>
-                        </div>
-                        <div class="row">
-                            <div class="form-group col-xs-6">
-                                <label for="build" name="buildField">Build</label>
-                                <select class="form-control"  id="build" name="build">
-                                </select>
-                            </div>
-                            <div class="form-group col-xs-6">
-                                <label for="revision" name="revisionField">Revision</label>
-                                <select class="form-control"  id="revision" name="revision">
-                                </select>
-                            </div>
-                        </div>
-                        <div class="row">
-                            <div class="form-group col-xs-6">
-                                <label for="ticketIdFixed" name="ticketIdFixedField">Ticket ID</label>
-                                <input type="text" class="form-control" name="ticketidfixed" id="ticketIdFixed" aria-describedby="basic-addon1" maxlength="45">
-                            </div>
-                            <div class="form-group col-xs-6">
-                                <label for="bugIdFixed" name="bugIdFixedField">Bug ID</label>
-                                <input type="text" class="form-control" name="bugidfixed" id="bugIdFixed" aria-describedby="basic-addon1" maxlength="45">
+                                <input type="text" class="form-control" name="description" id="description" aria-describedby="basic-addon1" maxlength="200">
                             </div>
                         </div>
                         <div class="row">
                             <div class="form-group col-xs-12">
-                                <label for="link" name="linkField">Link</label>
-                                <input type="text" class="form-control" name="link" id="link" aria-describedby="basic-addon1" maxlength="300">
+                                <label for="distribList" name="distribListField">Specific Distribution List</label>
+                                <textarea id="distribList" name="distribList"
+                                          class="form-control"></textarea> 
                             </div>
                         </div>
                         <div class="row">
                             <div class="form-group col-xs-12">
-                                <label for="subject" name="subjectField">Subject</label>
-                                <textarea id="subject" name="subject"
-                                          class="form-control" maxlength="1000"></textarea> 
+                                <label for="eMailBodyChain" name="eMailBodyChainField">Specific Email Body on New Chain Event</label>
+                                <textarea id="eMailBodyChain" name="eMailBodyChain"
+                                          class="form-control"></textarea> 
                             </div>
                         </div>
                         <div class="row">
-                            <div class="form-group col-xs-6">
-                                <label for="jenkinsBuildId" name="jenkinsBuildIdField">Jenkins Build ID</label>
-                                <input type="text" class="form-control" name="jenkinsbuildid" id="jenkinsBuildId" aria-describedby="basic-addon1" maxlength="200" readonly>
-                            </div>
-                            <div class="form-group col-xs-6">
-                                <label for="mavenGroupId" name="mavenGroupIdField">Maven Group ID</label>
-                                <input type="text" class="form-control" name="mavengroupid" id="mavenGroupId" aria-describedby="basic-addon1" maxlength="200" readonly>
+                            <div class="form-group col-xs-12">
+                                <label for="eMailBodyRevision" name="eMailBodyRevisionField">Specific Email Body on New Build/Revision Event</label>
+                                <textarea id="eMailBodyRevision" name="eMailBodyRevision"
+                                          class="form-control"></textarea> 
                             </div>
                         </div>
                         <div class="row">
-                            <div class="form-group col-xs-6">
-                                <label for="mavenArtifactId" name="mavenArtifactIdField">Maven Artifact ID</label>
-                                <input type="text" class="form-control" name="mavenartifactid" id="mavenArtifactId" aria-describedby="basic-addon1" maxlength="200" readonly>
+                            <div class="form-group col-xs-12">
+                                <label for="eMailBodyDisableEnvironment" name="eMailBodyDisableEnvironmentField">Specific Email Body on Disable Event</label>
+                                <textarea id="eMailBodyDisableEnvironment" name="eMailBodyDisableEnvironment"
+                                          class="form-control"></textarea> 
                             </div>
-                            <div class="form-group col-xs-6">
-                                <label for="mavenVersion" name="mavenVersionField">Maven Version</label>
-                                <input type="text" class="form-control" name="mavenversion" id="mavenVersion" aria-describedby="basic-addon1" maxlength="200" readonly>
+                        </div>
+                        <div class="row">
+                            <div class="form-group col-xs-4">
+                                <label for="maintenanceAct" name="maintenanceActField">Activate Maintenance</label>
+                                <select class="form-control"  id="maintenanceAct" name="maintenanceAct">
+                                </select>
+                            </div>
+                            <div class="form-group col-xs-4">
+                                <label for="maintenanceStr" name="maintenanceStrField">Start</label>
+                                <input type="text" class="form-control" name="maintenanceStr" id="maintenanceStr" aria-describedby="basic-addon1" maxlength="8" placeholder="00:00:00">
+                            </div>
+                            <div class="form-group col-xs-4">
+                                <label for="maintenanceEnd" name="maintenanceEndField">End</label>
+                                <input type="text" class="form-control" name="maintenanceEnd" id="maintenanceEnd" aria-describedby="basic-addon1" maxlength="8" placeholder="00:00:00">
                             </div>
                         </div>
                     </div>
