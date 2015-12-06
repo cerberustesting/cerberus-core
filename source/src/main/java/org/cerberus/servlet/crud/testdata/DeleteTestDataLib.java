@@ -126,7 +126,7 @@ public class DeleteTestDataLib extends HttpServlet {
                 //check if the lib can be deleted by search the lib name in the property                
                 ITestCaseCountryPropertiesService  propService = appContext.getBean(ITestCaseCountryPropertiesService.class);
                  
-                AnswerList testCasesAnswer = propService.findTestCaseCountryPropertiesByValue1(lib.getTestDataLibID(), lib.getName(), lib.getCountry(), "getFromDataLib");
+                AnswerList testCasesAnswer = propService.findTestCaseCountryPropertiesByValue1(lib.getTestDataLibID(), lib.getName(), lib.getCountry(), "getFromDataLib_BETA");
                 
                 List<TestListDTO> list = (List<TestListDTO>)testCasesAnswer.getDataList();
                 

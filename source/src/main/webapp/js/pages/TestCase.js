@@ -84,7 +84,7 @@ $.when($.getScript("js/pages/global/global.js")).then(function() {
             var parents = $(this).parents("div[id*='propertyRow']");
             var natureElement = parents.find("select[id*='properties_type_']");
             var propertyType = $(natureElement).find("option:selected").prop("value");
-            if (propertyType === "getFromDataLib") {
+            if (propertyType === "getFromDataLib_BETA") {
                 $(this).find("option:first").prop("selected", true);
                 $(this).find("option[value='RANDOMNEW']").addClass("hideElement");
                 $(this).find("option[value='NOTINUSE']").addClass("hideElement");
@@ -103,7 +103,7 @@ $.when($.getScript("js/pages/global/global.js")).then(function() {
 
             //var textArea1 = $(parents).find("textarea[id*='properties_value1']");
 
-            if ($(this).prop("value") === "getFromDataLib") {
+            if ($(this).prop("value") === "getFromDataLib_BETA") {
                 //gets the second textbox                
 
                 //var textArea2 = $(parents).find("textarea[id*='properties_value2']");
@@ -1363,7 +1363,7 @@ function drawPropertySymbolHandler() {
                     var idNumber = $("input.property_name[value='" + name[0] + "'] ").attr("id").replace("properties_property_", "");
                     var propertyType = $("#properties_type_" + idNumber).val();
 
-                    if (propertyType === "getFromDataLib") {
+                    if (propertyType === "getFromDataLib_BETA") {
                         //"You are using the syntax to acces a GetFromDataLIB " + propertyValue +" is missing! Create the corresponding property! ";                    
                         propertyValue = name[0];
                         isToCreate = false;
@@ -1421,7 +1421,7 @@ function createNewPropertyFromCommandList(propertyName, propertyType) {
     /*checks if is a getFromDataLib syntax and if it is then send all the property name (i.e., excludes the subdata value)*/
     var isSubDataAccess = propertyName.match("^[_A-Za-z0-9]+\\([_A-Za-z0-9]+\\)$");
     //is a format of the subdataaccess
-    if (isSubDataAccess !== null && propertyType === "getFromDataLib") {
+    if (isSubDataAccess !== null && propertyType === "getFromDataLib_BETA") {
         //check if the property from getdatalibrary exists
         //get the name for the property
         var name = propertyName.split(new RegExp("\\s+|\\(\\s*|\\)"));

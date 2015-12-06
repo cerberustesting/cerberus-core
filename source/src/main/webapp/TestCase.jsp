@@ -1757,14 +1757,14 @@
                                                 </div>
                                                 <div id="divProperties_value1_<%=incrementProperty%>" style="background-color:transparent;float:left;border-right-width:thin;border-right-style:solid;border-right-color:#CCCCCC;width:<%=widthValue1%>%;display:inline-block;">
                                                     <div class="pull-left showInlineElement"                                                    
-                                                        <% if (tccp.getType().equals("getFromDataLib")) {%>     
+                                                        <% if (tccp.getType().equals("getFromDataLib_BETA")) {%>     
                                                             style="width: 90%;" 
                                                         <%}else{%>
                                                             style="width: 100%;" 
                                                         <%}%>        
                                                        >
                                                         <textarea id="properties_value1_<%=incrementProperty%>" rows="2"  
-                                                                    <% if (tccp.getType().equals("getFromDataLib")) {%>     
+                                                                    <% if (tccp.getType().equals("getFromDataLib_BETA")) {%>     
                                                                         class ="wob getFromDataLib" 
                                                                     <%}else{%>
                                                                         class ="wob"
@@ -1776,7 +1776,7 @@
                                                     </div>
 
                                                        <div id="selectEntry_Data_<%=incrementProperty%>"  
-                                                       <% if (!tccp.getType().equals("getFromDataLib")) {%>     
+                                                       <% if (!tccp.getType().equals("getFromDataLib_BETA")) {%>     
                                                             class="hideElement"
                                                        <%}else{%>
                                                             class="showInlineElement" 

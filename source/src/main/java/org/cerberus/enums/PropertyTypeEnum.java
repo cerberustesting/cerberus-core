@@ -4,7 +4,7 @@ package org.cerberus.enums;
  * @author FNogueira
  */
 public enum PropertyTypeEnum {
-    GET_FROM_DATALIB("getFromDataLib"),
+    GET_FROM_DATALIB("getFromDataLib_BETA"),
     EXECUTE_SQL("executeSql"),
     EXECUTE_SQL_FROM_LIB("executeSqlFromLib"), 
     ACCESS_SUBDATA("accessSubData"), 
