@@ -31,11 +31,13 @@ import org.cerberus.enums.MessageEventEnum;
 import org.cerberus.crud.entity.MessageGeneral;
 import org.cerberus.crud.entity.TestCaseExecution;
 import org.cerberus.crud.entity.TestCaseStepActionControlExecution;
+import org.cerberus.crud.entity.TestCaseStepActionExecution;
 import org.cerberus.exception.CerberusEventException;
 import org.cerberus.log.MyLogger;
 import org.cerberus.service.engine.IControlService;
 import org.cerberus.service.engine.IIdentifierService;
 import org.cerberus.service.engine.IPropertyService;
+import org.cerberus.service.engine.IRecorderService;
 import org.cerberus.service.engine.ISikuliService;
 import org.cerberus.service.engine.IWebDriverService;
 import org.cerberus.service.engine.IXmlUnitService;
@@ -67,6 +69,8 @@ public class ControlService implements IControlService {
     private IIdentifierService identifierService;
     @Autowired
     private ISikuliService sikuliService;
+    @Autowired
+    private IRecorderService recorderService;
 
     @Override
     public TestCaseStepActionControlExecution doControl(TestCaseStepActionControlExecution testCaseStepActionControlExecution) {
@@ -77,7 +81,7 @@ public class ControlService implements IControlService {
          */
         try {
 
-                // for both control property and control value
+            // for both control property and control value
             //if the getvalue() indicates that the execution should stop then we stop it before the doControl  or
             //if the property service was unable to decode the property that is specified in the object, 
             //then the execution of this control should not performed
@@ -191,12 +195,16 @@ public class ControlService implements IControlService {
 
             } else if (testCaseStepActionControlExecution.getControlType().equals("verifyUrl")) {
                 res = this.verifyUrl(tCExecution, testCaseStepActionControlExecution.getControlProperty());
+
             } else if (testCaseStepActionControlExecution.getControlType().equals("verifyStringContains")) {
-                res = this.verifyStringContains(testCaseStepActionControlExecution.getControlProperty(),
-                        testCaseStepActionControlExecution.getControlValue());
+                res = this.verifyStringContains(testCaseStepActionControlExecution.getControlProperty(), testCaseStepActionControlExecution.getControlValue());
+
             } else if (testCaseStepActionControlExecution.getControlType().equals("verifyXmlTreeStructure")) {
-                res = this.verifyXmlTreeStructure(tCExecution, testCaseStepActionControlExecution.getControlProperty(),
-                        testCaseStepActionControlExecution.getControlValue());
+                res = this.verifyXmlTreeStructure(tCExecution, testCaseStepActionControlExecution.getControlProperty(), testCaseStepActionControlExecution.getControlValue());
+
+            } else if (testCaseStepActionControlExecution.getControlType().equals("takeScreenshot")) {
+                res = this.takeScreenshot(tCExecution, testCaseStepActionControlExecution.getTestCaseStepActionExecution(), testCaseStepActionControlExecution);
+
             } else {
                 res = new MessageEvent(MessageEventEnum.CONTROL_FAILED_UNKNOWNCONTROL);
                 res.setDescription(res.getDescription().replaceAll("%CONTROL%", testCaseStepActionControlExecution.getControlType()));
@@ -926,6 +934,22 @@ public class ControlService implements IControlService {
         } else {
             return new MessageEvent(MessageEventEnum.CONTROL_FAILED_NOTCLICKABLE_NULL);
         }
+    }
+
+    private MessageEvent takeScreenshot(TestCaseExecution tCExecution, TestCaseStepActionExecution testCaseStepActionExecution, TestCaseStepActionControlExecution testCaseStepActionControlExecution) {
+        MessageEvent message;
+        if (tCExecution.getApplication().getType().equalsIgnoreCase("GUI")
+                || tCExecution.getApplication().getType().equalsIgnoreCase("APK")) {
+            String screenshotPath = recorderService.recordScreenshotAndGetName(tCExecution,
+                    testCaseStepActionExecution, testCaseStepActionControlExecution.getControl());
+            testCaseStepActionControlExecution.setScreenshotFilename(screenshotPath);
+            message = new MessageEvent(MessageEventEnum.CONTROL_SUCCESS_TAKESCREENSHOT);
+            return message;
+        }
+        message = new MessageEvent(MessageEventEnum.CONTROL_NOTEXECUTED_NOTSUPPORTED_FOR_APPLICATION);
+        message.setDescription(message.getDescription().replaceAll("%CONTROL%", "takeScreenShot"));
+        message.setDescription(message.getDescription().replaceAll("%APPLICATIONTYPE%", testCaseStepActionExecution.getTestCaseStepExecution().gettCExecution().getApplication().getType()));
+        return message;
     }
 
     /**

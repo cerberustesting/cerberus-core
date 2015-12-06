@@ -5174,6 +5174,13 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLS.append("    ('ACTION', 'callSoapWithBase_BETA', '910', '[BETA] callSoapWithBase', '');");
         SQLInstruction.add(SQLS.toString());
 
+        // Adding takeScreenshot control to replace the action.
+        //-- ------------------------ 673
+        SQLS = new StringBuilder();
+        SQLS.append("INSERT INTO `invariant` (`idname`, `value`, `sort`, `description`, `VeryShortDesc`) ");
+        SQLS.append("VALUES ('CONTROL', 'takeScreenshot', '100', 'Take a screenshot.', '');");
+        SQLInstruction.add(SQLS.toString());
+
         return SQLInstruction;
     }
 

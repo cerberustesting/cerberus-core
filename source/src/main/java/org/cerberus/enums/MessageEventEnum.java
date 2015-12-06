@@ -206,6 +206,7 @@ public enum MessageEventEnum {
     CONTROL_SUCCESS_NOTCLICKABLE(300, "OK", "Element '%ELEMENT%' is not clickable", false, false, false, MessageGeneralEnum.EXECUTION_PE_TESTSTARTED),
     CONTROL_SUCCESS_ELEMENTEQUALS(300, "OK", "Element in path '%XPATH%' is equal to '%EXPECTED_ELEMENT%'.", false, false, false, MessageGeneralEnum.EXECUTION_PE_TESTSTARTED),
     CONTROL_SUCCESS_ELEMENTDIFFERENT(300, "OK", "Element in path '%XPATH%' is different from '%DIFFERENT_ELEMENT%'.", false, false, false, MessageGeneralEnum.EXECUTION_PE_TESTSTARTED),
+    CONTROL_SUCCESS_TAKESCREENSHOT(300, "OK", "Screenshot taken.", false, false, false, MessageGeneralEnum.EXECUTION_PE_TESTSTARTED),
     CONTROL_FAILED(350, "KO", "Control Failed", false, true, false, MessageGeneralEnum.EXECUTION_KO),
     CONTROL_FAILED_UNKNOWNCONTROL(351, "KO", "Control function '%CONTROL%' does not exist or is not supported.", true, false, false, MessageGeneralEnum.EXECUTION_FA),
     CONTROL_FAILED_FATAL(352, "KO", "Fatal Control Failed", true, true, false, MessageGeneralEnum.EXECUTION_KO),
