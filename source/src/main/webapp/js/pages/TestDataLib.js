@@ -1387,21 +1387,21 @@ function aoColumnsFuncTestDataLib(tableId) {
                             name="editTestDataLib" title="' + doc.getDocLabel("page_testdatalib", "tooltip_editentry") + '" type="button">\n\
                             <span class="glyphicon glyphicon-pencil"></span></button>';
 
+                            var editDataElement = '<button  class="editTestDataLib btn  btn-primary btn-xs margin-right5" \n\
+                            name="editTestDataLib" title="' + doc.getDocLabel("page_testdatalib", "tooltip_editsubdata") + '" type="button" onclick="editSubData(' + data + ')">\n\
+                            <span class="glyphicon glyphicon-list-alt"></span></button>';
+
                             var deleteElement = '<button onclick="deleteTestDataLib(' + oObj.testDataLibID + ',\'' + oObj.name
                                     + '\', ' + '\'' + oObj.system + '\', ' + '\'' + oObj.environment + '\', ' + '\'' + oObj.country + '\', '
                                     + '\'' + oObj.type + '\');" class="btn btn-default btn-xs margin-right25 " \n\
                             name="deleteTestDataLib" title="' + doc.getDocLabel("page_testdatalib", "tooltip_delete") + '" type="button">\n\
                             <span class="glyphicon glyphicon-trash"></span></button>';
 
-                            var viewDataElement = '<button  class="editTestDataLib btn  btn-primary btn-xs margin-right5" \n\
-                            name="editTestDataLib" title="' + doc.getDocLabel("page_testdatalib", "tooltip_editsubdata") + '" type="button" onclick="editSubData(' + data + ')">\n\
-                            <span class="glyphicon glyphicon-list-alt"></span></button>';
-
                             var duplicateEntryElement = '<button  class="btn btn-primary btn-xs margin-right5" \n\
                             name="duplicateTestDataLib" title="' + doc.getDocLabel("page_testdatalib", "tooltip_duplicateEntry") + '"\n\
                                  type="button" onclick="duplicateEntry(' + data + ')">D</button>'; //TODO check if we can add this glyphicon glyphicon-duplicate
 
-                            return '<div class="center btn-group width250">' + editElement + deleteElement + duplicateEntryElement + viewDataElement + viewTestCase + '</div>';
+                            return '<div class="center btn-group width250">' + editElement + editDataElement + deleteElement + duplicateEntryElement + viewTestCase + '</div>';
                         } else {
                             var viewDataElement = '<button  class="viewSubDataEntries btn  btn-primary btn-xs margin-right5" \n\
                             name="viewSubDataEntries" title="' + doc.getDocLabel("page_testdatalib", "tooltip_viewsubdata") + '" type="button" onclick="viewSubDataEntries(' + data + ', \'' + oObj.type + '\')">\n\
