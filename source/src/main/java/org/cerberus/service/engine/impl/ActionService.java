@@ -673,7 +673,7 @@ public class ActionService implements IActionService {
 
             if (tCExecution.getApplication().getType().equalsIgnoreCase("GUI")) {
                 if (identifier.getIdentifier().equals("picture")) {
-                    return sikuliService.doSikuliAction(tCExecution.getSession(), "keyPress", identifier.getLocator(), identifier.getLocator());
+                    return sikuliService.doSikuliAction(tCExecution.getSession(), "keyPress", identifier.getLocator(), property);
                 } else {
                     return webdriverService.doSeleniumActionKeyPress(tCExecution.getSession(), identifier, property);
                 }
