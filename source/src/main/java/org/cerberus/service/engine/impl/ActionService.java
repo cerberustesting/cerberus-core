@@ -186,13 +186,13 @@ public class ActionService implements IActionService {
         } else if (testCaseStepActionExecution.getAction().equals("callSoapWithBase")) {
             res = this.doActionMakeSoapCall(testCaseStepActionExecution, object, property, true);
 
+        } else if (testCaseStepActionExecution.getAction().equals("callSoapWithBase_BETA")) { // ACTION that is plugged to the TestDataLib
+            res = this.doActionCallSoapFromDataLib(testCaseStepActionExecution, object, property);
+
         } else if (testCaseStepActionExecution.getAction().equals("callSoap")) {
             res = this.doActionMakeSoapCall(testCaseStepActionExecution, object, property, false); 
 
-        } else if (testCaseStepActionExecution.getAction().equals("callSoapWithBase_BETA")) {
-            res = this.doActionCallSoapFromDataLib(testCaseStepActionExecution, object, property);
-
-        } else if (testCaseStepActionExecution.getAction().equals("callSoap_BETA")) {
+        } else if (testCaseStepActionExecution.getAction().equals("callSoap_BETA")) { // ACTION that is plugged to the TestDataLib
             res = this.doActionCallSoapFromDataLib(testCaseStepActionExecution, object, property);
 
         } else if (testCaseStepActionExecution.getAction().equals("mouseDownMouseUp")) {
@@ -200,9 +200,6 @@ public class ActionService implements IActionService {
 
         } else if (testCaseStepActionExecution.getAction().equals("calculateProperty")) {
             res = this.doActionCalculateProperty(object, property, propertyName);
-
-        } else if (testCaseStepActionExecution.getAction().equals("takeScreenshot")) {
-            res = this.doActionTakeScreenshot(testCaseStepActionExecution);
 
         } else if (testCaseStepActionExecution.getAction().equals("getPageSource")) {
             res = this.doActionGetPageSource(testCaseStepActionExecution);
@@ -218,6 +215,12 @@ public class ActionService implements IActionService {
 
         } else if (testCaseStepActionExecution.getAction().equals("skipAction")) {
             res = new MessageEvent(MessageEventEnum.ACTION_SUCCESS);
+
+        } else if (testCaseStepActionExecution.getAction().equals("takeScreenshot")) {
+            res = this.doActionTakeScreenshot(testCaseStepActionExecution);
+            res.setDescription(MESSAGE_DEPRECATED + " " + res.getDescription());
+            logEventService.createPrivateCalls("ENGINE", "takeScreenshot", MESSAGE_DEPRECATED + " Deprecated Action triggered by TestCase : ['" + testCaseStepActionExecution.getTest() + "|" + testCaseStepActionExecution.getTestCase() + "']");
+            LOG.warn(MESSAGE_DEPRECATED + " Deprecated Action takeScreenshot triggered by TestCase : ['" + testCaseStepActionExecution.getTest() + "'|'" + testCaseStepActionExecution.getTestCase() + "']");
 
         } else if (testCaseStepActionExecution.getAction().equals("clickAndWait")) { // DEPRECATED ACTION
             res = this.doActionClickWait(tCExecution, object, property);
