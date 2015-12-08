@@ -21,6 +21,7 @@ package org.cerberus.util;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -66,27 +67,33 @@ public final class ParameterParserUtil {
         return inString;
     }
 
+    /**
+     *
+     * @param column
+     * @param inString
+     * @return
+     */
     public static String wildcardOrIsNullIfEmpty(String column, String inString) {
         StringBuilder sb = new StringBuilder();
         if ((inString == null) || (inString.equalsIgnoreCase(""))) {
-            sb.append("'%' or ");
-            sb.append(column);
-            sb.append(" is null");
+            sb.append("'%' or ").append(column).append(" is null");
             return sb.toString();
         }
-        sb.append("'");
-        sb.append(inString);
-        sb.append("'");
+        sb.append("'").append(inString).append("'");
         return sb.toString();
     }
 
+    /**
+     *
+     * @param column
+     * @param inInt
+     * @return
+     */
     public static String wildcardOrIsNullIfMinusOne(String column, int inInt) {
         StringBuilder sb = new StringBuilder();
 
         if (inInt != -1) {
-            sb.append("'");
-            sb.append(inInt);
-            sb.append("'");
+            sb.append("'").append(inInt).append("'");
         } else {
             sb.append("'%' or ").append(column).append(" is null");
         }
@@ -125,6 +132,21 @@ public final class ParameterParserUtil {
             return parseStringParam(POLICY.sanitize(URLDecoder.decode(inParam, charset)), defaultVal);
         } catch (UnsupportedEncodingException e) {
             return defaultVal;
+        }
+    }
+
+    /**
+     *
+     * @param inParam
+     * @param defaultValue
+     * @return
+     * @throws UnsupportedEncodingException
+     */
+    public static String parseStringParamAndSanitize(String inParam, String defaultValue) throws UnsupportedEncodingException {
+        if (inParam == null) {
+            return defaultValue;
+        } else {
+            return URLDecoder.decode(StringEscapeUtils.unescapeHtml4(POLICY.sanitize(inParam)), "UTF-8");
         }
     }
 
@@ -284,6 +306,7 @@ public final class ParameterParserUtil {
 
     /**
      * @param inParam
+     * @param defaultVal
      * @return true if "yes", "true" or "Y", false if "no", "false" or "N" and
      * defaultVal if any over value
      */
@@ -338,11 +361,4 @@ public final class ParameterParserUtil {
         }
     }
 
-    public static String ParseStringParamAndSanitize(String inParam, String defaultValue) throws UnsupportedEncodingException {
-        if (inParam == null) {
-            return defaultValue;
-        } else {
-            return URLDecoder.decode(StringEscapeUtils.unescapeHtml4(POLICY.sanitize(inParam)), "UTF-8");
-        }
-    }
 }

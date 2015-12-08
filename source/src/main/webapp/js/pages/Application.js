@@ -96,8 +96,7 @@ function deleteApplicationHandlerClick() {
 function deleteApplication(idApplication) {
     clearResponseMessageMainPage();
     var doc = new Doc();
-    var messageComplete = doc.getDocLabel("page_global", "deleteMessage");
-    messageComplete = messageComplete.replace("%TABLE%", doc.getDocLabel("application", "Application"));
+    var messageComplete = doc.getDocLabel("page_application", "message_delete");
     messageComplete = messageComplete.replace("%ENTRY%", idApplication);
     showModalConfirmation(deleteApplicationHandlerClick, doc.getDocLabel("page_application", "button_delete"), messageComplete, idApplication, "", "", "");
 }

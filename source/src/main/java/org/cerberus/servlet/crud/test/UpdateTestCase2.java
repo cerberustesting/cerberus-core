@@ -89,12 +89,12 @@ public class UpdateTestCase2 extends HttpServlet {
         /**
          * Parsing and securing all required parameters.
          */
-        String test = ParameterParserUtil.ParseStringParamAndSanitize(request.getParameter("test"), "");
-        String testCase = ParameterParserUtil.ParseStringParamAndSanitize(request.getParameter("testCase"), "");
-        String active = ParameterParserUtil.ParseStringParamAndSanitize(request.getParameter("active"), "");
-        String tcDateCrea = ParameterParserUtil.ParseStringParamAndSanitize(request.getParameter("tcDateCrea"), "");
-        String country = ParameterParserUtil.ParseStringParamAndSanitize(request.getParameter("country"), "");
-        String state = ParameterParserUtil.ParseStringParamAndSanitize(request.getParameter("state"), "");
+        String test = ParameterParserUtil.parseStringParamAndSanitize(request.getParameter("test"), "");
+        String testCase = ParameterParserUtil.parseStringParamAndSanitize(request.getParameter("testCase"), "");
+        String active = ParameterParserUtil.parseStringParamAndSanitize(request.getParameter("active"), "");
+        String tcDateCrea = ParameterParserUtil.parseStringParamAndSanitize(request.getParameter("tcDateCrea"), "");
+        String country = ParameterParserUtil.parseStringParamAndSanitize(request.getParameter("country"), "");
+        String state = ParameterParserUtil.parseStringParamAndSanitize(request.getParameter("state"), "");
 
         /**
          * Checking all constrains before calling the services.
@@ -208,39 +208,39 @@ public class UpdateTestCase2 extends HttpServlet {
     }// </editor-fold>
 
     private TCase getInfo(HttpServletRequest request, TCase tc) throws CerberusException, JSONException, UnsupportedEncodingException {
-        tc.setTest(ParameterParserUtil.ParseStringParamAndSanitize(request.getParameter("test"), tc.getTest()));
-        tc.setTestCase(ParameterParserUtil.ParseStringParamAndSanitize(request.getParameter("testCase"), tc.getTestCase()));
-        tc.setImplementer(ParameterParserUtil.ParseStringParamAndSanitize(request.getParameter("imlementer"), tc.getImplementer()));
+        tc.setTest(ParameterParserUtil.parseStringParamAndSanitize(request.getParameter("test"), tc.getTest()));
+        tc.setTestCase(ParameterParserUtil.parseStringParamAndSanitize(request.getParameter("testCase"), tc.getTestCase()));
+        tc.setImplementer(ParameterParserUtil.parseStringParamAndSanitize(request.getParameter("imlementer"), tc.getImplementer()));
         tc.setLastModifier(request.getUserPrincipal().getName());
         if (!Strings.isNullOrEmpty(request.getParameter("project"))) {
-            tc.setProject(ParameterParserUtil.ParseStringParamAndSanitize(request.getParameter("project"), tc.getProject()));
+            tc.setProject(ParameterParserUtil.parseStringParamAndSanitize(request.getParameter("project"), tc.getProject()));
         } else if (request.getParameter("project") != null && request.getParameter("project").isEmpty()) {
             tc.setProject(null);
         } else {
             tc.setProject(tc.getProject());
         }
-        tc.setTicket(ParameterParserUtil.ParseStringParamAndSanitize(request.getParameter("ticket"), tc.getTicket()));
-        tc.setApplication(ParameterParserUtil.ParseStringParamAndSanitize(request.getParameter("application"), tc.getApplication()));
-        tc.setRunQA(ParameterParserUtil.ParseStringParamAndSanitize(request.getParameter("activeQA"), tc.getRunQA()));
-        tc.setRunUAT(ParameterParserUtil.ParseStringParamAndSanitize(request.getParameter("activeUAT"), tc.getRunUAT()));
-        tc.setRunPROD(ParameterParserUtil.ParseStringParamAndSanitize(request.getParameter("activeProd"), tc.getRunPROD()));
+        tc.setTicket(ParameterParserUtil.parseStringParamAndSanitize(request.getParameter("ticket"), tc.getTicket()));
+        tc.setApplication(ParameterParserUtil.parseStringParamAndSanitize(request.getParameter("application"), tc.getApplication()));
+        tc.setRunQA(ParameterParserUtil.parseStringParamAndSanitize(request.getParameter("activeQA"), tc.getRunQA()));
+        tc.setRunUAT(ParameterParserUtil.parseStringParamAndSanitize(request.getParameter("activeUAT"), tc.getRunUAT()));
+        tc.setRunPROD(ParameterParserUtil.parseStringParamAndSanitize(request.getParameter("activeProd"), tc.getRunPROD()));
         tc.setPriority(ParameterParserUtil.parseIntegerParam(request.getParameter("priority"), tc.getPriority()));
-        tc.setOrigin(ParameterParserUtil.ParseStringParamAndSanitize(request.getParameter("origin"), tc.getOrigin()));
-        tc.setGroup(ParameterParserUtil.ParseStringParamAndSanitize(request.getParameter("group"), tc.getGroup()));
-        tc.setStatus(ParameterParserUtil.ParseStringParamAndSanitize(request.getParameter("status"), tc.getStatus()));
-        tc.setShortDescription(ParameterParserUtil.ParseStringParamAndSanitize(request.getParameter("shortDesc"), tc.getShortDescription()));
-        tc.setDescription(ParameterParserUtil.ParseStringParamAndSanitize(request.getParameter("behaviorOrValueExpected"), tc.getDescription()));
-        tc.setHowTo(ParameterParserUtil.ParseStringParamAndSanitize(request.getParameter("howTo"), tc.getHowTo()));
-        tc.setActive(ParameterParserUtil.ParseStringParamAndSanitize(request.getParameter("active"), tc.getActive()));
-        tc.setFromSprint(ParameterParserUtil.ParseStringParamAndSanitize(request.getParameter("fromSprint"), tc.getFromSprint()));
-        tc.setFromRevision(ParameterParserUtil.ParseStringParamAndSanitize(request.getParameter("fromRev"), tc.getFromRevision()));
-        tc.setToSprint(ParameterParserUtil.ParseStringParamAndSanitize(request.getParameter("toSprint"), tc.getToSprint()));
-        tc.setToRevision(ParameterParserUtil.ParseStringParamAndSanitize(request.getParameter("toRev"), tc.getToRevision()));
-        tc.setBugID(ParameterParserUtil.ParseStringParamAndSanitize(request.getParameter("bugId"), tc.getBugID()));
-        tc.setTargetSprint(ParameterParserUtil.ParseStringParamAndSanitize(request.getParameter("targetSprint"), tc.getTargetSprint()));
-        tc.setTargetRevision(ParameterParserUtil.ParseStringParamAndSanitize(request.getParameter("targetRev"), tc.getTargetRevision()));
-        tc.setComment(ParameterParserUtil.ParseStringParamAndSanitize(request.getParameter("comment"), tc.getComment()));
-        tc.setFunction(ParameterParserUtil.ParseStringParamAndSanitize(request.getParameter("function"), tc.getFunction()));
+        tc.setOrigin(ParameterParserUtil.parseStringParamAndSanitize(request.getParameter("origin"), tc.getOrigin()));
+        tc.setGroup(ParameterParserUtil.parseStringParamAndSanitize(request.getParameter("group"), tc.getGroup()));
+        tc.setStatus(ParameterParserUtil.parseStringParamAndSanitize(request.getParameter("status"), tc.getStatus()));
+        tc.setShortDescription(ParameterParserUtil.parseStringParamAndSanitize(request.getParameter("shortDesc"), tc.getShortDescription()));
+        tc.setDescription(ParameterParserUtil.parseStringParamAndSanitize(request.getParameter("behaviorOrValueExpected"), tc.getDescription()));
+        tc.setHowTo(ParameterParserUtil.parseStringParamAndSanitize(request.getParameter("howTo"), tc.getHowTo()));
+        tc.setActive(ParameterParserUtil.parseStringParamAndSanitize(request.getParameter("active"), tc.getActive()));
+        tc.setFromSprint(ParameterParserUtil.parseStringParamAndSanitize(request.getParameter("fromSprint"), tc.getFromSprint()));
+        tc.setFromRevision(ParameterParserUtil.parseStringParamAndSanitize(request.getParameter("fromRev"), tc.getFromRevision()));
+        tc.setToSprint(ParameterParserUtil.parseStringParamAndSanitize(request.getParameter("toSprint"), tc.getToSprint()));
+        tc.setToRevision(ParameterParserUtil.parseStringParamAndSanitize(request.getParameter("toRev"), tc.getToRevision()));
+        tc.setBugID(ParameterParserUtil.parseStringParamAndSanitize(request.getParameter("bugId"), tc.getBugID()));
+        tc.setTargetSprint(ParameterParserUtil.parseStringParamAndSanitize(request.getParameter("targetSprint"), tc.getTargetSprint()));
+        tc.setTargetRevision(ParameterParserUtil.parseStringParamAndSanitize(request.getParameter("targetRev"), tc.getTargetRevision()));
+        tc.setComment(ParameterParserUtil.parseStringParamAndSanitize(request.getParameter("comment"), tc.getComment()));
+        tc.setFunction(ParameterParserUtil.parseStringParamAndSanitize(request.getParameter("function"), tc.getFunction()));
         return tc;
     }
 
@@ -255,7 +255,7 @@ public class UpdateTestCase2 extends HttpServlet {
 
         answer = invariantService.readByIdname("COUNTRY"); //TODO: handle if the response does not turn ok
         for (Invariant country : (List<Invariant>)answer.getDataList()) {
-            countryList.put(country.getValue(), ParameterParserUtil.ParseStringParamAndSanitize(request.getParameter(country.getValue()), ""));
+            countryList.put(country.getValue(), ParameterParserUtil.parseStringParamAndSanitize(request.getParameter(country.getValue()), ""));
         }
 
         for (TestCaseCountry countryDB : tcCountry) {

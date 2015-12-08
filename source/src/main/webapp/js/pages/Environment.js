@@ -34,10 +34,6 @@ function initBuildContentPage() {
     $('#addEnvModal').on('hidden.bs.modal', addEnvModalCloseHandler);
     $('#editEnvModal').on('hidden.bs.modal', editEnvModalCloseHandler);
 
-    //if the build or revision is passed as a url parameter, then it loads the table
-    var urlBuild = GetURLParameter('build');
-    var urlRevision = GetURLParameter('revision');
-
     var table = loadEnvTable();
     table.fnSort([3, 'asc']);
 
@@ -84,13 +80,19 @@ function displayPageLabel() {
     var urlRevision = GetURLParameter('revision'); // Feed Revision combo with Revision list.
     appendBuildList("revision", "2", urlRevision);
 
-    displayInvariantList("country", "COUNTRY");
+    var urlCountry = GetURLParameter('country'); // Feed Country combo with Country list.
+    displayInvariantList("country", "COUNTRY", urlCountry);
     var select = $('#selectCountry');
     select.append($('<option></option>').text("-- ALL --").val("ALL"));
 
-    displayInvariantList("environment", "ENVIRONMENT");
+    var urlEnvironment = GetURLParameter('environment'); // Feed Environment combo with Environment list.
+    displayInvariantList("environment", "ENVIRONMENT", urlEnvironment);
     var select = $('#selectEnvironment');
     select.append($('<option></option>').text("-- ALL --").val("ALL"));
+
+    displayInvariantList("system", "SYSTEM");
+    displayInvariantList("type", "ENVTYPE");
+    displayInvariantList("maintenanceAct", "MNTACTIVE", "N");
 
     displayFooter(doc);
 }
@@ -106,7 +108,6 @@ function appendBuildList(selectName, level, defaultValue) {
         dataType: 'json',
         success: function (data) {
             select.append($('<option></option>').text("-- ALL --").val("ALL"));
-            select.append($('<option></option>').text("NONE").val("NONE"));
 
             for (var option in data.contentTable) {
                 select.append($('<option></option>').text(data.contentTable[option].versionName).val(data.contentTable[option].versionName));
@@ -136,7 +137,7 @@ function loadEnvTable() {
                                             </table><div class="marginBottom20"></div>');
 
     //configure and create the dataTable
-    var param = "?system=" + getUser().defaultSystem;
+    var param = "?forceList=Y&system=" + getUser().defaultSystem;
     if (selectEnvironment !== 'ALL') {
         param = param + "&environment=" + selectEnvironment;
     }
@@ -160,7 +161,7 @@ function deleteEnvHandlerClick() {
     var system = $('#confirmationModal').find('#hiddenField1').prop("value");
     var country = $('#confirmationModal').find('#hiddenField2').prop("value");
     var environment = $('#confirmationModal').find('#hiddenField3').prop("value");
-    var jqxhr = $.post("DeleteCountryEnvParam", {system: system, country: country, environment: environment}, "json");
+    var jqxhr = $.post("DeleteCountryEnvParam1", {system: system, country: country, environment: environment}, "json");
     $.when(jqxhr).then(function (data) {
         var messageType = getAlertType(data.messageType);
         if (messageType === "success") {
@@ -184,7 +185,7 @@ function deleteEnvHandlerClick() {
 function deleteEnv(system, country, environment) {
     clearResponseMessageMainPage();
     var doc = new Doc();
-    var messageComplete = doc.getDocLabel("page_environent", "message_delete");
+    var messageComplete = doc.getDocLabel("page_environment", "message_delete");
     messageComplete = messageComplete.replace("%SYSTEM%", system);
     messageComplete = messageComplete.replace("%COUNTRY%", country);
     messageComplete = messageComplete.replace("%ENVIRONMENT%", environment);
@@ -210,7 +211,7 @@ function saveNewEnvHandler() {
         return;
 
     showLoaderInModal('#addEnvModal');
-    var jqxhr = $.post("CreateBuildRevisionParameters", formAdd.serialize());
+    var jqxhr = $.post("CreateCountryEnvParam1", formAdd.serialize());
     $.when(jqxhr).then(function (data) {
         hideLoaderInModal('#addEnvModal');
         console.log(data.messageType);
@@ -230,7 +231,7 @@ function saveUpdateEnvHandler() {
     var formEdit = $('#editEnvModal #editEnvModalForm');
     showLoaderInModal('#editEnvModal');
 
-    var jqxhr = $.post("UpdateBuildRevisionParameters", formEdit.serialize(), "json");
+    var jqxhr = $.post("UpdateCountryEnvParam1", formEdit.serialize(), "json");
     $.when(jqxhr).then(function (data) {
         // unblock when remote call returns 
         hideLoaderInModal('#editEnvModal');
@@ -274,12 +275,6 @@ function CreateEnvClick() {
     // New release goes by default to the build/revision selected in filter combos. (except when ALL)
     var myCountry = $("#selectCountry option:selected").val();
     var myEnvironment = $("#selectEnvironment option:selected").val();
-    if (myCountry === 'ALL') {
-        myCountry = 'NONE';
-    }
-    if (myEnvironment === 'ALL') {
-        myEnvironment = 'NONE';
-    }
     formAdd.find("#country").val(myCountry);
     formAdd.find("#environment").val(myEnvironment);
 
@@ -294,23 +289,32 @@ function editEnv(system, country, environment) {
 
         var formEdit = $('#editEnvModal');
 
-        formEdit.find("#id").prop("value", system);
-        formEdit.find("#build").prop("value", obj["build"]);
-        formEdit.find("#revision").prop("value", obj["revision"]);
-        formEdit.find("#datecre").prop("value", obj["datecre"]);
-        formEdit.find("#application").prop("value", obj["application"]);
-        formEdit.find("#release").prop("value", obj["release"]);
-        formEdit.find("#owner").prop("value", obj["releaseOwner"]);
-        formEdit.find("#project").prop("value", obj["project"]);
-        formEdit.find("#ticketIdFixed").prop("value", obj["ticketIdFixed"]);
-        formEdit.find("#bugIdFixed").prop("value", obj["bugIdFixed"]);
-        formEdit.find("#link").prop("value", obj["link"]);
-        formEdit.find("#subject").prop("value", obj["subject"]);
-        formEdit.find("#jenkinsBuildId").prop("value", obj["jenkinsBuildId"]);
-        formEdit.find("#mavenGroupId").prop("value", obj["mavenGroupId"]);
-        formEdit.find("#mavenArtifactId").prop("value", obj["mavenArtifactId"]);
-        formEdit.find("#mavenVersion").prop("value", obj["mavenVersion"]);
+        formEdit.find("#system").prop("value", system);
+        formEdit.find("#country").prop("value", country);
+        formEdit.find("#environment").prop("value", environment);
 
+        formEdit.find("#buildNew").prop("value", obj["build"]);
+        formEdit.find("#revisionNew").prop("value", obj["revision"]);
+        formEdit.find("#chainNew").prop("value", obj["chain"]);
+        formEdit.find("#activeNew").prop("checked", obj["active"]);
+
+        formEdit.find("#type").val(obj["type"]);
+
+        formEdit.find("#description").prop("value", obj["description"]);
+        formEdit.find("#distribList").prop("value", obj["distribList"]);
+        formEdit.find("#eMailBodyChain").prop("value", obj["eMailBodyChain"]);
+        formEdit.find("#eMailBodyRevision").prop("value", obj["eMailBodyRevision"]);
+        formEdit.find("#eMailBodyDisableEnvironment").prop("value", obj["eMailBodyDisableEnvironment"]);
+
+        formEdit.find("#maintenanceStr").prop("value", obj["maintenanceStr"]);
+        formEdit.find("#maintenanceEnd").prop("value", obj["maintenanceEnd"]);
+        if (obj["maintenanceAct"]) {
+            formEdit.find("#maintenanceAct").val("Y");
+        } else {
+            formEdit.find("#maintenanceAct").val("N");
+        }
+
+        console.debug(obj["description"]);
         formEdit.modal('show');
     });
 }
@@ -368,10 +372,21 @@ function aoColumnsFunc() {
             "sName": "description",
             "sWidth": "150px",
             "title": doc.getDocOnline("countryenvparam", "Description")},
-        {"data": "active",
+        {
+            "data": "active",
             "sName": "active",
-            "sWidth": "80px",
-            "title": doc.getDocOnline("countryenvparam", "active")},
+            "title": doc.getDocOnline("countryenvparam", "active"),
+            "sDefaultContent": "",
+            "sWidth": "70px",
+            "className": "center",
+            "mRender": function (data, type, obj) {
+                if ((data === "Y") || (data)) {
+                    return '<input type="checkbox" checked readonly disabled />';
+                } else {
+                    return '<input type="checkbox" readonly disabled />';
+                }
+            }
+        },
         {"data": "build",
             "sName": "build",
             "sWidth": "80px",
@@ -388,10 +403,21 @@ function aoColumnsFunc() {
             "sName": "type",
             "sWidth": "80px",
             "title": doc.getDocOnline("countryenvparam", "Type")},
-        {"data": "maintenanceAct",
+        {
+            "data": "maintenanceAct",
             "sName": "maintenanceAct",
-            "sWidth": "80px",
-            "title": doc.getDocOnline("countryenvparam", "maintenanceact")},
+            "title": doc.getDocOnline("countryenvparam", "maintenanceact"),
+            "sDefaultContent": "",
+            "sWidth": "70px",
+            "className": "center",
+            "mRender": function (data, type, obj) {
+                if ((data === "Y") || (data)) {
+                    return '<input type="checkbox" checked readonly disabled />';
+                } else {
+                    return '<input type="checkbox" readonly disabled />';
+                }
+            }
+        },
         {"data": "maintenanceStr",
             "sName": "maintenanceStr",
             "sWidth": "80px",

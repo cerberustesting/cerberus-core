@@ -106,18 +106,18 @@ public class CountryEnvParamService implements ICountryEnvParamService {
     }
 
     @Override
-    public void update(CountryEnvParam cep) throws CerberusException {
-        countryEnvParamDao.update(cep);
+    public void update_deprecated(CountryEnvParam cep) throws CerberusException {
+        countryEnvParamDao.update_deprecated(cep);
     }
 
     @Override
-    public void delete(CountryEnvParam cep) throws CerberusException {
-        countryEnvParamDao.delete(cep);
+    public void delete_deprecated(CountryEnvParam cep) throws CerberusException {
+        countryEnvParamDao.delete_deprecated(cep);
     }
 
     @Override
-    public void create(CountryEnvParam cep) throws CerberusException {
-        countryEnvParamDao.create(cep);
+    public void create_deprecated(CountryEnvParam cep) throws CerberusException {
+        countryEnvParamDao.create_deprecated(cep);
     }
 
     @Override
@@ -136,6 +136,11 @@ public class CountryEnvParamService implements ICountryEnvParamService {
     }
 
     @Override
+    public AnswerItem readByKey(String system, String country, String environment) {
+        return countryEnvParamDao.readByKey(system, country, environment);
+    }
+
+    @Override
     public AnswerList readActiveBySystem(String system) {
         return countryEnvParamDao.readActiveBySystem(system);
     }
@@ -146,18 +151,33 @@ public class CountryEnvParamService implements ICountryEnvParamService {
     }
 
     @Override
-    public AnswerList readByVariousByCriteria(String system, String active, int start, int amount, String colName, String dir, String searchTerm, String individualSearch) {
-        return countryEnvParamDao.readByVariousByCriteria(system, active, start, amount, colName, dir, searchTerm, individualSearch);
+    public AnswerList readByVariousByCriteria(String system, String country, String environment, String build, String revision, String active, int start, int amount, String colName, String dir, String searchTerm, String individualSearch) {
+        return countryEnvParamDao.readByVariousByCriteria(system, country, environment, build, revision, active, start, amount, colName, dir, searchTerm, individualSearch);
     }
 
     @Override
     public boolean exist(String system, String country, String environment) {
 //        try {
 //            convert(readByKey(system, country, environment));
-            return true;
+        return true;
 //        } catch (CerberusException e) {
 //            return false;
 //        }
+    }
+
+    @Override
+    public Answer create(CountryEnvParam cep) {
+        return countryEnvParamDao.create(cep);
+    }
+
+    @Override
+    public Answer delete(CountryEnvParam cep) {
+        return countryEnvParamDao.delete(cep);
+    }
+
+    @Override
+    public Answer update(CountryEnvParam cep) {
+        return countryEnvParamDao.update(cep);
     }
 
     @Override

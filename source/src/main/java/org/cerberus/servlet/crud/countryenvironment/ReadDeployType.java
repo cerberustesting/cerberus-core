@@ -55,6 +55,8 @@ public class ReadDeployType extends HttpServlet {
 
     private IDeployTypeService deployTypeService;
 
+    private final String OBJECT_NAME = "DeployType";
+    
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
      * methods.

@@ -54,7 +54,7 @@ public interface ICountryEnvParamService {
      * @param cep
      * @throws CerberusException
      */
-    void update(CountryEnvParam cep) throws CerberusException;
+    void update_deprecated(CountryEnvParam cep) throws CerberusException;
 
     /**
      * Delete countryEnvParam
@@ -62,7 +62,7 @@ public interface ICountryEnvParamService {
      * @param cep
      * @throws CerberusException
      */
-    void delete(CountryEnvParam cep) throws CerberusException;
+    void delete_deprecated(CountryEnvParam cep) throws CerberusException;
 
     /**
      * Create countryEnvParam
@@ -70,7 +70,7 @@ public interface ICountryEnvParamService {
      * @param cep
      * @throws CerberusException
      */
-    void create(CountryEnvParam cep) throws CerberusException;
+    void create_deprecated(CountryEnvParam cep) throws CerberusException;
 
     /**
      * Find List of CountryEnvParam by Criteria
@@ -100,6 +100,15 @@ public interface ICountryEnvParamService {
     /**
      *
      * @param system
+     * @param country
+     * @param environment
+     * @return
+     */
+    AnswerItem readByKey(String system, String country, String environment);
+
+    /**
+     *
+     * @param system
      * @return
      */
     public AnswerList readActiveBySystem(String system);
@@ -119,6 +128,10 @@ public interface ICountryEnvParamService {
     /**
      *
      * @param system
+     * @param country
+     * @param environment
+     * @param build
+     * @param revision
      * @param Active
      * @param startPosition
      * @param length
@@ -128,7 +141,7 @@ public interface ICountryEnvParamService {
      * @param string
      * @return
      */
-    public AnswerList readByVariousByCriteria(String system, String Active, int startPosition, int length, String columnName, String sort, String searchParameter, String string);
+    public AnswerList readByVariousByCriteria(String system, String country, String environment, String build, String revision, String Active, int startPosition, int length, String columnName, String sort, String searchParameter, String string);
 
     /**
      *
@@ -145,19 +158,22 @@ public interface ICountryEnvParamService {
      * @param cep
      * @return
      */
-//    Answer create(CountryEnvParam cep);
+    Answer create(CountryEnvParam cep);
+
     /**
      *
      * @param cep
      * @return
      */
-//    Answer delete(CountryEnvParam cep);
+    Answer delete(CountryEnvParam cep);
+
     /**
      *
      * @param cep
      * @return
      */
-//    Answer update(CountryEnvParam cep);
+    Answer update(CountryEnvParam cep);
+
     /**
      *
      * @param answerItem
@@ -180,4 +196,5 @@ public interface ICountryEnvParamService {
      * @throws CerberusException
      */
     void convert(Answer answer) throws CerberusException;
+
 }

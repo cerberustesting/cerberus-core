@@ -77,7 +77,7 @@ public class ReadTestCase extends HttpServlet {
         AnswerItem answer = new AnswerItem(new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED));
 
         int sEcho = Integer.valueOf(ParameterParserUtil.parseStringParam(request.getParameter("sEcho"), "0"));
-        String test = ParameterParserUtil.ParseStringParamAndSanitize(request.getParameter("test"), "");
+        String test = ParameterParserUtil.parseStringParamAndSanitize(request.getParameter("test"), "");
         String testCase = ParameterParserUtil.parseStringParam(request.getParameter("testCase"), "");
         String campaign = ParameterParserUtil.parseStringParam(request.getParameter("campaign"), "");
         boolean getMaxTC = ParameterParserUtil.parseBooleanParam(request.getParameter("getMaxTC"), false);
@@ -268,7 +268,7 @@ public class ReadTestCase extends HttpServlet {
         JSONArray dataArray = new JSONArray();
 
         String[] test = request.getParameterValues("test");
-        String[] idProject = request.getParameterValues("idProject");
+        String[] idProject = request.getParameterValues("project");
         String[] app = request.getParameterValues("application");
         String[] creator = request.getParameterValues("creator");
         String[] implementer = request.getParameterValues("implementer");

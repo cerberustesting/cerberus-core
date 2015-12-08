@@ -76,10 +76,10 @@ public class CreateTest1 extends HttpServlet {
         /**
          * Parsing and securing all required parameters.
          */
-        String test = ParameterParserUtil.ParseStringParamAndSanitize(request.getParameter("test"), "");
-        String active = ParameterParserUtil.ParseStringParamAndSanitize(request.getParameter("Active"), "");
-        String automated = ParameterParserUtil.ParseStringParamAndSanitize(request.getParameter("Automated"), "");
-        String description = ParameterParserUtil.ParseStringParamAndSanitize(request.getParameter("Description"), "");
+        String test = ParameterParserUtil.parseStringParamAndSanitize(request.getParameter("test"), "");
+        String active = ParameterParserUtil.parseStringParamAndSanitize(request.getParameter("Active"), "");
+        String automated = ParameterParserUtil.parseStringParamAndSanitize(request.getParameter("Automated"), "");
+        String description = ParameterParserUtil.parseStringParamAndSanitize(request.getParameter("Description"), "");
 
         /**
          * Checking all constrains before calling the services.

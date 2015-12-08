@@ -61,7 +61,7 @@ public class DuplicateTestDataLib extends HttpServlet {
      */
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        
+
         JSONObject jsonResponse = new JSONObject();
         Answer ans = new Answer();
         MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
@@ -82,7 +82,7 @@ public class DuplicateTestDataLib extends HttpServlet {
             }
         } catch (NumberFormatException ex) {
             testdatalibid_error = true;
-            org.apache.log4j.Logger.getLogger(DuplicateTestDataLib.class.getName()).log(org.apache.log4j.Level.ERROR, null, ex); 
+            org.apache.log4j.Logger.getLogger(DuplicateTestDataLib.class.getName()).log(org.apache.log4j.Level.ERROR, null, ex);
         }
         PolicyFactory policy = Sanitizers.FORMATTING.and(Sanitizers.LINKS);
         String name = policy.sanitize(request.getParameter("name"));
@@ -92,53 +92,52 @@ public class DuplicateTestDataLib extends HttpServlet {
         String environment = policy.sanitize(request.getParameter("environment"));
         String country = policy.sanitize(request.getParameter("country"));
         String database = policy.sanitize(request.getParameter("database"));
-        
-        
-        String description = StringEscapeUtils.escapeHtml4(request.getParameter("libdescription")); 
+
+        String description = StringEscapeUtils.escapeHtml4(request.getParameter("libdescription"));
         String script = StringEscapeUtils.escapeHtml4(request.getParameter("script"));
         String servicePath = StringEscapeUtils.escapeHtml4(request.getParameter("servicepath"));
         String method = StringEscapeUtils.escapeHtml4(request.getParameter("method"));
-        String envelope =  StringEscapeUtils.escapeXml11(request.getParameter("envelope"));
+        String envelope = StringEscapeUtils.escapeXml11(request.getParameter("envelope"));
         /**
          * Checking all constrains before calling the services.
-        */
-        
+         */
+
         if (StringUtil.isNullOrEmpty(name)) {
             msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_EXPECTED);
             msg.setDescription(msg.getDescription().replace("%ITEM%", "Test Data Library")
                     .replace("%OPERATION%", "Create")
                     .replace("%REASON%", "Test data library name is missing! "));
             ans.setResultMessage(msg);
-        }else if (testdatalibid_error) {
-                msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_EXPECTED);
-                msg.setDescription(msg.getDescription().replace("%ITEM%", "Test data library")
-                        .replace("%OPERATION%", "Update")
-                        .replace("%REASON%", "Could not manage to convert testdatalibid to an integer value or testdatalibid is missing."));
-                ans.setResultMessage(msg);
-        }else {
+        } else if (testdatalibid_error) {
+            msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_EXPECTED);
+            msg.setDescription(msg.getDescription().replace("%ITEM%", "Test data library")
+                    .replace("%OPERATION%", "Update")
+                    .replace("%REASON%", "Could not manage to convert testdatalibid to an integer value or testdatalibid is missing."));
+            ans.setResultMessage(msg);
+        } else {
             //data is valid, then we can call the servicesl
             ApplicationContext appContext = WebApplicationContextUtils.getWebApplicationContext(this.getServletContext());
             ITestDataLibService libService = appContext.getBean(ITestDataLibService.class);
             IFactoryTestDataLib factoryLibService = appContext.getBean(IFactoryTestDataLib.class);
-            
-            TestDataLib lib = factoryLibService.create(testdatalibid, name, system, environment, country, group, 
-                    type, database, script, servicePath, method, envelope, description);
-            
+
+            TestDataLib lib = factoryLibService.create(testdatalibid, name, system, environment, country, group, type, database, script,
+                    servicePath, method, envelope, description, request.getRemoteUser(), null, "", null);
+
             AnswerItem existsAnswer = libService.readByKey(lib.getName(), lib.getSystem(), lib.getEnvironment(), lib.getCountry());
-            
-            if(!existsAnswer.isCodeEquals(MessageEventEnum.DATA_OPERATION_NO_DATA_FOUND.getCode())){
+
+            if (!existsAnswer.isCodeEquals(MessageEventEnum.DATA_OPERATION_NO_DATA_FOUND.getCode())) {
                 msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_EXPECTED);
                 msg.setDescription(msg.getDescription().replace("%ITEM%", "Test Data Library")
-                    .replace("%OPERATION%", "Duplicate")
-                    .replace("%REASON%", "The test data library that you are trying to create already exists!"));
+                        .replace("%OPERATION%", "Duplicate")
+                        .replace("%REASON%", "The test data library that you are trying to create already exists!"));
                 ans.setResultMessage(msg);
-                
-            }else {
-                 //data was not found, it means that the we can duplicate the entry
-                ans = libService.duplicate(lib);       
-                
+
+            } else {
+                //data was not found, it means that the we can duplicate the entry
+                ans = libService.duplicate(lib);
+
                 //Object created. Adding Log entry.
-                if(ans.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())){
+                if (ans.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
                     ILogEventService logEventService = appContext.getBean(LogEventService.class);
                     logEventService.createPrivateCalls("/DuplicateTestDataLib", "DUPLICATE", "Duplicate with id:  : " + testdatalibid, request);
                 }
@@ -155,16 +154,14 @@ public class DuplicateTestDataLib extends HttpServlet {
             response.getWriter().print(jsonResponse);
             response.getWriter().flush();
         } catch (JSONException ex) {
-            org.apache.log4j.Logger.getLogger(DuplicateTestDataLib.class.getName()).log(org.apache.log4j.Level.ERROR, null, ex); 
-            response.getWriter().print(AnswerUtil.createGenericErrorAnswer());  
+            org.apache.log4j.Logger.getLogger(DuplicateTestDataLib.class.getName()).log(org.apache.log4j.Level.ERROR, null, ex);
+            response.getWriter().print(AnswerUtil.createGenericErrorAnswer());
             response.getWriter().flush();
         }
 
-
     }
-    
-    // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
 
+    // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
     /**
      * Handles the HTTP <code>GET</code> method.
      *

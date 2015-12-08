@@ -31,18 +31,15 @@
         <%@ include file="include/header.html"%>
 
         <div id="page-layout" class="container-fluid center">
+            <div class="alert alert-warning"><strong>BETA</strong> This page is in beta, some features may not be available or fully functional.</div>
             <%@ include file="include/messagesArea.html"%>
-            <%@ include file="include/utils/modal-confirmation.html"%>            
-            <%@ include file="include/testdatalib/manageTestDataLibData.html"%>
-            <%@ include file="include/testdatalib/createTestDataLib.html"%>       
-            <%@ include file="include/testdatalib/updateTestDataLib.html"%>       
+            <%@ include file="include/utils/modal-confirmation.html"%>
+            <%@ include file="include/testdatalib/addTestDataLib.html"%>
+            <%@ include file="include/testdatalib/editTestDataLib.html"%>       
+            <%@ include file="include/testdatalib/editTestDataLibData.html"%>
             <%@ include file="include/testdatalib/duplicateTestDataLib.html"%>       
-            <%@ include file="include/testdatalib/listTestDataLibData.html"%>       
             <%@ include file="include/testdatalib/listTestCase.html"%>       
             <%@ include file="include/utils/modal-upload.html"%>       
-            
-
-
 
             <h1 class="page-title-line" id="title">Test Data Library</h1>
             <div id="testdatalib" class="well">               

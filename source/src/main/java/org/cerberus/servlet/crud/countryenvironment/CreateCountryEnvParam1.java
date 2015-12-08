@@ -15,46 +15,42 @@
  * You should have received a copy of the GNU General Public License
  * along with Cerberus.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.cerberus.servlet.crud.test;
+package org.cerberus.servlet.crud.countryenvironment;
 
 import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.servlet.ServletException;
+import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import org.apache.commons.lang3.StringEscapeUtils;
+import org.cerberus.crud.entity.CountryEnvParam;
 import org.cerberus.crud.entity.MessageEvent;
 import org.cerberus.enums.MessageEventEnum;
-import org.cerberus.crud.entity.Project;
 import org.cerberus.exception.CerberusException;
-import org.cerberus.crud.factory.IFactoryLogEvent;
-import org.cerberus.crud.factory.impl.FactoryLogEvent;
+import org.cerberus.crud.factory.IFactoryCountryEnvParam;
+import org.cerberus.crud.service.ICountryEnvParamService;
 import org.cerberus.crud.service.ILogEventService;
-import org.cerberus.crud.service.IProjectService;
 import org.cerberus.crud.service.impl.LogEventService;
-import org.cerberus.util.ParameterParserUtil;
-import static org.cerberus.util.ParameterParserUtil.parseStringParamAndDecode;
 import org.cerberus.util.StringUtil;
 import org.cerberus.util.answer.Answer;
-import org.cerberus.util.answer.AnswerItem;
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.owasp.html.HtmlPolicyBuilder;
-import org.owasp.html.PolicyFactory;
-import org.owasp.html.Sanitizers;
-import static org.owasp.html.Sanitizers.LINKS;
-import static org.owasp.html.Sanitizers.STYLES;
 import org.springframework.context.ApplicationContext;
 import org.springframework.web.context.support.WebApplicationContextUtils;
+import org.owasp.html.PolicyFactory;
+import org.owasp.html.Sanitizers;
 
 /**
  *
  * @author bcivel
  */
-public class UpdateProject extends HttpServlet {
+@WebServlet(name = "CreateCountryEnvParam1", urlPatterns = {"/CreateCountryEnvParam1"})
+public class CreateCountryEnvParam1 extends HttpServlet {
 
+    private final String OBJECT_NAME = "CountryEnvParam";
+    
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
      * methods.
@@ -73,60 +69,68 @@ public class UpdateProject extends HttpServlet {
         MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
         msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", ""));
         ans.setResultMessage(msg);
-        PolicyFactory policy = Sanitizers.FORMATTING.and(LINKS);
+        PolicyFactory policy = Sanitizers.FORMATTING.and(Sanitizers.LINKS);
 
         response.setContentType("application/json");
 
         /**
          * Parsing and securing all required parameters.
          */
-        String idProject = ParameterParserUtil.parseStringParamAndSanitize(request.getParameter("idProject"), "");
+        String system = policy.sanitize(request.getParameter("system"));
+        String country = policy.sanitize(request.getParameter("country"));
+        String environment = policy.sanitize(request.getParameter("environment"));
+        String description = policy.sanitize(request.getParameter("description"));
+        String build = policy.sanitize(request.getParameter("build"));
+        String revision = policy.sanitize(request.getParameter("revision"));
+        String chain = policy.sanitize(request.getParameter("chain"));
+        String distribList = policy.sanitize(request.getParameter("distribList"));
+        String emailBodyRevision = policy.sanitize(request.getParameter("eMailBodyRevision"));
+        String type = policy.sanitize(request.getParameter("type"));
+        String emailBodyChain = policy.sanitize(request.getParameter("eMailBodyChain"));
+        String emailBodyDisableEnvironment = policy.sanitize(request.getParameter("eMailBodyDisableEnvironment"));
+        boolean active = "Y".equals(policy.sanitize(request.getParameter("active"))) ? true : false;
+        boolean maintenanceAct = "Y".equals(policy.sanitize(request.getParameter("maintenanceAct"))) ? true : false;
+        String maintenanceStr = policy.sanitize(request.getParameter("maintenanceStr"));
+        String maintenanceEnd = policy.sanitize(request.getParameter("maintenanceEnd"));
 
         /**
          * Checking all constrains before calling the services.
          */
-        if (StringUtil.isNullOrEmpty(idProject)) {
+        if (StringUtil.isNullOrEmpty(system)) {
             msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_EXPECTED);
-            msg.setDescription(msg.getDescription().replace("%ITEM%", "Project")
-                    .replace("%OPERATION%", "Update")
-                    .replace("%REASON%", "Project ID (id Project) is missing"));
+            msg.setDescription(msg.getDescription().replace("%ITEM%", OBJECT_NAME)
+                    .replace("%OPERATION%", "Create")
+                    .replace("%REASON%", "System is missing!"));
+            ans.setResultMessage(msg);
+        } else if (StringUtil.isNullOrEmpty(country)) {
+            msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_EXPECTED);
+            msg.setDescription(msg.getDescription().replace("%ITEM%", OBJECT_NAME)
+                    .replace("%OPERATION%", "Create")
+                    .replace("%REASON%", "Country is missing!"));
+            ans.setResultMessage(msg);
+        } else if (StringUtil.isNullOrEmpty(environment)) {
+            msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_EXPECTED);
+            msg.setDescription(msg.getDescription().replace("%ITEM%", OBJECT_NAME)
+                    .replace("%OPERATION%", "Create")
+                    .replace("%REASON%", "Environment is missing!"));
             ans.setResultMessage(msg);
         } else {
             /**
              * All data seems cleans so we can call the services.
              */
             ApplicationContext appContext = WebApplicationContextUtils.getWebApplicationContext(this.getServletContext());
-            IProjectService projectService = appContext.getBean(IProjectService.class);
+            ICountryEnvParamService countryEnvParamService = appContext.getBean(ICountryEnvParamService.class);
+            IFactoryCountryEnvParam factoryCountryEnvParam = appContext.getBean(IFactoryCountryEnvParam.class);
 
-            AnswerItem resp = projectService.readByKey(idProject);
-            if (!(resp.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode()))) {
+            CountryEnvParam countryEnvParamData = factoryCountryEnvParam.create(system, country, environment, description, build, revision, chain, distribList, emailBodyRevision, type, emailBodyChain, emailBodyDisableEnvironment, active, maintenanceAct, maintenanceStr, maintenanceEnd);
+            ans = countryEnvParamService.create(countryEnvParamData);
+
+            if (ans.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
                 /**
-                 * Object could not be found. We stop here and report the error.
+                 * Object created. Adding Log entry.
                  */
-                msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_EXPECTED);
-                msg.setDescription(msg.getDescription().replace("%ITEM%", "Project")
-                        .replace("%OPERATION%", "Update")
-                        .replace("%REASON%", "Project does not exist."));
-                ans.setResultMessage(msg);
-
-            } else {
-                /**
-                 * The service was able to perform the query and confirm the
-                 * object exist, then we can update it.
-                 */
-                Project projectData = (Project) resp.getItem();
-                projectData.setCode(ParameterParserUtil.parseStringParamAndSanitize(request.getParameter("VCCode"), projectData.getCode()));
-                projectData.setDescription(ParameterParserUtil.parseStringParamAndSanitize(request.getParameter("Description"), projectData.getDescription()));
-                projectData.setActive(ParameterParserUtil.parseStringParamAndSanitize(request.getParameter("Active"), projectData.getActive()));
-                ans = projectService.update(projectData);
-
-                if (ans.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
-                    /**
-                     * Update was successful. Adding Log entry.
-                     */
-                    ILogEventService logEventService = appContext.getBean(LogEventService.class);
-                    logEventService.createPrivateCalls("/UpdateProject", "UPDATE", "Updated Project : ['" + idProject + "']", request);
-                }
+                ILogEventService logEventService = appContext.getBean(LogEventService.class);
+                logEventService.createPrivateCalls("/CreateCountryEnvParam", "CREATE", "Create CountryEnvParam : ['" + system + "'|'" + country + "'|'" + environment + "']", request);
             }
         }
 
@@ -138,6 +142,7 @@ public class UpdateProject extends HttpServlet {
 
         response.getWriter().print(jsonResponse);
         response.getWriter().flush();
+
     }
 
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
@@ -154,12 +159,10 @@ public class UpdateProject extends HttpServlet {
             throws ServletException, IOException {
         try {
             processRequest(request, response);
-
         } catch (CerberusException ex) {
-            Logger.getLogger(UpdateProject.class
-                    .getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(CreateCountryEnvParam1.class.getName()).log(Level.SEVERE, null, ex);
         } catch (JSONException ex) {
-            Logger.getLogger(UpdateProject.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(CreateCountryEnvParam1.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
 
@@ -176,12 +179,10 @@ public class UpdateProject extends HttpServlet {
             throws ServletException, IOException {
         try {
             processRequest(request, response);
-
         } catch (CerberusException ex) {
-            Logger.getLogger(UpdateProject.class
-                    .getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(CreateCountryEnvParam1.class.getName()).log(Level.SEVERE, null, ex);
         } catch (JSONException ex) {
-            Logger.getLogger(UpdateProject.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(CreateCountryEnvParam1.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
 

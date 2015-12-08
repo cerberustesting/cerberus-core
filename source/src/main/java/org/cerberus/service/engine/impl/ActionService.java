@@ -188,12 +188,11 @@ public class ActionService implements IActionService {
 
         } else if (testCaseStepActionExecution.getAction().equals("callSoap")) {
             res = this.doActionMakeSoapCall(testCaseStepActionExecution, object, property, false); 
-            
 
-        } else if (testCaseStepActionExecution.getAction().equals("callSoapWithBase1")) {
+        } else if (testCaseStepActionExecution.getAction().equals("callSoapWithBase_BETA")) {
             res = this.doActionCallSoapFromDataLib(testCaseStepActionExecution, object, property);
 
-        } else if (testCaseStepActionExecution.getAction().equals("callSoap1")) {
+        } else if (testCaseStepActionExecution.getAction().equals("callSoap_BETA")) {
             res = this.doActionCallSoapFromDataLib(testCaseStepActionExecution, object, property);
 
         } else if (testCaseStepActionExecution.getAction().equals("mouseDownMouseUp")) {

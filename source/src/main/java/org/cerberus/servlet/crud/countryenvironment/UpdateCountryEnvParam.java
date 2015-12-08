@@ -104,7 +104,7 @@ public class UpdateCountryEnvParam extends HttpServlet {
             } else {
                 throw new CerberusException(new MessageGeneral(MessageGeneralEnum.NOT_IMPLEMEMTED));
             }
-            cepService.update(cep);
+            cepService.update_deprecated(cep);
             response.getWriter().print(value);
         } catch (CerberusException ex) {
             response.getWriter().print(ex.getMessageError().getDescription());

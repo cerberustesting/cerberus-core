@@ -24,7 +24,8 @@ import java.util.List;
 
 import org.apache.log4j.Level;
 import org.cerberus.crud.dao.ITestCaseExecutionDAO;
-import org.cerberus.dto.TestCaseWithExecution;
+import org.cerberus.crud.entity.CountryEnvParam;
+import org.cerberus.crud.entity.TCase;
 import org.cerberus.crud.entity.TestCaseExecution;
 import org.cerberus.exception.CerberusException;
 import org.cerberus.log.MyLogger;
@@ -55,14 +56,14 @@ public class TestCaseExecutionService implements ITestCaseExecutionService {
 
     @Override
     public TestCaseExecution findLastTCExecutionByCriteria(String test, String testCase, String environment, String country,
-                                                     String build, String revision) throws CerberusException {
+            String build, String revision) throws CerberusException {
         return testCaseExecutionDao.findLastTCExecutionByCriteria(test, testCase, environment, country, build, revision);
     }
 
     @Override
     public TestCaseExecution findLastTCExecutionByCriteria(String test, String testCase, String environment, String country,
-                                                           String build, String revision, String browser, String browserVersion,
-                                                           String ip, String port, String tag) {
+            String build, String revision, String browser, String browserVersion,
+            String ip, String port, String tag) {
         return this.testCaseExecutionDao.findLastTCExecutionByCriteria(test, testCase, environment, country, build, revision, browser, browserVersion, ip, port, tag);
     }
 
@@ -107,11 +108,11 @@ public class TestCaseExecutionService implements ITestCaseExecutionService {
 
     @Override
     public TestCaseExecution findLastTCExecutionInGroup(String test, String testCase, String environment, String country,
-                                                           String build, String revision, String browser, String browserVersion,
-                                                           String ip, String port, String tag) {
+            String build, String revision, String browser, String browserVersion,
+            String ip, String port, String tag) {
         return this.testCaseExecutionDao.findLastTCExecutionInGroup(test, testCase, environment, country, build, revision, browser, browserVersion, ip, port, tag);
     }
-    
+
     @Override
     public TestCaseExecution findLastTestCaseExecutionNotPE(String test, String testCase) throws CerberusException {
         return testCaseExecutionDao.findLastTestCaseExecutionNotPE(test, testCase);
@@ -126,24 +127,56 @@ public class TestCaseExecutionService implements ITestCaseExecutionService {
     public void setTagToExecution(long id, String tag) throws CerberusException {
         testCaseExecutionDao.setTagToExecution(id, tag);
     }
-    
+
     @Override
     public AnswerList findTagList(int tagnumber) throws CerberusException {
         return testCaseExecutionDao.findTagList(tagnumber);
     }
-    
+
     @Override
     public AnswerList readByTagByCriteria(String tag, int start, int amount, String column, String dir, String searchTerm, String individualSearch) throws CerberusException {
         return testCaseExecutionDao.readByTagByCriteria(tag, start, amount, column, dir, searchTerm, individualSearch);
     }
-    
+
     @Override
-     public AnswerList readDistinctEnvCoutnryBrowserByTag(String tag) {
-         return testCaseExecutionDao.readDistinctEnvCoutnryBrowserByTag(tag);
-     }
-     
-     @Override
-     public AnswerList readDistinctColumnByTag(String tag, boolean env, boolean country, boolean browser, boolean app) {
-         return testCaseExecutionDao.readDistinctColumnByTag(tag, env, country, browser, app);
-     }
+    public AnswerList readDistinctEnvCoutnryBrowserByTag(String tag) {
+        return testCaseExecutionDao.readDistinctEnvCoutnryBrowserByTag(tag);
+    }
+
+    @Override
+    public AnswerList readDistinctColumnByTag(String tag, boolean env, boolean country, boolean browser, boolean app) {
+        return testCaseExecutionDao.readDistinctColumnByTag(tag, env, country, browser, app);
+    }
+
+    @Override
+    public List<TestCaseExecution> createAllTestCaseExecution(List<TCase> testCaseList, List<String> envList, List<String> countryList) {
+        List<TestCaseExecution> result = new ArrayList<TestCaseExecution>();
+        
+        for (TCase tc : testCaseList) {
+            for (String environment : envList) {
+                for (String country : countryList) {
+                    TestCaseExecution execution = new TestCaseExecution();
+                    
+                    execution.setTest(tc.getTest());
+                    execution.setTestCase(tc.getTestCase());
+                    execution.setEnvironment(environment);
+                    execution.setCountry(country);
+                    result.add(execution);
+                }
+            }
+        }
+        
+        return result;
+    }
+    @Override
+    public AnswerList readBySystemByVarious(String system, List<String> testList, List<String> applicationList, List<String> projectList, List<String> tcstatusList, 
+            List<String> groupList, List<String> tcactiveList, List<String> priorityList, List<String> targetsprintList, List<String> targetrevisionList, 
+            List<String> creatorList, List<String> implementerList, List<String> buildList, List<String> revisionList, List<String> environmentList,
+            List<String> countryList, List<String> browserList, List<String> tcestatusList, String ip, String port, String tag, String browserversion, 
+            String comment, String bugid, String ticket) {
+        
+        return testCaseExecutionDao.readBySystemByVarious(system, testList, applicationList, projectList, tcstatusList, groupList, tcactiveList, priorityList, targetsprintList, 
+                targetrevisionList, creatorList, implementerList, buildList, revisionList, environmentList, countryList, browserList, tcestatusList, 
+                ip, port, tag, browserversion, comment, bugid, ticket);
+    }
 }

@@ -29,6 +29,7 @@
     <body>
         <%@ include file="include/header.html" %>
         <div class="container-fluid center" id="page-layout">
+            <div class="alert alert-warning"><strong>BETA</strong> This page is in beta, some features may not be available or fully functional </div>
             <%@ include file="include/messagesArea.html"%>
             <%@ include file="include/utils/modal-confirmation.html"%>
             <%@ include file="include/environment/addEnvironment.html"%>

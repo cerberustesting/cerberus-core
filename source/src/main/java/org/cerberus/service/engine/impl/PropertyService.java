@@ -1269,7 +1269,7 @@ public class PropertyService implements IPropertyService {
         String country = testCaseExecution.getCountry();
         TestCaseCountryProperties currentProperty = null;
         for(TestCaseCountryProperties prop :  testCaseExecution.getTestCaseCountryPropertyList()){
-            if(prop.getCountry().equals(country) && prop.getProperty().equals(propertyName) && prop.getType().equals("getFromDataLib")){
+            if(prop.getCountry().equals(country) && prop.getProperty().equals(propertyName) && prop.getType().equals("getFromDataLib_BETA")){
                 currentProperty = prop;
                 break;
             }

@@ -82,19 +82,27 @@ public class ReadCountryEnvParam extends HttpServlet {
          * Parsing and securing all required parameters.
          */
         String system = policy.sanitize(request.getParameter("system"));
+        String country = policy.sanitize(request.getParameter("country"));
+        String environment = policy.sanitize(request.getParameter("environment"));
         String active = policy.sanitize(request.getParameter("active"));
         boolean unique = ParameterParserUtil.parseBooleanParam(request.getParameter("unique"), false);
-        
+        boolean forceList = ParameterParserUtil.parseBooleanParam(request.getParameter("forceList"), false);
+
         // Init Answer with potencial error from Parsing parameter.
         AnswerItem answer = new AnswerItem(msg);
 
         try {
             JSONObject jsonResponse = new JSONObject();
-            if (unique) {
-                answer = findUniqueEnvironmentList(appContext, active);
+            if ((request.getParameter("system") != null) && (request.getParameter("country") != null) && (request.getParameter("environment") != null) && !(forceList)) {
+                answer = findCountryEnvParamByKey(system, country, environment, appContext);
+                jsonResponse = (JSONObject) answer.getItem();
+            } else if (unique) {
+                answer = findUniqueEnvironmentList(appContext, system, active);
                 jsonResponse = (JSONObject) answer.getItem();
             } else { // Default behaviour, we return the list of objects.
-                answer = findCountryEnvParamList(request.getParameter("system"), request.getParameter("active"), appContext, request);
+                answer = findCountryEnvParamList(request.getParameter("system"), request.getParameter("country"),
+                        request.getParameter("environment"), request.getParameter("build"), request.getParameter("revision"),
+                        request.getParameter("active"), appContext, request);
                 jsonResponse = (JSONObject) answer.getItem();
             }
             jsonResponse.put("messageType", answer.getResultMessage().getMessage().getCodeString());
@@ -164,7 +172,7 @@ public class ReadCountryEnvParam extends HttpServlet {
         return "Short description";
     }// </editor-fold>
 
-    private AnswerItem findCountryEnvParamList(String system, String active, ApplicationContext appContext, HttpServletRequest request) throws JSONException {
+    private AnswerItem findCountryEnvParamList(String system, String country, String environment, String build, String revision, String active, ApplicationContext appContext, HttpServletRequest request) throws JSONException {
 
         AnswerItem item = new AnswerItem();
         JSONObject jsonResponse = new JSONObject();
@@ -180,7 +188,7 @@ public class ReadCountryEnvParam extends HttpServlet {
         String columnToSort[] = sColumns.split(",");
         String columnName = columnToSort[columnToSortParameter];
         String sort = ParameterParserUtil.parseStringParam(request.getParameter("sSortDir_0"), "asc");
-        AnswerList resp = cepService.readByVariousByCriteria(system, active, startPosition, length, columnName, sort, searchParameter, "");
+        AnswerList resp = cepService.readByVariousByCriteria(system, country, environment, build, revision, active, startPosition, length, columnName, sort, searchParameter, "");
 
         JSONArray jsonArray = new JSONArray();
         boolean userHasPermissions = request.isUserInRole("IntegratorRO");
@@ -201,29 +209,21 @@ public class ReadCountryEnvParam extends HttpServlet {
 
     }
 
-    private JSONObject convertCountryEnvParamtoJSONObject(CountryEnvParam cep) throws JSONException {
-        Gson gson = new Gson();
-        JSONObject result = new JSONObject(gson.toJson(cep));
-        return result;
-    }
-
-    private AnswerItem findUniqueEnvironmentList(ApplicationContext appContext, String active) throws JSONException {
+    private AnswerItem findUniqueEnvironmentList(ApplicationContext appContext, String system, String active) throws JSONException {
         AnswerItem item = new AnswerItem();
         JSONObject jsonResponse = new JSONObject();
         cepService = appContext.getBean(ICountryEnvParamService.class);
 
-        AnswerList resp = cepService.readByVariousByCriteria("", active, 0, 0, "system", "asc", "", "");
+        AnswerList resp = cepService.readByVariousByCriteria(system, null, null, null, null, active, 0, 0, "system", "asc", "", "");
 
-        
-        
         JSONArray jsonArray = new JSONArray();
         if (resp.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {//the service was able to perform the query, then we should get all values
             HashMap<String, CountryEnvParam> hash = new HashMap<String, CountryEnvParam>();
-            
+
             for (CountryEnvParam cep : (List<CountryEnvParam>) resp.getDataList()) {
                 hash.put(cep.getEnvironment(), cep);
             }
-            
+
             for (CountryEnvParam cep : hash.values()) {
                 jsonArray.put(convertCountryEnvParamtoJSONObject(cep));
             }
@@ -236,6 +236,34 @@ public class ReadCountryEnvParam extends HttpServlet {
         item.setItem(jsonResponse);
         item.setResultMessage(resp.getResultMessage());
         return item;
+    }
+
+    private AnswerItem findCountryEnvParamByKey(String system, String country, String environment, ApplicationContext appContext) throws JSONException, CerberusException {
+        AnswerItem item = new AnswerItem();
+        JSONObject object = new JSONObject();
+
+        ICountryEnvParamService libService = appContext.getBean(ICountryEnvParamService.class);
+
+        //finds the CountryEnvParam
+        AnswerItem answer = libService.readByKey(system, country, environment);
+
+        if (answer.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
+            //if the service returns an OK message then we can get the item and convert it to JSONformat
+            CountryEnvParam lib = (CountryEnvParam) answer.getItem();
+            JSONObject response = convertCountryEnvParamtoJSONObject(lib);
+            object.put("contentTable", response);
+        }
+
+        item.setItem(object);
+        item.setResultMessage(answer.getResultMessage());
+
+        return item;
+    }
+
+    private JSONObject convertCountryEnvParamtoJSONObject(CountryEnvParam cep) throws JSONException {
+        Gson gson = new Gson();
+        JSONObject result = new JSONObject(gson.toJson(cep));
+        return result;
     }
 
 }

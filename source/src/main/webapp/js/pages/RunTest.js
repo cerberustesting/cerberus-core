@@ -35,7 +35,7 @@ $.when($.getScript("js/pages/global/global.js")).then(function () {
         $.when(
                 loadMultiSelect("ReadTest", "system=" + system, "test", ["test", "description"], "test"),
                 loadMultiSelect("ReadProject", "sEcho=1", "project", ["idProject"], "idProject"),
-                loadMultiSelect("ReadApplication", "system=" + system, "application", ["application"], "application", true),
+                loadMultiSelect("ReadApplication", "system=" + system, "application", ["application"], "application"),
                 loadMultiSelect("ReadUserPublic", "", "creator", ["login"], "login"),
                 loadMultiSelect("ReadUserPublic", "", "implementer", ["login"], "login"),
                 loadMultiSelect("ReadTestBattery", "", "testBattery", ["testbattery"], "testbattery"),
@@ -52,19 +52,16 @@ $.when($.getScript("js/pages/global/global.js")).then(function () {
             }
         });
 
-        $("#typeSelect").on("change", typeSelectHandler);
+        $("[name='typeSelect']").on("change", typeSelectHandler);
 
         $("#run").click(sendForm);
 
-        $("#loadbutton").click(function () {
-            var value = $("#typeSelect").val();
-            if (value === "filters") {
-                loadTestCaseFromFilter();
-            } else if (value === "campaign") {
-                var campaign = $("#campaignSelect").val();
-                loadCampaignContent(campaign);
-                loadCampaignParameter(campaign);
-            }
+        $("#loadFiltersBtn").click(loadTestCaseFromFilter);
+
+        $("#loadCampaignBtn").click(function () {
+            var campaign = $("#campaignSelect").val();
+            loadCampaignContent(campaign);
+            loadCampaignParameter(campaign);
         });
 
         $("#resetbutton").click(function () {
@@ -74,8 +71,12 @@ $.when($.getScript("js/pages/global/global.js")).then(function () {
             });
         });
 
-        $("#addQueue").click({"select": "#testCaseList option:selected"}, checkExecution);
-        $("#addAllQueue").click({"select": "#testCaseList option"}, checkExecution);
+        $("#addQueue").click(checkExecution);
+
+        $("#selectAll").click(function () {
+            $("#testCaseList option").prop("selected", "selected");
+            updatePotentialNumber();
+        });
 
         $("#resetQueue").click(function (event) {
             stopPropagation(event);
@@ -109,11 +110,15 @@ $.when($.getScript("js/pages/global/global.js")).then(function () {
             loadRobotInfo($(this).val());
         });
 
+        $("#testCaseList").on("change", updatePotentialNumber);
+        $("#envSettingsAuto select").on("change", updatePotentialNumber);
+
     });
 });
 
 function typeSelectHandler() {
-    var value = $("#typeSelect").val();
+    var value = $("[name='typeSelect']:checked").val();
+    console.log(value);
     if (value === "filters") {
 
         $("#envSettingsAuto select").prop("disabled", false).val("");
@@ -124,19 +129,20 @@ function typeSelectHandler() {
 
         $("#testCaseList").prop("disabled", false);
         $("#envSettingsAuto select").empty();
-        displayEnvList("environment", getUser().defaultSystem);
+        displayUniqueEnvList("environment", getUser().defaultSystem);
         $("#campaignSelection").hide();
         $("#filters").show();
         $("#resetbutton").show();
+        $("#filtersPanelContainer").show();
         loadTestCaseFromFilter();
     } else if (value === "campaign") {
-        $("#filters").hide();
-        $("#resetbutton").hide();
+        $("#filtersPanelContainer").hide();
         $("#campaignSelection").show();
         $("#testCaseList").empty();
         $("#envSettingsAuto select").empty();
-        displayUniqueEnvList("environment");
+        displayUniqueEnvList("environment", "");
     }
+    updatePotentialNumber();
 }
 
 function loadTestCaseFromFilter() {
@@ -165,19 +171,6 @@ function loadTestCaseFromFilter() {
     });
 }
 
-//function updateMultiSelect(selectName, dataToCheck, valueList) {
-//    $("#" + selectName + "Filter option").each(function () {
-//        if (valueList !== null && valueList.indexOf($(this).data("item")[dataToCheck]) === -1) {
-//            $(this).prop("checked", false);
-//            $(this).prop("disabled", true);
-//        } else {
-//            $(this).prop("disabled", false);
-//        }
-//    });
-//
-//    $("#" + selectName + "Filter").multiselect('rebuild');
-//}
-
 function appendCountryList() {
     var jqxhr = $.getJSON("FindInvariantByID", "idName=COUNTRY");
     $.when(jqxhr).then(function (data) {
@@ -190,36 +183,42 @@ function appendCountryList() {
                                 <input class="countrycb" type="checkbox" name="' + country + '"/>' + country + '\
                                 </label>');
         }
+        $("#countryList input.countrycb").each(function () {
+            $(this).on("change", updatePotentialNumber);
+        });
     });
 }
 
 /** UTILITY FUNCTIONS FOR CAMPAIGN LAUNCHING **/
 
 function loadCampaignContent(campaign) {
-    showLoader("#chooseTest");
-    $.ajax({
-        url: "ReadTestCase",
-        method: "GET",
-        data: {campaign: campaign},
-        datatype: "json",
-        async: true,
-        success: function (data) {
-            var testCaseList = $("#testCaseList");
+    if (campaign !== "") {
+        showLoader("#chooseTest");
+        $.ajax({
+            url: "ReadTestCase",
+            method: "GET",
+            data: {campaign: campaign},
+            datatype: "json",
+            async: true,
+            success: function (data) {
+                var testCaseList = $("#testCaseList");
 
-            testCaseList.empty().prop("disabled", "disabled");
+                testCaseList.empty().prop("disabled", "disabled");
 
-            for (var index = 0; index < data.contentTable.length; index++) {
-                var text = data.contentTable[index].test + " - " + data.contentTable[index].testCase + " [" + data.contentTable[index].application + "]: " + data.contentTable[index].shortDescription;
+                for (var index = 0; index < data.contentTable.length; index++) {
+                    var text = data.contentTable[index].test + " - " + data.contentTable[index].testCase + " [" + data.contentTable[index].application + "]: " + data.contentTable[index].shortDescription;
 
-                testCaseList.append($("<option></option>")
-                        .text(text)
-                        .val(data.contentTable[index].testCase)
-                        .prop("selected", true)
-                        .data("item", data.contentTable[index]));
+                    testCaseList.append($("<option></option>")
+                            .text(text)
+                            .val(data.contentTable[index].testCase)
+                            .prop("selected", true)
+                            .data("item", data.contentTable[index]));
+                }
+                updatePotentialNumber();
+                hideLoader("#chooseTest");
             }
-            hideLoader("#chooseTest");
-        }
-    });
+        });
+    }
 }
 
 function loadCampaignParameter(campaign) {
@@ -279,66 +278,103 @@ function checkForms() {
         message = "Please, select at least one browser.";
         showMessageMainPage(type, message);
         return false;
+    } else if ($("#queue li").length > 1 && $("#tag").val() === "") {
+        type = getAlertType("KO");
+        message = "Please, indicate a tag for your execution.";
+        showMessageMainPage(type, message);
+        return false;
     }
     return true;
 }
 
 function sendForm() {
     if (checkForms()) {
-        var $form = $("#AddToExecutionQueue");
-        var countries = getCountries();
-        var env = getEnvironment();
-        var $input = $('<input>').prop("type", "hidden");
-        var browser = $("#browser").val() ? $("#browser").val() : [];
-        var testcases = $("#queue li");
+        var data = {};
+        var executionList = $("#queue li");
+        var executionArray = [];
+        var browsers = $("#browser").val() ? $("#browser").val() : [];
+        var robotSettings = convertSerialToJSONObject($("#robotSettingsForm").serialize());
+        var execSettings = convertSerialToJSONObject($("#executionSettingsForm").serialize());
 
-        testcases.each(function () {
-            var testcase = $(this).data("item");
-            $form.append($input.clone().prop("name", "SelectedTest").val("Test=" + encodeURIComponent(testcase.test) + "&TestCase=" + encodeURIComponent(testcase.testcase)));
+        executionList.each(function () {
+            var data = $(this).data("item");
+            executionArray.push(data);
         });
 
-        for (var index = 0; index < countries.length; index++) {
-            $form.append($input.clone().prop("name", "Country").val(countries[index]));
-        }
-        for (var index = 0; index < env.length; index++) {
-            $form.append($input.clone().prop("name", "Environment").val(env[index]["env"]));
-        }
-        for (var index = 0; index < browser.length; index++) {
-            $form.append($input.clone().prop("name", "Browser").val(browser[index]));
-        }
+        if (executionArray.length === 1) {
+            //Call RunTestCase
+            setData(executionArray);
+            $("#RunTestCase").submit();
+        } else if (executionArray.length > 1) {
 
-        $("#manualURLATQ").val("N");
-        setRobotForm($form, $input);
-        setExecForm();
-        $form.submit();
+            for (var key in robotSettings) {
+                data[key] = robotSettings[key];
+            }
+            for (var key in execSettings) {
+                data[key] = execSettings[key];
+            }
+            
+            if ($('input[name="envSettings"]:checked').val() === "manual") {
+                data.ManualHost = $("#myhost").val();
+                data.ManualContextRoot = $("#mycontextroot").val();
+                data.ManualLoginRelativeURL = $("#myloginrelativeurl").val();
+                data.ManualEnvData = $("#myenvdata").val();
+            }
+            
+            data.browsers = JSON.stringify(browsers);
+            data.toAddList = JSON.stringify(executionArray);
+            data.push = true;
+
+            $.ajax({
+                url: "GetExecutionQueue",
+                method: "POST",
+                data: data,
+                async: true,
+                success: function (data) {
+                    if (data.redirect) {
+                        window.location.replace(data.redirect);
+                    }
+                },
+                error: showUnexpectedError
+            });
+        }
     }
 }
 
-function setRobotForm($form, $input) {
-    if ($("#robotConfig").val() === "") {
-        $("#manualRobotATQ").val("Y");
-        $("#ss_ipATQ").val($("#seleniumIP").val());
-        $("#ss_pATQ").val($("#seleniumPort").val());
-        $("#versionATQ").val($("#version").val());
-        $("#platformATQ").val($("#platform").val());
+function setData(executionArray) {
+    var browser = $("#browser").val() ? $("#browser").val() : [""];
+    var settings = $('input[name="envSettings"]:checked').val();
+
+    if (settings === "auto") {
+        $("#manualURLATQ").val("false");
+        $("#envATQ").val(executionArray[0].env);
     } else {
-        $("#manualRobotATQ").val("N");
-        $form.append($input.clone().prop("name", "robot").val($("#robotConfig").val()));
+        $("#manualURLATQ").val("true");
     }
-}
 
-function setExecForm() {
-    $("#tagATQ").val($("#tag").val());
+    $("#testATQ").val(executionArray[0].test);
+    $("#testcaseATQ").val(executionArray[0].testcase);
+    $("#countryATQ").val(executionArray[0].country);
+    $("#browserATQ").val(browser[0]);
+    $("#myhostATQ").val($("#myhost").val());
+    $("#mycontextrootATQ").val($("#mycontextroot").val());
+    $("#myloginrelativeurlATQ").val($("#myloginrelativeurl").val());
+    $("#myenvdataATQ").val($("#myenvdata").val());
     $("#outputformatATQ").val($("#outputFormat").val());
-    $("#verboseATQ").val($("#verbose").val());
     $("#screenshotATQ").val($("#screenshot").val());
+    $("#verboseATQ").val($("#verbose").val());
+    $("#timeoutATQ").val($("#timeout").val());
+    $("#synchroneousATQ").val($("#synchroneous").val());
     $("#pageSourceATQ").val($("#pageSource").val());
     $("#seleniumLogATQ").val($("#seleniumLog").val());
-    $("#synchroneousATQ").val($("#synchroneous").val());
-    $("#timeoutATQ").val($("#timeout").val());
-    $("#retriesATQ").val($("#retries").val());
     $("#manualExecutionATQ").val($("#manualExecution").val());
-    $("#statusPageATQ").val("");
+    $("#retriesATQ").val($("#retries").val());
+    $("#screenSizeATQ").val($("#screenSize").val());
+    $("#manualRobotATQ").val($("#robotConfig").val());
+    $("#ss_ipATQ").val($("#seleniumIP").val());
+    $("#ss_pATQ").val($("#seleniumPort").val());
+    $("#versionATQ").val($("#browserVersion").val());
+    $("#platformATQ").val($("#platform").val());
 }
 
 /** UTILITY FUNCTIONS FOR QUEUE **/
@@ -368,19 +404,11 @@ function getEnvironment() {
 
         if (envListAuto !== null) {
             for (var index = 0; index < envListAuto.length; index++) {
-                var env = {"env": envListAuto[index]};
-
-                envList.push(env);
+                envList.push(envListAuto[index]);
             }
         }
     } else if (settings === "manual") {
-        var env = {"env": "MANUAL",
-            "host": $("#myhost").val(),
-            "url": $("#mycontextroot").val(),
-            "loginurl": $("#myloginrelativeurl").val(),
-            "envdata": $("#myenvdata").val()};
-
-        envList.push(env);
+        envList.push("MANUAL");
     }
 
     return envList;
@@ -411,6 +439,15 @@ function updateValidNumber() {
     $("#validNumber").text($("#queue li").length);
 }
 
+function updatePotentialNumber() {
+    var testCaseSelected = $("#testCaseList option:selected").length;
+    var envSelected = $("#envSettingsAuto select option:selected").length;
+    var countrySelected = getCountries().length;
+    var result = testCaseSelected * envSelected * countrySelected;
+
+    $("#potentialNumber").text(result);
+}
+
 function addToQueue(executionList) {
     var notValidList = [];
     var queue = $("#queue");
@@ -435,10 +472,11 @@ function addToQueue(executionList) {
     notValidHandler(notValidList);
 }
 
-function checkExecution(event) {
-    var select = $(event.data.select);
+function checkExecution() {
+    var select = $("#testCaseList option:selected");
     var environment = getEnvironment();
     var countries = getCountries();
+    var browser = $("#browser").val() ? $("#browser").val() : [];
     var testcase = [];
 
     select.each(function () {
@@ -460,14 +498,18 @@ function checkExecution(event) {
     } else if (countries.length === 0) {
         $("#error").text("!!! Please, select at least 1 Country !!!");
     } else {
+        showLoader("#queuePanel");
         $.ajax({
             url: "GetExecutionQueue",
             method: "POST",
-            data: {"system": getUser().defaultSystem,
+            data: {"check": true,
+                "push": false,
                 "testcase": JSON.stringify(testcase),
                 "environment": JSON.stringify(environment),
-                "countries": JSON.stringify(countries)},
+                "countries": JSON.stringify(countries),
+                "browsers": JSON.stringify(browser)},
             success: function (data) {
+                hideLoader("#queuePanel");
                 addToQueue(data.contentTable);
             },
             error: showUnexpectedError
@@ -498,7 +540,7 @@ function multiSelectConf(name) {
     this.enableCaseInsensitiveFiltering = true;
 }
 
-function loadMultiSelect(url, urlParams, selectName, textItem, valueItem, isUpdate) {
+function loadMultiSelect(url, urlParams, selectName, textItem, valueItem) {
     var jqXHR = $.ajax({
         url: url,
         method: "GET",
@@ -635,13 +677,13 @@ function saveExecutionPreferences() {
 
 function loadExecForm() {
     $.when(
-            loadSelect("OUTPUTFORMAT", "outputFormat"),
-            loadSelect("VERBOSE", "verbose"),
-            loadSelect("SCREENSHOT", "screenshot"),
-            loadSelect("SELENIUMLOG", "seleniumLog"),
+            loadSelect("OUTPUTFORMAT", "OutputFormat"),
+            loadSelect("VERBOSE", "Verbose"),
+            loadSelect("SCREENSHOT", "Screenshot"),
+            loadSelect("SELENIUMLOG", "SeleniumLog"),
             loadSelect("MANUALEXECUTION", "manualExecution"),
-            loadSelect("PAGESOURCE", "pageSource"),
-            loadSelect("SYNCHRONEOUS", "synchroneous"),
+            loadSelect("PAGESOURCE", "PageSource"),
+            loadSelect("SYNCHRONEOUS", "Synchroneous"),
             loadSelect("RETRIES", "retries")
             ).then(function () {
         applyExecPref();
@@ -653,7 +695,7 @@ function loadRobotForm() {
             appendRobotList(),
             loadSelect("BROWSER", "browser"),
             $("[name=platform]").append($('<option></option>').text("Optional").val("")),
-            loadSelect("PLATFORM", "platform"),
+            loadSelect("PLATFORM", "Platform"),
             $("[name=screenSize]").append($('<option></option>').text("Default (Client Full Screen)").val("")),
             loadSelect("screensize", "screenSize")
             ).then(function () {

@@ -4332,6 +4332,33 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         // New updated Documentation.
         //-- ------------------------ 665-666
         SQLS = new StringBuilder();
+        SQLS.append("SELECT 1 FROM dual;");
+        SQLInstruction.add(SQLS.toString());
+        SQLS = new StringBuilder();
+        SQLS.append("SELECT 1 FROM dual;");
+        SQLInstruction.add(SQLS.toString());
+
+        // New invariant.
+        //-- ------------------------ 667
+        SQLS = new StringBuilder();
+        SQLS.append("INSERT INTO `invariant` (`idname`, `value`, `sort`, `description`, `VeryShortDesc`)");
+        SQLS.append("VALUES ('MNTACTIVE', 'N', '20', 'Disable', ''),");
+        SQLS.append("       ('MNTACTIVE', 'Y', '10', 'Active', '');");
+        SQLInstruction.add(SQLS.toString());
+
+        // Tracability on Testdatalib object.
+        //-- ------------------------ 668
+        SQLS = new StringBuilder();
+        SQLS.append("ALTER TABLE `testdatalib` ");
+        SQLS.append("ADD COLUMN `Creator` VARCHAR(45) NOT NULL DEFAULT '' AFTER `Description`,");
+        SQLS.append("ADD COLUMN `Created` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP AFTER `Creator`,");
+        SQLS.append("ADD COLUMN `LastModifier` VARCHAR(45) NOT NULL DEFAULT '' AFTER `Created`,");
+        SQLS.append("ADD COLUMN `LastModified` TIMESTAMP NOT NULL DEFAULT '2000-01-01 00:00:00' AFTER `LastModifier`;");
+        SQLInstruction.add(SQLS.toString());
+
+        // New updated Documentation.
+        //-- ------------------------ 669-670
+        SQLS = new StringBuilder();
         SQLS.append("DELETE FROM `documentation`;");
         SQLInstruction.add(SQLS.toString());
         SQLS = new StringBuilder();
@@ -4551,6 +4578,8 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLS.append(",('page_application','button_delete','','fr','Supprimer l\\'Application','')");
         SQLS.append(",('page_application','button_edit','','en','Edit Application','')");
         SQLS.append(",('page_application','button_edit','','fr','Modifier l\\'Application','')");
+        SQLS.append(",('page_application','message_delete','','en','Do you want to delete application <b>\\'%ENTRY%\\'</b> ?<br> WARNING : All corresponding TestCase will lose the link to that deleted application !!!','')");
+        SQLS.append(",('page_application','message_delete','','fr','Confirmez vous la suppression de l\\'application <b>\\'%ENTRY%\\'</b> ?<br> ATTENTION : Tous les Cas de Tests associés vont perdre le lien avec cette application !!!','')");
         SQLS.append(",('page_application','title','','en','APPLICATION','This page can be used to manage the applications.')");
         SQLS.append(",('page_application','title','','fr','APPLICATION','Cette page permet de gérer et créer des applications.')");
         SQLS.append(",('page_buildcontent','buttonLoadAll','','en','Load All Build','')");
@@ -4571,8 +4600,8 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLS.append(",('page_buildcontent','filters','','fr','Filtres','')");
         SQLS.append(",('page_buildcontent','list','','en','Build Content List','')");
         SQLS.append(",('page_buildcontent','list','','fr','Liste du contenu du Build','')");
-        SQLS.append(",('page_buildcontent','message_delete','','en','Do you want to delete release entry %ENTRY% ?<br> NB : It correspond to the release %RELEASE% of application %APPLI% of Build %BUILD% Revision %REVISION%.','')");
-        SQLS.append(",('page_buildcontent','message_delete','','fr','Confirmez vous la suppression de l\\'entrée %ENTRY% ?<br> NB : correspond à la release %RELEASE% de l\\'application %APPLI% du Build %BUILD% Revision %REVISION%.','')");
+        SQLS.append(",('page_buildcontent','message_delete','','en','Do you want to delete release entry <b>\\'%ENTRY%\\'</b> ?<br> NB : It correspond to the release <b>\\'%RELEASE%\\'</b> of application <b>\\'%APPLI%\\'</b> of Build <b>\\'%BUILD%\\'</b> Revision <b>\\'%REVISION%\\'</b>.','')");
+        SQLS.append(",('page_buildcontent','message_delete','','fr','Confirmez vous la suppression de l\\'entrée <b>\\'%ENTRY%\\'</b> ?<br> NB : correspond à la release <b>\\'%RELEASE%\\'</b> de l\\'application <b>\\'%APPLI%\\'</b> du Build <b>\\'%BUILD%\\'</b> Revision <b>\\'%REVISION%\\'</b>.','')");
         SQLS.append(",('page_buildcontent','standardfilters','','en','Standard Filters','')");
         SQLS.append(",('page_buildcontent','standardfilters','','fr','Standard Filters','')");
         SQLS.append(",('page_buildcontent','title','','en','BUILD CONTENT','This page can be used to manage the Build Content.')");
@@ -4591,16 +4620,18 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLS.append(",('page_deploytype','button_delete','','fr','Supprimer le Type de Deploiement','')");
         SQLS.append(",('page_deploytype','button_edit','','en','Edit Deployment Type','')");
         SQLS.append(",('page_deploytype','button_edit','','fr','Modifier le Type de Deploiement','')");
+        SQLS.append(",('page_deploytype','message_delete','','en','Do you want to delete Deploy Type <b>\\'%ENTRY%\\'</b> ?<br>WARNING1 : All corresponding Application will lose the link to that deleted Deploy Type !!!<br>WARNING2 : All associated Jenkins Agent on corresponding Environments will be deleted !!!','')");
+        SQLS.append(",('page_deploytype','message_delete','','fr','Confirmez vous la suppression du Type de Deploiement <b>\\'%ENTRY%\\'</b> ?<br> ATTENTION1 : Toutes les Applications associées vont perdre le lien avec ce Deploy Type !!!<br>ATTENTION2 : Tous les Jenkins Agent associés et Environnements associés seront supprimés !!!','')");
         SQLS.append(",('page_deploytype','title','','en','DEPLOYMENT TYPE','This page can be used in order to manage the deployment types.')");
         SQLS.append(",('page_deploytype','title','','fr','TYPE DE DEPLOIEMENT','Cette page permet de gérer et créer des types de deploiements.')");
-        SQLS.append(",('page_environent','message_delete','','en','Do you want to delete environment %ENVIRONMENT% from country %COUNTRY% and system %SYSTEM% ?',NULL)");
-        SQLS.append(",('page_environent','message_delete','','fr','Confirmez vous la suppression de l\\'environnement %ENVIRONMENT% du pays %COUNTRY% du système %SYSTEM% ?',NULL)");
         SQLS.append(",('page_environment','button_create','','en','Create a new Environment','')");
         SQLS.append(",('page_environment','button_create','','fr','Créer un nouvel Environnement','')");
         SQLS.append(",('page_environment','button_delete','','en','Delete Environment','')");
         SQLS.append(",('page_environment','button_delete','','fr','Supprimer l\\'Environnement','')");
         SQLS.append(",('page_environment','button_edit','','en','Edit Environment','')");
         SQLS.append(",('page_environment','button_edit','','fr','Modifier l\\'Environnement','')");
+        SQLS.append(",('page_environment','message_delete','','en','Do you want to delete environment <b>\\'%ENVIRONMENT%\\'</b> from country <b>\\'%COUNTRY%\\'</b> and system <b>\\'%SYSTEM%\\'</b> ?<br>WARNING : All corresponding parameters such as list of applications, databases and other environments dependencies will be removed !!!','')");
+        SQLS.append(",('page_environment','message_delete','','fr','Confirmez vous la suppression de l\\'environnement <b>\\'%ENVIRONMENT%\\'</b> du pays <b>\\'%COUNTRY%\\'</b> du système <b>\\'%SYSTEM%\\'</b> ?<br> ATTENTION : Tous les parametres associées tel que la liste des applications, database et autres dependances d\\'environnements seront supprimés !!!','')");
         SQLS.append(",('page_environment','title','','en','ENVIRONMENT','This page can be used to manage the environments.')");
         SQLS.append(",('page_environment','title','','fr','ENVIRONNEMENT','Cette page permet de gérer et créer des environnements.')");
         SQLS.append(",('page_executiondetail','buildrevision','','en','BuildRev','Build and Revision of the <code class=\\'doc-crbvvoca\\'>environment</code> of the <code class=\\'doc-crbvvoca\\'>system</code> of the <code class=\\'doc-crbvvoca\\'>application</code> that has been tested.')");
@@ -4633,8 +4664,6 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLS.append(",('page_global','buttonLoad','','fr','Charger','')");
         SQLS.append(",('page_global','columnAction','','en','Actions','')");
         SQLS.append(",('page_global','columnAction','','fr','Actions','')");
-        SQLS.append(",('page_global','deleteMessage','','en','Do you want to delete %ENTRY% %TABLE% ?','')");
-        SQLS.append(",('page_global','deleteMessage','','fr','Voulez vous supprimer le %TABLE% %ENTRY% ?','')");
         SQLS.append(",('page_global','export_data','','en','Export Data','')");
         SQLS.append(",('page_global','filters','','en','Filters','')");
         SQLS.append(",('page_global','filters','','fr','Filtres','')");
@@ -4646,6 +4675,8 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLS.append(",('page_global','invalid_extension_message','','fr','Merci de selectionner un fichier avec l\\'extension ','')");
         SQLS.append(",('page_global','lbl_all','','en','All','')");
         SQLS.append(",('page_global','lbl_all','','fr','Tous','')");
+        SQLS.append(",('page_global','message_delete','','en','Do you want to delete <b>\\'%ENTRY%\\'</b> %TABLE% ?','')");
+        SQLS.append(",('page_global','message_delete','','fr','Voulez vous supprimer le %TABLE% <b>\\'%ENTRY%\\'</b> ?','')");
         SQLS.append(",('page_global','processing','','en','Processing…','')");
         SQLS.append(",('page_global','processing','','fr','Traitement en cours...','')");
         SQLS.append(",('page_global','tooltip_delete_item','','en','This item will be removed from the database','')");
@@ -4762,6 +4793,8 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLS.append(",('page_project','button_delete','','fr','Supprimer le Projet','')");
         SQLS.append(",('page_project','button_edit','','en','Edit Project','')");
         SQLS.append(",('page_project','button_edit','','fr','Modifier le Projet','')");
+        SQLS.append(",('page_project','message_delete','','en','Do you want to delete Project <b>\\'%ENTRY%\\'</b> ?<br>WARNING : All corresponding Test Cases will lose the link to that deleted Project !!!','')");
+        SQLS.append(",('page_project','message_delete','','fr','Confirmez vous la suppression du projet <b>\\'%ENTRY%\\'</b> ?<br> ATTENTION : Tous les Cas de Tests associés vont perdre le lien avec ce projet !!!','')");
         SQLS.append(",('page_project','title','','en','PROJECT','This page can be used in order to manage the projets.')");
         SQLS.append(",('page_project','title','','fr','PROJET','Cette page permet de gérer et créer des projets.')");
         SQLS.append(",('page_reportbytag','btn_select_table','','en','Select table','')");
@@ -4804,19 +4837,24 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLS.append(",('page_runtests','Timeout','','en','Timeout','This is the timeout used for the execution.<br><br>If empty, the default value will be the one set in the parameter table.')");
         SQLS.append(",('page_test','btn_create','','en','Create Test','')");
         SQLS.append(",('page_test','btn_create','','fr','Créer un Test','')");
-        SQLS.append(",('page_test','btn_delete','','en','Delete Test','')");
-        SQLS.append(",('page_test','btn_delete','','fr','Supprimer le Test','')");
         SQLS.append(",('page_test','btn_edit','','en','Edit Test','')");
         SQLS.append(",('page_test','btn_edit','','fr','Modifier le Test','')");
+        SQLS.append(",('page_test','button_delete','','en','Delete Test','')");
+        SQLS.append(",('page_test','button_delete','','fr','Supprimer le Test','')");
         SQLS.append(",('page_test','delete','','en','Dlt','Select this checkbox and then save changes in order to delete the row.')");
+        SQLS.append(",('page_test','message_delete','','en','Do you want to delete Test <b>\\'%ENTRY%\\'</b> ?<br>WARNING1 : All corresponding Test Cases will be removed as well !!!<br>WARNING2 : All associated Test Cases executions will also be removed !!!','')");
+        SQLS.append(",('page_test','message_delete','','fr','Confirmez vous la suppression du Test <b>\\'%ENTRY%\\'</b> ?<br> ATTENTION1 : Tous les Cas de Test associés seront également supprimés !!!<br>ATTENTION2 : Toutes les Executions associées seront également supprimées !!!','')");
         SQLS.append(",('page_testcase','BugIDLink','','en','Link','')");
         SQLS.append(",('page_testcase','delete','','en','Dlt','Select this checkbox and then save changes in order to delete the row.')");
+        SQLS.append(",('page_testcase','delete','','fr','Sup','')");
         SQLS.append(",('page_testcase','dpd_choose_step','','en','-- Choose Step  --','')");
         SQLS.append(",('page_testcase','dpd_choose_test','','en','-- Choose Test --','')");
         SQLS.append(",('page_testcase','dpd_choose_testcase','','en','-- Choose Test Case --','')");
         SQLS.append(",('page_testcase','laststatus','','en','Last Execution Status','')");
         SQLS.append(",('page_testcase','lbl_copied_from','','en','Copied from:','')");
         SQLS.append(",('page_testcase','link_edit_step','','en','Edit Used Step','')");
+        SQLS.append(",('page_testcase','message_delete','','en','Do you want to delete Test Case <b>\\'%ENTRY%\\'</b> ?<br>WARNING : All associated Executions will also be removed !!!','')");
+        SQLS.append(",('page_testcase','message_delete','','fr','Confirmez vous la suppression du Cas de Test <b>\\'%ENTRY%\\'</b> ?<br>ATTENTION : Toutes les Executions associées seront également supprimées !!!','')");
         SQLS.append(",('page_testcase','tooltip_addAction','','en','Add Action','')");
         SQLS.append(",('page_testcase','tooltip_addControl','','en','Add Control','')");
         SQLS.append(",('page_testcase','tooltip_clicktocreate','','en','Property %P% is missing! Click to create a property!','')");
@@ -4845,6 +4883,8 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLS.append(",('page_testdatalib','duplicated_message','','en','Please check the subdata entries. There are entries with duplicated names, a total of: ','')");
         SQLS.append(",('page_testdatalib','empty_name_message','','en','Please specify the name of the entry!','')");
         SQLS.append(",('page_testdatalib','empty_subdata_message','','en','Please check the subdata entries. There are entries without sub-data name, a total of: ','')");
+        SQLS.append(",('page_testdatalib','message_delete','','en','Do you want to delete Test Data Library <b>\\'%ENTRY%\\'</b> <br>of system <b>\\'%SYSTEM%\\'</b>, country <b>\\'%COUNTRY%\\'</b> and environment <b>\\'%ENVIRONMENT%\\'</b> (ID : %ID%) ?','')");
+        SQLS.append(",('page_testdatalib','message_delete','','fr','Confirmez-vous la suppression de la donnée de test <b>\\'%ENTRY%\\'</b> <br>du système <b>\\'%SYSTEM%\\'</b>, pays <b>\\'%COUNTRY%\\'</b> et environnement <b>\\'%ENVIRONMENT%\\'</b> (ID : %ID%) ?','')");
         SQLS.append(",('page_testdatalib','page_title','','en','Test Data Library','')");
         SQLS.append(",('page_testdatalib','title','','en','Test Data Library','<p>The <u>Test Data Library</u> is a repository of test data that centralises and eases the Test Data Management process. Additionally, it eases the creation of test cases because it allows the reuse of data that is recurrently defined. </p> <p>Cerberus allows the definition of three types of entries: <b>STATIC</b>, <b>SQL</b> and <b>SOAP</b>.</p><p>The definition of each library entry comprises two steps: <ul><li>The definition of the library entry. </li><li>The definition of its sub-data entries.</li></ul></p>')");
         SQLS.append(",('page_testdatalib','tooltip_delete','','en','Delete entry.','')");
@@ -5117,6 +5157,28 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLS.append(",('user','DefaultSystem','','en','Default System','This is the default <code class=\\'doc-crbvvoca\\'>system</code> the user works on the most. It is used to default the perimeter of <code class=\\'doc-crbvvoca\\'>test case</code> or <code class=\\'doc-crbvvoca\\'>applications</code> displayed on some Cerberus pages.')");
         SQLS.append(",('user','Team','','en','Team','This is the team of the user.')");
         SQLS.append(",('usergroup','GroupName','','en','Group Name','Authorities are managed by group. In order to be granted to a set of feature, you must belong to the corresponding group.<br>Every user can of course belong to as many group as necessary in order to get access to as many feature as required.<br>In order to get the full access to the system you must belong to every group.<br>Some groups are linked together on the test perimeter and integration perimeter.<br><br><b>Test perimeter :</b><br><br><code class=\\'doc-fixed\\'>TestRO</code>: Has read only access to the information related to test cases and also has access to execution reporting options.<br><br><code class=\\'doc-fixed\\'>Test</code>: Can modify non WORKING test cases but cannot delete test cases.<br><br><code class=\\'doc-fixed\\'>TestAdmin</code>: Can modify or delete any test case (including Pre Testing test cases). Can also create or delete a test.<br><br>The minimum group you need to belong is <code class=\\'doc-fixed\\'>TestRO</code> that will give you access in read only to all test data (including its execution reporting page).<br>If you want to be able to modify the testcases (except the WORKING ones), you need <code class=\\'doc-fixed\\'>Test</code> group on top of <code class=\\'doc-fixed\\'>TestRO</code> group.<br>If you want the full access to all testcase (including beeing able to delete any testcase), you will need <code class=\\'doc-fixed\\'>TestAdmin</code> on top of <code class=\\'doc-fixed\\'>TestRO</code> and <code class=\\'doc-fixed\\'>Test</code> group.<br><br><b>Test Execution perimeter :</b><br><br><code class=\\'doc-fixed\\'>RunTest</code>: Can run both Manual and Automated test cases from GUI.<br><br><b>Integration perimeter :</b><br><br><code class=\\'doc-fixed\\'>IntegratorRO</code>: Has access to the integration status.<br><br><code class=\\'doc-fixed\\'>Integrator</code>: Can add an application. Can change parameters of the environments.<br><br><code class=\\'doc-fixed\\'>IntegratorNewChain</code>: Can register the end of the chain execution. Has read only access to the other informations on the same page.<br><br><code class=\\'doc-fixed\\'>IntegratorDeploy</code>: Can disable or enable environments and register new build / revision.<br><br>The minimum group you need to belong is <code class=\\'doc-fixed\\'>IntegratorRO</code> that will give you access in read only to all environment data.<br>If you want to be able to modify the environment data, you need <code class=\\'doc-fixed\\'>Integrator</code> group on top of <code class=\\'doc-fixed\\'>IntegratorRO</code> group.<br><code class=\\'doc-fixed\\'>IntegratorNewChain</code> and <code class=\\'doc-fixed\\'>IntegratorDeploy</code> are used on top of <code class=\\'doc-fixed\\'>Integrator</code> Group to be able to create a new chain on an environment or perform a deploy operation.<br><br><b>Administration perimeter :</b><br><br><code class=\\'doc-fixed\\'>Administrator</code>: Can create, modify or delete users. Has access to log Event and Database Maintenance. Can change Parameter values.')");
+        SQLInstruction.add(SQLS.toString());
+
+        // Updated Beta on getFromDataLib property.
+        //-- ------------------------ 671
+        SQLS = new StringBuilder();
+        SQLS.append("UPDATE `invariant` SET `value`='getFromDataLib_BETA', `description`='[Beta] Determines the data value associated with a library entry' ");
+        SQLS.append(" WHERE `idname`='PROPERTYTYPE' and`value`='getFromDataLib'; ");
+        SQLInstruction.add(SQLS.toString());
+
+        // Adding Beta version of actions callSoapWithBase_BETA callSoap_BETA.
+        //-- ------------------------ 672
+        SQLS = new StringBuilder();
+        SQLS.append("INSERT INTO `invariant` (`idname`, `value`, `sort`, `description`, `VeryShortDesc`) ");
+        SQLS.append("VALUES ('ACTION', 'callSoap_BETA', '900', '[BETA] callSoap', ''),");
+        SQLS.append("    ('ACTION', 'callSoapWithBase_BETA', '910', '[BETA] callSoapWithBase', '');");
+        SQLInstruction.add(SQLS.toString());
+
+        // Adding takeScreenshot control to replace the action.
+        //-- ------------------------ 673
+        SQLS = new StringBuilder();
+        SQLS.append("INSERT INTO `invariant` (`idname`, `value`, `sort`, `description`, `VeryShortDesc`) ");
+        SQLS.append("VALUES ('CONTROL', 'takeScreenshot', '100', 'Take a screenshot.', '');");
         SQLInstruction.add(SQLS.toString());
 
         return SQLInstruction;

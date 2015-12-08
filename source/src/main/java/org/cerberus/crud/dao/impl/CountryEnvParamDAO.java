@@ -17,7 +17,6 @@
  */
 package org.cerberus.crud.dao.impl;
 
-import com.google.common.base.Strings;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -39,6 +38,8 @@ import org.cerberus.enums.MessageEventEnum;
 import org.cerberus.log.MyLogger;
 import org.cerberus.util.ParameterParserUtil;
 import org.cerberus.util.StringUtil;
+import org.cerberus.util.answer.Answer;
+import org.cerberus.util.answer.AnswerItem;
 import org.cerberus.util.answer.AnswerList;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
@@ -53,9 +54,12 @@ public class CountryEnvParamDAO implements ICountryEnvParamDAO {
     private DatabaseSpring databaseSpring;
     @Autowired
     private IFactoryCountryEnvParam factoryCountryEnvParam;
+
     private static final Logger LOG = Logger.getLogger(CountryEnvParamDAO.class);
-    private final int MAX_ROW_SELECTED = 10000;
+
     private final String OBJECT_NAME = "CountryEnvParam";
+    private final String SQL_DUPLICATED_CODE = "23000";
+    private final int MAX_ROW_SELECTED = 10000;
 
     @Override
     public CountryEnvParam findCountryEnvParamByKey(String system, String country, String environment) throws CerberusException {
@@ -76,7 +80,7 @@ public class CountryEnvParamDAO implements ICountryEnvParamDAO {
                 ResultSet resultSet = preStat.executeQuery();
                 try {
                     if (resultSet.next()) {
-                        result = this.loadCountryEnvParamFromResultSet(resultSet);
+                        result = this.loadFromResultSet(resultSet);
                     } else {
                         throwex = true;
                     }
@@ -107,7 +111,7 @@ public class CountryEnvParamDAO implements ICountryEnvParamDAO {
         return result;
     }
 
-    private CountryEnvParam loadCountryEnvParamFromResultSet(ResultSet resultSet) throws SQLException {
+    private CountryEnvParam loadFromResultSet(ResultSet resultSet) throws SQLException {
         String system = resultSet.getString("System");
         String count = resultSet.getString("Country");
         String env = resultSet.getString("Environment");
@@ -153,7 +157,7 @@ public class CountryEnvParamDAO implements ICountryEnvParamDAO {
                 try {
                     //gets the data
                     while (resultSet.next()) {
-                        countryEnvParamList.add(this.loadCountryEnvParamFromResultSet(resultSet));
+                        countryEnvParamList.add(this.loadFromResultSet(resultSet));
                     }
 
                     //get the total number of rows
@@ -259,7 +263,7 @@ public class CountryEnvParamDAO implements ICountryEnvParamDAO {
                 ResultSet resultSet = preStat.executeQuery();
                 try {
                     while (resultSet.next()) {
-                        result.add(this.loadCountryEnvParamFromResultSet(resultSet));
+                        result.add(this.loadFromResultSet(resultSet));
                     }
                 } catch (SQLException exception) {
                     MyLogger.log(CountryEnvParamDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
@@ -301,7 +305,7 @@ public class CountryEnvParamDAO implements ICountryEnvParamDAO {
                 ResultSet resultSet = preStat.executeQuery();
                 try {
                     while (resultSet.next()) {
-                        result.add(this.loadCountryEnvParamFromResultSet(resultSet));
+                        result.add(this.loadFromResultSet(resultSet));
                     }
                 } catch (SQLException exception) {
                     LOG.error("Unable to execute query : " + exception.toString());
@@ -334,7 +338,7 @@ public class CountryEnvParamDAO implements ICountryEnvParamDAO {
     }
 
     @Override
-    public void update(CountryEnvParam cep) throws CerberusException {
+    public void update_deprecated(CountryEnvParam cep) throws CerberusException {
         final StringBuffer query = new StringBuffer("UPDATE `countryenvparam` SET `build`=?, ");
         query.append("`revision`=?,`chain`=?, `distriblist`=?, `eMailBodyRevision`=?, `type`=?,`eMailBodyChain`=?,");
         query.append("`eMailBodyDisableEnvironment`=?,  `active`=?, `maintenanceact`=?, `maintenancestr`=?, `maintenanceend`=? ");
@@ -388,7 +392,7 @@ public class CountryEnvParamDAO implements ICountryEnvParamDAO {
     }
 
     @Override
-    public void delete(CountryEnvParam cep) throws CerberusException {
+    public void delete_deprecated(CountryEnvParam cep) throws CerberusException {
         final StringBuffer query = new StringBuffer("DELETE FROM `countryenvparam` WHERE `system`=? and `country`=? and `environment`=?");
 
         Connection connection = this.databaseSpring.connect();
@@ -419,7 +423,7 @@ public class CountryEnvParamDAO implements ICountryEnvParamDAO {
     }
 
     @Override
-    public void create(CountryEnvParam cep) throws CerberusException {
+    public void create_deprecated(CountryEnvParam cep) throws CerberusException {
         final StringBuffer query = new StringBuffer("INSERT INTO `countryenvparam` ");
         query.append("(`system`, `country`, `environment`, `build`, `revision`,`chain`, `distriblist`, `eMailBodyRevision`, `type`,`eMailBodyChain`,");
         query.append("`eMailBodyDisableEnvironment`,  `active`, `maintenanceact`, `maintenancestr`, `maintenanceend`) VALUES ");
@@ -552,7 +556,7 @@ public class CountryEnvParamDAO implements ICountryEnvParamDAO {
                 try {
 
                     while (resultSet.next()) {
-                        result.add(this.loadCountryEnvParamFromResultSet(resultSet));
+                        result.add(this.loadFromResultSet(resultSet));
                     }
 
                 } catch (SQLException exception) {
@@ -696,7 +700,7 @@ public class CountryEnvParamDAO implements ICountryEnvParamDAO {
                 try {
 
                     while (resultSet.next()) {
-                        result.add(this.loadCountryEnvParamFromResultSet(resultSet));
+                        result.add(this.loadFromResultSet(resultSet));
                     }
 
                 } catch (SQLException exception) {
@@ -723,6 +727,64 @@ public class CountryEnvParamDAO implements ICountryEnvParamDAO {
             }
         }
         return result;
+    }
+
+    @Override
+    public AnswerItem readByKey(String system, String country, String environment) {
+        AnswerItem ans = new AnswerItem();
+        CountryEnvParam result = null;
+        final String query = "SELECT * FROM `countryenvparam` WHERE `system` = ? and `country` = ? and `environment` = ?";
+        MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
+        msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", ""));
+
+        Connection connection = this.databaseSpring.connect();
+        try {
+            PreparedStatement preStat = connection.prepareStatement(query);
+            try {
+                preStat.setString(1, system);
+                preStat.setString(2, country);
+                preStat.setString(3, environment);
+                ResultSet resultSet = preStat.executeQuery();
+                try {
+                    if (resultSet.first()) {
+                        result = loadFromResultSet(resultSet);
+                        msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
+                        msg.setDescription(msg.getDescription().replace("%ITEM%", OBJECT_NAME).replace("%OPERATION%", "SELECT"));
+                        ans.setItem(result);
+                    } else {
+                        msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_NO_DATA_FOUND);
+                    }
+                } catch (SQLException exception) {
+                    LOG.error("Unable to execute query : " + exception.toString());
+                    msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
+                    msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", exception.toString()));
+                } finally {
+                    resultSet.close();
+                }
+            } catch (SQLException exception) {
+                LOG.error("Unable to execute query : " + exception.toString());
+                msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
+                msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", exception.toString()));
+            } finally {
+                preStat.close();
+            }
+        } catch (SQLException exception) {
+            LOG.error("Unable to execute query : " + exception.toString());
+            msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
+            msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", exception.toString()));
+        } finally {
+            try {
+                if (connection != null) {
+                    connection.close();
+                }
+            } catch (SQLException exception) {
+                LOG.warn("Unable to close connection : " + exception.toString());
+            }
+        }
+
+        //sets the message
+        ans.setResultMessage(msg);
+        return ans;
     }
 
     @Override
@@ -780,7 +842,7 @@ public class CountryEnvParamDAO implements ICountryEnvParamDAO {
                 try {
                     //gets the data
                     while (resultSet.next()) {
-                        cepList.add(this.loadCountryEnvParamFromResultSet(resultSet));
+                        cepList.add(this.loadFromResultSet(resultSet));
                     }
 
                     //get the total number of rows
@@ -845,7 +907,7 @@ public class CountryEnvParamDAO implements ICountryEnvParamDAO {
     }
 
     @Override
-    public AnswerList readByVariousByCriteria(String system, String active, int start, int amount, String colName, String dir, String searchTerm, String individualSearch) {
+    public AnswerList readByVariousByCriteria(String system, String country, String environment, String build, String revision, String active, int start, int amount, String colName, String dir, String searchTerm, String individualSearch) {
         AnswerList response = new AnswerList();
         MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
         msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", ""));
@@ -885,6 +947,18 @@ public class CountryEnvParamDAO implements ICountryEnvParamDAO {
         }
         if (!StringUtil.isNullOrEmpty(active)) {
             searchSQL.append(" and (`active` = ? )");
+        }
+        if (!StringUtil.isNullOrEmpty(country)) {
+            searchSQL.append(" and (`country` = ? )");
+        }
+        if (!StringUtil.isNullOrEmpty(environment)) {
+            searchSQL.append(" and (`environment` = ? )");
+        }
+        if (!StringUtil.isNullOrEmpty(build)) {
+            searchSQL.append(" and (`build` = ? )");
+        }
+        if (!StringUtil.isNullOrEmpty(revision)) {
+            searchSQL.append(" and (`revision` = ? )");
         }
         query.append(searchSQL);
 
@@ -934,11 +1008,23 @@ public class CountryEnvParamDAO implements ICountryEnvParamDAO {
                 if (!StringUtil.isNullOrEmpty(active)) {
                     preStat.setString(i++, active);
                 }
+                if (!StringUtil.isNullOrEmpty(country)) {
+                    preStat.setString(i++, country);
+                }
+                if (!StringUtil.isNullOrEmpty(environment)) {
+                    preStat.setString(i++, environment);
+                }
+                if (!StringUtil.isNullOrEmpty(build)) {
+                    preStat.setString(i++, build);
+                }
+                if (!StringUtil.isNullOrEmpty(revision)) {
+                    preStat.setString(i++, revision);
+                }
                 ResultSet resultSet = preStat.executeQuery();
                 try {
                     //gets the data
                     while (resultSet.next()) {
-                        cepList.add(this.loadCountryEnvParamFromResultSet(resultSet));
+                        cepList.add(this.loadFromResultSet(resultSet));
                     }
 
                     //get the total number of rows
@@ -1004,4 +1090,190 @@ public class CountryEnvParamDAO implements ICountryEnvParamDAO {
         response.setDataList(cepList);
         return response;
     }
+
+    @Override
+    public Answer create(CountryEnvParam cep) {
+        MessageEvent msg = null;
+        StringBuilder query = new StringBuilder();
+        query.append("INSERT INTO `countryenvparam`  (`system`, `country`, `environment`, `build`, `revision`,`chain`, `distriblist`, `eMailBodyRevision`, `type`,`eMailBodyChain`, ");
+        query.append("`eMailBodyDisableEnvironment`,  `active`, `maintenanceact`, `maintenancestr`, `maintenanceend`, `description`) ");
+        query.append("VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)");
+
+        // Debug message on SQL.
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("SQL : " + query.toString());
+        }
+        Connection connection = this.databaseSpring.connect();
+        try {
+            PreparedStatement preStat = connection.prepareStatement(query.toString());
+            try {
+                preStat.setString(1, cep.getSystem());
+                preStat.setString(2, cep.getCountry());
+                preStat.setString(3, cep.getEnvironment());
+                preStat.setString(4, cep.getBuild());
+                preStat.setString(5, cep.getRevision());
+                preStat.setString(6, cep.getChain());
+                preStat.setString(7, cep.getDistribList());
+                preStat.setString(8, cep.geteMailBodyRevision());
+                preStat.setString(9, cep.getType());
+                preStat.setString(10, cep.geteMailBodyChain());
+                preStat.setString(11, cep.geteMailBodyDisableEnvironment());
+                if (cep.isActive()) {
+                    preStat.setString(12, "Y");
+                } else {
+                    preStat.setString(12, "N");
+                }
+                if (cep.isMaintenanceAct()) {
+                    preStat.setString(13, "Y");
+                } else {
+                    preStat.setString(13, "N");
+                }
+                preStat.setString(14, cep.getMaintenanceStr());
+                preStat.setString(15, cep.getMaintenanceEnd());
+                preStat.setString(16, cep.getDescription());
+
+                preStat.executeUpdate();
+                msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
+                msg.setDescription(msg.getDescription().replace("%ITEM%", OBJECT_NAME).replace("%OPERATION%", "INSERT"));
+
+            } catch (SQLException exception) {
+                LOG.error("Unable to execute query : " + exception.toString());
+
+                if (exception.getSQLState().equals(SQL_DUPLICATED_CODE)) { //23000 is the sql state for duplicate entries
+                    msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_DUPLICATE);
+                    msg.setDescription(msg.getDescription().replace("%ITEM%", OBJECT_NAME).replace("%OPERATION%", "INSERT"));
+                } else {
+                    msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
+                    msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", exception.toString()));
+                }
+            } finally {
+                preStat.close();
+            }
+        } catch (SQLException exception) {
+            LOG.error("Unable to execute query : " + exception.toString());
+            msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
+            msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", exception.toString()));
+        } finally {
+            try {
+                if (connection != null) {
+                    connection.close();
+                }
+            } catch (SQLException exception) {
+                LOG.warn("Unable to close connection : " + exception.toString());
+            }
+        }
+        return new Answer(msg);
+    }
+
+    @Override
+    public Answer delete(CountryEnvParam cep) {
+        MessageEvent msg = null;
+        final String query = "DELETE FROM `countryenvparam` WHERE `system`=? and `country`=? and `environment`=?";
+
+        // Debug message on SQL.
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("SQL : " + query);
+        }
+        Connection connection = this.databaseSpring.connect();
+        try {
+            PreparedStatement preStat = connection.prepareStatement(query);
+            try {
+                preStat.setString(1, cep.getSystem());
+                preStat.setString(2, cep.getCountry());
+                preStat.setString(3, cep.getEnvironment());
+
+                preStat.executeUpdate();
+                msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
+                msg.setDescription(msg.getDescription().replace("%ITEM%", OBJECT_NAME).replace("%OPERATION%", "DELETE"));
+            } catch (SQLException exception) {
+                LOG.error("Unable to execute query : " + exception.toString());
+                msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
+                msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", exception.toString()));
+            } finally {
+                preStat.close();
+            }
+        } catch (SQLException exception) {
+            LOG.error("Unable to execute query : " + exception.toString());
+            msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
+            msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", exception.toString()));
+        } finally {
+            try {
+                if (connection != null) {
+                    connection.close();
+                }
+            } catch (SQLException exception) {
+                LOG.warn("Unable to close connection : " + exception.toString());
+            }
+        }
+        return new Answer(msg);
+    }
+
+    @Override
+    public Answer update(CountryEnvParam cep) {
+        MessageEvent msg = null;
+
+        final StringBuffer query = new StringBuffer("UPDATE `countryenvparam` SET `build`=?, ");
+        query.append("`revision`=?,`chain`=?, `distriblist`=?, `eMailBodyRevision`=?, `type`=?,`eMailBodyChain`=?,");
+        query.append("`eMailBodyDisableEnvironment`=?,  `active`=?, `maintenanceact`=?, `maintenancestr`=?, `maintenanceend`=?, `description`=? ");
+        query.append(" where `system`=? and `country`=? and `environment`=? ");
+
+        // Debug message on SQL.
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("SQL : " + query.toString());
+        }
+        Connection connection = this.databaseSpring.connect();
+        try {
+            PreparedStatement preStat = connection.prepareStatement(query.toString());
+            try {
+                preStat.setString(1, cep.getBuild());
+                preStat.setString(2, cep.getRevision());
+                preStat.setString(3, cep.getChain());
+                preStat.setString(4, cep.getDistribList());
+                preStat.setString(5, cep.geteMailBodyRevision());
+                preStat.setString(6, cep.getType());
+                preStat.setString(7, cep.geteMailBodyChain());
+                preStat.setString(8, cep.geteMailBodyDisableEnvironment());
+                if (cep.isActive()) {
+                    preStat.setString(9, "Y");
+                } else {
+                    preStat.setString(9, "N");
+                }
+                if (cep.isMaintenanceAct()) {
+                    preStat.setString(10, "Y");
+                } else {
+                    preStat.setString(10, "N");
+                }
+                preStat.setString(11, cep.getMaintenanceStr());
+                preStat.setString(12, cep.getMaintenanceEnd());
+                preStat.setString(13, cep.getDescription());
+                preStat.setString(14, cep.getSystem());
+                preStat.setString(15, cep.getCountry());
+                preStat.setString(16, cep.getEnvironment());
+
+                preStat.executeUpdate();
+                msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
+                msg.setDescription(msg.getDescription().replace("%ITEM%", OBJECT_NAME).replace("%OPERATION%", "UPDATE"));
+            } catch (SQLException exception) {
+                LOG.error("Unable to execute query : " + exception.toString());
+                msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
+                msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", exception.toString()));
+            } finally {
+                preStat.close();
+            }
+        } catch (SQLException exception) {
+            LOG.error("Unable to execute query : " + exception.toString());
+            msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
+            msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", exception.toString()));
+        } finally {
+            try {
+                if (connection != null) {
+                    connection.close();
+                }
+            } catch (SQLException exception) {
+                LOG.warn("Unable to close connection : " + exception.toString());
+            }
+        }
+        return new Answer(msg);
+    }
+
 }

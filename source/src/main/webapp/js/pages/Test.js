@@ -52,7 +52,7 @@ function displayPageLabel(doc) {
     $("#pageTitle").html(doc.getDocLabel("test", "Test"));
     $("#title").html(doc.getDocLabel("test", "Test"));
     $("[name='addEntryField']").html(doc.getDocLabel("page_test", "btn_create"));
-    $("[name='confirmationField']").html(doc.getDocLabel("page_test", "btn_delete"));
+    $("[name='confirmationField']").html(doc.getDocLabel("page_test", "button_delete"));
     $("[name='editEntryField']").html(doc.getDocLabel("page_test", "btn_edit"));
     $("[name='testField']").html(doc.getDocOnline("test", "Test"));
     $("[name='activeField']").html(doc.getDocOnline("test", "Active"));
@@ -138,10 +138,9 @@ function deleteEntryHandlerClick() {
 function deleteEntry(entry) {
     clearResponseMessageMainPage();
     var doc = new Doc();
-    var messageComplete = doc.getDocLabel("page_global", "deleteMessage");
-    messageComplete = messageComplete.replace("%TABLE%", doc.getDocLabel("test", "Test"));
+    var messageComplete = doc.getDocLabel("page_test", "message_delete");
     messageComplete = messageComplete.replace("%ENTRY%", entry);
-    showModalConfirmation(deleteEntryHandlerClick, doc.getDocLabel("page_test", "btn_delete"), messageComplete, entry, "", "", "");
+    showModalConfirmation(deleteEntryHandlerClick, doc.getDocLabel("page_test", "button_delete"), messageComplete, entry, "", "", "");
 }
 
 function renderOptionsForTest(data) {
@@ -181,7 +180,7 @@ function aoColumnsFunc() {
                                 <span class="glyphicon glyphicon-pencil"></span></button>';
                     var deleteEntry = '<button id="deleteEntry" onclick="deleteEntry(\'' + escapeHtml(obj["test"]) + '\');" \n\
                                 class="deleteEntry btn btn-default btn-xs margin-right5" \n\
-                                name="deleteEntry" title="' + doc.getDocLabel("page_test", "btn_delete") + '" type="button">\n\
+                                name="deleteEntry" title="' + doc.getDocLabel("page_test", "button_delete") + '" type="button">\n\
                                 <span class="glyphicon glyphicon-trash"></span></button>';
                     return '<div class="center btn-group width150">' + editEntry + deleteEntry + testCaseLink + '</div>';
                 } else {

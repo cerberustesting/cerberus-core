@@ -402,8 +402,7 @@ function deleteEntryHandlerClick() {
 function deleteEntry(entry) {
     clearResponseMessageMainPage();
     var doc = new Doc();
-    var messageComplete = doc.getDocLabel("page_global", "deleteMessage");
-    messageComplete = messageComplete.replace("%TABLE%", "TestCase");
+    var messageComplete = doc.getDocLabel("page_testcase", "message_delete");
     messageComplete = messageComplete.replace("%ENTRY%", entry);
     showModalConfirmation(deleteEntryHandlerClick, "Delete", messageComplete, entry, "", "", "");
 }
@@ -469,7 +468,7 @@ function editEntry(testCase) {
         for (var country in data.countryList) {
             $('#countryList input[name="' + data.countryList[country] + '"]').prop("checked", true);
         }
-        formEdit.find("#shortDesc").prop("value", data.shortDesc);
+        formEdit.find("#shortDesc").prop("value", data.shortDescription);
         tinyMCE.get('behaviorOrValueExpected1').setContent(data.description);
         tinyMCE.get('howTo1').setContent(data.howTo);
 

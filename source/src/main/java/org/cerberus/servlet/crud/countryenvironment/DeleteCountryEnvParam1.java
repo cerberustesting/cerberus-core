@@ -15,37 +15,30 @@
  * You should have received a copy of the GNU General Public License
  * along with Cerberus.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.cerberus.servlet.crud.test;
+package org.cerberus.servlet.crud.countryenvironment;
 
 import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.servlet.ServletException;
+import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import org.apache.commons.lang3.StringEscapeUtils;
+import org.cerberus.crud.entity.CountryEnvParam;
 import org.cerberus.crud.entity.MessageEvent;
 import org.cerberus.enums.MessageEventEnum;
-import org.cerberus.crud.entity.Project;
 import org.cerberus.exception.CerberusException;
-import org.cerberus.crud.factory.IFactoryLogEvent;
-import org.cerberus.crud.factory.impl.FactoryLogEvent;
+import org.cerberus.crud.service.ICountryEnvParamService;
 import org.cerberus.crud.service.ILogEventService;
-import org.cerberus.crud.service.IProjectService;
 import org.cerberus.crud.service.impl.LogEventService;
-import org.cerberus.util.ParameterParserUtil;
-import static org.cerberus.util.ParameterParserUtil.parseStringParamAndDecode;
 import org.cerberus.util.StringUtil;
 import org.cerberus.util.answer.Answer;
 import org.cerberus.util.answer.AnswerItem;
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.owasp.html.HtmlPolicyBuilder;
 import org.owasp.html.PolicyFactory;
 import org.owasp.html.Sanitizers;
-import static org.owasp.html.Sanitizers.LINKS;
-import static org.owasp.html.Sanitizers.STYLES;
 import org.springframework.context.ApplicationContext;
 import org.springframework.web.context.support.WebApplicationContextUtils;
 
@@ -53,7 +46,10 @@ import org.springframework.web.context.support.WebApplicationContextUtils;
  *
  * @author bcivel
  */
-public class UpdateProject extends HttpServlet {
+@WebServlet(name = "DeleteCountryEnvParam1", urlPatterns = {"/DeleteCountryEnvParam1"})
+public class DeleteCountryEnvParam1 extends HttpServlet {
+
+    private final String OBJECT_NAME = "CountryEnvParam";
 
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
@@ -63,8 +59,6 @@ public class UpdateProject extends HttpServlet {
      * @param response servlet response
      * @throws ServletException if a servlet-specific error occurs
      * @throws IOException if an I/O error occurs
-     * @throws org.cerberus.exception.CerberusException
-     * @throws org.json.JSONException
      */
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException, CerberusException, JSONException {
@@ -73,59 +67,70 @@ public class UpdateProject extends HttpServlet {
         MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
         msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", ""));
         ans.setResultMessage(msg);
-        PolicyFactory policy = Sanitizers.FORMATTING.and(LINKS);
+        PolicyFactory policy = Sanitizers.FORMATTING.and(Sanitizers.LINKS);
 
         response.setContentType("application/json");
 
         /**
          * Parsing and securing all required parameters.
          */
-        String idProject = ParameterParserUtil.parseStringParamAndSanitize(request.getParameter("idProject"), "");
+        String system = policy.sanitize(request.getParameter("system"));
+        String country = policy.sanitize(request.getParameter("country"));
+        String environment = policy.sanitize(request.getParameter("environment"));
 
         /**
          * Checking all constrains before calling the services.
          */
-        if (StringUtil.isNullOrEmpty(idProject)) {
+        if (StringUtil.isNullOrEmpty(system)) {
             msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_EXPECTED);
-            msg.setDescription(msg.getDescription().replace("%ITEM%", "Project")
-                    .replace("%OPERATION%", "Update")
-                    .replace("%REASON%", "Project ID (id Project) is missing"));
+            msg.setDescription(msg.getDescription().replace("%ITEM%", OBJECT_NAME)
+                    .replace("%OPERATION%", "Delete")
+                    .replace("%REASON%", "System is missing!"));
+            ans.setResultMessage(msg);
+        } else if (StringUtil.isNullOrEmpty(country)) {
+            msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_EXPECTED);
+            msg.setDescription(msg.getDescription().replace("%ITEM%", OBJECT_NAME)
+                    .replace("%OPERATION%", "Delete")
+                    .replace("%REASON%", "Country is missing!"));
+            ans.setResultMessage(msg);
+        } else if (StringUtil.isNullOrEmpty(environment)) {
+            msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_EXPECTED);
+            msg.setDescription(msg.getDescription().replace("%ITEM%", OBJECT_NAME)
+                    .replace("%OPERATION%", "Delete")
+                    .replace("%REASON%", "Environment is missing!"));
             ans.setResultMessage(msg);
         } else {
             /**
              * All data seems cleans so we can call the services.
              */
             ApplicationContext appContext = WebApplicationContextUtils.getWebApplicationContext(this.getServletContext());
-            IProjectService projectService = appContext.getBean(IProjectService.class);
+            ICountryEnvParamService countryEnvParamService = appContext.getBean(ICountryEnvParamService.class);
 
-            AnswerItem resp = projectService.readByKey(idProject);
+            AnswerItem resp = countryEnvParamService.readByKey(system, country, environment);
             if (!(resp.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode()))) {
                 /**
                  * Object could not be found. We stop here and report the error.
                  */
                 msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_EXPECTED);
-                msg.setDescription(msg.getDescription().replace("%ITEM%", "Project")
-                        .replace("%OPERATION%", "Update")
-                        .replace("%REASON%", "Project does not exist."));
+                msg.setDescription(msg.getDescription().replace("%ITEM%", OBJECT_NAME)
+                        .replace("%OPERATION%", "Delete")
+                        .replace("%REASON%", OBJECT_NAME + " does not exist."));
                 ans.setResultMessage(msg);
 
             } else {
                 /**
                  * The service was able to perform the query and confirm the
-                 * object exist, then we can update it.
+                 * object exist, then we can delete it.
                  */
-                Project projectData = (Project) resp.getItem();
-                projectData.setCode(ParameterParserUtil.parseStringParamAndSanitize(request.getParameter("VCCode"), projectData.getCode()));
-                projectData.setDescription(ParameterParserUtil.parseStringParamAndSanitize(request.getParameter("Description"), projectData.getDescription()));
-                projectData.setActive(ParameterParserUtil.parseStringParamAndSanitize(request.getParameter("Active"), projectData.getActive()));
-                ans = projectService.update(projectData);
+                CountryEnvParam cepData = (CountryEnvParam) resp.getItem();
+                ans = countryEnvParamService.delete(cepData);
 
                 if (ans.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
                     /**
-                     * Update was successful. Adding Log entry.
+                     * Delete was succesfull. Adding Log entry.
                      */
                     ILogEventService logEventService = appContext.getBean(LogEventService.class);
-                    logEventService.createPrivateCalls("/UpdateProject", "UPDATE", "Updated Project : ['" + idProject + "']", request);
+                    logEventService.createPrivateCalls("/DeleteCountryEnvParam", "DELETE", "Delete CountryEnvParam : ['" + system + "'|'" + country + "'|'" + environment + "']", request);
                 }
             }
         }
@@ -136,11 +141,12 @@ public class UpdateProject extends HttpServlet {
         jsonResponse.put("messageType", ans.getResultMessage().getMessage().getCodeString());
         jsonResponse.put("message", ans.getResultMessage().getDescription());
 
-        response.getWriter().print(jsonResponse);
+        response.getWriter().print(jsonResponse.toString());
         response.getWriter().flush();
+
     }
 
-    // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
+// <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
     /**
      * Handles the HTTP <code>GET</code> method.
      *
@@ -156,10 +162,11 @@ public class UpdateProject extends HttpServlet {
             processRequest(request, response);
 
         } catch (CerberusException ex) {
-            Logger.getLogger(UpdateProject.class
+            Logger.getLogger(DeleteCountryEnvParam1.class
                     .getName()).log(Level.SEVERE, null, ex);
         } catch (JSONException ex) {
-            Logger.getLogger(UpdateProject.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(DeleteCountryEnvParam1.class
+                    .getName()).log(Level.SEVERE, null, ex);
         }
     }
 
@@ -178,10 +185,11 @@ public class UpdateProject extends HttpServlet {
             processRequest(request, response);
 
         } catch (CerberusException ex) {
-            Logger.getLogger(UpdateProject.class
+            Logger.getLogger(DeleteCountryEnvParam1.class
                     .getName()).log(Level.SEVERE, null, ex);
         } catch (JSONException ex) {
-            Logger.getLogger(UpdateProject.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(DeleteCountryEnvParam1.class
+                    .getName()).log(Level.SEVERE, null, ex);
         }
     }
 

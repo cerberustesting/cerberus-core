@@ -84,8 +84,8 @@ public class CreateTestCase2 extends HttpServlet {
         /**
          * Parsing and securing all required parameters.
          */
-        String test = ParameterParserUtil.ParseStringParamAndSanitize(request.getParameter("test"), "");
-        String testcase = ParameterParserUtil.ParseStringParamAndSanitize(request.getParameter("testCase"), "");
+        String test = ParameterParserUtil.parseStringParamAndSanitize(request.getParameter("test"), "");
+        String testcase = ParameterParserUtil.parseStringParamAndSanitize(request.getParameter("testCase"), "");
 
         /**
          * Checking all constrains before calling the services.
@@ -224,7 +224,7 @@ public class CreateTestCase2 extends HttpServlet {
         ITestCaseCountryService testCaseCountryService = appContext.getBean(TestCaseCountryService.class);
         AnswerList answer = invariantService.readByIdname("COUNTRY"); //TODO: handle if the response does not turn ok
         for (Invariant country : (List<Invariant>)answer.getDataList()) {
-            countryList.put(country.getValue(), ParameterParserUtil.ParseStringParamAndSanitize(request.getParameter(country.getValue()), "off"));
+            countryList.put(country.getValue(), ParameterParserUtil.parseStringParamAndSanitize(request.getParameter(country.getValue()), "off"));
         }
 
         for (Map.Entry<String, String> country : countryList.entrySet()) {

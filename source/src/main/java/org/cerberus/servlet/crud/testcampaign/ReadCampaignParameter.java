@@ -64,7 +64,7 @@ public class ReadCampaignParameter extends HttpServlet {
         String echo = request.getParameter("sEcho");
         ApplicationContext appContext = WebApplicationContextUtils.getWebApplicationContext(this.getServletContext());
 
-        String campaign = ParameterParserUtil.ParseStringParamAndSanitize(request.getParameter("campaign"), "");
+        String campaign = ParameterParserUtil.parseStringParamAndSanitize(request.getParameter("campaign"), "");
         
         AnswerItem answer = new AnswerItem(new MessageEvent(MessageEventEnum.DATA_OPERATION_OK));
         try {
