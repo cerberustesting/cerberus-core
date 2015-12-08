@@ -383,7 +383,7 @@
                         //console.log(parameter);
                         select.append(
                                 $("<option></option>").attr('value', parameter[1])
-                                .text(parameter[3])
+                                .text(parameter[1])
                                 .attr("title", parameter[3])
                             );
                      }
