@@ -1,0 +1,123 @@
+/*
+ * Cerberus  Copyright (C) 2013  vertigo17
+ * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
+ *
+ * This file is part of Cerberus.
+ *
+ * Cerberus is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * Cerberus is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with Cerberus.  If not, see <http://www.gnu.org/licenses/>.
+ *//* 
+    Created on : 4 déc. 2015, 16:08:55
+    Author     : cerberus
+*/
+
+.separator-left {
+    border-left: 1px solid #E3E3E3;
+}
+
+.side-item {
+    margin-top: 5px;
+    margin-bottom: 5px;
+}
+
+.testTestCase #test {
+    font-weight: normal;
+    color: #4078c0;
+}
+
+.testTestCase #testCase {
+    font-weight: bold;
+    color: #4078c0;
+}
+
+.testTestCase #description {
+    font-weight: normal;
+}
+
+.step-list li:hover {
+    background-color: #3071A9;
+    color: #FFFFFF;
+}
+
+.step-list li .active {
+    background-color: #3071A9;
+    color: #FFFFFF;
+}
+
+.step-list li {
+    width: 100%;
+    cursor: pointer;
+}
+
+.step-header {
+    padding-bottom: 5px;
+    margin-bottom: 20px;
+    border-bottom: 2px solid #eee;
+}
+
+.step-header #stepDescription {
+    font-weight: normal;
+    font-size: 20px;
+    line-height: 1.1;
+    word-wrap: break-word;
+    position: relative;
+}
+
+.action {
+    height: 80px;
+    font-size: 12px;
+    background-color: #f8f8f8;
+    border: 1px solid #e5e5e5;
+    border-radius: 3px 3px 0 0;
+}
+
+.control {
+    height: 80px;
+    margin-left: 25px;
+    font-size: 12px;
+    background-color: #f8f8f8;
+    border: 1px solid #e5e5e5;
+    border-radius: 1px 1px 0 0;
+}
+
+.action .type {
+    background-color: #3498db;
+}
+
+.control .type {
+    background-color: #2ecc71;
+}
+
+.type {
+    width: 8px;
+    height: 100%;
+    padding-right: 0px;
+    padding-left: 0px;
+}
+
+.drag-selector {
+    height: 100%;
+}
+
+.drag-selector span {
+    display: block;
+    text-align: center;
+    margin-top: 80%;
+    cursor: move;
+}
+
+.step-action .content .description {
+    font-size: 15px;
+    font-weight: bold;
+    line-height: 1.2;
+}

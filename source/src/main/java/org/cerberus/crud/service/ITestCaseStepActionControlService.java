@@ -23,6 +23,7 @@ import java.util.List;
 
 import org.cerberus.crud.entity.TestCaseStepActionControl;
 import org.cerberus.exception.CerberusException;
+import org.cerberus.util.answer.AnswerList;
 
 /**
  *
@@ -45,8 +46,10 @@ public interface ITestCaseStepActionControlService {
     public List<TestCaseStepActionControl> findControlByTestTestCase(String initialTest, String initialTestCase) throws CerberusException;
 
     public void deleteListTestCaseStepActionControl(List<TestCaseStepActionControl> tcsacToDelete) throws CerberusException;
-    
+
     public void deleteTestCaseStepActionControl(TestCaseStepActionControl tcsac) throws CerberusException;
-    
+
     public void compareListAndUpdateInsertDeleteElements(List<TestCaseStepActionControl> newList, List<TestCaseStepActionControl> oldList, boolean duplicate) throws CerberusException;
+
+    public AnswerList readByTestTestCase(String test, String testcase);
 }

@@ -21,6 +21,7 @@ import java.util.List;
 
 import org.cerberus.crud.entity.TestCaseStepActionControl;
 import org.cerberus.exception.CerberusException;
+import org.cerberus.util.answer.AnswerList;
 
 /**
  * {Insert class description here}
@@ -45,5 +46,5 @@ public interface ITestCaseStepActionControlDAO {
 
     public List<TestCaseStepActionControl> findControlByTestTestCase(String test, String testCase) throws CerberusException;
 
-    
+    public AnswerList readByTestTestCase(String test, String testcase);
 }

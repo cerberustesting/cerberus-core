@@ -28,6 +28,7 @@ import org.cerberus.crud.entity.TestCaseStepActionControl;
 import org.cerberus.exception.CerberusException;
 import org.cerberus.log.MyLogger;
 import org.cerberus.crud.service.ITestCaseStepActionControlService;
+import org.cerberus.util.answer.AnswerList;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -143,5 +144,10 @@ public class TestCaseStepActionControlService implements ITestCaseStepActionCont
             }
             this.deleteListTestCaseStepActionControl(tcsacToDelete);
         }
+    }
+
+    @Override
+    public AnswerList readByTestTestCase(String test, String testcase) {
+        return testCaseStepActionControlDao.readByTestTestCase(test, testcase);
     }
 }

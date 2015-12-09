@@ -23,6 +23,7 @@ import java.util.List;
 
 import org.cerberus.crud.entity.TestCaseStep;
 import org.cerberus.exception.CerberusException;
+import org.cerberus.util.answer.AnswerList;
 
 /**
  *
@@ -82,4 +83,6 @@ public interface ITestCaseStepService {
     List<TestCaseStep> getStepLibraryBySystemTest(String system, String test) throws CerberusException;
     
     List<TestCaseStep> getStepLibraryBySystemTestTestCase(String system, String test, String testCase) throws CerberusException;
+    
+    AnswerList readByTestTestCase(String test, String testcase);
 }

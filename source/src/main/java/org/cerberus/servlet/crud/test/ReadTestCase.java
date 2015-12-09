@@ -35,11 +35,20 @@ import org.cerberus.crud.entity.MessageEvent;
 import org.cerberus.crud.entity.TCase;
 import org.cerberus.crud.entity.TestBattery;
 import org.cerberus.crud.entity.TestCaseCountry;
+import org.cerberus.crud.entity.TestCaseStep;
+import org.cerberus.crud.entity.TestCaseStepAction;
+import org.cerberus.crud.entity.TestCaseStepActionControl;
 import org.cerberus.crud.service.ICampaignContentService;
 import org.cerberus.crud.service.ITestCaseCountryService;
 import org.cerberus.crud.service.ITestCaseService;
+import org.cerberus.crud.service.ITestCaseStepActionControlService;
+import org.cerberus.crud.service.ITestCaseStepActionService;
+import org.cerberus.crud.service.ITestCaseStepService;
 import org.cerberus.crud.service.impl.TestCaseCountryService;
 import org.cerberus.crud.service.impl.TestCaseService;
+import org.cerberus.crud.service.impl.TestCaseStepActionControlService;
+import org.cerberus.crud.service.impl.TestCaseStepActionService;
+import org.cerberus.crud.service.impl.TestCaseStepService;
 import org.cerberus.enums.MessageEventEnum;
 import org.cerberus.util.ParameterParserUtil;
 import org.cerberus.util.answer.AnswerItem;
@@ -60,6 +69,12 @@ public class ReadTestCase extends HttpServlet {
     private ITestCaseService testCaseService;
 
     private ITestCaseCountryService testCaseCountryService;
+
+    private ITestCaseStepService testCaseStepService;
+
+    private ITestCaseStepActionService testCaseStepActionService;
+
+    private ITestCaseStepActionControlService testCaseStepActionControlService;
 
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
@@ -82,6 +97,7 @@ public class ReadTestCase extends HttpServlet {
         String campaign = ParameterParserUtil.parseStringParam(request.getParameter("campaign"), "");
         boolean getMaxTC = ParameterParserUtil.parseBooleanParam(request.getParameter("getMaxTC"), false);
         boolean filter = ParameterParserUtil.parseBooleanParam(request.getParameter("filter"), false);
+        boolean withStep = ParameterParserUtil.parseBooleanParam(request.getParameter("withStep"), false);
 
         // Default message to unexpected error.
         MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
@@ -91,7 +107,7 @@ public class ReadTestCase extends HttpServlet {
             if (sEcho != 0 && !Strings.isNullOrEmpty(test)) {
                 answer = findTestCaseByTest(appContext, request, test);
                 jsonResponse = (JSONObject) answer.getItem();
-            } else if (sEcho == 0 && !Strings.isNullOrEmpty(test) && !Strings.isNullOrEmpty(testCase)) {
+            } else if (sEcho == 0 && !Strings.isNullOrEmpty(test) && !Strings.isNullOrEmpty(testCase) && !withStep) {
                 answer = findTestCaseByTestTestCase(appContext, test, testCase);
                 jsonResponse = (JSONObject) answer.getItem();
             } else if (sEcho == 0 && !Strings.isNullOrEmpty(test) && getMaxTC) {
@@ -107,6 +123,9 @@ public class ReadTestCase extends HttpServlet {
                 jsonResponse = (JSONObject) answer.getItem();
             } else if (sEcho == 0 && !Strings.isNullOrEmpty(campaign)) {
                 answer = findTestCaseByCampaign(appContext, campaign);
+                jsonResponse = (JSONObject) answer.getItem();
+            } else if (sEcho == 0 && !Strings.isNullOrEmpty(test) && !Strings.isNullOrEmpty(testCase) && withStep) {
+                answer = findTestCaseWithStep(appContext, test, testCase);
                 jsonResponse = (JSONObject) answer.getItem();
             }
 
@@ -322,5 +341,93 @@ public class ReadTestCase extends HttpServlet {
         answer.setItem(jsonResponse);
         answer.setResultMessage(resp.getResultMessage());
         return answer;
+    }
+
+    private AnswerItem findTestCaseWithStep(ApplicationContext appContext, String test, String testCase) throws JSONException {
+        AnswerItem item = new AnswerItem();
+        JSONObject object = new JSONObject();
+        JSONObject jsonResponse = new JSONObject();
+
+        testCaseService = appContext.getBean(TestCaseService.class);
+        testCaseCountryService = appContext.getBean(TestCaseCountryService.class);
+        testCaseStepService = appContext.getBean(TestCaseStepService.class);
+        testCaseStepActionService = appContext.getBean(TestCaseStepActionService.class);
+        testCaseStepActionControlService = appContext.getBean(TestCaseStepActionControlService.class);
+
+        //finds the project     
+        AnswerItem answer = testCaseService.readByKey(test, testCase);
+
+        AnswerList testCaseCountryList = testCaseCountryService.readByTestTestCase(test, testCase);
+        AnswerList testCaseStepList = testCaseStepService.readByTestTestCase(test, testCase);
+        AnswerList testCaseStepActionList = testCaseStepActionService.readByTestTestCase(test, testCase);
+        AnswerList testCaseStepActionControlList = testCaseStepActionControlService.readByTestTestCase(test, testCase);
+
+        if (answer.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
+            //if the service returns an OK message then we can get the item and convert it to JSONformat
+            TCase tc = (TCase) answer.getItem();
+            object = convertTestCaseToJSONObject(tc);
+            object.put("countryList", new JSONObject());
+        }
+
+        for (TestCaseCountry country : (List<TestCaseCountry>) testCaseCountryList.getDataList()) {
+            object.getJSONObject("countryList").put(country.getCountry(), country.getCountry());
+        }
+
+        JSONArray stepList = new JSONArray();
+        for (TestCaseStep step : (List<TestCaseStep>) testCaseStepList.getDataList()) {
+            JSONObject jsonStep = new JSONObject();
+
+            jsonStep.put("step", step.getStep());
+            jsonStep.put("description", step.getDescription());
+            jsonStep.put("useStep", step.getUseStep());
+            jsonStep.put("useStepTest", step.getUseStepTest());
+            jsonStep.put("useStepTestCase", step.getUseStepTestCase());
+            jsonStep.put("useStepStep", step.getUseStepStep());
+            jsonStep.put("inLibrary", step.getInLibrary());
+            jsonStep.put("objType", "step");
+            stepList.put(jsonStep);
+        }
+
+        JSONArray actionList = new JSONArray();
+        for (TestCaseStepAction action : (List<TestCaseStepAction>) testCaseStepActionList.getDataList()) {
+            JSONObject jsonAction = new JSONObject();
+
+            jsonAction.put("step", action.getStep());
+            jsonAction.put("sequence", action.getSequence());
+            jsonAction.put("action", action.getAction());
+            jsonAction.put("object", action.getObject());
+            jsonAction.put("property", action.getProperty());
+            jsonAction.put("description", action.getDescription());
+            jsonAction.put("screenshot", action.getScreenshotFilename());
+            jsonAction.put("objType", "action");
+            actionList.put(jsonAction);
+        }
+
+        JSONArray controlList = new JSONArray();
+        for (TestCaseStepActionControl control : (List<TestCaseStepActionControl>) testCaseStepActionControlList.getDataList()) {
+            JSONObject jsonControl = new JSONObject();
+
+            jsonControl.put("step", control.getStep());
+            jsonControl.put("sequence", control.getSequence());
+            jsonControl.put("control", control.getControl());
+            jsonControl.put("type", control.getType());
+            jsonControl.put("controlValue", control.getControlValue());
+            jsonControl.put("controlProperty", control.getControlProperty());
+            jsonControl.put("screenshot", control.getScreenshotFilename());
+            jsonControl.put("description", control.getDescription());
+            jsonControl.put("fatal", control.getFatal());
+            jsonControl.put("objType", "control");
+            controlList.put(jsonControl);
+        }
+
+        jsonResponse.put("info", object);
+        jsonResponse.put("stepList", stepList);
+        jsonResponse.put("actionList", actionList);
+        jsonResponse.put("controlList", controlList);
+
+        item.setItem(jsonResponse);
+        item.setResultMessage(answer.getResultMessage());
+
+        return item;
     }
 }

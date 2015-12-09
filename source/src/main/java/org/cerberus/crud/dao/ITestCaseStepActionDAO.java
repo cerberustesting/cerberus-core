@@ -21,6 +21,7 @@ import java.util.List;
 
 import org.cerberus.crud.entity.TestCaseStepAction;
 import org.cerberus.exception.CerberusException;
+import org.cerberus.util.answer.AnswerList;
 
 /**
  * {Insert class description here}
@@ -44,4 +45,6 @@ public interface ITestCaseStepActionDAO {
     void delete(TestCaseStepAction tcsa) throws CerberusException ;
 
     List<TestCaseStepAction> findTestCaseStepActionbyTestTestCase(String test, String testCase) throws CerberusException ;
+    
+    AnswerList readByTestTestCase(String test, String testcase);
 }

@@ -28,6 +28,7 @@ import org.cerberus.crud.entity.TestCaseStep;
 import org.cerberus.exception.CerberusException;
 import org.cerberus.log.MyLogger;
 import org.cerberus.crud.service.ITestCaseStepService;
+import org.cerberus.util.answer.AnswerList;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -182,6 +183,11 @@ public class TestCaseStepService implements ITestCaseStepService {
     @Override
     public List<TestCaseStep> getStepLibraryBySystemTestTestCase(String system, String test, String testCase) throws CerberusException {
         return testCaseStepDAO.getStepLibraryBySystemTestTestCase(system, test, testCase);
+    }
+    
+    @Override
+    public AnswerList readByTestTestCase(String test, String testcase) {
+        return testCaseStepDAO.readByTestTestCase(test, testcase);
     }
 
 }
