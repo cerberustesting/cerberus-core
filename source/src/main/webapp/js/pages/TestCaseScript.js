@@ -25,7 +25,29 @@ $.when($.getScript("js/pages/global/global.js")).then(function () {
         var test = GetURLParameter("test");
         var testcase = GetURLParameter("testcase");
         displayHeaderLabel(doc);
+        displayGlobalLabel(doc);
         displayFooter(doc);
+        displayInvariantList("group", "GROUP");
+        displayInvariantList("status", "TCSTATUS");
+        displayInvariantList("priority", "PRIORITY");
+        $('[name="origin"]').append('<option value="All">All</option>');
+        displayInvariantList("origin", "ORIGIN");
+        displayInvariantList("active", "TCACTIVE");
+        displayInvariantList("activeQA", "TCACTIVE");
+        displayInvariantList("activeUAT", "TCACTIVE");
+        displayInvariantList("activeProd", "TCACTIVE");
+        displayApplicationList("application", getUser().defaultSystem);
+        displayProjectList("project");
+        tinymce.init({
+            selector: "textarea"
+        });
+
+        $('#editEntryModal').on('hidden.bs.modal', {extra: "#editEntryModal"}, modalFormCleaner);
+        $("#editEntryButton").click(saveUpdateEntryHandler);
+        $("#editTcInfo").click({test: test, testcase: testcase}, editEntry);
+        $("#addStep").click(addStep);
+
+        var json;
         $.ajax({
             url: "ReadTestCase",
             data: {test: test, testCase: testcase, withStep: true},
@@ -41,9 +63,9 @@ $.when($.getScript("js/pages/global/global.js")).then(function () {
 });
 
 function loadTestCaseInfo(info) {
-    $("#test").text(info.test);
-    $("#testCase").text(info.testCase);
-    $("#description").text(info.shortDescription);
+    $(".testTestCase #test").text(info.test);
+    $(".testTestCase #testCase").text(info.testCase);
+    $(".testTestCase #description").text(info.shortDescription);
 }
 
 function cancelEdit() {
@@ -64,6 +86,28 @@ function editStep(event) {
     $("#cancelEdit").click(cancelEdit);
 }
 
+function deleteStep(event) {
+    var stepNumber = event.data.stepNumber;
+    
+    $("#stepList li:nth-child("+ stepNumber +")").remove();
+}
+
+function addStep(event) {
+    var drag = $("<span></span>").addClass("glyphicon glyphicon-move drag-step").css("margin-right", "5px").prop("draggable", true);
+    var htmlElement = $("<li></li>").addClass("list-group-item");
+    var stepNumber = $("#stepList li").length + 1;
+
+    htmlElement.prepend(drag);
+    $("#stepDescription").hide();
+    $("#editBtnArea").hide();
+    $("#editStepDescription").prop("placeholder", "Description").val("");
+    $("#editStep").show();
+
+    $("#cancelEdit").click({stepNumber: stepNumber}, deleteStep);
+
+    $("#stepList").append(htmlElement);
+}
+
 function getControlListHtml(controlList) {
     var html = [];
 
@@ -78,9 +122,20 @@ function getControlListHtml(controlList) {
 function createStepList(data) {
     for (var i = 0; i < data.length; i++) {
         var step = data[i];
-        var htmlElement = $("<li></li>").addClass("list-group-item").addClass("workflow");
+        var drag = $("<span></span>").addClass("glyphicon glyphicon-move drag-step").css("margin-right", "5px").prop("draggable", true);
+        var htmlElement = $("<li></li>").addClass("list-group-item");
 
-        $("#stepList").append(htmlElement.text(step.description).data("item", step));
+        htmlElement.text(step.description);
+        htmlElement.prepend(drag);
+
+        drag.on("dragstart", handleDragStart);
+        drag.on("dragenter", handleDragEnter);
+        drag.on("dragover", handleDragOver);
+        drag.on("dragleave", handleDragLeave);
+        drag.on("drop", handleDrop);
+        drag.on("dragend", handleDragEnd);
+
+        $("#stepList").append(htmlElement.data("item", step));
         loadStepInfo(step);
         htmlElement.click(function () {
             var step = $(this).data("item");
@@ -103,12 +158,161 @@ function createStepList(data) {
     }
 }
 
+/** EDIT TEST CASE INFO **/
+
+function editEntry(event) {
+    var test = event.data.test;
+    var testCase = event.data.testcase;
+    clearResponseMessageMainPage();
+    var jqxhr = $.getJSON("ReadTestCase", "test=" + encodeURIComponent(test) + "&testCase=" + encodeURIComponent(testCase));
+    $.when(jqxhr).then(function (data) {
+
+        var formEdit = $('#editEntryModal');
+        var testInfo = $.getJSON("ReadTest", "test=" + encodeURIComponent(test));
+        var appInfo = $.getJSON("ReadApplication", "application=" + encodeURIComponent(data.application));
+
+        $.when(testInfo).then(function (data) {
+            formEdit.find("#testDesc").prop("value", data.contentTable.description);
+        });
+
+        $.when(appInfo).then(function (appData) {
+            var currentSys = getUser().defaultSystem;
+            var bugTrackerUrl = appData.contentTable.bugTrackerUrl;
+
+            appendBuildRevList(appData.contentTable.system, data);
+
+            if (appData.contentTable.system !== currentSys) {
+                $("[name=application]").empty();
+                formEdit.find("#application").append($('<option></option>').text(data.application).val(data.application));
+                appendApplicationList(currentSys);
+            }
+            formEdit.find("#application").prop("value", data.application);
+
+            if (data.bugID !== "" && bugTrackerUrl) {
+                bugTrackerUrl = bugTrackerUrl.replace("%BUGID%", data.bugID);
+            }
+
+            formEdit.find("#link").prop("href", bugTrackerUrl).text(bugTrackerUrl);
+
+        });
+
+        //test info
+        formEdit.find("#test").prop("value", data.test);
+        formEdit.find("#testCase").prop("value", data.testCase);
+
+        //test case info
+        formEdit.find("#creator").prop("value", data.creator);
+        formEdit.find("#lastModifier").prop("value", data.lastModifier);
+        formEdit.find("#implementer").prop("value", data.implementer);
+        formEdit.find("#tcDateCrea").prop("value", data.tcDateCrea);
+        formEdit.find("#ticket").prop("value", data.ticket);
+        formEdit.find("#function").prop("value", data.function);
+        formEdit.find("#origin").prop("value", data.origin);
+        formEdit.find("#refOrigin").prop("value", data.refOrigin);
+        formEdit.find("#project").prop("value", data.project);
+
+        // test case parameters
+        formEdit.find("#application").prop("value", data.application);
+        formEdit.find("#group").prop("value", data.group);
+        formEdit.find("#status").prop("value", data.status);
+        formEdit.find("#priority").prop("value", data.priority);
+        formEdit.find("#actQA").prop("value", data.runQA);
+        formEdit.find("#actUAT").prop("value", data.runUAT);
+        formEdit.find("#actProd").prop("value", data.runPROD);
+        for (var country in data.countryList) {
+            $('#countryList input[name="' + data.countryList[country] + '"]').prop("checked", true);
+        }
+        formEdit.find("#shortDesc").prop("value", data.shortDescription);
+        tinyMCE.get('behaviorOrValueExpected1').setContent(data.description);
+        tinyMCE.get('howTo1').setContent(data.howTo);
+
+        //activation criteria
+        formEdit.find("#active").prop("value", data.active);
+        formEdit.find("#bugId").prop("value", data.bugID);
+        formEdit.find("#comment").prop("value", data.comment);
+
+        formEdit.modal('show');
+    });
+}
+
+function saveUpdateEntryHandler() {
+    clearResponseMessage($('#editEntryModal'));
+
+    var formEdit = $('#editEntryModalForm');
+    tinyMCE.triggerSave();
+
+    showLoaderInModal('#editEntryModal');
+    updateEntry("UpdateTestCase2", formEdit, "#testCaseTable");
+}
+
+function appendBuildRevList(system, editData) {
+
+    var jqxhr = $.getJSON("ReadBuildRevisionInvariant", "system=" + encodeURIComponent(system) + "&level=1");
+    $.when(jqxhr).then(function (data) {
+        var fromBuild = $("[name=fromSprint]");
+        var toBuild = $("[name=toSprint]");
+        var targetBuild = $("[name=targetSprint]");
+
+        fromBuild.empty();
+        toBuild.empty();
+        targetBuild.empty();
+
+        fromBuild.append($('<option></option>').text("-----").val(""));
+        toBuild.append($('<option></option>').text("-----").val(""));
+        targetBuild.append($('<option></option>').text("-----").val(""));
+
+        for (var index = 0; index < data.contentTable.length; index++) {
+            fromBuild.append($('<option></option>').text(data.contentTable[index].versionName).val(data.contentTable[index].versionName));
+            toBuild.append($('<option></option>').text(data.contentTable[index].versionName).val(data.contentTable[index].versionName));
+            targetBuild.append($('<option></option>').text(data.contentTable[index].versionName).val(data.contentTable[index].versionName));
+        }
+
+        if (editData !== undefined) {
+            var formEdit = $('#editEntryModal');
+
+            formEdit.find("#fromSprint").prop("value", editData.fromSprint);
+            formEdit.find("#toSprint").prop("value", editData.toSprint);
+            formEdit.find("#targetSprint").prop("value", editData.targetSprint);
+        }
+
+    });
+
+    var jqxhr = $.getJSON("ReadBuildRevisionInvariant", "system=" + encodeURIComponent(system) + "&level=2");
+    $.when(jqxhr).then(function (data) {
+        var fromRev = $("[name=fromRev]");
+        var toRev = $("[name=toRev]");
+        var targetRev = $("[name=targetRev]");
+
+        fromRev.empty();
+        toRev.empty();
+        targetRev.empty();
+
+        fromRev.append($('<option></option>').text("-----").val(""));
+        toRev.append($('<option></option>').text("-----").val(""));
+        targetRev.append($('<option></option>').text("-----").val(""));
+
+        for (var index = 0; index < data.contentTable.length; index++) {
+            fromRev.append($('<option></option>').text(data.contentTable[index].versionName).val(data.contentTable[index].versionName));
+            toRev.append($('<option></option>').text(data.contentTable[index].versionName).val(data.contentTable[index].versionName));
+            targetRev.append($('<option></option>').text(data.contentTable[index].versionName).val(data.contentTable[index].versionName));
+        }
+
+        if (editData !== undefined) {
+            var formEdit = $('#editEntryModal');
+
+            formEdit.find("#fromRevision").prop("value", editData.fromRevision);
+            formEdit.find("#toRevision").prop("value", editData.toRevision);
+            formEdit.find("#targetRevision").prop("value", editData.targetRevision);
+        }
+    });
+}
+
 /** HELPER FUNCTIONS TO GENERATE ACTION AND CONTROL ROWS **/
 
 function generateRow(stepAction, rowClass) {
     var row = $("<div></div>").addClass("step-action row").addClass(rowClass).data("item", stepAction);
     var type = $("<div></div>").addClass("type");
-    var drag = $("<div></div>").addClass("drag-selector col-lg-1").prop("draggable", true).append(type)
+    var drag = $("<div></div>").addClass("drag-step-action col-lg-1").prop("draggable", true).append(type)
             .append($("<span></span>").addClass("glyphicon glyphicon-move"));
     var content = generateContent(stepAction);
 
@@ -125,21 +329,20 @@ function generateRow(stepAction, rowClass) {
 }
 
 function generateContent(stepAction) {
-    var content = $("<div></div>").addClass("content col-lg-10");
+    var content = $("<div></div>").addClass("content col-lg-11");
     var firstRow = $("<div></div>").addClass("row");
-    var secondRow = $("<div></div>").addClass("row");
-
+    var secondRow = $("<div></div>").addClass("row form-inline");
 
     firstRow.append($("<input>").addClass("description").addClass("form-control").val(stepAction.description).prop("placeholder", "Description"));
     if (stepAction.objType === "action") {
         secondRow.append($("<span></span>").text(stepAction.action).addClass("col-lg-4"));
-        secondRow.append($("<span></span>").text(stepAction.object).addClass("col-lg-4"));
-        secondRow.append($("<span></span>").text(stepAction.property).addClass("col-lg-4"));
+        secondRow.append($("<span></span>").addClass("col-lg-4").append($("<input>").val(stepAction.object).addClass("form-control input-sm")));
+        secondRow.append($("<span></span>").addClass("col-lg-4").append($("<input>").val(stepAction.property).addClass("form-control input-sm")));
     } else {
         secondRow.append($("<span></span>").text(stepAction.type).addClass("col-lg-3"));
-        secondRow.append($("<span></span>").text(stepAction.controlValue).addClass("col-lg-3"));
-        secondRow.append($("<span></span>").text(stepAction.controlProperty).addClass("col-lg-3"));
-        secondRow.append($("<span></span>").text(stepAction.fatal).addClass("col-lg-3"));
+        secondRow.append($("<span></span>").addClass("col-lg-4").append($("<label></label>").text("Value : ")).append($("<input>").val(stepAction.controlValue).addClass("form-control input-sm")));
+        secondRow.append($("<span></span>").addClass("col-lg-4").append($("<input>").val(stepAction.controlProperty).addClass("form-control input-sm")));
+        secondRow.append($("<span></span>").text(stepAction.fatal).addClass("col-lg-1"));
     }
     content.append(firstRow);
     content.append(secondRow);
@@ -186,7 +389,7 @@ function handleDragStart(event) {
 
     if ($(obj).data("item").objType === "action") {
         img = obj.parentNode;
-    } else if ($(obj).data("item").objType === "control") {
+    } else {
         img = obj;
     }
 
@@ -210,6 +413,12 @@ function handleDragEnter(event) {
         }
     } else if (sourceData.objType === "control") {
         if (isBefore(source, target) || targetData.objType === "action") {
+            $(target).after(source);
+        } else {
+            $(target).before(source);
+        }
+    } else {
+        if (isBefore(source, target)) {
             $(target).after(source);
         } else {
             $(target).before(source);

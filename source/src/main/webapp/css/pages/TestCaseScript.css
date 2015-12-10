@@ -109,12 +109,12 @@
     padding-left: 0px;
 }
 
-.drag-selector {
+.drag-step-action {
     padding-left: 0px;
     height: 100%;
 }
 
-.drag-selector span {
+.drag-step-action span {
     display: block;
     text-align: center;
     margin-top: 45%;
