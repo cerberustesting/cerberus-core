@@ -75,10 +75,41 @@ function getControlListHtml(controlList) {
     return html;
 }
 
+function createStepList(data) {
+    for (var i = 0; i < data.length; i++) {
+        var step = data[i];
+        var htmlElement = $("<li></li>").addClass("list-group-item").addClass("workflow");
+
+        $("#stepList").append(htmlElement.text(step.description).data("item", step));
+        loadStepInfo(step);
+        htmlElement.click(function () {
+            var step = $(this).data("item");
+
+            $("#stepList li").each(function () {
+                $(this).removeClass("active");
+            });
+            $(this).addClass("active");
+
+            $(".step-container").each(function () {
+                $(this).hide();
+            });
+
+            $("#editBtnArea").show();
+            $("#editBtn").click({step: step}, editStep);
+            $("#stepDescription").text(step.description);
+            $(".step-container[data-step='" + step.step + "']").show();
+            cancelEdit();
+        });
+    }
+}
+
+/** HELPER FUNCTIONS TO GENERATE ACTION AND CONTROL ROWS **/
+
 function generateRow(stepAction, rowClass) {
     var row = $("<div></div>").addClass("step-action row").addClass(rowClass).data("item", stepAction);
-    var type = $("<div></div>").addClass("type col-lg-1");
-    var drag = $("<div></div>").addClass("drag-selector col-lg-1").prop("draggable", true).append($("<span></span>").addClass("glyphicon glyphicon-move"));
+    var type = $("<div></div>").addClass("type");
+    var drag = $("<div></div>").addClass("drag-selector col-lg-1").prop("draggable", true).append(type)
+            .append($("<span></span>").addClass("glyphicon glyphicon-move"));
     var content = generateContent(stepAction);
 
     drag.on("dragstart", handleDragStart);
@@ -88,7 +119,6 @@ function generateRow(stepAction, rowClass) {
     drag.on("drop", handleDrop);
     drag.on("dragend", handleDragEnd);
 
-    row.append(type);
     row.append(drag);
     row.append(content);
     return row;
@@ -102,7 +132,6 @@ function generateContent(stepAction) {
 
     firstRow.append($("<input>").addClass("description").addClass("form-control").val(stepAction.description).prop("placeholder", "Description"));
     if (stepAction.objType === "action") {
-
         secondRow.append($("<span></span>").text(stepAction.action).addClass("col-lg-4"));
         secondRow.append($("<span></span>").text(stepAction.object).addClass("col-lg-4"));
         secondRow.append($("<span></span>").text(stepAction.property).addClass("col-lg-4"));
@@ -121,11 +150,7 @@ function generateContent(stepAction) {
 function loadStepInfo(step) {
     var actionList = step.actionList;
     var container = $("#actionContainer");
-
-    container.empty();
-    $("#editBtnArea").show();
-    $("#editBtn").click({step: step}, editStep);
-    $("#stepDescription").text(step.description);
+    var stepContainer = $("<div></div>").addClass("step-container").attr("data-step", step.step).css("display", "none");
 
     for (var i = 0; i < actionList.length; i++) {
         var actionGroup = $("<div></div>").addClass("action-group");
@@ -134,26 +159,9 @@ function loadStepInfo(step) {
 
         actionGroup.append(actionRow);
         actionGroup.append(getControlListHtml(action.controlList));
-        container.append(actionGroup);
+        stepContainer.append(actionGroup);
     }
-
-}
-
-function createStepList(data) {
-    for (var i = 0; i < data.length; i++) {
-        var step = data[i];
-        var htmlElement = $("<li></li>").addClass("list-group-item");
-
-        $("#stepList").append(htmlElement.text(step.description).data("item", step));
-        htmlElement.click(function () {
-            $("#stepList li").each(function () {
-                $(this).removeClass("active");
-            });
-            $(this).addClass("active");
-            loadStepInfo($(this).data("item"));
-            cancelEdit();
-        });
-    }
+    container.append(stepContainer);
 }
 
 /** DRAG AND DROP HANDLERS **/
@@ -194,8 +202,6 @@ function handleDragEnter(event) {
     var sourceData = $(source).data("item");
     var targetData = $(target).data("item");
 
-    console.log("DRAG ENTER");
-
     if (sourceData.objType === "action" && targetData.objType === "action") {
         if (isBefore(source.parentNode, target.parentNode)) {
             $(target).parent(".action-group").after(source.parentNode);
@@ -213,7 +219,6 @@ function handleDragEnter(event) {
 
 function handleDragOver(event) {
     var e = event.originalEvent;
-
 
     if (e.preventDefault) {
         e.preventDefault(); // Necessary. Allows us to drop.

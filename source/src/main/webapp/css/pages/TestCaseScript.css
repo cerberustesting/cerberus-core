@@ -23,6 +23,9 @@
 
 .separator-left {
     border-left: 1px solid #E3E3E3;
+    width: inherit;
+    padding-left: 5px;
+    /*margin-right: 5px;*/
 }
 
 .side-item {
@@ -100,19 +103,21 @@
 
 .type {
     width: 8px;
-    height: 100%;
+    height: 99%;
+    float: left;
     padding-right: 0px;
     padding-left: 0px;
 }
 
 .drag-selector {
+    padding-left: 0px;
     height: 100%;
 }
 
 .drag-selector span {
     display: block;
     text-align: center;
-    margin-top: 80%;
+    margin-top: 45%;
     cursor: move;
 }
 

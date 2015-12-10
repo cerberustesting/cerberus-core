@@ -37,13 +37,13 @@
             <div class="row" style="margin-top: 10px;">
                 <div class="col-lg-2">
                     <h3>Steps</h3>
-                    <ul class="list-group step-list side-item" id="stepList"></ul>
+                    <ul class="list-group step-list side-item" id="stepList" style="height: 2000px;"></ul>
                 </div>
-                <div class="col-lg-7 well" style="min-height: 200px;">
+                <div class="col-lg-9 well" style="min-height: 200px;">
                     <div class="step-header clearfix">
                         <div class="row">
                             <div id="stepDescription" class="col-lg-9"></div>
-                            <div class="col-lg-3" id="editBtnArea">
+                            <div class="col-lg-3" id="editBtnArea" style="display: none;">
                                 <div class="btn-group pull-right">
                                     <button class="btn btn-default" id="editBtn"><span class="glyphicon glyphicon-pencil"></span></button>
                                     <button class="btn btn-default" id="deleteStep"><span class="glyphicon glyphicon-trash"></span></button>
@@ -62,12 +62,14 @@
                     </div>
                     <div id="actionContainer"></div>
                 </div>
-                <div class="col-lg-3 separator-left">
-                    <h3> Actions </h3>
-                    <div class="side-item">Last Execution was <a style="color : green">OK</a> in PREPROD in FR on Fri Nov 13 17:43:44 CET 2015<a><i> (Run it again) </i></a></div>
-                    <button class="btn btn-block btn-primary side-item">Edit Test Case info</button>
-                    <button class="btn btn-block btn-primary side-item">Save Script</button>
-                    <button class="btn btn-block btn-primary side-item">Run this Test Case</button>
+                <div class="col-lg-1">
+                    <div class="separator-left" data-spy="affix">
+                        <h3> Actions </h3>
+                        <div class="side-item">Last Execution was <a style="color : green">OK</a> in PREPROD in FR on Fri Nov 13 17:43:44 CET 2015<a><i> (Run it again) </i></a></div>
+                        <button class="btn btn-block btn-primary side-item">Edit Test Case info</button>
+                        <button class="btn btn-block btn-primary side-item">Save Script</button>
+                        <button class="btn btn-block btn-primary side-item">Run this Test Case</button>
+                    </div>
                 </div>
             </div>
             <footer class="footer">
