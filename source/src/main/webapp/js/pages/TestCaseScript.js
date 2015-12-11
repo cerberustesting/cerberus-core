@@ -45,7 +45,9 @@ $.when($.getScript("js/pages/global/global.js")).then(function () {
         $('#editEntryModal').on('hidden.bs.modal', {extra: "#editEntryModal"}, modalFormCleaner);
         $("#editEntryButton").click(saveUpdateEntryHandler);
         $("#editTcInfo").click({test: test, testcase: testcase}, editEntry);
-        $("#addStep").click(addStep);
+
+        $("#saveStep").click(saveStep);
+        $("#cancelEdit").click(cancelEdit);
 
         var json;
         $.ajax({
@@ -54,11 +56,13 @@ $.when($.getScript("js/pages/global/global.js")).then(function () {
             dataType: "json",
             success: function (data) {
                 loadTestCaseInfo(data.info);
-                data = agregateData(data);
-                createStepList(data);
+                json = agregateData(data);
+                createStepList(json);
             },
             error: showUnexpectedError
         });
+
+        $("#addStep").click({json: json}, addStep);
     });
 });
 
@@ -82,30 +86,39 @@ function editStep(event) {
     $("#editBtnArea").hide();
     $("#editStepDescription").prop("placeholder", "Description").val(step.description);
     $("#editStep").show();
+}
 
-    $("#cancelEdit").click(cancelEdit);
+function saveStep() {
+    var stepHtml = $("#stepList li.active");
+    var stepData = stepHtml.data("item");
+
+    stepData.description = $("#editStepDescription").val();
+    stepHtml.children("div").text(stepData.description);
+    $("#stepDescription").text(stepData.description);
+
+    cancelEdit();
 }
 
 function deleteStep(event) {
     var stepNumber = event.data.stepNumber;
-    
-    $("#stepList li:nth-child("+ stepNumber +")").remove();
+
+    $("#stepList li:nth-child(" + stepNumber + ")").remove();
+    cancelEdit();
 }
 
 function addStep(event) {
-    var drag = $("<span></span>").addClass("glyphicon glyphicon-move drag-step").css("margin-right", "5px").prop("draggable", true);
-    var htmlElement = $("<li></li>").addClass("list-group-item");
     var stepNumber = $("#stepList li").length + 1;
+    var step = {"inLibrary": "N",
+        "objType": "step",
+        "useStepTest": "",
+        "useStepTestCase": "",
+        "useStep": "N",
+        "description": "New Step",
+        "useStepStep": -1,
+        "step": stepNumber,
+        "actionList": []};
 
-    htmlElement.prepend(drag);
-    $("#stepDescription").hide();
-    $("#editBtnArea").hide();
-    $("#editStepDescription").prop("placeholder", "Description").val("");
-    $("#editStep").show();
-
-    $("#cancelEdit").click({stepNumber: stepNumber}, deleteStep);
-
-    $("#stepList").append(htmlElement);
+    drawStep(step);
 }
 
 function getControlListHtml(controlList) {
@@ -119,42 +132,56 @@ function getControlListHtml(controlList) {
     return html;
 }
 
+function drawStep(step) {
+    var drag = $("<span></span>").addClass("glyphicon glyphicon-move drag-step col-lg-2").prop("draggable", true);
+    var htmlElement = $("<li></li>").addClass("list-group-item row").css("margin-left", "0px");
+    var textArea = $("<div></div>").addClass("col-lg-10");
+
+    textArea.text(step.description);
+    htmlElement.append(drag);
+    htmlElement.append(textArea);
+
+    drag.on("dragstart", handleDragStart);
+    drag.on("dragenter", handleDragEnter);
+    drag.on("dragover", handleDragOver);
+    drag.on("dragleave", handleDragLeave);
+    drag.on("drop", handleDrop);
+    drag.on("dragend", handleDragEnd);
+
+    $("#stepList").append(htmlElement.data("item", step));
+    loadStepInfo(step);
+    htmlElement.click(displayStep);
+}
+
+function displayStep() {
+    var step = $(this).data("item");
+
+    $("#stepList li").each(function () {
+        $(this).removeClass("active");
+    });
+    $(this).addClass("active");
+
+    $(".step-container").each(function () {
+        $(this).hide();
+    });
+
+    $("#editBtnArea").show();
+    $("#editBtn").click({step: step}, editStep);
+    $("#stepDescription").text(step.description);
+
+    if (step.useStep === "Y") {
+        $("#stepInfo").text("(Imported from " + step.useStepTest + " - " + step.useStepTestCase + " - " + step.useStepStep + " )");
+    } else {
+        $("#stepInfo").text("");
+    }
+    $(".step-container[data-step='" + step.step + "']").show();
+    cancelEdit();
+}
+
 function createStepList(data) {
     for (var i = 0; i < data.length; i++) {
         var step = data[i];
-        var drag = $("<span></span>").addClass("glyphicon glyphicon-move drag-step").css("margin-right", "5px").prop("draggable", true);
-        var htmlElement = $("<li></li>").addClass("list-group-item");
-
-        htmlElement.text(step.description);
-        htmlElement.prepend(drag);
-
-        drag.on("dragstart", handleDragStart);
-        drag.on("dragenter", handleDragEnter);
-        drag.on("dragover", handleDragOver);
-        drag.on("dragleave", handleDragLeave);
-        drag.on("drop", handleDrop);
-        drag.on("dragend", handleDragEnd);
-
-        $("#stepList").append(htmlElement.data("item", step));
-        loadStepInfo(step);
-        htmlElement.click(function () {
-            var step = $(this).data("item");
-
-            $("#stepList li").each(function () {
-                $(this).removeClass("active");
-            });
-            $(this).addClass("active");
-
-            $(".step-container").each(function () {
-                $(this).hide();
-            });
-
-            $("#editBtnArea").show();
-            $("#editBtn").click({step: step}, editStep);
-            $("#stepDescription").text(step.description);
-            $(".step-container[data-step='" + step.step + "']").show();
-            cancelEdit();
-        });
+        drawStep(step);
     }
 }
 
@@ -385,19 +412,25 @@ function isBefore(a, b) {
 function handleDragStart(event) {
     var dataTransfer = event.originalEvent.dataTransfer;
     var obj = this.parentNode;
+    var offsetX = 50;
+    var offsetY = 50;
     var img;
 
     if ($(obj).data("item").objType === "action") {
         img = obj.parentNode;
+    } else if ($(obj).data("item").objType === "control") {
+        img = obj;
     } else {
         img = obj;
+        offsetX = 15;
+        offsetY = 15;
     }
 
     source = obj;
     obj.style.opacity = '0.4';
     dataTransfer.effectAllowed = 'move';
     dataTransfer.setData('text/html', img.innerHTML);
-    dataTransfer.setDragImage(img, 50, 50);
+    dataTransfer.setDragImage(img, offsetX, offsetY);
 }
 
 function handleDragEnter(event) {
@@ -411,13 +444,14 @@ function handleDragEnter(event) {
         } else {
             $(target).parent(".action-group").before(source.parentNode);
         }
-    } else if (sourceData.objType === "control") {
+    } else if (sourceData.objType === "control" &&
+            (targetData.objType === "action" || targetData.objType === "control")) {
         if (isBefore(source, target) || targetData.objType === "action") {
             $(target).after(source);
         } else {
             $(target).before(source);
         }
-    } else {
+    } else if (sourceData.objType === "step" && targetData.objType === "step") {
         if (isBefore(source, target)) {
             $(target).after(source);
         } else {

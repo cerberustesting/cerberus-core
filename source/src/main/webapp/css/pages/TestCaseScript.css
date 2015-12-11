@@ -126,3 +126,8 @@
     font-weight: bold;
     line-height: 1.2;
 }
+
+.step-info {
+    font-weight: bold;
+    font-style: italic;
+}

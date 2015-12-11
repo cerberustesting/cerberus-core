@@ -55,6 +55,11 @@
                                 </div>
                             </div>
                         </div>
+                        <div class="row">
+                            <div class="col-lg-9 step-info" id="stepInfo">
+                                
+                            </div>
+                        </div>
                         <div id="editStep" style="display: none;" class="row">
                             <div class="input-group">
                                 <input type="text" class="form-control" id="editStepDescription">
