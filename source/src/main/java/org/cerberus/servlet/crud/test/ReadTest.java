@@ -66,39 +66,65 @@ public class ReadTest extends HttpServlet {
      */
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException, JSONException {
+        String echo = request.getParameter("sEcho");
         ApplicationContext appContext = WebApplicationContextUtils.getWebApplicationContext(this.getServletContext());
         PolicyFactory policy = Sanitizers.FORMATTING.and(Sanitizers.LINKS);
 
-        int sEcho = Integer.valueOf(ParameterParserUtil.parseStringParam(request.getParameter("sEcho"), "0"));
+        response.setContentType("application/json");
+
+        // Default message to unexpected error.
+        MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
+        msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", ""));
+
+        /**
+         * Parsing and securing all required parameters.
+         */
         String test = ParameterParserUtil.parseStringParam(request.getParameter("test"), "");
         String system = ParameterParserUtil.parseStringParam(request.getParameter("system"), "");
 
-        AnswerItem answer = new AnswerItem(new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED));
-        JSONObject jsonResponse = new JSONObject();
+        // Global boolean on the servlet that define if the user has permition to edit and delete object.
+        boolean userHasPermissions = request.isUserInRole("TestAdmin");
 
-        if (!test.equals("")) {
-            answer = findTestByKey(appContext, test);
-            jsonResponse = (JSONObject) answer.getItem();
-        } else if (!system.equals("")) {
-            answer = findTestBySystem(appContext, system);
-            jsonResponse = (JSONObject) answer.getItem();
-        } else {
-            answer = findTestList(appContext, request);
-            jsonResponse = (JSONObject) answer.getItem();
+        // Init Answer with potencial error from Parsing parameter.
+        AnswerItem answer = new AnswerItem(msg);
+
+        try {
+            JSONObject jsonResponse = new JSONObject();
+            if (!test.equals("")) {
+                answer = findTestByKey(test, appContext, userHasPermissions);
+                jsonResponse = (JSONObject) answer.getItem();
+            } else if (!system.equals("")) {
+                answer = findTestBySystem(system, appContext, userHasPermissions);
+                jsonResponse = (JSONObject) answer.getItem();
+            } else {
+                answer = findTestList(appContext, userHasPermissions, request);
+                jsonResponse = (JSONObject) answer.getItem();
+            }
+
+            jsonResponse.put("messageType", answer.getResultMessage().getMessage().getCodeString());
+            jsonResponse.put("message", answer.getResultMessage().getDescription());
+            jsonResponse.put("sEcho", echo);
+
+            response.getWriter().print(jsonResponse.toString());
+        } catch (JSONException e) {
+            org.apache.log4j.Logger.getLogger(ReadTest.class.getName()).log(org.apache.log4j.Level.ERROR, null, e);
+            //returns a default error message with the json format that is able to be parsed by the client-side
+            response.setContentType("application/json");
+            msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
+            StringBuilder errorMessage = new StringBuilder();
+            errorMessage.append("{\"messageType\":\"").append(msg.getCode()).append("\",");
+            errorMessage.append("\"message\":\"");
+            errorMessage.append(msg.getDescription().replace("%DESCRIPTION%", "Unable to check the status of your request! Try later or open a bug."));
+            errorMessage.append("\"}");
+            response.getWriter().print(errorMessage.toString());
         }
-        
-        jsonResponse.put("messageType", answer.getResultMessage().getMessage().getCodeString());
-        jsonResponse.put("message", answer.getResultMessage().getDescription());
-
-        response.setContentType("application/json");
-        response.getWriter().print(jsonResponse.toString());
 
     }
 
-    private AnswerItem findTestList(ApplicationContext appContext, HttpServletRequest request) throws JSONException {
+    private AnswerItem findTestList(ApplicationContext appContext, boolean userHasPermissions, HttpServletRequest request) throws JSONException {
         AnswerItem answer = new AnswerItem(new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED));
         AnswerList testList = new AnswerList();
-        JSONObject jsonResponse = new JSONObject();
+        JSONObject object = new JSONObject();
 
         testService = appContext.getBean(TestService.class);
 
@@ -114,8 +140,6 @@ public class ReadTest extends HttpServlet {
 
         testList = testService.readByCriteria(startPosition, length, columnName, sort, searchParameter, "");
 
-        boolean userHasPermissions = request.isUserInRole("TestAdmin");
-
         JSONArray jsonArray = new JSONArray();
         if (testList.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {//the service was able to perform the query, then we should get all values
             for (Test test : (List<Test>) testList.getDataList()) {
@@ -123,21 +147,14 @@ public class ReadTest extends HttpServlet {
             }
         }
 
-        jsonResponse.put("contentTable", jsonArray);
-        jsonResponse.put("hasPermissions", userHasPermissions);
-        jsonResponse.put("iTotalRecords", testList.getTotalRows());
-        jsonResponse.put("iTotalDisplayRecords", testList.getTotalRows());
+        object.put("contentTable", jsonArray);
+        object.put("hasPermissions", userHasPermissions);
+        object.put("iTotalRecords", testList.getTotalRows());
+        object.put("iTotalDisplayRecords", testList.getTotalRows());
 
-        answer.setItem(jsonResponse);
+        answer.setItem(object);
         answer.setResultMessage(testList.getResultMessage());
         return answer;
-    }
-
-    private JSONObject convertTestToJSONObject(Test test) throws JSONException {
-
-        Gson gson = new Gson();
-        JSONObject result = new JSONObject(gson.toJson(test));
-        return result;
     }
 
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
@@ -187,9 +204,9 @@ public class ReadTest extends HttpServlet {
         return "Short description";
     }// </editor-fold>
 
-    private AnswerItem findTestByKey(ApplicationContext appContext, String testName) throws JSONException {
+    private AnswerItem findTestByKey(String testName, ApplicationContext appContext, boolean userHasPermissions) throws JSONException {
         AnswerItem answer = new AnswerItem();
-        JSONObject jsonResponse = new JSONObject();
+        JSONObject object = new JSONObject();
 
         testService = appContext.getBean(TestService.class);
 
@@ -198,19 +215,20 @@ public class ReadTest extends HttpServlet {
         if (answer.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
             //if the service returns an OK message then we can get the item and convert it to JSONformat
             Test test = (Test) answer.getItem();
-            jsonResponse.put("contentTable", convertTestToJSONObject(test));
+            object.put("contentTable", convertTestToJSONObject(test));
         }
 
-        answer.setItem(jsonResponse);
+        object.put("hasPermissions", userHasPermissions);
+        answer.setItem(object);
         answer.setResultMessage(answer.getResultMessage());
 
         return answer;
     }
 
-    private AnswerItem findTestBySystem(ApplicationContext appContext, String system) throws JSONException {
+    private AnswerItem findTestBySystem(String system, ApplicationContext appContext, boolean userHasPermissions) throws JSONException {
         AnswerItem answer = new AnswerItem(new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED));
         AnswerList testList = new AnswerList();
-        JSONObject jsonResponse = new JSONObject();
+        JSONObject object = new JSONObject();
 
         testService = appContext.getBean(TestService.class);
 
@@ -223,13 +241,22 @@ public class ReadTest extends HttpServlet {
             }
         }
 
-        jsonResponse.put("contentTable", jsonArray);
-        jsonResponse.put("iTotalRecords", testList.getTotalRows());
-        jsonResponse.put("iTotalDisplayRecords", testList.getTotalRows());
+        object.put("contentTable", jsonArray);
+        object.put("iTotalRecords", testList.getTotalRows());
+        object.put("iTotalDisplayRecords", testList.getTotalRows());
 
-        answer.setItem(jsonResponse);
+        object.put("hasPermissions", userHasPermissions);
+        answer.setItem(object);
         answer.setResultMessage(testList.getResultMessage());
+
         return answer;
+    }
+
+    private JSONObject convertTestToJSONObject(Test test) throws JSONException {
+
+        Gson gson = new Gson();
+        JSONObject result = new JSONObject(gson.toJson(test));
+        return result;
     }
 
 }

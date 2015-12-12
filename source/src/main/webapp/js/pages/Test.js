@@ -103,6 +103,16 @@ function editEntry(test) {
         formEdit.find("#description").prop("value", obj.description);
         formEdit.find("#automated").prop("value", obj.automated);
 
+        if (!(data["hasPermissions"])) { // If readonly, we only readonly all fields
+            formEdit.find("#test").prop("readonly", "readonly");
+            formEdit.find("#active").prop("disabled", "disabled");
+            formEdit.find("#description").prop("readonly", "readonly");
+            formEdit.find("#automated").prop("disabled", "disabled");
+
+            $('#editEntryButton').attr('class', '');
+            $('#editEntryButton').attr('hidden', 'hidden');
+        }
+
         formEdit.modal('show');
     });
 }
@@ -172,19 +182,19 @@ function aoColumnsFunc() {
                                     href="./TestCaseList.jsp?test=' + encodeURIComponent(obj["test"]) + '">\n\
                                     <span class="glyphicon glyphicon-new-window"></span>\n\
                                     </a>';
-
-                if (data["hasPermissions"]) {
-                    var editEntry = '<button id="editEntry" onclick="editEntry(\'' + escapeHtml(obj["test"]) + '\');"\n\
+                var editEntry = '<button id="editEntry" onclick="editEntry(\'' + escapeHtml(obj["test"]) + '\');"\n\
                                 class="editEntry btn btn-default btn-xs margin-right5" \n\
                                 name="editEntry" title="' + doc.getDocLabel("page_test", "btn_edit") + '" type="button">\n\
                                 <span class="glyphicon glyphicon-pencil"></span></button>';
-                    var deleteEntry = '<button id="deleteEntry" onclick="deleteEntry(\'' + escapeHtml(obj["test"]) + '\');" \n\
+                var deleteEntry = '<button id="deleteEntry" onclick="deleteEntry(\'' + escapeHtml(obj["test"]) + '\');" \n\
                                 class="deleteEntry btn btn-default btn-xs margin-right5" \n\
                                 name="deleteEntry" title="' + doc.getDocLabel("page_test", "button_delete") + '" type="button">\n\
                                 <span class="glyphicon glyphicon-trash"></span></button>';
+
+                if (data["hasPermissions"]) {
                     return '<div class="center btn-group width150">' + editEntry + deleteEntry + testCaseLink + '</div>';
                 } else {
-                    return '<div class="center btn-group width150">' + testCaseLink + '</div>';
+                    return '<div class="center btn-group width150">' + editEntry + testCaseLink + '</div>';
                 }
             }
         },
