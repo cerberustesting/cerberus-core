@@ -88,21 +88,24 @@ public class ReadCountryEnvParam extends HttpServlet {
         boolean unique = ParameterParserUtil.parseBooleanParam(request.getParameter("unique"), false);
         boolean forceList = ParameterParserUtil.parseBooleanParam(request.getParameter("forceList"), false);
 
+        // Global boolean on the servlet that define if the user has permition to edit and delete object.
+        boolean userHasPermissions = request.isUserInRole("Integrator");
+        
         // Init Answer with potencial error from Parsing parameter.
         AnswerItem answer = new AnswerItem(msg);
 
         try {
             JSONObject jsonResponse = new JSONObject();
             if ((request.getParameter("system") != null) && (request.getParameter("country") != null) && (request.getParameter("environment") != null) && !(forceList)) {
-                answer = findCountryEnvParamByKey(system, country, environment, appContext);
+                answer = findCountryEnvParamByKey(system, country, environment, appContext, userHasPermissions);
                 jsonResponse = (JSONObject) answer.getItem();
             } else if (unique) {
-                answer = findUniqueEnvironmentList(appContext, system, active);
+                answer = findUniqueEnvironmentList(system, active, appContext, userHasPermissions);
                 jsonResponse = (JSONObject) answer.getItem();
             } else { // Default behaviour, we return the list of objects.
                 answer = findCountryEnvParamList(request.getParameter("system"), request.getParameter("country"),
                         request.getParameter("environment"), request.getParameter("build"), request.getParameter("revision"),
-                        request.getParameter("active"), appContext, request);
+                        request.getParameter("active"), appContext, userHasPermissions, request);
                 jsonResponse = (JSONObject) answer.getItem();
             }
             jsonResponse.put("messageType", answer.getResultMessage().getMessage().getCodeString());
@@ -172,10 +175,11 @@ public class ReadCountryEnvParam extends HttpServlet {
         return "Short description";
     }// </editor-fold>
 
-    private AnswerItem findCountryEnvParamList(String system, String country, String environment, String build, String revision, String active, ApplicationContext appContext, HttpServletRequest request) throws JSONException {
+    private AnswerItem findCountryEnvParamList(String system, String country, String environment, String build, String revision, String active
+            , ApplicationContext appContext, boolean userHasPermissions, HttpServletRequest request) throws JSONException {
 
         AnswerItem item = new AnswerItem();
-        JSONObject jsonResponse = new JSONObject();
+        JSONObject object = new JSONObject();
         cepService = appContext.getBean(ICountryEnvParamService.class);
 
         int startPosition = Integer.valueOf(ParameterParserUtil.parseStringParam(request.getParameter("iDisplayStart"), "0"));
@@ -191,27 +195,26 @@ public class ReadCountryEnvParam extends HttpServlet {
         AnswerList resp = cepService.readByVariousByCriteria(system, country, environment, build, revision, active, startPosition, length, columnName, sort, searchParameter, "");
 
         JSONArray jsonArray = new JSONArray();
-        boolean userHasPermissions = request.isUserInRole("IntegratorRO");
         if (resp.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {//the service was able to perform the query, then we should get all values
             for (CountryEnvParam cep : (List<CountryEnvParam>) resp.getDataList()) {
                 jsonArray.put(convertCountryEnvParamtoJSONObject(cep));
             }
         }
 
-        jsonResponse.put("hasPermissions", userHasPermissions);
-        jsonResponse.put("contentTable", jsonArray);
-        jsonResponse.put("iTotalRecords", resp.getTotalRows());
-        jsonResponse.put("iTotalDisplayRecords", resp.getTotalRows());
+        object.put("hasPermissions", userHasPermissions);
+        object.put("contentTable", jsonArray);
+        object.put("iTotalRecords", resp.getTotalRows());
+        object.put("iTotalDisplayRecords", resp.getTotalRows());
 
-        item.setItem(jsonResponse);
+        item.setItem(object);
         item.setResultMessage(resp.getResultMessage());
         return item;
 
     }
 
-    private AnswerItem findUniqueEnvironmentList(ApplicationContext appContext, String system, String active) throws JSONException {
+    private AnswerItem findUniqueEnvironmentList(String system, String active, ApplicationContext appContext, boolean userHasPermissions) throws JSONException {
         AnswerItem item = new AnswerItem();
-        JSONObject jsonResponse = new JSONObject();
+        JSONObject object = new JSONObject();
         cepService = appContext.getBean(ICountryEnvParamService.class);
 
         AnswerList resp = cepService.readByVariousByCriteria(system, null, null, null, null, active, 0, 0, "system", "asc", "", "");
@@ -229,16 +232,17 @@ public class ReadCountryEnvParam extends HttpServlet {
             }
         }
 
-        jsonResponse.put("contentTable", jsonArray);
-        jsonResponse.put("iTotalRecords", resp.getTotalRows());
-        jsonResponse.put("iTotalDisplayRecords", resp.getTotalRows());
+        object.put("contentTable", jsonArray);
+        object.put("iTotalRecords", resp.getTotalRows());
+        object.put("iTotalDisplayRecords", resp.getTotalRows());
+        object.put("hasPermissions", userHasPermissions);
 
-        item.setItem(jsonResponse);
+        item.setItem(object);
         item.setResultMessage(resp.getResultMessage());
         return item;
     }
 
-    private AnswerItem findCountryEnvParamByKey(String system, String country, String environment, ApplicationContext appContext) throws JSONException, CerberusException {
+    private AnswerItem findCountryEnvParamByKey(String system, String country, String environment, ApplicationContext appContext, boolean userHasPermissions) throws JSONException, CerberusException {
         AnswerItem item = new AnswerItem();
         JSONObject object = new JSONObject();
 
@@ -254,6 +258,7 @@ public class ReadCountryEnvParam extends HttpServlet {
             object.put("contentTable", response);
         }
 
+        object.put("hasPermissions", userHasPermissions);
         item.setItem(object);
         item.setResultMessage(answer.getResultMessage());
 

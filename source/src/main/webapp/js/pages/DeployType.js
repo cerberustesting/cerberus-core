@@ -159,6 +159,14 @@ function editEntry(id) {
         formEdit.find("#deployType").prop("value", id);
         formEdit.find("#Description").prop("value", obj["description"]);
 
+        if (!(data["hasPermissions"])) { // If readonly, we only readonly all fields
+            formEdit.find("#deployType").prop("readonly", "readonly");
+            formEdit.find("#Description").prop("readonly", "readonly");
+
+            $('#editEntryButton').attr('class', '');
+            $('#editEntryButton').attr('hidden', 'hidden');
+        }
+
         formEdit.modal('show');
     });
 }
@@ -187,20 +195,19 @@ function aoColumnsFunc(tableId) {
             "bSearchable": false,
             "mRender": function (data, type, obj) {
                 var hasPermissions = $("#" + tableId).attr("hasPermissions");
-                
-                if(hasPermissions === "true"){ //only draws the options if the user has the correct privileges
-                    var editEntry = '<button id="editEntry" onclick="editEntry(\'' + obj["deploytype"] + '\');"\n\
+
+                var editEntry = '<button id="editEntry" onclick="editEntry(\'' + obj["deploytype"] + '\');"\n\
                                     class="editEntry btn btn-default btn-xs margin-right5" \n\
                                     name="editEntry" title="' + doc.getDocLabel("page_deploytype", "button_edit") + '" type="button">\n\
                                     <span class="glyphicon glyphicon-pencil"></span></button>';
-                    var deleteEntry = '<button id="deleteEntry" onclick="deleteEntry(\'' + obj["deploytype"] + '\');" \n\
+                var deleteEntry = '<button id="deleteEntry" onclick="deleteEntry(\'' + obj["deploytype"] + '\');" \n\
                                     class="deleteEntry btn btn-default btn-xs margin-right5" \n\
                                     name="deleteEntry" title="' + doc.getDocLabel("page_deploytype", "button_delete") + '" type="button">\n\
                                     <span class="glyphicon glyphicon-trash"></span></button>';
-
+                if (hasPermissions === "true") { //only draws the options if the user has the correct privileges
                     return '<div class="center btn-group width150">' + editEntry + deleteEntry + '</div>';
                 }
-                return '';
+                return '<div class="center btn-group width150">' + editEntry + '</div>';
             }
         },
         {"data": "deploytype",

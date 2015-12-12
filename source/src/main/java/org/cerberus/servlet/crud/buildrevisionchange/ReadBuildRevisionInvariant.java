@@ -112,16 +112,19 @@ public class ReadBuildRevisionInvariant extends HttpServlet {
         }
         String system = policy.sanitize(request.getParameter("system"));
 
+        // Global boolean on the servlet that define if the user has permition to edit and delete object.
+        boolean userHasPermissions = request.isUserInRole("Integrator");
+
         // Init Answer with potencial error from Parsing parameter.
         AnswerItem answer = new AnswerItem(msg);
 
         try {
             JSONObject jsonResponse = new JSONObject();
             if ((request.getParameter("system") != null) && (request.getParameter("level") != null) && !(lvlid_error) && (request.getParameter("seq") != null) && !(seqid_error)) { // ID parameter is specified so we return the unique record of object.
-                answer = findBuildRevisionInvariantByKey(system, lvlid, seqid, appContext);
+                answer = findBuildRevisionInvariantByKey(system, lvlid, seqid, appContext, userHasPermissions);
                 jsonResponse = (JSONObject) answer.getItem();
             } else { // Default behaviour, we return the list of objects.
-                answer = findBuildRevisionInvariantList(system, lvlid, appContext, request, response);
+                answer = findBuildRevisionInvariantList(system, lvlid, appContext, userHasPermissions, request);
                 jsonResponse = (JSONObject) answer.getItem();
             }
             jsonResponse.put("messageType", answer.getResultMessage().getMessage().getCodeString());
@@ -191,10 +194,10 @@ public class ReadBuildRevisionInvariant extends HttpServlet {
         return "Short description";
     }// </editor-fold>
 
-    private AnswerItem findBuildRevisionInvariantList(String system, Integer level, ApplicationContext appContext, HttpServletRequest request, HttpServletResponse response) throws JSONException {
+    private AnswerItem findBuildRevisionInvariantList(String system, Integer level, ApplicationContext appContext, boolean userHasPermissions, HttpServletRequest request) throws JSONException {
 
         AnswerItem item = new AnswerItem();
-        JSONObject jsonResponse = new JSONObject();
+        JSONObject object = new JSONObject();
         briService = appContext.getBean(BuildRevisionInvariantService.class);
 
         int startPosition = Integer.valueOf(ParameterParserUtil.parseStringParam(request.getParameter("iDisplayStart"), "0"));
@@ -210,24 +213,23 @@ public class ReadBuildRevisionInvariant extends HttpServlet {
         AnswerList resp = briService.readBySystemByCriteria(system, level, startPosition, length, columnName, sort, searchParameter, "");
 
         JSONArray jsonArray = new JSONArray();
-        boolean userHasPermissions = request.isUserInRole("IntegratorRO");
         if (resp.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {//the service was able to perform the query, then we should get all values
             for (BuildRevisionInvariant bri : (List<BuildRevisionInvariant>) resp.getDataList()) {
                 jsonArray.put(convertBuildRevisionInvariantToJSONObject(bri));
             }
         }
 
-        jsonResponse.put("hasPermissions", userHasPermissions);
-        jsonResponse.put("contentTable", jsonArray);
-        jsonResponse.put("iTotalRecords", resp.getTotalRows());
-        jsonResponse.put("iTotalDisplayRecords", resp.getTotalRows());
+        object.put("hasPermissions", userHasPermissions);
+        object.put("contentTable", jsonArray);
+        object.put("iTotalRecords", resp.getTotalRows());
+        object.put("iTotalDisplayRecords", resp.getTotalRows());
 
-        item.setItem(jsonResponse);
+        item.setItem(object);
         item.setResultMessage(resp.getResultMessage());
         return item;
     }
 
-    private AnswerItem findBuildRevisionInvariantByKey(String system, Integer level, Integer seq, ApplicationContext appContext) throws JSONException, CerberusException {
+    private AnswerItem findBuildRevisionInvariantByKey(String system, Integer level, Integer seq, ApplicationContext appContext, boolean userHasPermissions) throws JSONException, CerberusException {
         AnswerItem item = new AnswerItem();
         JSONObject object = new JSONObject();
 
@@ -244,6 +246,7 @@ public class ReadBuildRevisionInvariant extends HttpServlet {
             object.put("contentTable", response);
         }
 
+        object.put("hasPermissions", userHasPermissions);
         item.setItem(object);
         item.setResultMessage(answer.getResultMessage());
 

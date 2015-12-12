@@ -56,7 +56,7 @@ public class ReadDeployType extends HttpServlet {
     private IDeployTypeService deployTypeService;
 
     private final String OBJECT_NAME = "DeployType";
-    
+
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
      * methods.
@@ -83,18 +83,21 @@ public class ReadDeployType extends HttpServlet {
          * Parsing and securing all required parameters.
          */
         // Nothing to do here as no parameter to check.
-        
+        //
+        // Global boolean on the servlet that define if the user has permition to edit and delete object.
+        boolean userHasPermissions = request.isUserInRole("Integrator");
+
         // Init Answer with potencial error from Parsing parameter.
         AnswerItem answer = new AnswerItem(msg);
 
         try {
             JSONObject jsonResponse = new JSONObject();
             if (request.getParameter("deploytype") == null) {
-                answer = findDeployTypeList(appContext, request, response);
+                answer = findDeployTypeList(appContext, userHasPermissions, request);
                 jsonResponse = (JSONObject) answer.getItem();
             } else {
                 String deployType = policy.sanitize(request.getParameter("deploytype"));
-                answer = findDeployTypeByID(appContext, deployType);
+                answer = findDeployTypeByID(deployType, appContext, userHasPermissions);
                 jsonResponse = (JSONObject) answer.getItem();
             }
 
@@ -165,10 +168,10 @@ public class ReadDeployType extends HttpServlet {
         return "Short description";
     }// </editor-fold>
 
-    private AnswerItem findDeployTypeList(ApplicationContext appContext, HttpServletRequest request, HttpServletResponse response) throws JSONException {
+    private AnswerItem findDeployTypeList(ApplicationContext appContext, boolean userHasPermissions, HttpServletRequest request) throws JSONException {
 
         AnswerItem item = new AnswerItem();
-        JSONObject jsonResponse = new JSONObject();
+        JSONObject object = new JSONObject();
         deployTypeService = appContext.getBean(DeployTypeService.class);
 
         int startPosition = Integer.valueOf(ParameterParserUtil.parseStringParam(request.getParameter("iDisplayStart"), "0"));
@@ -183,31 +186,23 @@ public class ReadDeployType extends HttpServlet {
         AnswerList resp = deployTypeService.readByCriteria(startPosition, length, columnName, sort, searchParameter, "");
 
         JSONArray jsonArray = new JSONArray();
-        boolean userHasPermissions = request.isUserInRole("Integrator");
         if (resp.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {  //the service was able to perform the query, then we should get all values
             for (DeployType deploytype : (List<DeployType>) resp.getDataList()) {
                 jsonArray.put(convertDeployTypeToJSONObject(deploytype));
             }
         }
 
-        jsonResponse.put("hasPermissions", userHasPermissions);
-        jsonResponse.put("contentTable", jsonArray);
-        jsonResponse.put("iTotalRecords", resp.getTotalRows());
-        jsonResponse.put("iTotalDisplayRecords", resp.getTotalRows());
+        object.put("hasPermissions", userHasPermissions);
+        object.put("contentTable", jsonArray);
+        object.put("iTotalRecords", resp.getTotalRows());
+        object.put("iTotalDisplayRecords", resp.getTotalRows());
 
-        item.setItem(jsonResponse);
+        item.setItem(object);
         item.setResultMessage(resp.getResultMessage());
         return item;
     }
 
-    private JSONObject convertDeployTypeToJSONObject(DeployType deployType) throws JSONException {
-
-        Gson gson = new Gson();
-        JSONObject result = new JSONObject(gson.toJson(deployType));
-        return result;
-    }
-
-    private AnswerItem findDeployTypeByID(ApplicationContext appContext, String id) throws JSONException, CerberusException {
+    private AnswerItem findDeployTypeByID(String id, ApplicationContext appContext, boolean userHasPermissions) throws JSONException, CerberusException {
         AnswerItem item = new AnswerItem();
         JSONObject object = new JSONObject();
 
@@ -223,9 +218,18 @@ public class ReadDeployType extends HttpServlet {
             object.put("contentTable", response);
         }
 
+        object.put("hasPermissions", userHasPermissions);
         item.setItem(object);
         item.setResultMessage(answer.getResultMessage());
 
         return item;
     }
+    
+    private JSONObject convertDeployTypeToJSONObject(DeployType deployType) throws JSONException {
+
+        Gson gson = new Gson();
+        JSONObject result = new JSONObject(gson.toJson(deployType));
+        return result;
+    }
+
 }

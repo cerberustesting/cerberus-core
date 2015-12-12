@@ -5,7 +5,6 @@
             <div class="modal-header">
                 <button type="button" class="close margin-right25" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
                 <h4 class="modal-title" id="listInstallInstructionsModalLabel">Installation Instructions</h4>
-                <h4 class="modal-title" id="listInstallInstructionsModalLabel1">Build : Revision : </h4>
             </div>
             <div class="modal-body"> 
                 <div id="DialogMessagesArea">
@@ -16,12 +15,27 @@
                         </button>
                     </div>
                 </div>
+                <div class="panel-body">
+                    <div class="form-inline">
+                        <div class="marginBottom10">
+                            <label for="selectBuildFrom" name="buildFieldFrom">From Build/Revision :</label>
+                            <select class="form-control" id="selectBuildFrom" name="build" style="width: 10%"></select>
+                            <select class="form-control" id="selectRevisionFrom" name="revision" style="width: 10%"></select>
+                            <label for="selectBuildTo" name="buildFieldTo">To Build/Revision :</label>
+                            <select class="form-control" id="selectBuildTo" name="build" style="width: 10%"></select>
+                            <select class="form-control" id="selectRevisionTo" name="revision" style="width: 10%"></select>
+                            <button type="button" class="btn btn-default" id="btnLoad" onclick="refreshlistInstallInstructions()" name="btnLoad">Load</button>
+                        </div>
+                    </div>
+                </div>
                 <div id="listPanelInstallInstructions">
                     <div class="row">
                         <div class="col-xs-12">
                             <table class="table table-bordered table-hover nomarginbottom" id="installInstructionsTable">
                                 <thead>
                                     <tr>
+                                        <th class="text-center" id="buildHeader">Build</th>
+                                        <th class="text-center" id="revisionHeader">Revision</th>
                                         <th class="text-center" id="applicationHeader">Application</th>
                                         <th class="text-center" id="releaseHeader">Release</th>
                                         <th class="text-center" id="linkHeader">Deploy Link</th>

@@ -81,22 +81,26 @@ public class ReadApplication extends HttpServlet {
          * Parsing and securing all required parameters.
          */
         // Nothing to do here as no parameter to check.
+        //
+        // Global boolean on the servlet that define if the user has permition to edit and delete object.
+        boolean userHasPermissions = request.isUserInRole("Integrator");
+
         // Init Answer with potencial error from Parsing parameter.
         AnswerItem answer = new AnswerItem(new MessageEvent(MessageEventEnum.DATA_OPERATION_OK));
 
         try {
             JSONObject jsonResponse = new JSONObject();
             if ((request.getParameter("application") == null) && (request.getParameter("system") == null)) {
-                answer = findApplicationList(null, appContext, request, response);
+                answer = findApplicationList(null, appContext, userHasPermissions, request);
                 jsonResponse = (JSONObject) answer.getItem();
             } else {
                 if (request.getParameter("application") != null) {
                     String application = policy.sanitize(request.getParameter("application"));
-                    answer = findApplicationByKey(appContext, application);
+                    answer = findApplicationByKey(application, appContext, userHasPermissions);
                     jsonResponse = (JSONObject) answer.getItem();
                 } else if (request.getParameter("system") != null) {
                     String system = policy.sanitize(request.getParameter("system"));
-                    answer = findApplicationList(system, appContext, request, response);
+                    answer = findApplicationList(system, appContext, userHasPermissions, request);
                     jsonResponse = (JSONObject) answer.getItem();
                 }
             }
@@ -168,10 +172,10 @@ public class ReadApplication extends HttpServlet {
         return "Short description";
     }// </editor-fold>
 
-    private AnswerItem findApplicationList(String system, ApplicationContext appContext, HttpServletRequest request, HttpServletResponse response) throws JSONException {
+    private AnswerItem findApplicationList(String system, ApplicationContext appContext, boolean userHasPermissions, HttpServletRequest request) throws JSONException {
 
         AnswerItem item = new AnswerItem();
-        JSONObject jsonResponse = new JSONObject();
+        JSONObject object = new JSONObject();
         applicationService = appContext.getBean(ApplicationService.class);
 
         int startPosition = Integer.valueOf(ParameterParserUtil.parseStringParam(request.getParameter("iDisplayStart"), "0"));
@@ -187,31 +191,23 @@ public class ReadApplication extends HttpServlet {
         AnswerList resp = applicationService.readBySystemByCriteria(system, startPosition, length, columnName, sort, searchParameter, "");
 
         JSONArray jsonArray = new JSONArray();
-        boolean userHasPermissions = request.isUserInRole("Integrator");
         if (resp.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {//the service was able to perform the query, then we should get all values
             for (Application application : (List<Application>) resp.getDataList()) {
                 jsonArray.put(convertApplicationToJSONObject(application));
             }
         }
 
-        jsonResponse.put("hasPermissions", userHasPermissions);
-        jsonResponse.put("contentTable", jsonArray);
-        jsonResponse.put("iTotalRecords", resp.getTotalRows());
-        jsonResponse.put("iTotalDisplayRecords", resp.getTotalRows());
+        object.put("hasPermissions", userHasPermissions);
+        object.put("contentTable", jsonArray);
+        object.put("iTotalRecords", resp.getTotalRows());
+        object.put("iTotalDisplayRecords", resp.getTotalRows());
 
-        item.setItem(jsonResponse);
+        item.setItem(object);
         item.setResultMessage(resp.getResultMessage());
         return item;
     }
 
-    private JSONObject convertApplicationToJSONObject(Application application) throws JSONException {
-
-        Gson gson = new Gson();
-        JSONObject result = new JSONObject(gson.toJson(application));
-        return result;
-    }
-
-    private AnswerItem findApplicationByKey(ApplicationContext appContext, String id) throws JSONException, CerberusException {
+    private AnswerItem findApplicationByKey(String id, ApplicationContext appContext, boolean userHasPermissions) throws JSONException, CerberusException {
         AnswerItem item = new AnswerItem();
         JSONObject object = new JSONObject();
 
@@ -227,10 +223,18 @@ public class ReadApplication extends HttpServlet {
             object.put("contentTable", response);
         }
 
+        object.put("hasPermissions", userHasPermissions);
         item.setItem(object);
         item.setResultMessage(answer.getResultMessage());
 
         return item;
+    }
+
+    private JSONObject convertApplicationToJSONObject(Application application) throws JSONException {
+
+        Gson gson = new Gson();
+        JSONObject result = new JSONObject(gson.toJson(application));
+        return result;
     }
 
 }

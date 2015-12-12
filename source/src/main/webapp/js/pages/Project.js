@@ -161,6 +161,17 @@ function editEntry(id) {
         formEdit.find("#Active").prop("value", obj["active"]);
         formEdit.find("#datecre").prop("value", obj["dateCreation"]);
 
+        if (!(data["hasPermissions"])) { // If readonly, we only readonly all fields
+            formEdit.find("#idProject").prop("readonly", "readonly");
+            formEdit.find("#VCCode").prop("readonly", "readonly");
+            formEdit.find("#Description").prop("readonly", "readonly");
+            formEdit.find("#Active").prop("disabled", "disabled");
+            formEdit.find("#datecre").prop("readonly", "readonly");
+
+            $('#editEntryButton').attr('class', '');
+            $('#editEntryButton').attr('hidden', 'hidden');
+        }
+
         formEdit.modal('show');
     });
 }
@@ -188,22 +199,19 @@ function aoColumnsFunc(tableId) {
             "bSearchable": false,
             "mRender": function (data, type, obj) {
                 var hasPermissions = $("#" + tableId).attr("hasPermissions");
-                
 
-                if (hasPermissions === "true") { //only draws the options if the user has the correct privileges
-                    
-                    var editEntry = '<button id="editEntry" onclick="editEntry(\'' + escapeHtml(obj["idProject"]) + '\');"\n\
+                var editEntry = '<button id="editEntry" onclick="editEntry(\'' + escapeHtml(obj["idProject"]) + '\');"\n\
                                     class="editEntry btn btn-default btn-xs margin-right5" \n\
                                     name="editEntry" title="' + doc.getDocLabel("page_project", "button_edit") + '" type="button">\n\
                                     <span class="glyphicon glyphicon-pencil"></span></button>';
-                    var deleteEntry = '<button id="deleteEntry" onclick="deleteEntry(\'' + escapeHtml(obj["idProject"]) + '\');" \n\
+                var deleteEntry = '<button id="deleteEntry" onclick="deleteEntry(\'' + escapeHtml(obj["idProject"]) + '\');" \n\
                                     class="deleteEntry btn btn-default btn-xs margin-right5" \n\
                                     name="deleteEntry" title="' + doc.getDocLabel("page_project", "button_delete") + '" type="button">\n\
                                     <span class="glyphicon glyphicon-trash"></span></button>';
-
+                if (hasPermissions === "true") { //only draws the options if the user has the correct privileges
                     return '<div class="center btn-group width150">' + editEntry + deleteEntry + '</div>';
                 }
-                return '';
+                return '<div class="center btn-group width150">' + editEntry + '</div>';
             }
         },
         {"data": "idProject",

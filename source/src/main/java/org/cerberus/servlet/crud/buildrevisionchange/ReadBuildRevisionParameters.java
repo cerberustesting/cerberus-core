@@ -20,7 +20,6 @@
 package org.cerberus.servlet.crud.buildrevisionchange;
 
 import com.google.gson.Gson;
-import com.mysql.jdbc.StringUtils;
 import java.io.IOException;
 import java.util.List;
 import java.util.logging.Logger;
@@ -99,25 +98,31 @@ public class ReadBuildRevisionParameters extends HttpServlet {
             brpid_error = true;
         }
 
+        // Global boolean on the servlet that define if the user has permition to edit and delete object.
+        boolean userHasPermissions = request.isUserInRole("Integrator");
+
         // Init Answer with potencial error from Parsing parameter.
         AnswerItem answer = new AnswerItem(msg);
 
         try {
             JSONObject jsonResponse = new JSONObject();
             if ((request.getParameter("id") != null) && !(brpid_error)) { // ID parameter is specified so we return the unique record of object.
-                answer = findBuildRevisionParametersByKey(appContext, brpid);
+                answer = findBuildRevisionParametersByKey(brpid, appContext, userHasPermissions);
                 jsonResponse = (JSONObject) answer.getItem();
             } else if ((request.getParameter("system") != null) && (request.getParameter("getlast") != null)) { // getlast parameter trigger the last release from the system..
-                answer = findlastBuildRevisionParametersBySystem(appContext, request.getParameter("system"));
+                answer = findlastBuildRevisionParametersBySystem(request.getParameter("system"), appContext, userHasPermissions);
                 jsonResponse = (JSONObject) answer.getItem();
             } else if ((request.getParameter("system") != null) && (request.getParameter("build") != null) && (request.getParameter("revision") != null) && (request.getParameter("getSVNRelease") != null)) { // getSVNRelease parameter trigger the list of SVN Release inside he build per Application.
-                answer = findSVNBuildRevisionParametersBySystem(appContext, request.getParameter("system"), request.getParameter("build"), request.getParameter("revision"), request.getParameter("lastbuild"), request.getParameter("lastrevision"));
+                answer = findSVNBuildRevisionParametersBySystem(request.getParameter("system"), request.getParameter("build"), request.getParameter("revision")
+                        , request.getParameter("lastbuild"), request.getParameter("lastrevision"), appContext, userHasPermissions);
                 jsonResponse = (JSONObject) answer.getItem();
             } else if ((request.getParameter("system") != null) && (request.getParameter("build") != null) && (request.getParameter("revision") != null) && (request.getParameter("getNonSVNRelease") != null)) { // getNonSVNRelease parameter trigger the list of Manual Release with corresponding links.
-                answer = findManualBuildRevisionParametersBySystem(appContext, request.getParameter("system"), request.getParameter("build"), request.getParameter("revision"), request.getParameter("lastbuild"), request.getParameter("lastrevision"));
+                answer = findManualBuildRevisionParametersBySystem(request.getParameter("system"), request.getParameter("build"), request.getParameter("revision")
+                        , request.getParameter("lastbuild"), request.getParameter("lastrevision"), appContext, userHasPermissions);
                 jsonResponse = (JSONObject) answer.getItem();
             } else { // Default behaviour, we return the list of objects.
-                answer = findBuildRevisionParametersList(request.getParameter("system"), request.getParameter("build"), request.getParameter("revision"), request.getParameter("application"), appContext, request, response);
+                answer = findBuildRevisionParametersList(request.getParameter("system"), request.getParameter("build"), request.getParameter("revision")
+                        , request.getParameter("application"), appContext, userHasPermissions, request);
                 jsonResponse = (JSONObject) answer.getItem();
             }
             jsonResponse.put("messageType", answer.getResultMessage().getMessage().getCodeString());
@@ -187,10 +192,10 @@ public class ReadBuildRevisionParameters extends HttpServlet {
         return "Short description";
     }// </editor-fold>
 
-    private AnswerItem findBuildRevisionParametersList(String system, String build, String revision, String application, ApplicationContext appContext, HttpServletRequest request, HttpServletResponse response) throws JSONException {
+    private AnswerItem findBuildRevisionParametersList(String system, String build, String revision, String application, ApplicationContext appContext, boolean userHasPermissions, HttpServletRequest request) throws JSONException {
 
         AnswerItem item = new AnswerItem();
-        JSONObject jsonResponse = new JSONObject();
+        JSONObject object = new JSONObject();
         brpService = appContext.getBean(BuildRevisionParametersService.class);
 
         int startPosition = Integer.valueOf(ParameterParserUtil.parseStringParam(request.getParameter("iDisplayStart"), "0"));
@@ -206,24 +211,23 @@ public class ReadBuildRevisionParameters extends HttpServlet {
         AnswerList resp = brpService.readByVarious1ByCriteria(system, application, build, revision, startPosition, length, columnName, sort, searchParameter, "");
 
         JSONArray jsonArray = new JSONArray();
-        boolean userHasPermissions = request.isUserInRole("Integrator");
         if (resp.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {//the service was able to perform the query, then we should get all values
             for (BuildRevisionParameters brp : (List<BuildRevisionParameters>) resp.getDataList()) {
                 jsonArray.put(convertBuildRevisionParametersToJSONObject(brp));
             }
         }
 
-        jsonResponse.put("hasPermissions", userHasPermissions);
-        jsonResponse.put("contentTable", jsonArray);
-        jsonResponse.put("iTotalRecords", resp.getTotalRows());
-        jsonResponse.put("iTotalDisplayRecords", resp.getTotalRows());
+        object.put("hasPermissions", userHasPermissions);
+        object.put("contentTable", jsonArray);
+        object.put("iTotalRecords", resp.getTotalRows());
+        object.put("iTotalDisplayRecords", resp.getTotalRows());
 
-        item.setItem(jsonResponse);
+        item.setItem(object);
         item.setResultMessage(resp.getResultMessage());
         return item;
     }
 
-    private AnswerItem findBuildRevisionParametersByKey(ApplicationContext appContext, Integer id) throws JSONException, CerberusException {
+    private AnswerItem findBuildRevisionParametersByKey(Integer id, ApplicationContext appContext, boolean userHasPermissions) throws JSONException, CerberusException {
         AnswerItem item = new AnswerItem();
         JSONObject object = new JSONObject();
 
@@ -239,13 +243,15 @@ public class ReadBuildRevisionParameters extends HttpServlet {
             object.put("contentTable", response);
         }
 
+        object.put("hasPermissions", userHasPermissions);
+        
         item.setItem(object);
         item.setResultMessage(answer.getResultMessage());
 
         return item;
     }
 
-    private AnswerItem findlastBuildRevisionParametersBySystem(ApplicationContext appContext, String system) throws JSONException, CerberusException {
+    private AnswerItem findlastBuildRevisionParametersBySystem(String system, ApplicationContext appContext, boolean userHasPermissions) throws JSONException, CerberusException {
         AnswerItem item = new AnswerItem();
         JSONObject object = new JSONObject();
 
@@ -261,16 +267,18 @@ public class ReadBuildRevisionParameters extends HttpServlet {
             object.put("contentTable", response);
         }
 
+        object.put("hasPermissions", userHasPermissions);
+        
         item.setItem(object);
         item.setResultMessage(answer.getResultMessage());
 
         return item;
     }
 
-    private AnswerItem findSVNBuildRevisionParametersBySystem(ApplicationContext appContext, String system, String build, String revision, String lastbuild, String lastrevision) throws JSONException {
+    private AnswerItem findSVNBuildRevisionParametersBySystem(String system, String build, String revision, String lastbuild, String lastrevision, ApplicationContext appContext, boolean userHasPermissions) throws JSONException {
 
         AnswerItem item = new AnswerItem();
-        JSONObject jsonResponse = new JSONObject();
+        JSONObject object = new JSONObject();
         brpService = appContext.getBean(BuildRevisionParametersService.class);
 
         if (StringUtil.isNullOrEmpty(lastbuild)) {
@@ -289,19 +297,20 @@ public class ReadBuildRevisionParameters extends HttpServlet {
             }
         }
 
-        jsonResponse.put("contentTable", jsonArray);
-        jsonResponse.put("iTotalRecords", resp.getTotalRows());
-        jsonResponse.put("iTotalDisplayRecords", resp.getTotalRows());
-
-        item.setItem(jsonResponse);
+        object.put("contentTable", jsonArray);
+        object.put("iTotalRecords", resp.getTotalRows());
+        object.put("iTotalDisplayRecords", resp.getTotalRows());
+        object.put("hasPermissions", userHasPermissions);
+        
+        item.setItem(object);
         item.setResultMessage(resp.getResultMessage());
         return item;
     }
 
-    private AnswerItem findManualBuildRevisionParametersBySystem(ApplicationContext appContext, String system, String build, String revision, String lastbuild, String lastrevision) throws JSONException {
+    private AnswerItem findManualBuildRevisionParametersBySystem(String system, String build, String revision, String lastbuild, String lastrevision, ApplicationContext appContext, boolean userHasPermissions) throws JSONException {
 
         AnswerItem item = new AnswerItem();
-        JSONObject jsonResponse = new JSONObject();
+        JSONObject object = new JSONObject();
         brpService = appContext.getBean(BuildRevisionParametersService.class);
 
         if (StringUtil.isNullOrEmpty(lastbuild)) {
@@ -320,11 +329,12 @@ public class ReadBuildRevisionParameters extends HttpServlet {
             }
         }
 
-        jsonResponse.put("contentTable", jsonArray);
-        jsonResponse.put("iTotalRecords", resp.getTotalRows());
-        jsonResponse.put("iTotalDisplayRecords", resp.getTotalRows());
-
-        item.setItem(jsonResponse);
+        object.put("contentTable", jsonArray);
+        object.put("iTotalRecords", resp.getTotalRows());
+        object.put("iTotalDisplayRecords", resp.getTotalRows());
+        object.put("hasPermissions", userHasPermissions);
+        
+        item.setItem(object);
         item.setResultMessage(resp.getResultMessage());
         return item;
     }

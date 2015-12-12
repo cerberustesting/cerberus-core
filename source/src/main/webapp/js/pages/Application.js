@@ -176,7 +176,7 @@ function editApplicationModalCloseHandler() {
 
 function CreateApplicationClick() {
     clearResponseMessageMainPage();
-    
+
     // When creating a new application, System takes the default value of the 
     // system already selected in header.
     var formAdd = $('#addApplicationModal');
@@ -184,7 +184,7 @@ function CreateApplicationClick() {
     // Default to NONE on DeployType and Application Type.
     formAdd.find("#type").val("NONE");
     formAdd.find("#deploytype").val("NONE");
-   
+
     $('#addApplicationModal').modal('show');
 }
 
@@ -207,6 +207,22 @@ function editApplication(id) {
         formEdit.find("#bugtrackernewurl").prop("value", obj["bugTrackerNewUrl"]);
         formEdit.find("#deploytype").prop("value", obj["deploytype"]);
         formEdit.find("#mavengroupid").prop("value", obj["mavengroupid"]);
+
+        if (!(data["hasPermissions"])) { // If readonly, we only readonly all fields
+            formEdit.find("#description").prop("readonly", "readonly");
+            formEdit.find("#sort").prop("readonly", "readonly");
+            formEdit.find("#type").prop("disabled", "disabled");
+            formEdit.find("#system").prop("disabled", "disabled");
+            formEdit.find("#subsystem").prop("readonly", "readonly");
+            formEdit.find("#svnurl").prop("readonly", "readonly");
+            formEdit.find("#bugtrackerurl").prop("readonly", "readonly");
+            formEdit.find("#bugtrackernewurl").prop("readonly", "readonly");
+            formEdit.find("#deploytype").prop("disabled", "disabled");
+            formEdit.find("#mavengroupid").prop("readonly", "readonly");
+
+            $('#editApplicationButton').attr('class', '');
+            $('#editApplicationButton').attr('hidden', 'hidden');
+        }
 
         formEdit.modal('show');
     });
@@ -236,19 +252,18 @@ function aoColumnsFunc(tableId) {
             "mRender": function (data, type, obj) {
                 var hasPermissions = $("#" + tableId).attr("hasPermissions");
 
-                if (hasPermissions === "true") { //only draws the options if the user has the correct privileges
-                    var editApplication = '<button id="editApplication" onclick="editApplication(\'' + obj["application"] + '\');"\n\
+                var editApplication = '<button id="editApplication" onclick="editApplication(\'' + obj["application"] + '\');"\n\
                                     class="editApplication btn btn-default btn-xs margin-right5" \n\
                                     name="editApplication" title="\'' + doc.getDocLabel("page_application", "button_edit") + '\'" type="button">\n\
                                     <span class="glyphicon glyphicon-pencil"></span></button>';
-                    var deleteApplication = '<button id="deleteApplication" onclick="deleteApplication(\'' + obj["application"] + '\');" \n\
+                var deleteApplication = '<button id="deleteApplication" onclick="deleteApplication(\'' + obj["application"] + '\');" \n\
                                     class="deleteApplication btn btn-default btn-xs margin-right5" \n\
                                     name="deleteApplication" title="\'' + doc.getDocLabel("page_application", "button_delete") + '\'" type="button">\n\
                                     <span class="glyphicon glyphicon-trash"></span></button>';
-
+                if (hasPermissions === "true") { //only draws the options if the user has the correct privileges
                     return '<div class="center btn-group width150">' + editApplication + deleteApplication + '</div>';
                 }
-                return '';
+                return '<div class="center btn-group width150">' + editApplication + '</div>';
             }
         },
         {"data": "application",

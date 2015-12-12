@@ -96,17 +96,20 @@ public class ReadRobot extends HttpServlet {
             robotid_error = true;
         }
 
+        // Global boolean on the servlet that define if the user has permition to edit and delete object.
+        boolean userHasPermissions = request.isUserInRole("Integrator");
+
         // Init Answer with potencial error from Parsing parameter.
         AnswerItem answer = new AnswerItem(msg);
-        
+
         try {
             JSONObject jsonResponse = new JSONObject();
             if ((request.getParameter("robotid") == null)) {
-                answer = findRobotList(appContext, request, response);
+                answer = findRobotList(appContext, userHasPermissions, request);
                 jsonResponse = (JSONObject) answer.getItem();
             } else {
                 if ((request.getParameter("robotid") != null) && !(robotid_error)) {
-                    answer = findRobotByKey(appContext, robotid);
+                    answer = findRobotByKey(robotid, appContext, userHasPermissions);
                     jsonResponse = (JSONObject) answer.getItem();
                 }
             }
@@ -116,7 +119,7 @@ public class ReadRobot extends HttpServlet {
             jsonResponse.put("sEcho", echo);
 
             response.getWriter().print(jsonResponse.toString());
-            
+
         } catch (JSONException e) {
             org.apache.log4j.Logger.getLogger(ReadRobot.class.getName()).log(org.apache.log4j.Level.ERROR, null, e);
             //returns a default error message with the json format that is able to be parsed by the client-side
@@ -178,10 +181,10 @@ public class ReadRobot extends HttpServlet {
         return "Short description";
     }// </editor-fold>
 
-    private AnswerItem findRobotList(ApplicationContext appContext, HttpServletRequest request, HttpServletResponse response) throws JSONException {
+    private AnswerItem findRobotList(ApplicationContext appContext, boolean userHasPermissions, HttpServletRequest request) throws JSONException {
 
         AnswerItem item = new AnswerItem();
-        JSONObject jsonResponse = new JSONObject();
+        JSONObject object = new JSONObject();
         robotService = appContext.getBean(RobotService.class);
 
         int startPosition = Integer.valueOf(ParameterParserUtil.parseStringParam(request.getParameter("iDisplayStart"), "0"));
@@ -197,31 +200,23 @@ public class ReadRobot extends HttpServlet {
         AnswerList resp = robotService.readByCriteria(startPosition, length, columnName, sort, searchParameter, "");
 
         JSONArray jsonArray = new JSONArray();
-        boolean userHasPermissions = request.isUserInRole("Integrator");
         if (resp.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {//the service was able to perform the query, then we should get all values
             for (Robot robot : (List<Robot>) resp.getDataList()) {
                 jsonArray.put(convertRobotToJSONObject(robot));
             }
         }
 
-        jsonResponse.put("hasPermissions", userHasPermissions);
-        jsonResponse.put("contentTable", jsonArray);
-        jsonResponse.put("iTotalRecords", resp.getTotalRows());
-        jsonResponse.put("iTotalDisplayRecords", resp.getTotalRows());
+        object.put("hasPermissions", userHasPermissions);
+        object.put("contentTable", jsonArray);
+        object.put("iTotalRecords", resp.getTotalRows());
+        object.put("iTotalDisplayRecords", resp.getTotalRows());
 
-        item.setItem(jsonResponse);
+        item.setItem(object);
         item.setResultMessage(resp.getResultMessage());
         return item;
     }
 
-    private JSONObject convertRobotToJSONObject(Robot robot) throws JSONException {
-
-        Gson gson = new Gson();
-        JSONObject result = new JSONObject(gson.toJson(robot));
-        return result;
-    }
-
-    private AnswerItem findRobotByKey(ApplicationContext appContext, Integer id) throws JSONException, CerberusException {
+    private AnswerItem findRobotByKey(Integer id, ApplicationContext appContext, boolean userHasPermissions) throws JSONException, CerberusException {
         AnswerItem item = new AnswerItem();
         JSONObject object = new JSONObject();
 
@@ -237,10 +232,18 @@ public class ReadRobot extends HttpServlet {
             object.put("contentTable", response);
         }
 
+        object.put("hasPermissions", userHasPermissions);
         item.setItem(object);
         item.setResultMessage(answer.getResultMessage());
 
         return item;
+    }
+
+    private JSONObject convertRobotToJSONObject(Robot robot) throws JSONException {
+
+        Gson gson = new Gson();
+        JSONObject result = new JSONObject(gson.toJson(robot));
+        return result;
     }
 
 }

@@ -151,7 +151,7 @@ function loadEnvTable() {
         param = param + "&revision=" + selectRevision;
     }
 
-    var configurations = new TableConfigurationsServerSide("environmentsTable", "ReadCountryEnvParam" + param, "contentTable", aoColumnsFunc());
+    var configurations = new TableConfigurationsServerSide("environmentsTable", "ReadCountryEnvParam" + param, "contentTable", aoColumnsFunc("environmentsTable"));
 
     var table = createDataTableWithPermissions(configurations, renderOptionsForEnv);
     return table;
@@ -292,20 +292,16 @@ function editEnv(system, country, environment) {
         formEdit.find("#system").prop("value", system);
         formEdit.find("#country").prop("value", country);
         formEdit.find("#environment").prop("value", environment);
-
         formEdit.find("#buildNew").prop("value", obj["build"]);
         formEdit.find("#revisionNew").prop("value", obj["revision"]);
         formEdit.find("#chainNew").prop("value", obj["chain"]);
         formEdit.find("#activeNew").prop("checked", obj["active"]);
-
         formEdit.find("#type").val(obj["type"]);
-
         formEdit.find("#description").prop("value", obj["description"]);
         formEdit.find("#distribList").prop("value", obj["distribList"]);
         formEdit.find("#eMailBodyChain").prop("value", obj["eMailBodyChain"]);
         formEdit.find("#eMailBodyRevision").prop("value", obj["eMailBodyRevision"]);
         formEdit.find("#eMailBodyDisableEnvironment").prop("value", obj["eMailBodyDisableEnvironment"]);
-
         formEdit.find("#maintenanceStr").prop("value", obj["maintenanceStr"]);
         formEdit.find("#maintenanceEnd").prop("value", obj["maintenanceEnd"]);
         if (obj["maintenanceAct"]) {
@@ -314,7 +310,32 @@ function editEnv(system, country, environment) {
             formEdit.find("#maintenanceAct").val("N");
         }
 
-        console.debug(obj["description"]);
+        if (!(data["hasPermissions"])) { // If readonly, we only readonly all fields
+            formEdit.find("#link").prop("readonly", "readonly");
+            formEdit.find("#build").prop("disabled", "disabled");
+
+            formEdit.find("#system").prop("readonly", "readonly");
+            formEdit.find("#country").prop("readonly", "readonly");
+            formEdit.find("#environment").prop("readonly", "readonly");
+            formEdit.find("#buildNew").prop("readonly", "readonly");
+            formEdit.find("#revisionNew").prop("readonly", "readonly");
+            formEdit.find("#chainNew").prop("readonly", "readonly");
+            formEdit.find("#activeNew").prop("disabled", "disabled");
+            formEdit.find("#type").prop("disabled", "disabled");
+            formEdit.find("#description").prop("readonly", "readonly");
+            formEdit.find("#distribList").prop("readonly", "readonly");
+            formEdit.find("#eMailBodyChain").prop("readonly", "readonly");
+            formEdit.find("#eMailBodyRevision").prop("readonly", "readonly");
+            formEdit.find("#eMailBodyDisableEnvironment").prop("readonly", "readonly");
+            formEdit.find("#maintenanceStr").prop("readonly", "readonly");
+            formEdit.find("#maintenanceEnd").prop("readonly", "readonly");
+            formEdit.find("#maintenanceAct").prop("disabled", "disabled");
+
+            $('#editEnvButton').attr('class', '');
+            $('#editEnvButton').attr('hidden', 'hidden');
+            console.debug("readonly");
+        }
+
         formEdit.modal('show');
     });
 }
@@ -335,7 +356,7 @@ function renderOptionsForEnv(data) {
 
 
 
-function aoColumnsFunc() {
+function aoColumnsFunc(tableId) {
     var doc = new Doc();
     var aoColumns = [
         {"data": null,
@@ -344,6 +365,8 @@ function aoColumnsFunc() {
             "sWidth": "80px",
             "bSearchable": false,
             "mRender": function (data, type, obj) {
+                var hasPermissions = $("#" + tableId).attr("hasPermissions");
+
                 var editEnv = '<button id="editEnv" onclick="editEnv(\'' + obj["system"] + '\',\'' + obj["country"] + '\',\'' + obj["environment"] + '\');"\n\
                                 class="editEnv btn btn-default btn-xs margin-right5" \n\
                                 name="editEnv" title="\'' + doc.getDocLabel("page_environment", "button_edit") + '\'" type="button">\n\
@@ -352,8 +375,10 @@ function aoColumnsFunc() {
                                 class="deleteEnv btn btn-default btn-xs margin-right5" \n\
                                 name="deleteEnv" title="\'' + doc.getDocLabel("page_environment", "button_delete") + '\'" type="button">\n\
                                 <span class="glyphicon glyphicon-trash"></span></button>';
-
-                return '<div class="center btn-group width150">' + editEnv + deleteEnv + '</div>';
+                if (hasPermissions === "true") { //only draws the options if the user has the correct privileges
+                    return '<div class="center btn-group width150">' + editEnv + deleteEnv + '</div>';
+                }
+                return '<div class="center btn-group width150">' + editEnv + '</div>';
             }
         },
         {"data": "system",

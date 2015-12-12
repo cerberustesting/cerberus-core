@@ -72,15 +72,30 @@ public class ReadProject extends HttpServlet {
         ApplicationContext appContext = WebApplicationContextUtils.getWebApplicationContext(this.getServletContext());
         PolicyFactory policy = Sanitizers.FORMATTING.and(Sanitizers.LINKS);
 
-        AnswerItem answer = new AnswerItem(new MessageEvent(MessageEventEnum.DATA_OPERATION_OK));
+        response.setContentType("application/json");
+
+        // Default message to unexpected error.
+        MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
+        msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", ""));
+
+        /**
+         * Parsing and securing all required parameters.
+         */
+        //
+        // Global boolean on the servlet that define if the user has permition to edit and delete object.
+        boolean userHasPermissions = request.isUserInRole("Integrator");
+
+        // Init Answer with potencial error from Parsing parameter.
+        AnswerItem answer = new AnswerItem(msg);
+
         try {
             JSONObject jsonResponse = new JSONObject();
             if (request.getParameter("idProject") == null) {
-                answer = findProjectList(appContext, request, response);
+                answer = findProjectList(appContext, userHasPermissions, request);
                 jsonResponse = (JSONObject) answer.getItem();
             } else {
                 String idProject = ParameterParserUtil.parseStringParamAndSanitize(request.getParameter("idProject"), "");
-                answer = findProjectByID(appContext, idProject);
+                answer = findProjectByID(idProject, appContext, userHasPermissions);
                 jsonResponse = (JSONObject) answer.getItem();
             }
 
@@ -88,19 +103,17 @@ public class ReadProject extends HttpServlet {
             jsonResponse.put("message", answer.getResultMessage().getDescription());
             jsonResponse.put("sEcho", echo);
 
-            response.setContentType("application/json");
             response.getWriter().print(jsonResponse.toString());
         } catch (JSONException e) {
             org.apache.log4j.Logger.getLogger(ReadProject.class.getName()).log(org.apache.log4j.Level.ERROR, null, e);
             //returns a default error message with the json format that is able to be parsed by the client-side
             response.setContentType("application/json");
-            MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
+            msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
             StringBuilder errorMessage = new StringBuilder();
-            errorMessage.append("{'messageType':'").append(msg.getCode()).append("', ");
-            errorMessage.append(" 'message': '");
-            errorMessage.append(msg.getDescription().replace("%DESCRIPTION%", "Unable to check the status of your request! Try later or - Open a bug or ask for any new feature \n"
-                    + "<a href=\"https://github.com/vertigo17/Cerberus/issues/\" target=\"_blank\">here</a>"));
-            errorMessage.append("'}");
+            errorMessage.append("{\"messageType\":\"").append(msg.getCode()).append("\",");
+            errorMessage.append("\"message\":\"");
+            errorMessage.append(msg.getDescription().replace("%DESCRIPTION%", "Unable to check the status of your request! Try later or open a bug."));
+            errorMessage.append("\"}");
             response.getWriter().print(errorMessage.toString());
         }
     }
@@ -152,10 +165,10 @@ public class ReadProject extends HttpServlet {
         return "Short description";
     }// </editor-fold>
 
-    private AnswerItem findProjectList(ApplicationContext appContext, HttpServletRequest request, HttpServletResponse response) throws JSONException {
+    private AnswerItem findProjectList(ApplicationContext appContext, boolean userHasPermissions, HttpServletRequest request) throws JSONException {
 
         AnswerItem item = new AnswerItem();
-        JSONObject jsonResponse = new JSONObject();
+        JSONObject object = new JSONObject();
         projectService = appContext.getBean(ProjectService.class);
 
         int startPosition = Integer.valueOf(ParameterParserUtil.parseStringParam(request.getParameter("iDisplayStart"), "0"));
@@ -171,31 +184,23 @@ public class ReadProject extends HttpServlet {
         AnswerList resp = projectService.readByCriteria(startPosition, length, columnName, sort, searchParameter, "");
 
         JSONArray jsonArray = new JSONArray();
-        boolean userHasPermissions = request.isUserInRole("Integrator");
         if (resp.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {//the service was able to perform the query, then we should get all values
             for (Project project : (List<Project>) resp.getDataList()) {
                 jsonArray.put(convertProjectToJSONObject(project).put("hasPermissions", userHasPermissions));
             }
         }
 
-        jsonResponse.put("hasPermissions", userHasPermissions);
-        jsonResponse.put("contentTable", jsonArray);
-        jsonResponse.put("iTotalRecords", resp.getTotalRows());
-        jsonResponse.put("iTotalDisplayRecords", resp.getTotalRows());
+        object.put("hasPermissions", userHasPermissions);
+        object.put("contentTable", jsonArray);
+        object.put("iTotalRecords", resp.getTotalRows());
+        object.put("iTotalDisplayRecords", resp.getTotalRows());
 
-        item.setItem(jsonResponse);
+        item.setItem(object);
         item.setResultMessage(resp.getResultMessage());
         return item;
     }
 
-    private JSONObject convertProjectToJSONObject(Project project) throws JSONException {
-
-        Gson gson = new Gson();
-        JSONObject result = new JSONObject(gson.toJson(project));
-        return result;
-    }
-
-    private AnswerItem findProjectByID(ApplicationContext appContext, String id) throws JSONException, CerberusException {
+    private AnswerItem findProjectByID(String id, ApplicationContext appContext, boolean userHasPermissions) throws JSONException, CerberusException {
         AnswerItem item = new AnswerItem();
         JSONObject object = new JSONObject();
 
@@ -211,9 +216,18 @@ public class ReadProject extends HttpServlet {
             object.put("contentTable", response);
         }
 
+        object.put("hasPermissions", userHasPermissions);
         item.setItem(object);
         item.setResultMessage(answer.getResultMessage());
 
         return item;
     }
+
+    private JSONObject convertProjectToJSONObject(Project project) throws JSONException {
+
+        Gson gson = new Gson();
+        JSONObject result = new JSONObject(gson.toJson(project));
+        return result;
+    }
+
 }

@@ -38,14 +38,15 @@ function initPage() {
     var configurations = new TableConfigurationsServerSide("robotsTable", "ReadRobot", "contentTable", aoColumnsFunc("robotsTable"));
 
     createDataTableWithPermissions(configurations, renderOptionsForRobot);
-};
+}
+;
 
 function displayPageLabel() {
     var doc = new Doc();
 
     displayHeaderLabel(doc);
     displayGlobalLabel(doc);
-    $("#pageTitle").html(doc.getDocLabel("page_robot" ,"title"));
+    $("#pageTitle").html(doc.getDocLabel("page_robot", "title"));
     $("#title").html(doc.getDocOnline("page_robot", "title"));
     $("[name='addEntryField']").html(doc.getDocLabel("page_robot", "button_create"));
     $("[name='confirmationField']").html(doc.getDocLabel("page_robot", "button_delete"));
@@ -60,7 +61,7 @@ function displayPageLabel() {
     $("[name='useragentField']").html(doc.getDocOnline("robot", "useragent"));
     $("[name='descriptionField']").html(doc.getDocOnline("robot", "description"));
     displayInvariantList("active", "ROBOTACTIVE");
-    
+
     displayFooter(doc);
 }
 
@@ -176,6 +177,21 @@ function editEntry(id) {
         formEdit.find("#useragent").prop("value", obj["userAgent"]);
         formEdit.find("#Description").prop("value", obj["description"]);
 
+        if (!(data["hasPermissions"])) { // If readonly, we only readonly all fields
+            formEdit.find("#robot").prop("readonly", "readonly");
+            formEdit.find("#active").prop("disabled", "disabled");
+            formEdit.find("#host").prop("readonly", "readonly");
+            formEdit.find("#port").prop("readonly", "readonly");
+            formEdit.find("#platform").prop("readonly", "readonly");
+            formEdit.find("#browser").prop("readonly", "readonly");
+            formEdit.find("#version").prop("readonly", "readonly");
+            formEdit.find("#useragent").prop("readonly", "readonly");
+            formEdit.find("#Description").prop("readonly", "readonly");
+
+            $('#editEntryButton').attr('class', '');
+            $('#editEntryButton').attr('hidden', 'hidden');
+        }
+
         formEdit.modal('show');
     });
 }
@@ -196,26 +212,26 @@ function renderOptionsForRobot(data) {
 
 function aoColumnsFunc(tableId) {
     var doc = new Doc();
-    
+
     var aoColumns = [
         {"data": null,
             "title": doc.getDocLabel("page_global", "columnAction"),
             "bSortable": false,
             "bSearchable": false,
             "mRender": function (data, type, obj) {
-                var hasPermissions = $("#" + tableId).attr("hasPermissions");                
-                if(hasPermissions === "true"){ //only draws the options if the user has the correct privileges
-                    var editEntry = '<button id="editEntry" onclick="editEntry(\'' + obj["robotID"] + '\');"\n\
+                var hasPermissions = $("#" + tableId).attr("hasPermissions");
+                var editEntry = '<button id="editEntry" onclick="editEntry(\'' + obj["robotID"] + '\');"\n\
                                     class="editEntry btn btn-default btn-xs margin-right5" \n\
                                     name="editEntry" title="' + doc.getDocLabel("page_robot", "button_edit") + '" type="button">\n\
                                     <span class="glyphicon glyphicon-pencil"></span></button>';
-                    var deleteEntry = '<button id="deleteEntry" onclick="deleteEntry(\'' + obj["robotID"] + '\',\'' + obj["robot"] + '\');" \n\
+                var deleteEntry = '<button id="deleteEntry" onclick="deleteEntry(\'' + obj["robotID"] + '\',\'' + obj["robot"] + '\');" \n\
                                     class="deleteEntry btn btn-default btn-xs margin-right5" \n\
                                     name="deleteEntry" title="' + doc.getDocLabel("page_robot", "button_delete") + '" type="button">\n\
                                     <span class="glyphicon glyphicon-trash"></span></button>';
+                if (hasPermissions === "true") { //only draws the options if the user has the correct privileges
                     return '<div class="center btn-group width150">' + editEntry + deleteEntry + '</div>';
                 }
-                return '';
+                return '<div class="center btn-group width150">' + editEntry + '</div>';
             }
         },
         {"data": "robot",

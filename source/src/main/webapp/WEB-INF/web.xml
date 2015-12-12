@@ -1746,10 +1746,8 @@
             <url-pattern>/SearchManualTestCaseInformation</url-pattern>
             <url-pattern>/TCEwwwDetail</url-pattern>
             <url-pattern>/GenerateGraph</url-pattern>
-            <url-pattern>/GetReportData</url-pattern>
             <url-pattern>/TestCaseActionExecutionDetail</url-pattern>
             <url-pattern>/ExecutionPerBuildRevision</url-pattern>
-            <url-pattern>/FindInvariantByID</url-pattern>
             <url-pattern>/GetStepUsedAsLibraryInOtherTestCasePerApplication</url-pattern>
             <url-pattern>/ExportTestCase</url-pattern>
             <url-pattern>/FindTestImplementationStatusPerApplication</url-pattern>
@@ -1811,9 +1809,6 @@
             <url-pattern>/UpdateTestCaseField</url-pattern>
             <url-pattern>/UpdateTestCase2</url-pattern>
             <url-pattern>/CreateTestCase2</url-pattern>
-            <url-pattern>/ReadBuildRevisionInvariant</url-pattern>
-            <url-pattern>/ReadProject</url-pattern>
-            <url-pattern>/ReadApplication</url-pattern>
         </web-resource-collection>
         <auth-constraint>
             <description>Test</description>
@@ -1873,8 +1868,6 @@
             <url-pattern>/UpdateExecutionInQueue</url-pattern>
             <url-pattern>/AddToExecutionQueue</url-pattern>
             <url-pattern>/GetExecutionQueue</url-pattern>
-            <url-pattern>/ReadCountryEnvParam</url-pattern>
-            <url-pattern>/ReadRobot</url-pattern>
         </web-resource-collection>
         <auth-constraint>
             <description>RunTest</description>
@@ -2133,6 +2126,13 @@
             <url-pattern>/UpdateMyUserReporting1</url-pattern>
             <url-pattern>/UpdateMyUserRobotPreference</url-pattern>
             <url-pattern>/ReadUserPublic</url-pattern>
+            <url-pattern>/FindInvariantByID</url-pattern>
+            <url-pattern>/GetReportData</url-pattern>
+            <url-pattern>/ReadApplication</url-pattern>
+            <url-pattern>/ReadBuildRevisionInvariant</url-pattern>
+            <url-pattern>/ReadProject</url-pattern>
+            <url-pattern>/ReadRobot</url-pattern>
+            <url-pattern>/ReadCountryEnvParam</url-pattern>
         </web-resource-collection>
         <auth-constraint>
             <description/>

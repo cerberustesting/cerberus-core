@@ -50,9 +50,9 @@
                                     <label for="selectApplication" name="applicationField">Application :</label>
                                     <select class="form-control" id="selectApplication" name="application" style="width: 25%"></select>
                                     <label for="selectBuild" name="buildField">Build :</label>
-                                    <select class="form-control" id="selectBuild" name="build" style="width: 10%"></select>
+                                    <select class="form-control" id="selectBuild" name="buildf" style="width: 10%"></select>
                                     <label for="selectRevision" name="revisionField">Revision :</label>
-                                    <select class="form-control" id="selectRevision" name="revision" style="width: 10%"></select>
+                                    <select class="form-control" id="selectRevision" name="revisionf" style="width: 10%"></select>
                                     <button type="button" class="btn btn-default" id="btnLoad" onclick="loadBCTable()" name="btnLoad">Load</button>
                                     <button type="button" class="btn btn-default" id="btnViewInstall" onclick="displayInstallInstructions()" name="btnViewInstall">Preview Install instructions</button>
                                 </div>

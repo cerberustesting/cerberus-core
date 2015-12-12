@@ -66,7 +66,7 @@ function deleteEntryHandlerClick() {
     var system = $('#confirmationModal').find('#hiddenField1').prop("value");
     var level = $('#confirmationModal').find('#hiddenField2').prop("value");
     var seq = $('#confirmationModal').find('#hiddenField3').prop("value");
-    var jqxhr = $.post("DeleteBuildRevisionInvariant", {system: encodeURIComponent(system),level: encodeURIComponent(level),seq: encodeURIComponent(seq)}, "json");
+    var jqxhr = $.post("DeleteBuildRevisionInvariant", {system: encodeURIComponent(system), level: encodeURIComponent(level), seq: encodeURIComponent(seq)}, "json");
     $.when(jqxhr).then(function (data) {
         var messageType = getAlertType(data.messageType);
         if (messageType === "success") {
@@ -173,6 +173,16 @@ function editEntry(system, level, seq) {
         formEdit.find("#seq").prop("value", obj["seq"]);
         formEdit.find("#versionname").prop("value", obj["versionName"]);
 
+        if (!(data["hasPermissions"])) { // If readonly, we only readonly all fields
+            formEdit.find("#system").prop("disabled", "disabled");
+            formEdit.find("#level").prop("disabled", "disabled");
+            formEdit.find("#seq").prop("readonly", "readonly");
+            formEdit.find("#versionname").prop("readonly", "readonly");
+
+            $('#editEntryButton').attr('class', '');
+            $('#editEntryButton').attr('hidden', 'hidden');
+        }
+
         formEdit.modal('show');
     });
 }
@@ -201,21 +211,18 @@ function aoColumnsFunc(tableId) {
             "mRender": function (data, type, obj) {
                 var hasPermissions = $("#" + tableId).attr("hasPermissions");
 
-
-                if (hasPermissions === "true") { //only draws the options if the user has the correct privileges
-
-                    var editEntry = '<button id="editEntry" onclick="editEntry(\'' + escapeHtml(obj["system"]) + '\',\'' + obj["level"] + '\',\'' + obj["seq"] + '\');"\n\
+                var editEntry = '<button id="editEntry" onclick="editEntry(\'' + escapeHtml(obj["system"]) + '\',\'' + obj["level"] + '\',\'' + obj["seq"] + '\');"\n\
                                     class="editEntry btn btn-default btn-xs margin-right5" \n\
                                     name="editEntry" title="' + doc.getDocLabel("page_buildrevdefinition", "button_edit") + '" type="button">\n\
                                     <span class="glyphicon glyphicon-pencil"></span></button>';
-                    var deleteEntry = '<button id="deleteEntry" onclick="deleteEntry(\'' + escapeHtml(obj["system"]) + '\',\'' + obj["level"] + '\',\'' + obj["seq"] + '\',\'' + obj["versionName"] + '\');" \n\
+                var deleteEntry = '<button id="deleteEntry" onclick="deleteEntry(\'' + escapeHtml(obj["system"]) + '\',\'' + obj["level"] + '\',\'' + obj["seq"] + '\',\'' + obj["versionName"] + '\');" \n\
                                     class="deleteEntry btn btn-default btn-xs margin-right5" \n\
                                     name="deleteEntry" title="' + doc.getDocLabel("page_buildrevdefinition", "button_delete") + '" type="button">\n\
                                     <span class="glyphicon glyphicon-trash"></span></button>';
-
+                if (hasPermissions === "true") { //only draws the options if the user has the correct privileges
                     return '<div class="center btn-group width150">' + editEntry + deleteEntry + '</div>';
                 }
-                return '';
+                return '<div class="center btn-group width150">' + editEntry + '</div>';
             }
         },
         {"data": "system",

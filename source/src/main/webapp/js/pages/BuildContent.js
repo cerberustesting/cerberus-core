@@ -149,9 +149,17 @@ function displayPageLabel() {
 
 
     var urlBuild = GetURLParameter('build'); // Feed Build combo with Build list.
-    appendBuildList("build", "1", urlBuild);
     var urlRevision = GetURLParameter('revision'); // Feed Revision combo with Revision list.
-    appendBuildList("revision", "2", urlRevision);
+
+    appendBuildList("buildf", "1", urlBuild, "Y", "Y");
+    appendBuildList("revisionf", "2", urlRevision, "Y", "Y");
+
+    appendBuildList("build", "1", urlBuild, "N", "N");
+    appendBuildList("revision", "2", urlRevision, "N", "N");
+
+    appendBuildList("buildn", "1", urlBuild, "N", "Y");
+    appendBuildList("revisionn", "2", urlRevision, "N", "Y");
+
     displayApplicationList("application", getUser().defaultSystem); // Feed Application combo with application list.
     var select = $('#selectApplication');
     select.append($('<option></option>').text("-- ALL --").val("ALL"));
@@ -160,7 +168,7 @@ function displayPageLabel() {
     displayFooter(doc);
 }
 
-function appendBuildList(selectName, level, defaultValue) {
+function appendBuildList(selectName, level, defaultValue, withAll, withNone) {
     var select = $('[name="' + selectName + '"]');
 
     $.ajax({
@@ -170,8 +178,12 @@ function appendBuildList(selectName, level, defaultValue) {
         async: false,
         dataType: 'json',
         success: function (data) {
-            select.append($('<option></option>').text("-- ALL --").val("ALL"));
-            select.append($('<option></option>').text("NONE").val("NONE"));
+            if (withAll === "Y") {
+                select.append($('<option></option>').text("-- ALL --").val("ALL"));
+            }
+            if (withNone === "Y") {
+                select.append($('<option></option>').text("NONE").val("NONE"));
+            }
 
             for (var option in data.contentTable) {
                 select.append($('<option></option>').text(data.contentTable[option].versionName).val(data.contentTable[option].versionName));
@@ -212,7 +224,7 @@ function loadBCTable() {
             param = param + "&application=" + selectApplication;
         }
 
-        var configurations = new TableConfigurationsServerSide("buildrevisionparametersTable", "ReadBuildRevisionParameters" + param, "contentTable", aoColumnsFunc());
+        var configurations = new TableConfigurationsServerSide("buildrevisionparametersTable", "ReadBuildRevisionParameters" + param, "contentTable", aoColumnsFunc("buildrevisionparametersTable"));
 
         var table = createDataTableWithPermissions(configurations, renderOptionsForBrp);
         return table;
@@ -374,6 +386,28 @@ function editBrp(id) {
         formEdit.find("#mavenArtifactId").prop("value", obj["mavenArtifactId"]);
         formEdit.find("#mavenVersion").prop("value", obj["mavenVersion"]);
 
+        if (!(data["hasPermissions"])) { // If readonly, we only readonly all fields
+            formEdit.find("#link").prop("readonly", "readonly");
+            formEdit.find("#build").prop("disabled", "disabled");
+            formEdit.find("#revision").prop("disabled", "disabled");
+            formEdit.find("#datecre").prop("readonly", "readonly");
+            formEdit.find("#application").prop("disabled", "disabled");
+            formEdit.find("#release").prop("readonly", "readonly");
+            formEdit.find("#owner").prop("disabled", "disabled");
+            formEdit.find("#project").prop("disabled", "disabled");
+            formEdit.find("#ticketIdFixed").prop("readonly", "readonly");
+            formEdit.find("#bugIdFixed").prop("readonly", "readonly");
+            formEdit.find("#link").prop("readonly", "readonly");
+            formEdit.find("#subject").prop("readonly", "readonly");
+            formEdit.find("#jenkinsBuildId").prop("readonly", "readonly");
+            formEdit.find("#mavenGroupId").prop("readonly", "readonly");
+            formEdit.find("#mavenArtifactId").prop("readonly", "readonly");
+            formEdit.find("#mavenVersion").prop("readonly", "readonly");
+            $('#editBrpButton').attr('class', '');
+            $('#editBrpButton').attr('hidden', 'hidden');
+            console.debug("readonly");
+        }
+        
         formEdit.modal('show');
     });
 }
@@ -392,6 +426,43 @@ function renderOptionsForBrp(data) {
     }
 }
 
+/**
+ * Handler that cleans the modal for editing subdata when it is closed.
+ */
+function refreshlistInstallInstructions() {
+    $('#installInstructionsTableBody tr').remove();
+
+
+    var formEdit = $('#listInstallInstructions');
+
+    var selectBuildFrom = $("#selectBuildFrom").val();
+    var selectRevisionFrom = $("#selectRevisionFrom").val();
+    var selectBuildTo = $("#selectBuildTo").val();
+    var selectRevisionTo = $("#selectRevisionTo").val();
+
+
+    var jqxhr = $.getJSON("ReadBuildRevisionParameters", "system=" + getUser().defaultSystem + "&lastbuild=" + selectBuildFrom + "&lastrevision=" + selectRevisionFrom
+            + "&build=" + selectBuildTo + "&revision=" + selectRevisionTo + "&getSVNRelease");
+    $.when(jqxhr).then(function (result) {
+        $.each(result["contentTable"], function (idx, obj) {
+            appendNewInstallRow(obj.build, obj.revision, obj.application, obj.release, "", obj.mavenVersion);
+        });
+    }).fail(handleErrorAjaxAfterTimeout);
+
+    var jqxhr = $.getJSON("ReadBuildRevisionParameters", "system=" + getUser().defaultSystem + "&lastbuild=" + selectBuildFrom + "&lastrevision=" + selectRevisionFrom
+            + "&build=" + selectBuildTo + "&revision=" + selectRevisionTo + "&getNonSVNRelease");
+    $.when(jqxhr).then(function (result) {
+        $.each(result["contentTable"], function (idx, obj) {
+            appendNewInstallRow(obj.build, obj.revision, obj.application, obj.release, obj.link, "");
+        });
+    }).fail(handleErrorAjaxAfterTimeout);
+
+    formEdit.modal('show');
+}
+
+/**
+ * Display installation instructions modal if build and revision is defined in main screen.
+ */
 function displayInstallInstructions() {
     clearResponseMessageMainPage();
 
@@ -405,20 +476,25 @@ function displayInstallInstructions() {
 
     } else {
 
-        $("#listInstallInstructionsModalLabel1").html("Build : " + selectBuild + " / Revision : " + selectRevision);
+// init the select build and rev when coming from the main screen.
+        $("#selectBuildFrom").prop("value", selectBuild);
+        $("#selectRevisionFrom").prop("value", selectRevision);
+        $("#selectBuildTo").prop("value", selectBuild);
+        $("#selectRevisionTo").prop("value", selectRevision);
+
         var formEdit = $('#listInstallInstructions');
 
         var jqxhr = $.getJSON("ReadBuildRevisionParameters", "system=" + getUser().defaultSystem + "&build=" + selectBuild + "&revision=" + selectRevision + "&getSVNRelease");
         $.when(jqxhr).then(function (result) {
             $.each(result["contentTable"], function (idx, obj) {
-                appendNewInstallRow(obj.application, obj.release, "", obj.mavenVersion);
+                appendNewInstallRow(obj.build, obj.revision, obj.application, obj.release, "", obj.mavenVersion);
             });
         }).fail(handleErrorAjaxAfterTimeout);
 
         var jqxhr = $.getJSON("ReadBuildRevisionParameters", "system=" + getUser().defaultSystem + "&build=" + selectBuild + "&revision=" + selectRevision + "&getNonSVNRelease");
         $.when(jqxhr).then(function (result) {
             $.each(result["contentTable"], function (idx, obj) {
-                appendNewInstallRow(obj.application, obj.release, obj.link, "");
+                appendNewInstallRow(obj.build, obj.revision, obj.application, obj.release, obj.link, "");
             });
         }).fail(handleErrorAjaxAfterTimeout);
 
@@ -426,7 +502,10 @@ function displayInstallInstructions() {
     }
 }
 
-function appendNewInstallRow(application, release, link, version) {
+/**
+ * Render 1 line on installation instructions modal.
+ */
+function appendNewInstallRow(build, revision, application, release, link, version) {
     var doc = new Doc();
     if ((version === null) || (version === "undefined") || (version === ""))
         version = "";
@@ -439,16 +518,20 @@ function appendNewInstallRow(application, release, link, version) {
     //for each install instructions adds a new row
     $('#installInstructionsTableBody').append('<tr> \n\
         <td><div class="nomarginbottom form-group form-group-sm">\n\
-        <input readonly name="application" type="text" class="releaseClass form-control input-xs" value="' + application + '"/><span></span></div></td>\n\\n\
+            <input readonly name="build" type="text" class="releaseClass form-control input-xs" value="' + build + '"/><span></span></div></td>\n\\n\
         <td><div class="nomarginbottom form-group form-group-sm">\n\
-        <input readonly name="release" type="text" class="releaseClass form-control input-xs" value="' + release + '"/><span></span></div></td>\n\\n\
+            <input readonly name="build" type="text" class="releaseClass form-control input-xs" value="' + revision + '"/><span></span></div></td>\n\\n\
+        <td><div class="nomarginbottom form-group form-group-sm">\n\
+            <input readonly name="application" type="text" class="releaseClass form-control input-xs" value="' + application + '"/><span></span></div></td>\n\\n\
+        <td><div class="nomarginbottom form-group form-group-sm">\n\
+            <input readonly name="release" type="text" class="releaseClass form-control input-xs" value="' + release + '"/><span></span></div></td>\n\\n\
         <td style="text-align:center"><div class="nomarginbottom form-group form-group-sm">' + link_html + '</div></td>\n\\n\
         <td><div class="nomarginbottom form-group form-group-sm">\n\n\
-        <input readonly name="version" type="text" class="releaseClass form-control input-xs" value="' + version + '" /></div></td></tr>');
+            <input readonly name="version" type="text" class="releaseClass form-control input-xs" value="' + version + '" /></div></td>\n\
+        </tr>');
 }
 
-
-function aoColumnsFunc() {
+function aoColumnsFunc(tableId) {
     var doc = new Doc();
     var aoColumns = [
         {"data": null,
@@ -457,6 +540,8 @@ function aoColumnsFunc() {
             "sWidth": "80px",
             "bSearchable": false,
             "mRender": function (data, type, obj) {
+                var hasPermissions = $("#" + tableId).attr("hasPermissions");
+
                 var editBrp = '<button id="editBrp" onclick="editBrp(\'' + obj["id"] + '\');"\n\
                                 class="editBrp btn btn-default btn-xs margin-right5" \n\
                                 name="editBrp" title="\'' + doc.getDocLabel("page_buildcontent", "button_edit") + '\'" type="button">\n\
@@ -465,8 +550,11 @@ function aoColumnsFunc() {
                                 class="deleteBrp btn btn-default btn-xs margin-right5" \n\
                                 name="deleteBrp" title="\'' + doc.getDocLabel("page_buildcontent", "button_delete") + '\'" type="button">\n\
                                 <span class="glyphicon glyphicon-trash"></span></button>';
+                if (hasPermissions === "true") { //only draws the options if the user has the correct privileges
+                    return '<div class="center btn-group width150">' + editBrp + deleteBrp + '</div>';
+                }
+                return '<div class="center btn-group width150">' + editBrp + '</div>';
 
-                return '<div class="center btn-group width150">' + editBrp + deleteBrp + '</div>';
             }
         },
         {"data": "build",
