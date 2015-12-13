@@ -546,6 +546,10 @@ function aoColumnsFunc(tableId) {
                                 class="editBrp btn btn-default btn-xs margin-right5" \n\
                                 name="editBrp" title="\'' + doc.getDocLabel("page_buildcontent", "button_edit") + '\'" type="button">\n\
                                 <span class="glyphicon glyphicon-pencil"></span></button>';
+                var viewBrp = '<button id="editBrp" onclick="editBrp(\'' + obj["id"] + '\');"\n\
+                                class="editBrp btn btn-default btn-xs margin-right5" \n\
+                                name="editBrp" title="\'' + doc.getDocLabel("page_buildcontent", "button_edit") + '\'" type="button">\n\
+                                <span class="glyphicon glyphicon-eye-open"></span></button>';
                 var deleteBrp = '<button id="deleteBrp" onclick="deleteBrp(\'' + obj["id"] + '\',\'' + obj["build"] + '\',\'' + obj["revision"] + '\',\'' + obj["release"] + '\',\'' + obj["application"] + '\');" \n\
                                 class="deleteBrp btn btn-default btn-xs margin-right5" \n\
                                 name="deleteBrp" title="\'' + doc.getDocLabel("page_buildcontent", "button_delete") + '\'" type="button">\n\
@@ -553,7 +557,7 @@ function aoColumnsFunc(tableId) {
                 if (hasPermissions === "true") { //only draws the options if the user has the correct privileges
                     return '<div class="center btn-group width150">' + editBrp + deleteBrp + '</div>';
                 }
-                return '<div class="center btn-group width150">' + editBrp + '</div>';
+                return '<div class="center btn-group width150">' + viewBrp + '</div>';
 
             }
         },

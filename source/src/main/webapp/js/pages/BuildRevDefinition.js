@@ -215,6 +215,10 @@ function aoColumnsFunc(tableId) {
                                     class="editEntry btn btn-default btn-xs margin-right5" \n\
                                     name="editEntry" title="' + doc.getDocLabel("page_buildrevdefinition", "button_edit") + '" type="button">\n\
                                     <span class="glyphicon glyphicon-pencil"></span></button>';
+                var viewEntry = '<button id="editEntry" onclick="editEntry(\'' + escapeHtml(obj["system"]) + '\',\'' + obj["level"] + '\',\'' + obj["seq"] + '\');"\n\
+                                    class="editEntry btn btn-default btn-xs margin-right5" \n\
+                                    name="editEntry" title="' + doc.getDocLabel("page_buildrevdefinition", "button_edit") + '" type="button">\n\
+                                    <span class="glyphicon glyphicon-eye-open"></span></button>';
                 var deleteEntry = '<button id="deleteEntry" onclick="deleteEntry(\'' + escapeHtml(obj["system"]) + '\',\'' + obj["level"] + '\',\'' + obj["seq"] + '\',\'' + obj["versionName"] + '\');" \n\
                                     class="deleteEntry btn btn-default btn-xs margin-right5" \n\
                                     name="deleteEntry" title="' + doc.getDocLabel("page_buildrevdefinition", "button_delete") + '" type="button">\n\
@@ -222,7 +226,7 @@ function aoColumnsFunc(tableId) {
                 if (hasPermissions === "true") { //only draws the options if the user has the correct privileges
                     return '<div class="center btn-group width150">' + editEntry + deleteEntry + '</div>';
                 }
-                return '<div class="center btn-group width150">' + editEntry + '</div>';
+                return '<div class="center btn-group width150">' + viewEntry + '</div>';
             }
         },
         {"data": "system",

@@ -78,7 +78,7 @@ public class ReadTestDataLib extends HttpServlet {
         MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
         msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", ""));
         AnswerItem answer = new AnswerItem(msg);
-        
+
         response.setContentType("application/json");
 
         /**
@@ -112,26 +112,28 @@ public class ReadTestDataLib extends HttpServlet {
         } catch (NumberFormatException ex) {
             org.apache.log4j.Logger.getLogger(ReadTestDataLib.class.getName()).log(org.apache.log4j.Level.WARN, null, ex);
         }
-        
+
+        // Global boolean on the servlet that define if the user has permition to edit and delete object.
+        boolean userHasPermissions = request.isUserInRole("TestDataManager");
+
         try {
             JSONObject jsonResponse;
-            
+
             if (request.getParameter("testdatalibid") != null && !hasError) {
                 if (request.getParameter("name") != null && request.getParameter("country") != null) {
                     //gets all test cases that use a library
-                    answer = getTestCasesUsingTestDataLib(appContext, testDataLibId, name, country);
+                    answer = getTestCasesUsingTestDataLib(testDataLibId, name, country, appContext, userHasPermissions);
                 } else {
                     //gets a lib by id
-                    answer = findTestDataLibByID(appContext, testDataLibId);
+                    answer = findTestDataLibByID(testDataLibId, appContext, userHasPermissions);
                 }
             } else {
                 if (request.getParameter("name") != null && request.getParameter("limit") != null) {
-                    answer = findTestDataLibNameList(appContext, name, limit);
-                }else if (request.getParameter("groups") != null){
+                    answer = findTestDataLibNameList(name, limit, appContext);
+                } else if (request.getParameter("groups") != null) {
                     //gets the list of distinct groups
                     answer = findDistinctGroups(appContext);
-                }
-                else {
+                } else {
                     //no parameters, then retrieves the full list
                     answer = findTestDataLibList(appContext, request);
                 }
@@ -206,36 +208,6 @@ public class ReadTestDataLib extends HttpServlet {
     }
 
     /**
-     * Auxiliary method that converts a test data library object to a JSON
-     * object.
-     *
-     * @param testDataLib test data library
-     * @param unescapeXML indicates whether the XML retrieved in the Envelope
-     * should be un-escaped or not.
-     * @return JSON object
-     * @throws JSONException
-     */
-    private JSONObject convertTestDataLibToJSONObject(TestDataLib testDataLib, boolean unescapeContent) throws JSONException {
-
-        if (unescapeContent) {
-            //general            
-            testDataLib.setDescription(StringEscapeUtils.unescapeHtml4(testDataLib.getDescription()));
-            
-            //SQL
-            testDataLib.setScript(StringEscapeUtils.unescapeHtml4(testDataLib.getScript()));
-            
-            //SOAP
-            testDataLib.setServicePath(StringEscapeUtils.unescapeHtml4(testDataLib.getServicePath()));
-            testDataLib.setMethod(StringEscapeUtils.unescapeHtml4(testDataLib.getMethod()));
-            testDataLib.setEnvelope(StringEscapeUtils.unescapeXml(testDataLib.getEnvelope()));
-        }
-
-        Gson gson = new Gson();
-        JSONObject result = new JSONObject(gson.toJson(testDataLib));
-        return result;
-    }
-
-    /**
      * Auxiliary method that finds a test data library entry with basis on an
      * identifier
      *
@@ -245,7 +217,7 @@ public class ReadTestDataLib extends HttpServlet {
      * that matches the identifier
      * @throws JSONException
      */
-    private AnswerItem findTestDataLibByID(ApplicationContext appContext, int testDatalib) throws JSONException {
+    private AnswerItem findTestDataLibByID(int testDatalib, ApplicationContext appContext, boolean userHasPermissions) throws JSONException {
         AnswerItem item = new AnswerItem();
         JSONObject object = new JSONObject();
 
@@ -261,6 +233,7 @@ public class ReadTestDataLib extends HttpServlet {
             object.put("testDataLib", response);
         }
 
+        object.put("hasPermissions", userHasPermissions);
         item.setItem(object);
         item.setResultMessage(answer.getResultMessage());
 
@@ -277,7 +250,7 @@ public class ReadTestDataLib extends HttpServlet {
      * @return object containing values that match the name
      * @throws JSONException
      */
-    private AnswerItem findTestDataLibNameList(ApplicationContext appContext, String nameToSearch, int limit) throws JSONException {
+    private AnswerItem findTestDataLibNameList(String nameToSearch, int limit, ApplicationContext appContext) throws JSONException {
 
         AnswerItem ansItem = new AnswerItem();
 
@@ -307,9 +280,9 @@ public class ReadTestDataLib extends HttpServlet {
      * that use the entry
      * @throws JSONException
      */
-    private AnswerItem getTestCasesUsingTestDataLib(ApplicationContext appContext, int testDataLibId, String name, String country) throws JSONException {
-        JSONObject response = new JSONObject();
-        JSONArray object = new JSONArray();
+    private AnswerItem getTestCasesUsingTestDataLib(int testDataLibId, String name, String country, ApplicationContext appContext, boolean userHasPermissions) throws JSONException {
+        JSONObject object = new JSONObject();
+        JSONArray objectArray = new JSONArray();
         AnswerItem ansItem = new AnswerItem();
         ITestCaseService tcService = appContext.getBean(ITestCaseService.class);
 
@@ -341,12 +314,13 @@ public class ReadTestDataLib extends HttpServlet {
                 jsonArray.put(l.getTestCaseList().size());
                 jsonArray.put(arrTestCase);
                 //test case details
-                object.put(jsonArray);
+                objectArray.put(jsonArray);
             }
         }
-        
-        response.put("TestCasesList", object);
-        ansItem.setItem(response);
+
+        object.put("TestCasesList", objectArray);
+        object.put("hasPermissions", userHasPermissions);
+        ansItem.setItem(object);
         ansItem.setResultMessage(ansList.getResultMessage());
         return ansItem;
     }
@@ -378,4 +352,35 @@ public class ReadTestDataLib extends HttpServlet {
 
         return answerItem;
     }
+
+    /**
+     * Auxiliary method that converts a test data library object to a JSON
+     * object.
+     *
+     * @param testDataLib test data library
+     * @param unescapeXML indicates whether the XML retrieved in the Envelope
+     * should be un-escaped or not.
+     * @return JSON object
+     * @throws JSONException
+     */
+    private JSONObject convertTestDataLibToJSONObject(TestDataLib testDataLib, boolean unescapeContent) throws JSONException {
+
+        if (unescapeContent) {
+            //general            
+            testDataLib.setDescription(StringEscapeUtils.unescapeHtml4(testDataLib.getDescription()));
+
+            //SQL
+            testDataLib.setScript(StringEscapeUtils.unescapeHtml4(testDataLib.getScript()));
+
+            //SOAP
+            testDataLib.setServicePath(StringEscapeUtils.unescapeHtml4(testDataLib.getServicePath()));
+            testDataLib.setMethod(StringEscapeUtils.unescapeHtml4(testDataLib.getMethod()));
+            testDataLib.setEnvelope(StringEscapeUtils.unescapeXml(testDataLib.getEnvelope()));
+        }
+
+        Gson gson = new Gson();
+        JSONObject result = new JSONObject(gson.toJson(testDataLib));
+        return result;
+    }
+
 }

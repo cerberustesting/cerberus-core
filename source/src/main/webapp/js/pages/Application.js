@@ -256,6 +256,10 @@ function aoColumnsFunc(tableId) {
                                     class="editApplication btn btn-default btn-xs margin-right5" \n\
                                     name="editApplication" title="\'' + doc.getDocLabel("page_application", "button_edit") + '\'" type="button">\n\
                                     <span class="glyphicon glyphicon-pencil"></span></button>';
+                var viewApplication = '<button id="editApplication" onclick="editApplication(\'' + obj["application"] + '\');"\n\
+                                    class="editApplication btn btn-default btn-xs margin-right5" \n\
+                                    name="editApplication" title="\'' + doc.getDocLabel("page_application", "button_edit") + '\'" type="button">\n\
+                                    <span class="glyphicon glyphicon-eye-open"></span></button>';
                 var deleteApplication = '<button id="deleteApplication" onclick="deleteApplication(\'' + obj["application"] + '\');" \n\
                                     class="deleteApplication btn btn-default btn-xs margin-right5" \n\
                                     name="deleteApplication" title="\'' + doc.getDocLabel("page_application", "button_delete") + '\'" type="button">\n\
@@ -263,7 +267,7 @@ function aoColumnsFunc(tableId) {
                 if (hasPermissions === "true") { //only draws the options if the user has the correct privileges
                     return '<div class="center btn-group width150">' + editApplication + deleteApplication + '</div>';
                 }
-                return '<div class="center btn-group width150">' + editApplication + '</div>';
+                return '<div class="center btn-group width150">' + viewApplication + '</div>';
             }
         },
         {"data": "application",

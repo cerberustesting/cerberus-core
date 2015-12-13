@@ -371,6 +371,10 @@ function aoColumnsFunc(tableId) {
                                 class="editEnv btn btn-default btn-xs margin-right5" \n\
                                 name="editEnv" title="\'' + doc.getDocLabel("page_environment", "button_edit") + '\'" type="button">\n\
                                 <span class="glyphicon glyphicon-pencil"></span></button>';
+                var viewEnv = '<button id="editEnv" onclick="editEnv(\'' + obj["system"] + '\',\'' + obj["country"] + '\',\'' + obj["environment"] + '\');"\n\
+                                class="editEnv btn btn-default btn-xs margin-right5" \n\
+                                name="editEnv" title="\'' + doc.getDocLabel("page_environment", "button_edit") + '\'" type="button">\n\
+                                <span class="glyphicon glyphicon-eye-open"></span></button>';
                 var deleteEnv = '<button id="deleteEnv" onclick="deleteEnv(\'' + obj["system"] + '\',\'' + obj["country"] + '\',\'' + obj["environment"] + '\');" \n\
                                 class="deleteEnv btn btn-default btn-xs margin-right5" \n\
                                 name="deleteEnv" title="\'' + doc.getDocLabel("page_environment", "button_delete") + '\'" type="button">\n\
@@ -378,7 +382,7 @@ function aoColumnsFunc(tableId) {
                 if (hasPermissions === "true") { //only draws the options if the user has the correct privileges
                     return '<div class="center btn-group width150">' + editEnv + deleteEnv + '</div>';
                 }
-                return '<div class="center btn-group width150">' + editEnv + '</div>';
+                return '<div class="center btn-group width150">' + viewEnv + '</div>';
             }
         },
         {"data": "system",

@@ -22,7 +22,6 @@ package org.cerberus.servlet.crud.test;
 import com.google.common.base.Strings;
 import com.google.gson.Gson;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import javax.servlet.ServletException;
@@ -33,7 +32,6 @@ import javax.servlet.http.HttpServletResponse;
 import org.cerberus.crud.entity.CampaignContent;
 import org.cerberus.crud.entity.MessageEvent;
 import org.cerberus.crud.entity.TCase;
-import org.cerberus.crud.entity.TestBattery;
 import org.cerberus.crud.entity.TestCaseCountry;
 import org.cerberus.crud.entity.TestCaseStep;
 import org.cerberus.crud.entity.TestCaseStepAction;
@@ -56,6 +54,8 @@ import org.cerberus.util.answer.AnswerList;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.owasp.html.PolicyFactory;
+import org.owasp.html.Sanitizers;
 import org.springframework.context.ApplicationContext;
 import org.springframework.web.context.support.WebApplicationContextUtils;
 
@@ -67,13 +67,9 @@ import org.springframework.web.context.support.WebApplicationContextUtils;
 public class ReadTestCase extends HttpServlet {
 
     private ITestCaseService testCaseService;
-
     private ITestCaseCountryService testCaseCountryService;
-
     private ITestCaseStepService testCaseStepService;
-
     private ITestCaseStepActionService testCaseStepActionService;
-
     private ITestCaseStepActionControlService testCaseStepActionControlService;
 
     /**
@@ -87,11 +83,19 @@ public class ReadTestCase extends HttpServlet {
      */
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        ApplicationContext appContext = WebApplicationContextUtils.getWebApplicationContext(this.getServletContext());
-        JSONObject jsonResponse = new JSONObject();
-        AnswerItem answer = new AnswerItem(new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED));
-
         int sEcho = Integer.valueOf(ParameterParserUtil.parseStringParam(request.getParameter("sEcho"), "0"));
+        ApplicationContext appContext = WebApplicationContextUtils.getWebApplicationContext(this.getServletContext());
+        PolicyFactory policy = Sanitizers.FORMATTING.and(Sanitizers.LINKS);
+
+        response.setContentType("application/json");
+
+        // Default message to unexpected error.
+        MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
+        msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", ""));
+
+        /**
+         * Parsing and securing all required parameters.
+         */
         String test = ParameterParserUtil.parseStringParamAndSanitize(request.getParameter("test"), "");
         String testCase = ParameterParserUtil.parseStringParam(request.getParameter("testCase"), "");
         String campaign = ParameterParserUtil.parseStringParam(request.getParameter("campaign"), "");
@@ -99,16 +103,19 @@ public class ReadTestCase extends HttpServlet {
         boolean filter = ParameterParserUtil.parseBooleanParam(request.getParameter("filter"), false);
         boolean withStep = ParameterParserUtil.parseBooleanParam(request.getParameter("withStep"), false);
 
-        // Default message to unexpected error.
-        MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
-        msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", ""));
+        // Global boolean on the servlet that define if the user has permition to edit and delete object.
+        boolean userHasPermissions = request.isUserInRole("TestAdmin");
+
+        // Init Answer with potencial error from Parsing parameter.
+        AnswerItem answer = new AnswerItem(msg);
 
         try {
+            JSONObject jsonResponse = new JSONObject();
             if (sEcho != 0 && !Strings.isNullOrEmpty(test)) {
-                answer = findTestCaseByTest(appContext, request, test);
+                answer = findTestCaseByTest(test, appContext, request);
                 jsonResponse = (JSONObject) answer.getItem();
             } else if (sEcho == 0 && !Strings.isNullOrEmpty(test) && !Strings.isNullOrEmpty(testCase) && !withStep) {
-                answer = findTestCaseByTestTestCase(appContext, test, testCase);
+                answer = findTestCaseByTestTestCase(test, testCase, appContext, request);
                 jsonResponse = (JSONObject) answer.getItem();
             } else if (sEcho == 0 && !Strings.isNullOrEmpty(test) && getMaxTC) {
                 testCaseService = appContext.getBean(TestCaseService.class);
@@ -133,7 +140,6 @@ public class ReadTestCase extends HttpServlet {
             jsonResponse.put("message", answer.getResultMessage().getDescription());
             jsonResponse.put("sEcho", sEcho);
 
-            response.setContentType("application/json");
             response.getWriter().print(jsonResponse.toString());
         } catch (JSONException e) {
             org.apache.log4j.Logger.getLogger(ReadTestCase.class.getName()).log(org.apache.log4j.Level.ERROR, null, e);
@@ -189,9 +195,9 @@ public class ReadTestCase extends HttpServlet {
         return "Short description";
     }// </editor-fold>
 
-    private AnswerItem findTestCaseByTest(ApplicationContext appContext, HttpServletRequest request, String test) throws JSONException {
+    private AnswerItem findTestCaseByTest(String test, ApplicationContext appContext, HttpServletRequest request) throws JSONException {
         AnswerItem answer = new AnswerItem();
-        JSONObject jsonResponse = new JSONObject();
+        JSONObject object = new JSONObject();
 
         testCaseService = appContext.getBean(TestCaseService.class);
         testCaseCountryService = appContext.getBean(TestCaseCountryService.class);
@@ -221,40 +227,41 @@ public class ReadTestCase extends HttpServlet {
         }
 
         JSONArray jsonArray = new JSONArray();
-        boolean canCreate = request.isUserInRole("Test");
-        boolean canDelete = request.isUserInRole("TestAdmin");
+        boolean isTest = request.isUserInRole("Test");
+        boolean isTestAdmin = request.isUserInRole("TestAdmin");
         if (testCaseList.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {//the service was able to perform the query, then we should get all values
             for (TCase testCase : (List<TCase>) testCaseList.getDataList()) {
                 String key = testCase.getTest() + "_" + testCase.getTestCase();
                 JSONObject value = convertTestCaseToJSONObject(testCase);
-                value.put("canCreate", canCreate);
-                value.put("canDelete", canDelete);
+                value.put("hasPermissionsDelete", isTestAdmin);
+                if (testCase.getStatus().equalsIgnoreCase("WORKING")) { // If testcase is WORKING only TestAdmin can update it
+                    value.put("hasPermissionsUpdate", isTestAdmin);
+                } else {
+                    value.put("hasPermissionsUpdate", isTest);
+                }
                 value.put("countryList", testCaseWithCountry.get(key));
 
                 jsonArray.put(value);
             }
         }
 
-        jsonResponse.put("canCreate", canCreate);
-        jsonResponse.put("canDelete", canDelete);
-        jsonResponse.put("contentTable", jsonArray);
-        jsonResponse.put("iTotalRecords", testCaseList.getTotalRows());
-        jsonResponse.put("iTotalDisplayRecords", testCaseList.getTotalRows());
+        object.put("hasPermissionsCreate", isTest);
+        object.put("hasPermissionsDelete", isTestAdmin);
+        object.put("contentTable", jsonArray);
+        object.put("iTotalRecords", testCaseList.getTotalRows());
+        object.put("iTotalDisplayRecords", testCaseList.getTotalRows());
 
-        answer.setItem(jsonResponse);
+        answer.setItem(object);
         answer.setResultMessage(testCaseList.getResultMessage());
         return answer;
     }
 
-    private JSONObject convertTestCaseToJSONObject(TCase testCase) throws JSONException {
-        Gson gson = new Gson();
-        JSONObject result = new JSONObject(gson.toJson(testCase));
-        return result;
-    }
-
-    private AnswerItem findTestCaseByTestTestCase(ApplicationContext appContext, String test, String testCase) throws JSONException {
+    private AnswerItem findTestCaseByTestTestCase(String test, String testCase, ApplicationContext appContext, HttpServletRequest request) throws JSONException {
         AnswerItem item = new AnswerItem();
         JSONObject object = new JSONObject();
+        boolean hasPermissionsUpdate = false;
+        boolean isTest = request.isUserInRole("Test");
+        boolean isTestAdmin = request.isUserInRole("TestAdmin");
 
         testCaseService = appContext.getBean(TestCaseService.class);
         testCaseCountryService = appContext.getBean(TestCaseCountryService.class);
@@ -268,6 +275,11 @@ public class ReadTestCase extends HttpServlet {
             //if the service returns an OK message then we can get the item and convert it to JSONformat
             TCase tc = (TCase) answer.getItem();
             object = convertTestCaseToJSONObject(tc);
+                if (tc.getStatus().equalsIgnoreCase("WORKING")) { // If testcase is WORKING only TestAdmin can update it
+                    hasPermissionsUpdate=isTestAdmin;
+                } else {
+                    hasPermissionsUpdate=isTest;
+                }
             object.put("countryList", new JSONObject());
         }
 
@@ -275,6 +287,8 @@ public class ReadTestCase extends HttpServlet {
             object.getJSONObject("countryList").put(country.getCountry(), country.getCountry());
         }
 
+                
+        object.put("hasPermissionsUpdate", hasPermissionsUpdate);
         item.setItem(object);
         item.setResultMessage(answer.getResultMessage());
 
@@ -430,4 +444,11 @@ public class ReadTestCase extends HttpServlet {
 
         return item;
     }
+
+    private JSONObject convertTestCaseToJSONObject(TCase testCase) throws JSONException {
+        Gson gson = new Gson();
+        JSONObject result = new JSONObject(gson.toJson(testCase));
+        return result;
+    }
+
 }

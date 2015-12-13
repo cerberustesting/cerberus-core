@@ -1046,6 +1046,12 @@ function editTestDataLib(testDataLibID) {
             $('#editTestDataLibModal #lastModified').prop("value", obj.lastModified);
             $('#editTestDataLibModal #lastModifier').prop("value", obj.lastModifier);
 
+        if (!(data["hasPermissions"])) { // If readonly, we only readonly all fields
+
+            $('#saveTestDataLib').attr('class', '');
+            $('#saveTestDataLib').attr('hidden', 'hidden');
+        }
+
             //after everything. then shows the modal
             $('#editTestDataLibModal').modal('show');
         });
@@ -1376,40 +1382,38 @@ function aoColumnsFuncTestDataLib(tableId) {
                     "title": doc.getDocLabel("testdatalib", "actions"),
                     "mRender": function (data, type, oObj) {
                         var hasPermissions = $("#" + tableId).attr("hasPermissions");
+                        var editElement = '<button id="editTestDataLib' + data + '"  onclick="editTestDataLib(' + data + ');" \n\
+                                class="editTestDataLib btn btn-default btn-xs margin-right5" \n\
+                            name="editTestDataLib" title="' + doc.getDocLabel("page_testdatalib", "tooltip_editentry") + '" type="button">\n\
+                            <span class="glyphicon glyphicon-pencil"></span></button>';
+                        var viewElement = '<button id="editTestDataLib' + data + '"  onclick="editTestDataLib(' + data + ');" \n\
+                                class="editTestDataLib btn btn-default btn-xs margin-right5" \n\
+                            name="editTestDataLib" title="' + doc.getDocLabel("page_testdatalib", "tooltip_editentry") + '" type="button">\n\
+                            <span class="glyphicon glyphicon-eye-open"></span></button>';
+                        var editDataElement = '<button  class="editTestDataLib btn  btn-default btn-xs margin-right5" \n\
+                            name="editTestDataLib" title="' + doc.getDocLabel("page_testdatalib", "tooltip_editsubdata") + '" type="button" onclick="editSubData(' + data + ')">\n\
+                            <span class="glyphicon glyphicon-list-alt"></span></button>';
+                        var viewDataElement = '<button  class="viewSubDataEntries btn  btn-default btn-xs margin-right5" \n\
+                            name="viewSubDataEntries" title="' + doc.getDocLabel("page_testdatalib", "tooltip_viewsubdata") + '" type="button" onclick="viewSubDataEntries(' + data + ', \'' + oObj.type + '\')">\n\
+                            <span class="glyphicon glyphicon-list-alt"></span></button>';
+                        var deleteElement = '<button onclick="deleteTestDataLib(' + oObj.testDataLibID + ',\'' + oObj.name
+                                + '\', ' + '\'' + oObj.system + '\', ' + '\'' + oObj.environment + '\', ' + '\'' + oObj.country + '\', '
+                                + '\'' + oObj.type + '\');" class="btn btn-default btn-xs margin-right25 " \n\
+                            name="deleteTestDataLib" title="' + doc.getDocLabel("page_testdatalib", "tooltip_delete") + '" type="button">\n\
+                            <span class="glyphicon glyphicon-trash"></span></button>';
+                        var duplicateEntryElement = '<button  class="btn btn-default btn-xs margin-right5" \n\
+                            name="duplicateTestDataLib" title="' + doc.getDocLabel("page_testdatalib", "tooltip_duplicateEntry") + '"\n\
+                                 type="button" onclick="duplicateEntry(' + data + ')">\n\
+                                <span class="fa fa-files-o"></span></button>'; //TODO check if we can add this glyphicon glyphicon-duplicate
                         var viewTestCase = '<button  class="getTestCasesUsing btn  btn-default btn-xs margin-right5" \n\
                             name="getTestCasesUsing" title="' + doc.getDocLabel("page_testdatalib", "tooltip_gettestcases") + '" type="button" \n\
                             onclick="getTestCasesUsing(' + data + ', \'' + oObj.name + '\', \'' + oObj.country + '\')">\n\
                             TC</button>';
 
                         if (hasPermissions === "true") { //only draws the options if the user has the correct privileges
-                            var editElement = '<button id="editTestDataLib' + data + '"  onclick="editTestDataLib(' + data + ');" \n\
-                                class="editTestDataLib btn btn-default btn-xs margin-right5" \n\
-                            name="editTestDataLib" title="' + doc.getDocLabel("page_testdatalib", "tooltip_editentry") + '" type="button">\n\
-                            <span class="glyphicon glyphicon-pencil"></span></button>';
-
-                            var editDataElement = '<button  class="editTestDataLib btn  btn-default btn-xs margin-right5" \n\
-                            name="editTestDataLib" title="' + doc.getDocLabel("page_testdatalib", "tooltip_editsubdata") + '" type="button" onclick="editSubData(' + data + ')">\n\
-                            <span class="glyphicon glyphicon-list-alt"></span></button>';
-
-                            var deleteElement = '<button onclick="deleteTestDataLib(' + oObj.testDataLibID + ',\'' + oObj.name
-                                    + '\', ' + '\'' + oObj.system + '\', ' + '\'' + oObj.environment + '\', ' + '\'' + oObj.country + '\', '
-                                    + '\'' + oObj.type + '\');" class="btn btn-default btn-xs margin-right25 " \n\
-                            name="deleteTestDataLib" title="' + doc.getDocLabel("page_testdatalib", "tooltip_delete") + '" type="button">\n\
-                            <span class="glyphicon glyphicon-trash"></span></button>';
-
-                            var duplicateEntryElement = '<button  class="btn btn-default btn-xs margin-right5" \n\
-                            name="duplicateTestDataLib" title="' + doc.getDocLabel("page_testdatalib", "tooltip_duplicateEntry") + '"\n\
-                                 type="button" onclick="duplicateEntry(' + data + ')">\n\
-                                <span class="fa fa-files-o"></span></button>'; //TODO check if we can add this glyphicon glyphicon-duplicate
-
                             return '<div class="center btn-group width250">' + editElement + editDataElement + deleteElement + duplicateEntryElement + viewTestCase + '</div>';
                         } else {
-                            var viewDataElement = '<button  class="viewSubDataEntries btn  btn-default btn-xs margin-right5" \n\
-                            name="viewSubDataEntries" title="' + doc.getDocLabel("page_testdatalib", "tooltip_viewsubdata") + '" type="button" onclick="viewSubDataEntries(' + data + ', \'' + oObj.type + '\')">\n\
-                            <span class="glyphicon glyphicon-list-alt"></span></button>';
-
-
-                            return '<div class="center btn-group width250">' + viewDataElement + viewTestCase + '</div>';
+                            return '<div class="center btn-group width250">' + viewElement + viewDataElement + viewTestCase + '</div>';
                         }
                     }
                 });

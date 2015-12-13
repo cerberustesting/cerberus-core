@@ -121,42 +121,6 @@ public class ReadTest extends HttpServlet {
 
     }
 
-    private AnswerItem findTestList(ApplicationContext appContext, boolean userHasPermissions, HttpServletRequest request) throws JSONException {
-        AnswerItem answer = new AnswerItem(new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED));
-        AnswerList testList = new AnswerList();
-        JSONObject object = new JSONObject();
-
-        testService = appContext.getBean(TestService.class);
-
-        int startPosition = Integer.valueOf(ParameterParserUtil.parseStringParam(request.getParameter("iDisplayStart"), "0"));
-        int length = Integer.valueOf(ParameterParserUtil.parseStringParam(request.getParameter("iDisplayLength"), "0"));
-
-        String searchParameter = ParameterParserUtil.parseStringParam(request.getParameter("sSearch"), "");
-        int columnToSortParameter = Integer.parseInt(ParameterParserUtil.parseStringParam(request.getParameter("iSortCol_0"), "0"));
-        String sColumns = ParameterParserUtil.parseStringParam(request.getParameter("sColumns"), "test,description,active,automated,tdatecrea");
-        String columnToSort[] = sColumns.split(",");
-        String columnName = columnToSort[columnToSortParameter];
-        String sort = ParameterParserUtil.parseStringParam(request.getParameter("sSortDir_0"), "asc");
-
-        testList = testService.readByCriteria(startPosition, length, columnName, sort, searchParameter, "");
-
-        JSONArray jsonArray = new JSONArray();
-        if (testList.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {//the service was able to perform the query, then we should get all values
-            for (Test test : (List<Test>) testList.getDataList()) {
-                jsonArray.put(convertTestToJSONObject(test).put("hasPermissions", userHasPermissions));
-            }
-        }
-
-        object.put("contentTable", jsonArray);
-        object.put("hasPermissions", userHasPermissions);
-        object.put("iTotalRecords", testList.getTotalRows());
-        object.put("iTotalDisplayRecords", testList.getTotalRows());
-
-        answer.setItem(object);
-        answer.setResultMessage(testList.getResultMessage());
-        return answer;
-    }
-
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
     /**
      * Handles the HTTP <code>GET</code> method.
@@ -222,6 +186,43 @@ public class ReadTest extends HttpServlet {
         answer.setItem(object);
         answer.setResultMessage(answer.getResultMessage());
 
+        return answer;
+    }
+
+    
+    private AnswerItem findTestList(ApplicationContext appContext, boolean userHasPermissions, HttpServletRequest request) throws JSONException {
+        AnswerItem answer = new AnswerItem(new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED));
+        AnswerList testList = new AnswerList();
+        JSONObject object = new JSONObject();
+
+        testService = appContext.getBean(TestService.class);
+
+        int startPosition = Integer.valueOf(ParameterParserUtil.parseStringParam(request.getParameter("iDisplayStart"), "0"));
+        int length = Integer.valueOf(ParameterParserUtil.parseStringParam(request.getParameter("iDisplayLength"), "0"));
+
+        String searchParameter = ParameterParserUtil.parseStringParam(request.getParameter("sSearch"), "");
+        int columnToSortParameter = Integer.parseInt(ParameterParserUtil.parseStringParam(request.getParameter("iSortCol_0"), "0"));
+        String sColumns = ParameterParserUtil.parseStringParam(request.getParameter("sColumns"), "test,description,active,automated,tdatecrea");
+        String columnToSort[] = sColumns.split(",");
+        String columnName = columnToSort[columnToSortParameter];
+        String sort = ParameterParserUtil.parseStringParam(request.getParameter("sSortDir_0"), "asc");
+
+        testList = testService.readByCriteria(startPosition, length, columnName, sort, searchParameter, "");
+
+        JSONArray jsonArray = new JSONArray();
+        if (testList.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {//the service was able to perform the query, then we should get all values
+            for (Test test : (List<Test>) testList.getDataList()) {
+                jsonArray.put(convertTestToJSONObject(test).put("hasPermissions", userHasPermissions));
+            }
+        }
+
+        object.put("contentTable", jsonArray);
+        object.put("hasPermissions", userHasPermissions);
+        object.put("iTotalRecords", testList.getTotalRows());
+        object.put("iTotalDisplayRecords", testList.getTotalRows());
+
+        answer.setItem(object);
+        answer.setResultMessage(testList.getResultMessage());
         return answer;
     }
 

@@ -186,6 +186,10 @@ function aoColumnsFunc() {
                                 class="editEntry btn btn-default btn-xs margin-right5" \n\
                                 name="editEntry" title="' + doc.getDocLabel("page_test", "btn_edit") + '" type="button">\n\
                                 <span class="glyphicon glyphicon-pencil"></span></button>';
+                var viewEntry = '<button id="editEntry" onclick="editEntry(\'' + escapeHtml(obj["test"]) + '\');"\n\
+                                class="editEntry btn btn-default btn-xs margin-right5" \n\
+                                name="editEntry" title="' + doc.getDocLabel("page_test", "btn_edit") + '" type="button">\n\
+                                <span class="glyphicon glyphicon-eye-open"></span></button>';
                 var deleteEntry = '<button id="deleteEntry" onclick="deleteEntry(\'' + escapeHtml(obj["test"]) + '\');" \n\
                                 class="deleteEntry btn btn-default btn-xs margin-right5" \n\
                                 name="deleteEntry" title="' + doc.getDocLabel("page_test", "button_delete") + '" type="button">\n\
@@ -194,7 +198,7 @@ function aoColumnsFunc() {
                 if (data["hasPermissions"]) {
                     return '<div class="center btn-group width150">' + editEntry + deleteEntry + testCaseLink + '</div>';
                 } else {
-                    return '<div class="center btn-group width150">' + editEntry + testCaseLink + '</div>';
+                    return '<div class="center btn-group width150">' + viewEntry + testCaseLink + '</div>';
                 }
             }
         },

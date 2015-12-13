@@ -108,7 +108,7 @@ function appendBuildRevList(system, editData) {
         var fromBuild = $("[name=fromSprint]");
         var toBuild = $("[name=toSprint]");
         var targetBuild = $("[name=targetSprint]");
-        
+
         fromBuild.empty();
         toBuild.empty();
         targetBuild.empty();
@@ -154,7 +154,7 @@ function appendBuildRevList(system, editData) {
         }
 
         if (editData !== undefined) {
-            var formEdit = $('#editEntryModal');         
+            var formEdit = $('#editEntryModal');
 
             formEdit.find("#fromRevision").prop("value", editData.fromRevision);
             formEdit.find("#toRevision").prop("value", editData.toRevision);
@@ -172,7 +172,7 @@ function appendCountryList() {
             var country = data[index].value;
 
             countryList.append('<label class="checkbox-inline"><input class="countrycb" type="checkbox" name="' + country + '"/>' + country + '\
-                                <input class="countrycb-hidden" type="hidden" name="' + country + '" value="off"/></label>');
+                                <input id="countryCheckB" class="countrycb-hidden" type="hidden" name="' + country + '" value="off"/></label>');
         }
     });
 }
@@ -320,7 +320,7 @@ function CreateTestCaseClick() {
 function renderOptionsForTestCaseList(data) {
     var doc = new Doc();
     //check if user has permissions to perform the add and import operations
-    if (data["canCreate"]) {
+    if (data["hasPermissionsCreate"]) {
         if ($("#createTestCaseButton").length === 0) {
             var contentToAdd = "<div class='marginBottom10'><button id='createTestCaseButton' type='button' class='btn btn-default'>\n\
             " + "Create Test Case" + "</button></div>";
@@ -438,7 +438,8 @@ function editEntry(testCase) {
                 bugTrackerUrl = bugTrackerUrl.replace("%BUGID%", data.bugID);
             }
 
-            formEdit.find("#link").prop("href", bugTrackerUrl).text(bugTrackerUrl);
+            formEdit.find("#link").prop("href", bugTrackerUrl).text(data.bugID);
+            formEdit.find("#link").prop("target", "_blank");
 
         });
 
@@ -451,16 +452,16 @@ function editEntry(testCase) {
         formEdit.find("#lastModifier").prop("value", data.lastModifier);
         formEdit.find("#implementer").prop("value", data.implementer);
         formEdit.find("#tcDateCrea").prop("value", data.tcDateCrea);
-        formEdit.find("#ticket").prop("value", data.ticket);
-        formEdit.find("#function").prop("value", data.function);
         formEdit.find("#origin").prop("value", data.origin);
         formEdit.find("#refOrigin").prop("value", data.refOrigin);
         formEdit.find("#project").prop("value", data.project);
+        formEdit.find("#ticket").prop("value", data.ticket);
+        formEdit.find("#function").prop("value", data.function);
 
         // test case parameters
         formEdit.find("#application").prop("value", data.application);
-        formEdit.find("#group").prop("value", data.group);
         formEdit.find("#status").prop("value", data.status);
+        formEdit.find("#group").prop("value", data.group);
         formEdit.find("#priority").prop("value", data.priority);
         formEdit.find("#actQA").prop("value", data.runQA);
         formEdit.find("#actUAT").prop("value", data.runUAT);
@@ -476,6 +477,80 @@ function editEntry(testCase) {
         formEdit.find("#active").prop("value", data.active);
         formEdit.find("#bugId").prop("value", data.bugID);
         formEdit.find("#comment").prop("value", data.comment);
+
+        //We desactivate or activate the access to the fields depending on if user has the credentials.
+        if (!(data["hasPermissionsUpdate"])) { // If readonly, we only readonly all fields
+            //test case info
+            formEdit.find("#implementer").prop("readonly", "readonly");
+            formEdit.find("#origin").prop("disabled", "disabled");
+            formEdit.find("#project").prop("disabled", "disabled");
+            formEdit.find("#ticket").prop("readonly", "readonly");
+            formEdit.find("#function").prop("readonly", "readonly");
+            // test case parameters
+            formEdit.find("#application").prop("disabled", "disabled");
+            formEdit.find("#status").prop("disabled", "disabled");
+            formEdit.find("#group").prop("disabled", "disabled");
+            formEdit.find("#priority").prop("disabled", "disabled");
+            formEdit.find("#actQA").prop("disabled", "disabled");
+            formEdit.find("#actUAT").prop("disabled", "disabled");
+            formEdit.find("#actProd").prop("disabled", "disabled");
+            var myCountryList = $('#countryList');
+            myCountryList.find("[class='countrycb']").prop("disabled", "disabled");
+            formEdit.find("#shortDesc").prop("readonly", "readonly");
+            tinyMCE.get('behaviorOrValueExpected1').getBody().setAttribute('contenteditable', false);
+            tinyMCE.get('howTo1').getBody().setAttribute('contenteditable', false);
+            //activation criteria
+            formEdit.find("#active").prop("disabled", "disabled");
+            formEdit.find("#fromSprint").prop("disabled", "disabled");
+            formEdit.find("#fromRev").prop("disabled", "disabled");
+            formEdit.find("#toSprint").prop("disabled", "disabled");
+            formEdit.find("#toRev").prop("disabled", "disabled");
+            formEdit.find("#targetSprint").prop("disabled", "disabled");
+            formEdit.find("#targetRev").prop("disabled", "disabled");
+            formEdit.find("#bugId").prop("readonly", "readonly");
+            formEdit.find("#comment").prop("readonly", "readonly");
+            // Save button is hidden.
+            $('#editEntryButton').attr('class', '');
+            $('#editEntryButton').attr('hidden', 'hidden');
+        } else {
+            formEdit.find("#active").removeProp("disabled");
+            formEdit.find("#bugId").removeProp("readonly");
+
+            //test case info
+            formEdit.find("#implementer").removeProp("readonly");
+            formEdit.find("#origin").removeProp("disabled");
+            formEdit.find("#project").removeProp("disabled");
+            formEdit.find("#ticket").removeProp("readonly");
+            formEdit.find("#function").removeProp("readonly");
+            // test case parameters
+            formEdit.find("#application").removeProp("disabled");
+            formEdit.find("#status").removeProp("disabled");
+            formEdit.find("#group").removeProp("disabled");
+            formEdit.find("#priority").removeProp("disabled");
+            formEdit.find("#actQA").removeProp("disabled");
+            formEdit.find("#actUAT").removeProp("disabled");
+            formEdit.find("#actProd").removeProp("disabled");
+            var myCountryList = $('#countryList');
+            myCountryList.find("[class='countrycb']").removeProp("disabled");
+            formEdit.find("#shortDesc").removeProp("readonly");
+            tinyMCE.get('behaviorOrValueExpected1').getBody().setAttribute('contenteditable', true);
+            tinyMCE.get('howTo1').getBody().setAttribute('contenteditable', true);
+            //activation criteria
+            formEdit.find("#active").removeProp("disabled");
+            formEdit.find("#fromSprint").removeProp("disabled");
+            formEdit.find("#fromRev").removeProp("disabled");
+            formEdit.find("#toSprint").removeProp("disabled");
+            formEdit.find("#toRev").removeProp("disabled");
+            formEdit.find("#targetSprint").removeProp("disabled");
+            formEdit.find("#targetRev").removeProp("disabled");
+            formEdit.find("#bugId").removeProp("readonly");
+            formEdit.find("#comment").removeProp("readonly");
+            // Save button is displayed.
+            $('#editEntryButton').attr('class', 'btn btn-primary');
+            $('#editEntryButton').removeProp('hidden');
+        }
+
+
 
         formEdit.modal('show');
     });
@@ -554,25 +629,26 @@ function aoColumnsFunc(countries) {
                                     href="TestCase.jsp?Test=' + encodeURIComponent(obj["test"]) + "&TestCase=" + encodeURIComponent(obj["testCase"]) + '&Load=Load">\n\
                                     <span class="glyphicon glyphicon-new-window"></span>\n\
                                     </a>';
-
-                if (data.canDelete || (data.canCreate && data.status !== "WORKING")) {
-                    var editEntry = '<button id="editEntry" onclick="editEntry(\'' + escapeHtml(obj["testCase"]) + '\');"\n\
+                var editEntry = '<button id="editEntry" onclick="editEntry(\'' + escapeHtml(obj["testCase"]) + '\');"\n\
                                 class="editEntry btn btn-default btn-xs margin-right5" \n\
                                 name="editEntry" title="' + "edit test case" + '" type="button">\n\
                                 <span class="glyphicon glyphicon-pencil"></span></button>';
-
-                    buttons += editEntry;
-                }
-
-                if (data.canDelete) {
-                    var deleteEntry = '<button id="deleteEntry" onclick="deleteEntry(\'' + escapeHtml(obj["testCase"]) + '\');"\n\
+                var viewEntry = '<button id="editEntry" onclick="editEntry(\'' + escapeHtml(obj["testCase"]) + '\');"\n\
+                                class="editEntry btn btn-default btn-xs margin-right5" \n\
+                                name="editEntry" title="' + "edit test case" + '" type="button">\n\
+                                <span class="glyphicon glyphicon-eye-open"></span></button>';
+                var deleteEntry = '<button id="deleteEntry" onclick="deleteEntry(\'' + escapeHtml(obj["testCase"]) + '\');"\n\
                                         class="deleteEntry btn btn-default btn-xs margin-right5" \n\
                                         name="deleteEntry" title="' + "delete test case" + '" type="button">\n\
                                         <span class="glyphicon glyphicon-trash"></span></button>';
-
+                if (data.hasPermissionsUpdate) {
+                    buttons += editEntry;
+                } else {
+                    buttons += viewEntry;
+                }
+                if (data.hasPermissionsDelete) {
                     buttons += deleteEntry;
                 }
-
                 buttons += testCaseLink;
 
                 return '<div class="center btn-group width150">' + buttons + '</div>';
@@ -621,7 +697,7 @@ function aoColumnsFunc(countries) {
             "sWidth": "70px",
             "className": "center",
             "mRender": function (data, type, obj) {
-                if (obj.canDelete || (obj.canCreate && obj.status !== "WORKING")) {
+                if (obj.hasPermissionsUpdate) {
                     if (data === "Y") {
                         return '<input type="checkbox" name="' + obj["testCase"] + '" data-test="' + obj.test + '" onchange="setActive(this);" checked/>';
                     } else if (data === "N") {
@@ -629,9 +705,9 @@ function aoColumnsFunc(countries) {
                     }
                 } else {
                     if (data === "Y") {
-                        return '<input type="checkbox" checked readonly />';
+                        return '<input type="checkbox" checked disabled />';
                     } else {
-                        return '<input type="checkbox" readonly />';
+                        return '<input type="checkbox" disabled />';
                     }
                 }
             }
@@ -694,7 +770,7 @@ function aoColumnsFunc(countries) {
             "data": function (row, type, val, meta) {
                 var dataTitle = meta.settings.aoColumns[meta.col].sTitle;
 
-                if (row.canDelete || (row.canCreate && row.status !== "WORKING")) {
+                if (row.hasPermissionsUpdate) {
                     if (row.hasOwnProperty("countryList") && row["countryList"].hasOwnProperty(dataTitle)) {
                         return '<input type="checkbox" name="' + dataTitle + '" data-test="' + row.test + '" data-testcase="' + row.testCase + '" onchange="setCountry(this);" checked/>';
                     } else {
@@ -702,9 +778,9 @@ function aoColumnsFunc(countries) {
                     }
                 } else {
                     if (row.hasOwnProperty("countryList") && row["countryList"].hasOwnProperty(dataTitle)) {
-                        return '<input type="checkbox" checked readonly/>';
+                        return '<input type="checkbox" checked disabled/>';
                     } else {
-                        return '<input type="checkbox" readonly/>';
+                        return '<input type="checkbox" disabled/>';
                     }
                 }
             },

@@ -96,7 +96,7 @@ function aoColumnsFunc() {
                 var editEntry = '<button id="editEntry" onclick="editEntry(\'' + obj["LogEventID"] + '\');"\n\
                                 class="editEntry btn btn-default btn-xs margin-right5" \n\
                                 name="editEntry" title="' + doc.getDocLabel("page_logviewer", "button_view") + '" type="button">\n\
-                                <span class="glyphicon glyphicon-list-alt"></span></button>';
+                                <span class="glyphicon glyphicon-eye-open"></span></button>';
 
                 return '<div class="center btn-group width150">' + editEntry + '</div>';
             }
