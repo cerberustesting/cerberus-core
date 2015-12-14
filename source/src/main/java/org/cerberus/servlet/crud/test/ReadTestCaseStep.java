@@ -92,6 +92,7 @@ public class ReadTestCaseStep extends HttpServlet {
                 for(TestCaseStepAction t : tcsActionList){                    
                     JSONObject obj = new JSONObject(gson.toJson(t));
                     obj.put("controlList", new JSONArray());
+                    obj.put("objType", "action");
                     list.put(obj);
                 }                
                 jsonResponse.put("tcsActionList", list);

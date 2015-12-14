@@ -44,6 +44,7 @@
                     <h3>Steps</h3>
                     <ul class="list-group step-list side-item" id="stepList"></ul>
                     <button class="btn btn-primary btn-block" id="addStep">Add step</button>
+                    <button class="btn btn-primary btn-block" id="importStep">Import from library</button>
                 </div>
                 <div class="col-lg-8 well" style="min-height: 200px;">
                     <div class="step-header clearfix">
@@ -72,7 +73,6 @@
                                 </div>
                             </div>
                             <div class="row">
-                                <button class="btn btn-primary pull-right" id="importStep">Import from library</button>
                             </div>
                         </div>
                     </div>

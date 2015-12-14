@@ -131,3 +131,24 @@
     font-weight: bold;
     font-style: italic;
 }
+
+.drag-step {
+    cursor: move;
+}
+
+.just-padding {
+    padding: 15px;
+}
+
+.list-group.list-group-root {
+    padding: 0;
+    overflow: hidden;
+}
+
+.list-group.list-group-root .list-group {
+    margin-bottom: 0;
+}
+
+.sub-item {
+    margin-left: 15px;
+}
