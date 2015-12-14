@@ -451,7 +451,7 @@ public class TestCaseStepActionDAO implements ITestCaseStepActionDAO {
         msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", ""));
         List<TestCaseStepAction> actionList = new ArrayList<TestCaseStepAction>();
         StringBuilder query = new StringBuilder();
-        query.append("SELECT * FROM testcasestepaction WHERE test = ? AND testcase = ? ");
+        query.append("SELECT * FROM testcasestepaction WHERE test = ? AND testcase = ? ORDER BY sequence");
 
         Connection connection = this.databaseSpring.connect();
         try {

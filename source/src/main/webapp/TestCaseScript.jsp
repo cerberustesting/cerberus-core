@@ -35,38 +35,44 @@
         <div id="page-layout" class="container-fluid center">
             <%@ include file="include/messagesArea.html"%>
             <%@ include file="include/testcaselist/editTestCase.html"%>
+            <%@ include file="include/testcasescript/importFromLib.html"%>
 
             <h1 class="page-title-line">Test Case Script</h1>
             <h1 class="testTestCase"><span id="test">THESEUS</span> / <span id="testCase">0001A</span> - <span id="description">Description of the Test Case</span></h1>
             <div class="row" style="margin-top: 10px;">
-                <div class="col-lg-3">
+                <div class="col-lg-3" id="list-wrapper">
                     <h3>Steps</h3>
                     <ul class="list-group step-list side-item" id="stepList"></ul>
                     <button class="btn btn-primary btn-block" id="addStep">Add step</button>
+                    <button class="btn btn-primary btn-block" id="importStep">Import from library</button>
                 </div>
                 <div class="col-lg-8 well" style="min-height: 200px;">
                     <div class="step-header clearfix">
-                        <div class="row">
-                            <div id="stepDescription" class="col-lg-9"></div>
-                            <div class="col-lg-3" id="editBtnArea" style="display: none;">
-                                <div class="btn-group pull-right">
-                                    <button class="btn btn-default" id="editBtn"><span class="glyphicon glyphicon-pencil"></span></button>
-                                    <button class="btn btn-default" id="deleteStep"><span class="glyphicon glyphicon-trash"></span></button>
+                        <div id="stepInfo"  style="display: none;">
+                            <div class="row">
+                                <div id="stepDescription" class="col-lg-9"></div>
+                                <div class="col-lg-3" id="editBtnArea">
+                                    <div class="btn-group pull-right">
+                                        <button class="btn btn-default" id="editBtn"><span class="glyphicon glyphicon-pencil"></span></button>
+                                        <button class="btn btn-default" id="deleteStep"><span class="glyphicon glyphicon-trash"></span></button>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-lg-9 lib-info" id="libInfo">
+
                                 </div>
                             </div>
                         </div>
-                        <div class="row">
-                            <div class="col-lg-9 step-info" id="stepInfo">
-                                
-                            </div>
-                        </div>
-                        <div id="editStep" style="display: none;" class="row">
-                            <div class="input-group">
+                        <div id="editStep" style="display: none;">
+                            <div class="input-group row">
                                 <input type="text" class="form-control" id="editStepDescription">
                                 <div class="input-group-btn">
                                     <button class="btn btn-default" id="saveStep">Save</button>
                                     <button class="btn btn-default" id="cancelEdit">Cancel</button>
                                 </div>
+                            </div>
+                            <div class="row">
                             </div>
                         </div>
                     </div>

@@ -90,7 +90,10 @@ public class ReadTestCaseStep extends HttpServlet {
             if(tcsActionList != null){
                 JSONArray list = new JSONArray();
                 for(TestCaseStepAction t : tcsActionList){                    
-                    list.put(gson.toJson(t));
+                    JSONObject obj = new JSONObject(gson.toJson(t));
+                    obj.put("controlList", new JSONArray());
+                    obj.put("objType", "action");
+                    list.put(obj);
                 }                
                 jsonResponse.put("tcsActionList", list);
             }
@@ -101,8 +104,9 @@ public class ReadTestCaseStep extends HttpServlet {
             
             if(tcsActionControlList != null){
                 JSONArray list2 = new JSONArray();
-                for(TestCaseStepActionControl t : tcsActionControlList){                    
-                    list2.put(gson.toJson(t));
+                for(TestCaseStepActionControl t : tcsActionControlList){
+                    JSONObject obj = new JSONObject(gson.toJson(t));
+                    list2.put(obj);
                 }
                 jsonResponse.put("tcsActionControlList", list2); 
             }
