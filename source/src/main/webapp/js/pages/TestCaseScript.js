@@ -46,6 +46,10 @@ $.when($.getScript("js/pages/global/global.js")).then(function () {
         $("#editEntryButton").click(saveUpdateEntryHandler);
         $("#editTcInfo").click({test: test, testcase: testcase}, editEntry);
 
+        $("#importStep").click(function () {
+            $("#libModal").modal('show');
+        });
+
         $("#saveStep").click(saveStep);
         $("#cancelEdit").click(cancelEdit);
 
@@ -56,8 +60,9 @@ $.when($.getScript("js/pages/global/global.js")).then(function () {
             dataType: "json",
             success: function (data) {
                 loadTestCaseInfo(data.info);
-                json = agregateData(data);
-                createStepList(json);
+//                json = agregateData(data);
+                sortData(data.stepList);
+                createStepList(data.stepList);
             },
             error: showUnexpectedError
         });
@@ -76,14 +81,14 @@ function cancelEdit() {
     $("#editStep").hide();
     $("#editStepDescription").val("");
     $("#stepDescription").show();
-    $("#editBtnArea").show();
+    $("#stepInfo").show();
 }
 
 function editStep(event) {
     var step = event.data.step;
 
     $("#stepDescription").hide();
-    $("#editBtnArea").hide();
+    $("#stepInfo").hide();
     $("#editStepDescription").prop("placeholder", "Description").val(step.description);
     $("#editStep").show();
 }
@@ -133,9 +138,12 @@ function getControlListHtml(controlList) {
 }
 
 function drawStep(step) {
-    var drag = $("<span></span>").addClass("glyphicon glyphicon-move drag-step col-lg-2").prop("draggable", true);
     var htmlElement = $("<li></li>").addClass("list-group-item row").css("margin-left", "0px");
     var textArea = $("<div></div>").addClass("col-lg-10");
+
+//    var type = $("<div></div>").addClass("type");
+    var drag = $("<div></div>").addClass("col-lg-2 drag-step").prop("draggable", true)
+            .append($("<span></span>").addClass("glyphicon glyphicon-move"));
 
     textArea.text(step.description);
     htmlElement.append(drag);
@@ -165,14 +173,14 @@ function displayStep() {
         $(this).hide();
     });
 
-    $("#editBtnArea").show();
+    $("#stepInfo").show();
     $("#editBtn").click({step: step}, editStep);
     $("#stepDescription").text(step.description);
 
     if (step.useStep === "Y") {
-        $("#stepInfo").text("(Imported from " + step.useStepTest + " - " + step.useStepTestCase + " - " + step.useStepStep + " )");
+        $("#libInfo").text("(Imported from " + step.useStepTest + " - " + step.useStepTestCase + " - " + step.useStepStep + " )");
     } else {
-        $("#stepInfo").text("");
+        $("#libInfo").text("");
     }
     $(".step-container[data-step='" + step.step + "']").show();
     cancelEdit();
@@ -379,6 +387,7 @@ function generateContent(stepAction) {
 
 function loadStepInfo(step) {
     var actionList = step.actionList;
+
     var container = $("#actionContainer");
     var stepContainer = $("<div></div>").addClass("step-container").attr("data-step", step.step).css("display", "none");
 
@@ -491,59 +500,24 @@ function handleDragEnd(event) {
 
 /** DATA AGREGATION **/
 
-function getIndexOf(type, data, stepNumber) {
-    for (var i = 0; i < data.length; i++) {
-        if (data[i][type] === stepNumber) {
-            return i;
-        }
-    }
-    return -1;
-}
-
 function sortData(agreg) {
     for (var i = 0; i < agreg.length; i++) {
         var step = agreg[i];
+
         for (var j = 0; j < step.actionList.length; j++) {
             var action = step.actionList[j];
+
             action.controlList.sort(function (a, b) {
                 return a.control - b.control;
             });
         }
+
         step.actionList.sort(function (a, b) {
             return a.sequence - b.sequence;
         });
     }
+
     agreg.sort(function (a, b) {
         return a.step - b.step;
     });
-}
-
-function agregateData(data) {
-    var agreg = [];
-
-    for (var i = 0; i < data.stepList.length; i++) {
-        data.stepList[i].actionList = [];
-        agreg.push(data.stepList[i]);
-    }
-
-    for (var i = 0; i < data.actionList.length; i++) {
-        var object = data.actionList[i];
-        var index = getIndexOf("step", agreg, object.step);
-        var step = agreg[index];
-
-        object.controlList = [];
-        step.actionList.push(object);
-    }
-
-    for (var i = 0; i < data.controlList.length; i++) {
-        var object = data.controlList[i];
-        var indexStep = getIndexOf("step", agreg, object.step);
-        var step = agreg[indexStep];
-        var indexAction = getIndexOf("sequence", step.actionList, object.sequence);
-        var action = step.actionList[indexAction];
-
-        action.controlList.push(object);
-    }
-    sortData(agreg);
-    return agreg;
 }

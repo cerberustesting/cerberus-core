@@ -900,7 +900,7 @@ function readStepFromDatabase(test, testcase, step, stepNumber, parentNode) {
         var actionList = [];
         //iterates the actions set
         $.each(data.tcsActionList, function(idx, obj) {
-            var action = $.parseJSON(obj)
+            var action = obj
             var actionObj = $.extend(new Action(), action);
             //sets the new action
             actionList[actionObj.sequence] = actionObj;
@@ -908,7 +908,7 @@ function readStepFromDatabase(test, testcase, step, stepNumber, parentNode) {
         //iterates the controls set and associates each one with the corresponding action
         $.each(data.tcsActionControlList, function(idx, obj) {
             //var obj2 = $.parseJSON(obj);
-            var control = $.parseJSON(obj)
+            var control = obj
             //console.log("aa >>   " + action.test);
             var controlObj = $.extend(new Control(), control);
 

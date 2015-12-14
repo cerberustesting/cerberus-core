@@ -450,7 +450,7 @@ public class TestCaseStepActionControlDAO implements ITestCaseStepActionControlD
         msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", ""));
         List<TestCaseStepActionControl> controlList = new ArrayList<TestCaseStepActionControl>();
         StringBuilder query = new StringBuilder();
-        query.append("SELECT * FROM testcasestepactioncontrol WHERE test = ? AND testcase = ? ");
+        query.append("SELECT * FROM testcasestepactioncontrol WHERE test = ? AND testcase = ? ORDER BY control");
 
         Connection connection = this.databaseSpring.connect();
         try {

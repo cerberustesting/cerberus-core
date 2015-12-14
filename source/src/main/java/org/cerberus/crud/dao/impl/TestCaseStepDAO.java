@@ -659,7 +659,7 @@ public class TestCaseStepDAO implements ITestCaseStepDAO {
         msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", ""));
         List<TestCaseStep> stepList = new ArrayList<TestCaseStep>();
         StringBuilder query = new StringBuilder();
-        query.append("SELECT * FROM testcasestep WHERE test = ? AND testcase = ? ");
+        query.append("SELECT * FROM testcasestep WHERE test = ? AND testcase = ? ORDER BY step");
 
         Connection connection = this.databaseSpring.connect();
         try {
