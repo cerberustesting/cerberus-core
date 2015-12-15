@@ -41,7 +41,7 @@ $.when($.getScript("js/pages/global/global.js")).then(function () {
         displayApplicationList("application", getUser().defaultSystem);
         displayProjectList("project");
         tinymce.init({
-            selector: "textarea"
+            selector: ".wysiwyg"
         });
 
         $('#editEntryModal').on('hidden.bs.modal', {extra: "#editEntryModal"}, modalFormCleaner);
@@ -50,6 +50,10 @@ $.when($.getScript("js/pages/global/global.js")).then(function () {
 
         $("#importStep").click(function () {
             $("#libModal").modal('show');
+        });
+
+        $("#manageProp").click(function () {
+            $("#propertiesModal").modal('show');
         });
 
         $("#saveStep").click(saveStep);
@@ -62,6 +66,7 @@ $.when($.getScript("js/pages/global/global.js")).then(function () {
             dataType: "json",
             success: function (data) {
                 loadTestCaseInfo(data.info);
+                loadProperties(test, testcase, data.info);
                 json = data.stepList;
                 sortData(json);
                 createStepList(json);
@@ -73,62 +78,88 @@ $.when($.getScript("js/pages/global/global.js")).then(function () {
     });
 });
 
-function loadLibraryStep() {
+function loadProperties(test, testcase, testcaseinfo) {
     $.ajax({
-        url: "GetStepInLibrary",
-        data: {system: getUser().defaultSystem},
+        url: "GetPropertiesForTestCase",
+        data: {test: test, testcase: testcase},
         async: true,
         success: function (data) {
-            var test = {};
+            var countriesHtml = getTestCaseCountry(testcaseinfo);
+            var selectType = getSelectInvariant("PROPERTYTYPE");
+            var selectDB = getSelectInvariant("PROPERTYDATABASE");
+            var selectNature = getSelectInvariant("PROPERTYNATURE");
+            var table = $("#propTable");
 
-            for (var index = 0; index < data.testCaseStepList.length; index++) {
-                var step = data.testCaseStepList[index];
 
-                if (!test.hasOwnProperty(step.test)) {
-                    $("#lib").append($("<a></a>").addClass("list-group-item").attr("data-toggle", "collapse").attr("href", "#" + step.test)
-                            .text(step.test).prepend($("<span></span>").addClass("glyphicon glyphicon-chevron-right")));
+            for (var index = 0; index < data.length; index++) {
+                var property = data[index];
 
-                    var listGrp = $("<div></div>").addClass("list-group collapse").prop("id", step.test);
-                    $("#lib").append(listGrp);
+                var row = $("<tr></tr>");
+                var deleteBtn = $("<td></td>").append($("<button></button>").addClass("btn btn-default btn-xs").append($("<span></span>").addClass("glyphicon glyphicon-trash")));
+                var propertyName = $("<td></td>").append($("<input>").addClass("form-control input-sm").val(property.property));
+                var country = $("<td></td>").append(countriesHtml.clone());
+                var type = $("<td></td>").append(selectType.clone().val(property.type));
+                var db = $("<td></td>").append(selectDB.clone().val(property.database));
+                var value = $("<td></td>").append($("<textarea></textarea>").addClass("form-control input-sm").val(property.value1));
+                var length = $("<td></td>").append($("<input>").addClass("form-control input-sm").val(property.length));
+                var rowLimit = $("<td></td>").append($("<input>").addClass("form-control input-sm").val(property.rowLimit));
+                var nature = $("<td></td>").append(selectNature.clone().val(property.nature));
 
-                    test[step.test] = listGrp;
-                }
-
-                console.log(test);
-                var listGrp = test[step.test];
-                listGrp.append($("<a></a>").addClass("list-group-item sub-item").attr("href", "#").text(step.description).data("stepInfo", step));
+                row.append(deleteBtn);
+                row.append(propertyName);
+                row.append(country);
+                row.append(type);
+                row.append(db);
+                row.append(value);
+                row.append(length);
+                row.append(rowLimit);
+                row.append(nature);
+                table.append(row);
             }
-            $('.list-group-item').on('click', function () {
-                $('.glyphicon', this)
-                        .toggleClass('glyphicon-chevron-right')
-                        .toggleClass('glyphicon-chevron-down');
-            });
-
-            $(".sub-item").click(importStep);
-        }
+        },
+        error: showUnexpectedError
     });
 }
 
-function importStep() {
-    var stepInfo = $(this).data("stepInfo");
+function getTestCaseCountry(testcaseinfo) {
+    var html = $("<div></div>");
 
-    $.ajax({
-        url: "ReadTestCaseStep",
-        data: {test: stepInfo.test, testcase: stepInfo.testCase, step: stepInfo.step},
-        success: function (data) {
-            var step = {"inLibrary": "N",
-                "objType": "step",
-                "useStep": "Y",
-                "useStepTest": stepInfo.test,
-                "useStepTestCase": stepInfo.testCase,
-                "useStepStep": stepInfo.step,
-                "description": stepInfo.description,
-                "step": $("#stepList li").length + 1,
-                "actionList": data.tcsActionList};
+    for (var country in testcaseinfo.countryList) {
+        html.append($("<label></label>").addClass("checkbox-inline").text(country)
+                .append($("<input>").attr("type", "checkbox").attr("name", country)));
+    }
 
-            drawStep(step);
+    return html;
+}
+
+function getSelectInvariant(idName) {
+    var list = JSON.parse(sessionStorage.getItem(idName + "INVARIANT"));
+    var select = $("<select></select>").addClass("form-control input-sm");
+
+    if (list === null) {
+        $.ajax({
+            url: "FindInvariantByID",
+            data: {idName: idName},
+            async: true,
+            success: function (data) {
+                list = data;
+                sessionStorage.setItem(idName + "INVARIANT", JSON.stringify(data));
+                for (var index = 0; index < list.length; index++) {
+                    var item = list[index].value;
+
+                    select.append($("<option></option>").text(item).val(item));
+                }
+            }
+        });
+    } else {
+        for (var index = 0; index < list.length; index++) {
+            var item = list[index].value;
+
+            select.append($("<option></option>").text(item).val(item));
         }
-    });
+    }
+
+    return select;
 }
 
 function loadTestCaseInfo(info) {
@@ -251,6 +282,73 @@ function createStepList(data) {
         var step = data[i];
         drawStep(step);
     }
+}
+
+/** LIBRARY STEP UTILY FUNCTIONS **/
+
+function loadLibraryStep() {
+    $.ajax({
+        url: "GetStepInLibrary",
+        data: {system: getUser().defaultSystem},
+        async: true,
+        success: function (data) {
+            var test = {};
+
+            for (var index = 0; index < data.testCaseStepList.length; index++) {
+                var step = data.testCaseStepList[index];
+
+                if (!test.hasOwnProperty(step.test)) {
+                    $("#lib").append($("<a></a>").addClass("list-group-item").attr("data-toggle", "collapse").attr("href", "[data-test='" + step.test + "']")
+                            .text(step.test).prepend($("<span></span>").addClass("glyphicon glyphicon-chevron-right")));
+
+                    var listGrp = $("<div></div>").addClass("list-group collapse").attr("data-test", step.test);
+                    $("#lib").append(listGrp);
+
+                    test[step.test] = listGrp;
+                }
+
+                var listGrp = test[step.test];
+                listGrp.append($("<a></a>").addClass("list-group-item sub-item").attr("href", "#").text(step.description).data("stepInfo", step));
+            }
+            $('.list-group-item').on('click', function () {
+                $('.glyphicon', this)
+                        .toggleClass('glyphicon-chevron-right')
+                        .toggleClass('glyphicon-chevron-down');
+            });
+
+            $(".sub-item").click(importStep);
+        }
+    });
+}
+
+function importStep() {
+    var stepInfo = $(this).data("stepInfo");
+
+    $.ajax({
+        url: "ReadTestCaseStep",
+        data: {test: stepInfo.test, testcase: stepInfo.testCase, step: stepInfo.step},
+        success: function (data) {
+            var step = {"inLibrary": "N",
+                "objType": "step",
+                "useStep": "Y",
+                "useStepTest": stepInfo.test,
+                "useStepTestCase": stepInfo.testCase,
+                "useStepStep": stepInfo.step,
+                "description": stepInfo.description,
+                "step": $("#stepList li").length + 1,
+                "actionList": data.tcsActionList};
+
+            for (var index = 0; index < data.tcsActionControlList.length; index++) {
+                var control = data.tcsActionControlList[index];
+
+                step.actionList[control.sequence - 1].controlList.push(control);
+            }
+
+            sortStep(step);
+            drawStep(step);
+            $("#libModal").modal('hide');
+        }
+    });
 }
 
 /** EDIT TEST CASE INFO **/
@@ -621,21 +719,25 @@ function handleDragEnd(event) {
 
 /** DATA AGREGATION **/
 
+function sortStep(step) {
+    for (var j = 0; j < step.actionList.length; j++) {
+        var action = step.actionList[j];
+
+        action.controlList.sort(function (a, b) {
+            return a.control - b.control;
+        });
+    }
+
+    step.actionList.sort(function (a, b) {
+        return a.sequence - b.sequence;
+    });
+}
+
 function sortData(agreg) {
     for (var i = 0; i < agreg.length; i++) {
         var step = agreg[i];
 
-        for (var j = 0; j < step.actionList.length; j++) {
-            var action = step.actionList[j];
-
-            action.controlList.sort(function (a, b) {
-                return a.control - b.control;
-            });
-        }
-
-        step.actionList.sort(function (a, b) {
-            return a.sequence - b.sequence;
-        });
+        sortStep(step);
     }
 
     agreg.sort(function (a, b) {
