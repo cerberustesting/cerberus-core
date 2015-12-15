@@ -687,7 +687,7 @@
                 <h4>Contextual Actions</h4>
                 <table class="tableBorder"  style="text-align: left" border="1" >
                     <tr>
-                        <%if (tcGroup.equalsIgnoreCase("MANUAL")) {%>
+                        <%if (tcGroup.equalsIgnoreCase("MANUAL") && !"PE".equalsIgnoreCase(controlStatus)) {%>
                             <td> 
                                 <button style="cursor:pointer; background:none; border:none;margin:0;padding:0;color: #008CDA;text-decoration: none;font-family: helvetica;font-size:11.2px " 
                                         onclick="openRunManualPopin('<%=test%>','<%=testCase%>', '<%=environment%>','<%=country%>','','<%=testCaseExecution.getTag()==null?"" : tagEncoded%>', '<%=browser%>')" 
