@@ -75,6 +75,13 @@ $.when($.getScript("js/pages/global/global.js")).then(function () {
         });
 
         $("#addStep").click({json: json}, addStep);
+        $('#addStepModal').on('hidden.bs.modal', function () {
+            $("#importInfo").removeData("stepInfo");
+            $("#importInfo").empty();
+            $("#addStepModal #description").val("");
+            $("#useStep").prop("checked", false);
+            $("#importDetail").hide();
+        });
     });
 });
 
@@ -84,7 +91,6 @@ function loadProperties(test, testcase, testcaseinfo) {
         data: {test: test, testcase: testcase},
         async: true,
         success: function (data) {
-            var countriesHtml = getTestCaseCountry(testcaseinfo);
             var selectType = getSelectInvariant("PROPERTYTYPE");
             var selectDB = getSelectInvariant("PROPERTYDATABASE");
             var selectNature = getSelectInvariant("PROPERTYNATURE");
@@ -97,7 +103,7 @@ function loadProperties(test, testcase, testcaseinfo) {
                 var row = $("<tr></tr>");
                 var deleteBtn = $("<td></td>").append($("<button></button>").addClass("btn btn-default btn-xs").append($("<span></span>").addClass("glyphicon glyphicon-trash")));
                 var propertyName = $("<td></td>").append($("<input>").addClass("form-control input-sm").val(property.property));
-                var country = $("<td></td>").append(countriesHtml.clone());
+                var country = $("<td></td>").append(getTestCaseCountry(testcaseinfo));
                 var type = $("<td></td>").append(selectType.clone().val(property.type));
                 var db = $("<td></td>").append(selectDB.clone().val(property.database));
                 var value = $("<td></td>").append($("<textarea></textarea>").addClass("form-control input-sm").val(property.value1));
@@ -122,11 +128,19 @@ function loadProperties(test, testcase, testcaseinfo) {
 }
 
 function getTestCaseCountry(testcaseinfo) {
-    var html = $("<div></div>");
+    var html = [];
+    var cpt = 0;
+    var div = $("<div></div>").addClass("checkbox");
 
     for (var country in testcaseinfo.countryList) {
-        html.append($("<label></label>").addClass("checkbox-inline").text(country)
-                .append($("<input>").attr("type", "checkbox").attr("name", country)));
+        div.append($("<label></label>").addClass("checkbox-inline")
+                .append($("<input>").attr("type", "checkbox").attr("name", country)).append(country));
+
+        cpt++;
+        if (cpt % 3 === 0) {
+            html.push(div);
+            div = $("<div></div>").addClass("checkbox");
+        }
     }
 
     return html;
@@ -203,18 +217,58 @@ function deleteStep(event) {
 }
 
 function addStep(event) {
-    var stepNumber = $("#stepList li").length + 1;
-    var step = {"inLibrary": "N",
-        "objType": "step",
-        "useStepTest": "",
-        "useStepTestCase": "",
-        "useStep": "N",
-        "description": "New Step",
-        "useStepStep": -1,
-        "step": stepNumber,
-        "actionList": []};
+    $("#addStepModal").modal('show');
 
-    drawStep(step);
+    $(".sub-item").click(function () {
+        var stepInfo = $(this).data("stepInfo");
+
+        $("#importInfo").text("Imported from " + stepInfo.test + " - " + stepInfo.testCase + " - " + stepInfo.step + ")").data("stepInfo", stepInfo);
+        $("#addStepModal #description").val(stepInfo.description);
+        $("#useStep").prop("checked", true);
+
+        $("#importDetail").show();
+    });
+
+    $("#addStepConfirm").unbind("click").click(function (event) {
+        var stepNumber = $("#stepList li").length + 1;
+        var step = {"inLibrary": "N",
+            "objType": "step",
+            "useStepTest": "",
+            "useStepTestCase": "",
+            "useStep": "N",
+            "description": "",
+            "useStepStep": -1,
+            "step": stepNumber,
+            "actionList": []};
+
+        step.description = $("#addStepModal #description").val();
+        if ($("#importInfo").data("stepInfo")) {
+            var useStep = $("#importInfo").data("stepInfo");
+            $.ajax({
+                url: "ReadTestCaseStep",
+                data: {test: useStep.test, testcase: useStep.testCase, step: useStep.step},
+                async: false,
+                success: function (data) {
+                    step.actionList = data.tcsActionList;
+
+                    for (var index = 0; index < data.tcsActionControlList.length; index++) {
+                        var control = data.tcsActionControlList[index];
+
+                        step.actionList[control.sequence - 1].controlList.push(control);
+                    }
+                    sortStep(step);
+                }
+            });
+            if ($("#useStep").prop("checked")) {
+
+                step.useStep = "Y";
+                step.useStepTest = useStep.test;
+                step.useStepTestCase = useStep.testCase;
+                step.useStepStep = useStep.step;
+            }
+        }
+        drawStep(step);
+    });
 }
 
 function getControlListHtml(controlList, useStep) {
@@ -316,40 +370,40 @@ function loadLibraryStep() {
                         .toggleClass('glyphicon-chevron-down');
             });
 
-            $(".sub-item").click(importStep);
+//            $(".sub-item").click(importStep);
         }
     });
 }
 
-function importStep() {
-    var stepInfo = $(this).data("stepInfo");
-
-    $.ajax({
-        url: "ReadTestCaseStep",
-        data: {test: stepInfo.test, testcase: stepInfo.testCase, step: stepInfo.step},
-        success: function (data) {
-            var step = {"inLibrary": "N",
-                "objType": "step",
-                "useStep": "Y",
-                "useStepTest": stepInfo.test,
-                "useStepTestCase": stepInfo.testCase,
-                "useStepStep": stepInfo.step,
-                "description": stepInfo.description,
-                "step": $("#stepList li").length + 1,
-                "actionList": data.tcsActionList};
-
-            for (var index = 0; index < data.tcsActionControlList.length; index++) {
-                var control = data.tcsActionControlList[index];
-
-                step.actionList[control.sequence - 1].controlList.push(control);
-            }
-
-            sortStep(step);
-            drawStep(step);
-            $("#libModal").modal('hide');
-        }
-    });
-}
+//function importStep() {
+//    var stepInfo = $(this).data("stepInfo");
+//
+//    $.ajax({
+//        url: "ReadTestCaseStep",
+//        data: {test: stepInfo.test, testcase: stepInfo.testCase, step: stepInfo.step},
+//        success: function (data) {
+//            var step = {"inLibrary": "N",
+//                "objType": "step",
+//                "useStep": "Y",
+//                "useStepTest": stepInfo.test,
+//                "useStepTestCase": stepInfo.testCase,
+//                "useStepStep": stepInfo.step,
+//                "description": stepInfo.description,
+//                "step": $("#stepList li").length + 1,
+//                "actionList": data.tcsActionList};
+//
+//            for (var index = 0; index < data.tcsActionControlList.length; index++) {
+//                var control = data.tcsActionControlList[index];
+//
+//                step.actionList[control.sequence - 1].controlList.push(control);
+//            }
+//
+//            sortStep(step);
+//            drawStep(step);
+//            $("#libModal").modal('hide');
+//        }
+//    });
+//}
 
 /** EDIT TEST CASE INFO **/
 

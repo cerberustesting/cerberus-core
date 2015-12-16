@@ -35,8 +35,8 @@
         <div id="page-layout" class="container-fluid center">
             <%@ include file="include/messagesArea.html"%>
             <%@ include file="include/testcaselist/editTestCase.html"%>
-            <%@ include file="include/testcasescript/importFromLib.html"%>
             <%@ include file="include/testcasescript/manageProperties.html"%>
+            <%@ include file="include/testcasescript/addStep.html"%>
 
             <h1 class="page-title-line">Test Case Script</h1>
             <h1 class="testTestCase"><span id="test">THESEUS</span> / <span id="testCase">0001A</span> - <span id="description">Description of the Test Case</span></h1>
@@ -45,7 +45,6 @@
                     <h3>Steps</h3>
                     <ul class="list-group step-list side-item" id="stepList"></ul>
                     <button class="btn btn-primary btn-block" id="addStep">Add step</button>
-                    <button class="btn btn-primary btn-block" id="importStep">Import from library</button>
                 </div>
                 <div class="col-lg-8 well" style="min-height: 200px;">
                     <div class="step-header clearfix">
