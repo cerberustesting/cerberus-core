@@ -33,10 +33,12 @@ import org.cerberus.crud.entity.CampaignContent;
 import org.cerberus.crud.entity.MessageEvent;
 import org.cerberus.crud.entity.TCase;
 import org.cerberus.crud.entity.TestCaseCountry;
+import org.cerberus.crud.entity.TestCaseCountryProperties;
 import org.cerberus.crud.entity.TestCaseStep;
 import org.cerberus.crud.entity.TestCaseStepAction;
 import org.cerberus.crud.entity.TestCaseStepActionControl;
 import org.cerberus.crud.service.ICampaignContentService;
+import org.cerberus.crud.service.ITestCaseCountryPropertiesService;
 import org.cerberus.crud.service.ITestCaseCountryService;
 import org.cerberus.crud.service.ITestCaseService;
 import org.cerberus.crud.service.ITestCaseStepActionControlService;
@@ -359,6 +361,7 @@ public class ReadTestCase extends HttpServlet {
     private AnswerItem findTestCaseWithStep(ApplicationContext appContext, String test, String testCase) throws JSONException {
         AnswerItem item = new AnswerItem();
         JSONObject object = new JSONObject();
+        JSONArray inheritedProp = new JSONArray();
         JSONObject jsonResponse = new JSONObject();
 
         testCaseService = appContext.getBean(TestCaseService.class);
@@ -366,6 +369,7 @@ public class ReadTestCase extends HttpServlet {
         testCaseStepService = appContext.getBean(TestCaseStepService.class);
         testCaseStepActionService = appContext.getBean(TestCaseStepActionService.class);
         testCaseStepActionControlService = appContext.getBean(TestCaseStepActionControlService.class);
+        ITestCaseCountryPropertiesService testCaseCountryPropertiesService = appContext.getBean(ITestCaseCountryPropertiesService.class);
 
         //finds the project     
         AnswerItem answer = testCaseService.readByKey(test, testCase);
@@ -407,7 +411,32 @@ public class ReadTestCase extends HttpServlet {
                 //If this step is imported from library, we call the service to retrieve actions
                 List<TestCaseStepAction> actionList = testCaseStepActionService.getListOfAction(step.getUseStepTest(), step.getUseStepTestCase(), step.getUseStepStep());
                 List<TestCaseStepActionControl> controlList = testCaseStepActionControlService.findControlByTestTestCaseStep(step.getUseStepTest(), step.getUseStepTestCase(), step.getUseStepStep());
+                List<TestCaseCountryProperties> properties = testCaseCountryPropertiesService.findDistinctPropertiesOfTestCase(test, testCase);
+
+                //retrieve the inherited properties
                 
+                for (TestCaseCountryProperties prop : properties) {
+                    JSONObject propertyFound = new JSONObject();
+
+                    propertyFound.put("fromTest", prop.getTest());
+                    propertyFound.put("fromTestCase", prop.getTestCase());
+                    propertyFound.put("property", prop.getProperty());
+                    propertyFound.put("type", prop.getType());
+                    propertyFound.put("database", prop.getDatabase());
+                    propertyFound.put("value1", prop.getValue1());
+                    propertyFound.put("value2", prop.getValue2());
+                    propertyFound.put("length", prop.getLength());
+                    propertyFound.put("rowLimit", prop.getRowLimit());
+                    propertyFound.put("nature", prop.getNature());
+                    List<String> countriesSelected = testCaseCountryPropertiesService.findCountryByProperty(prop);
+                    JSONArray countries = new JSONArray();
+                    for (String country : countriesSelected) {
+                        countries.put(country);
+                    }
+                    propertyFound.put("country", countries);
+                    inheritedProp.put(propertyFound);
+                }
+
                 for (TestCaseStepAction action : actionList) {
                     JSONObject jsonAction = new JSONObject();
 
@@ -493,6 +522,7 @@ public class ReadTestCase extends HttpServlet {
 
         jsonResponse.put("info", object);
         jsonResponse.put("stepList", stepList);
+        jsonResponse.put("inheritedProp", inheritedProp);
 
         item.setItem(jsonResponse);
         item.setResultMessage(answer.getResultMessage());

@@ -152,3 +152,8 @@
 .sub-item {
     margin-left: 15px;
 }
+
+.toDelete {
+    background-color: #e74c3c;
+    color: #FFFFFF;
+}

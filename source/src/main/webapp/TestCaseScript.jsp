@@ -39,11 +39,11 @@
             <%@ include file="include/testcasescript/addStep.html"%>
 
             <h1 class="page-title-line">Test Case Script</h1>
-            <h1 class="testTestCase"><span id="test">THESEUS</span> / <span id="testCase">0001A</span> - <span id="description">Description of the Test Case</span></h1>
+            <h1 class="testTestCase"><span id="test"></span> / <span id="testCase"></span> - <span id="description"></span></h1>
             <div class="row" style="margin-top: 10px;">
                 <div class="col-lg-3" id="list-wrapper">
                     <h3>Steps</h3>
-                    <ul class="list-group step-list side-item" id="stepList"></ul>
+                    <ul class="list-group step-list side-item" id="stepList" style="max-height: 600px;overflow-y: scroll"></ul>
                     <button class="btn btn-primary btn-block" id="addStep">Add step</button>
                 </div>
                 <div class="col-lg-8 well" style="min-height: 200px;">

@@ -25,7 +25,32 @@
                     <tbody id="propTable">
                     </tbody>
                 </table>
+                <button class="btn btn-default" id="addProperty">Add Property</button>
 
+                <div class="panel panel-default" style="margin-top: 20px;">
+                    <div class="panel-heading card" data-toggle="collapse" data-target="#inheritedPropPanel">
+                        <span class="toggle glyphicon glyphicon-chevron-right pull-right"></span>
+                        <label>Inherited Properties</label>
+                    </div>
+                    <div class="panel-body collapse in" id="inheritedPropPanel">
+                        <table class="table table-bordered table-hover nomarginbottom">
+                            <thead>
+                                <tr>
+                                    <th style="width: 5%;"></th>
+                                    <th id="subdataHeader" class="text-center">Property Name</th>
+                                    <th id="valueHeader" class="text-center">Country</th>
+                                    <th id="columnHeader" class="text-center">Type</th>
+                                    <th id="parsingAnswerHeader" class="text-center">DB</th>
+                                    <th id="descriptionHeader" class="text-center" style="width: 30%;">Value</th>
+                                    <th id="descriptionHeader" class="text-center" style="width: 5%">Length</th>
+                                    <th id="descriptionHeader" class="text-center" style="width: 5%">Row limit</th>
+                                    <th id="descriptionHeader" class="text-center">Nature</th>
+                                </tr>
+                            </thead>
+                            <tbody id="inheritedPropTable"></tbody>
+                        </table>
+                    </div>
+                </div>
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-default" data-dismiss="modal" name="buttonClose">Close</button>

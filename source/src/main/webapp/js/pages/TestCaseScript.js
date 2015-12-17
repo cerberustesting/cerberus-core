@@ -23,6 +23,7 @@ $.when($.getScript("js/pages/global/global.js")).then(function () {
         var doc = new Doc();
 
         loadLibraryStep();
+        bindToggleCollapse();
 
         var test = GetURLParameter("test");
         var testcase = GetURLParameter("testcase");
@@ -60,16 +61,19 @@ $.when($.getScript("js/pages/global/global.js")).then(function () {
         $("#cancelEdit").click(cancelEdit);
 
         var json;
+        var testcaseinfo;
         $.ajax({
             url: "ReadTestCase",
             data: {test: test, testCase: testcase, withStep: true},
             dataType: "json",
             success: function (data) {
+                testcaseinfo = data.info;
                 loadTestCaseInfo(data.info);
                 loadProperties(test, testcase, data.info);
                 json = data.stepList;
                 sortData(json);
                 createStepList(json);
+                drawInheritedProperty(data.inheritedProp);
             },
             error: showUnexpectedError
         });
@@ -82,8 +86,92 @@ $.when($.getScript("js/pages/global/global.js")).then(function () {
             $("#useStep").prop("checked", false);
             $("#importDetail").hide();
         });
+
+        $("#addProperty").click(function () {
+            var newProperty = {
+                property: "",
+                type: "",
+                database: "",
+                value1: "",
+                length: "",
+                rowLimit: "",
+                nature: ""
+            };
+
+            drawProperty(newProperty, testcaseinfo);
+        });
+
+        $("#deleteStep").click(function () {
+            var step = $("#stepList .active").data("item");
+
+            step.toDelete = true;
+        });
     });
 });
+
+function drawProperty(property, testcaseinfo) {
+    var selectType = getSelectInvariant("PROPERTYTYPE");
+    var selectDB = getSelectInvariant("PROPERTYDATABASE");
+    var selectNature = getSelectInvariant("PROPERTYNATURE");
+    var table = $("#propTable");
+
+    var row = $("<tr></tr>");
+    var deleteBtn = $("<td></td>").append($("<button></button>").addClass("btn btn-default btn-xs").append($("<span></span>").addClass("glyphicon glyphicon-trash")));
+    var propertyName = $("<td></td>").append($("<input>").addClass("form-control input-sm").val(property.property));
+    var country = $("<td></td>").append(getTestCaseCountry(testcaseinfo.countryList, property.country, false));
+    var type = $("<td></td>").append(selectType.clone().val(property.type));
+    var db = $("<td></td>").append(selectDB.clone().val(property.database));
+    var value = $("<td></td>").append($("<textarea></textarea>").addClass("form-control input-sm").val(property.value1));
+    var length = $("<td></td>").append($("<input>").addClass("form-control input-sm").val(property.length));
+    var rowLimit = $("<td></td>").append($("<input>").addClass("form-control input-sm").val(property.rowLimit));
+    var nature = $("<td></td>").append(selectNature.clone().val(property.nature));
+
+    row.data("property", property);
+    row.append(deleteBtn);
+    row.append(propertyName);
+    row.append(country);
+    row.append(type);
+    row.append(db);
+    row.append(value);
+    row.append(length);
+    row.append(rowLimit);
+    row.append(nature);
+    table.append(row);
+}
+
+function drawInheritedProperty(propList) {
+    var selectType = getSelectInvariant("PROPERTYTYPE");
+    var selectDB = getSelectInvariant("PROPERTYDATABASE");
+    var selectNature = getSelectInvariant("PROPERTYNATURE");
+    var table = $("#inheritedPropTable");
+
+    for (var index = 0; index < propList.length; index++) {
+        var property = propList[index];
+
+        var row = $("<tr></tr>");
+        var deleteBtn = $("<td></td>").append($("<button></button>").addClass("btn btn-default btn-xs").append($("<span></span>").addClass("glyphicon glyphicon-trash")));
+        var propertyName = $("<td></td>").append($("<input>").addClass("form-control input-sm").val(property.property).prop("readonly", true));
+        var country = $("<td></td>").append(getTestCaseCountry(property.country, property.country, true));
+        var type = $("<td></td>").append(selectType.clone().val(property.type).prop("disabled", "disabled"));
+        var db = $("<td></td>").append(selectDB.clone().val(property.database).prop("disabled", "disabled"));
+        var value = $("<td></td>").append($("<textarea></textarea>").addClass("form-control input-sm").val(property.value1).prop("readonly", true));
+        var length = $("<td></td>").append($("<input>").addClass("form-control input-sm").val(property.length).prop("readonly", true));
+        var rowLimit = $("<td></td>").append($("<input>").addClass("form-control input-sm").val(property.rowLimit).prop("readonly", true));
+        var nature = $("<td></td>").append(selectNature.clone().val(property.nature).prop("disabled", "disabled"));
+
+        row.data("property", property);
+        row.append(deleteBtn);
+        row.append(propertyName);
+        row.append(country);
+        row.append(type);
+        row.append(db);
+        row.append(value);
+        row.append(length);
+        row.append(rowLimit);
+        row.append(nature);
+        table.append(row);
+    }
+}
 
 function loadProperties(test, testcase, testcaseinfo) {
     $.ajax({
@@ -91,57 +179,49 @@ function loadProperties(test, testcase, testcaseinfo) {
         data: {test: test, testcase: testcase},
         async: true,
         success: function (data) {
-            var selectType = getSelectInvariant("PROPERTYTYPE");
-            var selectDB = getSelectInvariant("PROPERTYDATABASE");
-            var selectNature = getSelectInvariant("PROPERTYNATURE");
-            var table = $("#propTable");
-
 
             for (var index = 0; index < data.length; index++) {
                 var property = data[index];
 
-                var row = $("<tr></tr>");
-                var deleteBtn = $("<td></td>").append($("<button></button>").addClass("btn btn-default btn-xs").append($("<span></span>").addClass("glyphicon glyphicon-trash")));
-                var propertyName = $("<td></td>").append($("<input>").addClass("form-control input-sm").val(property.property));
-                var country = $("<td></td>").append(getTestCaseCountry(testcaseinfo));
-                var type = $("<td></td>").append(selectType.clone().val(property.type));
-                var db = $("<td></td>").append(selectDB.clone().val(property.database));
-                var value = $("<td></td>").append($("<textarea></textarea>").addClass("form-control input-sm").val(property.value1));
-                var length = $("<td></td>").append($("<input>").addClass("form-control input-sm").val(property.length));
-                var rowLimit = $("<td></td>").append($("<input>").addClass("form-control input-sm").val(property.rowLimit));
-                var nature = $("<td></td>").append(selectNature.clone().val(property.nature));
-
-                row.append(deleteBtn);
-                row.append(propertyName);
-                row.append(country);
-                row.append(type);
-                row.append(db);
-                row.append(value);
-                row.append(length);
-                row.append(rowLimit);
-                row.append(nature);
-                table.append(row);
+                drawProperty(property, testcaseinfo);
             }
         },
         error: showUnexpectedError
     });
 }
 
-function getTestCaseCountry(testcaseinfo) {
+function getTestCaseCountry(countryList, countryToCheck, isDisabled) {
     var html = [];
     var cpt = 0;
     var div = $("<div></div>").addClass("checkbox");
 
-    for (var country in testcaseinfo.countryList) {
+    $.each(countryList, function (index) {
+        var country;
+
+        if (typeof index === "number") {
+            country = countryList[index];
+        } else if (typeof index === "string") {
+            country = index;
+        }
+        var input = $("<input>").attr("type", "checkbox").attr("name", country);
+
+        if (countryToCheck.indexOf(country) !== -1) {
+            input.prop("checked", true);
+        }
+        if (isDisabled) {
+            input.prop("disabled", "disabled");
+        }
+
         div.append($("<label></label>").addClass("checkbox-inline")
-                .append($("<input>").attr("type", "checkbox").attr("name", country)).append(country));
+                .append(input)
+                .append(country));
 
         cpt++;
         if (cpt % 3 === 0) {
-            html.push(div);
             div = $("<div></div>").addClass("checkbox");
         }
-    }
+        html.push(div);
+    });
 
     return html;
 }
@@ -260,7 +340,6 @@ function addStep(event) {
                 }
             });
             if ($("#useStep").prop("checked")) {
-
                 step.useStep = "Y";
                 step.useStepTest = useStep.test;
                 step.useStepTestCase = useStep.testCase;
@@ -369,41 +448,10 @@ function loadLibraryStep() {
                         .toggleClass('glyphicon-chevron-right')
                         .toggleClass('glyphicon-chevron-down');
             });
-
-//            $(".sub-item").click(importStep);
         }
     });
 }
 
-//function importStep() {
-//    var stepInfo = $(this).data("stepInfo");
-//
-//    $.ajax({
-//        url: "ReadTestCaseStep",
-//        data: {test: stepInfo.test, testcase: stepInfo.testCase, step: stepInfo.step},
-//        success: function (data) {
-//            var step = {"inLibrary": "N",
-//                "objType": "step",
-//                "useStep": "Y",
-//                "useStepTest": stepInfo.test,
-//                "useStepTestCase": stepInfo.testCase,
-//                "useStepStep": stepInfo.step,
-//                "description": stepInfo.description,
-//                "step": $("#stepList li").length + 1,
-//                "actionList": data.tcsActionList};
-//
-//            for (var index = 0; index < data.tcsActionControlList.length; index++) {
-//                var control = data.tcsActionControlList[index];
-//
-//                step.actionList[control.sequence - 1].controlList.push(control);
-//            }
-//
-//            sortStep(step);
-//            drawStep(step);
-//            $("#libModal").modal('hide');
-//        }
-//    });
-//}
 
 /** EDIT TEST CASE INFO **/
 
@@ -658,7 +706,6 @@ function generateContent(stepAction, useStep) {
 }
 
 function loadStepInfo(step) {
-    console.log(step);
     var actionList = step.actionList;
 
     var container = $("#actionContainer");
@@ -674,6 +721,20 @@ function loadStepInfo(step) {
         stepContainer.append(actionGroup);
     }
     container.append(stepContainer);
+}
+
+function appendCountryList() {
+    var jqxhr = $.getJSON("FindInvariantByID", "idName=COUNTRY");
+    $.when(jqxhr).then(function (data) {
+        var countryList = $("[name=countryList]");
+
+        for (var index = 0; index < data.length; index++) {
+            var country = data[index].value;
+
+            countryList.append('<label class="checkbox-inline"><input class="countrycb" type="checkbox" name="' + country + '"/>' + country + '\
+                                <input id="countryCheckB" class="countrycb-hidden" type="hidden" name="' + country + '" value="off"/></label>');
+        }
+    });
 }
 
 /** DRAG AND DROP HANDLERS **/
