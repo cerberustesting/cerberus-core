@@ -22,6 +22,7 @@ package org.cerberus.servlet.crud.test;
 import com.google.common.base.Strings;
 import com.google.gson.Gson;
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import javax.servlet.ServletException;
@@ -361,7 +362,7 @@ public class ReadTestCase extends HttpServlet {
     private AnswerItem findTestCaseWithStep(ApplicationContext appContext, String test, String testCase) throws JSONException {
         AnswerItem item = new AnswerItem();
         JSONObject object = new JSONObject();
-        JSONArray inheritedProp = new JSONArray();
+        HashMap<String, JSONObject> hashProp = new HashMap<String, JSONObject>();
         JSONObject jsonResponse = new JSONObject();
 
         testCaseService = appContext.getBean(TestCaseService.class);
@@ -411,10 +412,9 @@ public class ReadTestCase extends HttpServlet {
                 //If this step is imported from library, we call the service to retrieve actions
                 List<TestCaseStepAction> actionList = testCaseStepActionService.getListOfAction(step.getUseStepTest(), step.getUseStepTestCase(), step.getUseStepStep());
                 List<TestCaseStepActionControl> controlList = testCaseStepActionControlService.findControlByTestTestCaseStep(step.getUseStepTest(), step.getUseStepTestCase(), step.getUseStepStep());
-                List<TestCaseCountryProperties> properties = testCaseCountryPropertiesService.findDistinctPropertiesOfTestCase(test, testCase);
+                List<TestCaseCountryProperties> properties = testCaseCountryPropertiesService.findDistinctPropertiesOfTestCase(step.getUseStepTest(), step.getUseStepTestCase());
 
                 //retrieve the inherited properties
-                
                 for (TestCaseCountryProperties prop : properties) {
                     JSONObject propertyFound = new JSONObject();
 
@@ -434,7 +434,8 @@ public class ReadTestCase extends HttpServlet {
                         countries.put(country);
                     }
                     propertyFound.put("country", countries);
-                    inheritedProp.put(propertyFound);
+
+                    hashProp.put(prop.getTest() + "_" + prop.getTestCase() + "_" + prop.getProperty(), propertyFound);
                 }
 
                 for (TestCaseStepAction action : actionList) {
@@ -522,7 +523,7 @@ public class ReadTestCase extends HttpServlet {
 
         jsonResponse.put("info", object);
         jsonResponse.put("stepList", stepList);
-        jsonResponse.put("inheritedProp", inheritedProp);
+        jsonResponse.put("inheritedProp", hashProp.values());
 
         item.setItem(jsonResponse);
         item.setResultMessage(answer.getResultMessage());
