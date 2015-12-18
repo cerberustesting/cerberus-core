@@ -151,15 +151,21 @@ function displayPageLabel() {
     var urlBuild = GetURLParameter('build'); // Feed Build combo with Build list.
     var urlRevision = GetURLParameter('revision'); // Feed Revision combo with Revision list.
 
-    appendBuildList("buildf", "1", urlBuild, "Y", "Y");
-    appendBuildList("revisionf", "2", urlRevision, "Y", "Y");
+    // Filter combo
+    appendBuildList('#selectBuild', "1", urlBuild, "Y", "Y");
+    appendBuildList('#selectRevision', "2", urlRevision, "Y", "Y");
 
-    appendBuildList("build", "1", urlBuild, "N", "N");
-    appendBuildList("revision", "2", urlRevision, "N", "N");
+    // Combo in install instruction
+    appendBuildList('#selectBuildFrom', "1", urlBuild, "N", "N");
+    appendBuildList('#selectRevisionFrom', "2", urlRevision, "N", "N");
+    appendBuildList('#selectBuildTo', "1", urlBuild, "N", "N");
+    appendBuildList('#selectRevisionTo', "2", urlRevision, "N", "N");
 
-    appendBuildList("buildn", "1", urlBuild, "N", "Y");
-    appendBuildList("revisionn", "2", urlRevision, "N", "Y");
+    // Add and edit screen combo
+    appendBuildList('#buildn', "1", urlBuild, "N", "Y");
+    appendBuildList('#revisionn', "2", urlRevision, "N", "Y");
 
+    console.debug("toto");
     displayApplicationList("application", getUser().defaultSystem); // Feed Application combo with application list.
     var select = $('#selectApplication');
     select.append($('<option></option>').text("-- ALL --").val("ALL"));
@@ -169,7 +175,7 @@ function displayPageLabel() {
 }
 
 function appendBuildList(selectName, level, defaultValue, withAll, withNone) {
-    var select = $('[name="' + selectName + '"]');
+    var select = $(selectName);
 
     $.ajax({
         type: "GET",
@@ -357,6 +363,11 @@ function CreateBrpClick() {
     }
     formAdd.find("#build").val(myBuild);
     formAdd.find("#revision").val(myRevision);
+    // New release goes by default to the application selected in filter combos. (except when ALL)
+    var myAppli = $("#selectApplication option:selected").val();
+    if (myAppli !== 'ALL') {
+        formAdd.find("#application").val(myAppli);
+    }
 
     $('#addBrpModal').modal('show');
 }
@@ -407,7 +418,7 @@ function editBrp(id) {
             $('#editBrpButton').attr('hidden', 'hidden');
             console.debug("readonly");
         }
-        
+
         formEdit.modal('show');
     });
 }
