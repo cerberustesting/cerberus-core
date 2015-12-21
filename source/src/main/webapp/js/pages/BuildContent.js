@@ -381,8 +381,8 @@ function editBrp(id) {
         var formEdit = $('#editBrpModal');
 
         formEdit.find("#id").prop("value", id);
-        formEdit.find("#build").prop("value", obj["build"]);
-        formEdit.find("#revision").prop("value", obj["revision"]);
+        formEdit.find("#buildn").prop("value", obj["build"]);
+        formEdit.find("#revisionn").prop("value", obj["revision"]);
         formEdit.find("#datecre").prop("value", obj["datecre"]);
         formEdit.find("#application").prop("value", obj["application"]);
         formEdit.find("#release").prop("value", obj["release"]);
