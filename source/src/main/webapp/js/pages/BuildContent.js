@@ -162,10 +162,8 @@ function displayPageLabel() {
     appendBuildList('#selectRevisionTo', "2", urlRevision, "N", "N");
 
     // Add and edit screen combo
-    appendBuildList('#addBuild', "1", urlBuild, "N", "Y");
-    appendBuildList('#addRevision', "2", urlRevision, "N", "Y");
-    appendBuildList('#editBuild', "1", urlBuild, "N", "Y");
-    appendBuildList('#editRevision', "2", urlRevision, "N", "Y");
+    appendBuildList('#buildn', "1", urlBuild, "N", "Y");
+    appendBuildList('#revisionn', "2", urlRevision, "N", "Y");
 
     console.debug("toto");
     displayApplicationList("application", getUser().defaultSystem); // Feed Application combo with application list.
@@ -363,8 +361,8 @@ function CreateBrpClick() {
     if (myRevision === 'ALL') {
         myRevision = 'NONE';
     }
-    formAdd.find("#addBuild").val(myBuild);
-    formAdd.find("#addRevision").val(myRevision);
+    formAdd.find("#build").val(myBuild);
+    formAdd.find("#revision").val(myRevision);
     // New release goes by default to the application selected in filter combos. (except when ALL)
     var myAppli = $("#selectApplication option:selected").val();
     if (myAppli !== 'ALL') {
@@ -383,8 +381,8 @@ function editBrp(id) {
         var formEdit = $('#editBrpModal');
 
         formEdit.find("#id").prop("value", id);
-        formEdit.find("#editBuild").prop("value", obj["build"]);
-        formEdit.find("#editRevision").prop("value", obj["revision"]);
+        formEdit.find("#build").prop("value", obj["build"]);
+        formEdit.find("#revision").prop("value", obj["revision"]);
         formEdit.find("#datecre").prop("value", obj["datecre"]);
         formEdit.find("#application").prop("value", obj["application"]);
         formEdit.find("#release").prop("value", obj["release"]);
