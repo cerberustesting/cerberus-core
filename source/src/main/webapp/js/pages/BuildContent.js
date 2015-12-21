@@ -162,8 +162,8 @@ function displayPageLabel() {
     appendBuildList('#selectRevisionTo', "2", urlRevision, "N", "N");
 
     // Add and edit screen combo
-    appendBuildList('#buildn', "1", urlBuild, "N", "Y");
-    appendBuildList('#revisionn', "2", urlRevision, "N", "Y");
+    appendBuildList('[name="build"]', "1", urlBuild, "N", "Y");
+    appendBuildList('[name="revision"]', "2", urlRevision, "N", "Y");
 
     console.debug("toto");
     displayApplicationList("application", getUser().defaultSystem); // Feed Application combo with application list.
