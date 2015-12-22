@@ -84,7 +84,7 @@
                         <div class="side-item">Last Execution was <a style="color : green">OK</a> in PREPROD in FR on Fri Nov 13 17:43:44 CET 2015<a><i> (Run it again) </i></a></div>
                         <button class="btn btn-block btn-primary side-item" id="editTcInfo">Edit Test Case info</button>
                         <button class="btn btn-block btn-primary side-item" id="manageProp">Manage properties</button>
-                        <button class="btn btn-block btn-primary side-item">Save Script</button>
+                        <button class="btn btn-block btn-primary side-item" id="saveScript">Save Script</button>
                         <button class="btn btn-block btn-primary side-item">Run this Test Case</button>
                     </div>
                 </div>

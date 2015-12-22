@@ -392,17 +392,11 @@ public class ReadTestCase extends HttpServlet {
         }
 
         JSONArray stepList = new JSONArray();
+        Gson gson = new Gson();
         for (TestCaseStep step : (List<TestCaseStep>) testCaseStepList.getDataList()) {
-            JSONObject jsonStep = new JSONObject();
+            JSONObject jsonStep = new JSONObject(gson.toJson(step));
 
             //Fill JSON with step info
-            jsonStep.put("step", step.getStep());
-            jsonStep.put("description", step.getDescription());
-            jsonStep.put("useStep", step.getUseStep());
-            jsonStep.put("useStepTest", step.getUseStepTest());
-            jsonStep.put("useStepTestCase", step.getUseStepTestCase());
-            jsonStep.put("useStepStep", step.getUseStepStep());
-            jsonStep.put("inLibrary", step.getInLibrary());
             jsonStep.put("objType", "step");
             //Add a JSON array for Action List from this step
             jsonStep.put("actionList", new JSONArray());
@@ -439,34 +433,20 @@ public class ReadTestCase extends HttpServlet {
                 }
 
                 for (TestCaseStepAction action : actionList) {
-                    JSONObject jsonAction = new JSONObject();
 
                     if (action.getStep() == step.getUseStepStep()) {
-                        jsonAction.put("step", action.getStep());
-                        jsonAction.put("sequence", action.getSequence());
-                        jsonAction.put("action", action.getAction());
-                        jsonAction.put("object", action.getObject());
-                        jsonAction.put("property", action.getProperty());
-                        jsonAction.put("description", action.getDescription());
-                        jsonAction.put("screenshot", action.getScreenshotFilename());
+                        JSONObject jsonAction = new JSONObject(gson.toJson(action));
+
                         jsonAction.put("objType", "action");
 
                         jsonAction.put("controlList", new JSONArray());
                         //We fill the action with the corresponding controls
                         for (TestCaseStepActionControl control : controlList) {
-                            JSONObject jsonControl = new JSONObject();
 
                             if (control.getStep() == step.getUseStepStep()
                                     && control.getSequence() == action.getSequence()) {
-                                jsonControl.put("step", control.getStep());
-                                jsonControl.put("sequence", control.getSequence());
-                                jsonControl.put("control", control.getControl());
-                                jsonControl.put("type", control.getType());
-                                jsonControl.put("controlValue", control.getControlValue());
-                                jsonControl.put("controlProperty", control.getControlProperty());
-                                jsonControl.put("screenshot", control.getScreenshotFilename());
-                                jsonControl.put("description", control.getDescription());
-                                jsonControl.put("fatal", control.getFatal());
+                                JSONObject jsonControl = new JSONObject(gson.toJson(control));
+
                                 jsonControl.put("objType", "control");
 
                                 jsonAction.getJSONArray("controlList").put(jsonControl);
@@ -479,34 +459,18 @@ public class ReadTestCase extends HttpServlet {
             } else {
                 //else, we fill the actionList with the action from this step
                 for (TestCaseStepAction action : (List<TestCaseStepAction>) testCaseStepActionList.getDataList()) {
-                    JSONObject jsonAction = new JSONObject();
 
                     if (action.getStep() == step.getStep()) {
-                        jsonAction.put("step", action.getStep());
-                        jsonAction.put("sequence", action.getSequence());
-                        jsonAction.put("action", action.getAction());
-                        jsonAction.put("object", action.getObject());
-                        jsonAction.put("property", action.getProperty());
-                        jsonAction.put("description", action.getDescription());
-                        jsonAction.put("screenshot", action.getScreenshotFilename());
+                        JSONObject jsonAction = new JSONObject(gson.toJson(action));
+                        
                         jsonAction.put("objType", "action");
-
                         jsonAction.put("controlList", new JSONArray());
                         //We fill the action with the corresponding controls
                         for (TestCaseStepActionControl control : (List<TestCaseStepActionControl>) testCaseStepActionControlList.getDataList()) {
-                            JSONObject jsonControl = new JSONObject();
 
                             if (control.getStep() == step.getStep()
                                     && control.getSequence() == action.getSequence()) {
-                                jsonControl.put("step", control.getStep());
-                                jsonControl.put("sequence", control.getSequence());
-                                jsonControl.put("control", control.getControl());
-                                jsonControl.put("type", control.getType());
-                                jsonControl.put("controlValue", control.getControlValue());
-                                jsonControl.put("controlProperty", control.getControlProperty());
-                                jsonControl.put("screenshot", control.getScreenshotFilename());
-                                jsonControl.put("description", control.getDescription());
-                                jsonControl.put("fatal", control.getFatal());
+                                JSONObject jsonControl = new JSONObject(gson.toJson(control));
                                 jsonControl.put("objType", "control");
 
                                 jsonAction.getJSONArray("controlList").put(jsonControl);

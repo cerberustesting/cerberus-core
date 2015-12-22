@@ -21,12 +21,14 @@
 $.when($.getScript("js/pages/global/global.js")).then(function () {
     $(document).ready(function () {
         var doc = new Doc();
+        var stepList = [];
 
         loadLibraryStep();
         bindToggleCollapse();
 
         var test = GetURLParameter("test");
         var testcase = GetURLParameter("testcase");
+
         displayHeaderLabel(doc);
         displayGlobalLabel(doc);
         displayFooter(doc);
@@ -49,10 +51,6 @@ $.when($.getScript("js/pages/global/global.js")).then(function () {
         $("#editEntryButton").click(saveUpdateEntryHandler);
         $("#editTcInfo").click({test: test, testcase: testcase}, editEntry);
 
-        $("#importStep").click(function () {
-            $("#libModal").modal('show');
-        });
-
         $("#manageProp").click(function () {
             $("#propertiesModal").modal('show');
         });
@@ -72,13 +70,13 @@ $.when($.getScript("js/pages/global/global.js")).then(function () {
                 loadProperties(test, testcase, data.info);
                 json = data.stepList;
                 sortData(json);
-                createStepList(json);
+                createStepList(json, stepList);
                 drawInheritedProperty(data.inheritedProp);
             },
             error: showUnexpectedError
         });
 
-        $("#addStep").click({json: json}, addStep);
+        $("#addStep").click({stepList: stepList}, addStep);
         $('#addStepModal').on('hidden.bs.modal', function () {
             $("#importInfo").removeData("stepInfo");
             $("#importInfo").empty();
@@ -104,10 +102,64 @@ $.when($.getScript("js/pages/global/global.js")).then(function () {
         $("#deleteStep").click(function () {
             var step = $("#stepList .active").data("item");
 
-            step.toDelete = true;
+            step.setDelete();
         });
+
+        $("#editBtn").click(editStep);
+
+        $("#saveScript").click(saveScript);
     });
 });
+
+function saveScript() {
+    var stepList = $("#stepList li");
+    var stepNumber = 0;
+    var stepArr = [];
+    var actionArr = [];
+    var controlArr = [];
+
+    for (var i = 0; i < stepList.length; i++) {
+        var step = $(stepList[i]).data("item");
+        var seq = 0;
+
+        if (!step.toDelete) {
+            var actionList = step.stepActionContainer.children(".action-group").children(".action");
+
+            stepNumber++;
+            step.setStep(stepNumber);
+            stepArr.push(step.getJsonData());
+
+            for (var j = 0; j < actionList.length; j++) {
+                var action = $(actionList[j]).data("item");
+                var controlNumber = 0;
+
+                if (!action.toDelete) {
+                    var controlList = action.html.children(".control");
+
+                    seq++;
+                    action.setStep(stepNumber);
+                    action.setSequence(seq);
+                    actionArr.push(action.getJsonData());
+
+                    for (var k = 0; k < controlList.length; k++) {
+                        var control = $(controlList[k]).data("item");
+
+                        if (!control.toDelete) {
+                            controlNumber++;
+                            control.setStep(stepNumber);
+                            control.setSequence(seq);
+                            control.setControl(controlNumber);
+                            controlArr.push(control.getJsonData());
+                        }
+                    }
+                }
+            }
+        }
+    }
+    console.log(stepArr);
+    console.log(actionArr);
+    console.log(controlArr);
+}
 
 function drawProperty(property, testcaseinfo) {
     var selectType = getSelectInvariant("PROPERTYTYPE");
@@ -269,8 +321,8 @@ function cancelEdit() {
     $("#stepInfo").show();
 }
 
-function editStep(event) {
-    var step = event.data.step;
+function editStep() {
+    var step = $("#stepList li.active").data("item");
 
     $("#stepDescription").hide();
     $("#stepInfo").hide();
@@ -282,21 +334,13 @@ function saveStep() {
     var stepHtml = $("#stepList li.active");
     var stepData = stepHtml.data("item");
 
-    stepData.description = $("#editStepDescription").val();
-    stepHtml.children(".step-description").text(stepData.description);
-    $("#stepDescription").text(stepData.description);
+    stepData.setDescription($("#editStepDescription").val());
 
-    cancelEdit();
-}
-
-function deleteStep(event) {
-    var stepNumber = event.data.stepNumber;
-
-    $("#stepList li:nth-child(" + stepNumber + ")").remove();
     cancelEdit();
 }
 
 function addStep(event) {
+    var stepList = event.data.stepList;
     $("#addStepModal").modal('show');
 
     $(".sub-item").click(function () {
@@ -346,74 +390,20 @@ function addStep(event) {
                 step.useStepStep = useStep.step;
             }
         }
-        drawStep(step);
+        var stepObj = new Step(step, stepList);
+
+        stepObj.draw();
+        stepList.push(stepObj);
     });
 }
 
-function getControlListHtml(controlList, useStep) {
-    var html = [];
-
-    for (var i = 0; i < controlList.length; i++) {
-        var control = controlList[i];
-
-        html.push(generateRow(control, "control", useStep));
-    }
-    return html;
-}
-
-function drawStep(step) {
-    var htmlElement = $("<li></li>").addClass("list-group-item row").css("margin-left", "0px");
-    var textArea = $("<div></div>").addClass("col-lg-10").addClass("step-description");
-
-    var drag = $("<div></div>").addClass("col-lg-2 drag-step").prop("draggable", true)
-            .append($("<span></span>").addClass("glyphicon glyphicon-move"));
-
-    textArea.text(step.description);
-    htmlElement.append(drag);
-    htmlElement.append(textArea);
-    htmlElement.data("item", step);
-
-    drag.on("dragstart", handleDragStart);
-    drag.on("dragenter", handleDragEnter);
-    drag.on("dragover", handleDragOver);
-    drag.on("dragleave", handleDragLeave);
-    drag.on("drop", handleDrop);
-    drag.on("dragend", handleDragEnd);
-
-    $("#stepList").append(htmlElement);
-    loadStepInfo(step);
-    htmlElement.click(displayStep);
-}
-
-function displayStep() {
-    var step = $(this).data("item");
-
-    $("#stepList li").each(function () {
-        $(this).removeClass("active");
-    });
-    $(this).addClass("active");
-
-    $(".step-container").each(function () {
-        $(this).hide();
-    });
-
-    $("#stepInfo").show();
-    $("#editBtn").click({step: step}, editStep);
-    $("#stepDescription").text(step.description);
-
-    if (step.useStep === "Y") {
-        $("#libInfo").text("(Imported from " + step.useStepTest + " - " + step.useStepTestCase + " - " + step.useStepStep + " )");
-    } else {
-        $("#libInfo").text("");
-    }
-    $(".step-container[data-step='" + step.step + "']").show();
-    cancelEdit();
-}
-
-function createStepList(data) {
+function createStepList(data, stepList) {
     for (var i = 0; i < data.length; i++) {
         var step = data[i];
-        drawStep(step);
+        var stepObj = new Step(step, stepList);
+
+        stepObj.draw();
+        stepList.push(stepObj);
     }
 }
 
@@ -602,127 +592,6 @@ function appendBuildRevList(system, editData) {
     });
 }
 
-/** HELPER FUNCTIONS TO GENERATE ACTION AND CONTROL ROWS **/
-
-function generateRow(stepAction, rowClass, useStep) {
-    var row = $("<div></div>").addClass("step-action row").addClass(rowClass).data("item", stepAction);
-    var type = $("<div></div>").addClass("type");
-    var drag = $("<div></div>").addClass("drag-step-action col-lg-1").prop("draggable", true).append(type);
-    var content = generateContent(stepAction, useStep);
-
-    if (useStep !== "Y") {
-        drag.append($("<span></span>").addClass("glyphicon glyphicon-move"));
-
-        drag.on("dragstart", handleDragStart);
-        drag.on("dragenter", handleDragEnter);
-        drag.on("dragover", handleDragOver);
-        drag.on("dragleave", handleDragLeave);
-        drag.on("drop", handleDrop);
-        drag.on("dragend", handleDragEnd);
-
-    }
-    row.append(drag);
-    row.append(content);
-    return row;
-}
-
-function buildActionList(select) {
-    var list = JSON.parse(sessionStorage.getItem("actionInvariant"));
-
-    if (list === null) {
-        $.ajax({
-            url: "FindInvariantByID",
-            data: {idName: "ACTION"},
-            async: false,
-            success: function (data) {
-                list = data;
-                sessionStorage.setItem("actionInvariant", JSON.stringify(data));
-            }
-        });
-    }
-
-    for (var index = 0; index < list.length; index++) {
-        var action = list[index].value;
-
-        select.append($("<option></option>").text(action).val(action));
-    }
-}
-
-function buildControlList(select) {
-    var list = JSON.parse(sessionStorage.getItem("controlInvariant"));
-
-    if (list === null) {
-        $.ajax({
-            url: "FindInvariantByID",
-            data: {idName: "CONTROL"},
-            async: false,
-            success: function (data) {
-                list = data;
-                sessionStorage.setItem("controlInvariant", JSON.stringify(data));
-            }
-        });
-    }
-
-    for (var index = 0; index < list.length; index++) {
-        var control = list[index].value;
-
-        select.append($("<option></option>").text(control).val(control));
-    }
-}
-
-function generateContent(stepAction, useStep) {
-    var content = $("<div></div>").addClass("content col-lg-11");
-    var firstRow = $("<div></div>").addClass("row");
-    var secondRow = $("<div></div>").addClass("row form-inline");
-
-    firstRow.append($("<input>").addClass("description").addClass("form-control").val(stepAction.description).prop("placeholder", "Description"));
-    if (stepAction.objType === "action") {
-        var actionList = $("<select></select>").addClass("form-control input-sm");
-        buildActionList(actionList);
-        actionList.val(stepAction.action);
-        secondRow.append($("<span></span>").addClass("col-lg-4").append(actionList));
-        secondRow.append($("<span></span>").addClass("col-lg-4").append($("<input>").val(stepAction.object).addClass("form-control input-sm")));
-        secondRow.append($("<span></span>").addClass("col-lg-4").append($("<input>").val(stepAction.property).addClass("form-control input-sm")));
-    } else {
-        var controlList = $("<select></select>").addClass("form-control input-sm");
-        buildControlList(controlList);
-        controlList.val(stepAction.type);
-        secondRow.append($("<span></span>").append(controlList).addClass("col-lg-3"));
-        secondRow.append($("<span></span>").addClass("col-lg-4").append($("<label></label>").text("Value : ")).append($("<input>").val(stepAction.controlValue).addClass("form-control input-sm")));
-        secondRow.append($("<span></span>").addClass("col-lg-4").append($("<input>").val(stepAction.controlProperty).addClass("form-control input-sm")));
-        secondRow.append($("<span></span>").text(stepAction.fatal).addClass("col-lg-1"));
-    }
-
-    if (useStep === "Y") {
-        firstRow.children("input").prop("readonly", true);
-        secondRow.children().children("input").prop("readonly", true);
-        secondRow.children().children("select").prop("disabled", "disabled");
-    }
-
-    content.append(firstRow);
-    content.append(secondRow);
-
-    return content;
-}
-
-function loadStepInfo(step) {
-    var actionList = step.actionList;
-
-    var container = $("#actionContainer");
-    var stepContainer = $("<div></div>").addClass("step-container").attr("data-step", step.step).css("display", "none");
-
-    for (var i = 0; i < actionList.length; i++) {
-        var actionGroup = $("<div></div>").addClass("action-group");
-        var action = actionList[i];
-        var actionRow = generateRow(action, "action", step.useStep);
-
-        actionGroup.append(actionRow);
-        actionGroup.append(getControlListHtml(action.controlList, step.useStep));
-        stepContainer.append(actionGroup);
-    }
-    container.append(stepContainer);
-}
-
 function appendCountryList() {
     var jqxhr = $.getJSON("FindInvariantByID", "idName=COUNTRY");
     $.when(jqxhr).then(function (data) {
@@ -759,9 +628,9 @@ function handleDragStart(event) {
     var offsetY = 50;
     var img;
 
-    if ($(obj).data("item").objType === "action") {
+    if ($(obj).data("item") instanceof Action) {
         img = obj.parentNode;
-    } else if ($(obj).data("item").objType === "control") {
+    } else if ($(obj).data("item") instanceof Control) {
         img = obj;
     } else {
         img = obj;
@@ -781,20 +650,22 @@ function handleDragEnter(event) {
     var sourceData = $(source).data("item");
     var targetData = $(target).data("item");
 
-    if (sourceData.objType === "action" && targetData.objType === "action") {
+    console.log(this);
+
+    if (sourceData instanceof Action && targetData instanceof Action) {
         if (isBefore(source.parentNode, target.parentNode)) {
             $(target).parent(".action-group").after(source.parentNode);
         } else {
             $(target).parent(".action-group").before(source.parentNode);
         }
-    } else if (sourceData.objType === "control" &&
-            (targetData.objType === "action" || targetData.objType === "control")) {
-        if (isBefore(source, target) || targetData.objType === "action") {
+    } else if (sourceData instanceof Control &&
+            (targetData instanceof Action || targetData instanceof Control)) {
+        if (isBefore(source, target) || targetData instanceof Action) {
             $(target).after(source);
         } else {
             $(target).before(source);
         }
-    } else if (sourceData.objType === "step" && targetData.objType === "step") {
+    } else if (sourceData instanceof Step && targetData instanceof Step) {
         if (isBefore(source, target)) {
             $(target).after(source);
         } else {
@@ -859,3 +730,418 @@ function sortData(agreg) {
         return a.step - b.step;
     });
 }
+
+/** JAVASCRIPT OBJECT **/
+
+function Step(json, stepList) {
+    this.stepActionContainer = $("<div></div>").addClass("step-container").css("display", "none");
+
+    this.test = json.test;
+    this.testcase = json.testCase;
+    this.step = json.step;
+    this.description = json.description;
+    this.useStep = json.useStep;
+    this.useStepTest = json.useStepTest;
+    this.useStepTestCase = json.useStepTestCase;
+    this.useStepStep = json.useStepStep;
+    this.inLibrary = json.inLibrary;
+    this.actionList = [];
+    this.setActionList(json.actionList);
+
+    this.stepList = stepList;
+    this.toDelete = false;
+
+    this.html = $("<li></li>").addClass("list-group-item row").css("margin-left", "0px");
+    this.textArea = $("<div></div>").addClass("col-lg-10").addClass("step-description").text(this.description);
+    this.drag = $("<div></div>").addClass("col-lg-2 drag-step").prop("draggable", true)
+            .append($("<span></span>").addClass("glyphicon glyphicon-move"));
+
+}
+
+Step.prototype.draw = function () {
+    var htmlElement = this.html;
+
+    this.drag.on("dragstart", handleDragStart);
+    this.drag.on("dragenter", handleDragEnter);
+    this.drag.on("dragover", handleDragOver);
+    this.drag.on("dragleave", handleDragLeave);
+    this.drag.on("drop", handleDrop);
+    this.drag.on("dragend", handleDragEnd);
+
+    htmlElement.append(this.drag);
+    htmlElement.append(this.textArea);
+    htmlElement.data("item", this);
+
+    htmlElement.click(this.show);
+
+    $("#stepList").append(htmlElement);
+    $("#actionContainer").append(this.stepActionContainer);
+};
+
+Step.prototype.show = function () {
+    var object = $(this).data("item");
+
+    cancelEdit();
+
+    for (var i = 0; i < object.stepList.length; i++) {
+        var step = object.stepList[i];
+
+        step.stepActionContainer.hide();
+        step.html.removeClass("active");
+    }
+
+    $(this).addClass("active");
+
+    if (object.toDelete) {
+        $("#deleteStep span").removeClass();
+        $("#deleteStep span").addClass("glyphicon glyphicon-remove");
+    } else {
+        $("#deleteStep span").removeClass();
+        $("#deleteStep span").addClass("glyphicon glyphicon-trash");
+    }
+
+    if (object.useStep === "Y") {
+        $("#libInfo").text("(Imported from " + object.useStepTest + " - " + object.useStepTestCase + " - " + object.useStepStep + " )");
+    } else {
+        $("#libInfo").text("");
+    }
+
+    object.stepActionContainer.show();
+    $("#stepDescription").text(object.description);
+    $("#stepInfo").show();
+};
+
+Step.prototype.setActionList = function (actionList) {
+    for (var i = 0; i < actionList.length; i++) {
+        this.setAction(actionList[i]);
+    }
+};
+
+Step.prototype.setAction = function (action) {
+    if (action instanceof Action) {
+        action.draw();
+        this.actionList.push(action);
+    } else {
+        var actionObj = new Action(action, this);
+
+        actionObj.draw();
+        this.actionList.push(actionObj);
+    }
+};
+
+Step.prototype.setDescription = function (description) {
+    this.description = description;
+    this.textArea.text(description);
+    $("#stepDescription").text(description);
+};
+
+Step.prototype.setDelete = function () {
+    this.toDelete = (this.toDelete) ? false : true;
+
+    if (this.toDelete) {
+        $("#deleteStep span").removeClass();
+        $("#deleteStep span").addClass("glyphicon glyphicon-remove");
+    } else {
+        $("#deleteStep span").removeClass();
+        $("#deleteStep span").addClass("glyphicon glyphicon-trash");
+    }
+
+    for (var i = 0; i < this.stepList.length; i++) {
+        var step = this.stepList[i];
+
+        if (step.toDelete) {
+            step.html.addClass("list-group-item-danger");
+        } else {
+            step.html.removeClass("list-group-item-danger");
+        }
+    }
+};
+
+Step.prototype.setStep = function (step) {
+    this.step = step;
+};
+
+Step.prototype.getJsonData = function () {
+    var json = {};
+
+    json.test = this.test;
+    json.testcase = this.testcase;
+    json.step = this.step;
+    json.description = this.description;
+    json.useStep = this.useStep;
+    json.useStepTest = this.useStepTest;
+    json.useStepTestCase = this.useStepTestCase;
+    json.useStepStep = this.useStepStep;
+    json.inLibrary = this.inLibrary;
+
+    return json;
+};
+
+function Action(json, parentStep) {
+    this.html = $("<div></div>").addClass("action-group");
+    this.parentStep = parentStep;
+
+    this.test = json.test;
+    this.testcase = json.testCase;
+    this.step = json.step;
+    this.sequence = json.sequence;
+    this.description = json.description;
+    this.action = json.action;
+    this.object = json.object;
+    this.property = json.property;
+    this.screenshotFileName = json.screenshotFileName;
+    this.controlList = [];
+    this.setControlList(json.controlList);
+
+    this.toDelete = false;
+
+    this.row = $("<div></div>").addClass("step-action row").addClass("action");
+    this.type = $("<div></div>").addClass("type");
+    this.drag = $("<div></div>").addClass("drag-step-action col-lg-1").prop("draggable", true).append(this.type);
+    this.content = this.generateContent();
+}
+
+Action.prototype.draw = function () {
+    var htmlElement = this.html;
+
+    if (this.parentStep.useStep === "N") {
+        this.drag.append($("<span></span>").addClass("glyphicon glyphicon-move"));
+        this.drag.on("dragstart", handleDragStart);
+        this.drag.on("dragenter", handleDragEnter);
+        this.drag.on("dragover", handleDragOver);
+        this.drag.on("dragleave", handleDragLeave);
+        this.drag.on("drop", handleDrop);
+        this.drag.on("dragend", handleDragEnd);
+    }
+
+    this.row.append(this.drag);
+    this.row.append(this.content);
+    this.row.data("item", this);
+    htmlElement.prepend(this.row);
+
+    this.parentStep.stepActionContainer.append(htmlElement);
+};
+
+Action.prototype.setControlList = function (controlList) {
+    for (var i = 0; i < controlList.length; i++) {
+        this.setControl(controlList[i]);
+    }
+};
+
+Action.prototype.setControl = function (control) {
+    if (control instanceof Control) {
+        control.draw();
+        this.controlList.push(control);
+    } else {
+        var controlObj = new Control(control, this);
+
+        controlObj.draw();
+        this.controlList.push(controlObj);
+    }
+};
+
+Action.prototype.setStep = function (step) {
+    this.step = step;
+};
+
+Action.prototype.setSequence = function (sequence) {
+    this.sequence = sequence;
+};
+
+Action.prototype.generateContent = function () {
+    var obj = this;
+    var content = $("<div></div>").addClass("content col-lg-11");
+    var firstRow = $("<div></div>").addClass("row");
+    var secondRow = $("<div></div>").addClass("row form-inline");
+
+    var actionList = $("<select></select>").addClass("form-control input-sm");
+    var descField = $("<input>").addClass("description").addClass("form-control").prop("placeholder", "Description");
+    var objectField = $("<input>").addClass("form-control input-sm");
+    var propertyField = $("<input>").addClass("form-control input-sm");
+
+    descField.val(this.description);
+    descField.on("change", function () {
+        obj.description = descField.val();
+    });
+
+    actionList = getSelectInvariant("ACTION");
+    actionList.val(this.action);
+    actionList.on("change", function () {
+        obj.action = actionList.val();
+    });
+
+    objectField.val(this.object);
+    objectField.on("change", function () {
+        obj.object = objectField.val();
+    });
+
+    propertyField.val(this.property);
+    propertyField.on("change", function () {
+        obj.property = propertyField.val();
+    });
+
+    firstRow.append(descField);
+    secondRow.append($("<span></span>").addClass("col-lg-4").append(actionList));
+    secondRow.append($("<span></span>").addClass("col-lg-4").append(objectField));
+    secondRow.append($("<span></span>").addClass("col-lg-4").append(propertyField));
+
+    if (this.parentStep.useStep === "Y") {
+        descField.prop("readonly", true);
+        objectField.prop("readonly", true);
+        propertyField.prop("readonly", true);
+        actionList.prop("disabled", "disabled");
+    }
+
+    content.append(firstRow);
+    content.append(secondRow);
+
+    return content;
+};
+
+Action.prototype.getJsonData = function () {
+    var json = {};
+
+    json.test = this.test;
+    json.testcase = this.testcase;
+    json.step = this.step;
+    json.sequence = this.sequence;
+    json.description = this.description;
+    json.action = this.action;
+    json.object = this.object;
+    json.property = this.property;
+    json.screenshotFileName = this.screenshotFileName;
+
+    return json;
+};
+
+function Control(json, parentAction) {
+    this.test = json.test;
+    this.testcase = json.testCase;
+    this.step = json.step;
+    this.sequence = json.sequence;
+    this.control = json.control;
+    this.description = json.description;
+    this.type = json.type;
+    this.controlValue = json.controlValue;
+    this.controlProperty = json.controlProperty;
+    this.fatal = json.fatal;
+    this.screenshotFileName = json.screenshotFileName;
+
+    this.parentStep = parentAction.parentStep;
+    this.parentAction = parentAction;
+
+    this.toDelete = false;
+
+    this.html = $("<div></div>").addClass("step-action row").addClass("control");
+    this.type = $("<div></div>").addClass("type");
+    this.drag = $("<div></div>").addClass("drag-step-action col-lg-1").prop("draggable", true).append(this.type);
+    this.content = this.generateContent();
+}
+
+Control.prototype.draw = function () {
+    var htmlElement = this.html;
+
+    if (this.parentAction.parentStep.useStep === "N") {
+        this.drag.append($("<span></span>").addClass("glyphicon glyphicon-move"));
+        this.drag.on("dragstart", handleDragStart);
+        this.drag.on("dragenter", handleDragEnter);
+        this.drag.on("dragover", handleDragOver);
+        this.drag.on("dragleave", handleDragLeave);
+        this.drag.on("drop", handleDrop);
+        this.drag.on("dragend", handleDragEnd);
+    }
+
+    htmlElement.append(this.drag);
+    htmlElement.append(this.content);
+    htmlElement.data("item", this);
+
+    this.parentAction.html.append(htmlElement);
+};
+
+Control.prototype.setStep = function (step) {
+    this.step = step;
+};
+
+Control.prototype.setSequence = function (sequence) {
+    this.sequence = sequence;
+};
+
+Control.prototype.setControl = function (control) {
+    this.control = control;
+};
+
+Control.prototype.generateContent = function () {
+    var obj = this;
+    var content = $("<div></div>").addClass("content col-lg-11");
+    var firstRow = $("<div></div>").addClass("row");
+    var secondRow = $("<div></div>").addClass("row form-inline");
+
+    var controlList = $("<select></select>").addClass("form-control input-sm");
+    var descField = $("<input>").addClass("description").addClass("form-control").prop("placeholder", "Description");
+    var objectField = $("<input>").addClass("form-control input-sm");
+    var propertyField = $("<input>").addClass("form-control input-sm");
+    var fatalField = $("<select></select>").addClass("form-control input-sm");
+
+    descField.val(this.description);
+    descField.on("change", function () {
+        obj.description = descField.val();
+    });
+
+    controlList = getSelectInvariant("CONTROL");
+    controlList.val(this.type);
+    controlList.on("change", function () {
+        obj.type = controlList.val();
+    });
+
+    objectField.val(this.object);
+    objectField.on("change", function () {
+        obj.controlValue = objectField.val();
+    });
+
+    propertyField.val(this.property);
+    propertyField.on("change", function () {
+        obj.controlProperty = propertyField.val();
+    });
+
+    fatalField = getSelectInvariant("CTRLFATAL");
+    fatalField.on("change", function () {
+        obj.fatal = fatalField.val();
+    });
+
+    firstRow.append(descField);
+    secondRow.append($("<span></span>").addClass("col-lg-3").append(controlList));
+    secondRow.append($("<span></span>").addClass("col-lg-4").append(objectField));
+    secondRow.append($("<span></span>").addClass("col-lg-4").append(propertyField));
+    secondRow.append($("<span></span>").addClass("col-lg-1").append(fatalField));
+
+    if (this.parentStep.useStep === "Y") {
+        descField.prop("readonly", true);
+        objectField.prop("readonly", true);
+        propertyField.prop("readonly", true);
+        controlList.prop("disabled", "disabled");
+        fatalField.prop("disabled", "disabled");
+    }
+
+    content.append(firstRow);
+    content.append(secondRow);
+
+    return content;
+};
+
+Control.prototype.getJsonData = function () {
+    var json = {};
+
+    json.test = this.test;
+    json.testcase = this.testcase;
+    json.step = this.step;
+    json.sequence = this.sequence;
+    json.control = this.control;
+    json.description = this.description;
+    json.type = this.type;
+    json.controlValue = this.controlValue;
+    json.controlProperty = this.controlProperty;
+    json.fatal = this.fatal;
+    json.screenshotFileName = this.screenshotFileName;
+
+    return json;
+};
