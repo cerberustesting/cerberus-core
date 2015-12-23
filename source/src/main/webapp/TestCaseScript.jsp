@@ -77,6 +77,7 @@
                         </div>
                     </div>
                     <div id="actionContainer"></div>
+                    <button class="btn btn-primary center-block" id="addAction"><span class="glyphicon glyphicon-plus"></span></button>
                 </div>
                 <div class="col-lg-1">
                     <div class="separator-left" data-spy="affix">

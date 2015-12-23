@@ -162,3 +162,15 @@
     background-color: #e74c3c;
     color: #FFFFFF;
 }
+
+.add-btn {
+    margin-top: 45%;
+}
+
+.action-group.toDelete, 
+.action-group.toDelete .action,
+.action-group.toDelete .control,
+.action-group.toDelete input, 
+.action-group.toDelete select {
+    background-color: #e74c3c;
+}

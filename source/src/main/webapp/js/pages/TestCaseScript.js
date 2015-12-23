@@ -106,20 +106,26 @@ $.when($.getScript("js/pages/global/global.js")).then(function () {
         });
 
         $("#editBtn").click(editStep);
-
+        $("#addAction").click(addAction);
         $("#saveScript").click(saveScript);
     });
 });
+
+function addAction() {
+    var step = $("#stepList li.active").data("item");
+    var action = new Action(null, step);
+
+    step.setAction(action);
+}
 
 function saveScript() {
     var stepList = $("#stepList li");
     var stepNumber = 0;
     var stepArr = [];
-    var actionArr = [];
-    var controlArr = [];
 
     for (var i = 0; i < stepList.length; i++) {
         var step = $(stepList[i]).data("item");
+        var actionArr = [];
         var seq = 0;
 
         if (!step.toDelete) {
@@ -127,11 +133,11 @@ function saveScript() {
 
             stepNumber++;
             step.setStep(stepNumber);
-            stepArr.push(step.getJsonData());
 
             for (var j = 0; j < actionList.length; j++) {
                 var action = $(actionList[j]).data("item");
                 var controlNumber = 0;
+                var controlArr = [];
 
                 if (!action.toDelete) {
                     var controlList = action.html.children(".control");
@@ -139,7 +145,6 @@ function saveScript() {
                     seq++;
                     action.setStep(stepNumber);
                     action.setSequence(seq);
-                    actionArr.push(action.getJsonData());
 
                     for (var k = 0; k < controlList.length; k++) {
                         var control = $(controlList[k]).data("item");
@@ -153,12 +158,31 @@ function saveScript() {
                         }
                     }
                 }
+                var actionJson = action.getJsonData();
+                actionJson.controlArr = controlArr;
+                actionArr.push(actionJson);
             }
+            var stepJson = step.getJsonData();
+            stepJson.actionArr = actionArr;
+            stepArr.push(stepJson);
         }
     }
     console.log(stepArr);
-    console.log(actionArr);
-    console.log(controlArr);
+
+    $.ajax({
+        url: "UpdateTestCaseWithDependencies1",
+        async: true,
+        method: "POST",
+        data: {informationInitialTest: "Examples",
+            informationInitialTestCase: "0007A",
+            informationTest: "Examples",
+            informationTestCase: "0007A",
+            stepArray: JSON.stringify(stepArr)},
+        success: function () {
+            location.reload();
+        },
+        error: showUnexpectedError
+    });
 }
 
 function drawProperty(property, testcaseinfo) {
@@ -754,7 +778,7 @@ function Step(json, stepList) {
     this.html = $("<li></li>").addClass("list-group-item row").css("margin-left", "0px");
     this.textArea = $("<div></div>").addClass("col-lg-10").addClass("step-description").text(this.description);
     this.drag = $("<div></div>").addClass("col-lg-2 drag-step").prop("draggable", true)
-            .append($("<span></span>").addClass("glyphicon glyphicon-move"));
+            .append($("<span></span>").addClass("fa fa-ellipsis-v"));
 
 }
 
@@ -864,6 +888,7 @@ Step.prototype.setStep = function (step) {
 Step.prototype.getJsonData = function () {
     var json = {};
 
+    json.toDelete = this.toDelete;
     json.test = this.test;
     json.testcase = this.testcase;
     json.step = this.step;
@@ -881,43 +906,75 @@ function Action(json, parentStep) {
     this.html = $("<div></div>").addClass("action-group");
     this.parentStep = parentStep;
 
-    this.test = json.test;
-    this.testcase = json.testCase;
-    this.step = json.step;
-    this.sequence = json.sequence;
-    this.description = json.description;
-    this.action = json.action;
-    this.object = json.object;
-    this.property = json.property;
-    this.screenshotFileName = json.screenshotFileName;
-    this.controlList = [];
-    this.setControlList(json.controlList);
+    if (json !== null) {
+        this.test = json.test;
+        this.testcase = json.testCase;
+        this.step = json.step;
+        this.sequence = json.sequence;
+        this.description = json.description;
+        this.action = json.action;
+        this.object = json.object;
+        this.property = json.property;
+        this.screenshotFileName = json.screenshotFileName;
+        this.controlList = [];
+        this.setControlList(json.controlList);
+    } else {
+        this.test = "";
+        this.testcase = "";
+        this.step = parentStep.step;
+        this.sequence = "";
+        this.description = "";
+        this.action = "Unknown";
+        this.object = "";
+        this.property = "";
+        this.screenshotFileName = "";
+        this.controlList = [];
+    }
 
     this.toDelete = false;
-
-    this.row = $("<div></div>").addClass("step-action row").addClass("action");
-    this.type = $("<div></div>").addClass("type");
-    this.drag = $("<div></div>").addClass("drag-step-action col-lg-1").prop("draggable", true).append(this.type);
-    this.content = this.generateContent();
 }
 
 Action.prototype.draw = function () {
     var htmlElement = this.html;
+    var action = this;
+    var row = $("<div></div>").addClass("step-action row").addClass("action");
+    var type = $("<div></div>").addClass("type");
+    var drag = $("<div></div>").addClass("drag-step-action col-lg-1").prop("draggable", true).append(type);
+    var addBtn = $("<button></button>").addClass("btn btn-success btn-xs add-btn").append($("<span></span>").addClass("glyphicon glyphicon-plus"));
+    var supprBtn = $("<button></button>").addClass("btn btn-danger btn-xs add-btn").append($("<span></span>").addClass("glyphicon glyphicon-trash"));
+    var btnGrp = $("<div></div>").addClass("btn-group").append(addBtn).append(supprBtn);
 
     if (this.parentStep.useStep === "N") {
-        this.drag.append($("<span></span>").addClass("glyphicon glyphicon-move"));
-        this.drag.on("dragstart", handleDragStart);
-        this.drag.on("dragenter", handleDragEnter);
-        this.drag.on("dragover", handleDragOver);
-        this.drag.on("dragleave", handleDragLeave);
-        this.drag.on("drop", handleDrop);
-        this.drag.on("dragend", handleDragEnd);
+        drag.append($("<span></span>").addClass("fa fa-ellipsis-v"));
+        drag.on("dragstart", handleDragStart);
+        drag.on("dragenter", handleDragEnter);
+        drag.on("dragover", handleDragOver);
+        drag.on("dragleave", handleDragLeave);
+        drag.on("drop", handleDrop);
+        drag.on("dragend", handleDragEnd);
     }
 
-    this.row.append(this.drag);
-    this.row.append(this.content);
-    this.row.data("item", this);
-    htmlElement.prepend(this.row);
+    addBtn.click(function () {
+        var control = new Control(null, action);
+
+        action.setControl(control);
+    });
+
+    supprBtn.click(function () {
+        action.toDelete = (action.toDelete) ? false : true;
+
+        if (action.toDelete) {
+            action.html.addClass("toDelete");
+        } else {
+            action.html.removeClass("toDelete");
+        }
+    });
+
+    row.append(drag);
+    row.append(this.generateContent());
+    row.append(btnGrp);
+    row.data("item", this);
+    htmlElement.prepend(row);
 
     this.parentStep.stepActionContainer.append(htmlElement);
 };
@@ -950,7 +1007,7 @@ Action.prototype.setSequence = function (sequence) {
 
 Action.prototype.generateContent = function () {
     var obj = this;
-    var content = $("<div></div>").addClass("content col-lg-11");
+    var content = $("<div></div>").addClass("content col-lg-10");
     var firstRow = $("<div></div>").addClass("row");
     var secondRow = $("<div></div>").addClass("row form-inline");
 
@@ -1001,6 +1058,7 @@ Action.prototype.generateContent = function () {
 Action.prototype.getJsonData = function () {
     var json = {};
 
+    json.toDelete = this.toDelete;
     json.test = this.test;
     json.testcase = this.testcase;
     json.step = this.step;
@@ -1009,23 +1067,37 @@ Action.prototype.getJsonData = function () {
     json.action = this.action;
     json.object = this.object;
     json.property = this.property;
-    json.screenshotFileName = this.screenshotFileName;
+    json.screenshotFileName = "";
 
     return json;
 };
 
 function Control(json, parentAction) {
-    this.test = json.test;
-    this.testcase = json.testCase;
-    this.step = json.step;
-    this.sequence = json.sequence;
-    this.control = json.control;
-    this.description = json.description;
-    this.type = json.type;
-    this.controlValue = json.controlValue;
-    this.controlProperty = json.controlProperty;
-    this.fatal = json.fatal;
-    this.screenshotFileName = json.screenshotFileName;
+    if (json !== null) {
+        this.test = json.test;
+        this.testcase = json.testCase;
+        this.step = json.step;
+        this.sequence = json.sequence;
+        this.control = json.control;
+        this.description = json.description;
+        this.type = json.type;
+        this.controlValue = json.controlValue;
+        this.controlProperty = json.controlProperty;
+        this.fatal = json.fatal;
+        this.screenshotFileName = "";
+    } else {
+        this.test = "";
+        this.testcase = "";
+        this.step = parentAction.step;
+        this.sequence = parentAction.sequence;
+        this.control = "";
+        this.description = "";
+        this.type = "Unknown";
+        this.controlValue = "";
+        this.controlProperty = "";
+        this.fatal = "Y";
+        this.screenshotFileName = "";
+    }
 
     this.parentStep = parentAction.parentStep;
     this.parentAction = parentAction;
@@ -1033,26 +1105,26 @@ function Control(json, parentAction) {
     this.toDelete = false;
 
     this.html = $("<div></div>").addClass("step-action row").addClass("control");
-    this.type = $("<div></div>").addClass("type");
-    this.drag = $("<div></div>").addClass("drag-step-action col-lg-1").prop("draggable", true).append(this.type);
-    this.content = this.generateContent();
 }
 
 Control.prototype.draw = function () {
     var htmlElement = this.html;
+    var type = $("<div></div>").addClass("type");
+    var drag = $("<div></div>").addClass("drag-step-action col-lg-1").prop("draggable", true).append(type);
+    var content = this.generateContent();
 
     if (this.parentAction.parentStep.useStep === "N") {
-        this.drag.append($("<span></span>").addClass("glyphicon glyphicon-move"));
-        this.drag.on("dragstart", handleDragStart);
-        this.drag.on("dragenter", handleDragEnter);
-        this.drag.on("dragover", handleDragOver);
-        this.drag.on("dragleave", handleDragLeave);
-        this.drag.on("drop", handleDrop);
-        this.drag.on("dragend", handleDragEnd);
+        drag.append($("<span></span>").addClass("fa fa-ellipsis-v"));
+        drag.on("dragstart", handleDragStart);
+        drag.on("dragenter", handleDragEnter);
+        drag.on("dragover", handleDragOver);
+        drag.on("dragleave", handleDragLeave);
+        drag.on("drop", handleDrop);
+        drag.on("dragend", handleDragEnd);
     }
 
-    htmlElement.append(this.drag);
-    htmlElement.append(this.content);
+    htmlElement.append(drag);
+    htmlElement.append(content);
     htmlElement.data("item", this);
 
     this.parentAction.html.append(htmlElement);
@@ -1131,6 +1203,7 @@ Control.prototype.generateContent = function () {
 Control.prototype.getJsonData = function () {
     var json = {};
 
+    json.toDelete = this.toDelete;
     json.test = this.test;
     json.testcase = this.testcase;
     json.step = this.step;
