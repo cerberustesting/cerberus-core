@@ -173,10 +173,10 @@ function saveScript() {
         url: "UpdateTestCaseWithDependencies1",
         async: true,
         method: "POST",
-        data: {informationInitialTest: "Examples",
-            informationInitialTestCase: "0007A",
-            informationTest: "Examples",
-            informationTestCase: "0007A",
+        data: {informationInitialTest: GetURLParameter("test"),
+            informationInitialTestCase: GetURLParameter("testcase"),
+            informationTest: GetURLParameter("test"),
+            informationTestCase: GetURLParameter("testcase"),
             stepArray: JSON.stringify(stepArr)},
         success: function () {
             location.reload();
