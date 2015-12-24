@@ -5377,6 +5377,27 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLS.append("ADD CONSTRAINT `FK_countryenvlink_01` FOREIGN KEY (`system` , `Country` , `Environment`) REFERENCES `countryenvparam` (`system` , `Country` , `Environment`) ON DELETE CASCADE ON UPDATE CASCADE;");
         SQLInstruction.add(SQLS.toString());
 
+        // Adding time index on log table IX_logevent_01.
+        //-- ------------------------ 721
+        SQLS = new StringBuilder();
+        SQLS.append("ALTER TABLE `logevent` ");
+        SQLS.append(" ADD INDEX `IX_logevent_01` (`Time` ASC);");
+        SQLInstruction.add(SQLS.toString());
+
+        // rename getFromDataLib to getFromDataLib_BETA.
+        //-- ------------------------ 722
+        SQLS = new StringBuilder();
+        SQLS.append("UPDATE `testcasecountryproperties` ");
+        SQLS.append(" SET type='getFromDataLib_BETA' where type='getFromDataLib';");
+        SQLInstruction.add(SQLS.toString());
+
+        // Clean data on wrong timestamp.
+        //-- ------------------------ 723
+        SQLS = new StringBuilder();
+        SQLS.append("UPDATE `testdatalib` ");
+        SQLS.append(" SET Created = '2000-01-01 00:00:00' WHERE Created = '0000-00-00 00:00:00';");
+        SQLInstruction.add(SQLS.toString());
+
         return SQLInstruction;
     }
 
