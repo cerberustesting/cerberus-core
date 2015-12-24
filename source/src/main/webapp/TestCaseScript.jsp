@@ -72,7 +72,12 @@
                                     <button class="btn btn-default" id="cancelEdit">Cancel</button>
                                 </div>
                             </div>
-                            <div class="row">
+                            <div class="row" id="addInLibArea" style="display: none;">
+                                <div class="pull-right">
+                                    <label class="checkbox-inline">
+                                        <input type="checkbox" id="addInLib"> Library
+                                    </label>
+                                </div>
                             </div>
                         </div>
                     </div>

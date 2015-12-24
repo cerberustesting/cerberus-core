@@ -170,14 +170,12 @@ function saveScript() {
             stepArr.push(stepJson);
         }
     }
-    console.log(stepArr);
 
     var properties = $("#propTable tr");
     var propArr = [];
     for (var i = 0; i < properties.length; i++) {
         propArr.push($(properties[i]).data("property"));
     }
-    console.log(propArr);
 
     $.ajax({
         url: "UpdateTestCaseWithDependencies1",
@@ -421,6 +419,12 @@ function editStep() {
     $("#stepInfo").hide();
     $("#editStepDescription").prop("placeholder", "Description").val(step.description);
     $("#editStep").show();
+
+    if (step.useStep === "Y") {
+        $("#addInLibArea").hide();
+    } else {
+        $("#addInLibArea").show();
+    }
 }
 
 function saveStep() {
@@ -428,6 +432,12 @@ function saveStep() {
     var stepData = stepHtml.data("item");
 
     stepData.setDescription($("#editStepDescription").val());
+
+    if ($("#addInLib").prop("checked")) {
+        stepData.inLibrary = "Y";
+    } else {
+        stepData.inLibrary = "Y";
+    }
 
     cancelEdit();
 }
@@ -889,6 +899,12 @@ Step.prototype.show = function () {
     } else {
         $("#deleteStep span").removeClass();
         $("#deleteStep span").addClass("glyphicon glyphicon-trash");
+    }
+
+    if (object.inLibrary === "Y") {
+        $("#addInLib").prop("checked", true);
+    } else {
+        $("#addInLib").prop("checked", false);
     }
 
     if (object.useStep === "Y") {
