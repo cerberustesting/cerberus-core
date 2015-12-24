@@ -88,12 +88,15 @@ $.when($.getScript("js/pages/global/global.js")).then(function () {
         $("#addProperty").click(function () {
             var newProperty = {
                 property: "",
-                type: "",
+                country: [],
+                type: "text",
                 database: "",
                 value1: "",
-                length: "",
-                rowLimit: "",
-                nature: ""
+                value2: "",
+                length: 0,
+                rowLimit: 0,
+                nature: "STATIC",
+                toDelete: false
             };
 
             drawProperty(newProperty, testcaseinfo);
@@ -169,6 +172,13 @@ function saveScript() {
     }
     console.log(stepArr);
 
+    var properties = $("#propTable tr");
+    var propArr = [];
+    for (var i = 0; i < properties.length; i++) {
+        propArr.push($(properties[i]).data("property"));
+    }
+    console.log(propArr);
+
     $.ajax({
         url: "UpdateTestCaseWithDependencies1",
         async: true,
@@ -177,7 +187,8 @@ function saveScript() {
             informationInitialTestCase: GetURLParameter("testcase"),
             informationTest: GetURLParameter("test"),
             informationTestCase: GetURLParameter("testcase"),
-            stepArray: JSON.stringify(stepArr)},
+            stepArray: JSON.stringify(stepArr),
+            propArr: JSON.stringify(propArr)},
         success: function () {
             location.reload();
         },
@@ -189,21 +200,64 @@ function drawProperty(property, testcaseinfo) {
     var selectType = getSelectInvariant("PROPERTYTYPE");
     var selectDB = getSelectInvariant("PROPERTYDATABASE");
     var selectNature = getSelectInvariant("PROPERTYNATURE");
+    var deleteBtn = $("<button></button>").addClass("btn btn-default btn-xs").append($("<span></span>").addClass("glyphicon glyphicon-trash"));
+    var propertyInput = $("<input>").addClass("form-control input-sm").val(property.property);
+    var valueInput = $("<textarea></textarea>").addClass("form-control input-sm").val(property.value1);
+    var lengthInput = $("<input>").addClass("form-control input-sm").val(property.length);
+    var rowLimitInput = $("<input>").addClass("form-control input-sm").val(property.rowLimit);
     var table = $("#propTable");
 
     var row = $("<tr></tr>");
-    var deleteBtn = $("<td></td>").append($("<button></button>").addClass("btn btn-default btn-xs").append($("<span></span>").addClass("glyphicon glyphicon-trash")));
-    var propertyName = $("<td></td>").append($("<input>").addClass("form-control input-sm").val(property.property));
+    var deleteBtnRow = $("<td></td>").append(deleteBtn);
+    var propertyName = $("<td></td>").append(propertyInput);
     var country = $("<td></td>").append(getTestCaseCountry(testcaseinfo.countryList, property.country, false));
-    var type = $("<td></td>").append(selectType.clone().val(property.type));
-    var db = $("<td></td>").append(selectDB.clone().val(property.database));
-    var value = $("<td></td>").append($("<textarea></textarea>").addClass("form-control input-sm").val(property.value1));
-    var length = $("<td></td>").append($("<input>").addClass("form-control input-sm").val(property.length));
-    var rowLimit = $("<td></td>").append($("<input>").addClass("form-control input-sm").val(property.rowLimit));
-    var nature = $("<td></td>").append(selectNature.clone().val(property.nature));
+    var type = $("<td></td>").append(selectType.val(property.type));
+    var db = $("<td></td>").append(selectDB.val(property.database));
+    var value = $("<td></td>").append(valueInput);
+    var length = $("<td></td>").append(lengthInput);
+    var rowLimit = $("<td></td>").append(rowLimitInput);
+    var nature = $("<td></td>").append(selectNature.val(property.nature));
+
+    deleteBtn.click(function () {
+        property.toDelete = (property.toDelete) ? false : true;
+
+        if (property.toDelete) {
+            row.addClass("danger");
+        } else {
+            row.removeClass("danger");
+        }
+    });
+
+    propertyInput.change(function () {
+        property.property = $(this).val();
+    });
+
+    selectType.change(function () {
+        property.type = $(this).val();
+    });
+
+    selectDB.change(function () {
+        property.database = $(this).val();
+    });
+
+    valueInput.change(function () {
+        property.value1 = $(this).val();
+    });
+
+    lengthInput.change(function () {
+        property.length = $(this).val();
+    });
+
+    rowLimitInput.change(function () {
+        property.rowLimit = $(this).val();
+    });
+
+    selectNature.change(function () {
+        property.nature = $(this).val();
+    });
 
     row.data("property", property);
-    row.append(deleteBtn);
+    row.append(deleteBtnRow);
     row.append(propertyName);
     row.append(country);
     row.append(type);
@@ -259,6 +313,7 @@ function loadProperties(test, testcase, testcaseinfo) {
             for (var index = 0; index < data.length; index++) {
                 var property = data[index];
 
+                property.toDelete = false;
                 drawProperty(property, testcaseinfo);
             }
         },
@@ -286,6 +341,20 @@ function getTestCaseCountry(countryList, countryToCheck, isDisabled) {
         }
         if (isDisabled) {
             input.prop("disabled", "disabled");
+        } else {
+            input.change(function () {
+                var country = $(this).prop("name");
+                var checked = $(this).prop("checked");
+                var index = countryToCheck.indexOf(country);
+
+                if (checked && index === -1) {
+                    countryToCheck.push(country);
+                } else if (!checked && index !== -1) {
+                    countryToCheck.splice(index, 1);
+                }
+
+                console.log(countryToCheck);
+            });
         }
 
         div.append($("<label></label>").addClass("checkbox-inline")
@@ -674,8 +743,6 @@ function handleDragEnter(event) {
     var sourceData = $(source).data("item");
     var targetData = $(target).data("item");
 
-    console.log(this);
-
     if (sourceData instanceof Action && targetData instanceof Action) {
         if (isBefore(source.parentNode, target.parentNode)) {
             $(target).parent(".action-group").after(source.parentNode);
@@ -777,22 +844,22 @@ function Step(json, stepList) {
 
     this.html = $("<li></li>").addClass("list-group-item row").css("margin-left", "0px");
     this.textArea = $("<div></div>").addClass("col-lg-10").addClass("step-description").text(this.description);
-    this.drag = $("<div></div>").addClass("col-lg-2 drag-step").prop("draggable", true)
-            .append($("<span></span>").addClass("fa fa-ellipsis-v"));
 
 }
 
 Step.prototype.draw = function () {
     var htmlElement = this.html;
+    var drag = $("<div></div>").addClass("col-lg-2 drag-step").prop("draggable", true)
+            .append($("<span></span>").addClass("fa fa-ellipsis-v"));
 
-    this.drag.on("dragstart", handleDragStart);
-    this.drag.on("dragenter", handleDragEnter);
-    this.drag.on("dragover", handleDragOver);
-    this.drag.on("dragleave", handleDragLeave);
-    this.drag.on("drop", handleDrop);
-    this.drag.on("dragend", handleDragEnd);
+    drag.on("dragstart", handleDragStart);
+    drag.on("dragenter", handleDragEnter);
+    drag.on("dragover", handleDragOver);
+    drag.on("dragleave", handleDragLeave);
+    drag.on("drop", handleDrop);
+    drag.on("dragend", handleDragEnd);
 
-    htmlElement.append(this.drag);
+    htmlElement.append(drag);
     htmlElement.append(this.textArea);
     htmlElement.data("item", this);
 

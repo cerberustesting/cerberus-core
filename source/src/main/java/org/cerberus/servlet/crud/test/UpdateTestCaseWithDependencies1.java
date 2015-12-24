@@ -107,54 +107,53 @@ public class UpdateTestCaseWithDependencies1 extends HttpServlet {
         IUserService userService = appContext.getBean(IUserService.class);
         IGroupService groupService = appContext.getBean(IGroupService.class);
 
+        /**
+         * For the list of testcase country verify it exists. If it does not
+         * exists > create it If it exist, verify if it's the
+         */
+        List<TestCaseCountryProperties> tccpFromPage = getTestCaseCountryPropertiesFromParameter(request, appContext, test, testCase);
+        List<TestCaseCountryProperties> tccpFromDtb = tccpService.findListOfPropertyPerTestTestCase(initialTest, initialTestCase);
 
-//        /**
-//         * For the list of testcase country verify it exists. If it does not
-//         * exists > create it If it exist, verify if it's the
-//         */
-//        List<TestCaseCountryProperties> tccpFromPage = getTestCaseCountryPropertiesFromParameter(request, appContext, test, testCase);
-//        List<TestCaseCountryProperties> tccpFromDtb = tccpService.findListOfPropertyPerTestTestCase(initialTest, initialTestCase);
-//
-//        /**
-//         * Iterate on (TestCaseCountryProperties From Page -
-//         * TestCaseCountryProperties From Database) If TestCaseCountryProperties
-//         * in Database has same key : Update and remove from the list. If
-//         * TestCaseCountryProperties in database does ot exist : Insert it.
-//         */
-//        List<TestCaseCountryProperties> tccpToUpdateOrInsert = new ArrayList(tccpFromPage);
-//        tccpToUpdateOrInsert.removeAll(tccpFromDtb);
-//        List<TestCaseCountryProperties> tccpToUpdateOrInsertToIterate = new ArrayList(tccpToUpdateOrInsert);
-//
-//        for (TestCaseCountryProperties tccpDifference : tccpToUpdateOrInsertToIterate) {
-//            for (TestCaseCountryProperties tccpInDatabase : tccpFromDtb) {
-//                if (tccpDifference.hasSameKey(tccpInDatabase)) {
-//                    tccpService.updateTestCaseCountryProperties(tccpDifference);
-//                    tccpToUpdateOrInsert.remove(tccpDifference);
-//                }
-//            }
-//        }
-//        tccpService.insertListTestCaseCountryProperties(tccpToUpdateOrInsert);
-//
-//        /**
-//         * Iterate on (TestCaseCountryProperties From Database -
-//         * TestCaseCountryProperties From Page). If TestCaseCountryProperties in
-//         * Page has same key : remove from the list. Then delete the list of
-//         * TestCaseCountryProperties
-//         */
-//        if (!duplicate) {
-//            List<TestCaseCountryProperties> tccpToDelete = new ArrayList(tccpFromDtb);
-//            tccpToDelete.removeAll(tccpFromPage);
-//            List<TestCaseCountryProperties> tccpToDeleteToIterate = new ArrayList(tccpToDelete);
-//
-//            for (TestCaseCountryProperties tccpDifference : tccpToDeleteToIterate) {
-//                for (TestCaseCountryProperties tccpInPage : tccpFromPage) {
-//                    if (tccpDifference.hasSameKey(tccpInPage)) {
-//                        tccpToDelete.remove(tccpDifference);
-//                    }
-//                }
-//            }
-//            tccpService.deleteListTestCaseCountryProperties(tccpToDelete);
-//        }
+        /**
+         * Iterate on (TestCaseCountryProperties From Page -
+         * TestCaseCountryProperties From Database) If TestCaseCountryProperties
+         * in Database has same key : Update and remove from the list. If
+         * TestCaseCountryProperties in database does ot exist : Insert it.
+         */
+        List<TestCaseCountryProperties> tccpToUpdateOrInsert = new ArrayList(tccpFromPage);
+        tccpToUpdateOrInsert.removeAll(tccpFromDtb);
+        List<TestCaseCountryProperties> tccpToUpdateOrInsertToIterate = new ArrayList(tccpToUpdateOrInsert);
+
+        for (TestCaseCountryProperties tccpDifference : tccpToUpdateOrInsertToIterate) {
+            for (TestCaseCountryProperties tccpInDatabase : tccpFromDtb) {
+                if (tccpDifference.hasSameKey(tccpInDatabase)) {
+                    tccpService.updateTestCaseCountryProperties(tccpDifference);
+                    tccpToUpdateOrInsert.remove(tccpDifference);
+                }
+            }
+        }
+        tccpService.insertListTestCaseCountryProperties(tccpToUpdateOrInsert);
+
+        /**
+         * Iterate on (TestCaseCountryProperties From Database -
+         * TestCaseCountryProperties From Page). If TestCaseCountryProperties in
+         * Page has same key : remove from the list. Then delete the list of
+         * TestCaseCountryProperties
+         */
+        if (!duplicate) {
+            List<TestCaseCountryProperties> tccpToDelete = new ArrayList(tccpFromDtb);
+            tccpToDelete.removeAll(tccpFromPage);
+            List<TestCaseCountryProperties> tccpToDeleteToIterate = new ArrayList(tccpToDelete);
+
+            for (TestCaseCountryProperties tccpDifference : tccpToDeleteToIterate) {
+                for (TestCaseCountryProperties tccpInPage : tccpFromPage) {
+                    if (tccpDifference.hasSameKey(tccpInPage)) {
+                        tccpToDelete.remove(tccpDifference);
+                    }
+                }
+            }
+            tccpService.deleteListTestCaseCountryProperties(tccpToDelete);
+        }
         /**
          * For the list of testcasestep verify it exists. If it does not exists
          * > create it If it exist, verify if it's the
@@ -311,28 +310,30 @@ public class UpdateTestCaseWithDependencies1 extends HttpServlet {
         return result;
     }
 
-    private List<TestCaseCountryProperties> getTestCaseCountryPropertiesFromParameter(HttpServletRequest request, ApplicationContext appContext, String test, String testCase) {
+    private List<TestCaseCountryProperties> getTestCaseCountryPropertiesFromParameter(HttpServletRequest request, ApplicationContext appContext, String test, String testCase) throws JSONException {
         List<TestCaseCountryProperties> testCaseCountryProp = new ArrayList();
-        String[] testcase_properties_increment = getParameterValuesIfExists(request, "property_increment");
+//        String[] testcase_properties_increment = getParameterValuesIfExists(request, "property_increment");
         IFactoryTestCaseCountryProperties testCaseCountryPropertiesFactory = appContext.getBean(IFactoryTestCaseCountryProperties.class);
-        if (testcase_properties_increment != null) {
-            for (String inc : testcase_properties_increment) {
-                String[] countries = getParameterValuesIfExists(request, "properties_country_" + inc);
-                String delete = getParameterIfExists(request, "properties_delete_" + inc);
-                String property = getParameterIfExists(request, "properties_property_" + inc);
-                String type = getParameterIfExists(request, "properties_type_" + inc);
-                String value = getParameterIfExists(request, "properties_value1_" + inc);
-                String value2 = getParameterIfExists(request, "properties_value2_" + inc);
-                int length = Integer.valueOf(getParameterIfExists(request, "properties_length_" + inc).equals("") ? "0" : getParameterIfExists(request, "properties_length_" + inc));
-                int rowLimit = Integer.valueOf(getParameterIfExists(request, "properties_rowlimit_" + inc).equals("") ? "0" : getParameterIfExists(request, "properties_rowlimit_" + inc));
-                String nature = getParameterIfExists(request, "properties_nature_" + inc);
-                String database = getParameterIfExists(request, "properties_dtb_" + inc);
-                if (countries != null) {
-                    for (String country : countries) {
-                        if (delete == null && property != null && !property.equals("")) {
-                            testCaseCountryProp.add(testCaseCountryPropertiesFactory.create(test, testCase, country, property, type, database, value, value2, length, rowLimit, nature));
-                        }
-                    }
+        JSONArray properties = new JSONArray(request.getParameter("propArr"));
+
+        for (int i = 0; i < properties.length(); i++) {
+            JSONObject propJson = properties.getJSONObject(i);
+
+            boolean delete = propJson.getBoolean("toDelete");
+            String property = propJson.getString("property");
+            String type = propJson.getString("type");
+            String value = propJson.getString("value1");
+            String value2 = propJson.getString("value2");
+            int length = propJson.getInt("length");
+            int rowLimit = propJson.getInt("rowLimit");
+            String nature = propJson.getString("nature");
+            String database = propJson.getString("database");
+            JSONArray countries = propJson.getJSONArray("country");
+            if (!delete && !property.equals("")) {
+                for (int j = 0; j < countries.length(); j++) {
+                    String country = countries.getString(j);
+
+                    testCaseCountryProp.add(testCaseCountryPropertiesFactory.create(test, testCase, country, property, type, database, value, value2, length, rowLimit, nature));
                 }
             }
         }
