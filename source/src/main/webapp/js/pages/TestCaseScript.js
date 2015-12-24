@@ -1192,8 +1192,11 @@ function Control(json, parentAction) {
 
 Control.prototype.draw = function () {
     var htmlElement = this.html;
+    var control = this;
     var type = $("<div></div>").addClass("type");
     var drag = $("<div></div>").addClass("drag-step-action col-lg-1").prop("draggable", true).append(type);
+    var supprBtn = $("<button></button>").addClass("btn btn-danger btn-xs add-btn").append($("<span></span>").addClass("glyphicon glyphicon-trash"));
+    var btnGrp = $("<div></div>").addClass("btn-group").append(supprBtn);
     var content = this.generateContent();
 
     if (this.parentAction.parentStep.useStep === "N") {
@@ -1206,8 +1209,19 @@ Control.prototype.draw = function () {
         drag.on("dragend", handleDragEnd);
     }
 
+    supprBtn.click(function () {
+        control.toDelete = (control.toDelete) ? false : true;
+
+        if (control.toDelete) {
+            control.html.addClass("toDelete");
+        } else {
+            control.html.removeClass("toDelete");
+        }
+    });
+
     htmlElement.append(drag);
     htmlElement.append(content);
+    htmlElement.append(btnGrp);
     htmlElement.data("item", this);
 
     this.parentAction.html.append(htmlElement);
@@ -1227,7 +1241,7 @@ Control.prototype.setControl = function (control) {
 
 Control.prototype.generateContent = function () {
     var obj = this;
-    var content = $("<div></div>").addClass("content col-lg-11");
+    var content = $("<div></div>").addClass("content col-lg-10");
     var firstRow = $("<div></div>").addClass("row");
     var secondRow = $("<div></div>").addClass("row form-inline");
 

@@ -174,3 +174,9 @@
 .action-group.toDelete select {
     background-color: #e74c3c;
 }
+
+.control.toDelete,
+.control.toDelete input,
+.control.toDelete select {
+    background-color: #e74c3c;
+}
