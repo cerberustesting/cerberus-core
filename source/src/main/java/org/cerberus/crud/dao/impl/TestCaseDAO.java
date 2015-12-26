@@ -125,7 +125,7 @@ public class TestCaseDAO implements ITestCaseDAO {
     }
 
     @Override
-    public AnswerList readByTestByCriteria(String test, int start, int amount, String column, String dir, String searchTerm, String individualSearch) {
+    public AnswerList readByTestByCriteria(String system, String test, int start, int amount, String column, String dir, String searchTerm, String individualSearch) {
         AnswerList answer = new AnswerList();
         MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
         msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", ""));
@@ -136,9 +136,20 @@ public class TestCaseDAO implements ITestCaseDAO {
 
         //SQL_CALC_FOUND_ROWS allows to retrieve the total number of columns by disrearding the limit clauses that 
         //were applied -- used for pagination p
-        query.append("SELECT SQL_CALC_FOUND_ROWS * FROM testcase ");
+        query.append("SELECT SQL_CALC_FOUND_ROWS * FROM testcase tc ");
 
-        searchSQL.append("WHERE 1=1 AND test = ?");
+        if (!StringUtil.isNullOrEmpty(system)) {
+            searchSQL.append(" LEFT OUTER JOIN application app on app.application = tc.application ");
+        }
+        
+        searchSQL.append("WHERE 1=1");
+
+        if (!StringUtil.isNullOrEmpty(system)) {
+            searchSQL.append(" AND `system` = ? ");
+        }
+        if (!StringUtil.isNullOrEmpty(test)) {
+            searchSQL.append(" AND `test` = ?");
+        }
 
         if (!StringUtil.isNullOrEmpty(searchTerm)) {
             searchSQL.append(" and (`testcase` like ?");
@@ -168,13 +179,22 @@ public class TestCaseDAO implements ITestCaseDAO {
             query.append(" limit ").append(start).append(" , ").append(MAX_ROW_SELECTED);
         }
 
+        // Debug message on SQL.
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("SQL : " + query.toString());
+        }
         Connection connection = this.databaseSpring.connect();
         try {
             PreparedStatement preStat = connection.prepareStatement(query.toString());
 
             try {
                 int i = 1;
-                preStat.setString(i++, test);
+                if (!StringUtil.isNullOrEmpty(system)) {
+                    preStat.setString(i++, system);
+                }
+                if (!StringUtil.isNullOrEmpty(test)) {
+                    preStat.setString(i++, test);
+                }
                 if (!Strings.isNullOrEmpty(searchTerm)) {
                     preStat.setString(i++, "%" + searchTerm + "%");
                     preStat.setString(i++, "%" + searchTerm + "%");
@@ -1663,7 +1683,7 @@ public class TestCaseDAO implements ITestCaseDAO {
                     while (resultSet.next()) {
                         list.add(loadFromResultSet(resultSet));
                     }
-                    
+
                     if (list.size() >= MAX_ROW_SELECTED) { // Result of SQl was limited by MAX_ROW_SELECTED constrain. That means that we may miss some lines in the resultList.
                         LOG.error("Partial Result in the query.");
                         msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_WARNING_PARTIAL_RESULT);
@@ -1677,7 +1697,7 @@ public class TestCaseDAO implements ITestCaseDAO {
                         msg.setDescription(msg.getDescription().replace("%ITEM%", OBJECT_NAME).replace("%OPERATION%", "SELECT"));
                         response = new AnswerList(list, list.size());
                     }
-                    
+
                 } catch (SQLException exception) {
                     MyLogger.log(TestCaseDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
                     msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);

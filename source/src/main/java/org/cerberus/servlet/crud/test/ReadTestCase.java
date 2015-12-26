@@ -100,6 +100,7 @@ public class ReadTestCase extends HttpServlet {
          * Parsing and securing all required parameters.
          */
         String test = ParameterParserUtil.parseStringParamAndSanitize(request.getParameter("test"), "");
+        String system = ParameterParserUtil.parseStringParamAndSanitize(request.getParameter("system"), "");
         String testCase = ParameterParserUtil.parseStringParam(request.getParameter("testCase"), "");
         String campaign = ParameterParserUtil.parseStringParam(request.getParameter("campaign"), "");
         boolean getMaxTC = ParameterParserUtil.parseBooleanParam(request.getParameter("getMaxTC"), false);
@@ -114,13 +115,13 @@ public class ReadTestCase extends HttpServlet {
 
         try {
             JSONObject jsonResponse = new JSONObject();
-            if (sEcho != 0 && !Strings.isNullOrEmpty(test)) {
-                answer = findTestCaseByTest(test, appContext, request);
-                jsonResponse = (JSONObject) answer.getItem();
-            } else if (sEcho == 0 && !Strings.isNullOrEmpty(test) && !Strings.isNullOrEmpty(testCase) && !withStep) {
+            if (!Strings.isNullOrEmpty(test) && !Strings.isNullOrEmpty(testCase) && !withStep) {
                 answer = findTestCaseByTestTestCase(test, testCase, appContext, request);
                 jsonResponse = (JSONObject) answer.getItem();
-            } else if (sEcho == 0 && !Strings.isNullOrEmpty(test) && getMaxTC) {
+            } else if (!Strings.isNullOrEmpty(test) && !Strings.isNullOrEmpty(testCase) && withStep) {
+                answer = findTestCaseWithStep(appContext, test, testCase);
+                jsonResponse = (JSONObject) answer.getItem();
+            } else if (!Strings.isNullOrEmpty(test) && getMaxTC) {
                 testCaseService = appContext.getBean(TestCaseService.class);
                 String max = testCaseService.getMaxNumberTestCase(test);
                 if (max == null) {
@@ -128,14 +129,14 @@ public class ReadTestCase extends HttpServlet {
                 }
                 jsonResponse.put("maxTestCase", Integer.valueOf(max));
                 answer.setResultMessage(new MessageEvent(MessageEventEnum.DATA_OPERATION_OK));
-            } else if (sEcho == 0 && filter) {
+            } else if (filter) {
                 answer = findTestCaseByVariousCriteria(appContext, request);
                 jsonResponse = (JSONObject) answer.getItem();
-            } else if (sEcho == 0 && !Strings.isNullOrEmpty(campaign)) {
+            } else if (!Strings.isNullOrEmpty(campaign)) {
                 answer = findTestCaseByCampaign(appContext, campaign);
                 jsonResponse = (JSONObject) answer.getItem();
-            } else if (sEcho == 0 && !Strings.isNullOrEmpty(test) && !Strings.isNullOrEmpty(testCase) && withStep) {
-                answer = findTestCaseWithStep(appContext, test, testCase);
+            } else {
+                answer = findTestCaseByTest(system, test, appContext, request);
                 jsonResponse = (JSONObject) answer.getItem();
             }
 
@@ -198,7 +199,7 @@ public class ReadTestCase extends HttpServlet {
         return "Short description";
     }// </editor-fold>
 
-    private AnswerItem findTestCaseByTest(String test, ApplicationContext appContext, HttpServletRequest request) throws JSONException {
+    private AnswerItem findTestCaseByTest(String system, String test, ApplicationContext appContext, HttpServletRequest request) throws JSONException {
         AnswerItem answer = new AnswerItem();
         JSONObject object = new JSONObject();
 
@@ -214,7 +215,7 @@ public class ReadTestCase extends HttpServlet {
         String columnToSort[] = sColumns.split(",");
         String columnName = columnToSort[columnToSortParameter];
         String sort = ParameterParserUtil.parseStringParam(request.getParameter("sSortDir_0"), "asc");
-        AnswerList testCaseList = testCaseService.readByTestByCriteria(test, startPosition, length, columnName, sort, searchParameter, "");
+        AnswerList testCaseList = testCaseService.readByTestByCriteria(system, test, startPosition, length, columnName, sort, searchParameter, "");
 
         AnswerList testCaseCountryList = testCaseCountryService.readByTestTestCase(test, null);
 
@@ -462,7 +463,7 @@ public class ReadTestCase extends HttpServlet {
 
                     if (action.getStep() == step.getStep()) {
                         JSONObject jsonAction = new JSONObject(gson.toJson(action));
-                        
+
                         jsonAction.put("objType", "action");
                         jsonAction.put("controlList", new JSONArray());
                         //We fill the action with the corresponding controls

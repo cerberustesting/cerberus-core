@@ -154,7 +154,18 @@ public interface ITestCaseService {
 
     AnswerList readTestCaseByStepsInLibrary(String test);
 
-    public AnswerList readByTestByCriteria(String test, int start, int amount, String column, String dir, String searchTerm, String individualSearch);
+    /**
+     *
+     * @param test
+     * @param start
+     * @param amount
+     * @param column
+     * @param dir
+     * @param searchTerm
+     * @param individualSearch
+     * @return
+     */
+    public AnswerList readByTestByCriteria(String system, String test, int start, int amount, String column, String dir, String searchTerm, String individualSearch);
 
     public AnswerItem readByKey(String test, String testCase);
 

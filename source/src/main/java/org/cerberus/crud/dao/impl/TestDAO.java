@@ -551,7 +551,7 @@ public class TestDAO implements ITestDAO {
         query.append("SELECT SQL_CALC_FOUND_ROWS DISTINCT(t.test), t.* FROM test t ");
         query.append("LEFT JOIN testcase tc ON t.test = tc.test ");
         query.append("LEFT JOIN application app ON tc.application = app.application ");
-        query.append("WHERE t.active = 'Y' AND tc.tcActive = 'Y' AND app.system = ?");
+        query.append("WHERE app.system = ?");
 
         Connection connection = this.databaseSpring.connect();
         try {

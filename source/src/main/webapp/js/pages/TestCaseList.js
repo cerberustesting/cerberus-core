@@ -28,6 +28,7 @@ $.when($.getScript("js/pages/global/global.js")).then(function () {
 
         var urlTag = GetURLParameter('test');
         loadTestFilters(urlTag);
+        loadTestComboAddTestCase(urlTag);
 
         $('#editEntryModal').on('hidden.bs.modal', {extra: "#editEntryModal"}, modalFormCleaner);
         $('#addEntryModal').on('hidden.bs.modal', {extra: "#addEntryModal"}, modalFormCleaner);
@@ -206,34 +207,63 @@ function appendProjectList() {
 }
 
 function loadTestFilters(urlTag) {
-    var jqxhr = $.get("ReadTest", {sEcho: "1"}, "json");
+    var jqxhr = $.get("ReadTest", "system=" + getUser().defaultSystem);
     $.when(jqxhr).then(function (data) {
         var messageType = getAlertType(data.messageType);
+        var option = $('<option></option>').attr("value", "ALL").text("-- ALL --");
+        $('#selectTest').append(option);
         if (messageType === "success") {
             var index;
-            $('#selectTest').append($('<option></option>').attr("value", "")).attr("placeholder", "Select a Test");
             for (index = 0; index < data.contentTable.length; index++) {
                 //the character " needs a special encoding in order to avoid breaking the string that creates the html element   
                 var encodedString = data.contentTable[index].test.replace(/\"/g, "%22");
                 var text = data.contentTable[index].test + ' - ' + data.contentTable[index].description;
                 var option = $('<option></option>').attr("value", encodedString).text(text);
                 $('#selectTest').append(option);
-                $('#testAdd').append($('<option></option>').text(text).val(encodedString));
             }
 
             //if the tag is passed as a url parameter, then it loads the report from this tag
-            if (urlTag !== null) {
-                $('#selectTest option[value="' + urlTag + '"]').attr("selected", "selected");
-                loadTable();
+            if (urlTag === null) {
+                urlTag = "ALL";
             }
+            $('#selectTest option[value="' + urlTag + '"]').attr("selected", "selected");
+            loadTable();
+
         } else {
             showMessageMainPage(messageType, data.message);
         }
     }).fail(handleErrorAjaxAfterTimeout);
 }
 
+function loadTestComboAddTestCase(urlTag) {
+    var jqxhr = $.get("ReadTest");
+    $.when(jqxhr).then(function (data) {
+        var messageType = getAlertType(data.messageType);
+        if (messageType === "success") {
+            var index;
+            for (index = 0; index < data.contentTable.length; index++) {
+                //the character " needs a special encoding in order to avoid breaking the string that creates the html element   
+                var encodedString = data.contentTable[index].test.replace(/\"/g, "%22");
+                var text = data.contentTable[index].test + ' - ' + data.contentTable[index].description;
+                var option = $('<option></option>').attr("value", encodedString).text(text);
+                $('#testAdd').append($('<option></option>').text(text).val(encodedString));
+            }
+
+        } else {
+            showMessageMainPage(messageType, data.message);
+        }
+    }).fail(handleErrorAjaxAfterTimeout);
+}
+
+
+
 function loadTable() {
     var selectTest = $("#selectTest option:selected").attr("value");
+
+    var urlToCall = "ReadTestCase?system=" + getUser().defaultSystem;
+    if (selectTest !== "ALL") {
+        urlToCall += "&test=" + encodeURIComponent(selectTest);
+    }
 
     window.history.pushState('test', '', 'TestCaseList.jsp?test=' + encodeURIComponent(selectTest));
 
@@ -245,7 +275,7 @@ function loadTable() {
         var jqxhr = $.getJSON("FindInvariantByID", "idName=COUNTRY");
 
         $.when(jqxhr).then(function (data) {
-            var config = new TableConfigurationsServerSide("testCaseTable", "ReadTestCase?test=" + encodeURIComponent(selectTest), "contentTable", aoColumnsFunc(data));
+            var config = new TableConfigurationsServerSide("testCaseTable", urlToCall, "contentTable", aoColumnsFunc(data));
 
             var table = createDataTableWithPermissions(config, renderOptionsForTestCaseList);
             table.fnSort([1, 'asc']);
@@ -259,6 +289,8 @@ function CreateTestCaseClick() {
     var pref = JSON.parse(localStorage.getItem("createTC"));
     var form = $("#addEntryModalForm");
 
+
+// Predefine the testcase value.
     $.ajax({
         url: "ReadTestCase",
         method: "GET",
@@ -653,6 +685,13 @@ function aoColumnsFunc(countries) {
 
                 return '<div class="center btn-group width150">' + buttons + '</div>';
             }
+        },
+        {
+            "data": "test",
+            "sName": "test",
+            "title": doc.getDocOnline("test", "Test"),
+            "sWidth": "120px",
+            "sDefaultContent": ""
         },
         {
             "data": "testCase",
