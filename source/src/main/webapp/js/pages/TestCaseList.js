@@ -459,9 +459,8 @@ function deleteEntry(entry) {
     showModalConfirmation(deleteEntryHandlerClick, "Delete", messageComplete, entry, "", "", "");
 }
 
-function editEntry(testCase) {
+function editEntry(test, testCase) {
     clearResponseMessageMainPage();
-    var test = GetURLParameter('test');
     var jqxhr = $.getJSON("ReadTestCase", "test=" + encodeURIComponent(test) + "&testCase=" + encodeURIComponent(testCase));
     $.when(jqxhr).then(function (data) {
 
@@ -681,7 +680,7 @@ function aoColumnsFunc(countries) {
                                     href="TestCase.jsp?Test=' + encodeURIComponent(obj["test"]) + "&TestCase=" + encodeURIComponent(obj["testCase"]) + '&Load=Load">\n\
                                     <span class="glyphicon glyphicon-new-window"></span>\n\
                                     </a>';
-                var editEntry = '<button id="editEntry" onclick="editEntry(\'' + escapeHtml(obj["testCase"]) + '\');"\n\
+                var editEntry = '<button id="editEntry" onclick="editEntry(\'' + escapeHtml(obj["test"]) + '\',\'' + escapeHtml(obj["testCase"]) + '\');"\n\
                                 class="editEntry btn btn-default btn-xs margin-right5" \n\
                                 name="editEntry" title="' + "edit test case" + '" type="button">\n\
                                 <span class="glyphicon glyphicon-pencil"></span></button>';
