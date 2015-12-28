@@ -23,17 +23,6 @@
 $.when($.getScript("js/pages/global/global.js")).then(function () {
     $(document).ready(function () {
         initPage();
-
-        $("#editEntryButton").click(saveUpdateEntryHandler);
-
-        var urlTag = GetURLParameter('test');
-        loadTestFilters(urlTag);
-        loadTestComboAddTestCase(urlTag);
-
-        $('#editEntryModal').on('hidden.bs.modal', {extra: "#editEntryModal"}, modalFormCleaner);
-        $('#addEntryModal').on('hidden.bs.modal', {extra: "#addEntryModal"}, modalFormCleaner);
-
-        $("#addEntryButton").click(saveNewEntryHandler);
     });
 });
 
@@ -57,9 +46,28 @@ function initPage() {
     appendApplicationList();
     appendProjectList();
     appendBuildRevList(getUser().defaultSystem);
+
+    var selectTest = GetURLParameter('test');
+    loadTestFilters(selectTest);
+    loadTestComboAddTestCase(selectTest);
+
     tinymce.init({
         selector: "textarea"
     });
+
+    var table = loadTable(selectTest);
+    if (isEmptyorALL(selectTest)) {
+        table.fnSort([1, 'asc']);
+    } else {
+        table.fnSort([2, 'asc']);
+    }
+
+    // handle the click for specific action buttons
+    $("#editEntryButton").click(saveUpdateEntryHandler);
+    $("#addEntryButton").click(saveNewEntryHandler);
+
+    $('#editEntryModal').on('hidden.bs.modal', {extra: "#editEntryModal"}, modalFormCleaner);
+    $('#addEntryModal').on('hidden.bs.modal', {extra: "#addEntryModal"}, modalFormCleaner);
 }
 
 function displayPageLabel(doc) {
@@ -206,7 +214,7 @@ function appendProjectList() {
     });
 }
 
-function loadTestFilters(urlTag) {
+function loadTestFilters(selectTest) {
     var jqxhr = $.get("ReadTest", "system=" + getUser().defaultSystem);
     $.when(jqxhr).then(function (data) {
         var messageType = getAlertType(data.messageType);
@@ -221,21 +229,24 @@ function loadTestFilters(urlTag) {
                 var option = $('<option></option>').attr("value", encodedString).text(text);
                 $('#selectTest').append(option);
             }
-
-            //if the tag is passed as a url parameter, then it loads the report from this tag
-            if (urlTag === null) {
-                urlTag = "ALL";
+            //if the test is passed as a url parameter, then we load the testcase list from that test. If not we load the list with testcases from all tests.
+            if (!isEmptyorALL(selectTest)) {
+                $('#selectTest').val(selectTest);
+                var selectTestNew = $("#selectTest option:selected").attr("value");
+                if (selectTestNew !== selectTest) { // If the url test value exist in the combobox we send a warning.
+                    showMessageMainPage("warning", "The test \"" + selectTest + "\" contains no testcase on application that belong to " + getUser().defaultSystem + " system.");
+                    option = $('<option></option>').attr("value", selectTest).text(selectTest);
+                    $('#selectTest').append(option);
+                    $('#selectTest').val(selectTest);
+                }
             }
-            $('#selectTest option[value="' + urlTag + '"]').attr("selected", "selected");
-            loadTable();
-
         } else {
             showMessageMainPage(messageType, data.message);
         }
     }).fail(handleErrorAjaxAfterTimeout);
 }
 
-function loadTestComboAddTestCase(urlTag) {
+function loadTestComboAddTestCase(selectTest) {
     var jqxhr = $.get("ReadTest");
     $.when(jqxhr).then(function (data) {
         var messageType = getAlertType(data.messageType);
@@ -248,6 +259,9 @@ function loadTestComboAddTestCase(urlTag) {
                 var option = $('<option></option>').attr("value", encodedString).text(text);
                 $('#testAdd').append($('<option></option>').text(text).val(encodedString));
             }
+            if (selectTest !== undefined) {
+                $('#testAdd').val(selectTest);
+            }
 
         } else {
             showMessageMainPage(messageType, data.message);
@@ -255,32 +269,38 @@ function loadTestComboAddTestCase(urlTag) {
     }).fail(handleErrorAjaxAfterTimeout);
 }
 
+function loadTable(selectTest) {
 
-
-function loadTable() {
-    var selectTest = $("#selectTest option:selected").attr("value");
-
-    var urlToCall = "ReadTestCase?system=" + getUser().defaultSystem;
-    if (selectTest !== "ALL") {
-        urlToCall += "&test=" + encodeURIComponent(selectTest);
+    if (isEmpty(selectTest)) {
+        selectTest = $("#selectTest").val();
     }
 
-    window.history.pushState('test', '', 'TestCaseList.jsp?test=' + encodeURIComponent(selectTest));
+    // We add the Browser history.
+    var CallParam = '?';
+    if (!isEmptyorALL(selectTest))
+        CallParam += 'test=' + encodeURIComponent(selectTest);
+    InsertURLInHistory('TestCaseList.jsp' + CallParam);
 
+    //clear the old report content before reloading it
     $("#testCaseList").empty();
     $("#testCaseList").html('<table id="testCaseTable" class="table table-hover display" name="testCaseTable">\n\
                                             </table><div class="marginBottom20"></div>');
 
-    if (selectTest !== "") {
-        var jqxhr = $.getJSON("FindInvariantByID", "idName=COUNTRY");
-
-        $.when(jqxhr).then(function (data) {
-            var config = new TableConfigurationsServerSide("testCaseTable", urlToCall, "contentTable", aoColumnsFunc(data));
-
-            var table = createDataTableWithPermissions(config, renderOptionsForTestCaseList);
-            table.fnSort([1, 'asc']);
-        });
+    var contentUrl = "ReadTestCase?system=" + getUser().defaultSystem;
+    if (!isEmptyorALL(selectTest)) {
+        contentUrl += "&test=" + encodeURIComponent(selectTest);
     }
+
+    //configure and create the dataTable
+    var jqxhr = $.getJSON("FindInvariantByID", "idName=COUNTRY");
+
+    $.when(jqxhr).then(function (data) {
+        var config = new TableConfigurationsServerSide("testCaseTable", contentUrl, "contentTable", aoColumnsFunc(data));
+
+        var table = createDataTableWithPermissions(config, renderOptionsForTestCaseList);
+        return table;
+
+    });
 }
 
 function CreateTestCaseClick() {

@@ -250,11 +250,11 @@ public class UpdateTestCase2 extends HttpServlet {
         IInvariantService invariantService = appContext.getBean(InvariantService.class);
 
         ITestCaseCountryService testCaseCountryService = appContext.getBean(TestCaseCountryService.class);
-        AnswerList answer = testCaseCountryService.readByTestTestCase(tc.getTest(), tc.getTestCase());
+        AnswerList answer = testCaseCountryService.readByTestTestCase(null, tc.getTest(), tc.getTestCase());
         List<TestCaseCountry> tcCountry = answer.getDataList();
 
         answer = invariantService.readByIdname("COUNTRY"); //TODO: handle if the response does not turn ok
-        for (Invariant country : (List<Invariant>)answer.getDataList()) {
+        for (Invariant country : (List<Invariant>) answer.getDataList()) {
             countryList.put(country.getValue(), ParameterParserUtil.parseStringParamAndSanitize(request.getParameter(country.getValue()), ""));
         }
 

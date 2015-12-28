@@ -55,8 +55,21 @@ public interface ITestCaseCountryService {
 
     void deleteListTestCaseCountry(List<TestCaseCountry> tccToDelete) throws CerberusException;
     
-    public AnswerList readByTestTestCase(String test, String testCase);
+    /**
+     *
+     * @param test
+     * @param testCase
+     * @return
+     */
+    public AnswerList readByTestTestCase(String system, String test, String testCase);
     
+    /**
+     *
+     * @param test
+     * @param testCase
+     * @param country
+     * @return
+     */
     public AnswerItem readByKey(String test, String testCase, String country);
 
 }

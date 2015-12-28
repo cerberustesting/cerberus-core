@@ -217,7 +217,7 @@ public class ReadTestCase extends HttpServlet {
         String sort = ParameterParserUtil.parseStringParam(request.getParameter("sSortDir_0"), "asc");
         AnswerList testCaseList = testCaseService.readByTestByCriteria(system, test, startPosition, length, columnName, sort, searchParameter, "");
 
-        AnswerList testCaseCountryList = testCaseCountryService.readByTestTestCase(test, null);
+        AnswerList testCaseCountryList = testCaseCountryService.readByTestTestCase(system, test, null);
 
         LinkedHashMap<String, JSONObject> testCaseWithCountry = new LinkedHashMap();
         for (TestCaseCountry country : (List<TestCaseCountry>) testCaseCountryList.getDataList()) {
@@ -273,7 +273,7 @@ public class ReadTestCase extends HttpServlet {
         //finds the project     
         AnswerItem answer = testCaseService.readByKey(test, testCase);
 
-        AnswerList testCaseCountryList = testCaseCountryService.readByTestTestCase(test, testCase);
+        AnswerList testCaseCountryList = testCaseCountryService.readByTestTestCase(null, test, testCase);
 
         if (answer.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
             //if the service returns an OK message then we can get the item and convert it to JSONformat
@@ -376,7 +376,7 @@ public class ReadTestCase extends HttpServlet {
         //finds the project     
         AnswerItem answer = testCaseService.readByKey(test, testCase);
 
-        AnswerList testCaseCountryList = testCaseCountryService.readByTestTestCase(test, testCase);
+        AnswerList testCaseCountryList = testCaseCountryService.readByTestTestCase(null, test, testCase);
         AnswerList testCaseStepList = testCaseStepService.readByTestTestCase(test, testCase);
         AnswerList testCaseStepActionList = testCaseStepActionService.readByTestTestCase(test, testCase);
         AnswerList testCaseStepActionControlList = testCaseStepActionControlService.readByTestTestCase(test, testCase);

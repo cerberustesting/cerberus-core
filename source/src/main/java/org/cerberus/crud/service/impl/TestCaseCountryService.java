@@ -22,8 +22,8 @@ package org.cerberus.crud.service.impl;
 import java.util.ArrayList;
 import java.util.List;
 import org.apache.log4j.Level;
+import org.cerberus.crud.dao.ITestCaseCountryDAO;
 
-import org.cerberus.crud.dao.impl.TestCaseCountryDAO;
 import org.cerberus.crud.entity.TestCaseCountry;
 import org.cerberus.exception.CerberusException;
 import org.cerberus.log.MyLogger;
@@ -40,7 +40,7 @@ import org.springframework.stereotype.Service;
 public class TestCaseCountryService implements ITestCaseCountryService {
 
     @Autowired
-    TestCaseCountryDAO tccDao;
+    ITestCaseCountryDAO tccDao;
 
     @Override
     public List<TestCaseCountry> findTestCaseCountryByTestTestCase(String test, String testCase) {
@@ -97,8 +97,8 @@ public class TestCaseCountryService implements ITestCaseCountryService {
     }
     
     @Override
-    public AnswerList readByTestTestCase(String test, String testCase) {
-        return tccDao.readByTestTestCase(test, testCase);
+    public AnswerList readByTestTestCase(String system, String test, String testCase) {
+        return tccDao.readByTestTestCase(system, test, testCase);
     }
     
     @Override

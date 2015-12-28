@@ -61,24 +61,14 @@ public class TestCaseCountryDAO implements ITestCaseCountryDAO {
     private IFactoryTestCaseCountry factoryTestCaseCountry;
 
     private static final Logger LOG = Logger.getLogger(TestCaseCountryDAO.class);
-    
+
     private final String OBJECT_NAME = "TestCaseCountry";
     private final String SQL_DUPLICATED_CODE = "23000";
     private final int MAX_ROW_SELECTED = 100000;
 
-    /**
-     * Short one line description.
-     * <p/>
-     * Longer description. If there were any, it would be here.
-     * <p>
-     * And even more explanations to follow in consecutive paragraphs separated
-     * by HTML paragraph breaks.
-     *
-     * @return Description text text text.
-     */
     @Override
     public TestCaseCountry findTestCaseCountryByKey(String test, String testCase, String country) throws CerberusException {
-        final String query = "SELECT * FROM testcasecountry WHERE test = ? AND testcase = ? AND country = ? ";
+        final String query = "SELECT * FROM testcasecountry tcc WHERE test = ? AND testcase = ? AND country = ? ";
         TestCaseCountry result = null;
         boolean throwException = false;
 
@@ -124,21 +114,10 @@ public class TestCaseCountryDAO implements ITestCaseCountryDAO {
         return result;
     }
 
-    /**
-     * Short one line description.
-     * <p/>
-     * Longer description. If there were any, it would be here.
-     * <p>
-     * And even more explanations to follow in consecutive paragraphs separated
-     * by HTML paragraph breaks.
-     *
-     * @param variable Description text text text.
-     * @return Description text text text.
-     */
     @Override
     public List<TestCaseCountry> findTestCaseCountryByTestTestCase(String test, String testCase) {
         List<TestCaseCountry> result = null;
-        final String query = "SELECT * FROM testcasecountry WHERE test = ? AND testcase = ?";
+        final String query = "SELECT * FROM testcasecountry tcc WHERE test = ? AND testcase = ?";
 
         Connection connection = this.databaseSpring.connect();
         try {
@@ -254,17 +233,29 @@ public class TestCaseCountryDAO implements ITestCaseCountryDAO {
     }
 
     @Override
-    public AnswerList readByTestTestCase(String test, String testCase) {
+    public AnswerList readByTestTestCase(String system, String test, String testCase) {
         AnswerList answer = new AnswerList();
         MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
         msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", ""));
         List<TestCaseCountry> testCaseCountryList = new ArrayList<TestCaseCountry>();
         StringBuilder query = new StringBuilder();
 
-        query.append("SELECT * FROM testcasecountry WHERE test = ?");
+        query.append("SELECT * FROM testcasecountry tcc ");
+        if (!Strings.isNullOrEmpty(system)) {
+            query.append(" LEFT OUTER JOIN testcase tc on tc.test = tcc.test and tc.testcase = tcc.testcase  ");
+            query.append(" LEFT OUTER JOIN application app on app.application = tc.application ");
+        }
 
+        query.append(" WHERE 1=1");
+
+        if (!Strings.isNullOrEmpty(system)) {
+            query.append(" AND app.`system` = ?");
+        }
+        if (!Strings.isNullOrEmpty(test)) {
+            query.append(" AND tcc.test = ?");
+        }
         if (!Strings.isNullOrEmpty(testCase)) {
-            query.append(" AND testcase = ?");
+            query.append(" AND tcc.testcase = ?");
         }
 
         Connection connection = this.databaseSpring.connect();
@@ -272,9 +263,15 @@ public class TestCaseCountryDAO implements ITestCaseCountryDAO {
             PreparedStatement preStat = connection.prepareStatement(query.toString());
 
             try {
-                preStat.setString(1, test);
+                int i = 1;
+                if (!Strings.isNullOrEmpty(system)) {
+                    preStat.setString(i++, system);
+                }
+                if (!Strings.isNullOrEmpty(test)) {
+                    preStat.setString(i++, test);
+                }
                 if (!Strings.isNullOrEmpty(testCase)) {
-                    preStat.setString(2, testCase);
+                    preStat.setString(i++, testCase);
                 }
                 ResultSet resultSet = preStat.executeQuery();
                 try {
@@ -328,21 +325,13 @@ public class TestCaseCountryDAO implements ITestCaseCountryDAO {
         return answer;
     }
 
-    private TestCaseCountry loadFromResultSet(ResultSet resultSet) throws SQLException {
-        String test = resultSet.getString("test") == null ? "" : resultSet.getString("test");
-        String testcase = resultSet.getString("testcase") == null ? "" : resultSet.getString("testcase");
-        String country = resultSet.getString("country") == null ? "" : resultSet.getString("country");
-
-        return factoryTestCaseCountry.create(test, testcase, country);
-    }
-
     @Override
     public AnswerItem readByKey(String test, String testCase, String country) {
         AnswerItem answer = new AnswerItem();
         MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
         msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", ""));
         TestCaseCountry result = new TestCaseCountry();
-        final String query = "SELECT * FROM testcasecountry WHERE test = ? AND testcase = ? AND country = ?";
+        final String query = "SELECT * FROM testcasecountry tcc WHERE test = ? AND testcase = ? AND country = ?";
 
         Connection connection = this.databaseSpring.connect();
         try {
@@ -399,4 +388,13 @@ public class TestCaseCountryDAO implements ITestCaseCountryDAO {
         answer.setResultMessage(msg);
         return answer;
     }
+
+    private TestCaseCountry loadFromResultSet(ResultSet resultSet) throws SQLException {
+        String test = resultSet.getString("tcc.test") == null ? "" : resultSet.getString("test");
+        String testcase = resultSet.getString("tcc.testcase") == null ? "" : resultSet.getString("testcase");
+        String country = resultSet.getString("tcc.country") == null ? "" : resultSet.getString("country");
+
+        return factoryTestCaseCountry.create(test, testcase, country);
+    }
+
 }

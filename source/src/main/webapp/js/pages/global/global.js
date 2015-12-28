@@ -35,6 +35,7 @@ function handleErrorAjaxAfterTimeout(result) {
     }
 
 }
+
 /***
  * Returns a label depending on the type of entry
  * @param {type} type - type selected
@@ -54,11 +55,10 @@ function getSubDataLabel(type) {
     return labelEntry;
 }
 
-/*****INVARIANT LIST **********************************/
 /**
  * Method that display a combo box in all the selectName tags with the value retrieved from the invariant list
- * @param {String} idName value that filters the invariants that will be retrieved
  * @param {String} selectName value name of the select tag in the html
+ * @param {String} idName value that filters the invariants that will be retrieved
  * @param {String} defaultValue to be selected
  * @returns {void}
  */
@@ -74,6 +74,14 @@ function displayInvariantList(selectName, idName, defaultValue) {
     });
 }
 
+/**
+ * Method that display a combo box in all the selectName tags with the value retrieved from the invariant list 
+ * and the description of the invariant
+ * @param {String} selectName value name of the select tag in the html
+ * @param {String} idName value that filters the invariants that will be retrieved
+ * @param {String} defaultValue to be selected
+ * @returns {void}
+ */
 function displayInvariantListWithDesc(selectName, idName, defaultValue) {
     $.when($.getJSON("FindInvariantByID", "idName=" + idName)).then(function (data) {
         for (var option in data) {
@@ -86,7 +94,6 @@ function displayInvariantListWithDesc(selectName, idName, defaultValue) {
     });
 }
 
-/*****DEPLOYTYPE LIST **********************************/
 /**
  * Method that display a combo box in all the selectName tags with the value retrieved from the DeployType list
  * @param {String} selectName value name of the select tag in the html
@@ -105,7 +112,6 @@ function displayDeployTypeList(selectName, defaultValue) {
     });
 }
 
-/*****APPLICATION LIST **********************************/
 /**
  * Method that display a combo box in all the selectName tags with the value retrieved from the Application list
  * @param {String} selectName value name of the select tag in the html
@@ -129,7 +135,6 @@ function displayApplicationList(selectName, system, defaultValue) {
     });
 }
 
-/*****PROJECT LIST **********************************/
 /**
  * Method that display a combo box in all the selectName tags with the value retrieved from the Project list
  * @param {String} selectName value name of the select tag in the html
@@ -149,7 +154,6 @@ function displayProjectList(selectName, defaultValue) {
     });
 }
 
-/*****BuildInvariant LIST **********************************/
 /**
  * Method that display a combo box in all the selectName tags with the value retrieved from the Build Invariant list
  * @param {String} selectName value name of the select tag in the html
@@ -178,7 +182,6 @@ function displayBuildList(selectName, system, level, defaultValue) {
     });
 }
 
-/*****Environment LIST **********************************/
 /**
  * Method that display a combo box in all the selectName tags with the value retrieved from the Environment list
  * @param {String} selectName value name of the select tag in the html
@@ -201,10 +204,11 @@ function displayEnvList(selectName, system, defaultValue) {
 /**
  * Method that display a combo box in all the selectName tags with the value retrieved from the Environment list
  * @param {String} selectName value name of the select tag in the html
+ * @param {String} system name of the system
  * @param {String} defaultValue to be selected
  * @returns {void}
  */
-function displayUniqueEnvList(selectName, system ,defaultValue) {
+function displayUniqueEnvList(selectName, system, defaultValue) {
     $.when($.getJSON("ReadCountryEnvParam", "unique=true&active=Y&system=" + system)).then(function (data) {
         for (var option in data.contentTable) {
             $("[name='" + selectName + "']").append($('<option></option>').text(data.contentTable[option].environment).val(data.contentTable[option].environment));
@@ -216,7 +220,6 @@ function displayUniqueEnvList(selectName, system ,defaultValue) {
     });
 }
 
-/*****User LIST **********************************/
 /**
  * Method that display a combo box in all the selectName tags with the value retrieved from the user list
  * @param {String} selectName value name of the select tag in the html
@@ -232,7 +235,6 @@ function displayUserList(selectName) {
     });
 }
 
-
 /**
  * Auxiliary method that retrieves a list containing the values that belong to the invariant that matches the provided idname.
  * @param {idName} idName value that filters the invariants that will be retrieved
@@ -243,6 +245,7 @@ function getInvariantList(idName, handleData) {
         handleData(data);
     });
 }
+
 /**
  * Auxiliary method that retrieves set of invariants (based on a list of idnames), for each idname the method retrieves a list containing the associated values.
  * @param {list} list containing several idName values that filter the invariants that will be retrieved
@@ -253,7 +256,9 @@ function getInvariantListN(list, handleData) {
         handleData(data);
     });
 }
+
 /***********************************************Messages/ALERT***************************************/
+
 /**
  * Auxiliary method that gets the code returned by the service and translates it into the corresponding type of message
  * @param {type} code  string to be translated
@@ -292,6 +297,7 @@ function clearResponseMessage(dialog) {
         elementAlert.fadeOut();
     }
 }
+
 /**
  * Clears the messages added in the main page.
  */
@@ -301,6 +307,7 @@ function clearResponseMessageMainPage() {
     $("#alertDescription").html("");
     $("#mainAlert").fadeOut();
 }
+
 /**
  * Method that shows a message 
  * @param {type} obj - object containing the message and the message type
@@ -327,6 +334,7 @@ function showMessage(obj, dialog) {
      jQuery(dialog).dialog('close');
      }*/
 }
+
 /**
  * Method that allows us to append a message in an already existing alert.
  * @param {type} obj  - object containing the message and the message type
@@ -352,16 +360,16 @@ function showMessageMainPage(type, message) {
     $("#alertDescription").html(message);
     $("#mainAlert").fadeIn();
 }
+
 /*****************************************************************************/
+
 $(function () {
 
 
-    /*****************************************************************************/
     /**
-     /*Closes the alert message that is visible in the main page
-     */
-    /*****************************************************************************/
-
+     * Closes the alert message that is visible in the main page
+     *
+     /*****************************************************************************/
     $("#buttonMainAlert").click(function () {
         var elementToClose = $(this).closest("." + $(this).attr("data-hide"));
         $(elementToClose).siblings("strong span[class='alert-description']").text("");
@@ -370,13 +378,9 @@ $(function () {
         $(elementToClose).fadeOut();
     });
 
-
-
-    /*****************************************************************************/
     /**
-     /*Closes the alert page that is visible in the dialogs
+     * Closes the alert page that is visible in the dialogs
      */
-    /*****************************************************************************/
     $("[data-hide]").on("click", function () {
         var elementToClose = $(this).closest("." + $(this).attr("data-hide"));
         $(elementToClose).siblings("strong span[class='alert-description']").text("");
@@ -386,11 +390,9 @@ $(function () {
         $(elementToClose).hide();
     });
 
-    /*****************************************************************************/
     /**
      * Clears all the information from the modal that allows the upload of files
      */
-    /*****************************************************************************/
     //resets the modal that allows the upload of files
     $('#modalUpload').on('hidden.bs.modal', function () {
         resetModalUpload();
@@ -401,8 +403,8 @@ $(function () {
     });
 });
 
-
 /********************************LOADER*******************************************/
+
 /**
  * Method that shows a loader inside a html element
  * @param {type} element 
@@ -412,6 +414,7 @@ function showLoader(element) {
     var processing = doc.getDocLabel("page_global", "processing");
     $(element).block({message: processing});
 }
+
 /**
  * Method that hides a loader that was specified in a modal dialog
  * @param {type} element
@@ -419,6 +422,7 @@ function showLoader(element) {
 function hideLoader(element) {
     $(element).unblock();
 }
+
 /**
  * Method that shows a loader inside the content of a modal dialog
  * @param {type} element dialog
@@ -428,6 +432,7 @@ function showLoaderInModal(element) {
     var processing = doc.getDocLabel("page_global", "processing");
     $(element).find(".modal-content").block({message: processing});
 }
+
 /**
  * Method that hides a loader that was specified in a modal dialog
  * @param {type} element dialog
@@ -452,6 +457,7 @@ function modalFormCleaner(event) {
 }
 
 /***********************************MODAL CONFIRMATION*************************************************/
+
 /**
  * 
  * @param {type} handlerClickOk - method triggered when the "ok" is clicked
@@ -469,6 +475,7 @@ function showModalConfirmation(handlerClickOk, title, message, hiddenField1, hid
     clearResponseMessageMainPage();
     $('#confirmationModal').modal('show');
 }
+
 /**
  * Method that cleans the confirmation modal after being closed.
  */
@@ -476,6 +483,7 @@ function resetConfirmationModal() {
     setDataConfirmationModal("", "", "", "", "", "");
     $('#confirmationModal #confirmOk').unbind('click');
 }
+
 /**
  * Method that allows the specification of a confirmation modal.
  * @param {type} title -  title to be displayed
@@ -503,6 +511,7 @@ function setDataConfirmationModal(title, message, hiddenField1, hiddenField2, hi
 }
 
 /**************************MODAL UPLOAD *********************************************/
+
 /**
  * Auxiliary function that shows a modal dialog that allows the upload of files
  * @param {type} handlerClickOk / function that will be executed when the user clicks in the upload button
@@ -552,6 +561,7 @@ function validatesFileExtension(fileName, fileExtension) {
         showMessage(localMessage, $('#modalUpload'));
     }
 }
+
 /**
  * Method that resets the data entered in the modal used for uploading files.
  */
@@ -567,6 +577,7 @@ function resetModalUpload() {
 }
 
 /********************************TABLES*******************************************/
+
 /**
  * Allows the definition of a new ajax source for datatables
  * @param {type} oSettings settings 
@@ -578,6 +589,7 @@ $.fn.dataTableExt.oApi.fnNewAjax = function (oSettings, sNewSource) {
     }
     this.fnDraw();
 }
+
 /**
  * Auxiliary object that stores configurations that should be applied in a table that is client-side
  * @param {type} divId - table unique identifier
@@ -596,7 +608,7 @@ function TableConfigurationsClientSide(divId, data, aoColumnsFunction, defineLen
         this.paginate = false;
         this.displayLength = 10;
         this.paginationType = "full_numbers";
-    }else{
+    } else {
         this.paginate = false;
         this.lengthChange = false;
         this.displayLength = "All";
@@ -606,9 +618,9 @@ function TableConfigurationsClientSide(divId, data, aoColumnsFunction, defineLen
     //not mandatory properties, and default values
     this.searchText = "";
     this.searchMenu = "";
-    this.tableWidth = "1500px";    
+    this.tableWidth = "1500px";
     this.bJQueryUI = true; //Enable jQuery UI ThemeRoller support (required as ThemeRoller requires some slightly different and additional mark-up from what DataTables has traditionally used    
-    
+
     //Enable or disable automatic column width calculation. This can be disabled as an optimisation (it takes some time to calculate the widths) if the tables widths are passed in using aoColumns.
     this.autoWidth = false;
     //Enable or disable state saving. When enabled a cookie will be used to save table display information such as pagination information, display length, filtering and sorting. As such when the end user reloads the page the display will match what they had previously set up
@@ -940,7 +952,7 @@ jQuery.fn.dataTableExt.oApi.fnSetFilteringDelay = function (oSettings, iDelay) {
     });
     return this;
 };
-/*AUTOCOMPLETE*/
+
 /**
  * Auxiliary function that sets the autocomplete option in one html element.
  * @param {type} selector
@@ -1008,8 +1020,7 @@ function displayFooter(doc) {
  * @param {type} sParam parameter you want to get value from
  * @returns {GetURLParameter.sParameterName} the value or null if not found
  */
-function GetURLParameter(sParam)
-{
+function GetURLParameter(sParam) {
     var sPageURL = window.location.search.substring(1);
     var sURLVariables = sPageURL.split('&');
 
@@ -1020,6 +1031,24 @@ function GetURLParameter(sParam)
         {
             return decodeURIComponent(sParameterName[1]);
         }
+    }
+    return null;
+}
+
+/**
+ * Add an browser history entry only if different from the current one.
+ * @param {string} sUrl Url to insert in the history.
+ * @returns {void}
+ */
+function InsertURLInHistory(sUrl) {
+    if (sUrl.substr(sUrl.length - 1) === "?") { // If the url ends by ?, we remove it.
+        sUrl = sUrl.substr(0, sUrl.length - 1);
+    }
+    var currentURL = window.location.href.replace(window.location.origin, "");
+    var currentURLtoTest = currentURL + "TOTO" ;
+    var sUrltoTest = sUrl + "TOTO" ;
+    if (currentURLtoTest.indexOf(sUrltoTest) === -1) {
+        window.history.pushState({}, '', sUrl);
     }
     return null;
 }
@@ -1070,7 +1099,6 @@ function bindToggleCollapse() {
     });
 }
 
-
 function drawURL(data) {
     return drawHyperlink(data, data);
 }
@@ -1089,7 +1117,6 @@ function drawHyperlinkExternal(href, text) {
     return '';
 }
 
-//load elements
 function loadSelectElement(data, element, includeEmpty, includeEmptyText) {
     $(element).empty();
     if (includeEmpty !== null && includeEmpty) {
@@ -1118,7 +1145,6 @@ function generateExecutionLink(status, id) {
     return result;
 }
 
-
 function getRowClass(status) {
     var rowClass = [];
 
@@ -1142,12 +1168,31 @@ function getRowClass(status) {
     }
     return rowClass;
 }
+
+/**
+ * Method that return true if val is null, undefined or empty
+ * @param {String} val value to test
+ * @returns {boolean} true if is null, undefined of len >= 0
+ */
+function isEmpty(val) {
+    return (val === undefined || val === null || val.length <= 0) ? true : false;
+}
+
+/**
+ * Method that return true if val is null, undefined, empty or = ALL
+ * @param {String} val value to test
+ * @returns {boolean} true if is null, undefined of len >= 0
+ */
+function isEmptyorALL(val) {
+    return (val === undefined || val === null || val.length <= 0 || val === 'ALL') ? true : false;
+}
+
 /**
  * Function that allows us to retrieve all url parameters. Also, it groups values by parameter name. E.g., ?country=BE&country=CH
  * @param {type} param
  */
 $.extend({
-    getUrlVars: function() {
+    getUrlVars: function () {
         var vars = [], hash;
         var hashes = window.location.href.slice(window.location.href.indexOf('?') + 1).split('&');
         for (var i = 0; i < hashes.length; i++) {
@@ -1170,7 +1215,7 @@ $.extend({
 
         return vars;
     },
-    getUrlVar: function(name) {
+    getUrlVar: function (name) {
         return $.getUrlVars()[name];
     }
 });

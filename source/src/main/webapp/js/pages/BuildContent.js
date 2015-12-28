@@ -20,12 +20,44 @@
 
 $.when($.getScript("js/pages/global/global.js")).then(function () {
     $(document).ready(function () {
-        initBuildContentPage();
+        initPage();
     });
 });
 
-function initBuildContentPage() {
+function initPage() {
     displayPageLabel();
+    
+    var urlBuild = GetURLParameter('build'); // Feed Build combo with Build list.
+    var urlRevision = GetURLParameter('revision'); // Feed Revision combo with Revision list.
+    var urlApplication = GetURLParameter('application');
+
+    // Filter combo
+    appendBuildList('#selectBuild', "1", urlBuild, "Y", "Y");
+    appendBuildList('#selectRevision', "2", urlRevision, "Y", "Y");
+
+    // Combo in install instruction
+    appendBuildList('#selectBuildFrom', "1", urlBuild, "N", "N");
+    appendBuildList('#selectRevisionFrom', "2", urlRevision, "N", "N");
+    appendBuildList('#selectBuildTo', "1", urlBuild, "N", "N");
+    appendBuildList('#selectRevisionTo', "2", urlRevision, "N", "N");
+
+    // Add and edit screen combo
+    appendBuildList('#addBuild', "1", urlBuild, "N", "Y");
+    appendBuildList('#addRevision', "2", urlRevision, "N", "Y");
+    appendBuildList('#editBuild', "1", urlBuild, "N", "Y");
+    appendBuildList('#editRevision', "2", urlRevision, "N", "Y");
+
+    // Feed Application combo with Application list.
+    var select = $('#selectApplication');
+    select.append($('<option></option>').text("-- ALL --").val("ALL"));
+    displayApplicationList("application", getUser().defaultSystem, urlApplication);
+
+    displayProjectList("project");
+    displayUserList("releaseowner");
+    
+    var table = loadBCTable(urlBuild, urlRevision, urlApplication);
+    table.fnSort([11, 'desc']);
+
     // handle the click for specific action buttons
     $("#addBrpButton").click(saveNewBrpHandler);
     $("#editBrpButton").click(saveUpdateBrpHandler);
@@ -34,23 +66,7 @@ function initBuildContentPage() {
     $('#addBrpModal').on('hidden.bs.modal', addBrpModalCloseHandler);
     $('#editBrpModal').on('hidden.bs.modal', editBrpModalCloseHandler);
 
-    //if the build or revision is passed as a url parameter, then it loads the table
-    var urlBuild = GetURLParameter('build');
-    var urlRevision = GetURLParameter('revision');
-
-//    if (urlBuild !== null) {
-//        $('#selectBuild').val(urlBuild);
-//    }
-//    if (urlRevision !== null) {
-//        $('#selectRevision').val(urlRevision);
-//    }
-//    console.log('B : ' + urlBuild + ' R : ' + urlRevision);
-    var table = loadBCTable();
-    table.fnSort([11, 'desc']);
-
     $('#listInstallInstructions').on('hidden.bs.modal', listInstallInstructionsModalCloseHandler);
-
-
 }
 
 /**
@@ -146,32 +162,6 @@ function displayPageLabel() {
     $("[name='mavenGroupIdField']").html(doc.getDocOnline("buildrevisionparameters", "mavenGroupId"));
     $("[name='mavenArtifactIdField']").html(doc.getDocOnline("buildrevisionparameters", "mavenArtifactId"));
     $("[name='mavenVersionField']").html(doc.getDocOnline("buildrevisionparameters", "mavenVersion"));
-
-
-    var urlBuild = GetURLParameter('build'); // Feed Build combo with Build list.
-    var urlRevision = GetURLParameter('revision'); // Feed Revision combo with Revision list.
-
-    // Filter combo
-    appendBuildList('#selectBuild', "1", urlBuild, "Y", "Y");
-    appendBuildList('#selectRevision', "2", urlRevision, "Y", "Y");
-
-    // Combo in install instruction
-    appendBuildList('#selectBuildFrom', "1", urlBuild, "N", "N");
-    appendBuildList('#selectRevisionFrom', "2", urlRevision, "N", "N");
-    appendBuildList('#selectBuildTo', "1", urlBuild, "N", "N");
-    appendBuildList('#selectRevisionTo', "2", urlRevision, "N", "N");
-
-    // Add and edit screen combo
-    appendBuildList('#addBuild', "1", urlBuild, "N", "Y");
-    appendBuildList('#addRevision', "2", urlRevision, "N", "Y");
-    appendBuildList('#editBuild', "1", urlBuild, "N", "Y");
-    appendBuildList('#editRevision', "2", urlRevision, "N", "Y");
-
-    displayApplicationList("application", getUser().defaultSystem); // Feed Application combo with application list.
-    var select = $('#selectApplication');
-    select.append($('<option></option>').text("-- ALL --").val("ALL"));
-    displayProjectList("project");
-    displayUserList("releaseowner");
     displayFooter(doc);
 }
 
@@ -205,37 +195,49 @@ function appendBuildList(selectName, level, defaultValue, withAll, withNone) {
     });
 }
 
-function loadBCTable() {
-    var selectBuild = $("#selectBuild").val();
-    var selectRevision = $("#selectRevision").val();
-    var selectApplication = $("#selectApplication").val();
+function loadBCTable(selectBuild, selectRevision, selectApplication) {
 
-    var CallParam = 'build=' + encodeURIComponent(selectBuild) + '&revision=' + encodeURIComponent(selectRevision) + '&application=' + encodeURIComponent(selectApplication);
-    window.history.pushState('BuildContent', '', 'BuildContent.jsp?' + CallParam);
+    if (isEmpty(selectBuild)) {
+        selectBuild = $("#selectBuild").val();
+    }
+    if (isEmpty(selectRevision)) {
+        selectRevision = $("#selectRevision").val();
+    }
+    if (isEmpty(selectApplication)) {
+        selectApplication = $("#selectApplication").val();
+    }
+
+    // We add the Browser history.
+    var CallParam = '?';
+    if (!isEmptyorALL(selectBuild))
+        CallParam += 'build=' + encodeURIComponent(selectBuild);
+    if (!isEmptyorALL(selectRevision))
+        CallParam += '&revision=' + encodeURIComponent(selectRevision)
+    if (!isEmptyorALL(selectApplication))
+        CallParam += '&application=' + encodeURIComponent(selectApplication);
+    InsertURLInHistory('BuildContent.jsp' + CallParam);
 
     //clear the old report content before reloading it
     $("#buildContentList").empty();
     $("#buildContentList").html('<table id="buildrevisionparametersTable" class="table table-hover display" name="buildrevisionparametersTable">\n\
                                             </table><div class="marginBottom20"></div>');
 
-    if (selectBuild !== "") {
-        //configure and create the dataTable
-        var param = "?system=" + getUser().defaultSystem;
-        if (selectRevision !== 'ALL') {
-            param = param + "&revision=" + selectRevision;
-        }
-        if (selectBuild !== 'ALL') {
-            param = param + "&build=" + selectBuild;
-        }
-        if (selectApplication !== 'ALL') {
-            param = param + "&application=" + selectApplication;
-        }
-
-        var configurations = new TableConfigurationsServerSide("buildrevisionparametersTable", "ReadBuildRevisionParameters" + param, "contentTable", aoColumnsFunc("buildrevisionparametersTable"));
-
-        var table = createDataTableWithPermissions(configurations, renderOptionsForBrp);
-        return table;
+    //configure and create the dataTable
+    var contentUrl = "ReadBuildRevisionParameters?system=" + getUser().defaultSystem;
+    if (selectRevision !== 'ALL') {
+        contentUrl += "&revision=" + selectRevision;
     }
+    if (selectBuild !== 'ALL') {
+        contentUrl += "&build=" + selectBuild;
+    }
+    if (selectApplication !== 'ALL') {
+        contentUrl += "&application=" + selectApplication;
+    }
+
+    var configurations = new TableConfigurationsServerSide("buildrevisionparametersTable", contentUrl, "contentTable", aoColumnsFunc("buildrevisionparametersTable"));
+
+    var table = createDataTableWithPermissions(configurations, renderOptionsForBrp);
+    return table;
 }
 
 function deleteBrpHandlerClick() {
@@ -556,15 +558,15 @@ function aoColumnsFunc(tableId) {
 
                 var editBrp = '<button id="editBrp" onclick="editBrp(\'' + obj["id"] + '\');"\n\
                                 class="editBrp btn btn-default btn-xs margin-right5" \n\
-                                name="editBrp" title="\'' + doc.getDocLabel("page_buildcontent", "button_edit") + '\'" type="button">\n\
+                                name="editBrp" title="' + doc.getDocLabel("page_buildcontent", "button_edit") + '" type="button">\n\
                                 <span class="glyphicon glyphicon-pencil"></span></button>';
                 var viewBrp = '<button id="editBrp" onclick="editBrp(\'' + obj["id"] + '\');"\n\
                                 class="editBrp btn btn-default btn-xs margin-right5" \n\
-                                name="editBrp" title="\'' + doc.getDocLabel("page_buildcontent", "button_edit") + '\'" type="button">\n\
+                                name="editBrp" title="' + doc.getDocLabel("page_buildcontent", "button_edit") + '" type="button">\n\
                                 <span class="glyphicon glyphicon-eye-open"></span></button>';
                 var deleteBrp = '<button id="deleteBrp" onclick="deleteBrp(\'' + obj["id"] + '\',\'' + obj["build"] + '\',\'' + obj["revision"] + '\',\'' + obj["release"] + '\',\'' + obj["application"] + '\');" \n\
                                 class="deleteBrp btn btn-default btn-xs margin-right5" \n\
-                                name="deleteBrp" title="\'' + doc.getDocLabel("page_buildcontent", "button_delete") + '\'" type="button">\n\
+                                name="deleteBrp" title="' + doc.getDocLabel("page_buildcontent", "button_delete") + '" type="button">\n\
                                 <span class="glyphicon glyphicon-trash"></span></button>';
                 if (hasPermissions === "true") { //only draws the options if the user has the correct privileges
                     return '<div class="center btn-group width150">' + editBrp + deleteBrp + '</div>';

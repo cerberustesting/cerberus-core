@@ -20,12 +20,36 @@
 
 $.when($.getScript("js/pages/global/global.js")).then(function () {
     $(document).ready(function () {
-        initBuildContentPage();
+        initPage();
     });
 });
 
-function initBuildContentPage() {
+function initPage() {
     displayPageLabel();
+
+    var urlBuild = GetURLParameter('build'); // Feed Build combo with Build list.
+    var urlRevision = GetURLParameter('revision'); // Feed Revision combo with Revision list.
+    var urlCountry = GetURLParameter('country'); // Feed Country combo with Country list.
+    var urlEnvironment = GetURLParameter('environment'); // Feed Environment combo with Environment list.
+
+    appendBuildList("build", "1", urlBuild);
+    appendBuildList("revision", "2", urlRevision);
+
+    var select = $('#selectCountry');
+    select.append($('<option></option>').text("-- ALL --").val("ALL"));
+    displayInvariantList("country", "COUNTRY", urlCountry);
+
+    var select = $('#selectEnvironment');
+    select.append($('<option></option>').text("-- ALL --").val("ALL"));
+    displayInvariantList("environment", "ENVIRONMENT", urlEnvironment);
+
+    displayInvariantList("system", "SYSTEM");
+    displayInvariantList("type", "ENVTYPE");
+    displayInvariantList("maintenanceAct", "MNTACTIVE", "N");
+
+    var table = loadEnvTable(urlCountry, urlEnvironment, urlBuild, urlRevision);
+    table.fnSort([3, 'asc']);
+
     // handle the click for specific action buttons
     $("#addEnvButton").click(saveNewEnvHandler);
     $("#editEnvButton").click(saveUpdateEnvHandler);
@@ -33,10 +57,6 @@ function initBuildContentPage() {
     //clear the modals fields when closed
     $('#addEnvModal').on('hidden.bs.modal', addEnvModalCloseHandler);
     $('#editEnvModal').on('hidden.bs.modal', editEnvModalCloseHandler);
-
-    var table = loadEnvTable();
-    table.fnSort([3, 'asc']);
-
 }
 
 function displayPageLabel() {
@@ -73,27 +93,6 @@ function displayPageLabel() {
     $("[name='mavenGroupIdField']").html(doc.getDocOnline("buildrevisionparameters", "mavenGroupId"));
     $("[name='mavenArtifactIdField']").html(doc.getDocOnline("buildrevisionparameters", "mavenArtifactId"));
     $("[name='mavenVersionField']").html(doc.getDocOnline("buildrevisionparameters", "mavenVersion"));
-
-
-    var urlBuild = GetURLParameter('build'); // Feed Build combo with Build list.
-    appendBuildList("build", "1", urlBuild);
-    var urlRevision = GetURLParameter('revision'); // Feed Revision combo with Revision list.
-    appendBuildList("revision", "2", urlRevision);
-
-    var urlCountry = GetURLParameter('country'); // Feed Country combo with Country list.
-    displayInvariantList("country", "COUNTRY", urlCountry);
-    var select = $('#selectCountry');
-    select.append($('<option></option>').text("-- ALL --").val("ALL"));
-
-    var urlEnvironment = GetURLParameter('environment'); // Feed Environment combo with Environment list.
-    displayInvariantList("environment", "ENVIRONMENT", urlEnvironment);
-    var select = $('#selectEnvironment');
-    select.append($('<option></option>').text("-- ALL --").val("ALL"));
-
-    displayInvariantList("system", "SYSTEM");
-    displayInvariantList("type", "ENVTYPE");
-    displayInvariantList("maintenanceAct", "MNTACTIVE", "N");
-
     displayFooter(doc);
 }
 
@@ -122,14 +121,32 @@ function appendBuildList(selectName, level, defaultValue) {
     });
 }
 
-function loadEnvTable() {
-    var selectCountry = $("#selectCountry").val();
-    var selectEnvironment = $("#selectEnvironment").val();
-    var selectBuild = $("#selectBuild").val();
-    var selectRevision = $("#selectRevision").val();
-
-    var CallParam = 'country=' + encodeURIComponent(selectCountry) + '&environment=' + encodeURIComponent(selectEnvironment) + '&build=' + encodeURIComponent(selectBuild) + '&revision=' + encodeURIComponent(selectRevision);
-    window.history.pushState('Environment', '', 'Environment1.jsp?' + CallParam);
+function loadEnvTable(selectCountry, selectEnvironment, selectBuild, selectRevision) {
+    
+    if (isEmpty(selectCountry)) {
+        selectCountry = $("#selectCountry").val();
+    }
+    if (isEmpty(selectEnvironment)) {
+        selectEnvironment = $("#selectEnvironment").val();
+    }
+    if (isEmpty(selectBuild)) {
+        selectBuild = $("#selectBuild").val();
+    }
+    if (isEmpty(selectRevision)) {
+        selectRevision = $("#selectRevision").val();
+    }
+    
+    // We add the Browser history.
+    var CallParam = '?';
+    if (!isEmptyorALL(selectCountry))
+        CallParam += 'country=' + encodeURIComponent(selectCountry);
+    if (!isEmptyorALL(selectEnvironment))
+        CallParam += '&environment=' + encodeURIComponent(selectEnvironment);
+    if (!isEmptyorALL(selectBuild))
+        CallParam += '&build=' + encodeURIComponent(selectBuild);
+    if (!isEmptyorALL(selectRevision))
+        CallParam += '&revision=' + encodeURIComponent(selectRevision)
+    InsertURLInHistory('Environment1.jsp' + CallParam);
 
     //clear the old report content before reloading it
     $("#environmentList").empty();
@@ -137,21 +154,21 @@ function loadEnvTable() {
                                             </table><div class="marginBottom20"></div>');
 
     //configure and create the dataTable
-    var param = "?forceList=Y&system=" + getUser().defaultSystem;
+    var contentUrl = "ReadCountryEnvParam?forceList=Y&system=" + getUser().defaultSystem;
     if (selectEnvironment !== 'ALL') {
-        param = param + "&environment=" + selectEnvironment;
+        contentUrl = contentUrl + "&environment=" + selectEnvironment;
     }
     if (selectCountry !== 'ALL') {
-        param = param + "&country=" + selectCountry;
+        contentUrl = contentUrl + "&country=" + selectCountry;
     }
     if (selectBuild !== 'ALL') {
-        param = param + "&build=" + selectBuild;
+        contentUrl = contentUrl + "&build=" + selectBuild;
     }
     if (selectRevision !== 'ALL') {
-        param = param + "&revision=" + selectRevision;
+        contentUrl = contentUrl + "&revision=" + selectRevision;
     }
 
-    var configurations = new TableConfigurationsServerSide("environmentsTable", "ReadCountryEnvParam" + param, "contentTable", aoColumnsFunc("environmentsTable"));
+    var configurations = new TableConfigurationsServerSide("environmentsTable", contentUrl, "contentTable", aoColumnsFunc("environmentsTable"));
 
     var table = createDataTableWithPermissions(configurations, renderOptionsForEnv);
     return table;
