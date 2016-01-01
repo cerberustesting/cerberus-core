@@ -167,12 +167,12 @@ public class BuildRevisionParametersService implements IBuildRevisionParametersS
 
         /**
          * Checking if the build Revision has already been deployed. If so the
-         * delete cannot be performed
+         * update cannot be performed
          */
         if (check_buildRevisionAlreadyUsed(brp.getApplication(), brp.getBuild(), brp.getRevision())) {
             msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_EXPECTED);
             msg.setDescription(msg.getDescription().replace("%ITEM%", OBJECT_NAME)
-                    .replace("%OPERATION%", "Delete")
+                    .replace("%OPERATION%", "Update")
                     .replace("%REASON%", "Could not update this release as corresponding build " + brp.getBuild() + " revision " + brp.getRevision() + " has already been deployed in an environment."));
             // "Could not update this release to this new build revision values as it has already been deployed in an environment."
             ans.setResultMessage(msg);

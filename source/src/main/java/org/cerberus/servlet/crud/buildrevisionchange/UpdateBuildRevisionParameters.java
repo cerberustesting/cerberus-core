@@ -34,6 +34,7 @@ import org.cerberus.enums.MessageEventEnum;
 import org.cerberus.exception.CerberusException;
 import org.cerberus.crud.service.ILogEventService;
 import org.cerberus.crud.service.impl.LogEventService;
+import org.cerberus.util.ParameterParserUtil;
 import org.cerberus.util.answer.Answer;
 import org.cerberus.util.answer.AnswerItem;
 import org.json.JSONException;
@@ -64,6 +65,8 @@ public class UpdateBuildRevisionParameters extends HttpServlet {
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException, CerberusException, JSONException {
         JSONObject jsonResponse = new JSONObject();
+        ApplicationContext appContext = WebApplicationContextUtils.getWebApplicationContext(this.getServletContext());
+        ILogEventService logEventService = appContext.getBean(LogEventService.class);
         Answer ans = new Answer();
         MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
         msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", ""));
@@ -90,88 +93,122 @@ public class UpdateBuildRevisionParameters extends HttpServlet {
         String mavenArtifactID = policy.sanitize(request.getParameter("mavenartifactid"));
         String mavenVersion = policy.sanitize(request.getParameter("mavenversion"));
         Integer brpid = 0;
-        boolean brpid_error = true;
-        try {
-            if (request.getParameter("id") != null && !request.getParameter("id").equals("")) {
-                brpid = Integer.valueOf(policy.sanitize(request.getParameter("id")));
-                brpid_error = false;
+
+        String[] myId = request.getParameterValues("id");
+        StringBuilder output_message = new StringBuilder();
+        MessageEvent final_msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
+        int massErrorCounter = 0;
+        for (String myId1 : myId) {
+
+            brpid = 0;
+            boolean brpid_error = true;
+            try {
+                if (myId1 != null && !myId1.equals("")) {
+                    brpid = Integer.valueOf(policy.sanitize(myId1));
+                    brpid_error = false;
+                }
+            } catch (Exception ex) {
+                brpid_error = true;
             }
-        } catch (Exception ex) {
-            brpid_error = true;
-        }
 
-        /**
-         * Checking all constrains before calling the services.
-         */
-        if (brpid_error) {
-            msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_EXPECTED);
-            msg.setDescription(msg.getDescription().replace("%ITEM%", OBJECT_NAME)
-                    .replace("%OPERATION%", "Update")
-                    .replace("%REASON%", "Could not manage to convert id to an integer value or id is missing."));
-            ans.setResultMessage(msg);
-        } else {
             /**
-             * All data seems cleans so we can call the services.
+             * Checking all constrains before calling the services.
              */
-            ApplicationContext appContext = WebApplicationContextUtils.getWebApplicationContext(this.getServletContext());
-            IBuildRevisionParametersService brpService = appContext.getBean(IBuildRevisionParametersService.class);
-
-            AnswerItem resp = brpService.readByKeyTech(brpid);
-            if (!(resp.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode()))) {
-                /**
-                 * Object could not be found. We stop here and report the error.
-                 */
+            if (brpid_error) {
                 msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_EXPECTED);
                 msg.setDescription(msg.getDescription().replace("%ITEM%", OBJECT_NAME)
                         .replace("%OPERATION%", "Update")
-                        .replace("%REASON%", "BuildRevisionParameters does not exist."));
+                        .replace("%REASON%", "Could not manage to convert id to an integer value or id is missing."));
                 ans.setResultMessage(msg);
-
+                massErrorCounter++;
+                output_message.append("<br>id : ").append(myId1).append(" - ").append(msg.getDescription());
             } else {
                 /**
-                 * The service was able to perform the query and confirm the
-                 * object exist, then we can update it.
+                 * All data seems cleans so we can call the services.
                  */
-                BuildRevisionParameters brpData = (BuildRevisionParameters) resp.getItem();
+                IBuildRevisionParametersService brpService = appContext.getBean(IBuildRevisionParametersService.class);
 
-                /**
-                 * Before updating, we check that the old entry can be modified.
-                 * If old entry point to a build/revision that already been
-                 * deployed, we cannot update it.
-                 */
-                if (brpService.check_buildRevisionAlreadyUsed(brpData.getApplication(), brpData.getBuild(), brpData.getRevision())) {
+                AnswerItem resp = brpService.readByKeyTech(brpid);
+                if (!(resp.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode()))) {
+                    /**
+                     * Object could not be found. We stop here and report the
+                     * error.
+                     */
                     msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_EXPECTED);
                     msg.setDescription(msg.getDescription().replace("%ITEM%", OBJECT_NAME)
                             .replace("%OPERATION%", "Update")
-                            .replace("%REASON%", "Could not update this release as its original build " + brpData.getBuild() + " revision " + brpData.getRevision() + " has already been deployed in an environment."));
+                            .replace("%REASON%", "BuildRevisionParameters does not exist."));
                     ans.setResultMessage(msg);
+                    massErrorCounter++;
+                    output_message.append("<br>id : ").append(myId1).append(" - ").append(msg.getDescription());
+
                 } else {
+                    /**
+                     * The service was able to perform the query and confirm the
+                     * object exist, then we can update it.
+                     */
+                    BuildRevisionParameters brpData = (BuildRevisionParameters) resp.getItem();
 
-                    brpData.setBuild(build);
-                    brpData.setRevision(revision);
-                    brpData.setRelease(release);
-                    brpData.setApplication(application);
-                    brpData.setProject(project);
-                    brpData.setTicketIdFixed(ticketidfixed);
-                    brpData.setBugIdFixed(bugidfixed);
-                    brpData.setLink(link);
-                    brpData.setReleaseOwner(releaseowner);
-                    brpData.setSubject(subject);
-                    brpData.setJenkinsBuildId(jenkinsbuildid);
-                    brpData.setMavenGroupId(mavenGroupID);
-                    brpData.setMavenArtifactId(mavenArtifactID);
-                    brpData.setMavenVersion(mavenVersion);
-                    ans = brpService.update(brpData);
+                    /**
+                     * Before updating, we check that the old entry can be
+                     * modified. If old entry point to a build/revision that
+                     * already been deployed, we cannot update it.
+                     */
+                    if (brpService.check_buildRevisionAlreadyUsed(brpData.getApplication(), brpData.getBuild(), brpData.getRevision())) {
+                        msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_EXPECTED);
+                        msg.setDescription(msg.getDescription().replace("%ITEM%", OBJECT_NAME)
+                                .replace("%OPERATION%", "Update")
+                                .replace("%REASON%", "Could not update this release as its original build " + brpData.getBuild() + " revision " + brpData.getRevision() + " has already been deployed in an environment."));
+                        ans.setResultMessage(msg);
+                        massErrorCounter++;
+                        output_message.append("<br>id : ").append(myId1).append(" - ").append(msg.getDescription());
+                    } else {
 
-                    if (ans.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
-                        /**
-                         * Update was succesfull. Adding Log entry.
-                         */
-                        ILogEventService logEventService = appContext.getBean(LogEventService.class);
-                        logEventService.createPrivateCalls("/UpdateBuildRevisionParameters", "UPDATE", "Updated BuildRevisionParameters : ['" + brpid + "'|'" + build + "'|'" + revision + "'|'" + release + "']", request);
+                        brpData.setBuild(ParameterParserUtil.parseStringParamAndSanitize(request.getParameter("build"), brpData.getBuild()));
+                        brpData.setRevision(ParameterParserUtil.parseStringParamAndSanitize(request.getParameter("revision"), brpData.getRevision()));
+                        brpData.setRelease(ParameterParserUtil.parseStringParamAndSanitize(request.getParameter("release"), brpData.getRelease()));
+                        brpData.setApplication(ParameterParserUtil.parseStringParamAndSanitize(request.getParameter("application"), brpData.getApplication()));
+                        brpData.setProject(ParameterParserUtil.parseStringParamAndSanitize(request.getParameter("project"), brpData.getProject()));
+                        brpData.setTicketIdFixed(ParameterParserUtil.parseStringParamAndSanitize(request.getParameter("ticketidfixed"), brpData.getTicketIdFixed()));
+                        brpData.setBugIdFixed(ParameterParserUtil.parseStringParamAndSanitize(request.getParameter("bugidfixed"), brpData.getBugIdFixed()));
+                        brpData.setLink(ParameterParserUtil.parseStringParamAndSanitize(request.getParameter("link"), brpData.getLink()));
+                        brpData.setReleaseOwner(ParameterParserUtil.parseStringParamAndSanitize(request.getParameter("releaseowner"), brpData.getReleaseOwner()));
+                        brpData.setSubject(ParameterParserUtil.parseStringParamAndSanitize(request.getParameter("subject"), brpData.getSubject()));
+                        brpData.setJenkinsBuildId(ParameterParserUtil.parseStringParamAndSanitize(request.getParameter("jenkinsbuildid"), brpData.getJenkinsBuildId()));
+                        brpData.setMavenGroupId(ParameterParserUtil.parseStringParamAndSanitize(request.getParameter("mavengroupid"), brpData.getMavenGroupId()));
+                        brpData.setMavenArtifactId(ParameterParserUtil.parseStringParamAndSanitize(request.getParameter("mavenartifactid"), brpData.getMavenArtifactId()));
+                        brpData.setMavenVersion(ParameterParserUtil.parseStringParamAndSanitize(request.getParameter("mavenversion"), brpData.getMavenVersion()));
+
+                        ans = brpService.update(brpData);
+
+                        if (ans.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
+                            /**
+                             * Update was successful. Adding Log entry.
+                             */
+                            logEventService.createPrivateCalls("/UpdateBuildRevisionParameters", "UPDATE", "Updated BuildRevisionParameters : ['" + brpid + "'|'" + build + "'|'" + revision + "'|'" + release + "']", request);
+                        } else {
+                            massErrorCounter++;
+                            output_message.append("<br>id : ").append(myId1).append(" - ").append(ans.getResultMessage().getDescription());
+                        }
                     }
                 }
             }
+        }
+
+        if (myId.length > 1) {
+            if (massErrorCounter > 0) {
+                msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_EXPECTED);
+                msg.setDescription(msg.getDescription().replace("%ITEM%", OBJECT_NAME)
+                        .replace("%OPERATION%", "Mass Update")
+                        .replace("%REASON%", massErrorCounter + " objects(s) out of " + myId.length + " failed to update due to an issue.<br>") + output_message.toString());
+                ans.setResultMessage(msg);
+            } else {
+                msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
+                msg.setDescription(msg.getDescription().replace("%ITEM%", OBJECT_NAME)
+                        .replace("%OPERATION%", "Mass Update") + "\n\nAll " + myId.length + " object(s) updated successfuly.");
+                ans.setResultMessage(msg);
+            }
+            logEventService.createPrivateCalls("/UpdateBuildRevisionParameters", "MASSUPDATE", msg.getDescription(), request);
         }
 
         /**

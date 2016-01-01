@@ -26,7 +26,7 @@ $.when($.getScript("js/pages/global/global.js")).then(function () {
 
 function initPage() {
     displayPageLabel();
-    
+
     var urlBuild = GetURLParameter('build'); // Feed Build combo with Build list.
     var urlRevision = GetURLParameter('revision'); // Feed Revision combo with Revision list.
     var urlApplication = GetURLParameter('application');
@@ -35,17 +35,21 @@ function initPage() {
     appendBuildList('#selectBuild', "1", urlBuild, "Y", "Y");
     appendBuildList('#selectRevision', "2", urlRevision, "Y", "Y");
 
-    // Combo in install instruction
+    // Combo in install instruction Modal
     appendBuildList('#selectBuildFrom', "1", urlBuild, "N", "N");
     appendBuildList('#selectRevisionFrom', "2", urlRevision, "N", "N");
     appendBuildList('#selectBuildTo', "1", urlBuild, "N", "N");
     appendBuildList('#selectRevisionTo', "2", urlRevision, "N", "N");
 
-    // Add and edit screen combo
+    // Add and edit Modal combo
     appendBuildList('#addBuild', "1", urlBuild, "N", "Y");
     appendBuildList('#addRevision', "2", urlRevision, "N", "Y");
     appendBuildList('#editBuild', "1", urlBuild, "N", "Y");
     appendBuildList('#editRevision', "2", urlRevision, "N", "Y");
+
+    // Mass Action Modal combo
+    appendBuildList('#massBuild', "1", null, "N", "Y");
+    appendBuildList('#massRevision', "2", null, "N", "Y");
 
     // Feed Application combo with Application list.
     var select = $('#selectApplication');
@@ -54,28 +58,129 @@ function initPage() {
 
     displayProjectList("project");
     displayUserList("releaseowner");
-    
+
     var table = loadBCTable(urlBuild, urlRevision, urlApplication);
-    table.fnSort([11, 'desc']);
+    table.fnSort([12, 'desc']);
 
     // handle the click for specific action buttons
-    $("#addBrpButton").click(saveNewBrpHandler);
-    $("#editBrpButton").click(saveUpdateBrpHandler);
+    $("#addBrpButton").click(addBrpModalSaveHandler);
+    $("#editBrpButton").click(editBrpModalSaveHandler);
+    $("#massActionBrpButton").click(massActionModalSaveHandler);
 
     //clear the modals fields when closed
     $('#addBrpModal').on('hidden.bs.modal', addBrpModalCloseHandler);
     $('#editBrpModal').on('hidden.bs.modal', editBrpModalCloseHandler);
+    $('#massActionBrpModal').on('hidden.bs.modal', massActionModalCloseHandler);
 
     $('#listInstallInstructions').on('hidden.bs.modal', listInstallInstructionsModalCloseHandler);
 }
 
-/**
- * Handler that cleans the modal for editing subdata when it is closed.
- */
-function listInstallInstructionsModalCloseHandler() {
-    $('#installInstructionsTableBody tr').remove();
+function displayPageLabel() {
+    var doc = new Doc();
+
+    displayHeaderLabel(doc);
+    $("#pageTitle").html(doc.getDocLabel("page_buildcontent", "title"));
+    $("#title").html(doc.getDocOnline("page_buildcontent", "title"));
+    $("[name='createBrpField']").html(doc.getDocLabel("page_buildcontent", "button_create"));
+    $("[name='confirmationField']").html(doc.getDocLabel("page_buildcontent", "button_delete"));
+    $("[name='editBrpField']").html(doc.getDocLabel("page_buildcontent", "button_edit"));
+    $("[name='buttonAdd']").html(doc.getDocLabel("page_global", "buttonAdd"));
+    $("[name='buttonClose']").html(doc.getDocLabel("page_global", "buttonClose"));
+    $("[name='buttonConfirm']").html(doc.getDocLabel("page_global", "buttonConfirm"));
+    $("[name='buttonDismiss']").html(doc.getDocLabel("page_global", "buttonDismiss"));
+    $("[name='filtersField']").html(doc.getDocOnline("page_buildcontent", "filters"));
+    $("[name='shortcutsField']").html(doc.getDocOnline("page_buildcontent", "standardfilters"));
+    $("[name='listField']").html(doc.getDocOnline("page_buildcontent", "list"));
+    $("[name='btnLoad']").html(doc.getDocLabel("page_global", "buttonLoad"));
+    $("[name='btnLoadPending']").html(doc.getDocLabel("page_buildcontent", "buttonLoadPending"));
+    $("[name='btnLoadLatest']").html(doc.getDocLabel("page_buildcontent", "buttonLoadLatest"));
+    $("[name='btnLoadAll']").html(doc.getDocLabel("page_buildcontent", "buttonLoadAll"));
+
+    $("[name='idField']").html(doc.getDocOnline("buildrevisionparameters", "id"));
+    $("[name='buildField']").html(doc.getDocOnline("buildrevisionparameters", "Build"));
+    $("[name='revisionField']").html(doc.getDocOnline("buildrevisionparameters", "Revision"));
+    $("[name='datecreField']").html(doc.getDocOnline("buildrevisionparameters", "datecre"));
+    $("[name='applicationField']").html(doc.getDocOnline("buildrevisionparameters", "application"));
+    $("[name='releaseField']").html(doc.getDocOnline("buildrevisionparameters", "Release"));
+    $("[name='ownerField']").html(doc.getDocOnline("buildrevisionparameters", "ReleaseOwner"));
+    $("[name='projectField']").html(doc.getDocOnline("buildrevisionparameters", "project"));
+    $("[name='ticketIdFixedField']").html(doc.getDocOnline("buildrevisionparameters", "TicketIDFixed"));
+    $("[name='bugIdFixedField']").html(doc.getDocOnline("buildrevisionparameters", "BugIDFixed"));
+    $("[name='linkField']").html(doc.getDocOnline("buildrevisionparameters", "Link"));
+    $("[name='subjectField']").html(doc.getDocOnline("buildrevisionparameters", "subject"));
+    $("[name='jenkinsBuildIdField']").html(doc.getDocOnline("buildrevisionparameters", "jenkinsBuildId"));
+    $("[name='mavenGroupIdField']").html(doc.getDocOnline("buildrevisionparameters", "mavenGroupId"));
+    $("[name='mavenArtifactIdField']").html(doc.getDocOnline("buildrevisionparameters", "mavenArtifactId"));
+    $("[name='mavenVersionField']").html(doc.getDocOnline("buildrevisionparameters", "mavenVersion"));
+    displayFooter(doc);
 }
 
+function loadBCTable(selectBuild, selectRevision, selectApplication) {
+
+    if (isEmpty(selectBuild)) {
+        selectBuild = $("#selectBuild").val();
+    }
+    if (isEmpty(selectRevision)) {
+        selectRevision = $("#selectRevision").val();
+    }
+    if (isEmpty(selectApplication)) {
+        selectApplication = $("#selectApplication").val();
+    }
+
+    // We add the Browser history.
+    var CallParam = '?';
+    if (!isEmptyorALL(selectBuild))
+        CallParam += 'build=' + encodeURIComponent(selectBuild);
+    if (!isEmptyorALL(selectRevision))
+        CallParam += '&revision=' + encodeURIComponent(selectRevision)
+    if (!isEmptyorALL(selectApplication))
+        CallParam += '&application=' + encodeURIComponent(selectApplication);
+    InsertURLInHistory('BuildContent.jsp' + CallParam);
+
+    //clear the old report content before reloading it
+    $("#buildContentList").empty();
+    $("#buildContentList").html('<table id="buildrevisionparametersTable" class="table table-hover display" name="buildrevisionparametersTable">\n\
+                                            </table><div class="marginBottom20"></div>');
+
+    //configure and create the dataTable
+    var contentUrl = "ReadBuildRevisionParameters?system=" + getUser().defaultSystem;
+    if (selectRevision !== 'ALL') {
+        contentUrl += "&revision=" + selectRevision;
+    }
+    if (selectBuild !== 'ALL') {
+        contentUrl += "&build=" + selectBuild;
+    }
+    if (selectApplication !== 'ALL') {
+        contentUrl += "&application=" + selectApplication;
+    }
+
+    var configurations = new TableConfigurationsServerSide("buildrevisionparametersTable", contentUrl, "contentTable", aoColumnsFunc("buildrevisionparametersTable"));
+
+    var table = createDataTableWithPermissions(configurations, renderOptionsForBrp);
+
+    // handle the click for specific action on the list.
+    $("#selectAll").click(selectAll);
+
+    return table;
+}
+
+function renderOptionsForBrp(data) {
+    var doc = new Doc();
+    //check if user has permissions to perform the add and import operations
+    if (data["hasPermissions"]) {
+
+        if ($("#createBrpButton").length === 0) {
+            var contentToAdd = "<div class='marginBottom10'>";
+            contentToAdd += "<button id='createBrpMassButton' type='button' class='btn btn-default'>" + doc.getDocLabel("page_global", "button_massAction") + "</button>";
+            contentToAdd += "<button id='createBrpButton' type='button' class='btn btn-default'>" + doc.getDocLabel("page_buildcontent", "button_create") + "</button>";
+            contentToAdd += "</div>";
+
+            $("#buildrevisionparametersTable_wrapper div.ColVis").before(contentToAdd);
+            $('#buildContentList #createBrpButton').click(addBrpClick);
+            $('#buildContentList #createBrpMassButton').click(massActionBrpClick);
+        }
+    }
+}
 
 function setPending() {
     var myBuild = "NONE";
@@ -125,46 +230,6 @@ function setLatest() {
 
 }
 
-function displayPageLabel() {
-    var doc = new Doc();
-
-    displayHeaderLabel(doc);
-    $("#pageTitle").html(doc.getDocLabel("page_buildcontent", "title"));
-    $("#title").html(doc.getDocOnline("page_buildcontent", "title"));
-    $("[name='createBrpField']").html(doc.getDocLabel("page_buildcontent", "button_create"));
-    $("[name='confirmationField']").html(doc.getDocLabel("page_buildcontent", "button_delete"));
-    $("[name='editBrpField']").html(doc.getDocLabel("page_buildcontent", "button_edit"));
-    $("[name='buttonAdd']").html(doc.getDocLabel("page_global", "buttonAdd"));
-    $("[name='buttonClose']").html(doc.getDocLabel("page_global", "buttonClose"));
-    $("[name='buttonConfirm']").html(doc.getDocLabel("page_global", "buttonConfirm"));
-    $("[name='buttonDismiss']").html(doc.getDocLabel("page_global", "buttonDismiss"));
-    $("[name='filtersField']").html(doc.getDocOnline("page_buildcontent", "filters"));
-    $("[name='shortcutsField']").html(doc.getDocOnline("page_buildcontent", "standardfilters"));
-    $("[name='listField']").html(doc.getDocOnline("page_buildcontent", "list"));
-    $("[name='btnLoad']").html(doc.getDocLabel("page_global", "buttonLoad"));
-    $("[name='btnLoadPending']").html(doc.getDocLabel("page_buildcontent", "buttonLoadPending"));
-    $("[name='btnLoadLatest']").html(doc.getDocLabel("page_buildcontent", "buttonLoadLatest"));
-    $("[name='btnLoadAll']").html(doc.getDocLabel("page_buildcontent", "buttonLoadAll"));
-
-    $("[name='idField']").html(doc.getDocOnline("buildrevisionparameters", "id"));
-    $("[name='buildField']").html(doc.getDocOnline("buildrevisionparameters", "Build"));
-    $("[name='revisionField']").html(doc.getDocOnline("buildrevisionparameters", "Revision"));
-    $("[name='datecreField']").html(doc.getDocOnline("buildrevisionparameters", "datecre"));
-    $("[name='applicationField']").html(doc.getDocOnline("buildrevisionparameters", "application"));
-    $("[name='releaseField']").html(doc.getDocOnline("buildrevisionparameters", "Release"));
-    $("[name='ownerField']").html(doc.getDocOnline("buildrevisionparameters", "ReleaseOwner"));
-    $("[name='projectField']").html(doc.getDocOnline("buildrevisionparameters", "project"));
-    $("[name='ticketIdFixedField']").html(doc.getDocOnline("buildrevisionparameters", "TicketIDFixed"));
-    $("[name='bugIdFixedField']").html(doc.getDocOnline("buildrevisionparameters", "BugIDFixed"));
-    $("[name='linkField']").html(doc.getDocOnline("buildrevisionparameters", "Link"));
-    $("[name='subjectField']").html(doc.getDocOnline("buildrevisionparameters", "subject"));
-    $("[name='jenkinsBuildIdField']").html(doc.getDocOnline("buildrevisionparameters", "jenkinsBuildId"));
-    $("[name='mavenGroupIdField']").html(doc.getDocOnline("buildrevisionparameters", "mavenGroupId"));
-    $("[name='mavenArtifactIdField']").html(doc.getDocOnline("buildrevisionparameters", "mavenArtifactId"));
-    $("[name='mavenVersionField']").html(doc.getDocOnline("buildrevisionparameters", "mavenVersion"));
-    displayFooter(doc);
-}
-
 function appendBuildList(selectName, level, defaultValue, withAll, withNone) {
     var select = $(selectName);
 
@@ -195,51 +260,6 @@ function appendBuildList(selectName, level, defaultValue, withAll, withNone) {
     });
 }
 
-function loadBCTable(selectBuild, selectRevision, selectApplication) {
-
-    if (isEmpty(selectBuild)) {
-        selectBuild = $("#selectBuild").val();
-    }
-    if (isEmpty(selectRevision)) {
-        selectRevision = $("#selectRevision").val();
-    }
-    if (isEmpty(selectApplication)) {
-        selectApplication = $("#selectApplication").val();
-    }
-
-    // We add the Browser history.
-    var CallParam = '?';
-    if (!isEmptyorALL(selectBuild))
-        CallParam += 'build=' + encodeURIComponent(selectBuild);
-    if (!isEmptyorALL(selectRevision))
-        CallParam += '&revision=' + encodeURIComponent(selectRevision)
-    if (!isEmptyorALL(selectApplication))
-        CallParam += '&application=' + encodeURIComponent(selectApplication);
-    InsertURLInHistory('BuildContent.jsp' + CallParam);
-
-    //clear the old report content before reloading it
-    $("#buildContentList").empty();
-    $("#buildContentList").html('<table id="buildrevisionparametersTable" class="table table-hover display" name="buildrevisionparametersTable">\n\
-                                            </table><div class="marginBottom20"></div>');
-
-    //configure and create the dataTable
-    var contentUrl = "ReadBuildRevisionParameters?system=" + getUser().defaultSystem;
-    if (selectRevision !== 'ALL') {
-        contentUrl += "&revision=" + selectRevision;
-    }
-    if (selectBuild !== 'ALL') {
-        contentUrl += "&build=" + selectBuild;
-    }
-    if (selectApplication !== 'ALL') {
-        contentUrl += "&application=" + selectApplication;
-    }
-
-    var configurations = new TableConfigurationsServerSide("buildrevisionparametersTable", contentUrl, "contentTable", aoColumnsFunc("buildrevisionparametersTable"));
-
-    var table = createDataTableWithPermissions(configurations, renderOptionsForBrp);
-    return table;
-}
-
 function deleteBrpHandlerClick() {
     var id = $('#confirmationModal').find('#hiddenField1').prop("value");
     var jqxhr = $.post("DeleteBuildRevisionParameters", {id: id}, "json");
@@ -263,7 +283,7 @@ function deleteBrpHandlerClick() {
     }).fail(handleErrorAjaxAfterTimeout);
 }
 
-function deleteBrp(id, build, revision, release, application) {
+function deleteBrpClick(id, build, revision, release, application) {
     clearResponseMessageMainPage();
     var doc = new Doc();
     var messageComplete = doc.getDocLabel("page_buildcontent", "message_delete");
@@ -275,14 +295,15 @@ function deleteBrp(id, build, revision, release, application) {
     showModalConfirmation(deleteBrpHandlerClick, doc.getDocLabel("page_buildcontent", "button_delete"), messageComplete, id, "", "", "");
 }
 
-function saveNewBrpHandler() {
+function addBrpModalSaveHandler() {
+    var doc = new Doc();
     clearResponseMessage($('#addBrpModal'));
     var formAdd = $("#addBrpModal #addBrpModalForm");
 
     var nameElement = formAdd.find("#build");
     var nameElementEmpty = nameElement.prop("value") === '';
     if (nameElementEmpty) {
-        var localMessage = new Message("danger", "Please specify the name of the build!");
+        var localMessage = new Message("danger", doc.getDocLabel("page_buildcontent", "message_ErrorBuild"));
         nameElement.parents("div.form-group").addClass("has-error");
         showMessage(localMessage, $('#addBrpModal'));
     } else {
@@ -309,27 +330,6 @@ function saveNewBrpHandler() {
     }).fail(handleErrorAjaxAfterTimeout);
 }
 
-function saveUpdateBrpHandler() {
-    clearResponseMessage($('#editBrpModal'));
-    var formEdit = $('#editBrpModal #editBrpModalForm');
-    showLoaderInModal('#editBrpModal');
-
-    var jqxhr = $.post("UpdateBuildRevisionParameters", formEdit.serialize(), "json");
-    $.when(jqxhr).then(function (data) {
-        // unblock when remote call returns 
-        hideLoaderInModal('#editBrpModal');
-        if (getAlertType(data.messageType) === "success") {
-            var oTable = $("#buildrevisionparametersTable").dataTable();
-            oTable.fnDraw(true);
-            $('#editBrpModal').modal('hide');
-            showMessage(data);
-
-        } else {
-            showMessage(data, $('#editBrpModal'));
-        }
-    }).fail(handleErrorAjaxAfterTimeout);
-}
-
 function addBrpModalCloseHandler() {
     // reset form values
     $('#addBrpModal #addBrpModalForm')[0].reset();
@@ -339,16 +339,7 @@ function addBrpModalCloseHandler() {
     clearResponseMessage($('#addBrpModal'));
 }
 
-function editBrpModalCloseHandler() {
-    // reset form values
-    $('#editBrpModal #editBrpModalForm')[0].reset();
-    // remove all errors on the form fields
-    $(this).find('div.has-error').removeClass("has-error");
-    // clear the response messages of the modal
-    clearResponseMessage($('#editBrpModal'));
-}
-
-function CreateBrpClick() {
+function addBrpClick() {
     clearResponseMessageMainPage();
     // When creating a new item, Define here the default value.
     var formAdd = $('#addBrpModal');
@@ -375,7 +366,37 @@ function CreateBrpClick() {
     $('#addBrpModal').modal('show');
 }
 
-function editBrp(id) {
+function editBrpModalSaveHandler() {
+    clearResponseMessage($('#editBrpModal'));
+    var formEdit = $('#editBrpModal #editBrpModalForm');
+    showLoaderInModal('#editBrpModal');
+
+    var jqxhr = $.post("UpdateBuildRevisionParameters", formEdit.serialize(), "json");
+    $.when(jqxhr).then(function (data) {
+        // unblock when remote call returns 
+        hideLoaderInModal('#editBrpModal');
+        if (getAlertType(data.messageType) === "success") {
+            var oTable = $("#buildrevisionparametersTable").dataTable();
+            oTable.fnDraw(true);
+            $('#editBrpModal').modal('hide');
+            showMessage(data);
+
+        } else {
+            showMessage(data, $('#editBrpModal'));
+        }
+    }).fail(handleErrorAjaxAfterTimeout);
+}
+
+function editBrpModalCloseHandler() {
+    // reset form values
+    $('#editBrpModal #editBrpModalForm')[0].reset();
+    // remove all errors on the form fields
+    $(this).find('div.has-error').removeClass("has-error");
+    // clear the response messages of the modal
+    clearResponseMessage($('#editBrpModal'));
+}
+
+function editBrpClick(id) {
     clearResponseMessageMainPage();
     var jqxhr = $.getJSON("ReadBuildRevisionParameters", "id=" + id);
     $.when(jqxhr).then(function (data) {
@@ -426,18 +447,11 @@ function editBrp(id) {
     });
 }
 
-function renderOptionsForBrp(data) {
-    var doc = new Doc();
-    //check if user has permissions to perform the add and import operations
-    if (data["hasPermissions"]) {
-        if ($("#createBrpButton").length === 0) {
-            var contentToAdd = "<div class='marginBottom10'><button id='createBrpButton' type='button' class='btn btn-default'>\n\
-            " + doc.getDocLabel("page_buildcontent", "button_create") + "</button></div>";
-
-            $("#buildrevisionparametersTable_wrapper div.ColVis").before(contentToAdd);
-            $('#buildContentList #createBrpButton').click(CreateBrpClick);
-        }
-    }
+/**
+ * Handler that cleans the modal for editing subdata when it is closed.
+ */
+function listInstallInstructionsModalCloseHandler() {
+    $('#installInstructionsTableBody tr').remove();
 }
 
 /**
@@ -478,13 +492,14 @@ function refreshlistInstallInstructions() {
  * Display installation instructions modal if build and revision is defined in main screen.
  */
 function displayInstallInstructions() {
+    var doc = new Doc();
     clearResponseMessageMainPage();
 
     var selectBuild = $("#selectBuild").val();
     var selectRevision = $("#selectRevision").val();
 
     if ((selectBuild === 'ALL') || (selectRevision === 'ALL') || (selectBuild === 'NONE') || (selectRevision === 'NONE')) {
-        var localMessage = new Message("danger", "Please specify a build and a revision to get the installation instructions!");
+        var localMessage = new Message("danger", doc.getDocLabel("page_buildcontent", "message_instruction"));
         console.warn(localMessage.message);
         showMessage(localMessage, null);
 
@@ -545,9 +560,84 @@ function appendNewInstallRow(build, revision, application, release, link, versio
         </tr>');
 }
 
+function selectAll() {
+    console.debug("toto");
+    if ($(this).prop("checked"))
+        $("[data-line='select']").prop("checked", true);
+    else
+        $("[data-line='select']").removeProp("checked");
+}
+
+function massActionModalSaveHandler() {
+    clearResponseMessage($('#massActionBrpModal'));
+
+    var formNewValues = $('#massActionBrpModal #massActionBrpModalForm');
+    var formList = $('#massActionForm');
+    var paramSerialized = formNewValues.serialize() + "&" + formList.serialize().replace(/=on/g, '').replace(/id-/g, 'id=');
+
+    showLoaderInModal('#massActionBrpModal');
+
+    var jqxhr = $.post("UpdateBuildRevisionParameters", paramSerialized, "json");
+    $.when(jqxhr).then(function (data) {
+        // unblock when remote call returns 
+        hideLoaderInModal('#massActionBrpModal');
+        if (getAlertType(data.messageType) === "success") {
+            var oTable = $("#buildrevisionparametersTable").dataTable();
+            oTable.fnDraw(true);
+            $('#massActionBrpModal').modal('hide');
+            showMessage(data);
+
+        } else {
+            showMessage(data, $('#massActionBrpModal'));
+        }
+    }).fail(handleErrorAjaxAfterTimeout);
+}
+
+function massActionModalCloseHandler() {
+    // reset form values
+    $('#massActionBrpModal #massActionBrpModalForm')[0].reset();
+    // remove all errors on the form fields
+    $(this).find('div.has-error').removeClass("has-error");
+    // clear the response messages of the modal
+    clearResponseMessage($('#massActionBrpModal'));
+}
+
+function massActionBrpClick() {
+    var doc = new Doc();
+    console.debug("Mass Action");
+    clearResponseMessageMainPage();
+    // When creating a new item, Define here the default value.
+    var formList = $('#massActionForm');
+    if (formList.serialize().indexOf("id-") === -1) {
+        var localMessage = new Message("danger", doc.getDocLabel("page_buildcontent", "message_massActionError1"));
+        showMessage(localMessage, null);
+    } else {
+        $('#massActionBrpModal').modal('show');
+    }
+}
+
 function aoColumnsFunc(tableId) {
     var doc = new Doc();
     var aoColumns = [
+        {"data": null,
+            "title": '<input id="selectAll" title="' + doc.getDocLabel("page_global", "tooltip_massAction") + '" type="checkbox"></input>',
+            "bSortable": false,
+            "sWidth": "30px",
+            "bSearchable": false,
+            "mRender": function (data, type, obj) {
+                var hasPermissions = $("#" + tableId).attr("hasPermissions");
+
+                var selectBrp = '<input id="selectLine" \n\
+                                class="selectBrp margin-right5" \n\
+                                name="id-' + obj["id"] + '" data-line="select" data-id="' + obj["id"] + '" title="' + doc.getDocLabel("page_global", "tooltip_massActionLine") + '" type="checkbox">\n\
+                                </input>';
+                if (hasPermissions === "true") { //only draws the options if the user has the correct privileges
+                    return '<div class="center btn-group width50">' + selectBrp + '</div>';
+                }
+                return '<div class="center btn-group width50"></div>';
+
+            }
+        },
         {"data": null,
             "title": doc.getDocLabel("page_global", "columnAction"),
             "bSortable": false,
@@ -556,15 +646,15 @@ function aoColumnsFunc(tableId) {
             "mRender": function (data, type, obj) {
                 var hasPermissions = $("#" + tableId).attr("hasPermissions");
 
-                var editBrp = '<button id="editBrp" onclick="editBrp(\'' + obj["id"] + '\');"\n\
+                var editBrp = '<button id="editBrp" onclick="editBrpClick(\'' + obj["id"] + '\');"\n\
                                 class="editBrp btn btn-default btn-xs margin-right5" \n\
                                 name="editBrp" title="' + doc.getDocLabel("page_buildcontent", "button_edit") + '" type="button">\n\
                                 <span class="glyphicon glyphicon-pencil"></span></button>';
-                var viewBrp = '<button id="editBrp" onclick="editBrp(\'' + obj["id"] + '\');"\n\
+                var viewBrp = '<button id="editBrp" onclick="editBrpClick(\'' + obj["id"] + '\');"\n\
                                 class="editBrp btn btn-default btn-xs margin-right5" \n\
                                 name="editBrp" title="' + doc.getDocLabel("page_buildcontent", "button_edit") + '" type="button">\n\
                                 <span class="glyphicon glyphicon-eye-open"></span></button>';
-                var deleteBrp = '<button id="deleteBrp" onclick="deleteBrp(\'' + obj["id"] + '\',\'' + obj["build"] + '\',\'' + obj["revision"] + '\',\'' + obj["release"] + '\',\'' + obj["application"] + '\');" \n\
+                var deleteBrp = '<button id="deleteBrp" onclick="deleteBrpClick(\'' + obj["id"] + '\',\'' + obj["build"] + '\',\'' + obj["revision"] + '\',\'' + obj["release"] + '\',\'' + obj["application"] + '\');" \n\
                                 class="deleteBrp btn btn-default btn-xs margin-right5" \n\
                                 name="deleteBrp" title="' + doc.getDocLabel("page_buildcontent", "button_delete") + '" type="button">\n\
                                 <span class="glyphicon glyphicon-trash"></span></button>';

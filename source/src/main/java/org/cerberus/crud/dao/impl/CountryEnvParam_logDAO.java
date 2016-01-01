@@ -165,7 +165,7 @@ public class CountryEnvParam_logDAO implements ICountryEnvParam_logDAO {
         query.append(searchSQL);
 
         if (!StringUtil.isNullOrEmpty(column)) {
-            query.append("order by `").append(column).append("` ").append(dir);
+            query.append(" order by `").append(column).append("` ").append(dir);
         }
 
         if ((amount <= 0) || (amount >= MAX_ROW_SELECTED)) {

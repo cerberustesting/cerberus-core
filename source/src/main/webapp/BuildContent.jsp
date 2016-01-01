@@ -33,6 +33,7 @@
             <%@ include file="include/utils/modal-confirmation.html"%>
             <%@ include file="include/buildcontent/addBuildContent.html"%>
             <%@ include file="include/buildcontent/editBuildContent.html"%>
+            <%@ include file="include/buildcontent/massActionBuildContent.html"%>
             <%@ include file="include/buildcontent/listInstallInstructions.html"%>
 
             <h1 class="page-title-line" id="title">Build Content</h1>
@@ -67,15 +68,16 @@
                 </div>
             </div>
 
-
             <div class="panel panel-default">
                 <div class="panel-heading card">
                     <label id="shortcuts" name="listField">Build Content List</label>
                 </div>
-                <div class="panel-body" id="buildContentList">
-                    <table id="buildrevisionparametersTable" class="table table-hover display" name="buildrevisionparametersTable"></table>
-                    <div class="marginBottom20"></div>
-                </div>
+                <form id="massActionForm" name="massActionForm"  title="MassActionBuidContent" role="form">
+                    <div class="panel-body" id="buildContentList">
+                        <table id="buildrevisionparametersTable" class="table table-hover display" name="buildrevisionparametersTable"></table>
+                        <div class="marginBottom20"></div>
+                    </div>
+                </form>
             </div>
 
             <footer class="footer">

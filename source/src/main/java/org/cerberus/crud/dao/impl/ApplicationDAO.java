@@ -33,7 +33,6 @@ import org.cerberus.crud.entity.MessageEvent;
 import org.cerberus.enums.MessageEventEnum;
 import org.cerberus.crud.factory.IFactoryApplication;
 import org.cerberus.crud.factory.impl.FactoryApplication;
-import org.cerberus.crud.service.IInvariantService;
 import org.cerberus.util.ParameterParserUtil;
 import org.cerberus.util.StringUtil;
 import org.cerberus.util.answer.Answer;

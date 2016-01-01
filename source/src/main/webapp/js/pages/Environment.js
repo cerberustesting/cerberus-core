@@ -371,8 +371,6 @@ function renderOptionsForEnv(data) {
     }
 }
 
-
-
 function aoColumnsFunc(tableId) {
     var doc = new Doc();
     var aoColumns = [

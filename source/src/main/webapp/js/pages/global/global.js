@@ -905,7 +905,6 @@ function updateEntry(servletName, form, tableID) {
  * @param {type} event
  * @returns {undefined}
  */
-
 function stopPropagation(event) {
     if (event.stopPropagation !== undefined) {
         event.stopPropagation();
