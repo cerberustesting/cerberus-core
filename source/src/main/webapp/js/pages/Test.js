@@ -22,8 +22,8 @@ $.when($.getScript("js/pages/global/global.js")).then(function () {
     $(document).ready(function () {
         initPage();
 
-        $("#editEntryButton").click(saveUpdateEntryHandler);
-        $("#addEntryButton").click(saveNewEntryHandler);
+        $("#editEntryButton").click(editEntryModalSaveHandler);
+        $("#addEntryButton").click(addEntryModalSaveHandler);
 
         $('#editEntryModal').on('hidden.bs.modal', {extra: "#editEntryModal"}, modalFormCleaner);
         $('#addEntryModal').on('hidden.bs.modal', {extra: "#addEntryModal"}, modalFormCleaner);
@@ -60,7 +60,53 @@ function displayPageLabel(doc) {
     $("[name='descriptionField']").html(doc.getDocOnline("test", "Description"));
 }
 
-function saveNewEntryHandler() {
+function renderOptionsForTest(data) {
+    var doc = new Doc();
+    //check if user has permissions to perform the add and import operations
+
+    if (data["hasPermissions"]) {
+        if ($("#createTestButton").length === 0) {
+            var contentToAdd = "<div class='marginBottom10'><button id='createTestButton' type='button' class='btn btn-default'>\n\
+            " + doc.getDocLabel("page_test", "btn_create") + "</button></div>";
+
+            $("#testTable_wrapper div.ColVis").before(contentToAdd);
+            $('#testList #createTestButton').click(addEntryClick);
+        }
+    }
+}
+
+function deleteEntryHandlerClick() {
+    var test = $('#confirmationModal').find('#hiddenField1').prop("value");
+    var jqxhr = $.post("DeleteTest1", {test: test}, "json");
+    $.when(jqxhr).then(function (data) {
+        var messageType = getAlertType(data.messageType);
+        if (messageType === "success") {
+            //redraw the datatable
+            var oTable = $("#testTable").dataTable();
+            oTable.fnDraw(true);
+            var info = oTable.fnGetData().length;
+
+            if (info === 1) {//page has only one row, then returns to the previous page
+                oTable.fnPageChange('previous');
+            }
+
+        }
+        //show message in the main page
+        showMessageMainPage(messageType, data.message);
+        //close confirmation window
+        $('#confirmationModal').modal('hide');
+    }).fail(handleErrorAjaxAfterTimeout);
+}
+
+function deleteEntryClick(entry) {
+    clearResponseMessageMainPage();
+    var doc = new Doc();
+    var messageComplete = doc.getDocLabel("page_test", "message_delete");
+    messageComplete = messageComplete.replace("%ENTRY%", entry);
+    showModalConfirmation(deleteEntryHandlerClick, doc.getDocLabel("page_test", "button_delete"), messageComplete, entry, "", "", "");
+}
+
+function addEntryModalSaveHandler() {
     clearResponseMessage($('#addEntryModal'));
     var formAdd = $("#addEntryModal #addEntryModalForm");
 
@@ -82,7 +128,12 @@ function saveNewEntryHandler() {
     createEntry("CreateTest1", formAdd, "#testTable");
 }
 
-function saveUpdateEntryHandler() {
+function addEntryClick() {
+    clearResponseMessageMainPage();
+    $('#addEntryModal').modal('show');
+}
+
+function editEntryModalSaveHandler() {
     clearResponseMessage($('#editEntryModal'));
     var formEdit = $('#editEntryModalForm');
 
@@ -90,7 +141,7 @@ function saveUpdateEntryHandler() {
     updateEntry("UpdateTest1", formEdit, "#testTable");
 }
 
-function editEntry(test) {
+function editEntryClick(test) {
     clearResponseMessageMainPage();
     var jqxhr = $.getJSON("ReadTest", "test=" + encodeURIComponent(test));
     $.when(jqxhr).then(function (data) {
@@ -117,57 +168,6 @@ function editEntry(test) {
     });
 }
 
-function CreateTestClick() {
-    clearResponseMessageMainPage();
-    $('#addEntryModal').modal('show');
-}
-
-function deleteEntryHandlerClick() {
-    var test = $('#confirmationModal').find('#hiddenField1').prop("value");
-    var jqxhr = $.post("DeleteTest1", {test: test}, "json");
-    $.when(jqxhr).then(function (data) {
-        var messageType = getAlertType(data.messageType);
-        if (messageType === "success") {
-            //redraw the datatable
-            var oTable = $("#testTable").dataTable();
-            oTable.fnDraw(true);
-            var info = oTable.fnGetData().length;
-
-            if (info === 1) {//page has only one row, then returns to the previous page
-                oTable.fnPageChange('previous');
-            }
-
-        }
-        //show message in the main page
-        showMessageMainPage(messageType, data.message);
-        //close confirmation window
-        $('#confirmationModal').modal('hide');
-    }).fail(handleErrorAjaxAfterTimeout);
-}
-
-function deleteEntry(entry) {
-    clearResponseMessageMainPage();
-    var doc = new Doc();
-    var messageComplete = doc.getDocLabel("page_test", "message_delete");
-    messageComplete = messageComplete.replace("%ENTRY%", entry);
-    showModalConfirmation(deleteEntryHandlerClick, doc.getDocLabel("page_test", "button_delete"), messageComplete, entry, "", "", "");
-}
-
-function renderOptionsForTest(data) {
-    var doc = new Doc();
-    //check if user has permissions to perform the add and import operations
-
-    if (data["hasPermissions"]) {
-        if ($("#createTestButton").length === 0) {
-            var contentToAdd = "<div class='marginBottom10'><button id='createTestButton' type='button' class='btn btn-default'>\n\
-            " + doc.getDocLabel("page_test", "btn_create") + "</button></div>";
-
-            $("#testTable_wrapper div.ColVis").before(contentToAdd);
-            $('#testList #createTestButton').click(CreateTestClick);
-        }
-    }
-}
-
 function aoColumnsFunc() {
     var doc = new Doc();
 
@@ -182,15 +182,15 @@ function aoColumnsFunc() {
                                     href="./TestCaseList.jsp?test=' + encodeURIComponent(obj["test"]) + '">\n\
                                     <span class="glyphicon glyphicon-new-window"></span>\n\
                                     </a>';
-                var editEntry = '<button id="editEntry" onclick="editEntry(\'' + escapeHtml(obj["test"]) + '\');"\n\
+                var editEntry = '<button id="editEntry" onclick="editEntryClick(\'' + escapeHtml(obj["test"]) + '\');"\n\
                                 class="editEntry btn btn-default btn-xs margin-right5" \n\
                                 name="editEntry" title="' + doc.getDocLabel("page_test", "btn_edit") + '" type="button">\n\
                                 <span class="glyphicon glyphicon-pencil"></span></button>';
-                var viewEntry = '<button id="editEntry" onclick="editEntry(\'' + escapeHtml(obj["test"]) + '\');"\n\
+                var viewEntry = '<button id="editEntry" onclick="editEntryClick(\'' + escapeHtml(obj["test"]) + '\');"\n\
                                 class="editEntry btn btn-default btn-xs margin-right5" \n\
                                 name="editEntry" title="' + doc.getDocLabel("page_test", "btn_edit") + '" type="button">\n\
                                 <span class="glyphicon glyphicon-eye-open"></span></button>';
-                var deleteEntry = '<button id="deleteEntry" onclick="deleteEntry(\'' + escapeHtml(obj["test"]) + '\');" \n\
+                var deleteEntry = '<button id="deleteEntry" onclick="deleteEntryClick(\'' + escapeHtml(obj["test"]) + '\');" \n\
                                 class="deleteEntry btn btn-default btn-xs margin-right5" \n\
                                 name="deleteEntry" title="' + doc.getDocLabel("page_test", "button_delete") + '" type="button">\n\
                                 <span class="glyphicon glyphicon-trash"></span></button>';

@@ -27,8 +27,8 @@ $.when($.getScript("js/pages/global/global.js")).then(function () {
 function initPage() {
     displayPageLabel();
     // handle the click for specific action buttons
-    $("#addEntryButton").click(saveNewEntryHandler);
-    $("#editEntryButton").click(saveUpdateEntryHandler);
+    $("#addEntryButton").click(addEntryModalSaveHandler);
+    $("#editEntryButton").click(editEntryModalSaveHandler);
 
     //clear the modals fields when closed
     $('#addEntryModal').on('hidden.bs.modal', {extra: "#addEntryModal"}, buttonCloseHandler);
@@ -40,7 +40,6 @@ function initPage() {
     var table = createDataTableWithPermissions(configurations, renderOptionsForBuildRevDefinition);
 
 }
-
 
 function displayPageLabel() {
     var doc = new Doc();
@@ -60,6 +59,20 @@ function displayPageLabel() {
     $("[name='level']").append($('<option></option>').text("1").val("1"));
     $("[name='level']").append($('<option></option>').text("2").val("2"));
     displayFooter(doc);
+}
+
+function renderOptionsForBuildRevDefinition(data) {
+    var doc = new Doc();
+    //check if user has permissions to perform the add and import operations
+    if (data["hasPermissions"]) {
+        if ($("#createBuildRevDefinitionButton").length === 0) {
+            var contentToAdd = "<div class='marginBottom10'><button id='createBuildRevDefinitionButton' type='button' class='btn btn-default'>\n\
+            " + doc.getDocLabel("page_buildrevdefinition", "button_create") + "</button></div>";
+
+            $("#buildrevdefinitionsTable_wrapper div.ColVis").before(contentToAdd);
+            $('#buildrevdefinition #createBuildRevDefinitionButton').click(addEntryClick);
+        }
+    }
 }
 
 function deleteEntryHandlerClick() {
@@ -87,7 +100,7 @@ function deleteEntryHandlerClick() {
     }).fail(handleErrorAjaxAfterTimeout);
 }
 
-function deleteEntry(system, level, seq, versionname) {
+function deleteEntryClick(system, level, seq, versionname) {
     clearResponseMessageMainPage();
     var doc = new Doc();
     var messageComplete = doc.getDocLabel("page_global", "message_delete");
@@ -97,7 +110,7 @@ function deleteEntry(system, level, seq, versionname) {
     showModalConfirmation(deleteEntryHandlerClick, doc.getDocLabel("page_buildrevdefinition", "button_delete"), messageComplete, system, level, seq, "");
 }
 
-function saveNewEntryHandler() {
+function addEntryModalSaveHandler() {
     clearResponseMessage($('#addEntryModal'));
     var formAdd = $("#addEntryModal #addEntryModalForm");
 
@@ -130,25 +143,7 @@ function saveNewEntryHandler() {
 
 }
 
-function saveUpdateEntryHandler() {
-    clearResponseMessage($('#editEntryModal'));
-    var formEdit = $('#editEntryModal #editEntryModalForm');
-
-    showLoaderInModal('#editEntryModal');
-    updateEntry("UpdateBuildRevisionInvariant", formEdit, "#buildrevdefinitionsTable");
-}
-
-function buttonCloseHandler(event) {
-    var modalID = event.data.extra;
-    // reset form values
-    $(modalID + " " + modalID + "Form")[0].reset();
-    // remove all errors on the form fields
-    $(this).find('div.has-error').removeClass("has-error");
-    // clear the response messages of the modal
-    clearResponseMessage($(modalID));
-}
-
-function CreateBuildRevDefinitionClick() {
+function addEntryClick() {
     clearResponseMessageMainPage();
     // When creating a new Entry, System takes the default value of the 
     // system already selected in header.
@@ -157,7 +152,15 @@ function CreateBuildRevDefinitionClick() {
     $('#addEntryModal').modal('show');
 }
 
-function editEntry(system, level, seq) {
+function editEntryModalSaveHandler() {
+    clearResponseMessage($('#editEntryModal'));
+    var formEdit = $('#editEntryModal #editEntryModalForm');
+
+    showLoaderInModal('#editEntryModal');
+    updateEntry("UpdateBuildRevisionInvariant", formEdit, "#buildrevdefinitionsTable");
+}
+
+function editEntryClick(system, level, seq) {
     clearResponseMessageMainPage();
     var param = "system=" + encodeURIComponent(system);
     param = param + "&level=" + encodeURIComponent(level)
@@ -187,18 +190,14 @@ function editEntry(system, level, seq) {
     });
 }
 
-function renderOptionsForBuildRevDefinition(data) {
-    var doc = new Doc();
-    //check if user has permissions to perform the add and import operations
-    if (data["hasPermissions"]) {
-        if ($("#createBuildRevDefinitionButton").length === 0) {
-            var contentToAdd = "<div class='marginBottom10'><button id='createBuildRevDefinitionButton' type='button' class='btn btn-default'>\n\
-            " + doc.getDocLabel("page_buildrevdefinition", "button_create") + "</button></div>";
-
-            $("#buildrevdefinitionsTable_wrapper div.ColVis").before(contentToAdd);
-            $('#buildrevdefinition #createBuildRevDefinitionButton').click(CreateBuildRevDefinitionClick);
-        }
-    }
+function buttonCloseHandler(event) {
+    var modalID = event.data.extra;
+    // reset form values
+    $(modalID + " " + modalID + "Form")[0].reset();
+    // remove all errors on the form fields
+    $(this).find('div.has-error').removeClass("has-error");
+    // clear the response messages of the modal
+    clearResponseMessage($(modalID));
 }
 
 function aoColumnsFunc(tableId) {
@@ -211,15 +210,15 @@ function aoColumnsFunc(tableId) {
             "mRender": function (data, type, obj) {
                 var hasPermissions = $("#" + tableId).attr("hasPermissions");
 
-                var editEntry = '<button id="editEntry" onclick="editEntry(\'' + escapeHtml(obj["system"]) + '\',\'' + obj["level"] + '\',\'' + obj["seq"] + '\');"\n\
+                var editEntry = '<button id="editEntry" onclick="editEntryClick(\'' + escapeHtml(obj["system"]) + '\',\'' + obj["level"] + '\',\'' + obj["seq"] + '\');"\n\
                                     class="editEntry btn btn-default btn-xs margin-right5" \n\
                                     name="editEntry" title="' + doc.getDocLabel("page_buildrevdefinition", "button_edit") + '" type="button">\n\
                                     <span class="glyphicon glyphicon-pencil"></span></button>';
-                var viewEntry = '<button id="editEntry" onclick="editEntry(\'' + escapeHtml(obj["system"]) + '\',\'' + obj["level"] + '\',\'' + obj["seq"] + '\');"\n\
+                var viewEntry = '<button id="editEntry" onclick="editEntryClick(\'' + escapeHtml(obj["system"]) + '\',\'' + obj["level"] + '\',\'' + obj["seq"] + '\');"\n\
                                     class="editEntry btn btn-default btn-xs margin-right5" \n\
                                     name="editEntry" title="' + doc.getDocLabel("page_buildrevdefinition", "button_edit") + '" type="button">\n\
                                     <span class="glyphicon glyphicon-eye-open"></span></button>';
-                var deleteEntry = '<button id="deleteEntry" onclick="deleteEntry(\'' + escapeHtml(obj["system"]) + '\',\'' + obj["level"] + '\',\'' + obj["seq"] + '\',\'' + obj["versionName"] + '\');" \n\
+                var deleteEntry = '<button id="deleteEntry" onclick="deleteEntryClick(\'' + escapeHtml(obj["system"]) + '\',\'' + obj["level"] + '\',\'' + obj["seq"] + '\',\'' + obj["versionName"] + '\');" \n\
                                     class="deleteEntry btn btn-default btn-xs margin-right5" \n\
                                     name="deleteEntry" title="' + doc.getDocLabel("page_buildrevdefinition", "button_delete") + '" type="button">\n\
                                     <span class="glyphicon glyphicon-trash"></span></button>';

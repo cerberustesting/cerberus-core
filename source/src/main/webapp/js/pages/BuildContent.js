@@ -63,13 +63,13 @@ function initPage() {
     table.fnSort([12, 'desc']);
 
     // handle the click for specific action buttons
-    $("#addBrpButton").click(addBrpModalSaveHandler);
-    $("#editBrpButton").click(editBrpModalSaveHandler);
+    $("#addBrpButton").click(addEntryModalSaveHandler);
+    $("#editBrpButton").click(editEntryModalSaveHandler);
     $("#massActionBrpButton").click(massActionModalSaveHandler);
 
     //clear the modals fields when closed
-    $('#addBrpModal').on('hidden.bs.modal', addBrpModalCloseHandler);
-    $('#editBrpModal').on('hidden.bs.modal', editBrpModalCloseHandler);
+    $('#addBrpModal').on('hidden.bs.modal', addEntryModalCloseHandler);
+    $('#editBrpModal').on('hidden.bs.modal', editEntryModalCloseHandler);
     $('#massActionBrpModal').on('hidden.bs.modal', massActionModalCloseHandler);
 
     $('#listInstallInstructions').on('hidden.bs.modal', listInstallInstructionsModalCloseHandler);
@@ -176,8 +176,8 @@ function renderOptionsForBrp(data) {
             contentToAdd += "</div>";
 
             $("#buildrevisionparametersTable_wrapper div.ColVis").before(contentToAdd);
-            $('#buildContentList #createBrpButton').click(addBrpClick);
-            $('#buildContentList #createBrpMassButton').click(massActionBrpClick);
+            $('#buildContentList #createBrpButton').click(addEntryClick);
+            $('#buildContentList #createBrpMassButton').click(massActionClick);
         }
     }
 }
@@ -260,7 +260,7 @@ function appendBuildList(selectName, level, defaultValue, withAll, withNone) {
     });
 }
 
-function deleteBrpHandlerClick() {
+function deleteEntryHandlerClick() {
     var id = $('#confirmationModal').find('#hiddenField1').prop("value");
     var jqxhr = $.post("DeleteBuildRevisionParameters", {id: id}, "json");
     $.when(jqxhr).then(function (data) {
@@ -283,7 +283,7 @@ function deleteBrpHandlerClick() {
     }).fail(handleErrorAjaxAfterTimeout);
 }
 
-function deleteBrpClick(id, build, revision, release, application) {
+function deleteEntryClick(id, build, revision, release, application) {
     clearResponseMessageMainPage();
     var doc = new Doc();
     var messageComplete = doc.getDocLabel("page_buildcontent", "message_delete");
@@ -292,10 +292,10 @@ function deleteBrpClick(id, build, revision, release, application) {
     messageComplete = messageComplete.replace("%REVISION%", revision);
     messageComplete = messageComplete.replace("%RELEASE%", release);
     messageComplete = messageComplete.replace("%APPLI%", application);
-    showModalConfirmation(deleteBrpHandlerClick, doc.getDocLabel("page_buildcontent", "button_delete"), messageComplete, id, "", "", "");
+    showModalConfirmation(deleteEntryHandlerClick, doc.getDocLabel("page_buildcontent", "button_delete"), messageComplete, id, "", "", "");
 }
 
-function addBrpModalSaveHandler() {
+function addEntryModalSaveHandler() {
     var doc = new Doc();
     clearResponseMessage($('#addBrpModal'));
     var formAdd = $("#addBrpModal #addBrpModalForm");
@@ -330,7 +330,7 @@ function addBrpModalSaveHandler() {
     }).fail(handleErrorAjaxAfterTimeout);
 }
 
-function addBrpModalCloseHandler() {
+function addEntryModalCloseHandler() {
     // reset form values
     $('#addBrpModal #addBrpModalForm')[0].reset();
     // remove all errors on the form fields
@@ -339,7 +339,7 @@ function addBrpModalCloseHandler() {
     clearResponseMessage($('#addBrpModal'));
 }
 
-function addBrpClick() {
+function addEntryClick() {
     clearResponseMessageMainPage();
     // When creating a new item, Define here the default value.
     var formAdd = $('#addBrpModal');
@@ -366,7 +366,7 @@ function addBrpClick() {
     $('#addBrpModal').modal('show');
 }
 
-function editBrpModalSaveHandler() {
+function editEntryModalSaveHandler() {
     clearResponseMessage($('#editBrpModal'));
     var formEdit = $('#editBrpModal #editBrpModalForm');
     showLoaderInModal('#editBrpModal');
@@ -387,7 +387,7 @@ function editBrpModalSaveHandler() {
     }).fail(handleErrorAjaxAfterTimeout);
 }
 
-function editBrpModalCloseHandler() {
+function editEntryModalCloseHandler() {
     // reset form values
     $('#editBrpModal #editBrpModalForm')[0].reset();
     // remove all errors on the form fields
@@ -396,7 +396,7 @@ function editBrpModalCloseHandler() {
     clearResponseMessage($('#editBrpModal'));
 }
 
-function editBrpClick(id) {
+function editEntryClick(id) {
     clearResponseMessageMainPage();
     var jqxhr = $.getJSON("ReadBuildRevisionParameters", "id=" + id);
     $.when(jqxhr).then(function (data) {
@@ -602,7 +602,7 @@ function massActionModalCloseHandler() {
     clearResponseMessage($('#massActionBrpModal'));
 }
 
-function massActionBrpClick() {
+function massActionClick() {
     var doc = new Doc();
     console.debug("Mass Action");
     clearResponseMessageMainPage();
@@ -646,15 +646,15 @@ function aoColumnsFunc(tableId) {
             "mRender": function (data, type, obj) {
                 var hasPermissions = $("#" + tableId).attr("hasPermissions");
 
-                var editBrp = '<button id="editBrp" onclick="editBrpClick(\'' + obj["id"] + '\');"\n\
+                var editBrp = '<button id="editBrp" onclick="editEntryClick(\'' + obj["id"] + '\');"\n\
                                 class="editBrp btn btn-default btn-xs margin-right5" \n\
                                 name="editBrp" title="' + doc.getDocLabel("page_buildcontent", "button_edit") + '" type="button">\n\
                                 <span class="glyphicon glyphicon-pencil"></span></button>';
-                var viewBrp = '<button id="editBrp" onclick="editBrpClick(\'' + obj["id"] + '\');"\n\
+                var viewBrp = '<button id="editBrp" onclick="editEntryClick(\'' + obj["id"] + '\');"\n\
                                 class="editBrp btn btn-default btn-xs margin-right5" \n\
                                 name="editBrp" title="' + doc.getDocLabel("page_buildcontent", "button_edit") + '" type="button">\n\
                                 <span class="glyphicon glyphicon-eye-open"></span></button>';
-                var deleteBrp = '<button id="deleteBrp" onclick="deleteBrpClick(\'' + obj["id"] + '\',\'' + obj["build"] + '\',\'' + obj["revision"] + '\',\'' + obj["release"] + '\',\'' + obj["application"] + '\');" \n\
+                var deleteBrp = '<button id="deleteBrp" onclick="deleteEntryClick(\'' + obj["id"] + '\',\'' + obj["build"] + '\',\'' + obj["revision"] + '\',\'' + obj["release"] + '\',\'' + obj["application"] + '\');" \n\
                                 class="deleteBrp btn btn-default btn-xs margin-right5" \n\
                                 name="deleteBrp" title="' + doc.getDocLabel("page_buildcontent", "button_delete") + '" type="button">\n\
                                 <span class="glyphicon glyphicon-trash"></span></button>';

@@ -27,8 +27,8 @@ $.when($.getScript("js/pages/global/global.js")).then(function () {
 function initPage() {
     displayPageLabel();
     // handle the click for specific action buttons
-    $("#addEntryButton").click(saveNewEntryHandler);
-    $("#editEntryButton").click(saveUpdateEntryHandler);
+    $("#addEntryButton").click(addEntryModalSaveHandler);
+    $("#editEntryButton").click(editEntryModalSaveHandler);
 
     //clear the modals fields when closed
     $('#addEntryModal').on('hidden.bs.modal', {extra: "#addEntryModal"}, buttonCloseHandler);
@@ -55,6 +55,20 @@ function displayPageLabel() {
     displayFooter(doc);
 }
 
+function renderOptionsForDeployType(data) {
+    var doc = new Doc();
+    //check if user has permissions to perform the add and import operations
+    if (data["hasPermissions"]) {
+        if ($("#createDeployTypeButton").length === 0) {
+            var contentToAdd = "<div class='marginBottom10'><button id='createDeployTypeButton' type='button' class='btn btn-default'>\n\
+            " + doc.getDocLabel("page_deploytype", "button_create") + "</button></div>";
+
+            $("#deploytypesTable_wrapper div.ColVis").before(contentToAdd);
+            $('#deploytype #createDeployTypeButton').click(addEntryClick);
+        }
+    }
+}
+
 function deleteEntryHandlerClick() {
     var deployType = $('#confirmationModal').find('#hiddenField1').prop("value");
     var jqxhr = $.post("DeleteDeployType", {deploytype: deployType}, "json");
@@ -78,7 +92,7 @@ function deleteEntryHandlerClick() {
     }).fail(handleErrorAjaxAfterTimeout);
 }
 
-function deleteEntry(entry) {
+function deleteEntryClick(entry) {
     clearResponseMessageMainPage();
     var doc = new Doc();
     var messageComplete = doc.getDocLabel("page_deploytype", "message_delete");
@@ -87,22 +101,7 @@ function deleteEntry(entry) {
     showModalConfirmation(deleteEntryHandlerClick, doc.getDocLabel("page_deploytype", "button_delete"), messageComplete, entry, "", "", "");
 }
 
-function saveEntry(servletName, modalID, form) {
-    var jqxhr = $.post(servletName, form.serialize());
-    $.when(jqxhr).then(function (data) {
-        hideLoaderInModal(modalID);
-        if (getAlertType(data.messageType) === 'success') {
-            var oTable = $("#deploytypesTable").dataTable();
-            oTable.fnDraw(true);
-            showMessage(data);
-            $(modalID).modal('hide');
-        } else {
-            showMessage(data, $(modalID));
-        }
-    }).fail(handleErrorAjaxAfterTimeout);
-}
-
-function saveNewEntryHandler() {
+function addEntryModalSaveHandler() {
     clearResponseMessage($('#addEntryModal'));
     var formAdd = $("#addEntryModal #addEntryModalForm");
 
@@ -125,7 +124,12 @@ function saveNewEntryHandler() {
 
 }
 
-function saveUpdateEntryHandler() {
+function addEntryClick() {
+    clearResponseMessageMainPage();
+    $('#addEntryModal').modal('show');
+}
+
+function editEntryModalSaveHandler() {
     clearResponseMessage($('#editEntryModal'));
     var formEdit = $('#editEntryModal #editEntryModalForm');
 
@@ -133,22 +137,7 @@ function saveUpdateEntryHandler() {
     saveEntry("UpdateDeployType", "#editEntryModal", formEdit);
 }
 
-function buttonCloseHandler(event) {
-    var modalID = event.data.extra;
-    // reset form values
-    $(modalID + " " + modalID + "Form")[0].reset();
-    // remove all errors on the form fields
-    $(this).find('div.has-error').removeClass("has-error");
-    // clear the response messages of the modal
-    clearResponseMessage($(modalID));
-}
-
-function CreateDeployTypeClick() {
-    clearResponseMessageMainPage();
-    $('#addEntryModal').modal('show');
-}
-
-function editEntry(id) {
+function editEntryClick(id) {
     clearResponseMessageMainPage();
     var jqxhr = $.getJSON("ReadDeployType", "deploytype=" + id);
     $.when(jqxhr).then(function (data) {
@@ -171,18 +160,29 @@ function editEntry(id) {
     });
 }
 
-function renderOptionsForDeployType(data) {
-    var doc = new Doc();
-    //check if user has permissions to perform the add and import operations
-    if (data["hasPermissions"]) {
-        if ($("#createDeployTypeButton").length === 0) {
-            var contentToAdd = "<div class='marginBottom10'><button id='createDeployTypeButton' type='button' class='btn btn-default'>\n\
-            " + doc.getDocLabel("page_deploytype", "button_create") + "</button></div>";
-
-            $("#deploytypesTable_wrapper div.ColVis").before(contentToAdd);
-            $('#deploytype #createDeployTypeButton').click(CreateDeployTypeClick);
+function saveEntry(servletName, modalID, form) {
+    var jqxhr = $.post(servletName, form.serialize());
+    $.when(jqxhr).then(function (data) {
+        hideLoaderInModal(modalID);
+        if (getAlertType(data.messageType) === 'success') {
+            var oTable = $("#deploytypesTable").dataTable();
+            oTable.fnDraw(true);
+            showMessage(data);
+            $(modalID).modal('hide');
+        } else {
+            showMessage(data, $(modalID));
         }
-    }
+    }).fail(handleErrorAjaxAfterTimeout);
+}
+
+function buttonCloseHandler(event) {
+    var modalID = event.data.extra;
+    // reset form values
+    $(modalID + " " + modalID + "Form")[0].reset();
+    // remove all errors on the form fields
+    $(this).find('div.has-error').removeClass("has-error");
+    // clear the response messages of the modal
+    clearResponseMessage($(modalID));
 }
 
 function aoColumnsFunc(tableId) {
@@ -196,15 +196,15 @@ function aoColumnsFunc(tableId) {
             "mRender": function (data, type, obj) {
                 var hasPermissions = $("#" + tableId).attr("hasPermissions");
 
-                var editEntry = '<button id="editEntry" onclick="editEntry(\'' + obj["deploytype"] + '\');"\n\
+                var editEntry = '<button id="editEntry" onclick="editEntryClick(\'' + obj["deploytype"] + '\');"\n\
                                     class="editEntry btn btn-default btn-xs margin-right5" \n\
                                     name="editEntry" title="' + doc.getDocLabel("page_deploytype", "button_edit") + '" type="button">\n\
                                     <span class="glyphicon glyphicon-pencil"></span></button>';
-                var viewEntry = '<button id="editEntry" onclick="editEntry(\'' + obj["deploytype"] + '\');"\n\
+                var viewEntry = '<button id="editEntry" onclick="editEntryClick(\'' + obj["deploytype"] + '\');"\n\
                                     class="editEntry btn btn-default btn-xs margin-right5" \n\
                                     name="editEntry" title="' + doc.getDocLabel("page_deploytype", "button_edit") + '" type="button">\n\
                                     <span class="glyphicon glyphicon-eye-open"></span></button>';
-                var deleteEntry = '<button id="deleteEntry" onclick="deleteEntry(\'' + obj["deploytype"] + '\');" \n\
+                var deleteEntry = '<button id="deleteEntry" onclick="deleteEntryClick(\'' + obj["deploytype"] + '\');" \n\
                                     class="deleteEntry btn btn-default btn-xs margin-right5" \n\
                                     name="deleteEntry" title="' + doc.getDocLabel("page_deploytype", "button_delete") + '" type="button">\n\
                                     <span class="glyphicon glyphicon-trash"></span></button>';

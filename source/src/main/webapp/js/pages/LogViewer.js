@@ -20,28 +20,29 @@
 
 $.when($.getScript("js/pages/global/global.js")).then(function () {
     $(document).ready(function () {
-        displayPageLabel();
-
-        //configure and create the dataTable
-        var configurations = new TableConfigurationsServerSide("logViewerTable", "ReadLogEvent", "contentTable", aoColumnsFunc());
-
-        var table = createDataTable(configurations);
-        //By default, sort the log messages from newest to oldest
-        table.fnSort([1, 'desc']);
-        var api = table.api();
-        api.search(buildSearchString()).draw();
+        initPage();
     });
 });
 
-function buildSearchString() {
+function initPage() {
+    // The page take some parameters.
     var test = GetURLParameter("Test");
     var testCase = GetURLParameter("TestCase");
-    
+
+    displayPageLabel();
+
+    //configure and create the dataTable
+    var configurations = new TableConfigurationsServerSide("logViewerTable", "ReadLogEvent", "contentTable", aoColumnsFunc());
+
+    var table = createDataTable(configurations);
+    //By default, sort the log messages from newest to oldest
+    table.fnSort([1, 'desc']);
+    var api = table.api();
+    // if test and testcase parameter are sent, we filter the logs on it.
     if (test !== null && testCase !== null) {
         var searchString = "'" + test + "'|'" + testCase + "'";
-        return searchString;
+        api.search(searchString).draw();
     }
-    return '';
 }
 
 function displayPageLabel() {
@@ -63,7 +64,7 @@ function displayPageLabel() {
     displayGlobalLabel(doc);
 }
 
-function editEntry(id) {
+function editEntryClick(id) {
     clearResponseMessageMainPage();
     var jqxhr = $.getJSON("ReadLogEvent", "logeventid=" + id);
     $.when(jqxhr).then(function (data) {
@@ -93,7 +94,7 @@ function aoColumnsFunc() {
             "bSortable": false,
             "bSearchable": false,
             "mRender": function (data, type, obj) {
-                var editEntry = '<button id="editEntry" onclick="editEntry(\'' + obj["LogEventID"] + '\');"\n\
+                var editEntry = '<button id="editEntry" onclick="editEntryClick(\'' + obj["LogEventID"] + '\');"\n\
                                 class="editEntry btn btn-default btn-xs margin-right5" \n\
                                 name="editEntry" title="' + doc.getDocLabel("page_logviewer", "button_view") + '" type="button">\n\
                                 <span class="glyphicon glyphicon-eye-open"></span></button>';

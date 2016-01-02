@@ -55,16 +55,15 @@ function initPage() {
         selector: "textarea"
     });
 
-    var table = loadTable(selectTest);
     if (isEmptyorALL(selectTest)) {
-        table.fnSort([1, 'asc']);
+        loadTable(selectTest, 1);
     } else {
-        table.fnSort([2, 'asc']);
+        loadTable(selectTest, 2);
     }
 
     // handle the click for specific action buttons
-    $("#editEntryButton").click(saveUpdateEntryHandler);
-    $("#addEntryButton").click(saveNewEntryHandler);
+    $("#editEntryButton").click(editEntryModalSaveHandler);
+    $("#addEntryButton").click(addEntryModalSaveHandler);
 
     $('#editEntryModal').on('hidden.bs.modal', {extra: "#editEntryModal"}, modalFormCleaner);
     $('#addEntryModal').on('hidden.bs.modal', {extra: "#addEntryModal"}, modalFormCleaner);
@@ -108,6 +107,345 @@ function displayPageLabel(doc) {
     $("[name='commentField']").html(doc.getDocOnline("testcase", "Comment"));
     $("#filters").html(doc.getDocOnline("page_testcaselist", "filters"));
     $("#testCaseListLabel").html(doc.getDocOnline("page_testcaselist", "testcaselist"));
+}
+
+function loadTable(selectTest, sortColumn) {
+
+    if (isEmpty(selectTest)) {
+        selectTest = $("#selectTest").val();
+    }
+
+    // We add the Browser history.
+    var CallParam = '?';
+    if (!isEmptyorALL(selectTest))
+        CallParam += 'test=' + encodeURIComponent(selectTest);
+    InsertURLInHistory('TestCaseList.jsp' + CallParam);
+
+    //clear the old report content before reloading it
+    $("#testCaseList").empty();
+    $("#testCaseList").html('<table id="testCaseTable" class="table table-hover display" name="testCaseTable">\n\
+                                            </table><div class="marginBottom20"></div>');
+
+    var contentUrl = "ReadTestCase?system=" + getUser().defaultSystem;
+    if (!isEmptyorALL(selectTest)) {
+        contentUrl += "&test=" + encodeURIComponent(selectTest);
+    }
+
+    //configure and create the dataTable
+    var jqxhr = $.getJSON("FindInvariantByID", "idName=COUNTRY");
+
+    $.when(jqxhr).then(function (data) {
+        var config = new TableConfigurationsServerSide("testCaseTable", contentUrl, "contentTable", aoColumnsFunc(data));
+
+        var table = createDataTableWithPermissions(config, renderOptionsForTestCaseList);
+        if (!isEmpty(sortColumn))
+            table.fnSort([sortColumn, 'asc']);
+
+    });
+}
+
+function renderOptionsForTestCaseList(data) {
+    var doc = new Doc();
+    //check if user has permissions to perform the add and import operations
+    if (data["hasPermissionsCreate"]) {
+        if ($("#createTestCaseButton").length === 0) {
+            var contentToAdd = "<div class='marginBottom10'><button id='createTestCaseButton' type='button' class='btn btn-default'>\n\
+            " + "Create Test Case" + "</button></div>";
+
+            $("#testCaseTable_wrapper div.ColVis").before(contentToAdd);
+            $('#testCaseList #createTestCaseButton').click(data, addEntryClick);
+        }
+    }
+}
+
+function deleteEntryHandlerClick() {
+    var test = GetURLParameter('test');
+    var testCase = $('#confirmationModal').find('#hiddenField1').prop("value");
+    var jqxhr = $.post("DeleteTestCase2", {test: test, testCase: testCase}, "json");
+    $.when(jqxhr).then(function (data) {
+        var messageType = getAlertType(data.messageType);
+        if (messageType === "success") {
+            //redraw the datatable
+            var oTable = $("#testCaseTable").dataTable();
+            oTable.fnDraw(true);
+            var info = oTable.fnGetData().length;
+
+            if (info === 1) {//page has only one row, then returns to the previous page
+                oTable.fnPageChange('previous');
+            }
+
+        }
+        //show message in the main page
+        showMessageMainPage(messageType, data.message);
+        //close confirmation window
+        $('#confirmationModal').modal('hide');
+    }).fail(handleErrorAjaxAfterTimeout);
+}
+
+function deleteEntryClick(entry) {
+    clearResponseMessageMainPage();
+    var doc = new Doc();
+    var messageComplete = doc.getDocLabel("page_testcase", "message_delete");
+    messageComplete = messageComplete.replace("%ENTRY%", entry);
+    showModalConfirmation(deleteEntryHandlerClick, "Delete", messageComplete, entry, "", "", "");
+}
+
+function addEntryModalSaveHandler() {
+    clearResponseMessage($('#addEntryModal'));
+    var formAdd = $("#addEntryModal #addEntryModalForm");
+
+    var nameElement = formAdd.find("#test");
+    var nameElementEmpty = nameElement.prop("value") === '';
+    if (nameElementEmpty) {
+        var localMessage = new Message("danger", "Please specify the name of the test!");
+        nameElement.parents("div.form-group").addClass("has-error");
+        showMessage(localMessage, $('#addEntryModal'));
+    } else {
+        nameElement.parents("div.form-group").removeClass("has-error");
+    }
+
+    var testCase = formAdd.find("#testCase");
+    var testCaseEmpty = testCase.prop("value") === '';
+    if (testCaseEmpty) {
+        var localMessage = new Message("danger", "Please specify the name of the testCase!");
+        testCase.parents("div.form-group").addClass("has-error");
+        showMessage(localMessage, $('#addEntryModal'));
+    } else {
+        testCase.parents("div.form-group").removeClass("has-error");
+    }
+
+    // verif if all mendatory fields are not empty
+    if (nameElementEmpty || testCaseEmpty)
+        return;
+
+    tinyMCE.triggerSave();
+    localStorage.setItem("createTC", JSON.stringify(convertSerialToJSONObject(formAdd.serialize())));
+    showLoaderInModal('#addEntryModal');
+    createEntry("CreateTestCase2", formAdd, "#testCaseTable");
+}
+
+function addEntryClick() {
+    clearResponseMessageMainPage();
+    var test = GetURLParameter('test');
+    var pref = JSON.parse(localStorage.getItem("createTC"));
+    var form = $("#addEntryModalForm");
+
+
+// Predefine the testcase value.
+    $.ajax({
+        url: "ReadTestCase",
+        method: "GET",
+        data: {test: encodeURIComponent(test), getMaxTC: true},
+        dataType: "json",
+        success: function (data) {
+            var testCaseNumber = data.maxTestCase + 1;
+            var tcnumber;
+
+            if (testCaseNumber < 10) {
+                tcnumber = "000" + testCaseNumber.toString() + "A";
+            } else if (testCaseNumber >= 10 && testCaseNumber < 99) {
+                tcnumber = "00" + testCaseNumber.toString() + "A";
+            } else if (testCaseNumber >= 100 && testCaseNumber < 999) {
+                tcnumber = "0" + testCaseNumber.toString() + "A";
+            } else if (testCaseNumber >= 1000) {
+                tcnumber = testCaseNumber.toString() + "A";
+            } else {
+                tcnumber = "0001A";
+            }
+
+            $('#addEntryModalForm #testCase').val(tcnumber);
+        },
+        error: showUnexpectedError
+    });
+
+    if (test !== "") {
+        $('#testAdd option[value="' + test + '"]').attr("selected", "selected");
+    }
+
+    $('#addEntryModalForm #actProd option[value="N"]').attr("selected", "selected");
+
+    if (pref !== null) {
+        form.find("#origin").val(pref.origin);
+        form.find("#refOrigin").val(pref.refOrigin);
+        form.find(".countrycb").each(function () {
+            if (pref[$(this).prop("name")] !== "off") {
+                $(this).prop("checked", true);
+            } else {
+                $(this).prop("checked", false);
+            }
+        });
+        form.find("#project").val(pref.project);
+        form.find("#ticket").val(pref.ticket);
+        form.find("#function").val(pref.function);
+        form.find("#application").val(pref.application);
+        form.find("#status").val(pref.status);
+        form.find("#group").val(pref.group);
+        form.find("#priority").val(pref.priority);
+        form.find("#bugId").val(pref.bugId);
+        form.find("#activeQA").val(pref.activeQA);
+        form.find("#activeUAT").val(pref.activeUAT);
+        form.find("#activeProd").val(pref.activeProd);
+    }
+
+    $('#addEntryModal').modal('show');
+}
+
+function editEntryModalSaveHandler() {
+    clearResponseMessage($('#editEntryModal'));
+
+    var formEdit = $('#editEntryModalForm');
+    tinyMCE.triggerSave();
+
+    showLoaderInModal('#editEntryModal');
+    updateEntry("UpdateTestCase2", formEdit, "#testCaseTable");
+}
+
+function editEntryClick(test, testCase) {
+    clearResponseMessageMainPage();
+    var jqxhr = $.getJSON("ReadTestCase", "test=" + encodeURIComponent(test) + "&testCase=" + encodeURIComponent(testCase));
+    $.when(jqxhr).then(function (data) {
+
+        var formEdit = $('#editEntryModal');
+        var testInfo = $.getJSON("ReadTest", "test=" + encodeURIComponent(test));
+        var appInfo = $.getJSON("ReadApplication", "application=" + encodeURIComponent(data.application));
+
+        $.when(testInfo).then(function (data) {
+            formEdit.find("#testDesc").prop("value", data.contentTable.description);
+        });
+
+        $.when(appInfo).then(function (appData) {
+            var currentSys = getUser().defaultSystem;
+            var bugTrackerUrl = appData.contentTable.bugTrackerUrl;
+
+            appendBuildRevList(appData.contentTable.system, data);
+
+            if (appData.contentTable.system !== currentSys) {
+                $("[name=application]").empty();
+                formEdit.find("#application").append($('<option></option>').text(data.application).val(data.application));
+                appendApplicationList(currentSys);
+            }
+            formEdit.find("#application").prop("value", data.application);
+
+            if (data.bugID !== "" && bugTrackerUrl) {
+                bugTrackerUrl = bugTrackerUrl.replace("%BUGID%", data.bugID);
+            }
+
+            formEdit.find("#link").prop("href", bugTrackerUrl).text(data.bugID);
+            formEdit.find("#link").prop("target", "_blank");
+
+        });
+
+        //test info
+        formEdit.find("#test").prop("value", data.test);
+        formEdit.find("#testCase").prop("value", data.testCase);
+
+        //test case info
+        formEdit.find("#creator").prop("value", data.creator);
+        formEdit.find("#lastModifier").prop("value", data.lastModifier);
+        formEdit.find("#implementer").prop("value", data.implementer);
+        formEdit.find("#tcDateCrea").prop("value", data.tcDateCrea);
+        formEdit.find("#origin").prop("value", data.origin);
+        formEdit.find("#refOrigin").prop("value", data.refOrigin);
+        formEdit.find("#project").prop("value", data.project);
+        formEdit.find("#ticket").prop("value", data.ticket);
+        formEdit.find("#function").prop("value", data.function);
+
+        // test case parameters
+        formEdit.find("#application").prop("value", data.application);
+        formEdit.find("#status").prop("value", data.status);
+        formEdit.find("#group").prop("value", data.group);
+        formEdit.find("#priority").prop("value", data.priority);
+        formEdit.find("#actQA").prop("value", data.runQA);
+        formEdit.find("#actUAT").prop("value", data.runUAT);
+        formEdit.find("#actProd").prop("value", data.runPROD);
+        for (var country in data.countryList) {
+            $('#countryList input[name="' + data.countryList[country] + '"]').prop("checked", true);
+        }
+        formEdit.find("#shortDesc").prop("value", data.shortDescription);
+        tinyMCE.get('behaviorOrValueExpected1').setContent(data.description);
+        tinyMCE.get('howTo1').setContent(data.howTo);
+
+        //activation criteria
+        formEdit.find("#active").prop("value", data.active);
+        formEdit.find("#bugId").prop("value", data.bugID);
+        formEdit.find("#comment").prop("value", data.comment);
+
+        //We desactivate or activate the access to the fields depending on if user has the credentials.
+        if (!(data["hasPermissionsUpdate"])) { // If readonly, we only readonly all fields
+            //test case info
+            formEdit.find("#implementer").prop("readonly", "readonly");
+            formEdit.find("#origin").prop("disabled", "disabled");
+            formEdit.find("#project").prop("disabled", "disabled");
+            formEdit.find("#ticket").prop("readonly", "readonly");
+            formEdit.find("#function").prop("readonly", "readonly");
+            // test case parameters
+            formEdit.find("#application").prop("disabled", "disabled");
+            formEdit.find("#status").prop("disabled", "disabled");
+            formEdit.find("#group").prop("disabled", "disabled");
+            formEdit.find("#priority").prop("disabled", "disabled");
+            formEdit.find("#actQA").prop("disabled", "disabled");
+            formEdit.find("#actUAT").prop("disabled", "disabled");
+            formEdit.find("#actProd").prop("disabled", "disabled");
+            var myCountryList = $('#countryList');
+            myCountryList.find("[class='countrycb']").prop("disabled", "disabled");
+            formEdit.find("#shortDesc").prop("readonly", "readonly");
+            tinyMCE.get('behaviorOrValueExpected1').getBody().setAttribute('contenteditable', false);
+            tinyMCE.get('howTo1').getBody().setAttribute('contenteditable', false);
+            //activation criteria
+            formEdit.find("#active").prop("disabled", "disabled");
+            formEdit.find("#fromSprint").prop("disabled", "disabled");
+            formEdit.find("#fromRev").prop("disabled", "disabled");
+            formEdit.find("#toSprint").prop("disabled", "disabled");
+            formEdit.find("#toRev").prop("disabled", "disabled");
+            formEdit.find("#targetSprint").prop("disabled", "disabled");
+            formEdit.find("#targetRev").prop("disabled", "disabled");
+            formEdit.find("#bugId").prop("readonly", "readonly");
+            formEdit.find("#comment").prop("readonly", "readonly");
+            // Save button is hidden.
+            $('#editEntryButton').attr('class', '');
+            $('#editEntryButton').attr('hidden', 'hidden');
+        } else {
+            formEdit.find("#active").removeProp("disabled");
+            formEdit.find("#bugId").removeProp("readonly");
+
+            //test case info
+            formEdit.find("#implementer").removeProp("readonly");
+            formEdit.find("#origin").removeProp("disabled");
+            formEdit.find("#project").removeProp("disabled");
+            formEdit.find("#ticket").removeProp("readonly");
+            formEdit.find("#function").removeProp("readonly");
+            // test case parameters
+            formEdit.find("#application").removeProp("disabled");
+            formEdit.find("#status").removeProp("disabled");
+            formEdit.find("#group").removeProp("disabled");
+            formEdit.find("#priority").removeProp("disabled");
+            formEdit.find("#actQA").removeProp("disabled");
+            formEdit.find("#actUAT").removeProp("disabled");
+            formEdit.find("#actProd").removeProp("disabled");
+            var myCountryList = $('#countryList');
+            myCountryList.find("[class='countrycb']").removeProp("disabled");
+            formEdit.find("#shortDesc").removeProp("readonly");
+            tinyMCE.get('behaviorOrValueExpected1').getBody().setAttribute('contenteditable', true);
+            tinyMCE.get('howTo1').getBody().setAttribute('contenteditable', true);
+            //activation criteria
+            formEdit.find("#active").removeProp("disabled");
+            formEdit.find("#fromSprint").removeProp("disabled");
+            formEdit.find("#fromRev").removeProp("disabled");
+            formEdit.find("#toSprint").removeProp("disabled");
+            formEdit.find("#toRev").removeProp("disabled");
+            formEdit.find("#targetSprint").removeProp("disabled");
+            formEdit.find("#targetRev").removeProp("disabled");
+            formEdit.find("#bugId").removeProp("readonly");
+            formEdit.find("#comment").removeProp("readonly");
+            // Save button is displayed.
+            $('#editEntryButton').attr('class', 'btn btn-primary');
+            $('#editEntryButton').removeProp('hidden');
+        }
+
+
+
+        formEdit.modal('show');
+    });
 }
 
 function appendBuildRevList(system, editData) {
@@ -269,344 +607,6 @@ function loadTestComboAddTestCase(selectTest) {
     }).fail(handleErrorAjaxAfterTimeout);
 }
 
-function loadTable(selectTest) {
-
-    if (isEmpty(selectTest)) {
-        selectTest = $("#selectTest").val();
-    }
-
-    // We add the Browser history.
-    var CallParam = '?';
-    if (!isEmptyorALL(selectTest))
-        CallParam += 'test=' + encodeURIComponent(selectTest);
-    InsertURLInHistory('TestCaseList.jsp' + CallParam);
-
-    //clear the old report content before reloading it
-    $("#testCaseList").empty();
-    $("#testCaseList").html('<table id="testCaseTable" class="table table-hover display" name="testCaseTable">\n\
-                                            </table><div class="marginBottom20"></div>');
-
-    var contentUrl = "ReadTestCase?system=" + getUser().defaultSystem;
-    if (!isEmptyorALL(selectTest)) {
-        contentUrl += "&test=" + encodeURIComponent(selectTest);
-    }
-
-    //configure and create the dataTable
-    var jqxhr = $.getJSON("FindInvariantByID", "idName=COUNTRY");
-
-    $.when(jqxhr).then(function (data) {
-        var config = new TableConfigurationsServerSide("testCaseTable", contentUrl, "contentTable", aoColumnsFunc(data));
-
-        var table = createDataTableWithPermissions(config, renderOptionsForTestCaseList);
-        return table;
-
-    });
-}
-
-function CreateTestCaseClick() {
-    clearResponseMessageMainPage();
-    var test = GetURLParameter('test');
-    var pref = JSON.parse(localStorage.getItem("createTC"));
-    var form = $("#addEntryModalForm");
-
-
-// Predefine the testcase value.
-    $.ajax({
-        url: "ReadTestCase",
-        method: "GET",
-        data: {test: encodeURIComponent(test), getMaxTC: true},
-        dataType: "json",
-        success: function (data) {
-            var testCaseNumber = data.maxTestCase + 1;
-            var tcnumber;
-
-            if (testCaseNumber < 10) {
-                tcnumber = "000" + testCaseNumber.toString() + "A";
-            } else if (testCaseNumber >= 10 && testCaseNumber < 99) {
-                tcnumber = "00" + testCaseNumber.toString() + "A";
-            } else if (testCaseNumber >= 100 && testCaseNumber < 999) {
-                tcnumber = "0" + testCaseNumber.toString() + "A";
-            } else if (testCaseNumber >= 1000) {
-                tcnumber = testCaseNumber.toString() + "A";
-            } else {
-                tcnumber = "0001A";
-            }
-
-            $('#addEntryModalForm #testCase').val(tcnumber);
-        },
-        error: showUnexpectedError
-    });
-
-    if (test !== "") {
-        $('#testAdd option[value="' + test + '"]').attr("selected", "selected");
-    }
-
-    $('#addEntryModalForm #actProd option[value="N"]').attr("selected", "selected");
-
-    if (pref !== null) {
-        form.find("#origin").val(pref.origin);
-        form.find("#refOrigin").val(pref.refOrigin);
-        form.find(".countrycb").each(function () {
-            if (pref[$(this).prop("name")] !== "off") {
-                $(this).prop("checked", true);
-            } else {
-                $(this).prop("checked", false);
-            }
-        });
-        form.find("#project").val(pref.project);
-        form.find("#ticket").val(pref.ticket);
-        form.find("#function").val(pref.function);
-        form.find("#application").val(pref.application);
-        form.find("#status").val(pref.status);
-        form.find("#group").val(pref.group);
-        form.find("#priority").val(pref.priority);
-        form.find("#bugId").val(pref.bugId);
-        form.find("#activeQA").val(pref.activeQA);
-        form.find("#activeUAT").val(pref.activeUAT);
-        form.find("#activeProd").val(pref.activeProd);
-    }
-
-    $('#addEntryModal').modal('show');
-}
-
-function renderOptionsForTestCaseList(data) {
-    var doc = new Doc();
-    //check if user has permissions to perform the add and import operations
-    if (data["hasPermissionsCreate"]) {
-        if ($("#createTestCaseButton").length === 0) {
-            var contentToAdd = "<div class='marginBottom10'><button id='createTestCaseButton' type='button' class='btn btn-default'>\n\
-            " + "Create Test Case" + "</button></div>";
-
-            $("#testCaseTable_wrapper div.ColVis").before(contentToAdd);
-            $('#testCaseList #createTestCaseButton').click(data, CreateTestCaseClick);
-        }
-    }
-}
-
-function saveNewEntryHandler() {
-    clearResponseMessage($('#addEntryModal'));
-    var formAdd = $("#addEntryModal #addEntryModalForm");
-
-    var nameElement = formAdd.find("#test");
-    var nameElementEmpty = nameElement.prop("value") === '';
-    if (nameElementEmpty) {
-        var localMessage = new Message("danger", "Please specify the name of the test!");
-        nameElement.parents("div.form-group").addClass("has-error");
-        showMessage(localMessage, $('#addEntryModal'));
-    } else {
-        nameElement.parents("div.form-group").removeClass("has-error");
-    }
-
-    var testCase = formAdd.find("#testCase");
-    var testCaseEmpty = testCase.prop("value") === '';
-    if (testCaseEmpty) {
-        var localMessage = new Message("danger", "Please specify the name of the testCase!");
-        testCase.parents("div.form-group").addClass("has-error");
-        showMessage(localMessage, $('#addEntryModal'));
-    } else {
-        testCase.parents("div.form-group").removeClass("has-error");
-    }
-
-    // verif if all mendatory fields are not empty
-    if (nameElementEmpty || testCaseEmpty)
-        return;
-
-    tinyMCE.triggerSave();
-    localStorage.setItem("createTC", JSON.stringify(convertSerialToJSONObject(formAdd.serialize())));
-    showLoaderInModal('#addEntryModal');
-    createEntry("CreateTestCase2", formAdd, "#testCaseTable");
-}
-
-function saveUpdateEntryHandler() {
-    clearResponseMessage($('#editEntryModal'));
-
-    var formEdit = $('#editEntryModalForm');
-    tinyMCE.triggerSave();
-
-    showLoaderInModal('#editEntryModal');
-    updateEntry("UpdateTestCase2", formEdit, "#testCaseTable");
-}
-
-function deleteEntryHandlerClick() {
-    var test = GetURLParameter('test');
-    var testCase = $('#confirmationModal').find('#hiddenField1').prop("value");
-    var jqxhr = $.post("DeleteTestCase2", {test: test, testCase: testCase}, "json");
-    $.when(jqxhr).then(function (data) {
-        var messageType = getAlertType(data.messageType);
-        if (messageType === "success") {
-            //redraw the datatable
-            var oTable = $("#testCaseTable").dataTable();
-            oTable.fnDraw(true);
-            var info = oTable.fnGetData().length;
-
-            if (info === 1) {//page has only one row, then returns to the previous page
-                oTable.fnPageChange('previous');
-            }
-
-        }
-        //show message in the main page
-        showMessageMainPage(messageType, data.message);
-        //close confirmation window
-        $('#confirmationModal').modal('hide');
-    }).fail(handleErrorAjaxAfterTimeout);
-}
-
-function deleteEntry(entry) {
-    clearResponseMessageMainPage();
-    var doc = new Doc();
-    var messageComplete = doc.getDocLabel("page_testcase", "message_delete");
-    messageComplete = messageComplete.replace("%ENTRY%", entry);
-    showModalConfirmation(deleteEntryHandlerClick, "Delete", messageComplete, entry, "", "", "");
-}
-
-function editEntry(test, testCase) {
-    clearResponseMessageMainPage();
-    var jqxhr = $.getJSON("ReadTestCase", "test=" + encodeURIComponent(test) + "&testCase=" + encodeURIComponent(testCase));
-    $.when(jqxhr).then(function (data) {
-
-        var formEdit = $('#editEntryModal');
-        var testInfo = $.getJSON("ReadTest", "test=" + encodeURIComponent(test));
-        var appInfo = $.getJSON("ReadApplication", "application=" + encodeURIComponent(data.application));
-
-        $.when(testInfo).then(function (data) {
-            formEdit.find("#testDesc").prop("value", data.contentTable.description);
-        });
-
-        $.when(appInfo).then(function (appData) {
-            var currentSys = getUser().defaultSystem;
-            var bugTrackerUrl = appData.contentTable.bugTrackerUrl;
-
-            appendBuildRevList(appData.contentTable.system, data);
-
-            if (appData.contentTable.system !== currentSys) {
-                $("[name=application]").empty();
-                formEdit.find("#application").append($('<option></option>').text(data.application).val(data.application));
-                appendApplicationList(currentSys);
-            }
-            formEdit.find("#application").prop("value", data.application);
-
-            if (data.bugID !== "" && bugTrackerUrl) {
-                bugTrackerUrl = bugTrackerUrl.replace("%BUGID%", data.bugID);
-            }
-
-            formEdit.find("#link").prop("href", bugTrackerUrl).text(data.bugID);
-            formEdit.find("#link").prop("target", "_blank");
-
-        });
-
-        //test info
-        formEdit.find("#test").prop("value", data.test);
-        formEdit.find("#testCase").prop("value", data.testCase);
-
-        //test case info
-        formEdit.find("#creator").prop("value", data.creator);
-        formEdit.find("#lastModifier").prop("value", data.lastModifier);
-        formEdit.find("#implementer").prop("value", data.implementer);
-        formEdit.find("#tcDateCrea").prop("value", data.tcDateCrea);
-        formEdit.find("#origin").prop("value", data.origin);
-        formEdit.find("#refOrigin").prop("value", data.refOrigin);
-        formEdit.find("#project").prop("value", data.project);
-        formEdit.find("#ticket").prop("value", data.ticket);
-        formEdit.find("#function").prop("value", data.function);
-
-        // test case parameters
-        formEdit.find("#application").prop("value", data.application);
-        formEdit.find("#status").prop("value", data.status);
-        formEdit.find("#group").prop("value", data.group);
-        formEdit.find("#priority").prop("value", data.priority);
-        formEdit.find("#actQA").prop("value", data.runQA);
-        formEdit.find("#actUAT").prop("value", data.runUAT);
-        formEdit.find("#actProd").prop("value", data.runPROD);
-        for (var country in data.countryList) {
-            $('#countryList input[name="' + data.countryList[country] + '"]').prop("checked", true);
-        }
-        formEdit.find("#shortDesc").prop("value", data.shortDescription);
-        tinyMCE.get('behaviorOrValueExpected1').setContent(data.description);
-        tinyMCE.get('howTo1').setContent(data.howTo);
-
-        //activation criteria
-        formEdit.find("#active").prop("value", data.active);
-        formEdit.find("#bugId").prop("value", data.bugID);
-        formEdit.find("#comment").prop("value", data.comment);
-
-        //We desactivate or activate the access to the fields depending on if user has the credentials.
-        if (!(data["hasPermissionsUpdate"])) { // If readonly, we only readonly all fields
-            //test case info
-            formEdit.find("#implementer").prop("readonly", "readonly");
-            formEdit.find("#origin").prop("disabled", "disabled");
-            formEdit.find("#project").prop("disabled", "disabled");
-            formEdit.find("#ticket").prop("readonly", "readonly");
-            formEdit.find("#function").prop("readonly", "readonly");
-            // test case parameters
-            formEdit.find("#application").prop("disabled", "disabled");
-            formEdit.find("#status").prop("disabled", "disabled");
-            formEdit.find("#group").prop("disabled", "disabled");
-            formEdit.find("#priority").prop("disabled", "disabled");
-            formEdit.find("#actQA").prop("disabled", "disabled");
-            formEdit.find("#actUAT").prop("disabled", "disabled");
-            formEdit.find("#actProd").prop("disabled", "disabled");
-            var myCountryList = $('#countryList');
-            myCountryList.find("[class='countrycb']").prop("disabled", "disabled");
-            formEdit.find("#shortDesc").prop("readonly", "readonly");
-            tinyMCE.get('behaviorOrValueExpected1').getBody().setAttribute('contenteditable', false);
-            tinyMCE.get('howTo1').getBody().setAttribute('contenteditable', false);
-            //activation criteria
-            formEdit.find("#active").prop("disabled", "disabled");
-            formEdit.find("#fromSprint").prop("disabled", "disabled");
-            formEdit.find("#fromRev").prop("disabled", "disabled");
-            formEdit.find("#toSprint").prop("disabled", "disabled");
-            formEdit.find("#toRev").prop("disabled", "disabled");
-            formEdit.find("#targetSprint").prop("disabled", "disabled");
-            formEdit.find("#targetRev").prop("disabled", "disabled");
-            formEdit.find("#bugId").prop("readonly", "readonly");
-            formEdit.find("#comment").prop("readonly", "readonly");
-            // Save button is hidden.
-            $('#editEntryButton').attr('class', '');
-            $('#editEntryButton').attr('hidden', 'hidden');
-        } else {
-            formEdit.find("#active").removeProp("disabled");
-            formEdit.find("#bugId").removeProp("readonly");
-
-            //test case info
-            formEdit.find("#implementer").removeProp("readonly");
-            formEdit.find("#origin").removeProp("disabled");
-            formEdit.find("#project").removeProp("disabled");
-            formEdit.find("#ticket").removeProp("readonly");
-            formEdit.find("#function").removeProp("readonly");
-            // test case parameters
-            formEdit.find("#application").removeProp("disabled");
-            formEdit.find("#status").removeProp("disabled");
-            formEdit.find("#group").removeProp("disabled");
-            formEdit.find("#priority").removeProp("disabled");
-            formEdit.find("#actQA").removeProp("disabled");
-            formEdit.find("#actUAT").removeProp("disabled");
-            formEdit.find("#actProd").removeProp("disabled");
-            var myCountryList = $('#countryList');
-            myCountryList.find("[class='countrycb']").removeProp("disabled");
-            formEdit.find("#shortDesc").removeProp("readonly");
-            tinyMCE.get('behaviorOrValueExpected1').getBody().setAttribute('contenteditable', true);
-            tinyMCE.get('howTo1').getBody().setAttribute('contenteditable', true);
-            //activation criteria
-            formEdit.find("#active").removeProp("disabled");
-            formEdit.find("#fromSprint").removeProp("disabled");
-            formEdit.find("#fromRev").removeProp("disabled");
-            formEdit.find("#toSprint").removeProp("disabled");
-            formEdit.find("#toRev").removeProp("disabled");
-            formEdit.find("#targetSprint").removeProp("disabled");
-            formEdit.find("#targetRev").removeProp("disabled");
-            formEdit.find("#bugId").removeProp("readonly");
-            formEdit.find("#comment").removeProp("readonly");
-            // Save button is displayed.
-            $('#editEntryButton').attr('class', 'btn btn-primary');
-            $('#editEntryButton').removeProp('hidden');
-        }
-
-
-
-        formEdit.modal('show');
-    });
-}
-
 function setActive(checkbox) {
     var test = checkbox.dataset.test;
     var testCase = checkbox.name;
@@ -660,7 +660,6 @@ function setCountry(checkbox) {
     });
 }
 
-
 function aoColumnsFunc(countries) {
     var doc = new Doc();
 
@@ -680,15 +679,15 @@ function aoColumnsFunc(countries) {
                                     href="TestCase.jsp?Test=' + encodeURIComponent(obj["test"]) + "&TestCase=" + encodeURIComponent(obj["testCase"]) + '&Load=Load">\n\
                                     <span class="glyphicon glyphicon-new-window"></span>\n\
                                     </a>';
-                var editEntry = '<button id="editEntry" onclick="editEntry(\'' + escapeHtml(obj["test"]) + '\',\'' + escapeHtml(obj["testCase"]) + '\');"\n\
+                var editEntry = '<button id="editEntry" onclick="editEntryClick(\'' + escapeHtml(obj["test"]) + '\',\'' + escapeHtml(obj["testCase"]) + '\');"\n\
                                 class="editEntry btn btn-default btn-xs margin-right5" \n\
                                 name="editEntry" title="' + "edit test case" + '" type="button">\n\
                                 <span class="glyphicon glyphicon-pencil"></span></button>';
-                var viewEntry = '<button id="editEntry" onclick="editEntry(\'' + escapeHtml(obj["testCase"]) + '\');"\n\
+                var viewEntry = '<button id="editEntry" onclick="editEntryClick(\'' + escapeHtml(obj["testCase"]) + '\');"\n\
                                 class="editEntry btn btn-default btn-xs margin-right5" \n\
                                 name="editEntry" title="' + "edit test case" + '" type="button">\n\
                                 <span class="glyphicon glyphicon-eye-open"></span></button>';
-                var deleteEntry = '<button id="deleteEntry" onclick="deleteEntry(\'' + escapeHtml(obj["testCase"]) + '\');"\n\
+                var deleteEntry = '<button id="deleteEntry" onclick="deleteEntryClick(\'' + escapeHtml(obj["testCase"]) + '\');"\n\
                                         class="deleteEntry btn btn-default btn-xs margin-right5" \n\
                                         name="deleteEntry" title="' + "delete test case" + '" type="button">\n\
                                         <span class="glyphicon glyphicon-trash"></span></button>';

@@ -20,25 +20,24 @@
 
 $.when($.getScript("js/pages/global/global.js")).then(function () {
     $(document).ready(function () {
-        initApplicationPage();
+        initPage();
     });
 });
 
-function initApplicationPage() {
+function initPage() {
     displayPageLabel();
     // handle the click for specific action buttons
-    $("#addApplicationButton").click(saveNewApplicationHandler);
-    $("#editApplicationButton").click(saveUpdateApplicationHandler);
+    $("#addApplicationButton").click(addEntryModalSaveHandler);
+    $("#editApplicationButton").click(editEntryModalSaveHandler);
 
     //clear the modals fields when closed
-    $('#addApplicationModal').on('hidden.bs.modal', addApplicationModalCloseHandler);
-    $('#editApplicationModal').on('hidden.bs.modal', editApplicationModalCloseHandler);
+    $('#addApplicationModal').on('hidden.bs.modal', addEntryModalCloseHandler);
+    $('#editApplicationModal').on('hidden.bs.modal', editEntryModalCloseHandler);
 
     //configure and create the dataTable
     var configurations = new TableConfigurationsServerSide("applicationsTable", "ReadApplication?system=" + getUser().defaultSystem, "contentTable", aoColumnsFunc("applicationsTable"));
     createDataTableWithPermissions(configurations, renderOptionsForApplication);
 }
-
 
 function displayPageLabel() {
     var doc = new Doc();
@@ -70,7 +69,21 @@ function displayPageLabel() {
     displayFooter(doc);
 }
 
-function deleteApplicationHandlerClick() {
+function renderOptionsForApplication(data) {
+    var doc = new Doc();
+    //check if user has permissions to perform the add and import operations
+    if (data["hasPermissions"]) {
+        if ($("#createApplicationButton").length === 0) {
+            var contentToAdd = "<div class='marginBottom10'><button id='createApplicationButton' type='button' class='btn btn-default'>\n\
+            " + doc.getDocLabel("page_application", "button_create") + "</button></div>";
+
+            $("#applicationsTable_wrapper div.ColVis").before(contentToAdd);
+            $('#application #createApplicationButton').click(addEntryClick);
+        }
+    }
+}
+
+function deleteEntryHandlerClick() {
     var idApplication = $('#confirmationModal').find('#hiddenField1').prop("value");
     var jqxhr = $.post("DeleteApplication", {application: idApplication}, "json");
     $.when(jqxhr).then(function (data) {
@@ -93,15 +106,15 @@ function deleteApplicationHandlerClick() {
     }).fail(handleErrorAjaxAfterTimeout);
 }
 
-function deleteApplication(idApplication) {
+function deleteEntryClick(idApplication) {
     clearResponseMessageMainPage();
     var doc = new Doc();
     var messageComplete = doc.getDocLabel("page_application", "message_delete");
     messageComplete = messageComplete.replace("%ENTRY%", idApplication);
-    showModalConfirmation(deleteApplicationHandlerClick, doc.getDocLabel("page_application", "button_delete"), messageComplete, idApplication, "", "", "");
+    showModalConfirmation(deleteEntryHandlerClick, doc.getDocLabel("page_application", "button_delete"), messageComplete, idApplication, "", "", "");
 }
 
-function saveNewApplicationHandler() {
+function addEntryModalSaveHandler() {
     clearResponseMessage($('#addApplicationModal'));
     var formAdd = $("#addApplicationModal #addApplicationModalForm");
 
@@ -135,7 +148,30 @@ function saveNewApplicationHandler() {
     }).fail(handleErrorAjaxAfterTimeout);
 }
 
-function saveUpdateApplicationHandler() {
+function addEntryModalCloseHandler() {
+    // reset form values
+    $('#addApplicationModal #addApplicationModalForm')[0].reset();
+    // remove all errors on the form fields
+    $(this).find('div.has-error').removeClass("has-error");
+    // clear the response messages of the modal
+    clearResponseMessage($('#addApplicationModal'));
+}
+
+function addEntryClick() {
+    clearResponseMessageMainPage();
+
+    // When creating a new application, System takes the default value of the 
+    // system already selected in header.
+    var formAdd = $('#addApplicationModal');
+    formAdd.find("#system").prop("value", getUser().defaultSystem);
+    // Default to NONE on DeployType and Application Type.
+    formAdd.find("#type").val("NONE");
+    formAdd.find("#deploytype").val("NONE");
+
+    $('#addApplicationModal').modal('show');
+}
+
+function editEntryModalSaveHandler() {
     clearResponseMessage($('#editApplicationModal'));
     var formEdit = $('#editApplicationModal #editApplicationModalForm');
     showLoaderInModal('#editApplicationModal');
@@ -156,16 +192,7 @@ function saveUpdateApplicationHandler() {
     }).fail(handleErrorAjaxAfterTimeout);
 }
 
-function addApplicationModalCloseHandler() {
-    // reset form values
-    $('#addApplicationModal #addApplicationModalForm')[0].reset();
-    // remove all errors on the form fields
-    $(this).find('div.has-error').removeClass("has-error");
-    // clear the response messages of the modal
-    clearResponseMessage($('#addApplicationModal'));
-}
-
-function editApplicationModalCloseHandler() {
+function editEntryModalCloseHandler() {
     // reset form values
     $('#editApplicationModal #editApplicationModalForm')[0].reset();
     // remove all errors on the form fields
@@ -174,21 +201,7 @@ function editApplicationModalCloseHandler() {
     clearResponseMessage($('#editApplicationModal'));
 }
 
-function CreateApplicationClick() {
-    clearResponseMessageMainPage();
-
-    // When creating a new application, System takes the default value of the 
-    // system already selected in header.
-    var formAdd = $('#addApplicationModal');
-    formAdd.find("#system").prop("value", getUser().defaultSystem);
-    // Default to NONE on DeployType and Application Type.
-    formAdd.find("#type").val("NONE");
-    formAdd.find("#deploytype").val("NONE");
-
-    $('#addApplicationModal').modal('show');
-}
-
-function editApplication(id) {
+function editEntryClick(id) {
     clearResponseMessageMainPage();
     var jqxhr = $.getJSON("ReadApplication", "application=" + id);
     $.when(jqxhr).then(function (data) {
@@ -228,20 +241,6 @@ function editApplication(id) {
     });
 }
 
-function renderOptionsForApplication(data) {
-    var doc = new Doc();
-    //check if user has permissions to perform the add and import operations
-    if (data["hasPermissions"]) {
-        if ($("#createApplicationButton").length === 0) {
-            var contentToAdd = "<div class='marginBottom10'><button id='createApplicationButton' type='button' class='btn btn-default'>\n\
-            " + doc.getDocLabel("page_application", "button_create") + "</button></div>";
-
-            $("#applicationsTable_wrapper div.ColVis").before(contentToAdd);
-            $('#application #createApplicationButton').click(CreateApplicationClick);
-        }
-    }
-}
-
 function aoColumnsFunc(tableId) {
     var doc = new Doc();
     var aoColumns = [
@@ -252,15 +251,15 @@ function aoColumnsFunc(tableId) {
             "mRender": function (data, type, obj) {
                 var hasPermissions = $("#" + tableId).attr("hasPermissions");
 
-                var editApplication = '<button id="editApplication" onclick="editApplication(\'' + obj["application"] + '\');"\n\
+                var editApplication = '<button id="editApplication" onclick="editEntryClick(\'' + obj["application"] + '\');"\n\
                                     class="editApplication btn btn-default btn-xs margin-right5" \n\
                                     name="editApplication" title="\'' + doc.getDocLabel("page_application", "button_edit") + '\'" type="button">\n\
                                     <span class="glyphicon glyphicon-pencil"></span></button>';
-                var viewApplication = '<button id="editApplication" onclick="editApplication(\'' + obj["application"] + '\');"\n\
+                var viewApplication = '<button id="editApplication" onclick="editEntryClick(\'' + obj["application"] + '\');"\n\
                                     class="editApplication btn btn-default btn-xs margin-right5" \n\
                                     name="editApplication" title="\'' + doc.getDocLabel("page_application", "button_edit") + '\'" type="button">\n\
                                     <span class="glyphicon glyphicon-eye-open"></span></button>';
-                var deleteApplication = '<button id="deleteApplication" onclick="deleteApplication(\'' + obj["application"] + '\');" \n\
+                var deleteApplication = '<button id="deleteApplication" onclick="deleteEntryClick(\'' + obj["application"] + '\');" \n\
                                     class="deleteApplication btn btn-default btn-xs margin-right5" \n\
                                     name="deleteApplication" title="\'' + doc.getDocLabel("page_application", "button_delete") + '\'" type="button">\n\
                                     <span class="glyphicon glyphicon-trash"></span></button>';

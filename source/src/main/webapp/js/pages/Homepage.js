@@ -41,7 +41,7 @@ $.when($.getScript("js/pages/global/global.js")).then(function () {
                                     </div>');
             }
             $("#selectTag").val("");
-            
+
             $(".removeTag").on('click', function () {
                 $(this).parent().remove();
             });
@@ -124,8 +124,7 @@ function displayPageLabel() {
     displayGlobalLabel(doc);
 }
 
-function getSys()
-{
+function getSys() {
     var sel = document.getElementById("MySystem");
     var selectedIndex = sel.selectedIndex;
     return sel.options[selectedIndex].value;
@@ -234,8 +233,6 @@ function generateTagReport(data, tag) {
     buildBar += '</div>';
     reportArea.append(buildBar);
 }
-
-
 
 function loadTagExec() {
 //Get the last tag to display

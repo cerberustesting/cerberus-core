@@ -27,8 +27,8 @@ $.when($.getScript("js/pages/global/global.js")).then(function () {
 function initPage() {
     displayPageLabel();
     // handle the click for specific action buttons
-    $("#addEntryButton").click(saveNewEntryHandler);
-    $("#editEntryButton").click(saveUpdateEntryHandler);
+    $("#addEntryButton").click(addEntryModalSaveHandler);
+    $("#editEntryButton").click(editEntryModalSaveHandler);
 
     //clear the modals fields when closed
     $('#addEntryModal').on('hidden.bs.modal', {extra: "#addEntryModal"}, buttonCloseHandler);
@@ -39,7 +39,6 @@ function initPage() {
 
     createDataTableWithPermissions(configurations, renderOptionsForRobot);
 }
-;
 
 function displayPageLabel() {
     var doc = new Doc();
@@ -65,6 +64,20 @@ function displayPageLabel() {
     displayFooter(doc);
 }
 
+function renderOptionsForRobot(data) {
+    var doc = new Doc();
+    //check if user has permissions to perform the add and import operations
+    if (data["hasPermissions"]) {
+        if ($("#createRobotButton").length === 0) {
+            var contentToAdd = "<div class='marginBottom10'><button id='createRobotButton' type='button' class='btn btn-default'>\n\
+            " + doc.getDocLabel("page_robot", "button_create") + "</button></div>";
+
+            $("#robotsTable_wrapper div.ColVis").before(contentToAdd);
+            $('#robot #createRobotButton').click(addEntryClick);
+        }
+    }
+}
+
 function deleteEntryHandlerClick() {
     var robotID = $('#confirmationModal').find('#hiddenField1').prop("value");
     var jqxhr = $.post("DeleteRobot", {robotid: robotID}, "json");
@@ -88,7 +101,7 @@ function deleteEntryHandlerClick() {
     }).fail(handleErrorAjaxAfterTimeout);
 }
 
-function deleteEntry(entry, name) {
+function deleteEntryClick(entry, name) {
     clearResponseMessageMainPage();
     var doc = new Doc();
     var messageComplete = doc.getDocLabel("page_global", "message_delete");
@@ -97,22 +110,7 @@ function deleteEntry(entry, name) {
     showModalConfirmation(deleteEntryHandlerClick, doc.getDocLabel("page_robot", "button_delete"), messageComplete, entry, "", "", "");
 }
 
-function saveEntry(servletName, modalID, form) {
-    var jqxhr = $.post(servletName, form.serialize());
-    $.when(jqxhr).then(function (data) {
-        hideLoaderInModal(modalID);
-        if (getAlertType(data.messageType) === 'success') {
-            var oTable = $("#robotsTable").dataTable();
-            oTable.fnDraw(true);
-            showMessage(data);
-            $(modalID).modal('hide');
-        } else {
-            showMessage(data, $(modalID));
-        }
-    }).fail(handleErrorAjaxAfterTimeout);
-}
-
-function saveNewEntryHandler() {
+function addEntryModalSaveHandler() {
     clearResponseMessage($('#addEntryModal'));
     var formAdd = $("#addEntryModal #addEntryModalForm");
 
@@ -135,7 +133,12 @@ function saveNewEntryHandler() {
 
 }
 
-function saveUpdateEntryHandler() {
+function addEntryClick() {
+    clearResponseMessageMainPage();
+    $('#addEntryModal').modal('show');
+}
+
+function editEntryModalSaveHandler() {
     clearResponseMessage($('#editEntryModal'));
     var formEdit = $('#editEntryModal #editEntryModalForm');
 
@@ -143,22 +146,7 @@ function saveUpdateEntryHandler() {
     saveEntry("UpdateRobot", "#editEntryModal", formEdit);
 }
 
-function buttonCloseHandler(event) {
-    var modalID = event.data.extra;
-    // reset form values
-    $(modalID + " " + modalID + "Form")[0].reset();
-    // remove all errors on the form fields
-    $(this).find('div.has-error').removeClass("has-error");
-    // clear the response messages of the modal
-    clearResponseMessage($(modalID));
-}
-
-function CreateRobotClick() {
-    clearResponseMessageMainPage();
-    $('#addEntryModal').modal('show');
-}
-
-function editEntry(id) {
+function editEntryClick(id) {
     clearResponseMessageMainPage();
     var jqxhr = $.getJSON("ReadRobot", "robotid=" + id);
     $.when(jqxhr).then(function (data) {
@@ -196,18 +184,29 @@ function editEntry(id) {
     });
 }
 
-function renderOptionsForRobot(data) {
-    var doc = new Doc();
-    //check if user has permissions to perform the add and import operations
-    if (data["hasPermissions"]) {
-        if ($("#createRobotButton").length === 0) {
-            var contentToAdd = "<div class='marginBottom10'><button id='createRobotButton' type='button' class='btn btn-default'>\n\
-            " + doc.getDocLabel("page_robot", "button_create") + "</button></div>";
-
-            $("#robotsTable_wrapper div.ColVis").before(contentToAdd);
-            $('#robot #createRobotButton').click(CreateRobotClick);
+function saveEntry(servletName, modalID, form) {
+    var jqxhr = $.post(servletName, form.serialize());
+    $.when(jqxhr).then(function (data) {
+        hideLoaderInModal(modalID);
+        if (getAlertType(data.messageType) === 'success') {
+            var oTable = $("#robotsTable").dataTable();
+            oTable.fnDraw(true);
+            showMessage(data);
+            $(modalID).modal('hide');
+        } else {
+            showMessage(data, $(modalID));
         }
-    }
+    }).fail(handleErrorAjaxAfterTimeout);
+}
+
+function buttonCloseHandler(event) {
+    var modalID = event.data.extra;
+    // reset form values
+    $(modalID + " " + modalID + "Form")[0].reset();
+    // remove all errors on the form fields
+    $(this).find('div.has-error').removeClass("has-error");
+    // clear the response messages of the modal
+    clearResponseMessage($(modalID));
 }
 
 function aoColumnsFunc(tableId) {
@@ -220,15 +219,15 @@ function aoColumnsFunc(tableId) {
             "bSearchable": false,
             "mRender": function (data, type, obj) {
                 var hasPermissions = $("#" + tableId).attr("hasPermissions");
-                var editEntry = '<button id="editEntry" onclick="editEntry(\'' + obj["robotID"] + '\');"\n\
+                var editEntry = '<button id="editEntry" onclick="editEntryClick(\'' + obj["robotID"] + '\');"\n\
                                     class="editEntry btn btn-default btn-xs margin-right5" \n\
                                     name="editEntry" title="' + doc.getDocLabel("page_robot", "button_edit") + '" type="button">\n\
                                     <span class="glyphicon glyphicon-pencil"></span></button>';
-                var viewEntry = '<button id="editEntry" onclick="editEntry(\'' + obj["robotID"] + '\');"\n\
+                var viewEntry = '<button id="editEntry" onclick="editEntryClick(\'' + obj["robotID"] + '\');"\n\
                                     class="editEntry btn btn-default btn-xs margin-right5" \n\
                                     name="editEntry" title="' + doc.getDocLabel("page_robot", "button_edit") + '" type="button">\n\
                                     <span class="glyphicon glyphicon-eye-open"></span></button>';
-                var deleteEntry = '<button id="deleteEntry" onclick="deleteEntry(\'' + obj["robotID"] + '\',\'' + obj["robot"] + '\');" \n\
+                var deleteEntry = '<button id="deleteEntry" onclick="deleteEntryClick(\'' + obj["robotID"] + '\',\'' + obj["robot"] + '\');" \n\
                                     class="deleteEntry btn btn-default btn-xs margin-right5" \n\
                                     name="deleteEntry" title="' + doc.getDocLabel("page_robot", "button_delete") + '" type="button">\n\
                                     <span class="glyphicon glyphicon-trash"></span></button>';

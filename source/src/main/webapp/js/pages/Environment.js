@@ -51,11 +51,11 @@ function initPage() {
     table.fnSort([3, 'asc']);
 
     // handle the click for specific action buttons
-    $("#addEnvButton").click(saveNewEnvHandler);
-    $("#editEnvButton").click(saveUpdateEnvHandler);
+    $("#addEnvButton").click(addEntryModalSaveHandler);
+    $("#editEnvButton").click(editEntryModalSaveHandler);
 
     //clear the modals fields when closed
-    $('#addEnvModal').on('hidden.bs.modal', addEnvModalCloseHandler);
+    $('#addEnvModal').on('hidden.bs.modal', addEntryModalCloseHandler);
     $('#editEnvModal').on('hidden.bs.modal', editEnvModalCloseHandler);
 }
 
@@ -94,31 +94,6 @@ function displayPageLabel() {
     $("[name='mavenArtifactIdField']").html(doc.getDocOnline("buildrevisionparameters", "mavenArtifactId"));
     $("[name='mavenVersionField']").html(doc.getDocOnline("buildrevisionparameters", "mavenVersion"));
     displayFooter(doc);
-}
-
-function appendBuildList(selectName, level, defaultValue) {
-    var select = $('[name="' + selectName + '"]');
-
-    $.ajax({
-        type: "GET",
-        url: "ReadBuildRevisionInvariant",
-        data: {iSortCol_0: "2", system: getUser().defaultSystem, level: level},
-        async: false,
-        dataType: 'json',
-        success: function (data) {
-            select.append($('<option></option>').text("-- ALL --").val("ALL"));
-
-            for (var option in data.contentTable) {
-                select.append($('<option></option>').text(data.contentTable[option].versionName).val(data.contentTable[option].versionName));
-            }
-
-            if (defaultValue !== undefined) {
-                select.val(defaultValue);
-            }
-
-        },
-        error: showUnexpectedError
-    });
 }
 
 function loadEnvTable(selectCountry, selectEnvironment, selectBuild, selectRevision) {
@@ -174,7 +149,46 @@ function loadEnvTable(selectCountry, selectEnvironment, selectBuild, selectRevis
     return table;
 }
 
-function deleteEnvHandlerClick() {
+function renderOptionsForEnv(data) {
+    var doc = new Doc();
+    //check if user has permissions to perform the add operations
+    if (data["hasPermissions"]) {
+        if ($("#createEnvButton").length === 0) {
+            var contentToAdd = "<div class='marginBottom10'><button id='createEnvButton' type='button' class='btn btn-default'>\n\
+            " + doc.getDocLabel("page_environment", "button_create") + "</button></div>";
+
+            $("#environmentsTable_wrapper div.ColVis").before(contentToAdd);
+            $('#environmentList #createEnvButton').click(addEntryClick);
+        }
+    }
+}
+
+function appendBuildList(selectName, level, defaultValue) {
+    var select = $('[name="' + selectName + '"]');
+
+    $.ajax({
+        type: "GET",
+        url: "ReadBuildRevisionInvariant",
+        data: {iSortCol_0: "2", system: getUser().defaultSystem, level: level},
+        async: false,
+        dataType: 'json',
+        success: function (data) {
+            select.append($('<option></option>').text("-- ALL --").val("ALL"));
+
+            for (var option in data.contentTable) {
+                select.append($('<option></option>').text(data.contentTable[option].versionName).val(data.contentTable[option].versionName));
+            }
+
+            if (defaultValue !== undefined) {
+                select.val(defaultValue);
+            }
+
+        },
+        error: showUnexpectedError
+    });
+}
+
+function deleteEntryHandlerClick() {
     var system = $('#confirmationModal').find('#hiddenField1').prop("value");
     var country = $('#confirmationModal').find('#hiddenField2').prop("value");
     var environment = $('#confirmationModal').find('#hiddenField3').prop("value");
@@ -199,17 +213,17 @@ function deleteEnvHandlerClick() {
     }).fail(handleErrorAjaxAfterTimeout);
 }
 
-function deleteEnv(system, country, environment) {
+function deleteEntryClick(system, country, environment) {
     clearResponseMessageMainPage();
     var doc = new Doc();
     var messageComplete = doc.getDocLabel("page_environment", "message_delete");
     messageComplete = messageComplete.replace("%SYSTEM%", system);
     messageComplete = messageComplete.replace("%COUNTRY%", country);
     messageComplete = messageComplete.replace("%ENVIRONMENT%", environment);
-    showModalConfirmation(deleteEnvHandlerClick, doc.getDocLabel("page_environment", "button_delete"), messageComplete, system, country, environment, "");
+    showModalConfirmation(deleteEntryHandlerClick, doc.getDocLabel("page_environment", "button_delete"), messageComplete, system, country, environment, "");
 }
 
-function saveNewEnvHandler() {
+function addEntryModalSaveHandler() {
     clearResponseMessage($('#addEnvModal'));
     var formAdd = $("#addEnvModal #addEnvModalForm");
 
@@ -243,7 +257,32 @@ function saveNewEnvHandler() {
     }).fail(handleErrorAjaxAfterTimeout);
 }
 
-function saveUpdateEnvHandler() {
+function addEntryModalCloseHandler() {
+    // reset form values
+    $('#addEnvModal #addEnvModalForm')[0].reset();
+    // remove all errors on the form fields
+    $(this).find('div.has-error').removeClass("has-error");
+    // clear the response messages of the modal
+    clearResponseMessage($('#addEnvModal'));
+}
+
+function addEntryClick() {
+    clearResponseMessageMainPage();
+    // When creating a new item, Define here the default value.
+    var formAdd = $('#addEnvModal');
+
+    // User that makes the creation is becoming the owner or the release.
+    formAdd.find("#system").prop("value", getUser().defaultSystem);
+    // New release goes by default to the build/revision selected in filter combos. (except when ALL)
+    var myCountry = $("#selectCountry option:selected").val();
+    var myEnvironment = $("#selectEnvironment option:selected").val();
+    formAdd.find("#country").val(myCountry);
+    formAdd.find("#environment").val(myEnvironment);
+
+    $('#addEnvModal').modal('show');
+}
+
+function editEntryModalSaveHandler() {
     clearResponseMessage($('#editEnvModal'));
     var formEdit = $('#editEnvModal #editEnvModalForm');
     showLoaderInModal('#editEnvModal');
@@ -264,15 +303,6 @@ function saveUpdateEnvHandler() {
     }).fail(handleErrorAjaxAfterTimeout);
 }
 
-function addEnvModalCloseHandler() {
-    // reset form values
-    $('#addEnvModal #addEnvModalForm')[0].reset();
-    // remove all errors on the form fields
-    $(this).find('div.has-error').removeClass("has-error");
-    // clear the response messages of the modal
-    clearResponseMessage($('#addEnvModal'));
-}
-
 function editEnvModalCloseHandler() {
     // reset form values
     $('#editEnvModal #editEnvModalForm')[0].reset();
@@ -282,23 +312,7 @@ function editEnvModalCloseHandler() {
     clearResponseMessage($('#editEnvModal'));
 }
 
-function CreateEnvClick() {
-    clearResponseMessageMainPage();
-    // When creating a new item, Define here the default value.
-    var formAdd = $('#addEnvModal');
-
-    // User that makes the creation is becoming the owner or the release.
-    formAdd.find("#system").prop("value", getUser().defaultSystem);
-    // New release goes by default to the build/revision selected in filter combos. (except when ALL)
-    var myCountry = $("#selectCountry option:selected").val();
-    var myEnvironment = $("#selectEnvironment option:selected").val();
-    formAdd.find("#country").val(myCountry);
-    formAdd.find("#environment").val(myEnvironment);
-
-    $('#addEnvModal').modal('show');
-}
-
-function editEnv(system, country, environment) {
+function editEntryClick(system, country, environment) {
     clearResponseMessageMainPage();
     var jqxhr = $.getJSON("ReadCountryEnvParam", "system=" + system + "&country=" + country + "&environment=" + environment);
     $.when(jqxhr).then(function (data) {
@@ -357,20 +371,6 @@ function editEnv(system, country, environment) {
     });
 }
 
-function renderOptionsForEnv(data) {
-    var doc = new Doc();
-    //check if user has permissions to perform the add operations
-    if (data["hasPermissions"]) {
-        if ($("#createEnvButton").length === 0) {
-            var contentToAdd = "<div class='marginBottom10'><button id='createEnvButton' type='button' class='btn btn-default'>\n\
-            " + doc.getDocLabel("page_environment", "button_create") + "</button></div>";
-
-            $("#environmentsTable_wrapper div.ColVis").before(contentToAdd);
-            $('#environmentList #createEnvButton').click(CreateEnvClick);
-        }
-    }
-}
-
 function aoColumnsFunc(tableId) {
     var doc = new Doc();
     var aoColumns = [
@@ -382,15 +382,15 @@ function aoColumnsFunc(tableId) {
             "mRender": function (data, type, obj) {
                 var hasPermissions = $("#" + tableId).attr("hasPermissions");
 
-                var editEnv = '<button id="editEnv" onclick="editEnv(\'' + obj["system"] + '\',\'' + obj["country"] + '\',\'' + obj["environment"] + '\');"\n\
+                var editEnv = '<button id="editEnv" onclick="editEntryClick(\'' + obj["system"] + '\',\'' + obj["country"] + '\',\'' + obj["environment"] + '\');"\n\
                                 class="editEnv btn btn-default btn-xs margin-right5" \n\
                                 name="editEnv" title="\'' + doc.getDocLabel("page_environment", "button_edit") + '\'" type="button">\n\
                                 <span class="glyphicon glyphicon-pencil"></span></button>';
-                var viewEnv = '<button id="editEnv" onclick="editEnv(\'' + obj["system"] + '\',\'' + obj["country"] + '\',\'' + obj["environment"] + '\');"\n\
+                var viewEnv = '<button id="editEnv" onclick="editEntryClick(\'' + obj["system"] + '\',\'' + obj["country"] + '\',\'' + obj["environment"] + '\');"\n\
                                 class="editEnv btn btn-default btn-xs margin-right5" \n\
                                 name="editEnv" title="\'' + doc.getDocLabel("page_environment", "button_edit") + '\'" type="button">\n\
                                 <span class="glyphicon glyphicon-eye-open"></span></button>';
-                var deleteEnv = '<button id="deleteEnv" onclick="deleteEnv(\'' + obj["system"] + '\',\'' + obj["country"] + '\',\'' + obj["environment"] + '\');" \n\
+                var deleteEnv = '<button id="deleteEnv" onclick="deleteEntryClick(\'' + obj["system"] + '\',\'' + obj["country"] + '\',\'' + obj["environment"] + '\');" \n\
                                 class="deleteEnv btn btn-default btn-xs margin-right5" \n\
                                 name="deleteEnv" title="\'' + doc.getDocLabel("page_environment", "button_delete") + '\'" type="button">\n\
                                 <span class="glyphicon glyphicon-trash"></span></button>';

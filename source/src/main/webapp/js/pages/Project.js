@@ -27,8 +27,8 @@ $.when($.getScript("js/pages/global/global.js")).then(function () {
 function initPage() {
     displayPageLabel();
     // handle the click for specific action buttons
-    $("#addEntryButton").click(saveNewEntryHandler);
-    $("#editEntryButton").click(saveUpdateEntryHandler);
+    $("#addEntryButton").click(addEntryModalSaveHandler);
+    $("#editEntryButton").click(editEntryModalSaveHandler);
 
     //clear the modals fields when closed
     $('#addEntryModal').on('hidden.bs.modal', {extra: "#addEntryModal"}, buttonCloseHandler);
@@ -39,7 +39,6 @@ function initPage() {
 
     createDataTableWithPermissions(configurations, renderOptionsForProject);
 }
-
 
 function displayPageLabel() {
     var doc = new Doc();
@@ -58,6 +57,20 @@ function displayPageLabel() {
     $("[name='descriptionField']").html(doc.getDocOnline("project", "description"));
     displayInvariantList("Active", "PROJECTACTIVE");
     displayFooter(doc);
+}
+
+function renderOptionsForProject(data) {
+    var doc = new Doc();
+    //check if user has permissions to perform the add and import operations
+    if (data["hasPermissions"]) {
+        if ($("#createProjectButton").length === 0) {
+            var contentToAdd = "<div class='marginBottom10'><button id='createProjectButton' type='button' class='btn btn-default'>\n\
+            " + doc.getDocLabel("page_project", "button_create") + "</button></div>";
+
+            $("#projectsTable_wrapper div.ColVis").before(contentToAdd);
+            $('#project #createProjectButton').click(addEntryClick);
+        }
+    }
 }
 
 function deleteEntryHandlerClick() {
@@ -83,7 +96,7 @@ function deleteEntryHandlerClick() {
     }).fail(handleErrorAjaxAfterTimeout);
 }
 
-function deleteEntry(entry) {
+function deleteEntryClick(entry) {
     clearResponseMessageMainPage();
     var doc = new Doc();
     var messageComplete = doc.getDocLabel("page_project", "message_delete");
@@ -91,7 +104,7 @@ function deleteEntry(entry) {
     showModalConfirmation(deleteEntryHandlerClick, doc.getDocLabel("page_project", "button_delete"), messageComplete, entry, "", "", "");
 }
 
-function saveNewEntryHandler() {
+function addEntryModalSaveHandler() {
     clearResponseMessage($('#addEntryModal'));
     var formAdd = $("#addEntryModal #addEntryModalForm");
 
@@ -124,7 +137,12 @@ function saveNewEntryHandler() {
 
 }
 
-function saveUpdateEntryHandler() {
+function addEntryClick() {
+    clearResponseMessageMainPage();
+    $('#addEntryModal').modal('show');
+}
+
+function editEntryModalSaveHandler() {
     clearResponseMessage($('#editEntryModal'));
     var formEdit = $('#editEntryModal #editEntryModalForm');
 
@@ -132,22 +150,7 @@ function saveUpdateEntryHandler() {
     updateEntry("UpdateProject", formEdit, "#projectsTable");
 }
 
-function buttonCloseHandler(event) {
-    var modalID = event.data.extra;
-    // reset form values
-    $(modalID + " " + modalID + "Form")[0].reset();
-    // remove all errors on the form fields
-    $(this).find('div.has-error').removeClass("has-error");
-    // clear the response messages of the modal
-    clearResponseMessage($(modalID));
-}
-
-function CreateProjectClick() {
-    clearResponseMessageMainPage();
-    $('#addEntryModal').modal('show');
-}
-
-function editEntry(id) {
+function editEntryClick(id) {
     clearResponseMessageMainPage();
     var jqxhr = $.getJSON("ReadProject", "idProject=" + encodeURIComponent(id));
     $.when(jqxhr).then(function (data) {
@@ -176,18 +179,14 @@ function editEntry(id) {
     });
 }
 
-function renderOptionsForProject(data) {
-    var doc = new Doc();
-    //check if user has permissions to perform the add and import operations
-    if (data["hasPermissions"]) {
-        if ($("#createProjectButton").length === 0) {
-            var contentToAdd = "<div class='marginBottom10'><button id='createProjectButton' type='button' class='btn btn-default'>\n\
-            " + doc.getDocLabel("page_project", "button_create") + "</button></div>";
-
-            $("#projectsTable_wrapper div.ColVis").before(contentToAdd);
-            $('#project #createProjectButton').click(CreateProjectClick);
-        }
-    }
+function buttonCloseHandler(event) {
+    var modalID = event.data.extra;
+    // reset form values
+    $(modalID + " " + modalID + "Form")[0].reset();
+    // remove all errors on the form fields
+    $(this).find('div.has-error').removeClass("has-error");
+    // clear the response messages of the modal
+    clearResponseMessage($(modalID));
 }
 
 function aoColumnsFunc(tableId) {
@@ -200,15 +199,15 @@ function aoColumnsFunc(tableId) {
             "mRender": function (data, type, obj) {
                 var hasPermissions = $("#" + tableId).attr("hasPermissions");
 
-                var editEntry = '<button id="editEntry" onclick="editEntry(\'' + escapeHtml(obj["idProject"]) + '\');"\n\
+                var editEntry = '<button id="editEntry" onclick="editEntryClick(\'' + escapeHtml(obj["idProject"]) + '\');"\n\
                                     class="editEntry btn btn-default btn-xs margin-right5" \n\
                                     name="editEntry" title="' + doc.getDocLabel("page_project", "button_edit") + '" type="button">\n\
                                     <span class="glyphicon glyphicon-pencil"></span></button>';
-                var viewEntry = '<button id="editEntry" onclick="editEntry(\'' + escapeHtml(obj["idProject"]) + '\');"\n\
+                var viewEntry = '<button id="editEntry" onclick="editEntryClick(\'' + escapeHtml(obj["idProject"]) + '\');"\n\
                                     class="editEntry btn btn-default btn-xs margin-right5" \n\
                                     name="editEntry" title="' + doc.getDocLabel("page_project", "button_edit") + '" type="button">\n\
                                     <span class="glyphicon glyphicon-eye-open"></span></button>';
-                var deleteEntry = '<button id="deleteEntry" onclick="deleteEntry(\'' + escapeHtml(obj["idProject"]) + '\');" \n\
+                var deleteEntry = '<button id="deleteEntry" onclick="deleteEntryClick(\'' + escapeHtml(obj["idProject"]) + '\');" \n\
                                     class="deleteEntry btn btn-default btn-xs margin-right5" \n\
                                     name="deleteEntry" title="' + doc.getDocLabel("page_project", "button_delete") + '" type="button">\n\
                                     <span class="glyphicon glyphicon-trash"></span></button>';

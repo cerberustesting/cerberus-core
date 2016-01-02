@@ -27,10 +27,8 @@ $.when($.getScript("js/pages/global/global.js")).then(function () {
 
     $(function () {
 
-
         var i = 0;
         var j = 0;
-        /*****************************************************************************/
         //adds new rows to the subdata table
         $("#newSubData_addRow").click(function () {
 
@@ -48,7 +46,6 @@ $.when($.getScript("js/pages/global/global.js")).then(function () {
             $("#addTestDataLibModal #addSubDataTableBody tr td:nth-child(2) input:last").change(subdataNameOnChangeHandler);
             updateSubDataTabLabel();
         });
-        /*****************************************************************************/
         //adds a new run in the edit window
         $("#editSubData_addRow").click(function () {
             //gets the id from the first row
@@ -66,21 +63,16 @@ $.when($.getScript("js/pages/global/global.js")).then(function () {
             $("#manageTestDataLibDataModal #editSubDataTableBody tr td:nth-child(2) input:last").change(subdataNameOnChangeHandler);
             j++;
         });
-
-        /*****************************************************************************/
         //delete all subdata rows     
         $("#newSubData_deleteAll").click(function () {
             removeAllEntries("addSubDataTable");
             updateSubDataTabLabel();
         });
 
-
-        /*****************************************************************************/
         /**
          * Handles the click to save the test data lib entry
          */
         $("#saveTestDataLib").on("click", saveTestDataLibClickHandler);
-        /*****************************************************************************/
         /**
          * Disables the group text box when the users selects an existing group
          */
@@ -93,7 +85,6 @@ $.when($.getScript("js/pages/global/global.js")).then(function () {
          * Disables the group text box when the users selects an existing group - duplicate modal
          */
         $("#groupduplicate").change(groupChangeHandler);
-        /*****************************************************************************/
         /*
          * Handles the change of the type when adding a new test data lib entry
          */
