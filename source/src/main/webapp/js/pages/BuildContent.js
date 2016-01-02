@@ -95,6 +95,7 @@ function displayPageLabel() {
     $("[name='btnLoadPending']").html(doc.getDocLabel("page_buildcontent", "buttonLoadPending"));
     $("[name='btnLoadLatest']").html(doc.getDocLabel("page_buildcontent", "buttonLoadLatest"));
     $("[name='btnLoadAll']").html(doc.getDocLabel("page_buildcontent", "buttonLoadAll"));
+    $("[name='massActionBrpField']").html(doc.getDocLabel("page_buildcontent", "message_massAction"));
 
     $("[name='idField']").html(doc.getDocOnline("buildrevisionparameters", "id"));
     $("[name='buildField']").html(doc.getDocOnline("buildrevisionparameters", "Build"));
