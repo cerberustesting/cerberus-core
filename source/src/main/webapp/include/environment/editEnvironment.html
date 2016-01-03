@@ -10,9 +10,9 @@
 
                 <!--edit form-->
                 <form id="editEnvModalForm" name="editEnvModalForm"  title="Edit Environment" role="form">
-                    <div class="container-fluid center">
-                         <!-- messages area-->
-                         <div id="DialogMessagesArea">
+                    <div id="tabs" class="container-fluid center">
+                        <!-- messages area-->
+                        <div id="DialogMessagesArea">
                             <div class="alert" id="DialogMessagesAlert"  style="display:none;">
                                 <strong><span class="alert-description" id="DialogAlertDescription"></span></strong>
                                 <button type="button" class="close" data-hide="alert"  aria-hidden="true">
@@ -20,90 +20,111 @@
                                 </button>
                             </div>
                         </div>
+                        <!-- Key definition-->
                         <div class="row">
-                            <div class="form-group col-xs-3">
+                            <div class="form-group col-xs-4">
                                 <label for="system" name="systemField">System</label>
                                 <input type="text" class="form-control" name="system" id="system" aria-describedby="basic-addon1" readonly="">
                             </div>
-                            <div class="form-group col-xs-3">
+                            <div class="form-group col-xs-4">
                                 <label for="country" name="countryField">Country</label>
                                 <input type="text" class="form-control" name="country" id="country" aria-describedby="basic-addon1" readonly="">
                             </div>
-                            <div class="form-group col-xs-3">
+                            <div class="form-group col-xs-4">
                                 <label for="environment" name="environmentField">Environment</label>
                                 <input type="text" class="form-control" name="environment" id="environment" aria-describedby="basic-addon1" readonly="">
                             </div>
-                            <div class="form-group col-xs-3">
-                                <label for="type" name="typeField">Type</label>
-                                <select class="form-control"  id="type" name="type">
-                                </select>
-                            </div>
                         </div>
-                        <div class="row">
-                            <div class="form-group col-xs-2">
-                                <label for="active" name="activeField">Active</label>
-                                <br><input type="checkbox" checked="" id="activeNew" name="activeNew" class="activecb" disabled="" >
+                        <!-- tabs definition-->
+                        <ul id="tabsEdit" class="nav nav-tabs" data-tabs="tabs">
+                            <li class="active"><a data-toggle="tab" href="#tabsEdit-1" id="tab1Text">Definition</a></li>
+                            <li><a data-toggle="tab" href="#tabsEdit-2" id="tab2Text">Notifications</a></li>
+                            <li><a data-toggle="tab" href="#tabsEdit-3" id="tab3Text">Status</a></li>
+                            <li><a data-toggle="tab" href="#tabsEdit-4" id="tab4Text">Dependencies</a></li>
+                            <li><a data-toggle="tab" href="#tabsEdit-5" id="tab5Text">Database</a></li>
+                        </ul>
+                        <div class="tab-content">   
+                            <div class="center marginTop25 tab-pane fade in active" id="tabsEdit-1">
+                                <div class="row">
+                                    <div class="form-group col-xs-9">
+                                        <label for="description" name="descriptionField">Description</label>
+                                        <input type="text" class="form-control" name="description" id="description" aria-describedby="basic-addon1" maxlength="200">
+                                    </div>
+                                    <div class="form-group col-xs-3">
+                                        <label for="type" name="typeField">Type</label>
+                                        <select class="form-control"  id="type" name="type">
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="form-group col-xs-4">
+                                        <label for="maintenanceAct" name="maintenanceActField">Activate Maintenance</label>
+                                        <select class="form-control"  id="maintenanceAct" name="maintenanceAct">
+                                        </select>
+                                    </div>
+                                    <div class="form-group col-xs-4">
+                                        <label for="maintenanceStr" name="maintenanceStrField">Start</label>
+                                        <input type="text" class="form-control" name="maintenanceStr" id="maintenanceStr" aria-describedby="basic-addon1" maxlength="8" placeholder="00:00:00">
+                                    </div>
+                                    <div class="form-group col-xs-4">
+                                        <label for="maintenanceEnd" name="maintenanceEndField">End</label>
+                                        <input type="text" class="form-control" name="maintenanceEnd" id="maintenanceEnd" aria-describedby="basic-addon1" maxlength="8" placeholder="00:00:00">
+                                    </div>
+                                </div>
                             </div>
-                            <div class="form-group col-xs-3">
-                                <label for="build" name="buildField">Build</label>
-                                <input type="text" class="form-control" name="buildNew" id="buildNew" aria-describedby="basic-addon1" readonly>
+                            <div class="center tab-pane fade marginTop25" id="tabsEdit-2">
+                                <div class="row">
+                                    <div class="form-group col-xs-12">
+                                        <label for="distribList" name="distribListField">Specific Distribution List</label>
+                                        <textarea id="distribList" name="distribList"
+                                                  class="form-control"></textarea> 
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="form-group col-xs-12">
+                                        <label for="eMailBodyChain" name="eMailBodyChainField">Specific Email Body on New Chain Event</label>
+                                        <textarea id="eMailBodyChain" name="eMailBodyChain"
+                                                  class="form-control"></textarea> 
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="form-group col-xs-12">
+                                        <label for="eMailBodyRevision" name="eMailBodyRevisionField">Specific Email Body on New Build/Revision Event</label>
+                                        <textarea id="eMailBodyRevision" name="eMailBodyRevision"
+                                                  class="form-control"></textarea> 
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="form-group col-xs-12">
+                                        <label for="eMailBodyDisableEnvironment" name="eMailBodyDisableEnvironmentField">Specific Email Body on Disable Event</label>
+                                        <textarea id="eMailBodyDisableEnvironment" name="eMailBodyDisableEnvironment"
+                                                  class="form-control"></textarea> 
+                                    </div>
+                                </div>
                             </div>
-                            <div class="form-group col-xs-3">
-                                <label for="revision" name="revisionField">Revision</label>
-                                <input type="text" class="form-control" name="revisionNew" id="revisionNew" aria-describedby="basic-addon1" readonly>
+                            <div class="center tab-pane fade marginTop25" id="tabsEdit-3">
+                                <div class="row">
+                                    <div class="form-group col-xs-2">
+                                        <label for="active" name="activeField">Active</label>
+                                        <br><input type="checkbox" checked="" id="activeNew" name="activeNew" class="activecb" disabled="" >
+                                    </div>
+                                    <div class="form-group col-xs-3">
+                                        <label for="build" name="buildField">Build</label>
+                                        <input type="text" class="form-control" name="buildNew" id="buildNew" aria-describedby="basic-addon1" readonly>
+                                    </div>
+                                    <div class="form-group col-xs-3">
+                                        <label for="revision" name="revisionField">Revision</label>
+                                        <input type="text" class="form-control" name="revisionNew" id="revisionNew" aria-describedby="basic-addon1" readonly>
+                                    </div>
+                                    <div class="form-group col-xs-4">
+                                        <label for="chain" name="chainField">Chain</label>
+                                        <input type="text" class="form-control" name="chainNew" id="chainNew" aria-describedby="basic-addon1" readonly>
+                                    </div>
+                                </div>
                             </div>
-                            <div class="form-group col-xs-4">
-                                <label for="chain" name="chainField">Chain</label>
-                                <input type="text" class="form-control" name="chainNew" id="chainNew" aria-describedby="basic-addon1" readonly>
+                            <div class="center tab-pane fade marginTop25" id="tabsEdit-4">
                             </div>
-                        </div>
-                        <div class="row">
-                            <div class="form-group col-xs-12">
-                                <label for="description" name="descriptionField">Description</label>
-                                <input type="text" class="form-control" name="description" id="description" aria-describedby="basic-addon1" maxlength="200">
-                            </div>
-                        </div>
-                        <div class="row">
-                            <div class="form-group col-xs-12">
-                                <label for="distribList" name="distribListField">Specific Distribution List</label>
-                                <textarea id="distribList" name="distribList"
-                                          class="form-control"></textarea> 
-                            </div>
-                        </div>
-                        <div class="row">
-                            <div class="form-group col-xs-12">
-                                <label for="eMailBodyChain" name="eMailBodyChainField">Specific Email Body on New Chain Event</label>
-                                <textarea id="eMailBodyChain" name="eMailBodyChain"
-                                          class="form-control"></textarea> 
-                            </div>
-                        </div>
-                        <div class="row">
-                            <div class="form-group col-xs-12">
-                                <label for="eMailBodyRevision" name="eMailBodyRevisionField">Specific Email Body on New Build/Revision Event</label>
-                                <textarea id="eMailBodyRevision" name="eMailBodyRevision"
-                                          class="form-control"></textarea> 
-                            </div>
-                        </div>
-                        <div class="row">
-                            <div class="form-group col-xs-12">
-                                <label for="eMailBodyDisableEnvironment" name="eMailBodyDisableEnvironmentField">Specific Email Body on Disable Event</label>
-                                <textarea id="eMailBodyDisableEnvironment" name="eMailBodyDisableEnvironment"
-                                          class="form-control"></textarea> 
-                            </div>
-                        </div>
-                        <div class="row">
-                            <div class="form-group col-xs-4">
-                                <label for="maintenanceAct" name="maintenanceActField">Activate Maintenance</label>
-                                <select class="form-control"  id="maintenanceAct" name="maintenanceAct">
-                                </select>
-                            </div>
-                            <div class="form-group col-xs-4">
-                                <label for="maintenanceStr" name="maintenanceStrField">Start</label>
-                                <input type="text" class="form-control" name="maintenanceStr" id="maintenanceStr" aria-describedby="basic-addon1" maxlength="8" placeholder="00:00:00">
-                            </div>
-                            <div class="form-group col-xs-4">
-                                <label for="maintenanceEnd" name="maintenanceEndField">End</label>
-                                <input type="text" class="form-control" name="maintenanceEnd" id="maintenanceEnd" aria-describedby="basic-addon1" maxlength="8" placeholder="00:00:00">
+                            <div class="center tab-pane fade marginTop25" id="tabsEdit-5">
                             </div>
                         </div>
                     </div>

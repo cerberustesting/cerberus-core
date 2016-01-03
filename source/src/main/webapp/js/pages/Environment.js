@@ -97,7 +97,7 @@ function displayPageLabel() {
 }
 
 function loadEnvTable(selectCountry, selectEnvironment, selectBuild, selectRevision) {
-    
+
     if (isEmpty(selectCountry)) {
         selectCountry = $("#selectCountry").val();
     }
@@ -110,7 +110,7 @@ function loadEnvTable(selectCountry, selectEnvironment, selectBuild, selectRevis
     if (isEmpty(selectRevision)) {
         selectRevision = $("#selectRevision").val();
     }
-    
+
     // We add the Browser history.
     var CallParam = '?';
     if (!isEmptyorALL(selectCountry))
@@ -377,27 +377,45 @@ function aoColumnsFunc(tableId) {
         {"data": null,
             "title": doc.getDocLabel("page_global", "columnAction"),
             "bSortable": false,
-            "sWidth": "80px",
+            "sWidth": "100px",
             "bSearchable": false,
             "mRender": function (data, type, obj) {
                 var hasPermissions = $("#" + tableId).attr("hasPermissions");
 
                 var editEnv = '<button id="editEnv" onclick="editEntryClick(\'' + obj["system"] + '\',\'' + obj["country"] + '\',\'' + obj["environment"] + '\');"\n\
                                 class="editEnv btn btn-default btn-xs margin-right5" \n\
-                                name="editEnv" title="\'' + doc.getDocLabel("page_environment", "button_edit") + '\'" type="button">\n\
+                                name="editEnv" title="' + doc.getDocLabel("page_environment", "button_edit") + '" type="button">\n\
                                 <span class="glyphicon glyphicon-pencil"></span></button>';
                 var viewEnv = '<button id="editEnv" onclick="editEntryClick(\'' + obj["system"] + '\',\'' + obj["country"] + '\',\'' + obj["environment"] + '\');"\n\
                                 class="editEnv btn btn-default btn-xs margin-right5" \n\
-                                name="editEnv" title="\'' + doc.getDocLabel("page_environment", "button_edit") + '\'" type="button">\n\
+                                name="editEnv" title="' + doc.getDocLabel("page_environment", "button_edit") + '" type="button">\n\
                                 <span class="glyphicon glyphicon-eye-open"></span></button>';
                 var deleteEnv = '<button id="deleteEnv" onclick="deleteEntryClick(\'' + obj["system"] + '\',\'' + obj["country"] + '\',\'' + obj["environment"] + '\');" \n\
                                 class="deleteEnv btn btn-default btn-xs margin-right5" \n\
-                                name="deleteEnv" title="\'' + doc.getDocLabel("page_environment", "button_delete") + '\'" type="button">\n\
+                                name="deleteEnv" title="' + doc.getDocLabel("page_environment", "button_delete") + '" type="button">\n\
                                 <span class="glyphicon glyphicon-trash"></span></button>';
+                var disableEnv = '<button id="disableEnv" onclick="disableEntryClick(\'' + obj["system"] + '\',\'' + obj["country"] + '\',\'' + obj["environment"] + '\');" \n\
+                                class="disableEnv btn btn-default btn-xs margin-right5" \n\
+                                name="disableEnv" title="' + doc.getDocLabel("page_environment", "button_delete") + '" type="button">\n\
+                                <span class="glyphicon glyphicon-remove-circle"></span></button>';
+                var enableEnv = '<button id="enableEnv" onclick="enableEntryClick(\'' + obj["system"] + '\',\'' + obj["country"] + '\',\'' + obj["environment"] + '\');;" \n\
+                                class="enableEnv btn btn-default btn-xs margin-right5" \n\
+                                name="enableEnv" title="' + doc.getDocLabel("page_environment", "button_delete") + '" type="button">\n\
+                                <span class="glyphicon glyphicon-ok-circle"></span></button>';
+
+                var returnString = '<div class="center btn-group width150">';
                 if (hasPermissions === "true") { //only draws the options if the user has the correct privileges
-                    return '<div class="center btn-group width150">' + editEnv + deleteEnv + '</div>';
+                    returnString += editEnv + deleteEnv;
+                } else {
+                    returnString += viewEnv;
                 }
-                return '<div class="center btn-group width150">' + viewEnv + '</div>';
+                if (obj["active"]) {
+//                    returnString += disableEnv;
+                } else {
+//                    returnString += enableEnv;
+                }
+                returnString += '</div>';
+                return returnString;
             }
         },
         {"data": "system",
