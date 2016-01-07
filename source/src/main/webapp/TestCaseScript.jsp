@@ -33,6 +33,7 @@
     <body>
         <%@ include file="include/header.html"%>
         <div id="page-layout" class="container-fluid center">
+            <div class="alert alert-warning"><strong>BETA</strong> This page is in beta, some features may not be available or fully functional.</div>
             <%@ include file="include/messagesArea.html"%>
             <%@ include file="include/testcaselist/editTestCase.html"%>
             <%@ include file="include/testcasescript/manageProperties.html"%>

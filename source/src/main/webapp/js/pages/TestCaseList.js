@@ -676,7 +676,7 @@ function aoColumnsFunc(countries) {
                 var buttons = "";
 
                 var testCaseLink = '<a id="testCaseLink" class="btn btn-primary btn-xs margin-right5"\n\
-                                    href="TestCase.jsp?Test=' + encodeURIComponent(obj["test"]) + "&TestCase=" + encodeURIComponent(obj["testCase"]) + '&Load=Load">\n\
+                                    title="' + "edit testcase script" + '" href="TestCase.jsp?Test=' + encodeURIComponent(obj["test"]) + "&TestCase=" + encodeURIComponent(obj["testCase"]) + '&Load=Load">\n\
                                     <span class="glyphicon glyphicon-new-window"></span>\n\
                                     </a>';
                 var editEntry = '<button id="editEntry" onclick="editEntryClick(\'' + escapeHtml(obj["test"]) + '\',\'' + escapeHtml(obj["testCase"]) + '\');"\n\
@@ -691,6 +691,10 @@ function aoColumnsFunc(countries) {
                                         class="deleteEntry btn btn-default btn-xs margin-right5" \n\
                                         name="deleteEntry" title="' + "delete test case" + '" type="button">\n\
                                         <span class="glyphicon glyphicon-trash"></span></button>';
+                var testCaseBetaLink = '<a id="testCaseBetaLink" class="btn btn-warning btn-xs margin-right5"\n\
+                                    title="' + "edit testcase script (beta page)" + '" href="TestCaseScript.jsp?test=' + encodeURIComponent(obj["test"]) + "&testcase=" + encodeURIComponent(obj["testCase"]) + '">\n\
+                                    <span class="glyphicon glyphicon-new-window"></span>\n\
+                                    </a>';
                 if (data.hasPermissionsUpdate) {
                     buttons += editEntry;
                 } else {
@@ -700,6 +704,7 @@ function aoColumnsFunc(countries) {
                     buttons += deleteEntry;
                 }
                 buttons += testCaseLink;
+                buttons += testCaseBetaLink;
 
                 return '<div class="center btn-group width150">' + buttons + '</div>';
             }
