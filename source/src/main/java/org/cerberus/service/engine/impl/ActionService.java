@@ -131,6 +131,9 @@ public class ActionService implements IActionService {
         if (testCaseStepActionExecution.getAction().equals("click")) {
             res = this.doActionClick(tCExecution, object, property);
 
+        } else if (testCaseStepActionExecution.getAction().equals("clickIF")) {
+            res = this.doActionClickIF(tCExecution, object, property);
+
         } else if (testCaseStepActionExecution.getAction().equals("doubleClick")) {
             res = this.doActionDoubleClick(tCExecution, object, property);
 
@@ -167,6 +170,9 @@ public class ActionService implements IActionService {
 
         } else if (testCaseStepActionExecution.getAction().equals("type")) {
             res = this.doActionType(tCExecution, object, property, propertyName);
+
+        } else if (testCaseStepActionExecution.getAction().equals("typeIF")) {
+            res = this.doActionTypeIF(tCExecution, object, property, propertyName);
 
         } else if (testCaseStepActionExecution.getAction().equals("wait")) {
             res = this.doActionWait(tCExecution, object, property);
@@ -1040,4 +1046,74 @@ public class ActionService implements IActionService {
 
         return message;
     }
+
+    private MessageEvent doActionClickIF(TestCaseExecution tCExecution, String object, String property) {
+        MessageEvent message;
+        String element;
+        try {
+            /**
+             * Get element to use String object if not empty, String property if
+             * object empty, throws Exception if both empty)
+             */
+            element = getElementToUse(object, property, "clickIF", tCExecution);
+            /**
+             * Get Identifier (identifier, locator) and check it's valid
+             */
+            Identifier identifier = identifierService.convertStringToIdentifier(element);
+            identifierService.checkWebElementIdentifier(identifier.getIdentifier());
+ 
+            if (tCExecution.getApplication().getType().equalsIgnoreCase("GUI")) {
+                if (identifier.getIdentifier().equals("picture")) {
+                    return sikuliService.doSikuliAction(tCExecution.getSession(), "clickIF", identifier.getLocator(), "");
+                } else {
+                    return webdriverService.doSeleniumActionClickIF(tCExecution.getSession(), identifier, true, true);
+                }
+            } else if (tCExecution.getApplication().getType().equalsIgnoreCase("APK")) {
+                return webdriverService.doSeleniumActionClick(tCExecution.getSession(), identifier, true, false);
+            }
+
+            message = new MessageEvent(MessageEventEnum.ACTION_NOTEXECUTED_NOTSUPPORTED_FOR_APPLICATION);
+            message.setDescription(message.getDescription().replaceAll("%ACTION%", "Click"));
+            message.setDescription(message.getDescription().replaceAll("%APPLICATIONTYPE%", tCExecution.getApplication().getType()));
+            return message;
+        } catch (CerberusEventException ex) {
+        	LOG.fatal("Error doing Action ClickIF :" + ex);
+            return ex.getMessageError();
+        }
+        
+    }
+    
+    private MessageEvent doActionTypeIF(TestCaseExecution tCExecution, String object, String property, String propertyName) {
+        MessageEvent message;
+        try {
+            /**
+             * Check object and property are not null
+             */
+            if (object == null || property == null) {
+                return new MessageEvent(MessageEventEnum.ACTION_FAILED_TYPE);
+            }
+            /**
+             * Get Identifier (identifier, locator)
+             */
+            Identifier identifier = identifierService.convertStringToIdentifier(object);
+            identifierService.checkWebElementIdentifier(identifier.getIdentifier());
+
+            if (tCExecution.getApplication().getType().equalsIgnoreCase("GUI")
+                    || tCExecution.getApplication().getType().equalsIgnoreCase("APK")) {
+                if (identifier.getIdentifier().equals("picture")) {
+                    return sikuliService.doSikuliAction(tCExecution.getSession(), "typeIF", identifier.getLocator(), property);
+                } else {
+                    return webdriverService.doSeleniumActionTypeIF(tCExecution.getSession(), identifier, property, propertyName);
+                }
+            }
+            message = new MessageEvent(MessageEventEnum.ACTION_NOTEXECUTED_NOTSUPPORTED_FOR_APPLICATION);
+            message.setDescription(message.getDescription().replaceAll("%ACTION%", "TypeIF"));
+            message.setDescription(message.getDescription().replaceAll("%APPLICATIONTYPE%", tCExecution.getApplication().getType()));
+            return message;
+        } catch (CerberusEventException ex) {
+        	LOG.fatal("Error doing Action TypeIF :" + ex);
+            return ex.getMessageError();
+        }
+    }
+       
 }

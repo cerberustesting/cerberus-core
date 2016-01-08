@@ -118,6 +118,7 @@ public class SikuliService implements ISikuliService {
             /**
              * If response contains Failed, return failed message
              */
+            if( !(action.equals("clickIF") || action.equals("typeIF")) ) {
             if (response.toString().contains("Failed")) {
                 if (!action.equals("verifyElementPresent")){
                 MessageEvent mes = new MessageEvent(MessageEventEnum.ACTION_FAILED_SIKULI_ELEMENT_NOT_FOUND);
@@ -129,6 +130,7 @@ public class SikuliService implements ISikuliService {
                 mes.setDescription(mes.getDescription().replaceAll("%STRING1%", locator));
                 return mes;
                 }
+            }
             }
             in.close();
             os.close();
@@ -159,6 +161,9 @@ public class SikuliService implements ISikuliService {
         if (action.equals("click")) {
             message = new MessageEvent(MessageEventEnum.ACTION_SUCCESS_CLICK);
             message.setDescription(message.getDescription().replaceAll("%ELEMENT%", locator));
+        } else if (action.equals("clickIF")) {
+            message = new MessageEvent(MessageEventEnum.ACTION_SUCCESS_CLICKIF);
+            message.setDescription(message.getDescription().replaceAll("%ELEMENT%", locator));
         } else if (action.equals("rightClick")) {
             message = new MessageEvent(MessageEventEnum.ACTION_SUCCESS_RIGHTCLICK);
             message.setDescription(message.getDescription().replaceAll("%ELEMENT%", locator));
@@ -167,6 +172,10 @@ public class SikuliService implements ISikuliService {
             message.setDescription(message.getDescription().replaceAll("%ELEMENT%", locator));
         } else if (action.equals("type")) {
             message = new MessageEvent(MessageEventEnum.ACTION_SUCCESS_TYPE);
+            message.setDescription(message.getDescription().replaceAll("%ELEMENT%", locator));
+            message.setDescription(message.getDescription().replaceAll("%DATA%", text));
+        } else if (action.equals("typeIF")) {
+            message = new MessageEvent(MessageEventEnum.ACTION_SUCCESS_TYPEIF);
             message.setDescription(message.getDescription().replaceAll("%ELEMENT%", locator));
             message.setDescription(message.getDescription().replaceAll("%DATA%", text));
         } else if (action.equals("mouseOver")) {

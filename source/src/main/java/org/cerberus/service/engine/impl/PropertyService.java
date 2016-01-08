@@ -705,7 +705,7 @@ public class PropertyService implements IPropertyService {
     private TestCaseExecutionData executeSql(TestCaseExecutionData testCaseExecutionData, TestCaseCountryProperties testCaseCountryProperty, TestCaseExecution tCExecution, boolean forceCalculation) {
         return sQLService.calculateOnDatabase(testCaseExecutionData, testCaseCountryProperty, tCExecution);
     }
-
+    
     private TestCaseExecutionData calculateText(TestCaseExecutionData testCaseExecutionData, TestCaseCountryProperties testCaseCountryProperty, boolean forceRecalculation) {
         if (Property.NATURE_RANDOM.equals(testCaseCountryProperty.getNature())
                 //TODO CTE Voir avec B. Civel "RANDOM_NEW"

@@ -109,5 +109,10 @@ public interface IWebDriverService {
     MessageEvent doSeleniumActionMouseDownMouseUp(Session session, Identifier identifier);
 
     public MessageEvent doSeleniumActionRightClick(Session session, Identifier identifier);
+
+    MessageEvent doSeleniumActionClickIF(Session session, Identifier identifier, boolean waitForVisibility, boolean waitForClickability);
+
+    MessageEvent doSeleniumActionTypeIF(Session session, Identifier identifier, String property, String propertyName);
+
 }
     

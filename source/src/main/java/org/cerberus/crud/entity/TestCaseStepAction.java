@@ -129,6 +129,8 @@ public class TestCaseStepAction {
     private static final String SELENIUM_URLLOGIN = "openUrlLogin";
     private static final String SELENIUM_WAIT = "wait";
     private static final String ACTION_CALCULATEPROPERTY = "calculateProperty";
+    private static final String SELENIUM_CLICKIF = "clickIF";
+    private static final String SELENIUM_TYPEIF = "typeIF";
 
     public boolean isSeleniumClick() {
         return this.getAction().equalsIgnoreCase(SELENIUM_CLICK);
@@ -192,7 +194,8 @@ public class TestCaseStepAction {
                 || this.getAction().equalsIgnoreCase(SELENIUM_KEYPRESS) || this.getAction().equalsIgnoreCase(SELENIUM_OPENURL)
                 || this.getAction().equalsIgnoreCase(SELENIUM_MOUSEOVER) || this.getAction().equalsIgnoreCase(SELENIUM_MOUSEOVERANDWAIT)
                 || this.getAction().equalsIgnoreCase(SELENIUM_TYPE) || this.getAction().equalsIgnoreCase(SELENIUM_WAIT)
-                || this.getAction().equalsIgnoreCase(SELENIUM_SELECTWAIT) || this.getAction().equalsIgnoreCase(SELENIUM_URLLOGIN);
+                || this.getAction().equalsIgnoreCase(SELENIUM_SELECTWAIT) || this.getAction().equalsIgnoreCase(SELENIUM_URLLOGIN)
+                || this.getAction().equalsIgnoreCase(SELENIUM_CLICKIF) || this.getAction().equalsIgnoreCase(SELENIUM_TYPEIF);
     }
 
     public boolean hasSameKey(TestCaseStepAction obj) {
@@ -276,5 +279,11 @@ public class TestCaseStepAction {
         return "TestCaseStepAction{" + "test=" + test + ", testCase=" + testCase + ", step=" + step + ", sequence=" + sequence + ", action=" + action + ", object=" + object + ", property=" + property + ", description=" + description + ", testCaseStepActionControl=" + testCaseStepActionControl + '}';
     }
     
+    public boolean isSeleniumClickIF() {
+        return this.getAction().equalsIgnoreCase(SELENIUM_CLICKIF);
+    }
     
+    public boolean isSeleniumTypeIF() {
+        return this.getAction().equalsIgnoreCase(SELENIUM_TYPEIF);
+    }    
 }

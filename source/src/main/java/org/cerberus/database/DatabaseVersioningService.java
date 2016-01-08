@@ -391,6 +391,8 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLS.append(",('ACTION','verifyValue',150,12,'verifyValue',NULL,NULL,NULL)");
         SQLS.append(",('ACTION','wait',160,12,'wait',NULL,NULL,NULL)");
         SQLS.append(",('ACTION','waitForPage',170,12,'waitForPage',NULL,NULL,NULL)");
+        SQLS.append(",('ACTION','clickIF',210,12,'clickIF',NULL,NULL,NULL)");
+        SQLS.append(",('ACTION','typeIF',220,12,'typeIF',NULL,NULL,NULL)");
         SQLS.append(",('CONTROL','PropertyIsEqualTo',10,13,'PropertyIsEqualTo',NULL,NULL,NULL)");
         SQLS.append(",('CONTROL','PropertyIsGreaterThan',12,13,'PropertyIsGreaterThan',NULL,NULL,NULL)");
         SQLS.append(",('CONTROL','PropertyIsMinorThan',14,13,'PropertyIsMinorThan',NULL,NULL,NULL)");
@@ -5350,6 +5352,8 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLS.append(",('testcasestepaction','Action','unknown','en','Unknown action.','This is the default action defined inside Cerberus.<br>It can be used when the action has not been identified or clarified yet.<br>NB : It is not implemented and will report a FA status on the corresponding execution.')");
         SQLS.append(",('testcasestepaction','Action','wait','en','Wait for a certain amount of time.','<b>wait :</b> When the action expected is to wait 5 seconds.<br><br><dd><u><i>How to feed it :</i></u> <br><br><dd><i>Action =</i> wait, <i>Value =</i> null  and  <i>Property =</i> null.<br><br><br>')");
         SQLS.append(",('testcasestepaction','Action','waitForPage','en','Waiting for a page to load.','<b>waitForPage :</b> When the action expected is to wait for the opening of a new page.<br><br><dd><u><i>How to feed it :</i></u> <br><br><dd><i>Action =</i> waitForPage, <i>Value =</i> null  and <i>Property =</i>null.<br><br>')");
+        SQLS.append(",('testcasestepaction','Action','clickIF','en','Click on an optional element if it's in the page. If not, no error.','<b>clickIF :</b> Click on an element who may appear from time to time<br><br><dd><i>Action =</i> waitForPage, <i>Value = not empty</i>   and <i>Property =</i>null.<br><br>')");
+        SQLS.append(",('testcasestepaction','Action','typeIF','en','Type on an optional element if it's in the page. If not, no error.','<b>typeIF :</b> Type in an element who may appear from time to time<br><br><dd><i>Action =</i> waitForPage, <i>Value = not empty</i>   and <i>Property =</i>null.<br><br>')");
         SQLS.append(",('testcasestepaction','description','','en','Description','This is the functional desciption of the action.')");
         SQLS.append(",('testcasestepaction','image','','en','Picture','')");
         SQLS.append(",('testcasestepaction','Object','','en','Object','This is the object information that is used to perform the action.<br>The same variable as property value field can be used (See <a href=\"?DocTable=testcasecountryproperties&DocField=Value\">doc</a>)<br>This information needs to be feed according to the action chosen.<br><br>Get more information on <code class=\\'doc-fixed\\'>action</code> field.')");
