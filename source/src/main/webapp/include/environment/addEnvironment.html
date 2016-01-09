@@ -43,8 +43,9 @@
                             <li class="active"><a data-toggle="tab" id="tab1Text" href="#tabsAdd-1">Definition</a></li>
                             <li><a data-toggle="tab" href="#tabsAdd-2" id="tab2Text">Notifications</a></li>
                             <li><a data-toggle="tab" href="#tabsAdd-3" id="tab3Text">Status</a></li>
-                            <li><a data-toggle="tab" href="#tabsAdd-4" id="tab4Text">Dependencies</a></li>
-                            <li><a data-toggle="tab" href="#tabsAdd-5" id="tab5Text">Database</a></li>
+                            <li><a data-toggle="tab" href="#tabsAdd-4" id="tab4Text">Chain</a></li>
+                            <li><a data-toggle="tab" href="#tabsAdd-5" id="tab5Text">Dependencies</a></li>
+                            <li><a data-toggle="tab" href="#tabsAdd-6" id="tab6Text">Database</a></li>
                         </ul>
                         <div class="tab-content">   
                             <div class="center marginTop25 tab-pane fade in active" id="tabsAdd-1">
@@ -111,23 +112,27 @@
                                         <label for="active" name="activeField">Active</label>
                                         <br><input type="checkbox" checked="" id="activeNew" name="activeNew" class="activecb" disabled="" >
                                     </div>
-                                    <div class="form-group col-xs-3">
+                                    <div class="form-group col-xs-5">
                                         <label for="build" name="buildField">Build</label>
                                         <input type="text" class="form-control" name="buildNew" id="buildNew" aria-describedby="basic-addon1" readonly>
                                     </div>
-                                    <div class="form-group col-xs-3">
+                                    <div class="form-group col-xs-5">
                                         <label for="revision" name="revisionField">Revision</label>
                                         <input type="text" class="form-control" name="revisionNew" id="revisionNew" aria-describedby="basic-addon1" readonly>
                                     </div>
-                                    <div class="form-group col-xs-4">
+                                </div>
+                            </div>
+                            <div class="center tab-pane fade marginTop25" id="tabsAdd-4">
+                                <div class="row">
+                                    <div class="form-group col-xs-12">
                                         <label for="chain" name="chainField">Chain</label>
                                         <input type="text" class="form-control" name="chainNew" id="chainNew" aria-describedby="basic-addon1" readonly>
                                     </div>
                                 </div>
                             </div>
-                            <div class="center tab-pane fade marginTop25" id="tabsAdd-4">
-                            </div>
                             <div class="center tab-pane fade marginTop25" id="tabsAdd-5">
+                            </div>
+                            <div class="center tab-pane fade marginTop25" id="tabsAdd-6">
                             </div>
                         </div>
                     </div>

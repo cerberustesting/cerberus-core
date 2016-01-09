@@ -364,11 +364,28 @@ function editEntryClick(system, country, environment) {
 
             $('#editEnvButton').attr('class', '');
             $('#editEnvButton').attr('hidden', 'hidden');
-            console.debug("readonly");
         }
 
         formEdit.modal('show');
     });
+}
+
+function disableEntryClick(system, country, environment) {
+    clearResponseMessageMainPage();
+    console.debug("Not Implemened.");
+    showMessageMainPage("warning", "Disable Not Yet Implemened.");
+}
+
+function enableEntryClick(system, country, environment) {
+    clearResponseMessageMainPage();
+    console.debug("Not Implemened.");
+    showMessageMainPage("warning", "Enable Not Yet Implemened.");
+}
+
+function newChainEntryClick(system, country, environment) {
+    clearResponseMessageMainPage();
+    console.debug("Not Implemened.");
+    showMessageMainPage("warning", "New Chain Not Yet Implemened.");
 }
 
 function aoColumnsFunc(tableId) {
@@ -377,7 +394,7 @@ function aoColumnsFunc(tableId) {
         {"data": null,
             "title": doc.getDocLabel("page_global", "columnAction"),
             "bSortable": false,
-            "sWidth": "100px",
+            "sWidth": "160px",
             "bSearchable": false,
             "mRender": function (data, type, obj) {
                 var hasPermissions = $("#" + tableId).attr("hasPermissions");
@@ -391,7 +408,7 @@ function aoColumnsFunc(tableId) {
                                 name="editEnv" title="' + doc.getDocLabel("page_environment", "button_edit") + '" type="button">\n\
                                 <span class="glyphicon glyphicon-eye-open"></span></button>';
                 var deleteEnv = '<button id="deleteEnv" onclick="deleteEntryClick(\'' + obj["system"] + '\',\'' + obj["country"] + '\',\'' + obj["environment"] + '\');" \n\
-                                class="deleteEnv btn btn-default btn-xs margin-right5" \n\
+                                class="deleteEnv btn btn-default btn-xs margin-right25" \n\
                                 name="deleteEnv" title="' + doc.getDocLabel("page_environment", "button_delete") + '" type="button">\n\
                                 <span class="glyphicon glyphicon-trash"></span></button>';
                 var disableEnv = '<button id="disableEnv" onclick="disableEntryClick(\'' + obj["system"] + '\',\'' + obj["country"] + '\',\'' + obj["environment"] + '\');" \n\
@@ -402,17 +419,21 @@ function aoColumnsFunc(tableId) {
                                 class="enableEnv btn btn-default btn-xs margin-right5" \n\
                                 name="enableEnv" title="' + doc.getDocLabel("page_environment", "button_delete") + '" type="button">\n\
                                 <span class="glyphicon glyphicon-ok-circle"></span></button>';
+                var newChainEnv = '<button id="newChainEnv" onclick="newChainEntryClick(\'' + obj["system"] + '\',\'' + obj["country"] + '\',\'' + obj["environment"] + '\');;" \n\
+                                class="newChainEnv btn btn-default btn-xs margin-right5" \n\
+                                name="newChainEnv" title="' + doc.getDocLabel("page_environment", "button_delete") + '" type="button">\n\
+                                NC</button>';
 
-                var returnString = '<div class="center btn-group width150">';
+                var returnString = '<div class="center btn-group width160">';
                 if (hasPermissions === "true") { //only draws the options if the user has the correct privileges
                     returnString += editEnv + deleteEnv;
                 } else {
                     returnString += viewEnv;
                 }
                 if (obj["active"]) {
-//                    returnString += disableEnv;
+                    returnString += disableEnv + newChainEnv;
                 } else {
-//                    returnString += enableEnv;
+                    returnString += enableEnv;
                 }
                 returnString += '</div>';
                 return returnString;
