@@ -104,3 +104,13 @@ GROUP BY d.DocTable, d.DocField, d.DocValue
 ) doc_count
 GROUP BY DocTable
 ) doc_2 ;  
+
+
+
+
+-- Check Environment consistency
+-----------------------------------------
+
+-- control if system application is consistent with env table.
+SELECT distinct cep.system, cep.application, a.system from countryenvironmentparameters cep
+join application a on cep.application=a.application where cep.system<>a.system;
