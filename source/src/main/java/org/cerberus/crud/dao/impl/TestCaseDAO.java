@@ -145,24 +145,24 @@ public class TestCaseDAO implements ITestCaseDAO {
         searchSQL.append("WHERE 1=1");
 
         if (!StringUtil.isNullOrEmpty(system)) {
-            searchSQL.append(" AND `system` = ? ");
+            searchSQL.append(" AND app.`system` = ? ");
         }
         if (!StringUtil.isNullOrEmpty(test)) {
-            searchSQL.append(" AND `test` = ?");
+            searchSQL.append(" AND tc.`test` = ?");
         }
 
         if (!StringUtil.isNullOrEmpty(searchTerm)) {
-            searchSQL.append(" and (`testcase` like ?");
-            searchSQL.append(" or `application` like ?");
-            searchSQL.append(" or `project` like ?");
-            searchSQL.append(" or `creator` like ?");
-            searchSQL.append(" or `lastmodifier` like ?");
-            searchSQL.append(" or `tcactive` like ?");
-            searchSQL.append(" or `status` like ?");
-            searchSQL.append(" or `group` like ?");
-            searchSQL.append(" or `priority` like ?");
-            searchSQL.append(" or `tcdatecrea` like ?");
-            searchSQL.append(" or `description` like ?)");
+            searchSQL.append(" and (tc.`testcase` like ?");
+            searchSQL.append(" or tc.`application` like ?");
+            searchSQL.append(" or tc.`project` like ?");
+            searchSQL.append(" or tc.`creator` like ?");
+            searchSQL.append(" or tc.`lastmodifier` like ?");
+            searchSQL.append(" or tc.`tcactive` like ?");
+            searchSQL.append(" or tc.`status` like ?");
+            searchSQL.append(" or tc.`group` like ?");
+            searchSQL.append(" or tc.`priority` like ?");
+            searchSQL.append(" or tc.`tcdatecrea` like ?");
+            searchSQL.append(" or tc.`description` like ?)");
         }
         if (!StringUtil.isNullOrEmpty(individualSearch)) {
             searchSQL.append(" and ( ? )");
@@ -170,7 +170,7 @@ public class TestCaseDAO implements ITestCaseDAO {
         query.append(searchSQL);
 
         if (!StringUtil.isNullOrEmpty(column)) {
-            query.append(" order by `").append(column).append("` ").append(dir);
+            query.append(" order by tc.`").append(column).append("` ").append(dir);
         }
 
         if (amount != 0) {
