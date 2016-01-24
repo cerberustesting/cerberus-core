@@ -24,6 +24,7 @@ import org.cerberus.crud.dao.ICountryEnvParam_logDAO;
 
 import org.cerberus.crud.entity.CountryEnvParam_log;
 import org.cerberus.crud.entity.MessageGeneral;
+import org.cerberus.crud.factory.IFactoryCountryEnvParam_log;
 import org.cerberus.crud.service.ICountryEnvParam_logService;
 import org.cerberus.enums.MessageGeneralEnum;
 import org.cerberus.enums.MessageEventEnum;
@@ -42,6 +43,8 @@ public class CountryEnvParam_logService implements ICountryEnvParam_logService {
 
     @Autowired
     private ICountryEnvParam_logDAO countryEnvParamLogDao;
+    @Autowired
+    private IFactoryCountryEnvParam_log countryEnvParamLogFactory;
 
     @Override
     public AnswerItem readByKey(Long id) {
@@ -81,6 +84,15 @@ public class CountryEnvParam_logService implements ICountryEnvParam_logService {
     @Override
     public Answer update(CountryEnvParam_log countryEnvParamLog) {
         return countryEnvParamLogDao.update(countryEnvParamLog);
+    }
+
+    @Override
+    public Answer createLogEntry(String system, String country, String environment, String build, String revision, String description, String creator) {
+//        CountryEnvParam_log countryEnvParamLog;
+        String toto = "";
+        toto="titi";
+//        countryEnvParamLog = countryEnvParamLogFactory.create(system, country, environment, "", "", 0, description, creator);
+        return this.create(countryEnvParamLogFactory.create(system, country, environment, build, revision, 0, description, creator));
     }
 
     @Override

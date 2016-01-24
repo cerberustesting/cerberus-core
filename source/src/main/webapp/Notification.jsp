@@ -127,7 +127,7 @@
                                 formAction = "DisableEnvironment";
                             }
                             if (event.equals("newchain")) {
-                                eMailContent = myEmailGeneration.EmailGenerationNewChain(system, country, env, build, revision, chain);
+                                eMailContent = myEmailGeneration.EmailGenerationNewChain(system, country, env, chain);
                                 formAction = "NewChain";
                             }
                         }

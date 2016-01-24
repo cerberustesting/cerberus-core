@@ -43,4 +43,17 @@ public interface IFactoryCountryEnvParam_log {
     CountryEnvParam_log create(long id, String system, String country, String environment, String build, String revision,
             int chain, String description, Timestamp datecre, String creator);
 
+    /**
+     * @param description Description of the Application.
+     * @param country
+     * @param environment
+     * @param build
+     * @param revision
+     * @param chain
+     * @param system
+     * @param creator
+     * @return
+     */
+    CountryEnvParam_log create(String system, String country, String environment, String build, String revision,
+            int chain, String description, String creator);
 }

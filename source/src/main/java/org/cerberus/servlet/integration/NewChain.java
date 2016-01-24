@@ -17,7 +17,7 @@
  * You should have received a copy of the GNU General Public License
  * along with Cerberus.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.cerberus.servlet.crud.countryenvironment;
+package org.cerberus.servlet.integration;
 
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -47,8 +47,8 @@ import org.springframework.web.context.support.WebApplicationContextUtils;
 /**
  * @author vertigo
  */
-@WebServlet(name = "DisableEnvironment", urlPatterns = {"/DisableEnvironment"})
-public class DisableEnvironment extends HttpServlet {
+@WebServlet(name = "NewChain", urlPatterns = {"/NewChain"})
+public class NewChain extends HttpServlet {
 
     /**
      * Processes requests for both HTTP
@@ -70,6 +70,7 @@ public class DisableEnvironment extends HttpServlet {
 
         Connection connection = database.connect();
         try {
+
             String system = null;
             if (request.getParameter("system") != null && request.getParameter("system").compareTo("") != 0) {
                 system = request.getParameter("system");
@@ -82,12 +83,24 @@ public class DisableEnvironment extends HttpServlet {
             if (request.getParameter("env") != null && request.getParameter("env").compareTo("") != 0) {
                 env = request.getParameter("env");
             }
+            String chain = null;
+            if (request.getParameter("chain") != null && request.getParameter("chain").compareTo("") != 0) {
+                chain = request.getParameter("chain");
+            }
+            String build = null;
+            if (request.getParameter("build") != null && request.getParameter("build").compareTo("") != 0) {
+                build = request.getParameter("build");
+            }
+            String rev = null;
+            if (request.getParameter("revision") != null && request.getParameter("revision").compareTo("") != 0) {
+                rev = request.getParameter("revision");
+            }
 
 
             // Generate the content of the email
             IEmailGeneration emailGenerationService = appContext.getBean(EmailGeneration.class);
 
-            String eMailContent = emailGenerationService.EmailGenerationDisableEnv(system, country, env);
+            String eMailContent = emailGenerationService.EmailGenerationNewChain(system, country, env, chain);
 
             // Split the result to extract all the data
             String[] eMailContentTable = eMailContent.split("///");
@@ -102,20 +115,15 @@ public class DisableEnvironment extends HttpServlet {
             Statement stmt = connection.createStatement();
 
             try {
-                String req_update_active = "UPDATE countryenvparam "
-                        + " SET Active='N'"
-                        + "WHERE `System`='" + system + "' and Country='" + country + "' and Environment='" + env + "'";
+                String req_update_active = "INSERT INTO buildrevisionbatch "
+                        + " ( `System`, `Batch`, `Country`, `Build`, `Revision`, `Environment` ) "
+                        + " VALUES ('" + system + "', '" + chain + "', '" + country + "', '"
+                        + build + "', '" + rev + "', '" + env + "') ";
+
                 stmt.executeUpdate(req_update_active);
-
-
-                String req_insert_log = "INSERT INTO  countryenvparam_log "
-                        + " ( `System`, `Country`, `Environment`, `Description`, `Creator`) "
-                        + " VALUES ('" + system + "', '" + country + "', '" + env + "', 'Disabled.', '" + request.getUserPrincipal().getName() + "') ";
-                stmt.execute(req_insert_log);
             } finally {
                 stmt.close();
             }
-
 
             // Email sending.
             // Search the From, the Host and the Port defined in the database
@@ -129,13 +137,15 @@ public class DisableEnvironment extends HttpServlet {
             host = parameterService.findParameterByKey("integration_smtp_host",system).getValue();
             port = Integer.valueOf(parameterService.findParameterByKey("integration_smtp_port",system).getValue());
 
+
             //sendMail Mail = new sendMail();
             sendMail.sendHtmlMail(host, port, body, subject, from, to, cc);
 
             response.sendRedirect("Environment.jsp?system=" + system + "&country=" + country + "&env=" + env);
 
+
         } catch (Exception e) {
-            Logger.getLogger(DisableEnvironment.class.getName()).log(Level.SEVERE, Infos.getInstance().getProjectNameAndVersion() + " - Exception catched.", e);
+            Logger.getLogger(NewChain.class.getName()).log(Level.SEVERE, Infos.getInstance().getProjectNameAndVersion() + " - Exception catched.", e);
             out.println(e.getMessage());
         } finally {
             out.close();
@@ -144,7 +154,7 @@ public class DisableEnvironment extends HttpServlet {
                     connection.close();
                 }
             } catch (SQLException e) {
-                MyLogger.log(DisableEnvironment.class.getName(), org.apache.log4j.Level.WARN, e.toString());
+                MyLogger.log(NewChain.class.getName(), org.apache.log4j.Level.WARN, e.toString());
             }
         }
 

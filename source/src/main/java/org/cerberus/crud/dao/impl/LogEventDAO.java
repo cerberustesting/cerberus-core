@@ -145,6 +145,8 @@ public class LogEventDAO implements ILogEventDAO {
 
         if (!StringUtil.isNullOrEmpty(colName)) {
             query.append("order by `").append(colName).append("` ").append(dir);
+        }else{
+            query.append("order by `logEventID` desc");
         }
         if ((amount <= 0) || (amount >= MAX_ROW_SELECTED)) {
             query.append(" limit ").append(start).append(" , ").append(MAX_ROW_SELECTED);

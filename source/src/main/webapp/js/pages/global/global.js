@@ -156,29 +156,41 @@ function displayProjectList(selectName, defaultValue) {
 
 /**
  * Method that display a combo box in all the selectName tags with the value retrieved from the Build Invariant list
- * @param {String} selectName value name of the select tag in the html
+ * @param {String} selectName html ref of the select tag in the html (ex : #selectBuild)
  * @param {String} system value of the system to filter the build.
  * @param {String} level value of the level of the build invariant
  * @param {String} defaultValue to be selected
+ * @param {String} withAll "Y" in order to add a ALL entry
+ * @param {String} withNone "Y" in order to add a NONE entry
  * @returns {void}
  */
-function displayBuildList(selectName, system, level, defaultValue) {
-    var myData = "iSortCol_0=2"; // We sort by sequence.
-    if (system !== "") {
-        myData += "&system=" + system;
-    }
-    if (level !== "") {
-        myData += "&level=" + level;
-    }
-    $("[name='" + selectName + "']").append($('<option></option>').text("NONE").val("NONE"));
-    $.when($.getJSON("ReadBuildRevisionInvariant", myData)).then(function (data) {
-        for (var option in data.contentTable) {
-            $("[name='" + selectName + "']").append($('<option></option>').text(data.contentTable[option].versionName).val(data.contentTable[option].versionName));
-        }
+function displayBuildList(selectName, system, level, defaultValue, withAll, withNone) {
+    var select = $(selectName);
 
-        if (defaultValue !== undefined) {
-            $("[name='" + selectName + "']").val(defaultValue);
-        }
+    $.ajax({
+        type: "GET",
+        url: "ReadBuildRevisionInvariant",
+        data: {iSortCol_0: "2", system: system, level: level},
+        async: false,
+        dataType: 'json',
+        success: function (data) {
+            if (withAll === "Y") {
+                select.append($('<option></option>').text("-- ALL --").val("ALL"));
+            }
+            if (withNone === "Y") {
+                select.append($('<option></option>').text("NONE").val("NONE"));
+            }
+
+            for (var option in data.contentTable) {
+                select.append($('<option></option>').text(data.contentTable[option].versionName).val(data.contentTable[option].versionName));
+            }
+
+            if (defaultValue !== undefined) {
+                select.val(defaultValue);
+            }
+
+        },
+        error: showUnexpectedError
     });
 }
 

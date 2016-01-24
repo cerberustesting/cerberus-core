@@ -63,8 +63,8 @@ public class EmailBodyGeneration implements IEmailBodyGeneration {
 
             buildContentTable = "Here are the last modifications since last change (" + lastBuild + "/" + lastRevision + ") :";
             buildContentTable = buildContentTable + "<table>";
-            buildContentTable = buildContentTable + "<tr style=\"background-color:#cad3f1; font-style:bold\"><td>"
-                    + "Sprint/Rev</td><td>Application</td><td>Subject</td><td>Project</td><td>Bug</td><td>Ticket</td><td>People in Charge</td><td>Release Documentation</td></tr>";
+            buildContentTable = buildContentTable + "<thead><tr style=\"background-color:#cad3f1; font-style:bold\"><td>"
+                    + "Sprint/Rev</td><td>Application</td><td>Subject</td><td>Project</td><td>Bug</td><td>Ticket</td><td>People in Charge</td><td>Release Documentation</td></tr></thead><tbody>";
 
             final String contentSQL = new StringBuffer("SELECT b.`Build`, b.`Revision`, b.`Release` , b.`Link` , ")
                     .append(" b.`Application`, b.`ReleaseOwner`, b.`BugIDFixed`, b.`TicketIDFixed`, b.`subject`, b.`Project`")
@@ -165,7 +165,7 @@ public class EmailBodyGeneration implements IEmailBodyGeneration {
                         + release + "</td></tr>";
             } while (rsBC.next());
 
-            buildContentTable = buildContentTable + "</table><br>";
+            buildContentTable = buildContentTable + "</tbody></table><br>";
 
             rsBC.close();
             stmtBuildContent.close();

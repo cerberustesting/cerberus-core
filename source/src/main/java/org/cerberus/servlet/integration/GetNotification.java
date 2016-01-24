@@ -1,0 +1,206 @@
+/*
+ * Cerberus  Copyright (C) 2013  vertigo17
+ * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
+ *
+ * This file is part of Cerberus.
+ *
+ * Cerberus is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * Cerberus is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with Cerberus.  If not, see <http://www.gnu.org/licenses/>.
+ */
+package org.cerberus.servlet.integration;
+
+import java.io.IOException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
+import javax.servlet.ServletException;
+import javax.servlet.annotation.WebServlet;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+import org.cerberus.crud.entity.MessageEvent;
+import org.cerberus.enums.MessageEventEnum;
+import org.cerberus.exception.CerberusException;
+import org.cerberus.service.email.IEmailGeneration;
+import org.cerberus.util.answer.Answer;
+import org.cerberus.util.answer.AnswerItem;
+import org.json.JSONException;
+import org.json.JSONObject;
+import org.owasp.html.PolicyFactory;
+import org.owasp.html.Sanitizers;
+import org.springframework.context.ApplicationContext;
+import org.springframework.web.context.support.WebApplicationContextUtils;
+
+/**
+ *
+ * @author vertigo
+ */
+@WebServlet(name = "GetNotification", urlPatterns = {"/GetNotification"})
+public class GetNotification extends HttpServlet {
+
+    private final String OBJECT_NAME = "GetNotification";
+
+    /**
+     * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
+     * methods.
+     *
+     * @param request servlet request
+     * @param response servlet response
+     * @throws ServletException if a servlet-specific error occurs
+     * @throws IOException if an I/O error occurs
+     * @throws org.cerberus.exception.CerberusException
+     */
+    protected void processRequest(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException, CerberusException, JSONException {
+        JSONObject jsonResponse = new JSONObject();
+        Answer answer = new Answer();
+        MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
+        msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", ""));
+        answer.setResultMessage(msg);
+        PolicyFactory policy = Sanitizers.FORMATTING.and(Sanitizers.LINKS);
+
+        response.setContentType("application/json");
+
+        /**
+         * Parsing and securing all required parameters.
+         */
+        String system = policy.sanitize(request.getParameter("system"));
+        String country = policy.sanitize(request.getParameter("country"));
+        String env = policy.sanitize(request.getParameter("environment"));
+        String build = policy.sanitize(request.getParameter("build"));
+        String revision = policy.sanitize(request.getParameter("revision"));
+        String chain = policy.sanitize(request.getParameter("chain"));
+
+        // Init Answer with potencial error from Parsing parameter.
+//        AnswerItem answer = new AnswerItem(msg);
+        String eMailContent = "";
+        ApplicationContext appContext = WebApplicationContextUtils.getWebApplicationContext(this.getServletContext());
+        IEmailGeneration emailService = appContext.getBean(IEmailGeneration.class);
+
+        if (request.getParameter("system") == null) {
+            msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_EXPECTED);
+            msg.setDescription(msg.getDescription().replace("%ITEM%", "GetNotification")
+                    .replace("%OPERATION%", "Get")
+                    .replace("%REASON%", "System name is missing!"));
+            answer.setResultMessage(msg);
+        } else if (request.getParameter("event") == null) {
+            msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_EXPECTED);
+            msg.setDescription(msg.getDescription().replace("%ITEM%", "GetNotification")
+                    .replace("%OPERATION%", "Get")
+                    .replace("%REASON%", "event is missing!"));
+            answer.setResultMessage(msg);
+        } else if (request.getParameter("event").equals("newbuildrevision")) { // ID parameter is specified so we return the unique record of object.
+            msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
+            msg.setDescription(msg.getDescription().replace("%ITEM%", "GetNotification")
+                    .replace("%OPERATION%", "Get"));
+            answer.setResultMessage(msg);
+            eMailContent = emailService.EmailGenerationRevisionChange(system, country, env, build, revision);
+            String[] eMailContentTable = eMailContent.split("///");
+            jsonResponse.put("notificationTo", eMailContentTable[0]);
+            jsonResponse.put("notificationCC", eMailContentTable[1]);
+            jsonResponse.put("notificationSubject", eMailContentTable[2]);
+            jsonResponse.put("notificationBody", eMailContentTable[3]);
+        } else if (request.getParameter("event").equals("disableenvironment")) { // ID parameter is specified so we return the unique record of object.
+            msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
+            msg.setDescription(msg.getDescription().replace("%ITEM%", "GetNotification")
+                    .replace("%OPERATION%", "Get"));
+            answer.setResultMessage(msg);
+            eMailContent = emailService.EmailGenerationDisableEnv(system, country, env);
+            String[] eMailContentTable = eMailContent.split("///");
+            jsonResponse.put("notificationTo", eMailContentTable[0]);
+            jsonResponse.put("notificationCC", eMailContentTable[1]);
+            jsonResponse.put("notificationSubject", eMailContentTable[2]);
+            jsonResponse.put("notificationBody", eMailContentTable[3]);
+        } else if (request.getParameter("event").equals("newchain")) { // ID parameter is specified so we return the unique record of object.
+            msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
+            msg.setDescription(msg.getDescription().replace("%ITEM%", "GetNotification")
+                    .replace("%OPERATION%", "Get"));
+            answer.setResultMessage(msg);
+            eMailContent = emailService.EmailGenerationNewChain(system, country, env, chain);
+            String[] eMailContentTable = eMailContent.split("///");
+            jsonResponse.put("notificationTo", eMailContentTable[0]);
+            jsonResponse.put("notificationCC", eMailContentTable[1]);
+            jsonResponse.put("notificationSubject", eMailContentTable[2]);
+            jsonResponse.put("notificationBody", eMailContentTable[3]);
+        } else {
+            msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_EXPECTED);
+            msg.setDescription(msg.getDescription().replace("%ITEM%", "GetNotification")
+                    .replace("%OPERATION%", "Get")
+                    .replace("%REASON%", "Unknown reason!"));
+            answer.setResultMessage(msg);
+        }
+
+        /**
+         * Formating and returning the json result.
+         */
+        jsonResponse.put("messageType", answer.getResultMessage().getMessage().getCodeString());
+        jsonResponse.put("message", answer.getResultMessage().getDescription());
+
+        response.getWriter().print(jsonResponse);
+        response.getWriter().flush();
+
+    }
+
+    // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
+    /**
+     * Handles the HTTP <code>GET</code> method.
+     *
+     * @param request servlet request
+     * @param response servlet response
+     * @throws ServletException if a servlet-specific error occurs
+     * @throws IOException if an I/O error occurs
+     */
+    @Override
+    protected void doGet(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+        try {
+            processRequest(request, response);
+        } catch (CerberusException ex) {
+            Logger.getLogger(GetNotification.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+        } catch (JSONException ex) {
+            Logger.getLogger(GetNotification.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+
+    /**
+     * Handles the HTTP <code>POST</code> method.
+     *
+     * @param request servlet request
+     * @param response servlet response
+     * @throws ServletException if a servlet-specific error occurs
+     * @throws IOException if an I/O error occurs
+     */
+    @Override
+    protected void doPost(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+        try {
+            processRequest(request, response);
+        } catch (CerberusException ex) {
+            Logger.getLogger(GetNotification.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+        } catch (JSONException ex) {
+            Logger.getLogger(GetNotification.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+
+    /**
+     * Returns a short description of the servlet.
+     *
+     * @return a String containing servlet description
+     */
+    @Override
+    public String getServletInfo() {
+        return "Short description";
+    }// </editor-fold>
+
+}

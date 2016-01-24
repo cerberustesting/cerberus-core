@@ -47,6 +47,9 @@ function initPage() {
     displayInvariantList("type", "ENVTYPE");
     displayInvariantList("maintenanceAct", "MNTACTIVE", "N");
 
+    displayBuildList('#newBuild', getUser().defaultSystem, "1", "", "", "");
+    displayBuildList('#newRevision', getUser().defaultSystem, "2", "", "", "");
+
     var table = loadEnvTable(urlCountry, urlEnvironment, urlBuild, urlRevision);
     table.fnSort([3, 'asc']);
 
@@ -56,7 +59,16 @@ function initPage() {
 
     //clear the modals fields when closed
     $('#addEnvModal').on('hidden.bs.modal', addEntryModalCloseHandler);
-    $('#editEnvModal').on('hidden.bs.modal', editEnvModalCloseHandler);
+    $('#editEnvModal').on('hidden.bs.modal', editEntryModalCloseHandler);
+    $('#eventEnableModal').on('hidden.bs.modal', eventEnableModalCloseHandler);
+    $("#eventEnablePreviewNotificationButton").click(eventEnablePreview);
+    $("#eventEnableButton").click(eventEnableModalConfirmHandler);
+    $('#eventDisableModal').on('hidden.bs.modal', eventDisableModalCloseHandler);
+    $("#eventDisableButton").click(eventDisableModalConfirmHandler);
+    $('#eventNewChainModal').on('hidden.bs.modal', eventNewChainModalCloseHandler);
+    $("#eventNewChainPreviewNotificationButton").click(eventNewChainPreview);
+    $("#eventNewChainButton").click(eventNewChainModalConfirmHandler);
+
 }
 
 function displayPageLabel() {
@@ -303,7 +315,7 @@ function editEntryModalSaveHandler() {
     }).fail(handleErrorAjaxAfterTimeout);
 }
 
-function editEnvModalCloseHandler() {
+function editEntryModalCloseHandler() {
     // reset form values
     $('#editEnvModal #editEnvModalForm')[0].reset();
     // remove all errors on the form fields
@@ -370,22 +382,278 @@ function editEntryClick(system, country, environment) {
     });
 }
 
-function disableEntryClick(system, country, environment) {
+function eventEnableClick(system, country, environment, build, revision) {
     clearResponseMessageMainPage();
-    console.debug("Not Implemened.");
-    showMessageMainPage("warning", "Disable Not Yet Implemened.");
+    var formEvent = $('#eventEnableModal');
+    formEvent.find("#system").prop("value", system);
+    formEvent.find("#country").prop("value", country);
+    formEvent.find("#environment").prop("value", environment);
+    formEvent.find("#currentBuild").prop("value", build);
+    formEvent.find("#currentRevision").prop("value", revision);
+    formEvent.find('#newBuild').val(build);
+    formEvent.find('#newRevision').val(revision);
+
+    $("#eventEnableButton").prop("disabled", "disabled");
+
+    // Clean Old field values.
+    var formEvent = $('#eventEnableModal');
+    // Clean old html data
+    formEvent.find("#notifTo").prop("value", '');
+    formEvent.find("#notifCc").prop("value", '');
+    formEvent.find("#notifSubject").prop("value", '');
+    formEvent.find("#notifBody div").remove();
+    $('#installInstructionsTableBody tr').remove();
+
+    formEvent.modal('show');
 }
 
-function enableEntryClick(system, country, environment) {
-    clearResponseMessageMainPage();
-    console.debug("Not Implemened.");
-    showMessageMainPage("warning", "Enable Not Yet Implemened.");
+function eventEnablePreview() {
+    var formEvent = $('#eventEnableModal');
+    // Clean old html data
+    formEvent.find("#notifTo").prop("value", '');
+    formEvent.find("#notifCc").prop("value", '');
+    formEvent.find("#notifSubject").prop("value", '');
+    formEvent.find("#notifBody div").remove();
+    var system = formEvent.find("#system").prop("value");
+    var country = formEvent.find("#country").prop("value");
+    var environment = formEvent.find("#environment").prop("value");
+    var build = formEvent.find("#newBuild").val();
+    var revision = formEvent.find("#newRevision").val();
+    // Email Preview tab refresh
+    var jqxhr = $.getJSON("GetNotification", "event=newbuildrevision" + "&system=" + system + "&country=" + country + "&environment=" + environment + "&build=" + build + "&revision=" + revision);
+    $.when(jqxhr).then(function (data) {
+        formEvent.find("#notifTo").prop("value", data.notificationTo);
+        formEvent.find("#notifCc").prop("value", data.notificationCC);
+        formEvent.find("#notifSubject").prop("value", data.notificationSubject);
+        // We force the table to be smaller than 950px.
+        formEvent.find("#notifBody").append("<div><table><tbody><tr><td style=\"max-width: 950px;\">" + data.notificationBody + "</td></tr></tbody></table></div>");
+        $("#eventEnableButton").removeProp("disabled");
+    }).fail(handleErrorAjaxAfterTimeout);
+    // Installation instructions tab refresh
+    refreshlistInstallInstructions();
 }
 
-function newChainEntryClick(system, country, environment) {
+function eventEnableModalCloseHandler() {
+    // reset form values
+    $('#eventEnableModal #eventEnableModalForm')[0].reset();
+    // remove all errors on the form fields
+    $(this).find('div.has-error').removeClass("has-error");
+    // clear the response messages of the modal
+    clearResponseMessage($('#eventEnableModal'));
+    // Clean old html data
+    $('#notifBody div').remove();
+    console.debug("Closed.");
+}
+
+function eventEnableModalConfirmHandler() {
+    console.debug("Confirmed.");
+    var formEvent = $('#eventEnableModal');
+    var system = formEvent.find("#system").prop("value");
+    var country = formEvent.find("#country").prop("value");
+    var environment = formEvent.find("#environment").prop("value");
+    var build = formEvent.find("#newBuild").val();
+    var revision = formEvent.find("#newRevision").val();
+
+    var jqxhr = $.getJSON("NewBuildRev1", "system=" + system + "&country=" + country + "&environment=" + environment + "&build=" + build + "&revision=" + revision);
+    $.when(jqxhr).then(function (data) {
+        console.debug("Email Sent.");
+        hideLoaderInModal('#eventEnableModal');
+        if (getAlertType(data.messageType) === "success") {
+            var oTable = $("#environmentsTable").dataTable();
+            oTable.fnDraw(true);
+            $('#eventEnableModal').modal('hide');
+            showMessage(data);
+        } else {
+            showMessage(data, $('#eventEnableModal'));
+        }
+    });
+}
+
+/**
+ * Handler that cleans the modal for editing subdata when it is closed.
+ */
+function refreshlistInstallInstructions() {
+    console.debug("Refresh install nstructions.");
+
+    $('#installInstructionsTableBody tr').remove();
+
+
+    var formEdit = $('#eventNewChainModal');
+
+    var selectBuildFrom = $("#currentBuild").val();
+    var selectRevisionFrom = $("#currentRevision").val();
+    var selectBuildTo = $("#newBuild").val();
+    var selectRevisionTo = $("#newRevision").val();
+
+
+    var jqxhr = $.getJSON("ReadBuildRevisionParameters", "system=" + getUser().defaultSystem + "&lastbuild=" + selectBuildFrom + "&lastrevision=" + selectRevisionFrom
+            + "&build=" + selectBuildTo + "&revision=" + selectRevisionTo + "&getSVNRelease");
+    $.when(jqxhr).then(function (result) {
+        $.each(result["contentTable"], function (idx, obj) {
+            appendNewInstallRow(obj.build, obj.revision, obj.application, obj.release, "", obj.mavenVersion);
+        });
+    }).fail(handleErrorAjaxAfterTimeout);
+
+    var jqxhr = $.getJSON("ReadBuildRevisionParameters", "system=" + getUser().defaultSystem + "&lastbuild=" + selectBuildFrom + "&lastrevision=" + selectRevisionFrom
+            + "&build=" + selectBuildTo + "&revision=" + selectRevisionTo + "&getNonSVNRelease");
+    $.when(jqxhr).then(function (result) {
+        $.each(result["contentTable"], function (idx, obj) {
+            appendNewInstallRow(obj.build, obj.revision, obj.application, obj.release, obj.link, "");
+        });
+    }).fail(handleErrorAjaxAfterTimeout);
+
+}
+
+/**
+ * Render 1 line on installation instructions modal.
+ */
+function appendNewInstallRow(build, revision, application, release, link, version) {
+    var doc = new Doc();
+    if ((version === null) || (version === "undefined") || (version === ""))
+        version = "";
+    var link_html = "";
+    if (link === "") {
+        link_html = "";
+    } else {
+        link_html = '<a target="_blank" href="' + link + '">link</a>';
+    }
+    //for each install instructions adds a new row
+    $('#installInstructionsTableBody').append('<tr> \n\
+        <td><div class="nomarginbottom form-group form-group-sm">\n\
+            <input readonly name="build" type="text" class="releaseClass form-control input-xs" value="' + build + '"/><span></span></div></td>\n\\n\
+        <td><div class="nomarginbottom form-group form-group-sm">\n\
+            <input readonly name="build" type="text" class="releaseClass form-control input-xs" value="' + revision + '"/><span></span></div></td>\n\\n\
+        <td><div class="nomarginbottom form-group form-group-sm">\n\
+            <input readonly name="application" type="text" class="releaseClass form-control input-xs" value="' + application + '"/><span></span></div></td>\n\\n\
+        <td><div class="nomarginbottom form-group form-group-sm">\n\
+            <input readonly name="release" type="text" class="releaseClass form-control input-xs" value="' + release + '"/><span></span></div></td>\n\\n\
+        <td style="text-align:center"><div class="nomarginbottom form-group form-group-sm">' + link_html + '</div></td>\n\\n\
+        <td><div class="nomarginbottom form-group form-group-sm">\n\n\
+            <input readonly name="version" type="text" class="releaseClass form-control input-xs" value="' + version + '" /></div></td>\n\
+        </tr>');
+}
+
+function eventDisableClick(system, country, environment) {
     clearResponseMessageMainPage();
-    console.debug("Not Implemened.");
-    showMessageMainPage("warning", "New Chain Not Yet Implemened.");
+    var jqxhr = $.getJSON("GetNotification", "event=disableenvironment" + "&system=" + system + "&country=" + country + "&environment=" + environment);
+    $.when(jqxhr).then(function (data) {
+        var formEvent = $('#eventDisableModal');
+
+        formEvent.find("#system").prop("value", system);
+        formEvent.find("#country").prop("value", country);
+        formEvent.find("#environment").prop("value", environment);
+
+        formEvent.find("#notifTo").prop("value", data.notificationTo);
+        formEvent.find("#notifCc").prop("value", data.notificationCC);
+        formEvent.find("#notifSubject").prop("value", data.notificationSubject);
+        formEvent.find("#notifBody").append("<div>" + data.notificationBody + "</div>");
+        formEvent.modal('show');
+    });
+}
+
+function eventDisableModalCloseHandler() {
+    // reset form values
+    $('#eventDisableModal #eventDisableModalForm')[0].reset();
+    // remove all errors on the form fields
+    $(this).find('div.has-error').removeClass("has-error");
+    // clear the response messages of the modal
+    clearResponseMessage($('#eventDisableModal'));
+    // Clean old html data
+    $('#notifBody div').remove();
+    console.debug("Closed.");
+}
+
+function eventDisableModalConfirmHandler() {
+    clearResponseMessageMainPage();
+    var formEvent = $('#eventDisableModal');
+    var system = formEvent.find("#system").prop("value");
+    var country = formEvent.find("#country").prop("value");
+    var environment = formEvent.find("#environment").prop("value");
+
+    var jqxhr = $.getJSON("DisableEnvironment1", "system=" + system + "&country=" + country + "&environment=" + environment);
+    $.when(jqxhr).then(function (data) {
+        hideLoaderInModal('#eventDisableModal');
+        if (getAlertType(data.messageType) === "success") {
+            var oTable = $("#environmentsTable").dataTable();
+            oTable.fnDraw(true);
+            $('#eventDisableModal').modal('hide');
+            showMessage(data);
+        } else {
+            showMessage(data, $('#eventDisableModal'));
+        }
+    });
+}
+
+function eventNewChainClick(system, country, environment) {
+    clearResponseMessageMainPage();
+    var formEvent = $('#eventNewChainModal');
+    formEvent.find("#system").prop("value", system);
+    formEvent.find("#country").prop("value", country);
+    formEvent.find("#environment").prop("value", environment);
+
+    $("#eventNewChainButton").prop("disabled", "disabled");
+
+    formEvent.modal('show');
+}
+
+function eventNewChainPreview() {
+    var formEvent = $('#eventNewChainModal');
+    // Clean old html data
+    formEvent.find("#notifTo").prop("value", '');
+    formEvent.find("#notifCc").prop("value", '');
+    formEvent.find("#notifSubject").prop("value", '');
+    formEvent.find("#notifBody div").remove();
+    var system = formEvent.find("#system").prop("value");
+    var country = formEvent.find("#country").prop("value");
+    var environment = formEvent.find("#environment").prop("value");
+    var chain = formEvent.find("#batch").val();
+    var jqxhr = $.getJSON("GetNotification", "event=newchain" + "&system=" + system + "&country=" + country + "&environment=" + environment + "&chain=" + chain);
+    $.when(jqxhr).then(function (data) {
+        formEvent.find("#notifTo").prop("value", data.notificationTo);
+        formEvent.find("#notifCc").prop("value", data.notificationCC);
+        formEvent.find("#notifSubject").prop("value", data.notificationSubject);
+        formEvent.find("#notifBody").append("<div>" + data.notificationBody + "</div>");
+        $("#eventNewChainButton").removeProp("disabled");
+    }).fail(handleErrorAjaxAfterTimeout);
+}
+
+function eventNewChainModalCloseHandler() {
+    // reset form values
+    $('#eventNewChainModal #eventNewChainModalForm')[0].reset();
+    // remove all errors on the form fields
+    $(this).find('div.has-error').removeClass("has-error");
+    // clear the response messages of the modal
+    clearResponseMessage($('#eventNewChainModal'));
+    // Clean old html data
+    var formEvent = $('#eventNewChainModal');
+    formEvent.find("#notifTo").prop("value", '');
+    formEvent.find("#notifCc").prop("value", '');
+    formEvent.find("#notifSubject").prop("value", '');
+    formEvent.find("#notifBody div").remove();
+    console.debug("Closed.");
+}
+
+function eventNewChainModalConfirmHandler() {
+    console.debug("Confirmed.");
+    var formEvent = $('#eventNewChainModal');
+    var system = formEvent.find("#system").prop("value");
+    var country = formEvent.find("#country").prop("value");
+    var environment = formEvent.find("#environment").prop("value");
+    var chain = formEvent.find("#batch").val();
+
+    var jqxhr = $.getJSON("NewChain1", "system=" + system + "&country=" + country + "&environment=" + environment + "&chain=" + chain);
+    $.when(jqxhr).then(function (data) {
+        console.debug("Email Sent.");
+        hideLoaderInModal('#eventNewChainModal');
+        if (getAlertType(data.messageType) === "success") {
+            var oTable = $("#environmentsTable").dataTable();
+            oTable.fnDraw(true);
+            $('#eventNewChainModal').modal('hide');
+            showMessage(data);
+        } else {
+            showMessage(data, $('#eventNewChainModal'));
+        }
+    });
 }
 
 function aoColumnsFunc(tableId) {
@@ -411,15 +679,15 @@ function aoColumnsFunc(tableId) {
                                 class="deleteEnv btn btn-default btn-xs margin-right25" \n\
                                 name="deleteEnv" title="' + doc.getDocLabel("page_environment", "button_delete") + '" type="button">\n\
                                 <span class="glyphicon glyphicon-trash"></span></button>';
-                var disableEnv = '<button id="disableEnv" onclick="disableEntryClick(\'' + obj["system"] + '\',\'' + obj["country"] + '\',\'' + obj["environment"] + '\');" \n\
+                var disableEnv = '<button id="disableEnv" onclick="eventDisableClick(\'' + obj["system"] + '\',\'' + obj["country"] + '\',\'' + obj["environment"] + '\');" \n\
                                 class="disableEnv btn btn-default btn-xs margin-right5" \n\
                                 name="disableEnv" title="' + doc.getDocLabel("page_environment", "button_delete") + '" type="button">\n\
                                 <span class="glyphicon glyphicon-remove-circle"></span></button>';
-                var enableEnv = '<button id="enableEnv" onclick="enableEntryClick(\'' + obj["system"] + '\',\'' + obj["country"] + '\',\'' + obj["environment"] + '\');;" \n\
+                var enableEnv = '<button id="enableEnv" onclick="eventEnableClick(\'' + obj["system"] + '\',\'' + obj["country"] + '\',\'' + obj["environment"] + '\',\'' + obj["build"] + '\',\'' + obj["revision"] + '\');;" \n\
                                 class="enableEnv btn btn-default btn-xs margin-right5" \n\
                                 name="enableEnv" title="' + doc.getDocLabel("page_environment", "button_delete") + '" type="button">\n\
                                 <span class="glyphicon glyphicon-ok-circle"></span></button>';
-                var newChainEnv = '<button id="newChainEnv" onclick="newChainEntryClick(\'' + obj["system"] + '\',\'' + obj["country"] + '\',\'' + obj["environment"] + '\');;" \n\
+                var newChainEnv = '<button id="newChainEnv" onclick="eventNewChainClick(\'' + obj["system"] + '\',\'' + obj["country"] + '\',\'' + obj["environment"] + '\');;" \n\
                                 class="newChainEnv btn btn-default btn-xs margin-right5" \n\
                                 name="newChainEnv" title="' + doc.getDocLabel("page_environment", "button_delete") + '" type="button">\n\
                                 NC</button>';

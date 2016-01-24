@@ -171,7 +171,7 @@ public class EmailGeneration implements IEmailGeneration {
     }
 
     @Override
-    public String EmailGenerationNewChain(String system, String country, String env, String build, String revision, String chain) {
+    public String EmailGenerationNewChain(String system, String country, String env, String chain) {
 
         String result = "";
 
@@ -211,7 +211,7 @@ public class EmailGeneration implements IEmailGeneration {
             body = body.replaceAll("%REVISION%", myCountryEnvParam.getRevision());
             body = body.replaceAll("%CHAIN%", lastchain);
 
-            result = to + "///" + cc + "///" + subject + "///" + body + "///" + build + "///" + revision + "///" + chain;
+            result = to + "///" + cc + "///" + subject + "///" + body + "///" + chain;
 
         } catch (Exception e) {
             Logger.getLogger(EmailGeneration.class.getName()).log(Level.SEVERE, Infos.getInstance().getProjectNameAndVersion() + " - Exception catched.", e);

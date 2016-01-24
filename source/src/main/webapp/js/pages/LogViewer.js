@@ -36,7 +36,7 @@ function initPage() {
 
     var table = createDataTable(configurations);
     //By default, sort the log messages from newest to oldest
-    table.fnSort([1, 'desc']);
+    //table.fnSort([1, 'desc']);
     var api = table.api();
     // if test and testcase parameter are sent, we filter the logs on it.
     if (test !== null && testCase !== null) {

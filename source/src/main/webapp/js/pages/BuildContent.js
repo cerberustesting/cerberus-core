@@ -32,24 +32,24 @@ function initPage() {
     var urlApplication = GetURLParameter('application');
 
     // Filter combo
-    appendBuildList('#selectBuild', "1", urlBuild, "Y", "Y");
-    appendBuildList('#selectRevision', "2", urlRevision, "Y", "Y");
+    displayBuildList('#selectBuild', getUser().defaultSystem, "1", urlBuild, "Y", "Y");
+    displayBuildList('#selectRevision', getUser().defaultSystem, "2", urlRevision, "Y", "Y");
 
     // Combo in install instruction Modal
-    appendBuildList('#selectBuildFrom', "1", urlBuild, "N", "N");
-    appendBuildList('#selectRevisionFrom', "2", urlRevision, "N", "N");
-    appendBuildList('#selectBuildTo', "1", urlBuild, "N", "N");
-    appendBuildList('#selectRevisionTo', "2", urlRevision, "N", "N");
+    displayBuildList('#selectBuildFrom', getUser().defaultSystem, "1", urlBuild, "N", "N");
+    displayBuildList('#selectRevisionFrom', getUser().defaultSystem, "2", urlRevision, "N", "N");
+    displayBuildList('#selectBuildTo', getUser().defaultSystem, "1", urlBuild, "N", "N");
+    displayBuildList('#selectRevisionTo', getUser().defaultSystem, "2", urlRevision, "N", "N");
 
     // Add and edit Modal combo
-    appendBuildList('#addBuild', "1", urlBuild, "N", "Y");
-    appendBuildList('#addRevision', "2", urlRevision, "N", "Y");
-    appendBuildList('#editBuild', "1", urlBuild, "N", "Y");
-    appendBuildList('#editRevision', "2", urlRevision, "N", "Y");
+    displayBuildList('#addBuild', getUser().defaultSystem, "1", urlBuild, "N", "Y");
+    displayBuildList('#addRevision', getUser().defaultSystem, "2", urlRevision, "N", "Y");
+    displayBuildList('#editBuild', getUser().defaultSystem, "1", urlBuild, "N", "Y");
+    displayBuildList('#editRevision', getUser().defaultSystem, "2", urlRevision, "N", "Y");
 
     // Mass Action Modal combo
-    appendBuildList('#massBuild', "1", null, "N", "Y");
-    appendBuildList('#massRevision', "2", null, "N", "Y");
+    displayBuildList('#massBuild', getUser().defaultSystem, "1", null, "N", "Y");
+    displayBuildList('#massRevision', getUser().defaultSystem, "2", null, "N", "Y");
 
     // Feed Application combo with Application list.
     var select = $('#selectApplication');
@@ -229,36 +229,6 @@ function setLatest() {
         }
     }).fail(handleErrorAjaxAfterTimeout);
 
-}
-
-function appendBuildList(selectName, level, defaultValue, withAll, withNone) {
-    var select = $(selectName);
-
-    $.ajax({
-        type: "GET",
-        url: "ReadBuildRevisionInvariant",
-        data: {iSortCol_0: "2", system: getUser().defaultSystem, level: level},
-        async: false,
-        dataType: 'json',
-        success: function (data) {
-            if (withAll === "Y") {
-                select.append($('<option></option>').text("-- ALL --").val("ALL"));
-            }
-            if (withNone === "Y") {
-                select.append($('<option></option>').text("NONE").val("NONE"));
-            }
-
-            for (var option in data.contentTable) {
-                select.append($('<option></option>').text(data.contentTable[option].versionName).val(data.contentTable[option].versionName));
-            }
-
-            if (defaultValue !== undefined) {
-                select.val(defaultValue);
-            }
-
-        },
-        error: showUnexpectedError
-    });
 }
 
 function deleteEntryHandlerClick() {

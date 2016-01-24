@@ -34,6 +34,9 @@
             <%@ include file="include/utils/modal-confirmation.html"%>
             <%@ include file="include/environment/addEnvironment.html"%>
             <%@ include file="include/environment/editEnvironment.html"%>
+            <%@ include file="include/environment/eventEnable.html"%>
+            <%@ include file="include/environment/eventDisable.html"%>
+            <%@ include file="include/environment/eventNewChain.html"%>
 
             <h1 class="page-title-line" id="title">Environment</h1>
 

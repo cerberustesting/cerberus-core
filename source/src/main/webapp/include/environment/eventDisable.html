@@ -1,0 +1,70 @@
+<!--Edit Environment page-->
+<div data-backdrop="static" class="modal fade center" id="eventDisableModal" tabindex="-1" role="dialog" aria-labelledby="eventDisableModalLabel" aria-hidden="true">
+    <div class="modal-dialog nomargintop nomarginbottom">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title" id="eventDisableModalLabel" name="eventDisableField">Disable Environment</h4>
+            </div>
+            <div class="modal-body">
+
+                <!--edit form-->
+                <form id="eventDisableModalForm" name="eventDisableModalForm"  title="Edit Environment" role="form">
+                    <div id="tabs" class="container-fluid center">
+                        <!-- messages area-->
+                        <div id="DialogMessagesArea">
+                            <div class="alert" id="DialogMessagesAlert"  style="display:none;">
+                                <strong><span class="alert-description" id="DialogAlertDescription"></span></strong>
+                                <button type="button" class="close" data-hide="alert"  aria-hidden="true">
+                                    <span class="glyphicon glyphicon-remove alert-right alert-close pull-right"></span>
+                                </button>
+                            </div>
+                        </div>
+                        <!-- Key definition-->
+                        <div class="row">
+                            <div class="form-group col-xs-4">
+                                <label for="system" name="systemField">System</label>
+                                <input type="text" class="form-control" name="system" id="system" aria-describedby="basic-addon1" readonly="">
+                            </div>
+                            <div class="form-group col-xs-4">
+                                <label for="country" name="countryField">Country</label>
+                                <input type="text" class="form-control" name="country" id="country" aria-describedby="basic-addon1" readonly="">
+                            </div>
+                            <div class="form-group col-xs-4">
+                                <label for="environment" name="environmentField">Environment</label>
+                                <input type="text" class="form-control" name="environment" id="environment" aria-describedby="basic-addon1" readonly="">
+                            </div>
+                        </div>
+                        <!-- tabs definition-->
+                        <ul id="tabsAdd" class="nav nav-tabs" data-tabs="tabs">
+                            <li class="active"><a data-toggle="tab" id="tab1Text" href="#tabsAdd-1">Email Preview</a></li>
+                        </ul>
+                        <div class="tab-content">   
+                            <div class="center marginTop25 tab-pane fade in active" id="tabsAdd-1">
+                                <div class="row">
+                                    <label for="toField" name="toField">To</label>
+                                    <textarea  class="form-control" id="notifTo" name="notifTo" aria-describedby="basic-addon1" readonly></textarea> 
+                                </div>
+                                <div class="row">
+                                    <label for="ccField" name="ccField">Cc</label>
+                                    <textarea  class="form-control" id="notifCc" name="notifCc" aria-describedby="basic-addon1" readonly></textarea> 
+                                </div>
+                                <div class="row">
+                                    <label for="toField" name="toField">Subject</label>
+                                    <input type="text" class="form-control" name="notifSubject" id="notifSubject" aria-describedby="basic-addon1" readonly="">
+                                </div>
+                                <br>
+                                <div id="notifBody" class="row">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal" name="buttonClose">Close</button>
+                <button type="button" id="eventDisableButton" class="btn btn-primary" name="buttonDisable">Disable and Send notification</button>
+            </div>
+        </div>
+    </div>
+</div>

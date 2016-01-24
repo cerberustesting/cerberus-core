@@ -46,6 +46,21 @@ public class FactoryCountryEnvParam_log implements IFactoryCountryEnvParam_log {
         newCountryEnvParamLog.setCreator(creator);
         return newCountryEnvParamLog;
     }
+    
+    @Override
+    public CountryEnvParam_log create(String system, String country, String environment, String build, String revision,
+            int chain, String description, String creator) {
+        CountryEnvParam_log newCountryEnvParamLog = new CountryEnvParam_log();
+        newCountryEnvParamLog.setSystem(system);
+        newCountryEnvParamLog.setCountry(country);
+        newCountryEnvParamLog.setEnvironment(environment);
+        newCountryEnvParamLog.setBuild(build);
+        newCountryEnvParamLog.setRevision(revision);
+        newCountryEnvParamLog.setChain(chain);
+        newCountryEnvParamLog.setDescription(description);
+        newCountryEnvParamLog.setCreator(creator);
+        return newCountryEnvParamLog;
+    }
 
 
 }

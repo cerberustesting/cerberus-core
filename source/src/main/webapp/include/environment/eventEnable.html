@@ -1,0 +1,118 @@
+<!--Edit Environment page-->
+<div data-backdrop="static" class="modal fade center" id="eventEnableModal" tabindex="-1" role="dialog" aria-labelledby="eventEnableModalLabel" aria-hidden="true">
+    <div class="modal-dialog nomargintop nomarginbottom width1000">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title" id="eventEnableModalLabel" name="eventEnableField">Enable Environment with new Build Revision</h4>
+            </div>
+            <div class="modal-body">
+
+                <!--edit form-->
+                <form id="eventEnableModalForm" name="eventEnableModalForm"  title="Edit Environment" role="form">
+                    <div id="tabs" class="container-fluid center">
+                        <!-- messages area-->
+                        <div id="DialogMessagesArea">
+                            <div class="alert" id="DialogMessagesAlert"  style="display:none;">
+                                <strong><span class="alert-description" id="DialogAlertDescription"></span></strong>
+                                <button type="button" class="close" data-hide="alert"  aria-hidden="true">
+                                    <span class="glyphicon glyphicon-remove alert-right alert-close pull-right"></span>
+                                </button>
+                            </div>
+                        </div>
+                        <!-- Key definition-->
+                        <div class="row">
+                            <div class="form-group col-xs-4">
+                                <label for="system" name="systemField">System</label>
+                                <input type="text" class="form-control" name="system" id="system" aria-describedby="basic-addon1" readonly="">
+                            </div>
+                            <div class="form-group col-xs-4">
+                                <label for="country" name="countryField">Country</label>
+                                <input type="text" class="form-control" name="country" id="country" aria-describedby="basic-addon1" readonly="">
+                            </div>
+                            <div class="form-group col-xs-4">
+                                <label for="environment" name="environmentField">Environment</label>
+                                <input type="text" class="form-control" name="environment" id="environment" aria-describedby="basic-addon1" readonly="">
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="form-group col-xs-3">
+                                <label for="currentBuild" name="currentBuildField">Current Build</label>
+                                <input type="text" class="form-control" name="currentBuild" id="currentBuild" aria-describedby="basic-addon1" readonly="">
+                            </div>
+                            <div class="form-group col-xs-3">
+                                <label for="currentRevision" name="currentRevisionField">Current Revision</label>
+                                <input type="text" class="form-control" name="currentRevision" id="currentRevision" aria-describedby="basic-addon1" readonly="">
+                            </div>
+                            <div class="form-group col-xs-3">
+                                <label for="newBuild" name="newBuildField">New Build</label>
+                                <select class="form-control"  id="newBuild" name="newBuild">
+                                </select>
+                            </div>
+                            <div class="form-group col-xs-3">
+                                <label for="newRevision" name="newRevisionField">New Revision</label>
+                                <select class="form-control"  id="newRevision" name="newRevision">
+                                </select>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="form-group col-xs-12">
+                                <button type="button" id="eventEnablePreviewNotificationButton" class="btn btn-primary" name="buttonEnablePreviewNotification">Preview Notification</button>
+                            </div>
+                        </div>
+                        <!-- tabs definition-->
+                        <ul id="tabsAdd" class="nav nav-tabs" data-tabs="tabs">
+                            <li class="active"><a data-toggle="tab" id="tab1Text" href="#tabsEnable-1">Email Preview</a></li>
+                            <li><a data-toggle="tab" href="#tabsEnable-2" id="tab2Text">Installation instruction</a></li>
+                        </ul>
+                        <div class="tab-content">   
+                            <div class="center marginTop25 tab-pane fade in active" id="tabsEnable-1">
+                                <div class="row">
+                                    <label for="toField" name="toField">To</label>
+                                    <textarea  class="form-control" id="notifTo" name="notifTo" aria-describedby="basic-addon1" readonly></textarea> 
+                                </div>
+                                <div class="row">
+                                    <label for="ccField" name="ccField">Cc</label>
+                                    <textarea  class="form-control" id="notifCc" name="notifCc" aria-describedby="basic-addon1" readonly></textarea> 
+                                </div>
+                                <div class="row">
+                                    <label for="toField" name="toField">Subject</label>
+                                    <input type="text" class="form-control" name="notifSubject" id="notifSubject" aria-describedby="basic-addon1" readonly="">
+                                </div>
+                                <br>
+                                <div id="notifBody" class="row">
+                                </div>
+                            </div>
+                            <div class="center marginTop25 tab-pane fade in" id="tabsEnable-2">
+                                <div id="listPanelInstallInstructions">
+                                    <div class="row">
+                                        <div class="col-xs-12">
+                                            <table class="table table-bordered table-hover nomarginbottom" id="installInstructionsTable">
+                                                <thead>
+                                                    <tr>
+                                                        <th class="text-center" id="buildHeader">Build</th>
+                                                        <th class="text-center" id="revisionHeader">Revision</th>
+                                                        <th class="text-center" id="applicationHeader">Application</th>
+                                                        <th class="text-center" id="releaseHeader">Release</th>
+                                                        <th class="text-center" id="linkHeader">Deploy Link</th>
+                                                        <th class="text-center" id="versionHeader">Version</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody id="installInstructionsTableBody">
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>  
+                                </div>   
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal" name="buttonClose">Close</button>
+                <button type="button" id="eventEnableButton" class="btn btn-primary" name="buttonEnable">Enable and Send notification</button>
+            </div>
+        </div>
+    </div>
+</div>

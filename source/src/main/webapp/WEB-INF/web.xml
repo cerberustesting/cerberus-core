@@ -302,6 +302,10 @@
         <servlet-class>org.cerberus.servlet.crud.countryenvironment.ReadDeployType</servlet-class>
     </servlet>
     <servlet>
+        <servlet-name>GetNotification</servlet-name>
+        <servlet-class>org.cerberus.servlet.integration.GetNotification</servlet-class>
+    </servlet>
+    <servlet>
         <servlet-name>CreateDeployType</servlet-name>
         <servlet-class>org.cerberus.servlet.crud.countryenvironment.CreateDeployType</servlet-class>
     </servlet>
@@ -331,15 +335,27 @@
     </servlet>
     <servlet>
         <servlet-name>NewBuildRev</servlet-name>
-        <servlet-class>org.cerberus.servlet.crud.countryenvironment.NewBuildRev</servlet-class>
+        <servlet-class>org.cerberus.servlet.integration.NewBuildRev</servlet-class>
     </servlet>
     <servlet>
         <servlet-name>DisableEnvironment</servlet-name>
-        <servlet-class>org.cerberus.servlet.crud.countryenvironment.DisableEnvironment</servlet-class>
+        <servlet-class>org.cerberus.servlet.integration.DisableEnvironment</servlet-class>
     </servlet>
     <servlet>
         <servlet-name>NewChain</servlet-name>
-        <servlet-class>org.cerberus.servlet.crud.countryenvironment.NewChain</servlet-class>
+        <servlet-class>org.cerberus.servlet.integration.NewChain</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>NewBuildRev1</servlet-name>
+        <servlet-class>org.cerberus.servlet.integration.NewBuildRev1</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>DisableEnvironment1</servlet-name>
+        <servlet-class>org.cerberus.servlet.integration.DisableEnvironment1</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>NewChain1</servlet-name>
+        <servlet-class>org.cerberus.servlet.integration.NewChain1</servlet-class>
     </servlet>
     <servlet>
         <servlet-name>JenkinsDeploy</servlet-name>
@@ -624,6 +640,10 @@
     <servlet>
         <servlet-name>UpdateTestCaseWithDependencies</servlet-name>
         <servlet-class>org.cerberus.servlet.crud.test.UpdateTestCaseWithDependencies</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>UpdateTestCaseWithDependencies1</servlet-name>
+        <servlet-class>org.cerberus.servlet.crud.test.UpdateTestCaseWithDependencies1</servlet-class>
     </servlet>
     <servlet>
         <servlet-name>DeleteTestCaseFromTestPage</servlet-name>
@@ -1153,6 +1173,10 @@
         <url-pattern>/ReadDeployType</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
+        <servlet-name>GetNotification</servlet-name>
+        <url-pattern>/GetNotification</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
         <servlet-name>NewBuildRev</servlet-name>
         <url-pattern>/NewBuildRev</url-pattern>
     </servlet-mapping>
@@ -1163,6 +1187,18 @@
     <servlet-mapping>
         <servlet-name>NewChain</servlet-name>
         <url-pattern>/NewChain</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>NewBuildRev1</servlet-name>
+        <url-pattern>/NewBuildRev1</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>DisableEnvironment1</servlet-name>
+        <url-pattern>/DisableEnvironment1</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>NewChain1</servlet-name>
+        <url-pattern>/NewChain1</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
         <servlet-name>JenkinsDeploy</servlet-name>
@@ -1453,6 +1489,10 @@
         <url-pattern>/UpdateTestCaseWithDependencies</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
+        <servlet-name>UpdateTestCaseWithDependencies1</servlet-name>
+        <url-pattern>/UpdateTestCaseWithDependencies1</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
         <servlet-name>DeleteTestCaseFromTestPage</servlet-name>
         <url-pattern>/DeleteTestCaseFromTestPage</url-pattern>
     </servlet-mapping>
@@ -1476,7 +1516,7 @@
         <servlet-name>AddToExecutionQueue</servlet-name>
         <url-pattern>/AddToExecutionQueue</url-pattern>
     </servlet-mapping>
-        <servlet-mapping>
+    <servlet-mapping>
         <servlet-name>GetExecutionQueue</servlet-name>
         <url-pattern>/GetExecutionQueue</url-pattern>
     </servlet-mapping>
@@ -1723,6 +1763,7 @@
             <url-pattern>/Test.jsp</url-pattern>
             <url-pattern>/Test2.jsp</url-pattern>
             <url-pattern>/TestCase.jsp</url-pattern>
+            <url-pattern>/TestCaseScript.jsp</url-pattern>
             <url-pattern>/TestCaseList.jsp</url-pattern>
             <url-pattern>/TestCaseSearch.jsp</url-pattern>
             <url-pattern>/TestCaseSearchNew.jsp</url-pattern>
@@ -1804,6 +1845,7 @@
             <url-pattern>/GetTestCaseForTest</url-pattern>
             <url-pattern>/UseTestCaseStep</url-pattern>
             <url-pattern>/UpdateTestCaseWithDependencies</url-pattern>
+            <url-pattern>/UpdateTestCaseWithDependencies1</url-pattern>
             <url-pattern>/ImportTestCaseFromJson</url-pattern>
             <url-pattern>/Thumbnailer</url-pattern>
             <url-pattern>/UpdateTestCaseField</url-pattern>
@@ -1924,6 +1966,7 @@
             <url-pattern>/GetCountryEnvironmentParameterList</url-pattern>
             <url-pattern>/FindEnvironments</url-pattern>
             <url-pattern>/ReadDeployType</url-pattern>
+            <url-pattern>/GetNotification</url-pattern>
             <url-pattern>/ReadBuildRevisionParameters</url-pattern>
         </web-resource-collection>
         <auth-constraint>
@@ -1979,6 +2022,7 @@
             <web-resource-name>servlet</web-resource-name>
             <description>servlet</description>
             <url-pattern>/NewChain</url-pattern>
+            <url-pattern>/NewChain1</url-pattern>
         </web-resource-collection>
         <auth-constraint>
             <description>IntegratorNewChain</description>
@@ -1992,6 +2036,8 @@
             <description>servlet</description>
             <url-pattern>/DisableEnvironment</url-pattern>
             <url-pattern>/NewBuildRev</url-pattern>
+            <url-pattern>/DisableEnvironment1</url-pattern>
+            <url-pattern>/NewBuildRev1</url-pattern>
             <url-pattern>/JenkinsDeploy</url-pattern>
         </web-resource-collection>
         <auth-constraint>
@@ -2102,7 +2148,7 @@
             <url-pattern>/ReadCampaign</url-pattern>
             <url-pattern>/ReadCampaignParameter</url-pattern>
             <url-pattern>/ReadTestBattery</url-pattern>
-            <url-pattern>/ReadInvariant</url-pattern>            
+            <url-pattern>/ReadInvariant</url-pattern>
         </web-resource-collection>
     </security-constraint>
     <security-constraint>

@@ -92,6 +92,17 @@ public interface ICountryEnvParam_logService {
 
     /**
      *
+     * @param system
+     * @param country
+     * @param environment
+     * @param description
+     * @param creator
+     * @return
+     */
+    Answer createLogEntry(String system, String country, String environment, String build, String revision, String description, String creator);
+    
+    /**
+     *
      * @param answerItem
      * @return
      * @throws CerberusException
