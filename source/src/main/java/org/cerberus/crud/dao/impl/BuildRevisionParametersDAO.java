@@ -687,8 +687,8 @@ public class BuildRevisionParametersDAO implements IBuildRevisionParametersDAO {
         query.append(" and a.`system` = ? ");
         query.append(" and brp.build = ? ");
         if (lastBuild.equalsIgnoreCase(build)) { // If last version is on the same build.
-            if (lastRevision.equalsIgnoreCase(revision)) { // Same build and revision some we filter only the current content.
-                query.append(" and bri.seq >= (select seq from buildrevisioninvariant where `system` = ? and `level` = 2 and `versionname` = ? ) "); // lastRevision
+            if (lastRevision==null) { // Same build and revision some we filter only the current content.
+                query.append(" and bri.seq = (select seq from buildrevisioninvariant where `system` = ? and `level` = 2 and `versionname` = ? ) "); // revision
             } else { // 2 different revisions inside the same build, we take the content between the 2.
                 query.append(" and bri.seq > (select seq from buildrevisioninvariant where `system` = ? and `level` = 2 and `versionname` = ? ) "); // lastRevision
             }
@@ -717,8 +717,13 @@ public class BuildRevisionParametersDAO implements IBuildRevisionParametersDAO {
                 preStat.setString(i++, system);
                 preStat.setString(i++, build);
                 if (lastBuild.equalsIgnoreCase(build)) {
-                    preStat.setString(i++, system);
-                    preStat.setString(i++, lastRevision);
+                    if (lastRevision == null) { // if lastRevision is not defined, we filter only the current content.
+                        preStat.setString(i++, system);
+                        preStat.setString(i++, revision);
+                    } else { // 2 different revisions inside the same build, we take the content between the 2.
+                        preStat.setString(i++, system);
+                        preStat.setString(i++, lastRevision);
+                    }
                 }
                 preStat.setString(i++, system);
                 preStat.setString(i++, revision);
@@ -815,8 +820,8 @@ public class BuildRevisionParametersDAO implements IBuildRevisionParametersDAO {
         query.append(" and a.`system` = ? ");
         query.append(" and brp.build = ? ");
         if (lastBuild.equalsIgnoreCase(build)) {
-            if (lastRevision.equalsIgnoreCase(revision)) { // Same build and revision some we filter only the current content.
-                query.append(" and bri.seq >= (select seq from buildrevisioninvariant where `system` = ? and `level` = 2 and `versionname` = ? ) "); // lastRevision
+            if (lastRevision == null) { // if lastRevision is not defined, we filter only the current content.
+                query.append(" and bri.seq = (select seq from buildrevisioninvariant where `system` = ? and `level` = 2 and `versionname` = ? ) "); // revision
             } else { // 2 different revisions inside the same build, we take the content between the 2.
                 query.append(" and bri.seq > (select seq from buildrevisioninvariant where `system` = ? and `level` = 2 and `versionname` = ? ) "); // lastRevision
             }
@@ -843,9 +848,9 @@ public class BuildRevisionParametersDAO implements IBuildRevisionParametersDAO {
                 preStat.setString(i++, system);
                 preStat.setString(i++, build);
                 if (lastBuild.equalsIgnoreCase(build)) {
-                    if (lastRevision.equalsIgnoreCase(revision)) { // Same build and revision some we filter only the current content.
+                    if (lastRevision == null) { // if lastRevision is not defined, we filter only the current content.
                         preStat.setString(i++, system);
-                        preStat.setString(i++, lastRevision);
+                        preStat.setString(i++, revision);
                     } else { // 2 different revisions inside the same build, we take the content between the 2.
                         preStat.setString(i++, system);
                         preStat.setString(i++, lastRevision);

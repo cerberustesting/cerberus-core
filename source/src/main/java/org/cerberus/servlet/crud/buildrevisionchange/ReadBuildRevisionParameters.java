@@ -284,9 +284,6 @@ public class ReadBuildRevisionParameters extends HttpServlet {
         if (StringUtil.isNullOrEmpty(lastbuild)) {
             lastbuild = build;
         }
-        if (StringUtil.isNullOrEmpty(lastrevision)) {
-            lastrevision = revision;
-        }
 
         AnswerList resp = brpService.readMaxSVNReleasePerApplication(system, build, revision, lastbuild, lastrevision);
 
@@ -315,9 +312,6 @@ public class ReadBuildRevisionParameters extends HttpServlet {
 
         if (StringUtil.isNullOrEmpty(lastbuild)) {
             lastbuild = build;
-        }
-        if (StringUtil.isNullOrEmpty(lastrevision)) {
-            lastrevision = revision;
         }
 
         AnswerList resp = brpService.readNonSVNRelease(system, build, revision, lastbuild, lastrevision);

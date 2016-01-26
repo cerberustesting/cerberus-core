@@ -37,7 +37,7 @@ function initPage() {
 
     // Combo in install instruction Modal
     displayBuildList('#selectBuildFrom', getUser().defaultSystem, "1", urlBuild, "N", "N");
-    displayBuildList('#selectRevisionFrom', getUser().defaultSystem, "2", urlRevision, "N", "N");
+    displayBuildList('#selectRevisionFrom', getUser().defaultSystem, "2", urlRevision, "N", "Y");
     displayBuildList('#selectBuildTo', getUser().defaultSystem, "1", urlBuild, "N", "N");
     displayBuildList('#selectRevisionTo', getUser().defaultSystem, "2", urlRevision, "N", "N");
 
@@ -440,16 +440,31 @@ function refreshlistInstallInstructions() {
     var selectRevisionTo = $("#selectRevisionTo").val();
 
 
-    var jqxhr = $.getJSON("ReadBuildRevisionParameters", "system=" + getUser().defaultSystem + "&lastbuild=" + selectBuildFrom + "&lastrevision=" + selectRevisionFrom
-            + "&build=" + selectBuildTo + "&revision=" + selectRevisionTo + "&getSVNRelease");
+    var URL2param = "";
+    if (selectRevisionFrom === 'NONE') {
+        URL2param = "system=" + getUser().defaultSystem + "&lastbuild=" + selectBuildFrom 
+            + "&build=" + selectBuildTo + "&revision=" + selectRevisionTo + "&getSVNRelease";
+    } else {
+        URL2param = "system=" + getUser().defaultSystem + "&lastbuild=" + selectBuildFrom + "&lastrevision=" + selectRevisionFrom
+            + "&build=" + selectBuildTo + "&revision=" + selectRevisionTo + "&getSVNRelease";
+    }
+    var jqxhr = $.getJSON("ReadBuildRevisionParameters", URL2param);
     $.when(jqxhr).then(function (result) {
         $.each(result["contentTable"], function (idx, obj) {
             appendNewInstallRow(obj.build, obj.revision, obj.application, obj.release, "", obj.mavenVersion);
         });
     }).fail(handleErrorAjaxAfterTimeout);
 
-    var jqxhr = $.getJSON("ReadBuildRevisionParameters", "system=" + getUser().defaultSystem + "&lastbuild=" + selectBuildFrom + "&lastrevision=" + selectRevisionFrom
-            + "&build=" + selectBuildTo + "&revision=" + selectRevisionTo + "&getNonSVNRelease");
+
+    var URL1param = "";
+    if (selectRevisionFrom === 'NONE') {
+        URL1param = "system=" + getUser().defaultSystem + "&lastbuild=" + selectBuildFrom
+                + "&build=" + selectBuildTo + "&revision=" + selectRevisionTo + "&getNonSVNRelease";
+    } else {
+        URL1param = "system=" + getUser().defaultSystem + "&lastbuild=" + selectBuildFrom + "&lastrevision=" + selectRevisionFrom
+                + "&build=" + selectBuildTo + "&revision=" + selectRevisionTo + "&getNonSVNRelease";
+    }
+    var jqxhr = $.getJSON("ReadBuildRevisionParameters", URL1param);
     $.when(jqxhr).then(function (result) {
         $.each(result["contentTable"], function (idx, obj) {
             appendNewInstallRow(obj.build, obj.revision, obj.application, obj.release, obj.link, "");
@@ -478,7 +493,7 @@ function displayInstallInstructions() {
 
 // init the select build and rev when coming from the main screen.
         $("#selectBuildFrom").prop("value", selectBuild);
-        $("#selectRevisionFrom").prop("value", selectRevision);
+        $("#selectRevisionFrom").prop("value", "NONE");
         $("#selectBuildTo").prop("value", selectBuild);
         $("#selectRevisionTo").prop("value", selectRevision);
 
