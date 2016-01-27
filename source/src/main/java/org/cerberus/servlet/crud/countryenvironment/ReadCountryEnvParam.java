@@ -267,7 +267,14 @@ public class ReadCountryEnvParam extends HttpServlet {
 
     private JSONObject convertCountryEnvParamtoJSONObject(CountryEnvParam cep) throws JSONException {
         Gson gson = new Gson();
+        String defaultTime = "00:00:00";
         JSONObject result = new JSONObject(gson.toJson(cep));
+        if (cep.getMaintenanceStr().equalsIgnoreCase(defaultTime)) {
+            result.put("maintenanceStr", defaultTime);
+        }
+        if (cep.getMaintenanceEnd().equalsIgnoreCase(defaultTime)) {
+            result.put("maintenanceEnd", defaultTime);
+        }
         return result;
     }
 

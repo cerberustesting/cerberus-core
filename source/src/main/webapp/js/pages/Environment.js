@@ -290,6 +290,9 @@ function addEntryClick() {
     var myEnvironment = $("#selectEnvironment option:selected").val();
     formAdd.find("#country").val(myCountry);
     formAdd.find("#environment").val(myEnvironment);
+    // Force Default values to maintenance times
+    formAdd.find("#maintenanceStr").val("01:00:00");
+    formAdd.find("#maintenanceEnd").val("01:00:00");
 
     $('#addEnvModal').modal('show');
 }
