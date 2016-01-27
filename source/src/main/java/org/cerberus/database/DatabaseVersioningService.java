@@ -20,6 +20,7 @@ package org.cerberus.database;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.ArrayList;
 
 import org.apache.log4j.Level;
@@ -43,12 +44,12 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
 
     @Override
     public String exeSQL(String SQLString) {
-        PreparedStatement preStat;
+        Statement preStat;
         Connection connection = this.databaseSpring.connect();
         try {
-            preStat = connection.prepareStatement(SQLString);
+            preStat = connection.createStatement();
             try {
-                preStat.execute();
+                preStat.execute(SQLString);
                 MyLogger.log(DatabaseVersioningService.class.getName(), Level.INFO, SQLString + " Executed successfully.");
             } catch (Exception exception1) {
                 MyLogger.log(DatabaseVersioningService.class.getName(), Level.ERROR, exception1.toString());
@@ -4582,7 +4583,6 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLS.append("ALTER TABLE `countryenvparam_log` ");
         SQLS.append("ADD CONSTRAINT `FK_countryenvparam_log_01` FOREIGN KEY (`system` , `Country` , `Environment`) REFERENCES `countryenvparam` (`system` , `Country` , `Environment`) ON DELETE CASCADE ON UPDATE CASCADE;");
         SQLInstruction.add(SQLS.toString());
-        
 
         // Adding time index on log table IX_logevent_01.
         //-- ------------------------ 721
