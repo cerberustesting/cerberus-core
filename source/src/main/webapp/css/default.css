@@ -185,12 +185,12 @@ td
 }
 
 div button.margin-right25{
-    //margin-left: 5px;
+    /*margin-left: 5px;*/
     margin-right: 25px;
 }
 
 div button.margin-right5{
-    //margin-left: 5px;
+    /*margin-left: 5px;*/
     margin-right: 5px;
 }
 .hideElement{
@@ -336,7 +336,7 @@ table.display thead th div.DataTables_sort_wrapper span {
 }*/
 
 /*********AUTOCOMPLETE***************/
-//from:https://gist.github.com/daz/2168334
+/*from:https://gist.github.com/daz/2168334*/
 /* workarounds */
 * html .ui-autocomplete { width:1px; } /* without this, the menu expands to 100% in IE6 */
 
@@ -390,7 +390,7 @@ table.display thead th div.DataTables_sort_wrapper span {
     background-image: none;
 }
 
-//from http://www.bootply.com/vitor-gapitec/AugjvLCRFt
+/*from http://www.bootply.com/vitor-gapitec/AugjvLCRFt*/
 /* CSS used here will be applied after bootstrap.css */
 .menu-ico-collapse {
     margin-left: 4px;
