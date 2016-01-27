@@ -205,6 +205,8 @@ public class ReadUser extends HttpServlet {
 
         Gson gson = new Gson();
         JSONObject result = new JSONObject(gson.toJson(user));
+        // For obvious security reasons, We avoid the password to be return from the servlet.
+        result.remove("password");
         return result;
     }
 }
