@@ -106,7 +106,7 @@ public class NewRelease extends HttpServlet {
         String mavengroupid = ParameterParserUtil.parseStringParamAndDecode(request.getParameter("mavengroupid"), "", charset);
         String mavenartifactid = ParameterParserUtil.parseStringParamAndDecode(request.getParameter("mavenartifactid"), "", charset);
         String mavenversion = ParameterParserUtil.parseStringParamAndDecode(request.getParameter("mavenversion"), "", charset);
-        String repositoryurl = ParameterParserUtil.parseStringParamAndDecode(request.getParameter("repositoryUrl"), "", charset);
+        String repositoryurl = ParameterParserUtil.parseStringParamAndDecode(request.getParameter("repositoryurl"), "", charset);
 
         String helpMessage = "\nThis servlet is used to create or update a release entry in a 'NONE' build and 'NONE' revision.\n\nParameter list :\n"
                 + "- application [mandatory] : the application that produced the release. This parameter must match the application list in Cerberus. [" + application + "]\n"

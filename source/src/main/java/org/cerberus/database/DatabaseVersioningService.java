@@ -5441,6 +5441,15 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLS.append("ALTER TABLE `buildrevisionparameters` ");
         SQLS.append("ADD COLUMN `repositoryurl` VARCHAR(1000) NULL DEFAULT '' AFTER `mavenversion`;");
         SQLInstruction.add(SQLS.toString());
+        
+// Add documentation for repositoryUrl
+//-- ------------------------ 730
+        SQLS = new StringBuilder();
+        SQLS.append("INSERT INTO `documentation` (`DocTable`, `DocField`, `DocValue`, `Lang`, `DocLabel`, `DocDesc`) ");
+	SQLS.append(" VALUES ('buildrevisionparameters', 'repositoryUrl', '', 'en', 'Repository URL', 'This information corresponds to the URL where the current build of the <code class=\\'doc-crbvvoca\\'>application</code> can be downloaded.<br>It allow to retrieve it in a repository such as Nexus.')");
+	SQLS.append(",('buildrevisionparameters', 'repositoryUrl', '', 'fr', 'URL du Dépot', 'Cette information correspond à l\\'URL d\\'où le build de l\\'<code class=\\'doc-crbvvoca\\'>application</code> peut-être téléchargé.<br>Cela permet de retrouver un build spécifique dans un dépot de livrable de type Nexus.');");
+        SQLInstruction.add(SQLS.toString());
+        
 
         return SQLInstruction;
     }
