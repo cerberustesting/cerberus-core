@@ -30,6 +30,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import org.cerberus.crud.entity.CountryEnvParam;
 import org.cerberus.crud.entity.MessageEvent;
+import org.cerberus.crud.service.IBuildRevisionBatchService;
 import org.cerberus.crud.service.ICountryEnvParamService;
 import org.cerberus.crud.service.ICountryEnvParam_logService;
 import org.cerberus.crud.service.ILogEventService;
@@ -94,6 +95,7 @@ public class NewChain1 extends HttpServlet {
         IEmailGeneration emailService = appContext.getBean(IEmailGeneration.class);
         IParameterService parameterService = appContext.getBean(IParameterService.class);
         ICountryEnvParamService countryEnvParamService = appContext.getBean(ICountryEnvParamService.class);
+        IBuildRevisionBatchService buildRevisionBatchService = appContext.getBean(IBuildRevisionBatchService.class);
         ILogEventService logEventService = appContext.getBean(LogEventService.class);
 
         if (request.getParameter("system") == null) {
@@ -139,13 +141,10 @@ public class NewChain1 extends HttpServlet {
                  * The service was able to perform the query and confirm the
                  * object exist, then we can update it.
                  */
+                // Adding BuildRevisionBatch entry.
                 // Adding CountryEnvParam Log entry.
                 CountryEnvParam cepData = (CountryEnvParam) answerItem.getItem();
-                String req_update_active = "INSERT INTO buildrevisionbatch "
-                        + " ( `System`, `Batch`, `Country`, `Build`, `Revision`, `Environment` ) "
-                        + " VALUES ('" + system + "', '" + chain + "', '" + country + "', '"
-                        + cepData.getBuild() + "', '" + cepData.getRevision() + "', '" + env + "') ";
-//                    countryEnvParam_logService.createLogEntry(system, country, env, "", request.getUserPrincipal().getName());
+                buildRevisionBatchService.createBatchEntry(system, country, env, cepData.getBuild(), cepData.getRevision(), chain);
 
                 /**
                  * Email notification.

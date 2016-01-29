@@ -383,6 +383,42 @@ function editEntryClick(system, country, environment) {
 
         formEdit.modal('show');
     });
+
+    var table = loadChangeTable(system, country, environment);
+    table.fnSort([0, 'desc']);
+
+    var table = loadEventTable(system, country, environment);
+    table.fnSort([0, 'desc']);
+}
+
+function loadChangeTable(selectSystem, selectCountry, selectEnvironment) {
+    //clear the old report content before reloading it
+    $("#lastChangeList").empty();
+    $("#lastChangeList").html('<table id="lastChangeTable" class="table table-hover display" name="lastChangeTable">\n\
+                                            </table><div class="marginBottom20"></div>');
+
+    //configure and create the dataTable
+    var contentUrl = "ReadCountryEnvParam_log?system=" + selectSystem + "&country=" + selectCountry + "&environment=" + selectEnvironment;
+
+    var configurations = new TableConfigurationsServerSide("lastChangeTable", contentUrl, "contentTable", aoColumnsFuncChange("lastChangeTable"));
+
+    var table = createDataTableWithPermissions(configurations, null);
+    return table;
+}
+
+function loadEventTable(selectSystem, selectCountry, selectEnvironment) {
+    //clear the old report content before reloading it
+    $("#lastEventList").empty();
+    $("#lastEventList").html('<table id="lastEventTable" class="table table-hover display" name="lastEventTable">\n\
+                                            </table><div class="marginBottom20"></div>');
+
+    //configure and create the dataTable
+    var contentUrl = "ReadBuildRevisionBatch?system=" + selectSystem + "&country=" + selectCountry + "&environment=" + selectEnvironment;
+
+    var configurations = new TableConfigurationsServerSide("lastEventTable", contentUrl, "contentTable", aoColumnsFuncEvent("lastEventTable"));
+
+    var table = createDataTableWithPermissions(configurations, null);
+    return table;
 }
 
 function eventEnableClick(system, country, environment, build, revision) {
@@ -481,7 +517,10 @@ function refreshlistInstallInstructions() {
     $('#installInstructionsTableBody tr').remove();
 
 
-    var formEdit = $('#eventNewChainModal');
+    var formEdit = $('#eventEnableModal');
+
+    var selectCountry = formEdit.find("#country").val();
+    var selectEnvironment = formEdit.find("#environment").val();
 
     var selectBuildFrom = $("#currentBuild").val();
     var selectRevisionFrom = $("#currentRevision").val();
@@ -489,11 +528,11 @@ function refreshlistInstallInstructions() {
     var selectRevisionTo = $("#newRevision").val();
 
 
-    var jqxhr = $.getJSON("ReadBuildRevisionParameters", "system=" + getUser().defaultSystem + "&lastbuild=" + selectBuildFrom + "&lastrevision=" + selectRevisionFrom
+    var jqxhr = $.getJSON("ReadBuildRevisionParameters", "system=" + getUser().defaultSystem + "&country=" + selectCountry + "&environment=" + selectEnvironment + "&lastbuild=" + selectBuildFrom + "&lastrevision=" + selectRevisionFrom
             + "&build=" + selectBuildTo + "&revision=" + selectRevisionTo + "&getSVNRelease");
     $.when(jqxhr).then(function (result) {
         $.each(result["contentTable"], function (idx, obj) {
-            appendNewInstallRow(obj.build, obj.revision, obj.application, obj.release, "", obj.mavenVersion);
+            appendNewInstallRow(obj.build, obj.revision, obj.application, obj.release, "", obj.mavenVersion, obj.install);
         });
     }).fail(handleErrorAjaxAfterTimeout);
 
@@ -501,7 +540,7 @@ function refreshlistInstallInstructions() {
             + "&build=" + selectBuildTo + "&revision=" + selectRevisionTo + "&getNonSVNRelease");
     $.when(jqxhr).then(function (result) {
         $.each(result["contentTable"], function (idx, obj) {
-            appendNewInstallRow(obj.build, obj.revision, obj.application, obj.release, obj.link, "");
+            appendNewInstallRow(obj.build, obj.revision, obj.application, obj.release, obj.link, "", "");
         });
     }).fail(handleErrorAjaxAfterTimeout);
 
@@ -510,7 +549,7 @@ function refreshlistInstallInstructions() {
 /**
  * Render 1 line on installation instructions modal.
  */
-function appendNewInstallRow(build, revision, application, release, link, version) {
+function appendNewInstallRow(build, revision, application, release, link, version, install) {
     var doc = new Doc();
     if ((version === null) || (version === "undefined") || (version === ""))
         version = "";
@@ -518,7 +557,13 @@ function appendNewInstallRow(build, revision, application, release, link, versio
     if (link === "") {
         link_html = "";
     } else {
-        link_html = '<a target="_blank" href="' + link + '">link</a>';
+        link_html = '<a target="_blank" href="' + link + '">link <input type="checkbox" name="checklist"></a>';
+    }
+    var key=0;
+    if (install.length >= 1) {
+        for (key in install) {
+            link_html += '<a target="_blank" href="' + install[key].link + '">'+install[key].jenkinsAgent+' <input type="checkbox" name="checklist"></a>';;
+        }
     }
     //for each install instructions adds a new row
     $('#installInstructionsTableBody').append('<tr> \n\
@@ -780,6 +825,56 @@ function aoColumnsFunc(tableId) {
             "sName": "maintenanceEnd",
             "sWidth": "80px",
             "title": doc.getDocOnline("countryenvparam", "maintenanceend")}
+    ];
+    return aoColumns;
+}
+
+function aoColumnsFuncChange(tableId) {
+    var doc = new Doc();
+    var aoColumns = [
+        {"data": "datecre",
+            "sName": "datecre",
+            "sWidth": "145px",
+            "title": doc.getDocOnline("countryenvparam_log", "datecre")},
+        {"data": "description",
+            "sName": "description",
+            "sWidth": "140px",
+            "title": doc.getDocOnline("countryenvparam_log", "description")},
+        {"data": "build",
+            "sName": "build",
+            "sWidth": "70px",
+            "title": doc.getDocOnline("countryenvparam_log", "build")},
+        {"data": "revision",
+            "sName": "revision",
+            "sWidth": "70px",
+            "title": doc.getDocOnline("countryenvparam_log", "revision")},
+        {"data": "creator",
+            "sName": "creator",
+            "sWidth": "80px",
+            "title": doc.getDocOnline("countryenvparam_log", "creator")}
+    ];
+    return aoColumns;
+}
+
+function aoColumnsFuncEvent(tableId) {
+    var doc = new Doc();
+    var aoColumns = [
+        {"data": "dateBatch",
+            "sName": "dateBatch",
+            "sWidth": "145px",
+            "title": doc.getDocOnline("buildrevisionbatch", "dateBatch")},
+        {"data": "batch",
+            "sName": "batch",
+            "sWidth": "220px",
+            "title": doc.getDocOnline("buildrevisionbatch", "batch")},
+        {"data": "build",
+            "sName": "build",
+            "sWidth": "70px",
+            "title": doc.getDocOnline("buildrevisionbatch", "build")},
+        {"data": "revision",
+            "sName": "revision",
+            "sWidth": "70px",
+            "title": doc.getDocOnline("buildrevisionbatch", "revision")}
     ];
     return aoColumns;
 }
