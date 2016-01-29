@@ -207,7 +207,7 @@
                 	// Looping on all Jenkins Agent for the country environment and deploytype values.
                                     Application app = applicationService.convert(applicationService.readByKey(brp.getApplication()));
                                     for (String JenkinsAgent : countryEnvDeployTypeService.findJenkinsAgentByKey(system, country, env, app.getDeploytype())) {
-                                        String DeployURL = "JenkinsDeploy?application=" + brp.getApplication() + "&jenkinsagent=" + JenkinsAgent + "&country=" + country + "&deploytype=" + app.getDeploytype() + "&release=" + brp.getRelease() + "&jenkinsbuildid=" + brp.getJenkinsBuildId();
+                                        String DeployURL = "JenkinsDeploy?application=" + brp.getApplication() + "&jenkinsagent=" + JenkinsAgent + "&country=" + country + "&deploytype=" + app.getDeploytype() + "&release=" + brp.getRelease() + "&jenkinsbuildid=" + brp.getJenkinsBuildId() + "&repositoryurl=" + brp.getRepositoryUrl();
                 %>
                         <a href='<%=DeployURL%>' target='_blank'><%=JenkinsAgent%> <input type="checkbox" name="checklist"></a><br>
                     <%
