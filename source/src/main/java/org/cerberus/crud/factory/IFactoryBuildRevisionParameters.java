@@ -30,6 +30,6 @@ public interface IFactoryBuildRevisionParameters {
     BuildRevisionParameters create(int id, String build, String revision, String release,
             String application, String project, String ticketIDFixed, String bugIDFixed, String link,
             String releaseOwner, String subject, Timestamp dateCre, String jenkinsBuildID,
-            String mavenGroupID, String mavenArtefactID, String mavenVersion);
+            String mavenGroupID, String mavenArtefactID, String mavenVersion, String repositoryUrl);
 
 }

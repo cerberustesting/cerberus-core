@@ -152,4 +152,14 @@ public interface IBuildRevisionParametersService {
      */
     boolean check_buildRevisionAlreadyUsed(String application, String build, String revision);
 
+    /**
+     * This service is used to retrieve the buildRevisionParameters from database
+     * knowing the build, revision, release and application
+     * @param build
+     * @param revision
+     * @param release
+     * @param appliction
+     * @return buildRevisionParameters Object 
+     */
+    AnswerItem readByVarious2(String build, String revision, String release, String application);
 }

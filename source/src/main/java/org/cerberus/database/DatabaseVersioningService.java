@@ -5435,6 +5435,13 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLS.append("ALTER TABLE `buildrevisionparameters` CHANGE COLUMN `Release` `Release` VARCHAR(200) NULL DEFAULT NULL ; ");
         SQLInstruction.add(SQLS.toString());
 
+// Add collumn repositoryUrl to the buildrevisionparameters table
+//-- ------------------------ 729
+        SQLS = new StringBuilder();
+        SQLS.append("ALTER TABLE `buildrevisionparameters` ");
+        SQLS.append("ADD COLUMN `repositoryurl` VARCHAR(1000) NULL DEFAULT '' AFTER `mavenversion`;");
+        SQLInstruction.add(SQLS.toString());
+
         return SQLInstruction;
     }
 

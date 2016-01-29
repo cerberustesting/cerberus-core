@@ -32,9 +32,11 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import org.cerberus.database.DatabaseSpring;
-import org.cerberus.log.MyLogger;
+import org.cerberus.crud.entity.BuildRevisionParameters;
+import org.cerberus.crud.entity.MessageEvent;
+import org.cerberus.crud.factory.IFactoryBuildRevisionParameters;
 import org.cerberus.crud.service.IApplicationService;
+import org.cerberus.crud.service.IBuildRevisionParametersService;
 import org.cerberus.crud.service.ILogEventService;
 import org.cerberus.crud.service.IProjectService;
 import org.cerberus.crud.service.IUserService;
@@ -42,8 +44,13 @@ import org.cerberus.crud.service.impl.ApplicationService;
 import org.cerberus.crud.service.impl.LogEventService;
 import org.cerberus.crud.service.impl.ProjectService;
 import org.cerberus.crud.service.impl.UserService;
+import org.cerberus.database.DatabaseSpring;
+import org.cerberus.enums.MessageCodeEnum;
+import org.cerberus.enums.MessageEventEnum;
+import org.cerberus.log.MyLogger;
 import org.cerberus.util.ParameterParserUtil;
 import org.cerberus.util.StringUtil;
+import org.cerberus.util.answer.AnswerItem;
 import org.cerberus.version.Infos;
 import org.springframework.context.ApplicationContext;
 import org.springframework.web.context.support.WebApplicationContextUtils;
@@ -82,6 +89,8 @@ public class NewRelease extends HttpServlet {
         IApplicationService MyApplicationService = appContext.getBean(ApplicationService.class);
         IUserService MyUserService = appContext.getBean(UserService.class);
         IProjectService MyProjectService = appContext.getBean(ProjectService.class);
+        IBuildRevisionParametersService buildRevisionParametersService = appContext.getBean(IBuildRevisionParametersService.class);
+        IFactoryBuildRevisionParameters factoryBuildRevisionParameters = appContext.getBean(IFactoryBuildRevisionParameters.class);
 
         // Parsing all parameters.
         String application = ParameterParserUtil.parseStringParamAndDecode(request.getParameter("application"), "", charset);
@@ -97,6 +106,7 @@ public class NewRelease extends HttpServlet {
         String mavengroupid = ParameterParserUtil.parseStringParamAndDecode(request.getParameter("mavengroupid"), "", charset);
         String mavenartifactid = ParameterParserUtil.parseStringParamAndDecode(request.getParameter("mavenartifactid"), "", charset);
         String mavenversion = ParameterParserUtil.parseStringParamAndDecode(request.getParameter("mavenversion"), "", charset);
+        String repositoryurl = ParameterParserUtil.parseStringParamAndDecode(request.getParameter("repositoryUrl"), "", charset);
 
         String helpMessage = "\nThis servlet is used to create or update a release entry in a 'NONE' build and 'NONE' revision.\n\nParameter list :\n"
                 + "- application [mandatory] : the application that produced the release. This parameter must match the application list in Cerberus. [" + application + "]\n"
@@ -111,6 +121,7 @@ public class NewRelease extends HttpServlet {
                 + "- jenkinsbuildid : Jenkins Build ID. [" + jenkinsbuildid + "]\n"
                 + "- mavengroupid : Maven Group ID. [" + mavengroupid + "]\n"
                 + "- mavenartifactid : Maven Artifact ID. [" + mavenartifactid + "]\n"
+                + "- repositoryurl : Repository URL. [" + repositoryurl + "]\n"
                 + "- mavenversion : Maven Version. [" + mavenversion + "]\n";
 
         DatabaseSpring database = appContext.getBean(DatabaseSpring.class);
@@ -168,62 +179,59 @@ public class NewRelease extends HttpServlet {
                 //  if it exist, we update it in stead of inserting a new row.
                 //  That coorespond in the cases where the Jenkins pipe is executed several times 
                 //  on a single svn commit.
-                Statement stmt4 = connection.createStatement();
-                try {
-                    String req_sel4 = "Select id FROM  buildrevisionparameters "
-                            + " WHERE build='NONE' and revision='NONE' and application = '" + application + "' "
-                            + "   and `release` = '" + release + "'";
-                    ResultSet rsBC4 = stmt4.executeQuery(req_sel4);
-                    try {
-                        if (rsBC4.first()) {
-                            out.println("Warning - Release entry already exist. Updating the existing entry : " + rsBC4.getString("id"));
+                /**
+                 * Verify if the entry already exists if already exists, update
+                 * it else create it
+                 */
+                AnswerItem answer = buildRevisionParametersService.readByVarious2("NONE", "NONE", release, application);
+                BuildRevisionParameters buildRevisionParameters = (BuildRevisionParameters) answer.getItem();
 
-                            String req_update = "UPDATE buildrevisionparameters "
-                                    + "SET Project = '" + project + "', "
-                                    + " TicketIDFixed = '" + ticket + "', "
-                                    + " BugIDFixed = '" + bug + "', "
-                                    + " Link = '" + link + "', "
-                                    + " ReleaseOwner = '" + owner + "', "
-                                    + " Subject = '" + subject + "', "
-                                    + " jenkinsbuildid = '" + jenkinsbuildid + "', "
-                                    + " mavengroupid = '" + mavengroupid + "', "
-                                    + " mavenartifactid = '" + mavenartifactid + "', "
-                                    + " mavenversion = '" + mavenversion + "'"
-                                    + "WHERE id = '" + rsBC4.getString("id") + "' ";
-                            Statement stmt = connection.createStatement();
-                            try {
-                                stmt.execute(req_update);
-                            } finally {
-                                stmt.close();
-                            }
-                        } else {
-                            String req_insert = "INSERT INTO  buildrevisionparameters "
-                                    + " ( `Build`, `Revision`, `Release`, `Application`"
-                                    + ", `Project`, `TicketIDFixed`, `BugIDFixed`"
-                                    + ", `Link`, `ReleaseOwner`, `Subject`, `jenkinsbuildid`"
-                                    + ", `mavengroupid`, `mavenartifactid`, `mavenversion`) "
-                                    + " VALUES ('NONE', 'NONE', '" + release + "', '" + application + "'"
-                                    + ", '" + project + "', '" + ticket + "', '" + bug + "'"
-                                    + ", '" + link + "', '" + owner + "', '" + subject + "', '" + jenkinsbuildid + "'"
-                                    + ", '" + mavengroupid + "', '" + mavenartifactid + "', '" + mavenversion + "') ";
-                            Statement stmt = connection.createStatement();
-                            try {
-                                stmt.execute(req_insert);
-                            } finally {
-                                stmt.close();
-                            }
-                            out.println("Release Inserted : '" + release + "' on '" + application + "' for user '" + owner + "'");
-                        }
-                    } finally {
-                        rsBC4.close();
+                if (answer.getResultMessage().getCode() == new MessageEvent(MessageEventEnum.DATA_OPERATION_OK).getCode()) {
+                    out.println("Warning - Release entry already exist. Updating the existing entry : " + buildRevisionParameters.getId());
+                    if (!project.isEmpty()) {
+                        buildRevisionParameters.setProject(project);
                     }
-                } finally {
-                    stmt4.close();
+                    if (!ticket.isEmpty()) {
+                        buildRevisionParameters.setTicketIdFixed(ticket);
+                    }
+                    if (!bug.isEmpty()) {
+                        buildRevisionParameters.setBugIdFixed(bug);
+                    }
+                    if (!subject.isEmpty()) {
+                        buildRevisionParameters.setSubject(subject);
+                    }
+                    if (!owner.isEmpty()) {
+                        buildRevisionParameters.setReleaseOwner(owner);
+                    }
+                    if (!link.isEmpty()) {
+                        buildRevisionParameters.setLink(link);
+                    }
+                    if (!jenkinsbuildid.isEmpty()) {
+                        buildRevisionParameters.setJenkinsBuildId(jenkinsbuildid);
+                    }
+                    if (!mavengroupid.isEmpty()) {
+                        buildRevisionParameters.setMavenGroupId(mavengroupid);
+                    }
+                    if (!mavenartifactid.isEmpty()) {
+                        buildRevisionParameters.setMavenArtifactId(mavenartifactid);
+                    }
+                    if (!mavenversion.isEmpty()) {
+                        buildRevisionParameters.setMavenVersion(mavenversion);
+                    }
+                    if (!repositoryurl.isEmpty()) {
+                        buildRevisionParameters.setRepositoryUrl(repositoryurl);
+                    }
+
+                    buildRevisionParametersService.update(buildRevisionParameters);
+                } else if (answer.getResultMessage().getCode() == new MessageEvent(MessageEventEnum.DATA_OPERATION_NO_DATA_FOUND).getCode()) {
+                    buildRevisionParametersService.create(factoryBuildRevisionParameters.create(0, "NONE", "NONE", release, application, project, ticket, bug, link, owner, subject, null, jenkinsbuildid, mavengroupid, mavenartifactid, mavenversion, repositoryurl));
+                    out.println("Release Inserted : '" + release + "' on '" + application + "' for user '" + owner + "'");
+                } else {
+                    out.println("A problem occured : '" + answer.getResultMessage().getDescription());
                 }
             } else {
                 // In case of errors, we display the help message.
                 out.println(helpMessage);
-
             }
 
         } catch (Exception e) {

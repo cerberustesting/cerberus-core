@@ -229,4 +229,9 @@ public class BuildRevisionParametersService implements IBuildRevisionParametersS
         return true;
     }
 
+    @Override
+    public AnswerItem readByVarious2(String build, String revision, String release, String application) {
+        return buildRevisionParametersDAO.readByVarious2(build, revision, release, application);
+    }
+
 }

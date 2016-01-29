@@ -525,6 +525,7 @@ public class BuildRevisionParametersDAO implements IBuildRevisionParametersDAO {
             searchSQL.append(" or `jenkinsbuildid` like ?");
             searchSQL.append(" or `mavengroupid` like ?");
             searchSQL.append(" or `mavenartifactid` like ?");
+            searchSQL.append(" or `repositoryurl` like ?");
             searchSQL.append(" or `mavenversion` like ? )");
         }
         if (!StringUtil.isNullOrEmpty(individualSearch)) {
@@ -564,6 +565,7 @@ public class BuildRevisionParametersDAO implements IBuildRevisionParametersDAO {
             try {
                 int i = 1;
                 if (!StringUtil.isNullOrEmpty(searchTerm)) {
+                    preStat.setString(i++, "%" + searchTerm + "%");
                     preStat.setString(i++, "%" + searchTerm + "%");
                     preStat.setString(i++, "%" + searchTerm + "%");
                     preStat.setString(i++, "%" + searchTerm + "%");
@@ -687,7 +689,7 @@ public class BuildRevisionParametersDAO implements IBuildRevisionParametersDAO {
         query.append(" and a.`system` = ? ");
         query.append(" and brp.build = ? ");
         if (lastBuild.equalsIgnoreCase(build)) { // If last version is on the same build.
-            if (lastRevision==null) { // Same build and revision some we filter only the current content.
+            if (lastRevision == null) { // Same build and revision some we filter only the current content.
                 query.append(" and bri.seq = (select seq from buildrevisioninvariant where `system` = ? and `level` = 2 and `versionname` = ? ) "); // revision
             } else { // 2 different revisions inside the same build, we take the content between the 2.
                 query.append(" and bri.seq > (select seq from buildrevisioninvariant where `system` = ? and `level` = 2 and `versionname` = ? ) "); // lastRevision
@@ -865,7 +867,7 @@ public class BuildRevisionParametersDAO implements IBuildRevisionParametersDAO {
                     //gets the data
                     while (resultSet.next()) {
                         BuildRevisionParameters newBRP;
-                        newBRP = factoryBuildRevisionParameters.create(ParameterParserUtil.parseIntegerParam(resultSet.getString("maxid"), 0), ParameterParserUtil.parseStringParam(resultSet.getString("build"), ""), ParameterParserUtil.parseStringParam(resultSet.getString("revision"), ""), ParameterParserUtil.parseStringParam(resultSet.getString("rel"), ""), ParameterParserUtil.parseStringParam(resultSet.getString("application"), ""), "", "", "", ParameterParserUtil.parseStringParam(resultSet.getString("link"), ""), "", "", null, null, null, null, null);
+                        newBRP = factoryBuildRevisionParameters.create(ParameterParserUtil.parseIntegerParam(resultSet.getString("maxid"), 0), ParameterParserUtil.parseStringParam(resultSet.getString("build"), ""), ParameterParserUtil.parseStringParam(resultSet.getString("revision"), ""), ParameterParserUtil.parseStringParam(resultSet.getString("rel"), ""), ParameterParserUtil.parseStringParam(resultSet.getString("application"), ""), "", "", "", ParameterParserUtil.parseStringParam(resultSet.getString("link"), ""), "", "", null, null, null, null, null, null);
                         brpList.add(newBRP);
                     }
 
@@ -938,8 +940,8 @@ public class BuildRevisionParametersDAO implements IBuildRevisionParametersDAO {
         MessageEvent msg = null;
         StringBuilder query = new StringBuilder();
         query.append("INSERT INTO buildrevisionparameters (`Build`,`Revision`,`Release`,`Link` , `Application`, `releaseOwner`, `Project`");
-        query.append(" , `BugIDFixed`, `TicketIDFixed` , `Subject`, `jenkinsbuildid`, `mavengroupid`, `mavenartifactid`, `mavenversion`) ");
-        query.append("VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?)");
+        query.append(" , `BugIDFixed`, `TicketIDFixed` , `Subject`, `jenkinsbuildid`, `mavengroupid`, `mavenartifactid`, `mavenversion`, `repositoryurl`) ");
+        query.append("VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)");
 
         // Debug message on SQL.
         if (LOG.isDebugEnabled()) {
@@ -963,7 +965,7 @@ public class BuildRevisionParametersDAO implements IBuildRevisionParametersDAO {
                 preStat.setString(12, brp.getMavenGroupId());
                 preStat.setString(13, brp.getMavenArtifactId());
                 preStat.setString(14, brp.getMavenVersion());
-
+                preStat.setString(15, brp.getRepositoryUrl());
                 preStat.executeUpdate();
                 msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
                 msg.setDescription(msg.getDescription().replace("%ITEM%", OBJECT_NAME).replace("%OPERATION%", "INSERT"));
@@ -1041,9 +1043,9 @@ public class BuildRevisionParametersDAO implements IBuildRevisionParametersDAO {
     @Override
     public Answer update(BuildRevisionParameters brp) {
         MessageEvent msg = null;
-        final String query = "UPDATE buildrevisionparameters SET build = ?, revision = ?, application = ?,"
+        final String query = "UPDATE buildrevisionparameters SET `build` = ?, revision = ?, application = ?,"
                 + "`release` = ?, project = ?, ticketidfixed = ?, bugidfixed = ?, `subject` = ?, releaseowner = ?,"
-                + " link = ?, jenkinsbuildid = ?, mavengroupid = ?, mavenartifactid = ?, mavenversion = ? "
+                + " link = ?, jenkinsbuildid = ?, mavengroupid = ?, mavenartifactid = ?, mavenversion = ?, repositoryurl = ? "
                 + "  WHERE id = ?";
 
         // Debug message on SQL.
@@ -1068,7 +1070,8 @@ public class BuildRevisionParametersDAO implements IBuildRevisionParametersDAO {
                 preStat.setString(12, brp.getMavenGroupId());
                 preStat.setString(13, brp.getMavenArtifactId());
                 preStat.setString(14, brp.getMavenVersion());
-                preStat.setInt(15, brp.getId());
+                preStat.setString(15, brp.getRepositoryUrl());
+                preStat.setInt(16, brp.getId());
 
                 preStat.executeUpdate();
                 msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
@@ -1097,6 +1100,70 @@ public class BuildRevisionParametersDAO implements IBuildRevisionParametersDAO {
     }
 
     @Override
+    public AnswerItem readByVarious2(String build, String revision, String release, String application) {
+        AnswerItem ans = new AnswerItem();
+        MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
+        msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", ""));
+        BuildRevisionParameters result = null;
+        StringBuilder query = new StringBuilder();
+
+        query.append("Select * FROM  buildrevisionparameters ");
+        query.append(" WHERE build= ? and revision= ? and `release` = ?  and application = ? ");
+
+        Connection connection = this.databaseSpring.connect();
+        try {
+            PreparedStatement preStat = connection.prepareStatement(query.toString());
+            try {
+                preStat.setString(1, build);
+                preStat.setString(2, revision);
+                preStat.setString(3, release);
+                preStat.setString(4, application);
+
+                ResultSet resultSet = preStat.executeQuery();
+                try {
+                    //gets the data
+                    if (resultSet.first()) {
+                        result = loadFromResultSet(resultSet);
+                        msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
+                        msg.setDescription(msg.getDescription().replace("%ITEM%", OBJECT_NAME).replace("%OPERATION%", "SELECT"));
+                        ans.setItem(result);
+                    } else {
+                        msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_NO_DATA_FOUND);
+                    }
+                } catch (SQLException exception) {
+                    LOG.error("Unable to execute query : " + exception.toString());
+                    msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
+                    msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", exception.toString()));
+                } finally {
+                    resultSet.close();
+                }
+            } catch (SQLException exception) {
+                LOG.error("Unable to execute query : " + exception.toString());
+                msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
+                msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", exception.toString()));
+            } finally {
+                preStat.close();
+            }
+        } catch (SQLException exception) {
+            LOG.error("Unable to execute query : " + exception.toString());
+            msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
+            msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", exception.toString()));
+        } finally {
+            try {
+                if (connection != null) {
+                    connection.close();
+                }
+            } catch (SQLException exception) {
+                LOG.warn("Unable to close connection : " + exception.toString());
+            }
+        }
+
+        //sets the message
+        ans.setResultMessage(msg);
+        return ans;
+    }
+
+    @Override
     public BuildRevisionParameters loadFromResultSet(ResultSet rs) throws SQLException {
         int iD = rs.getInt("ID");
         String build = ParameterParserUtil.parseStringParam(rs.getString("build"), "");
@@ -1114,9 +1181,10 @@ public class BuildRevisionParametersDAO implements IBuildRevisionParametersDAO {
         String mavenGroupId = ParameterParserUtil.parseStringParam(rs.getString("mavengroupid"), "");
         String mavenArtifactId = ParameterParserUtil.parseStringParam(rs.getString("mavenartifactid"), "");
         String mavenVersion = ParameterParserUtil.parseStringParam(rs.getString("mavenversion"), "");
+        String repositoryUrl = ParameterParserUtil.parseStringParam(rs.getString("repositoryurl"), "");
 
         factoryBuildRevisionParameters = new FactoryBuildRevisionParameters();
-        return factoryBuildRevisionParameters.create(iD, build, revision, release, application, project, ticketIdFixed, budIdFixed, link, releaseOwner, subject, dateCreation, jenkinsBuildId, mavenGroupId, mavenArtifactId, mavenVersion);
+        return factoryBuildRevisionParameters.create(iD, build, revision, release, application, project, ticketIdFixed, budIdFixed, link, releaseOwner, subject, dateCreation, jenkinsBuildId, mavenGroupId, mavenArtifactId, mavenVersion, repositoryUrl);
     }
 
 }

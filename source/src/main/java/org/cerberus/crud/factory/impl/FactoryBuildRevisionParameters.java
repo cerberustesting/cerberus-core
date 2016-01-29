@@ -32,7 +32,7 @@ public class FactoryBuildRevisionParameters implements IFactoryBuildRevisionPara
     public BuildRevisionParameters create(int id, String build, String revision, String release,
             String application, String project, String ticketIDFixed, String bugIDFixed, String link,
             String releaseOwner, String subject, Timestamp dateCre, String jenkinsBuildID,
-            String mavenGroupID, String mavenArtefactID, String mavenVersion) {
+            String mavenGroupID, String mavenArtefactID, String mavenVersion, String repositoryUrl) {
         BuildRevisionParameters newBuildRevisionParameters = new BuildRevisionParameters();
         newBuildRevisionParameters.setId(id);
         newBuildRevisionParameters.setBuild(build);
@@ -50,6 +50,7 @@ public class FactoryBuildRevisionParameters implements IFactoryBuildRevisionPara
         newBuildRevisionParameters.setMavenGroupId(mavenGroupID);
         newBuildRevisionParameters.setMavenArtifactId(mavenArtefactID);
         newBuildRevisionParameters.setMavenVersion(mavenVersion);
+        newBuildRevisionParameters.setRepositoryUrl(repositoryUrl);
         return newBuildRevisionParameters;
     }
     

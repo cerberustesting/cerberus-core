@@ -92,6 +92,7 @@ public class UpdateBuildRevisionParameters extends HttpServlet {
         String mavenGroupID = policy.sanitize(request.getParameter("mavengroupid"));
         String mavenArtifactID = policy.sanitize(request.getParameter("mavenartifactid"));
         String mavenVersion = policy.sanitize(request.getParameter("mavenversion"));
+        String repositoryUrl = policy.sanitize(request.getParameter("repositoryurl"));
         Integer brpid = 0;
 
         String[] myId = request.getParameterValues("id");
@@ -178,7 +179,7 @@ public class UpdateBuildRevisionParameters extends HttpServlet {
                         brpData.setMavenGroupId(ParameterParserUtil.parseStringParamAndSanitize(request.getParameter("mavengroupid"), brpData.getMavenGroupId()));
                         brpData.setMavenArtifactId(ParameterParserUtil.parseStringParamAndSanitize(request.getParameter("mavenartifactid"), brpData.getMavenArtifactId()));
                         brpData.setMavenVersion(ParameterParserUtil.parseStringParamAndSanitize(request.getParameter("mavenversion"), brpData.getMavenVersion()));
-
+                        brpData.setRepositoryUrl(ParameterParserUtil.parseStringParamAndSanitize(request.getParameter("repositoryurl"), brpData.getRepositoryUrl()));
                         ans = brpService.update(brpData);
 
                         if (ans.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
