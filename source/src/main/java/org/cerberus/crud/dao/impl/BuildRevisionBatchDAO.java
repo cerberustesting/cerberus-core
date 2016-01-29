@@ -27,12 +27,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.log4j.Logger;
-import org.cerberus.crud.dao.ICountryEnvParam_logDAO;
-import org.cerberus.crud.entity.CountryEnvParam_log;
+import org.cerberus.crud.dao.IBuildRevisionBatchDAO;
+import org.cerberus.crud.entity.BuildRevisionBatch;
 import org.cerberus.database.DatabaseSpring;
 import org.cerberus.crud.entity.MessageEvent;
+import org.cerberus.crud.factory.IFactoryBuildRevisionBatch;
 import org.cerberus.enums.MessageEventEnum;
-import org.cerberus.crud.factory.IFactoryCountryEnvParam_log;
+import org.cerberus.util.ParameterParserUtil;
 import org.cerberus.util.StringUtil;
 import org.cerberus.util.answer.Answer;
 import org.cerberus.util.answer.AnswerItem;
@@ -44,24 +45,24 @@ import org.springframework.stereotype.Repository;
  * @author vertigo17
  */
 @Repository
-public class CountryEnvParam_logDAO implements ICountryEnvParam_logDAO {
+public class BuildRevisionBatchDAO implements IBuildRevisionBatchDAO {
 
     @Autowired
     private DatabaseSpring databaseSpring;
     @Autowired
-    private IFactoryCountryEnvParam_log factoryCountryEnvParamLog;
+    private IFactoryBuildRevisionBatch factoryBuildRevisionBatch;
 
-    private static final Logger LOG = Logger.getLogger(CountryEnvParam_logDAO.class);
+    private static final Logger LOG = Logger.getLogger(BuildRevisionBatchDAO.class);
 
-    private final String OBJECT_NAME = "CountryEnvParam_log";
+    private final String OBJECT_NAME = "BuildRevisionBatchDAO";
     private final String SQL_DUPLICATED_CODE = "23000";
     private final int MAX_ROW_SELECTED = 100000;
 
     @Override
     public AnswerItem readByKey(long id) {
         AnswerItem ans = new AnswerItem();
-        CountryEnvParam_log result = null;
-        final String query = "SELECT * FROM countryenvparam_log WHERE id = ?";
+        BuildRevisionBatch result = null;
+        final String query = "SELECT * FROM buildrevisionbatch WHERE id = ?";
         MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
         msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", ""));
 
@@ -118,17 +119,17 @@ public class CountryEnvParam_logDAO implements ICountryEnvParam_logDAO {
     }
 
     @Override
-    public AnswerList readByVariousByCriteria(String system, String country, String environment, String build, String revision, int start, int amount, String column, String dir, String searchTerm, String individualSearch) {
+    public AnswerList readByVariousByCriteria(String system, String country, String environment, int start, int amount, String column, String dir, String searchTerm, String individualSearch) {
         AnswerList response = new AnswerList();
         MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
         msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", ""));
-        List<CountryEnvParam_log> countryEnvParamLogList = new ArrayList<CountryEnvParam_log>();
+        List<BuildRevisionBatch> resultList = new ArrayList<BuildRevisionBatch>();
         StringBuilder searchSQL = new StringBuilder();
 
         StringBuilder query = new StringBuilder();
         //SQL_CALC_FOUND_ROWS allows to retrieve the total number of columns by disrearding the limit clauses that 
         //were applied -- used for pagination p
-        query.append("SELECT SQL_CALC_FOUND_ROWS * FROM countryenvparam_log ");
+        query.append("SELECT SQL_CALC_FOUND_ROWS * FROM buildrevisionbatch ");
 
         searchSQL.append(" where 1=1 ");
 
@@ -139,10 +140,8 @@ public class CountryEnvParam_logDAO implements ICountryEnvParam_logDAO {
             searchSQL.append(" or `Environment` like ?");
             searchSQL.append(" or `Build` like ?");
             searchSQL.append(" or `Revision` like ?");
-            searchSQL.append(" or `Chain` like ?");
-            searchSQL.append(" or `Description` like ?");
-            searchSQL.append(" or `datecre` like ?");
-            searchSQL.append(" or `Creator` like ?)");
+            searchSQL.append(" or `Batch` like ?");
+            searchSQL.append(" or `DateBatch` like ?)");
         }
         if (!StringUtil.isNullOrEmpty(individualSearch)) {
             searchSQL.append(" and ( ? )");
@@ -155,12 +154,6 @@ public class CountryEnvParam_logDAO implements ICountryEnvParam_logDAO {
         }
         if (!StringUtil.isNullOrEmpty(environment)) {
             searchSQL.append(" and (`environment` = ?)");
-        }
-        if (!StringUtil.isNullOrEmpty(build)) {
-            searchSQL.append(" and (`build` = ?)");
-        }
-        if (!StringUtil.isNullOrEmpty(revision)) {
-            searchSQL.append(" and (`revision` = ?)");
         }
         query.append(searchSQL);
 
@@ -192,8 +185,6 @@ public class CountryEnvParam_logDAO implements ICountryEnvParam_logDAO {
                     preStat.setString(i++, "%" + searchTerm + "%");
                     preStat.setString(i++, "%" + searchTerm + "%");
                     preStat.setString(i++, "%" + searchTerm + "%");
-                    preStat.setString(i++, "%" + searchTerm + "%");
-                    preStat.setString(i++, "%" + searchTerm + "%");
                 }
                 if (!StringUtil.isNullOrEmpty(individualSearch)) {
                     preStat.setString(i++, individualSearch);
@@ -207,17 +198,11 @@ public class CountryEnvParam_logDAO implements ICountryEnvParam_logDAO {
                 if (!StringUtil.isNullOrEmpty(environment)) {
                     preStat.setString(i++, environment);
                 }
-                if (!StringUtil.isNullOrEmpty(build)) {
-                    preStat.setString(i++, build);
-                }
-                if (!StringUtil.isNullOrEmpty(revision)) {
-                    preStat.setString(i++, revision);
-                }
                 ResultSet resultSet = preStat.executeQuery();
                 try {
                     //gets the data
                     while (resultSet.next()) {
-                        countryEnvParamLogList.add(this.loadFromResultSet(resultSet));
+                        resultList.add(this.loadFromResultSet(resultSet));
                     }
 
                     //get the total number of rows
@@ -228,18 +213,18 @@ public class CountryEnvParam_logDAO implements ICountryEnvParam_logDAO {
                         nrTotalRows = resultSet.getInt(1);
                     }
 
-                    if (countryEnvParamLogList.size() >= MAX_ROW_SELECTED) { // Result of SQl was limited by MAX_ROW_SELECTED constrain. That means that we may miss some lines in the resultList.
+                    if (resultList.size() >= MAX_ROW_SELECTED) { // Result of SQl was limited by MAX_ROW_SELECTED constrain. That means that we may miss some lines in the resultList.
                         LOG.error("Partial Result in the query.");
                         msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_WARNING_PARTIAL_RESULT);
                         msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", "Maximum row reached : " + MAX_ROW_SELECTED));
-                        response = new AnswerList(countryEnvParamLogList, nrTotalRows);
-                    } else if (countryEnvParamLogList.size() <= 0) {
+                        response = new AnswerList(resultList, nrTotalRows);
+                    } else if (resultList.size() <= 0) {
                         msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_NO_DATA_FOUND);
-                        response = new AnswerList(countryEnvParamLogList, nrTotalRows);
+                        response = new AnswerList(resultList, nrTotalRows);
                     } else {
                         msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
                         msg.setDescription(msg.getDescription().replace("%ITEM%", OBJECT_NAME).replace("%OPERATION%", "SELECT"));
-                        response = new AnswerList(countryEnvParamLogList, nrTotalRows);
+                        response = new AnswerList(resultList, nrTotalRows);
                     }
 
                 } catch (SQLException exception) {
@@ -279,16 +264,16 @@ public class CountryEnvParam_logDAO implements ICountryEnvParam_logDAO {
             }
         }
         response.setResultMessage(msg);
-        response.setDataList(countryEnvParamLogList);
+        response.setDataList(resultList);
         return response;
     }
 
     @Override
-    public Answer create(CountryEnvParam_log countryEnvParamLog) {
+    public Answer create(BuildRevisionBatch buildRevisionBatch) {
         MessageEvent msg = null;
         StringBuilder query = new StringBuilder();
-        query.append("INSERT INTO countryenvparam_log (`system`, `Country`, `Environment`, `Build`, `Revision`, `Chain`, `Description`, `Creator` ) ");
-        query.append("VALUES (?,?,?,?,?,?,?,?)");
+        query.append("INSERT INTO buildrevisionbatch (`system`, `Country`, `Environment`, `Build`, `Revision`, `Batch` ) ");
+        query.append("VALUES (?,?,?,?,?,?)");
 
         // Debug message on SQL.
         if (LOG.isDebugEnabled()) {
@@ -298,14 +283,12 @@ public class CountryEnvParam_logDAO implements ICountryEnvParam_logDAO {
         try {
             PreparedStatement preStat = connection.prepareStatement(query.toString());
             try {
-                preStat.setString(1, countryEnvParamLog.getSystem());
-                preStat.setString(2, countryEnvParamLog.getCountry());
-                preStat.setString(3, countryEnvParamLog.getEnvironment());
-                preStat.setString(4, countryEnvParamLog.getBuild());
-                preStat.setString(5, countryEnvParamLog.getRevision());
-                preStat.setInt(6, countryEnvParamLog.getChain());
-                preStat.setString(7, countryEnvParamLog.getDescription());
-                preStat.setString(8, countryEnvParamLog.getCreator());
+                preStat.setString(1, buildRevisionBatch.getSystem());
+                preStat.setString(2, buildRevisionBatch.getCountry());
+                preStat.setString(3, buildRevisionBatch.getEnvironment());
+                preStat.setString(4, buildRevisionBatch.getBuild());
+                preStat.setString(5, buildRevisionBatch.getRevision());
+                preStat.setString(6, buildRevisionBatch.getBatch());
 
                 preStat.executeUpdate();
                 msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
@@ -334,16 +317,16 @@ public class CountryEnvParam_logDAO implements ICountryEnvParam_logDAO {
                     connection.close();
                 }
             } catch (SQLException exception) {
-                LOG.error("Unable to close connection : " + exception.toString());
+                LOG.warn("Unable to close connection : " + exception.toString());
             }
         }
         return new Answer(msg);
     }
 
     @Override
-    public Answer delete(CountryEnvParam_log countryEnvParamLog) {
+    public Answer delete(BuildRevisionBatch buildRevisionBatch) {
         MessageEvent msg = null;
-        final String query = "DELETE FROM countryenvparam_log WHERE id = ? ";
+        final String query = "DELETE FROM buildrevisionbatch WHERE id = ? ";
 
         // Debug message on SQL.
         if (LOG.isDebugEnabled()) {
@@ -353,7 +336,7 @@ public class CountryEnvParam_logDAO implements ICountryEnvParam_logDAO {
         try {
             PreparedStatement preStat = connection.prepareStatement(query);
             try {
-                preStat.setLong(1, countryEnvParamLog.getId());
+                preStat.setLong(1, buildRevisionBatch.getId());
 
                 preStat.executeUpdate();
                 msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
@@ -382,10 +365,10 @@ public class CountryEnvParam_logDAO implements ICountryEnvParam_logDAO {
     }
 
     @Override
-    public Answer update(CountryEnvParam_log countryEnvPramaLog) {
+    public Answer update(BuildRevisionBatch buildRevisionBatch) {
         MessageEvent msg = null;
-        final String query = "UPDATE countryenvparam_log SET system = ?, Country = ?, Environment = ?, Build = ?, Revision = ?, "
-                + "Chain = ?, Description = ?, Creator = ?  WHERE id = ? ";
+        final String query = "UPDATE buildrevisionbatch SET system = ?, Country = ?, Environment = ?, Build = ?, Revision = ?, "
+                + "Batch = ?  WHERE id = ? ";
 
         // Debug message on SQL.
         if (LOG.isDebugEnabled()) {
@@ -395,15 +378,13 @@ public class CountryEnvParam_logDAO implements ICountryEnvParam_logDAO {
         try {
             PreparedStatement preStat = connection.prepareStatement(query);
             try {
-                preStat.setString(1, countryEnvPramaLog.getSystem());
-                preStat.setString(2, countryEnvPramaLog.getCountry());
-                preStat.setString(3, countryEnvPramaLog.getEnvironment());
-                preStat.setString(4, countryEnvPramaLog.getBuild());
-                preStat.setString(5, countryEnvPramaLog.getRevision());
-                preStat.setInt(6, countryEnvPramaLog.getChain());
-                preStat.setString(7, countryEnvPramaLog.getDescription());
-                preStat.setString(8, countryEnvPramaLog.getCreator());
-                preStat.setLong(9, countryEnvPramaLog.getId());
+                preStat.setString(1, buildRevisionBatch.getSystem());
+                preStat.setString(2, buildRevisionBatch.getCountry());
+                preStat.setString(3, buildRevisionBatch.getEnvironment());
+                preStat.setString(4, buildRevisionBatch.getBuild());
+                preStat.setString(5, buildRevisionBatch.getRevision());
+                preStat.setString(6, buildRevisionBatch.getBatch());
+                preStat.setLong(7, buildRevisionBatch.getId());
 
                 preStat.executeUpdate();
                 msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
@@ -432,17 +413,16 @@ public class CountryEnvParam_logDAO implements ICountryEnvParam_logDAO {
     }
 
     @Override
-    public CountryEnvParam_log loadFromResultSet(ResultSet resultSet) throws SQLException {
-        long id = resultSet.getLong("id");
-        String system = resultSet.getString("system") == null ? "" : resultSet.getString("system");
-        String country = resultSet.getString("Country") == null ? "" : resultSet.getString("Country");
-        String environment = resultSet.getString("Environment") == null ? "" : resultSet.getString("Environment");
-        String build = resultSet.getString("Build") == null ? "" : resultSet.getString("Build");
-        String revision = resultSet.getString("Revision") == null ? "" : resultSet.getString("Revision");
-        int chain = resultSet.getInt("Chain");
-        String description = resultSet.getString("Description") == null ? "" : resultSet.getString("Description");
-        Timestamp datecre = resultSet.getTimestamp("datecre");
-        String Creator = resultSet.getString("Creator") == null ? "" : resultSet.getString("Creator");
-        return factoryCountryEnvParamLog.create(id, system, country, environment, build, revision, chain, description, datecre, Creator);
+    public BuildRevisionBatch loadFromResultSet(ResultSet resultSet) throws SQLException {
+        
+        Long id = ParameterParserUtil.parseLongParam(resultSet.getString("id"), 0);
+        String system = ParameterParserUtil.parseStringParam(resultSet.getString("system"), "");
+        String country = ParameterParserUtil.parseStringParam(resultSet.getString("country"), "");
+        String environment = ParameterParserUtil.parseStringParam(resultSet.getString("environment"), "");
+        String build = ParameterParserUtil.parseStringParam(resultSet.getString("build"), "");
+        String revision = ParameterParserUtil.parseStringParam(resultSet.getString("revision"), "");
+        String batch = ParameterParserUtil.parseStringParam(resultSet.getString("batch"), "");
+        Timestamp dateBatch = resultSet.getTimestamp("DateBatch");
+        return factoryBuildRevisionBatch.create(id, system, country, environment, build, revision, batch, dateBatch);
     }
 }

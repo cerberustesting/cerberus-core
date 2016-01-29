@@ -326,6 +326,10 @@
         <servlet-class>org.cerberus.servlet.crud.countryenvironment.ReadCountryEnvParam</servlet-class>
     </servlet>
     <servlet>
+        <servlet-name>ReadCountryEnvParam_log</servlet-name>
+        <servlet-class>org.cerberus.servlet.crud.countryenvironment.ReadCountryEnvParam_log</servlet-class>
+    </servlet>
+    <servlet>
         <servlet-name>UpdateApplication</servlet-name>
         <servlet-class>org.cerberus.servlet.crud.test.UpdateApplication</servlet-class>
     </servlet>
@@ -1149,6 +1153,10 @@
         <url-pattern>/ReadCountryEnvParam</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
+        <servlet-name>ReadCountryEnvParam_log</servlet-name>
+        <url-pattern>/ReadCountryEnvParam_log</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
         <servlet-name>UpdateApplication</servlet-name>
         <url-pattern>/UpdateApplication</url-pattern>
     </servlet-mapping>
@@ -1968,6 +1976,7 @@
             <url-pattern>/ReadDeployType</url-pattern>
             <url-pattern>/GetNotification</url-pattern>
             <url-pattern>/ReadBuildRevisionParameters</url-pattern>
+            <url-pattern>/ReadCountryEnvParam</url-pattern>
         </web-resource-collection>
         <auth-constraint>
             <description>IntegratorRO</description>

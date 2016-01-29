@@ -20,12 +20,12 @@
 package org.cerberus.crud.service.impl;
 
 import java.util.List;
-import org.cerberus.crud.dao.ICountryEnvParam_logDAO;
+import org.cerberus.crud.dao.IBuildRevisionBatchDAO;
+import org.cerberus.crud.entity.BuildRevisionBatch;
 
-import org.cerberus.crud.entity.CountryEnvParam_log;
 import org.cerberus.crud.entity.MessageGeneral;
-import org.cerberus.crud.factory.IFactoryCountryEnvParam_log;
-import org.cerberus.crud.service.ICountryEnvParam_logService;
+import org.cerberus.crud.factory.IFactoryBuildRevisionBatch;
+import org.cerberus.crud.service.IBuildRevisionBatchService;
 import org.cerberus.enums.MessageGeneralEnum;
 import org.cerberus.enums.MessageEventEnum;
 import org.cerberus.exception.CerberusException;
@@ -39,26 +39,26 @@ import org.springframework.stereotype.Service;
  * @author vertigo17
  */
 @Service
-public class CountryEnvParam_logService implements ICountryEnvParam_logService {
+public class BuildRevisionBatchService implements IBuildRevisionBatchService {
 
     @Autowired
-    private ICountryEnvParam_logDAO countryEnvParamLogDao;
+    private IBuildRevisionBatchDAO buildRevisionBatchDao;
     @Autowired
-    private IFactoryCountryEnvParam_log countryEnvParamLogFactory;
+    private IFactoryBuildRevisionBatch buildRevisionBatchFactory;
 
     @Override
     public AnswerItem readByKey(Long id) {
-        return countryEnvParamLogDao.readByKey(id);
+        return buildRevisionBatchDao.readByKey(id);
     }
 
     @Override
     public AnswerList readAll() {
-        return readByVariousByCriteria(null, null, null, null, null, 0, 0, "id", "asc", null, null);
+        return readByVariousByCriteria(null, null, null, 0, 0, "id", "asc", null, null);
     }
 
     @Override
-    public AnswerList readByVariousByCriteria(String system, String country, String environment, String build, String revision, int startPosition, int length, String columnName, String sort, String searchParameter, String string) {
-        return countryEnvParamLogDao.readByVariousByCriteria(system, country, environment, build, revision, startPosition, length, columnName, sort, searchParameter, string);
+    public AnswerList readByVariousByCriteria(String system, String country, String environment, int startPosition, int length, String columnName, String sort, String searchParameter, String string) {
+        return buildRevisionBatchDao.readByVariousByCriteria(system, country, environment, startPosition, length, columnName, sort, searchParameter, string);
     }
 
     @Override
@@ -72,39 +72,39 @@ public class CountryEnvParam_logService implements ICountryEnvParam_logService {
     }
 
     @Override
-    public Answer create(CountryEnvParam_log countryEnvParamLog) {
-        return countryEnvParamLogDao.create(countryEnvParamLog);
+    public Answer create(BuildRevisionBatch buildRevisionBatch) {
+        return buildRevisionBatchDao.create(buildRevisionBatch);
     }
 
     @Override
-    public Answer delete(CountryEnvParam_log countryEnvParamLog) {
-        return countryEnvParamLogDao.delete(countryEnvParamLog);
+    public Answer delete(BuildRevisionBatch buildRevisionBatch) {
+        return buildRevisionBatchDao.delete(buildRevisionBatch);
     }
 
     @Override
-    public Answer update(CountryEnvParam_log countryEnvParamLog) {
-        return countryEnvParamLogDao.update(countryEnvParamLog);
+    public Answer update(BuildRevisionBatch buildRevisionBatch) {
+        return buildRevisionBatchDao.update(buildRevisionBatch);
     }
 
     @Override
-    public Answer createLogEntry(String system, String country, String environment, String build, String revision, String description, String creator) {
-        return this.create(countryEnvParamLogFactory.create(system, country, environment, build, revision, 0, description, creator));
+    public Answer createBatchEntry(String system, String country, String environment, String build, String revision, String batch) {
+        return this.create(buildRevisionBatchFactory.create(system, country, environment, build, revision, batch));
     }
 
     @Override
-    public CountryEnvParam_log convert(AnswerItem answerItem) throws CerberusException {
+    public BuildRevisionBatch convert(AnswerItem answerItem) throws CerberusException {
         if (answerItem.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
             //if the service returns an OK message then we can get the item
-            return (CountryEnvParam_log) answerItem.getItem();
+            return (BuildRevisionBatch) answerItem.getItem();
         }
         throw new CerberusException(new MessageGeneral(MessageGeneralEnum.DATA_OPERATION_ERROR));
     }
 
     @Override
-    public List<CountryEnvParam_log> convert(AnswerList answerList) throws CerberusException {
+    public List<BuildRevisionBatch> convert(AnswerList answerList) throws CerberusException {
         if (answerList.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
             //if the service returns an OK message then we can get the item
-            return (List<CountryEnvParam_log>) answerList.getDataList();
+            return (List<BuildRevisionBatch>) answerList.getDataList();
         }
         throw new CerberusException(new MessageGeneral(MessageGeneralEnum.DATA_OPERATION_ERROR));
     }

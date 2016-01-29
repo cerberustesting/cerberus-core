@@ -406,7 +406,7 @@ public class ApplicationDAO implements IApplicationDAO {
                     connection.close();
                 }
             } catch (SQLException exception) {
-                LOG.warn("Unable to close connection : " + exception.toString());
+                LOG.error("Unable to close connection : " + exception.toString());
             }
         }
         return new Answer(msg);
