@@ -68,7 +68,8 @@ GROUP BY tce.IP ;
 
 ---- DEPRECATED statistics.
 -----------------------------------
-SELECT date_format(`Time`,"%Y%m"), `Action`, count(*) FROM logevent
-where `Time` > '2016-00-00 00:00:00' and `Log` like '[DEPRECATED]%'
-GROUP BY date_format(`Time`,"%Y%m"), `Action`
-ORDER BY `Time` desc;
+SELECT `Action`, date_format(`Time`,"%Y%m%d"), count(*) FROM logevent
+where `Time` > '2016-02-01 00:00:00' and `Log` like '[DEPRECATED]%'
+GROUP BY `Action`, date_format(`Time`,"%Y%m%d")
+ORDER BY `Action`, date_format(`Time`,"%Y%m%d");
+
