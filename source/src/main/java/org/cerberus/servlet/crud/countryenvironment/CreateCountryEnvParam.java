@@ -76,8 +76,10 @@ public class CreateCountryEnvParam extends HttpServlet {
             final String emailBodyDisableEnvironment = policy.sanitize(request.getParameter("EmailBodyDisableEnvironment"));
             final boolean active = "Y".equals(policy.sanitize(request.getParameter("Active"))) ? true : false;
             final boolean maintenanceAct = "Y".equals(policy.sanitize(request.getParameter("MaintenanceAct"))) ? true : false;
-            final String maintenanceStr = policy.sanitize(request.getParameter("MaintenanceStr"));
-            final String maintenanceEnd = policy.sanitize(request.getParameter("MaintenanceEnd"));
+            String maintenanceStr = policy.sanitize(request.getParameter("MaintenanceStr"));
+            String maintenanceEnd = policy.sanitize(request.getParameter("MaintenanceEnd"));
+            maintenanceStr = maintenanceStr.isEmpty() ? "00:00:00" : maintenanceStr;
+            maintenanceEnd = maintenanceEnd.isEmpty() ? "00:00:00" : maintenanceEnd;
 
             final ApplicationContext appContext = WebApplicationContextUtils.getWebApplicationContext(this.getServletContext());
             final ICountryEnvParamService cepService = appContext.getBean(ICountryEnvParamService.class);
