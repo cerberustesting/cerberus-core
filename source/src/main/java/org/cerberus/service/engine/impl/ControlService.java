@@ -694,7 +694,7 @@ public class ControlService implements IControlService {
             Identifier identifier = identifierService.convertStringToIdentifier(html);
             String str = this.webdriverService.getValueFromHTML(tCExecution.getSession(), identifier);
             MyLogger.log(ControlService.class.getName(), Level.DEBUG, "Control : verifyRegexInElement element : " + html + " has value : " + StringUtil.sanitize(str));
-            if (html != null) {
+            if (html != null && str != null) {
                 try {
                     Pattern pattern = Pattern.compile(regex);
                     Matcher matcher = pattern.matcher(str);
@@ -717,8 +717,12 @@ public class ControlService implements IControlService {
                     mes.setDescription(mes.getDescription().replaceAll("%ERROR%", e.getMessage()));
                     return mes;
                 }
-            } else {
+            } else if (str != null) {
                 mes = new MessageEvent(MessageEventEnum.CONTROL_FAILED_REGEXINELEMENT_NULL);
+                return mes;
+            } else {
+                mes = new MessageEvent(MessageEventEnum.CONTROL_FAILED_REGEXINELEMENT_NO_SUCH_ELEMENT);
+                mes.setDescription(mes.getDescription().replaceAll("%ELEMENT%", html));
                 return mes;
             }
         } catch (NoSuchElementException exception) {

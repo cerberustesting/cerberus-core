@@ -40,6 +40,15 @@ public class BuildRevisionParameters {
     private String mavenGroupId;
     private String mavenArtifactId;
     private String mavenVersion;
+    private String repositoryUrl;
+
+    public String getRepositoryUrl() {
+        return repositoryUrl;
+    }
+
+    public void setRepositoryUrl(String repositoryUrl) {
+        this.repositoryUrl = repositoryUrl;
+    }
 
     public int getId() {
         return id;

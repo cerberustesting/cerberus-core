@@ -119,6 +119,16 @@ public interface IBuildRevisionParametersDAO {
      * @return
      */
     Answer update(BuildRevisionParameters brp);
+    
+    /**
+     * 
+     * @param build
+     * @param revision
+     * @param release
+     * @param application
+     * @return A list of BuildRevisionParameters object for a build, revision, release, application
+     */
+    AnswerItem readByVarious2(String build, String revision, String release, String application);
 
     /**
      *

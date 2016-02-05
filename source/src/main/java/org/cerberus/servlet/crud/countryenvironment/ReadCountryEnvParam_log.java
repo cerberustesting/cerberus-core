@@ -17,20 +17,23 @@
  * You should have received a copy of the GNU General Public License
  * along with Cerberus.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.cerberus.servlet.crud.usermanagement;
+package org.cerberus.servlet.crud.countryenvironment;
 
+import com.google.gson.Gson;
 import java.io.IOException;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import org.cerberus.crud.entity.CountryEnvParam_log;
 import org.cerberus.crud.entity.MessageEvent;
-import org.cerberus.crud.entity.User;
-import org.cerberus.crud.service.IUserService;
-import org.cerberus.crud.service.impl.UserService;
+import org.cerberus.crud.service.ICountryEnvParam_logService;
 import org.cerberus.enums.MessageEventEnum;
+import org.cerberus.exception.CerberusException;
 import org.cerberus.util.ParameterParserUtil;
 import org.cerberus.util.answer.AnswerItem;
 import org.cerberus.util.answer.AnswerList;
@@ -46,11 +49,11 @@ import org.springframework.web.context.support.WebApplicationContextUtils;
  *
  * @author cerberus
  */
-@WebServlet(name = "ReadUserPublic", urlPatterns = {"/ReadUserPublic"})
-public class ReadUserPublic extends HttpServlet {
+@WebServlet(name = "ReadCountryEnvParam_log", urlPatterns = {"/ReadCountryEnvParam_log"})
+public class ReadCountryEnvParam_log extends HttpServlet {
 
-    private final CharSequence OBJECT_NAME = "Users";
-    private IUserService userService;
+    private ICountryEnvParam_logService ceplService;
+    private final String OBJECT_NAME = "ReadCountryEnvParam_log";
 
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
@@ -60,9 +63,10 @@ public class ReadUserPublic extends HttpServlet {
      * @param response servlet response
      * @throws ServletException if a servlet-specific error occurs
      * @throws IOException if an I/O error occurs
+     * @throws org.cerberus.exception.CerberusException
      */
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException {
+            throws ServletException, IOException, CerberusException {
         String echo = request.getParameter("sEcho");
         ApplicationContext appContext = WebApplicationContextUtils.getWebApplicationContext(this.getServletContext());
         PolicyFactory policy = Sanitizers.FORMATTING.and(Sanitizers.LINKS);
@@ -76,31 +80,20 @@ public class ReadUserPublic extends HttpServlet {
         /**
          * Parsing and securing all required parameters.
          */
-        Integer brpid = 0;
-        boolean brpid_error = true;
-        try {
-            if (request.getParameter("id") != null && !request.getParameter("id").equals("")) {
-                brpid = Integer.valueOf(policy.sanitize(request.getParameter("id")));
-                brpid_error = false;
-            }
-        } catch (Exception ex) {
-            msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_EXPECTED);
-            msg.setDescription(msg.getDescription().replace("%ITEM%", OBJECT_NAME));
-            msg.setDescription(msg.getDescription().replace("%OPERATION%", "Read"));
-            msg.setDescription(msg.getDescription().replace("%REASON%", "id must be an integer value."));
-            brpid_error = true;
-        }
+        String system = policy.sanitize(request.getParameter("system"));
+        String country = policy.sanitize(request.getParameter("country"));
+        String environment = policy.sanitize(request.getParameter("environment"));
+
+        // Global boolean on the servlet that define if the user has permition to edit and delete object.
+        boolean userHasPermissions = request.isUserInRole("IntegratorRO");
 
         // Init Answer with potencial error from Parsing parameter.
         AnswerItem answer = new AnswerItem(msg);
 
         try {
             JSONObject jsonResponse = new JSONObject();
-            if ((request.getParameter("id") != null) && !(brpid_error)) { // ID parameter is specified so we return the unique record of object.
-//                answer = findBuildRevisionParametersByKey(appContext, brpid); // TODO
-                jsonResponse = (JSONObject) answer.getItem();
-            } else { // Default behaviour, we return the simple list of objects.
-                answer = findUserList(appContext, request, response);
+            if (1 == 1) {
+                answer = findCountryEnvParamList(request.getParameter("system"), request.getParameter("country"), request.getParameter("environment"), appContext, userHasPermissions, request);
                 jsonResponse = (JSONObject) answer.getItem();
             }
             jsonResponse.put("messageType", answer.getResultMessage().getMessage().getCodeString());
@@ -110,7 +103,7 @@ public class ReadUserPublic extends HttpServlet {
             response.getWriter().print(jsonResponse.toString());
 
         } catch (JSONException e) {
-            org.apache.log4j.Logger.getLogger(ReadUser.class.getName()).log(org.apache.log4j.Level.ERROR, null, e);
+            org.apache.log4j.Logger.getLogger(ReadCountryEnvParam_log.class.getName()).log(org.apache.log4j.Level.ERROR, null, e);
             //returns a default error message with the json format that is able to be parsed by the client-side
             response.setContentType("application/json");
             msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
@@ -121,40 +114,6 @@ public class ReadUserPublic extends HttpServlet {
             errorMessage.append("\"}");
             response.getWriter().print(errorMessage.toString());
         }
-    }
-
-    private AnswerItem findUserList(ApplicationContext appContext, HttpServletRequest request, HttpServletResponse response) throws JSONException {
-
-        AnswerItem item = new AnswerItem();
-        JSONObject jsonResponse = new JSONObject();
-        userService = appContext.getBean(UserService.class);
-
-        int startPosition = Integer.valueOf(ParameterParserUtil.parseStringParam(request.getParameter("iDisplayStart"), "0"));
-        int length = Integer.valueOf(ParameterParserUtil.parseStringParam(request.getParameter("iDisplayLength"), "0"));
-        /*int sEcho  = Integer.valueOf(request.getParameter("sEcho"));*/
-
-        String searchParameter = ParameterParserUtil.parseStringParam(request.getParameter("sSearch"), "");
-        int columnToSortParameter = Integer.parseInt(ParameterParserUtil.parseStringParam(request.getParameter("iSortCol_0"), "1"));
-        String sColumns = ParameterParserUtil.parseStringParam(request.getParameter("sColumns"), "userID,login,name");
-        String columnToSort[] = sColumns.split(",");
-        String columnName = columnToSort[columnToSortParameter];
-        String sort = ParameterParserUtil.parseStringParam(request.getParameter("sSortDir_0"), "asc");
-        AnswerList resp = userService.readByCriteria(startPosition, length, columnName, sort, searchParameter, "");
-
-        JSONArray jsonArray = new JSONArray();
-        if (resp.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {//the service was able to perform the query, then we should get all values
-            for (User user : (List<User>) resp.getDataList()) {
-                jsonArray.put(convertUserToJSONObject(user));
-            }
-        }
-
-        jsonResponse.put("contentTable", jsonArray);
-        jsonResponse.put("iTotalRecords", resp.getTotalRows());
-        jsonResponse.put("iTotalDisplayRecords", resp.getTotalRows());
-
-        item.setItem(jsonResponse);
-        item.setResultMessage(resp.getResultMessage());
-        return item;
     }
 
 // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
@@ -169,7 +128,11 @@ public class ReadUserPublic extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        processRequest(request, response);
+        try {
+            processRequest(request, response);
+        } catch (CerberusException ex) {
+            Logger.getLogger(ReadCountryEnvParam_log.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
 
     /**
@@ -183,7 +146,11 @@ public class ReadUserPublic extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        processRequest(request, response);
+        try {
+            processRequest(request, response);
+        } catch (CerberusException ex) {
+            Logger.getLogger(ReadCountryEnvParam_log.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
 
     /**
@@ -196,13 +163,46 @@ public class ReadUserPublic extends HttpServlet {
         return "Short description";
     }// </editor-fold>
 
-    private JSONObject convertUserToJSONObject(User user) throws JSONException {
-        JSONObject result = new JSONObject();
-        
-        result.put("login", user.getLogin());
-        result.put("name", user.getName());
-        result.put("system", user.getDefaultSystem());
-        
+    private AnswerItem findCountryEnvParamList(String system, String country, String environment, ApplicationContext appContext, boolean userHasPermissions, HttpServletRequest request) throws JSONException {
+
+        AnswerItem item = new AnswerItem();
+        JSONObject object = new JSONObject();
+        ceplService = appContext.getBean(ICountryEnvParam_logService.class);
+
+        int startPosition = Integer.valueOf(ParameterParserUtil.parseStringParam(request.getParameter("iDisplayStart"), "0"));
+        int length = Integer.valueOf(ParameterParserUtil.parseStringParam(request.getParameter("iDisplayLength"), "0"));
+        /*int sEcho  = Integer.valueOf(request.getParameter("sEcho"));*/
+
+        String searchParameter = ParameterParserUtil.parseStringParam(request.getParameter("sSearch"), "");
+        int columnToSortParameter = Integer.parseInt(ParameterParserUtil.parseStringParam(request.getParameter("iSortCol_0"), "1"));
+        String sColumns = ParameterParserUtil.parseStringParam(request.getParameter("sColumns"), "ID,system,country,Environment,Build,Revision,Chain,Disable,datecre,creator");
+        String columnToSort[] = sColumns.split(",");
+        String columnName = columnToSort[columnToSortParameter];
+        String sort = ParameterParserUtil.parseStringParam(request.getParameter("sSortDir_0"), "asc");
+        AnswerList resp = ceplService.readByVariousByCriteria(system, country, environment, null, null, startPosition, length, columnName, sort, searchParameter, "");
+
+        JSONArray jsonArray = new JSONArray();
+        if (resp.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {//the service was able to perform the query, then we should get all values
+            for (CountryEnvParam_log cepl : (List<CountryEnvParam_log>) resp.getDataList()) {
+                jsonArray.put(convertCountryEnvParamtoJSONObject(cepl));
+            }
+        }
+
+        object.put("hasPermissions", userHasPermissions);
+        object.put("contentTable", jsonArray);
+        object.put("iTotalRecords", resp.getTotalRows());
+        object.put("iTotalDisplayRecords", resp.getTotalRows());
+
+        item.setItem(object);
+        item.setResultMessage(resp.getResultMessage());
+        return item;
+
+    }
+
+
+    private JSONObject convertCountryEnvParamtoJSONObject(CountryEnvParam_log cepl) throws JSONException {
+        Gson gson = new Gson();
+        JSONObject result = new JSONObject(gson.toJson(cepl));
         return result;
     }
 

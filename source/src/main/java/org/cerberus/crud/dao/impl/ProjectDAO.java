@@ -282,14 +282,14 @@ public class ProjectDAO implements IProjectDAO {
         } catch (SQLException exception) {
             LOG.error("Unable to execute query : " + exception.toString());
             msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
-            msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", "Unable to execute query - INSERT Project"));
+            msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", exception.toString()));
         } finally {
             try {
                 if (connection != null) {
                     connection.close();
                 }
             } catch (SQLException exception) {
-                LOG.error("Unable to close connection : " + exception.toString());
+                LOG.warn("Unable to close connection : " + exception.toString());
             }
         }
         return new Answer(msg);

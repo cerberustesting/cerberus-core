@@ -22,6 +22,7 @@ package org.cerberus.servlet.crud.buildrevisionchange;
 import com.google.gson.Gson;
 import java.io.IOException;
 import java.util.List;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javax.servlet.ServletException;
@@ -29,10 +30,13 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import org.cerberus.crud.entity.Application;
 import org.cerberus.crud.entity.BuildRevisionParameters;
 
 import org.cerberus.crud.entity.MessageEvent;
+import org.cerberus.crud.service.IApplicationService;
 import org.cerberus.crud.service.IBuildRevisionParametersService;
+import org.cerberus.crud.service.ICountryEnvDeployTypeService;
 import org.cerberus.enums.MessageEventEnum;
 import org.cerberus.exception.CerberusException;
 import org.cerberus.crud.service.impl.BuildRevisionParametersService;
@@ -56,6 +60,9 @@ import org.springframework.web.context.support.WebApplicationContextUtils;
 public class ReadBuildRevisionParameters extends HttpServlet {
 
     private IBuildRevisionParametersService brpService;
+    private IApplicationService appService;
+    private ICountryEnvDeployTypeService cedtService;
+
     private final String OBJECT_NAME = "BuildRevisionParameters";
 
     /**
@@ -113,16 +120,13 @@ public class ReadBuildRevisionParameters extends HttpServlet {
                 answer = findlastBuildRevisionParametersBySystem(request.getParameter("system"), appContext, userHasPermissions);
                 jsonResponse = (JSONObject) answer.getItem();
             } else if ((request.getParameter("system") != null) && (request.getParameter("build") != null) && (request.getParameter("revision") != null) && (request.getParameter("getSVNRelease") != null)) { // getSVNRelease parameter trigger the list of SVN Release inside he build per Application.
-                answer = findSVNBuildRevisionParametersBySystem(request.getParameter("system"), request.getParameter("build"), request.getParameter("revision")
-                        , request.getParameter("lastbuild"), request.getParameter("lastrevision"), appContext, userHasPermissions);
+                answer = findSVNBuildRevisionParametersBySystem(request.getParameter("system"), request.getParameter("country"), request.getParameter("environment"), request.getParameter("build"), request.getParameter("revision"), request.getParameter("lastbuild"), request.getParameter("lastrevision"), appContext, userHasPermissions);
                 jsonResponse = (JSONObject) answer.getItem();
             } else if ((request.getParameter("system") != null) && (request.getParameter("build") != null) && (request.getParameter("revision") != null) && (request.getParameter("getNonSVNRelease") != null)) { // getNonSVNRelease parameter trigger the list of Manual Release with corresponding links.
-                answer = findManualBuildRevisionParametersBySystem(request.getParameter("system"), request.getParameter("build"), request.getParameter("revision")
-                        , request.getParameter("lastbuild"), request.getParameter("lastrevision"), appContext, userHasPermissions);
+                answer = findManualBuildRevisionParametersBySystem(request.getParameter("system"), request.getParameter("build"), request.getParameter("revision"), request.getParameter("lastbuild"), request.getParameter("lastrevision"), appContext, userHasPermissions);
                 jsonResponse = (JSONObject) answer.getItem();
             } else { // Default behaviour, we return the list of objects.
-                answer = findBuildRevisionParametersList(request.getParameter("system"), request.getParameter("build"), request.getParameter("revision")
-                        , request.getParameter("application"), appContext, userHasPermissions, request);
+                answer = findBuildRevisionParametersList(request.getParameter("system"), request.getParameter("build"), request.getParameter("revision"), request.getParameter("application"), appContext, userHasPermissions, request);
                 jsonResponse = (JSONObject) answer.getItem();
             }
             jsonResponse.put("messageType", answer.getResultMessage().getMessage().getCodeString());
@@ -244,7 +248,7 @@ public class ReadBuildRevisionParameters extends HttpServlet {
         }
 
         object.put("hasPermissions", userHasPermissions);
-        
+
         item.setItem(object);
         item.setResultMessage(answer.getResultMessage());
 
@@ -268,18 +272,20 @@ public class ReadBuildRevisionParameters extends HttpServlet {
         }
 
         object.put("hasPermissions", userHasPermissions);
-        
+
         item.setItem(object);
         item.setResultMessage(answer.getResultMessage());
 
         return item;
     }
 
-    private AnswerItem findSVNBuildRevisionParametersBySystem(String system, String build, String revision, String lastbuild, String lastrevision, ApplicationContext appContext, boolean userHasPermissions) throws JSONException {
+    private AnswerItem findSVNBuildRevisionParametersBySystem(String system, String country, String environment, String build, String revision, String lastbuild, String lastrevision, ApplicationContext appContext, boolean userHasPermissions) throws JSONException {
 
         AnswerItem item = new AnswerItem();
         JSONObject object = new JSONObject();
-        brpService = appContext.getBean(BuildRevisionParametersService.class);
+        brpService = appContext.getBean(IBuildRevisionParametersService.class);
+        appService = appContext.getBean(IApplicationService.class);
+        cedtService = appContext.getBean(ICountryEnvDeployTypeService.class);
 
         if (StringUtil.isNullOrEmpty(lastbuild)) {
             lastbuild = build;
@@ -287,10 +293,27 @@ public class ReadBuildRevisionParameters extends HttpServlet {
 
         AnswerList resp = brpService.readMaxSVNReleasePerApplication(system, build, revision, lastbuild, lastrevision);
 
+        JSONObject newSubObj = new JSONObject();
+        JSONObject newSubObjContent = new JSONObject();
         JSONArray jsonArray = new JSONArray();
         if (resp.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {//the service was able to perform the query, then we should get all values
             for (BuildRevisionParameters brp : (List<BuildRevisionParameters>) resp.getDataList()) {
-                jsonArray.put(convertBuildRevisionParametersToJSONObject(brp));
+                newSubObj = convertBuildRevisionParametersToJSONObject(brp);
+
+                // We get here the links of all corresponding deployTypes.
+                Application app;
+                try {
+                    app = appService.convert(appService.readByKey(brp.getApplication()));
+                    for (String JenkinsAgent : cedtService.findJenkinsAgentByKey(system, country, environment, app.getDeploytype())) {
+                        String DeployURL = "JenkinsDeploy?application=" + brp.getApplication() + "&jenkinsagent=" + JenkinsAgent + "&country=" + country + "&deploytype=" + app.getDeploytype() + "&release=" + brp.getRelease() + "&jenkinsbuildid=" + brp.getJenkinsBuildId()+ "&repositoryurl=" + brp.getRepositoryUrl();
+                        newSubObjContent.put("jenkinsAgent", JenkinsAgent);
+                        newSubObjContent.put("link", DeployURL);
+                        newSubObj.append("install", newSubObjContent);
+                    }
+                } catch (CerberusException ex) {
+                    Logger.getLogger(ReadBuildRevisionParameters.class.getName()).log(Level.SEVERE, null, ex);
+                }
+                jsonArray.put(newSubObj);
             }
         }
 
@@ -298,7 +321,7 @@ public class ReadBuildRevisionParameters extends HttpServlet {
         object.put("iTotalRecords", resp.getTotalRows());
         object.put("iTotalDisplayRecords", resp.getTotalRows());
         object.put("hasPermissions", userHasPermissions);
-        
+
         item.setItem(object);
         item.setResultMessage(resp.getResultMessage());
         return item;
@@ -327,7 +350,7 @@ public class ReadBuildRevisionParameters extends HttpServlet {
         object.put("iTotalRecords", resp.getTotalRows());
         object.put("iTotalDisplayRecords", resp.getTotalRows());
         object.put("hasPermissions", userHasPermissions);
-        
+
         item.setItem(object);
         item.setResultMessage(resp.getResultMessage());
         return item;

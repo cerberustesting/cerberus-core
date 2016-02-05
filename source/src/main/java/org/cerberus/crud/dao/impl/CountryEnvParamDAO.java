@@ -932,7 +932,7 @@ public class CountryEnvParamDAO implements ICountryEnvParamDAO {
             searchSQL.append(" or `distriblist` like ?");
             searchSQL.append(" or `emailbodyrevision` like ?");
             searchSQL.append(" or `type` like ?");
-            searchSQL.append(" or `emailbodychain` ?");
+            searchSQL.append(" or `emailbodychain` like ?");
             searchSQL.append(" or `emailbodydisableenvironment` like ?");
             searchSQL.append(" or `active` like ?");
             searchSQL.append(" or `maintenanceact` like ?");

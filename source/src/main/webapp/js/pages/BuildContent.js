@@ -113,6 +113,7 @@ function displayPageLabel() {
     $("[name='mavenGroupIdField']").html(doc.getDocOnline("buildrevisionparameters", "mavenGroupId"));
     $("[name='mavenArtifactIdField']").html(doc.getDocOnline("buildrevisionparameters", "mavenArtifactId"));
     $("[name='mavenVersionField']").html(doc.getDocOnline("buildrevisionparameters", "mavenVersion"));
+    $("[name='repositoryUrl']").html(doc.getDocOnline("buildrevisionparameters", "repositoryUrl"));
     displayFooter(doc);
 }
 
@@ -391,6 +392,7 @@ function editEntryClick(id) {
         formEdit.find("#mavenGroupId").prop("value", obj["mavenGroupId"]);
         formEdit.find("#mavenArtifactId").prop("value", obj["mavenArtifactId"]);
         formEdit.find("#mavenVersion").prop("value", obj["mavenVersion"]);
+        formEdit.find("#repositoryUrl").prop("value", obj["repositoryUrl"]);
 
         if (!(data["hasPermissions"])) { // If readonly, we only readonly all fields
             formEdit.find("#link").prop("readonly", "readonly");
@@ -409,6 +411,7 @@ function editEntryClick(id) {
             formEdit.find("#mavenGroupId").prop("readonly", "readonly");
             formEdit.find("#mavenArtifactId").prop("readonly", "readonly");
             formEdit.find("#mavenVersion").prop("readonly", "readonly");
+            formEdit.find("#repositoryUrl").prop("readonly", "readonly");
             $('#editBrpButton').attr('class', '');
             $('#editBrpButton').attr('hidden', 'hidden');
             console.debug("readonly");
@@ -714,7 +717,11 @@ function aoColumnsFunc(tableId) {
         {"data": "mavenVersion",
             "sName": "mavenVersion",
             "sWidth": "80px",
-            "title": doc.getDocOnline("buildrevisionparameters", "mavenVersion")}
+            "title": doc.getDocOnline("buildrevisionparameters", "mavenVersion")},
+        {"data": "repositoryUrl",
+            "sName": "repositoryUrl",
+            "sWidth": "200px",
+            "title": doc.getDocOnline("buildrevisionparameters", "repositoryUrl")}
     ];
     return aoColumns;
 }

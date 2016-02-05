@@ -20,16 +20,36 @@
 package org.cerberus.crud.factory;
 
 import java.sql.Timestamp;
-import org.cerberus.crud.entity.BuildRevisionParameters;
+import org.cerberus.crud.entity.BuildRevisionBatch;
 
 /**
  * @author vertigo
  */
-public interface IFactoryBuildRevisionParameters {
+public interface IFactoryBuildRevisionBatch {
 
-    BuildRevisionParameters create(int id, String build, String revision, String release,
-            String application, String project, String ticketIDFixed, String bugIDFixed, String link,
-            String releaseOwner, String subject, Timestamp dateCre, String jenkinsBuildID,
-            String mavenGroupID, String mavenArtefactID, String mavenVersion, String repositoryUrl);
+    /**
+     * @param id
+     * @param country
+     * @param environment
+     * @param build
+     * @param revision
+     * @param system
+     * @param batch
+     * @param dateBatch
+     * @return
+     */
+    BuildRevisionBatch create(long id, String system, String country, String environment, String build, String revision,
+            String batch, Timestamp dateBatch);
 
+    /**
+     * @param country
+     * @param environment
+     * @param build
+     * @param revision
+     * @param system
+     * @param batch
+     * @return
+     */
+    BuildRevisionBatch create(String system, String country, String environment, String build, String revision,
+            String batch);
 }
