@@ -129,9 +129,6 @@ public class CountryEnvParam {
     }
 
     public String getMaintenanceEnd() {
-//        if (maintenanceEnd == null) {
-//        return "00:00:00";
-//        }
         return maintenanceEnd;
     }
 
@@ -140,10 +137,6 @@ public class CountryEnvParam {
     }
 
     public String getMaintenanceStr() {
-//        if (maintenanceStr == null) {
-//        return "00:00:00";
-//        }
-        
         return maintenanceStr;
     }
 
