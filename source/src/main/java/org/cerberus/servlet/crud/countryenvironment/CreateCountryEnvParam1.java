@@ -50,7 +50,7 @@ import org.owasp.html.Sanitizers;
 public class CreateCountryEnvParam1 extends HttpServlet {
 
     private final String OBJECT_NAME = "CountryEnvParam";
-    
+
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
      * methods.
@@ -92,7 +92,9 @@ public class CreateCountryEnvParam1 extends HttpServlet {
         boolean maintenanceAct = "Y".equals(policy.sanitize(request.getParameter("maintenanceAct"))) ? true : false;
         String maintenanceStr = policy.sanitize(request.getParameter("maintenanceStr"));
         String maintenanceEnd = policy.sanitize(request.getParameter("maintenanceEnd"));
-
+        maintenanceStr = maintenanceStr.isEmpty() ? "00:00:00" : maintenanceStr;
+        maintenanceEnd = maintenanceEnd.isEmpty() ? "00:00:00" : maintenanceEnd;
+        
         /**
          * Checking all constrains before calling the services.
          */

@@ -305,7 +305,7 @@ public class ReadBuildRevisionParameters extends HttpServlet {
                 try {
                     app = appService.convert(appService.readByKey(brp.getApplication()));
                     for (String JenkinsAgent : cedtService.findJenkinsAgentByKey(system, country, environment, app.getDeploytype())) {
-                        String DeployURL = "JenkinsDeploy?application=" + brp.getApplication() + "&jenkinsagent=" + JenkinsAgent + "&country=" + country + "&deploytype=" + app.getDeploytype() + "&release=" + brp.getRelease() + "&jenkinsbuildid=" + brp.getJenkinsBuildId();
+                        String DeployURL = "JenkinsDeploy?application=" + brp.getApplication() + "&jenkinsagent=" + JenkinsAgent + "&country=" + country + "&deploytype=" + app.getDeploytype() + "&release=" + brp.getRelease() + "&jenkinsbuildid=" + brp.getJenkinsBuildId()+ "&repositoryurl=" + brp.getRepositoryUrl();
                         newSubObjContent.put("jenkinsAgent", JenkinsAgent);
                         newSubObjContent.put("link", DeployURL);
                         newSubObj.append("install", newSubObjContent);
