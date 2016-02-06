@@ -389,6 +389,9 @@ function editEntryClick(system, country, environment) {
 
     var table = loadEventTable(system, country, environment);
     table.fnSort([0, 'desc']);
+    
+    loadDatabaseTable(system, country, environment);
+  
 }
 
 function loadChangeTable(selectSystem, selectCountry, selectEnvironment) {
@@ -419,6 +422,29 @@ function loadEventTable(selectSystem, selectCountry, selectEnvironment) {
 
     var table = createDataTableWithPermissions(configurations, null);
     return table;
+}
+
+function loadDatabaseTable(selectSystem, selectCountry, selectEnvironment) {
+    $('#databaseTableBody tr').remove();
+        var jqxhr = $.getJSON("ReadCountryEnvironmentDatabase", "system=" + selectSystem + "&country=" + selectCountry + "&environment=" + selectEnvironment );
+    $.when(jqxhr).then(function (result) {
+        $.each(result["contentTable"], function (idx, obj) {
+            appendDatabaseRow(obj.database, obj.connectionPoolName);
+        });
+    }).fail(handleErrorAjaxAfterTimeout);
+}
+/**
+ * Render 1 line on installation instructions modal.
+ */
+function appendDatabaseRow(database, connectionPoolName) {
+    var doc = new Doc();
+    //for each install instructions adds a new row
+    $('#databaseTableBody').append('<tr> \n\
+        <td><div class="nomarginbottom form-group form-group-sm">\n\
+            <input readonly name="database" type="text" class="releaseClass form-control input-xs" value="' + database + '"/><span></span></div></td>\n\\n\
+        <td><div class="nomarginbottom form-group form-group-sm">\n\
+            <input readonly name="connectionPoolName" type="text" class="releaseClass form-control input-xs" value="' + connectionPoolName + '"/><span></span></div></td>\n\\n\
+        </tr>');
 }
 
 function eventEnableClick(system, country, environment, build, revision) {
@@ -512,10 +538,7 @@ function eventEnableModalConfirmHandler() {
  * Handler that cleans the modal for editing subdata when it is closed.
  */
 function refreshlistInstallInstructions() {
-    console.debug("Refresh install nstructions.");
-
     $('#installInstructionsTableBody tr').remove();
-
 
     var formEdit = $('#eventEnableModal');
 
@@ -559,10 +582,11 @@ function appendNewInstallRow(build, revision, application, release, link, versio
     } else {
         link_html = '<a target="_blank" href="' + link + '">link <input type="checkbox" name="checklist"></a>';
     }
-    var key=0;
+    var key = 0;
     if (install.length >= 1) {
         for (key in install) {
-            link_html += '<a target="_blank" href="' + install[key].link + '">'+install[key].jenkinsAgent+' <input type="checkbox" name="checklist"></a>';;
+            link_html += '<a target="_blank" href="' + install[key].link + '">' + install[key].jenkinsAgent + ' <input type="checkbox" name="checklist"></a>';
+            ;
         }
     }
     //for each install instructions adds a new row

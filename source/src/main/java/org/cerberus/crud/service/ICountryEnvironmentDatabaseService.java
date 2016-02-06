@@ -20,9 +20,9 @@
 package org.cerberus.crud.service;
 
 import java.util.List;
-import org.cerberus.crud.entity.CountryEnvironmentApplication;
 import org.cerberus.crud.entity.CountryEnvironmentDatabase;
 import org.cerberus.exception.CerberusException;
+import org.cerberus.util.answer.AnswerList;
 
 /**
  *
@@ -34,51 +34,84 @@ public interface ICountryEnvironmentDatabaseService {
 
     /**
      * Find all countryEnvironmentDatabase by System
+     *
      * @param system
      * @return
-     * @throws CerberusException 
+     * @throws CerberusException
      */
     List<CountryEnvironmentDatabase> findAll(String system) throws CerberusException;
-    
-    /**
-     * Update countryEnvironmentDatabase
-     * @param ced
-     * @throws CerberusException 
-     */
-    void update(CountryEnvironmentDatabase ced) throws CerberusException;
-    
-    /**
-     * Delete countryEnvironmentDatabase
-     * @param ced
-     * @throws CerberusException 
-     */
-    void delete(CountryEnvironmentDatabase ced) throws CerberusException;
-    
-    /**
-     * Create countryEnvironmentDatabase
-     * @param ced
-     * @throws CerberusException 
-     */
-    void create(CountryEnvironmentDatabase ced) throws CerberusException;
-    
+
     /**
      * Find List of CountryEnvironmentDatabase by Criteria
-     * @param start row number of the resulset where start the List (limit(start,amount)) 
+     *
+     * @param start row number of the resulset where start the List
+     * (limit(start,amount))
      * @param amount number of row returned
-     * @param column column used for the sort (sort by column dir >become> sort by country asc)
+     * @param column column used for the sort (sort by column dir >become> sort
+     * by country asc)
      * @param dir asc or desc
-     * @param searchTerm 
+     * @param searchTerm
      * @param individualSearch
-     * @return 
+     * @return
      */
     public List<CountryEnvironmentDatabase> findListByCriteria(int start, int amount, String column, String dir, String searchTerm, String individualSearch);
 
     /**
-     * Find the number of CountryEnvironmentDatabase found respecting the search criteria
+     *
+     * @param system
+     * @param country
+     * @param environment
+     * @param start
+     * @param amount
+     * @param column
+     * @param dir
      * @param searchTerm
-     * @return 
+     * @param individualSearch
+     * @return
+     */
+    public AnswerList readByVariousByCriteria(String system, String country, String environment, int start, int amount, String column, String dir, String searchTerm, String individualSearch);
+
+    /**
+     * Find the number of CountryEnvironmentDatabase found respecting the search
+     * criteria
+     *
+     * @param searchTerm
+     * @return
      */
     public Integer count(String searchTerm);
 
-    public List<CountryEnvironmentDatabase> findListByCriteria(String system, String country, String environment)  throws CerberusException;
+    /**
+     *
+     * @param system
+     * @param country
+     * @param environment
+     * @return
+     * @throws CerberusException
+     */
+    public List<CountryEnvironmentDatabase> findListByCriteria(String system, String country, String environment) throws CerberusException;
+
+    /**
+     * Update countryEnvironmentDatabase
+     *
+     * @param ced
+     * @throws CerberusException
+     */
+    void update(CountryEnvironmentDatabase ced) throws CerberusException;
+
+    /**
+     * Delete countryEnvironmentDatabase
+     *
+     * @param ced
+     * @throws CerberusException
+     */
+    void delete(CountryEnvironmentDatabase ced) throws CerberusException;
+
+    /**
+     * Create countryEnvironmentDatabase
+     *
+     * @param ced
+     * @throws CerberusException
+     */
+    void create(CountryEnvironmentDatabase ced) throws CerberusException;
+
 }
