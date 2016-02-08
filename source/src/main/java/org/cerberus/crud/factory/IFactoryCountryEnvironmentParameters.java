@@ -19,14 +19,14 @@
  */
 package org.cerberus.crud.factory;
 
-import org.cerberus.crud.entity.CountryEnvironmentApplication;
+import org.cerberus.crud.entity.CountryEnvironmentParameters;
 
 /**
  *
  * @author bcivel
  */
-public interface IFactoryCountryEnvironmentApplication {
+public interface IFactoryCountryEnvironmentParameters {
 
-    CountryEnvironmentApplication create(String system, String country, String environment, String application, String ip,
+    CountryEnvironmentParameters create(String system, String country, String environment, String application, String ip,
             String Domain, String url, String urlLogin);
 }

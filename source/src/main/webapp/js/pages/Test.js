@@ -28,10 +28,9 @@ $.when($.getScript("js/pages/global/global.js")).then(function () {
         $('#editEntryModal').on('hidden.bs.modal', {extra: "#editEntryModal"}, modalFormCleaner);
         $('#addEntryModal').on('hidden.bs.modal', {extra: "#addEntryModal"}, modalFormCleaner);
 
-        var config = new TableConfigurationsServerSide("testTable", "ReadTest", "contentTable", aoColumnsFunc());
+        var config = new TableConfigurationsServerSide("testTable", "ReadTest", "contentTable", aoColumnsFunc(), [1, 'asc']);
 
         var table = createDataTableWithPermissions(config, renderOptionsForTest);
-        table.fnSort([1, 'asc']);
 
     });
 });

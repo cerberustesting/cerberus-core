@@ -290,7 +290,7 @@ public class SeleniumServerService implements ISeleniumServerService {
          * apk
          */
         if (tCExecution.getApplication().getType().equalsIgnoreCase("APK")) {
-            File app = new File(tCExecution.getCountryEnvironmentApplication().getIp());
+            File app = new File(tCExecution.getCountryEnvironmentParameters().getIp());
             caps.setCapability("app", app);
         }
         return caps;

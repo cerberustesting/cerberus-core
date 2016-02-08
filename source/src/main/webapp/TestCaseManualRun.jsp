@@ -19,8 +19,8 @@
 --%>
 <%@page import="org.cerberus.enums.MessageGeneralEnum"%>
 <%@page import="org.cerberus.crud.service.ITestCaseExecutionInQueueService"%>
-<%@page import="org.cerberus.crud.service.ICountryEnvironmentApplicationService"%>
-<%@page import="org.cerberus.crud.entity.CountryEnvironmentApplication"%>
+<%@page import="org.cerberus.crud.service.ICountryEnvironmentParametersService"%>
+<%@page import="org.cerberus.crud.entity.CountryEnvironmentParameters"%>
 <%@page import="org.cerberus.crud.service.ITestCaseExecutionSysVerService"%>
 <%@page import="org.cerberus.crud.entity.TestCaseExecutionSysVer"%>
 <%@page import="org.cerberus.crud.factory.IFactoryTestCaseExecutionSysVer"%>
@@ -142,7 +142,7 @@
                 IInvariantService invariantService = appContext.getBean(IInvariantService.class);
                 IUserSystemService userSystemService = appContext.getBean(IUserSystemService.class);
                 ICountryEnvParamService countryEnvParamService = appContext.getBean(ICountryEnvParamService.class);
-                ICountryEnvironmentApplicationService countryEnvironmentApplicationService = appContext.getBean(ICountryEnvironmentApplicationService.class);
+                ICountryEnvironmentParametersService countryEnvironmentParametersService = appContext.getBean(ICountryEnvironmentParametersService.class);
                 IFactoryTestCaseExecution factoryTestCaseExecution = appContext.getBean(IFactoryTestCaseExecution.class);
                 IFactoryTestCaseExecutionSysVer factoryTestCaseExecutionSysVer = appContext.getBean(IFactoryTestCaseExecutionSysVer.class);
                 ITestCaseExecutionSysVerService testCaseExecutionSysVerService = appContext.getBean(ITestCaseExecutionSysVerService.class);
@@ -196,9 +196,9 @@
                             + "' not defined for System/Application: " + myApp.getSystem() + "/" + myApp.getApplication());
                     throw ex;
                 }
-                CountryEnvironmentApplication countryEnvironmentParameter;
+                CountryEnvironmentParameters countryEnvironmentParameter;
                 try {
-                    countryEnvironmentParameter = countryEnvironmentApplicationService.findCountryEnvironmentParameterByKey(myApp.getSystem(), country, environment, myApp.getApplication());
+                    countryEnvironmentParameter = countryEnvironmentParametersService.findCountryEnvironmentParameterByKey(myApp.getSystem(), country, environment, myApp.getApplication());
                 } catch (CerberusException e) {
                     CerberusException ex = new CerberusException(new MessageGeneral(MessageGeneralEnum.NO_DATA_FOUND));
                     throw ex;

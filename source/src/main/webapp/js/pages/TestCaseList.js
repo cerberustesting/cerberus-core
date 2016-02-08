@@ -135,11 +135,9 @@ function loadTable(selectTest, sortColumn) {
     var jqxhr = $.getJSON("FindInvariantByID", "idName=COUNTRY");
 
     $.when(jqxhr).then(function (data) {
-        var config = new TableConfigurationsServerSide("testCaseTable", contentUrl, "contentTable", aoColumnsFunc(data));
+        var config = new TableConfigurationsServerSide("testCaseTable", contentUrl, "contentTable", aoColumnsFunc(data), [sortColumn, 'asc']);
 
         var table = createDataTableWithPermissions(config, renderOptionsForTestCaseList);
-        if (!isEmpty(sortColumn))
-            table.fnSort([sortColumn, 'asc']);
 
     });
 }

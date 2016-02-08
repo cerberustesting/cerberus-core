@@ -21,7 +21,7 @@ package org.cerberus.crud.entity;
  *
  * @author bcivel
  */
-public class CountryEnvironmentApplication {
+public class CountryEnvironmentParameters {
 
     private String system;
     private String country;

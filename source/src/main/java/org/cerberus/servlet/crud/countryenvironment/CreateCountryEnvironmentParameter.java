@@ -25,16 +25,16 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import org.cerberus.crud.entity.CountryEnvironmentApplication;
+import org.cerberus.crud.entity.CountryEnvironmentParameters;
 import org.cerberus.exception.CerberusException;
-import org.cerberus.crud.factory.IFactoryCountryEnvironmentApplication;
 import org.cerberus.crud.factory.IFactoryLogEvent;
-import org.cerberus.crud.service.ICountryEnvironmentApplicationService;
 import org.cerberus.crud.service.ILogEventService;
 import org.owasp.html.PolicyFactory;
 import org.owasp.html.Sanitizers;
 import org.springframework.context.ApplicationContext;
 import org.springframework.web.context.support.WebApplicationContextUtils;
+import org.cerberus.crud.service.ICountryEnvironmentParametersService;
+import org.cerberus.crud.factory.IFactoryCountryEnvironmentParameters;
 
 /**
  *
@@ -70,22 +70,22 @@ public class CreateCountryEnvironmentParameter extends HttpServlet {
             String urlLogin = policy.sanitize(request.getParameter("UrlLogin"));
 
             ApplicationContext appContext = WebApplicationContextUtils.getWebApplicationContext(this.getServletContext());
-            ICountryEnvironmentApplicationService cepService = appContext.getBean(ICountryEnvironmentApplicationService.class);
-            IFactoryCountryEnvironmentApplication factoryCep = appContext.getBean(IFactoryCountryEnvironmentApplication.class);
+            ICountryEnvironmentParametersService cepService = appContext.getBean(ICountryEnvironmentParametersService.class);
+            IFactoryCountryEnvironmentParameters factoryCep = appContext.getBean(IFactoryCountryEnvironmentParameters.class);
 
-            CountryEnvironmentApplication cea = factoryCep.create(system, country, environment, application, ip, domain, url, urlLogin);
-            cepService.create(cea);
+            CountryEnvironmentParameters cea = factoryCep.create(system, country, environment, application, ip, domain, url, urlLogin);
+            cepService.create_deprecated(cea);
 
             /**
              * Adding Log entry.
              */
             ILogEventService logEventService = appContext.getBean(ILogEventService.class);
-            logEventService.createPrivateCalls("/CreateCountryEnvironmentParameter", "CREATE", "Create CountryEnvironmentApplication : " + country + "_" + environment + "_" + application, request);
+            logEventService.createPrivateCalls("/CreateCountryEnvironmentParameter", "CREATE", "Create CountryEnvironmentParameters : " + country + "_" + environment + "_" + application, request);
 
             response.getWriter().append(country + "_" + environment + "_" + application).close();
         } catch (CerberusException ex) {
             LOG.error(ex);
-            response.getWriter().append("Unable to create CountryEnvironmentApplication").close();
+            response.getWriter().append("Unable to create CountryEnvironmentParameters").close();
         } finally {
             out.close();
         }

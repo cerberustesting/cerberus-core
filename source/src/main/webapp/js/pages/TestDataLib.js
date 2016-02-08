@@ -147,8 +147,7 @@ $.when($.getScript("js/pages/global/global.js")).then(function () {
 
         $("#addTestDataLibModal #addSubDataTableBody tr td:nth-child(2) input").change(subdataNameOnChangeHandler);
 
-        var configurations = new TableConfigurationsServerSide("listOfTestDataLib", "ReadTestDataLib", "contentTable", aoColumnsFuncTestDataLib("listOfTestDataLib"));
-
+        var configurations = new TableConfigurationsServerSide("listOfTestDataLib", "ReadTestDataLib", "contentTable", aoColumnsFuncTestDataLib("listOfTestDataLib"), [1,'asc']);
 
         //creates the main table and draws the management buttons if the user has the permissions
         $.when(createDataTableWithPermissions(configurations, renderOptionsForTestDataManager)).then(function () {

@@ -60,7 +60,6 @@ function initPage() {
     displayUserList("releaseowner");
 
     var table = loadBCTable(urlBuild, urlRevision, urlApplication);
-    table.fnSort([12, 'desc']);
 
     // handle the click for specific action buttons
     $("#addBrpButton").click(addEntryModalSaveHandler);
@@ -156,7 +155,7 @@ function loadBCTable(selectBuild, selectRevision, selectApplication) {
         contentUrl += "&application=" + selectApplication;
     }
 
-    var configurations = new TableConfigurationsServerSide("buildrevisionparametersTable", contentUrl, "contentTable", aoColumnsFunc("buildrevisionparametersTable"));
+    var configurations = new TableConfigurationsServerSide("buildrevisionparametersTable", contentUrl, "contentTable", aoColumnsFunc("buildrevisionparametersTable"), [12, 'desc']);
 
     var table = createDataTableWithPermissions(configurations, renderOptionsForBrp);
 

@@ -51,13 +51,15 @@
                             <div class="form-inline">
                                 <div class="marginBottom10">
                                     <label for="selectCountry" name="countryField">Country :</label>
-                                    <select class="form-control" id="selectCountry" name="country" style="width: 10%"></select>
+                                    <select class="form-control" id="selectCountry" name="country" ></select>
                                     <label for="selectEnvironment" name="environmentField">Environment :</label>
-                                    <select class="form-control" id="selectEnvironment" name="environment" style="width: 15%"></select>
+                                    <select class="form-control" id="selectEnvironment" name="environment" ></select>
                                     <label for="selectBuild" name="buildField">Build :</label>
-                                    <select class="form-control" id="selectBuild" name="build" style="width: 10%"></select>
+                                    <select class="form-control" id="selectBuild" name="build" ></select>
                                     <label for="selectRevision" name="revisionField">Revision :</label>
-                                    <select class="form-control" id="selectRevision" name="revision" style="width: 10%"></select>
+                                    <select class="form-control" id="selectRevision" name="revision" ></select>
+                                </div>
+                                <div class="marginBottom10">
                                     <button type="button" class="btn btn-default" id="btnLoad" onclick="loadEnvTable()" name="btnLoad">Load</button>
                                 </div>
                             </div>

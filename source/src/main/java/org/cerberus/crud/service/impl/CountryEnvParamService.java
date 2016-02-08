@@ -25,13 +25,11 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.cerberus.crud.dao.ICountryEnvParamDAO;
 import org.cerberus.crud.entity.CountryEnvParam;
-import org.cerberus.crud.entity.CountryEnvironmentApplication;
+import org.cerberus.crud.entity.CountryEnvironmentParameters;
 import org.cerberus.crud.entity.MessageGeneral;
 import org.cerberus.exception.CerberusException;
 import org.cerberus.crud.factory.IFactoryCountryEnvParam;
-import org.cerberus.crud.factory.IFactoryCountryEnvironmentApplication;
 import org.cerberus.crud.service.ICountryEnvParamService;
-import org.cerberus.crud.service.ICountryEnvironmentApplicationService;
 import org.cerberus.enums.MessageEventEnum;
 import org.cerberus.enums.MessageGeneralEnum;
 import org.cerberus.util.answer.Answer;
@@ -41,6 +39,8 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.cerberus.crud.service.ICountryEnvironmentParametersService;
+import org.cerberus.crud.factory.IFactoryCountryEnvironmentParameters;
 
 /**
  *
@@ -54,9 +54,9 @@ public class CountryEnvParamService implements ICountryEnvParamService {
     @Autowired
     IFactoryCountryEnvParam countryEnvParamFactory;
     @Autowired
-    IFactoryCountryEnvironmentApplication countryEnvironmentApplicationFactory;
+    IFactoryCountryEnvironmentParameters countryEnvironmentParametersFactory;
     @Autowired
-    ICountryEnvironmentApplicationService countryEnvironmentApplicationService;
+    ICountryEnvironmentParametersService countryEnvironmentParametersService;
 
     @Override
     public CountryEnvParam findCountryEnvParamByKey(String system, String country, String environment) throws CerberusException {
@@ -73,13 +73,13 @@ public class CountryEnvParamService implements ICountryEnvParamService {
     public List<JSONObject> findActiveEnvironmentBySystemCountryApplication(String system, String country, String application) throws CerberusException {
         List<JSONObject> result = new ArrayList();
         CountryEnvParam countryEnvParam = countryEnvParamFactory.create(system, country, true);
-        CountryEnvironmentApplication countryEnvironmentApplication = countryEnvironmentApplicationFactory.create(system, country, null, application, null, null, null, null);
+        CountryEnvironmentParameters countryEnvironmentParameters = countryEnvironmentParametersFactory.create(system, country, null, application, null, null, null, null);
 
-        List<CountryEnvironmentApplication> ceaList = countryEnvironmentApplicationService.findCountryEnvironmentApplicationByCriteria(countryEnvironmentApplication);
+        List<CountryEnvironmentParameters> ceaList = countryEnvironmentParametersService.findCountryEnvironmentParametersByCriteria(countryEnvironmentParameters);
         List<CountryEnvParam> ceList = this.findCountryEnvParamByCriteria(countryEnvParam);
 
         try {
-            for (CountryEnvironmentApplication cea : ceaList) {
+            for (CountryEnvironmentParameters cea : ceaList) {
                 for (CountryEnvParam ce : ceList) {
                     if (cea.getEnvironment().equals(ce.getEnvironment())) {
 

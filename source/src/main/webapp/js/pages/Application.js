@@ -35,7 +35,7 @@ function initPage() {
     $('#editApplicationModal').on('hidden.bs.modal', editEntryModalCloseHandler);
 
     //configure and create the dataTable
-    var configurations = new TableConfigurationsServerSide("applicationsTable", "ReadApplication?system=" + getUser().defaultSystem, "contentTable", aoColumnsFunc("applicationsTable"));
+    var configurations = new TableConfigurationsServerSide("applicationsTable", "ReadApplication?system=" + getUser().defaultSystem, "contentTable", aoColumnsFunc("applicationsTable"), [3, 'asc']);
     createDataTableWithPermissions(configurations, renderOptionsForApplication);
 }
 
