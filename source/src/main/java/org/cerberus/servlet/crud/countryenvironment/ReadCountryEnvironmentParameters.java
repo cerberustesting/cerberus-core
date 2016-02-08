@@ -83,6 +83,7 @@ public class ReadCountryEnvironmentParameters extends HttpServlet {
         String system = policy.sanitize(request.getParameter("system"));
         String country = policy.sanitize(request.getParameter("country"));
         String environment = policy.sanitize(request.getParameter("environment"));
+        String application = policy.sanitize(request.getParameter("application"));
 
         // Global boolean on the servlet that define if the user has permition to edit and delete object.
         boolean userHasPermissions = request.isUserInRole("IntegratorRO");
@@ -93,7 +94,7 @@ public class ReadCountryEnvironmentParameters extends HttpServlet {
         try {
             JSONObject jsonResponse = new JSONObject();
             if (1 == 1) {
-                answer = findCountryEnvironmentParametersList(request.getParameter("system"), request.getParameter("country"), request.getParameter("environment"), appContext, userHasPermissions, request);
+                answer = findCountryEnvironmentParametersList(request.getParameter("system"), request.getParameter("country"), request.getParameter("environment"), request.getParameter("application"), appContext, userHasPermissions, request);
                 jsonResponse = (JSONObject) answer.getItem();
             }
             jsonResponse.put("messageType", answer.getResultMessage().getMessage().getCodeString());
@@ -163,7 +164,7 @@ public class ReadCountryEnvironmentParameters extends HttpServlet {
         return "Short description";
     }// </editor-fold>
 
-    private AnswerItem findCountryEnvironmentParametersList(String system, String country, String environment, ApplicationContext appContext, boolean userHasPermissions, HttpServletRequest request) throws JSONException {
+    private AnswerItem findCountryEnvironmentParametersList(String system, String country, String environment, String application, ApplicationContext appContext, boolean userHasPermissions, HttpServletRequest request) throws JSONException {
 
         AnswerItem item = new AnswerItem();
         JSONObject object = new JSONObject();
@@ -179,7 +180,7 @@ public class ReadCountryEnvironmentParameters extends HttpServlet {
         String columnToSort[] = sColumns.split(",");
         String columnName = columnToSort[columnToSortParameter];
         String sort = ParameterParserUtil.parseStringParam(request.getParameter("sSortDir_0"), "asc");
-        AnswerList resp = cepService.readByVariousByCriteria(system, country, environment, startPosition, length, columnName, sort, searchParameter, "");
+        AnswerList resp = cepService.readByVariousByCriteria(system, country, environment, application, startPosition, length, columnName, sort, searchParameter, "");
 
         JSONArray jsonArray = new JSONArray();
         if (resp.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {//the service was able to perform the query, then we should get all values

@@ -201,7 +201,7 @@ function editEntryModalCloseHandler() {
     clearResponseMessage($('#editApplicationModal'));
 }
 
-function editEntryClick(id) {
+function editEntryClick(id, system) {
     clearResponseMessageMainPage();
     var jqxhr = $.getJSON("ReadApplication", "application=" + id);
     $.when(jqxhr).then(function (data) {
@@ -239,6 +239,37 @@ function editEntryClick(id) {
 
         formEdit.modal('show');
     });
+
+    loadEnvironmentTable(system, id);
+}
+
+function loadEnvironmentTable(selectSystem, selectApplication) {
+    $('#environmentTableBody tr').remove();
+    var jqxhr = $.getJSON("ReadCountryEnvironmentParameters", "system=" + selectSystem + "&application=" + selectApplication + "&iSortCol_0=3");
+    $.when(jqxhr).then(function (result) {
+        $.each(result["contentTable"], function (idx, obj) {
+            appendEnvironmentRow(obj.environment, obj.country, obj.ip, obj.domain, obj.url, obj.urlLogin);
+        });
+    }).fail(handleErrorAjaxAfterTimeout);
+}
+
+function appendEnvironmentRow(environment, country, ip, domain, url, urllogin) {
+    var doc = new Doc();
+    //for each install instructions adds a new row
+    $('#environmentTableBody').append('<tr> \n\
+        <td><div class="nomarginbottom form-group form-group-sm">\n\
+            <input readonly name="environment" type="text" class="releaseClass form-control input-xs" value="' + environment + '"/><span></span></div></td>\n\\n\
+        <td><div class="nomarginbottom form-group form-group-sm">\n\
+            <input readonly name="country" type="text" class="releaseClass form-control input-xs" value="' + country + '"/><span></span></div></td>\n\\n\
+        <td><div class="nomarginbottom form-group form-group-sm">\n\
+            <input readonly name="ip" type="text" class="releaseClass form-control input-xs" value="' + ip + '"/><span></span></div></td>\n\\n\
+        <td><div class="nomarginbottom form-group form-group-sm">\n\
+            <input readonly name="url" type="text" class="releaseClass form-control input-xs" value="' + url + '"/><span></span></div></td>\n\\n\
+        <td><div class="nomarginbottom form-group form-group-sm">\n\
+            <input readonly name="urllogin" type="text" class="releaseClass form-control input-xs" value="' + urllogin + '"/><span></span></div></td>\n\\n\
+        <td><div class="nomarginbottom form-group form-group-sm">\n\
+            <input readonly name="domain" type="text" class="releaseClass form-control input-xs" value="' + domain + '"/><span></span></div></td><br>\n\\n\
+        </tr>');
 }
 
 function aoColumnsFunc(tableId) {
@@ -251,11 +282,11 @@ function aoColumnsFunc(tableId) {
             "mRender": function (data, type, obj) {
                 var hasPermissions = $("#" + tableId).attr("hasPermissions");
 
-                var editApplication = '<button id="editApplication" onclick="editEntryClick(\'' + obj["application"] + '\');"\n\
+                var editApplication = '<button id="editApplication" onclick="editEntryClick(\'' + obj["application"] + '\', \'' + obj["system"] + '\');"\n\
                                     class="editApplication btn btn-default btn-xs margin-right5" \n\
                                     name="editApplication" title="' + doc.getDocLabel("page_application", "button_edit") + '" type="button">\n\
                                     <span class="glyphicon glyphicon-pencil"></span></button>';
-                var viewApplication = '<button id="editApplication" onclick="editEntryClick(\'' + obj["application"] + '\');"\n\
+                var viewApplication = '<button id="editApplication" onclick="editEntryClick(\'' + obj["application"] + '\', \'' + obj["system"] + '\');"\n\
                                     class="editApplication btn btn-default btn-xs margin-right5" \n\
                                     name="editApplication" title="' + doc.getDocLabel("page_application", "button_edit") + '" type="button">\n\
                                     <span class="glyphicon glyphicon-eye-open"></span></button>';

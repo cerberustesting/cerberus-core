@@ -651,7 +651,7 @@ public class CountryEnvironmentParametersDAO implements ICountryEnvironmentParam
     }
     
     @Override
-    public AnswerList readByVariousByCriteria(String system, String country, String environment, int start, int amount, String column, String dir, String searchTerm, String individualSearch) {
+    public AnswerList readByVariousByCriteria(String system, String country, String environment, String application, int start, int amount, String column, String dir, String searchTerm, String individualSearch) {
         AnswerList response = new AnswerList();
         MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
         msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", ""));
@@ -686,6 +686,9 @@ public class CountryEnvironmentParametersDAO implements ICountryEnvironmentParam
         }
         if (!StringUtil.isNullOrEmpty(environment)) {
             searchSQL.append(" and (`environment` = ? )");
+        }
+        if (!StringUtil.isNullOrEmpty(application)) {
+            searchSQL.append(" and (`application` = ? )");
         }
         query.append(searchSQL);
 
@@ -729,6 +732,9 @@ public class CountryEnvironmentParametersDAO implements ICountryEnvironmentParam
                 }
                 if (!StringUtil.isNullOrEmpty(environment)) {
                     preStat.setString(i++, environment);
+                }
+                if (!StringUtil.isNullOrEmpty(application)) {
+                    preStat.setString(i++, application);
                 }
                 ResultSet resultSet = preStat.executeQuery();
                 try {
