@@ -23,6 +23,9 @@ import java.util.List;
 
 import org.cerberus.crud.entity.CountryEnvLink;
 import org.cerberus.exception.CerberusException;
+import org.cerberus.util.answer.Answer;
+import org.cerberus.util.answer.AnswerItem;
+import org.cerberus.util.answer.AnswerList;
 
 /**
  *
@@ -32,8 +35,71 @@ public interface ICountryEnvLinkService {
 
     /**
      *
-     * @param id
+     * @param system
+     * @param country
+     * @param environment
      * @return List of testCaseStepExecution that correspond to the Id.
+     * @throws org.cerberus.exception.CerberusException
      */
     List<CountryEnvLink> findCountryEnvLinkByCriteria(String system, String country, String environment) throws CerberusException;
+
+    /**
+     *
+     * @param system
+     * @param country
+     * @param environment
+     * @param start
+     * @param amount
+     * @param column
+     * @param dir
+     * @param searchTerm
+     * @param individualSearch
+     * @return
+     */
+    public AnswerList readByVariousByCriteria(String system, String country, String environment, int start, int amount, String column, String dir, String searchTerm, String individualSearch);
+
+    /**
+     *
+     * @param object
+     * @return
+     */
+    public Answer create(CountryEnvLink object);
+
+    /**
+     *
+     * @param object
+     * @return
+     */
+    public Answer delete(CountryEnvLink object);
+
+    /**
+     *
+     * @param object
+     * @return
+     */
+    public Answer update(CountryEnvLink object);
+
+    /**
+     *
+     * @param answerItem
+     * @return
+     * @throws CerberusException
+     */
+    CountryEnvLink convert(AnswerItem answerItem) throws CerberusException;
+
+    /**
+     *
+     * @param answerList
+     * @return
+     * @throws CerberusException
+     */
+    List<CountryEnvLink> convert(AnswerList answerList) throws CerberusException;
+
+    /**
+     *
+     * @param answer
+     * @throws CerberusException
+     */
+    void convert(Answer answer) throws CerberusException;
+
 }

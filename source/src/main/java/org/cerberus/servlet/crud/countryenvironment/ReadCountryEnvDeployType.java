@@ -29,9 +29,9 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import org.cerberus.crud.entity.CountryEnvironmentParameters;
+import org.cerberus.crud.entity.CountryEnvDeployType;
 import org.cerberus.crud.entity.MessageEvent;
-import org.cerberus.crud.service.ICountryEnvironmentParametersService;
+import org.cerberus.crud.service.ICountryEnvDeployTypeService;
 import org.cerberus.enums.MessageEventEnum;
 import org.cerberus.exception.CerberusException;
 import org.cerberus.util.ParameterParserUtil;
@@ -49,11 +49,11 @@ import org.springframework.web.context.support.WebApplicationContextUtils;
  *
  * @author cerberus
  */
-@WebServlet(name = "ReadCountryEnvironmentParameters", urlPatterns = {"/ReadCountryEnvironmentParameters"})
-public class ReadCountryEnvironmentParameters extends HttpServlet {
+@WebServlet(name = "ReadCountryEnvDeployType", urlPatterns = {"/ReadCountryEnvDeployType"})
+public class ReadCountryEnvDeployType extends HttpServlet {
 
-    private ICountryEnvironmentParametersService cepService;
-    private final String OBJECT_NAME = "ReadCountryEnvironmentParameters";
+    private ICountryEnvDeployTypeService celService;
+    private final String OBJECT_NAME = "ReadCountryEnvDeployType";
 
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
@@ -83,7 +83,6 @@ public class ReadCountryEnvironmentParameters extends HttpServlet {
         String system = policy.sanitize(request.getParameter("system"));
         String country = policy.sanitize(request.getParameter("country"));
         String environment = policy.sanitize(request.getParameter("environment"));
-        String application = policy.sanitize(request.getParameter("application"));
 
         // Global boolean on the servlet that define if the user has permition to edit and delete object.
         boolean userHasPermissions = request.isUserInRole("IntegratorRO");
@@ -94,7 +93,7 @@ public class ReadCountryEnvironmentParameters extends HttpServlet {
         try {
             JSONObject jsonResponse = new JSONObject();
             if (1 == 1) {
-                answer = findCountryEnvironmentParametersList(request.getParameter("system"), request.getParameter("country"), request.getParameter("environment"), request.getParameter("application"), appContext, userHasPermissions, request);
+                answer = findCountryEnvironmentDeployTypeList(request.getParameter("system"), request.getParameter("country"), request.getParameter("environment"), appContext, userHasPermissions, request);
                 jsonResponse = (JSONObject) answer.getItem();
             }
             jsonResponse.put("messageType", answer.getResultMessage().getMessage().getCodeString());
@@ -104,7 +103,7 @@ public class ReadCountryEnvironmentParameters extends HttpServlet {
             response.getWriter().print(jsonResponse.toString());
 
         } catch (JSONException e) {
-            org.apache.log4j.Logger.getLogger(ReadCountryEnvironmentParameters.class.getName()).log(org.apache.log4j.Level.ERROR, null, e);
+            org.apache.log4j.Logger.getLogger(ReadCountryEnvDeployType.class.getName()).log(org.apache.log4j.Level.ERROR, null, e);
             //returns a default error message with the json format that is able to be parsed by the client-side
             response.setContentType("application/json");
             msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
@@ -132,7 +131,7 @@ public class ReadCountryEnvironmentParameters extends HttpServlet {
         try {
             processRequest(request, response);
         } catch (CerberusException ex) {
-            Logger.getLogger(ReadCountryEnvironmentParameters.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(ReadCountryEnvDeployType.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
 
@@ -150,7 +149,7 @@ public class ReadCountryEnvironmentParameters extends HttpServlet {
         try {
             processRequest(request, response);
         } catch (CerberusException ex) {
-            Logger.getLogger(ReadCountryEnvironmentParameters.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(ReadCountryEnvDeployType.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
 
@@ -164,11 +163,11 @@ public class ReadCountryEnvironmentParameters extends HttpServlet {
         return "Short description";
     }// </editor-fold>
 
-    private AnswerItem findCountryEnvironmentParametersList(String system, String country, String environment, String application, ApplicationContext appContext, boolean userHasPermissions, HttpServletRequest request) throws JSONException {
+    private AnswerItem findCountryEnvironmentDeployTypeList(String system, String country, String environment, ApplicationContext appContext, boolean userHasPermissions, HttpServletRequest request) throws JSONException {
 
         AnswerItem item = new AnswerItem();
         JSONObject object = new JSONObject();
-        cepService = appContext.getBean(ICountryEnvironmentParametersService.class);
+        celService = appContext.getBean(ICountryEnvDeployTypeService.class);
 
         int startPosition = Integer.valueOf(ParameterParserUtil.parseStringParam(request.getParameter("iDisplayStart"), "0"));
         int length = Integer.valueOf(ParameterParserUtil.parseStringParam(request.getParameter("iDisplayLength"), "0"));
@@ -176,16 +175,16 @@ public class ReadCountryEnvironmentParameters extends HttpServlet {
 
         String searchParameter = ParameterParserUtil.parseStringParam(request.getParameter("sSearch"), "");
         int columnToSortParameter = Integer.parseInt(ParameterParserUtil.parseStringParam(request.getParameter("iSortCol_0"), "1"));
-        String sColumns = ParameterParserUtil.parseStringParam(request.getParameter("sColumns"), "ID,system,country,Environment,Build,Revision,Chain,Disable,datecre,creator");
+        String sColumns = ParameterParserUtil.parseStringParam(request.getParameter("sColumns"), "system,country,Environment,deploytype,jenkinsagent");
         String columnToSort[] = sColumns.split(",");
         String columnName = columnToSort[columnToSortParameter];
         String sort = ParameterParserUtil.parseStringParam(request.getParameter("sSortDir_0"), "asc");
-        AnswerList resp = cepService.readByVariousByCriteria(system, country, environment, application, startPosition, length, columnName, sort, searchParameter, "");
+        AnswerList resp = celService.readByVariousByCriteria(system, country, environment, startPosition, length, columnName, sort, searchParameter, "");
 
         JSONArray jsonArray = new JSONArray();
         if (resp.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {//the service was able to perform the query, then we should get all values
-            for (CountryEnvironmentParameters cepl : (List<CountryEnvironmentParameters>) resp.getDataList()) {
-                jsonArray.put(convertCountryEnvParamtoJSONObject(cepl));
+            for (CountryEnvDeployType cedt : (List<CountryEnvDeployType>) resp.getDataList()) {
+                jsonArray.put(convertToJSONObject(cedt));
             }
         }
 
@@ -200,9 +199,9 @@ public class ReadCountryEnvironmentParameters extends HttpServlet {
 
     }
 
-    private JSONObject convertCountryEnvParamtoJSONObject(CountryEnvironmentParameters cepl) throws JSONException {
+    private JSONObject convertToJSONObject(CountryEnvDeployType object) throws JSONException {
         Gson gson = new Gson();
-        JSONObject result = new JSONObject(gson.toJson(cepl));
+        JSONObject result = new JSONObject(gson.toJson(object));
         return result;
     }
 

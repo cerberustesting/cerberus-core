@@ -17,10 +17,15 @@
  */
 package org.cerberus.crud.dao;
 
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.List;
+import org.cerberus.crud.entity.Application;
 
 import org.cerberus.crud.entity.CountryEnvLink;
 import org.cerberus.exception.CerberusException;
+import org.cerberus.util.answer.Answer;
+import org.cerberus.util.answer.AnswerList;
 
 /**
  * @author bcivel
@@ -28,4 +33,52 @@ import org.cerberus.exception.CerberusException;
 public interface ICountryEnvLinkDAO {
 
     List<CountryEnvLink> findCountryEnvLinkByCriteria(String system, String country, String environment) throws CerberusException;
+
+    /**
+     *
+     * @param system
+     * @param country
+     * @param environment
+     * @param startPosition
+     * @param length
+     * @param columnName
+     * @param sort
+     * @param searchParameter
+     * @param string
+     * @return
+     */
+    AnswerList readByVariousByCriteria(String system, String country, String environment, int startPosition, int length, String columnName, String sort, String searchParameter, String string);
+
+    /**
+     *
+     * @param object
+     * @return
+     */
+    Answer create(CountryEnvLink object);
+
+    /**
+     *
+     * @param object
+     * @return
+     */
+    Answer delete(CountryEnvLink object);
+
+    /**
+     *
+     * @param object
+     * @return
+     */
+    Answer update(CountryEnvLink object);
+
+    /**
+     * Uses data of ResultSet to create object {@link Application}
+     *
+     * @param rs ResultSet relative to select from table countryenvlink
+     * @return object {@link CountryEnvLink}
+     * @throws SQLException when trying to get value from
+     * {@link java.sql.ResultSet#getString(String)}
+     * @see FactoryCountryEnvLink
+     */
+    CountryEnvLink loadFromResultSet(ResultSet rs) throws SQLException;
+
 }

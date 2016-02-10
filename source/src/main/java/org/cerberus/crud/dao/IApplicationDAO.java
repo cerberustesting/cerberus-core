@@ -64,24 +64,24 @@ public interface IApplicationDAO {
 
     /**
      *
-     * @param application
+     * @param object
      * @return
      */
-    Answer create(Application application);
+    Answer create(Application object);
 
     /**
      *
-     * @param application
+     * @param object
      * @return
      */
-    Answer delete(Application application);
+    Answer delete(Application object);
 
     /**
      *
-     * @param application
+     * @param object
      * @return
      */
-    Answer update(Application application);
+    Answer update(Application object);
 
     /**
      *
