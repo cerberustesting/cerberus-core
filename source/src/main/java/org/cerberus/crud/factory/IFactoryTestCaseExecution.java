@@ -23,7 +23,7 @@ import java.util.List;
 
 import org.cerberus.crud.entity.Application;
 import org.cerberus.crud.entity.CountryEnvParam;
-import org.cerberus.crud.entity.CountryEnvironmentApplication;
+import org.cerberus.crud.entity.CountryEnvironmentParameters;
 import org.cerberus.crud.entity.MessageGeneral;
 import org.cerberus.crud.entity.TestCaseExecution;
 import org.cerberus.crud.entity.TCase;
@@ -38,20 +38,20 @@ public interface IFactoryTestCaseExecution {
                        String country, String browser, String version, String platform, String browserFullVersion, long start, long end, String controlStatus, String controlMessage,
                        Application application, String ip, String url, String port, String tag, String finished, int verbose, int screenshot,int pageSource, int seleniumLog, boolean synchroneous, String timeout,
                        String outputFormat, String status, String crbVersion, TCase tCase, CountryEnvParam countryEnvParam,
-                       CountryEnvironmentApplication countryEnvironmentApplication, boolean manualURL, String myHost, String myContextRoot, String myLoginRelativeURL, String myEnvData,
+                       CountryEnvironmentParameters countryEnvironmentParameters, boolean manualURL, String myHost, String myContextRoot, String myLoginRelativeURL, String myEnvData,
             String seleniumIP, String seleniumPort, List<TestCaseStepExecution> testCaseStepExecution, MessageGeneral resultMessage, String executor);
     
     TestCaseExecution create(long id, String test, String testCase, String build, String revision, String environment,
                        String country, String browser, String version, String platform, String browserFullVersion, long start, long end, String controlStatus, String controlMessage,
                        Application application, String ip, String url, String port, String tag, String finished, int verbose, int screenshot,int pageSource, int seleniumLog, boolean synchroneous, String timeout,
                        String outputFormat, String status, String crbVersion, TCase tCase, CountryEnvParam countryEnvParam,
-                       CountryEnvironmentApplication countryEnvironmentApplication, boolean manualURL, String myHost, String myContextRoot, String myLoginRelativeURL, String myEnvData,
+                       CountryEnvironmentParameters countryEnvironmentParameters, boolean manualURL, String myHost, String myContextRoot, String myLoginRelativeURL, String myEnvData,
             String seleniumIP, String seleniumPort, List<TestCaseStepExecution> testCaseStepExecution, MessageGeneral resultMessage, String executor, int numberOfRetries);
     
     TestCaseExecution create(long id, String test, String testCase, String build, String revision, String environment,
                        String country, String browser, String version, String platform, String browserFullVersion, long start, long end, String controlStatus, String controlMessage,
                        Application application, String ip, String url, String port, String tag, String finished, int verbose, int screenshot,int pageSource, int seleniumLog, boolean synchroneous, String timeout,
                        String outputFormat, String status, String crbVersion, TCase tCase, CountryEnvParam countryEnvParam,
-                       CountryEnvironmentApplication countryEnvironmentApplication, boolean manualURL, String myHost, String myContextRoot, String myLoginRelativeURL, String myEnvData,
+                       CountryEnvironmentParameters countryEnvironmentParameters, boolean manualURL, String myHost, String myContextRoot, String myLoginRelativeURL, String myEnvData,
             String seleniumIP, String seleniumPort, List<TestCaseStepExecution> testCaseStepExecution, MessageGeneral resultMessage, String executor, int numberOfRetries, String screenSize);
 }

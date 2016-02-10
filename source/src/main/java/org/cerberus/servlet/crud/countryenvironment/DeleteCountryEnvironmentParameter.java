@@ -29,12 +29,12 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import org.cerberus.exception.CerberusException;
-import org.cerberus.crud.factory.IFactoryCountryEnvironmentApplication;
-import org.cerberus.crud.service.ICountryEnvironmentApplicationService;
 import org.owasp.html.PolicyFactory;
 import org.owasp.html.Sanitizers;
 import org.springframework.context.ApplicationContext;
 import org.springframework.web.context.support.WebApplicationContextUtils;
+import org.cerberus.crud.service.ICountryEnvironmentParametersService;
+import org.cerberus.crud.factory.IFactoryCountryEnvironmentParameters;
 
 /**
  *
@@ -42,8 +42,8 @@ import org.springframework.web.context.support.WebApplicationContextUtils;
  */
 public class DeleteCountryEnvironmentParameter extends HttpServlet {
 
-    private ICountryEnvironmentApplicationService ceaService;
-    private IFactoryCountryEnvironmentApplication factoryCea;
+    private ICountryEnvironmentParametersService ceaService;
+    private IFactoryCountryEnvironmentParameters factoryCea;
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
      * methods.
@@ -61,8 +61,8 @@ public class DeleteCountryEnvironmentParameter extends HttpServlet {
         try {
         
         ApplicationContext appContext = WebApplicationContextUtils.getWebApplicationContext(this.getServletContext());
-        ceaService = appContext.getBean(ICountryEnvironmentApplicationService.class);
-        factoryCea = appContext.getBean(IFactoryCountryEnvironmentApplication.class);
+        ceaService = appContext.getBean(ICountryEnvironmentParametersService.class);
+        factoryCea = appContext.getBean(IFactoryCountryEnvironmentParameters.class);
         PolicyFactory policy = Sanitizers.FORMATTING.and(Sanitizers.LINKS);
 
         String id = policy.sanitize(request.getParameter("id"));
@@ -72,7 +72,7 @@ public class DeleteCountryEnvironmentParameter extends HttpServlet {
         String app = id.split("App&#61;")[1].split("&amp;")[0];
 
         response.setContentType("text/html");
-            ceaService.delete(factoryCea.create(system, country, env, app, null, null, null, null));
+            ceaService.delete_deprecated(factoryCea.create(system, country, env, app, null, null, null, null));
         } catch (CerberusException ex) {
             Logger.getLogger(DeleteCountryEnvironmentParameter.class.getName()).log(Level.SEVERE, null, ex);
         }

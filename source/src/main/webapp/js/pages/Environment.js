@@ -51,7 +51,6 @@ function initPage() {
     displayBuildList('#newRevision', getUser().defaultSystem, "2", "", "", "");
 
     var table = loadEnvTable(urlCountry, urlEnvironment, urlBuild, urlRevision);
-    table.fnSort([3, 'asc']);
 
     // handle the click for specific action buttons
     $("#addEnvButton").click(addEntryModalSaveHandler);
@@ -155,7 +154,7 @@ function loadEnvTable(selectCountry, selectEnvironment, selectBuild, selectRevis
         contentUrl = contentUrl + "&revision=" + selectRevision;
     }
 
-    var configurations = new TableConfigurationsServerSide("environmentsTable", contentUrl, "contentTable", aoColumnsFunc("environmentsTable"));
+    var configurations = new TableConfigurationsServerSide("environmentsTable", contentUrl, "contentTable", aoColumnsFunc("environmentsTable"), [4, 'asc']);
 
     var table = createDataTableWithPermissions(configurations, renderOptionsForEnv);
     return table;
@@ -385,13 +384,16 @@ function editEntryClick(system, country, environment) {
     });
 
     var table = loadChangeTable(system, country, environment);
-    table.fnSort([0, 'desc']);
 
     var table = loadEventTable(system, country, environment);
-    table.fnSort([0, 'desc']);
-    
+
     loadDatabaseTable(system, country, environment);
-  
+
+    loadApplicationTable(system, country, environment);
+
+    loadDependenciesTable(system, country, environment);
+
+    loadDeployTypeTable(system, country, environment);
 }
 
 function loadChangeTable(selectSystem, selectCountry, selectEnvironment) {
@@ -403,7 +405,7 @@ function loadChangeTable(selectSystem, selectCountry, selectEnvironment) {
     //configure and create the dataTable
     var contentUrl = "ReadCountryEnvParam_log?system=" + selectSystem + "&country=" + selectCountry + "&environment=" + selectEnvironment;
 
-    var configurations = new TableConfigurationsServerSide("lastChangeTable", contentUrl, "contentTable", aoColumnsFuncChange("lastChangeTable"));
+    var configurations = new TableConfigurationsServerSide("lastChangeTable", contentUrl, "contentTable", aoColumnsFuncChange("lastChangeTable"), [0, "desc"]);
 
     var table = createDataTableWithPermissions(configurations, null);
     return table;
@@ -418,7 +420,7 @@ function loadEventTable(selectSystem, selectCountry, selectEnvironment) {
     //configure and create the dataTable
     var contentUrl = "ReadBuildRevisionBatch?system=" + selectSystem + "&country=" + selectCountry + "&environment=" + selectEnvironment;
 
-    var configurations = new TableConfigurationsServerSide("lastEventTable", contentUrl, "contentTable", aoColumnsFuncEvent("lastEventTable"));
+    var configurations = new TableConfigurationsServerSide("lastEventTable", contentUrl, "contentTable", aoColumnsFuncEvent("lastEventTable"), [0, "desc"]);
 
     var table = createDataTableWithPermissions(configurations, null);
     return table;
@@ -426,16 +428,14 @@ function loadEventTable(selectSystem, selectCountry, selectEnvironment) {
 
 function loadDatabaseTable(selectSystem, selectCountry, selectEnvironment) {
     $('#databaseTableBody tr').remove();
-        var jqxhr = $.getJSON("ReadCountryEnvironmentDatabase", "system=" + selectSystem + "&country=" + selectCountry + "&environment=" + selectEnvironment );
+    var jqxhr = $.getJSON("ReadCountryEnvironmentDatabase", "system=" + selectSystem + "&country=" + selectCountry + "&environment=" + selectEnvironment);
     $.when(jqxhr).then(function (result) {
         $.each(result["contentTable"], function (idx, obj) {
             appendDatabaseRow(obj.database, obj.connectionPoolName);
         });
     }).fail(handleErrorAjaxAfterTimeout);
 }
-/**
- * Render 1 line on installation instructions modal.
- */
+
 function appendDatabaseRow(database, connectionPoolName) {
     var doc = new Doc();
     //for each install instructions adds a new row
@@ -444,6 +444,77 @@ function appendDatabaseRow(database, connectionPoolName) {
             <input readonly name="database" type="text" class="releaseClass form-control input-xs" value="' + database + '"/><span></span></div></td>\n\\n\
         <td><div class="nomarginbottom form-group form-group-sm">\n\
             <input readonly name="connectionPoolName" type="text" class="releaseClass form-control input-xs" value="' + connectionPoolName + '"/><span></span></div></td>\n\\n\
+        </tr>');
+}
+
+function loadApplicationTable(selectSystem, selectCountry, selectEnvironment) {
+    $('#applicationTableBody tr').remove();
+    var jqxhr = $.getJSON("ReadCountryEnvironmentParameters", "system=" + selectSystem + "&country=" + selectCountry + "&environment=" + selectEnvironment);
+    $.when(jqxhr).then(function (result) {
+        $.each(result["contentTable"], function (idx, obj) {
+            appendApplicationRow(obj.application, obj.ip, obj.domain, obj.url, obj.urlLogin);
+        });
+    }).fail(handleErrorAjaxAfterTimeout);
+}
+
+function appendApplicationRow(application, ip, domain, url, urllogin) {
+    var doc = new Doc();
+    //for each install instructions adds a new row
+    $('#applicationTableBody').append('<tr> \n\
+        <td><div class="nomarginbottom form-group form-group-sm">\n\
+            <input readonly name="application" type="text" class="releaseClass form-control input-xs" value="' + application + '"/><span></span></div></td>\n\\n\
+        <td><div class="nomarginbottom form-group form-group-sm">\n\
+            <input readonly name="connectionPoolName" type="text" class="releaseClass form-control input-xs" value="' + ip + '"/><span></span></div></td>\n\\n\
+        <td><div class="nomarginbottom form-group form-group-sm">\n\
+            <input readonly name="connectionPoolName" type="text" class="releaseClass form-control input-xs" value="' + url + '"/><span></span></div></td>\n\\n\
+        <td><div class="nomarginbottom form-group form-group-sm">\n\
+            <input readonly name="connectionPoolName" type="text" class="releaseClass form-control input-xs" value="' + urllogin + '"/><span></span></div></td>\n\\n\
+        <td><div class="nomarginbottom form-group form-group-sm">\n\
+            <input readonly name="connectionPoolName" type="text" class="releaseClass form-control input-xs" value="' + domain + '"/><span></span></div></td><br>\n\\n\
+        </tr>');
+}
+
+function loadDependenciesTable(selectSystem, selectCountry, selectEnvironment) {
+    $('#dependenciesTableBody tr').remove();
+    var jqxhr = $.getJSON("ReadCountryEnvLink", "system=" + selectSystem + "&country=" + selectCountry + "&environment=" + selectEnvironment);
+    $.when(jqxhr).then(function (result) {
+        $.each(result["contentTable"], function (idx, obj) {
+            appendDependenciesRow(obj.systemLink, obj.countryLink, obj.environmentLink);
+        });
+    }).fail(handleErrorAjaxAfterTimeout);
+}
+
+function appendDependenciesRow(system, country, environment) {
+    var doc = new Doc();
+    //for each install instructions adds a new row
+    $('#dependenciesTableBody').append('<tr> \n\
+        <td><div class="nomarginbottom form-group form-group-sm">\n\
+            <input readonly name="application" type="text" class="releaseClass form-control input-xs" value="' + system + '"/><span></span></div></td>\n\\n\
+        <td><div class="nomarginbottom form-group form-group-sm">\n\
+            <input readonly name="connectionPoolName" type="text" class="releaseClass form-control input-xs" value="' + country + '"/><span></span></div></td>\n\\n\
+        <td><div class="nomarginbottom form-group form-group-sm">\n\
+            <input readonly name="connectionPoolName" type="text" class="releaseClass form-control input-xs" value="' + environment + '"/><span></span></div></td>\n\\n\
+        </tr>');
+}
+
+function loadDeployTypeTable(selectSystem, selectCountry, selectEnvironment) {
+    $('#deployTypeTableBody tr').remove();
+    var jqxhr = $.getJSON("ReadCountryEnvDeployType", "system=" + selectSystem + "&country=" + selectCountry + "&environment=" + selectEnvironment);
+    $.when(jqxhr).then(function (result) {
+        $.each(result["contentTable"], function (idx, obj) {
+            appendDeployTypeRow(obj.deployType, obj.jenkinsAgent);
+        });
+    }).fail(handleErrorAjaxAfterTimeout);
+}
+
+function appendDeployTypeRow(deployType, jenkinsAgent) {
+    var doc = new Doc();
+    //for each install instructions adds a new row
+    $('#deployTypeTableBody').append('<tr> \n\
+        <td><div class="nomarginbottom form-group form-group-sm">\n\
+            <input readonly name="application" type="text" class="releaseClass form-control input-xs" value="' + deployType + '"/><span></span></div></td>\n\\n\
+        <td><div class="nomarginbottom form-group form-group-sm">\n\
+            <input readonly name="connectionPoolName" type="text" class="releaseClass form-control input-xs" value="' + jenkinsAgent + '"/><span></span></div></td>\n\\n\
         </tr>');
 }
 

@@ -20,21 +20,19 @@
 package org.cerberus.servlet.crud.countryenvironment;
 
 import java.io.IOException;
-import java.io.PrintWriter;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import org.cerberus.crud.entity.CountryEnvironmentApplication;
+import org.cerberus.crud.entity.CountryEnvironmentParameters;
 import org.cerberus.crud.entity.MessageGeneral;
 import org.cerberus.enums.MessageGeneralEnum;
 import org.cerberus.exception.CerberusException;
-import org.cerberus.crud.service.ICountryEnvParamService;
-import org.cerberus.crud.service.ICountryEnvironmentApplicationService;
 import org.owasp.html.PolicyFactory;
 import org.owasp.html.Sanitizers;
 import org.springframework.context.ApplicationContext;
 import org.springframework.web.context.support.WebApplicationContextUtils;
+import org.cerberus.crud.service.ICountryEnvironmentParametersService;
 
 /**
  *
@@ -42,7 +40,7 @@ import org.springframework.web.context.support.WebApplicationContextUtils;
  */
 public class UpdateCountryEnvironmentParameter extends HttpServlet {
 
-    private ICountryEnvironmentApplicationService countryEnvAppService;
+    private ICountryEnvironmentParametersService countryEnvAppService;
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
      * methods.
@@ -55,7 +53,7 @@ public class UpdateCountryEnvironmentParameter extends HttpServlet {
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         ApplicationContext appContext = WebApplicationContextUtils.getWebApplicationContext(this.getServletContext());
-        countryEnvAppService = appContext.getBean(ICountryEnvironmentApplicationService.class);
+        countryEnvAppService = appContext.getBean(ICountryEnvironmentParametersService.class);
         PolicyFactory policy = Sanitizers.FORMATTING.and(Sanitizers.LINKS);
 
         String id = policy.sanitize(request.getParameter("id"));
@@ -68,7 +66,7 @@ public class UpdateCountryEnvironmentParameter extends HttpServlet {
 
         response.setContentType("text/html");
         try {
-            CountryEnvironmentApplication cea = countryEnvAppService.findCountryEnvironmentParameterByKey(system, country, env, app);
+            CountryEnvironmentParameters cea = countryEnvAppService.findCountryEnvironmentParameterByKey(system, country, env, app);
             if (name != null && "IP".equalsIgnoreCase(name.trim())) {
                 cea.setIp(value);
             } else if (name != null && "domain".equalsIgnoreCase(name.trim())) {
@@ -80,7 +78,7 @@ public class UpdateCountryEnvironmentParameter extends HttpServlet {
             } else {
                 throw new CerberusException(new MessageGeneral(MessageGeneralEnum.NOT_IMPLEMEMTED));
             }
-            countryEnvAppService.update(cea);
+            countryEnvAppService.update_deprecated(cea);
             response.getWriter().print(value);
         } catch (CerberusException ex) {
             response.getWriter().print(ex.getMessageError().getDescription());

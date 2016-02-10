@@ -22,7 +22,6 @@ package org.cerberus.crud.service.impl;
 import java.util.List;
 
 import org.cerberus.crud.dao.IBuildRevisionInvariantDAO;
-import org.cerberus.crud.entity.Application;
 import org.cerberus.crud.entity.BuildRevisionInvariant;
 import org.cerberus.crud.entity.MessageGeneral;
 import org.cerberus.exception.CerberusException;

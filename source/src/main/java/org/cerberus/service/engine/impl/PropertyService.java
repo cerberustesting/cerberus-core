@@ -643,8 +643,8 @@ public class PropertyService implements IPropertyService {
          */
         stringToDecode = StringUtil.replaceAllProperties(stringToDecode, "%SYS_SYSTEM%", tCExecution.getApplication().getSystem());
         stringToDecode = StringUtil.replaceAllProperties(stringToDecode, "%SYS_APPLI%", tCExecution.getApplication().getApplication());
-        stringToDecode = StringUtil.replaceAllProperties(stringToDecode, "%SYS_APP_DOMAIN%", tCExecution.getCountryEnvironmentApplication().getDomain());
-        stringToDecode = StringUtil.replaceAllProperties(stringToDecode, "%SYS_APP_HOST%", tCExecution.getCountryEnvironmentApplication().getIp());
+        stringToDecode = StringUtil.replaceAllProperties(stringToDecode, "%SYS_APP_DOMAIN%", tCExecution.getCountryEnvironmentParameters().getDomain());
+        stringToDecode = StringUtil.replaceAllProperties(stringToDecode, "%SYS_APP_HOST%", tCExecution.getCountryEnvironmentParameters().getIp());
         stringToDecode = StringUtil.replaceAllProperties(stringToDecode, "%SYS_ENV%", tCExecution.getEnvironmentData());
         stringToDecode = StringUtil.replaceAllProperties(stringToDecode, "%SYS_ENVGP%", tCExecution.getEnvironmentDataObj().getGp1());
         stringToDecode = StringUtil.replaceAllProperties(stringToDecode, "%SYS_COUNTRY%", tCExecution.getCountry());
@@ -1049,8 +1049,8 @@ public class PropertyService implements IPropertyService {
         TestDataLib lib;
         TestDataLibResult result;
         AnswerItem answer = testDataLibService.readByNameBySystemByEnvironmentByCountry(testCaseExecutionData.getValue1(),
-                tCExecution.getCountryEnvironmentApplication().getSystem(), tCExecution.getCountryEnvironmentApplication().getEnvironment(),
-                tCExecution.getCountryEnvironmentApplication().getCountry());
+                tCExecution.getCountryEnvironmentParameters().getSystem(), tCExecution.getCountryEnvironmentParameters().getEnvironment(),
+                tCExecution.getCountryEnvironmentParameters().getCountry());
         
         if (answer.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
             lib = (TestDataLib) answer.getItem();
@@ -1058,15 +1058,15 @@ public class PropertyService implements IPropertyService {
             unescapeTestDataLibrary(lib);
             //if the property was defined for all systems, then the query returned an empty value
             if (StringUtil.isNullOrEmpty(lib.getSystem())) {
-                lib.setSystem(tCExecution.getCountryEnvironmentApplication().getSystem());
+                lib.setSystem(tCExecution.getCountryEnvironmentParameters().getSystem());
             }
             //if the property was defined for all environments, then the query returned an empty value
             if (StringUtil.isNullOrEmpty(lib.getEnvironment())) {
-                lib.setEnvironment(tCExecution.getCountryEnvironmentApplication().getEnvironment());
+                lib.setEnvironment(tCExecution.getCountryEnvironmentParameters().getEnvironment());
             }
             //if the property was defined for all countries, then the query returned an empty value
             if (StringUtil.isNullOrEmpty(lib.getCountry())) {
-                lib.setCountry(tCExecution.getCountryEnvironmentApplication().getCountry());
+                lib.setCountry(tCExecution.getCountryEnvironmentParameters().getCountry());
             }
 
             AnswerItem serviceAnswer;
@@ -1129,9 +1129,9 @@ public class PropertyService implements IPropertyService {
                 //if the library name exists but was not available or does not exist for the current specification but exists for other countries/environments/systems
                 res = new MessageEvent(MessageEventEnum.TESTDATALIB_NOT_FOUND_ERROR);
                 res.setDescription(res.getDescription().replace("%ITEM%", testCaseExecutionData.getValue1()).
-                        replace("%COUNTRY%", tCExecution.getCountryEnvironmentApplication().getCountry()).
-                        replace("%ENVIRONMENT%", tCExecution.getCountryEnvironmentApplication().getEnvironment()).
-                        replace("%SYSTEM%", tCExecution.getCountryEnvironmentApplication().getSystem()));
+                        replace("%COUNTRY%", tCExecution.getCountryEnvironmentParameters().getCountry()).
+                        replace("%ENVIRONMENT%", tCExecution.getCountryEnvironmentParameters().getEnvironment()).
+                        replace("%SYSTEM%", tCExecution.getCountryEnvironmentParameters().getSystem()));
             } else {
                 res = new MessageEvent(MessageEventEnum.PROPERTY_FAILED_GETFROMDATALIB);
             }

@@ -21,7 +21,6 @@ package org.cerberus.servlet.crud.countryenvironment;
 
 import com.google.gson.Gson;
 import java.io.IOException;
-import java.util.HashMap;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -30,9 +29,9 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import org.cerberus.crud.entity.CountryEnvParam;
+import org.cerberus.crud.entity.CountryEnvironmentParameters;
 import org.cerberus.crud.entity.MessageEvent;
-import org.cerberus.crud.service.ICountryEnvParamService;
+import org.cerberus.crud.service.ICountryEnvironmentParametersService;
 import org.cerberus.enums.MessageEventEnum;
 import org.cerberus.exception.CerberusException;
 import org.cerberus.util.ParameterParserUtil;
@@ -50,11 +49,11 @@ import org.springframework.web.context.support.WebApplicationContextUtils;
  *
  * @author cerberus
  */
-@WebServlet(name = "ReadCountryEnvParam", urlPatterns = {"/ReadCountryEnvParam"})
-public class ReadCountryEnvParam extends HttpServlet {
+@WebServlet(name = "ReadCountryEnvironmentParameters", urlPatterns = {"/ReadCountryEnvironmentParameters"})
+public class ReadCountryEnvironmentParameters extends HttpServlet {
 
-    private ICountryEnvParamService cepService;
-    private final String OBJECT_NAME = "ReadCountryEnvParam";
+    private ICountryEnvironmentParametersService cepService;
+    private final String OBJECT_NAME = "ReadCountryEnvironmentParameters";
 
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
@@ -84,28 +83,18 @@ public class ReadCountryEnvParam extends HttpServlet {
         String system = policy.sanitize(request.getParameter("system"));
         String country = policy.sanitize(request.getParameter("country"));
         String environment = policy.sanitize(request.getParameter("environment"));
-        String active = policy.sanitize(request.getParameter("active"));
-        boolean unique = ParameterParserUtil.parseBooleanParam(request.getParameter("unique"), false);
-        boolean forceList = ParameterParserUtil.parseBooleanParam(request.getParameter("forceList"), false);
+        String application = policy.sanitize(request.getParameter("application"));
 
         // Global boolean on the servlet that define if the user has permition to edit and delete object.
-        boolean userHasPermissions = request.isUserInRole("Integrator");
-        
+        boolean userHasPermissions = request.isUserInRole("IntegratorRO");
+
         // Init Answer with potencial error from Parsing parameter.
         AnswerItem answer = new AnswerItem(msg);
 
         try {
             JSONObject jsonResponse = new JSONObject();
-            if ((request.getParameter("system") != null) && (request.getParameter("country") != null) && (request.getParameter("environment") != null) && !(forceList)) {
-                answer = findCountryEnvParamByKey(system, country, environment, appContext, userHasPermissions);
-                jsonResponse = (JSONObject) answer.getItem();
-            } else if (unique) {
-                answer = findUniqueEnvironmentList(system, active, appContext, userHasPermissions);
-                jsonResponse = (JSONObject) answer.getItem();
-            } else { // Default behaviour, we return the list of objects.
-                answer = findCountryEnvParamList(request.getParameter("system"), request.getParameter("country"),
-                        request.getParameter("environment"), request.getParameter("build"), request.getParameter("revision"),
-                        request.getParameter("active"), appContext, userHasPermissions, request);
+            if (1 == 1) {
+                answer = findCountryEnvironmentParametersList(request.getParameter("system"), request.getParameter("country"), request.getParameter("environment"), request.getParameter("application"), appContext, userHasPermissions, request);
                 jsonResponse = (JSONObject) answer.getItem();
             }
             jsonResponse.put("messageType", answer.getResultMessage().getMessage().getCodeString());
@@ -115,7 +104,7 @@ public class ReadCountryEnvParam extends HttpServlet {
             response.getWriter().print(jsonResponse.toString());
 
         } catch (JSONException e) {
-            org.apache.log4j.Logger.getLogger(ReadCountryEnvParam.class.getName()).log(org.apache.log4j.Level.ERROR, null, e);
+            org.apache.log4j.Logger.getLogger(ReadCountryEnvironmentParameters.class.getName()).log(org.apache.log4j.Level.ERROR, null, e);
             //returns a default error message with the json format that is able to be parsed by the client-side
             response.setContentType("application/json");
             msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
@@ -143,7 +132,7 @@ public class ReadCountryEnvParam extends HttpServlet {
         try {
             processRequest(request, response);
         } catch (CerberusException ex) {
-            Logger.getLogger(ReadCountryEnvParam.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(ReadCountryEnvironmentParameters.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
 
@@ -161,7 +150,7 @@ public class ReadCountryEnvParam extends HttpServlet {
         try {
             processRequest(request, response);
         } catch (CerberusException ex) {
-            Logger.getLogger(ReadCountryEnvParam.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(ReadCountryEnvironmentParameters.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
 
@@ -175,29 +164,28 @@ public class ReadCountryEnvParam extends HttpServlet {
         return "Short description";
     }// </editor-fold>
 
-    private AnswerItem findCountryEnvParamList(String system, String country, String environment, String build, String revision, String active
-            , ApplicationContext appContext, boolean userHasPermissions, HttpServletRequest request) throws JSONException {
+    private AnswerItem findCountryEnvironmentParametersList(String system, String country, String environment, String application, ApplicationContext appContext, boolean userHasPermissions, HttpServletRequest request) throws JSONException {
 
         AnswerItem item = new AnswerItem();
         JSONObject object = new JSONObject();
-        cepService = appContext.getBean(ICountryEnvParamService.class);
+        cepService = appContext.getBean(ICountryEnvironmentParametersService.class);
 
         int startPosition = Integer.valueOf(ParameterParserUtil.parseStringParam(request.getParameter("iDisplayStart"), "0"));
         int length = Integer.valueOf(ParameterParserUtil.parseStringParam(request.getParameter("iDisplayLength"), "0"));
         /*int sEcho  = Integer.valueOf(request.getParameter("sEcho"));*/
 
         String searchParameter = ParameterParserUtil.parseStringParam(request.getParameter("sSearch"), "");
-        int columnToSortParameter = Integer.parseInt(ParameterParserUtil.parseStringParam(request.getParameter("iSortCol_0"), "0"));
-        String sColumns = ParameterParserUtil.parseStringParam(request.getParameter("sColumns"), "system,country,environment,description,build,revision,chain,disriblist,emailbodyrevision,type,emailbodychain,emailbodydisableenvironment,active,maintenanceact,maintenancestr,maintenanceeend");
+        int columnToSortParameter = Integer.parseInt(ParameterParserUtil.parseStringParam(request.getParameter("iSortCol_0"), "1"));
+        String sColumns = ParameterParserUtil.parseStringParam(request.getParameter("sColumns"), "ID,system,country,Environment,Build,Revision,Chain,Disable,datecre,creator");
         String columnToSort[] = sColumns.split(",");
         String columnName = columnToSort[columnToSortParameter];
         String sort = ParameterParserUtil.parseStringParam(request.getParameter("sSortDir_0"), "asc");
-        AnswerList resp = cepService.readByVariousByCriteria(system, country, environment, build, revision, active, startPosition, length, columnName, sort, searchParameter, "");
+        AnswerList resp = cepService.readByVariousByCriteria(system, country, environment, application, startPosition, length, columnName, sort, searchParameter, "");
 
         JSONArray jsonArray = new JSONArray();
         if (resp.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {//the service was able to perform the query, then we should get all values
-            for (CountryEnvParam cep : (List<CountryEnvParam>) resp.getDataList()) {
-                jsonArray.put(convertCountryEnvParamtoJSONObject(cep));
+            for (CountryEnvironmentParameters cepl : (List<CountryEnvironmentParameters>) resp.getDataList()) {
+                jsonArray.put(convertCountryEnvParamtoJSONObject(cepl));
             }
         }
 
@@ -212,69 +200,9 @@ public class ReadCountryEnvParam extends HttpServlet {
 
     }
 
-    private AnswerItem findUniqueEnvironmentList(String system, String active, ApplicationContext appContext, boolean userHasPermissions) throws JSONException {
-        AnswerItem item = new AnswerItem();
-        JSONObject object = new JSONObject();
-        cepService = appContext.getBean(ICountryEnvParamService.class);
-
-        AnswerList resp = cepService.readByVariousByCriteria(system, null, null, null, null, active, 0, 0, "system", "asc", "", "");
-
-        JSONArray jsonArray = new JSONArray();
-        if (resp.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {//the service was able to perform the query, then we should get all values
-            HashMap<String, CountryEnvParam> hash = new HashMap<String, CountryEnvParam>();
-
-            for (CountryEnvParam cep : (List<CountryEnvParam>) resp.getDataList()) {
-                hash.put(cep.getEnvironment(), cep);
-            }
-
-            for (CountryEnvParam cep : hash.values()) {
-                jsonArray.put(convertCountryEnvParamtoJSONObject(cep));
-            }
-        }
-
-        object.put("contentTable", jsonArray);
-        object.put("iTotalRecords", resp.getTotalRows());
-        object.put("iTotalDisplayRecords", resp.getTotalRows());
-        object.put("hasPermissions", userHasPermissions);
-
-        item.setItem(object);
-        item.setResultMessage(resp.getResultMessage());
-        return item;
-    }
-
-    private AnswerItem findCountryEnvParamByKey(String system, String country, String environment, ApplicationContext appContext, boolean userHasPermissions) throws JSONException, CerberusException {
-        AnswerItem item = new AnswerItem();
-        JSONObject object = new JSONObject();
-
-        ICountryEnvParamService libService = appContext.getBean(ICountryEnvParamService.class);
-
-        //finds the CountryEnvParam
-        AnswerItem answer = libService.readByKey(system, country, environment);
-
-        if (answer.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
-            //if the service returns an OK message then we can get the item and convert it to JSONformat
-            CountryEnvParam lib = (CountryEnvParam) answer.getItem();
-            JSONObject response = convertCountryEnvParamtoJSONObject(lib);
-            object.put("contentTable", response);
-        }
-
-        object.put("hasPermissions", userHasPermissions);
-        item.setItem(object);
-        item.setResultMessage(answer.getResultMessage());
-
-        return item;
-    }
-
-    private JSONObject convertCountryEnvParamtoJSONObject(CountryEnvParam cep) throws JSONException {
+    private JSONObject convertCountryEnvParamtoJSONObject(CountryEnvironmentParameters cepl) throws JSONException {
         Gson gson = new Gson();
-        String defaultTime = "00:00:00";
-        JSONObject result = new JSONObject(gson.toJson(cep));
-        if ((cep.getMaintenanceStr() ==null) || (cep.getMaintenanceStr().equalsIgnoreCase(defaultTime))) {
-            result.put("maintenanceStr", defaultTime);
-        }
-        if ((cep.getMaintenanceEnd() ==null) || (cep.getMaintenanceEnd().equalsIgnoreCase(defaultTime))) {
-            result.put("maintenanceEnd", defaultTime);
-        }
+        JSONObject result = new JSONObject(gson.toJson(cepl));
         return result;
     }
 

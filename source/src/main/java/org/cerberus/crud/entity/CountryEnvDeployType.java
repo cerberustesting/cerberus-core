@@ -19,25 +19,22 @@ package org.cerberus.crud.entity;
 
 /**
  *
- * @author bcivel
+ * @author vertigo17
  */
-public class CountryEnvironmentApplication {
+public class CountryEnvDeployType {
 
     private String system;
     private String country;
     private String environment;
-    private String application;
-    private String ip;
-    private String domain;
-    private String url;
-    private String urlLogin;
+    private String deployType;
+    private String jenkinsAgent;
 
-    public String getApplication() {
-        return application;
+    public String getSystem() {
+        return system;
     }
 
-    public void setApplication(String application) {
-        this.application = application;
+    public void setSystem(String system) {
+        this.system = system;
     }
 
     public String getCountry() {
@@ -56,43 +53,20 @@ public class CountryEnvironmentApplication {
         this.environment = environment;
     }
 
-    public String getIp() {
-        return ip;
+    public String getDeployType() {
+        return deployType;
     }
 
-    public void setIp(String ip) {
-        this.ip = ip;
+    public void setDeployType(String deployType) {
+        this.deployType = deployType;
     }
 
-    public String getDomain() {
-        return domain;
+    public String getJenkinsAgent() {
+        return jenkinsAgent;
     }
 
-    public void setDomain(String domain) {
-        this.domain = domain;
+    public void setJenkinsAgent(String jenkinsAgent) {
+        this.jenkinsAgent = jenkinsAgent;
     }
 
-    public String getUrl() {
-        return url;
-    }
-
-    public void setUrl(String url) {
-        this.url = url;
-    }
-
-    public String getUrlLogin() {
-        return urlLogin;
-    }
-
-    public void setUrlLogin(String urlLogin) {
-        this.urlLogin = urlLogin;
-    }
-
-    public String getSystem() {
-        return system;
-    }
-
-    public void setSystem(String system) {
-        this.system = system;
-    }
 }

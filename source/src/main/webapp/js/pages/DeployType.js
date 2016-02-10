@@ -35,7 +35,7 @@ function initPage() {
     $('#editEntryModal').on('hidden.bs.modal', {extra: "#editEntryModal"}, buttonCloseHandler);
 
     //configure and create the dataTable
-    var configurations = new TableConfigurationsServerSide("deploytypesTable", "ReadDeployType", "contentTable", aoColumnsFunc("deploytypesTable"));
+    var configurations = new TableConfigurationsServerSide("deploytypesTable", "ReadDeployType", "contentTable", aoColumnsFunc("deploytypesTable"), [1,'asc']);
 
     createDataTableWithPermissions(configurations, renderOptionsForDeployType);
 }

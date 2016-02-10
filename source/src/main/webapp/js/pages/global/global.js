@@ -649,9 +649,10 @@ function TableConfigurationsClientSide(divId, data, aoColumnsFunction, defineLen
  * @param {type} ajaxSource - ajax url
  * @param {type} ajaxProp -  json property 
  * @param {type} aoColumnsFunction - function to render the columns
+ * @param {type} aaSorting - Table to define the sorting column and order. Ex : [3, 'asc']
  * @returns {TableConfigurationsServerSide}
  */
-function TableConfigurationsServerSide(divId, ajaxSource, ajaxProp, aoColumnsFunction) {
+function TableConfigurationsServerSide(divId, ajaxSource, ajaxProp, aoColumnsFunction, aaSorting) {
     this.divId = divId;
     this.aoColumnsFunction = aoColumnsFunction;
     this.ajaxSource = ajaxSource;
@@ -680,6 +681,7 @@ function TableConfigurationsServerSide(divId, ajaxSource, ajaxProp, aoColumnsFun
     this.lang = getDataTableLanguage();
     this.orderClasses = true;
     this.bDeferRender = false;
+    this.aaSorting = aaSorting;
 }
 
 function returnMessageHandler(response) {
@@ -736,7 +738,13 @@ function createDataTableWithPermissions(tableConfigurations, callbackfunction) {
     configs["lengthChange"] = tableConfigurations.lengthChange;
     configs["orderClasses"] = tableConfigurations.orderClasses;
     configs["bDeferRender"] = tableConfigurations.bDeferRender;
-
+    if (tableConfigurations.aaSorting !== undefined)  {
+        console.debug("Sorting Defined. " + tableConfigurations.aaSorting);
+        configs["aaSorting"] = [tableConfigurations.aaSorting];
+        
+    }else{
+        console.debug("Sorting Not Defined. " + tableConfigurations.aaSorting);
+    }
 
     if (tableConfigurations.serverSide) {
         configs["sAjaxSource"] = tableConfigurations.ajaxSource;
@@ -824,6 +832,13 @@ function createDataTable(tableConfigurations, callback, userCallbackFunction) {
     configs["createdRow"] = callback;
     configs["orderClasses"] = tableConfigurations.orderClasses;
     configs["bDeferRender"] = tableConfigurations.bDeferRender;
+    if (tableConfigurations.aaSorting !== undefined)  {
+        console.debug("Sorting Defined. " + tableConfigurations.aaSorting);
+        configs["aaSorting"] = [tableConfigurations.aaSorting];
+        
+    }else{
+        console.debug("Sorting Not Defined. " + tableConfigurations.aaSorting);
+    }
 
 
     if (tableConfigurations.serverSide) {
@@ -1056,8 +1071,8 @@ function InsertURLInHistory(sUrl) {
         sUrl = sUrl.substr(0, sUrl.length - 1);
     }
     var currentURL = window.location.href.replace(window.location.origin, "");
-    var currentURLtoTest = currentURL + "TOTO" ;
-    var sUrltoTest = sUrl + "TOTO" ;
+    var currentURLtoTest = currentURL + "TOTO";
+    var sUrltoTest = sUrl + "TOTO";
     if (currentURLtoTest.indexOf(sUrltoTest) === -1) {
         window.history.pushState({}, '', sUrl);
     }
