@@ -22,7 +22,10 @@ $GLASSFISHPATH/asadmin delete-resource-ref --target server jdbc/cerberusprd
 $GLASSFISHPATH/asadmin delete-jdbc-connection-pool cerberus
 $GLASSFISHPATH/asadmin delete-jdbc-resource jdbc/cerberusprd
 echo Creating Resources and Connection Pool
+#MySQL
 $GLASSFISHPATH/asadmin create-jdbc-connection-pool --datasourceclassname com.mysql.jdbc.jdbc2.optional.MysqlConnectionPoolDataSource --restype javax.sql.ConnectionPoolDataSource --steadypoolsize 2 --property user=$DTBUSER:password=$DTBPASSWD:ServerName=$DTBSRVHOST:DatabaseName=$DTBNAME:portNumber=$DTBSRVPORT cerberus
+# Mariadb
+#$GLASSFISHPATH/asadmin create-jdbc-connection-pool --datasourceclassname org.mariadb.jdbc.MariaDbDataSource --restype javax.sql.ConnectionPoolDataSource --steadypoolsize 2 --property user=$DTBUSER:password=$DTBPASSWD:serverName=$DTBSRVHOST:databaseName=$DTBNAME:portNumber=$DTBSRVPORT cerberus
 $GLASSFISHPATH/asadmin create-jdbc-resource --connectionpoolid cerberus jdbc/cerberusprd
 $GLASSFISHPATH/asadmin create-resource-ref --target server jdbc/cerberusprd
 

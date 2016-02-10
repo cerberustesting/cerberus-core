@@ -20,6 +20,7 @@ package org.cerberus.crud.dao;
 import java.util.List;
 import org.cerberus.crud.entity.CountryEnvironmentDatabase;
 import org.cerberus.exception.CerberusException;
+import org.cerberus.util.answer.AnswerList;
 
 /**
  * {Insert class description here}
@@ -30,6 +31,15 @@ import org.cerberus.exception.CerberusException;
  */
 public interface ICountryEnvironmentDatabaseDAO {
 
+    /**
+     *
+     * @param system
+     * @param country
+     * @param environment
+     * @param database
+     * @return
+     * @throws CerberusException
+     */
     CountryEnvironmentDatabase findCountryEnvironmentDatabaseByKey(String system, String country, String environment, String database) throws CerberusException;
 
     /**
@@ -39,6 +49,31 @@ public interface ICountryEnvironmentDatabaseDAO {
      * @throws CerberusException 
      */
     List<CountryEnvironmentDatabase> findAll(String system) throws CerberusException;
+    
+    /**
+     *
+     * @param system
+     * @param country
+     * @param environment
+     * @return
+     * @throws CerberusException
+     */
+    public List<CountryEnvironmentDatabase> findListByCriteria(String system, String country, String environment) throws CerberusException;
+    
+    /**
+     *
+     * @param system
+     * @param country
+     * @param environment
+     * @param start
+     * @param amount
+     * @param column
+     * @param dir
+     * @param searchTerm
+     * @param individualSearch
+     * @return
+     */
+    public AnswerList readByVariousByCriteria(String system, String country, String environment, int start, int amount, String column, String dir, String searchTerm, String individualSearch);
     
     /**
      * Update countryEnvironmentDatabase
@@ -61,5 +96,4 @@ public interface ICountryEnvironmentDatabaseDAO {
      */
     void create(CountryEnvironmentDatabase ced) throws CerberusException;
 
-    public List<CountryEnvironmentDatabase> findListByCriteria(String system, String country, String environment) throws CerberusException;
 }

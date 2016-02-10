@@ -38,11 +38,13 @@
                         <!-- tabs definition-->
                         <ul id="tabsEdit" class="nav nav-tabs" data-tabs="tabs">
                             <li class="active"><a data-toggle="tab" href="#tabsEdit-1" id="tab1Text">Definition</a></li>
-                            <li><a data-toggle="tab" href="#tabsEdit-2" id="tab2Text">Notifications</a></li>
-                            <li><a data-toggle="tab" href="#tabsEdit-3" id="tab3Text">Status</a></li>
+                            <li><a data-toggle="tab" href="#tabsEdit-3" id="tab3Text">Build/Revision</a></li>
                             <li><a data-toggle="tab" href="#tabsEdit-4" id="tab4Text">Chain</a></li>
-                            <li><a data-toggle="tab" href="#tabsEdit-5" id="tab5Text">Dependencies</a></li>
+                            <li><a data-toggle="tab" href="#tabsEdit-8" id="tab8Text">Applications</a></li>
                             <li><a data-toggle="tab" href="#tabsEdit-6" id="tab6Text">Database</a></li>
+                            <li><a data-toggle="tab" href="#tabsEdit-5" id="tab5Text">Dependencies</a></li>
+                            <li><a data-toggle="tab" href="#tabsEdit-7" id="tab7Text">Deploy Type</a></li>
+                            <li><a data-toggle="tab" href="#tabsEdit-2" id="tab2Text">Specific Notifications</a></li>
                         </ul>
                         <div class="tab-content">
                             <div class="center marginTop25 tab-pane fade in active" id="tabsEdit-1">
@@ -148,6 +150,26 @@
                             <div class="center tab-pane fade marginTop25" id="tabsEdit-5">
                             </div>
                             <div class="center tab-pane fade marginTop25" id="tabsEdit-6">
+                                <div id="listPanelDatabase">
+                                    <div class="row">
+                                        <div class="col-xs-12">
+                                            <table class="table table-bordered table-hover nomarginbottom" id="DatabaseTable">
+                                                <thead>
+                                                    <tr>
+                                                        <th class="text-center" id="buildHeader">Database</th>
+                                                        <th class="text-center" id="revisionHeader">ConnectionPoolName</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody id="databaseTableBody">
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>  
+                                </div>   
+                            </div>
+                            <div class="center tab-pane fade marginTop25" id="tabsEdit-7">
+                            </div>
+                            <div class="center tab-pane fade marginTop25" id="tabsEdit-8">
                             </div>
                         </div>
                     </div>

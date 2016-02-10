@@ -19,7 +19,7 @@ Installation
 
 0) Download Cerberus package 
 
-1) Setup MySQL Cerberus Database
+1) Setup Cerberus Database
 
 - create a user and associated schema inside mysql
 

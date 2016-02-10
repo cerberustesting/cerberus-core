@@ -24,6 +24,7 @@ import org.cerberus.crud.dao.ICountryEnvironmentDatabaseDAO;
 import org.cerberus.crud.entity.CountryEnvironmentDatabase;
 import org.cerberus.exception.CerberusException;
 import org.cerberus.crud.service.ICountryEnvironmentDatabaseService;
+import org.cerberus.util.answer.AnswerList;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -33,49 +34,53 @@ import org.springframework.stereotype.Service;
  */
 @Service
 public class CountryEnvironmentDatabaseService implements ICountryEnvironmentDatabaseService {
-
+    
     @Autowired
     private ICountryEnvironmentDatabaseDAO countryEnvironmentDatabaseDao;
-
+    
     @Override
     public CountryEnvironmentDatabase findCountryEnvironmentDatabaseByKey(String system, String country, String environment, String database) throws CerberusException {
         return countryEnvironmentDatabaseDao.findCountryEnvironmentDatabaseByKey(system, country, environment, database);
     }
-
+    
     @Override
     public List<CountryEnvironmentDatabase> findAll(String system) throws CerberusException {
         return countryEnvironmentDatabaseDao.findAll(system);
     }
-
-    @Override
-    public void update(CountryEnvironmentDatabase ced) throws CerberusException {
-        countryEnvironmentDatabaseDao.update(ced);
-    }
-
-    @Override
-    public void delete(CountryEnvironmentDatabase ced) throws CerberusException {
-        countryEnvironmentDatabaseDao.delete(ced);
-    }
-
-    @Override
-    public void create(CountryEnvironmentDatabase ced) throws CerberusException {
-        countryEnvironmentDatabaseDao.create(ced);
-    }
-
+    
     @Override
     public List<CountryEnvironmentDatabase> findListByCriteria(int start, int amount, String column, String dir, String searchTerm, String individualSearch) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
-
+    
+    @Override
+    public AnswerList readByVariousByCriteria(String system, String country, String environment, int start, int amount, String column, String dir, String searchTerm, String individualSearch) {
+        return countryEnvironmentDatabaseDao.readByVariousByCriteria(system, country, environment, start, amount, column, dir, searchTerm, individualSearch);
+    }
+    
     @Override
     public Integer count(String searchTerm) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
-
+    
     @Override
     public List<CountryEnvironmentDatabase> findListByCriteria(String system, String country, String environment) throws CerberusException {
         return countryEnvironmentDatabaseDao.findListByCriteria(system, country, environment);
     }
     
+    @Override
+    public void update(CountryEnvironmentDatabase ced) throws CerberusException {
+        countryEnvironmentDatabaseDao.update(ced);
+    }
+    
+    @Override
+    public void delete(CountryEnvironmentDatabase ced) throws CerberusException {
+        countryEnvironmentDatabaseDao.delete(ced);
+    }
+    
+    @Override
+    public void create(CountryEnvironmentDatabase ced) throws CerberusException {
+        countryEnvironmentDatabaseDao.create(ced);
+    }
     
 }
