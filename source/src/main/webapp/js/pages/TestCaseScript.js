@@ -73,6 +73,7 @@ $.when($.getScript("js/pages/global/global.js")).then(function() {
                 createStepList(json, stepList);
                 drawInheritedProperty(data.inheritedProp);
                 listenEnterKeypressWhenFocusingOnDescription();
+                setPlaceholder();
             },
             error: showUnexpectedError
         });
@@ -110,7 +111,12 @@ $.when($.getScript("js/pages/global/global.js")).then(function() {
         });
 
         $("#editBtn").click(editStep);
-        $("#addAction").click(addAction);
+        $("#addAction").click(function() {
+            $.when(addAction()).then(function(action) {
+                listenEnterKeypressWhenFocusingOnDescription();
+                $($(action.html[0]).find(".description")[0]).focus();
+            });
+        });
         $("#saveScript").click(saveScript);
     });
 });
@@ -1099,7 +1105,7 @@ Action.prototype.generateContent = function() {
     var secondRow = $("<div></div>").addClass("row form-inline");
 
     var actionList = $("<select></select>").addClass("form-control input-sm");
-    var descField = $("<input>").addClass("description").addClass("form-control").prop("placeholder", "Description");
+    var descField = $("<input>").addClass("description").addClass("form-control").prop("placeholder", "Describe this action");
     var objectField = $("<input>").addClass("form-control input-sm");
     var propertyField = $("<input>").addClass("form-control input-sm");
 
@@ -1112,6 +1118,7 @@ Action.prototype.generateContent = function() {
     actionList.val(this.action);
     actionList.on("change", function() {
         obj.action = actionList.val();
+        setPlaceholder();
     });
 
     objectField.val(this.object);
@@ -1358,10 +1365,41 @@ function listenEnterKeypressWhenFocusingOnDescription() {
             }
         });
     });
+}
 
-    function addControl(action) {
-        var control = new Control(null, action);
-        action.setControl(control);
-        return control;
-    }
+function addControl(action) {
+    var control = new Control(null, action);
+    action.setControl(control);
+    return control;
+}
+
+function setPlaceholder() {
+    var placeHolders = [
+        {"type": "Unknown", "object": null, "property": null},
+        {"type": "click", "object": "Define Element", "property": null},
+        {"type": "clickAndWait", "object": "Deprecated", "property": "Deprecated"},
+        {"type": "calculateProperty", "object": null, "property": "Define Property Name"},
+        {"type": "doubleClick", "object": "Define Element", "property": null},
+        {"type": "enter", "object": "Deprecated", "property": "Deprecated"}
+    ];
+
+    $('div[class="row form-inline"] option:selected').each(function(i, e) {
+
+        for (var i = 0; i < placeHolders.length; i++) {
+            if (placeHolders[i].type === e.value) {
+                if (placeHolders[i].object !== null) {
+                    $(e).parent().parent().next().show();
+                    $(e).parent().parent().next().find('input').prop("placeholder", placeHolders[i].object);
+                } else {
+                    $(e).parent().parent().next().hide();
+                }
+                if (placeHolders[i].property !== null) {
+                    $(e).parent().parent().next().next().show();
+                    $(e).parent().parent().next().next().find('input').prop("placeholder", placeHolders[i].property);
+                } else {
+                    $(e).parent().parent().next().next().hide();
+                }
+            }
+        }
+    });
 }
