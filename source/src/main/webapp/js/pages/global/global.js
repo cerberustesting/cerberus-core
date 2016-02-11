@@ -329,7 +329,7 @@ function clearResponseMessageMainPage() {
 function showMessage(obj, dialog) {
     var code = getAlertType(obj.messageType);
 
-    if (code !== "success" && dialog !== null) {
+    if (code !== "success" && dialog !== undefined) {
         //shows the error message in the current dialog    
         var elementAlert = dialog.find("div[id*='DialogMessagesAlert']");
         var elementAlertDescription = dialog.find("span[id*='DialogAlertDescription']");
@@ -600,7 +600,7 @@ $.fn.dataTableExt.oApi.fnNewAjax = function (oSettings, sNewSource) {
         oSettings.sAjaxSource = sNewSource;
     }
     this.fnDraw();
-}
+};
 
 /**
  * Auxiliary object that stores configurations that should be applied in a table that is client-side
@@ -738,11 +738,11 @@ function createDataTableWithPermissions(tableConfigurations, callbackfunction) {
     configs["lengthChange"] = tableConfigurations.lengthChange;
     configs["orderClasses"] = tableConfigurations.orderClasses;
     configs["bDeferRender"] = tableConfigurations.bDeferRender;
-    if (tableConfigurations.aaSorting !== undefined)  {
+    if (tableConfigurations.aaSorting !== undefined) {
         console.debug("Sorting Defined. " + tableConfigurations.aaSorting);
         configs["aaSorting"] = [tableConfigurations.aaSorting];
-        
-    }else{
+
+    } else {
         console.debug("Sorting Not Defined. " + tableConfigurations.aaSorting);
     }
 
@@ -832,11 +832,11 @@ function createDataTable(tableConfigurations, callback, userCallbackFunction) {
     configs["createdRow"] = callback;
     configs["orderClasses"] = tableConfigurations.orderClasses;
     configs["bDeferRender"] = tableConfigurations.bDeferRender;
-    if (tableConfigurations.aaSorting !== undefined)  {
+    if (tableConfigurations.aaSorting !== undefined) {
         console.debug("Sorting Defined. " + tableConfigurations.aaSorting);
         configs["aaSorting"] = [tableConfigurations.aaSorting];
-        
-    }else{
+
+    } else {
         console.debug("Sorting Not Defined. " + tableConfigurations.aaSorting);
     }
 
@@ -964,7 +964,7 @@ jQuery.fn.dataTableExt.oApi.fnSetFilteringDelay = function (oSettings, iDelay) {
         anControl.unbind('keyup search input').bind('keyup search input', function () {
             var $$this = $this;
 
-            if (sPreviousSearch === null || sPreviousSearch != anControl.val()) {
+            if (sPreviousSearch === null || sPreviousSearch !== anControl.val()) {
                 window.clearTimeout(oTimerId);
                 sPreviousSearch = anControl.val();
                 oTimerId = window.setTimeout(function () {

@@ -262,7 +262,7 @@ public enum MessageEventEnum {
     // *********** DATA OPERATION ***********
     DATA_OPERATION_OK(500, MessageCodeEnum.DATA_OPERATION_CODE_SUCCESS.getCode(), "%ITEM% - %OPERATION% was finished with success!", false, false, false, MessageGeneralEnum.DATA_OPERATION_SUCCESS),
     DATA_OPERATION_WARNING_PARTIAL_RESULT(500, MessageCodeEnum.DATA_OPERATION_CODE_WARNING.getCode(), "Result may contain partial result. %DESCRIPTION%", false, false, false, MessageGeneralEnum.DATA_OPERATION_WARNING),
-    DATA_OPERATION_WARNING(500, MessageCodeEnum.DATA_OPERATION_CODE_WARNING.getCode(), "%ITEM% - %OPERATION% was finished successfuly with warnings!", false, false, false, MessageGeneralEnum.DATA_OPERATION_WARNING),
+    DATA_OPERATION_WARNING(500, MessageCodeEnum.DATA_OPERATION_CODE_WARNING.getCode(), "%ITEM% - %OPERATION% was finished successfuly with warnings! %REASON%", false, false, false, MessageGeneralEnum.DATA_OPERATION_WARNING),
     DATA_OPERATION_NO_DATA_FOUND(530, MessageCodeEnum.DATA_OPERATION_CODE_SUCCESS.getCode(), "Could not find any data that match the required criteria.", true, true, false, MessageGeneralEnum.DATA_OPERATION_SUCCESS),
     DATA_OPERATION_ERROR_EXPECTED(550, MessageCodeEnum.DATA_OPERATION_CODE_ERROR.getCode(), "%ITEM% - operation %OPERATION% failed to complete. %REASON%", false, false, false, MessageGeneralEnum.DATA_OPERATION_ERROR),
     DATA_OPERATION_ERROR_DUPLICATE(551, MessageCodeEnum.DATA_OPERATION_CODE_ERROR.getCode(), "The %ITEM% that you are trying to %OPERATION% conflicts with an existing one! Please check for duplicates!", false, false, false, MessageGeneralEnum.DATA_OPERATION_ERROR),

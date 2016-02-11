@@ -569,12 +569,11 @@ function massActionModalSaveHandler() {
     $.when(jqxhr).then(function (data) {
         // unblock when remote call returns 
         hideLoaderInModal('#massActionBrpModal');
-        if (getAlertType(data.messageType) === "success") {
+        if ((getAlertType(data.messageType) === "success") || (getAlertType(data.messageType) === "warning")) {
             var oTable = $("#buildrevisionparametersTable").dataTable();
             oTable.fnDraw(true);
             $('#massActionBrpModal').modal('hide');
             showMessage(data);
-
         } else {
             showMessage(data, $('#massActionBrpModal'));
         }
