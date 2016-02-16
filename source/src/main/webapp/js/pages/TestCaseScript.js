@@ -118,6 +118,9 @@ $.when($.getScript("js/pages/global/global.js")).then(function() {
             });
         });
         $("#saveScript").click(saveScript);
+        $("#runTestCase").click(function() {
+            runTestCase(test, testcase);
+        });
     });
 });
 
@@ -126,6 +129,10 @@ function addAction() {
     var action = new Action(null, step);
     step.setAction(action);
     return action;
+}
+
+function runTestCase(test, testcase) {
+    window.location.href = "./RunTest2.jsp?test=" + test + "&testcase=" + testcase;
 }
 
 function saveScript() {
@@ -1374,14 +1381,86 @@ function addControl(action) {
 }
 
 function setPlaceholder() {
-    var placeHolders = [
-        {"type": "Unknown", "object": null, "property": null},
-        {"type": "click", "object": "Define Element", "property": null},
-        {"type": "clickAndWait", "object": "Deprecated", "property": "Deprecated"},
-        {"type": "calculateProperty", "object": null, "property": "Define Property Name"},
-        {"type": "doubleClick", "object": "Define Element", "property": null},
-        {"type": "enter", "object": "Deprecated", "property": "Deprecated"}
-    ];
+    /**
+     * Todo : GetFromDatabase
+     */
+    var placeHoldersList = {"fr": [
+            {"type": "Unknown", "object": null, "property": null},
+            {"type": "click", "object": "Chemin vers l'élement à cliquer", "property": null},
+            {"type": "clickAndWait", "object": "Action Depreciée", "property": "Action Depreciée"},
+            {"type": "calculateProperty", "object": null, "property": "Nom d'une Proprieté"},
+            {"type": "doubleClick", "object": "Chemin vers l'élement à double-cliquer", "property": null},
+            {"type": "enter", "object": "Action Depreciée", "property": "Action Depreciée"},
+            {"type": "focusToIframe", "object": "Identifiant de l'iFrame à cibler", "property": null},
+            {"type": "focusDefaultIframe", "object": null, "property": null},
+            {"type": "keypress", "object": "[opt] Chemin vers l'élement à cibler", "property": ""},
+            {"type": "mouseDown", "object": "Chemin vers l'élement à cibler", "property": null},
+            {"type": "mouseUp", "object": "Chemin vers l'élement", "property": null},
+            {"type": "mouseOver", "object": "Chemin vers l'élement", "property": null},
+            {"type": "mouseOverAndWait", "object": "Action Depreciée", "property": "Action Depreciée"},
+            {"type": "openUrlWithBase", "object": "/URI à appeler", "property": null},
+            {"type": "openUrlLogin", "object": null, "property": null},
+            {"type": "openUrl", "object": "URL à appeler", "property": null},
+            {"type": "removeSelection", "object": "Action Depreciée", "property": null},
+            {"type": "select", "object": "Chemin vers l'élement", "property": "Chemin vers l'option"},
+            {"type": "selectAndWait", "object": "Action Depreciée", "property": "Action Depreciée"},
+            {"type": "store", "object": "Action Depreciée", "property": "Action Depreciée"},
+            {"type": "takeScreenshot", "object": "Action Depreciée", "property": "Action Depreciée"},
+            {"type": "type", "object": "Chemin vers l'élement", "property": "Nom de propriété"},
+            {"type": "wait", "object": "Valeur(ms) ou élement", "property": null},
+            {"type": "waitForPage", "object": "Action Depreciée", "property": "Action Depreciée"},
+            {"type": "switchToWindow", "object": "Identifiant de fenêtre", "property": null},
+            {"type": "callSoap", "object": "Nom du Soap (librairie)", "property": "Nom de propriété"},
+            {"type": "callSoapWithBase", "object": "Nom du Soap (librairie)", "property": "Nom de propriété"},
+            {"type": "manageDialog", "object": "ok ou cancel", "property": null},
+            {"type": "getPageSource", "object": null, "property": null},
+            {"type": "removeDifference", "object": "Action Depreciée", "property": "Action Depreciée"},
+            {"type": "executeSqlUpdate", "object": "Nom de Base de donnée", "property": "Script à executer"},
+            {"type": "executeSqlStoredProcedure", "object": "Nom de Base de donnée", "property": "Procedure Stoquée à executer"},
+            {"type": "skipAction", "object": null, "property": null},
+            {"type": "callSoap_BETA", "object": "Nom du Soap (librairie)", "property": "Nom de propriété"},
+            {"type": "callSoapWithBase_BETA", "object": "Nom du Soap (librairie)", "property": "Nom de propriété"}
+        ], "en": [
+            {"type": "Unknown", "object": null, "property": null},
+            {"type": "click", "object": "Element path", "property": null},
+            {"type": "clickAndWait", "object": "Deprecated", "property": "Deprecated"},
+            {"type": "calculateProperty", "object": null, "property": "Property Name"},
+            {"type": "doubleClick", "object": "Element path", "property": null},
+            {"type": "enter", "object": "Deprecated", "property": "Deprecated"},
+            {"type": "focusToIframe", "object": "Id of the target iFrame", "property": null},
+            {"type": "focusDefaultIframe", "object": null, "property": null},
+            {"type": "keypress", "object": "[opt] Element path", "property": ""},
+            {"type": "mouseDown", "object": "Element path", "property": null},
+            {"type": "mouseUp", "object": "Element path", "property": null},
+            {"type": "mouseOver", "object": "Element path", "property": null},
+            {"type": "mouseOverAndWait", "object": "Deprecated", "property": "Deprecated"},
+            {"type": "openUrlWithBase", "object": "/URI to call", "property": null},
+            {"type": "openUrlLogin", "object": null, "property": null},
+            {"type": "openUrl", "object": "URL to call", "property": null},
+            {"type": "removeSelection", "object": "Deprecated", "property": null},
+            {"type": "select", "object": "Element path", "property": "Option path"},
+            {"type": "selectAndWait", "object": "Deprecated", "property": "Deprecated"},
+            {"type": "store", "object": "Deprecated", "property": "Deprecated"},
+            {"type": "takeScreenshot", "object": "Deprecated", "property": "Deprecated"},
+            {"type": "type", "object": "Element path", "property": "Property Name"},
+            {"type": "wait", "object": "Time(ms) or Element", "property": null},
+            {"type": "waitForPage", "object": "Deprecated", "property": "Deprecated"},
+            {"type": "switchToWindow", "object": "Window id", "property": null},
+            {"type": "callSoap", "object": "Soap Name (library)", "property": "Property Name"},
+            {"type": "callSoapWithBase", "object": "Soap Name (library)", "property": "Property Name"},
+            {"type": "manageDialog", "object": "ok or cancel", "property": null},
+            {"type": "getPageSource", "object": null, "property": null},
+            {"type": "removeDifference", "object": "Deprecated", "property": "Deprecated"},
+            {"type": "executeSqlUpdate", "object": "Database Name", "property": "Script"},
+            {"type": "executeSqlStoredProcedure", "object": "Database Name", "property": "Stored Procedure"},
+            {"type": "skipAction", "object": null, "property": null},
+            {"type": "callSoap_BETA", "object": "Soap Name (library)", "property": "Property Name"},
+            {"type": "callSoapWithBase_BETA", "object": "Soap Name (library)", "property": "Property Name"}
+        ]};
+
+    var user = getUser();
+    user.language;
+    var placeHolders = placeHoldersList[user.language];
 
     $('div[class="row form-inline"] option:selected').each(function(i, e) {
 

@@ -112,9 +112,15 @@ $.when($.getScript("js/pages/global/global.js")).then(function () {
 
         $("#testCaseList").on("change", updatePotentialNumber);
         $("#envSettingsAuto select").on("change", updatePotentialNumber);
-
+        
     });
 });
+
+function loadRequestContext(){
+    var test = GetURLParameter("test");
+    var testcase = GetURLParameter("testcase");
+    $('#testCaseList').find('option[value="'+test+'-'+testcase+'"]').prop("selected", true);
+}
 
 function typeSelectHandler() {
     var value = $("[name='typeSelect']:checked").val();
@@ -163,10 +169,11 @@ function loadTestCaseFromFilter() {
 
                 testCaseList.append($("<option></option>")
                         .text(text)
-                        .val(data.contentTable[index].testCase)
+                        .val(data.contentTable[index].test+"-"+data.contentTable[index].testCase)
                         .data("item", data.contentTable[index]));
             }
             hideLoader("#chooseTest");
+            loadRequestContext();
         }
     });
 }
