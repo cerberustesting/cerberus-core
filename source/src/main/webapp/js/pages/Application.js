@@ -63,6 +63,17 @@ function displayPageLabel() {
     $("[name='bugtrackernewurlField']").html(doc.getDocOnline("application", "bugtrackernewurl"));
     $("[name='deploytypeField']").html(doc.getDocOnline("application", "deploytype"));
     $("[name='mavengroupidField']").html(doc.getDocOnline("application", "mavengroupid"));
+
+    $("[name='tabsEdit1']").html(doc.getDocOnline("page_application", "tabDef"));
+    $("[name='tabsEdit2']").html(doc.getDocOnline("page_application", "tabEnv"));
+
+    $("#environmentHeader").html(doc.getDocOnline("invariant", "ENVIRONMENT"));
+    $("#countryHeader").html(doc.getDocOnline("invariant", "COUNTRY"));
+    $("#ipHeader").html(doc.getDocOnline("countryenvironmentparameters", "IP"));
+    $("#urlHeader").html(doc.getDocOnline("countryenvironmentparameters", "URL"));
+    $("#urlLoginHeader").html(doc.getDocOnline("countryenvironmentparameters", "URLLOGIN"));
+    $("#domainHeader").html(doc.getDocOnline("countryenvironmentparameters", "domain"));
+
     displayInvariantList("system", "SYSTEM");
     displayInvariantList("type", "APPLITYPE");
     displayDeployTypeList("deploytype");
@@ -245,31 +256,36 @@ function editEntryClick(id, system) {
 
 function loadEnvironmentTable(selectSystem, selectApplication) {
     $('#environmentTableBody tr').remove();
+
     var jqxhr = $.getJSON("ReadCountryEnvironmentParameters", "system=" + selectSystem + "&application=" + selectApplication + "&iSortCol_0=3");
     $.when(jqxhr).then(function (result) {
+        var html_to_append = '';
         $.each(result["contentTable"], function (idx, obj) {
-            appendEnvironmentRow(obj.environment, obj.country, obj.ip, obj.domain, obj.url, obj.urlLogin);
+//            appendEnvironmentRow(obj.environment, obj.country, obj.ip, obj.domain, obj.url, obj.urlLogin);
+            html_to_append += getEnvironmentRow(obj.environment, obj.country, obj.ip, obj.domain, obj.url, obj.urlLogin);
         });
+        $('#environmentTableBody').append(html_to_append);
+
     }).fail(handleErrorAjaxAfterTimeout);
+
 }
 
-function appendEnvironmentRow(environment, country, ip, domain, url, urllogin) {
-    var doc = new Doc();
-    //for each install instructions adds a new row
-    $('#environmentTableBody').append('<tr> \n\
+function getEnvironmentRow(environment, country, ip, domain, url, urllogin) {
+    return '<tr> \n\
         <td><div class="nomarginbottom form-group form-group-sm">\n\
-            <input readonly name="environment" type="text" class="releaseClass form-control input-xs" value="' + environment + '"/><span></span></div></td>\n\\n\
+            ' + environment + '</div></td>\n\\n\
         <td><div class="nomarginbottom form-group form-group-sm">\n\
-            <input readonly name="country" type="text" class="releaseClass form-control input-xs" value="' + country + '"/><span></span></div></td>\n\\n\
+            ' + country + '</div></td>\n\\n\
         <td><div class="nomarginbottom form-group form-group-sm">\n\
-            <input readonly name="ip" type="text" class="releaseClass form-control input-xs" value="' + ip + '"/><span></span></div></td>\n\\n\
+            ' + ip + '</div></td>\n\\n\
         <td><div class="nomarginbottom form-group form-group-sm">\n\
-            <input readonly name="url" type="text" class="releaseClass form-control input-xs" value="' + url + '"/><span></span></div></td>\n\\n\
+            ' + url + '</div></td>\n\\n\
         <td><div class="nomarginbottom form-group form-group-sm">\n\
-            <input readonly name="urllogin" type="text" class="releaseClass form-control input-xs" value="' + urllogin + '"/><span></span></div></td>\n\\n\
+            ' + urllogin + '</div></td>\n\\n\
         <td><div class="nomarginbottom form-group form-group-sm">\n\
-            <input readonly name="domain" type="text" class="releaseClass form-control input-xs" value="' + domain + '"/><span></span></div></td><br>\n\\n\
-        </tr>');
+            ' + domain + '</div></td><br>\n\\n\
+        </tr>';
+
 }
 
 function aoColumnsFunc(tableId) {

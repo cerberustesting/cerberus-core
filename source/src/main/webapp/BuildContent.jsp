@@ -72,7 +72,7 @@
                 <div class="panel-heading card">
                     <label id="shortcuts" name="listField">Build Content List</label>
                 </div>
-                <form id="massActionForm" name="massActionForm"  title="MassActionBuidContent" role="form">
+                <form id="massActionForm" name="massActionForm"  title="" role="form">
                     <div class="panel-body" id="buildContentList">
                         <table id="buildrevisionparametersTable" class="table table-hover display" name="buildrevisionparametersTable"></table>
                         <div class="marginBottom20"></div>

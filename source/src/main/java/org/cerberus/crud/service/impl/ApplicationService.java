@@ -85,18 +85,18 @@ public class ApplicationService implements IApplicationService {
     }
 
     @Override
-    public Answer create(Application application) {
-        return ApplicationDAO.create(application);
+    public Answer create(Application object) {
+        return ApplicationDAO.create(object);
     }
 
     @Override
-    public Answer delete(Application application) {
-        return ApplicationDAO.delete(application);
+    public Answer delete(Application object) {
+        return ApplicationDAO.delete(object);
     }
 
     @Override
-    public Answer update(Application application) {
-        return ApplicationDAO.update(application);
+    public Answer update(Application object) {
+        return ApplicationDAO.update(object);
     }
 
     @Override

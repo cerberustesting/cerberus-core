@@ -1,6 +1,4 @@
-/*
- * Cerberus  Copyright (C) 2013  vertigo17
- * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
+/* DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
  *
  * This file is part of Cerberus.
  *
@@ -17,7 +15,7 @@
  * You should have received a copy of the GNU General Public License
  * along with Cerberus.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.cerberus.servlet.crud.buildrevisionchange;
+package org.cerberus.servlet.crud.batch;
 
 import java.io.IOException;
 import java.util.logging.Level;
@@ -27,29 +25,31 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import org.cerberus.crud.entity.BuildRevisionInvariant;
+import org.cerberus.crud.entity.BatchInvariant;
 import org.cerberus.crud.entity.MessageEvent;
+import org.cerberus.crud.factory.IFactoryBatchInvariant;
 import org.cerberus.enums.MessageEventEnum;
 import org.cerberus.exception.CerberusException;
-import org.cerberus.crud.service.IBuildRevisionInvariantService;
+import org.cerberus.crud.service.IBatchInvariantService;
 import org.cerberus.crud.service.ILogEventService;
 import org.cerberus.crud.service.impl.LogEventService;
 import org.cerberus.util.StringUtil;
 import org.cerberus.util.answer.Answer;
-import org.cerberus.util.answer.AnswerItem;
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.owasp.html.PolicyFactory;
-import org.owasp.html.Sanitizers;
 import org.springframework.context.ApplicationContext;
 import org.springframework.web.context.support.WebApplicationContextUtils;
+import org.owasp.html.PolicyFactory;
+import org.owasp.html.Sanitizers;
 
 /**
  *
  * @author bcivel
  */
-@WebServlet(name = "UpdateBuildRevisionInvariant1", urlPatterns = {"/UpdateBuildRevisionInvariant1"})
-public class UpdateBuildRevisionInvariant extends HttpServlet {
+@WebServlet(name = "CreateBatchInvariant", urlPatterns = {"/CreateBatchInvariant"})
+public class CreateBatchInvariant extends HttpServlet {
+
+    private final String OBJECT_NAME = "BatchInvariant";
 
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
@@ -59,6 +59,8 @@ public class UpdateBuildRevisionInvariant extends HttpServlet {
      * @param response servlet response
      * @throws ServletException if a servlet-specific error occurs
      * @throws IOException if an I/O error occurs
+     * @throws org.cerberus.exception.CerberusException
+     * @throws org.json.JSONException
      */
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException, CerberusException, JSONException {
@@ -74,85 +76,36 @@ public class UpdateBuildRevisionInvariant extends HttpServlet {
         /**
          * Parsing and securing all required parameters.
          */
+        String batch = policy.sanitize(request.getParameter("batch"));
         String system = policy.sanitize(request.getParameter("system"));
-        String versionName = policy.sanitize(request.getParameter("versionname"));
-        Integer seq = -1;
-        boolean seq_error = false;
-        try {
-            if (request.getParameter("seq") != null && !request.getParameter("seq").equals("")) {
-                seq = Integer.valueOf(policy.sanitize(request.getParameter("seq")));
-            }
-        } catch (Exception ex) {
-            seq_error = true;
-        }
-        Integer level = -1;
-        boolean level_error = false;
-        try {
-            if (request.getParameter("level") != null && !request.getParameter("level").equals("")) {
-                level = Integer.valueOf(policy.sanitize(request.getParameter("level")));
-            }
-        } catch (Exception ex) {
-            level_error = true;
-        }
+        String description = policy.sanitize(request.getParameter("description"));
 
         /**
          * Checking all constrains before calling the services.
          */
-        if (StringUtil.isNullOrEmpty(system)) {
+        if (StringUtil.isNullOrEmpty(batch)) {
             msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_EXPECTED);
-            msg.setDescription(msg.getDescription().replace("%ITEM%", "BuildRevisionInvariant")
-                    .replace("%OPERATION%", "Update")
-                    .replace("%REASON%", "System name is missing!"));
-            ans.setResultMessage(msg);
-        } else if (level_error) {
-            msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_EXPECTED);
-            msg.setDescription(msg.getDescription().replace("%ITEM%", "BuildRevisionInvariant")
-                    .replace("%OPERATION%", "Update")
-                    .replace("%REASON%", "Could not manage to convert level to an integer value!"));
-            ans.setResultMessage(msg);
-        } else if (seq_error) {
-            msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_EXPECTED);
-            msg.setDescription(msg.getDescription().replace("%ITEM%", "BuildRevisionInvariant")
-                    .replace("%OPERATION%", "Update")
-                    .replace("%REASON%", "Could not manage to convert sequence to an integer value!"));
+            msg.setDescription(msg.getDescription().replace("%ITEM%", "Batch")
+                    .replace("%OPERATION%", "Create")
+                    .replace("%REASON%", "Batch name is missing!"));
             ans.setResultMessage(msg);
         } else {
             /**
              * All data seems cleans so we can call the services.
              */
             ApplicationContext appContext = WebApplicationContextUtils.getWebApplicationContext(this.getServletContext());
-            IBuildRevisionInvariantService buildRevisionInvariantService = appContext.getBean(IBuildRevisionInvariantService.class);
+            IBatchInvariantService batchInvariantService = appContext.getBean(IBatchInvariantService.class);
+            IFactoryBatchInvariant factoryBatchInvariant = appContext.getBean(IFactoryBatchInvariant.class);
 
-            AnswerItem resp = buildRevisionInvariantService.readByKey(system, level, seq);
-            if (!(resp.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode()))) {
+            BatchInvariant batchData = factoryBatchInvariant.create(system, batch, description);
+            ans = batchInvariantService.create(batchData);
+
+            if (ans.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
                 /**
-                 * Object could not be found. We stop here and report the error.
+                 * Object created. Adding Log entry.
                  */
-                msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_EXPECTED);
-                msg.setDescription(msg.getDescription().replace("%ITEM%", "BuildRevisionInvariant")
-                        .replace("%OPERATION%", "Update")
-                        .replace("%REASON%", "BuildRevisionInvariant does not exist."));
-                ans.setResultMessage(msg);
-
-            } else {
-                /**
-                 * The service was able to perform the query and confirm the
-                 * object exist, then we can update it.
-                 */
-                BuildRevisionInvariant buildRevisionInvariantData = (BuildRevisionInvariant) resp.getItem();
-                buildRevisionInvariantData.setSystem(system);
-                buildRevisionInvariantData.setLevel(level);
-                buildRevisionInvariantData.setSeq(seq);
-                buildRevisionInvariantData.setVersionName(versionName);
-                ans = buildRevisionInvariantService.update(buildRevisionInvariantData);
-
-                if (ans.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
-                    /**
-                     * Update was succesfull. Adding Log entry.
-                     */
-                    ILogEventService logEventService = appContext.getBean(LogEventService.class);
-                    logEventService.createPrivateCalls("/UpdateBuildRevisionInvariant", "UPDATE", "Updated BuildRevisionInvariant : ['" + system + "'|'" + level + "'|'" + seq + "']", request);
-                }
+                ILogEventService logEventService = appContext.getBean(LogEventService.class);
+                logEventService.createPrivateCalls("/CreateBatchInvariant", "CREATE", "Create BatchInvariant : ['" + batch + "']", request);
             }
         }
 
@@ -164,6 +117,7 @@ public class UpdateBuildRevisionInvariant extends HttpServlet {
 
         response.getWriter().print(jsonResponse);
         response.getWriter().flush();
+
     }
 
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
@@ -180,12 +134,10 @@ public class UpdateBuildRevisionInvariant extends HttpServlet {
             throws ServletException, IOException {
         try {
             processRequest(request, response);
-
         } catch (CerberusException ex) {
-            Logger.getLogger(UpdateBuildRevisionInvariant.class
-                    .getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(CreateBatchInvariant.class.getName()).log(Level.SEVERE, null, ex);
         } catch (JSONException ex) {
-            Logger.getLogger(UpdateBuildRevisionInvariant.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(CreateBatchInvariant.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
 
@@ -202,12 +154,10 @@ public class UpdateBuildRevisionInvariant extends HttpServlet {
             throws ServletException, IOException {
         try {
             processRequest(request, response);
-
         } catch (CerberusException ex) {
-            Logger.getLogger(UpdateBuildRevisionInvariant.class
-                    .getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(CreateBatchInvariant.class.getName()).log(Level.SEVERE, null, ex);
         } catch (JSONException ex) {
-            Logger.getLogger(UpdateBuildRevisionInvariant.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(CreateBatchInvariant.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
 

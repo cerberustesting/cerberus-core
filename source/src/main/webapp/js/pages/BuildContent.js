@@ -94,7 +94,8 @@ function displayPageLabel() {
     $("[name='btnLoadPending']").html(doc.getDocLabel("page_buildcontent", "buttonLoadPending"));
     $("[name='btnLoadLatest']").html(doc.getDocLabel("page_buildcontent", "buttonLoadLatest"));
     $("[name='btnLoadAll']").html(doc.getDocLabel("page_buildcontent", "buttonLoadAll"));
-    $("[name='massActionBrpField']").html(doc.getDocLabel("page_buildcontent", "message_massAction"));
+    $("[name='btnLoadAll']").html(doc.getDocLabel("page_buildcontent", "buttonLoadAll"));
+    $("[name='btnViewInstall']").html(doc.getDocLabel("page_buildcontent", "buttonInstallInstruction"));
 
     $("[name='idField']").html(doc.getDocOnline("buildrevisionparameters", "id"));
     $("[name='buildField']").html(doc.getDocOnline("buildrevisionparameters", "Build"));
@@ -112,7 +113,22 @@ function displayPageLabel() {
     $("[name='mavenGroupIdField']").html(doc.getDocOnline("buildrevisionparameters", "mavenGroupId"));
     $("[name='mavenArtifactIdField']").html(doc.getDocOnline("buildrevisionparameters", "mavenArtifactId"));
     $("[name='mavenVersionField']").html(doc.getDocOnline("buildrevisionparameters", "mavenVersion"));
-    $("[name='repositoryUrl']").html(doc.getDocOnline("buildrevisionparameters", "repositoryUrl"));
+    $("[name='repositoryUrlField']").html(doc.getDocOnline("buildrevisionparameters", "repositoryUrl"));
+    $("[name='massActionBrpField']").html(doc.getDocOnline("page_buildcontent", "massAction"));
+    
+    $("[name='buildHeader']").html(doc.getDocOnline("buildrevisionparameters", "Build"));
+    $("[name='revisionHeader']").html(doc.getDocOnline("buildrevisionparameters", "Revision"));
+    $("[name='applicationHeader']").html(doc.getDocOnline("buildrevisionparameters", "application"));
+    $("[name='releaseHeader']").html(doc.getDocOnline("buildrevisionparameters", "Release"));
+    $("[name='linkHeader']").html(doc.getDocOnline("buildrevisionparameters", "Link"));
+    $("[name='versionHeader']").html(doc.getDocOnline("buildrevisionparameters", "mavenVersion"));
+    
+    $("[name='buildFieldFrom']").html(doc.getDocOnline("page_buildcontent", "buildFrom"));
+    $("[name='buildFieldTo']").html(doc.getDocOnline("page_buildcontent", "buildTo"));
+    
+    $("[name='listInstallInstructionsModalLabel']").html(doc.getDocOnline("page_buildcontent", "InstallInstructions"));
+    
+    
     displayFooter(doc);
 }
 
@@ -133,7 +149,7 @@ function loadBCTable(selectBuild, selectRevision, selectApplication) {
     if (!isEmptyorALL(selectBuild))
         CallParam += 'build=' + encodeURIComponent(selectBuild);
     if (!isEmptyorALL(selectRevision))
-        CallParam += '&revision=' + encodeURIComponent(selectRevision)
+        CallParam += '&revision=' + encodeURIComponent(selectRevision);
     if (!isEmptyorALL(selectApplication))
         CallParam += '&application=' + encodeURIComponent(selectApplication);
     InsertURLInHistory('BuildContent.jsp' + CallParam);

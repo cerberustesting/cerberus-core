@@ -19,23 +19,86 @@
  */
 package org.cerberus.crud.service.impl;
 
+import java.util.List;
 import org.cerberus.crud.dao.IBatchInvariantDAO;
 import org.cerberus.crud.entity.BatchInvariant;
+import org.cerberus.crud.entity.MessageGeneral;
 import org.cerberus.exception.CerberusException;
 import org.cerberus.crud.service.IBatchInvariantService;
+import org.cerberus.enums.MessageEventEnum;
+import org.cerberus.enums.MessageGeneralEnum;
+import org.cerberus.util.answer.Answer;
+import org.cerberus.util.answer.AnswerItem;
+import org.cerberus.util.answer.AnswerList;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
 
 @Service
 public class BatchInvariantService implements IBatchInvariantService {
 
     @Autowired
     private IBatchInvariantDAO batchInvariantDAO;
-    
+
     @Override
-    public BatchInvariant findBatchInvariantByKey(String batch) throws CerberusException {
-        return batchInvariantDAO.findBatchInvariantByKey(batch);
+    public AnswerItem readByKey(String batch) {
+        return batchInvariantDAO.readByKey(batch);
     }
-    
+
+    @Override
+    public AnswerList readBySystemByCriteria(String system, int startPosition, int length, String columnName, String sort, String searchParameter, String string) {
+        return batchInvariantDAO.readBySystemByCriteria(system, startPosition, length, columnName, sort, searchParameter, string);
+    }
+
+    @Override
+    public boolean exist(String batch) {
+        try {
+            convert(readByKey(batch));
+            return true;
+        } catch (CerberusException e) {
+            return false;
+        }
+    }
+
+    @Override
+    public Answer create(BatchInvariant object) {
+        return batchInvariantDAO.create(object);
+    }
+
+    @Override
+    public Answer delete(BatchInvariant object) {
+        return batchInvariantDAO.delete(object);
+    }
+
+    @Override
+    public Answer update(BatchInvariant object) {
+        return batchInvariantDAO.update(object);
+    }
+
+    @Override
+    public BatchInvariant convert(AnswerItem answerItem) throws CerberusException {
+        if (answerItem.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
+            //if the service returns an OK message then we can get the item
+            return (BatchInvariant) answerItem.getItem();
+        }
+        throw new CerberusException(new MessageGeneral(MessageGeneralEnum.DATA_OPERATION_ERROR));
+    }
+
+    @Override
+    public List<BatchInvariant> convert(AnswerList answerList) throws CerberusException {
+        if (answerList.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
+            //if the service returns an OK message then we can get the item
+            return (List<BatchInvariant>) answerList.getDataList();
+        }
+        throw new CerberusException(new MessageGeneral(MessageGeneralEnum.DATA_OPERATION_ERROR));
+    }
+
+    @Override
+    public void convert(Answer answer) throws CerberusException {
+        if (answer.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
+            //if the service returns an OK message then we can get the item
+            return;
+        }
+        throw new CerberusException(new MessageGeneral(MessageGeneralEnum.DATA_OPERATION_ERROR));
+    }
+
 }

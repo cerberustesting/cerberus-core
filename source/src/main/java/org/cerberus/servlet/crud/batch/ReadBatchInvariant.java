@@ -17,7 +17,7 @@
  * You should have received a copy of the GNU General Public License
  * along with Cerberus.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.cerberus.servlet.crud.countryenvironment;
+package org.cerberus.servlet.crud.batch;
 
 import com.google.gson.Gson;
 import java.io.IOException;
@@ -29,9 +29,9 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import org.cerberus.crud.entity.BuildRevisionBatch;
+import org.cerberus.crud.entity.BatchInvariant;
 import org.cerberus.crud.entity.MessageEvent;
-import org.cerberus.crud.service.IBuildRevisionBatchService;
+import org.cerberus.crud.service.IBatchInvariantService;
 import org.cerberus.enums.MessageEventEnum;
 import org.cerberus.exception.CerberusException;
 import org.cerberus.util.ParameterParserUtil;
@@ -49,11 +49,11 @@ import org.springframework.web.context.support.WebApplicationContextUtils;
  *
  * @author cerberus
  */
-@WebServlet(name = "ReadBuildRevisionBatch", urlPatterns = {"/ReadBuildRevisionBatch"})
-public class ReadBuildRevisionBatch extends HttpServlet {
+@WebServlet(name = "ReadBatchInvariant", urlPatterns = {"/ReadBatchInvariant"})
+public class ReadBatchInvariant extends HttpServlet {
 
-    private IBuildRevisionBatchService brbService;
-    private final String OBJECT_NAME = "ReadBuildRevisionBatch";
+    private IBatchInvariantService biService;
+    private final String OBJECT_NAME = "BatchInvariant";
 
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
@@ -81,8 +81,6 @@ public class ReadBuildRevisionBatch extends HttpServlet {
          * Parsing and securing all required parameters.
          */
         String system = policy.sanitize(request.getParameter("system"));
-        String country = policy.sanitize(request.getParameter("country"));
-        String environment = policy.sanitize(request.getParameter("environment"));
 
         // Global boolean on the servlet that define if the user has permition to edit and delete object.
         boolean userHasPermissions = request.isUserInRole("IntegratorRO");
@@ -92,8 +90,11 @@ public class ReadBuildRevisionBatch extends HttpServlet {
 
         try {
             JSONObject jsonResponse = new JSONObject();
-            if (1 == 1) {
-                answer = findBuildRevisionBatchList(request.getParameter("system"), request.getParameter("country"), request.getParameter("environment"), appContext, userHasPermissions, request);
+            if (request.getParameter("batch") != null) {
+                answer = findBatchInvariantByKey(request.getParameter("batch"), appContext, userHasPermissions);
+                jsonResponse = (JSONObject) answer.getItem();
+            } else {
+                answer = findBatchInvariantList(request.getParameter("system"), appContext, userHasPermissions, request);
                 jsonResponse = (JSONObject) answer.getItem();
             }
             jsonResponse.put("messageType", answer.getResultMessage().getMessage().getCodeString());
@@ -103,7 +104,7 @@ public class ReadBuildRevisionBatch extends HttpServlet {
             response.getWriter().print(jsonResponse.toString());
 
         } catch (JSONException e) {
-            org.apache.log4j.Logger.getLogger(ReadBuildRevisionBatch.class.getName()).log(org.apache.log4j.Level.ERROR, null, e);
+            org.apache.log4j.Logger.getLogger(ReadBatchInvariant.class.getName()).log(org.apache.log4j.Level.ERROR, null, e);
             //returns a default error message with the json format that is able to be parsed by the client-side
             response.setContentType("application/json");
             msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
@@ -131,7 +132,7 @@ public class ReadBuildRevisionBatch extends HttpServlet {
         try {
             processRequest(request, response);
         } catch (CerberusException ex) {
-            Logger.getLogger(ReadBuildRevisionBatch.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(ReadBatchInvariant.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
 
@@ -149,7 +150,7 @@ public class ReadBuildRevisionBatch extends HttpServlet {
         try {
             processRequest(request, response);
         } catch (CerberusException ex) {
-            Logger.getLogger(ReadBuildRevisionBatch.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(ReadBatchInvariant.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
 
@@ -163,11 +164,11 @@ public class ReadBuildRevisionBatch extends HttpServlet {
         return "Short description";
     }// </editor-fold>
 
-    private AnswerItem findBuildRevisionBatchList(String system, String country, String environment, ApplicationContext appContext, boolean userHasPermissions, HttpServletRequest request) throws JSONException {
+    private AnswerItem findBatchInvariantList(String system, ApplicationContext appContext, boolean userHasPermissions, HttpServletRequest request) throws JSONException {
 
         AnswerItem item = new AnswerItem();
         JSONObject object = new JSONObject();
-        brbService = appContext.getBean(IBuildRevisionBatchService.class);
+        biService = appContext.getBean(IBatchInvariantService.class);
 
         int startPosition = Integer.valueOf(ParameterParserUtil.parseStringParam(request.getParameter("iDisplayStart"), "0"));
         int length = Integer.valueOf(ParameterParserUtil.parseStringParam(request.getParameter("iDisplayLength"), "0"));
@@ -179,11 +180,11 @@ public class ReadBuildRevisionBatch extends HttpServlet {
         String columnToSort[] = sColumns.split(",");
         String columnName = columnToSort[columnToSortParameter];
         String sort = ParameterParserUtil.parseStringParam(request.getParameter("sSortDir_0"), "asc");
-        AnswerList resp = brbService.readByVariousByCriteria(system, country, environment, startPosition, length, columnName, sort, searchParameter, "");
+        AnswerList resp = biService.readBySystemByCriteria(system, startPosition, length, columnName, sort, searchParameter, "");
 
         JSONArray jsonArray = new JSONArray();
         if (resp.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {//the service was able to perform the query, then we should get all values
-            for (BuildRevisionBatch brb : (List<BuildRevisionBatch>) resp.getDataList()) {
+            for (BatchInvariant brb : (List<BatchInvariant>) resp.getDataList()) {
                 jsonArray.put(convertToJSONObject(brb));
             }
         }
@@ -199,8 +200,32 @@ public class ReadBuildRevisionBatch extends HttpServlet {
 
     }
 
+        private AnswerItem findBatchInvariantByKey(String batch, ApplicationContext appContext, boolean userHasPermissions) throws JSONException, CerberusException {
+        AnswerItem item = new AnswerItem();
+        JSONObject object = new JSONObject();
 
-    private JSONObject convertToJSONObject(BuildRevisionBatch brb) throws JSONException {
+        IBatchInvariantService libService = appContext.getBean(IBatchInvariantService.class);
+
+        //finds the project     
+        AnswerItem answer = null;
+        answer = libService.readByKey(batch);
+
+        if (answer.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
+            //if the service returns an OK message then we can get the item and convert it to JSONformat
+            BatchInvariant bri = (BatchInvariant) answer.getItem();
+            JSONObject response = convertToJSONObject(bri);
+            object.put("contentTable", response);
+        }
+
+        object.put("hasPermissions", userHasPermissions);
+        item.setItem(object);
+        item.setResultMessage(answer.getResultMessage());
+
+        return item;
+    }
+
+
+    private JSONObject convertToJSONObject(BatchInvariant brb) throws JSONException {
         Gson gson = new Gson();
         JSONObject result = new JSONObject(gson.toJson(brb));
         return result;

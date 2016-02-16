@@ -46,6 +46,7 @@ function initPage() {
     displayInvariantList("system", "SYSTEM");
     displayInvariantList("type", "ENVTYPE");
     displayInvariantList("maintenanceAct", "MNTACTIVE", "N");
+    displayBatchInvariantList('batch', getUser().defaultSystem);
 
     displayBuildList('#newBuild', getUser().defaultSystem, "1", "", "", "");
     displayBuildList('#newRevision', getUser().defaultSystem, "2", "", "", "");
@@ -79,6 +80,7 @@ function displayPageLabel() {
     $("[name='createEnvField']").html(doc.getDocLabel("page_environment", "button_create"));
     $("[name='confirmationField']").html(doc.getDocLabel("page_environment", "button_delete"));
     $("[name='editEnvField']").html(doc.getDocLabel("page_environment", "button_edit"));
+    $("[name='listField']").html(doc.getDocOnline("page_environment", "list"));
     $("[name='buttonAdd']").html(doc.getDocLabel("page_global", "buttonAdd"));
     $("[name='buttonClose']").html(doc.getDocLabel("page_global", "buttonClose"));
     $("[name='buttonConfirm']").html(doc.getDocLabel("page_global", "buttonConfirm"));
@@ -86,24 +88,28 @@ function displayPageLabel() {
     $("[name='filtersField']").html(doc.getDocOnline("page_global", "filters"));
     $("[name='btnLoad']").html(doc.getDocLabel("page_global", "buttonLoad"));
 
+    $("[name='systemField']").html(doc.getDocOnline("invariant", "SYSTEM"));
     $("[name='countryField']").html(doc.getDocOnline("invariant", "COUNTRY"));
     $("[name='environmentField']").html(doc.getDocOnline("invariant", "ENVIRONMENT"));
     $("[name='buildField']").html(doc.getDocOnline("buildrevisioninvariant", "versionname01"));
     $("[name='revisionField']").html(doc.getDocOnline("buildrevisioninvariant", "versionname02"));
 
-    $("[name='datecreField']").html(doc.getDocOnline("buildrevisionparameters", "datecre"));
-    $("[name='applicationField']").html(doc.getDocOnline("buildrevisionparameters", "application"));
-    $("[name='releaseField']").html(doc.getDocOnline("buildrevisionparameters", "Release"));
-    $("[name='ownerField']").html(doc.getDocOnline("buildrevisionparameters", "ReleaseOwner"));
-    $("[name='projectField']").html(doc.getDocOnline("buildrevisionparameters", "project"));
-    $("[name='ticketIdFixedField']").html(doc.getDocOnline("buildrevisionparameters", "TicketIDFixed"));
-    $("[name='bugIdFixedField']").html(doc.getDocOnline("buildrevisionparameters", "BugIDFixed"));
-    $("[name='linkField']").html(doc.getDocOnline("buildrevisionparameters", "Link"));
-    $("[name='subjectField']").html(doc.getDocOnline("buildrevisionparameters", "subject"));
-    $("[name='jenkinsBuildIdField']").html(doc.getDocOnline("buildrevisionparameters", "jenkinsBuildId"));
-    $("[name='mavenGroupIdField']").html(doc.getDocOnline("buildrevisionparameters", "mavenGroupId"));
-    $("[name='mavenArtifactIdField']").html(doc.getDocOnline("buildrevisionparameters", "mavenArtifactId"));
-    $("[name='mavenVersionField']").html(doc.getDocOnline("buildrevisionparameters", "mavenVersion"));
+    $("[name='descriptionField']").html(doc.getDocOnline("countryenvparam", "Description"));
+    $("[name='typeField']").html(doc.getDocOnline("countryenvparam", "Type"));
+    $("[name='maintenanceActField']").html(doc.getDocOnline("countryenvparam", "maintenanceact"));
+    $("[name='maintenanceStrField']").html(doc.getDocOnline("countryenvparam", "maintenancestr"));
+    $("[name='maintenanceEndField']").html(doc.getDocOnline("countryenvparam", "maintenanceend"));
+    
+    $("[name='activeField']").html(doc.getDocOnline("countryenvparam", "active"));
+    $("[name='chainField']").html(doc.getDocOnline("countryenvparam", "chain"));
+    $("[name='distribListField']").html(doc.getDocOnline("countryenvparam", "DistribList"));
+    $("[name='eMailBodyChainField']").html(doc.getDocOnline("countryenvparam", "EMailBodyChain"));
+    $("[name='eMailBodyRevisionField']").html(doc.getDocOnline("countryenvparam", "EMailBodyRevision"));
+    $("[name='eMailBodyDisableEnvironmentField']").html(doc.getDocOnline("countryenvparam", "EMailBodyDisableEnvironment"));
+    
+    $("[name='changeListField']").html(doc.getDocOnline("page_environment", "listChange"));
+    $("[name='eventListField']").html(doc.getDocOnline("page_environment", "listEvent"));
+    
     displayFooter(doc);
 }
 
@@ -934,19 +940,19 @@ function aoColumnsFuncChange(tableId) {
         {"data": "description",
             "sName": "description",
             "sWidth": "140px",
-            "title": doc.getDocOnline("countryenvparam_log", "description")},
+            "title": doc.getDocOnline("countryenvparam_log", "Description")},
         {"data": "build",
             "sName": "build",
             "sWidth": "70px",
-            "title": doc.getDocOnline("countryenvparam_log", "build")},
+            "title": doc.getDocOnline("buildrevisioninvariant", "versionname01")},
         {"data": "revision",
             "sName": "revision",
             "sWidth": "70px",
-            "title": doc.getDocOnline("countryenvparam_log", "revision")},
+            "title": doc.getDocOnline("buildrevisioninvariant", "versionname02")},
         {"data": "creator",
             "sName": "creator",
             "sWidth": "80px",
-            "title": doc.getDocOnline("countryenvparam_log", "creator")}
+            "title": doc.getDocOnline("countryenvparam_log", "Creator")}
     ];
     return aoColumns;
 }

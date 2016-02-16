@@ -71,24 +71,34 @@ function ChangeSystem() {
 }
 
 function displayMenuItem(doc) {
+    // Translate Normal menu entries.
     var menuItems = document.getElementsByName('menu');
-
     $(menuItems).each(function () {
         var id = $(this).attr('id');
-            if ($(this).attr('class') === "dropdown-toggle") {
-                $(this).html(doc.getDocLabel("page_header", id) + " <span class=\"caret\"></span>");
-            } else {
-                $(this).html(doc.getDocLabel("page_header", id));
+        if ($(this).attr('class') === "dropdown-toggle") {
+            $(this).html(doc.getDocLabel("page_header", id) + " <span class=\"caret\"></span>");
+        } else {
+            $(this).html(doc.getDocLabel("page_header", id));
+        }
+    });
+    // Translate Beta menu entries.
+    var menuItems = document.getElementsByName('menuBeta');
+    $(menuItems).each(function () {
+        var id = $(this).attr('id');
+        if ($(this).attr('class') === "dropdown-toggle") {
+            $(this).html(doc.getDocLabel("page_header", id) + " <span class=\"caret\"></span>");
+        } else {
+            $(this).html(doc.getDocLabel("page_header", id) + "<input type=\"button\" class=\"btn btn-danger btn-small active\" value=\"Beta\" style=\"padding: 0px; margin-left: 5px\">");
         }
     });
     /**
      * Display Menu accordingly to the user right
      */
     var user = getUser();
-    for (var group in user.group){
-        $('#navlist li[class="dropdown '+user.group[group]+'"]').removeAttr('style');
+    for (var group in user.group) {
+        $('#navlist li[class="dropdown ' + user.group[group] + '"]').removeAttr('style');
     }
-    
+
 }
 
 function readSystem() {

@@ -182,7 +182,7 @@ public class EmailGeneration implements IEmailGeneration {
             myCountryEnvParam = countryEnvParamService.findCountryEnvParamByKey(system, country, env);
 
             BatchInvariant myBatchInvariant;
-            myBatchInvariant = batchInvariantService.findBatchInvariantByKey(chain);
+            myBatchInvariant = batchInvariantService.convert(batchInvariantService.readByKey(chain));
             String lastchain = myBatchInvariant.getBatch() + " (" + myBatchInvariant.getDescription() + ")";
 
             String to = parameterService.findParameterByKey("integration_notification_newchain_to", system).getValue();

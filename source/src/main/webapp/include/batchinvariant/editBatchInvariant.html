@@ -1,0 +1,52 @@
+<!--Edit deploy type page-->
+<div data-backdrop="static" class="modal fade center" id="editEntryModal" tabindex="-1" role="dialog" aria-labelledby="editEntryModalLabel" aria-hidden="true">
+    <div class="modal-dialog nomargintop nomarginbottom">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title" id="editEntryModalLabel" name="editEntryField">Edit Batch</h4>
+            </div>
+            <div class="modal-body">
+
+                <!--edit form-->
+                <form id="editEntryModalForm" name="editEntryModalForm"  title="Edit Batch" role="form">
+                    <div class="container-fluid center">
+                        <!-- messages area-->
+                        <div id="DialogMessagesArea">
+                            <div class="alert" id="DialogMessagesAlert"  style="display:none;">
+                                <strong><span class="alert-description" id="DialogAlertDescription"></span></strong>
+                                <button type="button" class="close" data-hide="alert"  aria-hidden="true">
+                                    <span class="glyphicon glyphicon-remove alert-right alert-close pull-right"></span>
+                                </button>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="form-group col-xs-12">
+                                <label for="batch" name="batchField">Batch</label>
+                                <input type="text" class="form-control" name="batch" id="batch" aria-describedby="basic-addon1" readonly>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="form-group col-xs-12">
+                                <label for="system" name="systemField">System</label>
+                                <select class="form-control"  id="system" name="system">
+                                </select>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="form-group col-xs-12">
+                                <label for="Description" name="descriptionField">Description</label>
+                                <textarea id="Description" name="description"   
+                                          class="form-control" maxlength="200"></textarea> 
+                            </div>
+                        </div>    
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal" name="buttonClose">Close</button>
+                <button type="button" id="editEntryButton" class="btn btn-primary" name="buttonAdd">Save</button>
+            </div>
+        </div>
+    </div>
+</div>
