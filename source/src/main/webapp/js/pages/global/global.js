@@ -136,20 +136,16 @@ function displayApplicationList(selectName, system, defaultValue) {
 }
 
 /**
- * Method that display a combo box in all the selectName tags with the value retrieved from the Application list
+ * Method that display a combo box in all the selectName tags with the value retrieved from the Project list
  * @param {String} selectName value name of the select tag in the html
- * @param {String} system [optional] value name of the system in order to filter the application list
  * @param {String} defaultValue to be selected
  * @returns {void}
  */
-function displayApplicationList(selectName, system, defaultValue) {
-    var myData = "";
-    if (system !== "") {
-        myData = "system=" + system;
-    }
-    $.when($.getJSON("ReadApplication", myData)).then(function (data) {
+function displayProjectList(selectName, defaultValue) {
+    $.when($.getJSON("ReadProject", "")).then(function (data) {
+        $("[name='" + selectName + "']").append($('<option></option>').text("NONE").val(""));
         for (var option in data.contentTable) {
-            $("[name='" + selectName + "']").append($('<option></option>').text(data.contentTable[option].application + " - " + data.contentTable[option].description).val(data.contentTable[option].application));
+            $("[name='" + selectName + "']").append($('<option></option>').text(data.contentTable[option].idProject + " - " + data.contentTable[option].description).val(data.contentTable[option].idProject));
         }
 
         if (defaultValue !== undefined) {
