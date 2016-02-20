@@ -19,8 +19,10 @@ package org.cerberus.crud.dao;
 
 import java.util.List;
 
-import org.cerberus.crud.entity.CountryEnvironmentApplication;
+import org.cerberus.crud.entity.CountryEnvironmentParameters;
 import org.cerberus.exception.CerberusException;
+import org.cerberus.util.answer.Answer;
+import org.cerberus.util.answer.AnswerList;
 
 /**
  * {Insert class description here}
@@ -31,47 +33,86 @@ import org.cerberus.exception.CerberusException;
  */
 public interface ICountryEnvironmentParametersDAO {
 
-    CountryEnvironmentApplication findCountryEnvironmentParameterByKey(String system, String country, String environment, String application) throws CerberusException;
+    CountryEnvironmentParameters findCountryEnvironmentParameterByKey(String system, String country, String environment, String application) throws CerberusException;
 
     List<String[]> getEnvironmentAvailable(String country, String application);
-    
-    List<CountryEnvironmentApplication> findCountryEnvironmentApplicationByCriteria(CountryEnvironmentApplication countryEnvironmentParameter) throws CerberusException;
+
+    List<CountryEnvironmentParameters> findCountryEnvironmentParametersByCriteria(CountryEnvironmentParameters countryEnvironmentParameter) throws CerberusException;
 
     List<String> getDistinctEnvironmentNames() throws CerberusException;
-    
+
     /**
-     * Find all countryEnvironmentApplication by System
+     * Find all CountryEnvironmentParameters by System
+     *
      * @param system
      * @return
-     * @throws CerberusException 
+     * @throws CerberusException
      */
-    List<CountryEnvironmentApplication> findAll(String system) throws CerberusException;
-    
+    List<CountryEnvironmentParameters> findAll(String system) throws CerberusException;
+
     /**
-     * Update countryEnvironmentApplication
+     * Update CountryEnvironmentParameters
+     *
      * @param cea
-     * @throws CerberusException 
+     * @throws CerberusException
      */
-    void update(CountryEnvironmentApplication cea) throws CerberusException;
-    
+    void update_deprecated(CountryEnvironmentParameters cea) throws CerberusException;
+
     /**
-     * Delete countryEnvironmentApplication
+     * Delete CountryEnvironmentParameters
+     *
      * @param cea
-     * @throws CerberusException 
+     * @throws CerberusException
      */
-    void delete(CountryEnvironmentApplication cea) throws CerberusException;
-    
+    void delete_deprecated(CountryEnvironmentParameters cea) throws CerberusException;
+
     /**
-     * Create countryEnvironmentApplication
+     * Create CountryEnvironmentParameters
+     *
      * @param cea
-     * @throws CerberusException 
+     * @throws CerberusException
      */
-    void create(CountryEnvironmentApplication cea) throws CerberusException;
+    void create_deprecated(CountryEnvironmentParameters cea) throws CerberusException;
 
     public Integer count(String searchTerm, String inds);
 
-    public List<CountryEnvironmentApplication> findListByCriteria(String system, String country, String env, int start, int amount, String column, String dir, String searchTerm, String individualSearch);
+    public List<CountryEnvironmentParameters> findListByCriteria(String system, String country, String env, int start, int amount, String column, String dir, String searchTerm, String individualSearch);
 
-    public List<CountryEnvironmentApplication> findListByCriteria(String system, String country, String environment);
+    public List<CountryEnvironmentParameters> findListByCriteria(String system, String country, String environment);
 
+    /**
+     *
+     * @param object
+     * @return
+     */
+    Answer create(CountryEnvironmentParameters object);
+
+    /**
+     *
+     * @param object
+     * @return
+     */
+    Answer delete(CountryEnvironmentParameters object);
+
+    /**
+     *
+     * @param object
+     * @return
+     */
+    Answer update(CountryEnvironmentParameters object);
+
+    /**
+     *
+     * @param system
+     * @param country
+     * @param environment
+     * @param start
+     * @param amount
+     * @param column
+     * @param dir
+     * @param searchTerm
+     * @param individualSearch
+     * @return
+     */
+    public AnswerList readByVariousByCriteria(String system, String country, String environment, String application, int start, int amount, String column, String dir, String searchTerm, String individualSearch);
 }

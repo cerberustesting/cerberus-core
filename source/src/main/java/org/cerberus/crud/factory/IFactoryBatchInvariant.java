@@ -26,5 +26,5 @@ import org.cerberus.crud.entity.BatchInvariant;
  */
 public interface IFactoryBatchInvariant {
 
-    BatchInvariant create(String batch, String incIni, String unit, String description);
+    BatchInvariant create(String system, String batch, String description);
 }

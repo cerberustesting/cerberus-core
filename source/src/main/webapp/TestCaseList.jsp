@@ -32,10 +32,10 @@
                             <label id="filters">Filters</label>
                         </div>
                         <div class="panel-body">
-                            <label for="selectTest">Test :</label>
+                            <label for="selectTest" name="testField">Test :</label>
                             <div class="form-inline">
                                 <select class="form-control" id="selectTest" style="width: 90%"></select>
-                                <button type="button" class="btn btn-default" id="btnLoad" onclick="loadTable()">Load</button>
+                                <button type="button" class="btn btn-default" name="btnLoad" id="btnLoad" onclick="loadTable()">Load</button>
                             </div>
                         </div>
                     </div>

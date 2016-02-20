@@ -107,6 +107,16 @@ function displayPageLabel(doc) {
     $("[name='commentField']").html(doc.getDocOnline("testcase", "Comment"));
     $("#filters").html(doc.getDocOnline("page_testcaselist", "filters"));
     $("#testCaseListLabel").html(doc.getDocOnline("page_testcaselist", "testcaselist"));
+    $("[name='btnLoad']").html(doc.getDocLabel("page_global", "buttonLoad"));
+    $("[name='testField']").html(doc.getDocLabel("test", "Test"));
+    $("[name='editEntryField']").html(doc.getDocLabel("page_testcaselist", "btn_edit"));
+    $("[name='addEntryField']").html(doc.getDocLabel("page_testcaselist", "btn_create"));
+    $("[name='linkField']").html(doc.getDocLabel("page_testcaselist", "link"));
+    
+    $("[name='testInfoField']").html(doc.getDocLabel("page_testcaselist", "testInfo"));
+    $("[name='testCaseInfoField']").html(doc.getDocLabel("page_testcaselist", "testCaseInfo"));
+    $("[name='testCaseParameterField']").html(doc.getDocLabel("page_testcaselist", "testCaseParameter"));
+    $("[name='activationCriteriaField']").html(doc.getDocLabel("page_testcaselist", "activationCriteria"));
 }
 
 function loadTable(selectTest, sortColumn) {
@@ -135,11 +145,9 @@ function loadTable(selectTest, sortColumn) {
     var jqxhr = $.getJSON("FindInvariantByID", "idName=COUNTRY");
 
     $.when(jqxhr).then(function (data) {
-        var config = new TableConfigurationsServerSide("testCaseTable", contentUrl, "contentTable", aoColumnsFunc(data));
+        var config = new TableConfigurationsServerSide("testCaseTable", contentUrl, "contentTable", aoColumnsFunc(data), [sortColumn, 'asc']);
 
         var table = createDataTableWithPermissions(config, renderOptionsForTestCaseList);
-        if (!isEmpty(sortColumn))
-            table.fnSort([sortColumn, 'asc']);
 
     });
 }
@@ -150,7 +158,7 @@ function renderOptionsForTestCaseList(data) {
     if (data["hasPermissionsCreate"]) {
         if ($("#createTestCaseButton").length === 0) {
             var contentToAdd = "<div class='marginBottom10'><button id='createTestCaseButton' type='button' class='btn btn-default'>\n\
-            " + "Create Test Case" + "</button></div>";
+            " + doc.getDocLabel("page_testcaselist", "btn_create") + "</button></div>";
 
             $("#testCaseTable_wrapper div.ColVis").before(contentToAdd);
             $('#testCaseList #createTestCaseButton').click(data, addEntryClick);
@@ -676,23 +684,23 @@ function aoColumnsFunc(countries) {
                 var buttons = "";
 
                 var testCaseLink = '<a id="testCaseLink" class="btn btn-primary btn-xs margin-right5"\n\
-                                    title="' + "edit testcase script" + '" href="TestCase.jsp?Test=' + encodeURIComponent(obj["test"]) + "&TestCase=" + encodeURIComponent(obj["testCase"]) + '&Load=Load">\n\
+                                    title="' + doc.getDocLabel("page_testcaselist", "btn_editScript") + '" href="TestCase.jsp?Test=' + encodeURIComponent(obj["test"]) + "&TestCase=" + encodeURIComponent(obj["testCase"]) + '&Load=Load">\n\
                                     <span class="glyphicon glyphicon-new-window"></span>\n\
                                     </a>';
                 var editEntry = '<button id="editEntry" onclick="editEntryClick(\'' + escapeHtml(obj["test"]) + '\',\'' + escapeHtml(obj["testCase"]) + '\');"\n\
                                 class="editEntry btn btn-default btn-xs margin-right5" \n\
-                                name="editEntry" title="' + "edit test case" + '" type="button">\n\
+                                name="editEntry" title="' + doc.getDocLabel("page_testcaselist", "btn_edit") + '" type="button">\n\
                                 <span class="glyphicon glyphicon-pencil"></span></button>';
                 var viewEntry = '<button id="editEntry" onclick="editEntryClick(\'' + escapeHtml(obj["testCase"]) + '\');"\n\
                                 class="editEntry btn btn-default btn-xs margin-right5" \n\
-                                name="editEntry" title="' + "edit test case" + '" type="button">\n\
+                                name="editEntry" title="' + doc.getDocLabel("page_testcaselist", "btn_view") + '" type="button">\n\
                                 <span class="glyphicon glyphicon-eye-open"></span></button>';
                 var deleteEntry = '<button id="deleteEntry" onclick="deleteEntryClick(\'' + escapeHtml(obj["testCase"]) + '\');"\n\
                                         class="deleteEntry btn btn-default btn-xs margin-right5" \n\
-                                        name="deleteEntry" title="' + "delete test case" + '" type="button">\n\
+                                        name="deleteEntry" title="' + doc.getDocLabel("page_testcaselist", "btn_delete") + '" type="button">\n\
                                         <span class="glyphicon glyphicon-trash"></span></button>';
                 var testCaseBetaLink = '<a id="testCaseBetaLink" class="btn btn-warning btn-xs margin-right5"\n\
-                                    title="' + "edit testcase script (beta page)" + '" href="TestCaseScript.jsp?test=' + encodeURIComponent(obj["test"]) + "&testcase=" + encodeURIComponent(obj["testCase"]) + '">\n\
+                                    title="' + doc.getDocLabel("page_testcaselist", "btn_editScript") + " (beta page)" + '" href="TestCaseScript.jsp?test=' + encodeURIComponent(obj["test"]) + "&testcase=" + encodeURIComponent(obj["testCase"]) + '">\n\
                                     <span class="glyphicon glyphicon-new-window"></span>\n\
                                     </a>';
                 if (data.hasPermissionsUpdate) {

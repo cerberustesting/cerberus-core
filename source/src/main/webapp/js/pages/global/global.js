@@ -136,16 +136,39 @@ function displayApplicationList(selectName, system, defaultValue) {
 }
 
 /**
- * Method that display a combo box in all the selectName tags with the value retrieved from the Project list
+ * Method that display a combo box in all the selectName tags with the value retrieved from the Application list
  * @param {String} selectName value name of the select tag in the html
+ * @param {String} system [optional] value name of the system in order to filter the application list
  * @param {String} defaultValue to be selected
  * @returns {void}
  */
-function displayProjectList(selectName, defaultValue) {
-    $.when($.getJSON("ReadProject", "")).then(function (data) {
-        $("[name='" + selectName + "']").append($('<option></option>').text("NONE").val(""));
+function displayApplicationList(selectName, system, defaultValue) {
+    var myData = "";
+    if (system !== "") {
+        myData = "system=" + system;
+    }
+    $.when($.getJSON("ReadApplication", myData)).then(function (data) {
         for (var option in data.contentTable) {
-            $("[name='" + selectName + "']").append($('<option></option>').text(data.contentTable[option].idProject + " - " + data.contentTable[option].description).val(data.contentTable[option].idProject));
+            $("[name='" + selectName + "']").append($('<option></option>').text(data.contentTable[option].application + " - " + data.contentTable[option].description).val(data.contentTable[option].application));
+        }
+
+        if (defaultValue !== undefined) {
+            $("[name='" + selectName + "']").val(defaultValue);
+        }
+    });
+}
+
+/**
+ * Method that display a combo box in all the selectName tags with the value retrieved from the Project list
+ * @param {String} selectName value name of the select tag in the html
+ * @param {String} system value to filter the relevant list of batch
+ * @param {String} defaultValue to be selected [optional]
+ * @returns {void}
+ */
+function displayBatchInvariantList(selectName, system, defaultValue) {
+    $.when($.getJSON("ReadBatchInvariant", "system=" + system)).then(function (data) {
+        for (var option in data.contentTable) {
+            $("[name='" + selectName + "']").append($('<option></option>').text(data.contentTable[option].batch + " - " + data.contentTable[option].description).val(data.contentTable[option].batch));
         }
 
         if (defaultValue !== undefined) {
@@ -329,7 +352,7 @@ function clearResponseMessageMainPage() {
 function showMessage(obj, dialog) {
     var code = getAlertType(obj.messageType);
 
-    if (code !== "success" && dialog !== null) {
+    if (code !== "success" && dialog !== undefined && dialog !== null) {
         //shows the error message in the current dialog    
         var elementAlert = dialog.find("div[id*='DialogMessagesAlert']");
         var elementAlertDescription = dialog.find("span[id*='DialogAlertDescription']");
@@ -600,7 +623,7 @@ $.fn.dataTableExt.oApi.fnNewAjax = function (oSettings, sNewSource) {
         oSettings.sAjaxSource = sNewSource;
     }
     this.fnDraw();
-}
+};
 
 /**
  * Auxiliary object that stores configurations that should be applied in a table that is client-side
@@ -649,9 +672,10 @@ function TableConfigurationsClientSide(divId, data, aoColumnsFunction, defineLen
  * @param {type} ajaxSource - ajax url
  * @param {type} ajaxProp -  json property 
  * @param {type} aoColumnsFunction - function to render the columns
+ * @param {type} aaSorting - Table to define the sorting column and order. Ex : [3, 'asc']
  * @returns {TableConfigurationsServerSide}
  */
-function TableConfigurationsServerSide(divId, ajaxSource, ajaxProp, aoColumnsFunction) {
+function TableConfigurationsServerSide(divId, ajaxSource, ajaxProp, aoColumnsFunction, aaSorting) {
     this.divId = divId;
     this.aoColumnsFunction = aoColumnsFunction;
     this.ajaxSource = ajaxSource;
@@ -680,6 +704,7 @@ function TableConfigurationsServerSide(divId, ajaxSource, ajaxProp, aoColumnsFun
     this.lang = getDataTableLanguage();
     this.orderClasses = true;
     this.bDeferRender = false;
+    this.aaSorting = aaSorting;
 }
 
 function returnMessageHandler(response) {
@@ -736,7 +761,13 @@ function createDataTableWithPermissions(tableConfigurations, callbackfunction) {
     configs["lengthChange"] = tableConfigurations.lengthChange;
     configs["orderClasses"] = tableConfigurations.orderClasses;
     configs["bDeferRender"] = tableConfigurations.bDeferRender;
+    if (tableConfigurations.aaSorting !== undefined) {
+        console.debug("Sorting Defined. " + tableConfigurations.aaSorting);
+        configs["aaSorting"] = [tableConfigurations.aaSorting];
 
+    } else {
+        console.debug("Sorting Not Defined. " + tableConfigurations.aaSorting);
+    }
 
     if (tableConfigurations.serverSide) {
         configs["sAjaxSource"] = tableConfigurations.ajaxSource;
@@ -824,6 +855,13 @@ function createDataTable(tableConfigurations, callback, userCallbackFunction) {
     configs["createdRow"] = callback;
     configs["orderClasses"] = tableConfigurations.orderClasses;
     configs["bDeferRender"] = tableConfigurations.bDeferRender;
+    if (tableConfigurations.aaSorting !== undefined) {
+        console.debug("Sorting Defined. " + tableConfigurations.aaSorting);
+        configs["aaSorting"] = [tableConfigurations.aaSorting];
+
+    } else {
+        console.debug("Sorting Not Defined. " + tableConfigurations.aaSorting);
+    }
 
 
     if (tableConfigurations.serverSide) {
@@ -949,7 +987,7 @@ jQuery.fn.dataTableExt.oApi.fnSetFilteringDelay = function (oSettings, iDelay) {
         anControl.unbind('keyup search input').bind('keyup search input', function () {
             var $$this = $this;
 
-            if (sPreviousSearch === null || sPreviousSearch != anControl.val()) {
+            if (sPreviousSearch === null || sPreviousSearch !== anControl.val()) {
                 window.clearTimeout(oTimerId);
                 sPreviousSearch = anControl.val();
                 oTimerId = window.setTimeout(function () {
@@ -1056,8 +1094,8 @@ function InsertURLInHistory(sUrl) {
         sUrl = sUrl.substr(0, sUrl.length - 1);
     }
     var currentURL = window.location.href.replace(window.location.origin, "");
-    var currentURLtoTest = currentURL + "TOTO" ;
-    var sUrltoTest = sUrl + "TOTO" ;
+    var currentURLtoTest = currentURL + "TOTO";
+    var sUrltoTest = sUrl + "TOTO";
     if (currentURLtoTest.indexOf(sUrltoTest) === -1) {
         window.history.pushState({}, '', sUrl);
     }

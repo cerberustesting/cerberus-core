@@ -269,10 +269,10 @@ public class ReadCountryEnvParam extends HttpServlet {
         Gson gson = new Gson();
         String defaultTime = "00:00:00";
         JSONObject result = new JSONObject(gson.toJson(cep));
-        if (cep.getMaintenanceStr().equalsIgnoreCase(defaultTime)) {
+        if ((cep.getMaintenanceStr() ==null) || (cep.getMaintenanceStr().equalsIgnoreCase(defaultTime))) {
             result.put("maintenanceStr", defaultTime);
         }
-        if (cep.getMaintenanceEnd().equalsIgnoreCase(defaultTime)) {
+        if ((cep.getMaintenanceEnd() ==null) || (cep.getMaintenanceEnd().equalsIgnoreCase(defaultTime))) {
             result.put("maintenanceEnd", defaultTime);
         }
         return result;

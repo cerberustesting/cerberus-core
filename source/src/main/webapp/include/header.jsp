@@ -123,6 +123,7 @@
                     <li id="subactive"><a name="menu" id="menuRobot" href="Robot.jsp" style="width:200px">Robot</a></li>
                     <li id="subactive"><a name="menu" id="menuProject" href="Project.jsp" style="width:200px">Project</a></li>
                     <li id="subactive"><a name="menu" id="menuDeployType" href="DeployType.jsp" style="width:200px">Deploy Type</a></li>
+                    <li id="subactive"><a name="menu" id="menuBatchInvariant" href="BatchInvariant.jsp" style="width:200px">Batch</a></li>
                     <li id="subactive"><a id="menuEnvironmentsBeta" href="Environment1.jsp" style="width:200px">Environments<input type="button" class="btn btn-danger btn-small active" value="Beta" style="padding: 0px; margin-left: 5px; color: red"></a></li>
                 </ul>
             </li>

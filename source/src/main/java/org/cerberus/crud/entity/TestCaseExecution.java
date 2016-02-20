@@ -67,7 +67,7 @@ public class TestCaseExecution {
     private TCase tCase;
     private List<TCase> PreTCase;
     private CountryEnvParam countryEnvParam;
-    private CountryEnvironmentApplication countryEnvironmentApplication;
+    private CountryEnvironmentParameters countryEnvironmentParameters;
     private boolean manualURL;
     private String myHost;
     private String myContextRoot;
@@ -321,12 +321,12 @@ public class TestCaseExecution {
         this.countryEnvParam = countryEnvParam;
     }
 
-    public CountryEnvironmentApplication getCountryEnvironmentApplication() {
-        return countryEnvironmentApplication;
+    public CountryEnvironmentParameters getCountryEnvironmentParameters() {
+        return countryEnvironmentParameters;
     }
 
-    public void setCountryEnvironmentApplication(CountryEnvironmentApplication countryEnvironmentApplication) {
-        this.countryEnvironmentApplication = countryEnvironmentApplication;
+    public void setCountryEnvironmentParameters(CountryEnvironmentParameters countryEnvironmentParameters) {
+        this.countryEnvironmentParameters = countryEnvironmentParameters;
     }
 
     public Test getTestObj() {

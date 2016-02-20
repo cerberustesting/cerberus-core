@@ -18,8 +18,8 @@
  * along with Cerberus.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-$.when($.getScript("js/pages/global/global.js")).then(function () {
-    $(document).ready(function () {
+$.when($.getScript("js/pages/global/global.js")).then(function() {
+    $(document).ready(function() {
         var doc = new Doc();
         var stepList = [];
 
@@ -51,7 +51,7 @@ $.when($.getScript("js/pages/global/global.js")).then(function () {
         $("#editEntryButton").click(saveUpdateEntryHandler);
         $("#editTcInfo").click({test: test, testcase: testcase}, editEntry);
 
-        $("#manageProp").click(function () {
+        $("#manageProp").click(function() {
             $("#propertiesModal").modal('show');
         });
 
@@ -64,7 +64,7 @@ $.when($.getScript("js/pages/global/global.js")).then(function () {
             url: "ReadTestCase",
             data: {test: test, testCase: testcase, withStep: true},
             dataType: "json",
-            success: function (data) {
+            success: function(data) {
                 testcaseinfo = data.info;
                 loadTestCaseInfo(data.info);
                 loadProperties(test, testcase, data.info);
@@ -72,12 +72,14 @@ $.when($.getScript("js/pages/global/global.js")).then(function () {
                 sortData(json);
                 createStepList(json, stepList);
                 drawInheritedProperty(data.inheritedProp);
+                listenEnterKeypressWhenFocusingOnDescription();
+                setPlaceholder();
             },
             error: showUnexpectedError
         });
 
         $("#addStep").click({stepList: stepList}, addStep);
-        $('#addStepModal').on('hidden.bs.modal', function () {
+        $('#addStepModal').on('hidden.bs.modal', function() {
             $("#importInfo").removeData("stepInfo");
             $("#importInfo").empty();
             $("#addStepModal #description").val("");
@@ -85,7 +87,7 @@ $.when($.getScript("js/pages/global/global.js")).then(function () {
             $("#importDetail").hide();
         });
 
-        $("#addProperty").click(function () {
+        $("#addProperty").click(function() {
             var newProperty = {
                 property: "",
                 country: [],
@@ -102,23 +104,35 @@ $.when($.getScript("js/pages/global/global.js")).then(function () {
             drawProperty(newProperty, testcaseinfo);
         });
 
-        $("#deleteStep").click(function () {
+        $("#deleteStep").click(function() {
             var step = $("#stepList .active").data("item");
 
             step.setDelete();
         });
 
         $("#editBtn").click(editStep);
-        $("#addAction").click(addAction);
+        $("#addAction").click(function() {
+            $.when(addAction()).then(function(action) {
+                listenEnterKeypressWhenFocusingOnDescription();
+                $($(action.html[0]).find(".description")[0]).focus();
+            });
+        });
         $("#saveScript").click(saveScript);
+        $("#runTestCase").click(function() {
+            runTestCase(test, testcase);
+        });
     });
 });
 
 function addAction() {
     var step = $("#stepList li.active").data("item");
     var action = new Action(null, step);
-
     step.setAction(action);
+    return action;
+}
+
+function runTestCase(test, testcase) {
+    window.location.href = "./RunTest2.jsp?test=" + test + "&testcase=" + testcase;
 }
 
 function saveScript() {
@@ -187,7 +201,7 @@ function saveScript() {
             informationTestCase: GetURLParameter("testcase"),
             stepArray: JSON.stringify(stepArr),
             propArr: JSON.stringify(propArr)},
-        success: function () {
+        success: function() {
             location.reload();
         },
         error: showUnexpectedError
@@ -216,7 +230,7 @@ function drawProperty(property, testcaseinfo) {
     var rowLimit = $("<td></td>").append(rowLimitInput);
     var nature = $("<td></td>").append(selectNature.val(property.nature));
 
-    deleteBtn.click(function () {
+    deleteBtn.click(function() {
         property.toDelete = (property.toDelete) ? false : true;
 
         if (property.toDelete) {
@@ -226,31 +240,31 @@ function drawProperty(property, testcaseinfo) {
         }
     });
 
-    propertyInput.change(function () {
+    propertyInput.change(function() {
         property.property = $(this).val();
     });
 
-    selectType.change(function () {
+    selectType.change(function() {
         property.type = $(this).val();
     });
 
-    selectDB.change(function () {
+    selectDB.change(function() {
         property.database = $(this).val();
     });
 
-    valueInput.change(function () {
+    valueInput.change(function() {
         property.value1 = $(this).val();
     });
 
-    lengthInput.change(function () {
+    lengthInput.change(function() {
         property.length = $(this).val();
     });
 
-    rowLimitInput.change(function () {
+    rowLimitInput.change(function() {
         property.rowLimit = $(this).val();
     });
 
-    selectNature.change(function () {
+    selectNature.change(function() {
         property.nature = $(this).val();
     });
 
@@ -306,7 +320,7 @@ function loadProperties(test, testcase, testcaseinfo) {
         url: "GetPropertiesForTestCase",
         data: {test: test, testcase: testcase},
         async: true,
-        success: function (data) {
+        success: function(data) {
 
             for (var index = 0; index < data.length; index++) {
                 var property = data[index];
@@ -324,7 +338,7 @@ function getTestCaseCountry(countryList, countryToCheck, isDisabled) {
     var cpt = 0;
     var div = $("<div></div>").addClass("checkbox");
 
-    $.each(countryList, function (index) {
+    $.each(countryList, function(index) {
         var country;
 
         if (typeof index === "number") {
@@ -340,7 +354,7 @@ function getTestCaseCountry(countryList, countryToCheck, isDisabled) {
         if (isDisabled) {
             input.prop("disabled", "disabled");
         } else {
-            input.change(function () {
+            input.change(function() {
                 var country = $(this).prop("name");
                 var checked = $(this).prop("checked");
                 var index = countryToCheck.indexOf(country);
@@ -378,7 +392,7 @@ function getSelectInvariant(idName) {
             url: "FindInvariantByID",
             data: {idName: idName},
             async: true,
-            success: function (data) {
+            success: function(data) {
                 list = data;
                 sessionStorage.setItem(idName + "INVARIANT", JSON.stringify(data));
                 for (var index = 0; index < list.length; index++) {
@@ -446,7 +460,7 @@ function addStep(event) {
     var stepList = event.data.stepList;
     $("#addStepModal").modal('show');
 
-    $(".sub-item").click(function () {
+    $(".sub-item").click(function() {
         var stepInfo = $(this).data("stepInfo");
 
         $("#importInfo").text("Imported from " + stepInfo.test + " - " + stepInfo.testCase + " - " + stepInfo.step + ")").data("stepInfo", stepInfo);
@@ -456,7 +470,7 @@ function addStep(event) {
         $("#importDetail").show();
     });
 
-    $("#addStepConfirm").unbind("click").click(function (event) {
+    $("#addStepConfirm").unbind("click").click(function(event) {
         var stepNumber = $("#stepList li").length + 1;
         var step = {"inLibrary": "N",
             "objType": "step",
@@ -475,7 +489,7 @@ function addStep(event) {
                 url: "ReadTestCaseStep",
                 data: {test: useStep.test, testcase: useStep.testCase, step: useStep.step},
                 async: false,
-                success: function (data) {
+                success: function(data) {
                     step.actionList = data.tcsActionList;
 
                     for (var index = 0; index < data.tcsActionControlList.length; index++) {
@@ -508,6 +522,9 @@ function createStepList(data, stepList) {
         stepObj.draw();
         stepList.push(stepObj);
     }
+    if (stepList.length > 0) {
+        $(stepList[0].html[0]).click();
+    }
 }
 
 /** LIBRARY STEP UTILY FUNCTIONS **/
@@ -517,7 +534,7 @@ function loadLibraryStep() {
         url: "GetStepInLibrary",
         data: {system: getUser().defaultSystem},
         async: true,
-        success: function (data) {
+        success: function(data) {
             var test = {};
 
             for (var index = 0; index < data.testCaseStepList.length; index++) {
@@ -536,7 +553,7 @@ function loadLibraryStep() {
                 var listGrp = test[step.test];
                 listGrp.append($("<a></a>").addClass("list-group-item sub-item").attr("href", "#").text(step.description).data("stepInfo", step));
             }
-            $('.list-group-item').on('click', function () {
+            $('.list-group-item').on('click', function() {
                 $('.glyphicon', this)
                         .toggleClass('glyphicon-chevron-right')
                         .toggleClass('glyphicon-chevron-down');
@@ -553,17 +570,17 @@ function editEntry(event) {
     var testCase = event.data.testcase;
     clearResponseMessageMainPage();
     var jqxhr = $.getJSON("ReadTestCase", "test=" + encodeURIComponent(test) + "&testCase=" + encodeURIComponent(testCase));
-    $.when(jqxhr).then(function (data) {
+    $.when(jqxhr).then(function(data) {
 
         var formEdit = $('#editEntryModal');
         var testInfo = $.getJSON("ReadTest", "test=" + encodeURIComponent(test));
         var appInfo = $.getJSON("ReadApplication", "application=" + encodeURIComponent(data.application));
 
-        $.when(testInfo).then(function (data) {
+        $.when(testInfo).then(function(data) {
             formEdit.find("#testDesc").prop("value", data.contentTable.description);
         });
 
-        $.when(appInfo).then(function (appData) {
+        $.when(appInfo).then(function(appData) {
             var currentSys = getUser().defaultSystem;
             var bugTrackerUrl = appData.contentTable.bugTrackerUrl;
 
@@ -636,7 +653,7 @@ function saveUpdateEntryHandler() {
 function appendBuildRevList(system, editData) {
 
     var jqxhr = $.getJSON("ReadBuildRevisionInvariant", "system=" + encodeURIComponent(system) + "&level=1");
-    $.when(jqxhr).then(function (data) {
+    $.when(jqxhr).then(function(data) {
         var fromBuild = $("[name=fromSprint]");
         var toBuild = $("[name=toSprint]");
         var targetBuild = $("[name=targetSprint]");
@@ -666,7 +683,7 @@ function appendBuildRevList(system, editData) {
     });
 
     var jqxhr = $.getJSON("ReadBuildRevisionInvariant", "system=" + encodeURIComponent(system) + "&level=2");
-    $.when(jqxhr).then(function (data) {
+    $.when(jqxhr).then(function(data) {
         var fromRev = $("[name=fromRev]");
         var toRev = $("[name=toRev]");
         var targetRev = $("[name=targetRev]");
@@ -697,7 +714,7 @@ function appendBuildRevList(system, editData) {
 
 function appendCountryList() {
     var jqxhr = $.getJSON("FindInvariantByID", "idName=COUNTRY");
-    $.when(jqxhr).then(function (data) {
+    $.when(jqxhr).then(function(data) {
         var countryList = $("[name=countryList]");
 
         for (var index = 0; index < data.length; index++) {
@@ -810,12 +827,12 @@ function sortStep(step) {
     for (var j = 0; j < step.actionList.length; j++) {
         var action = step.actionList[j];
 
-        action.controlList.sort(function (a, b) {
+        action.controlList.sort(function(a, b) {
             return a.control - b.control;
         });
     }
 
-    step.actionList.sort(function (a, b) {
+    step.actionList.sort(function(a, b) {
         return a.sequence - b.sequence;
     });
 }
@@ -827,7 +844,7 @@ function sortData(agreg) {
         sortStep(step);
     }
 
-    agreg.sort(function (a, b) {
+    agreg.sort(function(a, b) {
         return a.step - b.step;
     });
 }
@@ -857,7 +874,7 @@ function Step(json, stepList) {
 
 }
 
-Step.prototype.draw = function () {
+Step.prototype.draw = function() {
     var htmlElement = this.html;
     var drag = $("<div></div>").addClass("col-lg-2 drag-step").prop("draggable", true)
             .append($("<span></span>").addClass("fa fa-ellipsis-v"));
@@ -879,7 +896,7 @@ Step.prototype.draw = function () {
     $("#actionContainer").append(this.stepActionContainer);
 };
 
-Step.prototype.show = function () {
+Step.prototype.show = function() {
     var object = $(this).data("item");
 
     cancelEdit();
@@ -918,13 +935,13 @@ Step.prototype.show = function () {
     $("#stepInfo").show();
 };
 
-Step.prototype.setActionList = function (actionList) {
+Step.prototype.setActionList = function(actionList) {
     for (var i = 0; i < actionList.length; i++) {
         this.setAction(actionList[i]);
     }
 };
 
-Step.prototype.setAction = function (action) {
+Step.prototype.setAction = function(action) {
     if (action instanceof Action) {
         action.draw();
         this.actionList.push(action);
@@ -936,13 +953,13 @@ Step.prototype.setAction = function (action) {
     }
 };
 
-Step.prototype.setDescription = function (description) {
+Step.prototype.setDescription = function(description) {
     this.description = description;
     this.textArea.text(description);
     $("#stepDescription").text(description);
 };
 
-Step.prototype.setDelete = function () {
+Step.prototype.setDelete = function() {
     this.toDelete = (this.toDelete) ? false : true;
 
     if (this.toDelete) {
@@ -964,11 +981,11 @@ Step.prototype.setDelete = function () {
     }
 };
 
-Step.prototype.setStep = function (step) {
+Step.prototype.setStep = function(step) {
     this.step = step;
 };
 
-Step.prototype.getJsonData = function () {
+Step.prototype.getJsonData = function() {
     var json = {};
 
     json.toDelete = this.toDelete;
@@ -1017,7 +1034,7 @@ function Action(json, parentStep) {
     this.toDelete = false;
 }
 
-Action.prototype.draw = function () {
+Action.prototype.draw = function() {
     var htmlElement = this.html;
     var action = this;
     var row = $("<div></div>").addClass("step-action row").addClass("action");
@@ -1037,13 +1054,13 @@ Action.prototype.draw = function () {
         drag.on("dragend", handleDragEnd);
     }
 
-    addBtn.click(function () {
+    addBtn.click(function() {
         var control = new Control(null, action);
 
         action.setControl(control);
     });
 
-    supprBtn.click(function () {
+    supprBtn.click(function() {
         action.toDelete = (action.toDelete) ? false : true;
 
         if (action.toDelete) {
@@ -1062,13 +1079,13 @@ Action.prototype.draw = function () {
     this.parentStep.stepActionContainer.append(htmlElement);
 };
 
-Action.prototype.setControlList = function (controlList) {
+Action.prototype.setControlList = function(controlList) {
     for (var i = 0; i < controlList.length; i++) {
         this.setControl(controlList[i]);
     }
 };
 
-Action.prototype.setControl = function (control) {
+Action.prototype.setControl = function(control) {
     if (control instanceof Control) {
         control.draw();
         this.controlList.push(control);
@@ -1080,43 +1097,44 @@ Action.prototype.setControl = function (control) {
     }
 };
 
-Action.prototype.setStep = function (step) {
+Action.prototype.setStep = function(step) {
     this.step = step;
 };
 
-Action.prototype.setSequence = function (sequence) {
+Action.prototype.setSequence = function(sequence) {
     this.sequence = sequence;
 };
 
-Action.prototype.generateContent = function () {
+Action.prototype.generateContent = function() {
     var obj = this;
     var content = $("<div></div>").addClass("content col-lg-10");
     var firstRow = $("<div></div>").addClass("row");
     var secondRow = $("<div></div>").addClass("row form-inline");
 
     var actionList = $("<select></select>").addClass("form-control input-sm");
-    var descField = $("<input>").addClass("description").addClass("form-control").prop("placeholder", "Description");
+    var descField = $("<input>").addClass("description").addClass("form-control").prop("placeholder", "Describe this action");
     var objectField = $("<input>").addClass("form-control input-sm");
     var propertyField = $("<input>").addClass("form-control input-sm");
 
     descField.val(this.description);
-    descField.on("change", function () {
+    descField.on("change", function() {
         obj.description = descField.val();
     });
 
     actionList = getSelectInvariant("ACTION");
     actionList.val(this.action);
-    actionList.on("change", function () {
+    actionList.on("change", function() {
         obj.action = actionList.val();
+        setPlaceholder();
     });
 
     objectField.val(this.object);
-    objectField.on("change", function () {
+    objectField.on("change", function() {
         obj.object = objectField.val();
     });
 
     propertyField.val(this.property);
-    propertyField.on("change", function () {
+    propertyField.on("change", function() {
         obj.property = propertyField.val();
     });
 
@@ -1138,7 +1156,7 @@ Action.prototype.generateContent = function () {
     return content;
 };
 
-Action.prototype.getJsonData = function () {
+Action.prototype.getJsonData = function() {
     var json = {};
 
     json.toDelete = this.toDelete;
@@ -1190,7 +1208,7 @@ function Control(json, parentAction) {
     this.html = $("<div></div>").addClass("step-action row").addClass("control");
 }
 
-Control.prototype.draw = function () {
+Control.prototype.draw = function() {
     var htmlElement = this.html;
     var control = this;
     var type = $("<div></div>").addClass("type");
@@ -1209,7 +1227,7 @@ Control.prototype.draw = function () {
         drag.on("dragend", handleDragEnd);
     }
 
-    supprBtn.click(function () {
+    supprBtn.click(function() {
         control.toDelete = (control.toDelete) ? false : true;
 
         if (control.toDelete) {
@@ -1227,19 +1245,19 @@ Control.prototype.draw = function () {
     this.parentAction.html.append(htmlElement);
 };
 
-Control.prototype.setStep = function (step) {
+Control.prototype.setStep = function(step) {
     this.step = step;
 };
 
-Control.prototype.setSequence = function (sequence) {
+Control.prototype.setSequence = function(sequence) {
     this.sequence = sequence;
 };
 
-Control.prototype.setControl = function (control) {
+Control.prototype.setControl = function(control) {
     this.control = control;
 };
 
-Control.prototype.generateContent = function () {
+Control.prototype.generateContent = function() {
     var obj = this;
     var content = $("<div></div>").addClass("content col-lg-10");
     var firstRow = $("<div></div>").addClass("row");
@@ -1252,28 +1270,28 @@ Control.prototype.generateContent = function () {
     var fatalField = $("<select></select>").addClass("form-control input-sm");
 
     descField.val(this.description);
-    descField.on("change", function () {
+    descField.on("change", function() {
         obj.description = descField.val();
     });
 
     controlList = getSelectInvariant("CONTROL");
     controlList.val(this.type);
-    controlList.on("change", function () {
+    controlList.on("change", function() {
         obj.type = controlList.val();
     });
 
     objectField.val(this.object);
-    objectField.on("change", function () {
+    objectField.on("change", function() {
         obj.controlValue = objectField.val();
     });
 
     propertyField.val(this.property);
-    propertyField.on("change", function () {
+    propertyField.on("change", function() {
         obj.controlProperty = propertyField.val();
     });
 
     fatalField = getSelectInvariant("CTRLFATAL");
-    fatalField.on("change", function () {
+    fatalField.on("change", function() {
         obj.fatal = fatalField.val();
     });
 
@@ -1297,7 +1315,7 @@ Control.prototype.generateContent = function () {
     return content;
 };
 
-Control.prototype.getJsonData = function () {
+Control.prototype.getJsonData = function() {
     var json = {};
 
     json.toDelete = this.toDelete;
@@ -1315,3 +1333,152 @@ Control.prototype.getJsonData = function () {
 
     return json;
 };
+
+/**
+ * Call Add Action anf focus to next description when 
+ * focusing on description and clicking on enter
+ * @returns {undefined}
+ */
+function listenEnterKeypressWhenFocusingOnDescription() {
+    $("input[class='description form-control']").each(function(index, field) {
+        $(field).off('keydown');
+        $(field).on('keydown', function(e) {
+            if (e.which === 13) {
+                //if description is not empty, create new action
+                if ($(field)[0].value.length !== 0) {
+                    $.when(addAction()).then(function(action) {
+                        listenEnterKeypressWhenFocusingOnDescription();
+                        $($(action.html[0]).find(".description")[0]).focus();
+                    });
+                } else {
+                    //if description is empty, create action or control depending on field
+                    if ($(field).closest(".step-action").hasClass("action")) {
+                        var newAction = $(field).closest(".action-group");
+                        var oldAction = newAction.prev().find(".step-action.row.action").last();
+                        newAction.remove();
+                        $.when(addControl(oldAction.data("item"))).then(function(action) {
+                            listenEnterKeypressWhenFocusingOnDescription();
+                            $($(action.html[0]).find(".description")[0]).focus();
+                        });
+                    } else {
+                        var newAction = $(field).closest(".step-action");
+                        newAction.remove();
+                        $.when(addAction()).then(function(action) {
+                            listenEnterKeypressWhenFocusingOnDescription();
+                            $($(action.html[0]).find(".description")[0]).focus();
+                        });
+                    }
+                }
+            }
+        });
+    });
+}
+
+function addControl(action) {
+    var control = new Control(null, action);
+    action.setControl(control);
+    return control;
+}
+
+function setPlaceholder() {
+    /**
+     * Todo : GetFromDatabase
+     */
+    var placeHoldersList = {"fr": [
+            {"type": "Unknown", "object": null, "property": null},
+            {"type": "click", "object": "Chemin vers l'élement à cliquer", "property": null},
+            {"type": "clickAndWait", "object": "Action Depreciée", "property": "Action Depreciée"},
+            {"type": "calculateProperty", "object": null, "property": "Nom d'une Proprieté"},
+            {"type": "doubleClick", "object": "Chemin vers l'élement à double-cliquer", "property": null},
+            {"type": "enter", "object": "Action Depreciée", "property": "Action Depreciée"},
+            {"type": "focusToIframe", "object": "Identifiant de l'iFrame à cibler", "property": null},
+            {"type": "focusDefaultIframe", "object": null, "property": null},
+            {"type": "keypress", "object": "[opt] Chemin vers l'élement à cibler", "property": ""},
+            {"type": "mouseDown", "object": "Chemin vers l'élement à cibler", "property": null},
+            {"type": "mouseUp", "object": "Chemin vers l'élement", "property": null},
+            {"type": "mouseOver", "object": "Chemin vers l'élement", "property": null},
+            {"type": "mouseOverAndWait", "object": "Action Depreciée", "property": "Action Depreciée"},
+            {"type": "openUrlWithBase", "object": "/URI à appeler", "property": null},
+            {"type": "openUrlLogin", "object": null, "property": null},
+            {"type": "openUrl", "object": "URL à appeler", "property": null},
+            {"type": "removeSelection", "object": "Action Depreciée", "property": null},
+            {"type": "select", "object": "Chemin vers l'élement", "property": "Chemin vers l'option"},
+            {"type": "selectAndWait", "object": "Action Depreciée", "property": "Action Depreciée"},
+            {"type": "store", "object": "Action Depreciée", "property": "Action Depreciée"},
+            {"type": "takeScreenshot", "object": "Action Depreciée", "property": "Action Depreciée"},
+            {"type": "type", "object": "Chemin vers l'élement", "property": "Nom de propriété"},
+            {"type": "wait", "object": "Valeur(ms) ou élement", "property": null},
+            {"type": "waitForPage", "object": "Action Depreciée", "property": "Action Depreciée"},
+            {"type": "switchToWindow", "object": "Identifiant de fenêtre", "property": null},
+            {"type": "callSoap", "object": "Nom du Soap (librairie)", "property": "Nom de propriété"},
+            {"type": "callSoapWithBase", "object": "Nom du Soap (librairie)", "property": "Nom de propriété"},
+            {"type": "manageDialog", "object": "ok ou cancel", "property": null},
+            {"type": "getPageSource", "object": null, "property": null},
+            {"type": "removeDifference", "object": "Action Depreciée", "property": "Action Depreciée"},
+            {"type": "executeSqlUpdate", "object": "Nom de Base de donnée", "property": "Script à executer"},
+            {"type": "executeSqlStoredProcedure", "object": "Nom de Base de donnée", "property": "Procedure Stoquée à executer"},
+            {"type": "skipAction", "object": null, "property": null},
+            {"type": "callSoap_BETA", "object": "Nom du Soap (librairie)", "property": "Nom de propriété"},
+            {"type": "callSoapWithBase_BETA", "object": "Nom du Soap (librairie)", "property": "Nom de propriété"}
+        ], "en": [
+            {"type": "Unknown", "object": null, "property": null},
+            {"type": "click", "object": "Element path", "property": null},
+            {"type": "clickAndWait", "object": "Deprecated", "property": "Deprecated"},
+            {"type": "calculateProperty", "object": null, "property": "Property Name"},
+            {"type": "doubleClick", "object": "Element path", "property": null},
+            {"type": "enter", "object": "Deprecated", "property": "Deprecated"},
+            {"type": "focusToIframe", "object": "Id of the target iFrame", "property": null},
+            {"type": "focusDefaultIframe", "object": null, "property": null},
+            {"type": "keypress", "object": "[opt] Element path", "property": ""},
+            {"type": "mouseDown", "object": "Element path", "property": null},
+            {"type": "mouseUp", "object": "Element path", "property": null},
+            {"type": "mouseOver", "object": "Element path", "property": null},
+            {"type": "mouseOverAndWait", "object": "Deprecated", "property": "Deprecated"},
+            {"type": "openUrlWithBase", "object": "/URI to call", "property": null},
+            {"type": "openUrlLogin", "object": null, "property": null},
+            {"type": "openUrl", "object": "URL to call", "property": null},
+            {"type": "removeSelection", "object": "Deprecated", "property": null},
+            {"type": "select", "object": "Element path", "property": "Option path"},
+            {"type": "selectAndWait", "object": "Deprecated", "property": "Deprecated"},
+            {"type": "store", "object": "Deprecated", "property": "Deprecated"},
+            {"type": "takeScreenshot", "object": "Deprecated", "property": "Deprecated"},
+            {"type": "type", "object": "Element path", "property": "Property Name"},
+            {"type": "wait", "object": "Time(ms) or Element", "property": null},
+            {"type": "waitForPage", "object": "Deprecated", "property": "Deprecated"},
+            {"type": "switchToWindow", "object": "Window id", "property": null},
+            {"type": "callSoap", "object": "Soap Name (library)", "property": "Property Name"},
+            {"type": "callSoapWithBase", "object": "Soap Name (library)", "property": "Property Name"},
+            {"type": "manageDialog", "object": "ok or cancel", "property": null},
+            {"type": "getPageSource", "object": null, "property": null},
+            {"type": "removeDifference", "object": "Deprecated", "property": "Deprecated"},
+            {"type": "executeSqlUpdate", "object": "Database Name", "property": "Script"},
+            {"type": "executeSqlStoredProcedure", "object": "Database Name", "property": "Stored Procedure"},
+            {"type": "skipAction", "object": null, "property": null},
+            {"type": "callSoap_BETA", "object": "Soap Name (library)", "property": "Property Name"},
+            {"type": "callSoapWithBase_BETA", "object": "Soap Name (library)", "property": "Property Name"}
+        ]};
+
+    var user = getUser();
+    user.language;
+    var placeHolders = placeHoldersList[user.language];
+
+    $('div[class="row form-inline"] option:selected').each(function(i, e) {
+
+        for (var i = 0; i < placeHolders.length; i++) {
+            if (placeHolders[i].type === e.value) {
+                if (placeHolders[i].object !== null) {
+                    $(e).parent().parent().next().show();
+                    $(e).parent().parent().next().find('input').prop("placeholder", placeHolders[i].object);
+                } else {
+                    $(e).parent().parent().next().hide();
+                }
+                if (placeHolders[i].property !== null) {
+                    $(e).parent().parent().next().next().show();
+                    $(e).parent().parent().next().next().find('input').prop("placeholder", placeHolders[i].property);
+                } else {
+                    $(e).parent().parent().next().next().hide();
+                }
+            }
+        }
+    });
+}

@@ -17,12 +17,68 @@
  * You should have received a copy of the GNU General Public License
  * along with Cerberus.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package org.cerberus.crud.service;
 
 import java.util.List;
+import org.cerberus.crud.entity.CountryEnvDeployType;
+import org.cerberus.exception.CerberusException;
+import org.cerberus.util.answer.Answer;
+import org.cerberus.util.answer.AnswerItem;
+import org.cerberus.util.answer.AnswerList;
 
 public interface ICountryEnvDeployTypeService {
 
     List<String> findJenkinsAgentByKey(String system, String country, String env, String deploy);
+    /**
+     *
+     * @param system
+     * @param country
+     * @param environment
+     * @param start
+     * @param amount
+     * @param column
+     * @param dir
+     * @param searchTerm
+     * @param individualSearch
+     * @return
+     */
+    public AnswerList readByVariousByCriteria(String system, String country, String environment, int start, int amount, String column, String dir, String searchTerm, String individualSearch);
+
+    /**
+     *
+     * @param object
+     * @return
+     */
+    public Answer create(CountryEnvDeployType object);
+
+    /**
+     *
+     * @param object
+     * @return
+     */
+    public Answer delete(CountryEnvDeployType object);
+
+    /**
+     *
+     * @param answerItem
+     * @return
+     * @throws CerberusException
+     */
+    CountryEnvDeployType convert(AnswerItem answerItem) throws CerberusException;
+
+    /**
+     *
+     * @param answerList
+     * @return
+     * @throws CerberusException
+     */
+    List<CountryEnvDeployType> convert(AnswerList answerList) throws CerberusException;
+
+    /**
+     *
+     * @param answer
+     * @throws CerberusException
+     */
+    void convert(Answer answer) throws CerberusException;
+
 }

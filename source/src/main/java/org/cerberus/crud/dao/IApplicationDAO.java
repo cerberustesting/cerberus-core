@@ -19,7 +19,6 @@ package org.cerberus.crud.dao;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.List;
 
 import org.cerberus.crud.entity.Application;
 import org.cerberus.util.answer.Answer;
@@ -65,24 +64,24 @@ public interface IApplicationDAO {
 
     /**
      *
-     * @param application
+     * @param object
      * @return
      */
-    Answer create(Application application);
+    Answer create(Application object);
 
     /**
      *
-     * @param application
+     * @param object
      * @return
      */
-    Answer delete(Application application);
+    Answer delete(Application object);
 
     /**
      *
-     * @param application
+     * @param object
      * @return
      */
-    Answer update(Application application);
+    Answer update(Application object);
 
     /**
      *

@@ -23,7 +23,7 @@ import java.util.Date;
 import java.util.logging.Logger;
 import org.apache.log4j.Level;
 import org.cerberus.crud.entity.CountryEnvParam;
-import org.cerberus.crud.entity.CountryEnvironmentApplication;
+import org.cerberus.crud.entity.CountryEnvironmentParameters;
 import org.cerberus.crud.entity.ExecutionUUID;
 import org.cerberus.crud.entity.Invariant;
 import org.cerberus.crud.entity.MessageGeneral;
@@ -31,11 +31,9 @@ import org.cerberus.enums.MessageGeneralEnum;
 import org.cerberus.crud.entity.TCase;
 import org.cerberus.crud.entity.TestCaseExecution;
 import org.cerberus.exception.CerberusException;
-import org.cerberus.crud.factory.IFactoryCountryEnvironmentApplication;
 import org.cerberus.log.MyLogger;
 import org.cerberus.crud.service.IApplicationService;
 import org.cerberus.crud.service.ICountryEnvParamService;
-import org.cerberus.crud.service.ICountryEnvironmentApplicationService;
 import org.cerberus.crud.service.IInvariantService;
 import org.cerberus.crud.service.ITestCaseExecutionService;
 import org.cerberus.crud.service.ITestCaseService;
@@ -47,6 +45,8 @@ import org.cerberus.util.ParameterParserUtil;
 import org.cerberus.util.StringUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.cerberus.crud.service.ICountryEnvironmentParametersService;
+import org.cerberus.crud.factory.IFactoryCountryEnvironmentParameters;
 
 /**
  *
@@ -66,11 +66,11 @@ public class ExecutionStartService implements IExecutionStartService {
     @Autowired
     private ICountryEnvParamService countryEnvParamService;
     @Autowired
-    private ICountryEnvironmentApplicationService countryEnvironmentApplicationService;
+    private ICountryEnvironmentParametersService countryEnvironmentParametersService;
     @Autowired
     private IApplicationService applicationService;
     @Autowired
-    private IFactoryCountryEnvironmentApplication factorycountryEnvironmentApplication;
+    private IFactoryCountryEnvironmentParameters factorycountryEnvironmentParameters;
     @Autowired
     private IInvariantService invariantService;
     @Autowired
@@ -192,10 +192,10 @@ public class ExecutionStartService implements IExecutionStartService {
 
         /**
          * Checking if execution is manual or automaticaly configured. If
-         * Manual, CountryEnvironmentApplication object is manually created with
+         * Manual, CountryEnvironmentParameters object is manually created with
          * the servlet parameters. If automatic, parameters are build from the
-         * CountryEnvironmentApplication table in the database. Environmentdata
-         * will always be filled with the environment. Environment will be empty
+         * CountryEnvironmentParameters. table in the database. Environmentdata
+         * will always be filled with the environment. Environment will be forced to MANUAL
          * if execution is manual.
          *
          */
@@ -207,17 +207,17 @@ public class ExecutionStartService implements IExecutionStartService {
                 MyLogger.log(ExecutionStartService.class.getName(), Level.DEBUG, mes.getDescription());
                 throw new CerberusException(mes);
             } else {
-                CountryEnvironmentApplication cea;
-                cea = this.factorycountryEnvironmentApplication.create(tCExecution.getApplication().getSystem(), tCExecution.getCountry(), tCExecution.getEnvironment(), tCExecution.getApplication().getApplication(), tCExecution.getMyHost(), "", tCExecution.getMyContextRoot(), tCExecution.getMyLoginRelativeURL());
+                CountryEnvironmentParameters cea;
+                cea = this.factorycountryEnvironmentParameters.create(tCExecution.getApplication().getSystem(), tCExecution.getCountry(), tCExecution.getEnvironment(), tCExecution.getApplication().getApplication(), tCExecution.getMyHost(), "", tCExecution.getMyContextRoot(), tCExecution.getMyLoginRelativeURL());
                 cea.setIp(tCExecution.getMyHost());
                 cea.setUrl(tCExecution.getMyContextRoot());
                 tCExecution.setUrl(cea.getIp() + cea.getUrl());
                 cea.setUrlLogin(tCExecution.getMyLoginRelativeURL());
-                tCExecution.setCountryEnvironmentApplication(cea);
+                tCExecution.setCountryEnvironmentParameters(cea);
                 MyLogger.log(ExecutionStartService.class.getName(), Level.DEBUG, " -> Execution will be done with manual application connectivity setting. IP/URL/LOGIN : " + cea.getIp() + "-" + cea.getUrl() + "-" + cea.getUrlLogin());
             }
             /**
-             * If execution is manual, we force the env at empty string.
+             * If execution is manual, we force the env at 'MANUAL' string.
              */
             tCExecution.setEnvironment("MANUAL");
         } else {
@@ -230,11 +230,11 @@ public class ExecutionStartService implements IExecutionStartService {
              * the TestCaseExecution object
              */
             MyLogger.log(ExecutionStartService.class.getName(), Level.DEBUG, "Loading Country/Environment/Application Information. " + tCExecution.getCountry() + "-" + tCExecution.getEnvironment() + "-" + tCExecution.getApplication().getApplication());
-            CountryEnvironmentApplication cea;
+            CountryEnvironmentParameters cea;
             try {
-                cea = this.countryEnvironmentApplicationService.findCountryEnvironmentParameterByKey(
+                cea = this.countryEnvironmentParametersService.findCountryEnvironmentParameterByKey(
                         tCExecution.getApplication().getSystem(), tCExecution.getCountry(), tCExecution.getEnvironment(), tCExecution.getApplication().getApplication());
-                tCExecution.setCountryEnvironmentApplication(cea);
+                tCExecution.setCountryEnvironmentParameters(cea);
                 tCExecution.setUrl(cea.getIp() + cea.getUrl());
                 /**
                  * Forcing the IP URL and Login config from DevIP, DevURL and
@@ -347,8 +347,8 @@ public class ExecutionStartService implements IExecutionStartService {
             /**
              * Start Selenium server
              */
-            String url = ParameterParserUtil.parseStringParam(tCExecution.getCountryEnvironmentApplication().getIp() + tCExecution.getCountryEnvironmentApplication().getUrl(), "");
-            String login = ParameterParserUtil.parseStringParam(tCExecution.getCountryEnvironmentApplication().getUrlLogin(), "");
+            String url = ParameterParserUtil.parseStringParam(tCExecution.getCountryEnvironmentParameters().getIp() + tCExecution.getCountryEnvironmentParameters().getUrl(), "");
+            String login = ParameterParserUtil.parseStringParam(tCExecution.getCountryEnvironmentParameters().getUrlLogin(), "");
             MyLogger.log(ExecutionStartService.class.getName(), Level.DEBUG, "Starting Selenium Server.");
 
             try {

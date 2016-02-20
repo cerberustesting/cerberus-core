@@ -18,12 +18,22 @@
 package org.cerberus.crud.dao;
 
 import org.cerberus.crud.entity.BatchInvariant;
-import org.cerberus.exception.CerberusException;
+import org.cerberus.util.answer.Answer;
+import org.cerberus.util.answer.AnswerItem;
+import org.cerberus.util.answer.AnswerList;
 
 /**
  * @author bdumont
  */
 public interface IBatchInvariantDAO {
 
-    BatchInvariant findBatchInvariantByKey(String batch) throws CerberusException;
+    public AnswerItem readByKey(String batch);
+
+    public AnswerList readBySystemByCriteria(String system, int start, int amount, String column, String dir, String searchTerm, String individualSearch);
+
+    public Answer create(BatchInvariant object);
+
+    public Answer delete(BatchInvariant object);
+
+    public Answer update(BatchInvariant object);
 }

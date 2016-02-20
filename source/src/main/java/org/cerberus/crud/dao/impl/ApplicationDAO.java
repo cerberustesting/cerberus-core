@@ -123,7 +123,7 @@ public class ApplicationDAO implements IApplicationDAO {
         AnswerList response = new AnswerList();
         MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
         msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", ""));
-        List<Application> applicationList = new ArrayList<Application>();
+        List<Application> objectList = new ArrayList<Application>();
         StringBuilder searchSQL = new StringBuilder();
 
         StringBuilder query = new StringBuilder();
@@ -196,7 +196,7 @@ public class ApplicationDAO implements IApplicationDAO {
                 try {
                     //gets the data
                     while (resultSet.next()) {
-                        applicationList.add(this.loadFromResultSet(resultSet));
+                        objectList.add(this.loadFromResultSet(resultSet));
                     }
 
                     //get the total number of rows
@@ -207,18 +207,18 @@ public class ApplicationDAO implements IApplicationDAO {
                         nrTotalRows = resultSet.getInt(1);
                     }
 
-                    if (applicationList.size() >= MAX_ROW_SELECTED) { // Result of SQl was limited by MAX_ROW_SELECTED constrain. That means that we may miss some lines in the resultList.
+                    if (objectList.size() >= MAX_ROW_SELECTED) { // Result of SQl was limited by MAX_ROW_SELECTED constrain. That means that we may miss some lines in the resultList.
                         LOG.error("Partial Result in the query.");
                         msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_WARNING_PARTIAL_RESULT);
                         msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", "Maximum row reached : " + MAX_ROW_SELECTED));
-                        response = new AnswerList(applicationList, nrTotalRows);
-                    } else if (applicationList.size() <= 0) {
+                        response = new AnswerList(objectList, nrTotalRows);
+                    } else if (objectList.size() <= 0) {
                         msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_NO_DATA_FOUND);
-                        response = new AnswerList(applicationList, nrTotalRows);
+                        response = new AnswerList(objectList, nrTotalRows);
                     } else {
                         msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
                         msg.setDescription(msg.getDescription().replace("%ITEM%", OBJECT_NAME).replace("%OPERATION%", "SELECT"));
-                        response = new AnswerList(applicationList, nrTotalRows);
+                        response = new AnswerList(objectList, nrTotalRows);
                     }
 
                 } catch (SQLException exception) {
@@ -259,7 +259,7 @@ public class ApplicationDAO implements IApplicationDAO {
         }
 
         response.setResultMessage(msg);
-        response.setDataList(applicationList);
+        response.setDataList(objectList);
         return response;
     }
 
@@ -353,7 +353,7 @@ public class ApplicationDAO implements IApplicationDAO {
     }
 
     @Override
-    public Answer create(Application application) {
+    public Answer create(Application object) {
         MessageEvent msg = null;
         StringBuilder query = new StringBuilder();
         query.append("INSERT INTO application (`application`, `description`, `sort`, `type`, `system`, `SubSystem`, `svnurl`, `BugTrackerUrl`, `BugTrackerNewUrl`, `deploytype`, `mavengroupid` ) ");
@@ -367,17 +367,17 @@ public class ApplicationDAO implements IApplicationDAO {
         try {
             PreparedStatement preStat = connection.prepareStatement(query.toString());
             try {
-                preStat.setString(1, application.getApplication());
-                preStat.setString(2, application.getDescription());
-                preStat.setInt(3, application.getSort());
-                preStat.setString(4, application.getType());
-                preStat.setString(5, application.getSystem());
-                preStat.setString(6, application.getSubsystem());
-                preStat.setString(7, application.getSvnurl());
-                preStat.setString(8, application.getBugTrackerUrl());
-                preStat.setString(9, application.getBugTrackerNewUrl());
-                preStat.setString(10, application.getDeploytype());
-                preStat.setString(11, application.getMavengroupid());
+                preStat.setString(1, object.getApplication());
+                preStat.setString(2, object.getDescription());
+                preStat.setInt(3, object.getSort());
+                preStat.setString(4, object.getType());
+                preStat.setString(5, object.getSystem());
+                preStat.setString(6, object.getSubsystem());
+                preStat.setString(7, object.getSvnurl());
+                preStat.setString(8, object.getBugTrackerUrl());
+                preStat.setString(9, object.getBugTrackerNewUrl());
+                preStat.setString(10, object.getDeploytype());
+                preStat.setString(11, object.getMavengroupid());
 
                 preStat.executeUpdate();
                 msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
@@ -413,7 +413,7 @@ public class ApplicationDAO implements IApplicationDAO {
     }
 
     @Override
-    public Answer delete(Application application) {
+    public Answer delete(Application object) {
         MessageEvent msg = null;
         final String query = "DELETE FROM application WHERE application = ? ";
 
@@ -425,7 +425,7 @@ public class ApplicationDAO implements IApplicationDAO {
         try {
             PreparedStatement preStat = connection.prepareStatement(query);
             try {
-                preStat.setString(1, application.getApplication());
+                preStat.setString(1, object.getApplication());
 
                 preStat.executeUpdate();
                 msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
@@ -454,7 +454,7 @@ public class ApplicationDAO implements IApplicationDAO {
     }
 
     @Override
-    public Answer update(Application application) {
+    public Answer update(Application object) {
         MessageEvent msg = null;
         final String query = "UPDATE application SET description = ?, sort = ?, `type` = ?, `system` = ?, SubSystem = ?, svnurl = ?, BugTrackerUrl = ?, BugTrackerNewUrl = ?, deploytype = ?, mavengroupid = ?  WHERE Application = ?";
 
@@ -466,17 +466,17 @@ public class ApplicationDAO implements IApplicationDAO {
         try {
             PreparedStatement preStat = connection.prepareStatement(query);
             try {
-                preStat.setString(1, application.getDescription());
-                preStat.setInt(2, application.getSort());
-                preStat.setString(3, application.getType());
-                preStat.setString(4, application.getSystem());
-                preStat.setString(5, application.getSubsystem());
-                preStat.setString(6, application.getSvnurl());
-                preStat.setString(7, application.getBugTrackerUrl());
-                preStat.setString(8, application.getBugTrackerNewUrl());
-                preStat.setString(9, application.getDeploytype());
-                preStat.setString(10, application.getMavengroupid());
-                preStat.setString(11, application.getApplication());
+                preStat.setString(1, object.getDescription());
+                preStat.setInt(2, object.getSort());
+                preStat.setString(3, object.getType());
+                preStat.setString(4, object.getSystem());
+                preStat.setString(5, object.getSubsystem());
+                preStat.setString(6, object.getSvnurl());
+                preStat.setString(7, object.getBugTrackerUrl());
+                preStat.setString(8, object.getBugTrackerNewUrl());
+                preStat.setString(9, object.getDeploytype());
+                preStat.setString(10, object.getMavengroupid());
+                preStat.setString(11, object.getApplication());
 
                 preStat.executeUpdate();
                 msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);

@@ -153,7 +153,7 @@ public class ActionService implements IActionService {
             res = this.doActionOpenURL(tCExecution, object, property, false);
 
         } else if (testCaseStepActionExecution.getAction().equals("openUrlLogin")) {
-            testCaseStepActionExecution.setObject(testCaseStepActionExecution.getTestCaseStepExecution().gettCExecution().getCountryEnvironmentApplication().getUrlLogin());
+            testCaseStepActionExecution.setObject(testCaseStepActionExecution.getTestCaseStepExecution().gettCExecution().getCountryEnvironmentParameters().getUrlLogin());
             res = this.doActionUrlLogin(tCExecution);
 
         } else if (testCaseStepActionExecution.getAction().equals("select")) {
@@ -755,7 +755,7 @@ public class ActionService implements IActionService {
     private MessageEvent doActionUrlLogin(TestCaseExecution tCExecution) {
         MessageEvent message;
         if (tCExecution.getApplication().getType().equalsIgnoreCase("GUI")) {
-            return webdriverService.doSeleniumActionUrlLogin(tCExecution.getSession(), tCExecution.getUrl(), tCExecution.getCountryEnvironmentApplication().getUrlLogin());
+            return webdriverService.doSeleniumActionUrlLogin(tCExecution.getSession(), tCExecution.getUrl(), tCExecution.getCountryEnvironmentParameters().getUrlLogin());
         }
         message = new MessageEvent(MessageEventEnum.ACTION_NOTEXECUTED_NOTSUPPORTED_FOR_APPLICATION);
         message.setDescription(message.getDescription().replaceAll("%ACTION%", "UrlLogin"));
@@ -811,7 +811,7 @@ public class ActionService implements IActionService {
             SoapLibrary soapLibrary = soapLibraryService.findSoapLibraryByKey(object);
             String servicePath;
             if (withBase) {
-                servicePath = tCExecution.getCountryEnvironmentApplication().getIp() + tCExecution.getCountryEnvironmentApplication().getUrl();
+                servicePath = tCExecution.getCountryEnvironmentParameters().getIp() + tCExecution.getCountryEnvironmentParameters().getUrl();
             } else {
                 servicePath = soapLibrary.getServicePath();
             }

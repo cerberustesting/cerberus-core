@@ -79,7 +79,7 @@
 .action {
     height: 80px;
     font-size: 12px;
-    background-color: #f8f8f8;
+    background-color: #fff;
     border: 1px solid #e5e5e5;
     border-radius: 3px 3px 0 0;
 }
@@ -91,6 +91,11 @@
     background-color: #f8f8f8;
     border: 1px solid #e5e5e5;
     border-radius: 1px 1px 0 0;
+}
+
+.form-control{
+    border: 0px;
+    box-shadow: 0 0px 0px;
 }
 
 .action .type {
@@ -125,6 +130,36 @@
     font-size: 15px;
     font-weight: bold;
     line-height: 1.2;
+}
+
+.step-action {
+    background-color: white;
+}
+
+.step-action:hover {
+                background-color: #f8f8f8;
+}
+.step-action:hover input{
+                background-color: #f8f8f8;
+}
+.step-action:hover select{
+                background-color: #f8f8f8;
+}
+
+.step-action input::-webkit-input-placeholder {
+color: red !important;
+}
+ 
+.step-action input:-moz-placeholder { /* Firefox 18- */
+color: red !important;  
+}
+ 
+.step-action input::-moz-placeholder {  /* Firefox 19+ */
+color: red !important;  
+}
+ 
+.step-action input:-ms-input-placeholder {  
+color: red !important;  
 }
 
 .lib-info {

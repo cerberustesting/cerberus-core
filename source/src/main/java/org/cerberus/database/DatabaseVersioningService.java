@@ -4617,6 +4617,63 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         // New updated Documentation.
         //-- ------------------------ 726-727
         SQLS = new StringBuilder();
+        SQLS.append("SELECT 1 FROM dual;");
+        SQLInstruction.add(SQLS.toString());
+        SQLS = new StringBuilder();
+        SQLS.append("SELECT 1 FROM dual;");
+        SQLInstruction.add(SQLS.toString());
+
+        // Enlarging Release column.
+        //-- ------------------------ 728
+        SQLS = new StringBuilder();
+        SQLS.append("ALTER TABLE `buildrevisionparameters` CHANGE COLUMN `Release` `Release` VARCHAR(200) NULL DEFAULT NULL ; ");
+        SQLInstruction.add(SQLS.toString());
+
+// Add collumn repositoryUrl to the buildrevisionparameters table
+//-- ------------------------ 729
+        SQLS = new StringBuilder();
+        SQLS.append("ALTER TABLE `buildrevisionparameters` ");
+        SQLS.append("ADD COLUMN `repositoryurl` VARCHAR(1000) NULL DEFAULT '' AFTER `mavenversion`;");
+        SQLInstruction.add(SQLS.toString());
+
+// Add documentation for repositoryUrl
+//-- ------------------------ 730
+        SQLS = new StringBuilder();
+        SQLS.append("INSERT INTO `documentation` (`DocTable`, `DocField`, `DocValue`, `Lang`, `DocLabel`, `DocDesc`) ");
+        SQLS.append(" VALUES ('buildrevisionparameters', 'repositoryUrl', '', 'en', 'Repository URL', 'This information corresponds to the URL where the current build of the <code class=\\'doc-crbvvoca\\'>application</code> can be downloaded.<br>It allow to retrieve it in a repository such as Nexus.')");
+        SQLS.append(",('buildrevisionparameters', 'repositoryUrl', '', 'fr', 'URL du Dépot', 'Cette information correspond à l\\'URL d\\'où le build de l\\'<code class=\\'doc-crbvvoca\\'>application</code> peut-être téléchargé.<br>Cela permet de retrouver un build spécifique dans un dépot de livrable de type Nexus.');");
+        SQLInstruction.add(SQLS.toString());
+
+// Changing batchinvariant to a new structure.
+//-- ------------------------ 731-738
+        SQLS = new StringBuilder();
+        SQLS.append("ALTER TABLE `buildrevisionbatch` DROP FOREIGN KEY `FK_buildrevisionbatch_01`;");
+        SQLInstruction.add(SQLS.toString());
+        SQLS = new StringBuilder();
+        SQLS.append("ALTER TABLE `testcasestepbatch` DROP FOREIGN KEY `FK_testcasestepbatch_02`;");
+        SQLInstruction.add(SQLS.toString());
+        SQLS = new StringBuilder();
+        SQLS.append("ALTER TABLE `batchinvariant` ADD COLUMN `system` VARCHAR(45) NOT NULL FIRST, DROP COLUMN `Unit`, DROP COLUMN `IncIni`, CHANGE COLUMN `Batch` `Batch` VARCHAR(100) NOT NULL DEFAULT '', CHANGE COLUMN `Description` `Description` VARCHAR(200) NULL DEFAULT NULL ;");
+        SQLInstruction.add(SQLS.toString());
+        SQLS = new StringBuilder();
+        SQLS.append("ALTER TABLE `buildrevisionbatch` CHANGE COLUMN `Batch` `Batch` VARCHAR(100) NOT NULL COMMENT '' ;");
+        SQLInstruction.add(SQLS.toString());
+        SQLS = new StringBuilder();
+        SQLS.append("ALTER TABLE `buildrevisionbatch` ADD CONSTRAINT `FK_buildrevisionbatch_01` FOREIGN KEY (`Batch`) REFERENCES `cerberus`.`batchinvariant` (`Batch`) ON DELETE CASCADE ON UPDATE CASCADE;");
+        SQLInstruction.add(SQLS.toString());
+        SQLS = new StringBuilder();
+        SQLS.append("ALTER TABLE `testcasestepbatch` CHANGE COLUMN `Batch` `Batch` VARCHAR(100) NOT NULL DEFAULT '' COMMENT '' ;");
+        SQLInstruction.add(SQLS.toString());
+        SQLS = new StringBuilder();
+        SQLS.append("ALTER TABLE `testcasestepbatch` ADD CONSTRAINT `FK_testcasestepbatch_02` FOREIGN KEY (`Batch`) REFERENCES `cerberus`.`batchinvariant` (`Batch`) ON DELETE CASCADE ON UPDATE CASCADE;");
+        SQLInstruction.add(SQLS.toString());
+        SQLS = new StringBuilder();
+        SQLS.append("insert into batchinvariant select value, concat(`value`,b.batch), b.description from batchinvariant b join invariant where idname='SYSTEM';");
+        SQLInstruction.add(SQLS.toString());
+
+// New updated Documentation.
+//-- ------------------------ 739-740
+        SQLS = new StringBuilder();
         SQLS.append("DELETE FROM `documentation`;");
         SQLInstruction.add(SQLS.toString());
         SQLS = new StringBuilder();
@@ -4642,6 +4699,12 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLS.append(",('application','system','','fr','Système','Un <code class=\\'doc-crbvvoca\\'>système</code> est un groupe d\\'<code class=\\'doc-crbvvoca\\'>applications</code> pour lesquels il y a de temps en temps necessité de faire les changements en même temps.<br> La plupart du temps ces <code class=\\'doc-crbvvoca\\'>applications</code> partagent une même base de donnée et donc une structure de donnée unique.')");
         SQLS.append(",('application','type','','en','Type','The Type of the <code class=\\'doc-crbvvoca\\'>application</code> define whether the <code class=\\'doc-crbvvoca\\'>application</code> is a GUI, a Service or a Batch Treatment.<br>An automated <code class=\\'doc-crbvvoca\\'>testcase</code> based on a GUI <code class=\\'doc-crbvvoca\\'>application</code> will require a selenium server to execute.')");
         SQLS.append(",('application','type','','fr','Type','Le type de l\\'<code class=\\'doc-crbvvoca\\'>application</code> defini si l\\'<code class=\\'doc-crbvvoca\\'>application</code> est une interface graphique (GUI), un fournisseur de Service ou un traitement batch.<br>Un <code class=\\'doc-crbvvoca\\'>cas de test</code> automatisé basé sur une <code class=\\'doc-crbvvoca\\'>application</code> de type GUI necessitera un serveur Selenium pour s\\'executer.')");
+        SQLS.append(",('batchinvariant','Batch','','en','Batch','')");
+        SQLS.append(",('batchinvariant','Batch','','fr','Batch','')");
+        SQLS.append(",('batchinvariant','Description','','en','Description','Description of the batch.')");
+        SQLS.append(",('batchinvariant','Description','','fr','Description','Description du batch')");
+        SQLS.append(",('batchinvariant','system','','en','System','System of the batch')");
+        SQLS.append(",('batchinvariant','system','','fr','System','System du batch')");
         SQLS.append(",('buildrevisioninvariant','level','','en','Level','')");
         SQLS.append(",('buildrevisioninvariant','level','','fr','Niveau','')");
         SQLS.append(",('buildrevisioninvariant','seq','','en','Sequence','')");
@@ -4680,6 +4743,8 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLS.append(",('buildrevisionparameters','Release','','fr','Release','A <code class=\\'doc-crbvvoca\\'>release</code> is a single change done on the <code class=\\'doc-crbvvoca\\'>application</code>.')");
         SQLS.append(",('buildrevisionparameters','ReleaseOwner','','en','Owner','This is the name of the person who is responsible for the <code class=\\'doc-crbvvoca\\'>release</code>.')");
         SQLS.append(",('buildrevisionparameters','ReleaseOwner','','fr','Responsable','Nom de la personne responsable de la <code class=\\'doc-crbvvoca\\'>release</code>.')");
+        SQLS.append(",('buildrevisionparameters','repositoryUrl','','en','Repository URL','This information corresponds to the URL where the current build of the <code class=\\'doc-crbvvoca\\'>application</code> can be downloaded.<br>It allow to retrieve it in a repository such as Nexus.')");
+        SQLS.append(",('buildrevisionparameters','repositoryUrl','','fr','URL du Dépot','Cette information correspond à l\\'URL d\\'où le build de l\\'<code class=\\'doc-crbvvoca\\'>application</code> peut-être téléchargé.<br>Cela permet de retrouver un build spécifique dans un dépot de livrable de type Nexus.')");
         SQLS.append(",('buildrevisionparameters','Revision','','en','Revision','')");
         SQLS.append(",('buildrevisionparameters','Revision','','fr','Revision','')");
         SQLS.append(",('buildrevisionparameters','subject','','en','Description','')");
@@ -4838,8 +4903,28 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLS.append(",('page_application','button_edit','','fr','Modifier l\\'Application','')");
         SQLS.append(",('page_application','message_delete','','en','Do you want to delete application <b>\\'%ENTRY%\\'</b> ?<br>WARNING1 : All corresponding Test Cases will be removed as well !!!<br>WARNING2 : All associated Test Cases executions will also be removed !!!','')");
         SQLS.append(",('page_application','message_delete','','fr','Confirmez vous la suppression de l\\'application <b>\\'%ENTRY%\\'</b> ?<br> ATTENTION1 : Tous les Cas de Test associés seront également supprimés !!!<br>ATTENTION2 : Toutes les Executions associées seront également supprimées !!!','')");
+        SQLS.append(",('page_application','tabDef','','en','Definition','')");
+        SQLS.append(",('page_application','tabDef','','fr','Definition','')");
+        SQLS.append(",('page_application','tabEnv','','en','Environments','')");
+        SQLS.append(",('page_application','tabEnv','','fr','Environnements','')");
         SQLS.append(",('page_application','title','','en','APPLICATION','This page can be used to manage the applications.')");
         SQLS.append(",('page_application','title','','fr','APPLICATION','Cette page permet de gérer et créer des applications.')");
+        SQLS.append(",('page_batchinvariant','button_create','','en','Create new Batch','')");
+        SQLS.append(",('page_batchinvariant','button_create','','fr','Créer un nouveau Batch','')");
+        SQLS.append(",('page_batchinvariant','button_delete','','en','Delete Batch','')");
+        SQLS.append(",('page_batchinvariant','button_delete','','fr','Supprimer le Batch','')");
+        SQLS.append(",('page_batchinvariant','button_edit','','en','Edit Batch','')");
+        SQLS.append(",('page_batchinvariant','button_edit','','fr','Modifier le Batch','')");
+        SQLS.append(",('page_batchinvariant','message_delete','','en','Do you want to delete Batch <b>\\'%ENTRY%\\'</b> ?<br>WARNING1 : All corresponding Batch execution history will be deleted !!!','')");
+        SQLS.append(",('page_batchinvariant','message_delete','','fr','Confirmez vous la suppression du Batch <b>\\'%ENTRY%\\'</b> ?<br> ATTENTION1 : Tous les Historiques d\\'executions seront suprimés !!!','')");
+        SQLS.append(",('page_batchinvariant','title','','en','BATCH','This page can be used in order to manage the batch per system.')");
+        SQLS.append(",('page_batchinvariant','title','','fr','BATCH','Cette page permet de gérer et créer des batch pour chaque systeme.')");
+        SQLS.append(",('page_buildcontent','buildFrom','','en','From Build/Rev','')");
+        SQLS.append(",('page_buildcontent','buildFrom','','fr','De Build/Rev','')");
+        SQLS.append(",('page_buildcontent','buildTo','','en','To Build/Rev','')");
+        SQLS.append(",('page_buildcontent','buildTo','','fr','Vers Build/Rev','')");
+        SQLS.append(",('page_buildcontent','buttonInstallInstruction','','en','See Installation Instructions','')");
+        SQLS.append(",('page_buildcontent','buttonInstallInstruction','','fr','Voir Instructions d\\'installation','')");
         SQLS.append(",('page_buildcontent','buttonLoadAll','','en','Load All Build','')");
         SQLS.append(",('page_buildcontent','buttonLoadAll','','fr','Charger tous','')");
         SQLS.append(",('page_buildcontent','buttonLoadLatest','','en','Load latest Build','')");
@@ -4856,8 +4941,12 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLS.append(",('page_buildcontent','delete','','fr','Dlt','Select this checkbox and then save changes in order to delete the row.')");
         SQLS.append(",('page_buildcontent','filters','','en','Filters','')");
         SQLS.append(",('page_buildcontent','filters','','fr','Filtres','')");
+        SQLS.append(",('page_buildcontent','InstallInstructions','','en','Installation instructions','')");
+        SQLS.append(",('page_buildcontent','InstallInstructions','','fr','Instructions d\\'installation','')");
         SQLS.append(",('page_buildcontent','list','','en','Build Content List','')");
         SQLS.append(",('page_buildcontent','list','','fr','Liste du contenu du Build','')");
+        SQLS.append(",('page_buildcontent','massAction','','en','Massively update the selected release','')");
+        SQLS.append(",('page_buildcontent','massAction','','fr','Mise à jour massive des releases selectionnées','')");
         SQLS.append(",('page_buildcontent','message_delete','','en','Do you want to delete release entry <b>\\'%ENTRY%\\'</b> ?<br> NB : It correspond to the release <b>\\'%RELEASE%\\'</b> of application <b>\\'%APPLI%\\'</b> of Build <b>\\'%BUILD%\\'</b> Revision <b>\\'%REVISION%\\'</b>.','')");
         SQLS.append(",('page_buildcontent','message_delete','','fr','Confirmez vous la suppression de l\\'entrée <b>\\'%ENTRY%\\'</b> ?<br> NB : correspond à la release <b>\\'%RELEASE%\\'</b> de l\\'application <b>\\'%APPLI%\\'</b> du Build <b>\\'%BUILD%\\'</b> Revision <b>\\'%REVISION%\\'</b>.','')");
         SQLS.append(",('page_buildcontent','message_instruction','','en','Please specify a build and a revision to get the installation instructions!',NULL)");
@@ -4894,6 +4983,12 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLS.append(",('page_environment','button_delete','','fr','Supprimer l\\'Environnement','')");
         SQLS.append(",('page_environment','button_edit','','en','Edit Environment','')");
         SQLS.append(",('page_environment','button_edit','','fr','Modifier l\\'Environnement','')");
+        SQLS.append(",('page_environment','list','','en','Environment list','')");
+        SQLS.append(",('page_environment','list','','fr','Liste des environnements','')");
+        SQLS.append(",('page_environment','listChange','','en','Change list','')");
+        SQLS.append(",('page_environment','listChange','','fr','Liste des changements','')");
+        SQLS.append(",('page_environment','listEvent','','en','Batch list','')");
+        SQLS.append(",('page_environment','listEvent','','fr','Liste des batchs','')");
         SQLS.append(",('page_environment','message_delete','','en','Do you want to delete environment <b>\\'%ENVIRONMENT%\\'</b> from country <b>\\'%COUNTRY%\\'</b> and system <b>\\'%SYSTEM%\\'</b> ?<br>WARNING : All corresponding parameters such as list of applications, databases and other environments dependencies will be removed !!!','')");
         SQLS.append(",('page_environment','message_delete','','fr','Confirmez vous la suppression de l\\'environnement <b>\\'%ENVIRONMENT%\\'</b> du pays <b>\\'%COUNTRY%\\'</b> du système <b>\\'%SYSTEM%\\'</b> ?<br> ATTENTION : Tous les parametres associées tel que la liste des applications, database et autres dependances d\\'environnements seront supprimés !!!','')");
         SQLS.append(",('page_environment','title','','en','ENVIRONMENT','This page can be used to manage the environments.')");
@@ -4961,6 +5056,8 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLS.append(",('page_header','menuAdmin','','fr','Administration','')");
         SQLS.append(",('page_header','menuApplications','','en','Application','')");
         SQLS.append(",('page_header','menuApplications','','fr','Application','')");
+        SQLS.append(",('page_header','menuBatchInvariant','','en','Batch','')");
+        SQLS.append(",('page_header','menuBatchInvariant','','fr','Batch','')");
         SQLS.append(",('page_header','menuBuildContent','','en','Build Content','')");
         SQLS.append(",('page_header','menuBuildContent','','fr','Contenu des Builds','')");
         SQLS.append(",('page_header','menuBuildRevision','','en','Build Revision Definition','')");
@@ -5015,6 +5112,8 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLS.append(",('page_header','menuRobot','','fr','Robot','')");
         SQLS.append(",('page_header','menuRun','','en','Run','')");
         SQLS.append(",('page_header','menuRun','','fr','Executer','')");
+        SQLS.append(",('page_header','menuRunTest','','en','Run Test Case','')");
+        SQLS.append(",('page_header','menuRunTest','','fr','Executer un Cas de Test','')");
         SQLS.append(",('page_header','menuRunTestCase','','en','Run Test Case','')");
         SQLS.append(",('page_header','menuRunTestCase','','fr','Executer un Cas de Test','')");
         SQLS.append(",('page_header','menuRunTestSeePendingExecution','','en','See Execution In Queue','')");
@@ -5135,10 +5234,30 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLS.append(",('page_testcase','tooltip_step_used','','en','This step is being used by another step(s)!','')");
         SQLS.append(",('page_testcase','txt_property_not_defined','','en','** Property not defined **','')");
         SQLS.append(",('page_testcase','undefined_error_message','','en','There are undefined properties! Please check them before proceed.','')");
+        SQLS.append(",('page_testcaselist','activationCriteria','','en','Activation Criteria','')");
+        SQLS.append(",('page_testcaselist','activationCriteria','','fr','Critères d\\'activation','')");
+        SQLS.append(",('page_testcaselist','btn_create','','en','Create Test Case',NULL)");
+        SQLS.append(",('page_testcaselist','btn_create','','fr','Créer un Cas de Test',NULL)");
+        SQLS.append(",('page_testcaselist','btn_delete','','en','Delete Test Case','')");
+        SQLS.append(",('page_testcaselist','btn_delete','','fr','Supprimer Cas de Test','')");
+        SQLS.append(",('page_testcaselist','btn_edit','','en','Edit Test Case','')");
+        SQLS.append(",('page_testcaselist','btn_edit','','fr','Modifer le Cas de Test','')");
+        SQLS.append(",('page_testcaselist','btn_editScript','','en','Edit Test Case Script','')");
+        SQLS.append(",('page_testcaselist','btn_editScript','','fr','Editer le script du Cas de Test','')");
+        SQLS.append(",('page_testcaselist','btn_view','','en','View Test Case','')");
+        SQLS.append(",('page_testcaselist','btn_view','','fr','Voir Cas de Test','')");
         SQLS.append(",('page_testcaselist','filters','','en','Filters','Test filter')");
         SQLS.append(",('page_testcaselist','filters','','fr','Filtres','Filtre des tests')");
+        SQLS.append(",('page_testcaselist','link','','en','Bug Link','')");
+        SQLS.append(",('page_testcaselist','link','','fr','Lien vers le Bug','')");
+        SQLS.append(",('page_testcaselist','testCaseInfo','','en','Test Case Info','')");
+        SQLS.append(",('page_testcaselist','testCaseInfo','','fr','Test Case Info','')");
         SQLS.append(",('page_testcaselist','testcaselist','','en','Test Case List','List of all the test case of the selected test')");
         SQLS.append(",('page_testcaselist','testcaselist','','fr','Liste des cas de test','Liste de tout les cas de test du test selectionné')");
+        SQLS.append(",('page_testcaselist','testCaseParameter','','en','Test Case Parameter','')");
+        SQLS.append(",('page_testcaselist','testCaseParameter','','fr','Parametres du Cas de Test','')");
+        SQLS.append(",('page_testcaselist','testInfo','','en','Test Info','')");
+        SQLS.append(",('page_testcaselist','testInfo','','fr','Test Info','')");
         SQLS.append(",('page_testcasesearch','text','','en','Text','Insert here the text that will search against the following Fields of every <code class=\\'doc-crbvvoca\\'>test case</code> :<br>- Short Description,<br>- Detailed description / Value Expected,<br>- HowTo<br>- Comment<br><br>NB : Search is case insensitive.')");
         SQLS.append(",('page_testcase_m_addPicture','error_message_empty','','en','The URL value is empty!','')");
         SQLS.append(",('page_testcase_m_addPicture','lbl_feedurl','','en','Feed URL','')");
@@ -5428,28 +5547,6 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLS.append(",('user','Team','','en','Team','This is the team of the user.')");
         SQLS.append(",('usergroup','GroupName','','en','Group Name','Authorities are managed by group. In order to be granted to a set of feature, you must belong to the corresponding group.<br>Every user can of course belong to as many group as necessary in order to get access to as many feature as required.<br>In order to get the full access to the system you must belong to every group.<br>Some groups are linked together on the test perimeter and integration perimeter.<br><br><b>Test perimeter :</b><br><br><code class=\\'doc-fixed\\'>TestRO</code>: Has read only access to the information related to test cases and also has access to execution reporting options.<br><br><code class=\\'doc-fixed\\'>Test</code>: Can modify non WORKING test cases but cannot delete test cases.<br><br><code class=\\'doc-fixed\\'>TestAdmin</code>: Can modify or delete any test case (including Pre Testing test cases). Can also create or delete a test.<br><br>The minimum group you need to belong is <code class=\\'doc-fixed\\'>TestRO</code> that will give you access in read only to all test data (including its execution reporting page).<br>If you want to be able to modify the testcases (except the WORKING ones), you need <code class=\\'doc-fixed\\'>Test</code> group on top of <code class=\\'doc-fixed\\'>TestRO</code> group.<br>If you want the full access to all testcase (including beeing able to delete any testcase), you will need <code class=\\'doc-fixed\\'>TestAdmin</code> on top of <code class=\\'doc-fixed\\'>TestRO</code> and <code class=\\'doc-fixed\\'>Test</code> group.<br><br><b>Test Execution perimeter :</b><br><br><code class=\\'doc-fixed\\'>RunTest</code>: Can run both Manual and Automated test cases from GUI.<br><br><b>Integration perimeter :</b><br><br><code class=\\'doc-fixed\\'>IntegratorRO</code>: Has access to the integration status.<br><br><code class=\\'doc-fixed\\'>Integrator</code>: Can add an application. Can change parameters of the environments.<br><br><code class=\\'doc-fixed\\'>IntegratorNewChain</code>: Can register the end of the chain execution. Has read only access to the other informations on the same page.<br><br><code class=\\'doc-fixed\\'>IntegratorDeploy</code>: Can disable or enable environments and register new build / revision.<br><br>The minimum group you need to belong is <code class=\\'doc-fixed\\'>IntegratorRO</code> that will give you access in read only to all environment data.<br>If you want to be able to modify the environment data, you need <code class=\\'doc-fixed\\'>Integrator</code> group on top of <code class=\\'doc-fixed\\'>IntegratorRO</code> group.<br><code class=\\'doc-fixed\\'>IntegratorNewChain</code> and <code class=\\'doc-fixed\\'>IntegratorDeploy</code> are used on top of <code class=\\'doc-fixed\\'>Integrator</code> Group to be able to create a new chain on an environment or perform a deploy operation.<br><br><b>Administration perimeter :</b><br><br><code class=\\'doc-fixed\\'>Administrator</code>: Can create, modify or delete users. Has access to log Event and Database Maintenance. Can change Parameter values.')");
         SQLInstruction.add(SQLS.toString());
-
-        // Enlarging Release column.
-        //-- ------------------------ 728
-        SQLS = new StringBuilder();
-        SQLS.append("ALTER TABLE `buildrevisionparameters` CHANGE COLUMN `Release` `Release` VARCHAR(200) NULL DEFAULT NULL ; ");
-        SQLInstruction.add(SQLS.toString());
-
-// Add collumn repositoryUrl to the buildrevisionparameters table
-//-- ------------------------ 729
-        SQLS = new StringBuilder();
-        SQLS.append("ALTER TABLE `buildrevisionparameters` ");
-        SQLS.append("ADD COLUMN `repositoryurl` VARCHAR(1000) NULL DEFAULT '' AFTER `mavenversion`;");
-        SQLInstruction.add(SQLS.toString());
-        
-// Add documentation for repositoryUrl
-//-- ------------------------ 730
-        SQLS = new StringBuilder();
-        SQLS.append("INSERT INTO `documentation` (`DocTable`, `DocField`, `DocValue`, `Lang`, `DocLabel`, `DocDesc`) ");
-	SQLS.append(" VALUES ('buildrevisionparameters', 'repositoryUrl', '', 'en', 'Repository URL', 'This information corresponds to the URL where the current build of the <code class=\\'doc-crbvvoca\\'>application</code> can be downloaded.<br>It allow to retrieve it in a repository such as Nexus.')");
-	SQLS.append(",('buildrevisionparameters', 'repositoryUrl', '', 'fr', 'URL du Dépot', 'Cette information correspond à l\\'URL d\\'où le build de l\\'<code class=\\'doc-crbvvoca\\'>application</code> peut-être téléchargé.<br>Cela permet de retrouver un build spécifique dans un dépot de livrable de type Nexus.');");
-        SQLInstruction.add(SQLS.toString());
-        
 
         return SQLInstruction;
     }

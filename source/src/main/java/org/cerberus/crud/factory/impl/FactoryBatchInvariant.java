@@ -27,11 +27,10 @@ import org.springframework.stereotype.Service;
 public class FactoryBatchInvariant implements IFactoryBatchInvariant {
 
     @Override
-    public BatchInvariant create(String batch, String incIni, String unit, String description) {
+    public BatchInvariant create(String system, String batch, String description) {
         BatchInvariant newBatchInvariant = new BatchInvariant();
+        newBatchInvariant.setSystem(system);
         newBatchInvariant.setBatch(batch);
-        newBatchInvariant.setIncIni(incIni);
-        newBatchInvariant.setUnit(unit);
         newBatchInvariant.setDescription(description);
         return newBatchInvariant;
     }

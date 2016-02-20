@@ -22,8 +22,8 @@
 <%@page import="java.util.HashMap"%>
 <%@page import="org.cerberus.crud.entity.CountryEnvParam"%>
 <%@page import="org.cerberus.crud.service.ICountryEnvParamService"%>
-<%@page import="org.cerberus.crud.entity.CountryEnvironmentApplication"%>
-<%@page import="org.cerberus.crud.service.ICountryEnvironmentApplicationService"%>
+<%@page import="org.cerberus.crud.entity.CountryEnvironmentParameters"%>
+<%@page import="org.cerberus.crud.service.ICountryEnvironmentParametersService"%>
 <%@page import="java.net.URLEncoder"%>
 <%@page import="org.cerberus.crud.entity.Robot"%>
 <%@page import="org.cerberus.util.SqlUtil"%>

@@ -197,13 +197,19 @@ public class UpdateBuildRevisionParameters extends HttpServlet {
         }
 
         if (myId.length > 1) {
-            if (massErrorCounter > 0) {
+            if (massErrorCounter == myId.length) { // All updates are in ERROR.
                 msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_EXPECTED);
                 msg.setDescription(msg.getDescription().replace("%ITEM%", OBJECT_NAME)
                         .replace("%OPERATION%", "Mass Update")
                         .replace("%REASON%", massErrorCounter + " objects(s) out of " + myId.length + " failed to update due to an issue.<br>") + output_message.toString());
                 ans.setResultMessage(msg);
-            } else {
+            } else if (massErrorCounter > 0) { // At least 1 update in error
+                msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_WARNING);
+                msg.setDescription(msg.getDescription().replace("%ITEM%", OBJECT_NAME)
+                        .replace("%OPERATION%", "Mass Update")
+                        .replace("%REASON%", massErrorCounter + " objects(s) out of " + myId.length + " failed to update due to an issue.<br>") + output_message.toString());
+                ans.setResultMessage(msg);
+            } else { // No error detected.
                 msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
                 msg.setDescription(msg.getDescription().replace("%ITEM%", OBJECT_NAME)
                         .replace("%OPERATION%", "Mass Update") + "\n\nAll " + myId.length + " object(s) updated successfuly.");

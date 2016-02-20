@@ -22,10 +22,17 @@ package org.cerberus.crud.entity;
  */
 public class BatchInvariant {
 
+    private String system;
     private String batch;
-    private String incIni;
-    private String unit;
     private String description;
+
+    public String getSystem() {
+        return system;
+    }
+
+    public void setSystem(String system) {
+        this.system = system;
+    }
 
     public String getBatch() {
         return batch;
@@ -33,22 +40,6 @@ public class BatchInvariant {
 
     public void setBatch(String batch) {
         this.batch = batch;
-    }
-
-    public String getIncIni() {
-        return incIni;
-    }
-
-    public void setIncIni(String incIni) {
-        this.incIni = incIni;
-    }
-
-    public String getUnit() {
-        return unit;
-    }
-
-    public void setUnit(String unit) {
-        this.unit = unit;
     }
 
     public String getDescription() {

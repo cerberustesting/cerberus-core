@@ -29,8 +29,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import org.apache.log4j.Logger;
-import org.cerberus.crud.entity.CountryEnvironmentApplication;
-import org.cerberus.crud.service.ICountryEnvironmentApplicationService;
+import org.cerberus.crud.entity.CountryEnvironmentParameters;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -39,6 +38,7 @@ import org.owasp.html.Sanitizers;
 import org.springframework.context.ApplicationContext;
 import org.springframework.web.context.support.WebApplicationContextUtils;
 import org.springframework.web.util.HtmlUtils;
+import org.cerberus.crud.service.ICountryEnvironmentParametersService;
 
 /**
  *
@@ -74,13 +74,13 @@ public class GetCountryEnvironmentParameterList extends HttpServlet {
             JSONArray data = new JSONArray(); //data that will be shown in the table
 
             ApplicationContext appContext = WebApplicationContextUtils.getWebApplicationContext(this.getServletContext());
-            ICountryEnvironmentApplicationService cepService = appContext.getBean(ICountryEnvironmentApplicationService.class);
+            ICountryEnvironmentParametersService cepService = appContext.getBean(ICountryEnvironmentParametersService.class);
 
-            List<CountryEnvironmentApplication> ceaList = cepService.findListByCriteria(system, country, environment);
+            List<CountryEnvironmentParameters> ceaList = cepService.findListByCriteria(system, country, environment);
 
             JSONObject jsonResponse = new JSONObject();
 
-            for (CountryEnvironmentApplication cea : ceaList) {
+            for (CountryEnvironmentParameters cea : ceaList) {
                 JSONArray row = new JSONArray();
                 row.put("System="+cea.getSystem()+"&Country="+cea.getCountry()+"&Env="+cea.getEnvironment()+"&App="+cea.getApplication()+"&")
                         .put(cea.getCountry())

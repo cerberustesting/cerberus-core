@@ -19,14 +19,14 @@
  */
 package org.cerberus.crud.factory;
 
-import org.cerberus.crud.entity.CountryEnvironmentApplication;
+import org.cerberus.crud.entity.CountryEnvDeployType;
 
 /**
  *
  * @author bcivel
  */
-public interface IFactoryCountryEnvironmentApplication {
+public interface IFactoryCountryEnvDeployType {
 
-    CountryEnvironmentApplication create(String system, String country, String environment, String application, String ip,
-            String Domain, String url, String urlLogin);
+    CountryEnvDeployType create(String system, String country, String environment, String deployType, String jenkinsAgent);
+
 }

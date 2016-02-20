@@ -35,7 +35,7 @@ function initPage() {
     $('#editApplicationModal').on('hidden.bs.modal', editEntryModalCloseHandler);
 
     //configure and create the dataTable
-    var configurations = new TableConfigurationsServerSide("applicationsTable", "ReadApplication?system=" + getUser().defaultSystem, "contentTable", aoColumnsFunc("applicationsTable"));
+    var configurations = new TableConfigurationsServerSide("applicationsTable", "ReadApplication?system=" + getUser().defaultSystem, "contentTable", aoColumnsFunc("applicationsTable"), [3, 'asc']);
     createDataTableWithPermissions(configurations, renderOptionsForApplication);
 }
 
@@ -63,6 +63,17 @@ function displayPageLabel() {
     $("[name='bugtrackernewurlField']").html(doc.getDocOnline("application", "bugtrackernewurl"));
     $("[name='deploytypeField']").html(doc.getDocOnline("application", "deploytype"));
     $("[name='mavengroupidField']").html(doc.getDocOnline("application", "mavengroupid"));
+
+    $("[name='tabsEdit1']").html(doc.getDocOnline("page_application", "tabDef"));
+    $("[name='tabsEdit2']").html(doc.getDocOnline("page_application", "tabEnv"));
+
+    $("#environmentHeader").html(doc.getDocOnline("invariant", "ENVIRONMENT"));
+    $("#countryHeader").html(doc.getDocOnline("invariant", "COUNTRY"));
+    $("#ipHeader").html(doc.getDocOnline("countryenvironmentparameters", "IP"));
+    $("#urlHeader").html(doc.getDocOnline("countryenvironmentparameters", "URL"));
+    $("#urlLoginHeader").html(doc.getDocOnline("countryenvironmentparameters", "URLLOGIN"));
+    $("#domainHeader").html(doc.getDocOnline("countryenvironmentparameters", "domain"));
+
     displayInvariantList("system", "SYSTEM");
     displayInvariantList("type", "APPLITYPE");
     displayDeployTypeList("deploytype");
@@ -201,7 +212,7 @@ function editEntryModalCloseHandler() {
     clearResponseMessage($('#editApplicationModal'));
 }
 
-function editEntryClick(id) {
+function editEntryClick(id, system) {
     clearResponseMessageMainPage();
     var jqxhr = $.getJSON("ReadApplication", "application=" + id);
     $.when(jqxhr).then(function (data) {
@@ -239,6 +250,42 @@ function editEntryClick(id) {
 
         formEdit.modal('show');
     });
+
+    loadEnvironmentTable(system, id);
+}
+
+function loadEnvironmentTable(selectSystem, selectApplication) {
+    $('#environmentTableBody tr').remove();
+
+    var jqxhr = $.getJSON("ReadCountryEnvironmentParameters", "system=" + selectSystem + "&application=" + selectApplication + "&iSortCol_0=3");
+    $.when(jqxhr).then(function (result) {
+        var html_to_append = '';
+        $.each(result["contentTable"], function (idx, obj) {
+//            appendEnvironmentRow(obj.environment, obj.country, obj.ip, obj.domain, obj.url, obj.urlLogin);
+            html_to_append += getEnvironmentRow(obj.environment, obj.country, obj.ip, obj.domain, obj.url, obj.urlLogin);
+        });
+        $('#environmentTableBody').append(html_to_append);
+
+    }).fail(handleErrorAjaxAfterTimeout);
+
+}
+
+function getEnvironmentRow(environment, country, ip, domain, url, urllogin) {
+    return '<tr> \n\
+        <td><div class="nomarginbottom form-group form-group-sm">\n\
+            ' + environment + '</div></td>\n\\n\
+        <td><div class="nomarginbottom form-group form-group-sm">\n\
+            ' + country + '</div></td>\n\\n\
+        <td><div class="nomarginbottom form-group form-group-sm">\n\
+            ' + ip + '</div></td>\n\\n\
+        <td><div class="nomarginbottom form-group form-group-sm">\n\
+            ' + url + '</div></td>\n\\n\
+        <td><div class="nomarginbottom form-group form-group-sm">\n\
+            ' + urllogin + '</div></td>\n\\n\
+        <td><div class="nomarginbottom form-group form-group-sm">\n\
+            ' + domain + '</div></td><br>\n\\n\
+        </tr>';
+
 }
 
 function aoColumnsFunc(tableId) {
@@ -251,11 +298,11 @@ function aoColumnsFunc(tableId) {
             "mRender": function (data, type, obj) {
                 var hasPermissions = $("#" + tableId).attr("hasPermissions");
 
-                var editApplication = '<button id="editApplication" onclick="editEntryClick(\'' + obj["application"] + '\');"\n\
+                var editApplication = '<button id="editApplication" onclick="editEntryClick(\'' + obj["application"] + '\', \'' + obj["system"] + '\');"\n\
                                     class="editApplication btn btn-default btn-xs margin-right5" \n\
                                     name="editApplication" title="' + doc.getDocLabel("page_application", "button_edit") + '" type="button">\n\
                                     <span class="glyphicon glyphicon-pencil"></span></button>';
-                var viewApplication = '<button id="editApplication" onclick="editEntryClick(\'' + obj["application"] + '\');"\n\
+                var viewApplication = '<button id="editApplication" onclick="editEntryClick(\'' + obj["application"] + '\', \'' + obj["system"] + '\');"\n\
                                     class="editApplication btn btn-default btn-xs margin-right5" \n\
                                     name="editApplication" title="' + doc.getDocLabel("page_application", "button_edit") + '" type="button">\n\
                                     <span class="glyphicon glyphicon-eye-open"></span></button>';
