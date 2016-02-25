@@ -51,6 +51,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import org.openqa.selenium.Capabilities;
 import org.openqa.selenium.Dimension;
+import org.openqa.selenium.Platform;
 import org.openqa.selenium.Point;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.firefox.FirefoxDriver;
@@ -81,7 +82,7 @@ public class SeleniumServerService implements ISeleniumServerService {
         //message used for log purposes 
         String testCaseDescription = "[" + tCExecution.getTest() + " - " + tCExecution.getTestCase() + "]";
         try {
-            
+
             /**
              * SetUp Capabilities
              */
@@ -95,13 +96,21 @@ public class SeleniumServerService implements ISeleniumServerService {
             WebDriver driver = null;
             AppiumDriver appiumDriver = null;
             if (tCExecution.getApplication().getType().equalsIgnoreCase("GUI")) {
-                driver = new RemoteWebDriver(new URL("http://" + tCExecution.getSession().getHost() + ":" + tCExecution.getSession().getPort() + "/wd/hub"), caps);               
+                if (caps.getPlatform().is(Platform.ANDROID)) {
 
+                    appiumDriver = new AppiumDriver(new URL("http://" + tCExecution.getSession().getHost() + ":" + tCExecution.getSession().getPort() + "/wd/hub"), caps);
+                    driver = (WebDriver) appiumDriver;
+                } else {
+                    driver = new RemoteWebDriver(new URL("http://" + tCExecution.getSession().getHost() + ":" + tCExecution.getSession().getPort() + "/wd/hub"), caps);
+                }
             } else if (tCExecution.getApplication().getType().equalsIgnoreCase("APK")) {
                 appiumDriver = new AppiumDriver(new URL("http://" + tCExecution.getSession().getHost() + ":" + tCExecution.getSession().getPort() + "/wd/hub"), caps);
-                driver = (WebDriver) appiumDriver;                
+                driver = (WebDriver) appiumDriver;
+            } else if (tCExecution.getApplication().getType().equalsIgnoreCase("IPA")) {
+                appiumDriver = new AppiumDriver(new URL("http://" + tCExecution.getSession().getHost() + ":" + tCExecution.getSession().getPort() + "/wd/hub"), caps);
+                driver = (WebDriver) appiumDriver;
             }
-            
+
             tCExecution.getSession().setDriver(driver);
             tCExecution.getSession().setAppiumDriver(appiumDriver);
 
@@ -109,7 +118,8 @@ public class SeleniumServerService implements ISeleniumServerService {
              * If Gui application, maximize window Get IP of Node in case of
              * remote Server
              */
-            if (tCExecution.getApplication().getType().equalsIgnoreCase("GUI")) {
+            if (tCExecution.getApplication().getType().equalsIgnoreCase("GUI")
+                    && !caps.getPlatform().equals(Platform.ANDROID)) {
                 driver.manage().window().maximize();
                 getIPOfNode(tCExecution);
 
@@ -124,7 +134,7 @@ public class SeleniumServerService implements ISeleniumServerService {
                 tCExecution.setScreenSize(getScreenSize(driver));
             }
             tCExecution.getSession().setStarted(true);
-            
+
         } catch (CerberusException exception) {
             MyLogger.log(Selenium.class.getName(), Level.ERROR, exception.toString());
             throw new CerberusException(exception.getMessageError());
@@ -139,7 +149,7 @@ public class SeleniumServerService implements ISeleniumServerService {
             mes.setDescription(mes.getDescription().replace("%SSIP%", tCExecution.getSeleniumIP()));
             mes.setDescription(mes.getDescription().replace("%SSPORT%", tCExecution.getSeleniumPort()));
             throw new CerberusException(mes);
-        }catch (Exception exception) {
+        } catch (Exception exception) {
             MyLogger.log(Selenium.class.getName(), Level.ERROR, exception.toString());
             MessageGeneral mes = new MessageGeneral(MessageGeneralEnum.EXECUTION_FA_SELENIUM);
             mes.setDescription(mes.getDescription().replace("%MES%", exception.toString()));
@@ -264,6 +274,15 @@ public class SeleniumServerService implements ISeleniumServerService {
                     } else {
                         caps.setCapability(cap.getCapability(), cap.getValue());
                     }
+                    if (caps.getPlatform().is(Platform.ANDROID)) {
+                        caps = new DesiredCapabilities();
+                        caps.setCapability("deviceName", "Android");
+                        caps.setCapability("platformName", "Android");
+                        caps.setCapability(CapabilityType.PLATFORM, Platform.ANDROID);
+                        caps.setCapability("app", "Chrome");
+                        caps.setCapability("browserName", "");
+                        caps.setCapability("automationName", "Appium");
+                    }
                 }
             }
             if (tCExecution.getApplication().getType().equalsIgnoreCase("APK")) {
@@ -272,16 +291,15 @@ public class SeleniumServerService implements ISeleniumServerService {
                 caps.setCapability("automationName", "Appium");
                 caps.setCapability("platformName", "Android");
                 caps.setCapability("autoWebview", true);
+            }
+            if (tCExecution.getApplication().getType().equalsIgnoreCase("IPA")) {
+                caps.setCapability(CapabilityType.BROWSER_NAME, "");
+                caps.setCapability("deviceName", "iPhone 5s");
+                caps.setCapability("automationName", "Appium");
+                caps.setCapability("platformName", "iOS");
+                caps.setCapability("platformVersion", "9.1");
+                caps.setCapability("autoWebview", true);
 
-//                if (cap.getCapability().equalsIgnoreCase("browser")) {
-//                    caps.setCapability(CapabilityType.BROWSER_NAME, "android");
-//                }
-//                if (cap.getCapability().equalsIgnoreCase("platform")) {
-//                    caps.setCapability("platformName", cap.getValue());
-//                }
-//                if (cap.getCapability().equalsIgnoreCase("version")) {
-//                    caps.setCapability("deviceName", cap.getValue());
-//                }
             }
 
         }
@@ -289,9 +307,10 @@ public class SeleniumServerService implements ISeleniumServerService {
          * If android app, set app capability with the link where is stored the
          * apk
          */
-        if (tCExecution.getApplication().getType().equalsIgnoreCase("APK")) {
+        if (tCExecution.getApplication().getType().equalsIgnoreCase("APK")
+                || tCExecution.getApplication().getType().equalsIgnoreCase("IPA")) {
             File app = new File(tCExecution.getCountryEnvironmentParameters().getIp());
-            caps.setCapability("app", app);
+            caps.setCapability("app", tCExecution.getCountryEnvironmentParameters().getIp());
         }
         return caps;
     }
@@ -304,7 +323,7 @@ public class SeleniumServerService implements ISeleniumServerService {
                 Thread.sleep(2000);
             } catch (InterruptedException ex) {
                 Logger.getLogger(SeleniumServerService.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-             }
+            }
             Logger.getLogger(SeleniumServerService.class.getName()).log(java.util.logging.Level.INFO, "Stop Selenium Server");
             session.getDriver().quit();
             return true;

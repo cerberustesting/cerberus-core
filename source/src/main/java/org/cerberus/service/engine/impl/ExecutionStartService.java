@@ -317,7 +317,8 @@ public class ExecutionStartService implements IExecutionStartService {
          * Check if Browser is supported and if selenium server is reachable.
          */
         if (tCExecution.getApplication().getType().equalsIgnoreCase("GUI")
-                || tCExecution.getApplication().getType().equalsIgnoreCase("APK")) {
+                || tCExecution.getApplication().getType().equalsIgnoreCase("APK")
+        || tCExecution.getApplication().getType().equalsIgnoreCase("IPA")){
 
             try {
                 myInvariant = this.invariantService.findInvariantByIdValue("BROWSER", tCExecution.getBrowser());
