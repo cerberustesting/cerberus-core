@@ -3,14 +3,14 @@ Required Packages
 
 Make sure you've installed the following packages before continuing. 
 MySQL
-Java 1.6
-Glassfish Server v3
+Java 1.8
+Glassfish Server v4
   - if necessary, copy the mysql jdbc drivers jar file on the glassfish/lib folder of your Glassfish installation.
     The drivers can be downloaded at http://dev.mysql.com/downloads/connector/j/
   - In case your default distribution does not use Oracle jdk, you can get it from the web and modify glassfish config :
       file : glassfish/config/asenv.conf
       can be modified in order to add the following line :
-       AS_JAVA=/home/user/local/jdk1.6.0_xx
+       AS_JAVA=/home/user/local/jdk1.8.0_xx
       pointing to the location of the choosen jdk folder.
   
 
@@ -52,5 +52,4 @@ You can use the start-selenium.sh script in tools/selenium/ folder. Update it in
 
 Script execution automation can be done using the scripts located in tools/batchexecution/.
  
-NB1 : don't forget to update the cerberus parameters according to your Environment --> parameter page in Admin menu needs to be changed according to your local config (See CerberusPicturesConfig file inside docs folder).
-NB2 : The provided scripts install the application on default single instance server of Glassfish. You can of course change that to install it inside a cluster environment.
+NB : don't forget to update the cerberus parameters according to your Environment --> parameter page in Admin menu needs to be changed according to your local config (See CerberusPicturesConfig file inside docs folder).
