@@ -112,14 +112,14 @@ $.when($.getScript("js/pages/global/global.js")).then(function () {
 
         $("#testCaseList").on("change", updatePotentialNumber);
         $("#envSettingsAuto select").on("change", updatePotentialNumber);
-        
+
     });
 });
 
-function loadRequestContext(){
+function loadRequestContext() {
     var test = GetURLParameter("test");
     var testcase = GetURLParameter("testcase");
-    $('#testCaseList').find('option[value="'+test+'-'+testcase+'"]').prop("selected", true);
+    $('#testCaseList').find('option[value="' + test + '-' + testcase + '"]').prop("selected", true);
 }
 
 function typeSelectHandler() {
@@ -169,7 +169,7 @@ function loadTestCaseFromFilter() {
 
                 testCaseList.append($("<option></option>")
                         .text(text)
-                        .val(data.contentTable[index].test+"-"+data.contentTable[index].testCase)
+                        .val(data.contentTable[index].test + "-" + data.contentTable[index].testCase)
                         .data("item", data.contentTable[index]));
             }
             hideLoader("#chooseTest");
@@ -277,7 +277,7 @@ function checkForms() {
 
     if ($("#queue li").length === 0) {
         type = getAlertType("KO");
-        message = "Please, select at least one valid testcase.";
+        message = "Execution queue is empty !";
         showMessageMainPage(type, message);
         return false;
     } else if ($("#browser").val() === null) {
@@ -285,9 +285,9 @@ function checkForms() {
         message = "Please, select at least one browser.";
         showMessageMainPage(type, message);
         return false;
-    } else if ($("#queue li").length > 1 && $("#tag").val() === "") {
+    } else if ($("#queue li").length > 1 && $("#tag").val() === "") { // More than 1 excution and no Tag specified.
         type = getAlertType("KO");
-        message = "Please, indicate a tag for your execution.";
+        message = "More than 1 execution has been requested. It will be executed in batch mode so please, indicate a tag (to find it back).";
         showMessageMainPage(type, message);
         return false;
     }
@@ -295,6 +295,16 @@ function checkForms() {
 }
 
 function sendForm() {
+
+    if ($("#queue li").length > 1) { // We have more than 1 execution in the queue.
+        if ($("#tag").val() === "") { // We force the Tag is not defined.
+            var utc = new Date();
+            var tag = getUser().login + "-" + utc.toJSON().slice(0, 13) + utc.toJSON().slice(14, 16) + utc.toJSON().slice(17, 19)
+            $("#tag").prop("value", tag);
+        }
+    }
+
+
     if (checkForms()) {
         var data = {};
         var executionList = $("#queue li");
@@ -320,14 +330,14 @@ function sendForm() {
             for (var key in execSettings) {
                 data[key] = execSettings[key];
             }
-            
+
             if ($('input[name="envSettings"]:checked').val() === "manual") {
                 data.ManualHost = $("#myhost").val();
                 data.ManualContextRoot = $("#mycontextroot").val();
                 data.ManualLoginRelativeURL = $("#myloginrelativeurl").val();
                 data.ManualEnvData = $("#myenvdata").val();
             }
-            
+
             data.browsers = JSON.stringify(browsers);
             data.toAddList = JSON.stringify(executionArray);
             data.push = true;
@@ -339,7 +349,7 @@ function sendForm() {
                 async: true,
                 success: function (data) {
                     if (data.redirect) {
-                        window.location.replace(data.redirect);
+                        window.location.assign(data.redirect);
                     }
                 },
                 error: showUnexpectedError
@@ -622,7 +632,7 @@ function appendRobotList() {
     $.when(jqXHR).then(function (data) {
         var robotList = $("#robotConfig");
 
-        robotList.append($('<option></option>').text("Custom configuration").val(""));
+        robotList.append($('<option></option>').text("-- Custom configuration --").val(""));
         for (var index = 0; index < data.contentTable.length; index++) {
             robotList.append($('<option></option>').text(data.contentTable[index].robot).val(data.contentTable[index].robotID));
         }
@@ -655,11 +665,11 @@ function loadRobotInfo(robotID) {
         enableRobotFields();
         if (pref !== null && pref.robotConfig === "") {
             $("#robotConfig").val(pref.robotConfig);
-            $("#seleniumIP").val(pref.seleniumIP);
-            $("#seleniumPort").val(pref.seleniumPort);
-            $("#version").val(pref.version);
+            $("#seleniumIP").val(pref.ss_ip);
+            $("#seleniumPort").val(pref.ss_p);
             $("#browser").val(pref.browser);
-            $("#platform").val(pref.platform);
+            $("#version").val(pref.BrowserVersion);
+            $("#platform").val(pref.Platform);
             $("#screenSize").val(pref.screenSize);
         } else {
             $("#seleniumIP").val("");
@@ -701,7 +711,7 @@ function loadRobotForm() {
     $.when(
             appendRobotList(),
             loadSelect("BROWSER", "browser"),
-            $("[name=platform]").append($('<option></option>').text("Optional").val("")),
+            $("[name=Platform]").append($('<option></option>').text("Default").val("")),
             loadSelect("PLATFORM", "Platform"),
             $("[name=screenSize]").append($('<option></option>').text("Default (Client Full Screen)").val("")),
             loadSelect("screensize", "screenSize")
@@ -734,11 +744,11 @@ function applyRobotPref() {
         if (pref.robotConfig === "") {
             enableRobotFields();
             $("#robotConfig").val(pref.robotConfig);
-            $("#seleniumIP").val(pref.seleniumIP);
-            $("#seleniumPort").val(pref.seleniumPort);
-            $("#version").val(pref.version);
+            $("#seleniumIP").val(pref.ss_ip);
+            $("#seleniumPort").val(pref.ss_p);
             $("#browser").val(pref.browser);
-            $("#platform").val(pref.platform);
+            $("#version").val(pref.BrowserVersion);
+            $("#platform").val(pref.Platform);
             $("#screenSize").val(pref.screenSize);
         } else {
             $("#robotConfig").val(pref.robotConfig);
