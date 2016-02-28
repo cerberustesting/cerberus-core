@@ -62,8 +62,8 @@
                         </div>
                         <!-- tabs definition-->
                         <ul id="tabsAdd" class="nav nav-tabs" data-tabs="tabs">
-                            <li class="active"><a data-toggle="tab" id="tab1Text" href="#tabsEnable-1">Email Preview</a></li>
-                            <li><a data-toggle="tab" href="#tabsEnable-2" id="tab2Text">Installation instruction</a></li>
+                            <li class="active"><a data-toggle="tab" id="tab1Text" name="tab1Text" href="#tabsEnable-1">Email Preview</a></li>
+                            <li><a data-toggle="tab" href="#tabsEnable-2" id="tab2Text" name="tab2Text">Installation instruction</a></li>
                         </ul>
                         <div class="tab-content">   
                             <div class="center marginTop25 tab-pane fade in active" id="tabsEnable-1">
@@ -76,7 +76,7 @@
                                     <textarea  class="form-control" id="notifCc" name="notifCc" aria-describedby="basic-addon1" readonly></textarea> 
                                 </div>
                                 <div class="row">
-                                    <label for="toField" name="toField">Subject</label>
+                                    <label for="subjectField" name="subjectField">Subject</label>
                                     <input type="text" class="form-control" name="notifSubject" id="notifSubject" aria-describedby="basic-addon1" readonly="">
                                 </div>
                                 <br>
@@ -90,12 +90,12 @@
                                             <table class="table table-bordered table-hover nomarginbottom" id="installInstructionsTable">
                                                 <thead>
                                                     <tr>
-                                                        <th class="text-center" id="buildHeader">Build</th>
-                                                        <th class="text-center" id="revisionHeader">Revision</th>
-                                                        <th class="text-center" id="applicationHeader">Application</th>
-                                                        <th class="text-center" id="releaseHeader">Release</th>
-                                                        <th class="text-center" id="linkHeader">Deploy Link</th>
-                                                        <th class="text-center" id="versionHeader">Version</th>
+                                                        <th class="text-center" id="buildHeader" name="buildHeader">Build</th>
+                                                        <th class="text-center" id="revisionHeader" name="revisionHeader">Revision</th>
+                                                        <th class="text-center" id="applicationHeader" name="applicationHeader">Application</th>
+                                                        <th class="text-center" id="releaseHeader" name="releaseHeader">Release</th>
+                                                        <th class="text-center" id="linkHeader" name="linkHeader">Deploy Link</th>
+                                                        <th class="text-center" id="versionHeader" name="versionHeader">Version</th>
                                                     </tr>
                                                 </thead>
                                                 <tbody id="installInstructionsTableBody">

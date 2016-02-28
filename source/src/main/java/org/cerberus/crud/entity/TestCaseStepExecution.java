@@ -17,6 +17,7 @@
  */
 package org.cerberus.crud.entity;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 /**
@@ -33,7 +34,7 @@ public class TestCaseStepExecution {
     private long end;
     private long fullStart;
     private long fullEnd;
-    private long timeElapsed;
+    private BigDecimal timeElapsed;
     private String returnCode;
     private String returnMessage;
     /**
@@ -221,11 +222,11 @@ public class TestCaseStepExecution {
         this.testCase = testCase;
     }
 
-    public long getTimeElapsed() {
+    public BigDecimal getTimeElapsed() {
         return timeElapsed;
     }
 
-    public void setTimeElapsed(long timeElapsed) {
+    public void setTimeElapsed(BigDecimal timeElapsed) {
         this.timeElapsed = timeElapsed;
     }
 }

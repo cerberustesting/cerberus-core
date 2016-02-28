@@ -188,7 +188,6 @@ function loadTagFilters(urlTag) {
 function loadReport() {
     var selectTag = $("#selectTag option:selected").text();
 
-//    window.history.pushState('Tag', '', 'ReportingExecutionByTag.jsp?Tag=' + encodeURIComponent(selectTag));
     InsertURLInHistory('ReportingExecutionByTag.jsp?Tag=' + encodeURIComponent(selectTag));
 
     if (selectTag !== "") {
@@ -308,7 +307,7 @@ function loadReportList() {
 
             var request = "ReadTestCaseExecution?Tag=" + encodeURIComponent(selectTag) + "&" + statusFilter.serialize() + "&" + countryFilter.serialize();
 
-            var config = new TableConfigurationsServerSide("listTable", request, "testList", aoColumnsFunc(data.Columns), [0,'asc']);
+            var config = new TableConfigurationsServerSide("listTable", request, "testList", aoColumnsFunc(data.Columns), [0, 'asc']);
             customConfig(config);
 
             //var table = createDataTable(config, createShortDescRow);

@@ -99,17 +99,69 @@ function displayPageLabel() {
     $("[name='maintenanceActField']").html(doc.getDocOnline("countryenvparam", "maintenanceact"));
     $("[name='maintenanceStrField']").html(doc.getDocOnline("countryenvparam", "maintenancestr"));
     $("[name='maintenanceEndField']").html(doc.getDocOnline("countryenvparam", "maintenanceend"));
-    
+
     $("[name='activeField']").html(doc.getDocOnline("countryenvparam", "active"));
     $("[name='chainField']").html(doc.getDocOnline("countryenvparam", "chain"));
     $("[name='distribListField']").html(doc.getDocOnline("countryenvparam", "DistribList"));
     $("[name='eMailBodyChainField']").html(doc.getDocOnline("countryenvparam", "EMailBodyChain"));
     $("[name='eMailBodyRevisionField']").html(doc.getDocOnline("countryenvparam", "EMailBodyRevision"));
     $("[name='eMailBodyDisableEnvironmentField']").html(doc.getDocOnline("countryenvparam", "EMailBodyDisableEnvironment"));
-    
+
     $("[name='changeListField']").html(doc.getDocOnline("page_environment", "listChange"));
     $("[name='eventListField']").html(doc.getDocOnline("page_environment", "listEvent"));
-    
+
+    $("[name='toField']").html(doc.getDocOnline("page_environment", "to"));
+    $("[name='ccField']").html(doc.getDocOnline("page_environment", "cc"));
+    $("[name='subjectField']").html(doc.getDocOnline("page_environment", "subject"));
+
+    $("[name='eventEnableField']").html(doc.getDocOnline("page_environment", "button_enable"));
+    $("[name='currentBuildField']").html(doc.getDocOnline("page_environment", "currentBuild"));
+    $("[name='currentRevisionField']").html(doc.getDocOnline("page_environment", "currentRevision"));
+    $("[name='newBuildField']").html(doc.getDocOnline("page_environment", "newBuild"));
+    $("[name='newRevisionField']").html(doc.getDocOnline("page_environment", "newRevision"));
+    $("[name='buttonEnablePreviewNotification']").html(doc.getDocOnline("page_environment", "buttonPreviewNotification"));
+    $("[name='buttonEnable']").html(doc.getDocOnline("page_environment", "button_enable1"));
+    $("[name='tab1Text']").html(doc.getDocOnline("page_environment", "tabPreview"));
+    $("[name='tab2Text']").html(doc.getDocOnline("page_environment", "tabInstallInstruction"));
+    $("[name='buildHeader']").html(doc.getDocOnline("buildrevisionparameters", "Build"));
+    $("[name='revisionHeader']").html(doc.getDocOnline("buildrevisionparameters", "Revision"));
+    $("[name='applicationHeader']").html(doc.getDocOnline("buildrevisionparameters", "application"));
+    $("[name='releaseHeader']").html(doc.getDocOnline("buildrevisionparameters", "Release"));
+    $("[name='linkHeader']").html(doc.getDocOnline("buildrevisionparameters", "Link"));
+    $("[name='versionHeader']").html(doc.getDocOnline("buildrevisionparameters", "mavenVersion"));
+
+    $("[name='eventDisableField']").html(doc.getDocOnline("page_environment", "button_disable"));
+    $("[name='buttonDisable']").html(doc.getDocOnline("page_environment", "button_disable1"));
+
+    $("[name='eventNewChainField']").html(doc.getDocOnline("page_environment", "button_newChain"));
+    $("[name='buttonNewChain']").html(doc.getDocOnline("page_environment", "button_newChain1"));
+    $("[name='buttonNewChainPreviewNotification']").html(doc.getDocOnline("page_environment", "buttonPreviewNotification"));
+    // Tab
+    $("[name='tabDefinition']").html(doc.getDocOnline("page_environment", "tabDefinition"));
+    $("[name='tabBuild']").html(doc.getDocOnline("page_environment", "tabBuild"));
+    $("[name='tabChain']").html(doc.getDocOnline("page_environment", "tabChain"));
+    $("[name='tabApplication']").html(doc.getDocOnline("page_environment", "tabApplication"));
+    $("[name='tabDatabase']").html(doc.getDocOnline("page_environment", "tabDatabase"));
+    $("[name='tabDependencies']").html(doc.getDocOnline("page_environment", "tabDependencies"));
+    $("[name='tabDeploy']").html(doc.getDocOnline("page_environment", "tabDeploy"));
+    $("[name='tabNotif']").html(doc.getDocOnline("page_environment", "tabNotif"));
+    // Application List
+    $("[name='applicationHeader']").html(doc.getDocOnline("application", "Application"));
+    $("[name='ipHeader']").html(doc.getDocOnline("countryenvironmentparameters", "IP"));
+    $("[name='urlHeader']").html(doc.getDocOnline("countryenvironmentparameters", "URL"));
+    $("[name='urlLoginHeader']").html(doc.getDocOnline("countryenvironmentparameters", "URLLOGIN"));
+    $("[name='domainHeader']").html(doc.getDocOnline("countryenvironmentparameters", "domain"));
+    // Databases List
+    $("[name='databaseHeader']").html(doc.getDocOnline("countryenvironmentdatabase", "Database"));
+    $("[name='connectionPoolNameHeader']").html(doc.getDocOnline("countryenvironmentdatabase", "ConnectionPoolName"));
+    // Dependencies List
+    $("[name='systemHeader']").html(doc.getDocOnline("countryenvlink", "systemLink"));
+    $("[name='countryHeader']").html(doc.getDocOnline("countryenvlink", "CountryLink"));
+    $("[name='environmentHeader']").html(doc.getDocOnline("countryenvlink", "EnvironmentLink"));
+    // Deploy Type List
+    $("[name='deployTypeHeader']").html(doc.getDocOnline("deploytype", "deploytype"));
+    $("[name='jenkinsAgentHeader']").html(doc.getDocOnline("countryenvdeploytype", "JenkinsAgent"));
+
     displayFooter(doc);
 }
 
@@ -822,7 +874,7 @@ function aoColumnsFunc(tableId) {
                                 <span class="glyphicon glyphicon-pencil"></span></button>';
                 var viewEnv = '<button id="editEnv" onclick="editEntryClick(\'' + obj["system"] + '\',\'' + obj["country"] + '\',\'' + obj["environment"] + '\');"\n\
                                 class="editEnv btn btn-default btn-xs margin-right5" \n\
-                                name="editEnv" title="' + doc.getDocLabel("page_environment", "button_edit") + '" type="button">\n\
+                                name="editEnv" title="' + doc.getDocLabel("page_environment", "button_view") + '" type="button">\n\
                                 <span class="glyphicon glyphicon-eye-open"></span></button>';
                 var deleteEnv = '<button id="deleteEnv" onclick="deleteEntryClick(\'' + obj["system"] + '\',\'' + obj["country"] + '\',\'' + obj["environment"] + '\');" \n\
                                 class="deleteEnv btn btn-default btn-xs margin-right25" \n\
@@ -830,15 +882,15 @@ function aoColumnsFunc(tableId) {
                                 <span class="glyphicon glyphicon-trash"></span></button>';
                 var disableEnv = '<button id="disableEnv" onclick="eventDisableClick(\'' + obj["system"] + '\',\'' + obj["country"] + '\',\'' + obj["environment"] + '\');" \n\
                                 class="disableEnv btn btn-default btn-xs margin-right5" \n\
-                                name="disableEnv" title="' + doc.getDocLabel("page_environment", "button_delete") + '" type="button">\n\
+                                name="disableEnv" title="' + doc.getDocLabel("page_environment", "button_disable") + '" type="button">\n\
                                 <span class="glyphicon glyphicon-remove-circle"></span></button>';
                 var enableEnv = '<button id="enableEnv" onclick="eventEnableClick(\'' + obj["system"] + '\',\'' + obj["country"] + '\',\'' + obj["environment"] + '\',\'' + obj["build"] + '\',\'' + obj["revision"] + '\');;" \n\
                                 class="enableEnv btn btn-default btn-xs margin-right5" \n\
-                                name="enableEnv" title="' + doc.getDocLabel("page_environment", "button_delete") + '" type="button">\n\
+                                name="enableEnv" title="' + doc.getDocLabel("page_environment", "button_enable") + '" type="button">\n\
                                 <span class="glyphicon glyphicon-ok-circle"></span></button>';
                 var newChainEnv = '<button id="newChainEnv" onclick="eventNewChainClick(\'' + obj["system"] + '\',\'' + obj["country"] + '\',\'' + obj["environment"] + '\');;" \n\
                                 class="newChainEnv btn btn-default btn-xs margin-right5" \n\
-                                name="newChainEnv" title="' + doc.getDocLabel("page_environment", "button_delete") + '" type="button">\n\
+                                name="newChainEnv" title="' + doc.getDocLabel("page_environment", "button_newChain") + '" type="button">\n\
                                 NC</button>';
 
                 var returnString = '<div class="center btn-group width160">';

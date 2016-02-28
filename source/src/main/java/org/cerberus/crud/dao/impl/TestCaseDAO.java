@@ -895,7 +895,7 @@ public class TestCaseDAO implements ITestCaseDAO {
         String dateCrea = "";
         try { // Managing the case where the date is 0000-00-00 00:00:00 inside MySQL
             dateCrea = resultSet.getString("tcdatecrea");
-        } catch (SQLException e) {
+        } catch (Exception e) {
             dateCrea = "-- unknown --";
         }
 

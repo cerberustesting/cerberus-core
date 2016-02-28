@@ -381,7 +381,7 @@ public class GetExecutionQueue extends HttpServlet {
             jsonResponse.put("messageType", answer.getResultMessage().getMessage().getCodeString());
             jsonResponse.put("message", answer.getResultMessage().getDescription());
             jsonResponse.put("addedToQueue", addedToQueue);
-            jsonResponse.put("redirect", "ReportingExecutionByTag.jsp?enc=1&Tag=" + StringUtil.encodeAsJavaScriptURIComponent(tag));
+            jsonResponse.put("redirect", "ReportingExecutionByTag.jsp?Tag=" + StringUtil.encodeAsJavaScriptURIComponent(tag));
         }
 
         response.setContentType("application/json");
