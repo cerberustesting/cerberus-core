@@ -19,6 +19,7 @@
  */
 package org.cerberus.crud.factory.impl;
 
+import java.math.BigDecimal;
 import org.cerberus.crud.entity.MessageEvent;
 import org.cerberus.crud.entity.TestCaseExecution;
 import org.cerberus.crud.entity.TestCaseStep;
@@ -33,7 +34,7 @@ import org.springframework.stereotype.Service;
 public class FactoryTestCaseStepExecution implements IFactoryTestCaseStepExecution {
 
     @Override
-    public TestCaseStepExecution create(long id, String test, String testCase, int step, String batNumExe, long start, long end, long fullStart, long fullEnd, long timeElapsed,
+    public TestCaseStepExecution create(long id, String test, String testCase, int step, String batNumExe, long start, long end, long fullStart, long fullEnd, BigDecimal timeElapsed,
             String returnCode, MessageEvent stepResultMessage, TestCaseStep testCaseStep, TestCaseExecution tCExecution, String useStep, String useStepTest, 
                                  String useStepTestCase, int useStepTestCaseStep) {
         TestCaseStepExecution testCaseStepExecution = new TestCaseStepExecution();
@@ -59,7 +60,7 @@ public class FactoryTestCaseStepExecution implements IFactoryTestCaseStepExecuti
     }
 
     @Override
-    public TestCaseStepExecution create(long id, String test, String testCase, int step, String batNumExe, long start, long end, long fullStart, long fullEnd, long timeElapsed, String returnCode, String returnMessage) {
+    public TestCaseStepExecution create(long id, String test, String testCase, int step, String batNumExe, long start, long end, long fullStart, long fullEnd, BigDecimal timeElapsed, String returnCode, String returnMessage) {
         TestCaseStepExecution testCaseStepExecution = new TestCaseStepExecution();
         testCaseStepExecution.setBatNumExe(batNumExe);
         testCaseStepExecution.setEnd(end);

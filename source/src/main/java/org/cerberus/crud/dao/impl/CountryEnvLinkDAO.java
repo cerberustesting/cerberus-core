@@ -58,7 +58,7 @@ public class CountryEnvLinkDAO implements ICountryEnvLinkDAO {
     @Autowired
     private IFactoryCountryEnvLink factoryCountryEnvLink;
 
-    private static final Logger LOG = Logger.getLogger(ApplicationDAO.class);
+    private static final Logger LOG = Logger.getLogger(CountryEnvLinkDAO.class);
 
     private final String OBJECT_NAME = "CountryEnvLink";
     private final String SQL_DUPLICATED_CODE = "23000";
@@ -89,17 +89,17 @@ public class CountryEnvLinkDAO implements ICountryEnvLinkDAO {
                         result.add(resultData);
                     }
                 } catch (SQLException exception) {
-                    MyLogger.log(TestCaseExecutionDataDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
+                    MyLogger.log(CountryEnvLinkDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
                 } finally {
                     resultSet.close();
                 }
             } catch (SQLException exception) {
-                MyLogger.log(TestCaseExecutionDataDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
+                MyLogger.log(CountryEnvLinkDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
             } finally {
                 preStat.close();
             }
         } catch (SQLException exception) {
-            MyLogger.log(TestCaseExecutionDataDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
+            MyLogger.log(CountryEnvLinkDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
         } finally {
             try {
                 if (connection != null) {

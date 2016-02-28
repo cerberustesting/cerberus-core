@@ -21,6 +21,7 @@ package org.cerberus.servlet.manualtestcase;
 
 import java.io.File;
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -43,7 +44,6 @@ import org.cerberus.crud.service.ITestCaseStepActionExecutionService;
 import org.cerberus.crud.service.ITestCaseStepExecutionService;
 import org.cerberus.exception.CerberusException;
 import org.cerberus.log.MyLogger;
-import org.cerberus.service.engine.IRecorderService;
 import org.cerberus.util.FileUtil;
 import org.springframework.context.ApplicationContext;
 import org.springframework.web.context.support.WebApplicationContextUtils;
@@ -232,7 +232,7 @@ public class RunManualTest extends HttpServlet {
                 String stepReturnCode = getParameterIfExists(request, "stepStatus_" + inc);
 
                 result.add(testCaseStepExecutionFactory.create(executionId, test, testCase, step, null, now, now, now, now,
-                        0, stepReturnCode, stepResultMessage));
+                        new BigDecimal("0"), stepReturnCode, stepResultMessage));
             }
         }
         return result;

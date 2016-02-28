@@ -19,6 +19,7 @@
  */
 package org.cerberus.service.engine.impl;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -294,7 +295,7 @@ public class ExecutionRunService implements IExecutionRunService {
                 TestCaseStepExecution testCaseStepExecution = factoryTestCaseStepExecution.create(
                         runID, testCaseStep.getTest(), testCaseStep.getTestCase(),
                         testCaseStep.getStep(), null,
-                        startStep, 0, startStep, 0, 0, null, new MessageEvent(MessageEventEnum.STEP_PENDING), testCaseStep, tCExecution,
+                        startStep, 0, startStep, 0, new BigDecimal("0"), null, new MessageEvent(MessageEventEnum.STEP_PENDING), testCaseStep, tCExecution,
                         testCaseStep.getUseStep(), testCaseStep.getUseStepTest(), testCaseStep.getUseStepTestCase(), testCaseStep.getUseStepStep());
                 testCaseStepExecutionService.insertTestCaseStepExecution(testCaseStepExecution);
                 testCaseStepExecution.setExecutionResultMessage(new MessageGeneral(MessageGeneralEnum.EXECUTION_PE_TESTSTARTED));

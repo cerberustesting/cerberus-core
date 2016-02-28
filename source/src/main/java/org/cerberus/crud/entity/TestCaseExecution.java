@@ -50,10 +50,9 @@ public class TestCaseExecution {
     private int verbose;
     private String status;
     private String crbVersion;
-    private boolean synchroneous;
-    private String timeout;
     private String executor;
     private String screenSize;
+
 
     /**
      * From here are data outside database model.
@@ -88,6 +87,9 @@ public class TestCaseExecution {
     private long idFromQueue;
     private Integer numberOfRetries;
     private String userAgent;
+    private boolean synchroneous;
+    private String timeout;
+
 
     public String getUserAgent() {
         return userAgent;

@@ -464,7 +464,8 @@ public class CampaignDAO implements ICampaignDAO {
         }
         try { // Managing the case where the date is 0000-00-00 00:00:00 inside MySQL
             testCaseWithExecution.setEnd(resultSet.getString("End"));
-        } catch (SQLException e) {
+        } catch (Exception e) {
+            LOG.warn("End date on execution not definied. " + e.toString());
             testCaseWithExecution.setEnd("0000-00-00 00:00:00");
         }
         testCaseWithExecution.setStatusExecutionID(resultSet.getLong("statusExecutionID"));

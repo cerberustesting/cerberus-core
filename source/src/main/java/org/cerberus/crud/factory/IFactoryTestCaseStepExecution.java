@@ -19,6 +19,7 @@
  */
 package org.cerberus.crud.factory;
 
+import java.math.BigDecimal;
 import org.cerberus.crud.entity.MessageEvent;
 import org.cerberus.crud.entity.TestCaseExecution;
 import org.cerberus.crud.entity.TestCaseStep;
@@ -30,11 +31,11 @@ import org.cerberus.crud.entity.TestCaseStepExecution;
 public interface IFactoryTestCaseStepExecution {
 
     TestCaseStepExecution create(long id, String test, String testCase, int step, String batNumExe,
-                                 long start, long end, long fullStart, long fullEnd, long timeElapsed, String returnCode,
+                                 long start, long end, long fullStart, long fullEnd, BigDecimal timeElapsed, String returnCode,
                                  MessageEvent stepResultMessage, TestCaseStep testCaseStep, TestCaseExecution tCExecution, String useStep, String useStepTest, 
                                  String useStepTestCase, int useStepTestCaseStep);
     
     TestCaseStepExecution create(long id, String test, String testCase, int step, String batNumExe,
-                                 long start, long end, long fullStart, long fullEnd, long timeElapsed, String returnCode,
+                                 long start, long end, long fullStart, long fullEnd, BigDecimal timeElapsed, String returnCode,
                                  String returnMessage);
 }

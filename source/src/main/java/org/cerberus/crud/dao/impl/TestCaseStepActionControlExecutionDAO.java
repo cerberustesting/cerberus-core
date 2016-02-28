@@ -57,15 +57,6 @@ public class TestCaseStepActionControlExecutionDAO implements ITestCaseStepActio
     @Autowired
     private IFactoryTestCaseStepActionControlExecution factoryTestCaseStepActionControlExecution;
 
-    /**
-     * Short one line description.
-     * <p/>
-     * Longer description. If there were any, it would be here. <p> And even
-     * more explanations to follow in consecutive paragraphs separated by HTML
-     * paragraph breaks.
-     *
-     * @param variable Description text text text.
-     */
     @Override
     public void insertTestCaseStepActionControlExecution(TestCaseStepActionControlExecution testCaseStepActionControlExecution) {
 
@@ -108,32 +99,23 @@ public class TestCaseStepActionControlExecutionDAO implements ITestCaseStepActio
                 preStat.executeUpdate();
 
             } catch (SQLException exception) {
-                MyLogger.log(TestCaseStepActionControlExecutionDAO.class.getName(), Level.ERROR, "Unable to execute query : "+exception.toString());
+                MyLogger.log(TestCaseStepActionControlExecutionDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
             } finally {
                 preStat.close();
             }
         } catch (SQLException exception) {
-            MyLogger.log(TestCaseStepActionControlExecutionDAO.class.getName(), Level.ERROR, "Unable to execute query : "+exception.toString());
+            MyLogger.log(TestCaseStepActionControlExecutionDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
         } finally {
             try {
                 if (connection != null) {
                     connection.close();
                 }
             } catch (SQLException e) {
-                MyLogger.log(TestCaseStepActionControlDAO.class.getName(), Level.WARN, e.toString());
+                MyLogger.log(TestCaseStepActionControlExecutionDAO.class.getName(), Level.WARN, e.toString());
             }
         }
     }
 
-    /**
-     * Short one line description.
-     * <p/>
-     * Longer description. If there were any, it would be here. <p> And even
-     * more explanations to follow in consecutive paragraphs separated by HTML
-     * paragraph breaks.
-     *
-     * @param variable Description text text text.
-     */
     @Override
     public void updateTestCaseStepActionControlExecution(TestCaseStepActionControlExecution testCaseStepActionControlExecution) {
 
@@ -177,19 +159,19 @@ public class TestCaseStepActionControlExecutionDAO implements ITestCaseStepActio
                 preStat.executeUpdate();
 
             } catch (SQLException exception) {
-                MyLogger.log(TestCaseStepActionControlExecutionDAO.class.getName(), Level.ERROR, "Unable to execute query : "+exception.toString());
+                MyLogger.log(TestCaseStepActionControlExecutionDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
             } finally {
                 preStat.close();
             }
         } catch (SQLException exception) {
-            MyLogger.log(TestCaseStepActionControlExecutionDAO.class.getName(), Level.ERROR, "Unable to execute query : "+exception.toString());
+            MyLogger.log(TestCaseStepActionControlExecutionDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
         } finally {
             try {
                 if (connection != null) {
                     connection.close();
                 }
             } catch (SQLException e) {
-                MyLogger.log(TestCaseStepActionControlDAO.class.getName(), Level.WARN, e.toString());
+                MyLogger.log(TestCaseStepActionControlExecutionDAO.class.getName(), Level.WARN, e.toString());
             }
         }
     }
@@ -223,38 +205,37 @@ public class TestCaseStepActionControlExecutionDAO implements ITestCaseStepActio
                         String controlProperty = resultSet.getString("ControlProperty");
                         String controlValue = resultSet.getString("controlValue");
                         String fatal = resultSet.getString("fatal");
-                        long start = resultSet.getLong("start");
-                        long end = resultSet.getLong("end");
+                        long start = resultSet.getTimestamp("start").getTime();
+                        long end = resultSet.getTimestamp("end").getTime();
                         long startlong = resultSet.getLong("startlong");
                         long endlong = resultSet.getLong("endlong");
                         String screenshot = resultSet.getString("ScreenshotFilename");
                         String pageSource = resultSet.getString("PageSourceFilename");
-                        resultData = factoryTestCaseStepActionControlExecution.create(id, test, testCase, step, sequence, control, returnCode, returnMessage, controlType, controlProperty, controlValue, fatal, start, end, startlong, endlong, screenshot,pageSource, null, null);
+                        resultData = factoryTestCaseStepActionControlExecution.create(id, test, testCase, step, sequence, control, returnCode, returnMessage, controlType, controlProperty, controlValue, fatal, start, end, startlong, endlong, screenshot, pageSource, null, null);
                         result.add(resultData);
                     }
                 } catch (SQLException exception) {
-                    MyLogger.log(TestCaseExecutionDataDAO.class.getName(), Level.ERROR, "Unable to execute query : "+exception.toString());
+                    MyLogger.log(TestCaseStepActionControlExecutionDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
                 } finally {
                     resultSet.close();
                 }
             } catch (SQLException exception) {
-                MyLogger.log(TestCaseExecutionDataDAO.class.getName(), Level.ERROR, "Unable to execute query : "+exception.toString());
+                MyLogger.log(TestCaseStepActionControlExecutionDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
             } finally {
                 preStat.close();
             }
         } catch (SQLException exception) {
-            MyLogger.log(TestCaseExecutionDataDAO.class.getName(), Level.ERROR, "Unable to execute query : "+exception.toString());
+            MyLogger.log(TestCaseStepActionControlExecutionDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
         } finally {
             try {
                 if (connection != null) {
                     connection.close();
                 }
             } catch (SQLException e) {
-                MyLogger.log(TestCaseStepActionControlDAO.class.getName(), Level.WARN, e.toString());
+                MyLogger.log(TestCaseStepActionControlExecutionDAO.class.getName(), Level.WARN, e.toString());
             }
         }
         return result;
     }
-
 
 }

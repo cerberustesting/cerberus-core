@@ -28,6 +28,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.log4j.Level;
+import org.apache.log4j.Logger;
 import org.cerberus.crud.dao.ITestCaseExecutionDataDAO;
 import org.cerberus.database.DatabaseSpring;
 import org.cerberus.crud.entity.MessageGeneral;
@@ -60,10 +61,21 @@ public class TestCaseExecutionDataDAO implements ITestCaseExecutionDataDAO {
     @Autowired
     private IFactoryTestCaseExecutionData factoryTestCaseExecutionData;
 
+    private static final Logger LOG = Logger.getLogger(TestCaseExecutionDataDAO.class);
+
+    private final String OBJECT_NAME = "TestCase Execution Data";
+    private final String SQL_DUPLICATED_CODE = "23000";
+    private final int MAX_ROW_SELECTED = 100000;
+
     @Override
     public TestCaseExecutionData findTestCaseExecutionDataByKey(long id, String property) {
         TestCaseExecutionData result = null;
         final String query = "SELECT * FROM testcaseexecutiondata WHERE id = ? AND property = ?";
+
+        // Debug message on SQL.
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("SQL : " + query);
+        }
 
         Connection connection = this.databaseSpring.connect();
         try {
@@ -81,25 +93,25 @@ public class TestCaseExecutionDataDAO implements ITestCaseExecutionDataDAO {
                         String value2 = resultSet.getString("value2");
                         String returnCode = resultSet.getString("rc");
                         String returnMessage = resultSet.getString("rmessage");
-                        long start = resultSet.getLong("start");
-                        long end = resultSet.getLong("end");
+                        long start = resultSet.getTimestamp("start").getTime();
+                        long end = resultSet.getTimestamp("end").getTime();
                         long startLong = resultSet.getLong("startlong");
                         long endLong = resultSet.getLong("endlong");
-                        result = factoryTestCaseExecutionData.create(id, property, value, type, value1,value2,returnCode, returnMessage,
+                        result = factoryTestCaseExecutionData.create(id, property, value, type, value1, value2, returnCode, returnMessage,
                                 start, end, startLong, endLong, null);
                     }
                 } catch (SQLException exception) {
-                    MyLogger.log(TestCaseExecutionDataDAO.class.getName(), Level.ERROR, "Unable to execute query : "+exception.toString());
+                    MyLogger.log(TestCaseExecutionDataDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
                 } finally {
                     resultSet.close();
                 }
             } catch (SQLException exception) {
-                MyLogger.log(TestCaseExecutionDataDAO.class.getName(), Level.ERROR, "Unable to execute query : "+exception.toString());
+                MyLogger.log(TestCaseExecutionDataDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
             } finally {
                 preStat.close();
             }
         } catch (SQLException exception) {
-            MyLogger.log(TestCaseExecutionDataDAO.class.getName(), Level.ERROR, "Unable to execute query : "+exception.toString());
+            MyLogger.log(TestCaseExecutionDataDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
         } finally {
             try {
                 if (connection != null) {
@@ -110,6 +122,116 @@ public class TestCaseExecutionDataDAO implements ITestCaseExecutionDataDAO {
             }
         }
         return result;
+    }
+
+    @Override
+    public List<TestCaseExecutionData> findTestCaseExecutionDataById(long id) {
+        List<TestCaseExecutionData> result = null;
+        TestCaseExecutionData resultData;
+        final String query = "SELECT * FROM testcaseexecutiondata WHERE id = ? ORDER BY startlong";
+
+        // Debug message on SQL.
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("SQL : " + query);
+        }
+
+        Connection connection = this.databaseSpring.connect();
+        try {
+            PreparedStatement preStat = connection.prepareStatement(query);
+            try {
+                preStat.setString(1, String.valueOf(id));
+
+                ResultSet resultSet = preStat.executeQuery();
+                try {
+                    result = new ArrayList<TestCaseExecutionData>();
+
+                    while (resultSet.next()) {
+                        String value = resultSet.getString("value");
+                        String property = resultSet.getString("property");
+                        String type = resultSet.getString("type");
+                        String value1 = resultSet.getString("value1");
+                        String value2 = resultSet.getString("value2");
+                        String returnCode = resultSet.getString("rc");
+                        String returnMessage = resultSet.getString("rmessage");
+                        long start = resultSet.getTimestamp("start").getTime();
+                        long end = resultSet.getTimestamp("end").getTime();
+                        long startLong = resultSet.getLong("startlong");
+                        long endLong = resultSet.getLong("endlong");
+                        resultData = factoryTestCaseExecutionData.create(id, property, value, type, value1, value2, returnCode, returnMessage,
+                                start, end, startLong, endLong, null);
+                        result.add(resultData);
+                    }
+                } catch (SQLException exception) {
+                    MyLogger.log(TestCaseExecutionDataDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
+                } finally {
+                    resultSet.close();
+                }
+            } catch (SQLException exception) {
+                MyLogger.log(TestCaseExecutionDataDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
+            } finally {
+                preStat.close();
+            }
+        } catch (SQLException exception) {
+            MyLogger.log(TestCaseExecutionDataDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
+        } finally {
+            try {
+                if (connection != null) {
+                    connection.close();
+                }
+            } catch (SQLException e) {
+                MyLogger.log(TestCaseExecutionDataDAO.class.getName(), Level.WARN, e.toString());
+            }
+        }
+        return result;
+    }
+
+    @Override
+    public List<String> getPastValuesOfProperty(String propName, String test, String testCase, String build, String environment, String country) {
+        List<String> list = null;
+        final String query = "SELECT VALUE FROM testcaseexecutiondata WHERE Property = ? AND ID IN "
+                + "(SELECT id FROM testcaseexecution WHERE test = ? AND testcase = ? AND build = ? AND environment = ? AND country = ?) "
+                + "ORDER BY ID DESC";
+
+        Connection connection = this.databaseSpring.connect();
+        try {
+            PreparedStatement preStat = connection.prepareStatement(query);
+            try {
+                preStat.setString(1, propName);
+                preStat.setString(2, test);
+                preStat.setString(3, testCase);
+                preStat.setString(4, build);
+                preStat.setString(5, environment);
+                preStat.setString(6, country);
+
+                ResultSet resultSet = preStat.executeQuery();
+                try {
+                    list = new ArrayList<String>();
+
+                    while (resultSet.next()) {
+                        list.add(resultSet.getString("value"));
+                    }
+                } catch (SQLException exception) {
+                    MyLogger.log(TestCaseExecutionDataDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
+                } finally {
+                    resultSet.close();
+                }
+            } catch (SQLException exception) {
+                MyLogger.log(TestCaseExecutionDataDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
+            } finally {
+                preStat.close();
+            }
+        } catch (SQLException exception) {
+            MyLogger.log(TestCaseExecutionDataDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
+        } finally {
+            try {
+                if (connection != null) {
+                    connection.close();
+                }
+            } catch (SQLException e) {
+                MyLogger.log(TestCaseExecutionDataDAO.class.getName(), Level.WARN, e.toString());
+            }
+        }
+        return list;
     }
 
     @Override
@@ -139,14 +261,14 @@ public class TestCaseExecutionDataDAO implements ITestCaseExecutionDataDAO {
                 preStat.executeUpdate();
                 throwException = false;
             } catch (SQLException exception) {
-                MyLogger.log(TestCaseExecutionDataDAO.class.getName(), Level.ERROR, "Unable to execute query : "+exception.toString());
+                MyLogger.log(TestCaseExecutionDataDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
             } finally {
-                if(preStat != null){
+                if (preStat != null) {
                     preStat.close();
                 }
             }
         } catch (SQLException exception) {
-            MyLogger.log(TestCaseExecutionDataDAO.class.getName(), Level.ERROR, "Unable to execute query : "+exception.toString());
+            MyLogger.log(TestCaseExecutionDataDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
         } finally {
             try {
                 if (connection != null) {
@@ -188,12 +310,12 @@ public class TestCaseExecutionDataDAO implements ITestCaseExecutionDataDAO {
                 preStat.executeUpdate();
                 throwException = false;
             } catch (SQLException exception) {
-                MyLogger.log(TestCaseExecutionDataDAO.class.getName(), Level.ERROR, "Unable to execute query : "+exception.toString());
+                MyLogger.log(TestCaseExecutionDataDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
             } finally {
                 preStat.close();
             }
         } catch (SQLException exception) {
-            MyLogger.log(TestCaseExecutionDataDAO.class.getName(), Level.ERROR, "Unable to execute query : "+exception.toString());
+            MyLogger.log(TestCaseExecutionDataDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
         } finally {
             try {
                 if (connection != null) {
@@ -208,117 +330,4 @@ public class TestCaseExecutionDataDAO implements ITestCaseExecutionDataDAO {
         }
     }
 
-    /**
-     * Short one line description.
-     * <p/>
-     * Longer description. If there were any, it would be here. <p> And even
-     * more explanations to follow in consecutive paragraphs separated by HTML
-     * paragraph breaks.
-     *
-     * @param variable Description text text text.
-     */
-    @Override
-    public List<String> getPastValuesOfProperty(String propName, String test, String testCase, String build, String environment, String country) {
-        List<String> list = null;
-        final String query = "SELECT VALUE FROM testcaseexecutiondata WHERE Property = ? AND ID IN "
-                + "(SELECT id FROM testcaseexecution WHERE test = ? AND testcase = ? AND build = ? AND environment = ? AND country = ?) "
-                + "ORDER BY ID DESC";
-
-        Connection connection = this.databaseSpring.connect();
-        try {
-            PreparedStatement preStat = connection.prepareStatement(query);
-            try {
-                preStat.setString(1, propName);
-                preStat.setString(2, test);
-                preStat.setString(3, testCase);
-                preStat.setString(4, build);
-                preStat.setString(5, environment);
-                preStat.setString(6, country);
-
-                ResultSet resultSet = preStat.executeQuery();
-                try {
-                    list = new ArrayList<String>();
-
-                    while (resultSet.next()) {
-                        list.add(resultSet.getString("value"));
-                    }
-                } catch (SQLException exception) {
-                    MyLogger.log(TestCaseExecutionDataDAO.class.getName(), Level.ERROR, "Unable to execute query : "+exception.toString());
-                } finally {
-                    resultSet.close();
-                }
-            } catch (SQLException exception) {
-                MyLogger.log(TestCaseExecutionDataDAO.class.getName(), Level.ERROR, "Unable to execute query : "+exception.toString());
-            } finally {
-                preStat.close();
-            }
-        } catch (SQLException exception) {
-            MyLogger.log(TestCaseExecutionDataDAO.class.getName(), Level.ERROR, "Unable to execute query : "+exception.toString());
-        } finally {
-            try {
-                if (connection != null) {
-                    connection.close();
-                }
-            } catch (SQLException e) {
-                MyLogger.log(TestCaseExecutionDataDAO.class.getName(), Level.WARN, e.toString());
-            }
-        }
-        return list;
-    }
-
-    @Override
-    public List<TestCaseExecutionData> findTestCaseExecutionDataById(long id) {
-        List<TestCaseExecutionData> result = null;
-        TestCaseExecutionData resultData;
-        final String query = "SELECT * FROM testcaseexecutiondata WHERE id = ? ORDER BY startlong";
-
-        Connection connection = this.databaseSpring.connect();
-        try {
-            PreparedStatement preStat = connection.prepareStatement(query);
-            try {
-                preStat.setString(1, String.valueOf(id));
-
-                ResultSet resultSet = preStat.executeQuery();
-                try {
-                    result = new ArrayList<TestCaseExecutionData>();
-
-                    while (resultSet.next()) {
-                        String value = resultSet.getString("value");
-                        String property = resultSet.getString("property");
-                        String type = resultSet.getString("type");
-                        String value1 = resultSet.getString("value1");
-                        String value2 = resultSet.getString("value2");
-                        String returnCode = resultSet.getString("rc");
-                        String returnMessage = resultSet.getString("rmessage");
-                        long start = resultSet.getLong("start");
-                        long end = resultSet.getLong("end");
-                        long startLong = resultSet.getLong("startlong");
-                        long endLong = resultSet.getLong("endlong");
-                        resultData = factoryTestCaseExecutionData.create(id, property, value, type, value1, value2, returnCode, returnMessage,
-                                start, end, startLong, endLong, null);
-                        result.add(resultData);
-                    }
-                } catch (SQLException exception) {
-                    MyLogger.log(TestCaseExecutionDataDAO.class.getName(), Level.ERROR, "Unable to execute query : "+exception.toString());
-                } finally {
-                    resultSet.close();
-                }
-            } catch (SQLException exception) {
-                MyLogger.log(TestCaseExecutionDataDAO.class.getName(), Level.ERROR, "Unable to execute query : "+exception.toString());
-            } finally {
-                preStat.close();
-            }
-        } catch (SQLException exception) {
-            MyLogger.log(TestCaseExecutionDataDAO.class.getName(), Level.ERROR, "Unable to execute query : "+exception.toString());
-        } finally {
-            try {
-                if (connection != null) {
-                    connection.close();
-                }
-            } catch (SQLException e) {
-                MyLogger.log(TestCaseExecutionDataDAO.class.getName(), Level.WARN, e.toString());
-            }
-        }
-        return result;
-    }
 }
