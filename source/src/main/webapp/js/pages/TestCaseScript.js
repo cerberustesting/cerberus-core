@@ -431,7 +431,7 @@ function editStep() {
 
     $("#stepDescription").hide();
     $("#stepInfo").hide();
-    $("#editStepDescription").prop("placeholder", "Description").val(step.description);
+    $("#editStepDescription").prop("placeholder", "Description").prop("maxlength", "150").val(step.description);
     $("#editStep").show();
 
     if (step.useStep === "Y") {

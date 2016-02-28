@@ -1120,7 +1120,7 @@
                                                 <input type="hidden" name="initial_step_number_<%=incrementStep%>" id="initial_step_number_<%=incrementStep%>" value="<%=tcs.getStep()%>">
                                             </div>
                                             <div id="StepDescDiv" style="width:30%;float:left;margin-top:10px">
-                                                <div><div><input style="float:right;font-weight: bold; width: 100%;background-color:transparent; font-weight:bold;font-size:14px ;font-family: Trebuchet MS; color:#333333; border-color:#EEEEEE;border-style:solid; border-width:thin"
+                                                <div><div><input maxlength="150" style="float:right;font-weight: bold; width: 100%;background-color:transparent; font-weight:bold;font-size:14px ;font-family: Trebuchet MS; color:#333333; border-color:#EEEEEE;border-style:solid; border-width:thin"
                                                                  placeholder="Description" data-fieldtype="Description" name="step_description_<%=incrementStep%>" id="step_description_<%=incrementStep%>" value="<%=tcs.getDescription()%>">
                                                     </div></div></div>
                                             <div id="StepUseStepDiv" style="float:left">UseStep
@@ -2073,7 +2073,7 @@
                     </div>
                     <div id="StepDescDiv" style="width:550px;float:left">
                         <input style="float:right;margin-top:10px;font-weight: bold; width: 500px;background-color:transparent; font-weight:bold;font-size:16px ;font-family: Trebuchet MS;
-                               color:#333333; border-color:#EEEEEE; border-width: 1px" data-id="step_description_template">
+                               color:#333333; border-color:#EEEEEE; border-width: 1px" maxlength="150" data-id="step_description_template">
                     </div>
                     <div id="StepUseStepDiv" style="float:left">UseStep
                         <input type="checkbox" data-id="step_useStep_template" style="margin-top:15px;font-weight: bold; width:20px">
