@@ -4629,23 +4629,23 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLS.append("ALTER TABLE `buildrevisionparameters` CHANGE COLUMN `Release` `Release` VARCHAR(200) NULL DEFAULT NULL ; ");
         SQLInstruction.add(SQLS.toString());
 
-// Add collumn repositoryUrl to the buildrevisionparameters table
-//-- ------------------------ 729
+        // Add collumn repositoryUrl to the buildrevisionparameters table
+        //-- ------------------------ 729
         SQLS = new StringBuilder();
         SQLS.append("ALTER TABLE `buildrevisionparameters` ");
         SQLS.append("ADD COLUMN `repositoryurl` VARCHAR(1000) NULL DEFAULT '' AFTER `mavenversion`;");
         SQLInstruction.add(SQLS.toString());
 
-// Add documentation for repositoryUrl
-//-- ------------------------ 730
+        // Add documentation for repositoryUrl
+        //-- ------------------------ 730
         SQLS = new StringBuilder();
         SQLS.append("INSERT INTO `documentation` (`DocTable`, `DocField`, `DocValue`, `Lang`, `DocLabel`, `DocDesc`) ");
         SQLS.append(" VALUES ('buildrevisionparameters', 'repositoryUrl', '', 'en', 'Repository URL', 'This information corresponds to the URL where the current build of the <code class=\\'doc-crbvvoca\\'>application</code> can be downloaded.<br>It allow to retrieve it in a repository such as Nexus.')");
         SQLS.append(",('buildrevisionparameters', 'repositoryUrl', '', 'fr', 'URL du Dépot', 'Cette information correspond à l\\'URL d\\'où le build de l\\'<code class=\\'doc-crbvvoca\\'>application</code> peut-être téléchargé.<br>Cela permet de retrouver un build spécifique dans un dépot de livrable de type Nexus.');");
         SQLInstruction.add(SQLS.toString());
 
-// Changing batchinvariant to a new structure.
-//-- ------------------------ 731-738
+        // Changing batchinvariant to a new structure.
+        //-- ------------------------ 731-738
         SQLS = new StringBuilder();
         SQLS.append("ALTER TABLE `buildrevisionbatch` DROP FOREIGN KEY `FK_buildrevisionbatch_01`;");
         SQLInstruction.add(SQLS.toString());
@@ -4671,8 +4671,17 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLS.append("insert into batchinvariant select value, concat(`value`,b.batch), b.description from batchinvariant b join invariant where idname='SYSTEM';");
         SQLInstruction.add(SQLS.toString());
 
-// New updated Documentation.
-//-- ------------------------ 739-740
+        // New updated Documentation.
+        //-- ------------------------ 739-740
+        SQLS = new StringBuilder();
+        SQLS.append("SELECT 1 FROM dual;");
+        SQLInstruction.add(SQLS.toString());
+        SQLS = new StringBuilder();
+        SQLS.append("SELECT 1 FROM dual;");
+        SQLInstruction.add(SQLS.toString());
+
+        // New updated Documentation.
+        //-- ------------------------ 741-742
         SQLS = new StringBuilder();
         SQLS.append("DELETE FROM `documentation`;");
         SQLInstruction.add(SQLS.toString());
@@ -4705,6 +4714,14 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLS.append(",('batchinvariant','Description','','fr','Description','Description du batch')");
         SQLS.append(",('batchinvariant','system','','en','System','System of the batch')");
         SQLS.append(",('batchinvariant','system','','fr','System','System du batch')");
+        SQLS.append(",('buildrevisionbatch','batch','','en','Batch','')");
+        SQLS.append(",('buildrevisionbatch','batch','','fr','Batch','')");
+        SQLS.append(",('buildrevisionbatch','build','','en','Build','Build during the excution of the Batch Event.')");
+        SQLS.append(",('buildrevisionbatch','build','','fr','Build','Build lors de l\\'éxecution de l\\'événement Batch.')");
+        SQLS.append(",('buildrevisionbatch','dateBatch','','en','Date','')");
+        SQLS.append(",('buildrevisionbatch','dateBatch','','fr','Date','')");
+        SQLS.append(",('buildrevisionbatch','revision','','en','Revision','Revision during the excution of the Batch Event.')");
+        SQLS.append(",('buildrevisionbatch','revision','','fr','Revision','Revision lors de l\\'éxecution de l\\'événement Batch.')");
         SQLS.append(",('buildrevisioninvariant','level','','en','Level','')");
         SQLS.append(",('buildrevisioninvariant','level','','fr','Niveau','')");
         SQLS.append(",('buildrevisioninvariant','seq','','en','Sequence','')");
@@ -4751,12 +4768,26 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLS.append(",('buildrevisionparameters','subject','','fr','Description','')");
         SQLS.append(",('buildrevisionparameters','TicketIDFixed','','en','Associated Ticket ID','This is the Ticket ID which has been delivered with the <code class=\\'doc-crbvvoca\\'>release</code>.')");
         SQLS.append(",('buildrevisionparameters','TicketIDFixed','','fr','ID du Ticket associé','ID du ticket dont la release est associée.')");
+        SQLS.append(",('countryenvdeploytype','JenkinsAgent','','en','Jenkins Agent','')");
+        SQLS.append(",('countryenvdeploytype','JenkinsAgent','','fr','Agent Jenkins','')");
         SQLS.append(",('countryenvironmentdatabase','ConnectionPoolName','','en','JDBC Ressource','This is the name of the JDBC Ressource used to connect to the corresponding <code class=\\'doc-crbvvoca\\'>database</code> on the <code class=\\'doc-crbvvoca\\'>country</code> / <code class=\\'doc-crbvvoca\\'>environment</code>.<br>The JDBC Ressource (prefixed by <code class=\\'doc-fixed\\'>jdbc/</code> ) needs to be configured and associated to a connection pool on the application server that host the Cerberus application.<br><br>Example :<br><doc class=\"examples\"><table cellspacing=0 cellpadding=3><th class=\\'ex\\'>JDBC Ressource</th><th class=\\'ex\\'>Application server Ressource name</th><tr>\n<td class=\\'ex\\'>MyConnection</td>\n<td class=\\'ex\\'>jdbc/MyConnection</td>\n</tr></table>\n</doc>')");
+        SQLS.append(",('countryenvironmentdatabase','ConnectionPoolName','','fr','Ressource JDBC','Nom de la ressource JDBC utilisée pour se connecter à la <code class=\\'doc-crbvvoca\\'>base de donnée</code> correspondant au <code class=\\'doc-crbvvoca\\'>pays</code> / <code class=\\'doc-crbvvoca\\'>environnement</code>.<br>La ressource JDBC (préfixée par <code class=\\'doc-fixed\\'>jdbc/</code> ) doit être configuré dans le serveur l\\'application qui héberge Cerberus et associé à un pool de connexion.<br><br>Exemple :<br><doc class=\"examples\"><table cellspacing=0 cellpadding=3><th class=\\'ex\\'>JDBC Ressource</th><th class=\\'ex\\'>Application server Ressource name</th><tr>\n<td class=\\'ex\\'>MyConnection</td>\n<td class=\\'ex\\'>jdbc/MyConnection</td>\n</tr></table>\n</doc>')");
         SQLS.append(",('countryenvironmentdatabase','Database','','en','Database','')");
+        SQLS.append(",('countryenvironmentdatabase','Database','','fr','Base de donnée','')");
         SQLS.append(",('countryenvironmentparameters','domain','','en','Domain','Domain of the Application. Can be used inside any test execution with %SYS_APP_DOMAIN% variable.')");
-        SQLS.append(",('countryenvironmentparameters','IP','','en','IP','Ressource location of the application.<br><br>Examples :<br><doc class=\"examples\"><code class=\\'doc-url\\'>www.domain.com</code><br><code class=\\'doc-url\\'>192.168.1.1:80</code><br><code class=\\'doc-url\\'>user:password@www.domain.com:8080</code><br><code class=\\'doc-url\\'>user:password@192.168.1.1:80</code><br></doc>')");
-        SQLS.append(",('countryenvironmentparameters','URL','','en','URL','Root URL used to access the application. Equivalent to context root.<br>This path will always be added to the information specified in the testcase.<br><br>Example :<br><doc class=\"examples\"><table cellspacing=0 cellpadding=3><th class=\\'ex\\'>URL</th><th class=\\'ex\\'>Description</th><tr><td class=\\'ex\\'><code class=\\'doc-url\\'>/Cerberus-1.0.1-SNAPSHOT/</code></td><td class=\\'ex\\'>When opening <code class=\\'doc-url\\'>login.jsp</code>, Cerberus will open <code class=\\'doc-url\\'>/Cerberus-1.0.1-SNAPSHOT/login.jsp</code> URL</td></tr></table></doc>')");
-        SQLS.append(",('countryenvironmentparameters','URLLOGIN','','en','URLLOGIN','Path to login page. This path is used only when calling the <code class=\\'doc-action\\'>openUrlLogin</code> Action.')");
+        SQLS.append(",('countryenvironmentparameters','domain','','fr','Domaine','Domaine Internet de l\\'application. Peut être utilisé pendant l\\'execution des tests avec la variable %SYS_APP_DOMAIN%.')");
+        SQLS.append(",('countryenvironmentparameters','IP','','en','Host','Ressource location of the application.<br><br>Examples :<br><doc class=\"examples\"><code class=\\'doc-url\\'>www.domain.com</code><br><code class=\\'doc-url\\'>192.168.1.1:80</code><br><code class=\\'doc-url\\'>user:password@www.domain.com:8080</code><br><code class=\\'doc-url\\'>user:password@192.168.1.1:80</code><br></doc>')");
+        SQLS.append(",('countryenvironmentparameters','IP','','fr','Hote','')");
+        SQLS.append(",('countryenvironmentparameters','URL','','en','Context Root','Root URL used to access the application. Equivalent to context root.<br>This path will always be added to the information specified in the testcase.<br><br>Example :<br><doc class=\"examples\"><table cellspacing=0 cellpadding=3><th class=\\'ex\\'>URL</th><th class=\\'ex\\'>Description</th><tr><td class=\\'ex\\'><code class=\\'doc-url\\'>/Cerberus-1.0.1-SNAPSHOT/</code></td><td class=\\'ex\\'>When opening <code class=\\'doc-url\\'>login.jsp</code>, Cerberus will open <code class=\\'doc-url\\'>/Cerberus-1.0.1-SNAPSHOT/login.jsp</code> URL</td></tr></table></doc>')");
+        SQLS.append(",('countryenvironmentparameters','URL','','fr','Context Root','')");
+        SQLS.append(",('countryenvironmentparameters','URLLOGIN','','en','Login URL','Path to login page. This path is used only when calling the <code class=\\'doc-action\\'>openUrlLogin</code> Action.')");
+        SQLS.append(",('countryenvironmentparameters','URLLOGIN','','fr','URL de Login','')");
+        SQLS.append(",('countryenvlink','CountryLink','','en','Country linked','')");
+        SQLS.append(",('countryenvlink','CountryLink','','fr','Pays lié','')");
+        SQLS.append(",('countryenvlink','EnvironmentLink','','en','Environment linked','')");
+        SQLS.append(",('countryenvlink','EnvironmentLink','','fr','Environnement lié','')");
+        SQLS.append(",('countryenvlink','systemLink','','en','System','')");
+        SQLS.append(",('countryenvlink','systemLink','','fr','System','')");
         SQLS.append(",('countryenvparam','active','','en','Active','Define if the <code class=\\'doc-crbvvoca\\'>environment</code> is active or not. A <code class=\\'doc-crbvvoca\\'>test case</code> cannot be executed against an <code class=\\'doc-crbvvoca\\'>environment</code> that is not  active.')");
         SQLS.append(",('countryenvparam','active','','fr','Actif','')");
         SQLS.append(",('countryenvparam','chain','','en','Chain','')");
@@ -4977,12 +5008,34 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLS.append(",('page_deploytype','message_delete','','fr','Confirmez vous la suppression du Type de Deploiement <b>\\'%ENTRY%\\'</b> ?<br> ATTENTION1 : Toutes les Applications associées vont perdre le lien avec ce Deploy Type !!!<br>ATTENTION2 : Tous les Jenkins Agent associés et Environnements associés seront supprimés !!!','')");
         SQLS.append(",('page_deploytype','title','','en','DEPLOYMENT TYPE','This page can be used in order to manage the deployment types.')");
         SQLS.append(",('page_deploytype','title','','fr','TYPE DE DEPLOIEMENT','Cette page permet de gérer et créer des types de deploiements.')");
+        SQLS.append(",('page_environment','buttonPreviewNotification','','en','Preview Notification','')");
+        SQLS.append(",('page_environment','buttonPreviewNotification','','fr','Prévisualiser la notification','')");
         SQLS.append(",('page_environment','button_create','','en','Create a new Environment','')");
         SQLS.append(",('page_environment','button_create','','fr','Créer un nouvel Environnement','')");
         SQLS.append(",('page_environment','button_delete','','en','Delete Environment','')");
         SQLS.append(",('page_environment','button_delete','','fr','Supprimer l\\'Environnement','')");
+        SQLS.append(",('page_environment','button_disable','','en','Disable Environment','')");
+        SQLS.append(",('page_environment','button_disable','','fr','Désactiver l\\'Environnement','')");
+        SQLS.append(",('page_environment','button_disable1','','en','Disable and Send Notification','')");
+        SQLS.append(",('page_environment','button_disable1','','fr','Désactiver et envoyer la Notification','')");
         SQLS.append(",('page_environment','button_edit','','en','Edit Environment','')");
         SQLS.append(",('page_environment','button_edit','','fr','Modifier l\\'Environnement','')");
+        SQLS.append(",('page_environment','button_enable','','en','Enable Environment with new Build Revision','')");
+        SQLS.append(",('page_environment','button_enable','','fr','Activer l\\'Environnement avec un nouveau Build et Revision','')");
+        SQLS.append(",('page_environment','button_enable1','','en','Enable and Sent Notification','')");
+        SQLS.append(",('page_environment','button_enable1','','fr','Activer et Envoyer la Notification','')");
+        SQLS.append(",('page_environment','button_newChain','','en','New Event Chain','')");
+        SQLS.append(",('page_environment','button_newChain','','fr','Nouvel Evenement de Chaine','')");
+        SQLS.append(",('page_environment','button_newChain1','','en','Create New Chain Event and Send Notification','')");
+        SQLS.append(",('page_environment','button_newChain1','','fr','Créer un nouvel événement de Chaine et Envoyer la Notification','')");
+        SQLS.append(",('page_environment','button_view','','en','View Environment','')");
+        SQLS.append(",('page_environment','button_view','','fr','Voir Environnement','')");
+        SQLS.append(",('page_environment','cc','','en','CC','')");
+        SQLS.append(",('page_environment','cc','','fr','Copie','')");
+        SQLS.append(",('page_environment','currentBuild','','en','Current Build','')");
+        SQLS.append(",('page_environment','currentBuild','','fr','Build courant','')");
+        SQLS.append(",('page_environment','currentRevision','','en','Current Revision','')");
+        SQLS.append(",('page_environment','currentRevision','','fr','Revision courante','')");
         SQLS.append(",('page_environment','list','','en','Environment list','')");
         SQLS.append(",('page_environment','list','','fr','Liste des environnements','')");
         SQLS.append(",('page_environment','listChange','','en','Change list','')");
@@ -4991,8 +5044,36 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLS.append(",('page_environment','listEvent','','fr','Liste des batchs','')");
         SQLS.append(",('page_environment','message_delete','','en','Do you want to delete environment <b>\\'%ENVIRONMENT%\\'</b> from country <b>\\'%COUNTRY%\\'</b> and system <b>\\'%SYSTEM%\\'</b> ?<br>WARNING : All corresponding parameters such as list of applications, databases and other environments dependencies will be removed !!!','')");
         SQLS.append(",('page_environment','message_delete','','fr','Confirmez vous la suppression de l\\'environnement <b>\\'%ENVIRONMENT%\\'</b> du pays <b>\\'%COUNTRY%\\'</b> du système <b>\\'%SYSTEM%\\'</b> ?<br> ATTENTION : Tous les parametres associées tel que la liste des applications, database et autres dependances d\\'environnements seront supprimés !!!','')");
+        SQLS.append(",('page_environment','newBuild','','en','New Build','')");
+        SQLS.append(",('page_environment','newBuild','','fr','Nouveau Build','')");
+        SQLS.append(",('page_environment','newRevision','','en','New Revision','')");
+        SQLS.append(",('page_environment','newRevision','','fr','Nouvelle Revision','')");
+        SQLS.append(",('page_environment','subject','','en','Subject','')");
+        SQLS.append(",('page_environment','subject','','fr','Sujet','')");
+        SQLS.append(",('page_environment','tabApplication','','en','Applications','')");
+        SQLS.append(",('page_environment','tabApplication','','fr','Applications','')");
+        SQLS.append(",('page_environment','tabBuild','','en','Build/Revision','')");
+        SQLS.append(",('page_environment','tabBuild','','fr','Build/Revision','')");
+        SQLS.append(",('page_environment','tabChain','','en','Chain','')");
+        SQLS.append(",('page_environment','tabChain','','fr','Chain','')");
+        SQLS.append(",('page_environment','tabDatabase','','en','Databases','')");
+        SQLS.append(",('page_environment','tabDatabase','','fr','Bases de Données','')");
+        SQLS.append(",('page_environment','tabDefinition','','en','Definition','')");
+        SQLS.append(",('page_environment','tabDefinition','','fr','Definition','')");
+        SQLS.append(",('page_environment','tabDependencies','','en','Dependencies','')");
+        SQLS.append(",('page_environment','tabDependencies','','fr','Dépendances','')");
+        SQLS.append(",('page_environment','tabDeploy','','en','Deploy Types','')");
+        SQLS.append(",('page_environment','tabDeploy','','fr','Type de déploiements','')");
+        SQLS.append(",('page_environment','tabInstallInstruction','','en','Installation Instructions','')");
+        SQLS.append(",('page_environment','tabInstallInstruction','','fr','Instruction d\\'installation','')");
+        SQLS.append(",('page_environment','tabNotif','','en','Specific Notifications','')");
+        SQLS.append(",('page_environment','tabNotif','','fr','Notifications Spécifiques','')");
+        SQLS.append(",('page_environment','tabPreview','','en','EMail Preview','')");
+        SQLS.append(",('page_environment','tabPreview','','fr','Previsu de l\\'Email','')");
         SQLS.append(",('page_environment','title','','en','ENVIRONMENT','This page can be used to manage the environments.')");
         SQLS.append(",('page_environment','title','','fr','ENVIRONNEMENT','Cette page permet de gérer et créer des environnements.')");
+        SQLS.append(",('page_environment','to','','en','To','')");
+        SQLS.append(",('page_environment','to','','fr','Destinataire','')");
         SQLS.append(",('page_executiondetail','buildrevision','','en','BuildRev','Build and Revision of the <code class=\\'doc-crbvvoca\\'>environment</code> of the <code class=\\'doc-crbvvoca\\'>system</code> of the <code class=\\'doc-crbvvoca\\'>application</code> that has been tested.')");
         SQLS.append(",('page_executiondetail','buildrevisionlink','','en','BuildRev Linked','Build and Revision of the <code class=\\'doc-crbvvoca\\'>environment</code> of the linked <code class=\\'doc-crbvvoca\\'>system</code>. The linked systems are defined in the \\'Environment Dependancy\\' section of the <code class=\\'doc-crbvvoca\\'>environment</code> page.')");
         SQLS.append(",('page_executiondetail','SeleniumLog','','en','Selenium Log','Link to the selenium log file')");
