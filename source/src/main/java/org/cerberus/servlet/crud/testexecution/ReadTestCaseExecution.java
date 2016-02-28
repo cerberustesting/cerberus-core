@@ -260,7 +260,7 @@ public class ReadTestCaseExecution extends HttpServlet {
 
         String searchParameter = ParameterParserUtil.parseStringParam(request.getParameter("sSearch"), "");
         int columnToSortParameter = Integer.parseInt(ParameterParserUtil.parseStringParam(request.getParameter("iSortCol_0"), "0"));
-        String sColumns = ParameterParserUtil.parseStringParam(request.getParameter("sColumns"), "test,testCase,application,status,description,bugId,function");
+        String sColumns = ParameterParserUtil.parseStringParam(request.getParameter("sColumns"), "test,testCase,application,priority,status,description,bugId,function");
         String columnToSort[] = sColumns.split(",");
         String columnName = columnToSort[columnToSortParameter];
         String sort = ParameterParserUtil.parseStringParam(request.getParameter("sSortDir_0"), "asc");
@@ -296,6 +296,7 @@ public class ReadTestCaseExecution extends HttpServlet {
                         ttcObject.put("shortDesc", testCaseWithExecution.getShortDescription());
                         ttcObject.put("status", testCaseWithExecution.getStatus());
                         ttcObject.put("application", testCaseWithExecution.getApplication());
+                        ttcObject.put("priority", testCaseWithExecution.getPriority());
                         ttcObject.put("bugId", testCaseWithExecution.getBugID());
                         ttcObject.put("comment", testCaseWithExecution.getComment());
                         execTab.put(execKey, execution);
@@ -411,6 +412,7 @@ public class ReadTestCaseExecution extends HttpServlet {
         result.put("BugID", bugId);
 
         result.put("Comment", JavaScriptUtils.javaScriptEscape(testCaseWithExecution.getComment()));
+        result.put("Priority", JavaScriptUtils.javaScriptEscape(String.valueOf(testCaseWithExecution.getPriority())));
         result.put("Function", JavaScriptUtils.javaScriptEscape(testCaseWithExecution.getFunction()));
         result.put("Application", JavaScriptUtils.javaScriptEscape(testCaseWithExecution.getApplication()));
         result.put("ShortDescription", testCaseWithExecution.getShortDescription());

@@ -685,6 +685,8 @@ function createShortDescRow(row, data, index) {
 
     createdRow.child(data.shortDesc);
     $(row).children('.center').attr('rowspan', '2');
+    $(row).children('.priority').attr('rowspan', '2');
+    $(row).children('.bugid').attr('rowspan', '2');
     $(createdRow.child()).attr('class', rowClass);
     $(createdRow.child()).children('td').attr('colspan', '3').attr('class', 'shortDesc');
     createdRow.child.show();
@@ -707,8 +709,8 @@ function generateTooltip(data) {
 function aoColumnsFunc(Columns) {
     var doc = new Doc();
     var colLen = Columns.length;
-    var nbColumn = colLen + 3;
-    var testCaseInfoWidth = (1 / 3) * 30;
+    var nbColumn = colLen + 5;
+    var testCaseInfoWidth = (1 / 5) * 30;
     var testExecWidth = (1 / nbColumn) * 70;
 
 
@@ -773,6 +775,25 @@ function aoColumnsFunc(Columns) {
         };
         aoColumns.push(col);
     }
+    var col = 
+        {
+            "data": "priority",
+            "sName": "priority",
+            "sClass": "priority",
+            "sWidth": testCaseInfoWidth + "%",
+            "title": doc.getDocOnline("invariant", "Priority")
+        };
+        aoColumns.push(col);
+    var col =
+        {
+            "data": "bugId",
+            "sName": "bugId",
+            "sClass": "bugid",
+            "sWidth": testCaseInfoWidth + "%",
+            "title": doc.getDocOnline("testcase", "BugID")
+        };
+        aoColumns.push(col);
+        
     return aoColumns;
 }
 
