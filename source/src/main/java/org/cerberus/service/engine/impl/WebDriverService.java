@@ -301,6 +301,11 @@ public class WebDriverService implements IWebDriverService {
                 WebElement webElement = (WebElement) answer.getItem();
 
                 return webElement != null && !webElement.isDisplayed();
+            } else if (answer.isCodeEquals(MessageEventEnum.ACTION_FAILED_WAIT_NO_SUCH_ELEMENT.getCode())){
+                /**
+                 * Return true if element not found (not found >> not visible)
+                 */
+                return true;
             }
         } catch (NoSuchElementException exception) {
             MyLogger.log(WebDriverService.class.getName(), Level.FATAL, exception.toString());
