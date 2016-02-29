@@ -213,6 +213,8 @@ public class WebDriverService implements IWebDriverService {
                     }
                 }
             }
+        } else if (answer.isCodeEquals(MessageEventEnum.ACTION_FAILED_WAIT_NO_SUCH_ELEMENT.getCode())) {
+            throw new NoSuchElementException(identifier.getIdentifier() + "=" + identifier.getLocator());  
         }
         return result;
     }
