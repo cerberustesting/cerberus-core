@@ -18,6 +18,12 @@
 package org.cerberus.crud.entity;
 
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import org.cerberus.util.answer.AnswerList;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 /**
  * @author bcivel
@@ -50,7 +56,8 @@ public class TestCaseStepActionExecution {
     private String propertyName; // Property name is stored in order to keep track of the property name. property is replaced by the value of it.
     private boolean stopExecution;
     private List<TestCaseExecutionData> testCaseExecutionDataList; // Host the full list of data that was previously calculated and that will be used to calculate during the calculation of any property during the action.
-
+    private AnswerList testCaseStepActionControlExecutionList;
+    
     public String getPageSourceFilename() {
         return pageSourceFilename;
     }
@@ -237,5 +244,41 @@ public class TestCaseStepActionExecution {
 
     public void setTestCase(String testCase) {
         this.testCase = testCase;
+    }
+
+    public void setTestCaseStepActionControlExecutionList(AnswerList testCaseStepActionControlExecutionList) {
+        this.testCaseStepActionControlExecutionList = testCaseStepActionControlExecutionList;
+    }
+    
+    public AnswerList getTestCaseStepActionControlExecutionList(){
+        return testCaseStepActionControlExecutionList;
+    }
+
+    public JSONObject toJson() {
+        JSONObject result = new JSONObject();
+        try {
+            result.append("id", this.getId());
+            result.append("test", this.getTest());
+            result.append("testcase", this.getTestCase());
+            result.append("step", this.getStep());
+            result.append("sequence", this.getSequence());
+            result.append("action", this.getAction());
+            result.append("object", this.getObject());
+            result.append("property", this.getProperty());
+            result.append("start", this.getStart());
+            result.append("end", this.getEndLong());
+            result.append("startlong", this.getStartLong());
+            result.append("endlong", this.getEnd());
+            result.append("screenshotFilename", this.getScreenshotFilename());
+            result.append("pageSourceFilename", this.getPageSourceFilename());
+            JSONArray array = new JSONArray();
+            for (Object testCaseStepActionControlExecution : this.getTestCaseStepActionControlExecutionList().getDataList()) {
+                array.put(((TestCaseStepActionControlExecution)testCaseStepActionControlExecution).toJson());
+            }
+            result.append("testCaseStepActionControlExecutionList", array);
+        } catch (JSONException ex) {
+            Logger.getLogger(TestCaseStepActionExecution.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return result;
     }
 }

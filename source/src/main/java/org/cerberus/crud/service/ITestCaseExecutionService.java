@@ -25,6 +25,7 @@ import org.cerberus.crud.entity.TCase;
 
 import org.cerberus.crud.entity.TestCaseExecution;
 import org.cerberus.exception.CerberusException;
+import org.cerberus.util.answer.AnswerItem;
 import org.cerberus.util.answer.AnswerList;
 
 /**
@@ -137,4 +138,19 @@ public interface ITestCaseExecutionService {
             List<String> tcactiveList, List<String> priorityList, List<String> targetsprintList, List<String> targetrevisionList, List<String> creatorList, 
             List<String> implementerList, List<String> buildList, List<String> revisionList, List<String> environmentList, List<String> countryList, List<String> browserList, List<String> tcestatusList, String ip, String port, String tag, String browserversion, 
             String comment, String bugid, String ticket);
+    
+    /**
+     * Read TestCaseExecution knowing the Key
+     * @param executionId : ID of the execution
+     * @return AnswerItem with returncode and testcaseexecution object as item.
+     */
+    AnswerItem readByKey(long executionId);
+    
+        
+    /**
+     * Read TestCaseExecution knowing the Key
+     * @param executionId : ID of the execution
+     * @return AnswerItem with returncode and testcaseexecution object as item.
+     */
+    AnswerItem readByKeyWithDependency(long executionId);
 }

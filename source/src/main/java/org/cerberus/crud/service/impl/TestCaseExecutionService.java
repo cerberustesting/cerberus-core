@@ -24,13 +24,14 @@ import java.util.List;
 
 import org.apache.log4j.Level;
 import org.cerberus.crud.dao.ITestCaseExecutionDAO;
-import org.cerberus.crud.entity.CountryEnvParam;
 import org.cerberus.crud.entity.TCase;
 import org.cerberus.crud.entity.TestCaseExecution;
 import org.cerberus.exception.CerberusException;
 import org.cerberus.log.MyLogger;
 import org.cerberus.crud.service.ITestCaseExecutionService;
+import org.cerberus.crud.service.ITestCaseStepExecutionService;
 import org.cerberus.util.ParameterParserUtil;
+import org.cerberus.util.answer.AnswerItem;
 import org.cerberus.util.answer.AnswerList;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -43,6 +44,8 @@ public class TestCaseExecutionService implements ITestCaseExecutionService {
 
     @Autowired
     ITestCaseExecutionDAO testCaseExecutionDao;
+    @Autowired
+    ITestCaseStepExecutionService testCaseStepExecutionService;
 
     @Override
     public long insertTCExecution(TestCaseExecution tCExecution) throws CerberusException {
@@ -151,12 +154,12 @@ public class TestCaseExecutionService implements ITestCaseExecutionService {
     @Override
     public List<TestCaseExecution> createAllTestCaseExecution(List<TCase> testCaseList, List<String> envList, List<String> countryList) {
         List<TestCaseExecution> result = new ArrayList<TestCaseExecution>();
-        
+
         for (TCase tc : testCaseList) {
             for (String environment : envList) {
                 for (String country : countryList) {
                     TestCaseExecution execution = new TestCaseExecution();
-                    
+
                     execution.setTest(tc.getTest());
                     execution.setTestCase(tc.getTestCase());
                     execution.setEnvironment(environment);
@@ -165,18 +168,34 @@ public class TestCaseExecutionService implements ITestCaseExecutionService {
                 }
             }
         }
-        
+
         return result;
     }
+
     @Override
-    public AnswerList readBySystemByVarious(String system, List<String> testList, List<String> applicationList, List<String> projectList, List<String> tcstatusList, 
-            List<String> groupList, List<String> tcactiveList, List<String> priorityList, List<String> targetsprintList, List<String> targetrevisionList, 
+    public AnswerList readBySystemByVarious(String system, List<String> testList, List<String> applicationList, List<String> projectList, List<String> tcstatusList,
+            List<String> groupList, List<String> tcactiveList, List<String> priorityList, List<String> targetsprintList, List<String> targetrevisionList,
             List<String> creatorList, List<String> implementerList, List<String> buildList, List<String> revisionList, List<String> environmentList,
-            List<String> countryList, List<String> browserList, List<String> tcestatusList, String ip, String port, String tag, String browserversion, 
+            List<String> countryList, List<String> browserList, List<String> tcestatusList, String ip, String port, String tag, String browserversion,
             String comment, String bugid, String ticket) {
-        
-        return testCaseExecutionDao.readBySystemByVarious(system, testList, applicationList, projectList, tcstatusList, groupList, tcactiveList, priorityList, targetsprintList, 
-                targetrevisionList, creatorList, implementerList, buildList, revisionList, environmentList, countryList, browserList, tcestatusList, 
+
+        return testCaseExecutionDao.readBySystemByVarious(system, testList, applicationList, projectList, tcstatusList, groupList, tcactiveList, priorityList, targetsprintList,
+                targetrevisionList, creatorList, implementerList, buildList, revisionList, environmentList, countryList, browserList, tcestatusList,
                 ip, port, tag, browserversion, comment, bugid, ticket);
+    }
+
+    @Override
+    public AnswerItem readByKey(long executionId) {
+        return testCaseExecutionDao.readByKey(executionId);
+    }
+
+    @Override
+    public AnswerItem readByKeyWithDependency(long executionId) {
+        AnswerItem tce = this.readByKey(executionId);
+        TestCaseExecution testCaseExecution = (TestCaseExecution) tce.getItem();
+        AnswerList steps = testCaseStepExecutionService.readByVarious1WithDependency(executionId, testCaseExecution.getTest(), testCaseExecution.getTestCase());
+        testCaseExecution.setTestCaseStepExecutionList(steps);
+        AnswerItem response = new AnswerItem(testCaseExecution, tce.getResultMessage());
+        return response;
     }
 }

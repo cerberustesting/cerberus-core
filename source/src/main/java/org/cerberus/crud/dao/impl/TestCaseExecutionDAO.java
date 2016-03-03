@@ -45,6 +45,7 @@ import org.cerberus.log.MyLogger;
 import org.cerberus.util.ParameterParserUtil;
 import org.cerberus.util.SqlUtil;
 import org.cerberus.util.StringUtil;
+import org.cerberus.util.answer.AnswerItem;
 import org.cerberus.util.answer.AnswerList;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
@@ -294,7 +295,7 @@ public class TestCaseExecutionDAO implements ITestCaseExecutionDAO {
                 ResultSet resultSet = preStat.executeQuery();
                 try {
                     if (resultSet.first()) {
-                        result = this.loadFromResultSet(resultSet);
+                        result = this.loadTestCaseExecutionAndApplicationFromResultSet(resultSet);
                     } else {
                         throw new CerberusException(new MessageGeneral(MessageGeneralEnum.NO_DATA_FOUND));
                     }
@@ -353,7 +354,7 @@ public class TestCaseExecutionDAO implements ITestCaseExecutionDAO {
                 ResultSet resultSet = preStat.executeQuery();
                 try {
                     if (resultSet.first()) {
-                        result = this.loadFromResultSet(resultSet);
+                        result = this.loadTestCaseExecutionAndApplicationFromResultSet(resultSet);
                     }
                 } catch (SQLException exception) {
                     LOG.error("Unable to execute query : " + exception.toString());
@@ -410,7 +411,7 @@ public class TestCaseExecutionDAO implements ITestCaseExecutionDAO {
                     } else {
                         myTestCaseExecutions = new ArrayList<TestCaseExecution>();
                         do {
-                            Execution = this.loadFromResultSet(resultSet);
+                            Execution = this.loadTestCaseExecutionAndApplicationFromResultSet(resultSet);
 
                             myTestCaseExecutions.add(Execution);
                         } while (resultSet.next());
@@ -445,7 +446,7 @@ public class TestCaseExecutionDAO implements ITestCaseExecutionDAO {
         return myTestCaseExecutions;
     }
 
-    private TestCaseExecution loadFromResultSet(ResultSet resultSet) throws SQLException {
+    private TestCaseExecution loadTestCaseExecutionAndApplicationFromResultSet(ResultSet resultSet) throws SQLException {
         long id = resultSet.getLong("ID");
         String test = resultSet.getString("test");
         String testcase = resultSet.getString("testcase");
@@ -525,7 +526,7 @@ public class TestCaseExecutionDAO implements ITestCaseExecutionDAO {
                 ResultSet resultSet = preStat.executeQuery();
                 try {
                     if (resultSet.first()) {
-                        result = this.loadFromResultSet(resultSet);
+                        result = this.loadTestCaseExecutionAndApplicationFromResultSet(resultSet);
                     }
                 } catch (SQLException exception) {
                     LOG.error("Unable to execute query : " + exception.toString());
@@ -585,7 +586,7 @@ public class TestCaseExecutionDAO implements ITestCaseExecutionDAO {
                     } else {
                         campaignTestCaseExecutions = new ArrayList<TestCaseExecution>();
                         do {
-                            campaignTestCaseExecutions.add(this.loadFromResultSet(resultSet));
+                            campaignTestCaseExecutions.add(this.loadTestCaseExecutionAndApplicationFromResultSet(resultSet));
                         } while (resultSet.next());
                     }
                 } catch (SQLException exception) {
@@ -747,7 +748,7 @@ public class TestCaseExecutionDAO implements ITestCaseExecutionDAO {
                 ResultSet resultSet = preStat.executeQuery();
                 try {
                     if (resultSet.first()) {
-                        result = this.loadFromResultSet(resultSet);
+                        result = this.loadTestCaseExecutionAndApplicationFromResultSet(resultSet);
                     }
                 } catch (SQLException exception) {
                     LOG.error("Unable to execute query : " + exception.toString());
@@ -1590,6 +1591,108 @@ public class TestCaseExecutionDAO implements ITestCaseExecutionDAO {
         answer.setDataList(tceList);
         answer.setResultMessage(msg);
         return answer;
+    }
+
+    @Override
+    public AnswerItem readByKey(long executionId) {
+        AnswerItem ans = new AnswerItem();
+        TestCaseExecution result = null;
+        final String query = "SELECT * FROM `testcaseexecution` WHERE `id` = ?";
+        MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
+        msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", ""));
+
+        Connection connection = this.databaseSpring.connect();
+        try {
+            PreparedStatement preStat = connection.prepareStatement(query);
+            try {
+                preStat.setLong(1, executionId);
+                ResultSet resultSet = preStat.executeQuery();
+                try {
+                    if (resultSet.first()) {
+                        result = loadFromResultSet(resultSet);
+                        msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
+                        msg.setDescription(msg.getDescription().replace("%ITEM%", OBJECT_NAME).replace("%OPERATION%", "SELECT"));
+                        ans.setItem(result);
+                    } else {
+                        msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_NO_DATA_FOUND);
+                    }
+                } catch (SQLException exception) {
+                    LOG.error("Unable to execute query : " + exception.toString());
+                    msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
+                    msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", exception.toString()));
+                } finally {
+                    resultSet.close();
+                }
+            } catch (SQLException exception) {
+                LOG.error("Unable to execute query : " + exception.toString());
+                msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
+                msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", exception.toString()));
+            } finally {
+                preStat.close();
+            }
+        } catch (SQLException exception) {
+            LOG.error("Unable to execute query : " + exception.toString());
+            msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
+            msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", exception.toString()));
+        } finally {
+            try {
+                if (connection != null) {
+                    connection.close();
+                }
+            } catch (SQLException exception) {
+                LOG.warn("Unable to close connection : " + exception.toString());
+            }
+        }
+
+        //sets the message
+        ans.setResultMessage(msg);
+        return ans;
+    }
+
+    @Override
+    public TestCaseExecution loadFromResultSet(ResultSet resultSet) throws SQLException {
+        long id = resultSet.getLong("ID");
+        String test = resultSet.getString("test");
+        String testcase = resultSet.getString("testcase");
+        String build = resultSet.getString("build");
+        String revision = resultSet.getString("revision");
+        String environment = resultSet.getString("environment");
+        String country = resultSet.getString("country");
+        String browser = resultSet.getString("browser");
+        String version = resultSet.getString("version");
+        String platform = resultSet.getString("platform");
+        String browserFullVersion = resultSet.getString("browserFullVersion");
+        long start;
+        try { // Managing the case where the date is 0000-00-00 00:00:00 inside MySQL
+            start = resultSet.getTimestamp("start").getTime();
+           } catch (Exception e) {
+            LOG.warn("Start date on execution not definied. " + e.toString());
+            start = 0;
+        }
+        long end;
+        try { // Managing the case where the date is 0000-00-00 00:00:00 inside MySQL
+            end = resultSet.getTimestamp("end").getTime();
+        } catch (Exception e) {
+            LOG.warn("End date on execution not definied. " + e.toString());
+            end = 0;
+        }
+        String controlStatus = resultSet.getString("controlStatus");
+        String controlMessage = resultSet.getString("controlMessage");
+        String application = resultSet.getString("application");
+        String ip = resultSet.getString("ip"); // Host the Selenium IP
+        String url = resultSet.getString("url");
+        String port = resultSet.getString("port"); // host the Selenium Port
+        String tag = resultSet.getString("tag");
+        String finished = resultSet.getString("finished");
+        int verbose = resultSet.getInt("verbose");
+        String status = resultSet.getString("status");
+        String crbVersion = resultSet.getString("crbVersion");
+        String executor = resultSet.getString("executor");
+        String screenSize = resultSet.getString("screensize");
+        return factoryTCExecution.create(id, test, testcase, build, revision, environment,
+                country, browser, version, platform, browserFullVersion, start, end, controlStatus, controlMessage, null, ip, url,
+                port, tag, finished, verbose, 0, 0, 0, true, "", "", status, crbVersion, null, null, null,
+                false, null, null, null, null, null, null, null, null, executor, 0, screenSize);
     }
 
 }

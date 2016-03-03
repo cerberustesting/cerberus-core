@@ -17,6 +17,12 @@
  */
 package org.cerberus.crud.entity;
 
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
 /**
  * @author bcivel
  */
@@ -59,7 +65,7 @@ public class TestCaseStepActionControlExecution {
     public void setPageSourceFilename(String pageSourceFilename) {
         this.pageSourceFilename = pageSourceFilename;
     }
-    
+
     public void setControlResultMessage(MessageEvent controlResultMessage) {
         this.controlResultMessage = controlResultMessage;
         if (controlResultMessage != null) {
@@ -226,5 +232,30 @@ public class TestCaseStepActionControlExecution {
 
     public void setTestCase(String testCase) {
         this.testCase = testCase;
+    }
+
+    public JSONObject toJson() {
+        JSONObject result = new JSONObject();
+        try {
+            result.append("id", this.getId());
+            result.append("test", this.getTest());
+            result.append("testcase", this.getTestCase());
+            result.append("step", this.getStep());
+            result.append("sequence", this.getSequence());
+            result.append("control", this.getControl());
+            result.append("controlType", this.getControlType());
+            result.append("controlProperty", this.getControlProperty());
+            result.append("controlValue", this.getControlValue());
+            result.append("fatal", this.getFatal());
+            result.append("start", this.getStart());
+            result.append("end", this.getEndLong());
+            result.append("startlong", this.getStartLong());
+            result.append("endlong", this.getEnd());
+            result.append("screenshotFilename", this.getScreenshotFilename());
+            result.append("pageSourceFilename", this.getPageSourceFilename());
+        } catch (JSONException ex) {
+            Logger.getLogger(TestCaseStepExecution.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return result;
     }
 }

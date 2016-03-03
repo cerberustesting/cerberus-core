@@ -25,25 +25,24 @@ $.when($.getScript("js/pages/global/global.js")).then(function() {
 
         bindToggleCollapse();
 
-        var test = GetURLParameter("test");
-        var testcase = GetURLParameter("testcase");
+        var executionId = GetURLParameter("executionId");
 
         displayHeaderLabel(doc);
         displayGlobalLabel(doc);
         displayFooter(doc);
         
-        var json;
-        var testcaseinfo;
+        var steps;
+        var testCaseExecution;
         $.ajax({
-            url: "ReadTestCase",
-            data: {test: test, testCase: testcase, withStep: true},
+            url: "ReadTestCaseExecution",
+            data: {executionId: executionId},
             dataType: "json",
             success: function(data) {
-                testcaseinfo = data.info;
-                loadTestCaseInfo(data.info);
-                json = data.stepList;
-                sortData(json);
-                createStepList(json, stepList);
+                testCaseExecution = data.testCaseExecution;
+                loadTitleInfo(data.testCaseExecution);
+                steps = testCaseExecution.testCaseStepExecutionList;
+                //sortData(steps);
+                createStepList(steps, stepList);
                 
             },
             error: showUnexpectedError
@@ -73,10 +72,10 @@ function createStepList(data, stepList) {
 }
 
 
-function loadTestCaseInfo(info) {
+function loadTitleInfo(info) {
+    $(".testTestCase #executionId").text(info.id);
     $(".testTestCase #test").text(info.test);
-    $(".testTestCase #testCase").text(info.testCase);
-    $(".testTestCase #description").text(info.shortDescription);
+    $(".testTestCase #testCase").text(info.testcase);
 }
 
 
@@ -114,23 +113,24 @@ function sortData(agreg) {
 function Step(json, stepList) {
     this.stepActionContainer = $("<div></div>").addClass("step-container").css("display", "none");
 
-    this.test = json.test;
+    this.test = json[0].test;
     this.testcase = json.testCase;
-    this.step = json.step;
+    this.step = json[0].step;
     this.description = json.description;
+    this.timeElapsed = json[0].timeElapsed;
     this.useStep = json.useStep;
     this.useStepTest = json.useStepTest;
     this.useStepTestCase = json.useStepTestCase;
     this.useStepStep = json.useStepStep;
     this.inLibrary = json.inLibrary;
     this.actionList = [];
-    this.setActionList(json.actionList);
+    this.setActionList(json[0].testCaseStepActionExecutionList);
 
     this.stepList = stepList;
     this.toDelete = false;
 
     this.html = $("<li></li>").addClass("list-group-item row").css("margin-left", "0px");
-    this.textArea = $("<div></div>").addClass("col-lg-10").addClass("step-description").text(this.description);
+    this.textArea = $("<div></div>").addClass("col-lg-10").addClass("step-description").text("[Step "+this.step+"]  "+this.timeElapsed);
 
 }
 
@@ -239,14 +239,14 @@ function Action(json, parentStep) {
         this.test = json.test;
         this.testcase = json.testCase;
         this.step = json.step;
-        this.sequence = json.sequence;
+        this.sequence = json[0].sequence;
         this.description = json.description;
         this.action = json.action;
         this.object = json.object;
         this.property = json.property;
         this.screenshotFileName = json.screenshotFileName;
         this.controlList = [];
-        this.setControlList(json.controlList);
+        this.setControlList(json[0].testCaseStepActionControlExecutionList);
     } else {
         this.test = "";
         this.testcase = "";
@@ -316,7 +316,7 @@ Action.prototype.generateContent = function() {
     var objectField = $("<text>");
     var propertyField = $("<text>");
 
-    descField.text(this.description);
+    descField.text(this.sequence);
     actionList.text(this.action);
     objectField.text(this.object);
     propertyField.text(this.property);

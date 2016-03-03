@@ -30,13 +30,17 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.log4j.Level;
+import org.apache.log4j.Logger;
 import org.cerberus.crud.dao.ITestCaseStepExecutionDAO;
+import org.cerberus.crud.entity.MessageEvent;
 import org.cerberus.database.DatabaseSpring;
 import org.cerberus.crud.entity.TestCaseStepExecution;
 import org.cerberus.crud.factory.IFactoryTestCaseStepExecution;
+import org.cerberus.enums.MessageEventEnum;
 import org.cerberus.log.MyLogger;
 import org.cerberus.util.DateUtil;
 import org.cerberus.util.ParameterParserUtil;
+import org.cerberus.util.answer.AnswerList;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
@@ -57,6 +61,8 @@ public class TestCaseStepExecutionDAO implements ITestCaseStepExecutionDAO {
     private DatabaseSpring databaseSpring;
     @Autowired
     private IFactoryTestCaseStepExecution factoryTestCaseStepExecution;
+    
+    private static final Logger LOG = Logger.getLogger(TestCaseStepExecutionDAO.class);
 
     /**
      * Short one line description.
@@ -182,22 +188,7 @@ public class TestCaseStepExecutionDAO implements ITestCaseStepExecutionDAO {
                 result = new ArrayList<TestCaseStepExecution>();
                 try {
                     while (resultSet.next()) {
-                        String test = resultSet.getString("test");
-                        String testcase = resultSet.getString("testcase");
-                        int step = resultSet.getInt("step");
-                        String batNumExe = resultSet.getString("batnumexe");
-                        long start = resultSet.getTimestamp("start").getTime();
-                        long end = resultSet.getTimestamp("end").getTime();
-                        long fullstart = resultSet.getLong("fullstart");
-                        long fullend = resultSet.getLong("Fullend");
-                        BigDecimal timeelapsed = resultSet.getBigDecimal("timeelapsed");
-//                        long timeelapsed = toto.setScale(0, RoundingMode.HALF_DOWN).longValue();;
-//                        Long.parseLong(resultSet.getBigDecimal("timeelapsed").toString());
-//                        long timeelapsed = resultSet.getLong("timeelapsed");
-                        String returnCode = resultSet.getString("returncode");
-                        String returnMessage = resultSet.getString("returnMessage");
-                        resultData = factoryTestCaseStepExecution.create(id, test, testcase, step, batNumExe, start, end, fullstart, fullend, timeelapsed, returnCode, returnMessage);
-                        result.add(resultData);
+                        result.add(this.loadFromResultSet(resultSet));
                     }
                 } catch (SQLException exception) {
                     MyLogger.log(TestCaseStepExecutionDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
@@ -221,5 +212,90 @@ public class TestCaseStepExecutionDAO implements ITestCaseStepExecutionDAO {
             }
         }
         return result;
+    }
+
+    @Override
+    public AnswerList readByVarious1(long executionId, String test, String testcase) {
+        MessageEvent msg;
+        AnswerList answer = new AnswerList();
+        List<TestCaseStepExecution> list = new ArrayList<TestCaseStepExecution>();
+        StringBuilder query = new StringBuilder();
+        query.append("SELECT * FROM testcasestepexecution a ");
+        query.append("where id = ? and test = ? and testcase = ?");
+        // Debug message on SQL.
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("SQL : " + query.toString());
+        }
+        Connection connection = this.databaseSpring.connect();
+        try {
+            PreparedStatement preStat = connection.prepareStatement(query.toString());
+            try {
+                preStat.setLong(1, executionId);
+                preStat.setString(2, test);
+                preStat.setString(3, testcase);
+                ResultSet resultSet = preStat.executeQuery();
+                try {
+                    while (resultSet.next()) {
+                        list.add(this.loadFromResultSet(resultSet));
+                    }
+                    if (list.isEmpty()) {
+                        msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_NO_DATA_FOUND);
+                    } else {
+                        msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
+                    }
+                } catch (SQLException exception) {
+                    LOG.error("Unable to execute query : " + exception.toString());
+                    msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
+                    msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", exception.toString()));
+                    list.clear();
+                } finally {
+                    if (resultSet != null) {
+                        resultSet.close();
+                    }
+                }
+            } catch (SQLException exception) {
+                LOG.error("Unable to execute query : " + exception.toString());
+                msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
+                msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", exception.toString()));
+            } finally {
+                if (preStat != null) {
+                    preStat.close();
+                }
+            }
+        } catch (SQLException exception) {
+            LOG.error("Unable to execute query : " + exception.toString());
+            msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
+            msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", exception.toString()));
+        } finally {
+            try {
+                if (connection != null) {
+                    connection.close();
+                }
+            } catch (SQLException exception) {
+                LOG.warn("Unable to close connection : " + exception.toString());
+            }
+        }
+
+        answer.setTotalRows(list.size());
+        answer.setDataList(list);
+        answer.setResultMessage(msg);
+        return answer;
+    }
+
+    @Override
+    public TestCaseStepExecution loadFromResultSet(ResultSet resultSet) throws SQLException {
+        long id = resultSet.getInt("id");
+        String test = resultSet.getString("test");
+        String testcase = resultSet.getString("testcase");
+        int step = resultSet.getInt("step");
+        String batNumExe = resultSet.getString("batnumexe");
+        long start = resultSet.getTimestamp("start").getTime();
+        long end = resultSet.getTimestamp("end").getTime();
+        long fullstart = resultSet.getLong("fullstart");
+        long fullend = resultSet.getLong("Fullend");
+        BigDecimal timeelapsed = resultSet.getBigDecimal("timeelapsed");
+        String returnCode = resultSet.getString("returncode");
+        String returnMessage = resultSet.getString("returnMessage");
+        return factoryTestCaseStepExecution.create(id, test, testcase, step, batNumExe, start, end, fullstart, fullend, timeelapsed, returnCode, returnMessage);
     }
 }

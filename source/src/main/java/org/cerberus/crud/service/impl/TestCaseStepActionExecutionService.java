@@ -21,14 +21,17 @@ package org.cerberus.crud.service.impl;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import org.apache.log4j.Level;
 import org.cerberus.crud.dao.ITestCaseExecutionDAO;
 import org.cerberus.crud.dao.ITestCaseStepActionExecutionDAO;
 import org.cerberus.crud.entity.TestCaseStepActionExecution;
+import org.cerberus.crud.service.ITestCaseStepActionControlExecutionService;
 import org.cerberus.log.MyLogger;
 import org.cerberus.crud.service.ITestCaseStepActionExecutionService;
+import org.cerberus.util.answer.AnswerList;
 import org.json.JSONArray;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -44,6 +47,8 @@ public class TestCaseStepActionExecutionService implements ITestCaseStepActionEx
     ITestCaseStepActionExecutionDAO testCaseStepActionExecutionDao;
     @Autowired
     ITestCaseExecutionDAO testCaseExecutionDao;
+    @Autowired
+    ITestCaseStepActionControlExecutionService testCaseStepActionControlExecutionService;
 
     @Override
     public void insertTestCaseStepActionExecution(TestCaseStepActionExecution testCaseStepActionExecution) {
@@ -90,7 +95,7 @@ public class TestCaseStepActionExecutionService implements ITestCaseStepActionEx
                 data = new JSONArray();
                 DateFormat df2 = new SimpleDateFormat(org.cerberus.util.DateUtil.DATE_FORMAT_DISPLAY);
                 Date dat = df2.parse(listInformation.get(4));
-                
+
                 String datea = df2.format(dat);
                 data.put(datea);
                 String date1 = listInformation.get(5);
@@ -100,7 +105,7 @@ public class TestCaseStepActionExecutionService implements ITestCaseStepActionEx
                 Date d2 = df.parse(date2);
                 double diffInMilliseconds = (double) ((int) (((double) (d1.getTime() - d2.getTime()) / 1000) * 100)) / 100;
                 data.put(diffInMilliseconds);
-                
+
                 line.put(data);
             }
             result.put(line);
@@ -108,5 +113,25 @@ public class TestCaseStepActionExecutionService implements ITestCaseStepActionEx
             MyLogger.log(TestCaseStepActionExecutionService.class.getName(), Level.FATAL, ex.toString());
         }
         return result;
+    }
+
+    @Override
+    public AnswerList readByVarious1(long executionId, String test, String testcase, int step) {
+        return testCaseStepActionExecutionDao.readByVarious1(executionId, test, testcase, step);
+    }
+
+    @Override
+    public AnswerList readByVarious1WithDependency(long executionId, String test, String testcase, int step) {
+        AnswerList actions = this.readByVarious1(executionId, test, testcase, step);
+        AnswerList response = null;
+        List<TestCaseStepActionExecution> tcsaeList = new ArrayList();
+        for (Object action : actions.getDataList()) {
+            TestCaseStepActionExecution tcsae = (TestCaseStepActionExecution) action;
+            AnswerList controls = testCaseStepActionControlExecutionService.readByVarious1(executionId, test, testcase, step, tcsae.getSequence());
+            tcsae.setTestCaseStepActionControlExecutionList(controls);
+            tcsaeList.add(tcsae);
+        }
+        response = new AnswerList(tcsaeList, actions.getTotalRows());
+        return response;
     }
 }

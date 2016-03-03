@@ -22,6 +22,7 @@ package org.cerberus.crud.service;
 import java.util.List;
 
 import org.cerberus.crud.entity.TestCaseStepExecution;
+import org.cerberus.util.answer.AnswerList;
 
 /**
  *
@@ -39,4 +40,8 @@ public interface ITestCaseStepExecutionService {
      * @return List of testCaseStepExecution that correspond to the Id.
      */
     List<TestCaseStepExecution> findTestCaseStepExecutionById(long id);
+    
+    AnswerList readByVarious1(long executionId, String test, String testcase);
+    
+    AnswerList readByVarious1WithDependency(long executionId, String test, String testcase);
 }

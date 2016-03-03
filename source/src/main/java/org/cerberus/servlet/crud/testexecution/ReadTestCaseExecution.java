@@ -19,6 +19,7 @@
  */
 package org.cerberus.servlet.crud.testexecution;
 
+import com.google.gson.Gson;
 import java.io.IOException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -89,7 +90,8 @@ public class ReadTestCaseExecution extends HttpServlet {
             String test = ParameterParserUtil.parseStringParam(request.getParameter("test"), "");
             String testCase = ParameterParserUtil.parseStringParam(request.getParameter("testCase"), "");
             String system  = ParameterParserUtil.parseStringParam(request.getParameter("system"), "");
-            
+            long executionId = ParameterParserUtil.parseLongParam(request.getParameter("executionId"), 0);
+            boolean executionWithDependency = ParameterParserUtil.parseBooleanParam("executionWithDependency", false);
             if (sEcho == 0 && !Tag.equals("")) {
                 answer = findExecutionColumns(appContext, request, Tag);
                 jsonResponse = (JSONObject) answer.getItem();
@@ -109,6 +111,12 @@ public class ReadTestCaseExecution extends HttpServlet {
                 result.put("country", lastExec.getCountry());
                 result.put("end", new Date(lastExec.getEnd())).toString();
                 jsonResponse.put("contentTable", result);
+            }else if (executionId!=0 && !executionWithDependency){
+                answer = testCaseExecutionService.readByKeyWithDependency(executionId);
+                TestCaseExecution tce = (TestCaseExecution) answer.getItem();
+                jsonResponse.put("testCaseExecution", tce.toJson());
+            }else if (executionId!=0 && executionWithDependency){
+            
             }
 
             jsonResponse.put("messageType", answer.getResultMessage().getMessage().getCodeString());
