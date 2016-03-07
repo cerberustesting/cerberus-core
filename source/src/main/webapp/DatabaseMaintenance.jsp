@@ -177,7 +177,14 @@
 
                             out.print("Database is now uptodate. Enjoy the tool.<br>");
                             out.print("Show all SQL <a href=\"DatabaseMaintenance.jsp?ShowAll\">here</a>.");
-
+                            %>
+                            <script>function clearSessionStorage(){
+                                sessionStorage.clear();
+                                console.log("sessionStorage cleared");
+                            }
+                            clearSessionStorage();
+                            </script>
+            <%
                             if (request.getParameter("ShowAll") != null) {
                                 Integer i = 0;
                                 out.print("<table>");

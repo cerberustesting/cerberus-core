@@ -17,9 +17,12 @@
  */
 package org.cerberus.crud.dao;
 
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.List;
 
 import org.cerberus.crud.entity.TestCaseStepExecution;
+import org.cerberus.util.answer.AnswerList;
 
 /**
  * {Insert class description here}
@@ -48,4 +51,8 @@ public interface ITestCaseStepExecutionDAO {
      * @return
      */
     List<TestCaseStepExecution> findTestCaseStepExecutionById(long id);
+
+    public AnswerList readByVarious1(long executionId, String test, String testcase);
+    
+    public TestCaseStepExecution loadFromResultSet(ResultSet resultSet) throws SQLException;
 }

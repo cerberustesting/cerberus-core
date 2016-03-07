@@ -19,6 +19,12 @@ package org.cerberus.crud.entity;
 
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import org.cerberus.util.answer.AnswerList;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 /**
  * @author bcivel
@@ -50,6 +56,7 @@ public class TestCaseStepExecution {
     private String useStepTest;
     private String useStepTestCase;
     private int useStepTestCaseStep;
+    private AnswerList testCaseStepActionExecutionList;
 
     public String getReturnMessage() {
         return returnMessage;
@@ -58,7 +65,7 @@ public class TestCaseStepExecution {
     public void setReturnMessage(String returnMessage) {
         this.returnMessage = returnMessage;
     }
-    
+
     public String getUseStep() {
         return useStep;
     }
@@ -90,7 +97,7 @@ public class TestCaseStepExecution {
     public void setUseStepTestCaseStep(int useStepTestCaseStep) {
         this.useStepTestCaseStep = useStepTestCaseStep;
     }
-    
+
     public List<TestCaseExecutionData> getTestCaseExecutionDataList() {
         return testCaseExecutionDataList;
     }
@@ -228,5 +235,39 @@ public class TestCaseStepExecution {
 
     public void setTimeElapsed(BigDecimal timeElapsed) {
         this.timeElapsed = timeElapsed;
+    }
+
+    public void setTestCaseStepActionExecution(AnswerList testCaseStepActionExecutionList) {
+        this.testCaseStepActionExecutionList = testCaseStepActionExecutionList;
+    }
+
+    public AnswerList getTestCaseStepActionExecutionList() {
+        return testCaseStepActionExecutionList;
+    }
+
+    public JSONObject toJson() {
+        JSONObject result = new JSONObject();
+        try {
+            result.append("id", this.getId());
+            result.append("test", this.getTest());
+            result.append("testcase", this.getTestCase());
+            result.append("step", this.getStep());
+            result.append("batNumExe", this.getBatNumExe());
+            result.append("start", this.getStart());
+            result.append("end", this.getEnd());
+            result.append("fullStart", this.getFullStart());
+            result.append("fullEnd", this.getFullEnd());
+            result.append("timeElapsed", this.getTimeElapsed());
+            result.append("returnCode", this.getReturnCode());
+            result.append("returnMessage", this.getReturnMessage());
+            JSONArray array = new JSONArray();
+            for (Object testCaseStepExecution : this.getTestCaseStepActionExecutionList().getDataList()) {
+                array.put(((TestCaseStepActionExecution)testCaseStepExecution).toJson());
+            }
+            result.append("testCaseStepActionExecutionList", array);
+        } catch (JSONException ex) {
+            Logger.getLogger(TestCaseStepExecution.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return result;
     }
 }

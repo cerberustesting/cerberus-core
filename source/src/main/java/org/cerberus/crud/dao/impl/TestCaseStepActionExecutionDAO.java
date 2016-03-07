@@ -28,14 +28,18 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.log4j.Level;
+import org.apache.log4j.Logger;
 import org.cerberus.crud.dao.ITestCaseStepActionExecutionDAO;
+import org.cerberus.crud.entity.MessageEvent;
 import org.cerberus.database.DatabaseSpring;
 import org.cerberus.crud.entity.TestCaseStepActionExecution;
 import org.cerberus.crud.factory.IFactoryTestCaseStepActionExecution;
+import org.cerberus.enums.MessageEventEnum;
 import org.cerberus.log.MyLogger;
 import org.cerberus.util.DateUtil;
 import org.cerberus.util.ParameterParserUtil;
 import org.cerberus.util.StringUtil;
+import org.cerberus.util.answer.AnswerList;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
@@ -56,6 +60,8 @@ public class TestCaseStepActionExecutionDAO implements ITestCaseStepActionExecut
     private DatabaseSpring databaseSpring;
     @Autowired
     private IFactoryTestCaseStepActionExecution factoryTestCaseStepActionExecution;
+    
+    private static final Logger LOG = Logger.getLogger(TestCaseStepActionExecutionDAO.class);
 
     @Override
     public void updateTestCaseStepActionExecution(TestCaseStepActionExecution testCaseStepActionExecution) {
@@ -87,7 +93,7 @@ public class TestCaseStepActionExecutionDAO implements ITestCaseStepActionExecut
                 preStat.setString(8, testCaseStepActionExecution.getReturnCode());
                 preStat.setString(9, StringUtil.getLeftString(testCaseStepActionExecution.getReturnMessage(), 500));
                 preStat.setString(10, testCaseStepActionExecution.getScreenshotFilename());
-                preStat.setString(11, testCaseStepActionExecution.getPageSourceFilename()); 
+                preStat.setString(11, testCaseStepActionExecution.getPageSourceFilename());
                 preStat.setLong(12, testCaseStepActionExecution.getId());
                 preStat.setString(13, testCaseStepActionExecution.getTest());
                 preStat.setString(14, testCaseStepActionExecution.getTestCase());
@@ -97,12 +103,12 @@ public class TestCaseStepActionExecutionDAO implements ITestCaseStepActionExecut
                 preStat.executeUpdate();
 
             } catch (SQLException exception) {
-                MyLogger.log(TestCaseStepActionExecutionDAO.class.getName(), Level.ERROR, "Unable to execute query : "+exception.toString());
+                MyLogger.log(TestCaseStepActionExecutionDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
             } finally {
                 preStat.close();
             }
         } catch (SQLException exception) {
-            MyLogger.log(TestCaseStepActionExecutionDAO.class.getName(), Level.ERROR, "Unable to execute query : "+exception.toString());
+            MyLogger.log(TestCaseStepActionExecutionDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
         } finally {
             try {
                 if (connection != null) {
@@ -152,12 +158,12 @@ public class TestCaseStepActionExecutionDAO implements ITestCaseStepActionExecut
                 preStat.executeUpdate();
 
             } catch (SQLException exception) {
-                MyLogger.log(TestCaseStepActionExecutionDAO.class.getName(), Level.ERROR, "Unable to execute query : "+exception.toString());
+                MyLogger.log(TestCaseStepActionExecutionDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
             } finally {
                 preStat.close();
             }
         } catch (SQLException exception) {
-            MyLogger.log(TestCaseStepActionExecutionDAO.class.getName(), Level.ERROR, "Unable to execute query : "+exception.toString());
+            MyLogger.log(TestCaseStepActionExecutionDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
         } finally {
             try {
                 if (connection != null) {
@@ -216,17 +222,17 @@ public class TestCaseStepActionExecutionDAO implements ITestCaseStepActionExecut
                         list.add(array);
                     }
                 } catch (SQLException exception) {
-                    MyLogger.log(TestCaseStepActionExecutionDAO.class.getName(), Level.ERROR, "Unable to execute query : "+exception.toString());
+                    MyLogger.log(TestCaseStepActionExecutionDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
                 } finally {
                     resultSet.close();
                 }
             } catch (SQLException exception) {
-                MyLogger.log(TestCaseStepActionExecutionDAO.class.getName(), Level.ERROR, "Unable to execute query : "+exception.toString());
+                MyLogger.log(TestCaseStepActionExecutionDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
             } finally {
                 preStat.close();
             }
         } catch (SQLException exception) {
-            MyLogger.log(TestCaseStepActionExecutionDAO.class.getName(), Level.ERROR, "Unable to execute query : "+exception.toString());
+            MyLogger.log(TestCaseStepActionExecutionDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
         } finally {
             try {
                 if (connection != null) {
@@ -259,33 +265,20 @@ public class TestCaseStepActionExecutionDAO implements ITestCaseStepActionExecut
                     result = new ArrayList<TestCaseStepActionExecution>();
 
                     while (resultSet.next()) {
-                        int seq = resultSet.getInt("sequence");
-                        String returnCode = resultSet.getString("returncode");
-                        String returnMessage = resultSet.getString("returnmessage");
-                        String action = resultSet.getString("action");
-                        String object = resultSet.getString("object");
-                        String property = resultSet.getString("property");
-                        long start = resultSet.getTimestamp("start").getTime();
-                        long end = resultSet.getTimestamp("end").getTime();
-                        long startlong = resultSet.getLong("startlong");
-                        long endlong = resultSet.getLong("endlong");
-                        String screenshot = resultSet.getString("ScreenshotFilename");
-                        String pageSource = resultSet.getString("PageSourceFilename");
-                        resultData = factoryTestCaseStepActionExecution.create(id, test, testCase, step, seq, returnCode, returnMessage, action, object, property, start, end, startlong, endlong, screenshot, pageSource, null, null, null);
-                        result.add(resultData);
+                        result.add(this.loadFromResultset(resultSet));
                     }
                 } catch (SQLException exception) {
-                    MyLogger.log(TestCaseStepActionExecutionDAO.class.getName(), Level.ERROR, "Unable to execute query : "+exception.toString());
+                    MyLogger.log(TestCaseStepActionExecutionDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
                 } finally {
                     resultSet.close();
                 }
             } catch (SQLException exception) {
-                MyLogger.log(TestCaseStepActionExecutionDAO.class.getName(), Level.ERROR, "Unable to execute query : "+exception.toString());
+                MyLogger.log(TestCaseStepActionExecutionDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
             } finally {
                 preStat.close();
             }
         } catch (SQLException exception) {
-            MyLogger.log(TestCaseStepActionExecutionDAO.class.getName(), Level.ERROR, "Unable to execute query : "+exception.toString());
+            MyLogger.log(TestCaseStepActionExecutionDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
         } finally {
             try {
                 if (connection != null) {
@@ -298,5 +291,95 @@ public class TestCaseStepActionExecutionDAO implements ITestCaseStepActionExecut
         return result;
     }
 
+    @Override
+    public AnswerList readByVarious1(long executionId, String test, String testCase, int step) {
+        MessageEvent msg;
+        AnswerList answer = new AnswerList();
+        List<TestCaseStepActionExecution> list = new ArrayList<TestCaseStepActionExecution>();
+        StringBuilder query = new StringBuilder();
+        query.append("SELECT * FROM testcasestepactionexecution a ");
+        query.append("where id = ? and test = ? and testcase = ? and step = ? ");
+        // Debug message on SQL.
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("SQL : " + query.toString());
+        }
+        Connection connection = this.databaseSpring.connect();
+        try {
+            PreparedStatement preStat = connection.prepareStatement(query.toString());
+            try {
+                preStat.setLong(1, executionId);
+                preStat.setString(2, test);
+                preStat.setString(3, testCase);
+                preStat.setInt(4, step);
+                ResultSet resultSet = preStat.executeQuery();
+                try {
+                    while (resultSet.next()) {
+                        list.add(this.loadFromResultset(resultSet));
+                    }
+                    if (list.isEmpty()) {
+                        msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_NO_DATA_FOUND);
+                    } else {
+                        msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
+                    }
+                } catch (SQLException exception) {
+                    LOG.error("Unable to execute query : " + exception.toString());
+                    msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
+                    msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", exception.toString()));
+                    list.clear();
+                } finally {
+                    if (resultSet != null) {
+                        resultSet.close();
+                    }
+                }
+            } catch (SQLException exception) {
+                LOG.error("Unable to execute query : " + exception.toString());
+                msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
+                msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", exception.toString()));
+            } finally {
+                if (preStat != null) {
+                    preStat.close();
+                }
+            }
+        } catch (SQLException exception) {
+            LOG.error("Unable to execute query : " + exception.toString());
+            msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
+            msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", exception.toString()));
+        } finally {
+            try {
+                if (connection != null) {
+                    connection.close();
+                }
+            } catch (SQLException exception) {
+                LOG.warn("Unable to close connection : " + exception.toString());
+            }
+        }
+
+        answer.setTotalRows(list.size());
+        answer.setDataList(list);
+        answer.setResultMessage(msg);
+        return answer;
+    }
+
+    @Override
+    public TestCaseStepActionExecution loadFromResultset(ResultSet resultSet) throws SQLException {
+        long id = resultSet.getInt("id");
+        String test = resultSet.getString("test");
+        String testCase = resultSet.getString("testcase");
+        int step = resultSet.getInt("step");
+        int seq = resultSet.getInt("sequence");
+        String returnCode = resultSet.getString("returncode");
+        String returnMessage = resultSet.getString("returnmessage");
+        String action = resultSet.getString("action");
+        String object = resultSet.getString("object");
+        String property = resultSet.getString("property");
+        long start = resultSet.getTimestamp("start").getTime();
+        long end = resultSet.getTimestamp("end").getTime();
+        long startlong = resultSet.getLong("startlong");
+        long endlong = resultSet.getLong("endlong");
+        String screenshot = resultSet.getString("ScreenshotFilename");
+        String pageSource = resultSet.getString("PageSourceFilename");
+        return factoryTestCaseStepActionExecution.create(id, test, testCase, step, seq, returnCode, returnMessage, action, object, property, start, end, startlong, endlong, screenshot, pageSource, null, null, null);
+
+    }
 
 }

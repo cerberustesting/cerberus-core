@@ -17,9 +17,16 @@
  */
 package org.cerberus.crud.entity;
 
+import com.google.gson.Gson;
 import org.cerberus.service.engine.testdata.TestDataLibResult;
 import java.util.HashMap;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import org.cerberus.util.answer.AnswerList;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 /**
  * @author bcivel
@@ -52,7 +59,6 @@ public class TestCaseExecution {
     private String crbVersion;
     private String executor;
     private String screenSize;
-
 
     /**
      * From here are data outside database model.
@@ -89,7 +95,7 @@ public class TestCaseExecution {
     private String userAgent;
     private boolean synchroneous;
     private String timeout;
-
+    private AnswerList testCaseStepExecutionAnswerList;
 
     public String getUserAgent() {
         return userAgent;
@@ -106,8 +112,8 @@ public class TestCaseExecution {
     public void setNumberOfRetries(Integer numberOfRetries) {
         this.numberOfRetries = numberOfRetries;
     }
-    
-    public void decreaseNumberOfRetries(){
+
+    public void decreaseNumberOfRetries() {
         this.numberOfRetries--;
     }
 
@@ -126,7 +132,7 @@ public class TestCaseExecution {
     public void setTestCaseCountryPropertyList(List<TestCaseCountryProperties> testCaseCountryPropertyList) {
         this.testCaseCountryPropertyList = testCaseCountryPropertyList;
     }
-    
+
     public String getManualExecution() {
         return manualExecution;
     }
@@ -134,7 +140,7 @@ public class TestCaseExecution {
     public void setManualExecution(String manualExecution) {
         this.manualExecution = manualExecution;
     }
-    
+
     public Session getSession() {
         return session;
     }
@@ -158,7 +164,7 @@ public class TestCaseExecution {
     public void setSeleniumLog(Integer seleniumLog) {
         this.seleniumLog = seleniumLog;
     }
-    
+
     public boolean isSynchroneous() {
         return synchroneous;
     }
@@ -182,7 +188,7 @@ public class TestCaseExecution {
     public void setExecutionUUID(String executionUUID) {
         this.executionUUID = executionUUID;
     }
-    
+
     public Selenium getSelenium() {
         return selenium;
     }
@@ -222,7 +228,7 @@ public class TestCaseExecution {
     public void setEnvironmentDataObj(Invariant environmentDataObj) {
         this.environmentDataObj = environmentDataObj;
     }
-    
+
     public String getEnvironmentData() {
         return environmentData;
     }
@@ -538,7 +544,7 @@ public class TestCaseExecution {
     public void setTestCaseExecutionDataList(List<TestCaseExecutionData> testCaseExecutionDataList) {
         this.testCaseExecutionDataList = testCaseExecutionDataList;
     }
-    
+
     public HashMap<String, TestDataLibResult> getDataLibraryExecutionDataList() {
         return dataLibraryExecutionDataList;
     }
@@ -546,6 +552,7 @@ public class TestCaseExecution {
     public void setDataLibraryExecutionDataList(HashMap<String, TestDataLibResult> dataLibraryExecutionDataList) {
         this.dataLibraryExecutionDataList = dataLibraryExecutionDataList;
     }
+
     public String getExecutor() {
         return executor;
     }
@@ -557,7 +564,56 @@ public class TestCaseExecution {
     public String getScreenSize() {
         return screenSize;
     }
+
     public void setScreenSize(String screenSize) {
         this.screenSize = screenSize;
+    }
+    
+    public void setTestCaseStepExecutionList(AnswerList testCaseStepExecutionAnswerList) {
+        this.testCaseStepExecutionAnswerList = testCaseStepExecutionAnswerList;
+    }
+    
+    public AnswerList getTestCaseStepExecutionAnswerList(){
+        return testCaseStepExecutionAnswerList;
+    }
+
+    public JSONObject toJson() {
+        JSONObject result = new JSONObject();
+        try {
+            result.append("id", this.getId());
+            result.append("test", this.getTest());
+            result.append("testcase", this.getTestCase());
+            result.append("build", this.getBuild());
+            result.append("revision", this.getRevision());
+            result.append("environment", this.getEnvironment());
+            result.append("country", this.getCountry());
+            result.append("browser", this.getBrowser());
+            result.append("version", this.getVersion());
+            result.append("platform", this.getPlatform());
+            result.append("browserFullVersion", this.getBrowserFullVersion());
+            result.append("start", this.getStart());
+            result.append("end", this.getEnd());
+            result.append("controlStatus", this.getControlStatus());
+            result.append("controlMessage", this.getControlMessage());
+            result.append("application", this.getApplication());
+            result.append("ip", this.getIp());
+            result.append("url", this.getUrl());
+            result.append("port", this.getPort());
+            result.append("tag", this.getTag());
+            result.append("finished", this.getFinished());
+            result.append("verbose", this.getVerbose());
+            result.append("status", this.getStatus());
+            result.append("crbVersion", this.getCrbVersion());
+            result.append("executor", this.getExecutor());
+            result.append("screenSize", this.getScreenSize());
+            JSONArray array = new JSONArray();
+            for (Object testCaseStepExecution : this.getTestCaseStepExecutionAnswerList().getDataList()) {
+                array.put( ((TestCaseStepExecution)testCaseStepExecution).toJson());
+            }
+            result.append("testCaseStepExecutionList", array);
+        } catch (JSONException ex) {
+            Logger.getLogger(TestCaseExecution.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return result;
     }
 }
