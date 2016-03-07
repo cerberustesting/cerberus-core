@@ -20,6 +20,8 @@ package org.cerberus.crud.dao;
 import java.util.List;
 import org.cerberus.crud.entity.CountryEnvironmentDatabase;
 import org.cerberus.exception.CerberusException;
+import org.cerberus.util.answer.Answer;
+import org.cerberus.util.answer.AnswerItem;
 import org.cerberus.util.answer.AnswerList;
 
 /**
@@ -30,6 +32,16 @@ import org.cerberus.util.answer.AnswerList;
  * @since 2.0.0
  */
 public interface ICountryEnvironmentDatabaseDAO {
+
+    /**
+     *
+     * @param system
+     * @param country
+     * @param environment
+     * @param database
+     * @return
+     */
+    AnswerItem readByKey(String system, String country, String environment, String database);
 
     /**
      *
@@ -58,7 +70,7 @@ public interface ICountryEnvironmentDatabaseDAO {
      * @return
      * @throws CerberusException
      */
-    public List<CountryEnvironmentDatabase> findListByCriteria(String system, String country, String environment) throws CerberusException;
+    List<CountryEnvironmentDatabase> findListByCriteria(String system, String country, String environment) throws CerberusException;
     
     /**
      *
@@ -73,27 +85,49 @@ public interface ICountryEnvironmentDatabaseDAO {
      * @param individualSearch
      * @return
      */
-    public AnswerList readByVariousByCriteria(String system, String country, String environment, int start, int amount, String column, String dir, String searchTerm, String individualSearch);
+    AnswerList readByVariousByCriteria(String system, String country, String environment, int start, int amount, String column, String dir, String searchTerm, String individualSearch);
     
     /**
      * Update countryEnvironmentDatabase
      * @param ced
      * @throws CerberusException 
      */
-    void update(CountryEnvironmentDatabase ced) throws CerberusException;
+    void update_deprecated(CountryEnvironmentDatabase ced) throws CerberusException;
     
     /**
      * Delete countryEnvironmentDatabase
      * @param ced
      * @throws CerberusException 
      */
-    void delete(CountryEnvironmentDatabase ced) throws CerberusException;
+    void delete_deprecated(CountryEnvironmentDatabase ced) throws CerberusException;
     
     /**
      * Create countryEnvironmentDatabase
      * @param ced
      * @throws CerberusException 
      */
-    void create(CountryEnvironmentDatabase ced) throws CerberusException;
+    void create_deprecated(CountryEnvironmentDatabase ced) throws CerberusException;
+    
+    /**
+     *
+     * @param object
+     * @return
+     */
+    Answer create(CountryEnvironmentDatabase object);
+
+    /**
+     *
+     * @param object
+     * @return
+     */
+    Answer delete(CountryEnvironmentDatabase object);
+
+    /**
+     *
+     * @param object
+     * @return
+     */
+    Answer update(CountryEnvironmentDatabase object);
+
 
 }

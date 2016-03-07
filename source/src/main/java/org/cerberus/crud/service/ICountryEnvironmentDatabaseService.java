@@ -22,6 +22,8 @@ package org.cerberus.crud.service;
 import java.util.List;
 import org.cerberus.crud.entity.CountryEnvironmentDatabase;
 import org.cerberus.exception.CerberusException;
+import org.cerberus.util.answer.Answer;
+import org.cerberus.util.answer.AnswerItem;
 import org.cerberus.util.answer.AnswerList;
 
 /**
@@ -30,7 +32,9 @@ import org.cerberus.util.answer.AnswerList;
  */
 public interface ICountryEnvironmentDatabaseService {
 
-    CountryEnvironmentDatabase findCountryEnvironmentDatabaseByKey(String system, String country, String environment, String database) throws CerberusException;
+    public AnswerItem readByKey(String system, String country, String environment, String database);
+
+    public CountryEnvironmentDatabase findCountryEnvironmentDatabaseByKey(String system, String country, String environment, String database) throws CerberusException;
 
     /**
      * Find all countryEnvironmentDatabase by System
@@ -39,7 +43,7 @@ public interface ICountryEnvironmentDatabaseService {
      * @return
      * @throws CerberusException
      */
-    List<CountryEnvironmentDatabase> findAll(String system) throws CerberusException;
+    public List<CountryEnvironmentDatabase> findAll(String system) throws CerberusException;
 
     /**
      * Find List of CountryEnvironmentDatabase by Criteria
@@ -55,6 +59,15 @@ public interface ICountryEnvironmentDatabaseService {
      * @return
      */
     public List<CountryEnvironmentDatabase> findListByCriteria(int start, int amount, String column, String dir, String searchTerm, String individualSearch);
+
+    /**
+     *
+     * @param system
+     * @param country
+     * @param environment
+     * @return
+     */
+    public AnswerList readByVarious(String system, String country, String environment);
 
     /**
      *
@@ -96,7 +109,7 @@ public interface ICountryEnvironmentDatabaseService {
      * @param ced
      * @throws CerberusException
      */
-    void update(CountryEnvironmentDatabase ced) throws CerberusException;
+    void update_deprecated(CountryEnvironmentDatabase ced) throws CerberusException;
 
     /**
      * Delete countryEnvironmentDatabase
@@ -104,7 +117,7 @@ public interface ICountryEnvironmentDatabaseService {
      * @param ced
      * @throws CerberusException
      */
-    void delete(CountryEnvironmentDatabase ced) throws CerberusException;
+    void delete_deprecated(CountryEnvironmentDatabase ced) throws CerberusException;
 
     /**
      * Create countryEnvironmentDatabase
@@ -112,6 +125,88 @@ public interface ICountryEnvironmentDatabaseService {
      * @param ced
      * @throws CerberusException
      */
-    void create(CountryEnvironmentDatabase ced) throws CerberusException;
+    void create_deprecated(CountryEnvironmentDatabase ced) throws CerberusException;
 
+    /**
+     *
+     * @param object
+     * @return
+     */
+    public Answer create(CountryEnvironmentDatabase object);
+
+    /**
+     *
+     * @param object
+     * @return
+     */
+    public Answer delete(CountryEnvironmentDatabase object);
+
+    /**
+     *
+     * @param object
+     * @return
+     */
+    public Answer update(CountryEnvironmentDatabase object);
+
+    /**
+     *
+     * @param objectList
+     * @return
+     */
+    public Answer createList(List<CountryEnvironmentDatabase> objectList);
+
+    /**
+     *
+     * @param objectList
+     * @return
+     */
+    public Answer deleteList(List<CountryEnvironmentDatabase> objectList);
+
+    /**
+     * Update all CountryEnvironmentDatabase from the sourceList to the
+     * perimeter of system, country and environment list. All existing databases
+     * from newList will be updated, the new ones added and missing ones
+     * deleted.
+     *
+     * @param system
+     * @param country
+     * @param environement
+     * @param newList
+     * @return
+     */
+    public Answer compareListAndUpdateInsertDeleteElements(String system, String country, String environement, List<CountryEnvironmentDatabase> newList);
+
+    /**
+     *
+     * @param system
+     * @param country
+     * @param environment
+     * @param database
+     * @return true is application exist or false is application does not exist
+     * in database.
+     */
+    boolean exist(String system, String country, String environment, String database);
+
+    /**
+     *
+     * @param answerItem
+     * @return
+     * @throws CerberusException
+     */
+    CountryEnvironmentDatabase convert(AnswerItem answerItem) throws CerberusException;
+
+    /**
+     *
+     * @param answerList
+     * @return
+     * @throws CerberusException
+     */
+    List<CountryEnvironmentDatabase> convert(AnswerList answerList) throws CerberusException;
+
+    /**
+     *
+     * @param answer
+     * @throws CerberusException
+     */
+    void convert(Answer answer) throws CerberusException;
 }

@@ -68,5 +68,71 @@ public class CountryEnvDeployType {
     public void setJenkinsAgent(String jenkinsAgent) {
         this.jenkinsAgent = jenkinsAgent;
     }
+    
+    public boolean hasSameKey(CountryEnvDeployType obj) {
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        final CountryEnvDeployType other = (CountryEnvDeployType) obj;
+        if ((this.system == null) ? (other.system != null) : !this.system.equals(other.system)) {
+            return false;
+        }
+        if ((this.country == null) ? (other.country != null) : !this.country.equals(other.country)) {
+            return false;
+        }
+        if ((this.environment == null) ? (other.environment != null) : !this.environment.equals(other.environment)) {
+            return false;
+        }
+        if ((this.deployType == null) ? (other.deployType != null) : !this.deployType.equals(other.deployType)) {
+            return false;
+        }
+        if ((this.jenkinsAgent == null) ? (other.jenkinsAgent != null) : !this.jenkinsAgent.equals(other.jenkinsAgent)) {
+            return false;
+        }
+        return true;
+    }
+    
+    @Override
+    public int hashCode() {
+        int hash = 3;
+        hash = 29 * hash + (this.system != null ? this.system.hashCode() : 0);
+        hash = 29 * hash + (this.country != null ? this.country.hashCode() : 0);
+        hash = 29 * hash + (this.environment != null ? this.environment.hashCode() : 0);
+        hash = 29 * hash + (this.deployType != null ? this.deployType.hashCode() : 0);
+        hash = 29 * hash + (this.jenkinsAgent != null ? this.jenkinsAgent.hashCode() : 0);
+        return hash;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        final CountryEnvDeployType other = (CountryEnvDeployType) obj;
+        if ((this.system == null) ? (other.system != null) : !this.system.equals(other.system)) {
+            return false;
+        }
+        if ((this.country == null) ? (other.country != null) : !this.country.equals(other.country)) {
+            return false;
+        }
+        if ((this.environment == null) ? (other.environment != null) : !this.environment.equals(other.environment)) {
+            return false;
+        }
+        if ((this.deployType == null) ? (other.deployType != null) : !this.deployType.equals(other.deployType)) {
+            return false;
+        }
+        if ((this.jenkinsAgent == null) ? (other.jenkinsAgent != null) : !this.jenkinsAgent.equals(other.jenkinsAgent)) {
+            return false;
+        }
+        return true;
+    }
+
+    
 
 }

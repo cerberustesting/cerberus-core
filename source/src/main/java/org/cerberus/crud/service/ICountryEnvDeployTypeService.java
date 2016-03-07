@@ -28,7 +28,16 @@ import org.cerberus.util.answer.AnswerList;
 
 public interface ICountryEnvDeployTypeService {
 
+    /**
+     *
+     * @param system
+     * @param country
+     * @param env
+     * @param deploy
+     * @return
+     */
     List<String> findJenkinsAgentByKey(String system, String country, String env, String deploy);
+
     /**
      *
      * @param system
@@ -46,6 +55,22 @@ public interface ICountryEnvDeployTypeService {
 
     /**
      *
+     * @param system
+     * @param country
+     * @param environment
+     * @return
+     */
+    public AnswerList readByVarious(String system, String country, String environment);
+
+    /**
+     *
+     * @param object
+     * @return
+     */
+    public Answer update(CountryEnvDeployType object);
+
+    /**
+     *
      * @param object
      * @return
      */
@@ -57,6 +82,34 @@ public interface ICountryEnvDeployTypeService {
      * @return
      */
     public Answer delete(CountryEnvDeployType object);
+
+    /**
+     *
+     * @param objectList
+     * @return
+     */
+    public Answer createList(List<CountryEnvDeployType> objectList);
+
+    /**
+     *
+     * @param objectList
+     * @return
+     */
+    public Answer deleteList(List<CountryEnvDeployType> objectList);
+
+    /**
+     * Update all CountryEnvironmentDatabase from the sourceList to the
+     * perimeter of system, country and environment list. All existing databases
+     * from newList will be updated, the new ones added and missing ones
+     * deleted.
+     *
+     * @param system
+     * @param country
+     * @param environement
+     * @param newList
+     * @return
+     */
+    public Answer compareListAndUpdateInsertDeleteElements(String system, String country, String environement, List<CountryEnvDeployType> newList);
 
     /**
      *

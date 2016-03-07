@@ -21,7 +21,6 @@ package org.cerberus.util;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
-import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -103,6 +102,7 @@ public final class ParameterParserUtil {
 
     /**
      * @param inParam
+     * @param defaultVal
      * @return an empty string if the inParam is empty or null. It returns
      * inParam if OK.
      */
@@ -346,7 +346,8 @@ public final class ParameterParserUtil {
     }
 
     /**
-     * @param inParam
+     * @param value
+     * @param property
      * @return true if "yes", "true" or "Y", false if "no", "false" or "N" and
      * defaultVal if any over value
      */

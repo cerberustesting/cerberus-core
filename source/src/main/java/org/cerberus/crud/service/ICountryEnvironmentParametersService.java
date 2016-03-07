@@ -33,12 +33,64 @@ import org.cerberus.util.answer.AnswerList;
  */
 public interface ICountryEnvironmentParametersService {
 
+    /**
+     *
+     * @param system
+     * @param country
+     * @param environment
+     * @param application
+     * @return
+     * @throws CerberusException
+     */
     CountryEnvironmentParameters findCountryEnvironmentParameterByKey(String system, String country, String environment, String application) throws CerberusException;
 
+    /**
+     *
+     * @param country
+     * @param application
+     * @return
+     */
     public List<String[]> getEnvironmentAvailable(String country, String application);
 
+    /**
+     *
+     * @param countryEnvironmentParameter
+     * @return
+     * @throws CerberusException
+     */
     List<CountryEnvironmentParameters> findCountryEnvironmentParametersByCriteria(CountryEnvironmentParameters countryEnvironmentParameter) throws CerberusException;
 
+    /**
+     *
+     * @param system
+     * @param country
+     * @param environment
+     * @param application
+     * @param start
+     * @param amount
+     * @param column
+     * @param dir
+     * @param searchTerm
+     * @param individualSearch
+     * @return
+     */
+    public AnswerList readByVariousByCriteria(String system, String country, String environment, String application, int start, int amount, String column, String dir, String searchTerm, String individualSearch);
+
+    /**
+     *
+     * @param system
+     * @param country
+     * @param environment
+     * @param application
+     * @return
+     */
+    public AnswerList readByVarious(String system, String country, String environment, String application);
+
+    /**
+     *
+     * @return
+     * @throws CerberusException
+     */
     public List<String> getDistinctEnvironmentNames() throws CerberusException;
 
     /**
@@ -77,6 +129,9 @@ public interface ICountryEnvironmentParametersService {
     /**
      * Find List of CountryEnvironmentParameters by Criteria
      *
+     * @param system
+     * @param country
+     * @param env
      * @param start row number of the resulset where start the List
      * (limit(start,amount))
      * @param amount number of row returned
@@ -99,15 +154,63 @@ public interface ICountryEnvironmentParametersService {
      */
     public Integer countPerCriteria(String searchTerm, String inds);
 
+    /**
+     *
+     * @param system
+     * @param country
+     * @param environment
+     * @return
+     */
     public List<CountryEnvironmentParameters> findListByCriteria(String system, String country, String environment);
 
+    /**
+     *
+     * @param object
+     * @return
+     */
     public Answer update(CountryEnvironmentParameters object);
 
+    /**
+     *
+     * @param object
+     * @return
+     */
     public Answer delete(CountryEnvironmentParameters object);
 
+    /**
+     *
+     * @param object
+     * @return
+     */
     public Answer create(CountryEnvironmentParameters object);
 
-    public AnswerList readByVariousByCriteria(String system, String country, String environment, String application, int start, int amount, String column, String dir, String searchTerm, String individualSearch);
+    /**
+     *
+     * @param objectList
+     * @return
+     */
+    public Answer createList(List<CountryEnvironmentParameters> objectList);
+
+    /**
+     *
+     * @param objectList
+     * @return
+     */
+    public Answer deleteList(List<CountryEnvironmentParameters> objectList);
+
+    /**
+     * Update all CountryEnvironmentDatabase from the sourceList to the
+     * perimeter of system, country and environment list. All existing databases
+     * from newList will be updated, the new ones added and missing ones
+     * deleted.
+     *
+     * @param system
+     * @param country
+     * @param environement
+     * @param newList
+     * @return
+     */
+    public Answer compareListAndUpdateInsertDeleteElements(String system, String country, String environement, List<CountryEnvironmentParameters> newList);
 
     /**
      *

@@ -74,7 +74,7 @@ public class UpdateCountryEnvironmentDatabase extends HttpServlet {
             } else {
                 throw new CerberusException(new MessageGeneral(MessageGeneralEnum.NOT_IMPLEMEMTED));
             }
-            cedService.update(ced);
+            cedService.update_deprecated(ced);
             response.getWriter().print(value);
         } catch (CerberusException ex) {
             response.getWriter().print(ex.getMessageError().getDescription());

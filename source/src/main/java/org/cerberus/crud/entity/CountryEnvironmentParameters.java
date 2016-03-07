@@ -95,4 +95,78 @@ public class CountryEnvironmentParameters {
     public void setSystem(String system) {
         this.system = system;
     }
+
+    public boolean hasSameKey(CountryEnvironmentParameters obj) {
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        final CountryEnvironmentParameters other = (CountryEnvironmentParameters) obj;
+        if ((this.system == null) ? (other.system != null) : !this.system.equals(other.system)) {
+            return false;
+        }
+        if ((this.country == null) ? (other.country != null) : !this.country.equals(other.country)) {
+            return false;
+        }
+        if ((this.environment == null) ? (other.environment != null) : !this.environment.equals(other.environment)) {
+            return false;
+        }
+        if ((this.application == null) ? (other.application != null) : !this.application.equals(other.application)) {
+            return false;
+        }
+        return true;
+    }
+
+    @Override
+    public int hashCode() {
+        int hash = 3;
+        hash = 29 * hash + (this.system != null ? this.system.hashCode() : 0);
+        hash = 29 * hash + (this.country != null ? this.country.hashCode() : 0);
+        hash = 29 * hash + (this.environment != null ? this.environment.hashCode() : 0);
+        hash = 29 * hash + (this.application != null ? this.application.hashCode() : 0);
+        hash = 29 * hash + (this.ip != null ? this.ip.hashCode() : 0);
+        hash = 29 * hash + (this.url != null ? this.url.hashCode() : 0);
+        hash = 29 * hash + (this.urlLogin != null ? this.urlLogin.hashCode() : 0);
+        hash = 29 * hash + (this.domain != null ? this.domain.hashCode() : 0);
+        return hash;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        final CountryEnvironmentParameters other = (CountryEnvironmentParameters) obj;
+        if ((this.system == null) ? (other.system != null) : !this.system.equals(other.system)) {
+            return false;
+        }
+        if ((this.country == null) ? (other.country != null) : !this.country.equals(other.country)) {
+            return false;
+        }
+        if ((this.environment == null) ? (other.environment != null) : !this.environment.equals(other.environment)) {
+            return false;
+        }
+        if ((this.application == null) ? (other.application != null) : !this.application.equals(other.application)) {
+            return false;
+        }
+        if ((this.ip == null) ? (other.ip != null) : !this.ip.equals(other.ip)) {
+            return false;
+        }
+        if ((this.url == null) ? (other.url != null) : !this.url.equals(other.url)) {
+            return false;
+        }
+        if ((this.urlLogin == null) ? (other.urlLogin != null) : !this.urlLogin.equals(other.urlLogin)) {
+            return false;
+        }
+        if ((this.domain == null) ? (other.domain != null) : !this.domain.equals(other.domain)) {
+            return false;
+        }
+        return true;
+    }
+
 }

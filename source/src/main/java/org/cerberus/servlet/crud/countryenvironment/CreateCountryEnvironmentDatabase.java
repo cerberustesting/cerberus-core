@@ -71,7 +71,7 @@ public class CreateCountryEnvironmentDatabase extends HttpServlet {
             IFactoryCountryEnvironmentDatabase factoryCed = appContext.getBean(IFactoryCountryEnvironmentDatabase.class);
 
             CountryEnvironmentDatabase ced = factoryCed.create(system, country, environment, database, connectionPool);
-            cedService.create(ced);
+            cedService.create_deprecated(ced);
 
             /**
              * Adding Log entry.

@@ -69,10 +69,8 @@ function displayPageLabel() {
 
     $("#environmentHeader").html(doc.getDocOnline("invariant", "ENVIRONMENT"));
     $("#countryHeader").html(doc.getDocOnline("invariant", "COUNTRY"));
-    $("#ipHeader").html(doc.getDocOnline("countryenvironmentparameters", "IP"));
-    $("#urlHeader").html(doc.getDocOnline("countryenvironmentparameters", "URL"));
-    $("#urlLoginHeader").html(doc.getDocOnline("countryenvironmentparameters", "URLLOGIN"));
-    $("#domainHeader").html(doc.getDocOnline("countryenvironmentparameters", "domain"));
+    $("#ipHeader").html(doc.getDocOnline("countryenvironmentparameters", "IP") + '<br>' + doc.getDocOnline("countryenvironmentparameters", "URLLOGIN"));
+    $("#urlHeader").html(doc.getDocOnline("countryenvironmentparameters", "URL") + '<br>' + doc.getDocOnline("countryenvironmentparameters", "domain"));
 
     displayInvariantList("system", "SYSTEM");
     displayInvariantList("type", "APPLITYPE");
@@ -273,17 +271,17 @@ function loadEnvironmentTable(selectSystem, selectApplication) {
 function getEnvironmentRow(environment, country, ip, domain, url, urllogin) {
     return '<tr> \n\
         <td><div class="nomarginbottom form-group form-group-sm">\n\
-            ' + environment + '</div></td>\n\\n\
-        <td><div class="nomarginbottom form-group form-group-sm">\n\
-            ' + country + '</div></td>\n\\n\
-        <td><div class="nomarginbottom form-group form-group-sm">\n\
-            ' + ip + '</div></td>\n\\n\
-        <td><div class="nomarginbottom form-group form-group-sm">\n\
-            ' + url + '</div></td>\n\\n\
-        <td><div class="nomarginbottom form-group form-group-sm">\n\
-            ' + urllogin + '</div></td>\n\\n\
-        <td><div class="nomarginbottom form-group form-group-sm">\n\
-            ' + domain + '</div></td><br>\n\\n\
+            <input readonly name="environment" type="text" class="releaseClass form-control input-xs" size="4" value="' + environment + '"/></div></td>\
+        <td><div class="nomarginbottom form-group form-group-sm">\
+            <input readonly name="country" type="text" class="releaseClass form-control input-xs" size="4" value="' + country + '"/></div></td>\
+        <td><div class="nomarginbottom form-group form-group-sm">\
+            <input readonly name="ip" type="text" class="releaseClass form-control input-xs" value="' + ip + '"/></div>\
+            <div class="nomarginbottom form-group form-group-sm">\
+            <input readonly name="urlLogin" type="text" class="releaseClass form-control input-xs" value="' + urllogin + '"/></div></td>\n\\n\
+        <td><div class="nomarginbottom form-group form-group-sm">\
+            <input readonly name="url" type="text" class="releaseClass form-control input-xs" value="' + url + '"/></div>\
+            <div class="nomarginbottom form-group form-group-sm">\
+            <input readonly name="domain" type="text" class="releaseClass form-control input-xs" value="' + domain + '"/></div></td><br>\
         </tr>';
 
 }

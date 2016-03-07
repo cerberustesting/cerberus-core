@@ -37,7 +37,7 @@ public interface ICountryEnvDeployTypeDAO {
      * @return
      */
     List<String> findJenkinsAgentByKey(String system, String country, String env, String deploy);
-    
+
     /**
      *
      * @param system
@@ -66,6 +66,13 @@ public interface ICountryEnvDeployTypeDAO {
      * @return
      */
     Answer delete(CountryEnvDeployType object);
+
+    /**
+     *
+     * @param object
+     * @return
+     */
+    Answer update(CountryEnvDeployType object);
 
     /**
      * Uses data of ResultSet to create object {@link Application}

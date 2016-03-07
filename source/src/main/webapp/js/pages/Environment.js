@@ -69,6 +69,11 @@ function initPage() {
     $("#eventNewChainPreviewNotificationButton").click(eventNewChainPreview);
     $("#eventNewChainButton").click(eventNewChainModalConfirmHandler);
 
+    $("#addDatabase").click(addNewDatabaseRow);
+    $("#addApplication").click(addNewApplicationRow);
+    $("#addDependencies").click(addNewDependenciesRow);
+    $("#addDeployType").click(addNewDeployTypeRow);
+
 }
 
 function displayPageLabel() {
@@ -147,10 +152,8 @@ function displayPageLabel() {
     $("[name='tabNotif']").html(doc.getDocOnline("page_environment", "tabNotif"));
     // Application List
     $("[name='applicationHeader']").html(doc.getDocOnline("application", "Application"));
-    $("[name='ipHeader']").html(doc.getDocOnline("countryenvironmentparameters", "IP"));
-    $("[name='urlHeader']").html(doc.getDocOnline("countryenvironmentparameters", "URL"));
-    $("[name='urlLoginHeader']").html(doc.getDocOnline("countryenvironmentparameters", "URLLOGIN"));
-    $("[name='domainHeader']").html(doc.getDocOnline("countryenvironmentparameters", "domain"));
+    $("[name='ipHeader']").html(doc.getDocOnline("countryenvironmentparameters", "IP") + '<br>' + doc.getDocOnline("countryenvironmentparameters", "URLLOGIN"));
+    $("[name='urlHeader']").html(doc.getDocOnline("countryenvironmentparameters", "URL") + '<br>' + doc.getDocOnline("countryenvironmentparameters", "domain"));
     // Databases List
     $("[name='databaseHeader']").html(doc.getDocOnline("countryenvironmentdatabase", "Database"));
     $("[name='connectionPoolNameHeader']").html(doc.getDocOnline("countryenvironmentdatabase", "ConnectionPoolName"));
@@ -357,22 +360,93 @@ function addEntryClick() {
 function editEntryModalSaveHandler() {
     clearResponseMessage($('#editEnvModal'));
     var formEdit = $('#editEnvModal #editEnvModalForm');
+
+    // Getting Data from Application TAB
+    var table1 = $("#applicationTableBody tr");
+    var table_application = [];
+    for (var i = 0; i < table1.length; i++) {
+        table_application.push($(table1[i]).data("application"));
+    }
+
+    // Getting Data from Database TAB
+    var table2 = $("#databaseTableBody tr");
+    var table_database = [];
+    for (var i = 0; i < table2.length; i++) {
+        table_database.push($(table2[i]).data("database"));
+    }
+
+    // Getting Data from Dependencies TAB
+    var table3 = $("#dependenciesTableBody tr");
+    var table_dependencies = [];
+    for (var i = 0; i < table3.length; i++) {
+        table_dependencies.push($(table3[i]).data("dependencies"));
+    }
+
+    // Getting Data from DeployType TAB
+    var table4 = $("#deployTypeTableBody tr");
+    var table_deployType = [];
+    for (var i = 0; i < table4.length; i++) {
+        table_deployType.push($(table4[i]).data("deployType"));
+    }
+
+    // Get the header data from the form.
+    var data = convertSerialToJSONObject(formEdit.serialize());
+
     showLoaderInModal('#editEnvModal');
+    $.ajax({
+        url: "UpdateCountryEnvParam1",
+        async: true,
+        method: "POST",
+        data: {system: data.system,
+            country: data.country,
+            environment: data.environment,
+            description: data.description,
+            type: data.type,
+            distribList: data.distribList,
+            eMailBodyChain: data.eMailBodyChain,
+            eMailBodyDisableEnvironment: data.eMailBodyDisableEnvironment,
+            eMailBodyRevision: data.eMailBodyRevision,
+            maintenanceAct: data.maintenanceAct,
+            maintenanceEnd: data.maintenanceEnd,
+            maintenanceStr: data.maintenanceStr,
+            application: JSON.stringify(table_application),
+            database: JSON.stringify(table_database),
+            dependencies: JSON.stringify(table_dependencies),
+            deployType: JSON.stringify(table_deployType)},
+        success: function (data) {
+            hideLoaderInModal('#editEnvModal');
+            if (getAlertType(data.messageType) === "success") {
+                var oTable = $("#environmentsTable").dataTable();
+                oTable.fnDraw(true);
+                $('#editEnvModal').modal('hide');
+                showMessage(data);
+            } else {
+                showMessage(data, $('#editEnvModal'));
+            }
+        },
+        error: showUnexpectedError
+    });
 
-    var jqxhr = $.post("UpdateCountryEnvParam1", formEdit.serialize(), "json");
-    $.when(jqxhr).then(function (data) {
-        // unblock when remote call returns 
-        hideLoaderInModal('#editEnvModal');
-        if (getAlertType(data.messageType) === "success") {
-            var oTable = $("#environmentsTable").dataTable();
-            oTable.fnDraw(true);
-            $('#editEnvModal').modal('hide');
-            showMessage(data);
 
-        } else {
-            showMessage(data, $('#editEnvModal'));
-        }
-    }).fail(handleErrorAjaxAfterTimeout);
+//    showLoaderInModal('#editEnvModal');
+//    var jqxhr = $.post("UpdateCountryEnvParam1", formEdit.serialize(), "json");
+//    $.when(jqxhr).then(function (data) {
+//        // unblock when remote call returns 
+//        hideLoaderInModal('#editEnvModal');
+//        if (getAlertType(data.messageType) === "success") {
+//            var oTable = $("#environmentsTable").dataTable();
+//            oTable.fnDraw(true);
+//            $('#editEnvModal').modal('hide');
+//            showMessage(data);
+//
+//        } else {
+//            showMessage(data, $('#editEnvModal'));
+//        }
+//    }).fail(handleErrorAjaxAfterTimeout);
+
+
+
+
 }
 
 function editEntryModalCloseHandler() {
@@ -386,8 +460,12 @@ function editEntryModalCloseHandler() {
 
 function editEntryClick(system, country, environment) {
     clearResponseMessageMainPage();
+
+    showLoaderInModal('#editEnvModalForm');
+
     var jqxhr = $.getJSON("ReadCountryEnvParam", "system=" + system + "&country=" + country + "&environment=" + environment);
     $.when(jqxhr).then(function (data) {
+        hideLoader("#editEnvModalForm");
         var obj = data["contentTable"];
 
         var formEdit = $('#editEnvModal');
@@ -465,7 +543,7 @@ function loadChangeTable(selectSystem, selectCountry, selectEnvironment) {
 
     var configurations = new TableConfigurationsServerSide("lastChangeTable", contentUrl, "contentTable", aoColumnsFuncChange("lastChangeTable"), [0, "desc"]);
 
-    var table = createDataTableWithPermissions(configurations, null);
+    var table = createDataTableWithPermissions(configurations);
     return table;
 }
 
@@ -480,7 +558,7 @@ function loadEventTable(selectSystem, selectCountry, selectEnvironment) {
 
     var configurations = new TableConfigurationsServerSide("lastEventTable", contentUrl, "contentTable", aoColumnsFuncEvent("lastEventTable"), [0, "desc"]);
 
-    var table = createDataTableWithPermissions(configurations, null);
+    var table = createDataTableWithPermissions(configurations);
     return table;
 }
 
@@ -489,20 +567,53 @@ function loadDatabaseTable(selectSystem, selectCountry, selectEnvironment) {
     var jqxhr = $.getJSON("ReadCountryEnvironmentDatabase", "system=" + selectSystem + "&country=" + selectCountry + "&environment=" + selectEnvironment);
     $.when(jqxhr).then(function (result) {
         $.each(result["contentTable"], function (idx, obj) {
-            appendDatabaseRow(obj.database, obj.connectionPoolName);
+            obj.toDelete = false;
+            appendDatabaseRow(obj);
         });
     }).fail(handleErrorAjaxAfterTimeout);
 }
 
-function appendDatabaseRow(database, connectionPoolName) {
+function appendDatabaseRow(dtb) {
     var doc = new Doc();
-    //for each install instructions adds a new row
-    $('#databaseTableBody').append('<tr> \n\
-        <td><div class="nomarginbottom form-group form-group-sm">\n\
-            <input readonly name="database" type="text" class="releaseClass form-control input-xs" value="' + database + '"/><span></span></div></td>\n\\n\
-        <td><div class="nomarginbottom form-group form-group-sm">\n\
-            <input readonly name="connectionPoolName" type="text" class="releaseClass form-control input-xs" value="' + connectionPoolName + '"/><span></span></div></td>\n\\n\
-        </tr>');
+    var deleteBtn = $("<button type=\"button\"></button>").addClass("btn btn-default btn-xs").append($("<span></span>").addClass("glyphicon glyphicon-trash"));
+    var selectDatabase = getSelectInvariant("PROPERTYDATABASE");
+    var connectionPoolInput = $("<input>").addClass("form-control input-sm").val(dtb.connectionPoolName);
+    var table = $("#databaseTableBody");
+
+    var row = $("<tr></tr>");
+    var deleteBtnRow = $("<td></td>").append(deleteBtn);
+    var database = $("<td></td>").append(selectDatabase.val(dtb.database));
+    var connectionPoolName = $("<td></td>").append(connectionPoolInput);
+    deleteBtn.click(function () {
+        dtb.toDelete = (dtb.toDelete) ? false : true;
+
+        if (dtb.toDelete) {
+            row.addClass("danger");
+        } else {
+            row.removeClass("danger");
+        }
+    });
+    selectDatabase.change(function () {
+        dtb.database = $(this).val();
+    });
+    connectionPoolInput.change(function () {
+        dtb.connectionPoolName = $(this).val();
+    });
+    row.append(deleteBtnRow);
+    row.append(database);
+    row.append(connectionPoolName);
+    dtb.database = selectDatabase.prop("value"); // Value that has been requested by dtb parameter may not exist in combo vlaues so we take the real selected value.
+    row.data("database", dtb);
+    table.append(row);
+}
+
+function addNewDatabaseRow() {
+    var newDatabase = {
+        database: "",
+        connectionPoolName: "",
+        toDelete: false
+    };
+    appendDatabaseRow(newDatabase);
 }
 
 function loadApplicationTable(selectSystem, selectCountry, selectEnvironment) {
@@ -510,26 +621,69 @@ function loadApplicationTable(selectSystem, selectCountry, selectEnvironment) {
     var jqxhr = $.getJSON("ReadCountryEnvironmentParameters", "system=" + selectSystem + "&country=" + selectCountry + "&environment=" + selectEnvironment);
     $.when(jqxhr).then(function (result) {
         $.each(result["contentTable"], function (idx, obj) {
-            appendApplicationRow(obj.application, obj.ip, obj.domain, obj.url, obj.urlLogin);
+            obj.toDelete = false;
+            appendApplicationRow(obj);
         });
     }).fail(handleErrorAjaxAfterTimeout);
 }
 
-function appendApplicationRow(application, ip, domain, url, urllogin) {
+function appendApplicationRow(app) {
     var doc = new Doc();
-    //for each install instructions adds a new row
-    $('#applicationTableBody').append('<tr> \n\
-        <td><div class="nomarginbottom form-group form-group-sm">\n\
-            <input readonly name="application" type="text" class="releaseClass form-control input-xs" value="' + application + '"/><span></span></div></td>\n\\n\
-        <td><div class="nomarginbottom form-group form-group-sm">\n\
-            <input readonly name="connectionPoolName" type="text" class="releaseClass form-control input-xs" value="' + ip + '"/><span></span></div></td>\n\\n\
-        <td><div class="nomarginbottom form-group form-group-sm">\n\
-            <input readonly name="connectionPoolName" type="text" class="releaseClass form-control input-xs" value="' + url + '"/><span></span></div></td>\n\\n\
-        <td><div class="nomarginbottom form-group form-group-sm">\n\
-            <input readonly name="connectionPoolName" type="text" class="releaseClass form-control input-xs" value="' + urllogin + '"/><span></span></div></td>\n\\n\
-        <td><div class="nomarginbottom form-group form-group-sm">\n\
-            <input readonly name="connectionPoolName" type="text" class="releaseClass form-control input-xs" value="' + domain + '"/><span></span></div></td><br>\n\\n\
-        </tr>');
+    var deleteBtn = $("<button type=\"button\"></button>").addClass("btn btn-default btn-xs").append($("<span></span>").addClass("glyphicon glyphicon-trash"));
+    var selectApplication = getSelectApplication(getUser().defaultSystem);
+    var ipInput = $("<input>").addClass("form-control input-sm").val(app.ip);
+    var domainInput = $("<input>").addClass("form-control input-sm").val(app.domain);
+    var urlInput = $("<input>").addClass("form-control input-sm").val(app.url);
+    var urlLoginInput = $("<input>").addClass("form-control input-sm").val(app.urlLogin);
+    var table = $("#applicationTableBody");
+
+    var row = $("<tr></tr>");
+    var deleteBtnRow = $("<td></td>").append(deleteBtn);
+    var application = $("<td></td>").append(selectApplication.val(app.application));
+    var ipName = $("<td></td>").append(ipInput).append(urlLoginInput);
+    var urlName = $("<td></td>").append(urlInput).append(domainInput);
+    deleteBtn.click(function () {
+        app.toDelete = (app.toDelete) ? false : true;
+        if (app.toDelete) {
+            row.addClass("danger");
+        } else {
+            row.removeClass("danger");
+        }
+    });
+    selectApplication.change(function () {
+        app.application = $(this).val();
+    });
+    ipInput.change(function () {
+        app.ip = $(this).val();
+    });
+    domainInput.change(function () {
+        app.domain = $(this).val();
+    });
+    urlInput.change(function () {
+        app.url = $(this).val();
+    });
+    urlLoginInput.change(function () {
+        app.urlLogin = $(this).val();
+    });
+    row.append(deleteBtnRow);
+    row.append(application);
+    row.append(ipName);
+    row.append(urlName);
+    app.application = selectApplication.prop("value"); // Value that has been requested by dtb parameter may not exist in combo vlaues so we take the real selected value.
+    row.data("application", app);
+    table.append(row);
+}
+
+function addNewApplicationRow() {
+    var newApplication = {
+        application: "",
+        ip: "",
+        domain: "",
+        url: "",
+        urlLogin: "",
+        toDelete: false
+    };
+    appendApplicationRow(newApplication);
 }
 
 function loadDependenciesTable(selectSystem, selectCountry, selectEnvironment) {
@@ -537,22 +691,64 @@ function loadDependenciesTable(selectSystem, selectCountry, selectEnvironment) {
     var jqxhr = $.getJSON("ReadCountryEnvLink", "system=" + selectSystem + "&country=" + selectCountry + "&environment=" + selectEnvironment);
     $.when(jqxhr).then(function (result) {
         $.each(result["contentTable"], function (idx, obj) {
-            appendDependenciesRow(obj.systemLink, obj.countryLink, obj.environmentLink);
+            obj.toDelete = false;
+            appendDependenciesRow(obj);
         });
     }).fail(handleErrorAjaxAfterTimeout);
 }
 
-function appendDependenciesRow(system, country, environment) {
+function appendDependenciesRow(env) {
     var doc = new Doc();
-    //for each install instructions adds a new row
-    $('#dependenciesTableBody').append('<tr> \n\
-        <td><div class="nomarginbottom form-group form-group-sm">\n\
-            <input readonly name="application" type="text" class="releaseClass form-control input-xs" value="' + system + '"/><span></span></div></td>\n\\n\
-        <td><div class="nomarginbottom form-group form-group-sm">\n\
-            <input readonly name="connectionPoolName" type="text" class="releaseClass form-control input-xs" value="' + country + '"/><span></span></div></td>\n\\n\
-        <td><div class="nomarginbottom form-group form-group-sm">\n\
-            <input readonly name="connectionPoolName" type="text" class="releaseClass form-control input-xs" value="' + environment + '"/><span></span></div></td>\n\\n\
-        </tr>');
+    var deleteBtn = $("<button type=\"button\"></button>").addClass("btn btn-default btn-xs").append($("<span></span>").addClass("glyphicon glyphicon-trash"));
+    var selectSystemLnk = getSelectInvariant('SYSTEM');
+    var selectCountryLnk = getSelectInvariant('COUNTRY');
+    var selectEnvironmentLnk = getSelectInvariant('ENVIRONMENT');
+    var table = $("#dependenciesTableBody");
+
+    var row = $("<tr></tr>");
+    var deleteBtnRow = $("<td></td>").append(deleteBtn);
+    var systemLnk = $("<td></td>").append(selectSystemLnk.val(env.systemLink));
+    var countryLnk = $("<td></td>").append(selectCountryLnk.val(env.countryLink));
+    var environmentLnk = $("<td></td>").append(selectEnvironmentLnk.val(env.environmentLink));
+    deleteBtn.click(function () {
+        env.toDelete = (env.toDelete) ? false : true;
+        if (env.toDelete) {
+            row.addClass("danger");
+        } else {
+            row.removeClass("danger");
+        }
+    });
+    selectSystemLnk.change(function () {
+        env.systemLink = $(this).val();
+    });
+    selectCountryLnk.change(function () {
+        env.countryLink = $(this).val();
+    });
+    selectEnvironmentLnk.change(function () {
+        env.environmentLink = $(this).val();
+    });
+    row.append(deleteBtnRow);
+    row.append(systemLnk);
+    row.append(countryLnk);
+    row.append(environmentLnk);
+    env.systemLink = selectSystemLnk.prop("value"); // Value that has been requested by dtb parameter may not exist in combo vlaues so we take the real selected value.
+    env.countryLink = selectCountryLnk.prop("value"); // Value that has been requested by dtb parameter may not exist in combo vlaues so we take the real selected value.
+    env.environmentLink = selectEnvironmentLnk.prop("value"); // Value that has been requested by dtb parameter may not exist in combo vlaues so we take the real selected value.
+    row.data("dependencies", env);
+    table.append(row);
+}
+
+function addNewDependenciesRow() {
+    var selectCountry = $('#editEnvModal #country').prop("value");
+    var selectEnvironment = $('#editEnvModal #environment').prop("value");
+    ;
+    var newDependencies = {
+        systemLink: "",
+        countryLink: selectCountry,
+        environmentLink: selectEnvironment,
+        toDelete: false
+    };
+    appendDependenciesRow(newDependencies);
 }
 
 function loadDeployTypeTable(selectSystem, selectCountry, selectEnvironment) {
@@ -560,20 +756,52 @@ function loadDeployTypeTable(selectSystem, selectCountry, selectEnvironment) {
     var jqxhr = $.getJSON("ReadCountryEnvDeployType", "system=" + selectSystem + "&country=" + selectCountry + "&environment=" + selectEnvironment);
     $.when(jqxhr).then(function (result) {
         $.each(result["contentTable"], function (idx, obj) {
-            appendDeployTypeRow(obj.deployType, obj.jenkinsAgent);
+            obj.toDelete = false;
+            appendDeployTypeRow(obj);
         });
     }).fail(handleErrorAjaxAfterTimeout);
 }
 
-function appendDeployTypeRow(deployType, jenkinsAgent) {
+function appendDeployTypeRow(depTyp) {
     var doc = new Doc();
-    //for each install instructions adds a new row
-    $('#deployTypeTableBody').append('<tr> \n\
-        <td><div class="nomarginbottom form-group form-group-sm">\n\
-            <input readonly name="application" type="text" class="releaseClass form-control input-xs" value="' + deployType + '"/><span></span></div></td>\n\\n\
-        <td><div class="nomarginbottom form-group form-group-sm">\n\
-            <input readonly name="connectionPoolName" type="text" class="releaseClass form-control input-xs" value="' + jenkinsAgent + '"/><span></span></div></td>\n\\n\
-        </tr>');
+    var deleteBtn = $("<button  type=\"button\"></button>").addClass("btn btn-default btn-xs").append($("<span></span>").addClass("glyphicon glyphicon-trash"));
+    var selectDeployType = getSelectDeployType();
+    var jenkinsAgentInput = $("<input>").addClass("form-control input-sm").val(depTyp.jenkinsAgent);
+    var table = $("#deployTypeTableBody");
+
+    var row = $("<tr></tr>");
+    var deleteBtnRow = $("<td></td>").append(deleteBtn);
+    var depType = $("<td></td>").append(selectDeployType.val(depTyp.deployType));
+    var jenkinsAgent = $("<td></td>").append(jenkinsAgentInput);
+    deleteBtn.click(function () {
+        depTyp.toDelete = (depTyp.toDelete) ? false : true;
+        if (depTyp.toDelete) {
+            row.addClass("danger");
+        } else {
+            row.removeClass("danger");
+        }
+    });
+    selectDeployType.change(function () {
+        depTyp.deployType = $(this).val();
+    });
+    jenkinsAgentInput.change(function () {
+        depTyp.jenkinsAgent = $(this).val();
+    });
+    row.append(deleteBtnRow);
+    row.append(depType);
+    row.append(jenkinsAgent);
+    depTyp.deployType = selectDeployType.prop("value"); // Value that has been requested by depTyp parameter may not exist in combo vlaues so we take the real selected value.
+    row.data("deployType", depTyp);
+    table.append(row);
+}
+
+function addNewDeployTypeRow() {
+    var newDeployType = {
+        deployType: "",
+        jenkinsAgent: "",
+        toDelete: false
+    };
+    appendDeployTypeRow(newDeployType);
 }
 
 function eventEnableClick(system, country, environment, build, revision) {
@@ -614,8 +842,10 @@ function eventEnablePreview() {
     var build = formEvent.find("#newBuild").val();
     var revision = formEvent.find("#newRevision").val();
     // Email Preview tab refresh
+    showLoaderInModal('#eventEnableModal');
     var jqxhr = $.getJSON("GetNotification", "event=newbuildrevision" + "&system=" + system + "&country=" + country + "&environment=" + environment + "&build=" + build + "&revision=" + revision);
     $.when(jqxhr).then(function (data) {
+        hideLoaderInModal('#eventEnableModal');
         formEvent.find("#notifTo").prop("value", data.notificationTo);
         formEvent.find("#notifCc").prop("value", data.notificationCC);
         formEvent.find("#notifSubject").prop("value", data.notificationSubject);
@@ -648,6 +878,7 @@ function eventEnableModalConfirmHandler() {
     var build = formEvent.find("#newBuild").val();
     var revision = formEvent.find("#newRevision").val();
 
+    showLoaderInModal('#eventEnableModal');
     var jqxhr = $.getJSON("NewBuildRev1", "system=" + system + "&country=" + country + "&environment=" + environment + "&build=" + build + "&revision=" + revision);
     $.when(jqxhr).then(function (data) {
         console.debug("Email Sent.");
@@ -736,8 +967,10 @@ function appendNewInstallRow(build, revision, application, release, link, versio
 
 function eventDisableClick(system, country, environment) {
     clearResponseMessageMainPage();
+    showLoaderInModal('#eventDisableModal');
     var jqxhr = $.getJSON("GetNotification", "event=disableenvironment" + "&system=" + system + "&country=" + country + "&environment=" + environment);
     $.when(jqxhr).then(function (data) {
+        hideLoaderInModal('#eventDisableModal');
         var formEvent = $('#eventDisableModal');
 
         formEvent.find("#system").prop("value", system);
@@ -771,6 +1004,7 @@ function eventDisableModalConfirmHandler() {
     var country = formEvent.find("#country").prop("value");
     var environment = formEvent.find("#environment").prop("value");
 
+    showLoaderInModal('#eventDisableModal');
     var jqxhr = $.getJSON("DisableEnvironment1", "system=" + system + "&country=" + country + "&environment=" + environment);
     $.when(jqxhr).then(function (data) {
         hideLoaderInModal('#eventDisableModal');
@@ -808,8 +1042,10 @@ function eventNewChainPreview() {
     var country = formEvent.find("#country").prop("value");
     var environment = formEvent.find("#environment").prop("value");
     var chain = formEvent.find("#batch").val();
+    showLoaderInModal('#eventNewChainModal');
     var jqxhr = $.getJSON("GetNotification", "event=newchain" + "&system=" + system + "&country=" + country + "&environment=" + environment + "&chain=" + chain);
     $.when(jqxhr).then(function (data) {
+        hideLoaderInModal('#eventNewChainModal');
         formEvent.find("#notifTo").prop("value", data.notificationTo);
         formEvent.find("#notifCc").prop("value", data.notificationCC);
         formEvent.find("#notifSubject").prop("value", data.notificationSubject);
@@ -842,6 +1078,7 @@ function eventNewChainModalConfirmHandler() {
     var environment = formEvent.find("#environment").prop("value");
     var chain = formEvent.find("#batch").val();
 
+    showLoaderInModal('#eventNewChainModal');
     var jqxhr = $.getJSON("NewChain1", "system=" + system + "&country=" + country + "&environment=" + environment + "&chain=" + chain);
     $.when(jqxhr).then(function (data) {
         console.debug("Email Sent.");
@@ -947,10 +1184,6 @@ function aoColumnsFunc(tableId) {
             "sName": "revision",
             "sWidth": "80px",
             "title": doc.getDocOnline("buildrevisioninvariant", "versionname02")},
-        {"data": "chain",
-            "sName": "chain",
-            "sWidth": "80px",
-            "title": doc.getDocOnline("countryenvparam", "chain")},
         {"data": "type",
             "sName": "type",
             "sWidth": "80px",
@@ -987,23 +1220,23 @@ function aoColumnsFuncChange(tableId) {
     var aoColumns = [
         {"data": "datecre",
             "sName": "datecre",
-            "sWidth": "145px",
+            "sWidth": "195px",
             "title": doc.getDocOnline("countryenvparam_log", "datecre")},
         {"data": "description",
             "sName": "description",
-            "sWidth": "140px",
+            "sWidth": "360px",
             "title": doc.getDocOnline("countryenvparam_log", "Description")},
         {"data": "build",
             "sName": "build",
-            "sWidth": "70px",
+            "sWidth": "120px",
             "title": doc.getDocOnline("buildrevisioninvariant", "versionname01")},
         {"data": "revision",
             "sName": "revision",
-            "sWidth": "70px",
+            "sWidth": "120px",
             "title": doc.getDocOnline("buildrevisioninvariant", "versionname02")},
         {"data": "creator",
             "sName": "creator",
-            "sWidth": "80px",
+            "sWidth": "110px",
             "title": doc.getDocOnline("countryenvparam_log", "Creator")}
     ];
     return aoColumns;
@@ -1014,20 +1247,22 @@ function aoColumnsFuncEvent(tableId) {
     var aoColumns = [
         {"data": "dateBatch",
             "sName": "dateBatch",
-            "sWidth": "145px",
+            "sWidth": "195px",
             "title": doc.getDocOnline("buildrevisionbatch", "dateBatch")},
         {"data": "batch",
             "sName": "batch",
-            "sWidth": "220px",
+            "sWidth": "470px",
             "title": doc.getDocOnline("buildrevisionbatch", "batch")},
         {"data": "build",
             "sName": "build",
-            "sWidth": "70px",
+            "sWidth": "120px",
             "title": doc.getDocOnline("buildrevisionbatch", "build")},
         {"data": "revision",
             "sName": "revision",
-            "sWidth": "70px",
+            "sWidth": "120px",
             "title": doc.getDocOnline("buildrevisionbatch", "revision")}
     ];
     return aoColumns;
 }
+
+

@@ -348,6 +348,51 @@ public class CountryEnvDeployTypeDAO implements ICountryEnvDeployTypeDAO {
     }
 
     @Override
+    public Answer update(CountryEnvDeployType object) {
+        MessageEvent msg = null;
+        final String query = "UPDATE `countryenvdeploytype` SET `jenkinsagent`=? WHERE `system`=? and `country`=? and `environment`=? and `deploytype`=? ";
+
+        // Debug message on SQL.
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("SQL : " + query);
+        }
+        Connection connection = this.databaseSpring.connect();
+        try {
+            PreparedStatement preStat = connection.prepareStatement(query);
+            try {
+                preStat.setString(1, object.getJenkinsAgent());
+                preStat.setString(2, object.getSystem());
+                preStat.setString(3, object.getCountry());
+                preStat.setString(4, object.getEnvironment());
+                preStat.setString(5, object.getDeployType());
+
+                preStat.executeUpdate();
+                msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
+                msg.setDescription(msg.getDescription().replace("%ITEM%", OBJECT_NAME).replace("%OPERATION%", "UPDATE"));
+            } catch (SQLException exception) {
+                LOG.error("Unable to execute query : " + exception.toString());
+                msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
+                msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", exception.toString()));
+            } finally {
+                preStat.close();
+            }
+        } catch (SQLException exception) {
+            LOG.error("Unable to execute query : " + exception.toString());
+            msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
+            msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", exception.toString()));
+        } finally {
+            try {
+                if (connection != null) {
+                    connection.close();
+                }
+            } catch (SQLException exception) {
+                LOG.warn("Unable to close connection : " + exception.toString());
+            }
+        }
+        return new Answer(msg);
+    }
+
+    @Override
     public CountryEnvDeployType loadFromResultSet(ResultSet rs) throws SQLException {
         String system = rs.getString("system");
         String country = rs.getString("country");

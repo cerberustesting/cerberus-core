@@ -78,4 +78,69 @@ public class CountryEnvLink {
         this.environmentLink = environmentLink;
     }
 
+    public boolean hasSameKey(CountryEnvLink obj) {
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        final CountryEnvLink other = (CountryEnvLink) obj;
+        if ((this.system == null) ? (other.system != null) : !this.system.equals(other.system)) {
+            return false;
+        }
+        if ((this.country == null) ? (other.country != null) : !this.country.equals(other.country)) {
+            return false;
+        }
+        if ((this.environment == null) ? (other.environment != null) : !this.environment.equals(other.environment)) {
+            return false;
+        }
+        if ((this.systemLink == null) ? (other.systemLink != null) : !this.systemLink.equals(other.systemLink)) {
+            return false;
+        }
+        return true;
+    }
+
+    @Override
+    public int hashCode() {
+        int hash = 3;
+        hash = 29 * hash + (this.system != null ? this.system.hashCode() : 0);
+        hash = 29 * hash + (this.country != null ? this.country.hashCode() : 0);
+        hash = 29 * hash + (this.environment != null ? this.environment.hashCode() : 0);
+        hash = 29 * hash + (this.systemLink != null ? this.systemLink.hashCode() : 0);
+        hash = 29 * hash + (this.countryLink != null ? this.countryLink.hashCode() : 0);
+        hash = 29 * hash + (this.environmentLink != null ? this.environmentLink.hashCode() : 0);
+        return hash;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        final CountryEnvLink other = (CountryEnvLink) obj;
+        if ((this.system == null) ? (other.system != null) : !this.system.equals(other.system)) {
+            return false;
+        }
+        if ((this.country == null) ? (other.country != null) : !this.country.equals(other.country)) {
+            return false;
+        }
+        if ((this.environment == null) ? (other.environment != null) : !this.environment.equals(other.environment)) {
+            return false;
+        }
+        if ((this.systemLink == null) ? (other.systemLink != null) : !this.systemLink.equals(other.systemLink)) {
+            return false;
+        }
+        if ((this.countryLink == null) ? (other.countryLink != null) : !this.countryLink.equals(other.countryLink)) {
+            return false;
+        }
+        if ((this.environmentLink == null) ? (other.environmentLink != null) : !this.environmentLink.equals(other.environmentLink)) {
+            return false;
+        }
+        return true;
+    }
+
 }

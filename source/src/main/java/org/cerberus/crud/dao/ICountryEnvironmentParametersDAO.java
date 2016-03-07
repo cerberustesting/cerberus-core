@@ -74,11 +74,27 @@ public interface ICountryEnvironmentParametersDAO {
      */
     void create_deprecated(CountryEnvironmentParameters cea) throws CerberusException;
 
-    public Integer count(String searchTerm, String inds);
+    Integer count(String searchTerm, String inds);
 
-    public List<CountryEnvironmentParameters> findListByCriteria(String system, String country, String env, int start, int amount, String column, String dir, String searchTerm, String individualSearch);
+    List<CountryEnvironmentParameters> findListByCriteria(String system, String country, String env, int start, int amount, String column, String dir, String searchTerm, String individualSearch);
 
-    public List<CountryEnvironmentParameters> findListByCriteria(String system, String country, String environment);
+    List<CountryEnvironmentParameters> findListByCriteria(String system, String country, String environment);
+
+    /**
+     *
+     * @param system
+     * @param country
+     * @param environment
+     * @param application
+     * @param start
+     * @param amount
+     * @param column
+     * @param dir
+     * @param searchTerm
+     * @param individualSearch
+     * @return
+     */
+    AnswerList readByVariousByCriteria(String system, String country, String environment, String application, int start, int amount, String column, String dir, String searchTerm, String individualSearch);
 
     /**
      *
@@ -101,18 +117,4 @@ public interface ICountryEnvironmentParametersDAO {
      */
     Answer update(CountryEnvironmentParameters object);
 
-    /**
-     *
-     * @param system
-     * @param country
-     * @param environment
-     * @param start
-     * @param amount
-     * @param column
-     * @param dir
-     * @param searchTerm
-     * @param individualSearch
-     * @return
-     */
-    public AnswerList readByVariousByCriteria(String system, String country, String environment, String application, int start, int amount, String column, String dir, String searchTerm, String individualSearch);
 }
