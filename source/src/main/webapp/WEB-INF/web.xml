@@ -330,6 +330,42 @@
         <servlet-class>org.cerberus.servlet.crud.countryenvironment.ReadCountryEnvParam_log</servlet-class>
     </servlet>
     <servlet>
+        <servlet-name>ReadBuildRevisionBatch</servlet-name>
+        <servlet-class>org.cerberus.servlet.crud.batch.ReadBuildRevisionBatch</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>ReadBatchInvariant</servlet-name>
+        <servlet-class>org.cerberus.servlet.crud.batch.ReadBatchInvariant</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>ReadCountryEnvironmentDatabase</servlet-name>
+        <servlet-class>org.cerberus.servlet.crud.countryenvironment.ReadCountryEnvironmentDatabase</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>ReadCountryEnvDeployType</servlet-name>
+        <servlet-class>org.cerberus.servlet.crud.countryenvironment.ReadCountryEnvDeployType</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>ReadCountryEnvironmentParameters</servlet-name>
+        <servlet-class>org.cerberus.servlet.crud.countryenvironment.ReadCountryEnvironmentParameters</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>ReadCountryEnvLink</servlet-name>
+        <servlet-class>org.cerberus.servlet.crud.countryenvironment.ReadCountryEnvLink</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>UpdateBatchInvariant</servlet-name>
+        <servlet-class>org.cerberus.servlet.crud.batch.UpdateBatchInvariant</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>CreateBatchInvariant</servlet-name>
+        <servlet-class>org.cerberus.servlet.crud.batch.CreateBatchInvariant</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>DeleteBatchInvariant</servlet-name>
+        <servlet-class>org.cerberus.servlet.crud.batch.DeleteBatchInvariant</servlet-class>
+    </servlet>
+    <servlet>
         <servlet-name>UpdateApplication</servlet-name>
         <servlet-class>org.cerberus.servlet.crud.test.UpdateApplication</servlet-class>
     </servlet>
@@ -1157,6 +1193,42 @@
         <url-pattern>/ReadCountryEnvParam_log</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
+        <servlet-name>ReadBuildRevisionBatch</servlet-name>
+        <url-pattern>/ReadBuildRevisionBatch</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>CreateBatchInvariant</servlet-name>
+        <url-pattern>/CreateBatchInvariant</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>DeleteBatchInvariant</servlet-name>
+        <url-pattern>/DeleteBatchInvariant</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>ReadBatchInvariant</servlet-name>
+        <url-pattern>/ReadBatchInvariant</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>ReadCountryEnvDeployType</servlet-name>
+        <url-pattern>/ReadCountryEnvDeployType</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>ReadCountryEnvironmentDatabase</servlet-name>
+        <url-pattern>/ReadCountryEnvironmentDatabase</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>ReadCountryEnvironmentParameters</servlet-name>
+        <url-pattern>/ReadCountryEnvironmentParameters</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>ReadCountryEnvLink</servlet-name>
+        <url-pattern>/ReadCountryEnvLink</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>UpdateBatchInvariant</servlet-name>
+        <url-pattern>/UpdateBatchInvariant</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
         <servlet-name>UpdateApplication</servlet-name>
         <url-pattern>/UpdateApplication</url-pattern>
     </servlet-mapping>
@@ -1760,6 +1832,7 @@
             <web-resource-name>jsp</web-resource-name>
             <description>jsp</description>
             <url-pattern>/ExecutionDetail.jsp</url-pattern>
+            <url-pattern>/ExecutionDetail1.jsp</url-pattern>
             <url-pattern>/ExecutionDetailList.jsp</url-pattern>
             <url-pattern>/ExecutionPerBuildRevision.jsp</url-pattern>
             <url-pattern>/NetworkTraficDetail.jsp</url-pattern>
@@ -1782,7 +1855,6 @@
             <url-pattern>/ViewProperty.jsp</url-pattern>
             <url-pattern>/TestPerApplication.jsp</url-pattern>
             <url-pattern>/ReadTestCaseStep</url-pattern>
-            <url-pattern>/TestCase_new_prototype.jsp</url-pattern>
         </web-resource-collection>
         <web-resource-collection>
             <web-resource-name>servlet</web-resource-name>
@@ -1961,6 +2033,7 @@
             <url-pattern>/Robot.jsp</url-pattern>
             <url-pattern>/EnvironmentManagement.jsp</url-pattern>
             <url-pattern>/DeployType.jsp</url-pattern>
+            <url-pattern>/BatchInvariant.jsp</url-pattern>
         </web-resource-collection>
         <web-resource-collection>
             <web-resource-name>servlet</web-resource-name>
@@ -1976,7 +2049,13 @@
             <url-pattern>/ReadDeployType</url-pattern>
             <url-pattern>/GetNotification</url-pattern>
             <url-pattern>/ReadBuildRevisionParameters</url-pattern>
-            <url-pattern>/ReadCountryEnvParam</url-pattern>
+            <url-pattern>/ReadCountryEnvParam_log</url-pattern>
+            <url-pattern>/ReadBuildRevisionBatch</url-pattern>
+            <url-pattern>/ReadBatchInvariant</url-pattern>
+            <url-pattern>/ReadCountryEnvDeployType</url-pattern>
+            <url-pattern>/ReadCountryEnvironmentDatabase</url-pattern>
+            <url-pattern>/ReadCountryEnvironmentParameters</url-pattern>
+            <url-pattern>/ReadCountryEnvLink</url-pattern>
         </web-resource-collection>
         <auth-constraint>
             <description>IntegratorRO</description>
@@ -2019,6 +2098,9 @@
             <url-pattern>/UpdateBuildRevisionParameters</url-pattern>
             <url-pattern>/DeleteBuildRevisionParameters</url-pattern>
             <url-pattern>/ReadUser</url-pattern>
+            <url-pattern>/CreateBatchInvariant</url-pattern>
+            <url-pattern>/DeleteBatchInvariant</url-pattern>
+            <url-pattern>/UpdateBatchInvariant</url-pattern>
         </web-resource-collection>
         <auth-constraint>
             <description>Integrator</description>

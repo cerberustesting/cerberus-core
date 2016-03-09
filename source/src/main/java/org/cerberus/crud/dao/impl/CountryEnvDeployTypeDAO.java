@@ -349,8 +349,9 @@ public class CountryEnvDeployTypeDAO implements ICountryEnvDeployTypeDAO {
 
     @Override
     public Answer update(CountryEnvDeployType object) {
+        // Function is implemented for futur use and in order to keep standard uptodate on that class but today all rows are the key so no updates are possible.
         MessageEvent msg = null;
-        final String query = "UPDATE `countryenvdeploytype` SET `jenkinsagent`=? WHERE `system`=? and `country`=? and `environment`=? and `deploytype`=? ";
+        final String query = "UPDATE `countryenvdeploytype` SET 1=1 WHERE `system`=? and `country`=? and `environment`=? and `deploytype`=? and `jenkinsagent`=? ";
 
         // Debug message on SQL.
         if (LOG.isDebugEnabled()) {
@@ -360,11 +361,11 @@ public class CountryEnvDeployTypeDAO implements ICountryEnvDeployTypeDAO {
         try {
             PreparedStatement preStat = connection.prepareStatement(query);
             try {
-                preStat.setString(1, object.getJenkinsAgent());
-                preStat.setString(2, object.getSystem());
-                preStat.setString(3, object.getCountry());
-                preStat.setString(4, object.getEnvironment());
-                preStat.setString(5, object.getDeployType());
+                preStat.setString(1, object.getSystem());
+                preStat.setString(2, object.getCountry());
+                preStat.setString(3, object.getEnvironment());
+                preStat.setString(4, object.getDeployType());
+                preStat.setString(5, object.getJenkinsAgent());
 
                 preStat.executeUpdate();
                 msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
