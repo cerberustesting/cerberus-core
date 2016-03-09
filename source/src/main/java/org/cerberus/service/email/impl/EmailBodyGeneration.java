@@ -64,7 +64,7 @@ public class EmailBodyGeneration implements IEmailBodyGeneration {
             buildContentTable = "Here are the last modifications since last change (" + lastBuild + "/" + lastRevision + ") :";
             buildContentTable = buildContentTable + "<table>";
             buildContentTable = buildContentTable + "<thead><tr style=\"background-color:#cad3f1; font-style:bold\"><td>"
-                    + "Sprint/Rev</td><td>Application</td><td>Subject</td><td>Project</td><td>Bug</td><td>Ticket</td><td>People in Charge</td><td>Release Documentation</td></tr></thead><tbody>";
+                    + "Sprint/Rev</td><td>Application</td><td>Project</td><td>Bug</td><td>Ticket</td><td>People in Charge</td><td>Release Documentation</td></tr></thead><tbody>";
 
             final String contentSQL = new StringBuffer("SELECT b.`Build`, b.`Revision`, b.`Release` , b.`Link` , ")
                     .append(" b.`Application`, b.`ReleaseOwner`, b.`BugIDFixed`, b.`TicketIDFixed`, b.`subject`, b.`Project`")
@@ -78,7 +78,7 @@ public class EmailBodyGeneration implements IEmailBodyGeneration {
                     .append(" and bri.seq > (select seq from buildrevisioninvariant where `system` = '").append(system).append("' and `level` = 2 and `versionname` = '").append(lastRevision).append("' )  ")
                     .append(" and bri.seq <= (select seq from buildrevisioninvariant where `system` = '").append(system).append("' and `level` = 2 and `versionname` = '").append(revision).append("' )  ")
                     .append(" order by b.Build, bri.seq, b.Application, b.datecre,")
-                    .append(" b.TicketIDFixed, b.BugIDFixed, b.Release").toString();
+                    .append(" b.TicketIDFixed, b.BugIDFixed, b.`Release`").toString();
 
             Logger.getLogger(EmailBodyGeneration.class.getName()).log(Level.DEBUG, Infos.getInstance().getProjectNameAndVersion() + " - SQL : " + contentSQL);
 
@@ -150,19 +150,23 @@ public class EmailBodyGeneration implements IEmailBodyGeneration {
                     ProjectVC = Project;
                 }
 
-                buildContentTable = buildContentTable + "<tr style=\"background-color:" + bckColor + "; font-size:80%\"><td>"
-                        + contentBuild + "/" + contentRev + "</td><td>"
-                        + contentAppli + "</td><td>"
-                        + subject + "</td><td>"
-                        + ProjectVC + "</td><td>";
+                buildContentTable = buildContentTable + "<tr style=\"background-color:" + bckColor + "; font-size:80%\">"
+                        + "<td  rowspan=\"2\">" + contentBuild + "/" + contentRev + "</td>"
+                        + "<td>" + contentAppli + "</td>"
+                        + "<td>" + ProjectVC + "</td>";
                 if (StringUtil.isNullOrEmpty(contentBugURL)) {
-                    buildContentTable = buildContentTable + BugIDFixed + "</td><td>";
+                    buildContentTable = buildContentTable + "<td>" + BugIDFixed + "</td>";
                 } else {
-                    buildContentTable = buildContentTable + "<a target=\"_blank\" href=\"" + contentBugURL.replace("%BUGID%", BugIDFixed) + "\">" + BugIDFixed + "</a></td><td>";
+                    buildContentTable = buildContentTable + "<td><a target=\"_blank\" href=\"" + contentBugURL.replace("%BUGID%", BugIDFixed) + "\">" + BugIDFixed + "</a></td>";
                 }
-                buildContentTable = buildContentTable + TicketIDFixed + "</td><td>"
-                        + releaseOwner + "</td><td>"
-                        + release + "</td></tr>";
+                buildContentTable = buildContentTable + "<td>" + TicketIDFixed + "</td>"
+                        + "<td>" + releaseOwner + "</td>"
+                        + "<td>" + release  + "</td>"
+                        + "</tr>"
+                        + "<tr style=\"background-color:" + bckColor + "; font-size:80%\">"
+                        + "<td colspan=\"6\">" + subject + "</td>" 
+                        + "</tr>";
+                
             } while (rsBC.next());
 
             buildContentTable = buildContentTable + "</tbody></table><br>";
