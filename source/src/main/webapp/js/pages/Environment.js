@@ -577,7 +577,7 @@ function appendDatabaseRow(dtb) {
     var doc = new Doc();
     var deleteBtn = $("<button type=\"button\"></button>").addClass("btn btn-default btn-xs").append($("<span></span>").addClass("glyphicon glyphicon-trash"));
     var selectDatabase = getSelectInvariant("PROPERTYDATABASE");
-    var connectionPoolInput = $("<input>").addClass("form-control input-sm").val(dtb.connectionPoolName);
+    var connectionPoolInput = $("<input  maxlength=\"25\">").addClass("form-control input-sm").val(dtb.connectionPoolName);
     var table = $("#databaseTableBody");
 
     var row = $("<tr></tr>");
@@ -631,10 +631,10 @@ function appendApplicationRow(app) {
     var doc = new Doc();
     var deleteBtn = $("<button type=\"button\"></button>").addClass("btn btn-default btn-xs").append($("<span></span>").addClass("glyphicon glyphicon-trash"));
     var selectApplication = getSelectApplication(getUser().defaultSystem);
-    var ipInput = $("<input>").addClass("form-control input-sm").val(app.ip);
-    var domainInput = $("<input>").addClass("form-control input-sm").val(app.domain);
-    var urlInput = $("<input>").addClass("form-control input-sm").val(app.url);
-    var urlLoginInput = $("<input>").addClass("form-control input-sm").val(app.urlLogin);
+    var ipInput = $("<input  maxlength=\"150\">").addClass("form-control input-sm").val(app.ip);
+    var domainInput = $("<input  maxlength=\"150\">").addClass("form-control input-sm").val(app.domain);
+    var urlInput = $("<input  maxlength=\"150\">").addClass("form-control input-sm").val(app.url);
+    var urlLoginInput = $("<input  maxlength=\"150\">").addClass("form-control input-sm").val(app.urlLogin);
     var table = $("#applicationTableBody");
 
     var row = $("<tr></tr>");
@@ -766,7 +766,7 @@ function appendDeployTypeRow(depTyp) {
     var doc = new Doc();
     var deleteBtn = $("<button  type=\"button\"></button>").addClass("btn btn-default btn-xs").append($("<span></span>").addClass("glyphicon glyphicon-trash"));
     var selectDeployType = getSelectDeployType();
-    var jenkinsAgentInput = $("<input>").addClass("form-control input-sm").val(depTyp.jenkinsAgent);
+    var jenkinsAgentInput = $("<input  maxlength=\"50\">").addClass("form-control input-sm").val(depTyp.jenkinsAgent);
     var table = $("#deployTypeTableBody");
 
     var row = $("<tr></tr>");
