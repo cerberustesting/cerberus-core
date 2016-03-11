@@ -2,7 +2,7 @@ Required Packages
 -----------------
 
 Make sure you've installed the following packages before continuing. 
-MySQL
+MySQL 5.6.xx
 Java 1.8
 Glassfish Server v4
   - if necessary, copy the mysql jdbc drivers jar file on the glassfish/lib folder of your Glassfish installation.
