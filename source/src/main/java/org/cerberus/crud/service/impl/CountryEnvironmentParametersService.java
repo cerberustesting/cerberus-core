@@ -19,10 +19,12 @@
  */
 package org.cerberus.crud.service.impl;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.cerberus.crud.dao.ICountryEnvironmentParametersDAO;
 import org.cerberus.crud.entity.CountryEnvironmentParameters;
+import org.cerberus.crud.entity.MessageEvent;
 import org.cerberus.crud.entity.MessageGeneral;
 import org.cerberus.exception.CerberusException;
 import org.cerberus.enums.MessageEventEnum;
@@ -42,6 +44,10 @@ public class CountryEnvironmentParametersService implements ICountryEnvironmentP
 
     @Autowired
     ICountryEnvironmentParametersDAO countryEnvironmentParametersDao;
+
+    private final String OBJECT_NAME = "CountryEnvironmentParameters";
+
+    private static final org.apache.log4j.Logger LOG = org.apache.log4j.Logger.getLogger(CountryEnvironmentParametersService.class);
 
     @Override
     public CountryEnvironmentParameters findCountryEnvironmentParameterByKey(String system, String country, String environment, String application) throws CerberusException {
@@ -90,6 +96,16 @@ public class CountryEnvironmentParametersService implements ICountryEnvironmentP
     }
 
     @Override
+    public AnswerList readByVarious(String system, String country, String environment, String application) {
+        return countryEnvironmentParametersDao.readByVariousByCriteria(system, country, environment, application, 0, 0, null, null, null, null);
+    }
+
+    @Override
+    public AnswerList readByVariousByCriteria(String system, String country, String environment, String application, int start, int amount, String column, String dir, String searchTerm, String individualSearch) {
+        return countryEnvironmentParametersDao.readByVariousByCriteria(system, country, environment, application, start, amount, column, dir, searchTerm, individualSearch);
+    }
+
+    @Override
     public Integer countPerCriteria(String searchTerm, String inds) {
         return countryEnvironmentParametersDao.count(searchTerm, inds);
     }
@@ -115,8 +131,74 @@ public class CountryEnvironmentParametersService implements ICountryEnvironmentP
     }
 
     @Override
-    public AnswerList readByVariousByCriteria(String system, String country, String environment, String application, int start, int amount, String column, String dir, String searchTerm, String individualSearch) {
-        return countryEnvironmentParametersDao.readByVariousByCriteria(system, country, environment, application, start, amount, column, dir, searchTerm, individualSearch);
+    public Answer createList(List<CountryEnvironmentParameters> objectList) {
+        Answer ans = new Answer(null);
+        for (CountryEnvironmentParameters objectToCreate : objectList) {
+            ans = countryEnvironmentParametersDao.create(objectToCreate);
+        }
+        return ans;
+    }
+
+    @Override
+    public Answer deleteList(List<CountryEnvironmentParameters> objectList) {
+        Answer ans = new Answer(null);
+        for (CountryEnvironmentParameters objectToCreate : objectList) {
+            ans = countryEnvironmentParametersDao.delete(objectToCreate);
+        }
+        return ans;
+    }
+
+    @Override
+    public Answer compareListAndUpdateInsertDeleteElements(String system, String country, String environement, List<CountryEnvironmentParameters> newList) {
+        Answer ans = new Answer(null);
+        MessageEvent msg = null;
+        msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
+        msg.setDescription(msg.getDescription().replace("%ITEM%", OBJECT_NAME).replace("%OPERATION%", "UPDATE"));
+
+        List<CountryEnvironmentParameters> oldList = new ArrayList();
+        try {
+            oldList = this.convert(this.readByVarious(system, country, environement, null));
+        } catch (CerberusException ex) {
+            LOG.error(ex);
+        }
+
+        /**
+         * Iterate on (TestCaseStep From Page - TestCaseStep From Database) If
+         * TestCaseStep in Database has same key : Update and remove from the
+         * list. If TestCaseStep in database does ot exist : Insert it.
+         */
+        List<CountryEnvironmentParameters> listToUpdateOrInsert = new ArrayList(newList);
+        listToUpdateOrInsert.removeAll(oldList);
+        List<CountryEnvironmentParameters> listToUpdateOrInsertToIterate = new ArrayList(listToUpdateOrInsert);
+
+        for (CountryEnvironmentParameters objectDifference : listToUpdateOrInsertToIterate) {
+            for (CountryEnvironmentParameters objectInDatabase : oldList) {
+                if (objectDifference.hasSameKey(objectInDatabase)) {
+                    this.update(objectDifference);
+                    listToUpdateOrInsert.remove(objectDifference);
+                }
+            }
+        }
+        this.createList(listToUpdateOrInsert);
+
+        /**
+         * Iterate on (TestCaseStep From Database - TestCaseStep From Page). If
+         * TestCaseStep in Page has same key : remove from the list. Then delete
+         * the list of TestCaseStep
+         */
+        List<CountryEnvironmentParameters> listToDelete = new ArrayList(oldList);
+        listToDelete.removeAll(newList);
+        List<CountryEnvironmentParameters> listToDeleteToIterate = new ArrayList(listToDelete);
+
+        for (CountryEnvironmentParameters tcsDifference : listToDeleteToIterate) {
+            for (CountryEnvironmentParameters tcsInPage : newList) {
+                if (tcsDifference.hasSameKey(tcsInPage)) {
+                    listToDelete.remove(tcsDifference);
+                }
+            }
+        }
+        ans = this.deleteList(listToDelete);
+        return new Answer(msg);
     }
 
     @Override

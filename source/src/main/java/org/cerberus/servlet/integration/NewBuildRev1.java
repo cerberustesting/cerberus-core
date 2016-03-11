@@ -147,6 +147,15 @@ public class NewBuildRev1 extends HttpServlet {
                  * The service was able to perform the query and confirm the
                  * object exist, then we can update it.
                  */
+                // Email Calculation. Email must be calcuated before we update the Build and revision in order to have the old build revision still available in the mail.
+                String OutputMessage = "";
+                eMailContent = emailService.EmailGenerationRevisionChange(system, country, env, build, revision);
+                String[] eMailContentTable = eMailContent.split("///");
+                String to = eMailContentTable[0];
+                String cc = eMailContentTable[1];
+                String subject = eMailContentTable[2];
+                String body = eMailContentTable[3];
+                // We update the object.
                 CountryEnvParam cepData = (CountryEnvParam) answerItem.getItem();
                 cepData.setBuild(build);
                 cepData.setRevision(revision);
@@ -173,15 +182,6 @@ public class NewBuildRev1 extends HttpServlet {
                     /**
                      * Email notification.
                      */
-                    // Email Calculation.
-                    String OutputMessage = "";
-                    eMailContent = emailService.EmailGenerationRevisionChange(system, country, env, build, revision);
-                    String[] eMailContentTable = eMailContent.split("///");
-                    String to = eMailContentTable[0];
-                    String cc = eMailContentTable[1];
-                    String subject = eMailContentTable[2];
-                    String body = eMailContentTable[3];
-
                     // Search the From, the Host and the Port defined in the parameters
                     String from;
                     String host;

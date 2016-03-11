@@ -19,6 +19,7 @@
  */
 package org.cerberus.crud.service.impl;
 
+import java.util.ArrayList;
 import org.cerberus.crud.dao.ICountryEnvDeployTypeDAO;
 import org.cerberus.crud.service.ICountryEnvDeployTypeService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,7 +27,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import org.cerberus.crud.entity.CountryEnvDeployType;
-import org.cerberus.crud.entity.CountryEnvLink;
+import org.cerberus.crud.entity.MessageEvent;
 import org.cerberus.crud.entity.MessageGeneral;
 import org.cerberus.enums.MessageEventEnum;
 import org.cerberus.enums.MessageGeneralEnum;
@@ -41,14 +42,28 @@ public class CountryEnvDeployTypeService implements ICountryEnvDeployTypeService
     @Autowired
     private ICountryEnvDeployTypeDAO countryEnvDeployTypeDAO;
 
+    private final String OBJECT_NAME = "CountryEnvDeployType";
+
+    private static final org.apache.log4j.Logger LOG = org.apache.log4j.Logger.getLogger(CountryEnvDeployTypeService.class);
+
     @Override
     public List<String> findJenkinsAgentByKey(String system, String country, String env, String deploy) {
         return this.countryEnvDeployTypeDAO.findJenkinsAgentByKey(system, country, env, deploy);
     }
 
     @Override
+    public AnswerList readByVarious(String system, String country, String environment) {
+        return countryEnvDeployTypeDAO.readByVariousByCriteria(system, country, environment, 0, 0, null, null, null, null);
+    }
+
+    @Override
     public AnswerList readByVariousByCriteria(String system, String country, String environment, int start, int amount, String column, String dir, String searchTerm, String individualSearch) {
         return countryEnvDeployTypeDAO.readByVariousByCriteria(system, country, environment, start, amount, column, dir, searchTerm, individualSearch);
+    }
+
+    @Override
+    public Answer update(CountryEnvDeployType object) {
+        return countryEnvDeployTypeDAO.update(object);
     }
 
     @Override
@@ -59,6 +74,77 @@ public class CountryEnvDeployTypeService implements ICountryEnvDeployTypeService
     @Override
     public Answer delete(CountryEnvDeployType object) {
         return countryEnvDeployTypeDAO.delete(object);
+    }
+
+    @Override
+    public Answer createList(List<CountryEnvDeployType> objectList) {
+        Answer ans = new Answer(null);
+        for (CountryEnvDeployType objectToCreate : objectList) {
+            ans = countryEnvDeployTypeDAO.create(objectToCreate);
+        }
+        return ans;
+    }
+
+    @Override
+    public Answer deleteList(List<CountryEnvDeployType> objectList) {
+        Answer ans = new Answer(null);
+        for (CountryEnvDeployType objectToCreate : objectList) {
+            ans = countryEnvDeployTypeDAO.delete(objectToCreate);
+        }
+        return ans;
+    }
+
+    @Override
+    public Answer compareListAndUpdateInsertDeleteElements(String system, String country, String environement, List<CountryEnvDeployType> newList) {
+        Answer ans = new Answer(null);
+        MessageEvent msg = null;
+        msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
+        msg.setDescription(msg.getDescription().replace("%ITEM%", OBJECT_NAME).replace("%OPERATION%", "UPDATE"));
+
+        List<CountryEnvDeployType> oldList = new ArrayList();
+        try {
+            oldList = this.convert(this.readByVarious(system, country, environement));
+        } catch (CerberusException ex) {
+            LOG.error(ex);
+        }
+
+        /**
+         * Iterate on (TestCaseStep From Page - TestCaseStep From Database) If
+         * TestCaseStep in Database has same key : Update and remove from the
+         * list. If TestCaseStep in database does ot exist : Insert it.
+         */
+        List<CountryEnvDeployType> listToUpdateOrInsert = new ArrayList(newList);
+        listToUpdateOrInsert.removeAll(oldList);
+        List<CountryEnvDeployType> listToUpdateOrInsertToIterate = new ArrayList(listToUpdateOrInsert);
+
+        for (CountryEnvDeployType objectDifference : listToUpdateOrInsertToIterate) {
+            for (CountryEnvDeployType objectInDatabase : oldList) {
+                if (objectDifference.hasSameKey(objectInDatabase)) {
+                    this.update(objectDifference);
+                    listToUpdateOrInsert.remove(objectDifference);
+                }
+            }
+        }
+        this.createList(listToUpdateOrInsert);
+
+        /**
+         * Iterate on (TestCaseStep From Database - TestCaseStep From Page). If
+         * TestCaseStep in Page has same key : remove from the list. Then delete
+         * the list of TestCaseStep
+         */
+        List<CountryEnvDeployType> listToDelete = new ArrayList(oldList);
+        listToDelete.removeAll(newList);
+        List<CountryEnvDeployType> listToDeleteToIterate = new ArrayList(listToDelete);
+
+        for (CountryEnvDeployType tcsDifference : listToDeleteToIterate) {
+            for (CountryEnvDeployType tcsInPage : newList) {
+                if (tcsDifference.hasSameKey(tcsInPage)) {
+                    listToDelete.remove(tcsDifference);
+                }
+            }
+        }
+        ans = this.deleteList(listToDelete);
+        return new Answer(msg);
     }
 
     @Override

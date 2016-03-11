@@ -19,10 +19,12 @@
  */
 package org.cerberus.crud.service.impl;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.cerberus.crud.dao.ICountryEnvLinkDAO;
 import org.cerberus.crud.entity.CountryEnvLink;
+import org.cerberus.crud.entity.MessageEvent;
 import org.cerberus.crud.entity.MessageGeneral;
 import org.cerberus.exception.CerberusException;
 import org.cerberus.crud.service.ICountryEnvLinkService;
@@ -44,9 +46,18 @@ public class CountryEnvLinkService implements ICountryEnvLinkService {
     @Autowired
     ICountryEnvLinkDAO countryEnvLinkDao;
 
+    private final String OBJECT_NAME = "CountryEnvLink";
+
+    private static final org.apache.log4j.Logger LOG = org.apache.log4j.Logger.getLogger(CountryEnvLinkService.class);
+
     @Override
     public List<CountryEnvLink> findCountryEnvLinkByCriteria(String system, String country, String environment) throws CerberusException {
         return countryEnvLinkDao.findCountryEnvLinkByCriteria(system, country, environment);
+    }
+
+    @Override
+    public AnswerList readByVarious(String system, String country, String environment) {
+        return countryEnvLinkDao.readByVariousByCriteria(system, country, environment, 0, 0, null, null, null, null);
     }
 
     @Override
@@ -67,6 +78,77 @@ public class CountryEnvLinkService implements ICountryEnvLinkService {
     @Override
     public Answer update(CountryEnvLink object) {
         return countryEnvLinkDao.update(object);
+    }
+
+    @Override
+    public Answer createList(List<CountryEnvLink> objectList) {
+        Answer ans = new Answer(null);
+        for (CountryEnvLink objectToCreate : objectList) {
+            ans = countryEnvLinkDao.create(objectToCreate);
+        }
+        return ans;
+    }
+
+    @Override
+    public Answer deleteList(List<CountryEnvLink> objectList) {
+        Answer ans = new Answer(null);
+        for (CountryEnvLink objectToCreate : objectList) {
+            ans = countryEnvLinkDao.delete(objectToCreate);
+        }
+        return ans;
+    }
+
+    @Override
+    public Answer compareListAndUpdateInsertDeleteElements(String system, String country, String environement, List<CountryEnvLink> newList) {
+        Answer ans = new Answer(null);
+        MessageEvent msg = null;
+        msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
+        msg.setDescription(msg.getDescription().replace("%ITEM%", OBJECT_NAME).replace("%OPERATION%", "UPDATE"));
+
+        List<CountryEnvLink> oldList = new ArrayList();
+        try {
+            oldList = this.convert(this.readByVarious(system, country, environement));
+        } catch (CerberusException ex) {
+            LOG.error(ex);
+        }
+
+        /**
+         * Iterate on (TestCaseStep From Page - TestCaseStep From Database) If
+         * TestCaseStep in Database has same key : Update and remove from the
+         * list. If TestCaseStep in database does ot exist : Insert it.
+         */
+        List<CountryEnvLink> listToUpdateOrInsert = new ArrayList(newList);
+        listToUpdateOrInsert.removeAll(oldList);
+        List<CountryEnvLink> listToUpdateOrInsertToIterate = new ArrayList(listToUpdateOrInsert);
+
+        for (CountryEnvLink objectDifference : listToUpdateOrInsertToIterate) {
+            for (CountryEnvLink objectInDatabase : oldList) {
+                if (objectDifference.hasSameKey(objectInDatabase)) {
+                    this.update(objectDifference);
+                    listToUpdateOrInsert.remove(objectDifference);
+                }
+            }
+        }
+        this.createList(listToUpdateOrInsert);
+
+        /**
+         * Iterate on (TestCaseStep From Database - TestCaseStep From Page). If
+         * TestCaseStep in Page has same key : remove from the list. Then delete
+         * the list of TestCaseStep
+         */
+        List<CountryEnvLink> listToDelete = new ArrayList(oldList);
+        listToDelete.removeAll(newList);
+        List<CountryEnvLink> listToDeleteToIterate = new ArrayList(listToDelete);
+
+        for (CountryEnvLink tcsDifference : listToDeleteToIterate) {
+            for (CountryEnvLink tcsInPage : newList) {
+                if (tcsDifference.hasSameKey(tcsInPage)) {
+                    listToDelete.remove(tcsDifference);
+                }
+            }
+        }
+        ans = this.deleteList(listToDelete);
+        return new Answer(msg);
     }
 
     @Override

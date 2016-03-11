@@ -26,7 +26,6 @@ import java.util.List;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.cerberus.crud.dao.ICountryEnvironmentDatabaseDAO;
-import org.cerberus.crud.entity.Application;
 import org.cerberus.database.DatabaseSpring;
 import org.cerberus.crud.entity.CountryEnvironmentDatabase;
 import org.cerberus.crud.entity.MessageEvent;
@@ -37,6 +36,8 @@ import org.cerberus.crud.factory.IFactoryCountryEnvironmentDatabase;
 import org.cerberus.enums.MessageEventEnum;
 import org.cerberus.log.MyLogger;
 import org.cerberus.util.StringUtil;
+import org.cerberus.util.answer.Answer;
+import org.cerberus.util.answer.AnswerItem;
 import org.cerberus.util.answer.AnswerList;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
@@ -64,6 +65,65 @@ public class CountryEnvironmentDatabaseDAO implements ICountryEnvironmentDatabas
     private final String OBJECT_NAME = "CountryEnvironmentDatabase";
     private final String SQL_DUPLICATED_CODE = "23000";
     private final int MAX_ROW_SELECTED = 100000;
+
+    @Override
+    public AnswerItem readByKey(String system, String country, String environment, String database) {
+        AnswerItem ans = new AnswerItem();
+        CountryEnvironmentDatabase result = null;
+        final String query = "SELECT * FROM countryenvironmentdatabase ced WHERE ced.database = ? AND ced.environment = ? AND ced.country = ? AND ced.system = ?";
+        MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
+        msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", ""));
+
+        Connection connection = this.databaseSpring.connect();
+        try {
+            PreparedStatement preStat = connection.prepareStatement(query);
+            try {
+                preStat.setString(1, system);
+                preStat.setString(1, country);
+                preStat.setString(1, environment);
+                preStat.setString(1, database);
+                ResultSet resultSet = preStat.executeQuery();
+                try {
+                    if (resultSet.first()) {
+                        result = loadFromResultSet(resultSet);
+                        msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
+                        msg.setDescription(msg.getDescription().replace("%ITEM%", OBJECT_NAME).replace("%OPERATION%", "SELECT"));
+                        ans.setItem(result);
+                    } else {
+                        msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_NO_DATA_FOUND);
+                    }
+                } catch (SQLException exception) {
+                    LOG.error("Unable to execute query : " + exception.toString());
+                    msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
+                    msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", exception.toString()));
+                } finally {
+                    resultSet.close();
+                }
+            } catch (SQLException exception) {
+                LOG.error("Unable to execute query : " + exception.toString());
+                msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
+                msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", exception.toString()));
+            } finally {
+                preStat.close();
+            }
+        } catch (SQLException exception) {
+            LOG.error("Unable to execute query : " + exception.toString());
+            msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
+            msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", exception.toString()));
+        } finally {
+            try {
+                if (connection != null) {
+                    connection.close();
+                }
+            } catch (SQLException exception) {
+                LOG.warn("Unable to close connection : " + exception.toString());
+            }
+        }
+
+        //sets the message
+        ans.setResultMessage(msg);
+        return ans;
+    }
 
     @Override
     public CountryEnvironmentDatabase findCountryEnvironmentDatabaseByKey(String system, String country, String environment, String database) throws CerberusException {
@@ -355,7 +415,7 @@ public class CountryEnvironmentDatabaseDAO implements ICountryEnvironmentDatabas
     }
 
     @Override
-    public void update(CountryEnvironmentDatabase ced) throws CerberusException {
+    public void update_deprecated(CountryEnvironmentDatabase ced) throws CerberusException {
         final StringBuffer query = new StringBuffer("UPDATE `countryenvironmentdatabase` SET `connectionpoolname`=? ");
         query.append(" where `system`=? and `country`=? and `environment`=? and `database`=?");
 
@@ -389,7 +449,7 @@ public class CountryEnvironmentDatabaseDAO implements ICountryEnvironmentDatabas
     }
 
     @Override
-    public void delete(CountryEnvironmentDatabase ced) throws CerberusException {
+    public void delete_deprecated(CountryEnvironmentDatabase ced) throws CerberusException {
         final StringBuffer query = new StringBuffer("DELETE FROM `countryenvironmentdatabase` WHERE `system`=? and `country`=? and `environment`=? and `database`=?");
 
         Connection connection = this.databaseSpring.connect();
@@ -421,7 +481,7 @@ public class CountryEnvironmentDatabaseDAO implements ICountryEnvironmentDatabas
     }
 
     @Override
-    public void create(CountryEnvironmentDatabase ced) throws CerberusException {
+    public void create_deprecated(CountryEnvironmentDatabase ced) throws CerberusException {
         final StringBuffer query = new StringBuffer("INSERT INTO `countryenvironmentdatabase` ");
         query.append("(`system`, `country`, `environment`, `database`, `connectionpoolname`) VALUES ");
         query.append("(?,?,?,?,?)");
@@ -453,6 +513,149 @@ public class CountryEnvironmentDatabaseDAO implements ICountryEnvironmentDatabas
                 LOG.warn("Exception closing the connection :" + e.toString());
             }
         }
+    }
+
+    @Override
+    public Answer create(CountryEnvironmentDatabase object) {
+        MessageEvent msg = null;
+        StringBuilder query = new StringBuilder();
+        query.append("INSERT INTO `countryenvironmentdatabase` (`system`, `country`, `environment`, `database`, `connectionpoolname`) ");
+        query.append("VALUES (?,?,?,?,?)");
+
+        // Debug message on SQL.
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("SQL : " + query.toString());
+        }
+        Connection connection = this.databaseSpring.connect();
+        try {
+            PreparedStatement preStat = connection.prepareStatement(query.toString());
+            try {
+                preStat.setString(1, object.getSystem());
+                preStat.setString(2, object.getCountry());
+                preStat.setString(3, object.getEnvironment());
+                preStat.setString(4, object.getDatabase());
+                preStat.setString(5, object.getConnectionPoolName());
+
+                preStat.executeUpdate();
+                msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
+                msg.setDescription(msg.getDescription().replace("%ITEM%", OBJECT_NAME).replace("%OPERATION%", "INSERT"));
+
+            } catch (SQLException exception) {
+                LOG.error("Unable to execute query : " + exception.toString());
+
+                if (exception.getSQLState().equals(SQL_DUPLICATED_CODE)) { //23000 is the sql state for duplicate entries
+                    msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_DUPLICATE);
+                    msg.setDescription(msg.getDescription().replace("%ITEM%", OBJECT_NAME).replace("%OPERATION%", "INSERT"));
+                } else {
+                    msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
+                    msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", exception.toString()));
+                }
+            } finally {
+                preStat.close();
+            }
+        } catch (SQLException exception) {
+            LOG.error("Unable to execute query : " + exception.toString());
+            msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
+            msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", exception.toString()));
+        } finally {
+            try {
+                if (connection != null) {
+                    connection.close();
+                }
+            } catch (SQLException exception) {
+                LOG.error("Unable to close connection : " + exception.toString());
+            }
+        }
+        return new Answer(msg);
+    }
+
+    @Override
+    public Answer delete(CountryEnvironmentDatabase object) {
+        MessageEvent msg = null;
+        final String query = "DELETE FROM `countryenvironmentdatabase` WHERE `system`=? and `country`=? and `environment`=? and `database`=?";
+
+        // Debug message on SQL.
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("SQL : " + query);
+        }
+        Connection connection = this.databaseSpring.connect();
+        try {
+            PreparedStatement preStat = connection.prepareStatement(query);
+            try {
+                preStat.setString(1, object.getSystem());
+                preStat.setString(2, object.getCountry());
+                preStat.setString(3, object.getEnvironment());
+                preStat.setString(4, object.getDatabase());
+
+                preStat.executeUpdate();
+                msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
+                msg.setDescription(msg.getDescription().replace("%ITEM%", OBJECT_NAME).replace("%OPERATION%", "DELETE"));
+            } catch (SQLException exception) {
+                LOG.error("Unable to execute query : " + exception.toString());
+                msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
+                msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", exception.toString()));
+            } finally {
+                preStat.close();
+            }
+        } catch (SQLException exception) {
+            LOG.error("Unable to execute query : " + exception.toString());
+            msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
+            msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", exception.toString()));
+        } finally {
+            try {
+                if (connection != null) {
+                    connection.close();
+                }
+            } catch (SQLException exception) {
+                LOG.warn("Unable to close connection : " + exception.toString());
+            }
+        }
+        return new Answer(msg);
+    }
+
+    @Override
+    public Answer update(CountryEnvironmentDatabase object) {
+        MessageEvent msg = null;
+        final String query = "UPDATE `countryenvironmentdatabase` SET `connectionpoolname`=? WHERE `system`=? and `country`=? and `environment`=? and `database`=?";
+
+        // Debug message on SQL.
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("SQL : " + query);
+        }
+        Connection connection = this.databaseSpring.connect();
+        try {
+            PreparedStatement preStat = connection.prepareStatement(query);
+            try {
+                preStat.setString(1, object.getConnectionPoolName());
+                preStat.setString(2, object.getSystem());
+                preStat.setString(3, object.getCountry());
+                preStat.setString(4, object.getEnvironment());
+                preStat.setString(5, object.getDatabase());
+
+                preStat.executeUpdate();
+                msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
+                msg.setDescription(msg.getDescription().replace("%ITEM%", OBJECT_NAME).replace("%OPERATION%", "UPDATE"));
+            } catch (SQLException exception) {
+                LOG.error("Unable to execute query : " + exception.toString());
+                msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
+                msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", exception.toString()));
+            } finally {
+                preStat.close();
+            }
+        } catch (SQLException exception) {
+            LOG.error("Unable to execute query : " + exception.toString());
+            msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
+            msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", exception.toString()));
+        } finally {
+            try {
+                if (connection != null) {
+                    connection.close();
+                }
+            } catch (SQLException exception) {
+                LOG.warn("Unable to close connection : " + exception.toString());
+            }
+        }
+        return new Answer(msg);
     }
 
     private CountryEnvironmentDatabase loadFromResultSet(ResultSet resultSet) throws SQLException {

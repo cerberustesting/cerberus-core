@@ -60,6 +60,15 @@ public interface ICountryEnvLinkService {
 
     /**
      *
+     * @param system
+     * @param country
+     * @param environment
+     * @return
+     */
+    public AnswerList readByVarious(String system, String country, String environment);
+
+    /**
+     *
      * @param object
      * @return
      */
@@ -78,6 +87,34 @@ public interface ICountryEnvLinkService {
      * @return
      */
     public Answer update(CountryEnvLink object);
+
+    /**
+     *
+     * @param objectList
+     * @return
+     */
+    public Answer createList(List<CountryEnvLink> objectList);
+
+    /**
+     *
+     * @param objectList
+     * @return
+     */
+    public Answer deleteList(List<CountryEnvLink> objectList);
+
+    /**
+     * Update all CountryEnvironmentDatabase from the sourceList to the
+     * perimeter of system, country and environment list. All existing databases
+     * from newList will be updated, the new ones added and missing ones
+     * deleted.
+     *
+     * @param system
+     * @param country
+     * @param environement
+     * @param newList
+     * @return
+     */
+    public Answer compareListAndUpdateInsertDeleteElements(String system, String country, String environement, List<CountryEnvLink> newList);
 
     /**
      *

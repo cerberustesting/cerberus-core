@@ -55,6 +55,8 @@ function getSubDataLabel(type) {
     return labelEntry;
 }
 
+/*********************************************** COMBO DISPLAY ***************************************/
+
 /**
  * Method that display a combo box in all the selectName tags with the value retrieved from the invariant list
  * @param {String} selectName value name of the select tag in the html
@@ -287,6 +289,98 @@ function getInvariantListN(list, handleData) {
         handleData(data);
     });
 }
+
+
+function getSelectInvariant(idName) {
+    var list = JSON.parse(sessionStorage.getItem(idName + "INVARIANT"));
+    var select = $("<select></select>").addClass("form-control input-sm");
+
+    if (list === null) {
+        $.ajax({
+            url: "FindInvariantByID",
+            data: {idName: idName},
+            async: true,
+            success: function (data) {
+                list = data;
+                sessionStorage.setItem(idName + "INVARIANT", JSON.stringify(data));
+                for (var index = 0; index < list.length; index++) {
+                    var item = list[index].value;
+
+                    select.append($("<option></option>").text(item).val(item));
+                }
+            }
+        });
+    } else {
+        for (var index = 0; index < list.length; index++) {
+            var item = list[index].value;
+
+            select.append($("<option></option>").text(item).val(item));
+        }
+    }
+
+    return select;
+}
+
+function getSelectApplication(system) {
+    var list = JSON.parse(sessionStorage.getItem("APPLICATION" + system));
+    var select = $("<select></select>").addClass("form-control input-sm");
+
+    if (list === null) {
+        $.ajax({
+            url: "ReadApplication",
+            data: {system: system},
+            async: true,
+            success: function (data) {
+                list = data.contentTable;
+                sessionStorage.setItem("APPLICATION" + system, JSON.stringify(list));
+                for (var index = 0; index < list.length; index++) {
+                    var item = list[index].application;
+
+                    select.append($("<option></option>").text(item).val(item));
+                }
+            }
+        });
+    } else {
+        for (var index = 0; index < list.length; index++) {
+            var item = list[index].application;
+
+            select.append($("<option></option>").text(item).val(item));
+        }
+    }
+
+    return select;
+}
+
+function getSelectDeployType() {
+    var list = JSON.parse(sessionStorage.getItem("DEPLOYTYPE"));
+    var select = $("<select></select>").addClass("form-control input-sm");
+
+    if (list === null) {
+        $.ajax({
+            url: "ReadDeployType",
+            data: {},
+            async: true,
+            success: function (data) {
+                list = data.contentTable;
+                sessionStorage.setItem("DEPLOYTYPE", JSON.stringify(list));
+                for (var index = 0; index < list.length; index++) {
+                    var item = list[index].deploytype;
+
+                    select.append($("<option></option>").text(item).val(item));
+                }
+            }
+        });
+    } else {
+        for (var index = 0; index < list.length; index++) {
+            var item = list[index].deploytype;
+
+            select.append($("<option></option>").text(item).val(item));
+        }
+    }
+
+    return select;
+}
+
 
 /***********************************************Messages/ALERT***************************************/
 
@@ -789,7 +883,8 @@ function createDataTableWithPermissions(tableConfigurations, callbackfunction) {
             });
             $.when(oSettings.jqXHR).then(function (data) {
                 //updates the table with basis on the permissions that the current user has
-                callbackfunction(data);
+                if (callbackfunction !== undefined)
+                    callbackfunction(data);
             });
         };
     } else {

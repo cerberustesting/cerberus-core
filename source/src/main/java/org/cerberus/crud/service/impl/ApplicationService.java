@@ -75,9 +75,9 @@ public class ApplicationService implements IApplicationService {
     }
 
     @Override
-    public boolean exist(String Application) {
+    public boolean exist(String Object) {
         try {
-            convert(readByKey(Application));
+            convert(readByKey(Object));
             return true;
         } catch (CerberusException e) {
             return false;

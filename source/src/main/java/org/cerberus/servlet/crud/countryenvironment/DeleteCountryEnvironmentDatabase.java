@@ -70,7 +70,7 @@ public class DeleteCountryEnvironmentDatabase extends HttpServlet {
         String database = id.split("Database&#61;")[1].split("&amp;")[0];
 
         response.setContentType("text/html");
-            cedService.delete(factoryCed.create(system, country, env, database, null));
+            cedService.delete_deprecated(factoryCed.create(system, country, env, database, null));
         } catch (CerberusException ex) {
             LOG.error("Error deleting CountryEnvironmentDatabase :" + ex);
         }
