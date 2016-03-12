@@ -94,6 +94,7 @@
                     <li id="subactive"><a name="menu" id="menuRunTestTriggerBatchExecution" href="RunTestsTriggerBatchExecution.jsp" style="width:200px">Run Multiple Tests</a></li>
                     <li id="subactive"><a name="menu" id="menuRunTestSeePendingExecution" href="ExecutionPending.jsp" style="width:200px">See Execution In Queue</a></li>
                     <li id="subactive"><a id="menuRunTestBeta" href="RunTest2.jsp" style="width:200px">Run Test Case<input type="button" class="btn btn-danger btn-small active" value="Beta" style="padding: 0px; margin-left: 5px; color: red"></a></li>
+                    <li id="subactive"><a name="menu" id="menuRobot" href="Robot.jsp" style="width:200px">Robot</a></li>
                 </ul>
             </li>
             <% }%>
@@ -120,7 +121,6 @@
                     <li id="subactive"><a name="menu" id="menuEnvironmentManagement" href="EnvironmentManagement.jsp" style="width:200px">Environment Management</a></li>
                     <li id="subactive"><a name="menu" id="menuBuildRevision" href="BuildRevDefinition.jsp" style="width:200px">Build/Rev Definition</a></li>
                     <li id="subactive"><a name="menu" id="menuBuildContent" href="BuildContent.jsp" style="width:200px">Build Content</a></li>
-                    <li id="subactive"><a name="menu" id="menuRobot" href="Robot.jsp" style="width:200px">Robot</a></li>
                     <li id="subactive"><a name="menu" id="menuProject" href="Project.jsp" style="width:200px">Project</a></li>
                     <li id="subactive"><a name="menu" id="menuDeployType" href="DeployType.jsp" style="width:200px">Deploy Type</a></li>
                     <li id="subactive"><a name="menu" id="menuBatchInvariant" href="BatchInvariant.jsp" style="width:200px">Batch</a></li>
