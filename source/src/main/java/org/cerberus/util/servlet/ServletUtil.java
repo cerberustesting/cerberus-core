@@ -30,7 +30,7 @@ public final class ServletUtil {
 
     private static final Logger LOG = Logger.getLogger(ServletUtil.class);
 
-    private static final long DEFAULT_WAIT_MS = 2000;
+    private static final long DEFAULT_WAIT_MS = 20;
 
     /**
      * This method should be called in every servlet call. That allow transversal action to be performed in debug mode.

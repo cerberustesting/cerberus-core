@@ -32,11 +32,8 @@ import org.cerberus.crud.entity.CountryEnvParam;
 import org.cerberus.crud.entity.MessageEvent;
 import org.cerberus.crud.service.IBuildRevisionBatchService;
 import org.cerberus.crud.service.ICountryEnvParamService;
-import org.cerberus.crud.service.ICountryEnvParam_logService;
 import org.cerberus.crud.service.ILogEventService;
-
 import org.cerberus.crud.service.IParameterService;
-import org.cerberus.crud.service.impl.LogEventService;
 import org.cerberus.enums.MessageEventEnum;
 import org.cerberus.service.email.IEmailGeneration;
 import org.cerberus.service.email.impl.sendMail;
@@ -96,7 +93,7 @@ public class NewChain1 extends HttpServlet {
         IParameterService parameterService = appContext.getBean(IParameterService.class);
         ICountryEnvParamService countryEnvParamService = appContext.getBean(ICountryEnvParamService.class);
         IBuildRevisionBatchService buildRevisionBatchService = appContext.getBean(IBuildRevisionBatchService.class);
-        ILogEventService logEventService = appContext.getBean(LogEventService.class);
+        ILogEventService logEventService = appContext.getBean(ILogEventService.class);
 
         if (request.getParameter("system") == null) {
             msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_EXPECTED);

@@ -157,12 +157,12 @@ public class CountryEnvParamService implements ICountryEnvParamService {
 
     @Override
     public boolean exist(String system, String country, String environment) {
-//        try {
-//            convert(readByKey(system, country, environment));
-        return true;
-//        } catch (CerberusException e) {
-//            return false;
-//        }
+        try {
+            convert(readByKey(system, country, environment));
+            return true;
+        } catch (CerberusException e) {
+            return false;
+        }
     }
 
     @Override

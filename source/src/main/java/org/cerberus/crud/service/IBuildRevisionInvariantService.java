@@ -35,6 +35,8 @@ public interface IBuildRevisionInvariantService {
 
     AnswerItem readByKey(String system, Integer level, Integer seq);
 
+    AnswerItem readByKey(String system, Integer level, String versionName);
+
     AnswerList readBySystemByCriteria(String system, Integer level, int start, int amount, String column, String dir, String searchTerm, String individualSearch);
 
     BuildRevisionInvariant findBuildRevisionInvariantByKey(String system, Integer level, Integer seq) throws CerberusException;
@@ -52,6 +54,8 @@ public interface IBuildRevisionInvariantService {
     boolean updateBuildRevisionInvariant(BuildRevisionInvariant buildRevisionInvariant);
 
     boolean exist(String system, Integer level, Integer seq);
+
+    boolean exist(String system, Integer level, String versionName);
 
     Answer create(BuildRevisionInvariant buildRevisionInvariant);
 

@@ -46,6 +46,11 @@ public class BuildRevisionInvariantService implements IBuildRevisionInvariantSer
     }
 
     @Override
+    public AnswerItem readByKey(String system, Integer level, String versionName) {
+        return BuildRevisionInvariantDAO.readByKey(system, level, versionName);
+    }
+
+    @Override
     public AnswerList readBySystemByCriteria(String system, Integer level, int start, int amount, String column, String dir, String searchTerm, String individualSearch) {
         return BuildRevisionInvariantDAO.readByVariousByCriteria(system, level, start, amount, column, dir, searchTerm, individualSearch);
     }
@@ -89,6 +94,16 @@ public class BuildRevisionInvariantService implements IBuildRevisionInvariantSer
     public boolean exist(String system, Integer level, Integer seq) {
         try {
             convert(readByKey(system, level, seq));
+            return true;
+        } catch (CerberusException e) {
+            return false;
+        }
+    }
+
+    @Override
+    public boolean exist(String system, Integer level, String versionName) {
+        try {
+            convert(readByKey(system, level, versionName));
             return true;
         } catch (CerberusException e) {
             return false;

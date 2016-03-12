@@ -84,90 +84,92 @@ public class EmailBodyGeneration implements IEmailBodyGeneration {
 
             ResultSet rsBC = stmtBuildContent.executeQuery(contentSQL);
 
-            rsBC.first();
-            String bckColor = "#f3f6fa";
-            int a = 1;
-            do {
-                a++;
-                int b;
-                b = a % 2;
-                if (b == 1) {
-                    bckColor = "#e1e7f3";
-                } else {
-                    bckColor = "White";
-                }
+            if (rsBC.first()) {
+                String bckColor = "#f3f6fa";
+                int a = 1;
+                do {
+                    a++;
+                    int b;
+                    b = a % 2;
+                    if (b == 1) {
+                        bckColor = "#e1e7f3";
+                    } else {
+                        bckColor = "White";
+                    }
 
-                String contentBugURL = "";
-                String contentBuild = "";
-                String contentAppli = "";
-                String contentRev = "";
-                String subject = "";
-                String release = "";
-                String releaseOwner = "";
-                String BugIDFixed = " ";
-                String TicketIDFixed = " ";
-                String Project = " ";
-                String ProjectVC = " ";
+                    String contentBugURL = "";
+                    String contentBuild = "";
+                    String contentAppli = "";
+                    String contentRev = "";
+                    String subject = "";
+                    String release = "";
+                    String releaseOwner = "";
+                    String BugIDFixed = " ";
+                    String TicketIDFixed = " ";
+                    String Project = " ";
+                    String ProjectVC = " ";
 
-                if (rsBC.getString("a.BugTrackerUrl") != null) {
-                    contentBugURL = rsBC.getString("a.BugTrackerUrl");
-                }
-                if (rsBC.getString("b.build") != null) {
-                    contentBuild = rsBC.getString("b.build");
-                }
-                if (rsBC.getString("b.Application") != null) {
-                    contentAppli = rsBC.getString("b.Application");
-                }
-                if (rsBC.getString("b.Revision") != null) {
-                    contentRev = rsBC.getString("b.Revision");
-                }
-                if (rsBC.getString("subject") != null) {
-                    subject = rsBC.getString("subject");
-                }
-                if (rsBC.getString("Release") != null) {
-                    release = rsBC.getString("Release");
-                }
-                if (rsBC.getString("Name") != null) {
-                    releaseOwner = rsBC.getString("Name");
-                } else {
-                    releaseOwner = rsBC.getString("ReleaseOwner");
-                }
-                if (!StringUtil.isNullOrEmpty(rsBC.getString("Link"))) {
-                    release = "<a target=\"_blank\" href=\"" + rsBC.getString("Link") + "\">" + release + "</a>";
-                }
-                if (rsBC.getString("BugIDFixed") != null) {
-                    BugIDFixed = rsBC.getString("BugIDFixed");
-                }
-                if (rsBC.getString("TicketIDFixed") != null) {
-                    TicketIDFixed = rsBC.getString("TicketIDFixed");
-                }
-                if (rsBC.getString("Project") != null) {
-                    Project = rsBC.getString("Project");
-                }
-                if (!StringUtil.isNullOrEmpty(rsBC.getString("p.VCCode"))) {
-                    ProjectVC = Project + " (" + rsBC.getString("p.VCCode") + ")";
-                }else{
-                    ProjectVC = Project;
-                }
+                    if (rsBC.getString("a.BugTrackerUrl") != null) {
+                        contentBugURL = rsBC.getString("a.BugTrackerUrl");
+                    }
+                    if (rsBC.getString("b.build") != null) {
+                        contentBuild = rsBC.getString("b.build");
+                    }
+                    if (rsBC.getString("b.Application") != null) {
+                        contentAppli = rsBC.getString("b.Application");
+                    }
+                    if (rsBC.getString("b.Revision") != null) {
+                        contentRev = rsBC.getString("b.Revision");
+                    }
+                    if (rsBC.getString("subject") != null) {
+                        subject = rsBC.getString("subject");
+                    }
+                    if (rsBC.getString("Release") != null) {
+                        release = rsBC.getString("Release");
+                    }
+                    if (rsBC.getString("Name") != null) {
+                        releaseOwner = rsBC.getString("Name");
+                    } else {
+                        releaseOwner = rsBC.getString("ReleaseOwner");
+                    }
+                    if (!StringUtil.isNullOrEmpty(rsBC.getString("Link"))) {
+                        release = "<a target=\"_blank\" href=\"" + rsBC.getString("Link") + "\">" + release + "</a>";
+                    }
+                    if (rsBC.getString("BugIDFixed") != null) {
+                        BugIDFixed = rsBC.getString("BugIDFixed");
+                    }
+                    if (rsBC.getString("TicketIDFixed") != null) {
+                        TicketIDFixed = rsBC.getString("TicketIDFixed");
+                    }
+                    if (rsBC.getString("Project") != null) {
+                        Project = rsBC.getString("Project");
+                    }
+                    if (!StringUtil.isNullOrEmpty(rsBC.getString("p.VCCode"))) {
+                        ProjectVC = Project + " (" + rsBC.getString("p.VCCode") + ")";
+                    } else {
+                        ProjectVC = Project;
+                    }
 
-                buildContentTable = buildContentTable + "<tr style=\"background-color:" + bckColor + "; font-size:80%\">"
-                        + "<td  rowspan=\"2\">" + contentBuild + "/" + contentRev + "</td>"
-                        + "<td>" + contentAppli + "</td>"
-                        + "<td>" + ProjectVC + "</td>";
-                if (StringUtil.isNullOrEmpty(contentBugURL)) {
-                    buildContentTable = buildContentTable + "<td>" + BugIDFixed + "</td>";
-                } else {
-                    buildContentTable = buildContentTable + "<td><a target=\"_blank\" href=\"" + contentBugURL.replace("%BUGID%", BugIDFixed) + "\">" + BugIDFixed + "</a></td>";
-                }
-                buildContentTable = buildContentTable + "<td>" + TicketIDFixed + "</td>"
-                        + "<td>" + releaseOwner + "</td>"
-                        + "<td>" + release  + "</td>"
-                        + "</tr>"
-                        + "<tr style=\"background-color:" + bckColor + "; font-size:80%\">"
-                        + "<td colspan=\"6\">" + subject + "</td>" 
-                        + "</tr>";
-                
-            } while (rsBC.next());
+                    buildContentTable = buildContentTable + "<tr style=\"background-color:" + bckColor + "; font-size:80%\">"
+                            + "<td  rowspan=\"2\">" + contentBuild + "/" + contentRev + "</td>"
+                            + "<td>" + contentAppli + "</td>"
+                            + "<td>" + ProjectVC + "</td>";
+                    if (StringUtil.isNullOrEmpty(contentBugURL)) {
+                        buildContentTable = buildContentTable + "<td>" + BugIDFixed + "</td>";
+                    } else {
+                        buildContentTable = buildContentTable + "<td><a target=\"_blank\" href=\"" + contentBugURL.replace("%BUGID%", BugIDFixed) + "\">" + BugIDFixed + "</a></td>";
+                    }
+                    buildContentTable = buildContentTable + "<td>" + TicketIDFixed + "</td>"
+                            + "<td>" + releaseOwner + "</td>"
+                            + "<td>" + release + "</td>"
+                            + "</tr>"
+                            + "<tr style=\"background-color:" + bckColor + "; font-size:80%\">"
+                            + "<td colspan=\"6\">" + subject + "</td>"
+                            + "</tr>";
+
+                } while (rsBC.next());
+
+            }
 
             buildContentTable = buildContentTable + "</tbody></table><br>";
 
@@ -333,12 +335,10 @@ public class EmailBodyGeneration implements IEmailBodyGeneration {
 
                 TestRecapTable += buf.toString() + "</table><br>";
 
+            } else if (country.equalsIgnoreCase("ALL")) {
+                TestRecapTable = "Unfortunatly, no test have been executed for any country for <a target=\"_blank\" href=\"" + Cerberus_URL_ALL + "\">" + build + "/" + revision + "</a> :-(<br><br>";
             } else {
-                if (country.equalsIgnoreCase("ALL")) {
-                    TestRecapTable = "Unfortunatly, no test have been executed for any country for <a target=\"_blank\" href=\"" + Cerberus_URL_ALL + "\">" + build + "/" + revision + "</a> :-(<br><br>";
-                } else {
-                    TestRecapTable = "Unfortunatly, no test have been executed for your country for <a target=\"_blank\" href=\"" + Cerberus_URL + "\">" + build + "/" + revision + "</a> :-(<br><br>";
-                }
+                TestRecapTable = "Unfortunatly, no test have been executed for your country for <a target=\"_blank\" href=\"" + Cerberus_URL + "\">" + build + "/" + revision + "</a> :-(<br><br>";
             }
 
             rsBC.close();

@@ -22,9 +22,7 @@ package org.cerberus.servlet.zzpublic;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.sql.Connection;
-import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Statement;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.servlet.ServletException;
@@ -45,7 +43,6 @@ import org.cerberus.crud.service.impl.LogEventService;
 import org.cerberus.crud.service.impl.ProjectService;
 import org.cerberus.crud.service.impl.UserService;
 import org.cerberus.database.DatabaseSpring;
-import org.cerberus.enums.MessageCodeEnum;
 import org.cerberus.enums.MessageEventEnum;
 import org.cerberus.log.MyLogger;
 import org.cerberus.util.ParameterParserUtil;
@@ -177,7 +174,7 @@ public class NewRelease extends HttpServlet {
                 // Duplicate entry Verification. On the build/relivion not yet assigned (NONE/NONE),
                 //  we verify that the application + release has not been submitted yet.
                 //  if it exist, we update it in stead of inserting a new row.
-                //  That coorespond in the cases where the Jenkins pipe is executed several times 
+                //  That correspond in the cases where the Jenkins pipe is executed several times 
                 //  on a single svn commit.
                 /**
                  * Verify if the entry already exists if already exists, update
