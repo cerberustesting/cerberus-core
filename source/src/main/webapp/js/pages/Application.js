@@ -34,6 +34,9 @@ function initPage() {
     $('#addApplicationModal').on('hidden.bs.modal', addEntryModalCloseHandler);
     $('#editApplicationModal').on('hidden.bs.modal', editEntryModalCloseHandler);
 
+    // Adding rows in edit Modal.
+    $("#addEnvironment").click(addNewEnvironmentRow);
+
     //configure and create the dataTable
     var configurations = new TableConfigurationsServerSide("applicationsTable", "ReadApplication?system=" + getUser().defaultSystem, "contentTable", aoColumnsFunc("applicationsTable"), [3, 'asc']);
     createDataTableWithPermissions(configurations, renderOptionsForApplication, "#applicationList");
@@ -183,22 +186,48 @@ function addEntryClick() {
 function editEntryModalSaveHandler() {
     clearResponseMessage($('#editApplicationModal'));
     var formEdit = $('#editApplicationModal #editApplicationModalForm');
+
+    // Getting Data from Application TAB
+    var table1 = $("#environmentTableBody tr");
+    var table_environment = [];
+    for (var i = 0; i < table1.length; i++) {
+        table_environment.push($(table1[i]).data("environment"));
+    }
+
+    // Get the header data from the form.
+    var data = convertSerialToJSONObject(formEdit.serialize());
+
     showLoaderInModal('#editApplicationModal');
+    $.ajax({
+        url: "UpdateApplication",
+        async: true,
+        method: "POST",
+        data: {application: data.application,
+            description: data.description,
+            sort: data.sort,
+            type: data.type,
+            system: data.system,
+            subsystem: data.subsystem,
+            svnurl: data.svnurl,
+            bugtrackerurl: data.bugtrackerurl,
+            bugtrackernewurl: data.bugtrackernewurl,
+            deploytype: data.deploytype,
+            mavengroupid: data.mavengroupid,
+            environmentList: JSON.stringify(table_environment)},
+        success: function (data) {
+            hideLoaderInModal('#editApplicationModal');
+            if (getAlertType(data.messageType) === "success") {
+                var oTable = $("#applicationsTable").dataTable();
+                oTable.fnDraw(true);
+//                $('#editApplicationModal').modal('hide');
+                showMessage(data);
+            } else {
+                showMessage(data, $('#editApplicationModal'));
+            }
+        },
+        error: showUnexpectedError
+    });
 
-    var jqxhr = $.post("UpdateApplication", formEdit.serialize(), "json");
-    $.when(jqxhr).then(function (data) {
-        // unblock when remote call returns 
-        hideLoaderInModal('#editApplicationModal');
-        if (getAlertType(data.messageType) === "success") {
-            var oTable = $("#applicationsTable").dataTable();
-            oTable.fnDraw(true);
-            $('#editApplicationModal').modal('hide');
-            showMessage(data);
-
-        } else {
-            showMessage(data, $('#editApplicationModal'));
-        }
-    }).fail(handleErrorAjaxAfterTimeout);
 }
 
 function editEntryModalCloseHandler() {
@@ -254,36 +283,81 @@ function editEntryClick(id, system) {
 
 function loadEnvironmentTable(selectSystem, selectApplication) {
     $('#environmentTableBody tr').remove();
-
     var jqxhr = $.getJSON("ReadCountryEnvironmentParameters", "system=" + selectSystem + "&application=" + selectApplication + "&iSortCol_0=3");
     $.when(jqxhr).then(function (result) {
-        var html_to_append = '';
         $.each(result["contentTable"], function (idx, obj) {
-//            appendEnvironmentRow(obj.environment, obj.country, obj.ip, obj.domain, obj.url, obj.urlLogin);
-            html_to_append += getEnvironmentRow(obj.environment, obj.country, obj.ip, obj.domain, obj.url, obj.urlLogin);
+            obj.toDelete = false;
+            appendEnvironmentRow(obj);
         });
-        $('#environmentTableBody').append(html_to_append);
-
     }).fail(handleErrorAjaxAfterTimeout);
-
 }
 
-function getEnvironmentRow(environment, country, ip, domain, url, urllogin) {
-    return '<tr> \n\
-        <td><div class="nomarginbottom form-group form-group-sm">\n\
-            <input readonly name="environment" type="text" class="releaseClass form-control input-xs" size="4" value="' + environment + '"/></div></td>\
-        <td><div class="nomarginbottom form-group form-group-sm">\
-            <input readonly name="country" type="text" class="releaseClass form-control input-xs" size="4" value="' + country + '"/></div></td>\
-        <td><div class="nomarginbottom form-group form-group-sm">\
-            <input readonly name="ip" type="text" class="releaseClass form-control input-xs" value="' + ip + '"/></div>\
-            <div class="nomarginbottom form-group form-group-sm">\
-            <input readonly name="urlLogin" type="text" class="releaseClass form-control input-xs" value="' + urllogin + '"/></div></td>\n\\n\
-        <td><div class="nomarginbottom form-group form-group-sm">\
-            <input readonly name="url" type="text" class="releaseClass form-control input-xs" value="' + url + '"/></div>\
-            <div class="nomarginbottom form-group form-group-sm">\
-            <input readonly name="domain" type="text" class="releaseClass form-control input-xs" value="' + domain + '"/></div></td><br>\
-        </tr>';
+function appendEnvironmentRow(env) {
+    var doc = new Doc();
+    var deleteBtn = $("<button type=\"button\"></button>").addClass("btn btn-default btn-xs").append($("<span></span>").addClass("glyphicon glyphicon-trash"));
+    var selectEnvironment = getSelectInvariant("ENVIRONMENT");
+    var selectCountry = getSelectInvariant("COUNTRY");
+    var ipInput = $("<input  maxlength=\"150\">").addClass("form-control input-sm").val(env.ip);
+    var domainInput = $("<input  maxlength=\"150\">").addClass("form-control input-sm").val(env.domain);
+    var urlInput = $("<input  maxlength=\"150\">").addClass("form-control input-sm").val(env.url);
+    var urlLoginInput = $("<input  maxlength=\"150\">").addClass("form-control input-sm").val(env.urlLogin);
+    var table = $("#environmentTableBody");
 
+    var row = $("<tr></tr>");
+    var deleteBtnRow = $("<td></td>").append(deleteBtn);
+    var environment = $("<td></td>").append(selectEnvironment.val(env.environment));
+    var country = $("<td></td>").append(selectCountry.val(env.country));
+
+    var ipName = $("<td></td>").append(ipInput).append(urlLoginInput);
+    var urlName = $("<td></td>").append(urlInput).append(domainInput);
+    deleteBtn.click(function () {
+        env.toDelete = (env.toDelete) ? false : true;
+        if (env.toDelete) {
+            row.addClass("danger");
+        } else {
+            row.removeClass("danger");
+        }
+    });
+    selectEnvironment.change(function () {
+        env.environment = $(this).val();
+    });
+    selectCountry.change(function () {
+        env.country = $(this).val();
+    });
+    ipInput.change(function () {
+        env.ip = $(this).val();
+    });
+    domainInput.change(function () {
+        env.domain = $(this).val();
+    });
+    urlInput.change(function () {
+        env.url = $(this).val();
+    });
+    urlLoginInput.change(function () {
+        env.urlLogin = $(this).val();
+    });
+    row.append(deleteBtnRow);
+    row.append(environment);
+    row.append(country);
+    row.append(ipName);
+    row.append(urlName);
+    env.environment = selectEnvironment.prop("value"); // Value that has been requested by dtb parameter may not exist in combo vlaues so we take the real selected value.
+    env.country = selectCountry.prop("value"); // Value that has been requested by dtb parameter may not exist in combo vlaues so we take the real selected value.
+    row.data("environment", env);
+    table.append(row);
+}
+
+function addNewEnvironmentRow() {
+    var newEnvironment = {
+        environment: "",
+        country: "",
+        ip: "",
+        domain: "",
+        url: "",
+        urlLogin: "",
+        toDelete: false
+    };
+    appendEnvironmentRow(newEnvironment);
 }
 
 function aoColumnsFunc(tableId) {

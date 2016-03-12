@@ -163,9 +163,7 @@ public class CountryEnvironmentParametersService implements ICountryEnvironmentP
         }
 
         /**
-         * Iterate on (TestCaseStep From Page - TestCaseStep From Database) If
-         * TestCaseStep in Database has same key : Update and remove from the
-         * list. If TestCaseStep in database does ot exist : Insert it.
+         * Update and Create all objects database Objects from newList
          */
         List<CountryEnvironmentParameters> listToUpdateOrInsert = new ArrayList(newList);
         listToUpdateOrInsert.removeAll(oldList);
@@ -182,9 +180,7 @@ public class CountryEnvironmentParametersService implements ICountryEnvironmentP
         this.createList(listToUpdateOrInsert);
 
         /**
-         * Iterate on (TestCaseStep From Database - TestCaseStep From Page). If
-         * TestCaseStep in Page has same key : remove from the list. Then delete
-         * the list of TestCaseStep
+         * Delete all objects database Objects that do not exist from newList
          */
         List<CountryEnvironmentParameters> listToDelete = new ArrayList(oldList);
         listToDelete.removeAll(newList);
@@ -201,6 +197,55 @@ public class CountryEnvironmentParametersService implements ICountryEnvironmentP
         return new Answer(msg);
     }
 
+    @Override
+    public Answer compareListAndUpdateInsertDeleteElements(String system, String application, List<CountryEnvironmentParameters> newList) {
+        Answer ans = new Answer(null);
+        MessageEvent msg = null;
+        msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
+        msg.setDescription(msg.getDescription().replace("%ITEM%", OBJECT_NAME).replace("%OPERATION%", "UPDATE"));
+
+        List<CountryEnvironmentParameters> oldList = new ArrayList();
+        try {
+            oldList = this.convert(this.readByVarious(system, null, null, application));
+        } catch (CerberusException ex) {
+            LOG.error(ex);
+        }
+
+        /**
+         * Update and Create all objects database Objects from newList
+         */
+        List<CountryEnvironmentParameters> listToUpdateOrInsert = new ArrayList(newList);
+        listToUpdateOrInsert.removeAll(oldList);
+        List<CountryEnvironmentParameters> listToUpdateOrInsertToIterate = new ArrayList(listToUpdateOrInsert);
+
+        for (CountryEnvironmentParameters objectDifference : listToUpdateOrInsertToIterate) {
+            for (CountryEnvironmentParameters objectInDatabase : oldList) {
+                if (objectDifference.hasSameKey(objectInDatabase)) {
+                    this.update(objectDifference);
+                    listToUpdateOrInsert.remove(objectDifference);
+                }
+            }
+        }
+        this.createList(listToUpdateOrInsert);
+
+        /**
+         * Delete all objects database Objects that do not exist from newList
+         */
+        List<CountryEnvironmentParameters> listToDelete = new ArrayList(oldList);
+        listToDelete.removeAll(newList);
+        List<CountryEnvironmentParameters> listToDeleteToIterate = new ArrayList(listToDelete);
+
+        for (CountryEnvironmentParameters tcsDifference : listToDeleteToIterate) {
+            for (CountryEnvironmentParameters tcsInPage : newList) {
+                if (tcsDifference.hasSameKey(tcsInPage)) {
+                    listToDelete.remove(tcsDifference);
+                }
+            }
+        }
+        ans = this.deleteList(listToDelete);
+        return new Answer(msg);
+    }
+    
     @Override
     public CountryEnvironmentParameters convert(AnswerItem answerItem) throws CerberusException {
         if (answerItem.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {

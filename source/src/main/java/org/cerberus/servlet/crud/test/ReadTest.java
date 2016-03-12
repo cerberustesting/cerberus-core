@@ -73,6 +73,9 @@ public class ReadTest extends HttpServlet {
 
         response.setContentType("application/json");
 
+        // Calling Servlet Transversal Util.
+        ServletUtil.servletStart(request);
+        
         // Default message to unexpected error.
         MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
         msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", ""));

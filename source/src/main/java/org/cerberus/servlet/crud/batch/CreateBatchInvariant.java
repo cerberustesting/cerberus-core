@@ -33,8 +33,10 @@ import org.cerberus.exception.CerberusException;
 import org.cerberus.crud.service.IBatchInvariantService;
 import org.cerberus.crud.service.ILogEventService;
 import org.cerberus.crud.service.impl.LogEventService;
+import org.cerberus.util.ParameterParserUtil;
 import org.cerberus.util.StringUtil;
 import org.cerberus.util.answer.Answer;
+import org.cerberus.util.servlet.ServletUtil;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.springframework.context.ApplicationContext;
@@ -70,15 +72,19 @@ public class CreateBatchInvariant extends HttpServlet {
         msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", ""));
         ans.setResultMessage(msg);
         PolicyFactory policy = Sanitizers.FORMATTING.and(Sanitizers.LINKS);
+        String charset = request.getCharacterEncoding();
 
         response.setContentType("application/json");
 
+        // Calling Servlet Transversal Util.
+        ServletUtil.servletStart(request);
+        
         /**
          * Parsing and securing all required parameters.
          */
-        String batch = policy.sanitize(request.getParameter("batch"));
-        String system = policy.sanitize(request.getParameter("system"));
-        String description = policy.sanitize(request.getParameter("description"));
+        String batch = ParameterParserUtil.parseStringParamAndDecode(request.getParameter("batch"), null, charset);
+        String system = ParameterParserUtil.parseStringParamAndDecode(request.getParameter("system"), null, charset);
+        String description = ParameterParserUtil.parseStringParamAndDecode(request.getParameter("description"), null, charset);
 
         /**
          * Checking all constrains before calling the services.

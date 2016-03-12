@@ -35,6 +35,7 @@ import org.cerberus.crud.service.impl.LogEventService;
 import org.cerberus.util.StringUtil;
 import org.cerberus.util.answer.Answer;
 import org.cerberus.util.answer.AnswerItem;
+import org.cerberus.util.servlet.ServletUtil;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.owasp.html.PolicyFactory;
@@ -69,6 +70,9 @@ public class DeleteBuildRevisionInvariant extends HttpServlet {
 
         response.setContentType("application/json");
 
+        // Calling Servlet Transversal Util.
+        ServletUtil.servletStart(request);
+        
         /**
          * Parsing and securing all required parameters.
          */

@@ -20,6 +20,8 @@
 package org.cerberus.servlet.crud.test;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.servlet.ServletException;
@@ -28,18 +30,23 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import org.cerberus.crud.entity.Application;
+import org.cerberus.crud.entity.CountryEnvironmentParameters;
 import org.cerberus.crud.entity.MessageEvent;
+import org.cerberus.crud.factory.IFactoryCountryEnvironmentParameters;
 import org.cerberus.enums.MessageEventEnum;
 import org.cerberus.exception.CerberusException;
 import org.cerberus.crud.factory.IFactoryLogEvent;
 import org.cerberus.crud.factory.impl.FactoryLogEvent;
 import org.cerberus.crud.service.IApplicationService;
+import org.cerberus.crud.service.ICountryEnvironmentParametersService;
 import org.cerberus.crud.service.ILogEventService;
 import org.cerberus.crud.service.impl.LogEventService;
+import org.cerberus.util.ParameterParserUtil;
 import org.cerberus.util.StringUtil;
 import org.cerberus.util.answer.Answer;
 import org.cerberus.util.answer.AnswerItem;
 import org.cerberus.util.servlet.ServletUtil;
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.owasp.html.PolicyFactory;
@@ -66,30 +73,34 @@ public class UpdateApplication extends HttpServlet {
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException, CerberusException, JSONException {
         JSONObject jsonResponse = new JSONObject();
+        ApplicationContext appContext = WebApplicationContextUtils.getWebApplicationContext(this.getServletContext());
         Answer ans = new Answer();
         MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
         msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", ""));
         ans.setResultMessage(msg);
         PolicyFactory policy = Sanitizers.FORMATTING.and(Sanitizers.LINKS);
+        String charset = request.getCharacterEncoding();
+
+        ICountryEnvironmentParametersService ceaService = appContext.getBean(ICountryEnvironmentParametersService.class);
 
         response.setContentType("application/json");
 
         // Calling Servlet Transversal Util.
         ServletUtil.servletStart(request);
-        
+
         /**
          * Parsing and securing all required parameters.
          */
-        String application = policy.sanitize(request.getParameter("application"));
-        String system = policy.sanitize(request.getParameter("system"));
-        String subSystem = policy.sanitize(request.getParameter("subsystem"));
-        String type = policy.sanitize(request.getParameter("type"));
-        String mavenGpID = policy.sanitize(request.getParameter("mavengroupid"));
-        String deployType = policy.sanitize(request.getParameter("deploytype"));
-        String svnURL = policy.sanitize(request.getParameter("svnurl"));
-        String bugTrackerURL = policy.sanitize(request.getParameter("bugtrackerurl"));
-        String newBugURL = policy.sanitize(request.getParameter("bugtrackernewurl"));
-        String description = policy.sanitize(request.getParameter("description"));
+        String application = ParameterParserUtil.parseStringParamAndDecode(request.getParameter("application"), null, charset);
+        String system = ParameterParserUtil.parseStringParamAndDecode(request.getParameter("system"), null, charset);
+        String subSystem = ParameterParserUtil.parseStringParamAndDecode(request.getParameter("subsystem"), null, charset);
+        String type = ParameterParserUtil.parseStringParamAndDecode(request.getParameter("type"), null, charset);
+        String mavenGpID = ParameterParserUtil.parseStringParamAndDecode(request.getParameter("mavengroupid"), null, charset);
+        String deployType = ParameterParserUtil.parseStringParamAndDecode(request.getParameter("deploytype"), null, charset);
+        String svnURL = ParameterParserUtil.parseStringParamAndDecode(request.getParameter("svnurl"), null, charset);
+        String bugTrackerURL = ParameterParserUtil.parseStringParamAndDecode(request.getParameter("bugtrackerurl"), null, charset);
+        String newBugURL = ParameterParserUtil.parseStringParamAndDecode(request.getParameter("bugtrackernewurl"), null, charset);
+        String description = ParameterParserUtil.parseStringParamAndDecode(request.getParameter("description"), null, charset);
         Integer sort = 10;
         boolean sort_error = false;
         try {
@@ -99,6 +110,11 @@ public class UpdateApplication extends HttpServlet {
         } catch (Exception ex) {
             sort_error = true;
         }
+
+        // Getting list of application from JSON Call
+        JSONArray objApplicationArray = new JSONArray(request.getParameter("environmentList"));
+        List<CountryEnvironmentParameters> ceaList = new ArrayList();
+        ceaList = getCountryEnvironmentApplicationFromParameter(request, appContext, system, application, objApplicationArray);
 
         /**
          * Checking all constrains before calling the services.
@@ -119,7 +135,6 @@ public class UpdateApplication extends HttpServlet {
             /**
              * All data seems cleans so we can call the services.
              */
-            ApplicationContext appContext = WebApplicationContextUtils.getWebApplicationContext(this.getServletContext());
             IApplicationService applicationService = appContext.getBean(IApplicationService.class);
 
             AnswerItem resp = applicationService.readByKey(application);
@@ -151,6 +166,9 @@ public class UpdateApplication extends HttpServlet {
                 applicationData.setSort(sort);
                 ans = applicationService.update(applicationData);
 
+                // Update the Database with the new list.
+                ceaService.compareListAndUpdateInsertDeleteElements(system, application, ceaList);
+
                 if (ans.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
                     /**
                      * Update was succesfull. Adding Log entry.
@@ -169,6 +187,29 @@ public class UpdateApplication extends HttpServlet {
 
         response.getWriter().print(jsonResponse);
         response.getWriter().flush();
+    }
+
+    private List<CountryEnvironmentParameters> getCountryEnvironmentApplicationFromParameter(HttpServletRequest request, ApplicationContext appContext, String system, String application, JSONArray json) throws JSONException {
+        List<CountryEnvironmentParameters> cedList = new ArrayList();
+        IFactoryCountryEnvironmentParameters cedFactory = appContext.getBean(IFactoryCountryEnvironmentParameters.class);
+
+        for (int i = 0; i < json.length(); i++) {
+            JSONObject tcsaJson = json.getJSONObject(i);
+
+            boolean delete = tcsaJson.getBoolean("toDelete");
+            String country = tcsaJson.getString("country");
+            String environment = tcsaJson.getString("environment");
+            String ip = tcsaJson.getString("ip");
+            String domain = tcsaJson.getString("domain");
+            String url = tcsaJson.getString("url");
+            String urlLogin = tcsaJson.getString("urlLogin");
+
+            if (!delete) {
+                CountryEnvironmentParameters ced = cedFactory.create(system, country, environment, application, ip, domain, url, urlLogin);
+                cedList.add(ced);
+            }
+        }
+        return cedList;
     }
 
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">

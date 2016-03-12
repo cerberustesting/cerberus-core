@@ -87,6 +87,7 @@ public class UpdateCountryEnvParam1 extends HttpServlet {
         ans.setResultMessage(msg);
         PolicyFactory policy = Sanitizers.FORMATTING.and(Sanitizers.LINKS);
         String charset = request.getCharacterEncoding();
+
         ICountryEnvironmentDatabaseService cedService = appContext.getBean(ICountryEnvironmentDatabaseService.class);
         ICountryEnvironmentParametersService ceaService = appContext.getBean(ICountryEnvironmentParametersService.class);
         ICountryEnvDeployTypeService cetService = appContext.getBean(ICountryEnvDeployTypeService.class);
@@ -96,7 +97,7 @@ public class UpdateCountryEnvParam1 extends HttpServlet {
 
         // Calling Servlet Transversal Util.
         ServletUtil.servletStart(request);
-        
+
         /**
          * Parsing and securing all required parameters.
          */
@@ -117,29 +118,21 @@ public class UpdateCountryEnvParam1 extends HttpServlet {
         JSONArray objDatabaseArray = new JSONArray(request.getParameter("database"));
         List<CountryEnvironmentDatabase> cedList = new ArrayList();
         cedList = getCountryEnvironmentDatabaseFromParameter(request, appContext, system, country, environment, objDatabaseArray);
-        // Update the Database with the new list.
-        cedService.compareListAndUpdateInsertDeleteElements(system, country, environment, cedList);
 
         // Getting list of application from JSON Call
         JSONArray objApplicationArray = new JSONArray(request.getParameter("application"));
         List<CountryEnvironmentParameters> ceaList = new ArrayList();
         ceaList = getCountryEnvironmentApplicationFromParameter(request, appContext, system, country, environment, objApplicationArray);
-        // Update the Database with the new list.
-        ceaService.compareListAndUpdateInsertDeleteElements(system, country, environment, ceaList);
 
         // Getting list of database from JSON Call
         JSONArray objDeployTypeArray = new JSONArray(request.getParameter("deployType"));
         List<CountryEnvDeployType> cetList = new ArrayList();
         cetList = getCountryEnvironmentDeployTypeFromParameter(request, appContext, system, country, environment, objDeployTypeArray);
-        // Update the Database with the new list.
-        cetService.compareListAndUpdateInsertDeleteElements(system, country, environment, cetList);
 
         // Getting list of database from JSON Call
         JSONArray objDepArray = new JSONArray(request.getParameter("dependencies"));
         List<CountryEnvLink> celList = new ArrayList();
         celList = getCountryEnvironmentLinkFromParameter(request, appContext, system, country, environment, objDepArray);
-        // Update the Database with the new list.
-        celService.compareListAndUpdateInsertDeleteElements(system, country, environment, celList);
 
         /**
          * Checking all constrains before calling the services.
@@ -199,6 +192,15 @@ public class UpdateCountryEnvParam1 extends HttpServlet {
                 cepData.setMaintenanceEnd(maintenanceEnd);
 
                 ans = cepService.update(cepData);
+
+                // Update the Database with the new list.
+                cedService.compareListAndUpdateInsertDeleteElements(system, country, environment, cedList);
+                // Update the Database with the new list.
+                ceaService.compareListAndUpdateInsertDeleteElements(system, country, environment, ceaList);
+                // Update the Database with the new list.
+                cetService.compareListAndUpdateInsertDeleteElements(system, country, environment, cetList);
+                // Update the Database with the new list.
+                celService.compareListAndUpdateInsertDeleteElements(system, country, environment, celList);
 
                 if (ans.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
                     /**

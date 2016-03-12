@@ -383,36 +383,6 @@ function getTestCaseCountry(countryList, countryToCheck, isDisabled) {
     return html;
 }
 
-function getSelectInvariant(idName) {
-    var list = JSON.parse(sessionStorage.getItem(idName + "INVARIANT"));
-    var select = $("<select></select>").addClass("form-control input-sm");
-
-    if (list === null) {
-        $.ajax({
-            url: "FindInvariantByID",
-            data: {idName: idName},
-            async: true,
-            success: function(data) {
-                list = data;
-                sessionStorage.setItem(idName + "INVARIANT", JSON.stringify(data));
-                for (var index = 0; index < list.length; index++) {
-                    var item = list[index].value;
-
-                    select.append($("<option></option>").text(item).val(item));
-                }
-            }
-        });
-    } else {
-        for (var index = 0; index < list.length; index++) {
-            var item = list[index].value;
-
-            select.append($("<option></option>").text(item).val(item));
-        }
-    }
-
-    return select;
-}
-
 function loadTestCaseInfo(info) {
     $(".testTestCase #test").text(info.test);
     $(".testTestCase #testCase").text(info.testCase);

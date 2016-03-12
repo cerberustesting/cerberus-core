@@ -213,6 +213,19 @@ public interface ICountryEnvironmentParametersService {
     public Answer compareListAndUpdateInsertDeleteElements(String system, String country, String environement, List<CountryEnvironmentParameters> newList);
 
     /**
+     * Update all CountryEnvironmentDatabase from the sourceList to the
+     * perimeter of the application list. All existing databases
+     * from newList will be updated, the new ones added and missing ones
+     * deleted.
+     *
+     * @param system
+     * @param application
+     * @param newList
+     * @return
+     */
+    public Answer compareListAndUpdateInsertDeleteElements(String system, String application, List<CountryEnvironmentParameters> newList);
+
+    /**
      *
      * @param answerItem
      * @return
