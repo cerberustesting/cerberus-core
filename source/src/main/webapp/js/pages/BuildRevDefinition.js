@@ -37,7 +37,7 @@ function initPage() {
     //configure and create the dataTable
     var configurations = new TableConfigurationsServerSide("buildrevdefinitionsTable", "ReadBuildRevisionInvariant?system=" + getUser().defaultSystem, "contentTable", aoColumnsFunc("buildrevdefinitionsTable"), [2,'asc']);
 
-    var table = createDataTableWithPermissions(configurations, renderOptionsForBuildRevDefinition);
+    var table = createDataTableWithPermissions(configurations, renderOptionsForBuildRevDefinition, "#buildrevdefinition");
 
 }
 

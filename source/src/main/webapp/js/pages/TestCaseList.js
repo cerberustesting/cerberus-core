@@ -147,7 +147,7 @@ function loadTable(selectTest, sortColumn) {
     $.when(jqxhr).then(function (data) {
         var config = new TableConfigurationsServerSide("testCaseTable", contentUrl, "contentTable", aoColumnsFunc(data), [sortColumn, 'asc']);
 
-        var table = createDataTableWithPermissions(config, renderOptionsForTestCaseList);
+        var table = createDataTableWithPermissions(config, renderOptionsForTestCaseList, "#testCaseList");
 
     });
 }

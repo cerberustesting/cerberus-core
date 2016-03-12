@@ -496,7 +496,7 @@ function searchExecutionsClickHandler() {
 
 
         configurations.scrollX = true;
-        createDataTable(configurations);
+        createDataTable(configurations, undefined, undefined, undefined);
 
         createSummaryTables(result["contentTable"], countriesSelected, browsersSelected);
 

@@ -150,7 +150,7 @@ $.when($.getScript("js/pages/global/global.js")).then(function () {
         var configurations = new TableConfigurationsServerSide("listOfTestDataLib", "ReadTestDataLib", "contentTable", aoColumnsFuncTestDataLib("listOfTestDataLib"), [1,'asc']);
 
         //creates the main table and draws the management buttons if the user has the permissions
-        $.when(createDataTableWithPermissions(configurations, renderOptionsForTestDataManager)).then(function () {
+        $.when(createDataTableWithPermissions(configurations, renderOptionsForTestDataManager, "#testdatalib")).then(function () {
             $("#listOfTestDataLib_wrapper div.ColVis .ColVis_MasterButton").addClass("btn btn-default");
         });
     })
@@ -1141,7 +1141,7 @@ function viewSubDataEntries(testDataLibID) {
         configurations.tableWidth = "550px";
 
         if ($('#viewTestDataLibDataEntriesTable').hasClass('dataTable') === false) {
-            createDataTable(configurations);
+            createDataTable(configurations, undefined, undefined, undefined);
         } else {
             var oTable = $("#viewTestDataLibDataEntriesTable").dataTable();
             oTable.fnClearTable();

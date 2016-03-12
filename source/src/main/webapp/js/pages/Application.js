@@ -36,7 +36,7 @@ function initPage() {
 
     //configure and create the dataTable
     var configurations = new TableConfigurationsServerSide("applicationsTable", "ReadApplication?system=" + getUser().defaultSystem, "contentTable", aoColumnsFunc("applicationsTable"), [3, 'asc']);
-    createDataTableWithPermissions(configurations, renderOptionsForApplication);
+    createDataTableWithPermissions(configurations, renderOptionsForApplication, "#applicationList");
 }
 
 function displayPageLabel() {

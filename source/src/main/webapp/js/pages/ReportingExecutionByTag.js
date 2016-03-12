@@ -310,8 +310,7 @@ function loadReportList() {
             var config = new TableConfigurationsServerSide("listTable", request, "testList", aoColumnsFunc(data.Columns), [0, 'asc']);
             customConfig(config);
 
-            //var table = createDataTable(config, createShortDescRow);
-            createDataTable(config, createShortDescRow);
+            createDataTable(config, createShortDescRow, undefined, undefined);
             $('#listTable_wrapper').not('.initialized').addClass('initialized');
 
         });

@@ -50,6 +50,7 @@ import org.cerberus.util.ParameterParserUtil;
 import org.cerberus.util.StringUtil;
 import org.cerberus.util.answer.Answer;
 import org.cerberus.util.answer.AnswerItem;
+import org.cerberus.util.servlet.ServletUtil;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -93,6 +94,9 @@ public class UpdateCountryEnvParam1 extends HttpServlet {
 
         response.setContentType("application/json");
 
+        // Calling Servlet Transversal Util.
+        ServletUtil.servletStart(request);
+        
         /**
          * Parsing and securing all required parameters.
          */

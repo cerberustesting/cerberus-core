@@ -35,7 +35,7 @@
             <%@ include file="include/application/editApplication.html"%> 
 
             <h1 class="page-title-line" id="title">Application</h1>
-            <div id="application" class="well">
+            <div id="applicationList" class="well">
                 <table id="applicationsTable" class="table table-hover display" name="applicationsTable"></table>
                 <div class="marginBottom20"></div>
             </div>
