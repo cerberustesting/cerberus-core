@@ -154,10 +154,13 @@
                         <div class="panel-body collapse in" id="listReport">
                             <button type="button" class="btn btn-default pull-right" onclick="loadReportList()" id="reloadbutton">Reload</button>
                             <label id="countryLabel" class="bold">Country :</label>
+                            <button id="countrySelectAll" class="glyphicon glyphicon-check" title="select all countries"></button>
+                            <button id="countryUnselectAll" class="glyphicon glyphicon-unchecked" title="unselect all countries"></button>
                             <div class="form-group" id="countryFilter">
-
                             </div>
                             <label id="statusLabel" class="bold">Status :</label>
+                            <button id="statusSelectAll" class="glyphicon glyphicon-check" title="select all countries"></button>
+                            <button id="statusUnselectAll" class="glyphicon glyphicon-unchecked" title="unselect all countries"></button>
                             <div class="form-group marginBottom20" id="statusFilter">
                                 <label class="checkbox-inline">
                                     <input type="checkbox" name="OK" checked/>
