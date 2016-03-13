@@ -398,6 +398,18 @@
         <servlet-class>org.cerberus.servlet.integration.NewChain1</servlet-class>
     </servlet>
     <servlet>
+        <servlet-name>NewBuildRevisionV000</servlet-name>
+        <servlet-class>org.cerberus.servlet.zzpublic.NewBuildRevisionV000</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>DisableEnvironmentV000</servlet-name>
+        <servlet-class>org.cerberus.servlet.zzpublic.DisableEnvironmentV000</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>NewEnvironmentEventV000</servlet-name>
+        <servlet-class>org.cerberus.servlet.zzpublic.NewEnvironmentEventV000</servlet-class>
+    </servlet>
+    <servlet>
         <servlet-name>JenkinsDeploy</servlet-name>
         <servlet-class>org.cerberus.servlet.integration.JenkinsDeploy</servlet-class>
     </servlet>
@@ -1279,6 +1291,18 @@
     <servlet-mapping>
         <servlet-name>NewChain1</servlet-name>
         <url-pattern>/NewChain1</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>NewBuildRevisionV000</servlet-name>
+        <url-pattern>/NewBuildRevisionV000</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>DisableEnvironmentV000</servlet-name>
+        <url-pattern>/DisableEnvironmentV000</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>NewEnvironmentEventV000</servlet-name>
+        <url-pattern>/NewEnvironmentEventV000</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
         <servlet-name>JenkinsDeploy</servlet-name>
@@ -2270,6 +2294,9 @@
             <url-pattern>/ReadProject</url-pattern>
             <url-pattern>/ReadRobot</url-pattern>
             <url-pattern>/ReadCountryEnvParam</url-pattern>
+            <url-pattern>/NewBuildRevisionV000</url-pattern>
+            <url-pattern>/DisableEnvironmentV000</url-pattern>
+            <url-pattern>/NewEnvironmentEventV000</url-pattern>
         </web-resource-collection>
         <auth-constraint>
             <description/>
