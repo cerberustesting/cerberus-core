@@ -24,18 +24,53 @@ import org.cerberus.enums.MessageEventEnum;
 
 /**
  * Auxiliary class that provides methods related to error messages
+ *
  * @author FNogueira
  */
 public class AnswerUtil {
- 
-    public static String createGenericErrorAnswer(){
+
+    public static String createGenericErrorAnswer() {
         MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
         StringBuilder errorMessage = new StringBuilder();
         errorMessage.append("{'messageType':'").append(msg.getCode()).append("', ");
         errorMessage.append(" 'message': '");
-        errorMessage.append(msg.getDescription().replace("%DESCRIPTION%", "Unable to check the status of your request! Try later or - Open a bug or ask for any new feature " +
-        "<a href=\"https://github.com/vertigo17/Cerberus/issues/\" target=\"_blank\">here</a>"));
+        errorMessage.append(msg.getDescription().replace("%DESCRIPTION%", "Unable to check the status of your request! Try later or - Open a bug or ask for any new feature "
+                + "<a href=\"https://github.com/vertigo17/Cerberus/issues/\" target=\"_blank\">here</a>"));
         errorMessage.append("'}");
         return errorMessage.toString();
     }
+
+    public static Answer agregateAnswer(Answer existingAnswer, Answer newAnswer) {
+        Answer ans = new Answer();
+        if (newAnswer.isCodeStringEquals(MessageEventEnum.GENERIC_OK.getCodeString())) { // When OK, nothing happen to the old Answer
+
+            return existingAnswer;
+
+        } else if (newAnswer.isCodeStringEquals(MessageEventEnum.GENERIC_WARNING.getCodeString())) { // When Warning, 
+
+            if (existingAnswer.isCodeStringEquals(MessageEventEnum.GENERIC_OK.getCodeString())) { // and exsting is OK, we replace the message to the answer and move the code to Warning.
+                // Move existing to WARNING and add description
+                MessageEvent msg = new MessageEvent(MessageEventEnum.GENERIC_WARNING);
+                msg.setDescription(newAnswer.getMessageDescription());
+                ans.setResultMessage(msg);
+                return ans;
+            } else {
+                // Leave the code and just add the description
+                MessageEvent msg = existingAnswer.resultMessage;
+                msg.setDescription(msg.getDescription().concat(" -- " + newAnswer.getMessageDescription()));
+                ans.setResultMessage(msg);
+                return ans;
+            }
+
+        } else if (newAnswer.isCodeStringEquals(MessageEventEnum.GENERIC_ERROR.getCodeString())) {  // When ERROR, we don't change the code and only append the message.
+            // Leave the Code and add description.
+            MessageEvent msg = existingAnswer.resultMessage;
+            msg.setDescription(msg.getDescription().concat(" -- " + newAnswer.getMessageDescription()));
+            ans.setResultMessage(msg);
+            return ans;
+
+        }
+        return null; // That should never happen.
+    }
+
 }

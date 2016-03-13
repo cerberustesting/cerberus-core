@@ -69,6 +69,7 @@ function initPage() {
     $("#eventNewChainPreviewNotificationButton").click(eventNewChainPreview);
     $("#eventNewChainButton").click(eventNewChainModalConfirmHandler);
 
+    // Adding rows in edit Modal.
     $("#addDatabase").click(addNewDatabaseRow);
     $("#addApplication").click(addNewApplicationRow);
     $("#addDependencies").click(addNewDependenciesRow);
@@ -217,7 +218,7 @@ function loadEnvTable(selectCountry, selectEnvironment, selectBuild, selectRevis
 
     var configurations = new TableConfigurationsServerSide("environmentsTable", contentUrl, "contentTable", aoColumnsFunc("environmentsTable"), [4, 'asc']);
 
-    var table = createDataTableWithPermissions(configurations, renderOptionsForEnv);
+    var table = createDataTableWithPermissions(configurations, renderOptionsForEnv, "#environmentList");
     return table;
 }
 
@@ -426,27 +427,6 @@ function editEntryModalSaveHandler() {
         },
         error: showUnexpectedError
     });
-
-
-//    showLoaderInModal('#editEnvModal');
-//    var jqxhr = $.post("UpdateCountryEnvParam1", formEdit.serialize(), "json");
-//    $.when(jqxhr).then(function (data) {
-//        // unblock when remote call returns 
-//        hideLoaderInModal('#editEnvModal');
-//        if (getAlertType(data.messageType) === "success") {
-//            var oTable = $("#environmentsTable").dataTable();
-//            oTable.fnDraw(true);
-//            $('#editEnvModal').modal('hide');
-//            showMessage(data);
-//
-//        } else {
-//            showMessage(data, $('#editEnvModal'));
-//        }
-//    }).fail(handleErrorAjaxAfterTimeout);
-
-
-
-
 }
 
 function editEntryModalCloseHandler() {
@@ -543,7 +523,7 @@ function loadChangeTable(selectSystem, selectCountry, selectEnvironment) {
 
     var configurations = new TableConfigurationsServerSide("lastChangeTable", contentUrl, "contentTable", aoColumnsFuncChange("lastChangeTable"), [0, "desc"]);
 
-    var table = createDataTableWithPermissions(configurations);
+    var table = createDataTableWithPermissions(configurations, undefined, "#lastChangeList");
     return table;
 }
 
@@ -558,7 +538,7 @@ function loadEventTable(selectSystem, selectCountry, selectEnvironment) {
 
     var configurations = new TableConfigurationsServerSide("lastEventTable", contentUrl, "contentTable", aoColumnsFuncEvent("lastEventTable"), [0, "desc"]);
 
-    var table = createDataTableWithPermissions(configurations);
+    var table = createDataTableWithPermissions(configurations, undefined, "#lastEventList");
     return table;
 }
 

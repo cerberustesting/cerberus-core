@@ -2030,7 +2030,6 @@
             <url-pattern>/IntegrationStatus.jsp</url-pattern>
             <url-pattern>/Notification.jsp</url-pattern>
             <url-pattern>/Project.jsp</url-pattern>
-            <url-pattern>/Robot.jsp</url-pattern>
             <url-pattern>/EnvironmentManagement.jsp</url-pattern>
             <url-pattern>/DeployType.jsp</url-pattern>
             <url-pattern>/BatchInvariant.jsp</url-pattern>
@@ -2249,6 +2248,7 @@
             <description>jsp</description>
             <url-pattern>/Homepage.jsp</url-pattern>
             <url-pattern>/ChangePassword.jsp</url-pattern>
+            <url-pattern>/Robot.jsp</url-pattern>
         </web-resource-collection>
         <web-resource-collection>
             <web-resource-name>servlet</web-resource-name>

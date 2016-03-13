@@ -823,7 +823,14 @@ function showUnexpectedError(jqXHR, textStatus, errorThrown) {
     showMessageMainPage(type, message);
 }
 
-function createDataTableWithPermissions(tableConfigurations, callbackfunction) {
+/***
+ * Creates a datatable that is server-side processed.
+ * @param {type} tableConfigurations set of configurations that define how data is retrieved and presented
+ * @param {Function} callbackFunction callback function to be called after each row is created
+ * @param {String} objectWaitingLayer object that will report the waiting layer when external calls. Ex : #logViewer
+ * @return {Object} Return the dataTable object to use the api
+ */
+function createDataTableWithPermissions(tableConfigurations, callbackFunction, objectWaitingLayer) {
     var domConf = 'Cl<"showInlineElement pull-left marginLeft5"f>rti<"marginTop5"p>';
     if (!tableConfigurations.showColvis) {
         domConf = 'l<"showInlineElement pull-left marginLeft5"f>rti<"marginTop5"p>';
@@ -852,14 +859,15 @@ function createDataTableWithPermissions(tableConfigurations, callbackfunction) {
     configs["orderClasses"] = tableConfigurations.orderClasses;
     configs["bDeferRender"] = tableConfigurations.bDeferRender;
     if (tableConfigurations.aaSorting !== undefined) {
-        console.debug("Sorting Defined. " + tableConfigurations.aaSorting);
+//        console.debug("Sorting Defined. " + tableConfigurations.aaSorting);
         configs["aaSorting"] = [tableConfigurations.aaSorting];
-
-    } else {
-        console.debug("Sorting Not Defined. " + tableConfigurations.aaSorting);
     }
 
     if (tableConfigurations.serverSide) {
+        var objectWL = $(objectWaitingLayer)
+        if (objectWaitingLayer !== undefined) {
+            showLoader(objectWL);
+        }
         configs["sAjaxSource"] = tableConfigurations.ajaxSource;
         configs["sAjaxDataProp"] = tableConfigurations.ajaxProp;
         configs["fnServerData"] = function (sSource, aoData, fnCallback, oSettings) {
@@ -869,6 +877,9 @@ function createDataTableWithPermissions(tableConfigurations, callbackfunction) {
                 "url": sSource,
                 "data": aoData,
                 "success": function (json) {
+                    if (objectWaitingLayer !== undefined) {
+                        hideLoader(objectWL);
+                    }
                     var tabCheckPermissions = $("#" + tableConfigurations.divId);
                     var hasPermissions = false; //by default does not have permissions
                     if (Boolean(json["hasPermissions"])) { //if the response information about permissions then we will update it
@@ -883,8 +894,8 @@ function createDataTableWithPermissions(tableConfigurations, callbackfunction) {
             });
             $.when(oSettings.jqXHR).then(function (data) {
                 //updates the table with basis on the permissions that the current user has
-                if (callbackfunction !== undefined)
-                    callbackfunction(data);
+                if (callbackFunction !== undefined)
+                    callbackFunction(data);
             });
         };
     } else {
@@ -913,11 +924,12 @@ function createDataTableWithPermissions(tableConfigurations, callbackfunction) {
 /***
  * Creates a datatable that is server-side processed.
  * @param {type} tableConfigurations set of configurations that define how data is retrieved and presented
- * @param {Function} callback callback function to be called after each row is created
+ * @param {Function} callbackFunction callback function to be called after each row is created
  * @param {Function} userCallbackFunction function to can be called after the data was loaded (is optional)* 
+ * @param {String} objectWaitingLayer object that will report the waiting layer when external calls. Ex : #logViewer
  * @return {Object} Return the dataTable object to use the api
  */
-function createDataTable(tableConfigurations, callback, userCallbackFunction) {
+function createDataTable(tableConfigurations, callbackFunction, userCallbackFunction, objectWaitingLayer) {
     var domConf = 'Cl<"showInlineElement pull-left marginLeft5"f>rti<"marginTop5"p>';
     if (!tableConfigurations.showColvis) {
         domConf = 'l<"showInlineElement pull-left marginLeft5"f>rti<"marginTop5"p>';
@@ -943,19 +955,20 @@ function createDataTable(tableConfigurations, callback, userCallbackFunction) {
     configs["colVis"] = tableConfigurations.lang.colVis;
     configs["lengthChange"] = tableConfigurations.lengthChange;
     configs["lengthMenu"] = tableConfigurations.lengthMenu;
-    configs["createdRow"] = callback;
+    configs["createdRow"] = callbackFunction;
     configs["orderClasses"] = tableConfigurations.orderClasses;
     configs["bDeferRender"] = tableConfigurations.bDeferRender;
     if (tableConfigurations.aaSorting !== undefined) {
-        console.debug("Sorting Defined. " + tableConfigurations.aaSorting);
+//        console.debug("Sorting Defined. " + tableConfigurations.aaSorting);
         configs["aaSorting"] = [tableConfigurations.aaSorting];
-
-    } else {
-        console.debug("Sorting Not Defined. " + tableConfigurations.aaSorting);
     }
 
 
     if (tableConfigurations.serverSide) {
+        var objectWL = $(objectWaitingLayer)
+        if (objectWaitingLayer !== undefined) {
+            showLoader(objectWL);
+        }
         configs["sAjaxSource"] = tableConfigurations.ajaxSource;
         configs["sAjaxDataProp"] = tableConfigurations.ajaxProp;
         configs["fnServerData"] = function (sSource, aoData, fnCallback, oSettings) {
@@ -965,6 +978,9 @@ function createDataTable(tableConfigurations, callback, userCallbackFunction) {
                 "url": sSource,
                 "data": aoData,
                 "success": function (json) {
+                    if (objectWaitingLayer !== undefined) {
+                        hideLoader(objectWL);
+                    }
                     returnMessageHandler(json);
                     fnCallback(json);
                     if (Boolean(userCallbackFunction)) {

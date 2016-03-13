@@ -48,6 +48,7 @@ import org.cerberus.util.ParameterParserUtil;
 import org.cerberus.util.StringUtil;
 import org.cerberus.util.answer.Answer;
 import org.cerberus.util.answer.AnswerList;
+import org.cerberus.util.servlet.ServletUtil;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.owasp.html.PolicyFactory;
@@ -81,6 +82,10 @@ public class CreateTestCase2 extends HttpServlet {
         PolicyFactory policy = Sanitizers.FORMATTING.and(Sanitizers.LINKS);
 
         response.setContentType("application/json");
+        
+        // Calling Servlet Transversal Util.
+        ServletUtil.servletStart(request);
+        
         /**
          * Parsing and securing all required parameters.
          */

@@ -88,8 +88,7 @@ public enum MessageEventEnum {
     PROPERTY_FAILED_GETFROMDATALIB_GENERIC(192, "FA", "An error occurred while calculating the SQL from test data library entry '%ENTRY%'! Database: %DATABASE%, SQL %SQL%", true, false, false, MessageGeneralEnum.EXECUTION_FA),
     PROPERTY_FAILED_GETFROMDATALIB_NOTSOAP(192, "FA", "The library entry '%ENTRY%' is currently not of type SOAP!", true, false, false, MessageGeneralEnum.EXECUTION_FA),
     PROPERTY_FAILED_GETFROMDATALIBDATA(193, "FA", "Failed to get Data from '%VALUE1%' because could not find '%VALUE2%'!", true, false, false, MessageGeneralEnum.EXECUTION_FA),
-    PROPERTY_FAILED_INNERPROPERTY_GETFROMDATALIB_NOTFOUND(194, "FA", "Failed to execute because inner property '%PROPERTY%' "
-            + " accesses invalid test data library entries: %ITEM%. ", true, false, false, MessageGeneralEnum.EXECUTION_FA),
+    PROPERTY_FAILED_INNERPROPERTY_GETFROMDATALIB_NOTFOUND(194, "FA", "Failed to execute because inner property '%PROPERTY%'  accesses invalid test data library entries: %ITEM%. ", true, false, false, MessageGeneralEnum.EXECUTION_FA),
     PROPERTY_FAILED_SUBDATAACCESS(195, "FA", "Failed to calculate %SUBDATAACCCESS% because '%PROPERTY%' was not calculated!", true, false, false, MessageGeneralEnum.EXECUTION_FA),
     PROPERTY_FAILED_GETFROMDATALIBDATA_INVALID_COLUMN(196, "FA", "The column '%COLUMNNAME%' specified in the sub-data entry '%SUBDATA%' is not valid for the query specified in the library entry '%ENTRY%'!", true, false, false, MessageGeneralEnum.EXECUTION_FA),
     PROPERTY_FAILED_GETFROMDATALIBDATA_XMLEXCEPTION(197, "FA", "The evaluation of the xpath expression '%XPATH%' specified in the sub-data entry '%SUBDATA%' for the library entry '%ENTRY%' has failed! '%REASON%'", true, false, false, MessageGeneralEnum.EXECUTION_FA),
@@ -260,19 +259,23 @@ public enum MessageEventEnum {
     STEP_FAILED(450, "KO", "", false, true, false, MessageGeneralEnum.EXECUTION_PE_TESTSTARTED),
     STEP_PENDING(499, "PE", "Step running...", false, false, false, MessageGeneralEnum.EXECUTION_PE_TESTSTARTED),
     // *********** DATA OPERATION ***********
-    DATA_OPERATION_OK(500, MessageCodeEnum.DATA_OPERATION_CODE_SUCCESS.getCode(), "%ITEM% - %OPERATION% was finished with success!", false, false, false, MessageGeneralEnum.DATA_OPERATION_SUCCESS),
-    DATA_OPERATION_WARNING_PARTIAL_RESULT(500, MessageCodeEnum.DATA_OPERATION_CODE_WARNING.getCode(), "Result may contain partial result. %DESCRIPTION%", false, false, false, MessageGeneralEnum.DATA_OPERATION_WARNING),
-    DATA_OPERATION_WARNING(500, MessageCodeEnum.DATA_OPERATION_CODE_WARNING.getCode(), "%ITEM% - %OPERATION% was finished successfuly with warnings! %REASON%", false, false, false, MessageGeneralEnum.DATA_OPERATION_WARNING),
-    DATA_OPERATION_NO_DATA_FOUND(530, MessageCodeEnum.DATA_OPERATION_CODE_SUCCESS.getCode(), "Could not find any data that match the required criteria.", true, true, false, MessageGeneralEnum.DATA_OPERATION_SUCCESS),
-    DATA_OPERATION_ERROR_EXPECTED(550, MessageCodeEnum.DATA_OPERATION_CODE_ERROR.getCode(), "%ITEM% - operation %OPERATION% failed to complete. %REASON%", false, false, false, MessageGeneralEnum.DATA_OPERATION_ERROR),
-    DATA_OPERATION_ERROR_DUPLICATE(551, MessageCodeEnum.DATA_OPERATION_CODE_ERROR.getCode(), "The %ITEM% that you are trying to %OPERATION% conflicts with an existing one! Please check for duplicates!", false, false, false, MessageGeneralEnum.DATA_OPERATION_ERROR),
-    DATA_OPERATION_ERROR_UNEXPECTED(552, MessageCodeEnum.DATA_OPERATION_CODE_ERROR.getCode(), "An unexpected problem occurred. %DESCRIPTION%", false, false, false, MessageGeneralEnum.DATA_OPERATION_ERROR),
-    DATA_OPERATION_IMPORT_OK(003, MessageCodeEnum.DATA_OPERATION_CODE_SUCCESS.getCode(), "%ITEM% was imported with success!", false, false, false, MessageGeneralEnum.DATA_OPERATION_SUCCESS),
-    DATA_OPERATION_IMPORT_ERROR(905, MessageCodeEnum.DATA_OPERATION_CODE_ERROR.getCode(), "%ITEM% - Import failed! %REASON%", false, false, false, MessageGeneralEnum.DATA_OPERATION_ERROR),
-    DATA_OPERATION_IMPORT_ERROR_FORMAT(906, MessageCodeEnum.DATA_OPERATION_CODE_ERROR.getCode(), "%ITEM% Import failed! Format %FORMAT% is invalid!", false, false, false, MessageGeneralEnum.DATA_OPERATION_ERROR),
-    DATA_OPERATION_VALIDATIONS_OK(002, MessageCodeEnum.DATA_OPERATION_CODE_SUCCESS.getCode(), "Data is valid!", false, false, false, MessageGeneralEnum.DATA_OPERATION_SUCCESS),
-    DATA_OPERATION_VALIDATIONS_ERROR(905, MessageCodeEnum.DATA_OPERATION_CODE_ERROR.getCode(), "Data is invalid! Details: %DESCRIPTION%", false, false, false, MessageGeneralEnum.DATA_OPERATION_ERROR),
+    DATA_OPERATION_OK(500, MessageCodeEnum.GENERIC_CODE_SUCCESS.getCodeString(), "%ITEM% - %OPERATION% was finished with success!", false, false, false, MessageGeneralEnum.DATA_OPERATION_SUCCESS),
+    DATA_OPERATION_WARNING_PARTIAL_RESULT(500, MessageCodeEnum.GENERIC_CODE_WARNING.getCodeString(), "Result may contain partial result. %DESCRIPTION%", false, false, false, MessageGeneralEnum.DATA_OPERATION_WARNING),
+    DATA_OPERATION_WARNING(500, MessageCodeEnum.GENERIC_CODE_WARNING.getCodeString(), "%ITEM% - %OPERATION% was finished successfuly with warnings! %REASON%", false, false, false, MessageGeneralEnum.DATA_OPERATION_WARNING),
+    DATA_OPERATION_NO_DATA_FOUND(530, MessageCodeEnum.GENERIC_CODE_SUCCESS.getCodeString(), "Could not find any data that match the required criteria.", true, true, false, MessageGeneralEnum.DATA_OPERATION_SUCCESS),
+    DATA_OPERATION_ERROR_EXPECTED(550, MessageCodeEnum.GENERIC_CODE_ERROR.getCodeString(), "%ITEM% - operation %OPERATION% failed to complete. %REASON%", false, false, false, MessageGeneralEnum.DATA_OPERATION_ERROR),
+    DATA_OPERATION_ERROR_DUPLICATE(551, MessageCodeEnum.GENERIC_CODE_ERROR.getCodeString(), "The %ITEM% that you are trying to %OPERATION% conflicts with an existing one! Please check for duplicates!", false, false, false, MessageGeneralEnum.DATA_OPERATION_ERROR),
+    DATA_OPERATION_ERROR_UNEXPECTED(552, MessageCodeEnum.GENERIC_CODE_ERROR.getCodeString(), "An unexpected problem occurred. %DESCRIPTION%", false, false, false, MessageGeneralEnum.DATA_OPERATION_ERROR),
+    DATA_OPERATION_IMPORT_OK(003, MessageCodeEnum.GENERIC_CODE_SUCCESS.getCodeString(), "%ITEM% was imported with success!", false, false, false, MessageGeneralEnum.DATA_OPERATION_SUCCESS),
+    DATA_OPERATION_IMPORT_ERROR(905, MessageCodeEnum.GENERIC_CODE_ERROR.getCodeString(), "%ITEM% - Import failed! %REASON%", false, false, false, MessageGeneralEnum.DATA_OPERATION_ERROR),
+    DATA_OPERATION_IMPORT_ERROR_FORMAT(906, MessageCodeEnum.GENERIC_CODE_ERROR.getCodeString(), "%ITEM% Import failed! Format %FORMAT% is invalid!", false, false, false, MessageGeneralEnum.DATA_OPERATION_ERROR),
+    DATA_OPERATION_VALIDATIONS_OK(002, MessageCodeEnum.GENERIC_CODE_SUCCESS.getCodeString(), "Data is valid!", false, false, false, MessageGeneralEnum.DATA_OPERATION_SUCCESS),
+    DATA_OPERATION_VALIDATIONS_ERROR(905, MessageCodeEnum.GENERIC_CODE_ERROR.getCodeString(), "Data is invalid! Details: %DESCRIPTION%", false, false, false, MessageGeneralEnum.DATA_OPERATION_ERROR),
     TESTDATALIB_NOT_FOUND_ERROR(904, "FA", "The test data library entry %ITEM% is not available for the selected system %SYSTEM%, environment %ENVIRONMENT% and country %COUNTRY%.", true, false, false, MessageGeneralEnum.EXECUTION_FA),
+    // *********** GENERIC ***********
+    GENERIC_OK(500, MessageCodeEnum.GENERIC_CODE_SUCCESS.getCodeString(), "Operation finished with success.", false, false, false, MessageGeneralEnum.GENERIC_SUCCESS),
+    GENERIC_WARNING(500, MessageCodeEnum.GENERIC_CODE_WARNING.getCodeString(), "Operation finished with Warning :  %REASON%.", false, false, false, MessageGeneralEnum.GENERIC_WARNING),
+    GENERIC_ERROR(500, MessageCodeEnum.GENERIC_CODE_ERROR.getCodeString(), "Operation finished with error ! %REASON%", false, false, false, MessageGeneralEnum.GENERIC_WARNING),
     // *********** OTHERS ***********
     NOT_IMPLEMEMTED(900, "", "Not Implememted.", true, true, false, MessageGeneralEnum.EXECUTION_FA);
 
@@ -281,8 +284,8 @@ public enum MessageEventEnum {
     private final String description;
     private final boolean stopTest;
     private final boolean doScreenshot;
-    private final MessageGeneralEnum message;
     private final boolean getPageSource;
+    private final MessageGeneralEnum message;
 
     private MessageEventEnum(int tempCode, String tempCodeString, String tempDesc, boolean tempStopTest, boolean tempDoScreenshot, boolean tempGetPageSource, MessageGeneralEnum tempMessage) {
         this.code = tempCode;
@@ -290,8 +293,8 @@ public enum MessageEventEnum {
         this.description = tempDesc;
         this.stopTest = tempStopTest;
         this.doScreenshot = tempDoScreenshot;
-        this.message = tempMessage;
         this.getPageSource = tempGetPageSource;
+        this.message = tempMessage;
     }
 
     public String getDescription() {

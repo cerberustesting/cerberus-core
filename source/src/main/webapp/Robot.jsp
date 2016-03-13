@@ -35,7 +35,7 @@
             <%@ include file="include/robot/editRobot.html"%> 
 
             <h1 class="page-title-line" id="title">Robot</h1>
-            <div id="robot" class="well">
+            <div id="robotList" class="well">
                 <table id="robotsTable" class="table table-hover display" name="robotsTable"></table>
                 <div class="marginBottom20"></div>
             </div>

@@ -31,10 +31,12 @@ function initPage() {
 
     displayPageLabel();
 
+//    showLoader('#logViewerTable');
     //configure and create the dataTable
     var configurations = new TableConfigurationsServerSide("logViewerTable", "ReadLogEvent", "contentTable", aoColumnsFunc(), [1,'desc']);
 
-    var table = createDataTable(configurations);
+    var table = createDataTable(configurations, undefined, undefined, "#logViewer");
+//    hideLoader('#logViewerTable');
     
     var api = table.api();
     // if test and testcase parameter are sent, we filter the logs on it.

@@ -54,7 +54,6 @@ public interface IBatchInvariantService {
 
     /**
      *
-     * @param system
      * @param batch
      * @return true is application exist or false is application does not exist
      * in database.

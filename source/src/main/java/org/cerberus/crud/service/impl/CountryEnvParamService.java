@@ -156,13 +156,18 @@ public class CountryEnvParamService implements ICountryEnvParamService {
     }
 
     @Override
+    public AnswerList readByVarious(String system, String country, String environment, String build, String revision, String active) {
+        return countryEnvParamDao.readByVariousByCriteria(system, country, environment, build, revision, active, 0, 0, null, null, null, null);
+    }
+
+    @Override
     public boolean exist(String system, String country, String environment) {
-//        try {
-//            convert(readByKey(system, country, environment));
-        return true;
-//        } catch (CerberusException e) {
-//            return false;
-//        }
+        try {
+            convert(readByKey(system, country, environment));
+            return true;
+        } catch (CerberusException e) {
+            return false;
+        }
     }
 
     @Override

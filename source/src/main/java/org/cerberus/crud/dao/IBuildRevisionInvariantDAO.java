@@ -49,6 +49,15 @@ public interface IBuildRevisionInvariantDAO {
      *
      * @param system
      * @param level
+     * @param versionName
+     * @return
+     */
+    AnswerItem readByKey(String system, Integer level, String versionName);
+
+    /**
+     *
+     * @param system
+     * @param level
      * @param start
      * @param amount
      * @param column

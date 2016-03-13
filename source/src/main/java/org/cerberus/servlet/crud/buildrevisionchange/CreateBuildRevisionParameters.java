@@ -34,6 +34,7 @@ import org.cerberus.crud.service.IBuildRevisionParametersService;
 import org.cerberus.crud.service.ILogEventService;
 import org.cerberus.crud.service.impl.LogEventService;
 import org.cerberus.util.answer.Answer;
+import org.cerberus.util.servlet.ServletUtil;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.springframework.context.ApplicationContext;
@@ -72,6 +73,9 @@ public class CreateBuildRevisionParameters extends HttpServlet {
 
         response.setContentType("application/json");
 
+        // Calling Servlet Transversal Util.
+        ServletUtil.servletStart(request);
+        
         /**
          * Parsing and securing all required parameters.
          */
