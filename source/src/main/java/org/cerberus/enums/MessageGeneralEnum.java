@@ -105,9 +105,12 @@ public enum MessageGeneralEnum {
     GUI_TESTCASE_NON_ADMIN_SAVE_WORKING_TESTCASE(403, "", "Error : You're trying to save a WORKING testcase without having the TestAdmin right to do so."),
 
     // Data operations
-    DATA_OPERATION_SUCCESS(000, MessageCodeEnum.DATA_OPERATION_CODE_SUCCESS.getCode(), "The requested operation was concluded with success."),
-    DATA_OPERATION_WARNING(000, MessageCodeEnum.DATA_OPERATION_CODE_WARNING.getCode(), "The requested operation was concluded but with warnings."),
-    DATA_OPERATION_ERROR(900, MessageCodeEnum.DATA_OPERATION_CODE_ERROR.getCode(), "An error occurred while executing the requested operation !");
+    DATA_OPERATION_SUCCESS(000, MessageCodeEnum.GENERIC_CODE_SUCCESS.getCodeString(), "The requested operation was concluded with success."),
+    DATA_OPERATION_WARNING(000, MessageCodeEnum.GENERIC_CODE_WARNING.getCodeString(), "The requested operation was concluded but with warnings."),
+    DATA_OPERATION_ERROR(900, MessageCodeEnum.GENERIC_CODE_ERROR.getCodeString(), "An error occurred while executing the requested operation !"),
+    GENERIC_SUCCESS(000, MessageCodeEnum.GENERIC_CODE_SUCCESS.getCodeString(), "The requested operation was concluded with success."),
+    GENERIC_WARNING(000, MessageCodeEnum.GENERIC_CODE_WARNING.getCodeString(), "The requested operation was concluded but with warnings."),
+    GENERIC_ERROR(900, MessageCodeEnum.GENERIC_CODE_ERROR.getCodeString(), "An error occurred while executing the requested operation !");
     
     private final int code;
     private final String codeString;

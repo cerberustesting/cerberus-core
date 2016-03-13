@@ -21,6 +21,7 @@ package org.cerberus.servlet.zzpublic;
 
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.servlet.ServletException;
@@ -41,7 +42,8 @@ import org.cerberus.service.email.IEmailGeneration;
 import org.cerberus.service.email.impl.sendMail;
 import org.cerberus.util.ParameterParserUtil;
 import org.cerberus.util.answer.Answer;
-import org.cerberus.util.answer.AnswerItem;
+import org.cerberus.util.answer.AnswerList;
+import org.cerberus.util.answer.AnswerUtil;
 import org.cerberus.version.Infos;
 import org.springframework.context.ApplicationContext;
 import org.springframework.web.context.support.WebApplicationContextUtils;
@@ -55,6 +57,7 @@ public class DisableEnvironmentV000 extends HttpServlet {
     private static final org.apache.log4j.Logger LOG = org.apache.log4j.Logger.getLogger("DisableEnvironmentV000");
 
     private final String OPERATION = "Disable Environment";
+    private final String PARAMETERALL = "ALL";
 
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
@@ -78,6 +81,7 @@ public class DisableEnvironmentV000 extends HttpServlet {
         ILogEventService logEventService = appContext.getBean(ILogEventService.class);
         logEventService.createPublicCalls("/DisableEnvironmentV000", "CALL", "DisableEnvironmentV000 called : " + request.getRequestURL(), request);
 
+        // Loading Services.
         ICountryEnvParamService countryEnvParamService = appContext.getBean(ICountryEnvParamService.class);
         IInvariantService invariantService = appContext.getBean(IInvariantService.class);
         IBuildRevisionInvariantService buildRevisionInvariantService = appContext.getBean(IBuildRevisionInvariantService.class);
@@ -90,28 +94,21 @@ public class DisableEnvironmentV000 extends HttpServlet {
         String country = ParameterParserUtil.parseStringParamAndDecode(request.getParameter("country"), "", charset);
         String environment = ParameterParserUtil.parseStringParamAndDecode(request.getParameter("environment"), "", charset);
 
+        // Defining help message.
         String helpMessage = "\nThis servlet is used to inform Cerberus that a system is disabled. For example when a Revision is beeing deployed.\n\nParameter list :\n"
                 + "- system [mandatory] : the system where the Build Revision has been deployed. [" + system + "]\n"
-                + "- country [mandatory] : the country where the Build Revision has been deployed. [" + country + "]\n"
+                + "- country [mandatory] : the country where the Build Revision has been deployed. You can use ALL if you want to perform the action for all countries that exist for the given system and environement. [" + country + "]\n"
                 + "- environment [mandatory] : the environment where the Build Revision has been deployed. [" + environment + "]\n";
 
         boolean error = false;
 
-        // Checking the parameter validity. If application has been entered, does it exist ?
+        // Checking the parameter validity.
         if (system.equalsIgnoreCase("")) {
             out.println("Error - Parameter system is mandatory.");
             error = true;
         }
         if (!system.equalsIgnoreCase("") && !invariantService.isInvariantExist("SYSTEM", system)) {
             out.println("Error - System does not exist  : " + system);
-            error = true;
-        }
-        if (country.equalsIgnoreCase("")) {
-            out.println("Error - Parameter country is mandatory.");
-            error = true;
-        }
-        if (!country.equalsIgnoreCase("") && !invariantService.isInvariantExist("COUNTRY", country)) {
-            out.println("Error - Country does not exist  : " + country);
             error = true;
         }
         if (environment.equalsIgnoreCase("")) {
@@ -122,10 +119,19 @@ public class DisableEnvironmentV000 extends HttpServlet {
             out.println("Error - Environment does not exist  : " + environment);
             error = true;
         }
-        if (!error) {
-            if (!countryEnvParamService.exist(system, country, environment)) {
-                out.println("Error - System/Country/Environment does not exist : " + system + "/" + country + "/" + environment);
+        if (country.equalsIgnoreCase("")) {
+            out.println("Error - Parameter country is mandatory.");
+            error = true;
+        } else if (!country.equalsIgnoreCase(PARAMETERALL)) {
+            if (!invariantService.isInvariantExist("COUNTRY", country)) {
+                out.println("Error - Country does not exist  : " + country);
                 error = true;
+            }
+            if (!error) {
+                if (!countryEnvParamService.exist(system, country, environment)) {
+                    out.println("Error - System/Country/Environment does not exist : " + system + "/" + country + "/" + environment);
+                    error = true;
+                }
             }
         }
 
@@ -133,86 +139,90 @@ public class DisableEnvironmentV000 extends HttpServlet {
         if (error == false) {
 
             /**
-             * The service was able to perform the query and confirm the object
-             * exist, then we can update it.
+             * Getting the list of objects to treat.
              */
-            // Email Calculation. Email must be calcuated before we update the Build and revision in order to have the old build revision still available in the mail.
-            MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
-            msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", ""));
-            AnswerItem answerItem = new AnswerItem();
-            answerItem = countryEnvParamService.readByKey(system, country, environment);
+            MessageEvent msg = new MessageEvent(MessageEventEnum.GENERIC_OK);
+            Answer finalAnswer = new Answer(msg);
 
-            /**
-             * The service was able to perform the query and confirm the object
-             * exist, then we can update it.
-             */
-            CountryEnvParam cepData = (CountryEnvParam) answerItem.getItem();
-            cepData.setActive(false);
-            Answer answer = countryEnvParamService.update(cepData);
+            AnswerList answerList = new AnswerList();
+            if (country.equalsIgnoreCase(PARAMETERALL)) {
+                country = null;
+            }
+            answerList = countryEnvParamService.readByVarious(system, country, environment, null, null, "Y");
+            finalAnswer = AnswerUtil.agregateAnswer(finalAnswer, (Answer) answerList);
 
-            if (!(answer.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode()))) {
-                /**
-                 * Object could not be updated. We stop here and report the
-                 * error.
-                 */
-                answerItem.setResultMessage(answer.getResultMessage());
-
-            } else {
-                /**
-                 * Update was successful.
-                 */
-                // Adding Log entry.
-                logEventService.createPrivateCalls("/DisableEnvironmentV000", "UPDATE", "Updated CountryEnvParam : ['" + system + "','" + country + "','" + environment + "']", request);
-
-                // Adding CountryEnvParam Log entry.
-                countryEnvParam_logService.createLogEntry(system, country, environment, "", "", "Disabled.", "PublicCall");
+            for (CountryEnvParam cepData : (List<CountryEnvParam>) answerList.getDataList()) {
 
                 /**
-                 * Email notification.
+                 * For each object, we can update it.
                  */
-                // Email Calculation.
-                String eMailContent;
-                String OutputMessage = "";
-                eMailContent = emailService.EmailGenerationDisableEnv(system, country, environment);
-                String[] eMailContentTable = eMailContent.split("///");
-                String to = eMailContentTable[0];
-                String cc = eMailContentTable[1];
-                String subject = eMailContentTable[2];
-                String body = eMailContentTable[3];
+                cepData.setActive(false);
+                Answer answerUpdate = countryEnvParamService.update(cepData);
 
-                // Search the From, the Host and the Port defined in the parameters
-                String from;
-                String host;
-                int port;
-                try {
-                    from = parameterService.findParameterByKey("integration_smtp_from", system).getValue();
-                    host = parameterService.findParameterByKey("integration_smtp_host", system).getValue();
-                    port = Integer.valueOf(parameterService.findParameterByKey("integration_smtp_port", system).getValue());
+                if (!(answerUpdate.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode()))) {
+                    /**
+                     * Object could not be updated. We stop here and report the
+                     * error.
+                     */
+                    finalAnswer = AnswerUtil.agregateAnswer(finalAnswer, answerUpdate);
 
-                    //Sending the email
-                    sendMail.sendHtmlMail(host, port, body, subject, from, to, cc);
-                } catch (Exception e) {
-                    Logger.getLogger(DisableEnvironmentV000.class.getName()).log(Level.SEVERE, Infos.getInstance().getProjectNameAndVersion() + " - Exception catched.", e);
-                    logEventService.createPrivateCalls("/DisableEnvironmentV000", "DISABLE", "Warning on Disable environment : ['" + system + "','" + country + "','" + environment + "'] " + e.getMessage(), request);
-                    OutputMessage = e.getMessage();
-                }
-
-                if (OutputMessage.equals("")) {
-                    msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
-                    msg.setDescription(msg.getDescription().replace("%ITEM%", "Environment")
-                            .replace("%OPERATION%", OPERATION));
-                    answerItem.setResultMessage(msg);
                 } else {
-                    msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
-                    msg.setDescription(msg.getDescription().replace("%ITEM%", "Environment")
-                            .replace("%OPERATION%", OPERATION).concat(" Just one warning : ").concat(OutputMessage));
-                    answerItem.setResultMessage(msg);
+                    /**
+                     * Update was successful.
+                     */
+                    // Adding Log entry.
+                    logEventService.createPrivateCalls("/DisableEnvironmentV000", "UPDATE", "Updated CountryEnvParam : ['" + cepData.getSystem() + "','" + cepData.getCountry() + "','" + cepData.getEnvironment() + "']", request);
+
+                    // Adding CountryEnvParam Log entry.
+                    countryEnvParam_logService.createLogEntry(cepData.getSystem(), cepData.getCountry(), cepData.getEnvironment(), "", "", "Disabled.", "PublicCall");
+
+                    /**
+                     * Email notification.
+                     */
+                    // Email Calculation.
+                    String eMailContent;
+                    String OutputMessage = "";
+                    eMailContent = emailService.EmailGenerationDisableEnv(cepData.getSystem(), cepData.getCountry(), cepData.getEnvironment());
+                    String[] eMailContentTable = eMailContent.split("///");
+                    String to = eMailContentTable[0];
+                    String cc = eMailContentTable[1];
+                    String subject = eMailContentTable[2];
+                    String body = eMailContentTable[3];
+
+                    // Search the From, the Host and the Port defined in the parameters
+                    String from;
+                    String host;
+                    int port;
+                    try {
+                        from = parameterService.findParameterByKey("integration_smtp_from", cepData.getSystem()).getValue();
+                        host = parameterService.findParameterByKey("integration_smtp_host", cepData.getSystem()).getValue();
+                        port = Integer.valueOf(parameterService.findParameterByKey("integration_smtp_port", cepData.getSystem()).getValue());
+
+                        //Sending the email
+                        sendMail.sendHtmlMail(host, port, body, subject, from, to, cc);
+
+                    } catch (Exception e) {
+                        Logger.getLogger(DisableEnvironmentV000.class.getName()).log(Level.SEVERE, Infos.getInstance().getProjectNameAndVersion() + " - Exception catched.", e);
+                        logEventService.createPrivateCalls("/DisableEnvironmentV000", "DISABLE", "Warning on Disable environment : ['" + cepData.getSystem() + "','" + cepData.getCountry() + "','" + cepData.getEnvironment() + "'] " + e.getMessage(), request);
+                        OutputMessage = e.getMessage();
+                    }
+
+                    if (OutputMessage.equals("")) {
+                        msg = new MessageEvent(MessageEventEnum.GENERIC_OK);
+                        Answer answerSMTP = new AnswerList(msg);
+                        finalAnswer = AnswerUtil.agregateAnswer(finalAnswer, answerSMTP);
+                    } else {
+                        msg = new MessageEvent(MessageEventEnum.GENERIC_WARNING);
+                        msg.setDescription(msg.getDescription().replace("%REASON%", OutputMessage + " when sending email for " + cepData.getSystem() + "/" + cepData.getCountry() + "/" + cepData.getEnvironment()));
+                        Answer answerSMTP = new AnswerList(msg);
+                        finalAnswer = AnswerUtil.agregateAnswer(finalAnswer, answerSMTP);
+                    }
                 }
             }
             /**
-             * Formating and returning the json result.
+             * Formating and returning the result.
              */
-            out.println(answerItem.getResultMessage().getMessage().getCodeString() + " - " + answerItem.getResultMessage().getDescription());
+            out.println(finalAnswer.getResultMessage().getMessage().getCodeString() + " - " + finalAnswer.getResultMessage().getDescription());
 
         } else {
             // In case of errors, we display the help message.

@@ -148,6 +148,18 @@ public interface ICountryEnvParamService {
      * @param system
      * @param country
      * @param environment
+     * @param build
+     * @param revision
+     * @param Active
+     * @return
+     */
+    public AnswerList readByVarious(String system, String country, String environment, String build, String revision, String Active);
+    
+    /**
+     *
+     * @param system
+     * @param country
+     * @param environment
      * @return true is application exist or false is application does not exist
      * in database.
      */

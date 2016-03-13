@@ -25,17 +25,17 @@ package org.cerberus.enums;
  */
 public enum MessageCodeEnum {
     
-    DATA_OPERATION_CODE_SUCCESS("OK"),
-    DATA_OPERATION_CODE_WARNING("WARNING"),
-    DATA_OPERATION_CODE_ERROR("KO");
+    GENERIC_CODE_SUCCESS("OK"),
+    GENERIC_CODE_WARNING("WARNING"),
+    GENERIC_CODE_ERROR("KO");
     
-    private final String code;
+    private final String codeString;
 
-    public String getCode() {
-        return code;
+    public String getCodeString() {
+        return codeString;
     }
     private MessageCodeEnum(String code){
-        this.code = code;
+        this.codeString = code;
     }
     
 }
