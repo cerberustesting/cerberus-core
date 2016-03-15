@@ -53,6 +53,14 @@ function initPage() {
 
     var table = loadEnvTable(urlCountry, urlEnvironment, urlBuild, urlRevision);
 
+    // Load the select needed in localStorage cache.
+    getSelectApplication(getUser().defaultSystem, true);
+    getSelectInvariant("PROPERTYDATABASE", true);
+    getSelectInvariant('SYSTEM', true);
+    getSelectInvariant('COUNTRY', true);
+    getSelectInvariant('ENVIRONMENT', true);
+    getSelectDeployType(true);
+
     // handle the click for specific action buttons
     $("#addEnvButton").click(addEntryModalSaveHandler);
     $("#editEnvButton").click(editEntryModalSaveHandler);
@@ -556,8 +564,8 @@ function loadDatabaseTable(selectSystem, selectCountry, selectEnvironment) {
 function appendDatabaseRow(dtb) {
     var doc = new Doc();
     var deleteBtn = $("<button type=\"button\"></button>").addClass("btn btn-default btn-xs").append($("<span></span>").addClass("glyphicon glyphicon-trash"));
-    var selectDatabase = getSelectInvariant("PROPERTYDATABASE");
-    var connectionPoolInput = $("<input  maxlength=\"25\">").addClass("form-control input-sm").val(dtb.connectionPoolName);
+    var selectDatabase = getSelectInvariant("PROPERTYDATABASE", false);
+    var connectionPoolInput = $("<input  maxlength=\"25\" placeholder=\"-- " + doc.getDocLabel("countryenvironmentdatabase", "ConnectionPoolName") + " --\">").addClass("form-control input-sm").val(dtb.connectionPoolName);
     var table = $("#databaseTableBody");
 
     var row = $("<tr></tr>");
@@ -611,10 +619,10 @@ function appendApplicationRow(app) {
     var doc = new Doc();
     var deleteBtn = $("<button type=\"button\"></button>").addClass("btn btn-default btn-xs").append($("<span></span>").addClass("glyphicon glyphicon-trash"));
     var selectApplication = getSelectApplication(getUser().defaultSystem);
-    var ipInput = $("<input  maxlength=\"150\">").addClass("form-control input-sm").val(app.ip);
-    var domainInput = $("<input  maxlength=\"150\">").addClass("form-control input-sm").val(app.domain);
-    var urlInput = $("<input  maxlength=\"150\">").addClass("form-control input-sm").val(app.url);
-    var urlLoginInput = $("<input  maxlength=\"150\">").addClass("form-control input-sm").val(app.urlLogin);
+    var ipInput = $("<input  maxlength=\"150\" placeholder=\"-- " + doc.getDocLabel("countryenvironmentparameters", "IP") + " --\">").addClass("form-control input-sm").val(app.ip);
+    var domainInput = $("<input  maxlength=\"150\" placeholder=\"-- " + doc.getDocLabel("countryenvironmentparameters", "domain") + " --\">").addClass("form-control input-sm").val(app.domain);
+    var urlInput = $("<input  maxlength=\"150\" placeholder=\"-- " + doc.getDocLabel("countryenvironmentparameters", "URL") + " --\">").addClass("form-control input-sm").val(app.url);
+    var urlLoginInput = $("<input  maxlength=\"150\" placeholder=\"-- " + doc.getDocLabel("countryenvironmentparameters", "URLLOGIN") + " --\">").addClass("form-control input-sm").val(app.urlLogin);
     var table = $("#applicationTableBody");
 
     var row = $("<tr></tr>");
@@ -680,9 +688,9 @@ function loadDependenciesTable(selectSystem, selectCountry, selectEnvironment) {
 function appendDependenciesRow(env) {
     var doc = new Doc();
     var deleteBtn = $("<button type=\"button\"></button>").addClass("btn btn-default btn-xs").append($("<span></span>").addClass("glyphicon glyphicon-trash"));
-    var selectSystemLnk = getSelectInvariant('SYSTEM');
-    var selectCountryLnk = getSelectInvariant('COUNTRY');
-    var selectEnvironmentLnk = getSelectInvariant('ENVIRONMENT');
+    var selectSystemLnk = getSelectInvariant('SYSTEM', false);
+    var selectCountryLnk = getSelectInvariant('COUNTRY', false);
+    var selectEnvironmentLnk = getSelectInvariant('ENVIRONMENT', false);
     var table = $("#dependenciesTableBody");
 
     var row = $("<tr></tr>");
@@ -746,7 +754,7 @@ function appendDeployTypeRow(depTyp) {
     var doc = new Doc();
     var deleteBtn = $("<button  type=\"button\"></button>").addClass("btn btn-default btn-xs").append($("<span></span>").addClass("glyphicon glyphicon-trash"));
     var selectDeployType = getSelectDeployType();
-    var jenkinsAgentInput = $("<input  maxlength=\"50\">").addClass("form-control input-sm").val(depTyp.jenkinsAgent);
+    var jenkinsAgentInput = $("<input  maxlength=\"50\" placeholder=\"-- " + doc.getDocLabel("countryenvdeploytype", "JenkinsAgent") + " --\">").addClass("form-control input-sm").val(depTyp.jenkinsAgent);
     var table = $("#deployTypeTableBody");
 
     var row = $("<tr></tr>");

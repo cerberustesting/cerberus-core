@@ -209,9 +209,9 @@ function saveScript() {
 }
 
 function drawProperty(property, testcaseinfo) {
-    var selectType = getSelectInvariant("PROPERTYTYPE");
-    var selectDB = getSelectInvariant("PROPERTYDATABASE");
-    var selectNature = getSelectInvariant("PROPERTYNATURE");
+    var selectType = getSelectInvariant("PROPERTYTYPE", false);
+    var selectDB = getSelectInvariant("PROPERTYDATABASE", false);
+    var selectNature = getSelectInvariant("PROPERTYNATURE", false);
     var deleteBtn = $("<button></button>").addClass("btn btn-default btn-xs").append($("<span></span>").addClass("glyphicon glyphicon-trash"));
     var propertyInput = $("<input>").addClass("form-control input-sm").val(property.property);
     var valueInput = $("<textarea></textarea>").addClass("form-control input-sm").val(property.value1);
@@ -282,9 +282,9 @@ function drawProperty(property, testcaseinfo) {
 }
 
 function drawInheritedProperty(propList) {
-    var selectType = getSelectInvariant("PROPERTYTYPE");
-    var selectDB = getSelectInvariant("PROPERTYDATABASE");
-    var selectNature = getSelectInvariant("PROPERTYNATURE");
+    var selectType = getSelectInvariant("PROPERTYTYPE", false);
+    var selectDB = getSelectInvariant("PROPERTYDATABASE", false);
+    var selectNature = getSelectInvariant("PROPERTYNATURE", false);
     var table = $("#inheritedPropTable");
 
     for (var index = 0; index < propList.length; index++) {
@@ -1091,7 +1091,7 @@ Action.prototype.generateContent = function() {
         obj.description = descField.val();
     });
 
-    actionList = getSelectInvariant("ACTION");
+    actionList = getSelectInvariant("ACTION", false);
     actionList.val(this.action);
     actionList.on("change", function() {
         obj.action = actionList.val();
@@ -1244,7 +1244,7 @@ Control.prototype.generateContent = function() {
         obj.description = descField.val();
     });
 
-    controlList = getSelectInvariant("CONTROL");
+    controlList = getSelectInvariant("CONTROL", false);
     controlList.val(this.type);
     controlList.on("change", function() {
         obj.type = controlList.val();
@@ -1260,7 +1260,7 @@ Control.prototype.generateContent = function() {
         obj.controlProperty = propertyField.val();
     });
 
-    fatalField = getSelectInvariant("CTRLFATAL");
+    fatalField = getSelectInvariant("CTRLFATAL", false);
     fatalField.on("change", function() {
         obj.fatal = fatalField.val();
     });

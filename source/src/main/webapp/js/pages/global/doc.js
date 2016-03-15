@@ -90,6 +90,12 @@ function Doc() {
     this.table = getDoc();
 }
 
+/**
+ * Function that manage the documentation in text format.
+ * @param {docTable} Table of the documentation data.
+ * @param {docField} Field of the documentation data.
+ * @returns {String} text value of the field name from the documentation
+ */
 Doc.prototype.getDocLabel = function (docTable, docField) {
     try {
         if (!(this.table.hasOwnProperty(docTable)))
@@ -99,20 +105,23 @@ Doc.prototype.getDocLabel = function (docTable, docField) {
         return this.table[docTable][docField].docLabel;
     } catch (err) {
         var res;
-        var user = getUser();
-
-        res = docField + " <a class=\"nodoc\" href=\'javascript:popup(\"Documentation.jsp?DocTable=" + docTable +
-                "&DocField=" + docField + "&Lang=" + user.language + "\")\' onclick=\"stopPropagation(event)\"><span class=\"glyphicon glyphicon-exclamation-sign\"></span></a>";
+        res = docField + " -- Missing doc !!!";
         return res;
     }
 };
 
+/**
+ * Function that manage the documentation in html format.
+ * @param {docTable} Table of the documentation data.
+ * @param {docField} Field of the documentation data.
+ * @returns {String} html value of the field name from the documentation
+ */
 Doc.prototype.getDocOnline = function (docTable, docField) {
     var res;
     var user = getUser();
 
     try {
-        if (!(this.table.hasOwnProperty(docTable))) 
+        if (!(this.table.hasOwnProperty(docTable)))
             throw "docTable " + docTable + " not found";
         if (!(this.table[docTable].hasOwnProperty(docField)))
             throw "docField " + docField + " not found";

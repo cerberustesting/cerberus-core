@@ -270,7 +270,7 @@ function displayUserList(selectName) {
 
 /**
  * Auxiliary method that retrieves a list containing the values that belong to the invariant that matches the provided idname.
- * @param {idName} idName value that filters the invariants that will be retrieved
+ * @param {String} idName value that filters the invariants that will be retrieved
  * @param {handleData} handleData method that handles the data retrieved
  */
 function getInvariantList(idName, handleData) {
@@ -291,8 +291,22 @@ function getInvariantListN(list, handleData) {
 }
 
 
-function getSelectInvariant(idName) {
-    var list = JSON.parse(sessionStorage.getItem(idName + "INVARIANT"));
+/**
+ * This method will return the combo list of Invariant. 
+ * It will load the values from the sessionStorage cache of the browser 
+ * when available, if not available, it will get it from the server and save 
+ * it on local cache.
+ * The forceReload boolean can force the refresh of the list from the server.
+ * @param {String} idName of the invariant to load (ex : COUNTRY)
+ * @param {boolean} true if we want to force the reload on cache from the server
+ */
+function getSelectInvariant(idName, forceReload) {
+    var cacheEntryName = idName + "INVARIANT";
+    if (forceReload) {
+        console.debug("Purge " + cacheEntryName);
+        sessionStorage.removeItem(cacheEntryName);
+    }
+    var list = JSON.parse(sessionStorage.getItem(cacheEntryName));
     var select = $("<select></select>").addClass("form-control input-sm");
 
     if (list === null) {
@@ -302,7 +316,7 @@ function getSelectInvariant(idName) {
             async: true,
             success: function (data) {
                 list = data;
-                sessionStorage.setItem(idName + "INVARIANT", JSON.stringify(data));
+                sessionStorage.setItem(cacheEntryName, JSON.stringify(data));
                 for (var index = 0; index < list.length; index++) {
                     var item = list[index].value;
 
@@ -321,8 +335,13 @@ function getSelectInvariant(idName) {
     return select;
 }
 
-function getSelectApplication(system) {
-    var list = JSON.parse(sessionStorage.getItem("APPLICATION" + system));
+function getSelectApplication(system, forceReload) {
+    var cacheEntryName = system + "INVARIANT";
+    if (forceReload) {
+        console.debug("Purge " + cacheEntryName);
+        sessionStorage.removeItem(cacheEntryName);
+    }
+    var list = JSON.parse(sessionStorage.getItem(cacheEntryName));
     var select = $("<select></select>").addClass("form-control input-sm");
 
     if (list === null) {
@@ -332,7 +351,7 @@ function getSelectApplication(system) {
             async: true,
             success: function (data) {
                 list = data.contentTable;
-                sessionStorage.setItem("APPLICATION" + system, JSON.stringify(list));
+                sessionStorage.setItem(cacheEntryName, JSON.stringify(list));
                 for (var index = 0; index < list.length; index++) {
                     var item = list[index].application;
 
@@ -351,8 +370,13 @@ function getSelectApplication(system) {
     return select;
 }
 
-function getSelectDeployType() {
-    var list = JSON.parse(sessionStorage.getItem("DEPLOYTYPE"));
+function getSelectDeployType(forceReload) {
+    var cacheEntryName = "DEPLOYTYPE";
+    if (forceReload) {
+        console.debug("Purge " + cacheEntryName);
+        sessionStorage.removeItem(cacheEntryName);
+    }
+    var list = JSON.parse(sessionStorage.getItem(cacheEntryName));
     var select = $("<select></select>").addClass("form-control input-sm");
 
     if (list === null) {
@@ -362,7 +386,7 @@ function getSelectDeployType() {
             async: true,
             success: function (data) {
                 list = data.contentTable;
-                sessionStorage.setItem("DEPLOYTYPE", JSON.stringify(list));
+                sessionStorage.setItem(cacheEntryName, JSON.stringify(list));
                 for (var index = 0; index < list.length; index++) {
                     var item = list[index].deploytype;
 

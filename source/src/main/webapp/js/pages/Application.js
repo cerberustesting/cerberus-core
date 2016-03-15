@@ -37,6 +37,11 @@ function initPage() {
     // Adding rows in edit Modal.
     $("#addEnvironment").click(addNewEnvironmentRow);
 
+    // Load the select needed in localStorage cache.
+    getSelectInvariant("ENVIRONMENT", true);
+    getSelectInvariant("COUNTRY", true);
+
+
     //configure and create the dataTable
     var configurations = new TableConfigurationsServerSide("applicationsTable", "ReadApplication?system=" + getUser().defaultSystem, "contentTable", aoColumnsFunc("applicationsTable"), [3, 'asc']);
     createDataTableWithPermissions(configurations, renderOptionsForApplication, "#applicationList");
@@ -295,12 +300,12 @@ function loadEnvironmentTable(selectSystem, selectApplication) {
 function appendEnvironmentRow(env) {
     var doc = new Doc();
     var deleteBtn = $("<button type=\"button\"></button>").addClass("btn btn-default btn-xs").append($("<span></span>").addClass("glyphicon glyphicon-trash"));
-    var selectEnvironment = getSelectInvariant("ENVIRONMENT");
-    var selectCountry = getSelectInvariant("COUNTRY");
-    var ipInput = $("<input  maxlength=\"150\">").addClass("form-control input-sm").val(env.ip);
-    var domainInput = $("<input  maxlength=\"150\">").addClass("form-control input-sm").val(env.domain);
-    var urlInput = $("<input  maxlength=\"150\">").addClass("form-control input-sm").val(env.url);
-    var urlLoginInput = $("<input  maxlength=\"150\">").addClass("form-control input-sm").val(env.urlLogin);
+    var selectEnvironment = getSelectInvariant("ENVIRONMENT", false);
+    var selectCountry = getSelectInvariant("COUNTRY", false);
+    var ipInput = $("<input  maxlength=\"150\" placeholder=\"-- " + doc.getDocLabel("countryenvironmentparameters", "IP") + " --\">").addClass("form-control input-sm").val(env.ip);
+    var domainInput = $("<input  maxlength=\"150\" placeholder=\"-- " + doc.getDocLabel("countryenvironmentparameters", "domain") + " --\">").addClass("form-control input-sm").val(env.domain);
+    var urlInput = $("<input  maxlength=\"150\" placeholder=\"-- " + doc.getDocLabel("countryenvironmentparameters", "URL") + " --\">").addClass("form-control input-sm").val(env.url);
+    var urlLoginInput = $("<input  maxlength=\"150\" placeholder=\"-- " + doc.getDocLabel("countryenvironmentparameters", "URLLOGIN") + " --\">").addClass("form-control input-sm").val(env.urlLogin);
     var table = $("#environmentTableBody");
 
     var row = $("<tr></tr>");
