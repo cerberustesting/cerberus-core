@@ -115,20 +115,20 @@ function displayPageLabel() {
     $("[name='mavenVersionField']").html(doc.getDocOnline("buildrevisionparameters", "mavenVersion"));
     $("[name='repositoryUrlField']").html(doc.getDocOnline("buildrevisionparameters", "repositoryUrl"));
     $("[name='massActionBrpField']").html(doc.getDocOnline("page_buildcontent", "massAction"));
-    
+
     $("[name='buildHeader']").html(doc.getDocOnline("buildrevisionparameters", "Build"));
     $("[name='revisionHeader']").html(doc.getDocOnline("buildrevisionparameters", "Revision"));
     $("[name='applicationHeader']").html(doc.getDocOnline("buildrevisionparameters", "application"));
     $("[name='releaseHeader']").html(doc.getDocOnline("buildrevisionparameters", "Release"));
     $("[name='linkHeader']").html(doc.getDocOnline("buildrevisionparameters", "Link"));
     $("[name='versionHeader']").html(doc.getDocOnline("buildrevisionparameters", "mavenVersion"));
-    
+
     $("[name='buildFieldFrom']").html(doc.getDocOnline("page_buildcontent", "buildFrom"));
     $("[name='buildFieldTo']").html(doc.getDocOnline("page_buildcontent", "buildTo"));
-    
+
     $("[name='listInstallInstructionsModalLabel']").html(doc.getDocOnline("page_buildcontent", "InstallInstructions"));
-    
-    
+
+
     displayFooter(doc);
 }
 
@@ -409,6 +409,13 @@ function editEntryClick(id) {
         formEdit.find("#mavenVersion").prop("value", obj["mavenVersion"]);
         formEdit.find("#repositoryUrl").prop("value", obj["repositoryUrl"]);
 
+        // The link information should not be entered when the release has jenkinsbuildid defined.
+        if (obj["jenkinsBuildId"] === "") {
+            formEdit.find("#link").removeProp("readonly");
+        } else {
+            formEdit.find("#link").prop("readonly", "readonly");
+        }
+
         if (!(data["hasPermissions"])) { // If readonly, we only readonly all fields
             formEdit.find("#link").prop("readonly", "readonly");
             formEdit.find("#editBuild").prop("disabled", "disabled");
@@ -460,11 +467,11 @@ function refreshlistInstallInstructions() {
 
     var URL2param = "";
     if (selectRevisionFrom === 'NONE') {
-        URL2param = "system=" + getUser().defaultSystem + "&lastbuild=" + selectBuildFrom 
-            + "&build=" + selectBuildTo + "&revision=" + selectRevisionTo + "&getSVNRelease";
+        URL2param = "system=" + getUser().defaultSystem + "&lastbuild=" + selectBuildFrom
+                + "&build=" + selectBuildTo + "&revision=" + selectRevisionTo + "&getSVNRelease";
     } else {
         URL2param = "system=" + getUser().defaultSystem + "&lastbuild=" + selectBuildFrom + "&lastrevision=" + selectRevisionFrom
-            + "&build=" + selectBuildTo + "&revision=" + selectRevisionTo + "&getSVNRelease";
+                + "&build=" + selectBuildTo + "&revision=" + selectRevisionTo + "&getSVNRelease";
     }
     var jqxhr = $.getJSON("ReadBuildRevisionParameters", URL2param);
     $.when(jqxhr).then(function (result) {
