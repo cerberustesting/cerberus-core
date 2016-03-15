@@ -796,7 +796,7 @@ function aoColumnsFunc(Columns) {
             "sName": "priority",
             "sClass": "priority",
             "sWidth": testCaseInfoWidth + "%",
-            "title": doc.getDocOnline("invariant", "Priority")
+            "title": doc.getDocOnline("invariant", "PRIORITY")
         };
         aoColumns.push(col);
     var col =
