@@ -140,7 +140,7 @@ public class SQLService implements ISQLService {
         String connectionName;
         CountryEnvironmentDatabase countryEnvironmentDatabase;
         MessageEvent mes = new MessageEvent(MessageEventEnum.PROPERTY_SUCCESS_SQL);
-        List<HashMap<String, String>> list = null;
+        List<HashMap<String, String>> list;
 
         try {
             countryEnvironmentDatabase = this.countryEnvironmentDatabaseService.findCountryEnvironmentDatabaseByKey(system,
@@ -378,7 +378,7 @@ public class SQLService implements ISQLService {
 
     private AnswerList queryDatabaseNColumns(String connectionName, String sql, int rowLimit) {
         AnswerList listResult = new AnswerList();
-        List<HashMap<String, String>> list = null;
+        List<HashMap<String, String>> list;
         int maxSecurityFetch = 100;
         int nbFetch = 0;
         MessageEvent msg = new MessageEvent(MessageEventEnum.PROPERTY_SUCCESS);

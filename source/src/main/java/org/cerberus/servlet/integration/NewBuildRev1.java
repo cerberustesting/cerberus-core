@@ -90,7 +90,7 @@ public class NewBuildRev1 extends HttpServlet {
 
         // Init Answer with potencial error from Parsing parameter.
 //        AnswerItem answer = new AnswerItem(msg);
-        String eMailContent = "";
+        String eMailContent;
         ApplicationContext appContext = WebApplicationContextUtils.getWebApplicationContext(this.getServletContext());
         IEmailGeneration emailService = appContext.getBean(IEmailGeneration.class);
         IParameterService parameterService = appContext.getBean(IParameterService.class);

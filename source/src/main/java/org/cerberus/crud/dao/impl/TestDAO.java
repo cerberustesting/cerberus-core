@@ -89,7 +89,7 @@ public class TestDAO implements ITestDAO {
     @Override
     public AnswerItem readByKey(String test) {
         AnswerItem ans = new AnswerItem();
-        Test result = null;
+        Test result;
         final String query = "SELECT * FROM `test` WHERE `test` = ?";
         MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
         msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", ""));

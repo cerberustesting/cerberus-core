@@ -106,7 +106,7 @@ public class ParameterDAO implements IParameterDAO {
     public List<Parameter> findAllParameter() throws CerberusException {
         boolean throwExep = true;
         List<Parameter> result = null;
-        Parameter paramet = null;
+        Parameter paramet;
         final String query = "SELECT * FROM parameter p ";
 
         Connection connection = this.databaseSpring.connect();
