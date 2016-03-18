@@ -124,7 +124,7 @@ public class LogEventDAO implements ILogEventDAO {
         List<LogEvent> logEventList = new ArrayList<LogEvent>();
         StringBuilder searchSQL = new StringBuilder();
 
-        final StringBuffer query = new StringBuffer();
+        final StringBuilder query = new StringBuilder();
         //SQL_CALC_FOUND_ROWS allows to retrieve the total number of columns by disrearding the limit clauses that 
         //were applied -- used for pagination p
         query.append("SELECT SQL_CALC_FOUND_ROWS * FROM logevent ");

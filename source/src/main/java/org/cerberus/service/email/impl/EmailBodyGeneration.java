@@ -66,7 +66,7 @@ public class EmailBodyGeneration implements IEmailBodyGeneration {
             buildContentTable = buildContentTable + "<thead><tr style=\"background-color:#cad3f1; font-style:bold\"><td>"
                     + "Sprint/Rev</td><td>Application</td><td>Project</td><td>Bug</td><td>Ticket</td><td>People in Charge</td><td>Release Documentation</td></tr></thead><tbody>";
 
-            final String contentSQL = new StringBuffer("SELECT b.`Build`, b.`Revision`, b.`Release` , b.`Link` , ")
+            final String contentSQL = new StringBuilder("SELECT b.`Build`, b.`Revision`, b.`Release` , b.`Link` , ")
                     .append(" b.`Application`, b.`ReleaseOwner`, b.`BugIDFixed`, b.`TicketIDFixed`, b.`subject`, b.`Project`")
                     .append(", p.`VCCode`, u.Name, a.BugTrackerUrl ")
                     .append(" from buildrevisionparameters b ")
@@ -291,7 +291,7 @@ public class EmailBodyGeneration implements IEmailBodyGeneration {
 
                 String bckColor = "#f3f6fa";
                 int a = 1;
-                StringBuffer buf = new StringBuffer();
+                StringBuilder buf = new StringBuilder();
                 do {
                     a++;
                     int b;

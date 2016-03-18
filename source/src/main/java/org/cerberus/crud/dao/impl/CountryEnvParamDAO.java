@@ -339,7 +339,7 @@ public class CountryEnvParamDAO implements ICountryEnvParamDAO {
 
     @Override
     public void update_deprecated(CountryEnvParam cep) throws CerberusException {
-        final StringBuffer query = new StringBuffer("UPDATE `countryenvparam` SET `build`=?, ");
+        final StringBuilder query = new StringBuilder("UPDATE `countryenvparam` SET `build`=?, ");
         query.append("`revision`=?,`chain`=?, `distriblist`=?, `eMailBodyRevision`=?, `type`=?,`eMailBodyChain`=?,");
         query.append("`eMailBodyDisableEnvironment`=?,  `active`=?, `maintenanceact`=?, `maintenancestr`=?, `maintenanceend`=? ");
         query.append(" where `system`=? and `country`=? and `environment`=? ");
@@ -393,7 +393,7 @@ public class CountryEnvParamDAO implements ICountryEnvParamDAO {
 
     @Override
     public void delete_deprecated(CountryEnvParam cep) throws CerberusException {
-        final StringBuffer query = new StringBuffer("DELETE FROM `countryenvparam` WHERE `system`=? and `country`=? and `environment`=?");
+        final StringBuilder query = new StringBuilder("DELETE FROM `countryenvparam` WHERE `system`=? and `country`=? and `environment`=?");
 
         Connection connection = this.databaseSpring.connect();
         try {
@@ -424,7 +424,7 @@ public class CountryEnvParamDAO implements ICountryEnvParamDAO {
 
     @Override
     public void create_deprecated(CountryEnvParam cep) throws CerberusException {
-        final StringBuffer query = new StringBuffer("INSERT INTO `countryenvparam` ");
+        final StringBuilder query = new StringBuilder("INSERT INTO `countryenvparam` ");
         query.append("(`system`, `country`, `environment`, `build`, `revision`,`chain`, `distriblist`, `eMailBodyRevision`, `type`,`eMailBodyChain`,");
         query.append("`eMailBodyDisableEnvironment`,  `active`, `maintenanceact`, `maintenancestr`, `maintenanceend`) VALUES ");
         query.append("(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)");
@@ -1212,7 +1212,7 @@ public class CountryEnvParamDAO implements ICountryEnvParamDAO {
     public Answer update(CountryEnvParam cep) {
         MessageEvent msg = null;
 
-        final StringBuffer query = new StringBuffer("UPDATE `countryenvparam` SET `build`=?, ");
+        final StringBuilder query = new StringBuilder("UPDATE `countryenvparam` SET `build`=?, ");
         query.append("`revision`=?,`chain`=?, `distriblist`=?, `eMailBodyRevision`=?, `type`=?,`eMailBodyChain`=?,");
         query.append("`eMailBodyDisableEnvironment`=?,  `active`=?, `maintenanceact`=?, `maintenancestr`=?, `maintenanceend`=?, `description`=? ");
         query.append(" where `system`=? and `country`=? and `environment`=? ");
