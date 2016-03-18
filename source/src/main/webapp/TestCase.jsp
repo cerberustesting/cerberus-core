@@ -1033,7 +1033,7 @@
 
                                     <%
                                         int incrementStep = 0;
-                                        List<String> listOfImportedProperties = new ArrayList<String>();
+                                        List<String> listOfImportedProperties = new ArrayList<>();
                                         List<TestCaseStep> tcsList = tcsService.getListOfSteps(test, testcase);
                                         for (TestCaseStep tcs : tcsList) {
                                             incrementStep++;
