@@ -26,6 +26,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.servlet.ServletException;
@@ -97,7 +98,7 @@ public class CampaignExecutionReport extends HttpServlet {
              * Feed hash map with execution from the two list (to get only one
              * by test,testcase,country,env,browser)
              */
-            HashMap<String, TestCaseWithExecution> testCaseWithExecutionsList = new HashMap();
+            Map<String, TestCaseWithExecution> testCaseWithExecutionsList = new HashMap();
             SimpleDateFormat formater = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
 
             for (TestCaseWithExecution testCaseWithExecution : testCaseWithExecutions) {
@@ -122,8 +123,8 @@ public class CampaignExecutionReport extends HttpServlet {
             }
             testCaseWithExecutions = new ArrayList<TestCaseWithExecution>(testCaseWithExecutionsList.values());
 
-            HashMap<String, JSONObject> ttc = new HashMap<String, JSONObject>();
-            HashMap<String, JSONObject> ceb = new HashMap<String, JSONObject>();
+            Map<String, JSONObject> ttc = new HashMap<String, JSONObject>();
+            Map<String, JSONObject> ceb = new HashMap<String, JSONObject>();
             for (TestCaseWithExecution testCaseWithExecution : testCaseWithExecutions) {
                 try {
                     executionList.put(testCaseExecutionToJSONObject(testCaseWithExecution));

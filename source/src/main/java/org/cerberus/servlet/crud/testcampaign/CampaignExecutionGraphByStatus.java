@@ -94,7 +94,7 @@ public class CampaignExecutionGraphByStatus extends HttpServlet {
             /**
              * Feed hash map with execution from the two list (to get only one by test,testcase,country,env,browser)
              */
-            HashMap<String, TestCaseWithExecution> testCaseWithExecutionsList = new HashMap();
+            Map<String, TestCaseWithExecution> testCaseWithExecutionsList = new HashMap();
             SimpleDateFormat formater = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
             
             for (TestCaseWithExecution testCaseWithExecution : testCaseWithExecutions) {
@@ -120,7 +120,7 @@ public class CampaignExecutionGraphByStatus extends HttpServlet {
             testCaseWithExecutions = new ArrayList<TestCaseWithExecution>(testCaseWithExecutionsList.values());
             
             List<JSONObject> axis = new ArrayList<JSONObject>();
-            HashMap<String, Integer> datas = generateMultiBarAxisFromStatus(testCaseWithExecutions);
+            Map<String, Integer> datas = generateMultiBarAxisFromStatus(testCaseWithExecutions);
             
             String color, highlight, status;
             Integer value;

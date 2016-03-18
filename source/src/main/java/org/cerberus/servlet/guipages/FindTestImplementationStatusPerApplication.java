@@ -137,7 +137,7 @@ public class FindTestImplementationStatusPerApplication extends HttpServlet {
                 ResultSet rs_teststatus = stmt_teststatus.executeQuery();
 
 //                Integer tot = 0;
-                ArrayList<Integer> totLine;
+                List<Integer> totLine;
                 totLine = new ArrayList<Integer>();
                 for (Invariant i : myInvariants) {
                     totLine.add(0);
