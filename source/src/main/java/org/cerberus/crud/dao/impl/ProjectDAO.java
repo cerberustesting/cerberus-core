@@ -302,7 +302,7 @@ public class ProjectDAO implements IProjectDAO {
 
         // Debug message on SQL.
         if (LOG.isDebugEnabled()) {
-            LOG.debug("SQL : " + query.toString());
+            LOG.debug("SQL : " + query);
         }
         Connection connection = this.databaseSpring.connect();
         try {
@@ -343,7 +343,7 @@ public class ProjectDAO implements IProjectDAO {
 
         // Debug message on SQL.
         if (LOG.isDebugEnabled()) {
-            LOG.debug("SQL : " + query.toString());
+            LOG.debug("SQL : " + query);
         }
         Connection connection = this.databaseSpring.connect();
         try {
