@@ -389,7 +389,7 @@ public class CountryEnvParam_logDAO implements ICountryEnvParam_logDAO {
 
         // Debug message on SQL.
         if (LOG.isDebugEnabled()) {
-            LOG.debug("SQL : " + query.toString());
+            LOG.debug("SQL : " + query);
         }
         Connection connection = this.databaseSpring.connect();
         try {
