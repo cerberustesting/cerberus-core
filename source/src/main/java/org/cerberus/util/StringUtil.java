@@ -225,7 +225,7 @@ public final class StringUtil {
     }
 
     public static String replaceUrlByLinkInString(String text) {
-        if (text != null && text.length() > 0) {
+        if (text != null && !text.isEmpty()) {
             Matcher matcher = urlMatch.matcher(text);
             if (matcher.matches()) {
                 return matcher.replaceAll("$1<a href=\\\"$2\\\">$2</a>$3");
