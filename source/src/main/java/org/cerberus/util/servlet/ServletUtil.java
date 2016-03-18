@@ -32,6 +32,9 @@ public final class ServletUtil {
 
     private static final long DEFAULT_WAIT_MS = 20;
 
+    private ServletUtil() {
+    }
+
     /**
      * This method should be called in every servlet call. That allow transversal action to be performed in debug mode.
      * Actions can be for example to delay every called to simulate a slow response time and validate the behaviour of the GUI.

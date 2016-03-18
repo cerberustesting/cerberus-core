@@ -31,6 +31,9 @@ import org.json.JSONObject;
 public class GraphicHelper {
     private static final Logger LOGGER = Logger.getLogger(GraphicHelper.class);
 
+    private GraphicHelper() {
+    }
+
     /**
      *
      * @param label axis label

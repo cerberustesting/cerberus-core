@@ -29,6 +29,9 @@ import org.cerberus.enums.MessageEventEnum;
  */
 public class AnswerUtil {
 
+    private AnswerUtil() {
+    }
+
     public static String createGenericErrorAnswer() {
         MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
         StringBuilder errorMessage = new StringBuilder();

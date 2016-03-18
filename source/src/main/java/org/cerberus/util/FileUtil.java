@@ -24,6 +24,9 @@ package org.cerberus.util;
  * @author FNogueira
  */
 public class FileUtil {
+    private FileUtil() {
+    }
+
     /**
      * Generate ScreenshotFileName using 2 method : If pictureName is not null,
      * use it directly. If picture name is null, generate name using test,
