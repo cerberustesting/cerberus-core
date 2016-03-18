@@ -197,7 +197,7 @@ public class CampaignParameterDAO implements ICampaignParameterDAO {
 
     @Override
     public boolean updateCampaignParameter(CampaignParameter campaignParameter) {
-        final StringBuffer query = new StringBuffer("UPDATE `campaignparameter` SET campaign=?, `Parameter`=?, `Value`=? WHERE campaignparameterID=?");
+        final StringBuilder query = new StringBuilder("UPDATE `campaignparameter` SET campaign=?, `Parameter`=?, `Value`=? WHERE campaignparameterID=?");
 
         Connection connection = this.databaseSpring.connect();
         try {
@@ -230,7 +230,7 @@ public class CampaignParameterDAO implements ICampaignParameterDAO {
 
     @Override
     public boolean createCampaignParameter(CampaignParameter campaignParameter) {
-        final StringBuffer query = new StringBuffer("INSERT INTO `campaignparameter` (`campaign`, `Parameter`, `Value`) VALUES (?, ?, ?);");
+        final StringBuilder query = new StringBuilder("INSERT INTO `campaignparameter` (`campaign`, `Parameter`, `Value`) VALUES (?, ?, ?);");
 
         Connection connection = this.databaseSpring.connect();
         try {
@@ -263,7 +263,7 @@ public class CampaignParameterDAO implements ICampaignParameterDAO {
     @Override
     public List<CampaignParameter> findCampaignParameterByCriteria(Integer campaignparameterID, String campaign, String parameter, String value) throws CerberusException {
         boolean throwEx = false;
-        final StringBuffer query = new StringBuffer("SELECT * FROM campaignparameter c WHERE 1=1 ");
+        final StringBuilder query = new StringBuilder("SELECT * FROM campaignparameter c WHERE 1=1 ");
 
         if (campaignparameterID != null) {
             query.append(" AND c.campaignparameterID = ?");
@@ -340,7 +340,7 @@ public class CampaignParameterDAO implements ICampaignParameterDAO {
 
     @Override
     public boolean deleteCampaignParameter(CampaignParameter campaignParameter) {
-        final StringBuffer query = new StringBuffer("DELETE FROM `campaignparameter` WHERE campaignparameterID=?");
+        final StringBuilder query = new StringBuilder("DELETE FROM `campaignparameter` WHERE campaignparameterID=?");
 
         Connection connection = this.databaseSpring.connect();
         try {
