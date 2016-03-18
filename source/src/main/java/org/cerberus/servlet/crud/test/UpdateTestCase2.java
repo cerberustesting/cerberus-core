@@ -89,7 +89,7 @@ public class UpdateTestCase2 extends HttpServlet {
 
         // Calling Servlet Transversal Util.
         ServletUtil.servletStart(request);
-        
+
         /**
          * Parsing and securing all required parameters.
          */
@@ -125,12 +125,25 @@ public class UpdateTestCase2 extends HttpServlet {
                         .replace("%REASON%", "TestCase does not exist."));
                 ans.setResultMessage(msg);
 
-            } else {
-                /**
-                 * The service was able to perform the query and confirm the
-                 * object exist, then we can update it.
-                 */
+            } else /**
+             * The service was able to perform the query and confirm the object
+             * exist, then we can update it.
+             */
+            if (!request.isUserInRole("Test")) { // We cannot update the testcase if the user is not at least in Test role.
+                msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_EXPECTED);
+                msg.setDescription(msg.getDescription().replace("%ITEM%", "TestCase")
+                        .replace("%OPERATION%", "Update")
+                        .replace("%REASON%", "Not enought privilege to update the testcase. You mut belong to Test Privilege."));
+                ans.setResultMessage(msg);
 
+            } else if ((tc.getStatus().equalsIgnoreCase("WORKING")) && !(request.isUserInRole("TestAdmin"))) { // If Test Case is WORKING we need TestAdmin priviliges.
+                msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_EXPECTED);
+                msg.setDescription(msg.getDescription().replace("%ITEM%", "TestCase")
+                        .replace("%OPERATION%", "Update")
+                        .replace("%REASON%", "Not enought privilege to update the testcase. The test case is in WORKING status and needs TestAdmin privilige to be updated"));
+                ans.setResultMessage(msg);
+
+            } else {
                 getInfo(request, tc);
 
                 ans = testCaseService.update(tc);
@@ -143,6 +156,7 @@ public class UpdateTestCase2 extends HttpServlet {
                     ILogEventService logEventService = appContext.getBean(LogEventService.class);
                     logEventService.createPrivateCalls("/UpdateTestCase", "UPDATE", "Update testcase : ['" + tc.getTest() + "'|'" + tc.getTestCase() + "']", request);
                 }
+
             }
         }
 
