@@ -23,6 +23,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.logging.Logger;
 import java.util.regex.Pattern;
 import org.apache.commons.lang3.StringEscapeUtils;
@@ -534,7 +535,7 @@ public class PropertyService implements IPropertyService {
         //means that is library + subdata call -> LIBRARY(ATTRIBUTE) and that we have already the subdata property
         //gets the value for the library entry with basis on
         //the subdataentry specified
-        HashMap<String, TestDataLibResult> currentListResults = tCExecution.getDataLibraryExecutionDataList();
+        Map<String, TestDataLibResult> currentListResults = tCExecution.getDataLibraryExecutionDataList();
 
         TestDataLibResult result = currentListResults.get(keyDataList);
         String subDataValue = result.getValue(tecd.getValue2()); //temporary use of the value2

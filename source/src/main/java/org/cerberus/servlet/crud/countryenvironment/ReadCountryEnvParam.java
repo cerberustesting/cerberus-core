@@ -23,6 +23,7 @@ import com.google.gson.Gson;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.servlet.ServletException;
@@ -225,7 +226,7 @@ public class ReadCountryEnvParam extends HttpServlet {
 
         JSONArray jsonArray = new JSONArray();
         if (resp.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {//the service was able to perform the query, then we should get all values
-            HashMap<String, CountryEnvParam> hash = new HashMap<String, CountryEnvParam>();
+            Map<String, CountryEnvParam> hash = new HashMap<String, CountryEnvParam>();
 
             for (CountryEnvParam cep : (List<CountryEnvParam>) resp.getDataList()) {
                 hash.put(cep.getEnvironment(), cep);
