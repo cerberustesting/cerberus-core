@@ -382,7 +382,7 @@ public class RecorderService implements IRecorderService {
         //checks if soap calls were performed and save the data into the database
          HashMap<String, TestDataLibResult> data = testCaseStepActionExecution.getTestCaseStepExecution().gettCExecution().getDataLibraryExecutionDataList();
          
-        if ( data != null && data.size() > 0) {
+        if ( data != null && !data.isEmpty()) {
             //if the data library contains entries for xml, then save that xml
             
             //list of entries

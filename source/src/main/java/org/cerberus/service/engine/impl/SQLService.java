@@ -307,7 +307,7 @@ public class SQLService implements ISQLService {
                 tCExecution.getTestCase(), tCExecution.getCountryEnvParam().getBuild(), tCExecution.getEnvironmentData(),
                 tCExecution.getCountry());
 
-        if (pastValues.size() > 0) {
+        if (!pastValues.isEmpty()) {
             for (String value : list) {
                 if (!pastValues.contains(value)) {
                     return value;

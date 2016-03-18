@@ -421,7 +421,7 @@ public class PropertyService implements IPropertyService {
 
         MessageEvent mes = new MessageEvent(MessageEventEnum.PROPERTY_SUCCESS);
         StringBuilder errorMessage = new StringBuilder();
-        if (internalProperties.contains(tecd.getProperty()) && failedCalls.size() > 0) {
+        if (internalProperties.contains(tecd.getProperty()) && !failedCalls.isEmpty()) {
             //check if the internal property contains some property that failed
             for (TestCaseExecutionData failedData : failedCalls) {
                 if (tecd.getValue1().contains("%" + failedData.getProperty() + "%")
