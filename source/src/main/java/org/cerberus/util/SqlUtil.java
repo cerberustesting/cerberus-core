@@ -28,6 +28,9 @@ import org.apache.commons.lang3.StringUtils;
  */
 public class SqlUtil {
 
+    private SqlUtil() {
+    }
+
     /**
      *
      * @param obj List of generic object that have a toString Method

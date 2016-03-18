@@ -36,6 +36,9 @@ public class MessageEventUtil {
     private static final String DELETE_OPERATION = "Delete";
     private static final String SELECT_OPERATION = "Select";
 
+    private MessageEventUtil() {
+    }
+
     private static MessageEvent createUnexpectedErrorMessageDAO(String operation) {
         MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
         msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", "Unable to execute " + operation + " operation(s)!"));

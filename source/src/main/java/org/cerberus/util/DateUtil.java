@@ -41,7 +41,10 @@ public class DateUtil {
      */
     public static final String DATE_FORMAT_TIMESTAMP = "yyyyMMddHHmmssSSS";
 
-    
+    private DateUtil() {
+    }
+
+
     /**
      * @param nbMinutes
      * @return a String that contains a timestamp + the nb of minutes sent as a
