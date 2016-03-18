@@ -691,7 +691,7 @@ function aoColumnsFunc(countries) {
                                 class="editEntry btn btn-default btn-xs margin-right5" \n\
                                 name="editEntry" title="' + doc.getDocLabel("page_testcaselist", "btn_edit") + '" type="button">\n\
                                 <span class="glyphicon glyphicon-pencil"></span></button>';
-                var viewEntry = '<button id="editEntry" onclick="editEntryClick(\'' + escapeHtml(obj["testCase"]) + '\');"\n\
+                var viewEntry = '<button id="editEntry" onclick="editEntryClick(\'' + escapeHtml(obj["test"]) + '\',\'' + escapeHtml(obj["testCase"]) + '\');"\n\
                                 class="editEntry btn btn-default btn-xs margin-right5" \n\
                                 name="editEntry" title="' + doc.getDocLabel("page_testcaselist", "btn_view") + '" type="button">\n\
                                 <span class="glyphicon glyphicon-eye-open"></span></button>';
