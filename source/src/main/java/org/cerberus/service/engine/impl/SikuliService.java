@@ -50,7 +50,7 @@ public class SikuliService implements ISikuliService {
 
     private JSONObject generatePostParameters(String action, String locator, String text, long defaultWait) throws JSONException, IOException, MalformedURLException {
         JSONObject result = new JSONObject();
-        String picture = "";
+        String picture;
         /**
          * Get Picture from URL and convert to Base64
          */

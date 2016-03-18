@@ -279,7 +279,7 @@ public class UserDAO implements IUserDAO {
     @Override
     public AnswerItem<User> updateUserPassword(User user, String password){
         AnswerItem<User> answer = new AnswerItem<User>();
-        MessageEvent msg = null;
+        MessageEvent msg;
         boolean res = false;
         final String sql = "UPDATE user SET Password = SHA(?) , Request = ? WHERE Login LIKE ?";
 
@@ -612,7 +612,7 @@ public class UserDAO implements IUserDAO {
     @Override
     public AnswerItem readByKey(String login) {
         AnswerItem ans = new AnswerItem();
-        User result = null;
+        User result;
         final String query = "SELECT * FROM `user` WHERE `login` = ?";
         MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
         msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", ""));

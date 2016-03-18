@@ -41,7 +41,7 @@ public class Thumbnailer extends HttpServlet{
         File f = new File(PictureConnector.HOME_SHARED_DOCS, path);
 
         Boolean real = request.getParameter("r") != null;
-        BufferedImage b = null;
+        BufferedImage b;
 
 
         if (real) {

@@ -59,7 +59,7 @@ public class ProjectDAO implements IProjectDAO {
     @Override
     public AnswerItem readByKey(String project) {
         AnswerItem ans = new AnswerItem();
-        Project result = null;
+        Project result;
         final String query = "SELECT * FROM project WHERE idproject = ?";
         MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
         msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", ""));
