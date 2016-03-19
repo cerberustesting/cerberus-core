@@ -35,6 +35,7 @@ import org.cerberus.util.answer.AnswerList;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.cerberus.crud.service.ICountryEnvironmentParametersService;
+import org.cerberus.util.answer.AnswerUtil;
 
 /**
  * @author bcivel
@@ -151,9 +152,9 @@ public class CountryEnvironmentParametersService implements ICountryEnvironmentP
     @Override
     public Answer compareListAndUpdateInsertDeleteElements(String system, String country, String environement, List<CountryEnvironmentParameters> newList) {
         Answer ans = new Answer(null);
-        MessageEvent msg = null;
-        msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
-        msg.setDescription(msg.getDescription().replace("%ITEM%", OBJECT_NAME).replace("%OPERATION%", "UPDATE"));
+
+        MessageEvent msg1 = new MessageEvent(MessageEventEnum.GENERIC_OK);
+        Answer finalAnswer = new Answer(msg1);
 
         List<CountryEnvironmentParameters> oldList = new ArrayList();
         try {
@@ -172,12 +173,16 @@ public class CountryEnvironmentParametersService implements ICountryEnvironmentP
         for (CountryEnvironmentParameters objectDifference : listToUpdateOrInsertToIterate) {
             for (CountryEnvironmentParameters objectInDatabase : oldList) {
                 if (objectDifference.hasSameKey(objectInDatabase)) {
-                    this.update(objectDifference);
+                    ans = this.update(objectDifference);
+                    finalAnswer = AnswerUtil.agregateAnswer(finalAnswer, (Answer) ans);
                     listToUpdateOrInsert.remove(objectDifference);
                 }
             }
         }
-        this.createList(listToUpdateOrInsert);
+        if (!listToUpdateOrInsert.isEmpty()) {
+            ans = this.createList(listToUpdateOrInsert);
+            finalAnswer = AnswerUtil.agregateAnswer(finalAnswer, (Answer) ans);
+        }
 
         /**
          * Delete all objects database Objects that do not exist from newList
@@ -193,8 +198,11 @@ public class CountryEnvironmentParametersService implements ICountryEnvironmentP
                 }
             }
         }
-        ans = this.deleteList(listToDelete);
-        return new Answer(msg);
+        if (!listToDelete.isEmpty()) {
+            ans = this.deleteList(listToDelete);
+            finalAnswer = AnswerUtil.agregateAnswer(finalAnswer, (Answer) ans);
+        }
+        return finalAnswer;
     }
 
     @Override
@@ -245,7 +253,7 @@ public class CountryEnvironmentParametersService implements ICountryEnvironmentP
         ans = this.deleteList(listToDelete);
         return new Answer(msg);
     }
-    
+
     @Override
     public CountryEnvironmentParameters convert(AnswerItem answerItem) throws CerberusException {
         if (answerItem.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {

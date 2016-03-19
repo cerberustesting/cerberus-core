@@ -42,11 +42,11 @@ public class AnswerUtil {
 
     public static Answer agregateAnswer(Answer existingAnswer, Answer newAnswer) {
         Answer ans = new Answer();
-        if (newAnswer.isCodeStringEquals(MessageEventEnum.GENERIC_OK.getCodeString())) { // When OK, nothing happen to the old Answer
+        if (newAnswer.isCodeStringEquals(MessageEventEnum.GENERIC_OK.getCodeString())) { // When new is OK, nothing happen to the old (existing) Answer
 
             return existingAnswer;
 
-        } else if (newAnswer.isCodeStringEquals(MessageEventEnum.GENERIC_WARNING.getCodeString())) { // When Warning, 
+        } else if (newAnswer.isCodeStringEquals(MessageEventEnum.GENERIC_WARNING.getCodeString())) { // When new is Warning, 
 
             if (existingAnswer.isCodeStringEquals(MessageEventEnum.GENERIC_OK.getCodeString())) { // and exsting is OK, we replace the message to the answer and move the code to Warning.
                 // Move existing to WARNING and add description
@@ -62,10 +62,14 @@ public class AnswerUtil {
                 return ans;
             }
 
-        } else if (newAnswer.isCodeStringEquals(MessageEventEnum.GENERIC_ERROR.getCodeString())) {  // When ERROR, we don't change the code and only append the message.
-            // Leave the Code and add description.
-            MessageEvent msg = existingAnswer.resultMessage;
-            msg.setDescription(msg.getDescription().concat(" -- " + newAnswer.getMessageDescription()));
+        } else if (newAnswer.isCodeStringEquals(MessageEventEnum.GENERIC_ERROR.getCodeString())) {  // When new is ERROR,
+            // Keep the ERROR Error code.
+            MessageEvent msg = newAnswer.resultMessage;
+            if (existingAnswer.isCodeStringEquals(MessageEventEnum.GENERIC_OK.getCodeString())) {
+                msg.setDescription(newAnswer.getMessageDescription()); // If old is OK we replace the error message
+            } else {
+                msg.setDescription(msg.getDescription().concat(" -- " + newAnswer.getMessageDescription())); // If old is not OK we add the error message
+            }
             ans.setResultMessage(msg);
             return ans;
 

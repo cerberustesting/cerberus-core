@@ -50,6 +50,7 @@ import org.cerberus.util.ParameterParserUtil;
 import org.cerberus.util.StringUtil;
 import org.cerberus.util.answer.Answer;
 import org.cerberus.util.answer.AnswerItem;
+import org.cerberus.util.answer.AnswerUtil;
 import org.cerberus.util.servlet.ServletUtil;
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -134,6 +135,10 @@ public class UpdateCountryEnvParam1 extends HttpServlet {
         List<CountryEnvLink> celList = new ArrayList();
         celList = getCountryEnvironmentLinkFromParameter(request, appContext, system, country, environment, objDepArray);
 
+        // Prepard the final answer.
+        MessageEvent msg1 = new MessageEvent(MessageEventEnum.GENERIC_OK);
+        Answer finalAnswer = new Answer(msg1);
+
         /**
          * Checking all constrains before calling the services.
          */
@@ -143,18 +148,21 @@ public class UpdateCountryEnvParam1 extends HttpServlet {
                     .replace("%OPERATION%", "Update")
                     .replace("%REASON%", "System is missing"));
             ans.setResultMessage(msg);
+            finalAnswer = AnswerUtil.agregateAnswer(finalAnswer, (Answer) ans);
         } else if (StringUtil.isNullOrEmpty(country)) {
             msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_EXPECTED);
             msg.setDescription(msg.getDescription().replace("%ITEM%", OBJECT_NAME)
                     .replace("%OPERATION%", "Update")
                     .replace("%REASON%", "Country is missing"));
             ans.setResultMessage(msg);
+            finalAnswer = AnswerUtil.agregateAnswer(finalAnswer, (Answer) ans);
         } else if (StringUtil.isNullOrEmpty(environment)) {
             msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_EXPECTED);
             msg.setDescription(msg.getDescription().replace("%ITEM%", OBJECT_NAME)
                     .replace("%OPERATION%", "Update")
                     .replace("%REASON%", "Environment is missing"));
             ans.setResultMessage(msg);
+            finalAnswer = AnswerUtil.agregateAnswer(finalAnswer, (Answer) ans);
         } else {
             /**
              * All data seems cleans so we can call the services.
@@ -166,11 +174,7 @@ public class UpdateCountryEnvParam1 extends HttpServlet {
                 /**
                  * Object could not be found. We stop here and report the error.
                  */
-                msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_EXPECTED);
-                msg.setDescription(msg.getDescription().replace("%ITEM%", OBJECT_NAME)
-                        .replace("%OPERATION%", "Update")
-                        .replace("%REASON%", OBJECT_NAME + " does not exist."));
-                ans.setResultMessage(msg);
+                finalAnswer = AnswerUtil.agregateAnswer(finalAnswer, (Answer) resp);
 
             } else {
                 /**
@@ -179,7 +183,6 @@ public class UpdateCountryEnvParam1 extends HttpServlet {
                  */
                 CountryEnvParam cepData = (CountryEnvParam) resp.getItem();
                 cepData.setDescription(description);
-
                 cepData.setDistribList(distribList);
                 cepData.seteMailBodyRevision(eMailBodyRevision);
                 cepData.setType(type);
@@ -192,15 +195,7 @@ public class UpdateCountryEnvParam1 extends HttpServlet {
                 cepData.setMaintenanceEnd(maintenanceEnd);
 
                 ans = cepService.update(cepData);
-
-                // Update the Database with the new list.
-                cedService.compareListAndUpdateInsertDeleteElements(system, country, environment, cedList);
-                // Update the Database with the new list.
-                ceaService.compareListAndUpdateInsertDeleteElements(system, country, environment, ceaList);
-                // Update the Database with the new list.
-                cetService.compareListAndUpdateInsertDeleteElements(system, country, environment, cetList);
-                // Update the Database with the new list.
-                celService.compareListAndUpdateInsertDeleteElements(system, country, environment, celList);
+                finalAnswer = AnswerUtil.agregateAnswer(finalAnswer, (Answer) ans);
 
                 if (ans.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
                     /**
@@ -209,14 +204,28 @@ public class UpdateCountryEnvParam1 extends HttpServlet {
                     ILogEventService logEventService = appContext.getBean(LogEventService.class);
                     logEventService.createPrivateCalls("/UpdateCountryEnvParam", "UPDATE", "Updated CountryEnvParam : ['" + system + "','" + country + "','" + environment + "']", request);
                 }
+
+                // Update the Database with the new list.
+                ans = cedService.compareListAndUpdateInsertDeleteElements(system, country, environment, cedList);
+                finalAnswer = AnswerUtil.agregateAnswer(finalAnswer, (Answer) ans);
+                // Update the Database with the new list.
+                ans = ceaService.compareListAndUpdateInsertDeleteElements(system, country, environment, ceaList);
+                finalAnswer = AnswerUtil.agregateAnswer(finalAnswer, (Answer) ans);
+                // Update the Database with the new list.
+                ans = cetService.compareListAndUpdateInsertDeleteElements(system, country, environment, cetList);
+                finalAnswer = AnswerUtil.agregateAnswer(finalAnswer, (Answer) ans);
+                // Update the Database with the new list.
+                ans = celService.compareListAndUpdateInsertDeleteElements(system, country, environment, celList);
+                finalAnswer = AnswerUtil.agregateAnswer(finalAnswer, (Answer) ans);
+
             }
         }
 
         /**
          * Formating and returning the json result.
          */
-        jsonResponse.put("messageType", ans.getResultMessage().getMessage().getCodeString());
-        jsonResponse.put("message", ans.getResultMessage().getDescription());
+        jsonResponse.put("messageType", finalAnswer.getResultMessage().getMessage().getCodeString());
+        jsonResponse.put("message", finalAnswer.getResultMessage().getDescription());
 
         response.getWriter().print(jsonResponse);
         response.getWriter().flush();
