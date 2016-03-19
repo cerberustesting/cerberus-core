@@ -1180,6 +1180,11 @@ public class TestCaseDAO implements ITestCaseDAO {
             query.append(testCase.getFunction());
             query.append(") ");
         }
+        if (!StringUtil.isNull(testCase.getCreator())) {
+            query.append(" AND t2.Creator IN (");
+            query.append(testCase.getCreator());
+            query.append(") ");
+        }
         query.append(" ORDER BY t2.test, t2.testcase");
 
         Connection connection = this.databaseSpring.connect();
