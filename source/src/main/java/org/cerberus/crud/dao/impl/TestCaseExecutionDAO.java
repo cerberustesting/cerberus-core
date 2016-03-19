@@ -1254,7 +1254,7 @@ public class TestCaseExecutionDAO implements ITestCaseExecutionDAO {
         }
         try { // Managing the case where the date is 0000-00-00 00:00:00 inside MySQL
             testCaseWithExecution.setEnd(resultSet.getString("End"));
-        } catch (SQLException e) {
+        } catch (Exception e) {
             testCaseWithExecution.setEnd("0000-00-00 00:00:00");
         }
         testCaseWithExecution.setStatusExecutionID(resultSet.getLong("statusExecutionID"));
