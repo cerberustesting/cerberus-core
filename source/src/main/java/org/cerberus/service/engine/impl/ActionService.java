@@ -134,9 +134,6 @@ public class ActionService implements IActionService {
         } else if (testCaseStepActionExecution.getAction().equals("doubleClick")) {
             res = this.doActionDoubleClick(tCExecution, object, property);
 
-        } else if (testCaseStepActionExecution.getAction().equals("rightClick")) {
-            res = this.doActionRightClick(tCExecution, object, property);
-
         } else if (testCaseStepActionExecution.getAction().equals("keypress")) {
             res = this.doActionKeyPress(tCExecution, object, property);
 
@@ -194,9 +191,6 @@ public class ActionService implements IActionService {
 
         } else if (testCaseStepActionExecution.getAction().equals("callSoap_BETA")) { // ACTION that is plugged to the TestDataLib
             res = this.doActionCallSoapFromDataLib(testCaseStepActionExecution, object, property);
-
-        } else if (testCaseStepActionExecution.getAction().equals("mouseDownMouseUp")) {
-            res = this.doActionMouseDownMouseUp(tCExecution, object, property);
 
         } else if (testCaseStepActionExecution.getAction().equals("calculateProperty")) {
             res = this.doActionCalculateProperty(object, property, propertyName);
