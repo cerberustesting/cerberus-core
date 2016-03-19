@@ -190,7 +190,7 @@ public class GetCampaignExecutionsCommand extends HttpServlet {
     }
 
     private List<String> convertParametersListToListOfQueries(List<CampaignParameter> campaignParameterList, List<String> queries) {
-        HashMap<String, List<String>> hmParametersValues = new HashMap<String, List<String>>();
+        Map<String, List<String>> hmParametersValues = new HashMap<String, List<String>>();
 
         for (CampaignParameter campaignParameter : campaignParameterList) {
             if (campaignParameter.getParameter() != null && campaignParameter.getValue() != null) {

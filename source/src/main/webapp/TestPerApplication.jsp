@@ -133,7 +133,7 @@
      <input id="systemSelected" value="<%=MySystem%>" style="display:none">
         <%
             if (filterApp){
-                appList=new ArrayList<Application>();
+                appList= new ArrayList<>();
                 appList.add(applicationService.convert(applicationService.readByKey(appSel)));
             }
 

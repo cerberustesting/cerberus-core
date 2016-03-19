@@ -416,7 +416,7 @@ public class CountryEnvironmentDatabaseDAO implements ICountryEnvironmentDatabas
 
     @Override
     public void update_deprecated(CountryEnvironmentDatabase ced) throws CerberusException {
-        final StringBuffer query = new StringBuffer("UPDATE `countryenvironmentdatabase` SET `connectionpoolname`=? ");
+        final StringBuilder query = new StringBuilder("UPDATE `countryenvironmentdatabase` SET `connectionpoolname`=? ");
         query.append(" where `system`=? and `country`=? and `environment`=? and `database`=?");
 
         Connection connection = this.databaseSpring.connect();
@@ -450,7 +450,7 @@ public class CountryEnvironmentDatabaseDAO implements ICountryEnvironmentDatabas
 
     @Override
     public void delete_deprecated(CountryEnvironmentDatabase ced) throws CerberusException {
-        final StringBuffer query = new StringBuffer("DELETE FROM `countryenvironmentdatabase` WHERE `system`=? and `country`=? and `environment`=? and `database`=?");
+        final StringBuilder query = new StringBuilder("DELETE FROM `countryenvironmentdatabase` WHERE `system`=? and `country`=? and `environment`=? and `database`=?");
 
         Connection connection = this.databaseSpring.connect();
         try {
@@ -482,7 +482,7 @@ public class CountryEnvironmentDatabaseDAO implements ICountryEnvironmentDatabas
 
     @Override
     public void create_deprecated(CountryEnvironmentDatabase ced) throws CerberusException {
-        final StringBuffer query = new StringBuffer("INSERT INTO `countryenvironmentdatabase` ");
+        final StringBuilder query = new StringBuilder("INSERT INTO `countryenvironmentdatabase` ");
         query.append("(`system`, `country`, `environment`, `database`, `connectionpoolname`) VALUES ");
         query.append("(?,?,?,?,?)");
 

@@ -324,7 +324,7 @@ public class CountryEnvironmentParametersDAO implements ICountryEnvironmentParam
 
     @Override
     public void update_deprecated(CountryEnvironmentParameters cea) throws CerberusException {
-        final StringBuffer query = new StringBuffer("UPDATE `countryenvironmentparameters` SET `IP`=?, ");
+        final StringBuilder query = new StringBuilder("UPDATE `countryenvironmentparameters` SET `IP`=?, ");
         query.append("`URL`=?, `URLLOGIN`=?, `domain`=? ");
         query.append(" where `system`=? and `country`=? and `environment`=? and `application`=?");
 
@@ -362,7 +362,7 @@ public class CountryEnvironmentParametersDAO implements ICountryEnvironmentParam
 
     @Override
     public void delete_deprecated(CountryEnvironmentParameters cea) throws CerberusException {
-        final StringBuffer query = new StringBuffer("DELETE FROM `countryenvironmentparameters` WHERE `system`=? and `country`=? and `environment`=? and `application`=?");
+        final StringBuilder query = new StringBuilder("DELETE FROM `countryenvironmentparameters` WHERE `system`=? and `country`=? and `environment`=? and `application`=?");
 
         Connection connection = this.databaseSpring.connect();
         try {
@@ -394,7 +394,7 @@ public class CountryEnvironmentParametersDAO implements ICountryEnvironmentParam
 
     @Override
     public void create_deprecated(CountryEnvironmentParameters cea) throws CerberusException {
-        final StringBuffer query = new StringBuffer("INSERT INTO `countryenvironmentparameters` ");
+        final StringBuilder query = new StringBuilder("INSERT INTO `countryenvironmentparameters` ");
         query.append("(`system`, `country`, `environment`, `application`, `ip`, `domain`, `url`, `urllogin`) VALUES ");
         query.append("(?,?,?,?,?,?,?,?)");
 

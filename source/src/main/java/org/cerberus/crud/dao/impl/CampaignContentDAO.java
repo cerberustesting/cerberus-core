@@ -313,7 +313,7 @@ public class CampaignContentDAO implements ICampaignContentDAO {
 
     @Override
     public boolean updateCampaignContent(CampaignContent campaignContent) {
-        final StringBuffer query = new StringBuffer("UPDATE `campaigncontent` SET campaign=?, testbattery=? WHERE campaigncontentID=?");
+        final StringBuilder query = new StringBuilder("UPDATE `campaigncontent` SET campaign=?, testbattery=? WHERE campaigncontentID=?");
 
         Connection connection = this.databaseSpring.connect();
         try {
@@ -345,7 +345,7 @@ public class CampaignContentDAO implements ICampaignContentDAO {
 
     @Override
     public boolean createCampaignContent(CampaignContent campaignContent) {
-        final StringBuffer query = new StringBuffer("INSERT INTO `campaigncontent` (`campaign`, `testbattery`) VALUES (?, ?)");
+        final StringBuilder query = new StringBuilder("INSERT INTO `campaigncontent` (`campaign`, `testbattery`) VALUES (?, ?)");
 
         Connection connection = this.databaseSpring.connect();
         try {
@@ -376,7 +376,7 @@ public class CampaignContentDAO implements ICampaignContentDAO {
 
     @Override
     public boolean deleteCampaignContent(CampaignContent campaignContent) {
-        final StringBuffer query = new StringBuffer("DELETE FROM `campaigncontent` WHERE campaigncontentID=?");
+        final StringBuilder query = new StringBuilder("DELETE FROM `campaigncontent` WHERE campaigncontentID=?");
 
         Connection connection = this.databaseSpring.connect();
         try {

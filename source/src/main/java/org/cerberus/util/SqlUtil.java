@@ -28,6 +28,9 @@ import org.apache.commons.lang3.StringUtils;
  */
 public class SqlUtil {
 
+    private SqlUtil() {
+    }
+
     /**
      *
      * @param obj List of generic object that have a toString Method
@@ -97,7 +100,7 @@ public class SqlUtil {
      */
      public static String generateInClause(String field, List<String> list){
         StringBuilder clause = new StringBuilder();
-        if(list != null && list.size() > 0){
+        if(list != null && !list.isEmpty()){
             clause.append(field).append( " in (");            
             clause.append(StringUtils.repeat("?, ", list.size()));
             clause.append(") ");

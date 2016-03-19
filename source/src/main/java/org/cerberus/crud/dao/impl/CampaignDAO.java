@@ -200,7 +200,7 @@ public class CampaignDAO implements ICampaignDAO {
     @Override
     public List<Campaign> findCampaignByCriteria(Integer campaignID, String campaign, String description) throws CerberusException {
         boolean throwEx = false;
-        final StringBuffer query = new StringBuffer("SELECT * FROM campaign c WHERE 1=1 ");
+        final StringBuilder query = new StringBuilder("SELECT * FROM campaign c WHERE 1=1 ");
 
         if (campaignID != null) {
             query.append(" AND c.campaignID = ?");
@@ -269,7 +269,7 @@ public class CampaignDAO implements ICampaignDAO {
 
     @Override
     public boolean updateCampaign(Campaign campaign) {
-        final StringBuffer query = new StringBuffer("UPDATE `campaign` SET campaign=?, Description=? WHERE campaignID=?");
+        final StringBuilder query = new StringBuilder("UPDATE `campaign` SET campaign=?, Description=? WHERE campaignID=?");
 
         Connection connection = this.databaseSpring.connect();
         try {
@@ -301,7 +301,7 @@ public class CampaignDAO implements ICampaignDAO {
 
     @Override
     public boolean createCampaign(Campaign campaign) {
-        final StringBuffer query = new StringBuffer("INSERT INTO `campaign` (`campaign`, `Description`) VALUES (?, ?)");
+        final StringBuilder query = new StringBuilder("INSERT INTO `campaign` (`campaign`, `Description`) VALUES (?, ?)");
 
         Connection connection = this.databaseSpring.connect();
         try {
@@ -332,7 +332,7 @@ public class CampaignDAO implements ICampaignDAO {
 
     @Override
     public boolean deleteCampaign(Campaign campaign) {
-        final StringBuffer query = new StringBuffer("DELETE FROM `campaign` WHERE campaignID=?");
+        final StringBuilder query = new StringBuilder("DELETE FROM `campaign` WHERE campaignID=?");
 
         Connection connection = this.databaseSpring.connect();
         try {
@@ -371,7 +371,7 @@ public class CampaignDAO implements ICampaignDAO {
     @Override
     public List<TestCaseWithExecution> getCampaignTestCaseExecutionForEnvCountriesBrowserTag(String tag) throws CerberusException {
         boolean throwEx = false;
-        final StringBuffer query = new StringBuffer("select * from ( select tc.*, tce.Start, tce.End, tce.ID as statusExecutionID, tce.ControlStatus, tce.ControlMessage, tce.Environment, tce.Country, tce.Browser ")
+        final StringBuilder query = new StringBuilder("select * from ( select tc.*, tce.Start, tce.End, tce.ID as statusExecutionID, tce.ControlStatus, tce.ControlMessage, tce.Environment, tce.Country, tce.Browser ")
                 .append("from testcase tc ")
                 .append("left join testcaseexecution tce ")
                 .append("on tce.Test = tc.Test ")

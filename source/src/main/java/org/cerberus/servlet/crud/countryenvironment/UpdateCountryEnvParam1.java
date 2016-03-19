@@ -117,22 +117,22 @@ public class UpdateCountryEnvParam1 extends HttpServlet {
 
         // Getting list of database from JSON Call
         JSONArray objDatabaseArray = new JSONArray(request.getParameter("database"));
-        List<CountryEnvironmentDatabase> cedList = new ArrayList();
+        List<CountryEnvironmentDatabase> cedList;
         cedList = getCountryEnvironmentDatabaseFromParameter(request, appContext, system, country, environment, objDatabaseArray);
 
         // Getting list of application from JSON Call
         JSONArray objApplicationArray = new JSONArray(request.getParameter("application"));
-        List<CountryEnvironmentParameters> ceaList = new ArrayList();
+        List<CountryEnvironmentParameters> ceaList;
         ceaList = getCountryEnvironmentApplicationFromParameter(request, appContext, system, country, environment, objApplicationArray);
 
         // Getting list of database from JSON Call
         JSONArray objDeployTypeArray = new JSONArray(request.getParameter("deployType"));
-        List<CountryEnvDeployType> cetList = new ArrayList();
+        List<CountryEnvDeployType> cetList;
         cetList = getCountryEnvironmentDeployTypeFromParameter(request, appContext, system, country, environment, objDeployTypeArray);
 
         // Getting list of database from JSON Call
         JSONArray objDepArray = new JSONArray(request.getParameter("dependencies"));
-        List<CountryEnvLink> celList = new ArrayList();
+        List<CountryEnvLink> celList;
         celList = getCountryEnvironmentLinkFromParameter(request, appContext, system, country, environment, objDepArray);
 
         // Prepard the final answer.

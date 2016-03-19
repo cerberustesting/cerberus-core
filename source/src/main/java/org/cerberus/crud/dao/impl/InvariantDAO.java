@@ -429,7 +429,7 @@ public class InvariantDAO implements IInvariantDAO {
         
         String query = "SELECT count(*) FROM invariant i  WHERE 1=1 " + searchSQL.toString();
         
-        MyLogger.log(InvariantDAO.class.getName(), Level.DEBUG, query.toString());
+        MyLogger.log(InvariantDAO.class.getName(), Level.DEBUG, query);
 
         Connection connection = this.databaseSpring.connect();
         try {

@@ -97,7 +97,7 @@ public class UserService implements IUserService {
     @Override
     public AnswerItem<User> updateUserPassword(User user, String currentPassword, String newPassword, String confirmPassword) {
         AnswerItem answUpdate = new AnswerItem();
-        MessageEvent msg = null;
+        MessageEvent msg;
 
         if (newPassword.equals(confirmPassword)) {
             if (this.verifyPassword(user, currentPassword)) {

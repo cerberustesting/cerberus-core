@@ -116,9 +116,9 @@ public class ExecutionPerBuildRevision extends HttpServlet {
 
                 List<BuildRevisionStatistics> buildRev = tceStatsService.getListOfXLastBuildAndRev(MySystem, numberOfLastBR, sprint);
 
-                ArrayList<ArrayList<String>> arrayBuildRevision = new ArrayList<ArrayList<String>>();
+                List<ArrayList<String>> arrayBuildRevision = new ArrayList<ArrayList<String>>();
                 List<List<List<String>>> arrayBuildRevisionEnv = new ArrayList<List<List<String>>>();
-                ArrayList<ArrayList<ArrayList<String>>> arrayBuildRevisionContent = new ArrayList<ArrayList<ArrayList<String>>>();
+                List<ArrayList<ArrayList<String>>> arrayBuildRevisionContent = new ArrayList<ArrayList<ArrayList<String>>>();
 
                 for (BuildRevisionStatistics buildRevList : buildRev) {
                     //ITestCaseExecutionStatisticsService tceStatsS = appContext.getBean(ITestCaseExecutionStatisticsService.class);

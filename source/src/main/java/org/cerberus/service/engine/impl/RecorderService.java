@@ -167,7 +167,7 @@ public class RecorderService implements IRecorderService {
 
         File file = new File(dir.getAbsolutePath() + File.separator + screenshotFilename);
 
-        FileOutputStream fileOutputStream = null;
+        FileOutputStream fileOutputStream;
         try {
             fileOutputStream = new FileOutputStream(file);
             fileOutputStream.write(eSResponse.getExecutionSOAPResponse(testCaseStepActionExecution.getTestCaseStepExecution().gettCExecution().getExecutionUUID()).getBytes());
@@ -207,7 +207,7 @@ public class RecorderService implements IRecorderService {
 
         File file = new File(dir.getAbsolutePath() + File.separator + screenshotFilename);
 
-        FileOutputStream fileOutputStream = null;
+        FileOutputStream fileOutputStream;
         try {
             fileOutputStream = new FileOutputStream(file);
             fileOutputStream.write(this.webdriverService.getPageSource(testCaseExecution.getSession()).getBytes());
@@ -243,7 +243,7 @@ public class RecorderService implements IRecorderService {
 
         File file = new File(dir.getAbsolutePath() + File.separator + logFilename);
 
-        FileOutputStream fileOutputStream = null;
+        FileOutputStream fileOutputStream;
         try {
             fileOutputStream = new FileOutputStream(file);
             ByteArrayOutputStream baos = new ByteArrayOutputStream();
@@ -276,11 +276,11 @@ public class RecorderService implements IRecorderService {
     @Override
     public void recordExecutionInformation(TestCaseStepActionExecution testCaseStepActionExecution, TestCaseStepActionControlExecution testCaseStepActionControlExecution) {
 
-        TestCaseExecution myExecution = null;
-        boolean doScreenshot = false;
-        boolean getPageSource = false;
-        String applicationType = null;
-        String returnCode = null;
+        TestCaseExecution myExecution;
+        boolean doScreenshot;
+        boolean getPageSource;
+        String applicationType;
+        String returnCode;
         Integer controlNumber = 0;
         
         if (testCaseStepActionControlExecution == null) {
@@ -382,7 +382,7 @@ public class RecorderService implements IRecorderService {
         //checks if soap calls were performed and save the data into the database
          HashMap<String, TestDataLibResult> data = testCaseStepActionExecution.getTestCaseStepExecution().gettCExecution().getDataLibraryExecutionDataList();
          
-        if ( data != null && data.size() > 0) {
+        if ( data != null && !data.isEmpty()) {
             //if the data library contains entries for xml, then save that xml
             
             //list of entries

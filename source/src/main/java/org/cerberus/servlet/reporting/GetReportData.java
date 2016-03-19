@@ -27,6 +27,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.TreeMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -95,7 +96,7 @@ public class GetReportData extends HttpServlet {
 
         if (!split) {
 
-            HashMap<String, JSONObject> axisMap = new HashMap<String, JSONObject>();
+            Map<String, JSONObject> axisMap = new HashMap<String, JSONObject>();
 
             for (TestCaseWithExecution testCaseWithExecution : testCaseWithExecutions) {
                 String key;
@@ -141,7 +142,7 @@ public class GetReportData extends HttpServlet {
             AnswerList columnQueue = testCaseExecutionInQueueService.readDistinctColumnByTag(tag, env, country, browser, app);
             List<TestCaseWithExecution> columnInQueue = columnQueue.getDataList();
 
-            LinkedHashMap<String, TestCaseWithExecution> testCaseWithExecutionsList = new LinkedHashMap();
+            Map<String, TestCaseWithExecution> testCaseWithExecutionsList = new LinkedHashMap();
 
             for (TestCaseWithExecution column : columnTcExec) {
                 String key = column.getBrowser()
@@ -237,7 +238,7 @@ public class GetReportData extends HttpServlet {
     }// </editor-fold>
 
     private List<TestCaseWithExecution> hashExecution(List<TestCaseWithExecution> testCaseWithExecutions, List<TestCaseWithExecution> testCaseWithExecutionsInQueue) throws ParseException {
-        LinkedHashMap<String, TestCaseWithExecution> testCaseWithExecutionsList = new LinkedHashMap();
+        Map<String, TestCaseWithExecution> testCaseWithExecutionsList = new LinkedHashMap();
         SimpleDateFormat formater = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
 
         for (TestCaseWithExecution testCaseWithExecution : testCaseWithExecutions) {

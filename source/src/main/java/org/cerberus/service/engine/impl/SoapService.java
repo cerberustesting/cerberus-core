@@ -80,7 +80,7 @@ public class SoapService implements ISoapService {
 
     @Override
     public MessageEvent callSOAPAndStoreResponseInMemory(String uuid, String envelope, String servicePath, String method, String attachmentUrl, boolean isToSaveRequest) {
-        String result = null;
+        String result;
         ByteArrayOutputStream out = null;
         MessageEvent message = null;
         if (envelope != null && servicePath != null && method != null) {

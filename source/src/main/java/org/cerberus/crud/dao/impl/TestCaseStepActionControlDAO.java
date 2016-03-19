@@ -310,7 +310,7 @@ public class TestCaseStepActionControlDAO implements ITestCaseStepActionControlD
 
         Connection connection = this.databaseSpring.connect();
         try {
-            PreparedStatement preStat = connection.prepareStatement(query.toString());
+            PreparedStatement preStat = connection.prepareStatement(query);
             try {
                 preStat.setString(1, testCaseStepActionControl.getTest());
                 preStat.setString(2, testCaseStepActionControl.getTestCase());
