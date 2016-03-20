@@ -5,22 +5,29 @@
 -- 2 years = 730 days
 -- 1 year = 365 days
 
--- Batch execution History
+
+-- ENVIRONMENT Purges.
+-- -------------------
+
+-- Batch/Event execution in every Environment History
 DELETE FROM buildrevisionbatch
 -- SELECT count(*) FROM buildrevisionbatch
 where TO_DAYS(NOW()) - TO_DAYS(DateBatch) >= 1100 ;
 
--- Release History
+-- Release Content History
 DELETE FROM buildrevisionparameters
 -- SELECT count(*) FROM buildrevisionparameters
 where TO_DAYS(NOW()) - TO_DAYS(datecre) >= 3650 ;
 
--- Environment status log History
+-- Environment status log History (new build/Revision and disable events)
 DELETE FROM countryenvparam_log
 -- SELECT count(*) FROM countryenvparam_log
 where TO_DAYS(NOW()) - TO_DAYS(datecre) >= 1100 ;
 
--- Log History
+-- LOG Purges.
+-- -----------
+
+-- Log History [DEPRECATED]
 DELETE FROM log
 -- SELECT count(*) FROM log
 where TO_DAYS(NOW()) - TO_DAYS(datecre) >= 365 ;
@@ -29,6 +36,9 @@ where TO_DAYS(NOW()) - TO_DAYS(datecre) >= 365 ;
 DELETE FROM logevent
 -- SELECT count(*) FROM logevent
 where TO_DAYS(NOW()) - TO_DAYS(Time) >= 365 ;
+
+-- EXECUTION Purges.
+-- -----------------
 
 -- Test Execution Control History
 DELETE FROM testcasestepactioncontrolexecution
@@ -48,8 +58,7 @@ where TO_DAYS(NOW()) - TO_DAYS(Start) >= 200 ;
 -- Test Execution Property History
 DELETE FROM testcaseexecutiondata
 -- SELECT count(*) FROM testcaseexecutiondata
-where TO_DAYS(NOW()) - TO_DAYS(Start) >= 190 ;
-
+where TO_DAYS(NOW()) - TO_DAYS(Start) >= 200 ;
 
 -- Test Execution www det
 DELETE FROM testcaseexecutionwwwdet
@@ -59,11 +68,11 @@ where TO_DAYS(NOW()) - TO_DAYS(Start) >= 60 ;
 -- Test Execution History
 DELETE FROM testcaseexecution
 -- SELECT count(*) FROM testcaseexecution
-where TO_DAYS(NOW()) - TO_DAYS(Start) >= 700 ;
+where TO_DAYS(NOW()) - TO_DAYS(Start) >= 730 ;
 
 
-
--- More drastic Execution purge for BAM tests.
+-- EXECUTION Purges (BAM Test Cases).
+-- -----------------------
 
 -- Test Execution Control History
 DELETE FROM testcasestepactioncontrolexecution
@@ -80,7 +89,7 @@ DELETE FROM testcasestepexecution
 -- SELECT count(*) FROM testcasestepexecution
 where TO_DAYS(NOW()) - TO_DAYS(Start) >= 100 and test = 'Business Activity Monitor';
 
--- Test Execution History for BAM tests.
+-- Test Execution History
 DELETE FROM testcaseexecution
 -- SELECT count(*) FROM testcaseexecution
 where  TO_DAYS(NOW()) - TO_DAYS(Start) >= 400 and test = 'Business Activity Monitor';
@@ -90,7 +99,8 @@ DELETE FROM testcaseexecution
 -- SELECT count(*) FROM testcaseexecution
 where  TO_DAYS(NOW()) - TO_DAYS(Start) >= 2 and test = 'Business Activity Monitor' and ControlStatus in ('NA','FA','KO','PE','CA');
 
--- More drastic Execution purge for BAM tests.
+-- EXECUTION Purges (Performance Monitor Test Cases).
+-- -----------------------
 
 -- Test Execution Control History
 DELETE FROM testcasestepactioncontrolexecution
