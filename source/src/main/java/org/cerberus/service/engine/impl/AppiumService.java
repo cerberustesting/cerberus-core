@@ -101,7 +101,7 @@ public class AppiumService implements IAppiumService {
         MessageEvent message;
         try {
             TouchAction action = new TouchAction(session.getAppiumDriver());
-            action.press(this.getElement(session, identifier, true, false))
+            action.press(this.getElement(session, identifier, false, false))
                     .release()
                     .perform();
             message = new MessageEvent(MessageEventEnum.ACTION_SUCCESS_CLICK);

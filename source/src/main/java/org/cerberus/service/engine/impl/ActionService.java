@@ -279,7 +279,8 @@ public class ActionService implements IActionService {
                 } else {
                     return webdriverService.doSeleniumActionClick(tCExecution.getSession(), identifier, true, true);
                 }
-            } else if (tCExecution.getApplication().getType().equalsIgnoreCase("APK")) {
+            } else if (tCExecution.getApplication().getType().equalsIgnoreCase("APK")
+                    || tCExecution.getApplication().getType().equalsIgnoreCase("IPA")) {
                 return appiumService.click(tCExecution.getSession(), identifier);
             }
 
@@ -310,7 +311,8 @@ public class ActionService implements IActionService {
 
             if (tCExecution.getApplication().getType().equalsIgnoreCase("GUI")) {
                 return webdriverService.doSeleniumActionMouseDown(tCExecution.getSession(), identifier);
-            } else if (tCExecution.getApplication().getType().equalsIgnoreCase("APK")) {
+            } else if (tCExecution.getApplication().getType().equalsIgnoreCase("APK")
+                    || tCExecution.getApplication().getType().equalsIgnoreCase("IPA")) {
                 return appiumService.press(tCExecution.getSession(), identifier);
             }
             message = new MessageEvent(MessageEventEnum.ACTION_NOTEXECUTED_NOTSUPPORTED_FOR_APPLICATION);
@@ -400,7 +402,8 @@ public class ActionService implements IActionService {
 
             if (tCExecution.getApplication().getType().equalsIgnoreCase("GUI")) {
                 return webdriverService.doSeleniumActionSwitchToWindow(tCExecution.getSession(), identifier);
-            } else if (tCExecution.getApplication().getType().equalsIgnoreCase("APK")) {
+            } else if (tCExecution.getApplication().getType().equalsIgnoreCase("APK")
+                    || tCExecution.getApplication().getType().equalsIgnoreCase("IPA")) {
                 return appiumService.switchToContext(tCExecution.getSession(), identifier);
             }
             message = new MessageEvent(MessageEventEnum.ACTION_NOTEXECUTED_NOTSUPPORTED_FOR_APPLICATION);
@@ -486,7 +489,8 @@ public class ActionService implements IActionService {
                 } else {
                     return webdriverService.doSeleniumActionClick(tCExecution.getSession(), identifier, true, true);
                 }
-            } else if (tCExecution.getApplication().getType().equalsIgnoreCase("APK")) {
+            } else if (tCExecution.getApplication().getType().equalsIgnoreCase("APK")
+                    || tCExecution.getApplication().getType().equalsIgnoreCase("IPA")) {
                 return webdriverService.doSeleniumActionClick(tCExecution.getSession(), identifier, true, false);
             }
 
@@ -521,7 +525,8 @@ public class ActionService implements IActionService {
                 } else {
                     return webdriverService.doSeleniumActionType(tCExecution.getSession(), identifier, property, propertyName);
                 }
-            } else if (tCExecution.getApplication().getType().equalsIgnoreCase("APK")) {
+            } else if (tCExecution.getApplication().getType().equalsIgnoreCase("APK")
+                    ||tCExecution.getApplication().getType().equalsIgnoreCase("IPA")) {
                 return appiumService.type(tCExecution.getSession(), identifier, property, propertyName);
             }
             message = new MessageEvent(MessageEventEnum.ACTION_NOTEXECUTED_NOTSUPPORTED_FOR_APPLICATION);
@@ -629,7 +634,8 @@ public class ActionService implements IActionService {
             }
 
             if (tCExecution.getApplication().getType().equalsIgnoreCase("GUI")
-                    || tCExecution.getApplication().getType().equalsIgnoreCase("APK")) {
+                    || tCExecution.getApplication().getType().equalsIgnoreCase("APK")
+                    || tCExecution.getApplication().getType().equalsIgnoreCase("IPA")){
                 if (identifier != null && identifier.getIdentifier().equals("picture")) {
                     return sikuliService.doSikuliAction(tCExecution.getSession(), "wait", identifier.getLocator(), "");
                 } else if (identifier != null) {
@@ -642,11 +648,11 @@ public class ActionService implements IActionService {
                 return this.waitTime(timeToWait);
             }
             message = new MessageEvent(MessageEventEnum.ACTION_NOTEXECUTED_NOTSUPPORTED_FOR_APPLICATION);
-            message.setDescription(message.getDescription().replaceAll("%ACTION%", "ClickAndWait"));
+            message.setDescription(message.getDescription().replaceAll("%ACTION%", "Wait"));
             message.setDescription(message.getDescription().replaceAll("%APPLICATIONTYPE%", tCExecution.getApplication().getType()));
             return message;
         } catch (CerberusEventException ex) {
-            LOG.fatal("Error doing Action ClickAndWait :" + ex);
+            LOG.fatal("Error doing Action Wait :" + ex);
             return ex.getMessageError();
         }
     }
@@ -732,7 +738,8 @@ public class ActionService implements IActionService {
             identifierService.checkSelectOptionsIdentifier(identifierProperty.getIdentifier());
 
             if (tCExecution.getApplication().getType().equalsIgnoreCase("GUI")
-                    || tCExecution.getApplication().getType().equalsIgnoreCase("APK")) {
+                    || tCExecution.getApplication().getType().equalsIgnoreCase("APK")
+                    || tCExecution.getApplication().getType().equalsIgnoreCase("IPA")) {
                 return webdriverService.doSeleniumActionSelect(tCExecution.getSession(), identifierObject, identifierProperty);
             }
             message = new MessageEvent(MessageEventEnum.ACTION_NOTEXECUTED_NOTSUPPORTED_FOR_APPLICATION);
@@ -879,7 +886,8 @@ public class ActionService implements IActionService {
     private MessageEvent doActionTakeScreenshot(TestCaseStepActionExecution testCaseStepActionExecution) {
         MessageEvent message;
         if (testCaseStepActionExecution.getTestCaseStepExecution().gettCExecution().getApplication().getType().equalsIgnoreCase("GUI")
-                || testCaseStepActionExecution.getTestCaseStepExecution().gettCExecution().getApplication().getType().equalsIgnoreCase("APK")) {
+                || testCaseStepActionExecution.getTestCaseStepExecution().gettCExecution().getApplication().getType().equalsIgnoreCase("APK")
+                || testCaseStepActionExecution.getTestCaseStepExecution().gettCExecution().getApplication().getType().equalsIgnoreCase("IPA")) {
             String screenshotPath = recorderService.recordScreenshotAndGetName(testCaseStepActionExecution.getTestCaseStepExecution().gettCExecution(),
                     testCaseStepActionExecution, 0);
             testCaseStepActionExecution.setScreenshotFilename(screenshotPath);
@@ -895,7 +903,8 @@ public class ActionService implements IActionService {
     private MessageEvent doActionGetPageSource(TestCaseStepActionExecution testCaseStepActionExecution) {
         MessageEvent message;
         if (testCaseStepActionExecution.getTestCaseStepExecution().gettCExecution().getApplication().getType().equalsIgnoreCase("GUI")
-                || testCaseStepActionExecution.getTestCaseStepExecution().gettCExecution().getApplication().getType().equalsIgnoreCase("APK")) {
+                || testCaseStepActionExecution.getTestCaseStepExecution().gettCExecution().getApplication().getType().equalsIgnoreCase("APK")
+                || testCaseStepActionExecution.getTestCaseStepExecution().gettCExecution().getApplication().getType().equalsIgnoreCase("IPA")) {
             String screenshotPath = recorderService.recordPageSourceAndGetName(testCaseStepActionExecution.getTestCaseStepExecution().gettCExecution(),
                     testCaseStepActionExecution, 0);
             testCaseStepActionExecution.setScreenshotFilename(screenshotPath);
@@ -903,7 +912,7 @@ public class ActionService implements IActionService {
             return message;
         }
         message = new MessageEvent(MessageEventEnum.ACTION_NOTEXECUTED_NOTSUPPORTED_FOR_APPLICATION);
-        message.setDescription(message.getDescription().replaceAll("%ACTION%", "Click"));
+        message.setDescription(message.getDescription().replaceAll("%ACTION%", "getPageSource"));
         message.setDescription(message.getDescription().replaceAll("%APPLICATIONTYPE%", testCaseStepActionExecution.getTestCaseStepExecution().gettCExecution().getApplication().getType()));
         return message;
     }
