@@ -81,19 +81,22 @@ public class ReadRobot extends HttpServlet {
         /**
          * Parsing and securing all required parameters.
          */
+        String robot = ParameterParserUtil.parseStringParam(request.getParameter("robot"), "");
         Integer robotid = 0;
-        boolean robotid_error = true;
-        try {
-            if (request.getParameter("robotid") != null && !request.getParameter("robotid").equals("")) {
-                robotid = Integer.valueOf(policy.sanitize(request.getParameter("robotid")));
-                robotid_error = false;
+        boolean robotid_error = false;
+        if (request.getParameter("robotid") != null) {
+            try {
+                if (request.getParameter("robotid") != null && !request.getParameter("robotid").equals("")) {
+                    robotid = Integer.valueOf(policy.sanitize(request.getParameter("robotid")));
+                    robotid_error = false;
+                }
+            } catch (Exception ex) {
+                msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_EXPECTED);
+                msg.setDescription(msg.getDescription().replace("%ITEM%", "Robot"));
+                msg.setDescription(msg.getDescription().replace("%OPERATION%", "Read"));
+                msg.setDescription(msg.getDescription().replace("%REASON%", "robotid must be an integer value."));
+                robotid_error = true;
             }
-        } catch (Exception ex) {
-            msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_EXPECTED);
-            msg.setDescription(msg.getDescription().replace("%ITEM%", "Robot"));
-            msg.setDescription(msg.getDescription().replace("%OPERATION%", "Read"));
-            msg.setDescription(msg.getDescription().replace("%REASON%", "robotid must be an integer value."));
-            robotid_error = true;
         }
 
         // Global boolean on the servlet that define if the user has permition to edit and delete object.
@@ -104,12 +107,15 @@ public class ReadRobot extends HttpServlet {
 
         try {
             JSONObject jsonResponse = new JSONObject();
-            if ((request.getParameter("robotid") == null)) {
-                answer = findRobotList(appContext, userHasPermissions, request);
-                jsonResponse = (JSONObject) answer.getItem();
-            } else {
-                if ((request.getParameter("robotid") != null) && !(robotid_error)) {
-                    answer = findRobotByKey(robotid, appContext, userHasPermissions);
+            if (!robotid_error) {
+                if (!(request.getParameter("robotid") == null)) {
+                    answer = findRobotByKeyTech(robotid, appContext, userHasPermissions);
+                    jsonResponse = (JSONObject) answer.getItem();
+                } else if (!(request.getParameter("robot") == null)) {
+                    answer = findRobotByKey(robot, appContext, userHasPermissions);
+                    jsonResponse = (JSONObject) answer.getItem();
+                } else {
+                    answer = findRobotList(appContext, userHasPermissions, request);
                     jsonResponse = (JSONObject) answer.getItem();
                 }
             }
@@ -216,7 +222,7 @@ public class ReadRobot extends HttpServlet {
         return item;
     }
 
-    private AnswerItem findRobotByKey(Integer id, ApplicationContext appContext, boolean userHasPermissions) throws JSONException, CerberusException {
+    private AnswerItem findRobotByKeyTech(Integer id, ApplicationContext appContext, boolean userHasPermissions) throws JSONException, CerberusException {
         AnswerItem item = new AnswerItem();
         JSONObject object = new JSONObject();
 
@@ -224,6 +230,29 @@ public class ReadRobot extends HttpServlet {
 
         //finds the project     
         AnswerItem answer = libService.readByKeyTech(id);
+
+        if (answer.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
+            //if the service returns an OK message then we can get the item and convert it to JSONformat
+            Robot lib = (Robot) answer.getItem();
+            JSONObject response = convertRobotToJSONObject(lib);
+            object.put("contentTable", response);
+        }
+
+        object.put("hasPermissions", userHasPermissions);
+        item.setItem(object);
+        item.setResultMessage(answer.getResultMessage());
+
+        return item;
+    }
+
+    private AnswerItem findRobotByKey(String robot, ApplicationContext appContext, boolean userHasPermissions) throws JSONException, CerberusException {
+        AnswerItem item = new AnswerItem();
+        JSONObject object = new JSONObject();
+
+        IRobotService libService = appContext.getBean(IRobotService.class);
+
+        //finds the project     
+        AnswerItem answer = libService.readByKey(robot);
 
         if (answer.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
             //if the service returns an OK message then we can get the item and convert it to JSONformat

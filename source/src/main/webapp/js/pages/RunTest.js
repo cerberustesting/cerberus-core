@@ -634,20 +634,20 @@ function appendRobotList() {
 
         robotList.append($('<option></option>').text("-- Custom configuration --").val(""));
         for (var index = 0; index < data.contentTable.length; index++) {
-            robotList.append($('<option></option>').text(data.contentTable[index].robot).val(data.contentTable[index].robotID));
+            robotList.append($('<option></option>').text(data.contentTable[index].robot).val(data.contentTable[index].robot));
         }
     });
 
     return jqXHR;
 }
 
-function loadRobotInfo(robotID) {
+function loadRobotInfo(robot) {
 
-    if (robotID !== "") {
+    if (robot !== "") {
         $.ajax({
             url: "ReadRobot",
             method: "GET",
-            data: {robotid: robotID},
+            data: {robot: robot},
             dataType: "json",
             async: true,
             success: function (data) {
