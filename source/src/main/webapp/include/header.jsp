@@ -75,7 +75,7 @@
                 </ul>
             </li>
             <% }%>
-            <% if (request.getUserPrincipal() != null && (request.isUserInRole("Test"))) {%>
+            <% if (request.getUserPrincipal() != null && (request.isUserInRole("TestDataManager"))) {%>
             <li id="active"><a id="menuData" name="menu" href="#" style="width:100px">Data
                     <img src="images/dropdown.gif"/></a>
                 <ul class="subnav" id="subnavlist">
