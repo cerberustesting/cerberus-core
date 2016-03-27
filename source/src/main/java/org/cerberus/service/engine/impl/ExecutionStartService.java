@@ -147,8 +147,8 @@ public class ExecutionStartService implements IExecutionStartService {
         MyLogger.log(RunTestCaseService.class.getName(), Level.DEBUG, "Test Case Information Loaded - " + tCExecution.getTest() + "-" + tCExecution.getTestCase());
 
         /**
-         * Load Test information and Set TestObject to the
-         * TestCaseExecution object.
+         * Load Test information and Set TestObject to the TestCaseExecution
+         * object.
          */
         MyLogger.log(RunTestCaseService.class.getName(), Level.DEBUG, "Loading Test Information");
         try {
@@ -195,8 +195,8 @@ public class ExecutionStartService implements IExecutionStartService {
          * Manual, CountryEnvironmentParameters object is manually created with
          * the servlet parameters. If automatic, parameters are build from the
          * CountryEnvironmentParameters. table in the database. Environmentdata
-         * will always be filled with the environment. Environment will be forced to MANUAL
-         * if execution is manual.
+         * will always be filled with the environment. Environment will be
+         * forced to MANUAL if execution is manual.
          *
          */
         MyLogger.log(RunTestCaseService.class.getName(), Level.DEBUG, "Checking if connectivity parameters are manual or automatic from the database. '" + tCExecution.isManualURL() + "'");
@@ -217,9 +217,9 @@ public class ExecutionStartService implements IExecutionStartService {
                 MyLogger.log(ExecutionStartService.class.getName(), Level.DEBUG, " -> Execution will be done with manual application connectivity setting. IP/URL/LOGIN : " + cea.getIp() + "-" + cea.getUrl() + "-" + cea.getUrlLogin());
             }
             /**
-             * If execution is manual, we force the env at 'MANUAL' string.
+             * If execution is manual, we force the env at 'MANUAL-ENVDATA' string. We keep envData information in order to trace the env data that has been used.
              */
-            tCExecution.setEnvironment("MANUAL");
+            tCExecution.setEnvironment("MANUAL-" + tCExecution.getEnvironmentData());
         } else {
             /**
              * Automatic application configuration execution.
@@ -318,7 +318,7 @@ public class ExecutionStartService implements IExecutionStartService {
          */
         if (tCExecution.getApplication().getType().equalsIgnoreCase("GUI")
                 || tCExecution.getApplication().getType().equalsIgnoreCase("APK")
-        || tCExecution.getApplication().getType().equalsIgnoreCase("IPA")){
+                || tCExecution.getApplication().getType().equalsIgnoreCase("IPA")) {
 
             try {
                 myInvariant = this.invariantService.findInvariantByIdValue("BROWSER", tCExecution.getBrowser());

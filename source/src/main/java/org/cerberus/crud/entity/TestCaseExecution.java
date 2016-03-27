@@ -17,7 +17,6 @@
  */
 package org.cerberus.crud.entity;
 
-import com.google.gson.Gson;
 import org.cerberus.service.engine.testdata.TestDataLibResult;
 import java.util.HashMap;
 import java.util.List;

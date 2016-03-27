@@ -19,7 +19,6 @@
  */
 package org.cerberus.service.engine;
 
-import java.util.concurrent.Future;
 import org.cerberus.crud.entity.TestCaseExecution;
 import org.cerberus.exception.CerberusException;
 
