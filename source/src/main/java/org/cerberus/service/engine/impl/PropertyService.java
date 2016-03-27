@@ -802,7 +802,7 @@ public class PropertyService implements IPropertyService {
         try {
             propertyValue = testCaseExecutionData.getValue1();
             String valueFromTestData = testDataService.findTestDataByKey(propertyValue, tCExecution.getApplication().getApplication(),
-                    tCExecution.getEnvironment(), tCExecution.getCountry()).getValue();
+                    tCExecution.getEnvironmentData(), tCExecution.getCountry()).getValue();
             if (valueFromTestData != null) {
                 testCaseExecutionData.setValue(valueFromTestData);
                 MessageEvent res = new MessageEvent(MessageEventEnum.PROPERTY_SUCCESS_TESTDATA);
@@ -1050,8 +1050,8 @@ public class PropertyService implements IPropertyService {
         TestDataLib lib;
         TestDataLibResult result;
         AnswerItem answer = testDataLibService.readByNameBySystemByEnvironmentByCountry(testCaseExecutionData.getValue1(),
-                tCExecution.getCountryEnvironmentParameters().getSystem(), tCExecution.getCountryEnvironmentParameters().getEnvironment(),
-                tCExecution.getCountryEnvironmentParameters().getCountry());
+                tCExecution.getApplication().getSystem(), tCExecution.getEnvironmentData(),
+                tCExecution.getCountry());
         
         if (answer.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
             lib = (TestDataLib) answer.getItem();

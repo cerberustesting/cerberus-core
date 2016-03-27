@@ -217,7 +217,9 @@ public class ExecutionStartService implements IExecutionStartService {
                 MyLogger.log(ExecutionStartService.class.getName(), Level.DEBUG, " -> Execution will be done with manual application connectivity setting. IP/URL/LOGIN : " + cea.getIp() + "-" + cea.getUrl() + "-" + cea.getUrlLogin());
             }
             /**
-             * If execution is manual, we force the env at 'MANUAL-ENVDATA' string. We keep envData information in order to trace the env data that has been used.
+             * If execution is manual, we force the env at 'MANUAL-ENVDATA'
+             * string. We keep envData information in order to trace the env
+             * data that has been used.
              */
             tCExecution.setEnvironment("MANUAL-" + tCExecution.getEnvironmentData());
         } else {

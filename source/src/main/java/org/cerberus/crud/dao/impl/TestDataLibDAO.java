@@ -25,6 +25,7 @@ import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
 import org.apache.log4j.Level;
+import org.apache.log4j.Logger;
 import org.cerberus.crud.dao.ITestDataLibDAO;
 import org.cerberus.database.DatabaseSpring;
 import org.cerberus.crud.entity.MessageEvent;
@@ -52,6 +53,9 @@ public class TestDataLibDAO implements ITestDataLibDAO {
     private DatabaseSpring databaseSpring;
     @Autowired
     private IFactoryTestDataLib factoryTestDataLib;
+
+    private static final Logger LOG = Logger.getLogger(TestDataLibDAO.class);
+
     private final String OBJECT_NAME = "Test Data Library";
     private final String SQL_DUPLICATED_CODE = "23000";
     private final int MAX_ROW_SELECTED = 10000000;
@@ -68,6 +72,14 @@ public class TestDataLibDAO implements ITestDataLibDAO {
                 .append(" and (`country` = ? or `country` = '')")
                 .append(" order by `name` DESC, system DESC, environment DESC, country DESC")
                 .append(" limit 1").toString();
+
+        // Debug message on SQL.
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("SQL : " + query);
+            LOG.debug("SQL system : " + system);
+            LOG.debug("SQL environment : " + environment);
+            LOG.debug("SQL country : " + country);
+        }
 
         Connection connection = this.databaseSpring.connect();
         try {
@@ -137,6 +149,15 @@ public class TestDataLibDAO implements ITestDataLibDAO {
                 .append(" order by `name` DESC, system DESC, environment DESC, country DESC")
                 .append(" limit 1").toString();
 
+        // Debug message on SQL.
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("SQL : " + query);
+            LOG.debug("SQL name : " + name);
+            LOG.debug("SQL system : " + system);
+            LOG.debug("SQL environment : " + environment);
+            LOG.debug("SQL country : " + country);
+        }
+
         Connection connection = this.databaseSpring.connect();
         try {
             PreparedStatement preStat = connection.prepareStatement(query);
@@ -198,6 +219,11 @@ public class TestDataLibDAO implements ITestDataLibDAO {
         MessageEvent msg;
         TestDataLib result;
         final String query = "SELECT * FROM testdatalib where `TestDataLibID` = ?";
+
+        // Debug message on SQL.
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("SQL : " + query);
+        }
 
         Connection connection = this.databaseSpring.connect();
 
@@ -276,6 +302,11 @@ public class TestDataLibDAO implements ITestDataLibDAO {
             limit = MAX_ROW_SELECTED;
         }
 
+        // Debug message on SQL.
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("SQL : " + query);
+        }
+
         Connection connection = this.databaseSpring.connect();
         try {
             PreparedStatement preStat = connection.prepareStatement(query.toString());
@@ -344,6 +375,10 @@ public class TestDataLibDAO implements ITestDataLibDAO {
         List<TestDataLib> list = new ArrayList<TestDataLib>();
         final String query = "SELECT * FROM testdatalib";
 
+        // Debug message on SQL.
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("SQL : " + query);
+        }
         Connection connection = this.databaseSpring.connect();
         try {
             PreparedStatement preStat = connection.prepareStatement(query);
@@ -450,6 +485,11 @@ public class TestDataLibDAO implements ITestDataLibDAO {
             query.append(" limit ").append(start).append(" , ").append(amount).append(" ");
         }
 
+        // Debug message on SQL.
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("SQL : " + query);
+        }
+
         Connection connection = this.databaseSpring.connect();
         try {
             PreparedStatement preStat = connection.prepareStatement(query.toString());
@@ -521,10 +561,15 @@ public class TestDataLibDAO implements ITestDataLibDAO {
         AnswerList answerList = new AnswerList();
         ArrayList<String> listOfGroups = new ArrayList<String>();
         MessageEvent msg;
+        String query = "SELECT distinct(`Group`) FROM testdatalib  where `Group` <> '' order by `Group`";
+
+        // Debug message on SQL.
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("SQL : " + query);
+        }
 
         Connection connection = this.databaseSpring.connect();
 
-        String query = "SELECT distinct(`Group`) FROM testdatalib  where `Group` <> '' order by `Group`";
         try {
             PreparedStatement preStat = connection.prepareStatement(query);
 
@@ -585,6 +630,11 @@ public class TestDataLibDAO implements ITestDataLibDAO {
         query.append("INSERT INTO testdatalib (`name`, `system`, `environment`, `country`, `group`, `type`, `database`, "
                 + "`script`, `servicePath`, `method`, `envelope`, `description`, `creator`) ");
         query.append("VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?)");
+
+        // Debug message on SQL.
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("SQL : " + query.toString());
+        }
 
         Connection connection = this.databaseSpring.connect();
         try {
@@ -661,6 +711,11 @@ public class TestDataLibDAO implements ITestDataLibDAO {
         StringBuilder query = new StringBuilder();
         query.append("delete from testdatalib where testdatalibid = ?");
 
+        // Debug message on SQL.
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("SQL : " + query.toString());
+        }
+
         Connection connection = this.databaseSpring.connect();
         try {
             PreparedStatement preStat = connection.prepareStatement(query.toString());
@@ -710,6 +765,12 @@ public class TestDataLibDAO implements ITestDataLibDAO {
         String query = "update testdatalib set `type`=?, `group`= ?, `system`=?, `environment`=?, `country`=?, `database`= ? , `script`= ? , "
                 + "`servicepath`= ? , `method`= ? , `envelope`= ? , `description`= ? , `LastModifier`= ?, `LastModified` = NOW() where "
                 + "`TestDataLibID`= ?";
+        
+        // Debug message on SQL.
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("SQL : " + query);
+        }
+
         Connection connection = this.databaseSpring.connect();
         try {
             PreparedStatement preStat = connection.prepareStatement(query);
