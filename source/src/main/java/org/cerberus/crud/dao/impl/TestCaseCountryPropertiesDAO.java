@@ -67,9 +67,10 @@ public class TestCaseCountryPropertiesDAO implements ITestCaseCountryPropertiesD
     /**
      * Short one line description.
      * <p/>
-     * Longer description. If there were any, it would be here. <p> And even
-     * more explanations to follow in consecutive paragraphs separated by HTML
-     * paragraph breaks.
+     * Longer description. If there were any, it would be here.
+     * <p>
+     * And even more explanations to follow in consecutive paragraphs separated
+     * by HTML paragraph breaks.
      *
      * @param variable Description text text text.
      * @return Description text text text.
@@ -85,7 +86,7 @@ public class TestCaseCountryPropertiesDAO implements ITestCaseCountryPropertiesD
             try {
                 preStat.setString(1, test);
                 preStat.setString(2, testcase);
-                
+
                 ResultSet resultSet = preStat.executeQuery();
                 try {
                     list = new ArrayList<TestCaseCountryProperties>();
@@ -100,21 +101,21 @@ public class TestCaseCountryPropertiesDAO implements ITestCaseCountryPropertiesD
                         int length = resultSet.getInt("length");
                         int rowLimit = resultSet.getInt("rowLimit");
                         String nature = resultSet.getString("nature");
-                        list.add(factoryTestCaseCountryProperties.create(test, testcase, country, property, type, database, value1,value2, length, rowLimit, nature));
+                        list.add(factoryTestCaseCountryProperties.create(test, testcase, country, property, type, database, value1, value2, length, rowLimit, nature));
 
                     }
                 } catch (SQLException exception) {
-                    MyLogger.log(TestCaseCountryPropertiesDAO.class.getName(), Level.ERROR, "Unable to execute query : "+exception.toString());
+                    MyLogger.log(TestCaseCountryPropertiesDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
                 } finally {
                     resultSet.close();
                 }
             } catch (SQLException exception) {
-                MyLogger.log(TestCaseCountryPropertiesDAO.class.getName(), Level.ERROR, "Unable to execute query : "+exception.toString());
+                MyLogger.log(TestCaseCountryPropertiesDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
             } finally {
                 preStat.close();
             }
         } catch (SQLException exception) {
-            MyLogger.log(TestCaseCountryPropertiesDAO.class.getName(), Level.ERROR, "Unable to execute query : "+exception.toString());
+            MyLogger.log(TestCaseCountryPropertiesDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
         } finally {
             try {
                 if (connection != null) {
@@ -159,17 +160,17 @@ public class TestCaseCountryPropertiesDAO implements ITestCaseCountryPropertiesD
 
                     }
                 } catch (SQLException exception) {
-                    MyLogger.log(TestCaseCountryPropertiesDAO.class.getName(), Level.ERROR, "Unable to execute query : "+exception.toString());
+                    MyLogger.log(TestCaseCountryPropertiesDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
                 } finally {
                     resultSet.close();
                 }
             } catch (SQLException exception) {
-                MyLogger.log(TestCaseCountryPropertiesDAO.class.getName(), Level.ERROR, "Unable to execute query : "+exception.toString());
+                MyLogger.log(TestCaseCountryPropertiesDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
             } finally {
                 preStat.close();
             }
         } catch (SQLException exception) {
-            MyLogger.log(TestCaseCountryPropertiesDAO.class.getName(), Level.ERROR, "Unable to execute query : "+exception.toString());
+            MyLogger.log(TestCaseCountryPropertiesDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
         } finally {
             try {
                 if (connection != null) {
@@ -189,6 +190,7 @@ public class TestCaseCountryPropertiesDAO implements ITestCaseCountryPropertiesD
         query.append("SELECT country FROM testcasecountryproperties WHERE test = ? AND testcase = ?");
         query.append(" AND HEX(`property`) = hex(?) AND `type` =? AND `database` =? AND hex(`value1`) like hex( ? ) AND hex(`value2`) like hex( ? ) AND `length` = ? ");
         query.append(" AND `rowlimit` = ? AND `nature` = ?");
+        MyLogger.log(TestCaseCountryPropertiesDAO.class.getName(), Level.DEBUG, query.toString());
 
         Connection connection = this.databaseSpring.connect();
         try {
@@ -196,11 +198,11 @@ public class TestCaseCountryPropertiesDAO implements ITestCaseCountryPropertiesD
             try {
                 preStat.setString(1, testCaseCountryProperties.getTest());
                 preStat.setString(2, testCaseCountryProperties.getTestCase());
-                preStat.setNString(3, testCaseCountryProperties.getProperty());
+                preStat.setString(3, testCaseCountryProperties.getProperty());
                 preStat.setString(4, testCaseCountryProperties.getType());
                 preStat.setString(5, testCaseCountryProperties.getDatabase());
-                preStat.setNString(6, testCaseCountryProperties.getValue1());
-                preStat.setNString(7, testCaseCountryProperties.getValue2());
+                preStat.setString(6, testCaseCountryProperties.getValue1());
+                preStat.setString(7, testCaseCountryProperties.getValue2());
                 preStat.setString(8, String.valueOf(testCaseCountryProperties.getLength()));
                 preStat.setString(9, String.valueOf(testCaseCountryProperties.getRowLimit()));
                 preStat.setString(10, testCaseCountryProperties.getNature());
@@ -215,17 +217,17 @@ public class TestCaseCountryPropertiesDAO implements ITestCaseCountryPropertiesD
                         list.add(valueToAdd);
                     }
                 } catch (SQLException exception) {
-                    MyLogger.log(TestCaseCountryPropertiesDAO.class.getName(), Level.ERROR, "Unable to execute query : "+exception.toString());
+                    MyLogger.log(TestCaseCountryPropertiesDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
                 } finally {
                     resultSet.close();
                 }
             } catch (SQLException exception) {
-                MyLogger.log(TestCaseCountryPropertiesDAO.class.getName(), Level.ERROR, "Unable to execute query : "+exception.toString());
+                MyLogger.log(TestCaseCountryPropertiesDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
             } finally {
                 preStat.close();
             }
         } catch (SQLException exception) {
-            MyLogger.log(TestCaseCountryPropertiesDAO.class.getName(), Level.ERROR, "Unable to execute query : "+exception.toString());
+            MyLogger.log(TestCaseCountryPropertiesDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
         } finally {
             try {
                 if (connection != null) {
@@ -265,20 +267,20 @@ public class TestCaseCountryPropertiesDAO implements ITestCaseCountryPropertiesD
                         int rowLimit = resultSet.getInt("rowLimit");
                         String nature = resultSet.getString("nature");
                         MyLogger.log(TestCaseCountryPropertiesDAO.class.getName(), Level.DEBUG, "Found Test Case Country property : " + test + "-" + testcase + "-" + country + "-" + property);
-                        list.add(factoryTestCaseCountryProperties.create(test, testcase, country, property, type, database, value1,value2, length, rowLimit, nature));
+                        list.add(factoryTestCaseCountryProperties.create(test, testcase, country, property, type, database, value1, value2, length, rowLimit, nature));
                     }
                 } catch (SQLException exception) {
-                    MyLogger.log(TestCaseCountryPropertiesDAO.class.getName(), Level.ERROR, "Unable to execute query : "+exception.toString());
+                    MyLogger.log(TestCaseCountryPropertiesDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
                 } finally {
                     resultSet.close();
                 }
             } catch (SQLException exception) {
-                MyLogger.log(TestCaseCountryPropertiesDAO.class.getName(), Level.ERROR, "Unable to execute query : "+exception.toString());
+                MyLogger.log(TestCaseCountryPropertiesDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
             } finally {
                 preStat.close();
             }
         } catch (SQLException exception) {
-            MyLogger.log(TestCaseCountryPropertiesDAO.class.getName(), Level.ERROR, "Unable to execute query : "+exception.toString());
+            MyLogger.log(TestCaseCountryPropertiesDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
         } finally {
             try {
                 if (connection != null) {
@@ -304,7 +306,7 @@ public class TestCaseCountryPropertiesDAO implements ITestCaseCountryPropertiesD
                 preStat.setString(1, test);
                 preStat.setString(2, testcase);
                 preStat.setString(3, country);
-                preStat.setNString(4, property);
+                preStat.setString(4, property);
 
                 ResultSet resultSet = preStat.executeQuery();
                 try {
@@ -321,17 +323,17 @@ public class TestCaseCountryPropertiesDAO implements ITestCaseCountryPropertiesD
                         throwException = true;
                     }
                 } catch (SQLException exception) {
-                    MyLogger.log(TestCaseCountryPropertiesDAO.class.getName(), Level.ERROR, "Unable to execute query : "+exception.toString());
+                    MyLogger.log(TestCaseCountryPropertiesDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
                 } finally {
                     resultSet.close();
                 }
             } catch (SQLException exception) {
-                MyLogger.log(TestCaseCountryPropertiesDAO.class.getName(), Level.ERROR, "Unable to execute query : "+exception.toString());
+                MyLogger.log(TestCaseCountryPropertiesDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
             } finally {
                 preStat.close();
             }
         } catch (SQLException exception) {
-            MyLogger.log(TestCaseCountryPropertiesDAO.class.getName(), Level.ERROR, "Unable to execute query : "+exception.toString());
+            MyLogger.log(TestCaseCountryPropertiesDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
         } finally {
             try {
                 if (connection != null) {
@@ -354,7 +356,7 @@ public class TestCaseCountryPropertiesDAO implements ITestCaseCountryPropertiesD
         query.append("INSERT INTO testcasecountryproperties (`Test`,`TestCase`,`Country`,`Property` ,`Type`");
         query.append(",`Database`,`Value1`,`Value2`,`Length`,`RowLimit`,`Nature`) ");
         query.append("VALUES (?,?,?,?,?,?,?,?,?,?,?)");
-        
+
         Connection connection = this.databaseSpring.connect();
         try {
             PreparedStatement preStat = connection.prepareStatement(query.toString());
@@ -370,12 +372,10 @@ public class TestCaseCountryPropertiesDAO implements ITestCaseCountryPropertiesD
                 preStat.setInt(9, testCaseCountryProperties.getLength());
                 preStat.setInt(10, testCaseCountryProperties.getRowLimit());
                 preStat.setString(11, testCaseCountryProperties.getNature());
-                
 
                 preStat.executeUpdate();
                 throwExcep = false;
-                
-                
+
             } catch (SQLException exception) {
                 MyLogger.log(TestCaseCountryPropertiesDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
             } finally {
@@ -396,7 +396,7 @@ public class TestCaseCountryPropertiesDAO implements ITestCaseCountryPropertiesD
             throw new CerberusException(new MessageGeneral(MessageGeneralEnum.CANNOT_UPDATE_TABLE));
         }
     }
-    
+
     @Override
     public void updateTestCaseCountryProperties(TestCaseCountryProperties testCaseCountryProperties) throws CerberusException {
         boolean throwExcep = false;
@@ -419,13 +419,11 @@ public class TestCaseCountryPropertiesDAO implements ITestCaseCountryPropertiesD
                 preStat.setString(8, testCaseCountryProperties.getTest());
                 preStat.setString(9, testCaseCountryProperties.getTestCase());
                 preStat.setString(10, testCaseCountryProperties.getCountry());
-                preStat.setNString(11, testCaseCountryProperties.getProperty());
-                
+                preStat.setString(11, testCaseCountryProperties.getProperty());
 
                 preStat.executeUpdate();
                 throwExcep = false;
-                
-                
+
             } catch (SQLException exception) {
                 MyLogger.log(TestCaseCountryPropertiesDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
             } finally {
@@ -459,7 +457,7 @@ public class TestCaseCountryPropertiesDAO implements ITestCaseCountryPropertiesD
             try {
                 preStat.setString(1, test);
                 preStat.setString(2, testcase);
-                preStat.setNString(3, property);
+                preStat.setString(3, property);
 
                 ResultSet resultSet = preStat.executeQuery();
                 try {
@@ -510,16 +508,16 @@ public class TestCaseCountryPropertiesDAO implements ITestCaseCountryPropertiesD
                 preStat.setString(1, tccp.getTest());
                 preStat.setString(2, tccp.getTestCase());
                 preStat.setString(3, tccp.getCountry());
-                preStat.setNString(4, tccp.getProperty());
+                preStat.setString(4, tccp.getProperty());
 
                 throwExcep = preStat.executeUpdate() == 0;
             } catch (SQLException exception) {
-                MyLogger.log(TestCaseCountryPropertiesDAO.class.getName(), Level.ERROR, "Unable to execute query : "+exception.toString());
+                MyLogger.log(TestCaseCountryPropertiesDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
             } finally {
                 preStat.close();
             }
         } catch (SQLException exception) {
-            MyLogger.log(TestCaseCountryPropertiesDAO.class.getName(), Level.ERROR, "Unable to execute query : "+exception.toString());
+            MyLogger.log(TestCaseCountryPropertiesDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
         } finally {
             try {
                 if (connection != null) {
@@ -560,11 +558,10 @@ public class TestCaseCountryPropertiesDAO implements ITestCaseCountryPropertiesD
         query.append("inner join  testcase tc  on t.test = tccp.test  and t.test = tc.test ");
         query.append("inner join testdatalib tdl on tdl.`name` = tccp.value1  and ");
         query.append("(tccp.Country = tdl.Country or tdl.country='') and tccp.test = t.test and tccp.testcase = tc.testcase ");
-        query.append("where tccp.`Type` LIKE ? and tdl.TestDataLibID = ? "); 
+        query.append("where tccp.`Type` LIKE ? and tdl.TestDataLibID = ? ");
         query.append("and tdl.`Name` LIKE ? and (tdl.Country = ? or tdl.country='') ");
         query.append("group by tccp.test, tccp.testcase, tccp.property ");
 
-        
         Connection connection = this.databaseSpring.connect();
         try {
             PreparedStatement preStat = connection.prepareStatement(query.toString());
@@ -573,38 +570,36 @@ public class TestCaseCountryPropertiesDAO implements ITestCaseCountryPropertiesD
                 preStat.setInt(2, testDataLib);
                 preStat.setString(3, name);
                 preStat.setString(4, country);
-                
-                 
+
                 HashMap<String, TestListDTO> map = new HashMap<String, TestListDTO>();
-               
-                
+
                 HashMap<String, List<PropertyListDTO>> auxiliaryMap = new HashMap<String, List<PropertyListDTO>>();//the key is the test + ":" +testcasenumber
-                
+
                 String key, test, testCase;
                 ResultSet resultSet = preStat.executeQuery();
-                try{
-                    while(resultSet.next()){
+                try {
+                    while (resultSet.next()) {
                         TestListDTO testList;
-                        TestCaseListDTO testCaseDTO; 
+                        TestCaseListDTO testCaseDTO;
                         List<PropertyListDTO> propertiesList;
-                        
+
                         test = resultSet.getString("Test");
                         testCase = resultSet.getString("TestCase");
-                        
+
                         //TEST
                         //gets the info from test cases that match the desired information
-                        if(map.containsKey(test)){
+                        if (map.containsKey(test)) {
                             testList = map.get(test);
-                        }else{
+                        } else {
                             testList = new TestListDTO();
-                            
+
                             testList.setDescription(resultSet.getString("testDescription"));
                             testList.setTest(test);
                         }
-                        
+
                         //TESTCASE
                         key = test + ":" + testCase;
-                        if(!auxiliaryMap.containsKey(key)){
+                        if (!auxiliaryMap.containsKey(key)) {
                             //means that we must associate a new test case with a test
                             testCaseDTO = new TestCaseListDTO();
                             testCaseDTO.setTestCaseDescription(resultSet.getString("testCaseDescription"));
@@ -618,58 +613,56 @@ public class TestCaseCountryPropertiesDAO implements ITestCaseCountryPropertiesD
                             testList.getTestCaseList().add(testCaseDTO);
                             map.put(test, testList);
                             propertiesList = new ArrayList<PropertyListDTO>();
-                        }else{
+                        } else {
                             propertiesList = auxiliaryMap.get(key);
                         }
-                        
+
                         PropertyListDTO prop = new PropertyListDTO();
-                        
+
                         prop.setNrCountries(resultSet.getInt("total"));
                         prop.setPropertyName(resultSet.getString("property"));
                         propertiesList.add(prop);
                         //stores the information about the properties
                         auxiliaryMap.put(key, propertiesList);
-                        
+
                     }
-                   
-                    
+
                     //assigns the list of tests retrieved by the query to the list
                     listOfTests = new ArrayList<TestListDTO>(map.values());
-                    
-                    
-                     //assigns the list of properties to the correct testcaselist
-                    for(TestListDTO list : listOfTests){
-                        for(TestCaseListDTO cases : list.getTestCaseList()){
+
+                    //assigns the list of properties to the correct testcaselist
+                    for (TestListDTO list : listOfTests) {
+                        for (TestCaseListDTO cases : list.getTestCaseList()) {
                             cases.setPropertiesList(auxiliaryMap.get(list.getTest() + ":" + cases.getTestCaseNumber()));
                         }
                     }
-                    if(listOfTests.isEmpty()){
+                    if (listOfTests.isEmpty()) {
                         rs = new MessageEvent(MessageEventEnum.DATA_OPERATION_NO_DATA_FOUND);
-                    }else{
+                    } else {
                         rs = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
-                        rs.setDescription(rs.getDescription().replace("%ITEM%", "List of Test Cases").replace("%OPERATION%", "Select"));                        
+                        rs.setDescription(rs.getDescription().replace("%ITEM%", "List of Test Cases").replace("%OPERATION%", "Select"));
                     }
-                    
-                }catch (SQLException exception) {
-                    MyLogger.log(TestCaseCountryPropertiesDAO.class.getName(), Level.ERROR, "Unable to execute query : "+exception.toString());
+
+                } catch (SQLException exception) {
+                    MyLogger.log(TestCaseCountryPropertiesDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
                     rs = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
                     rs.setDescription(rs.getDescription().replace("%DESCRIPTION%", "Unable to get the list of test cases."));
-                } finally{
-                    if(resultSet != null){
+                } finally {
+                    if (resultSet != null) {
                         resultSet.close();
                     }
                 }
             } catch (SQLException exception) {
-                MyLogger.log(TestCaseCountryPropertiesDAO.class.getName(), Level.ERROR, "Unable to execute query : "+exception.toString());
+                MyLogger.log(TestCaseCountryPropertiesDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
                 rs = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
                 rs.setDescription(rs.getDescription().replace("%DESCRIPTION%", "Unable to get the list of test cases."));
             } finally {
-                if(preStat != null){
+                if (preStat != null) {
                     preStat.close();
                 }
             }
         } catch (SQLException exception) {
-            MyLogger.log(TestCaseCountryPropertiesDAO.class.getName(), Level.ERROR, "Unable to execute query : "+exception.toString());
+            MyLogger.log(TestCaseCountryPropertiesDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
             rs = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
             rs.setDescription(rs.getDescription().replace("%DESCRIPTION%", "Unable to get the list of test cases."));
         } finally {
@@ -682,8 +675,8 @@ public class TestCaseCountryPropertiesDAO implements ITestCaseCountryPropertiesD
             }
         }
         ansList.setResultMessage(rs);
-        ansList.setDataList(listOfTests); 
-        
+        ansList.setDataList(listOfTests);
+
         return ansList;
     }
 
@@ -695,13 +688,12 @@ public class TestCaseCountryPropertiesDAO implements ITestCaseCountryPropertiesD
         query.append("INSERT INTO testcasecountryproperties (`Test`,`TestCase`,`Country`,`Property` ,`Type`");
         query.append(",`Database`,`Value1`,`Value2`,`Length`,`RowLimit`,`Nature`) ");
         query.append("VALUES (?,?,?,?,?,?,?,?,?,?,?)");
-         
-        
-        Connection connection = this.databaseSpring.connect();        
+
+        Connection connection = this.databaseSpring.connect();
         try {
             PreparedStatement preStat = connection.prepareStatement(query.toString());
             try {
-                for(TestCaseCountryProperties prop: listOfPropertiesToInsert){
+                for (TestCaseCountryProperties prop : listOfPropertiesToInsert) {
                     preStat.setString(1, prop.getTest());
                     preStat.setString(2, prop.getTestCase());
                     preStat.setString(3, prop.getCountry());
@@ -713,34 +705,33 @@ public class TestCaseCountryPropertiesDAO implements ITestCaseCountryPropertiesD
                     preStat.setInt(9, prop.getLength());
                     preStat.setInt(10, prop.getRowLimit());
                     preStat.setString(11, prop.getNature());
-                    
+
                     preStat.addBatch();
                 }
-                
-                 //executes the batch         
+
+                //executes the batch         
                 preStat.executeBatch();
 
-                int affectedRows[] = preStat.executeBatch(); 
-                
+                int affectedRows[] = preStat.executeBatch();
+
                 //verify if some of the statements failed
                 boolean someFailed = ArrayUtils.contains(affectedRows, 0) || ArrayUtils.contains(affectedRows, Statement.EXECUTE_FAILED);
 
-                if(someFailed == false){
+                if (someFailed == false) {
                     rs = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
-                    rs.setDescription(rs.getDescription().replace("%ITEM%", "Property").replace("%OPERATION%", "CREATE")); 
-                }else{
+                    rs.setDescription(rs.getDescription().replace("%ITEM%", "Property").replace("%OPERATION%", "CREATE"));
+                } else {
                     rs = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_EXPECTED);
                     rs.setDescription(rs.getDescription().replace("%ITEM%", "Property").replace("%OPERATION%", "CREATE").
-                            replace("%REASON%", "Some problem occurred while creating the new property! "));                     
+                            replace("%REASON%", "Some problem occurred while creating the new property! "));
                 }
-                
-                
+
             } catch (SQLException exception) {
                 rs = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
-                rs.setDescription(rs.getDescription().replace("%DESCRIPTION%", "It was not possible to update table."));                
+                rs.setDescription(rs.getDescription().replace("%DESCRIPTION%", "It was not possible to update table."));
                 MyLogger.log(TestCaseCountryPropertiesDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
             } finally {
-                if(preStat != null){
+                if (preStat != null) {
                     preStat.close();
                 }
             }
@@ -750,8 +741,8 @@ public class TestCaseCountryPropertiesDAO implements ITestCaseCountryPropertiesD
             MyLogger.log(TestCaseCountryPropertiesDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
         } finally {
             try {
-                if(!this.databaseSpring.isOnTransaction()){
-                    if(connection != null){
+                if (!this.databaseSpring.isOnTransaction()) {
+                    if (connection != null) {
                         connection.close();
                     }
                 }
@@ -759,7 +750,7 @@ public class TestCaseCountryPropertiesDAO implements ITestCaseCountryPropertiesD
                 MyLogger.log(TestCaseCountryPropertiesDAO.class.getName(), Level.WARN, e.toString());
             }
         }
-        
+
         answer.setResultMessage(rs);
         return answer;
     }

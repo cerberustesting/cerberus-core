@@ -95,7 +95,7 @@ public class GetTestCase extends HttpServlet {
                 jsonObject.put("group", tcInfo.getGroup());
                 jsonObject.put("status", tcInfo.getStatus());
                 JSONArray countryList = new JSONArray();
-                for(TestCaseCountry tcc : tcInfo.getTestCaseCountry()){
+                for (TestCaseCountry tcc : tcInfo.getTestCaseCountry()) {
                     countryList.put(tcc.getCountry());
                 }
                 jsonObject.put("countriesList", countryList);
@@ -131,7 +131,7 @@ public class GetTestCase extends HttpServlet {
                     property.put("nature", prop.getNature());
                     List<String> countriesSelected = testCaseDAO.findCountryByProperty(prop);
                     for (TestCaseCountry tcc : tcInfo.getTestCaseCountry()) {
-                        if (countriesSelected.contains(tcc.getCountry())) {
+                        if (!(countriesSelected == null) && (countriesSelected.contains(tcc.getCountry()))) {
                             property.put(tcc.getCountry(), true);
                         } else {
                             property.put(tcc.getCountry(), false);
@@ -163,7 +163,7 @@ public class GetTestCase extends HttpServlet {
                         actionList.put(actionObject);
                         sequenceList.put(actionObject);
 
-                        for (TestCaseStepActionControl control : action.getTestCaseStepActionControl()){
+                        for (TestCaseStepActionControl control : action.getTestCaseStepActionControl()) {
                             JSONObject controlObject = new JSONObject();
                             controlObject.put("step", control.getStep());
                             controlObject.put("sequence", control.getSequence());

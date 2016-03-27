@@ -153,6 +153,7 @@ public class TestCaseDAO implements ITestCaseDAO {
 
         if (!StringUtil.isNullOrEmpty(searchTerm)) {
             searchSQL.append(" and (tc.`testcase` like ?");
+            searchSQL.append(" or tc.`test` like ?");
             searchSQL.append(" or tc.`application` like ?");
             searchSQL.append(" or tc.`project` like ?");
             searchSQL.append(" or tc.`creator` like ?");
@@ -196,6 +197,7 @@ public class TestCaseDAO implements ITestCaseDAO {
                     preStat.setString(i++, test);
                 }
                 if (!Strings.isNullOrEmpty(searchTerm)) {
+                    preStat.setString(i++, "%" + searchTerm + "%");
                     preStat.setString(i++, "%" + searchTerm + "%");
                     preStat.setString(i++, "%" + searchTerm + "%");
                     preStat.setString(i++, "%" + searchTerm + "%");
