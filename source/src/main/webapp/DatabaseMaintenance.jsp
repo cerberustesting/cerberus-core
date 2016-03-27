@@ -81,13 +81,13 @@
                     out.print("</b></td>");
 
                     // Start to build the SQL Script here.
-                    SQLInstruction = new ArrayList<>();
+                    SQLInstruction = new ArrayList<String>();
                     appContext = WebApplicationContextUtils.getWebApplicationContext(this.getServletContext());
                     IDatabaseVersioningService DatabaseVersionService = appContext.getBean(IDatabaseVersioningService.class);
                     SQLInstruction = DatabaseVersionService.getSQLScript();
 
                     // Initialize the array that will receive the RC of every execution.
-                    SQLRC = new ArrayList<>();
+                    SQLRC = new ArrayList<String>();
 
                     // Calculate the version that will be updated. Version correspond directly to the size of the arry (ie the number of SQL to execute)
                     NewVersion = SQLInstruction.size();

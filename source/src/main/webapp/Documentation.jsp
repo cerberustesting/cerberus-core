@@ -45,10 +45,10 @@
 
         String Title = "";
         List<String> TitleList;
-        TitleList = new ArrayList<>();
+        TitleList = new ArrayList<String>();
         String Doc = "";
         List<String> DocList;
-        DocList = new ArrayList<>();
+        DocList = new ArrayList<String>();
 
         if (DocValue_isdefined == false) {
 

@@ -108,7 +108,7 @@
                 <div style="float:left; width:100px"><p class="dttTitle">Filters</p></div>
                 <div style="float:left; width:100px;font-weight: bold;"><%out.print(docService.findLabelHTML("application", "application", "Application", myLang));%></div>
                 <div id="selectboxtestpage" style="float:left">
-                    <form action="TestPerApplication.jsp" method="post" name="selectApplication">
+                    <form action="TestPerApplication.jsp" method="post" name="selectApplication" >
                         <select id="Application" name="Application" style="width: 500px">
                             <option style="width: 500px" value="All">-- ALL --</option>
                             <%
@@ -133,7 +133,7 @@
      <input id="systemSelected" value="<%=MySystem%>" style="display:none">
         <%
             if (filterApp){
-                appList= new ArrayList<>();
+                appList=new ArrayList<Application>();
                 appList.add(applicationService.convert(applicationService.readByKey(appSel)));
             }
 

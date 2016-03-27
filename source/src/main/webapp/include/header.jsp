@@ -183,7 +183,7 @@
                                 MySystem = MyUserobj.getDefaultSystem();
                             } else {
                                 if (!(MyUserobj.getDefaultSystem().equals(MySystem))) {
-                                    List<String> systems = new ArrayList<>();
+                                    List<String> systems = new ArrayList<String>();
                                     for (UserSystem us : MyUserobj.getUserSystems()) {
                                         systems.add(us.getSystem());
                                     }

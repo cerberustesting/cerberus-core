@@ -440,7 +440,7 @@
 %>
 
 <%
-    TreeMap<String, String> options = new TreeMap<>();
+    TreeMap<String, String> options = new TreeMap<String, String>();
 
     User usr = userService.findUserByKey(request.getUserPrincipal().getName());
     String reportingFavorite = "ReportingExecution.jsp?"+usr.getReportingFavorite();

@@ -44,7 +44,7 @@
         <%@ include file="include/function.jsp" %>
             <%
                 final Logger LOG = Logger.getLogger(this.getClass());
-                TreeMap<String, String> options = new TreeMap<>();
+                TreeMap<String, String> options = new TreeMap<String, String>();
 
                 IInvariantService invariantService = appContext.getBean(InvariantService.class);
                 ITestService testService = appContext.getBean(ITestService.class);
