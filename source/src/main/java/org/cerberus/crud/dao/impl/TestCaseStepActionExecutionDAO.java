@@ -60,7 +60,7 @@ public class TestCaseStepActionExecutionDAO implements ITestCaseStepActionExecut
     private DatabaseSpring databaseSpring;
     @Autowired
     private IFactoryTestCaseStepActionExecution factoryTestCaseStepActionExecution;
-    
+
     private static final Logger LOG = Logger.getLogger(TestCaseStepActionExecutionDAO.class);
 
     @Override
@@ -372,8 +372,20 @@ public class TestCaseStepActionExecutionDAO implements ITestCaseStepActionExecut
         String action = resultSet.getString("action");
         String object = resultSet.getString("object");
         String property = resultSet.getString("property");
-        long start = resultSet.getTimestamp("start").getTime();
-        long end = resultSet.getTimestamp("end").getTime();
+        long start;
+        try { // Managing the case where the date is 0000-00-00 00:00:00 inside MySQL
+            start = resultSet.getTimestamp("start").getTime();
+        } catch (Exception e) {
+            LOG.warn("Start date on execution not definied. " + e.toString());
+            start = 0;
+        }
+        long end;
+        try { // Managing the case where the date is 0000-00-00 00:00:00 inside MySQL
+            end = resultSet.getTimestamp("end").getTime();
+        } catch (Exception e) {
+            LOG.warn("End date on execution not definied. " + e.toString());
+            end = 0;
+        }
         long startlong = resultSet.getLong("startlong");
         long endlong = resultSet.getLong("endlong");
         String screenshot = resultSet.getString("ScreenshotFilename");

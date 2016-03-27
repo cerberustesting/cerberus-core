@@ -315,14 +315,26 @@ public class TestCaseStepActionControlExecutionDAO implements ITestCaseStepActio
         String controlProperty = resultSet.getString("ControlProperty");
         String controlValue = resultSet.getString("controlValue");
         String fatal = resultSet.getString("fatal");
-        long start = resultSet.getTimestamp("start").getTime();
-        long end = resultSet.getTimestamp("end").getTime();
+        long start;
+        try { // Managing the case where the date is 0000-00-00 00:00:00 inside MySQL
+            start = resultSet.getTimestamp("start").getTime();
+        } catch (Exception e) {
+            LOG.warn("Start date on execution not definied. " + e.toString());
+            start = 0;
+        }
+        long end;
+        try { // Managing the case where the date is 0000-00-00 00:00:00 inside MySQL
+            end = resultSet.getTimestamp("end").getTime();
+        } catch (Exception e) {
+            LOG.warn("End date on execution not definied. " + e.toString());
+            end = 0;
+        }
         long startlong = resultSet.getLong("startlong");
         long endlong = resultSet.getLong("endlong");
         String screenshot = resultSet.getString("ScreenshotFilename");
         String pageSource = resultSet.getString("PageSourceFilename");
-        return factoryTestCaseStepActionControlExecution.create(id, test, testCase, step, 
-        sequence, control, returnCode, returnMessage, controlType, controlProperty, controlValue, 
-        fatal, start, end, startlong, endlong, screenshot, pageSource, null, null);
+        return factoryTestCaseStepActionControlExecution.create(id, test, testCase, step,
+                sequence, control, returnCode, returnMessage, controlType, controlProperty, controlValue,
+                fatal, start, end, startlong, endlong, screenshot, pageSource, null, null);
     }
 }

@@ -153,8 +153,20 @@ public class TestCaseExecutionDataDAO implements ITestCaseExecutionDataDAO {
                         String value2 = resultSet.getString("value2");
                         String returnCode = resultSet.getString("rc");
                         String returnMessage = resultSet.getString("rmessage");
-                        long start = resultSet.getTimestamp("start").getTime();
-                        long end = resultSet.getTimestamp("end").getTime();
+                        long start;
+                        try { // Managing the case where the date is 0000-00-00 00:00:00 inside MySQL
+                            start = resultSet.getTimestamp("start").getTime();
+                        } catch (Exception e) {
+                            LOG.warn("Start date on execution not definied. " + e.toString());
+                            start = 0;
+                        }
+                        long end;
+                        try { // Managing the case where the date is 0000-00-00 00:00:00 inside MySQL
+                            end = resultSet.getTimestamp("end").getTime();
+                        } catch (Exception e) {
+                            LOG.warn("End date on execution not definied. " + e.toString());
+                            end = 0;
+                        }
                         long startLong = resultSet.getLong("startlong");
                         long endLong = resultSet.getLong("endlong");
                         resultData = factoryTestCaseExecutionData.create(id, property, value, type, value1, value2, returnCode, returnMessage,

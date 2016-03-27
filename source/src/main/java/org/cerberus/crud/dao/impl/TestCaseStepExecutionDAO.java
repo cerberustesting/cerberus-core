@@ -18,7 +18,6 @@
 package org.cerberus.crud.dao.impl;
 
 import java.math.BigDecimal;
-import java.math.RoundingMode;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -61,7 +60,7 @@ public class TestCaseStepExecutionDAO implements ITestCaseStepExecutionDAO {
     private DatabaseSpring databaseSpring;
     @Autowired
     private IFactoryTestCaseStepExecution factoryTestCaseStepExecution;
-    
+
     private static final Logger LOG = Logger.getLogger(TestCaseStepExecutionDAO.class);
 
     /**
@@ -289,8 +288,20 @@ public class TestCaseStepExecutionDAO implements ITestCaseStepExecutionDAO {
         String testcase = resultSet.getString("testcase");
         int step = resultSet.getInt("step");
         String batNumExe = resultSet.getString("batnumexe");
-        long start = resultSet.getTimestamp("start").getTime();
-        long end = resultSet.getTimestamp("end").getTime();
+        long start;
+        try { // Managing the case where the date is 0000-00-00 00:00:00 inside MySQL
+            start = resultSet.getTimestamp("start").getTime();
+        } catch (Exception e) {
+            LOG.warn("Start date on execution not definied. " + e.toString());
+            start = 0;
+        }
+        long end;
+        try { // Managing the case where the date is 0000-00-00 00:00:00 inside MySQL
+            end = resultSet.getTimestamp("end").getTime();
+        } catch (Exception e) {
+            LOG.warn("End date on execution not definied. " + e.toString());
+            end = 0;
+        }
         long fullstart = resultSet.getLong("fullstart");
         long fullend = resultSet.getLong("Fullend");
         BigDecimal timeelapsed = resultSet.getBigDecimal("timeelapsed");
