@@ -29,6 +29,7 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import org.cerberus.crud.entity.MessageEvent;
 import org.cerberus.crud.entity.TCase;
 import org.cerberus.crud.entity.TestCaseCountry;
 import org.cerberus.crud.entity.TestCaseCountryProperties;
@@ -53,10 +54,18 @@ import org.cerberus.crud.service.ITestCaseStepService;
 import org.cerberus.crud.service.ITestService;
 import org.cerberus.crud.service.IUserService;
 import org.cerberus.crud.service.impl.LogEventService;
+import org.cerberus.enums.MessageEventEnum;
 import org.cerberus.exception.CerberusException;
+import org.cerberus.util.ParameterParserUtil;
+import org.cerberus.util.StringUtil;
+import org.cerberus.util.answer.Answer;
+import org.cerberus.util.answer.AnswerItem;
+import org.cerberus.util.servlet.ServletUtil;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.owasp.html.PolicyFactory;
+import org.owasp.html.Sanitizers;
 import org.springframework.context.ApplicationContext;
 import org.springframework.web.context.support.WebApplicationContextUtils;
 import org.springframework.web.util.HtmlUtils;
@@ -80,148 +89,225 @@ public class UpdateTestCaseWithDependencies1 extends HttpServlet {
      */
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException, CerberusException, JSONException {
-        ApplicationContext appContext = WebApplicationContextUtils.getWebApplicationContext(this.getServletContext());
+
+        JSONObject jsonResponse = new JSONObject();
+        Answer ans = new Answer();
+        MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
+        msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", ""));
+        ans.setResultMessage(msg);
+        PolicyFactory policy = Sanitizers.FORMATTING.and(Sanitizers.LINKS);
+
+        response.setContentType("application/json");
+
+        // Calling Servlet Transversal Util.
+        ServletUtil.servletStart(request);
+
+        /**
+         * Parsing and securing all required parameters.
+         */
         String initialTest = request.getParameter("informationInitialTest");
         String initialTestCase = request.getParameter("informationInitialTestCase");
         String test = request.getParameter("informationTest");
         String testCase = request.getParameter("informationTestCase");
         boolean duplicate = false;
 
-        ITestService tService = appContext.getBean(ITestService.class);
-        ITestCaseService tcService = appContext.getBean(ITestCaseService.class);
-        ITestCaseCountryService tccService = appContext.getBean(ITestCaseCountryService.class);
-        ITestCaseCountryPropertiesService tccpService = appContext.getBean(ITestCaseCountryPropertiesService.class);
-        ITestCaseStepService tcsService = appContext.getBean(ITestCaseStepService.class);
-        ITestCaseStepActionService tcsaService = appContext.getBean(ITestCaseStepActionService.class);
-        ITestCaseStepActionControlService tcsacService = appContext.getBean(ITestCaseStepActionControlService.class);
-        IInvariantService invariantService = appContext.getBean(IInvariantService.class);
-        IUserService userService = appContext.getBean(IUserService.class);
-        IGroupService groupService = appContext.getBean(IGroupService.class);
-
         /**
-         * For the list of testcase country verify it exists. If it does not
-         * exists > create it If it exist, verify if it's the
+         * Checking all constrains before calling the services.
          */
-        List<TestCaseCountryProperties> tccpFromPage = getTestCaseCountryPropertiesFromParameter(request, appContext, test, testCase);
-        List<TestCaseCountryProperties> tccpFromDtb = tccpService.findListOfPropertyPerTestTestCase(initialTest, initialTestCase);
+        if (StringUtil.isNullOrEmpty(test) || StringUtil.isNullOrEmpty(testCase)) {
+            msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_EXPECTED);
+            msg.setDescription(msg.getDescription().replace("%ITEM%", "Test Case")
+                    .replace("%OPERATION%", "Update")
+                    .replace("%REASON%", "mendatory fields are missing."));
+            ans.setResultMessage(msg);
+        } else {
+            ApplicationContext appContext = WebApplicationContextUtils.getWebApplicationContext(this.getServletContext());
+            ITestCaseService testCaseService = appContext.getBean(ITestCaseService.class);
+            ITestCaseCountryPropertiesService tccpService = appContext.getBean(ITestCaseCountryPropertiesService.class);
+            ITestCaseStepService tcsService = appContext.getBean(ITestCaseStepService.class);
+            ITestCaseStepActionService tcsaService = appContext.getBean(ITestCaseStepActionService.class);
+            ITestCaseStepActionControlService tcsacService = appContext.getBean(ITestCaseStepActionControlService.class);
 
-        /**
-         * Iterate on (TestCaseCountryProperties From Page -
-         * TestCaseCountryProperties From Database) If TestCaseCountryProperties
-         * in Database has same key : Update and remove from the list. If
-         * TestCaseCountryProperties in database does ot exist : Insert it.
-         */
-        List<TestCaseCountryProperties> tccpToUpdateOrInsert = new ArrayList(tccpFromPage);
-        tccpToUpdateOrInsert.removeAll(tccpFromDtb);
-        List<TestCaseCountryProperties> tccpToUpdateOrInsertToIterate = new ArrayList(tccpToUpdateOrInsert);
+            AnswerItem resp = testCaseService.readByKey(test, testCase);
+            TCase tc = (TCase) resp.getItem();
+            if (!(resp.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode()))) {
+                /**
+                 * Object could not be found. We stop here and report the error.
+                 */
+                msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_EXPECTED);
+                msg.setDescription(msg.getDescription().replace("%ITEM%", "TestCase")
+                        .replace("%OPERATION%", "Update")
+                        .replace("%REASON%", "TestCase does not exist."));
+                ans.setResultMessage(msg);
 
-        for (TestCaseCountryProperties tccpDifference : tccpToUpdateOrInsertToIterate) {
-            for (TestCaseCountryProperties tccpInDatabase : tccpFromDtb) {
-                if (tccpDifference.hasSameKey(tccpInDatabase)) {
-                    tccpService.updateTestCaseCountryProperties(tccpDifference);
-                    tccpToUpdateOrInsert.remove(tccpDifference);
-                }
-            }
-        }
-        tccpService.insertListTestCaseCountryProperties(tccpToUpdateOrInsert);
+            } else /**
+             * The service was able to perform the query and confirm the object
+             * exist, then we can update it.
+             */
+             if (!request.isUserInRole("Test")) { // We cannot update the testcase if the user is not at least in Test role.
+                    msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_EXPECTED);
+                    msg.setDescription(msg.getDescription().replace("%ITEM%", "TestCase")
+                            .replace("%OPERATION%", "Update")
+                            .replace("%REASON%", "Not enought privilege to update the testcase. You mut belong to Test Privilege."));
+                    ans.setResultMessage(msg);
 
-        /**
-         * Iterate on (TestCaseCountryProperties From Database -
-         * TestCaseCountryProperties From Page). If TestCaseCountryProperties in
-         * Page has same key : remove from the list. Then delete the list of
-         * TestCaseCountryProperties
-         */
-        if (!duplicate) {
-            List<TestCaseCountryProperties> tccpToDelete = new ArrayList(tccpFromDtb);
-            tccpToDelete.removeAll(tccpFromPage);
-            List<TestCaseCountryProperties> tccpToDeleteToIterate = new ArrayList(tccpToDelete);
+                } else if ((tc.getStatus().equalsIgnoreCase("WORKING")) && !(request.isUserInRole("TestAdmin"))) { // If Test Case is WORKING we need TestAdmin priviliges.
+                    msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_EXPECTED);
+                    msg.setDescription(msg.getDescription().replace("%ITEM%", "TestCase")
+                            .replace("%OPERATION%", "Update")
+                            .replace("%REASON%", "Not enought privilege to update the testcase. The test case is in WORKING status and needs TestAdmin privilige to be updated"));
+                    ans.setResultMessage(msg);
 
-            for (TestCaseCountryProperties tccpDifference : tccpToDeleteToIterate) {
-                for (TestCaseCountryProperties tccpInPage : tccpFromPage) {
-                    if (tccpDifference.hasSameKey(tccpInPage)) {
-                        tccpToDelete.remove(tccpDifference);
+                } else {
+
+                    // Test Case exist and we can update it so Global update start here //
+                    /**
+                     * For the list of testcase country verify it exists. If it
+                     * does not exists > create it If it exist, verify if it's
+                     * the
+                     */
+                    List<TestCaseCountryProperties> tccpFromPage = getTestCaseCountryPropertiesFromParameter(request, appContext, test, testCase);
+                    List<TestCaseCountryProperties> tccpFromDtb = tccpService.findListOfPropertyPerTestTestCase(initialTest, initialTestCase);
+
+                    /**
+                     * Iterate on (TestCaseCountryProperties From Page -
+                     * TestCaseCountryProperties From Database) If
+                     * TestCaseCountryProperties in Database has same key :
+                     * Update and remove from the list. If
+                     * TestCaseCountryProperties in database does ot exist :
+                     * Insert it.
+                     */
+                    List<TestCaseCountryProperties> tccpToUpdateOrInsert = new ArrayList(tccpFromPage);
+                    tccpToUpdateOrInsert.removeAll(tccpFromDtb);
+                    List<TestCaseCountryProperties> tccpToUpdateOrInsertToIterate = new ArrayList(tccpToUpdateOrInsert);
+
+                    for (TestCaseCountryProperties tccpDifference : tccpToUpdateOrInsertToIterate) {
+                        for (TestCaseCountryProperties tccpInDatabase : tccpFromDtb) {
+                            if (tccpDifference.hasSameKey(tccpInDatabase)) {
+                                tccpService.updateTestCaseCountryProperties(tccpDifference);
+                                tccpToUpdateOrInsert.remove(tccpDifference);
+                            }
+                        }
                     }
+                    tccpService.insertListTestCaseCountryProperties(tccpToUpdateOrInsert);
+
+                    /**
+                     * Iterate on (TestCaseCountryProperties From Database -
+                     * TestCaseCountryProperties From Page). If
+                     * TestCaseCountryProperties in Page has same key : remove
+                     * from the list. Then delete the list of
+                     * TestCaseCountryProperties
+                     */
+                    if (!duplicate) {
+                        List<TestCaseCountryProperties> tccpToDelete = new ArrayList(tccpFromDtb);
+                        tccpToDelete.removeAll(tccpFromPage);
+                        List<TestCaseCountryProperties> tccpToDeleteToIterate = new ArrayList(tccpToDelete);
+
+                        for (TestCaseCountryProperties tccpDifference : tccpToDeleteToIterate) {
+                            for (TestCaseCountryProperties tccpInPage : tccpFromPage) {
+                                if (tccpDifference.hasSameKey(tccpInPage)) {
+                                    tccpToDelete.remove(tccpDifference);
+                                }
+                            }
+                        }
+                        tccpService.deleteListTestCaseCountryProperties(tccpToDelete);
+                    }
+                    /**
+                     * For the list of testcasestep verify it exists. If it does
+                     * not exists > create it If it exist, verify if it's the
+                     */
+                    List<TestCaseStep> tcsFromPage = getTestCaseStepFromParameter(request, appContext, test, testCase, duplicate);
+                    List<TestCaseStepAction> tcsaFromPage = new ArrayList();
+                    List<TestCaseStepActionControl> tcsacFromPage = new ArrayList();
+
+                    for (TestCaseStep tcsL : tcsFromPage) {
+                        if (tcsL.getTestCaseStepAction() != null) {
+                            tcsaFromPage.addAll(tcsL.getTestCaseStepAction());
+                            for (TestCaseStepAction tcsaL : tcsL.getTestCaseStepAction()) {
+                                tcsacFromPage.addAll(tcsaL.getTestCaseStepActionControl());
+                            }
+                        }
+                    }
+
+                    List<TestCaseStep> tcsFromDtb = new ArrayList(tcsService.getListOfSteps(initialTest, initialTestCase));
+                    tcsService.compareListAndUpdateInsertDeleteElements(tcsFromPage, tcsFromDtb, duplicate);
+
+                    List<TestCaseStepAction> tcsaFromDtb = new ArrayList(tcsaService.findTestCaseStepActionbyTestTestCase(initialTest, initialTestCase));
+                    tcsaService.compareListAndUpdateInsertDeleteElements(tcsaFromPage, tcsaFromDtb, duplicate);
+
+                    List<TestCaseStepActionControl> tcsacFromDtb = new ArrayList(tcsacService.findControlByTestTestCase(initialTest, initialTestCase));
+                    tcsacService.compareListAndUpdateInsertDeleteElements(tcsacFromPage, tcsacFromDtb, duplicate);
+
+                    List<TestCaseStep> tcsNewFromPage = new ArrayList();
+                    List<TestCaseStepAction> tcsaNewFromPage = new ArrayList();
+                    List<TestCaseStepActionControl> tcsacNewFromPage = new ArrayList();
+                    List<TestCaseStep> tcsNewFromDtb = new ArrayList();
+                    List<TestCaseStepAction> tcsaNewFromDtb = new ArrayList();
+                    List<TestCaseStepActionControl> tcsacNewFromDtb = new ArrayList();
+
+                    tcsNewFromDtb = tcsService.getListOfSteps(test, testCase);
+                    int incrementStep = 0;
+                    for (TestCaseStep tcsNew : tcsNewFromDtb) {
+                        if (tcsService.getTestCaseStepUsingStepInParamter(test, testCase, tcsNew.getStep()).isEmpty()) {
+                            tcsNew.setIsStepInUseByOtherTestCase(false);
+                        } else {
+                            tcsNew.setIsStepInUseByOtherTestCase(true);
+                        }
+                        incrementStep++;
+                        tcsaNewFromDtb = tcsaService.getListOfAction(test, testCase, tcsNew.getStep());
+                        int incrementAction = 0;
+                        for (TestCaseStepAction tcsaNew : tcsaNewFromDtb) {
+                            incrementAction++;
+                            tcsacNewFromDtb = tcsacService.findControlByTestTestCaseStepSequence(test, testCase, tcsaNew.getStep(), tcsaNew.getSequence());
+                            int incrementControl = 0;
+                            for (TestCaseStepActionControl tcsacNew : tcsacNewFromDtb) {
+                                incrementControl++;
+                                tcsacNew.setControl(incrementControl);
+                                tcsacNew.setSequence(incrementAction);
+                                tcsacNew.setStep(incrementStep);
+                                tcsacNewFromPage.add(tcsacNew);
+                            }
+                            tcsaNew.setSequence(incrementAction);
+                            tcsaNew.setStep(incrementStep);
+                            tcsaNewFromPage.add(tcsaNew);
+                        }
+                        tcsNew.setInitialStep(tcsNew.getStep());
+                        tcsNew.setStep(incrementStep);
+                        tcsNewFromPage.add(tcsNew);
+                    }
+
+                    List<TestCaseStep> tcsNewNewFromDtb = new ArrayList(tcsService.getListOfSteps(test, testCase));
+                    tcsService.compareListAndUpdateInsertDeleteElements(tcsNewFromPage, tcsNewNewFromDtb, duplicate);
+
+                    List<TestCaseStepAction> tcsaNewNewFromDtb = new ArrayList(tcsaService.findTestCaseStepActionbyTestTestCase(test, testCase));
+                    tcsaService.compareListAndUpdateInsertDeleteElements(tcsaNewFromPage, tcsaNewNewFromDtb, duplicate);
+
+                    List<TestCaseStepActionControl> tcsacNewNewFromDtb = new ArrayList(tcsacService.findControlByTestTestCase(test, testCase));
+                    tcsacService.compareListAndUpdateInsertDeleteElements(tcsacNewFromPage, tcsacNewNewFromDtb, duplicate);
+
+                    /**
+                     * Adding Log entry.
+                     */
+                    if (ans.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
+                        /**
+                         * Update was succesfull. Adding Log entry.
+                         */
+                        ILogEventService logEventService = appContext.getBean(LogEventService.class);
+                        logEventService.createPrivateCalls("/UpdateTestCaseWithDependencies1", "UPDATE", "Update testcase : ['" + tc.getTest() + "'|'" + tc.getTestCase() + "']", request);
+                    }
+
                 }
-            }
-            tccpService.deleteListTestCaseCountryProperties(tccpToDelete);
         }
+
         /**
-         * For the list of testcasestep verify it exists. If it does not exists
-         * > create it If it exist, verify if it's the
+         * Formating and returning the json result.
          */
-        List<TestCaseStep> tcsFromPage = getTestCaseStepFromParameter(request, appContext, test, testCase, duplicate);
-        List<TestCaseStepAction> tcsaFromPage = new ArrayList();
-        List<TestCaseStepActionControl> tcsacFromPage = new ArrayList();
+        jsonResponse.put("messageType", ans.getResultMessage().getMessage().getCodeString());
+        jsonResponse.put("message", ans.getResultMessage().getDescription());
 
-        for (TestCaseStep tcsL : tcsFromPage) {
-            if (tcsL.getTestCaseStepAction() != null) {
-                tcsaFromPage.addAll(tcsL.getTestCaseStepAction());
-                for (TestCaseStepAction tcsaL : tcsL.getTestCaseStepAction()) {
-                    tcsacFromPage.addAll(tcsaL.getTestCaseStepActionControl());
-                }
-            }
-        }
+        response.getWriter().print(jsonResponse);
+        response.getWriter().flush();
 
-        List<TestCaseStep> tcsFromDtb = new ArrayList(tcsService.getListOfSteps(initialTest, initialTestCase));
-        tcsService.compareListAndUpdateInsertDeleteElements(tcsFromPage, tcsFromDtb, duplicate);
-
-        List<TestCaseStepAction> tcsaFromDtb = new ArrayList(tcsaService.findTestCaseStepActionbyTestTestCase(initialTest, initialTestCase));
-        tcsaService.compareListAndUpdateInsertDeleteElements(tcsaFromPage, tcsaFromDtb, duplicate);
-
-        List<TestCaseStepActionControl> tcsacFromDtb = new ArrayList(tcsacService.findControlByTestTestCase(initialTest, initialTestCase));
-        tcsacService.compareListAndUpdateInsertDeleteElements(tcsacFromPage, tcsacFromDtb, duplicate);
-
-        List<TestCaseStep> tcsNewFromPage = new ArrayList();
-        List<TestCaseStepAction> tcsaNewFromPage = new ArrayList();
-        List<TestCaseStepActionControl> tcsacNewFromPage = new ArrayList();
-        List<TestCaseStep> tcsNewFromDtb = new ArrayList();
-        List<TestCaseStepAction> tcsaNewFromDtb = new ArrayList();
-        List<TestCaseStepActionControl> tcsacNewFromDtb = new ArrayList();
-
-        tcsNewFromDtb = tcsService.getListOfSteps(test, testCase);
-        int incrementStep = 0;
-        for (TestCaseStep tcsNew : tcsNewFromDtb) {
-            if (tcsService.getTestCaseStepUsingStepInParamter(test, testCase, tcsNew.getStep()).isEmpty()) {
-                tcsNew.setIsStepInUseByOtherTestCase(false);
-            } else {
-                tcsNew.setIsStepInUseByOtherTestCase(true);
-            }
-            incrementStep++;
-            tcsaNewFromDtb = tcsaService.getListOfAction(test, testCase, tcsNew.getStep());
-            int incrementAction = 0;
-            for (TestCaseStepAction tcsaNew : tcsaNewFromDtb) {
-                incrementAction++;
-                tcsacNewFromDtb = tcsacService.findControlByTestTestCaseStepSequence(test, testCase, tcsaNew.getStep(), tcsaNew.getSequence());
-                int incrementControl = 0;
-                for (TestCaseStepActionControl tcsacNew : tcsacNewFromDtb) {
-                    incrementControl++;
-                    tcsacNew.setControl(incrementControl);
-                    tcsacNew.setSequence(incrementAction);
-                    tcsacNew.setStep(incrementStep);
-                    tcsacNewFromPage.add(tcsacNew);
-                }
-                tcsaNew.setSequence(incrementAction);
-                tcsaNew.setStep(incrementStep);
-                tcsaNewFromPage.add(tcsaNew);
-            }
-            tcsNew.setInitialStep(tcsNew.getStep());
-            tcsNew.setStep(incrementStep);
-            tcsNewFromPage.add(tcsNew);
-        }
-
-        List<TestCaseStep> tcsNewNewFromDtb = new ArrayList(tcsService.getListOfSteps(test, testCase));
-        tcsService.compareListAndUpdateInsertDeleteElements(tcsNewFromPage, tcsNewNewFromDtb, duplicate);
-
-        List<TestCaseStepAction> tcsaNewNewFromDtb = new ArrayList(tcsaService.findTestCaseStepActionbyTestTestCase(test, testCase));
-        tcsaService.compareListAndUpdateInsertDeleteElements(tcsaNewFromPage, tcsaNewNewFromDtb, duplicate);
-
-        List<TestCaseStepActionControl> tcsacNewNewFromDtb = new ArrayList(tcsacService.findControlByTestTestCase(test, testCase));
-        tcsacService.compareListAndUpdateInsertDeleteElements(tcsacNewFromPage, tcsacNewNewFromDtb, duplicate);
-
-        /**
-         * Adding Log entry.
-         */
-        ILogEventService logEventService = appContext.getBean(LogEventService.class);
     }
 
     /**

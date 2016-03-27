@@ -1017,7 +1017,7 @@
                                         <div style="float:left;height:25px" id="wob">
                                             <input name="divButtonSaveChange" style="display:none" value="Save Changes" onclick="submitTestCaseModificationNew('');"
                                                    id="submitButtonAction" name="submitChanges" class="buttonSaveChanges"
-                                                   type="button" >
+                                                   type="button"  >
                                         </div>
                                         <div id="ButtonDiv0" style="float:left; height:20px">
                                             <input type="button" value="Add Step" title="Add Step" class="buttonSaveChanges"
