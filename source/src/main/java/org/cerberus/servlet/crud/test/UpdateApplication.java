@@ -35,8 +35,6 @@ import org.cerberus.crud.entity.MessageEvent;
 import org.cerberus.crud.factory.IFactoryCountryEnvironmentParameters;
 import org.cerberus.enums.MessageEventEnum;
 import org.cerberus.exception.CerberusException;
-import org.cerberus.crud.factory.IFactoryLogEvent;
-import org.cerberus.crud.factory.impl.FactoryLogEvent;
 import org.cerberus.crud.service.IApplicationService;
 import org.cerberus.crud.service.ICountryEnvironmentParametersService;
 import org.cerberus.crud.service.ILogEventService;
@@ -45,6 +43,7 @@ import org.cerberus.util.ParameterParserUtil;
 import org.cerberus.util.StringUtil;
 import org.cerberus.util.answer.Answer;
 import org.cerberus.util.answer.AnswerItem;
+import org.cerberus.util.answer.AnswerUtil;
 import org.cerberus.util.servlet.ServletUtil;
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -116,6 +115,10 @@ public class UpdateApplication extends HttpServlet {
         List<CountryEnvironmentParameters> ceaList = new ArrayList();
         ceaList = getCountryEnvironmentApplicationFromParameter(request, appContext, system, application, objApplicationArray);
 
+        // Prepare the final answer.
+        MessageEvent msg1 = new MessageEvent(MessageEventEnum.GENERIC_OK);
+        Answer finalAnswer = new Answer(msg1);
+
         /**
          * Checking all constrains before calling the services.
          */
@@ -142,11 +145,7 @@ public class UpdateApplication extends HttpServlet {
                 /**
                  * Object could not be found. We stop here and report the error.
                  */
-                msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_EXPECTED);
-                msg.setDescription(msg.getDescription().replace("%ITEM%", "Application")
-                        .replace("%OPERATION%", "Update")
-                        .replace("%REASON%", "Application does not exist."));
-                ans.setResultMessage(msg);
+                finalAnswer = AnswerUtil.agregateAnswer(finalAnswer, (Answer) resp);
 
             } else {
                 /**
@@ -165,9 +164,7 @@ public class UpdateApplication extends HttpServlet {
                 applicationData.setDescription(description);
                 applicationData.setSort(sort);
                 ans = applicationService.update(applicationData);
-
-                // Update the Database with the new list.
-                ceaService.compareListAndUpdateInsertDeleteElements(system, application, ceaList);
+                finalAnswer = AnswerUtil.agregateAnswer(finalAnswer, (Answer) ans);
 
                 if (ans.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
                     /**
@@ -176,14 +173,19 @@ public class UpdateApplication extends HttpServlet {
                     ILogEventService logEventService = appContext.getBean(LogEventService.class);
                     logEventService.createPrivateCalls("/UpdateApplication", "UPDATE", "Updated Application : ['" + application + "']", request);
                 }
+
+                // Update the Database with the new list.
+                ans = ceaService.compareListAndUpdateInsertDeleteElements(system, application, ceaList);
+                finalAnswer = AnswerUtil.agregateAnswer(finalAnswer, (Answer) ans);
+
             }
         }
 
         /**
          * Formating and returning the json result.
          */
-        jsonResponse.put("messageType", ans.getResultMessage().getMessage().getCodeString());
-        jsonResponse.put("message", ans.getResultMessage().getDescription());
+        jsonResponse.put("messageType", finalAnswer.getResultMessage().getMessage().getCodeString());
+        jsonResponse.put("message", finalAnswer.getResultMessage().getDescription());
 
         response.getWriter().print(jsonResponse);
         response.getWriter().flush();

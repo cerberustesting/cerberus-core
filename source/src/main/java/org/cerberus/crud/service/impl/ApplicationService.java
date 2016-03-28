@@ -20,6 +20,7 @@
 package org.cerberus.crud.service.impl;
 
 import java.util.List;
+import org.apache.log4j.Logger;
 
 import org.cerberus.crud.dao.IApplicationDAO;
 import org.cerberus.crud.entity.Application;
@@ -28,6 +29,7 @@ import org.cerberus.enums.MessageEventEnum;
 import org.cerberus.enums.MessageGeneralEnum;
 import org.cerberus.exception.CerberusException;
 import org.cerberus.crud.service.IApplicationService;
+import org.cerberus.crud.service.ICountryEnvironmentParametersService;
 import org.cerberus.util.answer.Answer;
 import org.cerberus.util.answer.AnswerItem;
 import org.cerberus.util.answer.AnswerList;
@@ -43,6 +45,12 @@ public class ApplicationService implements IApplicationService {
 
     @Autowired
     private IApplicationDAO ApplicationDAO;
+    @Autowired
+    private ICountryEnvironmentParametersService countryEnvironmentParametersService;
+
+    private static final Logger LOG = Logger.getLogger("ApplicationService");
+
+    private final String OBJECT_NAME = "Application";
 
     @Override
     public AnswerItem readByKey(String id) {
@@ -96,8 +104,8 @@ public class ApplicationService implements IApplicationService {
 
     @Override
     public Answer update(Application object) {
-        return ApplicationDAO.update(object);
-    }
+            return ApplicationDAO.update(object);
+        }
 
     @Override
     public AnswerList readDistinctSystem() {

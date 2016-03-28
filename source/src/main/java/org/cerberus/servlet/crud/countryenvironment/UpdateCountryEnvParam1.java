@@ -135,7 +135,7 @@ public class UpdateCountryEnvParam1 extends HttpServlet {
         List<CountryEnvLink> celList;
         celList = getCountryEnvironmentLinkFromParameter(request, appContext, system, country, environment, objDepArray);
 
-        // Prepard the final answer.
+        // Prepare the final answer.
         MessageEvent msg1 = new MessageEvent(MessageEventEnum.GENERIC_OK);
         Answer finalAnswer = new Answer(msg1);
 

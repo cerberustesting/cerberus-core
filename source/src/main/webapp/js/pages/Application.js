@@ -224,7 +224,7 @@ function editEntryModalSaveHandler() {
             if (getAlertType(data.messageType) === "success") {
                 var oTable = $("#applicationsTable").dataTable();
                 oTable.fnDraw(true);
-//                $('#editApplicationModal').modal('hide');
+                $('#editApplicationModal').modal('hide');
                 showMessage(data);
             } else {
                 showMessage(data, $('#editApplicationModal'));
