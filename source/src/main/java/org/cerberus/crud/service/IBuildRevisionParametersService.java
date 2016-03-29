@@ -158,7 +158,7 @@ public interface IBuildRevisionParametersService {
      * @param build
      * @param revision
      * @param release
-     * @param appliction
+     * @param application
      * @return buildRevisionParameters Object 
      */
     AnswerItem readByVarious2(String build, String revision, String release, String application);
