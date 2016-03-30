@@ -303,7 +303,7 @@ function getInvariantListN(list, handleData) {
 function getSelectInvariant(idName, forceReload) {
     var cacheEntryName = idName + "INVARIANT";
     if (forceReload) {
-        console.debug("Purge " + cacheEntryName);
+//        console.debug("Purge " + cacheEntryName);
         sessionStorage.removeItem(cacheEntryName);
     }
     var list = JSON.parse(sessionStorage.getItem(cacheEntryName));
@@ -338,7 +338,7 @@ function getSelectInvariant(idName, forceReload) {
 function getSelectApplication(system, forceReload) {
     var cacheEntryName = system + "INVARIANT";
     if (forceReload) {
-        console.debug("Purge " + cacheEntryName);
+//        console.debug("Purge " + cacheEntryName);
         sessionStorage.removeItem(cacheEntryName);
     }
     var list = JSON.parse(sessionStorage.getItem(cacheEntryName));
@@ -373,7 +373,7 @@ function getSelectApplication(system, forceReload) {
 function getSelectDeployType(forceReload) {
     var cacheEntryName = "DEPLOYTYPE";
     if (forceReload) {
-        console.debug("Purge " + cacheEntryName);
+//        console.debug("Purge " + cacheEntryName);
         sessionStorage.removeItem(cacheEntryName);
     }
     var list = JSON.parse(sessionStorage.getItem(cacheEntryName));

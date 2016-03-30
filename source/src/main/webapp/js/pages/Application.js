@@ -95,7 +95,7 @@ function renderOptionsForApplication(data) {
             " + doc.getDocLabel("page_application", "button_create") + "</button></div>";
 
             $("#applicationsTable_wrapper div.ColVis").before(contentToAdd);
-            $('#application #createApplicationButton').click(addEntryClick);
+            $('#applicationList #createApplicationButton').click(addEntryClick);
         }
     }
 }
@@ -135,7 +135,7 @@ function addEntryModalSaveHandler() {
     clearResponseMessage($('#addApplicationModal'));
     var formAdd = $("#addApplicationModal #addApplicationModalForm");
 
-    var nameElement = formAdd.find("#application");
+    var nameElement = formAdd.find("#addApplicationModalForm");
     var nameElementEmpty = nameElement.prop("value") === '';
     if (nameElementEmpty) {
         var localMessage = new Message("danger", "Please specify the name of the application!");
@@ -153,7 +153,7 @@ function addEntryModalSaveHandler() {
     var jqxhr = $.post("CreateApplication", formAdd.serialize());
     $.when(jqxhr).then(function (data) {
         hideLoaderInModal('#addApplicationModal');
-        console.log(data.messageType);
+//        console.log(data.messageType);
         if (getAlertType(data.messageType) === 'success') {
             var oTable = $("#applicationsTable").dataTable();
             oTable.fnDraw(true);
