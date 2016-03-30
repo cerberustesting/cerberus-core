@@ -84,12 +84,8 @@ public class ApplicationService implements IApplicationService {
 
     @Override
     public boolean exist(String Object) {
-        try {
-            convert(readByKey(Object));
-            return true;
-        } catch (CerberusException e) {
-            return false;
-        }
+        AnswerItem objectAnswer = readByKey(Object);
+        return (objectAnswer.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) && (objectAnswer.getItem() != null); // Call was successfull and object was found.
     }
 
     @Override
@@ -104,8 +100,8 @@ public class ApplicationService implements IApplicationService {
 
     @Override
     public Answer update(Application object) {
-            return ApplicationDAO.update(object);
-        }
+        return ApplicationDAO.update(object);
+    }
 
     @Override
     public AnswerList readDistinctSystem() {

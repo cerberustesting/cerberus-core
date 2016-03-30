@@ -162,12 +162,8 @@ public class CountryEnvParamService implements ICountryEnvParamService {
 
     @Override
     public boolean exist(String system, String country, String environment) {
-        try {
-            convert(readByKey(system, country, environment));
-            return true;
-        } catch (CerberusException e) {
-            return false;
-        }
+        AnswerItem objectAnswer = readByKey(system, country, environment);
+        return (objectAnswer.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) && (objectAnswer.getItem() != null); // Call was successfull and object was found.
     }
 
     @Override

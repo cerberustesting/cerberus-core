@@ -60,12 +60,8 @@ public class ProjectService implements IProjectService {
 
     @Override
     public boolean exist(String project) {
-        try {
-            convert(readByKey(project));
-            return true;
-        } catch (CerberusException e) {
-            return false;
-        }
+        AnswerItem objectAnswer = readByKey(project);
+        return (objectAnswer.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) && (objectAnswer.getItem() != null); // Call was successfull and object was found.
     }
 
     @Override

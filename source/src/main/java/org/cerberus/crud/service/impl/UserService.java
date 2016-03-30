@@ -170,12 +170,8 @@ public class UserService implements IUserService {
 
     @Override
     public boolean exist(String login) {
-        try {
-            convert(readByKey(login));
-            return true;
-        } catch (CerberusException e) {
-            return false;
-        }
+        AnswerItem objectAnswer = readByKey(login);
+        return (objectAnswer.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) && (objectAnswer.getItem() != null); // Call was successfull and object was found.
     }
 
     @Override

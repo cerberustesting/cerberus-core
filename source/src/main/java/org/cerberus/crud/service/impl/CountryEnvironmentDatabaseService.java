@@ -200,12 +200,8 @@ public class CountryEnvironmentDatabaseService implements ICountryEnvironmentDat
 
     @Override
     public boolean exist(String system, String country, String environment, String database) {
-        try {
-            convert(readByKey(system, country, environment, database));
-            return true;
-        } catch (CerberusException e) {
-            return false;
-        }
+        AnswerItem objectAnswer = readByKey(system, country, environment, database);
+        return (objectAnswer.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) && (objectAnswer.getItem() != null); // Call was successfull and object was found.
     }
 
     @Override

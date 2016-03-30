@@ -63,12 +63,8 @@ public class BuildRevisionBatchService implements IBuildRevisionBatchService {
 
     @Override
     public boolean exist(Long id) {
-        try {
-            convert(readByKey(id));
-            return true;
-        } catch (CerberusException e) {
-            return false;
-        }
+        AnswerItem objectAnswer = readByKey(id);
+        return (objectAnswer.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) && (objectAnswer.getItem() != null); // Call was successfull and object was found.
     }
 
     @Override

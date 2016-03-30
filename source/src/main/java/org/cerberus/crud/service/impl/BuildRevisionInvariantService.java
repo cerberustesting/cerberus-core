@@ -92,22 +92,14 @@ public class BuildRevisionInvariantService implements IBuildRevisionInvariantSer
 
     @Override
     public boolean exist(String system, Integer level, Integer seq) {
-        try {
-            convert(readByKey(system, level, seq));
-            return true;
-        } catch (CerberusException e) {
-            return false;
-        }
+        AnswerItem objectAnswer = readByKey(system, level, seq);
+        return (objectAnswer.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) && (objectAnswer.getItem() != null); // Call was successfull and object was found.
     }
 
     @Override
     public boolean exist(String system, Integer level, String versionName) {
-        try {
-            convert(readByKey(system, level, versionName));
-            return true;
-        } catch (CerberusException e) {
-            return false;
-        }
+        AnswerItem objectAnswer = readByKey(system, level, versionName);
+        return (objectAnswer.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) && (objectAnswer.getItem() != null); // Call was successfull and object was found.
     }
 
     @Override

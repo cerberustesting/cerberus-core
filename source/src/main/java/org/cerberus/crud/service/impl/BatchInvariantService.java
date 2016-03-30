@@ -50,13 +50,9 @@ public class BatchInvariantService implements IBatchInvariantService {
     }
 
     @Override
-    public boolean exist(String batch) {
-        try {
-            convert(readByKey(batch));
-            return true;
-        } catch (CerberusException e) {
-            return false;
-        }
+    public boolean exist(String object) {
+        AnswerItem objectAnswer = readByKey(object);
+        return (objectAnswer.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) && (objectAnswer.getItem() != null); // Call was successfull and object was found.
     }
 
     @Override
