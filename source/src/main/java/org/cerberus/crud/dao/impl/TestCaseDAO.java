@@ -86,6 +86,10 @@ public class TestCaseDAO implements ITestCaseDAO {
         List<TCase> list = null;
         final String query = "SELECT * FROM testcase WHERE test = ?";
 
+        // Debug message on SQL.
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("SQL : " + query);
+        }
         Connection connection = this.databaseSpring.connect();
         try {
             PreparedStatement preStat = connection.prepareStatement(query);
@@ -299,6 +303,10 @@ public class TestCaseDAO implements ITestCaseDAO {
         TCase result = null;
         final String query = "SELECT * FROM testcase WHERE test = ? AND testcase = ?";
 
+        // Debug message on SQL.
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("SQL : " + query);
+        }
         Connection connection = this.databaseSpring.connect();
         try {
             PreparedStatement preStat = connection.prepareStatement(query);
@@ -348,6 +356,10 @@ public class TestCaseDAO implements ITestCaseDAO {
                 + "tc.FromRev = ?, tc.ToBuild = ?, tc.ToRev = ?, tc.BugID = ?, tc.TargetBuild = ?, tc.Implementer = ?, tc.LastModifier = ?, tc.TargetRev = ?, tc.`function` = ? "
                 + "WHERE tc.Test = ? AND tc.Testcase = ?";
 
+        // Debug message on SQL.
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("SQL : " + sql);
+        }
         Connection connection = this.databaseSpring.connect();
         try {
             PreparedStatement preStat = connection.prepareStatement(sql);
@@ -406,6 +418,10 @@ public class TestCaseDAO implements ITestCaseDAO {
         final String sql_count = "SELECT Country FROM testcasecountry WHERE Test = ? AND TestCase = ?";
         ArrayList<String> countriesDB = new ArrayList<String>();
 
+        // Debug message on SQL.
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("SQL : " + sql_count);
+        }
         Connection connection = this.databaseSpring.connect();
         try {
             PreparedStatement preStat = connection.prepareStatement(sql_count);
@@ -493,6 +509,10 @@ public class TestCaseDAO implements ITestCaseDAO {
                 .append("VALUES ( ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ")
                 .append("?, ?, ?, ?, ?, ?, ?, ?, ?, ? ); ");
 
+        // Debug message on SQL.
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("SQL : " + sql);
+        }
         Connection connection = this.databaseSpring.connect();
         try {
             PreparedStatement preStat = connection.prepareStatement(sql.toString());
@@ -558,6 +578,10 @@ public class TestCaseDAO implements ITestCaseDAO {
                 + "WHERE tc.test=tcc.test AND tc.testcase=tcc.testcase "
                 + "AND tc.test = ? AND tc.application = ? AND tcc.country = ? AND tc.tcactive = ? ";
 
+        // Debug message on SQL.
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("SQL : " + query);
+        }
         Connection connection = this.databaseSpring.connect();
         try {
             PreparedStatement preStat = connection.prepareStatement(query);
@@ -611,6 +635,10 @@ public class TestCaseDAO implements ITestCaseDAO {
                 .append("where cc.campaign = ? ")
                 .toString();
 
+        // Debug message on SQL.
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("SQL : " + query);
+        }
         Connection connection = this.databaseSpring.connect();
         try {
             PreparedStatement preStat = connection.prepareStatement(query);
@@ -710,6 +738,10 @@ public class TestCaseDAO implements ITestCaseDAO {
                 .append(ParameterParserUtil.wildcardOrIsNullIfEmpty("t2.function", testCase.getFunction()))
                 .append(")").toString();
 
+        // Debug message on SQL.
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("SQL : " + query.toString());
+        }
         Connection connection = this.databaseSpring.connect();
         try {
             PreparedStatement preStat = connection.prepareStatement(query);
@@ -793,6 +825,10 @@ public class TestCaseDAO implements ITestCaseDAO {
         query.append(createInClauseFromList(status, "tc.status"));
         query.append("GROUP BY tc.test, tc.testcase ");
 
+        // Debug message on SQL.
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("SQL : " + query.toString());
+        }
         Connection connection = this.databaseSpring.connect();
         try {
             PreparedStatement preStat = connection.prepareStatement(query.toString());
@@ -912,6 +948,10 @@ public class TestCaseDAO implements ITestCaseDAO {
         List<String> list = null;
         final String query = "SELECT DISTINCT tc." + column + " FROM testcase tc ORDER BY tc." + column + " ASC";
 
+        // Debug message on SQL.
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("SQL : " + query);
+        }
         Connection connection = this.databaseSpring.connect();
         try {
             PreparedStatement preStat = connection.prepareStatement(query);
@@ -960,6 +1000,10 @@ public class TestCaseDAO implements ITestCaseDAO {
         boolean bool = false;
         final String query = "DELETE FROM testcase WHERE test = ? AND testcase = ?";
 
+        // Debug message on SQL.
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("SQL : " + query);
+        }
         Connection connection = this.databaseSpring.connect();
         try {
             PreparedStatement preStat = connection.prepareStatement(query);
@@ -1001,6 +1045,10 @@ public class TestCaseDAO implements ITestCaseDAO {
         query.append(columnName);
         query.append("`=? where `test`=? and `testcase`=? ");
 
+        // Debug message on SQL.
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("SQL : " + query.toString());
+        }
         Connection connection = this.databaseSpring.connect();
         try {
             PreparedStatement preStat = connection.prepareStatement(query.toString());
@@ -1189,6 +1237,10 @@ public class TestCaseDAO implements ITestCaseDAO {
         }
         query.append(" ORDER BY t2.test, t2.testcase");
 
+        // Debug message on SQL.
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("SQL : " + query.toString());
+        }
         Connection connection = this.databaseSpring.connect();
         try {
             PreparedStatement preStat = connection.prepareStatement(query.toString());
@@ -1230,6 +1282,10 @@ public class TestCaseDAO implements ITestCaseDAO {
                 + "tc.FromRev = ?, tc.ToBuild = ?, tc.ToRev = ?, tc.BugID = ?, tc.TargetBuild = ?, tc.Implementer = ?, tc.LastModifier = ?, tc.TargetRev = ?, tc.`function` = ? "
                 + "WHERE tc.Test = ? AND tc.Testcase = ?";
 
+        // Debug message on SQL.
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("SQL : " + sql);
+        }
         Connection connection = this.databaseSpring.connect();
         try {
             PreparedStatement preStat = connection.prepareStatement(sql);
@@ -1290,6 +1346,10 @@ public class TestCaseDAO implements ITestCaseDAO {
         String max = "";
         final String sql = "SELECT  Max( Testcase ) + 0 as MAXTC FROM testcase where test = ?";
 
+        // Debug message on SQL.
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("SQL : " + sql);
+        }
         Connection connection = this.databaseSpring.connect();
         try {
             PreparedStatement preStat = connection.prepareStatement(sql);
@@ -1348,6 +1408,10 @@ public class TestCaseDAO implements ITestCaseDAO {
         }
         query.append(")");
 
+        // Debug message on SQL.
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("SQL : " + query.toString());
+        }
         Connection connection = this.databaseSpring.connect();
         try {
             PreparedStatement preStat = connection.prepareStatement(query.toString());
@@ -1399,6 +1463,10 @@ public class TestCaseDAO implements ITestCaseDAO {
         sb.append("SELECT * FROM testcase tc join application app on tc.application=app.application ");
         sb.append(" WHERE tc.test = ? and app.system = ? ");
 
+        // Debug message on SQL.
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("SQL : " + sb.toString());
+        }
         Connection connection = this.databaseSpring.connect();
         try {
             PreparedStatement preStat = connection.prepareStatement(sb.toString());
@@ -1464,6 +1532,10 @@ public class TestCaseDAO implements ITestCaseDAO {
         sb.append(campaignClause);
         sb.append(batteryClause);
         sb.append(" GROUP BY tc.test, tc.testcase ");
+        // Debug message on SQL.
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("SQL : " + sb.toString());
+        }
         Connection connection = this.databaseSpring.connect();
         try {
             PreparedStatement preStat = connection.prepareStatement(sb.toString());
@@ -1505,6 +1577,10 @@ public class TestCaseDAO implements ITestCaseDAO {
         String result = "";
         final String sql = "SELECT system from application a join testcase tc on tc.application=a.Application where tc.test= ? and tc.testcase= ?";
 
+        // Debug message on SQL.
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("SQL : " + sql);
+        }
         Connection connection = this.databaseSpring.connect();
         try {
             PreparedStatement preStat = connection.prepareStatement(sql);
@@ -1677,6 +1753,10 @@ public class TestCaseDAO implements ITestCaseDAO {
         query.append("inner join testcasestep  tcs on tc.test = tcs.test and tc.testcase = tcs.testcase ");
         query.append("WHERE tc.test= ? and (tcs.inlibrary = 'Y' or tcs.inlibrary = 'y') ");
         query.append("group by tc.testcase order by tc.testcase ");
+        // Debug message on SQL.
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("SQL : " + query.toString());
+        }
         Connection connection = this.databaseSpring.connect();
         try {
             PreparedStatement preStat = connection.prepareStatement(query.toString());
@@ -1749,6 +1829,10 @@ public class TestCaseDAO implements ITestCaseDAO {
         MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
         msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", ""));
 
+        // Debug message on SQL.
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("SQL : " + query);
+        }
         Connection connection = this.databaseSpring.connect();
         try {
             PreparedStatement preStat = connection.prepareStatement(query);
@@ -1830,6 +1914,10 @@ public class TestCaseDAO implements ITestCaseDAO {
         query.append(" `origine` = ?");
         query.append(" WHERE test = ? AND testcase = ?;");
 
+        // Debug message on SQL.
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("SQL : " + query.toString());
+        }
         Connection connection = this.databaseSpring.connect();
         try {
             PreparedStatement preStat = connection.prepareStatement(query.toString());
@@ -1903,6 +1991,10 @@ public class TestCaseDAO implements ITestCaseDAO {
                 .append("VALUES ( ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ")
                 .append("?, ?, ?, ?, ?, ?, ?, ?, ?, ? ); ");
 
+        // Debug message on SQL.
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("SQL : " + sql.toString());
+        }
         Connection connection = this.databaseSpring.connect();
         try {
             PreparedStatement preStat = connection.prepareStatement(sql.toString());
@@ -1976,6 +2068,10 @@ public class TestCaseDAO implements ITestCaseDAO {
         MessageEvent msg = null;
         final String query = "DELETE FROM testcase WHERE test = ? AND testcase = ?";
 
+        // Debug message on SQL.
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("SQL : " + query);
+        }
         Connection connection = this.databaseSpring.connect();
         try {
             PreparedStatement preStat = connection.prepareStatement(query);
