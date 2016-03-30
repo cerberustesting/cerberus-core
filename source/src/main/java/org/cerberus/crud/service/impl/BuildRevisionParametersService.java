@@ -218,7 +218,8 @@ public class BuildRevisionParametersService implements IBuildRevisionParametersS
 
             // Then we check here inside countryenvparam_log table is the build revision has already been used.
             AnswerList resp = countryEnvParamLogService.readByVariousByCriteria(system, null, null, build, revision, 0, 0, "id", "asc", null, null);
-            if (resp.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
+            if (resp.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())
+                    && resp.getTotalRows()!=0) {
                 return true;
             } else {
                 return false;
