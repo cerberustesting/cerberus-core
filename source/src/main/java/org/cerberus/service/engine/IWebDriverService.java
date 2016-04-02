@@ -25,7 +25,6 @@ import org.cerberus.crud.entity.Identifier;
 import org.cerberus.crud.entity.MessageEvent;
 import org.cerberus.crud.entity.Session;
 import org.cerberus.exception.CerberusEventException;
-import org.openqa.selenium.Capabilities;
 
 /**
  *
@@ -108,6 +107,6 @@ public interface IWebDriverService {
     
     MessageEvent doSeleniumActionMouseDownMouseUp(Session session, Identifier identifier);
 
-    public MessageEvent doSeleniumActionRightClick(Session session, Identifier identifier);
+    MessageEvent doSeleniumActionRightClick(Session session, Identifier identifier);
 }
     

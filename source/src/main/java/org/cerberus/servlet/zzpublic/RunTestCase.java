@@ -432,6 +432,9 @@ public class RunTestCase extends HttpServlet {
                         out.println("<tr><td>PageSource</td><td><span id='PageSource'>" + getPageSource + "</span></td></tr>");
                         out.println("<tr><td>SeleniumLog</td><td><span id='SeleniumLog'>" + getSeleniumLog + "</span></td></tr>");
                         out.println("<tr><td>Robot</td><td><span id='Robot'>" + robot + "</span></td></tr>");
+                        out.println("<tr><td>Selenium Server IP</td><td><span id='SeleniumIP'>" + ss_ip + "</span></td></tr>");
+                        out.println("<tr><td>Selenium Server Port</td><td><span id='SeleniumPort'>" + ss_p + "</span></td></tr>");
+                        out.println("<tr><td>Robot</td><td><span id='Robot'>" + robot + "</span></td></tr>");
                         out.println("<tr><td>Browser</td><td><span id='Browser'>" + browser + "</span></td></tr>");
                         out.println("<tr><td>Version</td><td><span id='Version'>" + version + "</span></td></tr>");
                         out.println("<tr><td>Platform</td><td><span id='Platform'>" + platform + "</span></td></tr>");

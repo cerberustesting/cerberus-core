@@ -48,9 +48,13 @@ public final class StringUtil {
     public static final String NULL = "null";
 
     private static final Pattern urlMatch = Pattern.compile("(.*[<>' \"^]+)([a-zA-Z]+://[^<>[:space:]]+[[:alnum:]/]*)([$<> ' \"].*)");
-                                                    
-    /** The property variable {@link Pattern} */
+
+    /**
+     * The property variable {@link Pattern}
+     */
     public static final Pattern PROPERTY_VARIABLE_PATTERN = Pattern.compile("%[^%]+%");
+
+    private static final org.apache.log4j.Logger LOG = org.apache.log4j.Logger.getLogger(StringUtil.class);
 
     /**
      * To avoid instanciation of utility class
@@ -132,10 +136,10 @@ public final class StringUtil {
         //replaceAll uses regex, therefore the syntax of the subdata entries ENTRY(SUBDATA) will be handled as part of the regex expression,
         //namely the characters '(' and ')'. As a consequence we need to escape those characteres and ensure that the replaceAll method
         //will consider the correct property name.
-        if(formula.contains("(") || formula.contains(")")){ //Its used becuse of the replacement of subdataentries'values. e.g., Person(Name)
+        if (formula.contains("(") || formula.contains(")")) { //Its used becuse of the replacement of subdataentries'values. e.g., Person(Name)
             formula = Pattern.quote(formula);
         }
-        
+
         if (replacement != null) {
             return str.replaceAll(formula, replacement);
         }
@@ -201,12 +205,10 @@ public final class StringUtil {
     public static String getLeftString(String string1, int length) {
         if (string1 == null) {
             return "";
+        } else if (length >= string1.length()) {
+            return string1;
         } else {
-            if (length >= string1.length()) {
-                return string1;
-            } else {
-                return string1.substring(0, length);
-            }
+            return string1.substring(0, length);
         }
     }
 
@@ -233,43 +235,86 @@ public final class StringUtil {
         }
         return text;
     }
-    
+
     public static String textToHtmlConvertingURLsToLinks(String text) {
-    if (text == null) {
-        return text;
+        if (text == null) {
+            return text;
+        }
+
+        String escapedText = HtmlUtils.htmlEscape(text);
+
+        return escapedText.replaceAll("(\\A|\\s)((http|https|ftp|mailto):\\S+)(\\s|\\z)",
+                "$1<a href=\"$2\">$2</a>$4");
     }
 
-    String escapedText = HtmlUtils.htmlEscape(text);
-
-    return escapedText.replaceAll("(\\A|\\s)((http|https|ftp|mailto):\\S+)(\\s|\\z)",
-        "$1<a href=\"$2\">$2</a>$4");
-    }
     /**
-     * Java function that encodes as string as the JavaScript function: encodeURIComponent() 
-     * Some characters (", &, #, +) need to be 
+     * Java function that encodes as string as the JavaScript function:
+     * encodeURIComponent() Some characters (", &, #, +) need to be
+     *
      * @param stringToEncode string to be encoded
-     * @return string encoded 
+     * @return string encoded
      */
-    public static String encodeAsJavaScriptURIComponent(String stringToEncode){
+    public static String encodeAsJavaScriptURIComponent(String stringToEncode) {
         try {
             ScriptEngineManager factory = new ScriptEngineManager();
-            ScriptEngine engine = factory.getEngineByName("JavaScript"); 
+            ScriptEngine engine = factory.getEngineByName("JavaScript");
             //characters we special meaning need to be encoded before applying
             //the javascript function
             stringToEncode = stringToEncode.replace("\"", "%22");
             stringToEncode = stringToEncode.replace("&", "%26");
             stringToEncode = stringToEncode.replace("#", "%23");
             stringToEncode = stringToEncode.replace("+", "%2B");
-            stringToEncode = engine.eval("encodeURIComponent(\"" + stringToEncode  + "\")").toString();            
+            stringToEncode = engine.eval("encodeURIComponent(\"" + stringToEncode + "\")").toString();
             //the previous special characteres were encoded and additional %25 were added, therefore 
             //we need to restore them and replace the each adicional %25 with the decoded character %
             stringToEncode = stringToEncode.replace("%2522", "%22");
             stringToEncode = stringToEncode.replace("%2526", "%26");
-            stringToEncode = stringToEncode.replace("%2523", "%23"); 
+            stringToEncode = stringToEncode.replace("%2523", "%23");
             stringToEncode = stringToEncode.replace("%252B", "%2B");
         } catch (ScriptException ex) {
             Logger.getLogger(StringUtil.class.getName()).log(Level.SEVERE, null, ex);
         }
         return stringToEncode;
     }
+
+    /**
+     *
+     * This method is used in order to clean the host to make it compatible with
+     * Selenium. Selenium require a fully qualitied host (including prefix
+     * http://). Cerberus is more flexible and allow simple host such as
+     * www.laredoute.fr This function checks that the host is previxed by
+     * http:// or https:// or ftp://. If protocol prefix is missing it adds by
+     * default http:// if not it leave the existing host.
+     *
+     * @param host
+     * @return formated host
+     */
+    public static String cleanHostURL(String host) {
+        String newHost = host;
+        if (!(host.startsWith("http://") || host.startsWith("https://") || host.startsWith("ftp://") || host.startsWith("ftps://"))) {
+            // No refix so we put http:// by default.
+            newHost = "http://" + host;
+        }
+        LOG.debug("Cleaned host from " + host + " to " + newHost);
+        return newHost;
+
+    }
+
+    /**
+     *
+     * This method is used in order to remove from full URL host the protocol
+     * part. Ex if host = http://www.laredoute.fr/ Method return
+     * www.laredoute.fr
+     *
+     * @param host
+     * @return formated host
+     */
+    public static String removeProtocolFromHostURL(String host) {
+        String newHost = host;
+        newHost = host.replace("http://", "").replace("https://", "").replace("ftp://", "").replace("ftps://", "");
+        LOG.debug("Removed protocol host from " + host + " to " + newHost);
+        return newHost;
+
+    }
+
 }

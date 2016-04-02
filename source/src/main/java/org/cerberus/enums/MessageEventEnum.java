@@ -212,7 +212,7 @@ public enum MessageEventEnum {
     CONTROL_FAILED_NO_SUCH_ELEMENT(353, "FA", "Element '%ELEMENT%' doesn't exist. Selenium Exception : %SELEX%.", true, true, true, MessageGeneralEnum.EXECUTION_KO),
     CONTROL_FAILED_SELENIUM_CONNECTIVITY(354, "CA", "The test case is cancelled due to lost connection to Selenium Server! Detailed error : %ERROR%", true, true, true, MessageGeneralEnum.EXECUTION_FA_CONNECTIVITY),
     CONTROL_FAILED_PROPERTY_NOTNUMERIC(355, "KO", "At least one of the Properties is not numeric, can not compare properties!", true, false, false, MessageGeneralEnum.EXECUTION_KO),
-    CONTROL_FAILED_URL_NOT_MATCH_APPLICATION(356, "FA", "Cannot find application host '%HOST% inside current URL %URL%. Maybe this is due to a redirection done on the web site. That can be corrected by modifying the application URL.", true, true, false, MessageGeneralEnum.EXECUTION_KO),
+    CONTROL_FAILED_URL_NOT_MATCH_APPLICATION(356, "FA", "Cannot find application host '%HOST%' inside current URL '%CURRENTURL%'. Maybe this is due to a redirection done on the web site. That can be corrected by modifying the application URL.", true, true, false, MessageGeneralEnum.EXECUTION_KO),
     CONTROL_FAILED_EQUAL(357, "KO", "'%STRING1%' is not equal to '%STRING2%'.", true, false, false, MessageGeneralEnum.EXECUTION_KO),
     CONTROL_FAILED_DIFFERENT(358, "KO", "'%STRING1%' is not different from '%STRING2%'.", true, false, false, MessageGeneralEnum.EXECUTION_KO),
     CONTROL_FAILED_GREATER(359, "KO", "'%STRING1%' is not greater than '%STRING2%'.", true, false, false, MessageGeneralEnum.EXECUTION_KO),

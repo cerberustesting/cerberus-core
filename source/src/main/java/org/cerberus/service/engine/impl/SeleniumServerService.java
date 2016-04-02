@@ -383,11 +383,13 @@ public class SeleniumServerService implements ISeleniumServerService {
             } else {
                 MyLogger.log(Selenium.class.getName(), Level.WARN, "Not supported Browser : " + browser);
                 MessageGeneral mes = new MessageGeneral(MessageGeneralEnum.EXECUTION_FA_SELENIUM);
+                mes.setDescription(mes.getDescription().replace("%MES%", "Browser '" + browser + "' is not supported"));
                 mes.setDescription("Not supported Browser : " + browser);
                 throw new CerberusException(mes);
             }
         } catch (CerberusException ex) {
             MessageGeneral mes = new MessageGeneral(MessageGeneralEnum.EXECUTION_FA_SELENIUM);
+            mes.setDescription(mes.getDescription().replace("%MES%", "Failed to set capability on the browser '" + browser + "'"));
             throw new CerberusException(mes);
         }
         return capabilities;

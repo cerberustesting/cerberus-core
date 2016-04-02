@@ -29,12 +29,12 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Set;
-import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
 import javax.imageio.ImageIO;
 import org.apache.log4j.Level;
+import org.apache.log4j.Logger;
 import org.cerberus.crud.entity.Identifier;
 import org.cerberus.crud.entity.MessageEvent;
 import org.cerberus.crud.entity.Session;
@@ -78,6 +78,8 @@ public class WebDriverService implements IWebDriverService {
 
     private static final int TIMEOUT_MILLIS = 30000;
     private static final int TIMEOUT_WEBELEMENT = 300;
+
+    private static final Logger LOG = Logger.getLogger("WebDriverService");
 
     private By getBy(Identifier identifier) {
 
@@ -138,27 +140,6 @@ public class WebDriverService implements IWebDriverService {
         answer.setResultMessage(msg);
         return answer;
     }
-    /*private WebElement getSeleniumElement(Session session, Identifier identifier, boolean visible, boolean clickable) {
-     By locator = this.getBy(identifier);
-     MyLogger.log(RunTestCaseService.class.getName(), Level.DEBUG, "Waiting for Element : " + identifier.getIdentifier() + "=" + identifier.getLocator());
-     try {
-     WebDriverWait wait = new WebDriverWait(session.getDriver(), session.getDefaultWait());
-     if (visible) {
-     if (clickable) {
-     wait.until(ExpectedConditions.elementToBeClickable(locator));
-     } else {
-     wait.until(ExpectedConditions.visibilityOfElementLocated(locator));
-     }
-     } else {
-     wait.until(ExpectedConditions.presenceOfElementLocated(locator));
-     }
-     } catch (TimeoutException exception) {
-     MyLogger.log(RunTestCaseService.class.getName(), Level.FATAL, "Exception waiting for element :" + exception);
-     throw new NoSuchElementException(identifier.getIdentifier() + "=" + identifier.getLocator());
-     }        
-     MyLogger.log(RunTestCaseService.class.getName(), Level.DEBUG, "Finding Element : " + identifier.getIdentifier() + "=" + identifier.getLocator());
-     return session.getDriver().findElement(locator);
-     }*/
 
     @Override
     public String getValueFromHTMLVisible(Session session, Identifier identifier) {
@@ -214,7 +195,7 @@ public class WebDriverService implements IWebDriverService {
                 }
             }
         } else if (answer.isCodeEquals(MessageEventEnum.ACTION_FAILED_WAIT_NO_SUCH_ELEMENT.getCode())) {
-            throw new NoSuchElementException(identifier.getIdentifier() + "=" + identifier.getLocator());  
+            throw new NoSuchElementException(identifier.getIdentifier() + "=" + identifier.getLocator());
         }
         return result;
     }
@@ -301,7 +282,7 @@ public class WebDriverService implements IWebDriverService {
                 WebElement webElement = (WebElement) answer.getItem();
 
                 return webElement != null && !webElement.isDisplayed();
-            } else if (answer.isCodeEquals(MessageEventEnum.ACTION_FAILED_WAIT_NO_SUCH_ELEMENT.getCode())){
+            } else if (answer.isCodeEquals(MessageEventEnum.ACTION_FAILED_WAIT_NO_SUCH_ELEMENT.getCode())) {
                 /**
                  * Return true if element not found (not found >> not visible)
                  */
@@ -341,11 +322,15 @@ public class WebDriverService implements IWebDriverService {
          *  0  |    http://
          *  1  |    /page/index.jsp
          */
-        String strings[] = session.getDriver().getCurrentUrl().split(url, 2);
+        // We start to remove the protocol part of the urls.
+        String cleanedCurrentURL = StringUtil.removeProtocolFromHostURL(session.getDriver().getCurrentUrl());
+        String cleanedURL = StringUtil.removeProtocolFromHostURL(url);
+        // We remove from current url the host part of the application.
+        String strings[] = cleanedCurrentURL.split(cleanedURL, 2);
         if (strings.length < 2) {
             MessageEvent msg = new MessageEvent(MessageEventEnum.CONTROL_FAILED_URL_NOT_MATCH_APPLICATION);
-            msg.setDescription(msg.getDescription().replaceAll("%HOST%", session.getDriver().getCurrentUrl()));
-            msg.setDescription(msg.getDescription().replaceAll("%URL%", url));
+            msg.setDescription(msg.getDescription().replaceAll("%HOST%", url));
+            msg.setDescription(msg.getDescription().replaceAll("%CURRENTURL%", session.getDriver().getCurrentUrl()));
             MyLogger.log(WebDriverService.class.getName(), Level.WARN, msg.toString());
             throw new CerberusEventException(msg);
         }
@@ -782,7 +767,7 @@ public class WebDriverService implements IWebDriverService {
                     message.setDescription(message.getDescription().replaceAll("%KEY%", property));
 
                 } catch (AWTException ex) {
-                    Logger.getLogger(WebDriverService.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+                    Logger.getLogger(WebDriverService.class.getName()).log(Level.ERROR, null, ex);
                     message = new MessageEvent(MessageEventEnum.ACTION_FAILED_KEYPRESS_ENV_ERROR);
                     MyLogger.log(WebDriverService.class.getName(), Level.DEBUG, ex.toString());
                 }
@@ -802,14 +787,14 @@ public class WebDriverService implements IWebDriverService {
     }
 
     @Override
-    public MessageEvent doSeleniumActionOpenURL(Session session, String host, Identifier identifier, boolean withBase
-    ) {
+    public MessageEvent doSeleniumActionOpenURL(Session session, String host, Identifier identifier, boolean withBase) {
         MessageEvent message;
         try {
             String url = identifier.getLocator();
             if (!StringUtil.isNull(url)) {
                 if (withBase) {
-                    url = "http://" + host + url;
+                    host = StringUtil.cleanHostURL(host);
+                    url = host + url;
                 }
                 session.getDriver().get(url);
                 message = new MessageEvent(MessageEventEnum.ACTION_SUCCESS_OPENURL);
@@ -828,8 +813,7 @@ public class WebDriverService implements IWebDriverService {
     }
 
     @Override
-    public MessageEvent doSeleniumActionSelect(Session session, Identifier object, Identifier property
-    ) {
+    public MessageEvent doSeleniumActionSelect(Session session, Identifier object, Identifier property) {
         MessageEvent message;
         try {
             Select select;
@@ -856,7 +840,7 @@ public class WebDriverService implements IWebDriverService {
             }
 
         } catch (CerberusEventException ex) {
-            Logger.getLogger(WebDriverService.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            Logger.getLogger(WebDriverService.class.getName()).log(Level.ERROR, null, ex);
             return ex.getMessageError();
         }
     }
@@ -931,7 +915,9 @@ public class WebDriverService implements IWebDriverService {
     public MessageEvent doSeleniumActionUrlLogin(Session session, String host, String uri) {
         MessageEvent message;
 
-        String url = "http://" + host + (host.endsWith("/") ? uri.replace("/", "") : uri);
+        host = StringUtil.cleanHostURL(host);
+        String url = host + (host.endsWith("/") ? uri.replace("/", "") : uri);
+
         try {
             session.getDriver().get(url);
             message = new MessageEvent(MessageEventEnum.ACTION_SUCCESS_URLLOGIN);
@@ -1112,5 +1098,5 @@ public class WebDriverService implements IWebDriverService {
             return message;
         }
     }
-   
+
 }
