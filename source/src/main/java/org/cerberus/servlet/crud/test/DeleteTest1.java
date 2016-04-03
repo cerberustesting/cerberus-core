@@ -98,7 +98,7 @@ public class DeleteTest1 extends HttpServlet {
 
             AnswerItem resp = testService.readByKey(key);
 
-            if (!(resp.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode()))) {
+            if (!(resp.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode()) && resp.getItem()!=null)) {
                 /**
                  * Object could not be found. We stop here and report the error.
                  */

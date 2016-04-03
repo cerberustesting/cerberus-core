@@ -111,7 +111,7 @@ public class DeleteCountryEnvParam1 extends HttpServlet {
             ICountryEnvParamService countryEnvParamService = appContext.getBean(ICountryEnvParamService.class);
 
             AnswerItem resp = countryEnvParamService.readByKey(system, country, environment);
-            if (!(resp.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode()))) {
+            if (!(resp.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode()) && resp.getItem()!=null)) {
                 /**
                  * Object could not be found. We stop here and report the error.
                  */

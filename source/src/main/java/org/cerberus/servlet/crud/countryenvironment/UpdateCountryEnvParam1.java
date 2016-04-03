@@ -170,7 +170,7 @@ public class UpdateCountryEnvParam1 extends HttpServlet {
             ICountryEnvParamService cepService = appContext.getBean(ICountryEnvParamService.class);
 
             AnswerItem resp = cepService.readByKey(system, country, environment);
-            if (!(resp.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode()))) {
+            if (!(resp.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode()) && resp.getItem()!=null)) {
                 /**
                  * Object could not be found. We stop here and report the error.
                  */

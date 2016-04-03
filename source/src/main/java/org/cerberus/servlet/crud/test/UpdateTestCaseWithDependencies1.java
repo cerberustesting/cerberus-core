@@ -130,7 +130,7 @@ public class UpdateTestCaseWithDependencies1 extends HttpServlet {
 
             AnswerItem resp = testCaseService.readByKey(test, testCase);
             TCase tc = (TCase) resp.getItem();
-            if (!(resp.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode()))) {
+            if (!(resp.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode()) && resp.getItem()!=null)) {
                 /**
                  * Object could not be found. We stop here and report the error.
                  */

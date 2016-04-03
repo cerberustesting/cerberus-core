@@ -86,7 +86,7 @@ public class ReadBuildRevisionParameters extends HttpServlet {
 
         // Calling Servlet Transversal Util.
         ServletUtil.servletStart(request);
-        
+
         // Default message to unexpected error.
         MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
         msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", ""));
@@ -309,7 +309,7 @@ public class ReadBuildRevisionParameters extends HttpServlet {
                 try {
                     app = appService.convert(appService.readByKey(brp.getApplication()));
                     for (String JenkinsAgent : cedtService.findJenkinsAgentByKey(system, country, environment, app.getDeploytype())) {
-                        String DeployURL = "JenkinsDeploy?application=" + brp.getApplication() + "&jenkinsagent=" + JenkinsAgent + "&country=" + country + "&deploytype=" + app.getDeploytype() + "&release=" + brp.getRelease() + "&jenkinsbuildid=" + brp.getJenkinsBuildId()+ "&repositoryurl=" + brp.getRepositoryUrl();
+                        String DeployURL = "JenkinsDeploy?application=" + brp.getApplication() + "&jenkinsagent=" + JenkinsAgent + "&country=" + country + "&deploytype=" + app.getDeploytype() + "&release=" + brp.getRelease() + "&jenkinsbuildid=" + brp.getJenkinsBuildId() + "&repositoryurl=" + brp.getRepositoryUrl();
                         newSubObjContent.put("jenkinsAgent", JenkinsAgent);
                         newSubObjContent.put("link", DeployURL);
                         newSubObj.append("install", newSubObjContent);

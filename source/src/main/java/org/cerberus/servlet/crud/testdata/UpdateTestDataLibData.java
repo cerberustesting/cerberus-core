@@ -71,9 +71,9 @@ public class UpdateTestDataLibData extends HttpServlet {
         MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
         msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", ""));
         ans.setResultMessage(msg);
-        
+
         response.setContentType("application/json");
-        
+
         String data = request.getParameter("data");
 
         try {
@@ -85,7 +85,7 @@ public class UpdateTestDataLibData extends HttpServlet {
                         .replace("%REASON%", "Data to be modified is missing! "));
                 ans.setResultMessage(msg);
             } else {
-                
+
                 JSONObject dataToEdit = new JSONObject(data);
 
                 ApplicationContext appContext = WebApplicationContextUtils.getWebApplicationContext(this.getServletContext());
@@ -98,9 +98,9 @@ public class UpdateTestDataLibData extends HttpServlet {
                 if (dataToEdit.has("remove")) {
                     AnswerList removeListAnswer = parseTestDataLibDataList((JSONArray) dataToEdit.get("remove"), appContext);
                     //check if validations are ok
-                    if(removeListAnswer.isCodeEquals(MessageEventEnum.DATA_OPERATION_VALIDATIONS_OK.getCode())){
-                        entriesToRemove.addAll((List<TestDataLibData>) removeListAnswer.getDataList());                        
-                    }else{
+                    if (removeListAnswer.isCodeEquals(MessageEventEnum.DATA_OPERATION_VALIDATIONS_OK.getCode())) {
+                        entriesToRemove.addAll((List<TestDataLibData>) removeListAnswer.getDataList());
+                    } else {
                         //has an error
                         validationsOK = false;
                     }
@@ -110,9 +110,9 @@ public class UpdateTestDataLibData extends HttpServlet {
                 ArrayList<TestDataLibData> entriesToUpdate = new ArrayList<TestDataLibData>();
                 if (dataToEdit.has("update")) {
                     AnswerList updateListAnswer = parseTestDataLibDataList((JSONArray) dataToEdit.get("update"), appContext);
-                    if(updateListAnswer.isCodeEquals(MessageEventEnum.DATA_OPERATION_VALIDATIONS_OK.getCode())){
-                        entriesToUpdate.addAll((List<TestDataLibData>) updateListAnswer.getDataList());                                                
-                    }else{
+                    if (updateListAnswer.isCodeEquals(MessageEventEnum.DATA_OPERATION_VALIDATIONS_OK.getCode())) {
+                        entriesToUpdate.addAll((List<TestDataLibData>) updateListAnswer.getDataList());
+                    } else {
                         //has an error
                         validationsOK = false;
                     }
@@ -123,33 +123,33 @@ public class UpdateTestDataLibData extends HttpServlet {
                 if (dataToEdit.has("insert")) {
                     AnswerList insertListAnswer = parseTestDataLibDataList((JSONArray) dataToEdit.get("insert"), appContext);
                     //check if validations are ok
-                    if(insertListAnswer.isCodeEquals(MessageEventEnum.DATA_OPERATION_VALIDATIONS_OK.getCode())){
+                    if (insertListAnswer.isCodeEquals(MessageEventEnum.DATA_OPERATION_VALIDATIONS_OK.getCode())) {
                         entriesToInsert.addAll((List<TestDataLibData>) insertListAnswer.getDataList());
-                        
-                    }else{
+
+                    } else {
                         //has an error
                         validationsOK = false;
                     }
 
                 }
-                if(validationsOK){
+                if (validationsOK) {
                     //check if the lists contain data
-                    if(entriesToInsert.isEmpty() && entriesToUpdate.isEmpty() && entriesToRemove.isEmpty()){
+                    if (entriesToInsert.isEmpty() && entriesToUpdate.isEmpty() && entriesToRemove.isEmpty()) {
                         msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_EXPECTED);
                         msg.setDescription(msg.getDescription().replace("%ITEM%", "Sub-data entries")
-                            .replace("%OPERATION%", "Update sub-data entries")
-                            .replace("%REASON%", "No data sent "));
+                                .replace("%OPERATION%", "Update sub-data entries")
+                                .replace("%REASON%", "No data sent "));
                         ans.setResultMessage(msg);
-                        
-                    }else{
+
+                    } else {
                         //everything is ok
                         ans = subDataService.createUpdateDelete(entriesToInsert, entriesToUpdate, entriesToRemove);
 
-                        if(ans.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())){
+                        if (ans.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
                             log(appContext, entriesToRemove, request, entriesToUpdate, entriesToInsert);
                         }
                     }
-                }else{
+                } else {
                     msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_EXPECTED);
                     msg.setDescription(msg.getDescription().replace("%ITEM%", "Sub-data entries")
                             .replace("%OPERATION%", "Update sub-data entries")
@@ -177,17 +177,17 @@ public class UpdateTestDataLibData extends HttpServlet {
         /**
          * Objects Modified. Adding Log entry.
          */
-        for(TestDataLibData entry: entriesToRemove){
-            logEventService.createPrivateCalls("/UpdateTestDataLibData", "DELETE", "Sub-data entry with id: " +
-                    entry.getTestDataLibDataID() + " name: " + entry.getSubData() + "[library id: " + entry.getTestDataLibID() + "]", request);
+        for (TestDataLibData entry : entriesToRemove) {
+            logEventService.createPrivateCalls("/UpdateTestDataLibData", "DELETE", "Sub-data entry with id: "
+                    + entry.getTestDataLibDataID() + " name: " + entry.getSubData() + "[library id: " + entry.getTestDataLibID() + "]", request);
         }
-        for(TestDataLibData entry: entriesToUpdate){
-            logEventService.createPrivateCalls("/UpdateTestDataLibData", "UPDATE", "Sub-data entry with id: " +
-                    entry.getTestDataLibDataID() + " name: " + entry.getSubData() + "[library id: " + entry.getTestDataLibID() + "]", request);
+        for (TestDataLibData entry : entriesToUpdate) {
+            logEventService.createPrivateCalls("/UpdateTestDataLibData", "UPDATE", "Sub-data entry with id: "
+                    + entry.getTestDataLibDataID() + " name: " + entry.getSubData() + "[library id: " + entry.getTestDataLibID() + "]", request);
         }
-        for(TestDataLibData entry: entriesToInsert){
-            logEventService.createPrivateCalls("/UpdateTestDataLibData", "INSERT", "New sub-data entry : " +
-                    entry.getTestDataLibDataID() + " name: " + entry.getSubData() + "[library id: " + entry.getTestDataLibID() + "]", request);
+        for (TestDataLibData entry : entriesToInsert) {
+            logEventService.createPrivateCalls("/UpdateTestDataLibData", "INSERT", "New sub-data entry : "
+                    + entry.getTestDataLibDataID() + " name: " + entry.getSubData() + "[library id: " + entry.getTestDataLibID() + "]", request);
         }
     }
 

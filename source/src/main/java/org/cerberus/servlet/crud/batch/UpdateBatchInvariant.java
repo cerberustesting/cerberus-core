@@ -109,7 +109,7 @@ public class UpdateBatchInvariant extends HttpServlet {
             IBatchInvariantService batchInvariantService = appContext.getBean(IBatchInvariantService.class);
 
             AnswerItem resp = batchInvariantService.readByKey(batch);
-            if (!(resp.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode()))) {
+            if (!(resp.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode()) && resp.getItem()!=null)) {
                 /**
                  * Object could not be found. We stop here and report the error.
                  */

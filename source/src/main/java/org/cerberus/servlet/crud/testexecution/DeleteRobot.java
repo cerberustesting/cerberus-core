@@ -99,7 +99,7 @@ public class DeleteRobot extends HttpServlet {
             IRobotService robotService = appContext.getBean(IRobotService.class);
 
             AnswerItem resp = robotService.readByKeyTech(robotid);
-            if (!(resp.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode()))) {
+            if (!(resp.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode()) && resp.getItem()!=null)) {
                 /**
                  * Object could not be found. We stop here and report the error.
                  */

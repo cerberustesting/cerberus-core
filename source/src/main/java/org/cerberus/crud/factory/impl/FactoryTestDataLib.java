@@ -36,7 +36,7 @@ public class FactoryTestDataLib implements IFactoryTestDataLib {
             String country, String group, String type, String database,
             String script, String servicePath, String method,
             String envelope, String description, String creator, Timestamp created,
-            String LastModifier, Timestamp lastModified) {
+            String LastModifier, Timestamp lastModified, String subDataValue, String subDataColumn, String subDataParsingAnswer) {
 
         TestDataLib newData = new TestDataLib();
 
@@ -58,6 +58,9 @@ public class FactoryTestDataLib implements IFactoryTestDataLib {
         newData.setCreated(created);
         newData.setLastModifier(LastModifier);
         newData.setLastModified(lastModified);
+        newData.setSubDataValue(subDataValue);
+        newData.setSubDataColumn(subDataColumn);
+        newData.setSubDataParsingAnswer(subDataParsingAnswer);
         return newData;
 
     }

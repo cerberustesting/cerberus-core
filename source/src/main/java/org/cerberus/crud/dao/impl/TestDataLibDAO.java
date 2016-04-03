@@ -446,20 +446,22 @@ public class TestDataLibDAO implements ITestDataLibDAO {
         StringBuilder query = new StringBuilder();
         //SQL_CALC_FOUND_ROWS allows to retrieve the total number of columns by disrearding the limit clauses that 
         //were applied -- used for pagination p
-        query.append("SELECT SQL_CALC_FOUND_ROWS * FROM testdatalib ");
+        query.append("SELECT SQL_CALC_FOUND_ROWS * FROM testdatalib tdl ");
 
-        gSearch.append(" where (`name` like '%").append(searchTerm).append("%'");
-        gSearch.append(" or `group` like '%").append(searchTerm).append("%'");
-        gSearch.append(" or `type` like '%").append(searchTerm).append("%'");
-        gSearch.append(" or `database` like '%").append(searchTerm).append("%'");
-        gSearch.append(" or `script` like '%").append(searchTerm).append("%'");
-        gSearch.append(" or `servicepath` like '%").append(searchTerm).append("%'");
-        gSearch.append(" or `method` like '%").append(searchTerm).append("%'");
-        gSearch.append(" or `envelope` like '%").append(searchTerm).append("%'");
-        gSearch.append(" or `description` like '%").append(searchTerm).append("%'");
-        gSearch.append(" or `system` like '%").append(searchTerm).append("%'");
-        gSearch.append(" or `environment` like '%").append(searchTerm).append("%'");
-        gSearch.append(" or `country` like '%").append(searchTerm).append("%') ");
+        query.append("LEFT OUTER JOIN testdatalibdata tdld ON tdl.TestDataLibID=tdld.TestDataLibID and tdld.SubData='' ");
+
+        gSearch.append(" where (tdl.`name` like '%").append(searchTerm).append("%'");
+        gSearch.append(" or tdl.`group` like '%").append(searchTerm).append("%'");
+        gSearch.append(" or tdl.`type` like '%").append(searchTerm).append("%'");
+        gSearch.append(" or tdl.`database` like '%").append(searchTerm).append("%'");
+        gSearch.append(" or tdl.`script` like '%").append(searchTerm).append("%'");
+        gSearch.append(" or tdl.`servicepath` like '%").append(searchTerm).append("%'");
+        gSearch.append(" or tdl.`method` like '%").append(searchTerm).append("%'");
+        gSearch.append(" or tdl.`envelope` like '%").append(searchTerm).append("%'");
+        gSearch.append(" or tdl.`description` like '%").append(searchTerm).append("%'");
+        gSearch.append(" or tdl.`system` like '%").append(searchTerm).append("%'");
+        gSearch.append(" or tdl.`environment` like '%").append(searchTerm).append("%'");
+        gSearch.append(" or tdl.`country` like '%").append(searchTerm).append("%') ");
 
         if (!searchTerm.equals("") && !individualSearch.equals("")) {
             searchSQL.append(gSearch.toString());
@@ -765,7 +767,7 @@ public class TestDataLibDAO implements ITestDataLibDAO {
         String query = "update testdatalib set `type`=?, `group`= ?, `system`=?, `environment`=?, `country`=?, `database`= ? , `script`= ? , "
                 + "`servicepath`= ? , `method`= ? , `envelope`= ? , `description`= ? , `LastModifier`= ?, `LastModified` = NOW() where "
                 + "`TestDataLibID`= ?";
-        
+
         // Debug message on SQL.
         if (LOG.isDebugEnabled()) {
             LOG.debug("SQL : " + query);
@@ -849,9 +851,19 @@ public class TestDataLibDAO implements ITestDataLibDAO {
         Timestamp created = resultSet.getTimestamp("Created");
         String lastModifier = ParameterParserUtil.returnEmptyStringIfNull(resultSet.getString("LastModifier"));
         Timestamp lastModified = resultSet.getTimestamp("LastModified");
+        String subDataValue = null;
+        String subDataColumn = null;
+        String subDataParsingAnswer = null;
+        try {
+            subDataValue = ParameterParserUtil.returnEmptyStringIfNull(resultSet.getString("tdld.Value"));
+            subDataColumn = ParameterParserUtil.returnEmptyStringIfNull(resultSet.getString("tdld.Column"));
+            subDataParsingAnswer = ParameterParserUtil.returnEmptyStringIfNull(resultSet.getString("tdld.parsingAnswer"));
+        } catch (Exception ex) {
+            MyLogger.log(TestDataLibDAO.class.getName(), Level.WARN, ex.toString());
+        }
 
         return factoryTestDataLib.create(testDataLibID, name, system, environment, country, group, type, database, script, servicePath,
-                method, envelope, description, creator, created, lastModifier, lastModified);
+                method, envelope, description, creator, created, lastModifier, lastModified, subDataValue, subDataColumn, subDataParsingAnswer);
     }
 
 }

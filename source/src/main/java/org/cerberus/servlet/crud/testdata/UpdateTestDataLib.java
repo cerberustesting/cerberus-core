@@ -130,7 +130,7 @@ public class UpdateTestDataLib extends HttpServlet {
                 ITestDataLibService libService = appContext.getBean(ITestDataLibService.class);
 
                 AnswerItem resp = libService.readByKey(testdatalibid);
-                if (!(resp.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode()))) {
+                if (!(resp.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode()) && resp.getItem()!=null)) {
                     /**
                      * Object could not be found. We stop here and report the
                      * error.

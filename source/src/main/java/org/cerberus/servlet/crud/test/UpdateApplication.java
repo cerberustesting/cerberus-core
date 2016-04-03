@@ -141,7 +141,7 @@ public class UpdateApplication extends HttpServlet {
             IApplicationService applicationService = appContext.getBean(IApplicationService.class);
 
             AnswerItem resp = applicationService.readByKey(application);
-            if (!(resp.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode()))) {
+            if (!(resp.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode()) && resp.getItem()!=null)) {
                 /**
                  * Object could not be found. We stop here and report the error.
                  */

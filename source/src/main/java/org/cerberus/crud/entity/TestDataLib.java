@@ -42,6 +42,14 @@ public class TestDataLib {
     private Timestamp created;
     private String lastModifier;
     private Timestamp lastModified;
+    
+    // Not included in table.
+    // Master subdata record (correspond to subdata='')
+    private String subDataValue;
+    private String subDataColumn;
+    private String subDataParsingAnswer;
+    
+    
 
     public Integer getTestDataLibID() {
         return testDataLibID;
@@ -177,6 +185,30 @@ public class TestDataLib {
 
     public void setLastModified(Timestamp LastModified) {
         this.lastModified = LastModified;
+    }
+
+    public String getSubDataValue() {
+        return subDataValue;
+    }
+
+    public void setSubDataValue(String subDataValue) {
+        this.subDataValue = subDataValue;
+    }
+
+    public String getSubDataColumn() {
+        return subDataColumn;
+    }
+
+    public void setSubDataColumn(String subDataColumn) {
+        this.subDataColumn = subDataColumn;
+    }
+
+    public String getSubDataParsingAnswer() {
+        return subDataParsingAnswer;
+    }
+
+    public void setSubDataParsingAnswer(String subDataParsingAnswer) {
+        this.subDataParsingAnswer = subDataParsingAnswer;
     }
 
 }

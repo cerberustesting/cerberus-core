@@ -183,8 +183,7 @@ public class NewRelease extends HttpServlet {
                 AnswerItem answer = buildRevisionParametersService.readByVarious2("NONE", "NONE", release, application);
                 BuildRevisionParameters buildRevisionParameters = (BuildRevisionParameters) answer.getItem();
 
-                if (answer.getResultMessage().getCode() == new MessageEvent(MessageEventEnum.DATA_OPERATION_OK).getCode()
-                        && buildRevisionParameters!=null) {
+                if (answer.getResultMessage().getCode() == new MessageEvent(MessageEventEnum.DATA_OPERATION_OK).getCode() && buildRevisionParameters != null) {
                     out.println("Warning - Release entry already exist. Updating the existing entry : " + buildRevisionParameters.getId());
                     if (!project.isEmpty()) {
                         buildRevisionParameters.setProject(project);

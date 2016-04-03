@@ -114,7 +114,7 @@ public class Homepage extends HttpServlet {
         JSONArray jsonArray = new JSONArray();
         HashMap<String, HashMap<String, Integer>> totalMap = (HashMap<String, HashMap<String, Integer>>) resp.getItem();
 
-        if (resp.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
+        if (resp.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode()) && resp.getItem()!=null) {
             IInvariantService invariantService = appContext.getBean(InvariantService.class);
             AnswerList<Invariant> answerList = invariantService.findInvariantByIdGp1("TCSTATUS", "Y");
             List<Invariant> myInvariants = answerList.getDataList();

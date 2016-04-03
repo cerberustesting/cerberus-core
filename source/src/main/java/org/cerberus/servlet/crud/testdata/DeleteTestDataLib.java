@@ -105,8 +105,8 @@ public class DeleteTestDataLib extends HttpServlet {
             ITestDataLibService libService = appContext.getBean(ITestDataLibService.class);
 
             AnswerItem resp = libService.readByKey(key);
-            
-            if (!(resp.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode()))) {
+
+            if (!(resp.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode()) && resp.getItem() != null)) {
                 /**
                  * Object could not be found. We stop here and report the error.
                  */
@@ -122,16 +122,16 @@ public class DeleteTestDataLib extends HttpServlet {
                  */
 
                 TestDataLib lib = (TestDataLib) resp.getItem();
-                
+
                 //check if the lib can be deleted by search the lib name in the property                
-                ITestCaseCountryPropertiesService  propService = appContext.getBean(ITestCaseCountryPropertiesService.class);
-                 
+                ITestCaseCountryPropertiesService propService = appContext.getBean(ITestCaseCountryPropertiesService.class);
+
                 AnswerList testCasesAnswer = propService.findTestCaseCountryPropertiesByValue1(lib.getTestDataLibID(), lib.getName(), lib.getCountry(), "getFromDataLib_BETA");
-                
-                List<TestListDTO> list = (List<TestListDTO>)testCasesAnswer.getDataList();
-                
-                if(list.isEmpty()){ //if list is empty then the library entry can be deleted
-                    ans = libService.delete(lib);                
+
+                List<TestListDTO> list = (List<TestListDTO>) testCasesAnswer.getDataList();
+
+                if (list.isEmpty()) { //if list is empty then the library entry can be deleted
+                    ans = libService.delete(lib);
                     /**
                      * Delete was perform with success. Adding Log entry.
                      */
@@ -139,26 +139,24 @@ public class DeleteTestDataLib extends HttpServlet {
                         ILogEventService logEventService = appContext.getBean(LogEventService.class);
                         logEventService.createPrivateCalls("/DeleteTestDataLib", "DELETE", "Delete TestDataLib : " + key, request);
                     }
-                }else{
-                    if (testCasesAnswer.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
-                        //ans.setResultMessage(testCasesAnswer.getResultMessage());
-                        MessageEvent deleteNotAllowed = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_EXPECTED);
-                        //DATA_OPERATION_ERROR_EXPECTED(550, MessageCodeEnum.DATA_OPERATION_CODE_ERROR.getCode(), 
-                        //"%ITEM% - operation %OPERATION% failed to complete. %REASON%", false, false, false, MessageGeneralEnum.DATA_OPERATION_ERROR),
-                        int totalTestCases = 0;
-                        for(TestListDTO test : list){
-                            totalTestCases += test.getTestCaseList().size();
-                        }
-                        
-                        deleteNotAllowed.setDescription(deleteNotAllowed.getDescription()
-                                                            .replace("%ITEM%", "Test Data Library")
-                                                            .replace("%OPERATION%", "Delete")
-                                                            .replace("%REASON%", "There are " + totalTestCases + " test cases using this library [# different tests involved:" + list.size() + " ]"));
-                        ans.setResultMessage(deleteNotAllowed);
-                    }else{
-                        //if another error was obtained than revert it to the user
-                        ans.setResultMessage(testCasesAnswer.getResultMessage());
+                } else if (testCasesAnswer.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
+                    //ans.setResultMessage(testCasesAnswer.getResultMessage());
+                    MessageEvent deleteNotAllowed = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_EXPECTED);
+                    //DATA_OPERATION_ERROR_EXPECTED(550, MessageCodeEnum.DATA_OPERATION_CODE_ERROR.getCode(), 
+                    //"%ITEM% - operation %OPERATION% failed to complete. %REASON%", false, false, false, MessageGeneralEnum.DATA_OPERATION_ERROR),
+                    int totalTestCases = 0;
+                    for (TestListDTO test : list) {
+                        totalTestCases += test.getTestCaseList().size();
                     }
+
+                    deleteNotAllowed.setDescription(deleteNotAllowed.getDescription()
+                            .replace("%ITEM%", "Test Data Library")
+                            .replace("%OPERATION%", "Delete")
+                            .replace("%REASON%", "There are " + totalTestCases + " test cases using this library [# different tests involved:" + list.size() + " ]"));
+                    ans.setResultMessage(deleteNotAllowed);
+                } else {
+                    //if another error was obtained than revert it to the user
+                    ans.setResultMessage(testCasesAnswer.getResultMessage());
                 }
 
             }

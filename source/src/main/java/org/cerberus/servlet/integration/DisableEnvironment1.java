@@ -118,7 +118,7 @@ public class DisableEnvironment1 extends HttpServlet {
 
             // Getting the contryEnvParam based on the parameters.
             answerItem = countryEnvParamService.readByKey(system, country, env);
-            if (!(answerItem.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode()))) {
+            if (!(answerItem.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode()) && answerItem.getItem()!=null)) {
                 /**
                  * Object could not be found. We stop here and report the error.
                  */

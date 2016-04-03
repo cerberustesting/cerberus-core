@@ -103,7 +103,7 @@ public class DeleteTestCase2 extends HttpServlet {
             ITestCaseStepService testCaseStepService = appContext.getBean(ITestCaseStepService.class);
 
             AnswerItem resp = testCaseService.readByKey(test, testCase);
-            if (!(resp.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode()))) {
+            if (!(resp.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode()) && resp.getItem()!=null)) {
                 /**
                  * Object could not be found. We stop here and report the error.
                  */

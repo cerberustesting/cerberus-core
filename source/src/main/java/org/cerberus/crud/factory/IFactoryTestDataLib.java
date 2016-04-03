@@ -53,6 +53,6 @@ public interface IFactoryTestDataLib {
             String country, String group, String type,
             String database, String script, String servicePath,
             String method, String envelope, String description,
-            String creator, Timestamp Created, String LastModifier, Timestamp LastModified);
+            String creator, Timestamp Created, String LastModifier, Timestamp LastModified, String subDataValue, String subDataColumn, String subDataParsingAnswer);
 
 }

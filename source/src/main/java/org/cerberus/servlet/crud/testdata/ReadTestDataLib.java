@@ -127,16 +127,14 @@ public class ReadTestDataLib extends HttpServlet {
                     //gets a lib by id
                     answer = findTestDataLibByID(testDataLibId, appContext, userHasPermissions);
                 }
+            } else if (request.getParameter("name") != null && request.getParameter("limit") != null) {
+                answer = findTestDataLibNameList(name, limit, appContext);
+            } else if (request.getParameter("groups") != null) {
+                //gets the list of distinct groups
+                answer = findDistinctGroups(appContext);
             } else {
-                if (request.getParameter("name") != null && request.getParameter("limit") != null) {
-                    answer = findTestDataLibNameList(name, limit, appContext);
-                } else if (request.getParameter("groups") != null) {
-                    //gets the list of distinct groups
-                    answer = findDistinctGroups(appContext);
-                } else {
-                    //no parameters, then retrieves the full list
-                    answer = findTestDataLibList(appContext, request);
-                }
+                //no parameters, then retrieves the full list
+                answer = findTestDataLibList(appContext, request);
             }
 
             jsonResponse = (JSONObject) answer.getItem();
@@ -179,7 +177,7 @@ public class ReadTestDataLib extends HttpServlet {
         String searchParameter = ParameterParserUtil.parseStringParam(request.getParameter("sSearch"), "");
         int columnToSortParameter = Integer.parseInt(ParameterParserUtil.parseStringParam(request.getParameter("iSortCol_0"), "0"));
         String sColumns = ParameterParserUtil.parseStringParam(request.getParameter("sColumns"),
-                "TestDataLibID, Name,System,Environment,Country,Group,Type,Database,Script,ServicePath,Method,Envelope,Description");
+                "TestDataLibID,Name,System,Environment,Country,Group,Type,Database,Script,ServicePath,Method,Envelope,Description");
         String columnToSort[] = sColumns.split(",");
         String columnName = columnToSort[columnToSortParameter];
         String sort = ParameterParserUtil.parseStringParam(request.getParameter("sSortDir_0"), "asc");

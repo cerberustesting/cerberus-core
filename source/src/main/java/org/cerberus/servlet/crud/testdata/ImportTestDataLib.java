@@ -71,11 +71,10 @@ public class ImportTestDataLib extends HttpServlet {
         MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
         msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", ""));
         Answer answer = new Answer(msg);
-        
+
         JSONObject jsonResponse = new JSONObject();
 
         response.setContentType("application/json");
-
 
         try {
 
@@ -114,12 +113,12 @@ public class ImportTestDataLib extends HttpServlet {
                         msg.setDescription(msg.getDescription().replace("%ITEM%", "Test Data Lib").replace("%REASON%", answer.getMessageDescription()));
                     }
                 }
-            }else{
+            } else {
                 msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
                 msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", "A Problem was found with the file that is being imported."));
                 answer.setResultMessage(msg);
             }
-            
+
             jsonResponse.put("messageType", msg.getMessage().getCodeString());
             jsonResponse.put("message", msg.getDescription());
 

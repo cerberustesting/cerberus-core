@@ -43,25 +43,7 @@
 
             <h1 class="page-title-line" id="title">Test Data Library</h1>
             <div id="testdatalib" class="well">               
-                <table  class="table table-hover display" id="listOfTestDataLib" name="listOfTestDataLib">
-                    <thead>
-                        <tr>
-                            <th id="testdatalibFirstColumnHeader"> Actions </th> 
-                            <th>Name</th>
-                            <th>System</th>
-                            <th>Environment</th>
-                            <th>Country</th>
-                            <th>Group</th>
-                            <th>Type</th>
-                            <th>Database</th>
-                            <th>Script</th>
-                            <th>Service Path</th>
-                            <th>Method</th>
-                            <th>Envelope</th>
-                            <th>Description</th>             
-                        </tr>                        
-                    </thead>
-                </table>
+                <table  class="table table-hover display" id="listOfTestDataLib" name="listOfTestDataLib"></table>
                 <div class="marginBottom20"></div>
             </div>
             <footer class="footer">

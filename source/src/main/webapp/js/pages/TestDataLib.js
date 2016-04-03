@@ -147,7 +147,7 @@ $.when($.getScript("js/pages/global/global.js")).then(function () {
 
         $("#addTestDataLibModal #addSubDataTableBody tr td:nth-child(2) input").change(subdataNameOnChangeHandler);
 
-        var configurations = new TableConfigurationsServerSide("listOfTestDataLib", "ReadTestDataLib", "contentTable", aoColumnsFuncTestDataLib("listOfTestDataLib"), [1,'asc']);
+        var configurations = new TableConfigurationsServerSide("listOfTestDataLib", "ReadTestDataLib", "contentTable", aoColumnsFuncTestDataLib("listOfTestDataLib"), [2, 'asc']);
 
         //creates the main table and draws the management buttons if the user has the permissions
         $.when(createDataTableWithPermissions(configurations, renderOptionsForTestDataManager, "#testdatalib")).then(function () {
@@ -214,7 +214,6 @@ function displayUpdateTestDataLibLabels(doc) {
     $("#lbl_choose_group_edit").html(doc.getDocOnline("page_testdatalib_m_createupdatelib", "lbl_choose_group"));
     $("#lbl_enter_group_edit").html(doc.getDocOnline("page_testdatalib_m_createupdatelib", "lbl_enter_group"));
 }
-
 
 /**
  * Applies the translations for the modal that duplicates a test data lib entry.
@@ -293,6 +292,7 @@ function displayListTestDataLibDataLabels(doc) {
 
     $("#closeSubDataManage").text(doc.getDocLabel("page_global", "buttonClose"));
 }
+
 /**
  * Applies the translations for the get list of test cases modal.
  * @param {type} doc object that contains Cerberus' documentation 
@@ -400,6 +400,7 @@ function renderOptionsForTestDataManager(data) {
         $("#testdatalibFirstColumnHeader").html(doc.getDocLabel("testdatalib", "actions_nopermissions"));
     }
 }
+
 /**
  * Handler that cleans the test case list modal when it is closed
  */
@@ -408,6 +409,7 @@ function testCaseListModalCloseHandler() {
     $('#testCaseListModal #testCaseListGroup a[id*="cat"]').remove();
     $('#testCaseListModal #testCaseListGroup div[id*="sub_cat"]').remove();
 }
+
 /**
  * Handler that removes the css error style when a field changes
  */
@@ -417,6 +419,7 @@ function subdataNameOnChangeHandler() {
         $(parent).removeClass('has-error');
     }
 }
+
 /**
  * Handler Method responsible for saving a new test data lib entry.
  */
@@ -468,6 +471,7 @@ function saveNewTestDataLibHandler() {
     });
 
 }
+
 /**
  * Handler that cleans the modal for editing subdata when it is closed.
  */
@@ -476,6 +480,7 @@ function editTestDataLibDataModalCloseHandler() {
     clearResponseMessage($('#manageTestDataLibDataModal'));
 
 }
+
 /**
  * Handler that cleans the modal for editing a testdatalib entry when it is closed
  */
@@ -517,6 +522,7 @@ function deleteTestDataLibHandlerClick() {
         $('#confirmationModal').modal('hide');
     }).fail(handleErrorAjaxAfterTimeout);
 }
+
 /**
  * Handler method that uploads a XML file
  */
@@ -621,6 +627,7 @@ function createLibButtonClickHandler() {
 
 
 }
+
 /**
  * Handler that cleans the modal for adding a testdatalib entry when it is closed
  */
@@ -763,6 +770,7 @@ function saveChangesSubDataClickHandler() {
     }).fail(handleErrorAjaxAfterTimeout);
 
 }
+
 function saveTestDataLibClickHandler() {
     var formEdit = $('#editTestDataLibModal').find('form#editTestLibData');
     showLoaderInModal('#editTestDataLibModal');
@@ -782,6 +790,7 @@ function saveTestDataLibClickHandler() {
         }
     }).fail(handleErrorAjaxAfterTimeout);
 }
+
 /**
  * Auxiliary method that validates if there are subdata entries that are repeated
  * @param {type} dialog
@@ -830,6 +839,7 @@ function validateSubDataEntriesRepeated(dialog, tableBody, checkOnesMarkedToRemo
     return true;
 
 }
+
 /**
  * Auxiliary method that handles the group options.
  * @returns {undefined}
@@ -880,6 +890,7 @@ function updateSubDataTabLabel() {
     $('#tab2Text').text(doc.getDocLabel("page_testdatalib_m_createlib", "m_tab2_text") + " (" +
             ($('#addSubDataTable tr[class="trData"]').size() + 1) + " " + doc.getDocLabel("page_testdatalib_m_createlib", "m_tab2_text_entries") + ")");
 }
+
 function editDeleteRowTestDataLibData(element) {
     //if is a new record then we know that is to remove from the interface
     var doc = new Doc();
@@ -898,11 +909,6 @@ function editDeleteRowTestDataLibData(element) {
     }
 }
 
-
-
-
-
-
 function removeAllEntries(tableID) {
     removeRows(tableID);
 }
@@ -910,10 +916,6 @@ function removeAllEntries(tableID) {
 function removeRows(tableID) {
     $('#' + tableID + ' tr[class="trData"]').remove();
 }
-
-
-
-
 
 /*************************** TestDataLib ******************************/
 /**
@@ -1036,11 +1038,11 @@ function editTestDataLib(testDataLibID) {
             $('#editTestDataLibModal #lastModified').prop("value", obj.lastModified);
             $('#editTestDataLibModal #lastModifier').prop("value", obj.lastModifier);
 
-        if (!(data["hasPermissions"])) { // If readonly, we only readonly all fields
+            if (!(data["hasPermissions"])) { // If readonly, we only readonly all fields
 
-            $('#saveTestDataLib').attr('class', '');
-            $('#saveTestDataLib').attr('hidden', 'hidden');
-        }
+                $('#saveTestDataLib').attr('class', '');
+                $('#saveTestDataLib').attr('hidden', 'hidden');
+            }
 
             //after everything. then shows the modal
             $('#editTestDataLibModal').modal('show');
@@ -1052,6 +1054,7 @@ function editTestDataLib(testDataLibID) {
     }).fail(handleErrorAjaxAfterTimeout);
 
 }
+
 /**
  * Function that loads all test cases that are associated with the selected entry 
  * @param {type} testDataLibID testdatalib id
@@ -1155,7 +1158,6 @@ function viewSubDataEntries(testDataLibID) {
     }).fail(handleErrorAjaxAfterTimeout);
 
 }
-
 
 /**
  *
@@ -1311,11 +1313,6 @@ function saveDuplicateTestDataLibClickHandler() {
 
 }
 
-
-
-//https://datatables.net/examples/api/show_hide.html
-
-
 function loadSelectElement(data, element, includeEmpty, includeEmptyText) {
     $(element).empty();
     if (includeEmpty !== null && includeEmpty) {
@@ -1360,100 +1357,176 @@ function aoColumnsViewTestDataLibData() {
 function aoColumnsFuncTestDataLib(tableId) {
     var doc = new Doc();
 
-    var aoColumns = [];
-    $("#listOfTestDataLib th").each(function (i) {
-        switch (i) {
-            case 0:
-                aoColumns.push({
-                    className: "width250",
-                    "sName": "TestDataLibID",
-                    "data": "testDataLibID",
-                    "bSortable": false,
-                    "title": doc.getDocLabel("testdatalib", "actions"),
-                    "mRender": function (data, type, oObj) {
-                        var hasPermissions = $("#" + tableId).attr("hasPermissions");
-                        var editElement = '<button id="editTestDataLib' + data + '"  onclick="editTestDataLib(' + data + ');" \n\
+    var aoColumns = [
+        {
+            "data": "testDataLibID",
+            "bSortable": false,
+            "bSearchable": false,
+            "sWidth": "200px",
+            "title": doc.getDocLabel("testdatalib", "actions"),
+            "mRender": function (data, type, oObj) {
+                var hasPermissions = $("#" + tableId).attr("hasPermissions");
+                var editElement = '<button id="editTestDataLib' + data + '"  onclick="editTestDataLib(' + data + ');" \n\
                                 class="editTestDataLib btn btn-default btn-xs margin-right5" \n\
                             name="editTestDataLib" title="' + doc.getDocLabel("page_testdatalib", "tooltip_editentry") + '" type="button">\n\
                             <span class="glyphicon glyphicon-pencil"></span></button>';
-                        var viewElement = '<button id="editTestDataLib' + data + '"  onclick="editTestDataLib(' + data + ');" \n\
+                var viewElement = '<button id="editTestDataLib' + data + '"  onclick="editTestDataLib(' + data + ');" \n\
                                 class="editTestDataLib btn btn-default btn-xs margin-right5" \n\
                             name="editTestDataLib" title="' + doc.getDocLabel("page_testdatalib", "tooltip_editentry") + '" type="button">\n\
                             <span class="glyphicon glyphicon-eye-open"></span></button>';
-                        var editDataElement = '<button  class="editTestDataLib btn  btn-default btn-xs margin-right5" \n\
+                var editDataElement = '<button  class="editTestDataLib btn  btn-default btn-xs margin-right5" \n\
                             name="editTestDataLib" title="' + doc.getDocLabel("page_testdatalib", "tooltip_editsubdata") + '" type="button" onclick="editSubData(' + data + ')">\n\
                             <span class="glyphicon glyphicon-list-alt"></span></button>';
-                        var viewDataElement = '<button  class="viewSubDataEntries btn  btn-default btn-xs margin-right5" \n\
+                var viewDataElement = '<button  class="viewSubDataEntries btn  btn-default btn-xs margin-right5" \n\
                             name="viewSubDataEntries" title="' + doc.getDocLabel("page_testdatalib", "tooltip_viewsubdata") + '" type="button" onclick="viewSubDataEntries(' + data + ', \'' + oObj.type + '\')">\n\
                             <span class="glyphicon glyphicon-list-alt"></span></button>';
-                        var deleteElement = '<button onclick="deleteTestDataLib(' + oObj.testDataLibID + ',\'' + oObj.name
-                                + '\', ' + '\'' + oObj.system + '\', ' + '\'' + oObj.environment + '\', ' + '\'' + oObj.country + '\', '
-                                + '\'' + oObj.type + '\');" class="btn btn-default btn-xs margin-right25 " \n\
+                var deleteElement = '<button onclick="deleteTestDataLib(' + oObj.testDataLibID + ',\'' + oObj.name
+                        + '\', ' + '\'' + oObj.system + '\', ' + '\'' + oObj.environment + '\', ' + '\'' + oObj.country + '\', '
+                        + '\'' + oObj.type + '\');" class="btn btn-default btn-xs margin-right25 " \n\
                             name="deleteTestDataLib" title="' + doc.getDocLabel("page_testdatalib", "tooltip_delete") + '" type="button">\n\
                             <span class="glyphicon glyphicon-trash"></span></button>';
-                        var duplicateEntryElement = '<button  class="btn btn-default btn-xs margin-right5" \n\
+                var duplicateEntryElement = '<button  class="btn btn-default btn-xs margin-right5" \n\
                             name="duplicateTestDataLib" title="' + doc.getDocLabel("page_testdatalib", "tooltip_duplicateEntry") + '"\n\
                                  type="button" onclick="duplicateEntry(' + data + ')">\n\
                                 <span class="fa fa-files-o"></span></button>'; //TODO check if we can add this glyphicon glyphicon-duplicate
-                        var viewTestCase = '<button  class="getTestCasesUsing btn  btn-default btn-xs margin-right5" \n\
+                var viewTestCase = '<button  class="getTestCasesUsing btn  btn-default btn-xs margin-right5" \n\
                             name="getTestCasesUsing" title="' + doc.getDocLabel("page_testdatalib", "tooltip_gettestcases") + '" type="button" \n\
                             onclick="getTestCasesUsing(' + data + ', \'' + oObj.name + '\', \'' + oObj.country + '\')">\n\
                             TC</button>';
 
-                        if (hasPermissions === "true") { //only draws the options if the user has the correct privileges
-                            return '<div class="center btn-group width250">' + editElement + editDataElement + deleteElement + duplicateEntryElement + viewTestCase + '</div>';
-                        } else {
-                            return '<div class="center btn-group width250">' + viewElement + viewDataElement + viewTestCase + '</div>';
-                        }
-                    }
-                });
-                break;
-
-            case 1 :
-                aoColumns.push({className: "width250", "sName": "Name", "data": "name", "title": doc.getDocOnline("testdatalib", "name")});
-                break;
-            case 2 :
-                aoColumns.push({className: "width130", "sName": "System", "data": "system", "title": doc.getDocOnline("testdatalib", "system")});
-                break;
-            case 3 :
-                aoColumns.push({className: "width130", "sName": "Environment", "data": "environment", "title": doc.getDocOnline("testdatalib", "environment")});
-                break;
-            case 4 :
-                aoColumns.push({className: "width130", "sName": "Country", "data": "country", "title": doc.getDocOnline("testdatalib", "country")});
-                break;
-            case 5 :
-                aoColumns.push({className: "width100", "sName": "Group", "data": "group", "title": doc.getDocOnline("testdatalib", "group")});
-                break;
-            case 6 :
-                aoColumns.push({className: "width80", "sName": "Type", "data": "type", "title": doc.getDocOnline("testdatalib", "type")});
-                break;
-            case 7 :
-                aoColumns.push({className: "width100", "sName": "Database", "data": "database", "title": doc.getDocOnline("testdatalib", "database")});
-                break;
-            case 8 :
-                aoColumns.push({className: "width500", "sName": "Script", "data": "script", "title": doc.getDocOnline("testdatalib", "script")});
-                break;
-            case 9 :
-                aoColumns.push({className: "width250", "sName": "ServicePath", "data": "servicePath", "title": doc.getDocOnline("testdatalib", "servicepath"),
-                    "mRender": function (data, type, oObj) {
-                        return drawURL(data);
-                    }});
-                break;
-            case 10 :
-                aoColumns.push({className: "width250", "sName": "Method", "data": "method", "title": doc.getDocOnline("testdatalib", "method")});
-                break;
-            case 11 :
-                aoColumns.push({className: "width500", "sName": "Envelope", "data": "envelope", "title": doc.getDocOnline("testdatalib", "envelope")});
-                break;
-            case 12:
-                aoColumns.push({className: "width150", "sName": "Description", "data": "description", "title": doc.getDocOnline("testdatalib", "description")});
-                break;
-
-            default :
-                aoColumns.push({"sWidth": "100px"});
-                break;
+                if (hasPermissions === "true") { //only draws the options if the user has the correct privileges
+                    return '<div class="center btn-group width250">' + editElement + editDataElement + deleteElement + duplicateEntryElement + viewTestCase + '</div>';
+                } else {
+                    return '<div class="center btn-group width250">' + viewElement + viewDataElement + viewTestCase + '</div>';
+                }
+            }
+        },
+        {
+            "sName": "TestDataLibID",
+            "data": "testDataLibID",
+            "sWidth": "50px",
+            "title": doc.getDocOnline("testdatalib", "testdatalibid")
+        },
+        {
+            "sName": "Name",
+            "data": "name",
+            "sWidth": "200px",
+            "title": doc.getDocOnline("testdatalib", "name")
+        },
+        {
+            "sName": "System",
+            "data": "system",
+            "sWidth": "70px",
+            "title": doc.getDocOnline("testdatalib", "system")
+        },
+        {
+            "sName": "Environment",
+            "data": "environment",
+            "sWidth": "70px",
+            "title": doc.getDocOnline("testdatalib", "environment")
+        },
+        {
+            "sName": "Country",
+            "data": "country",
+            "sWidth": "70px",
+            "title": doc.getDocOnline("testdatalib", "country")
+        },
+        {
+            "sName": "Group",
+            "data": "group",
+            "sWidth": "100px",
+            "title": doc.getDocOnline("testdatalib", "group")
+        },
+        {
+            "sName": "Description",
+            "data": "description",
+            "sWidth": "150px",
+            "title": doc.getDocOnline("testdatalib", "description")
+        },
+        {
+            "sName": "Type",
+            "data": "type",
+            "sWidth": "70px",
+            "title": doc.getDocOnline("testdatalib", "type")
+        },
+        {
+            "sName": "SubDataValue",
+            "data": "subDataValue",
+            "sWidth": "150px",
+            "bSortable": false,
+            "title": doc.getDocOnline("testdatalibdata", "value")
+        },
+        {
+            "sName": "Database",
+            "data": "database",
+            "sWidth": "70px",
+            "title": doc.getDocOnline("testdatalib", "database")
+        },
+        {
+            "sName": "Script",
+            "data": "script",
+            "sWidth": "150px",
+            "title": doc.getDocOnline("testdatalib", "script")
+        },
+        {
+            "sName": "ServicePath",
+            "data": "servicePath",
+            "sWidth": "150px",
+            "title": doc.getDocOnline("testdatalib", "servicepath")
+        },
+        {
+            "sName": "method",
+            "data": "method",
+            "sWidth": "150px",
+            "title": doc.getDocOnline("testdatalib", "method")
+        },
+        {
+            "sName": "envelope",
+            "data": "envelope",
+            "sWidth": "150px",
+            "title": doc.getDocOnline("testdatalib", "envelope")
+        },
+        {
+            "sName": "Created",
+            "data": "created",
+            "sWidth": "150px",
+            "title": doc.getDocOnline("testdatalib", "created")
+        },
+        {
+            "sName": "Creator",
+            "data": "creator",
+            "sWidth": "70px",
+            "title": doc.getDocOnline("testdatalib", "creator")
+        },
+        {
+            "sName": "LastModified",
+            "data": "lastModified",
+            "sWidth": "150px",
+            "title": doc.getDocOnline("testdatalib", "lastmodified")
+        },
+        {
+            "sName": "LastModifier",
+            "data": "lastModifier",
+            "sWidth": "70px",
+            "title": doc.getDocOnline("testdatalib", "lastmodifier")
+        },
+        {
+            "sName": "SubDataColumn",
+            "data": "subDataColumn",
+            "bSortable": false,
+            "sWidth": "70px",
+            "title": doc.getDocOnline("testdatalibdata", "column")
+        },
+        {
+            "sName": "SubDataParsingAnswer",
+            "data": "subDataParsingAnswer",
+            "bSortable": false,
+            "sWidth": "70px",
+            "title": doc.getDocOnline("testdatalibdata", "parsingAnswer")
         }
-    });
+    ];
+
     return aoColumns;
 
 }
+

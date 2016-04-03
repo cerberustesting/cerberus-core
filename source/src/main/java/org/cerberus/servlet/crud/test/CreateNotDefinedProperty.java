@@ -49,6 +49,7 @@ import org.springframework.web.context.support.WebApplicationContextUtils;
 
 /**
  * Creates a new property for the test case.
+ *
  * @author memiks
  * @author FNogueira
  */
@@ -66,10 +67,10 @@ public class CreateNotDefinedProperty extends HttpServlet {
      */
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        
+
         JSONObject jsonResponse = new JSONObject();
         MessageEvent rs = null;
-         
+
         ApplicationContext appContext = WebApplicationContextUtils.getWebApplicationContext(this.getServletContext());
 
         ITestCaseCountryPropertiesService testCaseCountryPropertiesService = appContext.getBean(TestCaseCountryPropertiesService.class);
@@ -121,23 +122,22 @@ public class CreateNotDefinedProperty extends HttpServlet {
                             "STATIC"
                     ));
                 }
-                
 
                 Answer answer = testCaseCountryPropertiesService.createListTestCaseCountryPropertiesBatch(listOfPropertiesToInsert);
                 rs = answer.getResultMessage();
-                
+
                 //if the operation retrieved success it means that we are able to create new records
                 //then a new entry should be added by the log service
-                if(answer.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())){
+                if (answer.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
                     //  Adding Log entry.
                     ILogEventService logEventService = appContext.getBean(LogEventService.class);
                     logEventService.createPrivateCalls("/CreateNotDefinedProperty", "CREATE", "Create NotDefinedProperty:" + " " + propertyName, request);
                 }
-            }else{
+            } else {
                 rs = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_EXPECTED);
                 rs.setDescription(rs.getDescription().replace("%ITEM%", "Property ").replace("%OPERATION%", "CREATE").replace("%REASON%", "No countries were defined for the test case."));
             }
-            
+
             //sets the message returned by the operations
             jsonResponse.put("messageType", rs.getMessage().getCodeString());
             jsonResponse.put("message", rs.getDescription());
@@ -146,7 +146,7 @@ public class CreateNotDefinedProperty extends HttpServlet {
             response.getWriter().print(jsonResponse);
             response.getWriter().flush();
 
-        }  catch (JSONException ex) {
+        } catch (JSONException ex) {
 
             org.apache.log4j.Logger.getLogger(CreateTestDataLib.class.getName()).log(org.apache.log4j.Level.ERROR, null, ex);
             //returns a default error message with the json format that is able to be parsed by the client-side

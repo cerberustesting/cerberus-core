@@ -23,7 +23,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import org.apache.log4j.Level;
-import org.cerberus.crud.dao.ITestDataLibDAO; 
+import org.cerberus.crud.dao.ITestDataLibDAO;
 import org.cerberus.crud.entity.MessageEvent;
 import org.cerberus.crud.entity.TestDataLib;
 import org.cerberus.crud.entity.TestDataLibData;
@@ -65,17 +65,17 @@ public class TestDataLibService implements ITestDataLibService {
     private IXmlUnitService xmlUnitService;
     @Autowired
     private ITestDataLibDataService testDataLibDataService;
-    
+
     @Override
     public AnswerItem readByNameBySystemByEnvironmentByCountry(String name, String system, String environment, String country) {
         return testDataLibDAO.readByNameBySystemByEnvironmentByCountry(name, system, environment, country);
     }
-    
+
     @Override
     public AnswerItem readByKey(String name, String system, String environment, String country) {
         return testDataLibDAO.readByKey(name, system, environment, country);
     }
-    
+
     @Override
     public AnswerItem readByKey(int testDatalib) {
         return testDataLibDAO.readByKey(testDatalib);
@@ -102,18 +102,18 @@ public class TestDataLibService implements ITestDataLibService {
     }
 
     @Override
-    public void create(TestDataLib testDataLib){
+    public void create(TestDataLib testDataLib) {
         testDataLibDAO.create(testDataLib);
     }
 
     @Override
     public Answer create(TestDataLib testDataLib, List<TestDataLibData> subDataList) {
         List<TestDataLibData> completeSubDataList = new ArrayList<TestDataLibData>();
-        
+
         //validates if the subdata are not duplicated
         Answer answer = testDataLibDataService.validate(completeSubDataList);
-        
-        if(answer.isCodeEquals(MessageEventEnum.DATA_OPERATION_VALIDATIONS_ERROR.getCode())){
+
+        if (answer.isCodeEquals(MessageEventEnum.DATA_OPERATION_VALIDATIONS_ERROR.getCode())) {
             return answer;
         }
         //if not then we can start the insert
@@ -122,7 +122,7 @@ public class TestDataLibService implements ITestDataLibService {
         answer = testDataLibDAO.create(testDataLib);
         if (answer.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
             //if success, then creates the entries
-            if (subDataList != null && !subDataList.isEmpty()) {                
+            if (subDataList != null && !subDataList.isEmpty()) {
                 for (TestDataLibData libData : subDataList) {
                     TestDataLibData data = testDataLibDataFactory.create(-1, testDataLib.getTestDataLibID(), libData.getSubData(), libData.getValue(),
                             libData.getColumn(), libData.getParsingAnswer(), libData.getDescription());
@@ -141,15 +141,15 @@ public class TestDataLibService implements ITestDataLibService {
         } else {
             dbManager.abortTransaction();
         }
-    
+
         return answer;
     }
-    
+
     @Override
     public Answer create(HashMap<TestDataLib, List<TestDataLibData>> entries) {
-        
+
         List<TestDataLibData> completeSubDataList;
-        
+
         Answer ansInsert = new Answer(new MessageEvent(MessageEventEnum.DATA_OPERATION_OK));
         dbManager.beginTransaction();
 
@@ -181,7 +181,7 @@ public class TestDataLibService implements ITestDataLibService {
         return ansInsert;
 
     }
-   
+
     @Override
     public Answer delete(TestDataLib testDataLib) {
 
@@ -211,7 +211,7 @@ public class TestDataLibService implements ITestDataLibService {
         AnswerItem answer = new AnswerItem();
         MessageEvent msg = new MessageEvent(MessageEventEnum.PROPERTY_SUCCESS);
         TestDataLibResult result = null;
-      
+
         if (lib.getType().equals(TestDataLibTypeEnum.STATIC.getCode())) {
             result = fetchDataStatic(lib);
 
@@ -229,7 +229,7 @@ public class TestDataLibService implements ITestDataLibService {
         answer.setResultMessage(msg);
         return answer;
     }
-    
+
     private TestDataLibResult fetchDataStatic(TestDataLib lib) {
         //static data does need pre processing to retrieve the subdataentries
         TestDataLibResult result = new TestDataLibResultStatic();
@@ -246,7 +246,7 @@ public class TestDataLibService implements ITestDataLibService {
         answer = sQLService.calculateOnDatabaseNColumns(lib.getScript(), lib.getDatabase(),
                 lib.getSystem(), lib.getCountry(), lib.getEnvironment(), rowLimit, propertyNature);
 
-        MyLogger.log(TestDataLibService.class.getName(), Level.INFO, "Test data libs ervice SQL " + lib.getScript());
+        MyLogger.log(TestDataLibService.class.getName(), Level.INFO, "Test data lib service SQL " + lib.getScript());
 
         //if the sql service returns a success message then we can process it
         if (answer.getResultMessage().getCode() == MessageEventEnum.PROPERTY_SUCCESS_SQL.getCode()) {
@@ -255,20 +255,25 @@ public class TestDataLibService implements ITestDataLibService {
             result.setTestDataLibID(lib.getTestDataLibID());
 
             ((TestDataLibResultSQL) result).setData(columns);
+            answer.setItem(result);
 
         } else if (answer.getResultMessage().getCode() == MessageEventEnum.PROPERTY_FAILED_SQL_NODATA.getCode()) {
             //if the script does not return 
             msg = new MessageEvent(MessageEventEnum.PROPERTY_FAILED_GETFROMDATALIB_NODATA);
             msg.setDescription(msg.getDescription().replace("%ENTRY%", lib.getName()).replace("%SQL%", lib.getScript())
                     .replace("%DATABASE%", lib.getDatabase()));
+            answer.setItem(result);
+            answer.setResultMessage(msg);
+            
         } else {
             //other error had occured
-            msg = new MessageEvent(MessageEventEnum.PROPERTY_FAILED_GETFROMDATALIB_GENERIC);
-            msg.setDescription(msg.getDescription().replace("%ENTRY%", lib.getName()).replace("%SQL%", lib.getScript())
+            answer.setItem(result);
+            msg=answer.getResultMessage();
+            msg.setDescription(msg.getDescription().replace("%ENTRY%", lib.getName()).replace("%SQL%", lib.getScript()).replace("%ENTRYID%", lib.getTestDataLibID().toString())
                     .replace("%DATABASE%", lib.getDatabase()));
+            answer.setResultMessage(msg);
+            
         }
-        answer.setItem(result);
-        answer.setResultMessage(msg);
         return answer;
     }
 
@@ -304,15 +309,15 @@ public class TestDataLibService implements ITestDataLibService {
         int originalID = lib.getTestDataLibID();
         dbManager.beginTransaction();
         //get all records from testdatalibdata that belong to the the lib that we are trying to duplicate
-        
+
         answer = testDataLibDAO.create(lib);
 
         if (answer.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
             answer = testDataLibDataService.readByKey(originalID);
-            if(answer.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())){
+            if (answer.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
                 //if there were no problems retrieving the sub-data list
                 //gets the subdatalist
-                List<TestDataLibData> originalList = (List<TestDataLibData>)((AnswerList)answer).getDataList();
+                List<TestDataLibData> originalList = (List<TestDataLibData>) ((AnswerList) answer).getDataList();
                 List<TestDataLibData> newList = new ArrayList<TestDataLibData>();
                 if (originalList != null && !originalList.isEmpty()) {
                     for (TestDataLibData libData : originalList) {
@@ -321,16 +326,16 @@ public class TestDataLibService implements ITestDataLibService {
                         newList.add(data);
                     }
                     answer = testDataLibDataService.create(newList);
-                }            
-            }            
-        } 
-        
+                }
+            }
+        }
+
         if (answer.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
             dbManager.commitTransaction();
         } else {
             dbManager.abortTransaction();
         }
-        
+
         return answer;
     }
 }

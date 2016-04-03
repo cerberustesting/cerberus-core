@@ -21,7 +21,7 @@ package org.cerberus.service.engine.testdata;
 
 import org.cerberus.enums.MessageEventEnum;
 import org.cerberus.enums.TestDataLibTypeEnum;
-import java.util.HashMap; 
+import java.util.HashMap;
 import org.cerberus.crud.entity.MessageEvent;
 import org.cerberus.crud.entity.TestDataLibData;
 import org.cerberus.util.answer.AnswerItem;
@@ -31,37 +31,39 @@ import org.cerberus.util.answer.AnswerItem;
  * @author FNogueira
  */
 public class TestDataLibResultSQL extends TestDataLibResult {
+
     private HashMap<String, String> rawData; //only saves a row each time - TODO:FN save a set of rows
-    
-    public TestDataLibResultSQL(){
+
+    public TestDataLibResultSQL() {
         this.type = TestDataLibTypeEnum.SQL.getCode();
     }
+
     @Override
-    public AnswerItem<String> getValue(TestDataLibData entry) {     
+    public AnswerItem<String> getValue(TestDataLibData entry) {
         MessageEvent msg = new MessageEvent(MessageEventEnum.PROPERTY_SUCCESS_GETFROMDATALIBDATA);
         AnswerItem ansGetValue = new AnswerItem();
-        
+
         //checks if the column was already retrieved
-        if(!values.containsKey(entry.getSubData())){
+        if (!values.containsKey(entry.getSubData())) {
             //if the map don't contain the entry that we want, we will get it
             String value = rawData.get(entry.getColumn().toUpperCase()); //columns are store in UPPERCASE
             //associates the subdata with the column data retrieved by the query
-            
-            if(value == null){
+
+            if (value == null) {
                 msg = new MessageEvent(MessageEventEnum.PROPERTY_FAILED_GETFROMDATALIBDATA_INVALID_COLUMN);
                 msg.setDescription(msg.getDescription().replace("%COLUMNNAME%", entry.getColumn()).replace("%SUBDATA%", entry.getSubData()).
-                        replace("%ENTRY%", entry.getTestDataLibID().toString()));                      
-            }else{
+                        replace("%ENTRYID%", entry.getTestDataLibID().toString()));
+            } else {
                 values.put(entry.getSubData(), value);
             }
         }
-        
-        ansGetValue.setResultMessage(msg);  
+
+        ansGetValue.setResultMessage(msg);
         ansGetValue.setItem(values.get(entry.getSubData()));
-        
+
         return ansGetValue;
     }
-    
+
     public HashMap<String, String> getData() {
         return rawData;
     }

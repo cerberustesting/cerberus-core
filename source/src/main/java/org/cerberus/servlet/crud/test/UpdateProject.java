@@ -97,7 +97,7 @@ public class UpdateProject extends HttpServlet {
             IProjectService projectService = appContext.getBean(IProjectService.class);
 
             AnswerItem resp = projectService.readByKey(idProject);
-            if (!(resp.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode()))) {
+            if (!(resp.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode()) && resp.getItem()!=null)) {
                 /**
                  * Object could not be found. We stop here and report the error.
                  */

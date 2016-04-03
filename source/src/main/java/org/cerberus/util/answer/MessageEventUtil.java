@@ -109,10 +109,11 @@ public class MessageEventUtil {
         msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", "Unable to retrieve data!"));
         return msg;
     }
-    public static MessageEvent createMessageDescriptionJSONFormat(MessageEventEnum messageType, 
+
+    public static MessageEvent createMessageDescriptionJSONFormat(MessageEventEnum messageType,
             HashMap<String, String> data) {
         MessageEvent message = new MessageEvent(messageType);
-        
+
         JSONObject obj = new JSONObject(data);
         message.setDescription(obj.toString());
         return message;

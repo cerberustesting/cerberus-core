@@ -37,7 +37,7 @@ import org.cerberus.enums.MessageEventEnum;
 import org.cerberus.enums.MessageGeneralEnum;
 import org.cerberus.exception.CerberusException;
 import org.cerberus.log.MyLogger;
-import org.cerberus.util.SqlUtil; 
+import org.cerberus.util.SqlUtil;
 import org.cerberus.util.answer.AnswerList;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
@@ -72,10 +72,10 @@ public class TestCaseExecutionStatisticsDAOImpl implements ITestCaseExecutionSta
             AnswerList answer;
             for (String e : environment) {
                 answer = invariantService.findInvariantByIdGp1("ENVIRONMENT", e);
-                if(!answer.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())){
+                if (!answer.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
                     //TODO: temporary fix that should be solved while refactoring
                     throw new CerberusException(new MessageGeneral(MessageGeneralEnum.DATA_OPERATION_ERROR));
-                }else{
+                } else {
                     inv.addAll(answer.getDataList());
                 }
             }
@@ -155,7 +155,6 @@ public class TestCaseExecutionStatisticsDAOImpl implements ITestCaseExecutionSta
         sbquery.append("' ");
         sbquery.append(" limit 1");
 
-
         Connection connection = this.databaseSpring.connect();
         try {
             Statement stat = connection.createStatement();
@@ -216,12 +215,12 @@ public class TestCaseExecutionStatisticsDAOImpl implements ITestCaseExecutionSta
         try {
             List<Invariant> inv = new ArrayList<Invariant>();
             AnswerList answer;
-            for (String e : environment) {                
+            for (String e : environment) {
                 answer = invariantService.findInvariantByIdGp1("ENVIRONMENT", e);
-                if(!answer.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())){
+                if (!answer.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
                     //TODO: temporary fix that should be solved while refactoring
                     throw new CerberusException(new MessageGeneral(MessageGeneralEnum.DATA_OPERATION_ERROR));
-                }else{
+                } else {
                     inv.addAll(answer.getDataList());
                 }
             }
@@ -317,7 +316,6 @@ public class TestCaseExecutionStatisticsDAOImpl implements ITestCaseExecutionSta
         sbquery.append("and application not ");
         sbquery.append(appliSQL);
         sbquery.append(" limit 1");
-
 
         Connection connection = this.databaseSpring.connect();
         try {
@@ -442,11 +440,11 @@ public class TestCaseExecutionStatisticsDAOImpl implements ITestCaseExecutionSta
         query.append(" JOIN buildrevisioninvariant l1 on br.build = l1.versionname AND l1.`level`=1 ");
         query.append(" JOIN buildrevisioninvariant l2 on br.revision = l2.versionname AND l2.`level`=2 ");
         query.append(" WHERE build <> 'NONE' ");
-        if (!sprint.equals("")){
-        query.append(" and build like '");
-        query.append(sprint);
-        query.append("' ");
-        } 
+        if (!sprint.equals("")) {
+            query.append(" and build like '");
+            query.append(sprint);
+            query.append("' ");
+        }
         query.append(" and application ");
         query.append(appliSQL);
         query.append(" ORDER BY seq1 desc, seq2 desc ");

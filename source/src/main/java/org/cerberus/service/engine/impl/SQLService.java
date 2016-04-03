@@ -28,6 +28,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Random;
+import java.util.logging.Logger;
 import org.apache.log4j.Level;
 import org.cerberus.crud.dao.ITestCaseExecutionDataDAO;
 import org.cerberus.crud.entity.CountryEnvironmentDatabase;
@@ -37,6 +38,7 @@ import org.cerberus.crud.entity.TestCaseCountryProperties;
 import org.cerberus.crud.entity.TestCaseExecution;
 import org.cerberus.crud.entity.TestCaseExecutionData;
 import org.cerberus.crud.service.ICountryEnvironmentDatabaseService;
+import org.cerberus.crud.service.IParameterService;
 import org.cerberus.crud.service.ITestCaseExecutionService;
 import org.cerberus.database.DatabaseSpring;
 import org.cerberus.enums.MessageEventEnum;
@@ -66,6 +68,10 @@ public class SQLService implements ISQLService {
     private ITestCaseExecutionDataDAO testCaseExecutionDataDAO;
     @Autowired
     private ITestCaseExecutionService testCaseExecutionService;
+    @Autowired
+    private IParameterService parameterService;
+
+    private static final org.apache.log4j.Logger LOG = org.apache.log4j.Logger.getLogger(SQLService.class);
 
     @Override
     public TestCaseExecutionData calculateOnDatabase(TestCaseExecutionData testCaseExecutionData, TestCaseCountryProperties testCaseProperties,
@@ -143,51 +149,68 @@ public class SQLService implements ISQLService {
         List<HashMap<String, String>> list;
 
         try {
-            countryEnvironmentDatabase = this.countryEnvironmentDatabaseService.findCountryEnvironmentDatabaseByKey(system,
-                    country, environment, db);
-            connectionName = countryEnvironmentDatabase.getConnectionPoolName();
 
-            if (!(StringUtil.isNullOrEmpty(connectionName))) {
-                //performs a query that returns several rows containing n columns
-                AnswerList responseList = this.queryDatabaseNColumns(connectionName, sql, rowLimit);
-
-                //if the query returns sucess then we can get the data
-                if (responseList.getResultMessage().getCode() == MessageEventEnum.PROPERTY_SUCCESS_SQL.getCode()) {
-                    list = responseList.getDataList();
-                    if (list != null && !list.isEmpty()) {
-                        if (propertyNature.equalsIgnoreCase(Property.NATURE_STATIC)) {
-                            answer.setItem((list.get(0)));
-
-                        } else if (propertyNature.equalsIgnoreCase(Property.NATURE_RANDOM)) {
-                            Random r = new Random();
-                            int position = r.nextInt(list.size());
-                            answer.setItem(list.get(position));
-                            mes = new MessageEvent(MessageEventEnum.PROPERTY_SUCCESS_SQL_RANDOM);
-
-                        }
-                        //TODO in future implement these two types of NATURE
-                        /*else if (testCaseProperties.getNature().equalsIgnoreCase(Property.NATURE_RANDOMNEW)) {                         
-                         } else if (testCaseProperties.getNature().equalsIgnoreCase(Property.NATURE_NOTINUSE)) {
-                         }*/
-                    } else {
-                        mes = new MessageEvent(MessageEventEnum.PROPERTY_FAILED_SQL_NODATA);
-                    }
-
-                } else {
-                    mes = responseList.getResultMessage();
-                }
-
-                mes.setDescription(mes.getDescription().replaceAll("%DB%", db));
-                mes.setDescription(mes.getDescription().replaceAll("%SQL%", sql));
-                mes.setDescription(mes.getDescription().replaceAll("%JDBCPOOLNAME%", connectionName));
+            if (StringUtil.isNullOrEmpty(db)) {
+                mes = new MessageEvent(MessageEventEnum.PROPERTY_FAILED_GETFROMDATALIB_DATABASEEMPTY);
 
             } else {
-                mes = new MessageEvent(MessageEventEnum.PROPERTY_FAILED_SQL_GENERIC);
-                mes.setDescription(mes.getDescription().replaceAll("%JDBC%", connectionName));
+
+                countryEnvironmentDatabase = this.countryEnvironmentDatabaseService.findCountryEnvironmentDatabaseByKey(system,
+                        country, environment, db);
+                connectionName = countryEnvironmentDatabase.getConnectionPoolName();
+
+                if (!(StringUtil.isNullOrEmpty(connectionName))) {
+                    if (propertyNature.equalsIgnoreCase(Property.NATURE_STATIC)) { // If Nature of the property is static, we don't need to getch more than 1 record.
+                        rowLimit = 1;
+                    }
+                    //performs a query that returns several rows containing n columns
+                    AnswerList responseList = this.queryDatabaseNColumns(connectionName, sql, system, rowLimit);
+
+                    //if the query returns sucess then we can get the data
+                    if (responseList.getResultMessage().getCode() == MessageEventEnum.PROPERTY_SUCCESS_SQL.getCode()) {
+                        list = responseList.getDataList();
+                        if (list != null && !list.isEmpty()) {
+
+                            if (propertyNature.equalsIgnoreCase(Property.NATURE_STATIC)) {
+                                answer.setItem((list.get(0)));
+                                mes = new MessageEvent(MessageEventEnum.PROPERTY_SUCCESS_GETFROMDATALIB);
+
+                            } else if (propertyNature.equalsIgnoreCase(Property.NATURE_RANDOM)) {
+                                Random r = new Random();
+                                int position = r.nextInt(list.size());
+                                answer.setItem(list.get(position));
+                                mes = new MessageEvent(MessageEventEnum.PROPERTY_SUCCESS_GETFROMDATALIB_SQL_RANDOM);
+                                mes.setDescription(mes.getDescription().replaceAll("%POS%", Integer.toString(position)).replaceAll("%TOTALPOS%", Integer.toString(list.size())));
+
+                            } else if (propertyNature.equalsIgnoreCase(Property.NATURE_RANDOMNEW)) {
+                                mes = new MessageEvent(MessageEventEnum.PROPERTY_FAILED_FEATURENOTIMPLEMENTED);
+                                mes.setDescription(mes.getDescription().replaceAll("%FEATURE%", "RANDOMNEW Property Nature in TestDataLibrary"));
+
+                            } else if (propertyNature.equalsIgnoreCase(Property.NATURE_NOTINUSE)) {
+                                mes = new MessageEvent(MessageEventEnum.PROPERTY_FAILED_FEATURENOTIMPLEMENTED);
+                                mes.setDescription(mes.getDescription().replaceAll("%FEATURE%", "NOTINUSE Property Nature in TestDataLibrary"));
+                            }
+
+                        } else {
+                            mes = new MessageEvent(MessageEventEnum.PROPERTY_FAILED_SQL_NODATA);
+                        }
+
+                    } else {
+                        mes = responseList.getResultMessage();
+                    }
+
+                    mes.setDescription(mes.getDescription().replaceAll("%DB%", db));
+                    mes.setDescription(mes.getDescription().replaceAll("%SQL%", sql));
+                    mes.setDescription(mes.getDescription().replaceAll("%JDBCPOOLNAME%", connectionName));
+
+                } else {
+                    mes = new MessageEvent(MessageEventEnum.PROPERTY_FAILED_GETFROMDATALIB_JDBCRESSOURCEMPTY);
+                    mes.setDescription(mes.getDescription().replaceAll("%SYSTEM%", system).replaceAll("%COUNTRY%", country).replaceAll("%ENV%", environment).replaceAll("%DATABASE%", db));
+                }
             }
         } catch (CerberusException ex) {
-            mes = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
-            mes.setDescription(mes.getDescription().replaceAll("%DESCRIPTION%", "Unable to retrieve the specified data."));
+            mes = new MessageEvent(MessageEventEnum.PROPERTY_FAILED_GETFROMDATALIB_DATABASENOTCONFIGURED);
+            mes.setDescription(mes.getDescription().replaceAll("%SYSTEM%", system).replaceAll("%COUNTRY%", country).replaceAll("%ENV%", environment).replaceAll("%DATABASE%", db));
         }
 
         answer.setResultMessage(mes);
@@ -376,10 +399,16 @@ public class SQLService implements ISQLService {
         return list.get(0);
     }
 
-    private AnswerList queryDatabaseNColumns(String connectionName, String sql, int rowLimit) {
+    private AnswerList queryDatabaseNColumns(String connectionName, String sql, String system, int rowLimit) {
         AnswerList listResult = new AnswerList();
         List<HashMap<String, String>> list;
         int maxSecurityFetch = 100;
+        try {
+            String maxSecurityFetch1 = parameterService.findParameterByKey("cerberus_testdatalib_fetchmax", system).getValue();
+            maxSecurityFetch = Integer.valueOf(maxSecurityFetch1);
+        } catch (CerberusException ex) {
+            LOG.error(ex);
+        }
         int nbFetch = 0;
         MessageEvent msg = new MessageEvent(MessageEventEnum.PROPERTY_SUCCESS);
         msg.setDescription(msg.getDescription().replaceAll("%JDBC%", "jdbc/" + connectionName));

@@ -51,7 +51,6 @@ public class BuildRevisionParametersService implements IBuildRevisionParametersS
     @Autowired
     ICountryEnvParam_logService countryEnvParamLogService;
 
-
     @Override
     public List<BuildRevisionParameters> findBuildRevisionParametersByCriteria(String system, String build, String revision) {
         return this.buildRevisionParametersDAO.findBuildRevisionParametersByCriteria(system, build, revision);
@@ -218,8 +217,7 @@ public class BuildRevisionParametersService implements IBuildRevisionParametersS
 
             // Then we check here inside countryenvparam_log table is the build revision has already been used.
             AnswerList resp = countryEnvParamLogService.readByVariousByCriteria(system, null, null, build, revision, 0, 0, "id", "asc", null, null);
-            if (resp.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())
-                    && resp.getTotalRows()!=0) {
+            if (resp.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode()) && resp.getTotalRows() > 0) {
                 return true;
             } else {
                 return false;

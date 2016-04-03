@@ -4687,6 +4687,7 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLS = new StringBuilder();
         SQLS.append("SELECT 1 FROM dual;");
         SQLInstruction.add(SQLS.toString());
+
         // New updated Documentation.
         //-- ------------------------ 743-744
         SQLS = new StringBuilder();
@@ -4707,6 +4708,21 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
 
         // New updated Documentation.
         //-- ------------------------ 747-748
+        SQLS = new StringBuilder();
+        SQLS.append("SELECT 1 FROM dual;");
+        SQLInstruction.add(SQLS.toString());
+        SQLS = new StringBuilder();
+        SQLS.append("SELECT 1 FROM dual;");
+        SQLInstruction.add(SQLS.toString());
+
+        // New parameter cerberus_testdatalib_fetchmax.
+        //-- ------------------------ 749
+        SQLS = new StringBuilder();
+        SQLS.append("INSERT INTO `parameter` (`param`, `value`, `description`) VALUES ('cerberus_testdatalib_fetchmax', '100', 'Maximum number of fetched records that Cerberus will perform when retrieving a data from SQL Data Library.');");
+        SQLInstruction.add(SQLS.toString());
+
+        // New updated Documentation.
+        //-- ------------------------ 749-750
         SQLS = new StringBuilder();
         SQLS.append("DELETE FROM `documentation`;");
         SQLInstruction.add(SQLS.toString());
@@ -5632,11 +5648,15 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLS.append(",('testdatalib','actions','','en','Actions','<p> List of available actions for the current user: </p><p><table border=\\'1\\'><tr><th class=\\'ex\\'>Button</th><th class=\\'ex\\'>Function</th><th class=\\'ex\\'>Description</th></tr><tr><td><span class=\\'glyphicon glyphicon-pencil\\'></span></td><td>Edit Entry</td><td>Allows the update of the library entry: system, environment, country, type, group, database, script, method, service path, envelope and description. The name is not editable.</td></tr><tr><td><span class=\\'glyphicon glyphicon-trash\\'></span></td><td>Delete Entry</td><td>Allows the deletion of a library entry (and its sub-data entries). Only the entries that are not being used are possible to be deleted. </td></tr> <tr><td><span class=\\'glyphicon glyphicon-list-alt\\'></span></td><td>Edit Sub-Data Entries</td><td>Allows the management of the sub-data set specified for the library entry. </td></tr><tr><td>TC</td><td>Get List of test cases that use this entry</td><td>Allows the visualisation of the test cases that are currently using the library entry.</td></tr></table></p>  ')");
         SQLS.append(",('testdatalib','actions_nopermissions','','en','Actions','<p> List of available actions for the current user: </p><p><table border=\\'1\\'><tr><th class=\\'ex\\'>Button</th><th class=\\'ex\\'>Function</th><th class=\\'ex\\'>Description</th></tr><tr><td><span class=\\'glyphicon glyphicon-list-alt\\'></span></td><td>Sub-Data Entries</td><td>Allows the visualisation of the sub-data set specified for the library entry. </td></tr><tr><td>TC</td><td>Get list of test cases that use this entry</td><td>Allows the visualisation of the test cases that are currently using the library entry.</td></tr></table></p>  ')");
         SQLS.append(",('testdatalib','country','','en','Country','<p>Country where the entry is available. If not specified, then the property applies to ALL countries. </p><p><b><u>Note</u></b>:The combination of <u>Name</u>, <u>System</u>, <u>Environment</u> and <u>Country</u> must be unique.</p>')");
+        SQLS.append(",('testdatalib','created','','en','Creation Date','')");
+        SQLS.append(",('testdatalib','creator','','en','Creator','User who created the data.')");
         SQLS.append(",('testdatalib','database','','en','Database','<p>Specifies the database where the <i>script</i> attribute should be executed. </p><p><u>Property Type:</u> SQL</p>')");
         SQLS.append(",('testdatalib','description','','en','Description','<p>Textual description of the entry.</p>')");
         SQLS.append(",('testdatalib','envelope','','en','Envelope','<p>Envelope that should be sent in the SOAP request.</p><p><u>Property Type:</u> SOAP</p><p><u>Allows the usage of other properties: </u>Yes</p>')");
         SQLS.append(",('testdatalib','environment','','en','Environment','<p>Environment where the entry is available. If not specified, then the property applies to ALL environments.</p><p><b><u>Note</u></b>: The combination of <u>Name</u>, <u>System</u>, <u>Environment</u> and <u>Country</u> must be unique.</p>')");
         SQLS.append(",('testdatalib','group','','en','Group','<p>Name that groups entries that are at some extent correlated. It is an <b>optional</b> attribute.</p>')");
+        SQLS.append(",('testdatalib','lastmodified','','en','Modification Date','')");
+        SQLS.append(",('testdatalib','lastmodifier','','en','Last Modifier','User who last modified the data.')");
         SQLS.append(",('testdatalib','method','','en','Method','<p>Method that is invoked by the SOAP request/call.</p><p><u>Property Type:</u> SOAP</p><p><u>Allows the usage of other properties: </u>Yes</p><p>Examples:</p><table><tr><td>MYMETHOD_REQUEST</td></tr><tr><td>%METHOD_NAME%</td></tr></table><p><b>Note: </b>SOAP Action.</p>')");
         SQLS.append(",('testdatalib','name','','en','Name','<p>Name of the entry. It is a <b>mandatory</b> attribute.</p><p><b><u>Note</u></b>: The combination of <u>Name</u>, <u>System</u>, <u>Environment</u> and <u>Country</u> must be unique.</p>')");
         SQLS.append(",('testdatalib','script','','en','Script','<p>SQL commands that should be executed to retrieve test data.</p><p><u>Property Type:</u> SQL</p><p><u>Allows the usage of other properties: </u>Yes</p><p>Examples:</p><table><tr><td>select * from table;</td></tr><tr><td>select * from table where column = %COLUMN%;</td></tr></table>')");
