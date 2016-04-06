@@ -83,8 +83,8 @@ public class UpdateBatchInvariant extends HttpServlet {
          * Parsing and securing all required parameters.
          */
         String batch = ParameterParserUtil.parseStringParamAndDecode(request.getParameter("batch"), null, charset);
-        String system = ParameterParserUtil.parseStringParamAndDecode(request.getParameter("system"), null, charset);
-        String description = ParameterParserUtil.parseStringParamAndDecode(request.getParameter("description"), null, charset);
+        String system = ParameterParserUtil.parseStringParamAndDecode(request.getParameter("system"), "", charset);
+        String description = ParameterParserUtil.parseStringParamAndDecode(request.getParameter("description"), "", charset);
 
         /**
          * Checking all constrains before calling the services.

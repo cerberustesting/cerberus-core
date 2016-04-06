@@ -1225,7 +1225,7 @@ public class CountryEnvParamDAO implements ICountryEnvParamDAO {
         try {
             PreparedStatement preStat = connection.prepareStatement(query.toString());
             try {
-                preStat.setString(1, cep.getBuild());
+                preStat.setString(1, ParameterParserUtil.parseStringParam(cep.getBuild(), ""));
                 preStat.setString(2, cep.getRevision());
                 preStat.setString(3, cep.getChain());
                 preStat.setString(4, cep.getDistribList());

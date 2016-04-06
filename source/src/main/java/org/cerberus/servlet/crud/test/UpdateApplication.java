@@ -91,15 +91,15 @@ public class UpdateApplication extends HttpServlet {
          * Parsing and securing all required parameters.
          */
         String application = ParameterParserUtil.parseStringParamAndDecode(request.getParameter("application"), null, charset);
-        String system = ParameterParserUtil.parseStringParamAndDecode(request.getParameter("system"), null, charset);
-        String subSystem = ParameterParserUtil.parseStringParamAndDecode(request.getParameter("subsystem"), null, charset);
-        String type = ParameterParserUtil.parseStringParamAndDecode(request.getParameter("type"), null, charset);
-        String mavenGpID = ParameterParserUtil.parseStringParamAndDecode(request.getParameter("mavengroupid"), null, charset);
-        String deployType = ParameterParserUtil.parseStringParamAndDecode(request.getParameter("deploytype"), null, charset);
-        String svnURL = ParameterParserUtil.parseStringParamAndDecode(request.getParameter("svnurl"), null, charset);
-        String bugTrackerURL = ParameterParserUtil.parseStringParamAndDecode(request.getParameter("bugtrackerurl"), null, charset);
-        String newBugURL = ParameterParserUtil.parseStringParamAndDecode(request.getParameter("bugtrackernewurl"), null, charset);
-        String description = ParameterParserUtil.parseStringParamAndDecode(request.getParameter("description"), null, charset);
+        String system = ParameterParserUtil.parseStringParamAndDecode(request.getParameter("system"), "", charset);
+        String subSystem = ParameterParserUtil.parseStringParamAndDecode(request.getParameter("subsystem"), "", charset);
+        String type = ParameterParserUtil.parseStringParamAndDecode(request.getParameter("type"), "", charset);
+        String mavenGpID = ParameterParserUtil.parseStringParamAndDecode(request.getParameter("mavengroupid"), "", charset);
+        String deployType = ParameterParserUtil.parseStringParamAndDecode(request.getParameter("deploytype"), "", charset);
+        String svnURL = ParameterParserUtil.parseStringParamAndDecode(request.getParameter("svnurl"), "", charset);
+        String bugTrackerURL = ParameterParserUtil.parseStringParamAndDecode(request.getParameter("bugtrackerurl"), "", charset);
+        String newBugURL = ParameterParserUtil.parseStringParamAndDecode(request.getParameter("bugtrackernewurl"), "", charset);
+        String description = ParameterParserUtil.parseStringParamAndDecode(request.getParameter("description"), "", charset);
         Integer sort = 10;
         boolean sort_error = false;
         try {
