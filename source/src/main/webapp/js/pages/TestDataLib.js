@@ -762,6 +762,8 @@ function saveChangesSubDataClickHandler() {
         hideLoaderInModal('#manageTestDataLibDataModal');
         console.log("data" + data);
         if (getAlertType(data.messageType) === 'success') {
+            var oTable = $("#listOfTestDataLib").dataTable();
+            oTable.fnDraw(true);
             $('#manageTestDataLibDataModal').modal('hide');
             showMessage(data);
         } else {
