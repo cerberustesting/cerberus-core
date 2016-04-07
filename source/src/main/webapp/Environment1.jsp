@@ -58,6 +58,10 @@
                                     <select class="form-control" id="selectBuild" name="build" ></select>
                                     <label for="selectRevision" name="revisionField">Revision :</label>
                                     <select class="form-control" id="selectRevision" name="revision" ></select>
+                                    <label for="selectEnvGp" name="envGpField">Environment Group :</label>
+                                    <select class="form-control" id="selectEnvGp" name="envGp" ></select>
+                                    <label for="selectActive" name="activeField">Active :</label>
+                                    <select class="form-control" id="selectActive" name="active" ></select>
                                 </div>
                                 <div class="marginBottom10">
                                     <button type="button" class="btn btn-default" id="btnLoad" onclick="loadEnvTable()" name="btnLoad">Load</button>

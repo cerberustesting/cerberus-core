@@ -897,6 +897,10 @@
         <servlet-class>org.cerberus.servlet.reporting.GeneratePerformanceString</servlet-class>
     </servlet>
     <servlet>
+        <servlet-name>GetEnvironmentsPerBuildRevision</servlet-name>
+        <servlet-class>org.cerberus.servlet.guipages.GetEnvironmentsPerBuildRevision</servlet-class>
+    </servlet>
+    <servlet>
         <servlet-name>UpdateMyUser</servlet-name>
         <servlet-class>org.cerberus.servlet.crud.usermanagement.UpdateMyUser</servlet-class>
     </servlet>
@@ -1788,6 +1792,10 @@
         <servlet-name>ReadInvariant</servlet-name>
         <url-pattern>/ReadInvariant</url-pattern>
     </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>GetEnvironmentsPerBuildRevision</servlet-name>
+        <url-pattern>/GetEnvironmentsPerBuildRevision</url-pattern>
+    </servlet-mapping>
     <session-config>
         <session-timeout>60</session-timeout>
     </session-config>
@@ -2050,6 +2058,7 @@
             <url-pattern>/Environment1.jsp</url-pattern>
             <url-pattern>/EnvironmentList.jsp</url-pattern>
             <url-pattern>/IntegrationStatus.jsp</url-pattern>
+            <url-pattern>/IntegrationStatus1.jsp</url-pattern>
             <url-pattern>/Notification.jsp</url-pattern>
             <url-pattern>/Project.jsp</url-pattern>
             <url-pattern>/EnvironmentManagement.jsp</url-pattern>
@@ -2297,6 +2306,7 @@
             <url-pattern>/ReadCountryEnvParam</url-pattern>
             <url-pattern>/GetTestBySystem</url-pattern>
             <url-pattern>/GetTestCaseForTest</url-pattern>
+            <url-pattern>/GetEnvironmentsPerBuildRevision</url-pattern>
         </web-resource-collection>
         <auth-constraint>
             <description/>

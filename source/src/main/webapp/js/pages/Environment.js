@@ -31,6 +31,8 @@ function initPage() {
     var urlRevision = GetURLParameter('revision'); // Feed Revision combo with Revision list.
     var urlCountry = GetURLParameter('country'); // Feed Country combo with Country list.
     var urlEnvironment = GetURLParameter('environment'); // Feed Environment combo with Environment list.
+    var urlEnvGp = GetURLParameter('envgp'); // Feed Environment Group combo with Environment list.
+    var urlActive = GetURLParameter('active'); // Feed Active combo with Active list.
 
     appendBuildList("build", "1", urlBuild);
     appendBuildList("revision", "2", urlRevision);
@@ -43,6 +45,14 @@ function initPage() {
     select.append($('<option></option>').text("-- ALL --").val("ALL"));
     displayInvariantList("environment", "ENVIRONMENT", urlEnvironment);
 
+    var select = $('#selectEnvGp');
+    select.append($('<option></option>').text("-- ALL --").val("ALL"));
+    displayInvariantList("envGp", "ENVGP", urlEnvGp);
+    
+    var select = $('#selectActive');
+    select.append($('<option></option>').text("-- ALL --").val("ALL"));
+    displayInvariantList("active", "ENVACTIVE", urlActive);
+
     displayInvariantList("system", "SYSTEM");
     displayInvariantList("type", "ENVTYPE");
     displayInvariantList("maintenanceAct", "MNTACTIVE", "N");
@@ -51,7 +61,7 @@ function initPage() {
     displayBuildList('#newBuild', getUser().defaultSystem, "1", "", "", "");
     displayBuildList('#newRevision', getUser().defaultSystem, "2", "", "", "");
 
-    var table = loadEnvTable(urlCountry, urlEnvironment, urlBuild, urlRevision);
+    var table = loadEnvTable(urlCountry, urlEnvironment, urlBuild, urlRevision, urlEnvGp, urlActive);
 
     // Load the select needed in localStorage cache.
     getSelectApplication(getUser().defaultSystem, true);
@@ -107,6 +117,7 @@ function displayPageLabel() {
     $("[name='environmentField']").html(doc.getDocOnline("invariant", "ENVIRONMENT"));
     $("[name='buildField']").html(doc.getDocOnline("buildrevisioninvariant", "versionname01"));
     $("[name='revisionField']").html(doc.getDocOnline("buildrevisioninvariant", "versionname02"));
+    $("[name='envGpField']").html(doc.getDocOnline("invariant", "ENVGP"));
 
     $("[name='descriptionField']").html(doc.getDocOnline("countryenvparam", "Description"));
     $("[name='typeField']").html(doc.getDocOnline("countryenvparam", "Type"));
@@ -177,7 +188,7 @@ function displayPageLabel() {
     displayFooter(doc);
 }
 
-function loadEnvTable(selectCountry, selectEnvironment, selectBuild, selectRevision) {
+function loadEnvTable(selectCountry, selectEnvironment, selectBuild, selectRevision, selectEnvGp, selectActive) {
 
     if (isEmpty(selectCountry)) {
         selectCountry = $("#selectCountry").val();
@@ -191,6 +202,12 @@ function loadEnvTable(selectCountry, selectEnvironment, selectBuild, selectRevis
     if (isEmpty(selectRevision)) {
         selectRevision = $("#selectRevision").val();
     }
+    if (isEmpty(selectEnvGp)) {
+        selectEnvGp = $("#selectEnvGp").val();
+    }
+    if (isEmpty(selectActive)) {
+        selectActive = $("#selectActive").val();
+    }
 
     // We add the Browser history.
     var CallParam = '?';
@@ -202,6 +219,10 @@ function loadEnvTable(selectCountry, selectEnvironment, selectBuild, selectRevis
         CallParam += '&build=' + encodeURIComponent(selectBuild);
     if (!isEmptyorALL(selectRevision))
         CallParam += '&revision=' + encodeURIComponent(selectRevision)
+    if (!isEmptyorALL(selectEnvGp))
+        CallParam += '&envgp=' + encodeURIComponent(selectEnvGp)
+    if (!isEmptyorALL(selectActive))
+        CallParam += '&active=' + encodeURIComponent(selectActive)
     InsertURLInHistory('Environment1.jsp' + CallParam);
 
     //clear the old report content before reloading it
@@ -223,8 +244,14 @@ function loadEnvTable(selectCountry, selectEnvironment, selectBuild, selectRevis
     if (selectRevision !== 'ALL') {
         contentUrl = contentUrl + "&revision=" + selectRevision;
     }
+    if (selectEnvGp !== 'ALL') {
+        contentUrl = contentUrl + "&envgp=" + selectEnvGp;
+    }
+    if (selectActive !== 'ALL') {
+        contentUrl = contentUrl + "&active=" + selectActive;
+    }
 
-    var configurations = new TableConfigurationsServerSide("environmentsTable", contentUrl, "contentTable", aoColumnsFunc("environmentsTable"), [4, 'asc']);
+    var configurations = new TableConfigurationsServerSide("environmentsTable", contentUrl, "contentTable", aoColumnsFunc("environmentsTable"), [3, 'asc']);
 
     var table = createDataTableWithPermissions(configurations, renderOptionsForEnv, "#environmentList");
     return table;

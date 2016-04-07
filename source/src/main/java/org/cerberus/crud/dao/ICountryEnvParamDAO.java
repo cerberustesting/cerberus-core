@@ -124,6 +124,7 @@ public interface ICountryEnvParamDAO {
      * @param build
      * @param revision
      * @param active
+     * @param envGp
      * @param startPosition
      * @param length
      * @param columnName
@@ -132,7 +133,7 @@ public interface ICountryEnvParamDAO {
      * @param string
      * @return
      */
-    public AnswerList readByVariousByCriteria(String system, String country, String environment, String build, String revision, String active, int startPosition, int length, String columnName, String sort, String searchParameter, String string);
+    public AnswerList readByVariousByCriteria(String system, String country, String environment, String build, String revision, String active, String envGp, int startPosition, int length, String columnName, String sort, String searchParameter, String string);
 
     /**
      *

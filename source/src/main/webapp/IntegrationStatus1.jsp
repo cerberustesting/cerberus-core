@@ -28,13 +28,17 @@
                         <div class="panel-body collapse in" id="DeployHisto">
                             <div class="row">
                                 <div class="col-lg-12" id="filterContainer">
-                                    <label for="selectTag">Tag :</label>
                                     <div class="row" id="tagFilter">
-                                        <div class="input-group">
+                                        <div class="col-xs-2">
+                                            <label for="selectTag">Environment Group :</label>
                                             <select class="form-control col-lg-7" name="Tag" id="selectTag"></select>
-                                            <div class="input-group-btn">
-                                                <button type="button" class="btn btn-default" style="margin-left: 10px;" id="loadbutton" onclick="loadReport()">Load</button>
-                                            </div>
+                                        </div>
+                                        <div class="col-xs-2">
+                                            <label for="selectTag">Since :</label>
+                                            <select class="form-control col-lg-7" name="Tag" id="selectTag"></select>
+                                        </div>
+                                        <div class="col-xs-2">
+                                            <button type="button" class="btn btn-default" style="margin-left: 10px;" id="loadbutton" onclick="loadLastModifReport()">Load</button>
                                         </div>
                                     </div>
                                 </div>
@@ -51,8 +55,22 @@
                         </div>
                         <div class="panel-body collapse in" id="EnvStatus">
                             <div class="row">
-                                <div class="col-xs-6" id="ReportByStatusTable"></div>
-                                <div class="col-xs-6" id="statusChart"></div>
+                                <div class="col-xs-12" id="EnvByBuildRevisionTable">
+                                    <table class="table table-bordered table-hover nomarginbottom" id="envTable">
+                                        <thead>
+                                            <tr>
+                                                <th class="text-center" id="buildHeader" name="buildHeader">Build</th>
+                                                <th class="text-center" id="revisionHeader" name="revisionHeader">Revision</th>
+                                                <th class="text-center" id="devHeader" name="devHeader">DEV</th>
+                                                <th class="text-center" id="qaHeader" name="qaHeader">QA</th>
+                                                <th class="text-center" id="uatHeader" name="uatHeader">UAT</th>
+                                                <th class="text-center" id="prodHeader" name="prodHeader">PROD</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="envTableBody">
+                                        </tbody>
+                                    </table>
+                                </div>
                             </div>
                         </div>
                     </div>

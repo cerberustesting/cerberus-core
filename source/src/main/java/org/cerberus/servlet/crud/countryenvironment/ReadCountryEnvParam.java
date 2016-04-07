@@ -78,7 +78,7 @@ public class ReadCountryEnvParam extends HttpServlet {
 
         // Calling Servlet Transversal Util.
         ServletUtil.servletStart(request);
-        
+
         // Default message to unexpected error.
         MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
         msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", ""));
@@ -89,13 +89,16 @@ public class ReadCountryEnvParam extends HttpServlet {
         String system = policy.sanitize(request.getParameter("system"));
         String country = policy.sanitize(request.getParameter("country"));
         String environment = policy.sanitize(request.getParameter("environment"));
+        String build = policy.sanitize(request.getParameter("build"));
+        String revision = policy.sanitize(request.getParameter("revision"));
         String active = policy.sanitize(request.getParameter("active"));
+        String envGp = policy.sanitize(request.getParameter("envGp"));
         boolean unique = ParameterParserUtil.parseBooleanParam(request.getParameter("unique"), false);
         boolean forceList = ParameterParserUtil.parseBooleanParam(request.getParameter("forceList"), false);
 
         // Global boolean on the servlet that define if the user has permition to edit and delete object.
         boolean userHasPermissions = request.isUserInRole("Integrator");
-        
+
         // Init Answer with potencial error from Parsing parameter.
         AnswerItem answer = new AnswerItem(msg);
 
@@ -108,9 +111,7 @@ public class ReadCountryEnvParam extends HttpServlet {
                 answer = findUniqueEnvironmentList(system, active, appContext, userHasPermissions);
                 jsonResponse = (JSONObject) answer.getItem();
             } else { // Default behaviour, we return the list of objects.
-                answer = findCountryEnvParamList(request.getParameter("system"), request.getParameter("country"),
-                        request.getParameter("environment"), request.getParameter("build"), request.getParameter("revision"),
-                        request.getParameter("active"), appContext, userHasPermissions, request);
+                answer = findCountryEnvParamList(system, country, environment, build, revision, active, envGp, appContext, userHasPermissions, request);
                 jsonResponse = (JSONObject) answer.getItem();
             }
             jsonResponse.put("messageType", answer.getResultMessage().getMessage().getCodeString());
@@ -180,8 +181,7 @@ public class ReadCountryEnvParam extends HttpServlet {
         return "Short description";
     }// </editor-fold>
 
-    private AnswerItem findCountryEnvParamList(String system, String country, String environment, String build, String revision, String active
-            , ApplicationContext appContext, boolean userHasPermissions, HttpServletRequest request) throws JSONException {
+    private AnswerItem findCountryEnvParamList(String system, String country, String environment, String build, String revision, String active, String envGp, ApplicationContext appContext, boolean userHasPermissions, HttpServletRequest request) throws JSONException {
 
         AnswerItem item = new AnswerItem();
         JSONObject object = new JSONObject();
@@ -197,7 +197,7 @@ public class ReadCountryEnvParam extends HttpServlet {
         String columnToSort[] = sColumns.split(",");
         String columnName = columnToSort[columnToSortParameter];
         String sort = ParameterParserUtil.parseStringParam(request.getParameter("sSortDir_0"), "asc");
-        AnswerList resp = cepService.readByVariousByCriteria(system, country, environment, build, revision, active, startPosition, length, columnName, sort, searchParameter, "");
+        AnswerList resp = cepService.readByVariousByCriteria(system, country, environment, build, revision, active, envGp, startPosition, length, columnName, sort, searchParameter, "");
 
         JSONArray jsonArray = new JSONArray();
         if (resp.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {//the service was able to perform the query, then we should get all values
@@ -222,7 +222,7 @@ public class ReadCountryEnvParam extends HttpServlet {
         JSONObject object = new JSONObject();
         cepService = appContext.getBean(ICountryEnvParamService.class);
 
-        AnswerList resp = cepService.readByVariousByCriteria(system, null, null, null, null, active, 0, 0, "system", "asc", "", "");
+        AnswerList resp = cepService.readByVariousByCriteria(system, null, null, null, null, null, active, 0, 0, "system", "asc", "", "");
 
         JSONArray jsonArray = new JSONArray();
         if (resp.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {//the service was able to perform the query, then we should get all values
@@ -274,10 +274,10 @@ public class ReadCountryEnvParam extends HttpServlet {
         Gson gson = new Gson();
         String defaultTime = "00:00:00";
         JSONObject result = new JSONObject(gson.toJson(cep));
-        if ((cep.getMaintenanceStr() ==null) || (cep.getMaintenanceStr().equalsIgnoreCase(defaultTime))) {
+        if ((cep.getMaintenanceStr() == null) || (cep.getMaintenanceStr().equalsIgnoreCase(defaultTime))) {
             result.put("maintenanceStr", defaultTime);
         }
-        if ((cep.getMaintenanceEnd() ==null) || (cep.getMaintenanceEnd().equalsIgnoreCase(defaultTime))) {
+        if ((cep.getMaintenanceEnd() == null) || (cep.getMaintenanceEnd().equalsIgnoreCase(defaultTime))) {
             result.put("maintenanceEnd", defaultTime);
         }
         return result;
