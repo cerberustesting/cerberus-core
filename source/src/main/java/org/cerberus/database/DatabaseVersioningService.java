@@ -4718,7 +4718,7 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         // New parameter cerberus_testdatalib_fetchmax.
         //-- ------------------------ 749
         SQLS = new StringBuilder();
-        SQLS.append("INSERT INTO `parameter` (`param`, `value`, `description`) VALUES ('cerberus_testdatalib_fetchmax', '100', 'Maximum number of fetched records that Cerberus will perform when retrieving a data from SQL Data Library.');");
+        SQLS.append("INSERT INTO `parameter` (`system`, `param`, `value`, `description`) VALUES ('', 'cerberus_testdatalib_fetchmax', '100', 'Maximum number of fetched records that Cerberus will perform when retrieving a data from SQL Data Library.');");
         SQLInstruction.add(SQLS.toString());
 
         // New updated Documentation.
