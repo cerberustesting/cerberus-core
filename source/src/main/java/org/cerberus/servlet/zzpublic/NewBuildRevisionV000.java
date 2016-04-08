@@ -167,7 +167,7 @@ public class NewBuildRevisionV000 extends HttpServlet {
             if (country.equalsIgnoreCase(PARAMETERALL)) {
                 country = null;
             }
-            answerList = countryEnvParamService.readByVarious(system, country, environment, null, null, "N");
+            answerList = countryEnvParamService.readByVarious(system, country, environment, null, null, null);
             finalAnswer = AnswerUtil.agregateAnswer(finalAnswer, (Answer) answerList);
 
             for (CountryEnvParam cepData : (List<CountryEnvParam>) answerList.getDataList()) {
