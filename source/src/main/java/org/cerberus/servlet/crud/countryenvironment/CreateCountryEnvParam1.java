@@ -33,6 +33,7 @@ import org.cerberus.crud.factory.IFactoryCountryEnvParam;
 import org.cerberus.crud.service.ICountryEnvParamService;
 import org.cerberus.crud.service.ILogEventService;
 import org.cerberus.crud.service.impl.LogEventService;
+import org.cerberus.util.ParameterParserUtil;
 import org.cerberus.util.StringUtil;
 import org.cerberus.util.answer.Answer;
 import org.cerberus.util.servlet.ServletUtil;
@@ -71,34 +72,38 @@ public class CreateCountryEnvParam1 extends HttpServlet {
         msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", ""));
         ans.setResultMessage(msg);
         PolicyFactory policy = Sanitizers.FORMATTING.and(Sanitizers.LINKS);
+        String charset = request.getCharacterEncoding();
 
         response.setContentType("application/json");
 
         // Calling Servlet Transversal Util.
         ServletUtil.servletStart(request);
-        
+
         /**
          * Parsing and securing all required parameters.
          */
+        // Parameter that are already controled by GUI (no need to decode) --> We SECURE them
         String system = policy.sanitize(request.getParameter("system"));
         String country = policy.sanitize(request.getParameter("country"));
         String environment = policy.sanitize(request.getParameter("environment"));
-        String description = policy.sanitize(request.getParameter("description"));
-        String build = policy.sanitize(request.getParameter("build"));
-        String revision = policy.sanitize(request.getParameter("revision"));
-        String chain = policy.sanitize(request.getParameter("chain"));
-        String distribList = policy.sanitize(request.getParameter("distribList"));
-        String emailBodyRevision = policy.sanitize(request.getParameter("eMailBodyRevision"));
         String type = policy.sanitize(request.getParameter("type"));
-        String emailBodyChain = policy.sanitize(request.getParameter("eMailBodyChain"));
-        String emailBodyDisableEnvironment = policy.sanitize(request.getParameter("eMailBodyDisableEnvironment"));
         boolean active = "Y".equals(policy.sanitize(request.getParameter("active"))) ? true : false;
         boolean maintenanceAct = "Y".equals(policy.sanitize(request.getParameter("maintenanceAct"))) ? true : false;
-        String maintenanceStr = policy.sanitize(request.getParameter("maintenanceStr"));
-        String maintenanceEnd = policy.sanitize(request.getParameter("maintenanceEnd"));
+        // Parameter that needs to be secured --> We SECURE+DECODE them
+        String description = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("description"), "", charset);
+        String maintenanceStr = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("maintenanceStr"), "01:00:00", charset);
+        String maintenanceEnd = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("maintenanceEnd"), "01:00:00", charset);
         maintenanceStr = maintenanceStr.isEmpty() ? "00:00:00" : maintenanceStr;
         maintenanceEnd = maintenanceEnd.isEmpty() ? "00:00:00" : maintenanceEnd;
-        
+        String build = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("build"), "", charset);
+        String revision = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("revision"), "", charset);
+        String chain = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("chain"), "", charset);
+        // Parameter that we cannot secure as we need the html --> We DECODE them
+        String distribList = ParameterParserUtil.parseStringParamAndDecode(request.getParameter("distribList"), "", charset);
+        String emailBodyRevision = ParameterParserUtil.parseStringParamAndDecode(request.getParameter("eMailBodyRevision"), "", charset);
+        String emailBodyChain = ParameterParserUtil.parseStringParamAndDecode(request.getParameter("eMailBodyChain"), "", charset);
+        String emailBodyDisableEnvironment = ParameterParserUtil.parseStringParamAndDecode(request.getParameter("eMailBodyDisableEnvironment"), "", charset);
+
         /**
          * Checking all constrains before calling the services.
          */

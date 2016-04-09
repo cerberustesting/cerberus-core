@@ -25,7 +25,6 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import org.apache.commons.lang3.StringEscapeUtils;
 import org.cerberus.crud.entity.MessageEvent;
 import org.cerberus.enums.MessageEventEnum;
 import org.cerberus.crud.entity.TestDataLib;
@@ -35,6 +34,7 @@ import org.cerberus.crud.factory.IFactoryTestDataLibData;
 import org.cerberus.crud.service.ILogEventService;
 import org.cerberus.crud.service.ITestDataLibService;
 import org.cerberus.crud.service.impl.LogEventService;
+import org.cerberus.util.ParameterParserUtil;
 import org.cerberus.util.StringUtil;
 import org.cerberus.util.answer.Answer;
 import org.cerberus.util.answer.AnswerUtil;
@@ -71,24 +71,28 @@ public class CreateTestDataLib extends HttpServlet {
         msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", ""));
         ans.setResultMessage(msg);
         PolicyFactory policy = Sanitizers.FORMATTING.and(Sanitizers.LINKS);
+        String charset = request.getCharacterEncoding();
 
         response.setContentType("application/json");
 
         /**
          * Parsing and securing all required parameters.
          */
-        String name = policy.sanitize(request.getParameter("name"));
+        // Parameter that are already controled by GUI (no need to decode) --> We SECURE them
         String type = policy.sanitize(request.getParameter("type"));
-        String group = policy.sanitize(request.getParameter("group"));
         String system = policy.sanitize(request.getParameter("system"));
         String environment = policy.sanitize(request.getParameter("environment"));
         String country = policy.sanitize(request.getParameter("country"));
         String database = policy.sanitize(request.getParameter("database"));
-        String description = StringEscapeUtils.escapeHtml4(request.getParameter("libdescription"));
-        String script = StringEscapeUtils.escapeHtml4(request.getParameter("script"));
-        String servicePath = StringEscapeUtils.escapeHtml4(request.getParameter("servicepath"));
-        String method = StringEscapeUtils.escapeHtml4(request.getParameter("method"));
-        String envelope = StringEscapeUtils.escapeXml11(request.getParameter("envelope"));
+        // Parameter that needs to be secured --> We SECURE+DECODE them
+        String name = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("name"), null, charset);
+        String group = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("group"), "", charset);
+        String description = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("libdescription"), "", charset);
+        // Parameter that we cannot secure as we need the html --> We DECODE them
+        String script = ParameterParserUtil.parseStringParamAndDecode(request.getParameter("script"), "", charset);
+        String servicePath = ParameterParserUtil.parseStringParamAndDecode(request.getParameter("servicepath"), "", charset);
+        String method = ParameterParserUtil.parseStringParamAndDecode(request.getParameter("method"), "", charset);
+        String envelope = ParameterParserUtil.parseStringParamAndDecode(request.getParameter("envelope"), "", charset);
         /**
          * Checking all constrains before calling the services.
          */
@@ -154,16 +158,22 @@ public class CreateTestDataLib extends HttpServlet {
         String[] subdataColumns = request.getParameterValues("column");
         String[] subdataParsingAnswer = request.getParameterValues("parsinganswer");
         String[] subdataDescriptions = request.getParameterValues("description");
+        String charset = request.getCharacterEncoding();
 
         TestDataLibData subData;
 
         for (int i = 0; i < subdataEntries.length; i++) {
+            // Parameter that are already controled by GUI (no need to decode) --> We SECURE them
+            // Parameter that needs to be secured --> We SECURE+DECODE them
+            String subdata = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(subdataEntries[i], null, charset);
+            String description = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(subdataDescriptions[i], "", charset);
+            // Parameter that we cannot secure as we need the html --> We DECODE them
+            String value = ParameterParserUtil.parseStringParamAndDecode(subdataValues[i], "", charset);
+            String column = ParameterParserUtil.parseStringParamAndDecode(subdataColumns[i], "", charset);
+            String parsinganswer = ParameterParserUtil.parseStringParamAndDecode(subdataParsingAnswer[i], "", charset);
+
             subData = factorySubdataService.create(null, null, //ids are not available yet
-                    policy.sanitize(subdataEntries[i]),
-                    policy.sanitize(subdataValues[i]),
-                    policy.sanitize(subdataColumns[i]),
-                    policy.sanitize(subdataParsingAnswer[i]),
-                    policy.sanitize(subdataDescriptions[i]));
+                    subdata, value, column, parsinganswer, description);
             listSubdata.add(subData);
         }
 

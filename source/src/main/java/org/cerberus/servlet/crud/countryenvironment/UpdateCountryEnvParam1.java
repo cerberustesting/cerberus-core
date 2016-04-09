@@ -102,18 +102,21 @@ public class UpdateCountryEnvParam1 extends HttpServlet {
         /**
          * Parsing and securing all required parameters.
          */
+        // Parameter that are already controled by GUI (no need to decode) --> We SECURE them
         String system = policy.sanitize(request.getParameter("system"));
         String country = policy.sanitize(request.getParameter("country"));
         String environment = policy.sanitize(request.getParameter("environment"));
-        String description = ParameterParserUtil.parseStringParamAndDecode(request.getParameter("description"), "", charset);
+        String type = policy.sanitize(request.getParameter("type"));
+        boolean maintenanceAct = ParameterParserUtil.parseBooleanParam(request.getParameter("maintenanceAct"), true);
+        // Parameter that needs to be secured --> We SECURE+DECODE them
+        String description = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("description"), "", charset);
+        String maintenanceStr = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("maintenanceStr"), "01:00:00", charset);
+        String maintenanceEnd = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("maintenanceEnd"), "01:00:00", charset);
+        // Parameter that we cannot secure as we need the html --> We DECODE them
         String distribList = ParameterParserUtil.parseStringParamAndDecode(request.getParameter("distribList"), "", charset);
         String eMailBodyRevision = ParameterParserUtil.parseStringParamAndDecode(request.getParameter("eMailBodyRevision"), "", charset);
-        String type = policy.sanitize(request.getParameter("type"));
         String eMailBodyChain = ParameterParserUtil.parseStringParamAndDecode(request.getParameter("eMailBodyChain"), "", charset);
         String eMailBodyDisableEnvironment = ParameterParserUtil.parseStringParamAndDecode(request.getParameter("eMailBodyDisableEnvironment"), "", charset);
-        boolean maintenanceAct = ParameterParserUtil.parseBooleanParam(request.getParameter("maintenanceAct"), true);
-        String maintenanceStr = ParameterParserUtil.parseStringParamAndDecode(request.getParameter("maintenanceStr"), "01:00:00", charset);
-        String maintenanceEnd = ParameterParserUtil.parseStringParamAndDecode(request.getParameter("maintenanceEnd"), "01:00:00", charset);
 
         // Getting list of database from JSON Call
         JSONArray objDatabaseArray = new JSONArray(request.getParameter("database"));

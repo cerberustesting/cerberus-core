@@ -82,9 +82,12 @@ public class CreateBatchInvariant extends HttpServlet {
         /**
          * Parsing and securing all required parameters.
          */
-        String batch = ParameterParserUtil.parseStringParamAndDecode(request.getParameter("batch"), null, charset);
-        String system = ParameterParserUtil.parseStringParamAndDecode(request.getParameter("system"), "", charset);
-        String description = ParameterParserUtil.parseStringParamAndDecode(request.getParameter("description"), "", charset);
+        // Parameter that are already controled by GUI (no need to decode) --> We SECURE them
+        // Parameter that needs to be secured --> We SECURE+DECODE them
+        String system = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("system"), "", charset);
+        String batch = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("batch"), null, charset);
+        String description = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("description"), "", charset);
+        // Parameter that we cannot secure as we need the html --> We DECODE them
 
         /**
          * Checking all constrains before calling the services.

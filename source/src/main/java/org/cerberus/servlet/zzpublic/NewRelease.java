@@ -90,20 +90,20 @@ public class NewRelease extends HttpServlet {
         IFactoryBuildRevisionParameters factoryBuildRevisionParameters = appContext.getBean(IFactoryBuildRevisionParameters.class);
 
         // Parsing all parameters.
-        String application = ParameterParserUtil.parseStringParamAndDecode(request.getParameter("application"), "", charset);
-        String release = ParameterParserUtil.parseStringParamAndDecode(request.getParameter("release"), "", charset);
-        String project = ParameterParserUtil.parseStringParamAndDecode(request.getParameter("project"), "", charset);
-        String ticket = ParameterParserUtil.parseStringParamAndDecode(request.getParameter("ticket"), "", charset);
-        String bug = ParameterParserUtil.parseStringParamAndDecode(request.getParameter("bug"), "", charset);
-        String subject = ParameterParserUtil.parseStringParamAndDecode(request.getParameter("subject"), "", charset);
-        String owner = ParameterParserUtil.parseStringParamAndDecode(request.getParameter("owner"), "", charset);
-        String link = ParameterParserUtil.parseStringParamAndDecode(request.getParameter("link"), "", charset);
+        String application = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("application"), "", charset);
+        String release = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("release"), "", charset);
+        String project = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("project"), "", charset);
+        String ticket = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("ticket"), "", charset);
+        String bug = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("bug"), "", charset);
+        String subject = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("subject"), "", charset);
+        String owner = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("owner"), "", charset);
+        String link = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("link"), "", charset);
         // Those Parameters could be used later when Cerberus send the deploy request to Jenkins. 
-        String jenkinsbuildid = ParameterParserUtil.parseStringParamAndDecode(request.getParameter("jenkinsbuildid"), "", charset);
-        String mavengroupid = ParameterParserUtil.parseStringParamAndDecode(request.getParameter("mavengroupid"), "", charset);
-        String mavenartifactid = ParameterParserUtil.parseStringParamAndDecode(request.getParameter("mavenartifactid"), "", charset);
-        String mavenversion = ParameterParserUtil.parseStringParamAndDecode(request.getParameter("mavenversion"), "", charset);
-        String repositoryurl = ParameterParserUtil.parseStringParamAndDecode(request.getParameter("repositoryurl"), "", charset);
+        String jenkinsbuildid = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("jenkinsbuildid"), "", charset);
+        String mavengroupid = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("mavengroupid"), "", charset);
+        String mavenartifactid = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("mavenartifactid"), "", charset);
+        String mavenversion = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("mavenversion"), "", charset);
+        String repositoryurl = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("repositoryurl"), "", charset);
 
         String helpMessage = "\nThis servlet is used to create or update a release entry in a 'NONE' build and 'NONE' revision.\n\nParameter list :\n"
                 + "- application [mandatory] : the application that produced the release. This parameter must match the application list in Cerberus. [" + application + "]\n"

@@ -89,11 +89,11 @@ public class NewBuildRevisionV000 extends HttpServlet {
         IParameterService parameterService = appContext.getBean(IParameterService.class);
 
         // Parsing all parameters.
-        String system = ParameterParserUtil.parseStringParamAndDecode(request.getParameter("system"), "", charset);
-        String country = ParameterParserUtil.parseStringParamAndDecode(request.getParameter("country"), "", charset);
-        String environment = ParameterParserUtil.parseStringParamAndDecode(request.getParameter("environment"), "", charset);
-        String build = ParameterParserUtil.parseStringParamAndDecode(request.getParameter("build"), "", charset);
-        String revision = ParameterParserUtil.parseStringParamAndDecode(request.getParameter("revision"), "", charset);
+        String system = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("system"), "", charset);
+        String country = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("country"), "", charset);
+        String environment = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("environment"), "", charset);
+        String build = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("build"), "", charset);
+        String revision = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("revision"), "", charset);
 
         String helpMessage = "\nThis servlet is used to inform Cerberus that a new Build and Revision has been deployed on a system.\n\nParameter list :\n"
                 + "- system [mandatory] : the system where the Build Revision has been deployed. [" + system + "]\n"

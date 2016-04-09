@@ -114,7 +114,29 @@ public final class ParameterParserUtil {
     }
 
     /**
-     * Parses and decodes the given inParam
+     * Parses and decodes and Sanitize the given inParam
+     *
+     * @see #parseStringParam(String, String)
+     *
+     * @param inParam
+     * @param defaultVal
+     * @param charset
+     * @return
+     */
+    public static String parseStringParamAndDecodeAndSanitize(String inParam, String defaultVal, String charset) {
+        if (inParam == null) {
+            return defaultVal;
+        }
+
+        try {
+            return parseStringParam(POLICY.sanitize(URLDecoder.decode(inParam, charset)), defaultVal);
+        } catch (UnsupportedEncodingException e) {
+            return defaultVal;
+        }
+    }
+
+    /**
+     * Parses and decodes and Sanitize the given inParam
      *
      * @see #parseStringParam(String, String)
      *
@@ -129,7 +151,7 @@ public final class ParameterParserUtil {
         }
 
         try {
-            return parseStringParam(POLICY.sanitize(URLDecoder.decode(inParam, charset)), defaultVal);
+            return parseStringParam(URLDecoder.decode(inParam, charset), defaultVal);
         } catch (UnsupportedEncodingException e) {
             return defaultVal;
         }

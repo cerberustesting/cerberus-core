@@ -94,10 +94,10 @@ public class NewEnvironmentEventV000 extends HttpServlet {
         IParameterService parameterService = appContext.getBean(IParameterService.class);
 
         // Parsing all parameters.
-        String system = ParameterParserUtil.parseStringParamAndDecode(request.getParameter("system"), "", charset);
-        String country = ParameterParserUtil.parseStringParamAndDecode(request.getParameter("country"), "", charset);
-        String environment = ParameterParserUtil.parseStringParamAndDecode(request.getParameter("environment"), "", charset);
-        String event = ParameterParserUtil.parseStringParamAndDecode(request.getParameter("event"), "", charset);
+        String system = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("system"), "", charset);
+        String country = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("country"), "", charset);
+        String environment = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("environment"), "", charset);
+        String event = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("event"), "", charset);
 
         String helpMessage = "\nThis servlet is used to inform Cerberus about an event that occured on a given environment. For example when a treatment has been executed.\n\nParameter list :\n"
                 + "- system [mandatory] : the system where the Build Revision has been deployed. [" + system + "]\n"

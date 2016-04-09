@@ -67,12 +67,12 @@ public class ParameterParserUtilTest {
 
     @Test
     public void testParseStringParamAndDecode() {
-    	Assert.assertEquals("foo bar", ParameterParserUtil.parseStringParamAndDecode("foo%20bar", "default", "UTF-8"));
+    	Assert.assertEquals("foo bar", ParameterParserUtil.parseStringParamAndDecodeAndSanitize("foo%20bar", "default", "UTF-8"));
     }
     
     @Test
     public void testParseStringParamAndDecodeWhenNull() {
-    	Assert.assertEquals("default", ParameterParserUtil.parseStringParamAndDecode(null, "default", "UTF-8"));
+    	Assert.assertEquals("default", ParameterParserUtil.parseStringParamAndDecodeAndSanitize(null, "default", "UTF-8"));
     }
     
     @Test
