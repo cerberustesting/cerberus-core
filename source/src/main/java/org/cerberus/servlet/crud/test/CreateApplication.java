@@ -33,6 +33,7 @@ import org.cerberus.crud.factory.IFactoryApplication;
 import org.cerberus.crud.service.IApplicationService;
 import org.cerberus.crud.service.ILogEventService;
 import org.cerberus.crud.service.impl.LogEventService;
+import org.cerberus.util.ParameterParserUtil;
 import org.cerberus.util.StringUtil;
 import org.cerberus.util.answer.Answer;
 import org.cerberus.util.servlet.ServletUtil;
@@ -69,6 +70,7 @@ public class CreateApplication extends HttpServlet {
         msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", ""));
         ans.setResultMessage(msg);
         PolicyFactory policy = Sanitizers.FORMATTING.and(Sanitizers.LINKS);
+        String charset = request.getCharacterEncoding();
 
         response.setContentType("application/json");
 
@@ -78,16 +80,19 @@ public class CreateApplication extends HttpServlet {
         /**
          * Parsing and securing all required parameters.
          */
-        String application = policy.sanitize(request.getParameter("application"));
+        // Parameter that are already controled by GUI (no need to decode) --> We SECURE them
         String system = policy.sanitize(request.getParameter("system"));
-        String subSystem = policy.sanitize(request.getParameter("subsystem"));
         String type = policy.sanitize(request.getParameter("type"));
-        String mavenGpID = policy.sanitize(request.getParameter("mavengroupid"));
         String deployType = policy.sanitize(request.getParameter("deploytype"));
-        String svnURL = policy.sanitize(request.getParameter("svnurl"));
-        String bugTrackerURL = policy.sanitize(request.getParameter("bugtrackerurl"));
-        String newBugURL = policy.sanitize(request.getParameter("bugtrackernewurl"));
-        String description = policy.sanitize(request.getParameter("description"));
+        // Parameter that needs to be secured --> We SECURE+DECODE them
+        String application = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("application"), null, charset);
+        String subSystem = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("subsystem"), "", charset);
+        String mavenGpID = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("mavengroupid"), "", charset);
+        String description = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("description"), "", charset);
+        // Parameter that we cannot secure as we need the html --> We DECODE them
+        String svnURL = ParameterParserUtil.parseStringParamAndDecode(request.getParameter("svnurl"), "", charset);
+        String bugTrackerURL = ParameterParserUtil.parseStringParamAndDecode(request.getParameter("bugtrackerurl"), "", charset);
+        String newBugURL = ParameterParserUtil.parseStringParamAndDecode(request.getParameter("bugtrackernewurl"), "", charset);
         Integer sort = 10;
         boolean sort_error = false;
         try {

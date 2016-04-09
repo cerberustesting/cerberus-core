@@ -108,6 +108,9 @@ $.when($.getScript("js/pages/global/global.js")).then(function () {
         }).fail(handleErrorAjaxAfterTimeout);
 
         loadTagExec();
+
+        loadBuildRevTable();
+
     });
 });
 
@@ -286,3 +289,47 @@ function aoColumnsFunc() {
 
     return aoColumns;
 }
+
+function loadBuildRevTable() {
+    $('#envTableBody tr').remove();
+    selectSystem = "VC";
+    var jqxhr = $.getJSON("GetEnvironmentsPerBuildRevision", "system=" + getUser().defaultSystem);
+    $.when(jqxhr).then(function (result) {
+        $.each(result["contentTable"], function (idx, obj) {
+            appendBuildRevRow(obj);
+        });
+    }).fail(handleErrorAjaxAfterTimeout);
+}
+
+function counterFormated(nb, build, revision, envGP) {
+    if (nb === 0) {
+        return "";
+    } else {
+        return "<a href=\"Environment1.jsp?&build=" + build + "&revision=" + revision + "&envgp=" + envGP + "&active=Y\">" + nb + "</a>"
+    }
+}
+
+function appendBuildRevRow(dtb) {
+    var doc = new Doc();
+    var table = $("#envTableBody");
+
+    var toto = counterFormated(dtb.nbEnvDEV);
+
+    var row = $("<tr></tr>");
+    var buildRow = $("<td></td>").append(dtb.build);
+    var revRow = $("<td></td>").append(dtb.revision);
+    var nbdev = $("<td style=\"text-align: right;\"></td>").append(counterFormated(dtb.nbEnvDEV, dtb.build, dtb.revision, "DEV"));
+    var nbqa = $("<td style=\"text-align: right;\"></td>").append(counterFormated(dtb.nbEnvQA, dtb.build, dtb.revision, "QA"));
+    var nbuat = $("<td style=\"text-align: right;\"></td>").append(counterFormated(dtb.nbEnvUAT, dtb.build, dtb.revision, "UAT"));
+    var nbprod = $("<td style=\"text-align: right;\"></td>").append(counterFormated(dtb.nbEnvPROD, dtb.build, dtb.revision, "PROD"));
+
+    row.append(buildRow);
+    row.append(revRow);
+    row.append(nbdev);
+    row.append(nbqa);
+    row.append(nbuat);
+    row.append(nbprod);
+    table.append(row);
+}
+
+

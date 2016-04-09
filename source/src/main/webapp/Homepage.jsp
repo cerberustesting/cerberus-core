@@ -75,17 +75,50 @@
                 </div>
             </div>
 
-            <div class="panel panel-default">
-                <div class="panel-heading card clearfix" data-toggle="collapse" data-target="#tagExecStatus">
-                    <span class="toggle glyphicon glyphicon-chevron-right pull-right"></span>
-                    <div class="btn-group pull-right">
-                        <button id="tagSettings" class="btn btn-default btn-xs"><span class="glyphicon glyphicon-cog"></span> <label id="tagSettingsLabel">Settings</label></button>
-                    </div>
-                    <span class="fa fa-tag fa-fw"></span>
-                    <label id="lastTagExec">Last tag executions</label>
-                </div>
-                <div class="panel-body collapse in" id="tagExecStatus">
+            <div class="row">
+                <div class="col-lg-6" id="LastTagExecPanel">
+                    <div class="panel panel-default">
+                        <div class="panel-heading card clearfix" data-toggle="collapse" data-target="#tagExecStatus">
+                            <span class="toggle glyphicon glyphicon-chevron-right pull-right"></span>
+                            <div class="btn-group pull-right">
+                                <button id="tagSettings" class="btn btn-default btn-xs"><span class="glyphicon glyphicon-cog"></span> <label id="tagSettingsLabel">Settings</label></button>
+                            </div>
+                            <span class="fa fa-tag fa-fw"></span>
+                            <label id="lastTagExec">Last tag executions</label>
+                        </div>
+                        <div class="panel-body collapse in" id="tagExecStatus">
 
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-6" id="ReportByStatusPanel">
+                    <div class="panel panel-default">
+                        <div class="panel-heading card" data-toggle="collapse" data-target="#EnvStatus">
+                            <span class="fa fa-pie-chart fa-fw"></span>
+                            <label id="reportStatus">Environment Status</label>
+                            <span class="toggle glyphicon glyphicon-chevron-right pull-right"></span>
+                        </div>
+                        <div class="panel-body collapse in" id="EnvStatus">
+                            <div class="row">
+                                <div class="col-xs-12" id="EnvByBuildRevisionTable">
+                                    <table class="table table-bordered table-hover nomarginbottom" id="envTable">
+                                        <thead>
+                                            <tr>
+                                                <th class="text-center" id="buildHeader" name="buildHeader">Build</th>
+                                                <th class="text-center" id="revisionHeader" name="revisionHeader">Revision</th>
+                                                <th class="text-center" id="devHeader" name="devHeader">DEV</th>
+                                                <th class="text-center" id="qaHeader" name="qaHeader">QA</th>
+                                                <th class="text-center" id="uatHeader" name="uatHeader">UAT</th>
+                                                <th class="text-center" id="prodHeader" name="prodHeader">PROD</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="envTableBody">
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
             <footer class="footer">

@@ -90,16 +90,19 @@ public class UpdateApplication extends HttpServlet {
         /**
          * Parsing and securing all required parameters.
          */
-        String application = ParameterParserUtil.parseStringParamAndDecode(request.getParameter("application"), null, charset);
-        String system = ParameterParserUtil.parseStringParamAndDecode(request.getParameter("system"), null, charset);
-        String subSystem = ParameterParserUtil.parseStringParamAndDecode(request.getParameter("subsystem"), null, charset);
-        String type = ParameterParserUtil.parseStringParamAndDecode(request.getParameter("type"), null, charset);
-        String mavenGpID = ParameterParserUtil.parseStringParamAndDecode(request.getParameter("mavengroupid"), null, charset);
-        String deployType = ParameterParserUtil.parseStringParamAndDecode(request.getParameter("deploytype"), null, charset);
-        String svnURL = ParameterParserUtil.parseStringParamAndDecode(request.getParameter("svnurl"), null, charset);
-        String bugTrackerURL = ParameterParserUtil.parseStringParamAndDecode(request.getParameter("bugtrackerurl"), null, charset);
-        String newBugURL = ParameterParserUtil.parseStringParamAndDecode(request.getParameter("bugtrackernewurl"), null, charset);
-        String description = ParameterParserUtil.parseStringParamAndDecode(request.getParameter("description"), null, charset);
+        // Parameter that are already controled by GUI (no need to decode) --> We SECURE them
+        String system = policy.sanitize(request.getParameter("system"));
+        String type = policy.sanitize(request.getParameter("type"));
+        String deployType = policy.sanitize(request.getParameter("deploytype"));
+        // Parameter that needs to be secured --> We SECURE+DECODE them
+        String application = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("application"), null, charset);
+        String subSystem = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("subsystem"), "", charset);
+        String mavenGpID = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("mavengroupid"), "", charset);
+        String description = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("description"), "", charset);
+        // Parameter that we cannot secure as we need the html --> We DECODE them
+        String svnURL = ParameterParserUtil.parseStringParamAndDecode(request.getParameter("svnurl"), "", charset);
+        String bugTrackerURL = ParameterParserUtil.parseStringParamAndDecode(request.getParameter("bugtrackerurl"), "", charset);
+        String newBugURL = ParameterParserUtil.parseStringParamAndDecode(request.getParameter("bugtrackernewurl"), "", charset);
         Integer sort = 10;
         boolean sort_error = false;
         try {
@@ -141,7 +144,7 @@ public class UpdateApplication extends HttpServlet {
             IApplicationService applicationService = appContext.getBean(IApplicationService.class);
 
             AnswerItem resp = applicationService.readByKey(application);
-            if (!(resp.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode()) && resp.getItem()!=null)) {
+            if (!(resp.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode()) && resp.getItem() != null)) {
                 /**
                  * Object could not be found. We stop here and report the error.
                  */
@@ -194,17 +197,22 @@ public class UpdateApplication extends HttpServlet {
     private List<CountryEnvironmentParameters> getCountryEnvironmentApplicationFromParameter(HttpServletRequest request, ApplicationContext appContext, String system, String application, JSONArray json) throws JSONException {
         List<CountryEnvironmentParameters> cedList = new ArrayList();
         IFactoryCountryEnvironmentParameters cedFactory = appContext.getBean(IFactoryCountryEnvironmentParameters.class);
+        PolicyFactory policy = Sanitizers.FORMATTING.and(Sanitizers.LINKS);
+        String charset = request.getCharacterEncoding();
 
         for (int i = 0; i < json.length(); i++) {
             JSONObject tcsaJson = json.getJSONObject(i);
 
+            // Parameter that are already controled by GUI (no need to decode) --> We SECURE them
             boolean delete = tcsaJson.getBoolean("toDelete");
-            String country = tcsaJson.getString("country");
-            String environment = tcsaJson.getString("environment");
-            String ip = tcsaJson.getString("ip");
-            String domain = tcsaJson.getString("domain");
-            String url = tcsaJson.getString("url");
-            String urlLogin = tcsaJson.getString("urlLogin");
+            String country = policy.sanitize(tcsaJson.getString("country"));
+            String environment = policy.sanitize(tcsaJson.getString("environment"));
+            // Parameter that needs to be secured --> We SECURE+DECODE them
+            // Parameter that we cannot secure as we need the html --> We DECODE them
+            String ip = ParameterParserUtil.parseStringParamAndDecode(tcsaJson.getString("ip"), "", charset);
+            String domain = ParameterParserUtil.parseStringParamAndDecode(tcsaJson.getString("domain"), "", charset);
+            String url = ParameterParserUtil.parseStringParamAndDecode(tcsaJson.getString("url"), "", charset);
+            String urlLogin = ParameterParserUtil.parseStringParamAndDecode(tcsaJson.getString("urlLogin"), "", charset);
 
             if (!delete) {
                 CountryEnvironmentParameters ced = cedFactory.create(system, country, environment, application, ip, domain, url, urlLogin);

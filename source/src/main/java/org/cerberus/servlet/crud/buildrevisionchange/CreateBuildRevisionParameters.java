@@ -33,6 +33,7 @@ import org.cerberus.exception.CerberusException;
 import org.cerberus.crud.service.IBuildRevisionParametersService;
 import org.cerberus.crud.service.ILogEventService;
 import org.cerberus.crud.service.impl.LogEventService;
+import org.cerberus.util.ParameterParserUtil;
 import org.cerberus.util.answer.Answer;
 import org.cerberus.util.servlet.ServletUtil;
 import org.json.JSONException;
@@ -70,6 +71,7 @@ public class CreateBuildRevisionParameters extends HttpServlet {
         msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", ""));
         ans.setResultMessage(msg);
         PolicyFactory policy = Sanitizers.FORMATTING.and(Sanitizers.LINKS);
+        String charset = request.getCharacterEncoding();
 
         response.setContentType("application/json");
 
@@ -79,21 +81,24 @@ public class CreateBuildRevisionParameters extends HttpServlet {
         /**
          * Parsing and securing all required parameters.
          */
-        String build = policy.sanitize(request.getParameter("build"));
-        String revision = policy.sanitize(request.getParameter("revision"));
-        String release = policy.sanitize(request.getParameter("release"));
-        String application = policy.sanitize(request.getParameter("application"));
-        String project = policy.sanitize(request.getParameter("project"));
-        String ticketidfixed = policy.sanitize(request.getParameter("ticketidfixed"));
-        String bugidfixed = policy.sanitize(request.getParameter("bugidfixed"));
-        String link = policy.sanitize(request.getParameter("link"));
-        String releaseowner = policy.sanitize(request.getParameter("releaseowner"));
-        String subject = policy.sanitize(request.getParameter("subject"));
-        String jenkinsbuildid = policy.sanitize(request.getParameter("jenkinsbuildid"));
-        String mavenGroupID = policy.sanitize(request.getParameter("mavengroupid"));
-        String mavenArtifactID = policy.sanitize(request.getParameter("mavenartifactid"));
-        String mavenVersion = policy.sanitize(request.getParameter("mavenversion"));
-        String repositoryUrl = policy.sanitize(request.getParameter("repositoryurl"));
+        // Parameter that are already controled by GUI (no need to decode) --> We SECURE them
+        // Parameter that needs to be secured --> We SECURE+DECODE them
+        String build = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("build"), "", charset);
+        String revision = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("revision"), "", charset);
+        String release = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("release"), "", charset);
+        String application = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("application"), "", charset);
+        String project = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("project"), "", charset);
+        String ticketidfixed = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("ticketidfixed"), "", charset);
+        String bugidfixed = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("bugidfixed"), "", charset);
+        String releaseowner = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("releaseowner"), "", charset);
+        String subject = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("subject"), "", charset);
+        String jenkinsbuildid = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("jenkinsbuildid"), "", charset);
+        String mavenGroupID = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("mavengroupid"), "", charset);
+        String mavenArtifactID = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("mavenartifactid"), "", charset);
+        String mavenVersion = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("mavenversion"), "", charset);
+        // Parameter that we cannot secure as we need the html --> We DECODE them
+        String link = ParameterParserUtil.parseStringParamAndDecode(request.getParameter("link"), "", charset);
+        String repositoryUrl = ParameterParserUtil.parseStringParamAndDecode(request.getParameter("repositoryurl"), "", charset);
 
         /**
          * Checking all constrains before calling the services.

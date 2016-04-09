@@ -194,7 +194,7 @@
                                                                                     + "on DEV.Build=c.Build and DEV.Revision=c.Revision "
                                                                                     + "WHERE c.build is not null and c.build not in ('','NA') and Active='Y' and `System`='" + MySystem + "' "
                                                                                     + "order by c.Build asc, c.Revision asc";
-                        %>
+%>
                         <table  style="text-align: left; border-collapse:collapse ; border-color: gainsboro" border="1">
                             <tr id="header">
                                 <td><b><%=docService.findLabelHTML("buildrevisioninvariant", "versionname01", "", myLang)%></b></td>

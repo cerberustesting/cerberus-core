@@ -151,13 +151,13 @@ public class CountryEnvParamService implements ICountryEnvParamService {
     }
 
     @Override
-    public AnswerList readByVariousByCriteria(String system, String country, String environment, String build, String revision, String active, int start, int amount, String colName, String dir, String searchTerm, String individualSearch) {
-        return countryEnvParamDao.readByVariousByCriteria(system, country, environment, build, revision, active, start, amount, colName, dir, searchTerm, individualSearch);
+    public AnswerList readByVariousByCriteria(String system, String country, String environment, String build, String revision, String active, String envGp, int start, int amount, String colName, String dir, String searchTerm, String individualSearch) {
+        return countryEnvParamDao.readByVariousByCriteria(system, country, environment, build, revision, active, envGp, start, amount, colName, dir, searchTerm, individualSearch);
     }
 
     @Override
     public AnswerList readByVarious(String system, String country, String environment, String build, String revision, String active) {
-        return countryEnvParamDao.readByVariousByCriteria(system, country, environment, build, revision, active, 0, 0, null, null, null, null);
+        return countryEnvParamDao.readByVariousByCriteria(system, country, environment, build, revision, active, null, 0, 0, null, null, null, null);
     }
 
     @Override

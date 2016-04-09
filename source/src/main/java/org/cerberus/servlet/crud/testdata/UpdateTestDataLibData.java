@@ -34,6 +34,7 @@ import org.cerberus.crud.service.ILogEventService;
 import org.cerberus.crud.service.ITestDataLibDataService;
 import org.cerberus.crud.service.impl.LogEventService;
 import org.cerberus.enums.MessageEventEnum;
+import org.cerberus.util.ParameterParserUtil;
 import org.cerberus.util.StringUtil;
 import org.cerberus.util.answer.Answer;
 import org.cerberus.util.answer.AnswerList;
@@ -71,7 +72,8 @@ public class UpdateTestDataLibData extends HttpServlet {
         MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
         msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", ""));
         ans.setResultMessage(msg);
-
+        String charset = request.getCharacterEncoding();
+        
         response.setContentType("application/json");
 
         String data = request.getParameter("data");
@@ -96,7 +98,7 @@ public class UpdateTestDataLibData extends HttpServlet {
                 //removes the entries selected by the user
                 ArrayList<TestDataLibData> entriesToRemove = new ArrayList<TestDataLibData>();
                 if (dataToEdit.has("remove")) {
-                    AnswerList removeListAnswer = parseTestDataLibDataList((JSONArray) dataToEdit.get("remove"), appContext);
+                    AnswerList removeListAnswer = parseTestDataLibDataList((JSONArray) dataToEdit.get("remove"), appContext, charset);
                     //check if validations are ok
                     if (removeListAnswer.isCodeEquals(MessageEventEnum.DATA_OPERATION_VALIDATIONS_OK.getCode())) {
                         entriesToRemove.addAll((List<TestDataLibData>) removeListAnswer.getDataList());
@@ -109,7 +111,7 @@ public class UpdateTestDataLibData extends HttpServlet {
                 //updates the selected entries
                 ArrayList<TestDataLibData> entriesToUpdate = new ArrayList<TestDataLibData>();
                 if (dataToEdit.has("update")) {
-                    AnswerList updateListAnswer = parseTestDataLibDataList((JSONArray) dataToEdit.get("update"), appContext);
+                    AnswerList updateListAnswer = parseTestDataLibDataList((JSONArray) dataToEdit.get("update"), appContext, charset);
                     if (updateListAnswer.isCodeEquals(MessageEventEnum.DATA_OPERATION_VALIDATIONS_OK.getCode())) {
                         entriesToUpdate.addAll((List<TestDataLibData>) updateListAnswer.getDataList());
                     } else {
@@ -121,7 +123,7 @@ public class UpdateTestDataLibData extends HttpServlet {
                 //inserts new subdataentries
                 ArrayList<TestDataLibData> entriesToInsert = new ArrayList<TestDataLibData>();
                 if (dataToEdit.has("insert")) {
-                    AnswerList insertListAnswer = parseTestDataLibDataList((JSONArray) dataToEdit.get("insert"), appContext);
+                    AnswerList insertListAnswer = parseTestDataLibDataList((JSONArray) dataToEdit.get("insert"), appContext, charset);
                     //check if validations are ok
                     if (insertListAnswer.isCodeEquals(MessageEventEnum.DATA_OPERATION_VALIDATIONS_OK.getCode())) {
                         entriesToInsert.addAll((List<TestDataLibData>) insertListAnswer.getDataList());
@@ -230,7 +232,7 @@ public class UpdateTestDataLibData extends HttpServlet {
         return "Short description";
     }// </editor-fold>
 
-    private AnswerList parseTestDataLibDataList(JSONArray entryList, ApplicationContext appContext) {
+    private AnswerList parseTestDataLibDataList(JSONArray entryList, ApplicationContext appContext, String charset) {
         AnswerList answer = new AnswerList();
         MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_VALIDATIONS_OK);
         ArrayList<TestDataLibData> entries = new ArrayList<TestDataLibData>();
@@ -241,14 +243,18 @@ public class UpdateTestDataLibData extends HttpServlet {
         for (int i = 0; i < entryList.length(); i++) {
             try {
                 obj = entryList.getJSONObject(i);
-                TestDataLibData item = factoryLibService.create(
-                        Integer.parseInt(obj.get("testdatalibdataid").toString()), //parse will do the sanitize, it will vail if the id is text
-                        Integer.parseInt(obj.get("testdatalibid").toString()),//parse will do the sanitize, it will vail if the id is text
-                        policy.sanitize(obj.get("subdata").toString()),
-                        policy.sanitize(obj.get("value").toString()),
-                        policy.sanitize(obj.get("column").toString()),
-                        policy.sanitize(obj.get("parsinganswer").toString()),
-                        policy.sanitize(obj.get("description").toString()));
+                // Parameter that are already controled by GUI (no need to decode) --> We SECURE them
+                Integer testdatalibdataid = Integer.parseInt(obj.get("testdatalibdataid").toString());
+                Integer testdatalibid = Integer.parseInt(obj.get("testdatalibid").toString());
+                // Parameter that needs to be secured --> We SECURE+DECODE them
+                String subdata = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(obj.get("subdata").toString(), null, charset);
+                String description = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(obj.get("description").toString(), "", charset);
+                // Parameter that we cannot secure as we need the html --> We DECODE them
+                String value = ParameterParserUtil.parseStringParamAndDecode(obj.get("value").toString(), "", charset);
+                String column = ParameterParserUtil.parseStringParamAndDecode(obj.get("column").toString(), "", charset);
+                String parsinganswer = ParameterParserUtil.parseStringParamAndDecode(obj.get("parsinganswer").toString(), "", charset);
+
+                TestDataLibData item = factoryLibService.create(testdatalibdataid, testdatalibid, subdata, value, column, parsinganswer, description);
                 entries.add(item);
             } catch (NumberFormatException ex) {
                 msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_VALIDATIONS_ERROR);

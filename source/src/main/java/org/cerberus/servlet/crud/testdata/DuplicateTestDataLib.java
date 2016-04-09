@@ -31,6 +31,7 @@ import org.cerberus.crud.service.ILogEventService;
 import org.cerberus.crud.service.ITestDataLibService;
 import org.cerberus.crud.service.impl.LogEventService;
 import org.cerberus.enums.MessageEventEnum;
+import org.cerberus.util.ParameterParserUtil;
 import org.cerberus.util.StringUtil;
 import org.cerberus.util.answer.Answer;
 import org.cerberus.util.answer.AnswerItem;
@@ -67,6 +68,8 @@ public class DuplicateTestDataLib extends HttpServlet {
         MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
         msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", ""));
         ans.setResultMessage(msg);
+        PolicyFactory policy = Sanitizers.FORMATTING.and(Sanitizers.LINKS);
+        String charset = request.getCharacterEncoding();
 
         response.setContentType("application/json");
 
@@ -84,24 +87,25 @@ public class DuplicateTestDataLib extends HttpServlet {
             testdatalibid_error = true;
             org.apache.log4j.Logger.getLogger(DuplicateTestDataLib.class.getName()).log(org.apache.log4j.Level.ERROR, null, ex);
         }
-        PolicyFactory policy = Sanitizers.FORMATTING.and(Sanitizers.LINKS);
-        String name = policy.sanitize(request.getParameter("name"));
+        // Parameter that are already controled by GUI (no need to decode) --> We SECURE them
         String type = policy.sanitize(request.getParameter("type"));
-        String group = policy.sanitize(request.getParameter("group"));
         String system = policy.sanitize(request.getParameter("system"));
         String environment = policy.sanitize(request.getParameter("environment"));
         String country = policy.sanitize(request.getParameter("country"));
         String database = policy.sanitize(request.getParameter("database"));
+        // Parameter that needs to be secured --> We SECURE+DECODE them
+        String name = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("name"), null, charset);
+        String group = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("group"), "", charset);
+        String description = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("libdescription"), "", charset);
+        // Parameter that we cannot secure as we need the html --> We DECODE them
+        String script = ParameterParserUtil.parseStringParamAndDecode(request.getParameter("script"), "", charset);
+        String servicePath = ParameterParserUtil.parseStringParamAndDecode(request.getParameter("servicepath"), "", charset);
+        String method = ParameterParserUtil.parseStringParamAndDecode(request.getParameter("method"), "", charset);
+        String envelope = ParameterParserUtil.parseStringParamAndDecode(request.getParameter("envelope"), "", charset);
 
-        String description = StringEscapeUtils.escapeHtml4(request.getParameter("libdescription"));
-        String script = StringEscapeUtils.escapeHtml4(request.getParameter("script"));
-        String servicePath = StringEscapeUtils.escapeHtml4(request.getParameter("servicepath"));
-        String method = StringEscapeUtils.escapeHtml4(request.getParameter("method"));
-        String envelope = StringEscapeUtils.escapeXml11(request.getParameter("envelope"));
         /**
          * Checking all constrains before calling the services.
          */
-
         if (StringUtil.isNullOrEmpty(name)) {
             msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_EXPECTED);
             msg.setDescription(msg.getDescription().replace("%ITEM%", "Test Data Library")

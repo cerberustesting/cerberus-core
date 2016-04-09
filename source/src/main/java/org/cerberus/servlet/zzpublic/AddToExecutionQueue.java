@@ -230,7 +230,7 @@ public class AddToExecutionQueue extends HttpServlet {
         String charset = req.getCharacterEncoding();
 
         boolean autoRunCampaign = false;
-        String campaign = ParameterParserUtil.parseStringParamAndDecode(req.getParameter(PARAMETER_CAMPAIGN), null, charset);
+        String campaign = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(req.getParameter(PARAMETER_CAMPAIGN), null, charset);
         if (campaign != null && !campaign.isEmpty()) {
             autoRunCampaign = true;
         }
@@ -284,17 +284,17 @@ public class AddToExecutionQueue extends HttpServlet {
         
         Date requestDate = new Date();
 
-        String robot = ParameterParserUtil.parseStringParamAndDecode(req.getParameter(PARAMETER_ROBOT), null, charset);
-        String robotIP = ParameterParserUtil.parseStringParamAndDecode(req.getParameter(PARAMETER_ROBOT_IP), null, charset);
-        String robotPort = ParameterParserUtil.parseStringParamAndDecode(req.getParameter(PARAMETER_ROBOT_PORT), null, charset);
-        String browserVersion = ParameterParserUtil.parseStringParamAndDecode(req.getParameter(PARAMETER_BROWSER_VERSION), null, charset);
-        String platform = ParameterParserUtil.parseStringParamAndDecode(req.getParameter(PARAMETER_PLATFORM), null, charset);
+        String robot = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(req.getParameter(PARAMETER_ROBOT), null, charset);
+        String robotIP = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(req.getParameter(PARAMETER_ROBOT_IP), null, charset);
+        String robotPort = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(req.getParameter(PARAMETER_ROBOT_PORT), null, charset);
+        String browserVersion = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(req.getParameter(PARAMETER_BROWSER_VERSION), null, charset);
+        String platform = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(req.getParameter(PARAMETER_PLATFORM), null, charset);
         boolean manualURL = ParameterParserUtil.parseBooleanParamAndDecode(req.getParameter(PARAMETER_MANUAL_URL), DEFAULT_VALUE_MANUAL_URL, charset);
-        String manualHost = ParameterParserUtil.parseStringParamAndDecode(req.getParameter(PARAMETER_MANUAL_HOST), null, charset);
-        String manualContextRoot = ParameterParserUtil.parseStringParamAndDecode(req.getParameter(PARAMETER_MANUAL_CONTEXT_ROOT), null, charset);
-        String manualLoginRelativeURL = ParameterParserUtil.parseStringParamAndDecode(req.getParameter(PARAMETER_MANUAL_LOGIN_RELATIVE_URL), null, charset);
-        String manualEnvData = ParameterParserUtil.parseStringParamAndDecode(req.getParameter(PARAMETER_MANUAL_ENV_DATA), null, charset);
-        String outputFormat = ParameterParserUtil.parseStringParamAndDecode(req.getParameter(PARAMETER_OUTPUT_FORMAT), DEFAULT_VALUE_OUTPUT_FORMAT, charset);
+        String manualHost = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(req.getParameter(PARAMETER_MANUAL_HOST), null, charset);
+        String manualContextRoot = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(req.getParameter(PARAMETER_MANUAL_CONTEXT_ROOT), null, charset);
+        String manualLoginRelativeURL = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(req.getParameter(PARAMETER_MANUAL_LOGIN_RELATIVE_URL), null, charset);
+        String manualEnvData = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(req.getParameter(PARAMETER_MANUAL_ENV_DATA), null, charset);
+        String outputFormat = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(req.getParameter(PARAMETER_OUTPUT_FORMAT), DEFAULT_VALUE_OUTPUT_FORMAT, charset);
         int screenshot = ParameterParserUtil.parseIntegerParamAndDecode(req.getParameter(PARAMETER_SCREENSHOT), DEFAULT_VALUE_SCREENSHOT, charset);
         int verbose = ParameterParserUtil.parseIntegerParamAndDecode(req.getParameter(PARAMETER_VERBOSE), DEFAULT_VALUE_VERBOSE, charset);
         long timeout = ParameterParserUtil.parseLongParamAndDecode(req.getParameter(PARAMETER_TIMEOUT), defaultWait, charset);

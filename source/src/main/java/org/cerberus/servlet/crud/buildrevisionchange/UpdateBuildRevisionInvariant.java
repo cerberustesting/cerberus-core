@@ -34,6 +34,7 @@ import org.cerberus.exception.CerberusException;
 import org.cerberus.crud.service.IBuildRevisionInvariantService;
 import org.cerberus.crud.service.ILogEventService;
 import org.cerberus.crud.service.impl.LogEventService;
+import org.cerberus.util.ParameterParserUtil;
 import org.cerberus.util.StringUtil;
 import org.cerberus.util.answer.Answer;
 import org.cerberus.util.answer.AnswerItem;
@@ -69,6 +70,7 @@ public class UpdateBuildRevisionInvariant extends HttpServlet {
         msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", ""));
         ans.setResultMessage(msg);
         PolicyFactory policy = Sanitizers.FORMATTING.and(Sanitizers.LINKS);
+        String charset = request.getCharacterEncoding();
 
         response.setContentType("application/json");
 
@@ -78,8 +80,7 @@ public class UpdateBuildRevisionInvariant extends HttpServlet {
         /**
          * Parsing and securing all required parameters.
          */
-        String system = policy.sanitize(request.getParameter("system"));
-        String versionName = policy.sanitize(request.getParameter("versionname"));
+        // Parameter that are already controled by GUI (no need to decode) --> We SECURE them
         Integer seq = -1;
         boolean seq_error = false;
         try {
@@ -98,6 +99,10 @@ public class UpdateBuildRevisionInvariant extends HttpServlet {
         } catch (Exception ex) {
             level_error = true;
         }
+        // Parameter that needs to be secured --> We SECURE+DECODE them
+        String system = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("system"), "", charset);
+        String versionName = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("versionname"), "", charset);
+        // Parameter that we cannot secure as we need the html --> We DECODE them
 
         /**
          * Checking all constrains before calling the services.

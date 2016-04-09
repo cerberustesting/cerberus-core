@@ -133,6 +133,7 @@ public interface ICountryEnvParamService {
      * @param build
      * @param revision
      * @param Active
+     * @param envGp
      * @param startPosition
      * @param length
      * @param columnName
@@ -141,7 +142,7 @@ public interface ICountryEnvParamService {
      * @param string
      * @return
      */
-    public AnswerList readByVariousByCriteria(String system, String country, String environment, String build, String revision, String Active, int startPosition, int length, String columnName, String sort, String searchParameter, String string);
+    public AnswerList readByVariousByCriteria(String system, String country, String environment, String build, String revision, String Active, String envGp, int startPosition, int length, String columnName, String sort, String searchParameter, String string);
 
     /**
      *

@@ -73,6 +73,7 @@ public class UpdateBuildRevisionParameters extends HttpServlet {
         msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", ""));
         ans.setResultMessage(msg);
         PolicyFactory policy = Sanitizers.FORMATTING.and(Sanitizers.LINKS);
+        String charset = request.getCharacterEncoding();
 
         response.setContentType("application/json");
 
@@ -82,21 +83,25 @@ public class UpdateBuildRevisionParameters extends HttpServlet {
         /**
          * Parsing and securing all required parameters.
          */
-        String build = policy.sanitize(request.getParameter("build"));
-        String revision = policy.sanitize(request.getParameter("revision"));
-        String release = policy.sanitize(request.getParameter("release"));
-        String application = policy.sanitize(request.getParameter("application"));
-        String project = policy.sanitize(request.getParameter("project"));
-        String ticketidfixed = policy.sanitize(request.getParameter("ticketidfixed"));
-        String bugidfixed = policy.sanitize(request.getParameter("bugidfixed"));
-        String link = policy.sanitize(request.getParameter("link"));
-        String releaseowner = policy.sanitize(request.getParameter("releaseowner"));
-        String subject = policy.sanitize(request.getParameter("subject"));
-        String jenkinsbuildid = policy.sanitize(request.getParameter("jenkinsbuildid"));
-        String mavenGroupID = policy.sanitize(request.getParameter("mavengroupid"));
-        String mavenArtifactID = policy.sanitize(request.getParameter("mavenartifactid"));
-        String mavenVersion = policy.sanitize(request.getParameter("mavenversion"));
-        String repositoryUrl = policy.sanitize(request.getParameter("repositoryurl"));
+        // Parameter that are already controled by GUI (no need to decode) --> We SECURE them
+        // Parameter that needs to be secured --> We SECURE+DECODE them
+        String build = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("build"), "", charset);
+        String revision = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("revision"), "", charset);
+        String release = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("release"), "", charset);
+        String application = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("application"), "", charset);
+        String project = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("project"), "", charset);
+        String ticketidfixed = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("ticketidfixed"), "", charset);
+        String bugidfixed = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("bugidfixed"), "", charset);
+        String releaseowner = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("releaseowner"), "", charset);
+        String subject = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("subject"), "", charset);
+        String jenkinsbuildid = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("jenkinsbuildid"), "", charset);
+        String mavenGroupID = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("mavengroupid"), "", charset);
+        String mavenArtifactID = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("mavenartifactid"), "", charset);
+        String mavenVersion = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("mavenversion"), "", charset);
+        // Parameter that we cannot secure as we need the html --> We DECODE them
+        String link = ParameterParserUtil.parseStringParamAndDecode(request.getParameter("link"), "", charset);
+        String repositoryUrl = ParameterParserUtil.parseStringParamAndDecode(request.getParameter("repositoryurl"), "", charset);
+        
         Integer brpid = 0;
 
         String[] myId = request.getParameterValues("id");
@@ -169,21 +174,21 @@ public class UpdateBuildRevisionParameters extends HttpServlet {
                         output_message.append("<br>id : ").append(myId1).append(" - ").append(msg.getDescription());
                     } else {
 
-                        brpData.setBuild(ParameterParserUtil.parseStringParamAndSanitize(request.getParameter("build"), brpData.getBuild()));
-                        brpData.setRevision(ParameterParserUtil.parseStringParamAndSanitize(request.getParameter("revision"), brpData.getRevision()));
-                        brpData.setRelease(ParameterParserUtil.parseStringParamAndSanitize(request.getParameter("release"), brpData.getRelease()));
-                        brpData.setApplication(ParameterParserUtil.parseStringParamAndSanitize(request.getParameter("application"), brpData.getApplication()));
-                        brpData.setProject(ParameterParserUtil.parseStringParamAndSanitize(request.getParameter("project"), brpData.getProject()));
-                        brpData.setTicketIdFixed(ParameterParserUtil.parseStringParamAndSanitize(request.getParameter("ticketidfixed"), brpData.getTicketIdFixed()));
-                        brpData.setBugIdFixed(ParameterParserUtil.parseStringParamAndSanitize(request.getParameter("bugidfixed"), brpData.getBugIdFixed()));
-                        brpData.setLink(ParameterParserUtil.parseStringParamAndSanitize(request.getParameter("link"), brpData.getLink()));
-                        brpData.setReleaseOwner(ParameterParserUtil.parseStringParamAndSanitize(request.getParameter("releaseowner"), brpData.getReleaseOwner()));
-                        brpData.setSubject(ParameterParserUtil.parseStringParamAndSanitize(request.getParameter("subject"), brpData.getSubject()));
-                        brpData.setJenkinsBuildId(ParameterParserUtil.parseStringParamAndSanitize(request.getParameter("jenkinsbuildid"), brpData.getJenkinsBuildId()));
-                        brpData.setMavenGroupId(ParameterParserUtil.parseStringParamAndSanitize(request.getParameter("mavengroupid"), brpData.getMavenGroupId()));
-                        brpData.setMavenArtifactId(ParameterParserUtil.parseStringParamAndSanitize(request.getParameter("mavenartifactid"), brpData.getMavenArtifactId()));
-                        brpData.setMavenVersion(ParameterParserUtil.parseStringParamAndSanitize(request.getParameter("mavenversion"), brpData.getMavenVersion()));
-                        brpData.setRepositoryUrl(ParameterParserUtil.parseStringParamAndSanitize(request.getParameter("repositoryurl"), brpData.getRepositoryUrl()));
+                        brpData.setBuild(ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("build"), brpData.getBuild(), charset));
+                        brpData.setRevision(ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("revision"), brpData.getRevision(), charset));
+                        brpData.setRelease(ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("release"), brpData.getRelease(), charset));
+                        brpData.setApplication(ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("application"), brpData.getApplication(), charset));
+                        brpData.setProject(ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("project"), brpData.getProject(), charset));
+                        brpData.setTicketIdFixed(ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("ticketidfixed"), brpData.getTicketIdFixed(), charset));
+                        brpData.setBugIdFixed(ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("bugidfixed"), brpData.getBugIdFixed(), charset));
+                        brpData.setLink(ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("link"), brpData.getLink(), charset));
+                        brpData.setReleaseOwner(ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("releaseowner"), brpData.getReleaseOwner(), charset));
+                        brpData.setSubject(ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("subject"), brpData.getSubject(), charset));
+                        brpData.setJenkinsBuildId(ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("jenkinsbuildid"), brpData.getJenkinsBuildId(), charset));
+                        brpData.setMavenGroupId(ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("mavengroupid"), brpData.getMavenGroupId(), charset));
+                        brpData.setMavenArtifactId(ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("mavenartifactid"), brpData.getMavenArtifactId(), charset));
+                        brpData.setMavenVersion(ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("mavenversion"), brpData.getMavenVersion(), charset));
+                        brpData.setRepositoryUrl(ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("repositoryurl"), brpData.getRepositoryUrl(), charset));
                         ans = brpService.update(brpData);
 
                         if (ans.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {

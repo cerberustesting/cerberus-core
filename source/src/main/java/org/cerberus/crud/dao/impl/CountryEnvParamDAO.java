@@ -907,7 +907,7 @@ public class CountryEnvParamDAO implements ICountryEnvParamDAO {
     }
 
     @Override
-    public AnswerList readByVariousByCriteria(String system, String country, String environment, String build, String revision, String active, int start, int amount, String colName, String dir, String searchTerm, String individualSearch) {
+    public AnswerList readByVariousByCriteria(String system, String country, String environment, String build, String revision, String active, String envGp, int start, int amount, String colName, String dir, String searchTerm, String individualSearch) {
         AnswerList response = new AnswerList();
         MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
         msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", ""));
@@ -917,8 +917,12 @@ public class CountryEnvParamDAO implements ICountryEnvParamDAO {
         StringBuilder query = new StringBuilder();
         //SQL_CALC_FOUND_ROWS allows to retrieve the total number of columns by disrearding the limit clauses that 
         //were applied -- used for pagination p
-        query.append("SELECT SQL_CALC_FOUND_ROWS * FROM countryenvparam ");
+        query.append("SELECT SQL_CALC_FOUND_ROWS * FROM countryenvparam cep");
 
+        if (!StringUtil.isNullOrEmpty(envGp)) {
+            searchSQL.append(" LEFT OUTER JOIN invariant i on i.idname='ENVIRONMENT' and i.value=cep.environment ");
+        }
+        
         searchSQL.append(" where 1=1 ");
 
         if (!StringUtil.isNullOrEmpty(searchTerm)) {
@@ -959,6 +963,9 @@ public class CountryEnvParamDAO implements ICountryEnvParamDAO {
         }
         if (!StringUtil.isNullOrEmpty(revision)) {
             searchSQL.append(" and (`revision` = ? )");
+        }
+        if (!StringUtil.isNullOrEmpty(envGp)) {
+            searchSQL.append(" and (i.`gp1` = ? )");
         }
         query.append(searchSQL);
 
@@ -1019,6 +1026,9 @@ public class CountryEnvParamDAO implements ICountryEnvParamDAO {
                 }
                 if (!StringUtil.isNullOrEmpty(revision)) {
                     preStat.setString(i++, revision);
+                }
+                if (!StringUtil.isNullOrEmpty(envGp)) {
+                    preStat.setString(i++, envGp);
                 }
                 ResultSet resultSet = preStat.executeQuery();
                 try {
@@ -1225,7 +1235,7 @@ public class CountryEnvParamDAO implements ICountryEnvParamDAO {
         try {
             PreparedStatement preStat = connection.prepareStatement(query.toString());
             try {
-                preStat.setString(1, cep.getBuild());
+                preStat.setString(1, ParameterParserUtil.parseStringParam(cep.getBuild(), ""));
                 preStat.setString(2, cep.getRevision());
                 preStat.setString(3, cep.getChain());
                 preStat.setString(4, cep.getDistribList());

@@ -90,9 +90,9 @@ public class DisableEnvironmentV000 extends HttpServlet {
         IParameterService parameterService = appContext.getBean(IParameterService.class);
 
         // Parsing all parameters.
-        String system = ParameterParserUtil.parseStringParamAndDecode(request.getParameter("system"), "", charset);
-        String country = ParameterParserUtil.parseStringParamAndDecode(request.getParameter("country"), "", charset);
-        String environment = ParameterParserUtil.parseStringParamAndDecode(request.getParameter("environment"), "", charset);
+        String system = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("system"), "", charset);
+        String country = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("country"), "", charset);
+        String environment = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("environment"), "", charset);
 
         // Defining help message.
         String helpMessage = "\nThis servlet is used to inform Cerberus that a system is disabled. For example when a Revision is beeing deployed.\n\nParameter list :\n"
@@ -148,7 +148,7 @@ public class DisableEnvironmentV000 extends HttpServlet {
             if (country.equalsIgnoreCase(PARAMETERALL)) {
                 country = null;
             }
-            answerList = countryEnvParamService.readByVarious(system, country, environment, null, null, "Y");
+            answerList = countryEnvParamService.readByVarious(system, country, environment, null, null, null);
             finalAnswer = AnswerUtil.agregateAnswer(finalAnswer, (Answer) answerList);
 
             for (CountryEnvParam cepData : (List<CountryEnvParam>) answerList.getDataList()) {
