@@ -222,7 +222,7 @@ public class ReadCountryEnvParam extends HttpServlet {
         JSONObject object = new JSONObject();
         cepService = appContext.getBean(ICountryEnvParamService.class);
 
-        AnswerList resp = cepService.readByVariousByCriteria(system, null, null, null, null, null, active, 0, 0, "system", "asc", "", "");
+        AnswerList resp = cepService.readByVariousByCriteria(system, null, null, null, null, active, null, 0, 0, "system", "asc", "", "");
 
         JSONArray jsonArray = new JSONArray();
         if (resp.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {//the service was able to perform the query, then we should get all values
