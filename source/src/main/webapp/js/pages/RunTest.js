@@ -23,14 +23,22 @@ $.when($.getScript("js/pages/global/global.js")).then(function () {
         var doc = new Doc();
         var system = getUser().defaultSystem;
 
+        var test = GetURLParameter("test");
+        var testcase = GetURLParameter("testcase");
+        var environment = GetURLParameter("environment");
+        var country = GetURLParameter("country");
+        var tag = GetURLParameter("tag");
+        var browser = GetURLParameter("browser");
+
         oldPreferenceCompatibility();
 
         displayHeaderLabel(doc);
         displayFooter(doc);
         bindToggleCollapse();
+
         appendCampaignList();
-        appendCountryList();
-        typeSelectHandler();
+        appendCountryList(country);
+        typeSelectHandler(test, testcase, environment, country);
         showLoader("#filtersPanel");
         $.when(
                 loadMultiSelect("ReadTest", "system=" + system, "test", ["test", "description"], "test"),
@@ -48,7 +56,7 @@ $.when($.getScript("js/pages/global/global.js")).then(function () {
                 ).then(function () {
             hideLoader("#filtersPanel");
             if ($("#typeSelect").val() === "filters") {
-                loadTestCaseFromFilter();
+                loadTestCaseFromFilter(test, testcase);
             }
         });
 
@@ -56,7 +64,9 @@ $.when($.getScript("js/pages/global/global.js")).then(function () {
 
         $("#run").click(sendForm);
 
-        $("#loadFiltersBtn").click(loadTestCaseFromFilter);
+        $("#loadFiltersBtn").click(function () {
+            loadTestCaseFromFilter(null, null);
+        });
 
         $("#loadCampaignBtn").click(function () {
             var campaign = $("#campaignSelect").val();
@@ -71,7 +81,12 @@ $.when($.getScript("js/pages/global/global.js")).then(function () {
             });
         });
 
-        $("#addQueue").click(checkExecution);
+        $("#addQueue").click(function () {
+            checkExecution(false);
+        });
+        $("#addQueueAndRun").click(function () {
+            checkExecution(true);
+        });
 
         $("#selectAll").click(function () {
             $("#testCaseList option").prop("selected", "selected");
@@ -91,8 +106,8 @@ $.when($.getScript("js/pages/global/global.js")).then(function () {
             $("#notValidTC").modal("show");
         });
 
-        loadExecForm();
-        loadRobotForm();
+        loadExecForm(tag);
+        loadRobotForm(browser);
 
         $('[name="envSettings"]').on("change", function () {
             if (this.value === "auto") {
@@ -122,7 +137,7 @@ function loadRequestContext() {
     $('#testCaseList').find('option[value="' + test + '-' + testcase + '"]').prop("selected", true);
 }
 
-function typeSelectHandler() {
+function typeSelectHandler(test, testcase, environment, country) {
     var value = $("[name='typeSelect']:checked").val();
     console.log(value);
     if (value === "filters") {
@@ -135,12 +150,12 @@ function typeSelectHandler() {
 
         $("#testCaseList").prop("disabled", false);
         $("#envSettingsAuto select").empty();
-        displayUniqueEnvList("environment", getUser().defaultSystem);
+        displayUniqueEnvList("environment", getUser().defaultSystem, environment);
         $("#campaignSelection").hide();
         $("#filters").show();
         $("#resetbutton").show();
         $("#filtersPanelContainer").show();
-        loadTestCaseFromFilter();
+        loadTestCaseFromFilter(test, testcase);
     } else if (value === "campaign") {
         $("#filtersPanelContainer").hide();
         $("#campaignSelection").show();
@@ -151,12 +166,17 @@ function typeSelectHandler() {
     updatePotentialNumber();
 }
 
-function loadTestCaseFromFilter() {
+function loadTestCaseFromFilter(defTest, defTestcase) {
+    console.debug("loadTestCaseFromFilter Called" + defTest + defTestcase);
     showLoader("#chooseTest");
+    var testURL = ""
+    if ((defTest !== null) && (defTest !== undefined)) { // If test is defined, we limit the testcase list on that test.
+        testURL = "&test=" + defTest;
+    }
     $.ajax({
         url: "ReadTestCase",
         method: "GET",
-        data: "filter=true&" + $("#filters").serialize() + "&system=" + getUser().defaultSystem,
+        data: "filter=true&" + $("#filters").serialize() + "&system=" + getUser().defaultSystem + testURL,
         datatype: "json",
         async: true,
         success: function (data) {
@@ -173,12 +193,15 @@ function loadTestCaseFromFilter() {
                         .data("item", data.contentTable[index]));
             }
             hideLoader("#chooseTest");
-            loadRequestContext();
+            if ((defTest !== null) && (defTest !== undefined)) { // if test is defined we select the value in the select list.
+                $('#testCaseList').find('option[value="' + defTest + '-' + defTestcase + '"]').prop("selected", true);
+                updatePotentialNumber();
+            }
         }
     });
 }
 
-function appendCountryList() {
+function appendCountryList(defCountry) {
     var jqxhr = $.getJSON("FindInvariantByID", "idName=COUNTRY");
     $.when(jqxhr).then(function (data) {
         var countryList = $("[name=countryList]");
@@ -186,8 +209,15 @@ function appendCountryList() {
         for (var index = 0; index < data.length; index++) {
             var country = data[index].value;
 
+            if (country === defCountry)
+            {
+                myChecked = 'checked="" ';
+
+            } else {
+                myChecked = "";
+            }
             countryList.append('<label class="checkbox-inline">\n\
-                                <input class="countrycb" type="checkbox" name="' + country + '"/>' + country + '\
+                                <input class="countrycb" type="checkbox" ' + myChecked + ' name="' + country + '"/>' + country + '\
                                 </label>');
         }
         $("#countryList input.countrycb").each(function () {
@@ -297,7 +327,7 @@ function checkForms() {
 function sendForm() {
 
     if ($("#queue li").length > 1) { // We have more than 1 execution in the queue.
-        if ($("#tag").val() === "") { // We force the Tag is not defined.
+        if ($("#tag").val() === "") { // We force the Tag if it is not defined yet.
             var utc = new Date();
             var tag = getUser().login + "-" + utc.toJSON().slice(0, 13) + utc.toJSON().slice(14, 16) + utc.toJSON().slice(17, 19)
             $("#tag").prop("value", tag);
@@ -320,7 +350,7 @@ function sendForm() {
 
         if (executionArray.length === 1) {
             //Call RunTestCase
-            setData(executionArray);
+            setSingleExecutionDataForm(executionArray);
             $("#RunTestCase").submit();
         } else if (executionArray.length > 1) {
 
@@ -358,7 +388,7 @@ function sendForm() {
     }
 }
 
-function setData(executionArray) {
+function setSingleExecutionDataForm(executionArray) {
     var browser = $("#browser").val() ? $("#browser").val() : [""];
     var settings = $('input[name="envSettings"]:checked').val();
 
@@ -390,8 +420,9 @@ function setData(executionArray) {
     $("#manualRobotATQ").val($("#robotConfig").val());
     $("#ss_ipATQ").val($("#seleniumIP").val());
     $("#ss_pATQ").val($("#seleniumPort").val());
-    $("#versionATQ").val($("#browserVersion").val());
+    $("#versionATQ").val($("#version").val());
     $("#platformATQ").val($("#platform").val());
+    $("#tagATQ").val($("#tag").val());
 }
 
 /** UTILITY FUNCTIONS FOR QUEUE **/
@@ -489,7 +520,7 @@ function addToQueue(executionList) {
     notValidHandler(notValidList);
 }
 
-function checkExecution() {
+function checkExecution(triggerRun) {
     var select = $("#testCaseList option:selected");
     var environment = getEnvironment();
     var countries = getCountries();
@@ -528,6 +559,9 @@ function checkExecution() {
             success: function (data) {
                 hideLoader("#queuePanel");
                 addToQueue(data.contentTable);
+                if (triggerRun) {
+                    sendForm();
+                }
             },
             error: showUnexpectedError
         });
@@ -692,9 +726,9 @@ function saveExecutionPreferences() {
     localStorage.setItem("executionSettings", JSON.stringify(pref));
 }
 
-function loadExecForm() {
+function loadExecForm(tag) {
     $.when(
-            loadSelect("OUTPUTFORMAT", "OutputFormat"),
+            loadSelect("OUTPUTFORMAT", "outputformat"),
             loadSelect("VERBOSE", "Verbose"),
             loadSelect("SCREENSHOT", "Screenshot"),
             loadSelect("SELENIUMLOG", "SeleniumLog"),
@@ -703,11 +737,11 @@ function loadExecForm() {
             loadSelect("SYNCHRONEOUS", "Synchroneous"),
             loadSelect("RETRIES", "retries")
             ).then(function () {
-        applyExecPref();
+        applyExecPref(tag);
     });
 }
 
-function loadRobotForm() {
+function loadRobotForm(browser) {
     $.when(
             appendRobotList(),
             loadSelect("BROWSER", "browser"),
@@ -716,28 +750,32 @@ function loadRobotForm() {
             $("[name=screenSize]").append($('<option></option>').text("Default (Client Full Screen)").val("")),
             loadSelect("screensize", "screenSize")
             ).then(function () {
-        applyRobotPref();
+        applyRobotPref(browser);
     });
 }
 
-function applyExecPref() {
+function applyExecPref(tag) {
     var pref = JSON.parse(localStorage.getItem("executionSettings"));
 
     if (pref !== null) {
-        $("#tag").val(pref.tag);
-        $("#outputFormat").val(pref.outputFormat);
-        $("#verbose").val(pref.verbose);
-        $("#screenshot").val(pref.screenshot);
-        $("#pageSource").val(pref.pageSource);
-        $("#seleniumLog").val(pref.seleniumLog);
-        $("#synchroneous").val(pref.synchroneous);
+        if (tag !== null) { // if tag defined from URL we take that value.
+            $("#tag").val(tag);
+        } else {
+            $("#tag").val(pref.Tag);
+        }
+        $("#outputFormat").val(pref.outputformat);
+        $("#verbose").val(pref.Verbose);
+        $("#screenshot").val(pref.Screenshot);
+        $("#pageSource").val(pref.PageSource);
+        $("#seleniumLog").val(pref.SeleniumLog);
+        $("#synchroneous").val(pref.Synchroneous);
         $("#timeout").val(pref.timeout);
         $("#retries").val(pref.retries);
         $("#manualExecution").val(pref.manualExecution);
     }
 }
 
-function applyRobotPref() {
+function applyRobotPref(browser) {
     var pref = JSON.parse(localStorage.getItem("robotSettings"));
 
     if (pref !== null) {
@@ -746,7 +784,12 @@ function applyRobotPref() {
             $("#robotConfig").val(pref.robotConfig);
             $("#seleniumIP").val(pref.ss_ip);
             $("#seleniumPort").val(pref.ss_p);
-            $("#browser").val(pref.browser);
+            console.debug(browser);
+            if (browser !== null) { // if browser defined from URL we take that value.
+                $("#browser").val(browser);
+            } else {
+                $("#browser").val(pref.browser);
+            }
             $("#version").val(pref.BrowserVersion);
             $("#platform").val(pref.Platform);
             $("#screenSize").val(pref.screenSize);

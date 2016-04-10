@@ -187,6 +187,7 @@
                         <div class="row">
                             <div class="col-lg-offset-3 col-lg-6 text-center" style="margin-top: 25px;">
                                 <button type="button" class="btn btn-primary" id="addQueue"> Add selection to queue </button>
+                                <button type="button" class="btn btn-primary" id="addQueueAndRun"> Add selection to queue and Run</button>
                             </div>
                         </div>
                     </div>
@@ -265,7 +266,7 @@
                                     <div class="form-group">
                                         <label for="outputFormat" class="col-sm-3 control-label bold">Output Format</label>
                                         <div class="col-sm-9">
-                                            <select class="form-control input-sm" id="outputFormat" name="OutputFormat"></select>
+                                            <select class="form-control input-sm" id="outputFormat" name="outputformat"></select>
                                         </div>
                                     </div>
                                     <div class="form-group">
@@ -330,7 +331,7 @@
                     <input type="hidden" name="TestCase" id="testcaseATQ">
                     <input type="hidden" name="Country" id="countryATQ">
                     <input type="hidden" name="Environment" id="envATQ">
-                    <input type="hidden" name="Browser" id="browserATQ">
+                    <input type="hidden" name="browser" id="browserATQ">
                     <input type="hidden" name="manualURL" id="manualURLATQ">
                     <input type="hidden" name="myhost" id="myhostATQ">
                     <input type="hidden" name="mycontextroot" id="mycontextrootATQ">
@@ -351,7 +352,7 @@
                     <input type="hidden" name="timeout" id="timeoutATQ">
                     <input type="hidden" name="retries" id="retriesATQ">
                     <input type="hidden" name="manualExecution" id="manualExecutionATQ">
-                    <input type="hidden" name="statusPage" id="screenSizeATQ">
+                    <input type="hidden" name="screenSize" id="screenSizeATQ">
                 </form>
 
                 <footer class="footer">
