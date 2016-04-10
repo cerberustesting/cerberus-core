@@ -23,6 +23,14 @@ $.when($.getScript("js/pages/global/global.js")).then(function () {
         var doc = new Doc();
         var stepList = [];
 
+        // Load invariant list into local storage.
+        getSelectInvariant("ACTION", false);
+        getSelectInvariant("CONTROL", false);
+        getSelectInvariant("CTRLFATAL", false);
+        getSelectInvariant("PROPERTYTYPE", false);
+        getSelectInvariant("PROPERTYDATABASE", false);
+        getSelectInvariant("PROPERTYNATURE", false);
+
         loadLibraryStep();
         bindToggleCollapse();
 

@@ -298,7 +298,7 @@ function getInvariantListN(list, handleData) {
  * it on local cache.
  * The forceReload boolean can force the refresh of the list from the server.
  * @param {String} idName of the invariant to load (ex : COUNTRY)
- * @param {boolean} true if we want to force the reload on cache from the server
+ * @param {boolean} forceReload true if we want to force the reload on cache from the server
  */
 function getSelectInvariant(idName, forceReload) {
     var cacheEntryName = idName + "INVARIANT";
