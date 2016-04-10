@@ -92,7 +92,7 @@ public class ReadCountryEnvParam extends HttpServlet {
         String build = policy.sanitize(request.getParameter("build"));
         String revision = policy.sanitize(request.getParameter("revision"));
         String active = policy.sanitize(request.getParameter("active"));
-        String envGp = policy.sanitize(request.getParameter("envGp"));
+        String envGp = policy.sanitize(request.getParameter("envgp"));
         boolean unique = ParameterParserUtil.parseBooleanParam(request.getParameter("unique"), false);
         boolean forceList = ParameterParserUtil.parseBooleanParam(request.getParameter("forceList"), false);
 
