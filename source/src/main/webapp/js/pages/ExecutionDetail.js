@@ -55,7 +55,7 @@ $.when($.getScript("js/pages/global/global.js")).then(function() {
 });
 
 function runTestCase(test, testcase) {
-    window.location.href = "./RunTest2.jsp?test=" + test + "&testcase=" + testcase;
+    window.location.href = "./RunTests1.jsp?test=" + test + "&testcase=" + testcase;
 }
 
 function createStepList(data, stepList) {

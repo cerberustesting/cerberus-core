@@ -2007,7 +2007,7 @@
             <url-pattern>/RunTestsSearchResult.jsp</url-pattern>
             <url-pattern>/TestCaseManualRun.jsp</url-pattern>
             <url-pattern>/RunTestsTriggerBatchExecution.jsp</url-pattern>
-            <url-pattern>/RunTest2.jsp</url-pattern>
+            <url-pattern>/RunTests1.jsp</url-pattern>
         </web-resource-collection>
         <web-resource-collection>
             <web-resource-name>servlet</web-resource-name>
