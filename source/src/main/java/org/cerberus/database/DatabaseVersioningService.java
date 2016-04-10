@@ -4722,7 +4722,7 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLInstruction.add(SQLS.toString());
 
         // New updated Documentation.
-        //-- ------------------------ 749-750
+        //-- ------------------------ 750-751
         SQLS = new StringBuilder();
         SQLS.append("DELETE FROM `documentation`;");
         SQLInstruction.add(SQLS.toString());
@@ -5675,16 +5675,16 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLInstruction.add(SQLS.toString());
 
         // Removed and clean takeScreenshot action.
-        //-- ------------------------ 750-751
+        //-- ------------------------ 752-753
         SQLS = new StringBuilder();
         SQLS.append("DELETE FROM `invariant` WHERE `idname`='ACTION' and `value`='takeScreenshot';");
         SQLInstruction.add(SQLS.toString());
         SQLS = new StringBuilder();
-        SQLS.append("UPDATE testcasestepaction SET ACtion='skipAction' WHERE Action='takeScreenshot';");
+        SQLS.append("UPDATE testcasestepaction SET Action='skipAction' WHERE Action='takeScreenshot';");
         SQLInstruction.add(SQLS.toString());
 
         // Added Environment group invariants.
-        //-- ------------------------ 752
+        //-- ------------------------ 754
         SQLS = new StringBuilder();
         SQLS.append("INSERT INTO `invariant` (`idname`, `value`, `sort`, `description`, `VeryShortDesc`) VALUES ");
         SQLS.append("    ('ENVGP', 'DEV', '100', 'Development Environments', 'DEV'),");
@@ -5692,6 +5692,39 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLS.append("    ('ENVGP', 'UAT', '300', 'User Acceptance Test Environments', 'UAT'),");
         SQLS.append("    ('ENVGP', 'PROD', '400', 'Production Environments', 'PROD'),");
         SQLS.append("    ('INVARIANTPRIVATE', 'ENVGP', '530', '', '');");
+        SQLInstruction.add(SQLS.toString());
+
+        // Rename Action skipAction to doNothing.
+        //-- ------------------------ 755-764
+        SQLS = new StringBuilder();
+        SQLS.append("UPDATE testcasestepaction SET Action='doNothing' WHERE Action='skipAction';");
+        SQLInstruction.add(SQLS.toString());
+        SQLS = new StringBuilder();
+        SQLS.append("UPDATE `invariant` SET `value`='doNothing', `description`='doNothing' WHERE `idname`='ACTION' and`value`='skipAction';");
+        SQLInstruction.add(SQLS.toString());
+        SQLS = new StringBuilder();
+        SQLS.append("UPDATE `invariant` SET `value`='mouseLeftButtonPress', `sort`='37' WHERE `idname`='ACTION' and`value`='mouseDown';");
+        SQLInstruction.add(SQLS.toString());
+        SQLS = new StringBuilder();
+        SQLS.append("UPDATE `invariant` SET `value`='mouseLeftButtonRelease', `sort`='38', `description`='Selenium Action mouseUp' WHERE `idname`='ACTION' and`value`='mouseUp';");
+        SQLInstruction.add(SQLS.toString());
+        SQLS = new StringBuilder();
+        SQLS.append("UPDATE `invariant` SET `sort`='49' WHERE `idname`='ACTION' and`value`='keypress';");
+        SQLInstruction.add(SQLS.toString());
+        SQLS = new StringBuilder();
+        SQLS.append("UPDATE `invariant` SET `sort`='31' WHERE `idname`='ACTION' and`value`='clickAndWait';");
+        SQLInstruction.add(SQLS.toString());
+        SQLS = new StringBuilder();
+        SQLS.append("UPDATE `invariant` SET `sort`='35' WHERE `idname`='ACTION' and`value`='doubleClick';");
+        SQLInstruction.add(SQLS.toString());
+        SQLS = new StringBuilder();
+        SQLS.append("UPDATE `invariant` SET `sort`='55' WHERE `idname`='ACTION' and`value`='switchToWindow';");
+        SQLInstruction.add(SQLS.toString());
+        SQLS = new StringBuilder();
+        SQLS.append("UPDATE `invariant` SET `sort`='59' WHERE `idname`='ACTION' and`value`='manageDialog';");
+        SQLInstruction.add(SQLS.toString());
+        SQLS = new StringBuilder();
+        SQLS.append("UPDATE `invariant` SET sort=sort*10 where `idname` in ('ACTION', 'CONTROL');");
         SQLInstruction.add(SQLS.toString());
 
         return SQLInstruction;

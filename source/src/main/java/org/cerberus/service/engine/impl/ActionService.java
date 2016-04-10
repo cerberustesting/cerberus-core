@@ -168,11 +168,11 @@ public class ActionService implements IActionService {
         } else if (testCaseStepActionExecution.getAction().equals("wait")) {
             res = this.doActionWait(tCExecution, object, property);
 
-        } else if (testCaseStepActionExecution.getAction().equals("mouseDown")) {
-            res = this.doActionMouseDown(tCExecution, object, property);
+        } else if (testCaseStepActionExecution.getAction().equals("mouseLeftButtonPress")) {
+            res = this.doActionMouseLeftButtonPress(tCExecution, object, property);
 
-        } else if (testCaseStepActionExecution.getAction().equals("mouseUp")) {
-            res = this.doActionMouseUp(tCExecution, object, property);
+        } else if (testCaseStepActionExecution.getAction().equals("mouseLeftButtonRelease")) {
+            res = this.doActionMouseLeftButtonRelease(tCExecution, object, property);
 
         } else if (testCaseStepActionExecution.getAction().equals("switchToWindow")) {
             res = this.doActionSwitchToWindow(tCExecution, object, property);
@@ -207,7 +207,7 @@ public class ActionService implements IActionService {
         } else if (testCaseStepActionExecution.getAction().equals("executeSqlStoredProcedure")) {
             res = this.doActionExecuteSQLStoredProcedure(tCExecution, object, property);
 
-        } else if (testCaseStepActionExecution.getAction().equals("skipAction")) {
+        } else if (testCaseStepActionExecution.getAction().equals("doNothing")) {
             res = new MessageEvent(MessageEventEnum.ACTION_SUCCESS);
 
         } else if (testCaseStepActionExecution.getAction().equals("takeScreenshot")) {
@@ -294,7 +294,7 @@ public class ActionService implements IActionService {
         }
     }
 
-    private MessageEvent doActionMouseDown(TestCaseExecution tCExecution, String object, String property) {
+    private MessageEvent doActionMouseLeftButtonPress(TestCaseExecution tCExecution, String object, String property) {
         MessageEvent message;
         String element;
         try {
@@ -302,7 +302,7 @@ public class ActionService implements IActionService {
              * Get element to use String object if not empty, String property if
              * object empty, throws Exception if both empty)
              */
-            element = getElementToUse(object, property, "mouseDown", tCExecution);
+            element = getElementToUse(object, property, "mouseLeftButtonPress", tCExecution);
             /**
              * Get Identifier (identifier, locator)
              */
@@ -357,7 +357,7 @@ public class ActionService implements IActionService {
         }
     }
 
-    private MessageEvent doActionMouseUp(TestCaseExecution tCExecution, String object, String property) {
+    private MessageEvent doActionMouseLeftButtonRelease(TestCaseExecution tCExecution, String object, String property) {
         MessageEvent message;
         String element;
         try {
@@ -365,7 +365,7 @@ public class ActionService implements IActionService {
              * Get element to use String object if not empty, String property if
              * object empty, throws Exception if both empty)
              */
-            element = getElementToUse(object, property, "mouseUp", tCExecution);
+            element = getElementToUse(object, property, "mouseLeftButtonRelease", tCExecution);
             /**
              * Get Identifier (identifier, locator)
              */
@@ -853,34 +853,6 @@ public class ActionService implements IActionService {
             return message;
         }
         //}
-    }
-
-    private MessageEvent doActionMouseDownMouseUp(TestCaseExecution tCExecution, String object, String property) {
-        MessageEvent message;
-        String element;
-        try {
-            /**
-             * Get element to use String object if not empty, String property if
-             * object empty, throws Exception if both empty)
-             */
-            element = getElementToUse(object, property, "mouseDownMouseUp", tCExecution);
-            /**
-             * Get Identifier (identifier, locator)
-             */
-            Identifier identifier = identifierService.convertStringToIdentifier(element);
-            identifierService.checkWebElementIdentifier(identifier.getIdentifier());
-
-            if (tCExecution.getApplication().getType().equalsIgnoreCase("GUI")) {
-                return webdriverService.doSeleniumActionMouseDownMouseUp(tCExecution.getSession(), identifier);
-            }
-            message = new MessageEvent(MessageEventEnum.ACTION_NOTEXECUTED_NOTSUPPORTED_FOR_APPLICATION);
-            message.setDescription(message.getDescription().replaceAll("%ACTION%", "mouseDownMouseUp"));
-            message.setDescription(message.getDescription().replaceAll("%APPLICATIONTYPE%", tCExecution.getApplication().getType()));
-            return message;
-        } catch (CerberusEventException ex) {
-            LOG.fatal("Error doing Action MouseDownMouseUp :" + ex);
-            return ex.getMessageError();
-        }
     }
 
     private MessageEvent doActionTakeScreenshot(TestCaseStepActionExecution testCaseStepActionExecution) {
