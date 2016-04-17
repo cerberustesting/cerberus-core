@@ -30,31 +30,33 @@ import org.cerberus.util.answer.AnswerList;
  */
 public interface IInvariantService {
 
-    public Invariant findInvariantByIdValue(String idName, String value) throws CerberusException;
+    Invariant findInvariantByIdValue(String idName, String value) throws CerberusException;
 
-    public Invariant findInvariantByIdSort(String idName, Integer sort) throws CerberusException;
+    Invariant findInvariantByIdSort(String idName, Integer sort) throws CerberusException;
 
-    public AnswerList readByIdname(String idName);
+    AnswerList readByIdname(String idName);
 
-    public AnswerList findInvariantByIdGp1(String idName, String gp);
+    AnswerList findInvariantByIdGp1(String idName, String gp);
 
-    public List<Invariant> readByPublicByCriteria(int start, int amount, String column, String dir, String searchTerm, String individualSearch);
+    AnswerList readInvariantCountryListEnvironmentLastChanges(String system, Integer nbDays);
 
-    public List<Invariant> readByPrivateByCriteria(int start, int amount, String column, String dir, String searchTerm, String individualSearch);
+    List<Invariant> readByPublicByCriteria(int start, int amount, String column, String dir, String searchTerm, String individualSearch);
 
-    public AnswerList readByCriteria(int start, int amount, String column, String dir, String searchTerm, String individualSearch);
-    
-    public Integer getNumberOfPrivateInvariant(String searchTerm);
+    List<Invariant> readByPrivateByCriteria(int start, int amount, String column, String dir, String searchTerm, String individualSearch);
 
-    public Integer getNumberOfPublicInvariant(String searchTerm);
+    AnswerList readByCriteria(int start, int amount, String column, String dir, String searchTerm, String individualSearch);
 
-    public boolean isInvariantExist(String idName, String value);
+    Integer getNumberOfPrivateInvariant(String searchTerm);
 
-    public void createInvariant(Invariant invariant) throws CerberusException;
+    Integer getNumberOfPublicInvariant(String searchTerm);
 
-    public void deleteInvariant(Invariant invariant) throws CerberusException;
+    boolean isInvariantExist(String idName, String value);
 
-    public void updateInvariant(Invariant invariant) throws CerberusException;
+    void createInvariant(Invariant invariant) throws CerberusException;
+
+    void deleteInvariant(Invariant invariant) throws CerberusException;
+
+    void updateInvariant(Invariant invariant) throws CerberusException;
 
     String getPublicPrivateFilter(String filter);
 }

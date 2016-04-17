@@ -223,7 +223,7 @@ function loadEnvTable(selectCountry, selectEnvironment, selectBuild, selectRevis
         CallParam += '&envgp=' + encodeURIComponent(selectEnvGp)
     if (!isEmptyorALL(selectActive))
         CallParam += '&active=' + encodeURIComponent(selectActive)
-    InsertURLInHistory('Environment1.jsp' + CallParam);
+    InsertURLInHistory('Environment.jsp' + CallParam);
 
     //clear the old report content before reloading it
     $("#environmentList").empty();

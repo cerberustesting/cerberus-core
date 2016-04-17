@@ -117,14 +117,12 @@
                 <ul class="subnav" id="subnavlist">
                     <li id="subactive"><a name="menu" id="menuIntegrationStatus" href="IntegrationStatus.jsp" style="width:200px">Integration Status</a></li>
                     <li id="subactive"><a name="menu" id="menuApplications" href="Application.jsp" style="width:200px">Applications</a></li>
-                    <li id="subactive"><a name="menu" id="menuEnvironments" href="EnvironmentList.jsp" style="width:200px">Environments</a></li>
-                    <li id="subactive"><a name="menu" id="menuEnvironmentManagement" href="EnvironmentManagement.jsp" style="width:200px">Environment Management</a></li>
+                    <li id="subactive"><a name="menu" id="menuEnvironments" href="Environment.jsp" style="width:200px">Environments</a></li>
                     <li id="subactive"><a name="menu" id="menuBuildRevision" href="BuildRevDefinition.jsp" style="width:200px">Build/Rev Definition</a></li>
                     <li id="subactive"><a name="menu" id="menuBuildContent" href="BuildContent.jsp" style="width:200px">Build Content</a></li>
                     <li id="subactive"><a name="menu" id="menuProject" href="Project.jsp" style="width:200px">Project</a></li>
                     <li id="subactive"><a name="menu" id="menuDeployType" href="DeployType.jsp" style="width:200px">Deploy Type</a></li>
                     <li id="subactive"><a name="menu" id="menuBatchInvariant" href="BatchInvariant.jsp" style="width:200px">Batch</a></li>
-                    <li id="subactive"><a id="menuEnvironmentsBeta" href="Environment1.jsp" style="width:200px">Environments<input type="button" class="btn btn-danger btn-small active" value="Beta" style="padding: 0px; margin-left: 5px; color: red"></a></li>
                 </ul>
             </li>
             <% }%>

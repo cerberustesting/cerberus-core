@@ -62,6 +62,11 @@ public class CountryEnvParam_logService implements ICountryEnvParam_logService {
     }
 
     @Override
+    public AnswerList readLastChanges(String system, String country, Integer nbDays, String envGp) {
+        return countryEnvParamLogDao.readLastChanges(system, country, nbDays, envGp);
+    }
+
+    @Override
     public boolean exist(Long id) {
         AnswerItem objectAnswer = readByKey(id);
         return (objectAnswer.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) && (objectAnswer.getItem() != null); // Call was successfull and object was found.

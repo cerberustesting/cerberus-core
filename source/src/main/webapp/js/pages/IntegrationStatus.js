@@ -25,7 +25,20 @@ $.when($.getScript("js/pages/global/global.js")).then(function () {
 
         bindToggleCollapse();
 
+        $("#loadLastModifbutton").click(loadHistoTable);
+
+        var select = $('#selectEngGp');
+        select.append($('<option></option>').text("-- ALL --").val("ALL"));
+        displayInvariantList("selectEngGp", "ENVGP");
+        displayInvariantList("selectSince", "FILTERNBDAYS");
+
+        //Loading interation status table
         loadBuildRevTable();
+
+        //Loading history deploy table
+        loadHistoTable();
+
+
     });
 });
 
@@ -45,14 +58,77 @@ function initPage() {
 function displayPageLabel(doc) {
     $("#pageTitle").html(doc.getDocLabel("page_integrationstatus", "title"));
     $("#title").html(doc.getDocOnline("page_integrationstatus", "title"));
-    $("#loadbutton").html(doc.getDocLabel("page_integrationstatus", "button_load"));
-    $("#reloadbutton").html(doc.getDocLabel("page_integrationstatus", "button_reload"));
-    $("#filters").html(doc.getDocOnline("page_integrationstatus", "filters"));
+    
+    $("#reportChanges").html(doc.getDocOnline("page_integrationstatus", "lastChanges"));
+    $("#selectEngGpLabel").html(doc.getDocOnline("invariant", "ENVGP"));
+    $("#selectSinceLabel").html(doc.getDocOnline("invariant", "FILTERNBDAYS"));
+    $("#loadLastModifbutton").html(doc.getDocLabel("page_global", "buttonLoad"));
+    
+    $("#reportStatus").html(doc.getDocOnline("page_integrationstatus", "environmentStatus"));
+    $("#buildHeader").html(doc.getDocOnline("buildrevisioninvariant", "versionname01"));
+    $("#revisionHeader").html(doc.getDocOnline("buildrevisioninvariant", "versionname02"));
+    $("#devHeader").html(doc.getDocOnline("page_integrationstatus", "DEV"));
+    $("#qaHeader").html(doc.getDocOnline("page_integrationstatus", "QA"));
+    $("#uatHeader").html(doc.getDocOnline("page_integrationstatus", "UAT"));
+    $("#prodHeader").html(doc.getDocOnline("page_integrationstatus", "PROD"));
+}
+
+function loadHistoTable() {
+
+    var nbDays = $("#selectSince").val();
+    var envGp = $("#selectEngGp").val();
+
+    var urlParam = "system=" + getUser().defaultSystem;
+    if (nbDays === null) {
+        urlParam += "&nbdays=14";
+    } else {
+        urlParam += "&nbdays=" + nbDays;
+    }
+    if (envGp !== "ALL")
+        urlParam += "&envgp=" + envGp;
+
+    $('#histoTableHead tr').remove();
+    $('#histoTableBody tr').remove();
+    var jqxhr = $.getJSON("GetEnvironmentsLastChangePerCountry", urlParam);
+    $.when(jqxhr).then(function (result) {
+
+        var tableHead = $("#histoTableHead");
+        var row = $("<tr></tr>");
+        $.each(result["contentTable"], function (idx, obj) {
+            var countryCol = $("<td></td>").append(obj.value);
+            row.append(countryCol);
+        });
+        tableHead.append(row);
+
+        var tableBody = $("#histoTableBody");
+        var row = $("<tr></tr>");
+        $.each(result["contentTable"], function (idx, obj) {
+            var countryCol = $("<td></td>").append(obj.contentTable.length).append(" Changes");
+            countryCol.append("<br>");
+            for (var option in obj.contentTable) {
+                dateold = obj.contentTable[option].datecre;
+                var date = new Date(dateold);
+                var formatted = date.getDate() + "/" + (date.getMonth()+1) ;
+//                var formatted = $.format.date(new Date(dateold), 'yyyy-MM-dd HH:mm:ss');
+                countryCol
+                        .append("<div style=\"text-align: right; bold;\">").append(formatted).append("</div><br>")
+                        .append("&nbsp;&nbsp;&nbsp;[").append(obj.contentTable[option].environment).append("]")
+                        .append("<br>")
+                        .append("&nbsp;&nbsp;&nbsp;").append(obj.contentTable[option].build).append(" ")
+                        .append(obj.contentTable[option].revision)
+                        .append("<br>");
+
+//            $("[name='" + selectName + "']").append($('<option></option>').text(data[option].value).val(data[option].value));
+            }
+            row.append(countryCol);
+        });
+        tableBody.append(row);
+
+    }).fail(handleErrorAjaxAfterTimeout);
 }
 
 function loadBuildRevTable() {
     $('#envTableBody tr').remove();
-    selectSystem = "VC";
     var jqxhr = $.getJSON("GetEnvironmentsPerBuildRevision", "system=" + getUser().defaultSystem);
     $.when(jqxhr).then(function (result) {
         $.each(result["contentTable"], function (idx, obj) {
@@ -65,7 +141,7 @@ function counterFormated(nb, build, revision, envGP) {
     if (nb === 0) {
         return "";
     } else {
-        return "<a href=\"Environment1.jsp?&build=" + build + "&revision=" + revision + "&envgp=" + envGP + "&active=Y\">" + nb + "</a>"
+        return "<a href=\"Environment.jsp?&build=" + build + "&revision=" + revision + "&envgp=" + envGP + "&active=Y\">" + nb + "</a>"
     }
 }
 

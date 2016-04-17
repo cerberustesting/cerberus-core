@@ -26,6 +26,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import org.apache.log4j.Logger;
+import org.cerberus.crud.entity.Invariant;
 import org.cerberus.crud.entity.MessageEvent;
 import org.cerberus.database.DatabaseSpring;
 import org.cerberus.enums.MessageEventEnum;
@@ -164,7 +165,7 @@ public class EnvironmentStatisticsDAOImpl implements IEnvironmentStatisticsDAO {
         response.setDataList(objectList);
         return response;
     }
-    
+
     private BuildRevisionStatisticsEnv loadFromResultSet(ResultSet rs) throws SQLException {
         BuildRevisionStatisticsEnv newBRStat = new BuildRevisionStatisticsEnv();
         newBRStat.setBuild(ParameterParserUtil.parseStringParam(rs.getString("build"), ""));
@@ -175,6 +176,5 @@ public class EnvironmentStatisticsDAOImpl implements IEnvironmentStatisticsDAO {
         newBRStat.setNbEnvPROD(ParameterParserUtil.parseIntegerParam(rs.getString("PROD"), 0));
         return newBRStat;
     }
-    
-    
+
 }

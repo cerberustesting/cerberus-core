@@ -123,6 +123,16 @@ function displayPageLabel() {
     $("#modalTitle").html(doc.getDocLabel("homepage", "modal_title"));
     $("#testCaseStatusByApp").html(doc.getDocOnline("homepage", "testCaseStatusByApp"));
     $("#title").html(doc.getDocLabel("homepage", "title"));
+
+    $("#reportStatus").html(doc.getDocOnline("page_integrationstatus", "environmentStatus"));
+    $("#buildHeader").html(doc.getDocOnline("buildrevisioninvariant", "versionname01"));
+    $("#revisionHeader").html(doc.getDocOnline("buildrevisioninvariant", "versionname02"));
+    $("#devHeader").html(doc.getDocOnline("page_integrationstatus", "DEV"));
+    $("#qaHeader").html(doc.getDocOnline("page_integrationstatus", "QA"));
+    $("#uatHeader").html(doc.getDocOnline("page_integrationstatus", "UAT"));
+    $("#prodHeader").html(doc.getDocOnline("page_integrationstatus", "PROD"));
+
+
     displayFooter(doc);
     displayGlobalLabel(doc);
 }
@@ -305,7 +315,7 @@ function counterFormated(nb, build, revision, envGP) {
     if (nb === 0) {
         return "";
     } else {
-        return "<a href=\"Environment1.jsp?&build=" + build + "&revision=" + revision + "&envgp=" + envGP + "&active=Y\">" + nb + "</a>"
+        return "<a href=\"Environment.jsp?&build=" + build + "&revision=" + revision + "&envgp=" + envGP + "&active=Y\">" + nb + "</a>"
     }
 }
 

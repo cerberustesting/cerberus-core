@@ -29,6 +29,7 @@ import java.util.List;
 import org.apache.log4j.Logger;
 import org.cerberus.crud.dao.ICountryEnvParam_logDAO;
 import org.cerberus.crud.entity.CountryEnvParam_log;
+import org.cerberus.crud.entity.Invariant;
 import org.cerberus.database.DatabaseSpring;
 import org.cerberus.crud.entity.MessageEvent;
 import org.cerberus.enums.MessageEventEnum;
@@ -280,6 +281,118 @@ public class CountryEnvParam_logDAO implements ICountryEnvParam_logDAO {
         }
         response.setResultMessage(msg);
         response.setDataList(countryEnvParamLogList);
+        return response;
+    }
+
+    @Override
+    public AnswerList readLastChanges(String system, String country, Integer nbdays, String envGp) {
+        AnswerList response = new AnswerList();
+        MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
+        msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", ""));
+        List<CountryEnvParam_log> objectList = new ArrayList<CountryEnvParam_log>();
+        StringBuilder searchSQL = new StringBuilder();
+
+        StringBuilder query = new StringBuilder();
+        //SQL_CALC_FOUND_ROWS allows to retrieve the total number of columns by disrearding the limit clauses that 
+        //were applied -- used for pagination p
+
+        query.append("SELECT cl.* ");
+        query.append("FROM countryenvparam_log cl  ");
+        query.append("JOIN invariant i on i.value=cl.Environment and i.idname='ENVIRONMENT'  ");
+        query.append("WHERE cl.country = ?  ");
+        query.append(" and TO_DAYS(NOW()) - TO_DAYS(cl.datecre) <= ? and cl.build != '' and `System`= ? ");
+        if (!(StringUtil.isNullOrEmpty(envGp))) {
+            query.append(" and i.gp1 = ? ");
+        }
+        query.append(" ORDER BY cl.id desc ; ");
+
+        // Debug message on SQL.
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("SQL : " + query.toString());
+            LOG.debug("SQL.param : " + country);
+            LOG.debug("SQL.param : " + nbdays);
+            LOG.debug("SQL.param : " + system);
+            LOG.debug("SQL.param : " + envGp);
+        }
+        Connection connection = this.databaseSpring.connect();
+        try {
+            PreparedStatement preStat = connection.prepareStatement(query.toString());
+            try {
+                int i = 1;
+                preStat.setString(i++, country);
+                preStat.setInt(i++, nbdays);
+                preStat.setString(i++, system);
+                if (!(StringUtil.isNullOrEmpty(envGp))) {
+                    preStat.setString(i++, envGp);
+                }
+                ResultSet resultSet = preStat.executeQuery();
+                try {
+                    //gets the data
+                    while (resultSet.next()) {
+                        objectList.add(this.loadFromResultSet(resultSet));
+                    }
+
+                    //get the total number of rows
+                    resultSet = preStat.executeQuery("SELECT FOUND_ROWS()");
+                    int nrTotalRows = 0;
+
+                    if (resultSet != null && resultSet.next()) {
+                        nrTotalRows = resultSet.getInt(1);
+                    }
+
+                    if (objectList.size() >= MAX_ROW_SELECTED) { // Result of SQl was limited by MAX_ROW_SELECTED constrain. That means that we may miss some lines in the resultList.
+                        LOG.error("Partial Result in the query.");
+                        msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_WARNING_PARTIAL_RESULT);
+                        msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", "Maximum row reached : " + MAX_ROW_SELECTED));
+                        response = new AnswerList(objectList, nrTotalRows);
+                    } else if (objectList.size() <= 0) {
+                        msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_NO_DATA_FOUND);
+                        response = new AnswerList(objectList, nrTotalRows);
+                    } else {
+                        msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
+                        msg.setDescription(msg.getDescription().replace("%ITEM%", OBJECT_NAME).replace("%OPERATION%", "SELECT"));
+                        response = new AnswerList(objectList, nrTotalRows);
+                    }
+
+                } catch (SQLException exception) {
+                    LOG.error("Unable to execute query : " + exception.toString());
+                    msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
+                    msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", exception.toString()));
+
+                } finally {
+                    if (resultSet != null) {
+                        resultSet.close();
+                    }
+                }
+
+            } catch (SQLException exception) {
+                LOG.error("Unable to execute query : " + exception.toString());
+                msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
+                msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", exception.toString()));
+            } finally {
+                if (preStat != null) {
+                    preStat.close();
+                }
+            }
+
+        } catch (SQLException exception) {
+            LOG.error("Unable to execute query : " + exception.toString());
+            msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
+            msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", exception.toString()));
+        } finally {
+            try {
+                if (!this.databaseSpring.isOnTransaction()) {
+                    if (connection != null) {
+                        connection.close();
+                    }
+                }
+            } catch (SQLException exception) {
+                LOG.warn("Unable to close connection : " + exception.toString());
+            }
+        }
+
+        response.setResultMessage(msg);
+        response.setDataList(objectList);
         return response;
     }
 

@@ -64,6 +64,16 @@ public interface ICountryEnvParam_logService {
 
     /**
      *
+     * @param system
+     * @param country
+     * @param nbDays
+     * @param envGp
+     * @return
+     */
+    AnswerList readLastChanges(String system, String country, Integer nbDays, String envGp);
+
+    /**
+     *
      * @param countryEnvParamLog
      * @return true if project exist. false if not.
      */
@@ -100,7 +110,7 @@ public interface ICountryEnvParam_logService {
      * @return
      */
     Answer createLogEntry(String system, String country, String environment, String build, String revision, String description, String creator);
-    
+
     /**
      *
      * @param answerItem

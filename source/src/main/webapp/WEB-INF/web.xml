@@ -901,6 +901,10 @@
         <servlet-class>org.cerberus.servlet.guipages.GetEnvironmentsPerBuildRevision</servlet-class>
     </servlet>
     <servlet>
+        <servlet-name>GetEnvironmentsLastChangePerCountry</servlet-name>
+        <servlet-class>org.cerberus.servlet.guipages.GetEnvironmentsLastChangePerCountry</servlet-class>
+    </servlet>
+    <servlet>
         <servlet-name>UpdateMyUser</servlet-name>
         <servlet-class>org.cerberus.servlet.crud.usermanagement.UpdateMyUser</servlet-class>
     </servlet>
@@ -1796,6 +1800,10 @@
         <servlet-name>GetEnvironmentsPerBuildRevision</servlet-name>
         <url-pattern>/GetEnvironmentsPerBuildRevision</url-pattern>
     </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>GetEnvironmentsLastChangePerCountry</servlet-name>
+        <url-pattern>/GetEnvironmentsLastChangePerCountry</url-pattern>
+    </servlet-mapping>
     <session-config>
         <session-timeout>60</session-timeout>
     </session-config>
@@ -1874,7 +1882,6 @@
             <url-pattern>/ReportingExecutionByTag.jsp</url-pattern>
             <url-pattern>/ExecutionPending.jsp</url-pattern>
             <url-pattern>/Test.jsp</url-pattern>
-            <url-pattern>/Test2.jsp</url-pattern>
             <url-pattern>/TestCase.jsp</url-pattern>
             <url-pattern>/TestCaseScript.jsp</url-pattern>
             <url-pattern>/TestCaseList.jsp</url-pattern>
@@ -2307,6 +2314,7 @@
             <url-pattern>/GetTestBySystem</url-pattern>
             <url-pattern>/GetTestCaseForTest</url-pattern>
             <url-pattern>/GetEnvironmentsPerBuildRevision</url-pattern>
+            <url-pattern>/GetEnvironmentsLastChangePerCountry</url-pattern>
         </web-resource-collection>
         <auth-constraint>
             <description/>

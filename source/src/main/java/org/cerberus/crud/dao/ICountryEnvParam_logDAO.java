@@ -21,7 +21,6 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import org.cerberus.crud.entity.CountryEnvParam_log;
 
-import org.cerberus.crud.entity.Project;
 import org.cerberus.util.answer.Answer;
 import org.cerberus.util.answer.AnswerItem;
 import org.cerberus.util.answer.AnswerList;
@@ -56,6 +55,16 @@ public interface ICountryEnvParam_logDAO {
      */
     AnswerList readByVariousByCriteria(String system, String country, String environment, String build, String revision, int startPosition, int length, String columnName, String sort, String searchParameter, String string);
 
+    /**
+     *
+     * @param system
+     * @param country
+     * @param nbdays
+     * @param envGp
+     * @return
+     */
+    AnswerList readLastChanges(String system, String country, Integer nbdays, String envGp);
+    
     /**
      *
      * @param countryEnvParamLog

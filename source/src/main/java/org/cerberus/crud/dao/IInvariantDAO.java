@@ -30,15 +30,61 @@ import org.cerberus.util.answer.AnswerList;
  */
 public interface IInvariantDAO {
 
+    /**
+     *
+     * @param idName
+     * @param value
+     * @return
+     * @throws CerberusException
+     */
     Invariant readByKey(String idName, String value) throws CerberusException;
 
+    /**
+     *
+     * @param idName
+     * @param sort
+     * @return
+     * @throws CerberusException
+     */
     Invariant readByIdnameBySort(String idName, Integer sort) throws CerberusException;
 
+    /**
+     *
+     * @param idName
+     * @return
+     */
     AnswerList readByIdname(String idName);
 
+    /**
+     *
+     * @param idName
+     * @param gp
+     * @return
+     */
     AnswerList readByIdnameByGp1(String idName, String gp);
 
+    /**
+     *
+     * @param start
+     * @param amount
+     * @param column
+     * @param dir
+     * @param searchTerm
+     * @param individualSearch
+     * @param PublicPrivateFilter
+     * @return
+     */
     public AnswerList readByCriteria(int start, int amount, String column, String dir, String searchTerm, String individualSearch, String PublicPrivateFilter);
+
+    /**
+     * Getting the list of country invariant for which exist at least 1 change
+     * performed before nbdays parameters in the corresonding system
+     *
+     * @param system
+     * @param nbdays
+     * @return
+     */
+    public AnswerList readInvariantCountryListEnvironmentLastChanges(String system, Integer nbdays);
 
     public Integer getNumberOfInvariant(String searchTerm, String PublicPrivateFilter) throws CerberusException;
 

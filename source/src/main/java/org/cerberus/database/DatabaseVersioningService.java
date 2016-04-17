@@ -4724,6 +4724,68 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         // New updated Documentation.
         //-- ------------------------ 750-751
         SQLS = new StringBuilder();
+        SQLS.append("SELECT 1 FROM dual;");
+        SQLInstruction.add(SQLS.toString());
+        SQLS = new StringBuilder();
+        SQLS.append("SELECT 1 FROM dual;");
+        SQLInstruction.add(SQLS.toString());
+
+        // Removed and clean takeScreenshot action.
+        //-- ------------------------ 752-753
+        SQLS = new StringBuilder();
+        SQLS.append("DELETE FROM `invariant` WHERE `idname`='ACTION' and `value`='takeScreenshot';");
+        SQLInstruction.add(SQLS.toString());
+        SQLS = new StringBuilder();
+        SQLS.append("UPDATE testcasestepaction SET Action='skipAction' WHERE Action='takeScreenshot';");
+        SQLInstruction.add(SQLS.toString());
+
+        // Added Environment group invariants.
+        //-- ------------------------ 754
+        SQLS = new StringBuilder();
+        SQLS.append("INSERT INTO `invariant` (`idname`, `value`, `sort`, `description`, `VeryShortDesc`) VALUES ");
+        SQLS.append("    ('ENVGP', 'DEV', '100', 'Development Environments', 'DEV'),");
+        SQLS.append("    ('ENVGP', 'QA', '200', 'Quality Assurance Environments', 'QA'),");
+        SQLS.append("    ('ENVGP', 'UAT', '300', 'User Acceptance Test Environments', 'UAT'),");
+        SQLS.append("    ('ENVGP', 'PROD', '400', 'Production Environments', 'PROD'),");
+        SQLS.append("    ('INVARIANTPRIVATE', 'ENVGP', '530', '', '');");
+        SQLInstruction.add(SQLS.toString());
+
+        // Rename Action skipAction to doNothing.
+        //-- ------------------------ 755-764
+        SQLS = new StringBuilder();
+        SQLS.append("UPDATE testcasestepaction SET Action='doNothing' WHERE Action='skipAction';");
+        SQLInstruction.add(SQLS.toString());
+        SQLS = new StringBuilder();
+        SQLS.append("UPDATE `invariant` SET `value`='doNothing', `description`='doNothing' WHERE `idname`='ACTION' and`value`='skipAction';");
+        SQLInstruction.add(SQLS.toString());
+        SQLS = new StringBuilder();
+        SQLS.append("UPDATE `invariant` SET `value`='mouseLeftButtonPress', `sort`='37' WHERE `idname`='ACTION' and`value`='mouseDown';");
+        SQLInstruction.add(SQLS.toString());
+        SQLS = new StringBuilder();
+        SQLS.append("UPDATE `invariant` SET `value`='mouseLeftButtonRelease', `sort`='38', `description`='Selenium Action mouseUp' WHERE `idname`='ACTION' and`value`='mouseUp';");
+        SQLInstruction.add(SQLS.toString());
+        SQLS = new StringBuilder();
+        SQLS.append("UPDATE `invariant` SET `sort`='49' WHERE `idname`='ACTION' and`value`='keypress';");
+        SQLInstruction.add(SQLS.toString());
+        SQLS = new StringBuilder();
+        SQLS.append("UPDATE `invariant` SET `sort`='31' WHERE `idname`='ACTION' and`value`='clickAndWait';");
+        SQLInstruction.add(SQLS.toString());
+        SQLS = new StringBuilder();
+        SQLS.append("UPDATE `invariant` SET `sort`='35' WHERE `idname`='ACTION' and`value`='doubleClick';");
+        SQLInstruction.add(SQLS.toString());
+        SQLS = new StringBuilder();
+        SQLS.append("UPDATE `invariant` SET `sort`='55' WHERE `idname`='ACTION' and`value`='switchToWindow';");
+        SQLInstruction.add(SQLS.toString());
+        SQLS = new StringBuilder();
+        SQLS.append("UPDATE `invariant` SET `sort`='59' WHERE `idname`='ACTION' and`value`='manageDialog';");
+        SQLInstruction.add(SQLS.toString());
+        SQLS = new StringBuilder();
+        SQLS.append("UPDATE `invariant` SET sort=sort*10 where `idname` in ('ACTION', 'CONTROL');");
+        SQLInstruction.add(SQLS.toString());
+
+        // New updated Documentation.
+        //-- ------------------------ 765-766
+        SQLS = new StringBuilder();
         SQLS.append("DELETE FROM `documentation`;");
         SQLInstruction.add(SQLS.toString());
         SQLS = new StringBuilder();
@@ -4921,10 +4983,12 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLS.append(",('host','Session','','en','Session','')");
         SQLS.append(",('invariant','COUNTRY','','en','Country','A <code class=\\'doc-crbvvoca\\'>country</code> is a declination of a <code class=\\'doc-crbvvoca\\'>system</code> in an <code class=\\'doc-crbvvoca\\'>environment</code> with a specific configuration.<br>This is called <code class=\\'doc-crbvvoca\\'>country</code> because for <code class=\\'doc-crbvvoca\\'>systems</code> that support multiple countries, every <code class=\\'doc-crbvvoca\\'>country</code> is deployed on different <code class=\\'doc-crbvvoca\\'>environments</code>. Each of them can have the same version of the <code class=\\'doc-crbvvoca\\'>application</code> but with different configuration. As a consequence, some <code class=\\'doc-crbvvoca\\'>test case</code> may or may not be relevant on that <code class=\\'doc-crbvvoca\\'>country</code>.')");
         SQLS.append(",('invariant','COUNTRY','','fr','Pays','Un <code class=\\'doc-crbvvoca\\'>pays</code> est une declinaison d\\'un <code class=\\'doc-crbvvoca\\'>système</code> dans un <code class=\\'doc-crbvvoca\\'>environnement</code> avec une configuration specifique.<br>Ca porte le nom de <code class=\\'doc-crbvvoca\\'>pays</code> car pour les <code class=\\'doc-crbvvoca\\'>systèmes</code> qui supportent plusieurs pays, chaque <code class=\\'doc-crbvvoca\\'>pays</code> est deployé sur un <code class=\\'doc-crbvvoca\\'>environnement</code> different. Chacun d\\'entre eux peut avoir la même version de l\\'<code class=\\'doc-crbvvoca\\'>application</code> mais avec differentes configuration. En conséquence, certain <code class=\\'doc-crbvvoca\\'>cas de test</code> peuvent ou non etre pertinant sur ce <code class=\\'doc-crbvvoca\\'>pays</code>.')");
+        SQLS.append(",('invariant','ENVGP','','en','Environment Group','')");
+        SQLS.append(",('invariant','ENVGP','','fr','Groupe d\\'Environnement','')");
         SQLS.append(",('invariant','ENVIRONMENT','','en','Environment','')");
         SQLS.append(",('invariant','ENVIRONMENT','','fr','Environnement','')");
-        SQLS.append(",('invariant','environmentgp','','en','Env Gp','')");
         SQLS.append(",('invariant','FILTERNBDAYS','','en','Nb Days','Number of days to Filter the history table in the integration status.')");
+        SQLS.append(",('invariant','FILTERNBDAYS','','fr','Nb Jours','')");
         SQLS.append(",('invariant','GROUP','','en','Group','The group is a property of a <code class=\\'doc-crbvvoca\\'>test case</code> that can take the following values : <br><br><b>AUTOMATED</b> : The <code class=\\'doc-crbvvoca\\'>test case</code> is fully automated and does not require any manual action.<br><b>MANUAL</b> : The <code class=\\'doc-crbvvoca\\'>test case</code> has to be manually executed.<br><b>PRIVATE</b> : The <code class=\\'doc-crbvvoca\\'>test case</code> exist for technical reason and will never appear on the reporting area. For example : <code class=\\'doc-fixed\\'>Pre Testing</code> test cases that are used for login purpose should all be PRIVATE.<br><b>PROCESS</b> : The <code class=\\'doc-crbvvoca\\'>test case</code> is related to specific process and needs some intermediate batch treatment to be fully executed.<br><b>COMPARATIVE</b> : <code class=\\'doc-crbvvoca\\'>Test cases</code> that compare the results of 2 batch executions inside the database by SQL requests.')");
         SQLS.append(",('invariant','GROUP','','fr','Groupe','')");
         SQLS.append(",('invariant','PRIORITY','','en','Priority','It is the priority level of the functionnality which is tested.')");
@@ -5266,10 +5330,20 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLS.append(",('page_header','menuTestPerApplication','','fr','Liste de Tests par Application','')");
         SQLS.append(",('page_header','menuUsersManager','','en','User Management','')");
         SQLS.append(",('page_header','menuUsersManager','','fr','Gestion des Utilisateurs','')");
-        SQLS.append(",('page_Integrationstatus','DEV','','en','DEV','Nb of DEV active <code class=\\'doc-crbvvoca\\'>environments</code> on that Specific Version.')");
-        SQLS.append(",('page_Integrationstatus','PROD','','en','PROD','Nb of PROD active <code class=\\'doc-crbvvoca\\'>environments</code> on that Specific Version.')");
-        SQLS.append(",('page_Integrationstatus','QA','','en','QA','Nb of QA active <code class=\\'doc-crbvvoca\\'>environments</code> on that Specific Version.')");
-        SQLS.append(",('page_Integrationstatus','UAT','','en','UAT','Nb of UAT active <code class=\\'doc-crbvvoca\\'>environments</code> on that Specific Version.')");
+        SQLS.append(",('page_integrationstatus','DEV','','en','DEV','Nb of DEV active <code class=\\'doc-crbvvoca\\'>environments</code> on that Specific Version.')");
+        SQLS.append(",('page_integrationstatus','DEV','','fr','DEV','')");
+        SQLS.append(",('page_integrationstatus','environmentStatus','','en','Environment Status','')");
+        SQLS.append(",('page_integrationstatus','environmentStatus','','fr','Statut des environnements','')");
+        SQLS.append(",('page_integrationstatus','lastChanges','','en','Last Changes','')");
+        SQLS.append(",('page_integrationstatus','lastChanges','','fr','Derniers Changements','')");
+        SQLS.append(",('page_integrationstatus','PROD','','en','PROD','Nb of PROD active <code class=\\'doc-crbvvoca\\'>environments</code> on that Specific Version.')");
+        SQLS.append(",('page_integrationstatus','PROD','','fr','PROD','')");
+        SQLS.append(",('page_integrationstatus','QA','','en','QA','Nb of QA active <code class=\\'doc-crbvvoca\\'>environments</code> on that Specific Version.')");
+        SQLS.append(",('page_integrationstatus','QA','','fr','QA','')");
+        SQLS.append(",('page_integrationstatus','title','','en','INTEGRATION STATUS','')");
+        SQLS.append(",('page_integrationstatus','title','','fr','ETAT D\\'INTEGRATION','')");
+        SQLS.append(",('page_integrationstatus','UAT','','en','UAT','Nb of UAT active <code class=\\'doc-crbvvoca\\'>environments</code> on that Specific Version.')");
+        SQLS.append(",('page_integrationstatus','UAT','','fr','UAT','')");
         SQLS.append(",('page_logviewer','button_view','','en','Log entry detail','')");
         SQLS.append(",('page_logviewer','button_view','','fr','Detail du log','')");
         SQLS.append(",('page_logviewer','title','','en','LOG VIEWER','This page displays all the log messages from Cerberus.')");
@@ -5672,59 +5746,6 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLS.append(",('user','DefaultSystem','','en','Default System','This is the default <code class=\\'doc-crbvvoca\\'>system</code> the user works on the most. It is used to default the perimeter of <code class=\\'doc-crbvvoca\\'>test case</code> or <code class=\\'doc-crbvvoca\\'>applications</code> displayed on some Cerberus pages.')");
         SQLS.append(",('user','Team','','en','Team','This is the team of the user.')");
         SQLS.append(",('usergroup','GroupName','','en','Group Name','Authorities are managed by group. In order to be granted to a set of feature, you must belong to the corresponding group.<br>Every user can of course belong to as many group as necessary in order to get access to as many feature as required.<br>In order to get the full access to the system you must belong to every group.<br>Some groups are linked together on the test perimeter and integration perimeter.<br><br><b>Test perimeter :</b><br><br><code class=\\'doc-fixed\\'>TestRO</code>: Has read only access to the information related to test cases and also has access to execution reporting options.<br><br><code class=\\'doc-fixed\\'>Test</code>: Can modify non WORKING test cases but cannot delete test cases.<br><br><code class=\\'doc-fixed\\'>TestAdmin</code>: Can modify or delete any test case (including Pre Testing test cases). Can also create or delete a test.<br><br>The minimum group you need to belong is <code class=\\'doc-fixed\\'>TestRO</code> that will give you access in read only to all test data (including its execution reporting page).<br>If you want to be able to modify the testcases (except the WORKING ones), you need <code class=\\'doc-fixed\\'>Test</code> group on top of <code class=\\'doc-fixed\\'>TestRO</code> group.<br>If you want the full access to all testcase (including beeing able to delete any testcase), you will need <code class=\\'doc-fixed\\'>TestAdmin</code> on top of <code class=\\'doc-fixed\\'>TestRO</code> and <code class=\\'doc-fixed\\'>Test</code> group.<br><br><b>Test Data perimeter :</b><br><br><code class=\\'doc-fixed\\'>TestDataManager</code>: Can modify the test data..<br><br><b>Test Execution perimeter :</b><br><br><code class=\\'doc-fixed\\'>RunTest</code>: Can run both Manual and Automated test cases from GUI.<br><br><b>Integration perimeter :</b><br><br><code class=\\'doc-fixed\\'>IntegratorRO</code>: Has access to the integration status.<br><br><code class=\\'doc-fixed\\'>Integrator</code>: Can add an application. Can change parameters of the environments.<br><br><code class=\\'doc-fixed\\'>IntegratorNewChain</code>: Can register the end of the chain execution. Has read only access to the other informations on the same page.<br><br><code class=\\'doc-fixed\\'>IntegratorDeploy</code>: Can disable or enable environments and register new build / revision.<br><br>The minimum group you need to belong is <code class=\\'doc-fixed\\'>IntegratorRO</code> that will give you access in read only to all environment data.<br>If you want to be able to modify the environment data, you need <code class=\\'doc-fixed\\'>Integrator</code> group on top of <code class=\\'doc-fixed\\'>IntegratorRO</code> group.<br><code class=\\'doc-fixed\\'>IntegratorNewChain</code> and <code class=\\'doc-fixed\\'>IntegratorDeploy</code> are used on top of <code class=\\'doc-fixed\\'>Integrator</code> Group to be able to create a new chain on an environment or perform a deploy operation.<br><br><b>Administration perimeter :</b><br><br><code class=\\'doc-fixed\\'>Administrator</code>: Can create, modify or delete users. Has access to log Event and Database Maintenance. Can change Parameter values.')");
-        SQLInstruction.add(SQLS.toString());
-
-        // Removed and clean takeScreenshot action.
-        //-- ------------------------ 752-753
-        SQLS = new StringBuilder();
-        SQLS.append("DELETE FROM `invariant` WHERE `idname`='ACTION' and `value`='takeScreenshot';");
-        SQLInstruction.add(SQLS.toString());
-        SQLS = new StringBuilder();
-        SQLS.append("UPDATE testcasestepaction SET Action='skipAction' WHERE Action='takeScreenshot';");
-        SQLInstruction.add(SQLS.toString());
-
-        // Added Environment group invariants.
-        //-- ------------------------ 754
-        SQLS = new StringBuilder();
-        SQLS.append("INSERT INTO `invariant` (`idname`, `value`, `sort`, `description`, `VeryShortDesc`) VALUES ");
-        SQLS.append("    ('ENVGP', 'DEV', '100', 'Development Environments', 'DEV'),");
-        SQLS.append("    ('ENVGP', 'QA', '200', 'Quality Assurance Environments', 'QA'),");
-        SQLS.append("    ('ENVGP', 'UAT', '300', 'User Acceptance Test Environments', 'UAT'),");
-        SQLS.append("    ('ENVGP', 'PROD', '400', 'Production Environments', 'PROD'),");
-        SQLS.append("    ('INVARIANTPRIVATE', 'ENVGP', '530', '', '');");
-        SQLInstruction.add(SQLS.toString());
-
-        // Rename Action skipAction to doNothing.
-        //-- ------------------------ 755-764
-        SQLS = new StringBuilder();
-        SQLS.append("UPDATE testcasestepaction SET Action='doNothing' WHERE Action='skipAction';");
-        SQLInstruction.add(SQLS.toString());
-        SQLS = new StringBuilder();
-        SQLS.append("UPDATE `invariant` SET `value`='doNothing', `description`='doNothing' WHERE `idname`='ACTION' and`value`='skipAction';");
-        SQLInstruction.add(SQLS.toString());
-        SQLS = new StringBuilder();
-        SQLS.append("UPDATE `invariant` SET `value`='mouseLeftButtonPress', `sort`='37' WHERE `idname`='ACTION' and`value`='mouseDown';");
-        SQLInstruction.add(SQLS.toString());
-        SQLS = new StringBuilder();
-        SQLS.append("UPDATE `invariant` SET `value`='mouseLeftButtonRelease', `sort`='38', `description`='Selenium Action mouseUp' WHERE `idname`='ACTION' and`value`='mouseUp';");
-        SQLInstruction.add(SQLS.toString());
-        SQLS = new StringBuilder();
-        SQLS.append("UPDATE `invariant` SET `sort`='49' WHERE `idname`='ACTION' and`value`='keypress';");
-        SQLInstruction.add(SQLS.toString());
-        SQLS = new StringBuilder();
-        SQLS.append("UPDATE `invariant` SET `sort`='31' WHERE `idname`='ACTION' and`value`='clickAndWait';");
-        SQLInstruction.add(SQLS.toString());
-        SQLS = new StringBuilder();
-        SQLS.append("UPDATE `invariant` SET `sort`='35' WHERE `idname`='ACTION' and`value`='doubleClick';");
-        SQLInstruction.add(SQLS.toString());
-        SQLS = new StringBuilder();
-        SQLS.append("UPDATE `invariant` SET `sort`='55' WHERE `idname`='ACTION' and`value`='switchToWindow';");
-        SQLInstruction.add(SQLS.toString());
-        SQLS = new StringBuilder();
-        SQLS.append("UPDATE `invariant` SET `sort`='59' WHERE `idname`='ACTION' and`value`='manageDialog';");
-        SQLInstruction.add(SQLS.toString());
-        SQLS = new StringBuilder();
-        SQLS.append("UPDATE `invariant` SET sort=sort*10 where `idname` in ('ACTION', 'CONTROL');");
         SQLInstruction.add(SQLS.toString());
 
         return SQLInstruction;
