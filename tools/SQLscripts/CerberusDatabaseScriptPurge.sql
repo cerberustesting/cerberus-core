@@ -41,8 +41,7 @@ where TO_DAYS(NOW()) - TO_DAYS(Time) >= 365 ;
 DELETE FROM logevent
 -- select count(*) from logevent 
 where TO_DAYS(NOW()) - TO_DAYS(Time) >= 30 
-and Log like '[DEPRECATED]%' 
-order by LogEventID desc;
+and Log like '[DEPRECATED]%' ;
 
 
 
