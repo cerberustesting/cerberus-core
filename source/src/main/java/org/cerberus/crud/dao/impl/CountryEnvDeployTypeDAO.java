@@ -64,6 +64,15 @@ public class CountryEnvDeployTypeDAO implements ICountryEnvDeployTypeDAO {
                 + " AND environment = ?"
                 + " AND deploytype = ?";
 
+        // Debug message on SQL.
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("SQL : " + query);
+            LOG.debug("SQL.param : " + country);
+            LOG.debug("SQL.param : " + system);
+            LOG.debug("SQL.param : " + env);
+            LOG.debug("SQL.param : " + deploy);
+        }
+
         Connection connection = this.databaseSpring.connect();
         try {
             PreparedStatement preStat = connection.prepareStatement(query);

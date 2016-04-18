@@ -64,6 +64,8 @@ public class ReadBuildRevisionParameters extends HttpServlet {
     private IApplicationService appService;
     private ICountryEnvDeployTypeService cedtService;
 
+    private static final org.apache.log4j.Logger LOG = org.apache.log4j.Logger.getLogger(ReadBuildRevisionParameters.class);
+
     private final String OBJECT_NAME = "BuildRevisionParameters";
 
     /**
@@ -297,9 +299,8 @@ public class ReadBuildRevisionParameters extends HttpServlet {
 
         AnswerList resp = brpService.readMaxSVNReleasePerApplication(system, build, revision, lastbuild, lastrevision);
 
-        JSONObject newSubObj = new JSONObject();
-        JSONObject newSubObjContent = new JSONObject();
         JSONArray jsonArray = new JSONArray();
+        JSONObject newSubObj = new JSONObject();
         if (resp.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {//the service was able to perform the query, then we should get all values
             for (BuildRevisionParameters brp : (List<BuildRevisionParameters>) resp.getDataList()) {
                 newSubObj = convertBuildRevisionParametersToJSONObject(brp);
@@ -310,6 +311,7 @@ public class ReadBuildRevisionParameters extends HttpServlet {
                     app = appService.convert(appService.readByKey(brp.getApplication()));
                     for (String JenkinsAgent : cedtService.findJenkinsAgentByKey(system, country, environment, app.getDeploytype())) {
                         String DeployURL = "JenkinsDeploy?application=" + brp.getApplication() + "&jenkinsagent=" + JenkinsAgent + "&country=" + country + "&deploytype=" + app.getDeploytype() + "&release=" + brp.getRelease() + "&jenkinsbuildid=" + brp.getJenkinsBuildId() + "&repositoryurl=" + brp.getRepositoryUrl();
+                        JSONObject newSubObjContent = new JSONObject();
                         newSubObjContent.put("jenkinsAgent", JenkinsAgent);
                         newSubObjContent.put("link", DeployURL);
                         newSubObj.append("install", newSubObjContent);
