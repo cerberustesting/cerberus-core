@@ -48,7 +48,7 @@ function initPage() {
     var select = $('#selectEnvGp');
     select.append($('<option></option>').text("-- ALL --").val("ALL"));
     displayInvariantList("envGp", "ENVGP", urlEnvGp);
-    
+
     var select = $('#selectActive');
     select.append($('<option></option>').text("-- ALL --").val("ALL"));
     displayInvariantList("active", "ENVACTIVE", urlActive);
@@ -56,6 +56,7 @@ function initPage() {
     displayInvariantList("system", "SYSTEM");
     displayInvariantList("type", "ENVTYPE");
     displayInvariantList("maintenanceAct", "MNTACTIVE", "N");
+    displayInvariantList("chain", "CHAIN", "Y");
     displayBatchInvariantList('batch', getUser().defaultSystem);
 
     displayBuildList('#newBuild', getUser().defaultSystem, "1", "", "", "");
@@ -445,6 +446,7 @@ function editEntryModalSaveHandler() {
             maintenanceAct: data.maintenanceAct,
             maintenanceEnd: data.maintenanceEnd,
             maintenanceStr: data.maintenanceStr,
+            chain: data.chain,
             application: JSON.stringify(table_application),
             database: JSON.stringify(table_database),
             dependencies: JSON.stringify(table_dependencies),
@@ -490,7 +492,7 @@ function editEntryClick(system, country, environment) {
         formEdit.find("#environment").prop("value", environment);
         formEdit.find("#buildNew").prop("value", obj["build"]);
         formEdit.find("#revisionNew").prop("value", obj["revision"]);
-        formEdit.find("#chainNew").prop("value", obj["chain"]);
+        formEdit.find("#chain").prop("value", obj["chain"]);
         formEdit.find("#activeNew").prop("checked", obj["active"]);
         formEdit.find("#type").val(obj["type"]);
         formEdit.find("#description").prop("value", obj["description"]);
@@ -1152,7 +1154,11 @@ function aoColumnsFunc(tableId) {
                     returnString += viewEnv;
                 }
                 if (obj["active"]) {
-                    returnString += disableEnv + newChainEnv;
+                    if (obj["chain"] === "Y") {
+                        returnString += disableEnv + newChainEnv;
+                    } else {
+                        returnString += disableEnv;
+                    }
                 } else {
                     returnString += enableEnv;
                 }
@@ -1225,7 +1231,11 @@ function aoColumnsFunc(tableId) {
         {"data": "maintenanceEnd",
             "sName": "maintenanceEnd",
             "sWidth": "80px",
-            "title": doc.getDocOnline("countryenvparam", "maintenanceend")}
+            "title": doc.getDocOnline("countryenvparam", "maintenanceend")},
+        {"data": "chain",
+            "sName": "chain",
+            "sWidth": "80px",
+            "title": doc.getDocOnline("countryenvparam", "chain")}
     ];
     return aoColumns;
 }
