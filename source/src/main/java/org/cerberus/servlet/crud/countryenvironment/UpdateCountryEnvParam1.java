@@ -107,6 +107,7 @@ public class UpdateCountryEnvParam1 extends HttpServlet {
         String country = policy.sanitize(request.getParameter("country"));
         String environment = policy.sanitize(request.getParameter("environment"));
         String type = policy.sanitize(request.getParameter("type"));
+        String chain = policy.sanitize(request.getParameter("chain"));
         boolean maintenanceAct = ParameterParserUtil.parseBooleanParam(request.getParameter("maintenanceAct"), true);
         // Parameter that needs to be secured --> We SECURE+DECODE them
         String description = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("description"), "", charset);
@@ -196,6 +197,7 @@ public class UpdateCountryEnvParam1 extends HttpServlet {
                 }
                 cepData.setMaintenanceStr(maintenanceStr);
                 cepData.setMaintenanceEnd(maintenanceEnd);
+                cepData.setChain(chain);
 
                 ans = cepService.update(cepData);
                 finalAnswer = AnswerUtil.agregateAnswer(finalAnswer, (Answer) ans);
