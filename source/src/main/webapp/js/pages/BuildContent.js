@@ -301,8 +301,11 @@ function addEntryModalSaveHandler() {
     if (nameElementEmpty)
         return;
 
+    // Get the header data from the form.
+    var dataForm = convertSerialToJSONObject(formAdd.serialize());
+    
     showLoaderInModal('#addBrpModal');
-    var jqxhr = $.post("CreateBuildRevisionParameters", formAdd.serialize());
+    var jqxhr = $.post("CreateBuildRevisionParameters", dataForm);
     $.when(jqxhr).then(function (data) {
         hideLoaderInModal('#addBrpModal');
         console.log(data.messageType);

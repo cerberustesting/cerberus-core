@@ -350,8 +350,11 @@ function addEntryModalSaveHandler() {
     if (nameElementEmpty)
         return;
 
+    // Get the header data from the form.
+    var dataForm = convertSerialToJSONObject(formAdd.serialize());
+    
     showLoaderInModal('#addEnvModal');
-    var jqxhr = $.post("CreateCountryEnvParam1", formAdd.serialize());
+    var jqxhr = $.post("CreateCountryEnvParam1", dataForm);
     $.when(jqxhr).then(function (data) {
         hideLoaderInModal('#addEnvModal');
         console.log(data.messageType);

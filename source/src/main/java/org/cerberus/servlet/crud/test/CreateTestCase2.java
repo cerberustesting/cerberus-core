@@ -82,10 +82,10 @@ public class CreateTestCase2 extends HttpServlet {
         PolicyFactory policy = Sanitizers.FORMATTING.and(Sanitizers.LINKS);
 
         response.setContentType("application/json");
-        
+
         // Calling Servlet Transversal Util.
         ServletUtil.servletStart(request);
-        
+
         /**
          * Parsing and securing all required parameters.
          */
@@ -185,39 +185,49 @@ public class CreateTestCase2 extends HttpServlet {
 
     private TCase getInfo(HttpServletRequest request) throws CerberusException, JSONException {
         TCase tc = new TCase();
-        tc.setTest(request.getParameter("test"));
-        tc.setTestCase(request.getParameter("testCase"));
-        tc.setImplementer(request.getParameter("implementer"));
-        tc.setCreator(request.getUserPrincipal().getName());
-        tc.setLastModifier(request.getUserPrincipal().getName());
+
+        PolicyFactory policy = Sanitizers.FORMATTING.and(Sanitizers.LINKS);
+        String charset = request.getCharacterEncoding();
+
+        // Parameter that are already controled by GUI (no need to decode) --> We SECURE them
+        tc.setImplementer(policy.sanitize(request.getParameter("implementer")));
+        tc.setCreator(policy.sanitize(request.getUserPrincipal().getName()));
+        tc.setLastModifier(policy.sanitize(request.getUserPrincipal().getName()));
         if (request.getParameter("project").isEmpty()) {
             tc.setProject(null);
         } else {
-            tc.setProject(request.getParameter("project"));
+            tc.setProject(policy.sanitize(request.getParameter("project")));
         }
-        tc.setTicket(request.getParameter("ticket"));
-        tc.setApplication(request.getParameter("application"));
-        tc.setRunQA(request.getParameter("activeQA"));
-        tc.setRunUAT(request.getParameter("activeUAT"));
-        tc.setRunPROD(request.getParameter("activeProd"));
-        tc.setOrigin(request.getParameter("origin"));
-        tc.setRefOrigin(request.getParameter("refOrigin"));
+        tc.setTest(policy.sanitize(request.getParameter("test")));
+        tc.setApplication(policy.sanitize(request.getParameter("application")));
+        tc.setRunQA(policy.sanitize(request.getParameter("activeQA")));
+        tc.setRunUAT(policy.sanitize(request.getParameter("activeUAT")));
+        tc.setRunPROD(policy.sanitize(request.getParameter("activeProd")));
+        tc.setFromSprint(policy.sanitize(request.getParameter("fromSprint")));
+        tc.setFromRevision(policy.sanitize(request.getParameter("fromRev")));
+        tc.setToSprint(policy.sanitize(request.getParameter("toSprint")));
+        tc.setToRevision(policy.sanitize(request.getParameter("toRev")));
+        tc.setActive(policy.sanitize(request.getParameter("active")));
+        tc.setTargetSprint(policy.sanitize(request.getParameter("targetSprint")));
+        tc.setTargetRevision(policy.sanitize(request.getParameter("targetRev")));
         tc.setPriority(Integer.parseInt(request.getParameter("priority")));
-        tc.setGroup(request.getParameter("group"));
-        tc.setStatus(request.getParameter("status"));
-        tc.setShortDescription(request.getParameter("shortDesc"));
-        tc.setDescription(request.getParameter("behaviorOrValueExpected"));
-        tc.setHowTo(request.getParameter("howTo"));
-        tc.setActive(request.getParameter("active"));
-        tc.setFromSprint(request.getParameter("fromSprint"));
-        tc.setFromRevision(request.getParameter("fromRev"));
-        tc.setToSprint(request.getParameter("toSprint"));
-        tc.setToRevision(request.getParameter("toRev"));
-        tc.setBugID(request.getParameter("bugId"));
-        tc.setTargetSprint(request.getParameter("targetSprint"));
-        tc.setTargetRevision(request.getParameter("targetRev"));
-        tc.setComment(request.getParameter("comment"));
-        tc.setFunction(request.getParameter("function"));
+
+        // Parameter that needs to be secured --> We SECURE+DECODE them
+        tc.setTestCase(ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("testCase"), "", charset));
+        tc.setTicket(ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("ticket"), "", charset));
+        tc.setOrigin(ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("origin"), "", charset));
+        tc.setRefOrigin(ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("refOrigin"), "", charset));
+        tc.setGroup(ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("group"), "", charset));
+        tc.setStatus(ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("status"), "", charset));
+        tc.setShortDescription(ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("shortDesc"), "", charset));
+        tc.setBugID(ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("bugId"), "", charset));
+        tc.setComment(ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("comment"), "", charset));
+        tc.setFunction(ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("function"), "", charset));
+
+        // Parameter that we cannot secure as we need the html --> We DECODE them
+        tc.setHowTo(ParameterParserUtil.parseStringParamAndDecode(request.getParameter("howTo"), "", charset));
+        tc.setDescription(ParameterParserUtil.parseStringParamAndDecode(request.getParameter("behaviorOrValueExpected"), "", charset));
+
         return tc;
     }
 
@@ -228,7 +238,7 @@ public class CreateTestCase2 extends HttpServlet {
 
         ITestCaseCountryService testCaseCountryService = appContext.getBean(TestCaseCountryService.class);
         AnswerList answer = invariantService.readByIdname("COUNTRY"); //TODO: handle if the response does not turn ok
-        for (Invariant country : (List<Invariant>)answer.getDataList()) {
+        for (Invariant country : (List<Invariant>) answer.getDataList()) {
             countryList.put(country.getValue(), ParameterParserUtil.parseStringParamAndSanitize(request.getParameter(country.getValue()), "off"));
         }
 

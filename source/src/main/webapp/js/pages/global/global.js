@@ -1044,7 +1044,10 @@ function createDataTable(tableConfigurations, callbackFunction, userCallbackFunc
  * @returns {void}
  */
 function createEntry(servletName, form, tableID) {
-    var jqxhr = $.post(servletName, form.serialize());
+    // Get the header data from the form.
+    var dataForm = convertSerialToJSONObject(form.serialize());
+    
+    var jqxhr = $.post(servletName, dataForm);
     $.when(jqxhr).then(function (data) {
         hideLoaderInModal("#addEntryModal");
         if (getAlertType(data.messageType) === 'success') {

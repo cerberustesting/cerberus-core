@@ -149,8 +149,11 @@ function addEntryModalSaveHandler() {
     if (nameElementEmpty)
         return;
 
+    // Get the header data from the form.
+    var dataForm = convertSerialToJSONObject(formAdd.serialize());
+    
     showLoaderInModal('#addApplicationModal');
-    var jqxhr = $.post("CreateApplication", formAdd.serialize());
+    var jqxhr = $.post("CreateApplication", dataForm);
     $.when(jqxhr).then(function (data) {
         hideLoaderInModal('#addApplicationModal');
 //        console.log(data.messageType);

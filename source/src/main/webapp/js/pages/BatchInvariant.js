@@ -165,7 +165,10 @@ function editEntryClick(batch) {
 }
 
 function saveEntry(servletName, modalID, form) {
-    var jqxhr = $.post(servletName, form.serialize());
+        // Get the header data from the form.
+    var dataForm = convertSerialToJSONObject(form.serialize());
+
+    var jqxhr = $.post(servletName, dataForm);
     $.when(jqxhr).then(function (data) {
         hideLoaderInModal(modalID);
         if (getAlertType(data.messageType) === 'success') {
