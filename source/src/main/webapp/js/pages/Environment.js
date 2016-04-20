@@ -960,10 +960,12 @@ function appendNewInstallRow(build, revision, application, release, link, versio
         link_html = '<a target="_blank" href="' + link + '">link <input type="checkbox" name="checklist"></a>';
     }
     var key = 0;
-    if (install.length >= 1) {
-        for (key in install) {
-            link_html += '<a target="_blank" href="' + install[key].link + '">' + install[key].jenkinsAgent + ' <input type="checkbox" name="checklist"></a><br>';
-            ;
+    if (install !== undefined) {
+        if (install.length >= 1) {
+            for (key in install) {
+                link_html += '<a target="_blank" href="' + install[key].link + '">' + install[key].jenkinsAgent + ' <input type="checkbox" name="checklist"></a><br>';
+                ;
+            }
         }
     }
     //for each install instructions adds a new row
