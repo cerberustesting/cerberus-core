@@ -145,7 +145,7 @@ public class TestCaseDAO implements ITestCaseDAO {
         if (!StringUtil.isNullOrEmpty(system)) {
             searchSQL.append(" LEFT OUTER JOIN application app on app.application = tc.application ");
         }
-        
+
         searchSQL.append("WHERE 1=1");
 
         if (!StringUtil.isNullOrEmpty(system)) {
@@ -1344,7 +1344,7 @@ public class TestCaseDAO implements ITestCaseDAO {
     @Override
     public String getMaxNumberTestCase(String test) {
         String max = "";
-        final String sql = "SELECT  Max( Testcase ) + 0 as MAXTC FROM testcase where test = ?";
+        final String sql = "SELECT  convert ( Max( Testcase ) + 0, UNSIGNED) as MAXTC FROM testcase where test = ?";
 
         // Debug message on SQL.
         if (LOG.isDebugEnabled()) {
@@ -1359,7 +1359,7 @@ public class TestCaseDAO implements ITestCaseDAO {
                 try {
                     if (resultSet.next()) {
                         max = resultSet.getString("MAXTC");
-                    }
+                        }
                 } catch (SQLException exception) {
                     MyLogger.log(TestCaseDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
                 } finally {

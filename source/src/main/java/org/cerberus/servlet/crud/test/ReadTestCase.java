@@ -30,6 +30,7 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import org.apache.log4j.Logger;
 import org.cerberus.crud.entity.CampaignContent;
 import org.cerberus.crud.entity.MessageEvent;
 import org.cerberus.crud.entity.TCase;
@@ -76,6 +77,8 @@ public class ReadTestCase extends HttpServlet {
     private ITestCaseStepActionService testCaseStepActionService;
     private ITestCaseStepActionControlService testCaseStepActionControlService;
 
+    private static final Logger LOG = Logger.getLogger(ReadTestCase.class);
+
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
      * methods.
@@ -95,7 +98,7 @@ public class ReadTestCase extends HttpServlet {
 
         // Calling Servlet Transversal Util.
         ServletUtil.servletStart(request);
-        
+
         // Default message to unexpected error.
         MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
         msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", ""));
