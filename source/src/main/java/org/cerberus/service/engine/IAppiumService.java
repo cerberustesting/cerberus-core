@@ -29,11 +29,14 @@ import org.cerberus.crud.entity.Session;
  */
 public interface IAppiumService {
     
-    public MessageEvent switchToContext(Session session, Identifier identifier);
+    MessageEvent switchToContext(Session session, Identifier identifier);
     
-    public MessageEvent type(Session session, Identifier identifier, String property, String propertyName);
+    MessageEvent type(Session session, Identifier identifier, String property, String propertyName);
 
-    public MessageEvent click(Session session, Identifier identifier);
+    MessageEvent click(Session session, Identifier identifier);
 
-    public MessageEvent press(Session session, Identifier identifier);
+    MessageEvent press(Session session, Identifier identifier);
+
+    MessageEvent hideKeyboard(Session session);
+
 }

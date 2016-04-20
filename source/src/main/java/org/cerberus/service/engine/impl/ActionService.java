@@ -210,6 +210,9 @@ public class ActionService implements IActionService {
         } else if (testCaseStepActionExecution.getAction().equals("doNothing")) {
             res = new MessageEvent(MessageEventEnum.ACTION_SUCCESS);
 
+        } else if (testCaseStepActionExecution.getAction().equals("hideKeyboard")) {
+            res = this.doActionHideKeyboard(tCExecution);
+
         } else if (testCaseStepActionExecution.getAction().equals("takeScreenshot")) {
             res = this.doActionTakeScreenshot(testCaseStepActionExecution);
             res.setDescription(MESSAGE_DEPRECATED + " " + res.getDescription());
@@ -1015,4 +1018,25 @@ public class ActionService implements IActionService {
 
         return message;
     }
+
+    private MessageEvent doActionHideKeyboard(TestCaseExecution tCExecution) {
+        // Check argument
+        if (tCExecution == null) {
+            return new MessageEvent(MessageEventEnum.ACTION_FAILED_TYPE);
+        }
+
+        // FIXME be compliant with the IPA application type
+        // See https://github.com/appium/appium/issues/5054 for the IOS case
+        String applicationType = tCExecution.getApplication().getType();
+        if (!"APK".equals(applicationType)) {
+            MessageEvent message = new MessageEvent(MessageEventEnum.ACTION_NOTEXECUTED_NOTSUPPORTED_FOR_APPLICATION);
+            message.setDescription(message.getDescription().replaceAll("%ACTION%", "hideKeyboard"));
+            message.setDescription(message.getDescription().replaceAll("%APPLICATIONTYPE%", tCExecution.getApplication().getType()));
+            return message;
+        }
+
+        // Hide keyboard by using the Appium service
+        return appiumService.hideKeyboard(tCExecution.getSession());
+    }
+
 }

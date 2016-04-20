@@ -21,8 +21,11 @@ package org.cerberus.service.engine.impl;
 
 import io.appium.java_client.AppiumDriver;
 import io.appium.java_client.TouchAction;
+
 import java.util.Set;
+
 import org.apache.log4j.Level;
+import org.apache.log4j.Logger;
 import org.cerberus.crud.entity.Identifier;
 import org.cerberus.crud.entity.MessageEvent;
 import org.cerberus.crud.entity.Session;
@@ -46,6 +49,8 @@ import org.springframework.stereotype.Service;
  */
 @Service
 public class AppiumService implements IAppiumService {
+
+    private static final Logger LOG = Logger.getLogger(AppiumService.class);
 
     @Override
     public MessageEvent switchToContext(Session session, Identifier identifier) {
@@ -177,6 +182,17 @@ public class AppiumService implements IAppiumService {
     @Override
     public MessageEvent press(Session session, Identifier identifier) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public MessageEvent hideKeyboard(Session session) {
+        try {
+            session.getAppiumDriver().hideKeyboard();
+            return new MessageEvent(MessageEventEnum.ACTION_SUCCESS_HIDEKEYBOARD);
+        } catch (Exception e) {
+            LOG.warn("Unable to hide keyboard due to: " + e.getMessage(), e);
+            return new MessageEvent(MessageEventEnum.ACTION_FAILED_HIDEKEYBOARD);
+        }
     }
 
 }
