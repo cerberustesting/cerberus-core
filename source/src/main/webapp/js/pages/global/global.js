@@ -1069,7 +1069,10 @@ function createEntry(servletName, form, tableID) {
  * @returns {void}
  */
 function updateEntry(servletName, form, tableID) {
-    var jqxhr = $.post(servletName, form.serialize());
+    // Get the header data from the form.
+    var dataForm = convertSerialToJSONObject(form.serialize());
+    
+    var jqxhr = $.post(servletName, dataForm);
     $.when(jqxhr).then(function (data) {
         hideLoaderInModal("#editEntryModal");
         if (getAlertType(data.messageType) === 'success') {

@@ -226,8 +226,10 @@ public class UpdateTestCase2 extends HttpServlet {
     }// </editor-fold>
 
     private TCase getInfo(HttpServletRequest request, TCase tc) throws CerberusException, JSONException, UnsupportedEncodingException {
-        tc.setTest(ParameterParserUtil.parseStringParamAndSanitize(request.getParameter("test"), tc.getTest()));
-        tc.setTestCase(ParameterParserUtil.parseStringParamAndSanitize(request.getParameter("testCase"), tc.getTestCase()));
+        
+        String charset = request.getCharacterEncoding();
+        
+        // Parameter that are already controled by GUI (no need to decode) --> We SECURE them
         tc.setImplementer(ParameterParserUtil.parseStringParamAndSanitize(request.getParameter("imlementer"), tc.getImplementer()));
         tc.setLastModifier(request.getUserPrincipal().getName());
         if (!Strings.isNullOrEmpty(request.getParameter("project"))) {
@@ -237,28 +239,36 @@ public class UpdateTestCase2 extends HttpServlet {
         } else {
             tc.setProject(tc.getProject());
         }
-        tc.setTicket(ParameterParserUtil.parseStringParamAndSanitize(request.getParameter("ticket"), tc.getTicket()));
+        tc.setTest(ParameterParserUtil.parseStringParamAndSanitize(request.getParameter("test"), tc.getTest()));
         tc.setApplication(ParameterParserUtil.parseStringParamAndSanitize(request.getParameter("application"), tc.getApplication()));
         tc.setRunQA(ParameterParserUtil.parseStringParamAndSanitize(request.getParameter("activeQA"), tc.getRunQA()));
         tc.setRunUAT(ParameterParserUtil.parseStringParamAndSanitize(request.getParameter("activeUAT"), tc.getRunUAT()));
         tc.setRunPROD(ParameterParserUtil.parseStringParamAndSanitize(request.getParameter("activeProd"), tc.getRunPROD()));
-        tc.setPriority(ParameterParserUtil.parseIntegerParam(request.getParameter("priority"), tc.getPriority()));
-        tc.setOrigin(ParameterParserUtil.parseStringParamAndSanitize(request.getParameter("origin"), tc.getOrigin()));
-        tc.setGroup(ParameterParserUtil.parseStringParamAndSanitize(request.getParameter("group"), tc.getGroup()));
-        tc.setStatus(ParameterParserUtil.parseStringParamAndSanitize(request.getParameter("status"), tc.getStatus()));
-        tc.setShortDescription(ParameterParserUtil.parseStringParamAndSanitize(request.getParameter("shortDesc"), tc.getShortDescription()));
-        tc.setDescription(ParameterParserUtil.parseStringParamAndSanitize(request.getParameter("behaviorOrValueExpected"), tc.getDescription()));
-        tc.setHowTo(ParameterParserUtil.parseStringParamAndSanitize(request.getParameter("howTo"), tc.getHowTo()));
         tc.setActive(ParameterParserUtil.parseStringParamAndSanitize(request.getParameter("active"), tc.getActive()));
         tc.setFromSprint(ParameterParserUtil.parseStringParamAndSanitize(request.getParameter("fromSprint"), tc.getFromSprint()));
         tc.setFromRevision(ParameterParserUtil.parseStringParamAndSanitize(request.getParameter("fromRev"), tc.getFromRevision()));
         tc.setToSprint(ParameterParserUtil.parseStringParamAndSanitize(request.getParameter("toSprint"), tc.getToSprint()));
         tc.setToRevision(ParameterParserUtil.parseStringParamAndSanitize(request.getParameter("toRev"), tc.getToRevision()));
-        tc.setBugID(ParameterParserUtil.parseStringParamAndSanitize(request.getParameter("bugId"), tc.getBugID()));
         tc.setTargetSprint(ParameterParserUtil.parseStringParamAndSanitize(request.getParameter("targetSprint"), tc.getTargetSprint()));
         tc.setTargetRevision(ParameterParserUtil.parseStringParamAndSanitize(request.getParameter("targetRev"), tc.getTargetRevision()));
-        tc.setComment(ParameterParserUtil.parseStringParamAndSanitize(request.getParameter("comment"), tc.getComment()));
-        tc.setFunction(ParameterParserUtil.parseStringParamAndSanitize(request.getParameter("function"), tc.getFunction()));
+        tc.setPriority(ParameterParserUtil.parseIntegerParam(request.getParameter("priority"), tc.getPriority()));
+        
+        // Parameter that needs to be secured --> We SECURE+DECODE them
+        tc.setTestCase(ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("testCase"), tc.getTestCase(), charset));
+        tc.setTicket(ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("ticket"), tc.getTicket(), charset));
+        tc.setOrigin(ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("origin"), tc.getOrigin(), charset));
+        tc.setGroup(ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("group"), tc.getGroup(), charset));
+        tc.setStatus(ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("status"), tc.getStatus(), charset));
+        tc.setShortDescription(ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("shortDesc"), tc.getShortDescription(), charset));
+        tc.setBugID(ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("bugId"), tc.getBugID(), charset));
+        tc.setComment(ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("comment"), tc.getComment(), charset));
+        tc.setFunction(ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("function"), tc.getFunction(), charset));
+        
+        // Parameter that we cannot secure as we need the html --> We DECODE them
+        tc.setDescription(ParameterParserUtil.parseStringParamAndDecode(request.getParameter("behaviorOrValueExpected"), tc.getDescription(), charset));
+        tc.setHowTo(ParameterParserUtil.parseStringParamAndDecode(request.getParameter("howTo"), tc.getHowTo(), charset));
+        
+        
         return tc;
     }
 
