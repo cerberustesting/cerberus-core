@@ -66,7 +66,7 @@ public class EmailBodyGeneration implements IEmailBodyGeneration {
             buildContentTable = buildContentTable + "<thead><tr style=\"background-color:#cad3f1; font-style:bold\"><td>"
                     + "Sprint/Rev</td><td>Application</td><td>Project</td><td>Bug</td><td>Ticket</td><td>People in Charge</td><td>Release Documentation</td></tr></thead><tbody>";
 
-            final String contentSQL = new StringBuilder("SELECT b.`Build`, b.`Revision`, b.`Release` , b.`Link` , ")
+            StringBuilder contentSQLSB = new StringBuilder("SELECT b.`Build`, b.`Revision`, b.`Release` , b.`Link` , ")
                     .append(" b.`Application`, b.`ReleaseOwner`, b.`BugIDFixed`, b.`TicketIDFixed`, b.`subject`, b.`Project`")
                     .append(", p.`VCCode`, u.Name, a.BugTrackerUrl ")
                     .append(" from buildrevisionparameters b ")
@@ -74,11 +74,15 @@ public class EmailBodyGeneration implements IEmailBodyGeneration {
                     .append(" left outer join user u on u.Login=b.ReleaseOwner ")
                     .append(" left outer join application a on a.application=b.application ")
                     .append(" join buildrevisioninvariant bri on bri.versionname = b.revision and bri.`system` = '").append(system).append("'  and bri.`level` = 2 ")
-                    .append(" where build = '").append(build).append("' and a.system = '").append(system).append("' ")
-                    .append(" and bri.seq > (select seq from buildrevisioninvariant where `system` = '").append(system).append("' and `level` = 2 and `versionname` = '").append(lastRevision).append("' )  ")
-                    .append(" and bri.seq <= (select seq from buildrevisioninvariant where `system` = '").append(system).append("' and `level` = 2 and `versionname` = '").append(revision).append("' )  ")
+                    .append(" where build = '").append(build).append("' and a.system = '").append(system).append("' ");
+            if (!StringUtil.isNullOrEmpty(lastRevision)) { // If lasRevision not defined, we take everything.
+                contentSQLSB.append(" and bri.seq > (select seq from buildrevisioninvariant where `system` = '").append(system).append("' and `level` = 2 and `versionname` = '").append(lastRevision).append("' )  ");
+            }
+            contentSQLSB.append(" and bri.seq <= (select seq from buildrevisioninvariant where `system` = '").append(system).append("' and `level` = 2 and `versionname` = '").append(revision).append("' )  ")
                     .append(" order by b.Build, bri.seq, b.Application, b.datecre,")
                     .append(" b.TicketIDFixed, b.BugIDFixed, b.`Release`").toString();
+
+            String contentSQL = contentSQLSB.toString();
 
             Logger.getLogger(EmailBodyGeneration.class.getName()).log(Level.DEBUG, Infos.getInstance().getProjectNameAndVersion() + " - SQL : " + contentSQL);
 

@@ -689,7 +689,7 @@ public class BuildRevisionParametersDAO implements IBuildRevisionParametersDAO {
         query.append(" and a.`system` = ? ");
         query.append(" and brp.build = ? ");
         if (lastBuild.equalsIgnoreCase(build)) { // If last version is on the same build.
-            if (lastRevision == null) { // Same build and revision some we filter only the current content.
+            if (StringUtil.isNullOrEmpty(lastRevision)) { // Same build and revision some we filter only the current content.
                 query.append(" and bri.seq = (select seq from buildrevisioninvariant where `system` = ? and `level` = 2 and `versionname` = ? ) "); // revision
             } else { // 2 different revisions inside the same build, we take the content between the 2.
                 query.append(" and bri.seq > (select seq from buildrevisioninvariant where `system` = ? and `level` = 2 and `versionname` = ? ) "); // lastRevision
@@ -709,6 +709,11 @@ public class BuildRevisionParametersDAO implements IBuildRevisionParametersDAO {
         // Debug message on SQL.
         if (LOG.isDebugEnabled()) {
             LOG.debug("SQL : " + query.toString());
+            LOG.debug("SQL.param.system : " + system);
+            LOG.debug("SQL.param.build : " + build);
+            LOG.debug("SQL.param.revision : " + revision);
+            LOG.debug("SQL.param.lastBuild : " + lastBuild);
+            LOG.debug("SQL.param.lastRevision : " + lastRevision);
         }
         Connection connection = this.databaseSpring.connect();
         try {
@@ -719,7 +724,7 @@ public class BuildRevisionParametersDAO implements IBuildRevisionParametersDAO {
                 preStat.setString(i++, system);
                 preStat.setString(i++, build);
                 if (lastBuild.equalsIgnoreCase(build)) {
-                    if (lastRevision == null) { // if lastRevision is not defined, we filter only the current content.
+                    if (StringUtil.isNullOrEmpty(lastRevision)) { // if lastRevision is not defined, we filter only the current content.
                         preStat.setString(i++, system);
                         preStat.setString(i++, revision);
                     } else { // 2 different revisions inside the same build, we take the content between the 2.
@@ -822,7 +827,7 @@ public class BuildRevisionParametersDAO implements IBuildRevisionParametersDAO {
         query.append(" and a.`system` = ? ");
         query.append(" and brp.build = ? ");
         if (lastBuild.equalsIgnoreCase(build)) {
-            if (lastRevision == null) { // if lastRevision is not defined, we filter only the current content.
+            if (StringUtil.isNullOrEmpty(lastRevision)) { // if lastRevision is not defined, we filter only the current content.
                 query.append(" and bri.seq = (select seq from buildrevisioninvariant where `system` = ? and `level` = 2 and `versionname` = ? ) "); // revision
             } else { // 2 different revisions inside the same build, we take the content between the 2.
                 query.append(" and bri.seq > (select seq from buildrevisioninvariant where `system` = ? and `level` = 2 and `versionname` = ? ) "); // lastRevision
@@ -840,6 +845,11 @@ public class BuildRevisionParametersDAO implements IBuildRevisionParametersDAO {
         // Debug message on SQL.
         if (LOG.isDebugEnabled()) {
             LOG.debug("SQL : " + query.toString());
+            LOG.debug("SQL.param.system : " + system);
+            LOG.debug("SQL.param.build : " + build);
+            LOG.debug("SQL.param.revision : " + revision);
+            LOG.debug("SQL.param.lastBuild : " + lastBuild);
+            LOG.debug("SQL.param.lastRevision : " + lastRevision);
         }
         Connection connection = this.databaseSpring.connect();
         try {
@@ -850,7 +860,7 @@ public class BuildRevisionParametersDAO implements IBuildRevisionParametersDAO {
                 preStat.setString(i++, system);
                 preStat.setString(i++, build);
                 if (lastBuild.equalsIgnoreCase(build)) {
-                    if (lastRevision == null) { // if lastRevision is not defined, we filter only the current content.
+                    if (StringUtil.isNullOrEmpty(lastRevision)) { // if lastRevision is not defined, we filter only the current content.
                         preStat.setString(i++, system);
                         preStat.setString(i++, revision);
                     } else { // 2 different revisions inside the same build, we take the content between the 2.
