@@ -13,7 +13,7 @@
         <!-- Version management -->
         <powermock.version>1.5.2</powermock.version>
         <javax.servlet-api.version>3.0.1</javax.servlet-api.version>
-        <spring.version>3.1.1.RELEASE</spring.version>
+        <spring.version>4.2.5.RELEASE</spring.version>
         <harlib.version>1.1.1</harlib.version>
         <eclipselink.version>2.3.2</eclipselink.version>
         <javax.persistence.version>2.0.3</javax.persistence.version>
@@ -26,6 +26,7 @@
         <selenium.version>2.44.0</selenium.version>
         <owasp-java-html-sanitizer.version>r223</owasp-java-html-sanitizer.version>
         <log4j.version>1.2.9</log4j.version>
+        <slf4j.version>1.7.19</slf4j.version>
         <jackson-core-asl.version>1.7.1</jackson-core-asl.version>
         <jfreechart.version>1.0.0</jfreechart.version>
         <jcommon.version>1.0.16</jcommon.version>
@@ -104,6 +105,11 @@
             <groupId>org.springframework</groupId>
             <artifactId>spring-test</artifactId>
             <version>${spring.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.data</groupId>
+            <artifactId>spring-data-jpa</artifactId>
+            <version>1.10.1.RELEASE</version>
         </dependency>
         <dependency>
             <groupId>com.google.guava</groupId>
@@ -222,6 +228,11 @@
             <version>${log4j.version}</version>
         </dependency>
         <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-log4j12</artifactId>
+            <version>${slf4j.version}</version>
+        </dependency>
+        <dependency>
             <groupId>javax.websocket</groupId>
             <artifactId>javax.websocket-api</artifactId>
             <version>${websocket.version}</version>
@@ -241,7 +252,16 @@
             <artifactId>poi-ooxml</artifactId>
             <version>${poi.version}</version>
         </dependency>
-
+        <dependency>
+            <groupId>org.hibernate</groupId>
+            <artifactId>hibernate-entitymanager</artifactId>
+            <version>4.3.11.Final</version>
+        </dependency>
+        <dependency>
+            <groupId>xml-apis</groupId>
+            <artifactId>xml-apis</artifactId>
+            <version>1.4.01</version>
+        </dependency>
 
         <!-- Provided scope -->
         <dependency>

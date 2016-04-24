@@ -20,6 +20,7 @@
 <%@page import="org.cerberus.crud.entity.Application"%>
 <%@page import="org.cerberus.crud.service.IDocumentationService"%>
 <%@page import="org.cerberus.crud.service.IApplicationService"%>
+<%@ page import="org.cerberus.crud.dao.ApplicationRepository" %>
 <% Date DatePageStart = new Date();%>
 
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
@@ -76,6 +77,7 @@
         try{
             IInvariantService invariantService = appContext.getBean(IInvariantService.class);
             IUserService userService = appContext.getBean(IUserService.class);
+            ApplicationRepository appRepository = appContext.getBean(ApplicationRepository.class);
             User myUser = userService.findUserByKey(request.getUserPrincipal().getName());
             String MySystem = ParameterParserUtil.parseStringParam(request.getParameter("MySystem"), "");
             String myLang = ParameterParserUtil.parseStringParam(request.getAttribute("MyLang").toString(), "en");
@@ -134,7 +136,8 @@
         <%
             if (filterApp){
                 appList=new ArrayList<Application>();
-                appList.add(applicationService.convert(applicationService.readByKey(appSel)));
+                appList.add(appRepository.findOne(appSel));
+//                appList.add(applicationService.convert(applicationService.readByKey(appSel)));
             }
 
             for (Application applicationL : appList){

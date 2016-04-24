@@ -17,11 +17,18 @@
  */
 package org.cerberus.crud.entity;
 
+import javax.persistence.Entity;
+import javax.persistence.Id;
+import javax.persistence.Table;
+
 /**
  * @author vertigo
  */
+@Entity
+@Table(name = "application")
 public class Application {
 
+    @Id
     private String application;
     private String description;
     private int sort;
