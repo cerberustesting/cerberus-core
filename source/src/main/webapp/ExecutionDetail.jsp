@@ -699,16 +699,23 @@
                         <% if (tcGroup.equalsIgnoreCase("AUTOMATED")) {%>
                             <td><a href="RunTests.jsp?Test=<%=test%>&TestCase=<%=testCase%>&MySystem=<%=appSystem%>&Country=<%=country%>&Environment=<%=environment%>&browser=<%=browser%>&Tag=<%=testCaseExecution.getTag()==null?"" : tagEncoded%>"
                                    title="Allows the user to execute the current test case. The user can modify the configurations associated with the execution: tag, environment, country... ">
-                                    Run the same Test Case again</a></td>
+                                    Run the same Test Case again</a><br>
+                            <a href="RunTests1.jsp?test=<%=test%>&testcase=<%=testCase%>&country=<%=country%>&environment=<%=environment%>&browser=<%=browser%>&tag=<%=testCaseExecution.getTag()==null?"" : tagEncoded%>"
+                                   title="Allows the user to execute the current test case. The user can modify the configurations associated with the execution: tag, environment, country... ">
+                                    Run the same Test Case again (Beta)</a></td>
                         <% } else if (tcGroup.equalsIgnoreCase("MANUAL")){%>
                         <td>
                             <a href="RunTests.jsp?Test=<%=test%>&TestCase=<%=testCase%>&MySystem=<%=appSystem%>&Country=<%=country%>&Environment=<%=environment%>&browser=<%=browser%>&Tag=<%=testCaseExecution.getTag()==null?"" : tagEncoded%>&manualExecution=Y"
                                 title="Allows the user to execute the current test case. The user can modify the configurations associated with the execution: tag, environment, country... ">
-                                Edit configurations and Run the same Test Case again</a>
+                                Edit configurations and Run the same Test Case again</a><br>
+                            <a href="RunTests1.jsp?test=<%=test%>&testcase=<%=testCase%>&country=<%=country%>&environment=<%=environment%>&browser=<%=browser%>&tag=<%=testCaseExecution.getTag()==null?"" : tagEncoded%>&manualExecution=Y"
+                                title="Allows the user to execute the current test case. The user can modify the configurations associated with the execution: tag, environment, country... ">
+                                Edit configurations and Run the same Test Case again (Beta)</a>
                         </td>
                         <%}%>                           
                         <td>
-                            <a href="TestCase.jsp?Test=<%=test%>&TestCase=<%=testCase%>&Load=Load">Modify the Test Case.</a>
+                            <a href="TestCase.jsp?Test=<%=test%>&TestCase=<%=testCase%>&Load=Load">Modify the Test Case.</a><br>
+                            <a href="TestCaseScript.jsp?test=<%=test%>&testcase=<%=testCase%>">Modify the Test Case (Beta).</a>
                         </td>
                         <td>
                     <a href="ExecutionDetailList.jsp?test=<%=test%>&testcase=<%=testCase%>&MySystem=<%=appSystem%>">See Last Executions..</a>

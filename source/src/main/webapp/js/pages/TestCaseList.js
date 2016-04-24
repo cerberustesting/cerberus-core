@@ -64,6 +64,10 @@ function initPage() {
     // handle the click for specific action buttons
     $("#editEntryButton").click(editEntryModalSaveHandler);
     $("#addEntryButton").click(addEntryModalSaveHandler);
+    // In Add TestCase form, if we change the test, we get the latest testcase from that test.
+    $("#testAdd").change(function () {
+        feedTestCase(null);
+    });
 
     $('#editEntryModal').on('hidden.bs.modal', {extra: "#editEntryModal"}, modalFormCleaner);
     $('#addEntryModal').on('hidden.bs.modal', {extra: "#addEntryModal"}, modalFormCleaner);
@@ -112,7 +116,7 @@ function displayPageLabel(doc) {
     $("[name='editEntryField']").html(doc.getDocLabel("page_testcaselist", "btn_edit"));
     $("[name='addEntryField']").html(doc.getDocLabel("page_testcaselist", "btn_create"));
     $("[name='linkField']").html(doc.getDocLabel("page_testcaselist", "link"));
-    
+
     $("[name='testInfoField']").html(doc.getDocLabel("page_testcaselist", "testInfo"));
     $("[name='testCaseInfoField']").html(doc.getDocLabel("page_testcaselist", "testCaseInfo"));
     $("[name='testCaseParameterField']").html(doc.getDocLabel("page_testcaselist", "testCaseParameter"));
@@ -232,14 +236,10 @@ function addEntryModalSaveHandler() {
     createEntry("CreateTestCase2", formAdd, "#testCaseTable");
 }
 
-function addEntryClick() {
-    clearResponseMessageMainPage();
-    var test = GetURLParameter('test');
-    var pref = JSON.parse(localStorage.getItem("createTC"));
-    var form = $("#addEntryModalForm");
-
-
+function feedTestCase(test) {
 // Predefine the testcase value.
+    if ((test === null) || (test === undefined))
+        test = $('#testAdd').val();
     $.ajax({
         url: "ReadTestCase",
         method: "GET",
@@ -266,12 +266,25 @@ function addEntryClick() {
         error: showUnexpectedError
     });
 
+}
+
+function addEntryClick() {
+    clearResponseMessageMainPage();
+    var pref = JSON.parse(localStorage.getItem("createTC"));
+    var form = $("#addEntryModalForm");
+
+    // Test by default comes from the URL (and the combo filter).
+    var test = GetURLParameter('test');
     if (test !== "") {
         $('#testAdd option[value="' + test + '"]').attr("selected", "selected");
     }
+    // TestCase is taken from the last value in database +1. This is an auto sequence. 
+    // It is already taken from the change event of the test combo.
 
+    // By default we desactivate the execution of the testcase in production environment.
     $('#addEntryModalForm #actProd option[value="N"]').attr("selected", "selected");
 
+    // The rest of the field com from the LocalStorage.
     if (pref !== null) {
         form.find("#origin").val(pref.origin);
         form.find("#refOrigin").val(pref.refOrigin);

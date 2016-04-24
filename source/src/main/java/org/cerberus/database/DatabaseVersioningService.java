@@ -5760,9 +5760,16 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         // Add the hideKeyboard action.
         //-- ------------------------ 769
         SQLS = new StringBuilder();
-        SQLS.append("INSERT INTO `cerberus`.`invariant` (`idname`, `value`, `sort`, `description`, `VeryShortDesc`) VALUES ('ACTION', 'hideKeyboard', '1200', 'hideKeyboard', '');");
+        SQLS.append("INSERT INTO `invariant` (`idname`, `value`, `sort`, `description`, `VeryShortDesc`) VALUES ('ACTION', 'hideKeyboard', '1200', 'hideKeyboard', '');");
         SQLInstruction.add(SQLS.toString());
 
+        // Add the Unknown Control.
+        //-- ------------------------ 770
+        SQLS = new StringBuilder();
+        SQLS.append("INSERT INTO `invariant` (`idname`, `value`, `sort`, `description`, `VeryShortDesc`) VALUES ('CONTROL', 'Unknown', '10', 'Unknown', '');");
+        SQLInstruction.add(SQLS.toString());
+        
+        
         return SQLInstruction;
     }
 
