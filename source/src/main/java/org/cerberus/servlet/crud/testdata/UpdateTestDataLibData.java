@@ -73,7 +73,7 @@ public class UpdateTestDataLibData extends HttpServlet {
         msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", ""));
         ans.setResultMessage(msg);
         String charset = request.getCharacterEncoding();
-        
+
         response.setContentType("application/json");
 
         String data = request.getParameter("data");
@@ -247,12 +247,12 @@ public class UpdateTestDataLibData extends HttpServlet {
                 Integer testdatalibdataid = Integer.parseInt(obj.get("testdatalibdataid").toString());
                 Integer testdatalibid = Integer.parseInt(obj.get("testdatalibid").toString());
                 // Parameter that needs to be secured --> We SECURE+DECODE them
-                String subdata = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(obj.get("subdata").toString(), null, charset);
-                String description = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(obj.get("description").toString(), "", charset);
+                String subdata = policy.sanitize(ParameterParserUtil.parseStringParam(obj.get("subdata").toString(), null));
+                String description = policy.sanitize(ParameterParserUtil.parseStringParam(obj.get("description").toString(), ""));
                 // Parameter that we cannot secure as we need the html --> We DECODE them
-                String value = ParameterParserUtil.parseStringParamAndDecode(obj.get("value").toString(), "", charset);
-                String column = ParameterParserUtil.parseStringParamAndDecode(obj.get("column").toString(), "", charset);
-                String parsinganswer = ParameterParserUtil.parseStringParamAndDecode(obj.get("parsinganswer").toString(), "", charset);
+                String value = ParameterParserUtil.parseStringParam(obj.get("value").toString(), "");
+                String column = ParameterParserUtil.parseStringParam(obj.get("column").toString(), "");
+                String parsinganswer = ParameterParserUtil.parseStringParam(obj.get("parsinganswer").toString(), "");
 
                 TestDataLibData item = factoryLibService.create(testdatalibdataid, testdatalibid, subdata, value, column, parsinganswer, description);
                 entries.add(item);

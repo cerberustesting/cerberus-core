@@ -85,14 +85,14 @@ public class CreateTestDataLib extends HttpServlet {
         String country = policy.sanitize(request.getParameter("country"));
         String database = policy.sanitize(request.getParameter("database"));
         // Parameter that needs to be secured --> We SECURE+DECODE them
-        String name = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("name"), null, charset);
-        String group = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("group"), "", charset);
-        String description = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("libdescription"), "", charset);
+        String name = ParameterParserUtil.parseStringParam(request.getParameter("name"), null);
+        String group = ParameterParserUtil.parseStringParam(request.getParameter("group"), "");
+        String description = ParameterParserUtil.parseStringParam(request.getParameter("libdescription"), "");
         // Parameter that we cannot secure as we need the html --> We DECODE them
-        String script = ParameterParserUtil.parseStringParamAndDecode(request.getParameter("script"), "", charset);
-        String servicePath = ParameterParserUtil.parseStringParamAndDecode(request.getParameter("servicepath"), "", charset);
-        String method = ParameterParserUtil.parseStringParamAndDecode(request.getParameter("method"), "", charset);
-        String envelope = ParameterParserUtil.parseStringParamAndDecode(request.getParameter("envelope"), "", charset);
+        String script = ParameterParserUtil.parseStringParam(request.getParameter("script"), "");
+        String servicePath = ParameterParserUtil.parseStringParam(request.getParameter("servicepath"), "");
+        String method = ParameterParserUtil.parseStringParam(request.getParameter("method"), "");
+        String envelope = ParameterParserUtil.parseStringParam(request.getParameter("envelope"), "");
         /**
          * Checking all constrains before calling the services.
          */
@@ -165,12 +165,12 @@ public class CreateTestDataLib extends HttpServlet {
         for (int i = 0; i < subdataEntries.length; i++) {
             // Parameter that are already controled by GUI (no need to decode) --> We SECURE them
             // Parameter that needs to be secured --> We SECURE+DECODE them
-            String subdata = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(subdataEntries[i], null, charset);
-            String description = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(subdataDescriptions[i], "", charset);
+            String subdata = ParameterParserUtil.parseStringParam(subdataEntries[i], null);
+            String description = ParameterParserUtil.parseStringParam(subdataDescriptions[i], "");
             // Parameter that we cannot secure as we need the html --> We DECODE them
-            String value = ParameterParserUtil.parseStringParamAndDecode(subdataValues[i], "", charset);
-            String column = ParameterParserUtil.parseStringParamAndDecode(subdataColumns[i], "", charset);
-            String parsinganswer = ParameterParserUtil.parseStringParamAndDecode(subdataParsingAnswer[i], "", charset);
+            String value = ParameterParserUtil.parseStringParam(subdataValues[i], "");
+            String column = ParameterParserUtil.parseStringParam(subdataColumns[i], "");
+            String parsinganswer = ParameterParserUtil.parseStringParam(subdataParsingAnswer[i], "");
 
             subData = factorySubdataService.create(null, null, //ids are not available yet
                     subdata, value, column, parsinganswer, description);

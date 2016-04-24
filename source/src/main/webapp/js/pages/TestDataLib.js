@@ -131,10 +131,6 @@ $.when($.getScript("js/pages/global/global.js")).then(function () {
          */
         $("#saveDuplicateTestDataLib").click(saveDuplicateTestDataLibClickHandler);
 
-        /**
-         * Method that saves new test data lib entry
-         */
-        $("#addTestDataLibButton").click(saveNewTestDataLibHandler);
         /*
          * Specification of the methods that handle the bs.modal close.
          */
@@ -777,7 +773,10 @@ function saveTestDataLibClickHandler() {
     var formEdit = $('#editTestDataLibModal').find('form#editTestLibData');
     showLoaderInModal('#editTestDataLibModal');
 
-    var jqxhr = $.post("UpdateTestDataLib", formEdit.serialize(), "json");
+    // Get the header data from the form.
+    var dataForm = convertSerialToJSONObject(formEdit.serialize());
+
+    var jqxhr = $.post("UpdateTestDataLib", dataForm);
     $.when(jqxhr).then(function (data) {
         // unblock when remote call returns 
         hideLoaderInModal('#editTestDataLibModal');
