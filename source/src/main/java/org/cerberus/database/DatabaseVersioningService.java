@@ -5768,7 +5768,23 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLS = new StringBuilder();
         SQLS.append("INSERT INTO `invariant` (`idname`, `value`, `sort`, `description`, `VeryShortDesc`) VALUES ('CONTROL', 'Unknown', '10', 'Unknown', '');");
         SQLInstruction.add(SQLS.toString());
-        
+
+        // Add the hideKeyboard and update the keyPress action documentation.
+        //-- ------------------------ 771-772
+        SQLS = new StringBuilder();
+        SQLS.append("INSERT INTO `documentation` (`DocTable`, `DocField`, `DocValue`, `Lang`, `DocLabel`, `DocDesc`) VALUES ('testcasestepaction', 'Action', " +
+                "'hideKeyboard', 'en', 'Hide keyboard.', 'Hide the currently visible keyboard.');\n");
+        SQLInstruction.add(SQLS.toString());
+        SQLS = new StringBuilder();
+        SQLS.append("UPDATE `documentation` SET `DocDesc`='<code class=\\'doc-fixed\\'>keypress</code> will allow you to press any key in the current web page" +
+                ".<br><br>Usage :<br><doc class=\\\"usage\\\"><table cellspacing=0 cellpadding=2><th class=\\'ex\\'>Field</th><th class=\\'ex\\'>Usage</th><tr><td " +
+                "class=\\'ex\\'>Object</td><td class=\\'ex\\'>Keycode of the key to press.</td></tr><tr><td class=\\'ex\\'>Property</td><td class=\\'ex\\'>Property name (only " +
+                "used to activate or not double click depending on if the property exist for the country).</td></tr></table></doc><br><br>Examples :<br><doc " +
+                "class=\\\"examples\\\"><table cellspacing=0 cellpadding=2><th class=\\'ex\\'>Object</th><th class=\\'ex\\'>Property</th><th class=\\'ex\\'>Result</th><tr><td " +
+                "class=\\'ex\\'>ENTER</td><td class=\\'ex\\'></td><td class=\\'ex\\'>ENTER key will be pressed.</td></tr><tr><td class=\\'ex\\'>SEARCH</td><td " +
+                "class=\\'ex\\'></td><td class=\\'ex\\'>SEARCH key will be pressed.</td></tr></table></doc>' WHERE `DocTable`='testcasestepaction' and`DocField`='Action' " +
+                "and`DocValue`='keypress' and`Lang`='en';\n");
+        SQLInstruction.add(SQLS.toString());
         
         return SQLInstruction;
     }

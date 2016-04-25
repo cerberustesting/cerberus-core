@@ -21,11 +21,7 @@ package org.cerberus.service.engine.impl;
 
 import io.appium.java_client.AppiumDriver;
 import io.appium.java_client.TouchAction;
-
-import java.util.Set;
-
 import org.apache.log4j.Level;
-import org.apache.log4j.Logger;
 import org.cerberus.crud.entity.Identifier;
 import org.cerberus.crud.entity.MessageEvent;
 import org.cerberus.crud.entity.Session;
@@ -41,16 +37,14 @@ import org.openqa.selenium.WebDriverException;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
-import org.springframework.stereotype.Service;
+
+import java.util.Set;
 
 /**
  *
  * @author bcivel
  */
-@Service
-public class AppiumService implements IAppiumService {
-
-    private static final Logger LOG = Logger.getLogger(AppiumService.class);
+public abstract class AppiumService implements IAppiumService {
 
     @Override
     public MessageEvent switchToContext(Session session, Identifier identifier) {
@@ -78,7 +72,7 @@ public class AppiumService implements IAppiumService {
         try {
             if (!StringUtil.isNull(property)) {
                 TouchAction action = new TouchAction(session.getAppiumDriver());
-                action.press(this.getElement(session, identifier, true, true)).release().perform();
+                action.press(this.getElement(session, identifier, false, false)).release().perform();
                 session.getAppiumDriver().getKeyboard().pressKey(property);
             }
             message = new MessageEvent(MessageEventEnum.ACTION_SUCCESS_TYPE);
@@ -177,22 +171,6 @@ public class AppiumService implements IAppiumService {
         }
         MyLogger.log(RunTestCaseService.class.getName(), Level.DEBUG, "Finding Element : " + identifier.getIdentifier() + "=" + identifier.getLocator());
         return driver.findElement(locator);
-    }
-
-    @Override
-    public MessageEvent press(Session session, Identifier identifier) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-
-    @Override
-    public MessageEvent hideKeyboard(Session session) {
-        try {
-            session.getAppiumDriver().hideKeyboard();
-            return new MessageEvent(MessageEventEnum.ACTION_SUCCESS_HIDEKEYBOARD);
-        } catch (Exception e) {
-            LOG.warn("Unable to hide keyboard due to: " + e.getMessage(), e);
-            return new MessageEvent(MessageEventEnum.ACTION_FAILED_HIDEKEYBOARD);
-        }
     }
 
 }

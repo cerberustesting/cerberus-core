@@ -35,7 +35,7 @@ public interface IAppiumService {
 
     MessageEvent click(Session session, Identifier identifier);
 
-    MessageEvent press(Session session, Identifier identifier);
+    MessageEvent keyPress(Session session, String keyName);
 
     MessageEvent hideKeyboard(Session session);
 
