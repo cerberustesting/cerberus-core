@@ -22,6 +22,7 @@ package org.cerberus.service.engine;
 import org.cerberus.crud.entity.Identifier;
 import org.cerberus.crud.entity.MessageEvent;
 import org.cerberus.crud.entity.Session;
+import org.cerberus.crud.entity.SwipeAction;
 
 /**
  *
@@ -38,5 +39,7 @@ public interface IAppiumService {
     MessageEvent keyPress(Session session, String keyName);
 
     MessageEvent hideKeyboard(Session session);
+
+    MessageEvent swipe(Session session, SwipeAction swipeAction);
 
 }

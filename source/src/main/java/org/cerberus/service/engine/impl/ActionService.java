@@ -28,6 +28,7 @@ import org.cerberus.crud.entity.Identifier;
 import org.cerberus.crud.entity.MessageEvent;
 import org.cerberus.crud.entity.MessageGeneral;
 import org.cerberus.crud.entity.SoapLibrary;
+import org.cerberus.crud.entity.SwipeAction;
 import org.cerberus.crud.entity.TestCaseExecution;
 import org.cerberus.crud.entity.TestCaseExecutionData;
 import org.cerberus.crud.entity.TestCaseStepActionExecution;
@@ -217,6 +218,9 @@ public class ActionService implements IActionService {
 
         } else if (testCaseStepActionExecution.getAction().equals("hideKeyboard")) {
             res = this.doActionHideKeyboard(tCExecution);
+
+        } else if (testCaseStepActionExecution.getAction().equals("swipe")) {
+            res = this.doActionSwipe(tCExecution, object, property);
 
         } else if (testCaseStepActionExecution.getAction().equals("takeScreenshot")) {
             res = this.doActionTakeScreenshot(testCaseStepActionExecution);
@@ -1037,6 +1041,35 @@ public class ActionService implements IActionService {
         } else {
             return new MessageEvent(MessageEventEnum.ACTION_NOTEXECUTED_NOTSUPPORTED_FOR_APPLICATION)
                     .resolveDescription("ACTION", "Hide keyboard")
+                    .resolveDescription("APPLICATIONTYPE", tCExecution.getApplication().getType());
+        }
+    }
+
+    private MessageEvent doActionSwipe(TestCaseExecution tCExecution, String object, String property) {
+        // Check arguments
+        if (tCExecution == null || object == null) {
+            return new MessageEvent(MessageEventEnum.ACTION_FAILED_TYPE);
+        }
+
+        // Create the associated swipe action to the given arguments
+        SwipeAction action = null;
+        try {
+            action = SwipeAction.fromStrings(object, property);
+        } catch (Exception e) {
+            return new MessageEvent(MessageEventEnum.ACTION_FAILED_SWIPE)
+                    .resolveDescription("DIRECTION", action == null ? "Unknown" : action.getActionType().name())
+                    .resolveDescription("REASON", e.getMessage());
+        }
+
+        // Swipe screen according to the application type
+        String applicationType = tCExecution.getApplication().getType();
+        if ("APK".equals(applicationType)) {
+            return androidAppiumService.swipe(tCExecution.getSession(), action);
+        } else if ("IPA".equals(applicationType)) {
+            return iosAppiumService.swipe(tCExecution.getSession(), action);
+        } else {
+            return new MessageEvent(MessageEventEnum.ACTION_NOTEXECUTED_NOTSUPPORTED_FOR_APPLICATION)
+                    .resolveDescription("ACTION", "Swipe screen")
                     .resolveDescription("APPLICATIONTYPE", tCExecution.getApplication().getType());
         }
     }

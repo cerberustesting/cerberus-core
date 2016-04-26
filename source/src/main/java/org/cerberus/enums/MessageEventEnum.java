@@ -130,6 +130,7 @@ public enum MessageEventEnum {
     ACTION_SUCCESS_MOUSEDOWNMOUSEUP(200, "OK", "Mouse Left Click pressed and released on Element '%ELEMENT%'.", false, false, false, MessageGeneralEnum.EXECUTION_PE_TESTSTARTED),
     ACTION_SUCCESS_REMOVEDIFFERENCE(200, "OK", "Difference '%DIFFERENCE%' removed from '%DIFFERENCES%'.", false, false, false, MessageGeneralEnum.EXECUTION_PE_TESTSTARTED),
     ACTION_SUCCESS_HIDEKEYBOARD(200, "OK", "Keyboard hidden.", false, false, false, MessageGeneralEnum.EXECUTION_PE_TESTSTARTED),
+    ACTION_SUCCESS_SWIPE(200, "OK", "Screen swiped '%DIRECTION%'.", false, false, false, MessageGeneralEnum.EXECUTION_PE_TESTSTARTED),
     ACTION_FAILED(250, "FA", "Unknown Action Error.", true, true, false, MessageGeneralEnum.EXECUTION_FA),
     ACTION_FAILED_CLICK(251, "FA", "Failed to click on '%ELEMENT%'.", true, true, true, MessageGeneralEnum.EXECUTION_FA_ACTION),
     ACTION_FAILED_SELENIUM_CONNECTIVITY(252, "CA", "The test case is canceled due to lost connection to Selenium Server!", true, true, true, MessageGeneralEnum.EXECUTION_FA_ACTION),
@@ -187,6 +188,7 @@ public enum MessageEventEnum {
     ACTION_FAILED_SQL_JDBCPOOLNOTCONFIGURED(295, "FA", "The JDBC connection pool name does not exist for the corresponding System : %SYSTEM% Country : %COUNTRY%, environment : %ENV% and database : %DB% . Please define it inside the database.", true, false, false, MessageGeneralEnum.EXECUTION_FA_ACTION),
     ACTION_FAILED_SQL_AGAINST_CERBERUS(295, "FA", "You cannot executeSqlUpdate using Cerberus connection pool. Please create new connection with dedicated rights.", true, false, false, MessageGeneralEnum.EXECUTION_FA_ACTION),
     ACTION_FAILED_HIDEKEYBOARD(296, "FA", "Failed to hide keyboard. Check server logs.", true, true, true, MessageGeneralEnum.EXECUTION_FA_ACTION),
+    ACTION_FAILED_SWIPE(297, "FA", "Failed to swipe '%DIRECTION%' screen due to '%REASON%'.", true, true, true, MessageGeneralEnum.EXECUTION_FA_ACTION),
     ACTION_PENDING(299, "PE", "Doing Action...", false, false, false, MessageGeneralEnum.EXECUTION_PE_TESTSTARTED),
     // *********** EXECUTION CONTROLS ***********
     CONTROL_SUCCESS(300, "OK", "", false, false, false, MessageGeneralEnum.EXECUTION_PE_TESTSTARTED),

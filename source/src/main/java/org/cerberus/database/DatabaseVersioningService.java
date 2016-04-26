@@ -5785,7 +5785,29 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
                 "class=\\'ex\\'></td><td class=\\'ex\\'>SEARCH key will be pressed.</td></tr></table></doc>' WHERE `DocTable`='testcasestepaction' and`DocField`='Action' " +
                 "and`DocValue`='keypress' and`Lang`='en';\n");
         SQLInstruction.add(SQLS.toString());
-        
+
+        // Add the swipe action.
+        //-- ------------------------ 773-775
+        SQLS = new StringBuilder();
+        SQLS.append("INSERT INTO `invariant` (`idname`, `value`, `sort`, `description`, `VeryShortDesc`) VALUES ('ACTION', 'swipe', '1300', 'Swipe mobile screen', '');\n");
+        SQLInstruction.add(SQLS.toString());
+        SQLS = new StringBuilder();
+        SQLS.append("INSERT INTO `documentation` (`DocTable`, `DocField`, `DocValue`, `Lang`, `DocLabel`, `DocDesc`) VALUES ('testcasestepaction', 'Action', 'swipe', " +
+                "'en', 'Swipe the screen.', '<code class=\\'doc-fixed\\'>swipe</code> will allow you to swipe a mobile screen to a specific direction.<br><br>Usage :<br><doc " +
+                "class=\\\"usage\\\"><table cellspacing=0 cellpadding=2><th class=\\'ex\\'>Field</th><th class=\\'ex\\'>Usage</th><tr><td class=\\'ex\\'>Object</td><td " +
+                "class=\\'ex\\'>Direction to swipe (UP, DOWN, RIGHT, LEFT or CUSTOM). In case of UP, DOWN, RIGHT and LEFT, swipe is done by computing from 1/3 to 2/3 of the " +
+                "screen resolution.</td></tr><tr><td class=\\'ex\\'>Property</td><td class=\\'ex\\'>Only in case of CUSTOM swipe direction, specify the custom direction thanks " +
+                "to the following format: x1;y1;x2;y2, where x1 and y1 are the coordinates of the start position on the screen and x2 and y2 are the coordinates of the end " +
+                "position on the screen.</td></tr></table></doc><br><br>Examples :<br><doc class=\\\"examples\\\"><table cellspacing=0 cellpadding=2><th " +
+                "class=\\'ex\\'>Object</th><th class=\\'ex\\'>Property</th><th class=\\'ex\\'>Result</th><tr><td class=\\'ex\\'>UP</td><td class=\\'ex\\'></td><td " +
+                "class=\\'ex\\'>Swipe is done from down to up (so the page go down).</td></tr><tr><td class=\\'ex\\'>CUSTOM</td><td class=\\'ex\\'>100;200;300;400</td></code><td" +
+                " class=\\'ex\\'>Swipe goes from (x1 = 100; y1 = 200) to (x2 = 300; y2 = 400) on the screen.</td></tr></table></doc>');");
+        SQLInstruction.add(SQLS.toString());
+        SQLS = new StringBuilder();
+        SQLS.append("INSERT INTO `parameter` (`system`, `param`, `value`, `description`) VALUES ('', 'appium_swipeDuration', '2000', 'The duration for the Appium " +
+                "swipe action');\n");
+        SQLInstruction.add(SQLS.toString());
+
         return SQLInstruction;
     }
 
