@@ -20,11 +20,10 @@
 package org.cerberus.service.engine.impl;
 
 import io.appium.java_client.IOSKeyCode;
+import org.apache.log4j.Logger;
 import org.cerberus.crud.entity.MessageEvent;
 import org.cerberus.crud.entity.Session;
 import org.cerberus.enums.MessageEventEnum;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 /**
@@ -38,7 +37,7 @@ public class IOSAppiumService extends AppiumService {
     /**
      * Associated {@link Logger} to this class
      */
-    private static final Logger LOGGER = LoggerFactory.getLogger(IOSAppiumService.class);
+    private static final Logger LOGGER = Logger.getLogger(IOSAppiumService.class);
 
     @Override
     public MessageEvent keyPress(Session session, String keyName) {

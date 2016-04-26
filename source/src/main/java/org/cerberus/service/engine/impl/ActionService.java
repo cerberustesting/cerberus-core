@@ -1036,13 +1036,15 @@ public class ActionService implements IActionService {
         String applicationType = tCExecution.getApplication().getType();
         if ("APK".equals(applicationType)) {
             return androidAppiumService.hideKeyboard(tCExecution.getSession());
-        } else if ("IPA".equals(applicationType)) {
-            return iosAppiumService.hideKeyboard(tCExecution.getSession());
-        } else {
-            return new MessageEvent(MessageEventEnum.ACTION_NOTEXECUTED_NOTSUPPORTED_FOR_APPLICATION)
-                    .resolveDescription("ACTION", "Hide keyboard")
-                    .resolveDescription("APPLICATIONTYPE", tCExecution.getApplication().getType());
         }
+        if ("IPA".equals(applicationType)) {
+            return iosAppiumService.hideKeyboard(tCExecution.getSession());
+        }
+
+        // Else we are faced with a non supported application
+        return new MessageEvent(MessageEventEnum.ACTION_NOTEXECUTED_NOTSUPPORTED_FOR_APPLICATION)
+                .resolveDescription("ACTION", "Hide keyboard")
+                .resolveDescription("APPLICATIONTYPE", tCExecution.getApplication().getType());
     }
 
     private MessageEvent doActionSwipe(TestCaseExecution tCExecution, String object, String property) {
@@ -1065,13 +1067,15 @@ public class ActionService implements IActionService {
         String applicationType = tCExecution.getApplication().getType();
         if ("APK".equals(applicationType)) {
             return androidAppiumService.swipe(tCExecution.getSession(), action);
-        } else if ("IPA".equals(applicationType)) {
-            return iosAppiumService.swipe(tCExecution.getSession(), action);
-        } else {
-            return new MessageEvent(MessageEventEnum.ACTION_NOTEXECUTED_NOTSUPPORTED_FOR_APPLICATION)
-                    .resolveDescription("ACTION", "Swipe screen")
-                    .resolveDescription("APPLICATIONTYPE", tCExecution.getApplication().getType());
         }
+        if ("IPA".equals(applicationType)) {
+            return iosAppiumService.swipe(tCExecution.getSession(), action);
+        }
+
+        // Else we are faced with a non supported application
+        return new MessageEvent(MessageEventEnum.ACTION_NOTEXECUTED_NOTSUPPORTED_FOR_APPLICATION)
+                .resolveDescription("ACTION", "Swipe screen")
+                .resolveDescription("APPLICATIONTYPE", tCExecution.getApplication().getType());
     }
 
 }

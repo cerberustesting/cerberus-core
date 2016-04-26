@@ -20,11 +20,10 @@
 package org.cerberus.service.engine.impl;
 
 import io.appium.java_client.AndroidKeyCode;
+import org.apache.log4j.Logger;
 import org.cerberus.crud.entity.MessageEvent;
 import org.cerberus.crud.entity.Session;
 import org.cerberus.enums.MessageEventEnum;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 /**
@@ -38,7 +37,7 @@ public class AndroidAppiumService extends AppiumService {
     /**
      * The associated {@link Logger} to this class
      */
-    private static final Logger LOGGER = LoggerFactory.getLogger(AndroidAppiumService.class);
+    private static final Logger LOGGER = Logger.getLogger(AndroidAppiumService.class);
 
     @Override
     public MessageEvent keyPress(Session session, String keyName) {
