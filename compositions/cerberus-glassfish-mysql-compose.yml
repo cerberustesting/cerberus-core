@@ -1,0 +1,58 @@
+# Cerberus Copyright (C) 2016 Cerberus Testing
+# DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
+#
+# This file is part of Cerberus.
+#
+# Cerberus is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# Cerberus is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with Cerberus. If not, see <http://www.gnu.org/licenses/>.
+# Cerberus Glassfish MySQL composition.
+
+# Run a Cerberus instance with a Glassfish application server and a MySQL database.
+#
+# How to run:
+#   - $ docker-compose -f ./cerberus-glassfish-mysql-compose.yml up
+#   - Waiting for images startup
+#   - Open your browser and go to <docker_host>:18080/Cerberus, where <docker_host> is your Docker host
+#
+# Exposed ports:
+#   - 13306: MySQL database access
+#   - 18080: Glassfish HTTP access
+#   - 14848: Glassfsh administration console access
+#
+# Volumes:
+#   - MySQL data directory: FROM ../images/cerberus-db-mysql/data TO /var/lib/mysql
+#     ** IMPORTANT **
+#     The default ../images/cerberus-db-mysql/data mapping value is for test only.
+#     Change this default value to be more relevant with your configuration.
+version: '2'
+services:
+  cerberus-db-mysql:
+    image: cerberustesting/cerberus-db-mysql:latest
+    expose:
+      - "3306"
+    ports:
+      - "13306:3306"
+    volumes:
+      - ../images/cerberus-db-mysql/data:/var/lib/mysql
+  cerberus-as-glassfish:
+    image: cerberustesting/cerberus-as-glassfish:latest
+    environment:
+      - DATABASE_HOST=cerberus-db-mysql
+      - DATABASE_PORT=3306
+    ports:
+      - "18080:8080"
+      - "14848:4848"
+    depends_on:
+      - cerberus-db-mysql
+    links:
+      - cerberus-db-mysql
