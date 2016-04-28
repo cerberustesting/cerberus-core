@@ -30,6 +30,11 @@ import org.cerberus.enums.MessageGeneralEnum;
 public class MessageEvent {
 
     /**
+     * Variable delimiter on the {@link MessageEvent#description} field
+     */
+    public static final char VARIABLE_DELIMITER = '%';
+
+    /**
      * Message is used to feedback the result of any Cerberus event. Events
      * could by Property, Action, Control or even Step. For every event, we
      * have: - a number - a 2 digit code that report the status of the event. -
@@ -79,7 +84,7 @@ public class MessageEvent {
     public boolean isDoScreenshot() {
         return doScreenshot;
     }
-    
+
     public boolean isGetPageSource() {
         return getPageSource;
     }
@@ -120,10 +125,27 @@ public class MessageEvent {
         this.description = description;
     }
 
+    /**
+     * Resolve description by injecting the given value for the given key
+     * <p>
+     * A key is a {@link MessageEvent} variable that follows the given pattern:
+     * {@link MessageEvent#VARIABLE_DELIMITER}[variable name]{@link MessageEvent#VARIABLE_DELIMITER}
+     *
+     * @param key   the variable name to replace on the {@link MessageEvent} description
+     * @param value the value to replace for the given variable name
+     * @return this {@link MessageEvent} instance
+     */
+    public MessageEvent resolveDescription(String key, String value) {
+        if (description != null) {
+            description = description.replaceAll(VARIABLE_DELIMITER + key + VARIABLE_DELIMITER, value);
+        }
+        return this;
+    }
+
     @Override
     public String toString() {
         return "MessageEvent{" + "code=" + code + ", codeString=" + codeString + ", description=" + description + ", stopTest=" + stopTest + ", doScreenshot=" + doScreenshot + ", getPageSource=" + getPageSource + ", message=" + message.toString() + '}';
     }
-    
-    
+
+
 }
