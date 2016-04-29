@@ -22,7 +22,7 @@ package org.cerberus.service.engine;
 import org.cerberus.crud.entity.Identifier;
 import org.cerberus.crud.entity.MessageEvent;
 import org.cerberus.crud.entity.Session;
-import org.cerberus.crud.entity.SwipeAction;
+import org.cerberus.service.engine.model.SwipeAction;
 
 /**
  *

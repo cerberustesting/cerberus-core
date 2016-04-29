@@ -27,7 +27,7 @@ import org.cerberus.crud.entity.Identifier;
 import org.cerberus.crud.entity.MessageEvent;
 import org.cerberus.crud.entity.Parameter;
 import org.cerberus.crud.entity.Session;
-import org.cerberus.crud.entity.SwipeAction;
+import org.cerberus.service.engine.model.SwipeAction;
 import org.cerberus.crud.service.impl.ParameterService;
 import org.cerberus.enums.MessageEventEnum;
 import org.cerberus.log.MyLogger;
