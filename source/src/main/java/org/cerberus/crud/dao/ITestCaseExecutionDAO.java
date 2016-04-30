@@ -35,7 +35,8 @@ import org.cerberus.util.answer.AnswerList;
 public interface ITestCaseExecutionDAO {
 
     /**
-     * @param tCExecution TestCaseExecution Object to insert in TestcaseExecution table
+     * @param tCExecution TestCaseExecution Object to insert in
+     * TestcaseExecution table
      * @throws org.cerberus.exception.CerberusException
      * @return execution id (long)
      */
@@ -46,32 +47,44 @@ public interface ITestCaseExecutionDAO {
     List<String> getIDListOfLastExecutions(String test, String testcase, String country);
 
     /**
+     * Gets the last execution from the database following the defined criteria.
      *
-     * @param test Test Criteria 
+     * @param application
+     * @return
+     */
+    AnswerItem readLastByCriteria(String application);
+
+    /**
+     *
+     * @param test Test Criteria
      * @param testcase TestCase Criteria
      * @param environment Environment Criteria
      * @param country Country Criteria
      * @param build
      * @param revision
-     * @return TestCaseExecution Object created only with attributes from database
+     * @return TestCaseExecution Object created only with attributes from
+     * database
      */
     TestCaseExecution findLastTCExecutionByCriteria(String test, String testcase, String environment, String country,
-                                              String build, String revision) throws CerberusException;
+            String build, String revision) throws CerberusException;
 
     TestCaseExecution findLastTCExecutionByCriteria(String test, String testCase, String environment, String country,
-                                                    String build, String revision, String browser, String browserVersion,
-                                                    String ip, String port, String tag);
+            String build, String revision, String browser, String browserVersion,
+            String ip, String port, String tag);
 
     /**
-     * @param dateLimitFrom The limit start date of the executions from which the selection is done. Mandatory parameter.
-     * @param test          filter on the test
-     * @param testCase      filter on the testCase
-     * @param application   filter on the application.
-     * @param country       filter on the country
-     * @param environment   filter on the environment
+     * @param dateLimitFrom The limit start date of the executions from which
+     * the selection is done. Mandatory parameter.
+     * @param test filter on the test
+     * @param testCase filter on the testCase
+     * @param application filter on the application.
+     * @param country filter on the country
+     * @param environment filter on the environment
      * @param controlStatus filter on the control status (RC of the execution)
-     * @param status        filter on the status (Status of the testCase when execution was made)
-     * @return a list of testCaseExecution done after the dateLimitFrom parameter and following the other criteria.
+     * @param status filter on the status (Status of the testCase when execution
+     * was made)
+     * @return a list of testCaseExecution done after the dateLimitFrom
+     * parameter and following the other criteria.
      * @throws CerberusException when no executions can be found.
      */
     List<TestCaseExecution> findExecutionbyCriteria1(String dateLimitFrom, String test, String testCase, String application, String country, String environment, String controlStatus, String status) throws CerberusException;
@@ -92,16 +105,15 @@ public interface ITestCaseExecutionDAO {
      * @throws CerberusException when no executions can be found.
      */
     List<TestCaseExecution> findExecutionsByCampaignNameAndTag(String campaign, String tag) throws CerberusException;
-    
+
     /**
      * @param withUUIDTag determine of we must retreive UUID tag or not
      * @return a list of String tag
      * @throws CerberusException when no tags can be found.
      */
     List<String> findDistinctTag(boolean withUUIDTag) throws CerberusException;
-    
-    TestCaseExecution findLastTestCaseExecutionNotPE(String test, String testCase) throws CerberusException;
 
+    TestCaseExecution findLastTestCaseExecutionNotPE(String test, String testCase) throws CerberusException;
 
     /**
      *
@@ -119,18 +131,19 @@ public interface ITestCaseExecutionDAO {
      * @return
      */
     public TestCaseExecution findLastTCExecutionInGroup(String test, String testCase, String environment, String country,
-                                                        String build, String revision, String browser, String browserVersion,
-                                                        String ip, String port, String tag);
-    
+            String build, String revision, String browser, String browserVersion,
+            String ip, String port, String tag);
+
     /**
      * Set Tag to an execution
+     *
      * @param id : ID of the execution
      * @param tag : Tag to set to the execution
      */
-    public void setTagToExecution(long id, String tag) throws CerberusException ;
-    
+    public void setTagToExecution(long id, String tag) throws CerberusException;
+
     AnswerList findTagList(int tagnumber) throws CerberusException;
-    
+
     public AnswerList readByTagByCriteria(String tag, int start, int amount, String column, String dir, String searchTerm, String individualSearch) throws CerberusException;
 
     public AnswerList readDistinctEnvCoutnryBrowserByTag(String tag);
@@ -140,7 +153,7 @@ public interface ITestCaseExecutionDAO {
     public AnswerList readBySystemByVarious(String system, List<String> testList, List<String> applicationList, List<String> projectList, List<String> tcstatusList, List<String> groupList, List<String> tcactiveList, List<String> priorityList, List<String> targetsprintList, List<String> targetrevisionList, List<String> creatorList, List<String> implementerList, List<String> buildList, List<String> revisionList, List<String> environmentList, List<String> countryList, List<String> browserList, List<String> tcestatusList, String ip, String port, String tag, String browserversion, String comment, String bugid, String ticket);
 
     public AnswerItem readByKey(long executionId);
-    
+
     public TestCaseExecution loadFromResultSet(ResultSet resultSet) throws SQLException;
 
-    }
+}
