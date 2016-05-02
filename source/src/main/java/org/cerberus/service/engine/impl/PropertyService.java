@@ -240,7 +240,7 @@ public class PropertyService implements IPropertyService {
             calculateSubDataEntry(tCExecution, testCaseExecutionData, inner.getProperty());//calculates the subdata entry
         } else //if the getFromDataLib does not succeed than it means that we are not able to perform the sub-data access 
         {
-            if (tecdAuxiliary.getPropertyResultMessage().getCode() == MessageEventEnum.TESTDATALIB_NOT_FOUND_ERROR.getCode()
+            if (tecdAuxiliary.getPropertyResultMessage().getCode() == MessageEventEnum.PROPERTY_FAILED_GETFROMDATALIB_NOT_FOUND_ERROR.getCode()
                     || tecdAuxiliary.getPropertyResultMessage().getCode() == MessageEventEnum.PROPERTY_FAILED_GETFROMDATALIB_GENERIC.getCode() //same code as PROPERTY_FAILED_GETFROMDATALIB_NODATA
                     || tecdAuxiliary.getPropertyResultMessage().getCode() == MessageEventEnum.ACTION_FAILED_CALLSOAP.getCode()) { //error related with the soap call 
                 //redefinition of the error message
@@ -391,7 +391,7 @@ public class PropertyService implements IPropertyService {
             stringToDecode = StringUtil.replaceAllProperties(stringToDecode, "%" + eachTccp.getProperty() + "%", tecd.getValue());
             //if a getFromDataLib fails or a property that tries to make a subdata access fails
             //then all properties that use it (as inner properties) should fail and its calculation should not proceed
-            if (tecd.getPropertyResultMessage().getCode() == MessageEventEnum.TESTDATALIB_NOT_FOUND_ERROR.getCode() //lib was not found
+            if (tecd.getPropertyResultMessage().getCode() == MessageEventEnum.PROPERTY_FAILED_GETFROMDATALIB_NOT_FOUND_ERROR.getCode() //lib was not found
                     || tecd.getPropertyResultMessage().getCode() == MessageEventEnum.PROPERTY_FAILED_SUBDATAACCESS.getCode() //a problem occurred while accesing a sub-data entry
                     || tecd.getPropertyResultMessage().getCode() == MessageEventEnum.PROPERTY_FAILED_GETFROMDATALIBDATA_INVALID_COLUMN.getCode() //a problem occurred while accesing a sub-data entry
                     || tecd.getPropertyResultMessage().getCode() == MessageEventEnum.PROPERTY_FAILED_GETFROMDATALIB_GENERIC.getCode()//the same code as PROPERTY_FAILED_GETFROMDATALIB_NODATA
@@ -1084,7 +1084,7 @@ public class PropertyService implements IPropertyService {
                 //check if there are properties defined in the data specification
                 calculateInnerProperties(lib, testCaseStepActionExecution);
                 //we need to recalculate the result for the lib
-                serviceAnswer = testDataLibService.fetchData(lib, testCaseCountryProperty.getRowLimit(), testCaseCountryProperty.getNature());
+                serviceAnswer = testDataLibService.fetchData(lib, testCaseCountryProperty, tCExecution);
 
                 if (serviceAnswer.getResultMessage().getCode() != MessageEventEnum.PROPERTY_SUCCESS.getCode()) {
                     //if the fetch data fails then we will get the message and show it
@@ -1130,13 +1130,14 @@ public class PropertyService implements IPropertyService {
             AnswerList nameExistsAnswer = testDataLibService.readNameListByName(testCaseExecutionData.getValue1(), 1);
             if (nameExistsAnswer.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode()) && nameExistsAnswer.getTotalRows() > 0) {
                 //if the library name exists but was not available or does not exist for the current specification but exists for other countries/environments/systems
-                res = new MessageEvent(MessageEventEnum.TESTDATALIB_NOT_FOUND_ERROR);
+                res = new MessageEvent(MessageEventEnum.PROPERTY_FAILED_GETFROMDATALIB_NOT_FOUND_ERROR);
                 res.setDescription(res.getDescription().replace("%ITEM%", testCaseExecutionData.getValue1()).
                         replace("%COUNTRY%", tCExecution.getCountryEnvironmentParameters().getCountry()).
                         replace("%ENVIRONMENT%", tCExecution.getCountryEnvironmentParameters().getEnvironment()).
                         replace("%SYSTEM%", tCExecution.getCountryEnvironmentParameters().getSystem()));
             } else {
-                res = new MessageEvent(MessageEventEnum.PROPERTY_FAILED_GETFROMDATALIB);
+                res = new MessageEvent(MessageEventEnum.PROPERTY_FAILED_GETFROMDATALIB_NOT_EXIST_ERROR);
+                res.setDescription(res.getDescription().replace("%ITEM%", testCaseExecutionData.getValue1()));
             }
 
         }
@@ -1294,7 +1295,7 @@ public class PropertyService implements IPropertyService {
                 if (lib.getType().equals(TestDataLibTypeEnum.SOAP.getCode())) {
                     //now we can call the soap entry
                     calculateInnerProperties(lib, testCaseStepActionExecution);
-                    AnswerItem callAnswer = testDataLibService.fetchData(lib, currentProperty.getRowLimit(), currentProperty.getNature());
+                    AnswerItem callAnswer = testDataLibService.fetchData(lib, currentProperty, null);
 
                     //updates the result data
                     if (callAnswer.isCodeEquals(MessageEventEnum.PROPERTY_SUCCESS.getCode())) {
@@ -1319,7 +1320,7 @@ public class PropertyService implements IPropertyService {
                 }
             } else {
                 //library entry is not defined for the specified: name + country + system + environment
-                message = new MessageEvent(MessageEventEnum.TESTDATALIB_NOT_FOUND_ERROR);
+                message = new MessageEvent(MessageEventEnum.PROPERTY_FAILED_GETFROMDATALIB_NOT_FOUND_ERROR);
                 message.setDescription(message.getDescription().replace("%ITEM%", libName).
                         replace("%COUNTRY%", country).
                         replace("%ENVIRONMENT%", environment).

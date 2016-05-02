@@ -200,9 +200,20 @@ public class TestCaseExecutionDataDAO implements ITestCaseExecutionDataDAO {
     @Override
     public List<String> getPastValuesOfProperty(String propName, String test, String testCase, String build, String environment, String country) {
         List<String> list = null;
-        final String query = "SELECT VALUE FROM testcaseexecutiondata WHERE Property = ? AND ID IN "
+        final String query = "SELECT distinct `VALUE` FROM testcaseexecutiondata WHERE Property = ? AND ID IN "
                 + "(SELECT id FROM testcaseexecution WHERE test = ? AND testcase = ? AND build = ? AND environment = ? AND country = ?) "
                 + "ORDER BY ID DESC";
+
+        // Debug message on SQL.
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("SQL : " + query);
+            LOG.debug("SQL.param : " + propName);
+            LOG.debug("SQL.param : " + test);
+            LOG.debug("SQL.param : " + testCase);
+            LOG.debug("SQL.param : " + build);
+            LOG.debug("SQL.param : " + environment);
+            LOG.debug("SQL.param : " + country);
+        }
 
         Connection connection = this.databaseSpring.connect();
         try {
@@ -214,6 +225,63 @@ public class TestCaseExecutionDataDAO implements ITestCaseExecutionDataDAO {
                 preStat.setString(4, build);
                 preStat.setString(5, environment);
                 preStat.setString(6, country);
+
+                ResultSet resultSet = preStat.executeQuery();
+                try {
+                    list = new ArrayList<String>();
+
+                    while (resultSet.next()) {
+                        list.add(resultSet.getString("value"));
+                    }
+                } catch (SQLException exception) {
+                    MyLogger.log(TestCaseExecutionDataDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
+                } finally {
+                    resultSet.close();
+                }
+            } catch (SQLException exception) {
+                MyLogger.log(TestCaseExecutionDataDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
+            } finally {
+                preStat.close();
+            }
+        } catch (SQLException exception) {
+            MyLogger.log(TestCaseExecutionDataDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
+        } finally {
+            try {
+                if (connection != null) {
+                    connection.close();
+                }
+            } catch (SQLException e) {
+                MyLogger.log(TestCaseExecutionDataDAO.class.getName(), Level.WARN, e.toString());
+            }
+        }
+        return list;
+    }
+
+    @Override
+    public List<String> getInUseValuesOfProperty(String propName, String environment, String country, Integer timeoutInSecond) {
+        List<String> list = null;
+        final String query = "SELECT distinct `VALUE` FROM testcaseexecutiondata WHERE Property = ? AND ID IN "
+                + "(SELECT id FROM testcaseexecution WHERE environment = ? AND country = ? AND ControlSTATUS = 'PE' "
+                + " AND TO_SECONDS(NOW()) - TO_SECONDS(start) < ? "
+                + ")";
+
+        // Debug message on SQL.
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("SQL : " + query);
+            LOG.debug("SQL.param : " + propName);
+            LOG.debug("SQL.param : " + environment);
+            LOG.debug("SQL.param : " + country);
+            LOG.debug("SQL.param : " + String.valueOf(timeoutInSecond));
+        }
+
+        Connection connection = this.databaseSpring.connect();
+        try {
+            PreparedStatement preStat = connection.prepareStatement(query);
+            try {
+                preStat.setString(1, propName);
+                preStat.setString(2, environment);
+                preStat.setString(3, country);
+                preStat.setInt(4, timeoutInSecond);
 
                 ResultSet resultSet = preStat.executeQuery();
                 try {

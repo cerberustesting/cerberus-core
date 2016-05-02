@@ -32,7 +32,7 @@ import org.cerberus.util.answer.AnswerItem;
  * @author bcivel
  */
 public interface ISQLService {
-    
+
     TestCaseExecutionData calculateOnDatabase(TestCaseExecutionData testCaseExecutionData, TestCaseCountryProperties testCaseProperties, TestCaseExecution tCExecution);
 
     List<String> queryDatabase(String connectionName, String sql, int limit) throws CerberusEventException;
@@ -42,24 +42,28 @@ public interface ISQLService {
      * @return A Random String from a List of String
      */
     String getRandomStringFromList(List<String> list);
-    
+
     String getRandomNewStringFromList(List<String> resultset, List<String> pastValues);
-    
+
     String getRandomStringNotInUse(List<String> resultSet, List<String> valuesInUse);
+
     /**
      * Performs an SQL query that retrieves information from several columns.
-     * @param sql - SQL query to be executed 
-     * @param db - database 
+     *
+     * @param sql - SQL query to be executed
+     * @param db - database
      * @param system - system where the query should be performed
      * @param country - country where the query should be performed
-     * @param environment  - environment where the query should be performed
-     * @param rowLimit - number of rows that should limit the query
-     * @param propertyNature - nature of the property (e.g., random, static) 
+     * @param environment - environment where the query should be performed
+     * @param testCaseCountryProperty
+     * @param keyColumn - sring with the column that contain the key (used for
+     * some propertyNature).
+     * @param tCExecution - Execution context is required for RANDOMNEW and NOTINUSE Natures (that requires test, testcase, build, environment, etc,...)
      * @return a row with several columns
      */
-    AnswerItem calculateOnDatabaseNColumns(String sql, String db, String system, String country, String environment, int rowLimit, String propertyNature);
+    AnswerItem calculateOnDatabaseNColumns(String sql, String db, String system, String country, String environment, TestCaseCountryProperties testCaseCountryProperty, String keyColumn, TestCaseExecution tCExecution);
 
     public MessageEvent executeUpdate(String system, String country, String environment, String db, String sql);
-    
+
     public MessageEvent executeCallableStatement(String system, String country, String environment, String db, String sql);
 }

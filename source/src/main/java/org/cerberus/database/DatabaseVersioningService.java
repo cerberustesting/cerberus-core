@@ -5808,6 +5808,13 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
                 "swipe action');\n");
         SQLInstruction.add(SQLS.toString());
 
+        // Add the cerberus_notinuse_timeout parameter.
+        //-- ------------------------ 776
+        SQLS = new StringBuilder();
+        SQLS.append("INSERT INTO `parameter` (`system`, `param`, `value`, `description`) VALUES ('', 'cerberus_notinuse_timeout', '600', 'Integer that correspond to the number of seconds after which, any pending execution (status=PE) will not be considered as pending.');");
+        SQLInstruction.add(SQLS.toString());
+        
+        
         return SQLInstruction;
     }
 

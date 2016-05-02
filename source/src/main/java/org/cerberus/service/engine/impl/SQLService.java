@@ -27,8 +27,8 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Random;
-import java.util.logging.Logger;
 import org.apache.log4j.Level;
 import org.cerberus.crud.dao.ITestCaseExecutionDataDAO;
 import org.cerberus.crud.entity.CountryEnvironmentDatabase;
@@ -141,12 +141,13 @@ public class SQLService implements ISQLService {
     }
 
     @Override
-    public AnswerItem calculateOnDatabaseNColumns(String sql, String db, String system, String country, String environment, int rowLimit, String propertyNature) {
+    public AnswerItem calculateOnDatabaseNColumns(String sql, String db, String system, String country, String environment, TestCaseCountryProperties testCaseCountryProperty, String keyColumn, TestCaseExecution tCExecution) {
         AnswerItem answer = new AnswerItem();
         String connectionName;
         CountryEnvironmentDatabase countryEnvironmentDatabase;
         MessageEvent mes = new MessageEvent(MessageEventEnum.PROPERTY_SUCCESS_SQL);
         List<HashMap<String, String>> list;
+        int rowLimit = testCaseCountryProperty.getRowLimit();
 
         try {
 
@@ -160,35 +161,103 @@ public class SQLService implements ISQLService {
                 connectionName = countryEnvironmentDatabase.getConnectionPoolName();
 
                 if (!(StringUtil.isNullOrEmpty(connectionName))) {
-                    if (propertyNature.equalsIgnoreCase(Property.NATURE_STATIC)) { // If Nature of the property is static, we don't need to getch more than 1 record.
+                    if (testCaseCountryProperty.getNature().equalsIgnoreCase(Property.NATURE_STATIC)) { // If Nature of the property is static, we don't need to getch more than 1 record.
                         rowLimit = 1;
                     }
                     //performs a query that returns several rows containing n columns
-                    AnswerList responseList = this.queryDatabaseNColumns(connectionName, sql, system, rowLimit);
+                    AnswerList responseList = this.queryDatabaseNColumns(connectionName, sql, rowLimit, system);
 
                     //if the query returns sucess then we can get the data
                     if (responseList.getResultMessage().getCode() == MessageEventEnum.PROPERTY_SUCCESS_SQL.getCode()) {
                         list = responseList.getDataList();
                         if (list != null && !list.isEmpty()) {
 
-                            if (propertyNature.equalsIgnoreCase(Property.NATURE_STATIC)) {
+                            if (testCaseCountryProperty.getNature().equalsIgnoreCase(Property.NATURE_STATIC)) {
                                 answer.setItem((list.get(0)));
-                                mes = new MessageEvent(MessageEventEnum.PROPERTY_SUCCESS_GETFROMDATALIB);
+                                mes = new MessageEvent(MessageEventEnum.PROPERTY_SUCCESS_GETFROMDATALIB_SQL_STATIC);
 
-                            } else if (propertyNature.equalsIgnoreCase(Property.NATURE_RANDOM)) {
+                            } else if (testCaseCountryProperty.getNature().equalsIgnoreCase(Property.NATURE_RANDOM)) {
                                 Random r = new Random();
                                 int position = r.nextInt(list.size());
                                 answer.setItem(list.get(position));
                                 mes = new MessageEvent(MessageEventEnum.PROPERTY_SUCCESS_GETFROMDATALIB_SQL_RANDOM);
                                 mes.setDescription(mes.getDescription().replaceAll("%POS%", Integer.toString(position)).replaceAll("%TOTALPOS%", Integer.toString(list.size())));
 
-                            } else if (propertyNature.equalsIgnoreCase(Property.NATURE_RANDOMNEW)) {
-                                mes = new MessageEvent(MessageEventEnum.PROPERTY_FAILED_FEATURENOTIMPLEMENTED);
-                                mes.setDescription(mes.getDescription().replaceAll("%FEATURE%", "RANDOMNEW Property Nature in TestDataLibrary"));
+                            } else if (testCaseCountryProperty.getNature().equalsIgnoreCase(Property.NATURE_RANDOMNEW)) {
 
-                            } else if (propertyNature.equalsIgnoreCase(Property.NATURE_NOTINUSE)) {
-                                mes = new MessageEvent(MessageEventEnum.PROPERTY_FAILED_FEATURENOTIMPLEMENTED);
-                                mes.setDescription(mes.getDescription().replaceAll("%FEATURE%", "NOTINUSE Property Nature in TestDataLibrary"));
+                                int initNB = list.size();
+                                // We get the list of values that are already used.
+                                List<String> pastValues = this.testCaseExecutionDataDAO.getPastValuesOfProperty(testCaseCountryProperty.getProperty(), tCExecution.getTest(),
+                                        tCExecution.getTestCase(), tCExecution.getCountryEnvParam().getBuild(), tCExecution.getEnvironmentData(),
+                                        tCExecution.getCountry());
+
+                                int removedNB = 0;
+                                // We save all rows that needs to be removed to listToremove.
+                                List<Map<String, String>> listToremove = new ArrayList<Map<String, String>>();
+                                for (String valueToRemove : pastValues) {
+                                    for (Map<String, String> curentRow : list) {
+                                        if (curentRow.get(keyColumn.toUpperCase()).equals(valueToRemove)) {
+                                            if (true) {
+                                                listToremove.add(curentRow);
+                                                removedNB++;
+                                            }
+                                        }
+                                    }
+                                }
+                                // We remove all listToremove entries from list.
+                                list.removeAll(listToremove);
+
+                                if (list != null && !list.isEmpty()) { // We pick a random value from the left entries of the list.
+                                    Random r = new Random();
+                                    int position = r.nextInt(list.size());
+                                    answer.setItem(list.get(position));
+                                    mes = new MessageEvent(MessageEventEnum.PROPERTY_SUCCESS_GETFROMDATALIB_SQL_RANDOMNEW);
+                                    mes.setDescription(mes.getDescription().replaceAll("%TOTNB%", Integer.toString(initNB))
+                                            .replaceAll("%REMNB%", Integer.toString(removedNB))
+                                            .replaceAll("%POS%", Integer.toString(position))
+                                            .replaceAll("%TOTALPOS%", Integer.toString(list.size())));
+                                } else { // No more entries available.
+                                    mes = new MessageEvent(MessageEventEnum.PROPERTY_FAILED_GETFROMDATALIB_SQL_RANDOMNEW_NOMORERECORD);
+                                    mes.setDescription(mes.getDescription().replaceAll("%TOTNB%", Integer.toString(initNB)));
+                                }
+
+                            } else if (testCaseCountryProperty.getNature().equalsIgnoreCase(Property.NATURE_NOTINUSE)) {
+
+                                int initNB = list.size();
+                                // We get the list of values that are already used.
+                                Integer peTimeout = Integer.valueOf(parameterService.findParameterByKey("cerberus_notinuse_timeout", system).getValue());
+                                List<String> pastValues = this.testCaseExecutionDataDAO.getInUseValuesOfProperty(testCaseCountryProperty.getProperty(), tCExecution.getEnvironmentData(), tCExecution.getCountry(), peTimeout);
+
+                                int removedNB = 0;
+                                // We save all rows that needs to be removed to listToremove.
+                                List<Map<String, String>> listToremove = new ArrayList<Map<String, String>>();
+                                for (String valueToRemove : pastValues) {
+                                    for (Map<String, String> curentRow : list) {
+                                        if (curentRow.get(keyColumn.toUpperCase()).equals(valueToRemove)) {
+                                            if (true) {
+                                                listToremove.add(curentRow);
+                                                removedNB++;
+                                            }
+                                        }
+                                    }
+                                }
+                                // We remove all listToremove entries from list.
+                                list.removeAll(listToremove);
+
+                                if (list != null && !list.isEmpty()) { // We pick a random value from the left entries of the list.
+                                    Random r = new Random();
+                                    int position = r.nextInt(list.size());
+                                    answer.setItem(list.get(position));
+                                    mes = new MessageEvent(MessageEventEnum.PROPERTY_SUCCESS_GETFROMDATALIB_SQL_NOTINUSE);
+                                    mes.setDescription(mes.getDescription().replaceAll("%TOTNB%", Integer.toString(initNB))
+                                            .replaceAll("%REMNB%", Integer.toString(removedNB))
+                                            .replaceAll("%POS%", Integer.toString(position))
+                                            .replaceAll("%TOTALPOS%", Integer.toString(list.size())));
+                                } else { // No more entries available.
+                                    mes = new MessageEvent(MessageEventEnum.PROPERTY_FAILED_GETFROMDATALIB_SQL_NOTINUSE_NOMORERECORD);
+                                    mes.setDescription(mes.getDescription().replaceAll("%TOTNB%", Integer.toString(initNB)));
+                                }
+
                             }
 
                         } else {
@@ -399,7 +468,7 @@ public class SQLService implements ISQLService {
         return list.get(0);
     }
 
-    private AnswerList queryDatabaseNColumns(String connectionName, String sql, String system, int rowLimit) {
+    private AnswerList queryDatabaseNColumns(String connectionName, String sql, int rowLimit, String system) {
         AnswerList listResult = new AnswerList();
         List<HashMap<String, String>> list;
         int maxSecurityFetch = 100;
@@ -409,6 +478,12 @@ public class SQLService implements ISQLService {
         } catch (CerberusException ex) {
             LOG.error(ex);
         }
+        int maxFetch = maxSecurityFetch;
+        if (rowLimit > 0 && rowLimit < maxSecurityFetch) {
+            maxFetch = rowLimit;
+        } else {
+            maxFetch = maxSecurityFetch;
+        }
         int nbFetch = 0;
         MessageEvent msg = new MessageEvent(MessageEventEnum.PROPERTY_SUCCESS);
         msg.setDescription(msg.getDescription().replaceAll("%JDBC%", "jdbc/" + connectionName));
@@ -416,22 +491,6 @@ public class SQLService implements ISQLService {
         Connection connection = this.databaseSpring.connect(connectionName);
         try {
             PreparedStatement preStat = connection.prepareStatement(sql);
-            if (rowLimit > 0 && rowLimit < maxSecurityFetch) {
-                preStat.setMaxRows(rowLimit);
-            } else {
-                preStat.setMaxRows(maxSecurityFetch);
-            }
-            //TODO add limit of select
-            /*
-             ORACLE      => * WHERE ROWNUM <= limit *
-             DB2         => * FETCH FIRST limit ROWS ONLY
-             MYSQL       => * LIMIT 0, limit
-             SQL SERVER  => SELECT TOP limit *
-             SYBASE      => SET ROWCOUNT limit *
-             if (limit > 0) {
-             sql.concat(Util.DbLimit(databaseType, limit));
-             }
-             */
             try {
                 ResultSet resultSet = preStat.executeQuery();
 
@@ -439,7 +498,7 @@ public class SQLService implements ISQLService {
 
                 list = new ArrayList<HashMap<String, String>>();
                 try {
-                    while ((resultSet.next()) && (nbFetch < maxSecurityFetch)) {
+                    while ((resultSet.next()) && (nbFetch < maxFetch)) {
 
                         HashMap<String, String> row = new HashMap<String, String>();
 

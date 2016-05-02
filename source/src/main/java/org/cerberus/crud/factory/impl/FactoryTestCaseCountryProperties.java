@@ -18,7 +18,7 @@
  * along with Cerberus.  If not, see <http://www.gnu.org/licenses/>.
  */
 package org.cerberus.crud.factory.impl;
- 
+
 import org.cerberus.crud.entity.TestCaseCountryProperties;
 import org.cerberus.crud.entity.TestCaseSubDataAccessProperty;
 import org.cerberus.crud.factory.IFactoryTestCaseCountryProperties;
@@ -48,9 +48,9 @@ public class FactoryTestCaseCountryProperties implements IFactoryTestCaseCountry
         testCaseCountryProperties.setNature(nature);
         return testCaseCountryProperties;
     }
+
     @Override
     public TestCaseSubDataAccessProperty create(TestCaseCountryProperties tccp, String property, String libName, String subdataName) {
-        
         TestCaseSubDataAccessProperty prop = new TestCaseSubDataAccessProperty();
         prop.setTest(tccp.getTest());
         prop.setTestCase(tccp.getTestCase());
@@ -61,11 +61,9 @@ public class FactoryTestCaseCountryProperties implements IFactoryTestCaseCountry
         prop.setValue1(""); //stores the testdatalib id
         prop.setValue2(subdataName); //stores the name of the subdata entry
         prop.setAccessName(property);
-        prop.setLibraryValue(libName); 
+        prop.setLibraryValue(libName);
         prop.setSubDataValue(subdataName);
         prop.setPropertyLibEntry(tccp);
-        
-        
-        return prop;                
-    }    
+        return prop;
+    }
 }
