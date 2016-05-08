@@ -39,19 +39,9 @@ public interface IBuildRevisionInvariantService {
 
     AnswerList readBySystemByCriteria(String system, Integer level, int start, int amount, String column, String dir, String searchTerm, String individualSearch);
 
-    BuildRevisionInvariant findBuildRevisionInvariantByKey(String system, Integer level, Integer seq) throws CerberusException;
+    AnswerList readBySystemLevel(String system, Integer level);
 
-    BuildRevisionInvariant findBuildRevisionInvariantByKey(String system, Integer level, String versionName) throws CerberusException;
-
-    List<BuildRevisionInvariant> findAllBuildRevisionInvariantBySystemLevel(String system, Integer level) throws CerberusException;
-
-    List<BuildRevisionInvariant> findAllBuildRevisionInvariantBySystem(String system) throws CerberusException;
-
-    boolean insertBuildRevisionInvariant(BuildRevisionInvariant buildRevisionInvariant);
-
-    boolean deleteBuildRevisionInvariant(BuildRevisionInvariant buildRevisionInvariant);
-
-    boolean updateBuildRevisionInvariant(BuildRevisionInvariant buildRevisionInvariant);
+    AnswerList readBySystem(String system);
 
     boolean exist(String system, Integer level, Integer seq);
 

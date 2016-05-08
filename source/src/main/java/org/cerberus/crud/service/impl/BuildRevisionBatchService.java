@@ -83,7 +83,7 @@ public class BuildRevisionBatchService implements IBuildRevisionBatchService {
     }
 
     @Override
-    public Answer createBatchEntry(String system, String country, String environment, String build, String revision, String batch) {
+    public Answer create(String system, String country, String environment, String build, String revision, String batch) {
         return this.create(buildRevisionBatchFactory.create(system, country, environment, build, revision, batch));
     }
 

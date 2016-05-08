@@ -301,7 +301,7 @@ function deleteEntryHandlerClick() {
     var system = $('#confirmationModal').find('#hiddenField1').prop("value");
     var country = $('#confirmationModal').find('#hiddenField2').prop("value");
     var environment = $('#confirmationModal').find('#hiddenField3').prop("value");
-    var jqxhr = $.post("DeleteCountryEnvParam1", {system: system, country: country, environment: environment}, "json");
+    var jqxhr = $.post("DeleteCountryEnvParam", {system: system, country: country, environment: environment}, "json");
     $.when(jqxhr).then(function (data) {
         var messageType = getAlertType(data.messageType);
         if (messageType === "success") {
@@ -354,7 +354,7 @@ function addEntryModalSaveHandler() {
     var dataForm = convertSerialToJSONObject(formAdd.serialize());
     
     showLoaderInModal('#addEnvModal');
-    var jqxhr = $.post("CreateCountryEnvParam1", dataForm);
+    var jqxhr = $.post("CreateCountryEnvParam", dataForm);
     $.when(jqxhr).then(function (data) {
         hideLoaderInModal('#addEnvModal');
         console.log(data.messageType);
@@ -434,7 +434,7 @@ function editEntryModalSaveHandler() {
 
     showLoaderInModal('#editEnvModal');
     $.ajax({
-        url: "UpdateCountryEnvParam1",
+        url: "UpdateCountryEnvParam",
         async: true,
         method: "POST",
         data: {system: data.system,
@@ -899,7 +899,7 @@ function eventEnableModalConfirmHandler() {
     var revision = formEvent.find("#newRevision").val();
 
     showLoaderInModal('#eventEnableModal');
-    var jqxhr = $.getJSON("NewBuildRev1", "system=" + system + "&country=" + country + "&environment=" + environment + "&build=" + build + "&revision=" + revision);
+    var jqxhr = $.getJSON("NewBuildRev", "system=" + system + "&country=" + country + "&environment=" + environment + "&build=" + build + "&revision=" + revision);
     $.when(jqxhr).then(function (data) {
         console.debug("Email Sent.");
         hideLoaderInModal('#eventEnableModal');
@@ -1027,7 +1027,7 @@ function eventDisableModalConfirmHandler() {
     var environment = formEvent.find("#environment").prop("value");
 
     showLoaderInModal('#eventDisableModal');
-    var jqxhr = $.getJSON("DisableEnvironment1", "system=" + system + "&country=" + country + "&environment=" + environment);
+    var jqxhr = $.getJSON("DisableEnvironment", "system=" + system + "&country=" + country + "&environment=" + environment);
     $.when(jqxhr).then(function (data) {
         hideLoaderInModal('#eventDisableModal');
         if (getAlertType(data.messageType) === "success") {
@@ -1101,7 +1101,7 @@ function eventNewChainModalConfirmHandler() {
     var chain = formEvent.find("#batch").val();
 
     showLoaderInModal('#eventNewChainModal');
-    var jqxhr = $.getJSON("NewChain1", "system=" + system + "&country=" + country + "&environment=" + environment + "&chain=" + chain);
+    var jqxhr = $.getJSON("NewChain", "system=" + system + "&country=" + country + "&environment=" + environment + "&chain=" + chain);
     $.when(jqxhr).then(function (data) {
         console.debug("Email Sent.");
         hideLoaderInModal('#eventNewChainModal');

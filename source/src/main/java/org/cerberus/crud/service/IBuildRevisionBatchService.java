@@ -98,7 +98,7 @@ public interface IBuildRevisionBatchService {
      * @param batch
      * @return
      */
-    Answer createBatchEntry(String system, String country, String environment, String build, String revision, String batch);
+    Answer create(String system, String country, String environment, String build, String revision, String batch);
     
     /**
      *

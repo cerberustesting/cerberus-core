@@ -374,28 +374,16 @@
         <servlet-class>org.cerberus.servlet.crud.test.ReadApplication</servlet-class>
     </servlet>
     <servlet>
-        <servlet-name>NewBuildRev</servlet-name>
+        <servlet-name>NewBuildRev1</servlet-name>
         <servlet-class>org.cerberus.servlet.integration.NewBuildRev</servlet-class>
     </servlet>
     <servlet>
-        <servlet-name>DisableEnvironment</servlet-name>
+        <servlet-name>DisableEnvironment1</servlet-name>
         <servlet-class>org.cerberus.servlet.integration.DisableEnvironment</servlet-class>
     </servlet>
     <servlet>
-        <servlet-name>NewChain</servlet-name>
-        <servlet-class>org.cerberus.servlet.integration.NewChain</servlet-class>
-    </servlet>
-    <servlet>
-        <servlet-name>NewBuildRev1</servlet-name>
-        <servlet-class>org.cerberus.servlet.integration.NewBuildRev1</servlet-class>
-    </servlet>
-    <servlet>
-        <servlet-name>DisableEnvironment1</servlet-name>
-        <servlet-class>org.cerberus.servlet.integration.DisableEnvironment1</servlet-class>
-    </servlet>
-    <servlet>
         <servlet-name>NewChain1</servlet-name>
-        <servlet-class>org.cerberus.servlet.integration.NewChain1</servlet-class>
+        <servlet-class>org.cerberus.servlet.integration.NewChain</servlet-class>
     </servlet>
     <servlet>
         <servlet-name>NewBuildRevisionV000</servlet-name>
@@ -412,10 +400,6 @@
     <servlet>
         <servlet-name>JenkinsDeploy</servlet-name>
         <servlet-class>org.cerberus.servlet.integration.JenkinsDeploy</servlet-class>
-    </servlet>
-    <servlet>
-        <servlet-name>UpdateCountryEnv</servlet-name>
-        <servlet-class>org.cerberus.servlet.crud.countryenvironment.UpdateCountryEnv</servlet-class>
     </servlet>
     <servlet>
         <servlet-name>ExportListTestCase</servlet-name>
@@ -765,64 +749,16 @@
         <servlet-class>org.cerberus.servlet.crud.buildrevisionchange.UpdateBuildRevisionParameters</servlet-class>
     </servlet>
     <servlet>
-        <servlet-name>GetCountryEnvParamList</servlet-name>
-        <servlet-class>org.cerberus.servlet.crud.countryenvironment.GetCountryEnvParamList</servlet-class>
-    </servlet>
-    <servlet>
-        <servlet-name>UpdateCountryEnvParam</servlet-name>
+        <servlet-name>UpdateCountryEnvParam1</servlet-name>
         <servlet-class>org.cerberus.servlet.crud.countryenvironment.UpdateCountryEnvParam</servlet-class>
     </servlet>
     <servlet>
-        <servlet-name>CreateCountryEnvParam</servlet-name>
+        <servlet-name>CreateCountryEnvParam1</servlet-name>
         <servlet-class>org.cerberus.servlet.crud.countryenvironment.CreateCountryEnvParam</servlet-class>
     </servlet>
     <servlet>
-        <servlet-name>DeleteCountryEnvParam</servlet-name>
-        <servlet-class>org.cerberus.servlet.crud.countryenvironment.DeleteCountryEnvParam</servlet-class>
-    </servlet>
-    <servlet>
-        <servlet-name>UpdateCountryEnvParam1</servlet-name>
-        <servlet-class>org.cerberus.servlet.crud.countryenvironment.UpdateCountryEnvParam1</servlet-class>
-    </servlet>
-    <servlet>
-        <servlet-name>CreateCountryEnvParam1</servlet-name>
-        <servlet-class>org.cerberus.servlet.crud.countryenvironment.CreateCountryEnvParam1</servlet-class>
-    </servlet>
-    <servlet>
         <servlet-name>DeleteCountryEnvParam1</servlet-name>
-        <servlet-class>org.cerberus.servlet.crud.countryenvironment.DeleteCountryEnvParam1</servlet-class>
-    </servlet>
-    <servlet>
-        <servlet-name>CreateCountryEnvironmentParameter</servlet-name>
-        <servlet-class>org.cerberus.servlet.crud.countryenvironment.CreateCountryEnvironmentParameter</servlet-class>
-    </servlet>
-    <servlet>
-        <servlet-name>DeleteCountryEnvironmentParameter</servlet-name>
-        <servlet-class>org.cerberus.servlet.crud.countryenvironment.DeleteCountryEnvironmentParameter</servlet-class>
-    </servlet>
-    <servlet>
-        <servlet-name>GetCountryEnvironmentParameterList</servlet-name>
-        <servlet-class>org.cerberus.servlet.crud.countryenvironment.GetCountryEnvironmentParameterList</servlet-class>
-    </servlet>
-    <servlet>
-        <servlet-name>UpdateCountryEnvironmentParameter</servlet-name>
-        <servlet-class>org.cerberus.servlet.crud.countryenvironment.UpdateCountryEnvironmentParameter</servlet-class>
-    </servlet>
-    <servlet>
-        <servlet-name>CreateCountryEnvironmentDatabase</servlet-name>
-        <servlet-class>org.cerberus.servlet.crud.countryenvironment.CreateCountryEnvironmentDatabase</servlet-class>
-    </servlet>
-    <servlet>
-        <servlet-name>DeleteCountryEnvironmentDatabase</servlet-name>
-        <servlet-class>org.cerberus.servlet.crud.countryenvironment.DeleteCountryEnvironmentDatabase</servlet-class>
-    </servlet>
-    <servlet>
-        <servlet-name>FindCountryEnvironmentDatabase</servlet-name>
-        <servlet-class>org.cerberus.servlet.crud.countryenvironment.FindCountryEnvironmentDatabase</servlet-class>
-    </servlet>
-    <servlet>
-        <servlet-name>UpdateCountryEnvironmentDatabase</servlet-name>
-        <servlet-class>org.cerberus.servlet.crud.countryenvironment.UpdateCountryEnvironmentDatabase</servlet-class>
+        <servlet-class>org.cerberus.servlet.crud.countryenvironment.DeleteCountryEnvParam</servlet-class>
     </servlet>
     <servlet>
         <servlet-name>ExecutionThreadMonitoring</servlet-name>
@@ -887,10 +823,6 @@
     <servlet>
         <servlet-name>ReadTestCase</servlet-name>
         <servlet-class>org.cerberus.servlet.crud.test.ReadTestCase</servlet-class>
-    </servlet>
-    <servlet>
-        <servlet-name>FindEnvironments</servlet-name>
-        <servlet-class>org.cerberus.servlet.crud.countryenvironment.FindEnvironments</servlet-class>
     </servlet>
     <servlet>
         <servlet-name>GeneratePerformanceString</servlet-name>
@@ -1277,18 +1209,6 @@
         <url-pattern>/GetNotification</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
-        <servlet-name>NewBuildRev</servlet-name>
-        <url-pattern>/NewBuildRev</url-pattern>
-    </servlet-mapping>
-    <servlet-mapping>
-        <servlet-name>DisableEnvironment</servlet-name>
-        <url-pattern>/DisableEnvironment</url-pattern>
-    </servlet-mapping>
-    <servlet-mapping>
-        <servlet-name>NewChain</servlet-name>
-        <url-pattern>/NewChain</url-pattern>
-    </servlet-mapping>
-    <servlet-mapping>
         <servlet-name>NewBuildRev1</servlet-name>
         <url-pattern>/NewBuildRev1</url-pattern>
     </servlet-mapping>
@@ -1315,10 +1235,6 @@
     <servlet-mapping>
         <servlet-name>JenkinsDeploy</servlet-name>
         <url-pattern>/JenkinsDeploy</url-pattern>
-    </servlet-mapping>
-    <servlet-mapping>
-        <servlet-name>UpdateCountryEnv</servlet-name>
-        <url-pattern>/UpdateCountryEnv</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
         <servlet-name>ExportListTestCase</servlet-name>
@@ -1589,10 +1505,6 @@
         <url-pattern>/GetReport</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
-        <servlet-name>FindEnvironments</servlet-name>
-        <url-pattern>/FindEnvironments</url-pattern>
-    </servlet-mapping>
-    <servlet-mapping>
         <servlet-name>GetReportTest</servlet-name>
         <url-pattern>/GetReportTest</url-pattern>
     </servlet-mapping>
@@ -1657,22 +1569,6 @@
         <url-pattern>/UpdateBuildRevisionParameters</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
-        <servlet-name>GetCountryEnvParamList</servlet-name>
-        <url-pattern>/GetCountryEnvParamList</url-pattern>
-    </servlet-mapping>
-    <servlet-mapping>
-        <servlet-name>UpdateCountryEnvParam</servlet-name>
-        <url-pattern>/UpdateCountryEnvParam</url-pattern>
-    </servlet-mapping>
-    <servlet-mapping>
-        <servlet-name>CreateCountryEnvParam</servlet-name>
-        <url-pattern>/CreateCountryEnvParam</url-pattern>
-    </servlet-mapping>
-    <servlet-mapping>
-        <servlet-name>DeleteCountryEnvParam</servlet-name>
-        <url-pattern>/DeleteCountryEnvParam</url-pattern>
-    </servlet-mapping>
-    <servlet-mapping>
         <servlet-name>UpdateCountryEnvParam1</servlet-name>
         <url-pattern>/UpdateCountryEnvParam1</url-pattern>
     </servlet-mapping>
@@ -1683,38 +1579,6 @@
     <servlet-mapping>
         <servlet-name>DeleteCountryEnvParam1</servlet-name>
         <url-pattern>/DeleteCountryEnvParam1</url-pattern>
-    </servlet-mapping>
-    <servlet-mapping>
-        <servlet-name>CreateCountryEnvironmentParameter</servlet-name>
-        <url-pattern>/CreateCountryEnvironmentParameter</url-pattern>
-    </servlet-mapping>
-    <servlet-mapping>
-        <servlet-name>DeleteCountryEnvironmentParameter</servlet-name>
-        <url-pattern>/DeleteCountryEnvironmentParameter</url-pattern>
-    </servlet-mapping>
-    <servlet-mapping>
-        <servlet-name>GetCountryEnvironmentParameterList</servlet-name>
-        <url-pattern>/GetCountryEnvironmentParameterList</url-pattern>
-    </servlet-mapping>
-    <servlet-mapping>
-        <servlet-name>UpdateCountryEnvironmentParameter</servlet-name>
-        <url-pattern>/UpdateCountryEnvironmentParameter</url-pattern>
-    </servlet-mapping>
-    <servlet-mapping>
-        <servlet-name>CreateCountryEnvironmentDatabase</servlet-name>
-        <url-pattern>/CreateCountryEnvironmentDatabase</url-pattern>
-    </servlet-mapping>
-    <servlet-mapping>
-        <servlet-name>DeleteCountryEnvironmentDatabase</servlet-name>
-        <url-pattern>/DeleteCountryEnvironmentDatabase</url-pattern>
-    </servlet-mapping>
-    <servlet-mapping>
-        <servlet-name>FindCountryEnvironmentDatabase</servlet-name>
-        <url-pattern>/FindCountryEnvironmentDatabase</url-pattern>
-    </servlet-mapping>
-    <servlet-mapping>
-        <servlet-name>UpdateCountryEnvironmentDatabase</servlet-name>
-        <url-pattern>/UpdateCountryEnvironmentDatabase</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
         <servlet-name>ExecutionThreadReset</servlet-name>

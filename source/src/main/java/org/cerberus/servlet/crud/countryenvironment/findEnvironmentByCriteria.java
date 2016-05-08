@@ -20,18 +20,12 @@
 package org.cerberus.servlet.crud.countryenvironment;
 
 import java.io.IOException;
-import java.io.PrintWriter;
-import java.util.List;
 import java.util.logging.Logger;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import org.apache.log4j.Level;
-import org.cerberus.crud.entity.CountryEnvParam;
-import org.cerberus.crud.entity.TCase;
 import org.cerberus.exception.CerberusException;
-import org.cerberus.log.MyLogger;
 import org.cerberus.crud.service.ICountryEnvParamService;
 import org.json.JSONArray;
 import org.json.JSONException;
