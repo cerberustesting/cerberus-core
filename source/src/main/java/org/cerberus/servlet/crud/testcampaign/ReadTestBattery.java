@@ -60,6 +60,9 @@ public class ReadTestBattery extends HttpServlet {
             throws ServletException, IOException {
         ApplicationContext appContext = WebApplicationContextUtils.getWebApplicationContext(this.getServletContext());
 
+        response.setContentType("application/json");
+        response.setCharacterEncoding("utf8");
+        
         try {
             JSONObject jsonResponse = new JSONObject();
             AnswerItem answer = new AnswerItem(new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED));
@@ -69,12 +72,12 @@ public class ReadTestBattery extends HttpServlet {
 
             jsonResponse.put("messageType", answer.getResultMessage().getMessage().getCodeString());
             jsonResponse.put("message", answer.getResultMessage().getDescription());
-            response.setContentType("application/json");
+
             response.getWriter().print(jsonResponse.toString());
         } catch (JSONException ex) {
             org.apache.log4j.Logger.getLogger(ReadTestBattery.class.getName()).log(org.apache.log4j.Level.ERROR, null, ex);
             //returns a default error message with the json format that is able to be parsed by the client-side
-            response.setContentType("application/json");
+
             MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
             StringBuilder errorMessage = new StringBuilder();
             errorMessage.append("{'messageType':'").append(msg.getCode()).append("', ");

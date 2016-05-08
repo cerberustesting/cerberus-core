@@ -79,6 +79,9 @@ public class ReadTestCaseExecution extends HttpServlet {
             throws ServletException, IOException, CerberusException, ParseException {
         ApplicationContext appContext = WebApplicationContextUtils.getWebApplicationContext(this.getServletContext());
 
+        response.setContentType("application/json");
+        response.setCharacterEncoding("utf8");
+
         testCaseExecutionService = appContext.getBean(ITestCaseExecutionService.class);
 
         try {
@@ -88,7 +91,7 @@ public class ReadTestCaseExecution extends HttpServlet {
             String Tag = ParameterParserUtil.parseStringParam(request.getParameter("Tag"), "");
             String test = ParameterParserUtil.parseStringParam(request.getParameter("test"), "");
             String testCase = ParameterParserUtil.parseStringParam(request.getParameter("testCase"), "");
-            String system  = ParameterParserUtil.parseStringParam(request.getParameter("system"), "");
+            String system = ParameterParserUtil.parseStringParam(request.getParameter("system"), "");
             long executionId = ParameterParserUtil.parseLongParam(request.getParameter("executionId"), 0);
             boolean executionWithDependency = ParameterParserUtil.parseBooleanParam("executionWithDependency", false);
             if (sEcho == 0 && !Tag.equals("")) {
@@ -97,11 +100,11 @@ public class ReadTestCaseExecution extends HttpServlet {
             } else if (sEcho != 0 && !Tag.equals("")) {
                 answer = findExecutionList(appContext, request, Tag);
                 jsonResponse = (JSONObject) answer.getItem();
-            }else if(!system.isEmpty()) {
+            } else if (!system.isEmpty()) {
                 //find execution by system, the remaining parameters are parsed after avoiding the extra processing
                 answer = findExecutionListBySystem(system, appContext, request);
                 jsonResponse = (JSONObject) answer.getItem();
-            }else if (!test.equals("") && !testCase.equals("")) {
+            } else if (!test.equals("") && !testCase.equals("")) {
                 TestCaseExecution lastExec = testCaseExecutionService.findLastTestCaseExecutionNotPE(test, testCase);
                 JSONObject result = new JSONObject();
                 result.put("id", lastExec.getId());
@@ -110,22 +113,21 @@ public class ReadTestCaseExecution extends HttpServlet {
                 result.put("country", lastExec.getCountry());
                 result.put("end", new Date(lastExec.getEnd())).toString();
                 jsonResponse.put("contentTable", result);
-            }else if (executionId!=0 && !executionWithDependency){
+            } else if (executionId != 0 && !executionWithDependency) {
                 answer = testCaseExecutionService.readByKeyWithDependency(executionId);
                 TestCaseExecution tce = (TestCaseExecution) answer.getItem();
                 jsonResponse.put("testCaseExecution", tce.toJson());
-            }else if (executionId!=0 && executionWithDependency){
-            
+            } else if (executionId != 0 && executionWithDependency) {
+
             }
 
             jsonResponse.put("messageType", answer.getResultMessage().getMessage().getCodeString());
             jsonResponse.put("message", answer.getResultMessage().getDescription());
-            response.setContentType("application/json");
+
             response.getWriter().print(jsonResponse.toString());
         } catch (JSONException ex) {
             org.apache.log4j.Logger.getLogger(ReadTestCaseExecution.class.getName()).log(org.apache.log4j.Level.ERROR, null, ex);
             //returns a default error message with the json format that is able to be parsed by the client-side
-            response.setContentType("application/json");
             MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
             StringBuilder errorMessage = new StringBuilder();
             errorMessage.append("{'messageType':'").append(msg.getCode()).append("', ");
@@ -346,12 +348,12 @@ public class ReadTestCaseExecution extends HttpServlet {
 
     private JSONObject getCountryList(HttpServletRequest request, ApplicationContext appContext) {
         JSONObject countryList = new JSONObject();
-        try{
+        try {
             IInvariantService invariantService = appContext.getBean(InvariantService.class);
             AnswerList answer = invariantService.readByIdname("COUNTRY"); //TODO: handle if the response does not turn ok
-            for (Invariant country : (List<Invariant>)answer.getDataList()) {
+            for (Invariant country : (List<Invariant>) answer.getDataList()) {
                 countryList.put(country.getValue(), ParameterParserUtil.parseStringParam(request.getParameter(country.getValue()), "off"));
-            } 
+            }
         } catch (JSONException ex) {
             Logger.getLogger(ReadTestCaseExecution.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -452,49 +454,48 @@ public class ReadTestCaseExecution extends HttpServlet {
         return testCaseWithExecutions;
     }
 
-    private AnswerItem findExecutionListBySystem(String system, ApplicationContext appContext, HttpServletRequest request) 
+    private AnswerItem findExecutionListBySystem(String system, ApplicationContext appContext, HttpServletRequest request)
             throws ParseException, JSONException {
         AnswerItem answer = new AnswerItem(new MessageEvent(MessageEventEnum.DATA_OPERATION_OK));
 
-       /**
+        /**
          * Parse all parameters used in the search.
          */
         String charset = request.getCharacterEncoding();
         /**
          * Parse parameters - list of values
          */
-        
+
         List<String> testList = ParameterParserUtil.parseListParamAndDecode(request.getParameterValues("test"), null, charset);
         List<String> applicationList = ParameterParserUtil.parseListParamAndDecode(request.getParameterValues("application"), null, charset);
         List<String> projectList = ParameterParserUtil.parseListParamAndDecode(request.getParameterValues("project"), null, charset);
-        
+
         List<String> tcstatusList = ParameterParserUtil.parseListParamAndDecode(request.getParameterValues("tcstatus"), null, charset);
         List<String> groupList = ParameterParserUtil.parseListParamAndDecode(request.getParameterValues("group"), null, charset);
         List<String> tcactiveList = ParameterParserUtil.parseListParamAndDecode(request.getParameterValues("tcactive"), null, charset);
         List<String> priorityList = ParameterParserUtil.parseListParamAndDecode(request.getParameterValues("priority"), null, charset);
-        
+
         List<String> targetsprintList = ParameterParserUtil.parseListParamAndDecode(request.getParameterValues("targetsprint"), null, charset);
         List<String> targetrevisionList = ParameterParserUtil.parseListParamAndDecode(request.getParameterValues("targetrevision"), null, charset);
         List<String> creatorList = ParameterParserUtil.parseListParamAndDecode(request.getParameterValues("creator"), null, charset);
         List<String> implementerList = ParameterParserUtil.parseListParamAndDecode(request.getParameterValues("implementer"), null, charset);
-                
+
         List<String> environmentList = ParameterParserUtil.parseListParamAndDecode(request.getParameterValues("environment"), null, charset);
         List<String> buildList = ParameterParserUtil.parseListParamAndDecode(request.getParameterValues("build"), null, charset);
         List<String> revisionList = ParameterParserUtil.parseListParamAndDecode(request.getParameterValues("revision"), null, charset);
-        
-        
+
         List<String> countryList = ParameterParserUtil.parseListParamAndDecode(request.getParameterValues("country"), null, charset);
         List<String> browserList = ParameterParserUtil.parseListParamAndDecode(request.getParameterValues("browser"), null, charset);
         List<String> tcestatusList = ParameterParserUtil.parseListParamAndDecode(request.getParameterValues("tcestatus"), null, charset);
-        
+
         //Sorts the lists 
-        if(countryList != null){
+        if (countryList != null) {
             Collections.sort(countryList);
         }
-        if(browserList != null){
+        if (browserList != null) {
             Collections.sort(browserList);
         }
-                       
+
         /**
          * Parse parameters - free text
          */
@@ -504,38 +505,34 @@ public class ReadTestCaseExecution extends HttpServlet {
         String port = StringEscapeUtils.escapeHtml4(request.getParameter("port"));
         String tag = StringEscapeUtils.escapeHtml4(request.getParameter("tag"));
         String browserversion = StringEscapeUtils.escapeHtml4(request.getParameter("browserversion"));
-        String comment = StringEscapeUtils.escapeHtml4(request.getParameter("comment")); 
-        
+        String comment = StringEscapeUtils.escapeHtml4(request.getParameter("comment"));
+
         /**
          * Gets regular executions (not in queue)
          */
-        AnswerList answerExecutions = testCaseExecutionService.readBySystemByVarious(system, testList, applicationList, projectList, tcstatusList, groupList, tcactiveList, priorityList, 
-                    targetsprintList, targetrevisionList, creatorList, implementerList, buildList, revisionList,
-                    environmentList, countryList, browserList, tcestatusList, ip, port, tag, browserversion, comment, bugid, ticket);
-        
-        List<TestCaseWithExecution> testCaseWithExecutions =  (List<TestCaseWithExecution>)answerExecutions.getDataList();
+        AnswerList answerExecutions = testCaseExecutionService.readBySystemByVarious(system, testList, applicationList, projectList, tcstatusList, groupList, tcactiveList, priorityList,
+                targetsprintList, targetrevisionList, creatorList, implementerList, buildList, revisionList,
+                environmentList, countryList, browserList, tcestatusList, ip, port, tag, browserversion, comment, bugid, ticket);
 
-        
+        List<TestCaseWithExecution> testCaseWithExecutions = (List<TestCaseWithExecution>) answerExecutions.getDataList();
+
         /**
          * Get list of Execution in Queue by Tag
          */
         ITestCaseExecutionInQueueService testCaseExecutionInQueueService = appContext.getBean(ITestCaseExecutionInQueueService.class);
-        AnswerList answerExecutionsInQueue  = testCaseExecutionInQueueService.readBySystemByVarious(system, testList, applicationList, projectList, tcstatusList, groupList, tcactiveList, priorityList, 
-                    targetsprintList, targetrevisionList, creatorList, implementerList, buildList, revisionList,
-                    environmentList, countryList, browserList, tcestatusList, ip, port, tag, browserversion, comment, bugid, ticket);
-        List<TestCaseWithExecution> testCaseWithExecutionsInQueue =  (List<TestCaseWithExecution>)answerExecutionsInQueue.getDataList();
-        
-        
+        AnswerList answerExecutionsInQueue = testCaseExecutionInQueueService.readBySystemByVarious(system, testList, applicationList, projectList, tcstatusList, groupList, tcactiveList, priorityList,
+                targetsprintList, targetrevisionList, creatorList, implementerList, buildList, revisionList,
+                environmentList, countryList, browserList, tcestatusList, ip, port, tag, browserversion, comment, bugid, ticket);
+        List<TestCaseWithExecution> testCaseWithExecutionsInQueue = (List<TestCaseWithExecution>) answerExecutionsInQueue.getDataList();
+
         /**
          * Merge Test Case Executions
          */
         List<TestCaseWithExecution> allTestCaseWithExecutions = hashExecution(testCaseWithExecutions, testCaseWithExecutionsInQueue);
-        
+
         JSONArray executionList = new JSONArray();
         LinkedHashMap<String, JSONObject> ttc = new LinkedHashMap<String, JSONObject>();
 
-        
-        
         for (TestCaseWithExecution testCaseWithExecution : allTestCaseWithExecutions) {
             try {
                 JSONObject execution = testCaseExecutionToJSONObject(testCaseWithExecution);

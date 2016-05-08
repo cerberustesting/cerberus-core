@@ -71,6 +71,7 @@ public class ReadTestDataLibData extends HttpServlet {
         AnswerItem answer = new AnswerItem(msg);
         
         response.setContentType("application/json");
+        response.setCharacterEncoding("utf8");
         
         
          /**

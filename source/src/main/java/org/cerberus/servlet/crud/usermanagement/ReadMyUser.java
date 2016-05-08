@@ -65,6 +65,9 @@ public class ReadMyUser extends HttpServlet {
         IUserSystemService userSystemService = appContext.getBean(IUserSystemService.class);
         IUserGroupService userGroupService = appContext.getBean(UserGroupService.class);
 
+        response.setContentType("application/json");
+        response.setCharacterEncoding("utf8");
+
         JSONObject data = new JSONObject();
 
         try {
@@ -85,7 +88,7 @@ public class ReadMyUser extends HttpServlet {
             data.put("robotBrowser", myUser.getRobotPort());
             data.put("robotVersion", myUser.getRobotPort());
             data.put("robot", myUser.getRobot());
-            data.put("reportingFavorite", myUser.getReportingFavorite());            
+            data.put("reportingFavorite", myUser.getReportingFavorite());
 
             JSONArray groups = new JSONArray();
             for (Group group : userGroupService.findGroupByKey(myUser.getLogin())) {
@@ -103,14 +106,12 @@ public class ReadMyUser extends HttpServlet {
             session.setAttribute("MyLang", myUser.getLanguage());
 
         } catch (CerberusException ex) {
-            response.setContentType("text/html");
             response.getWriter().print(ex.getMessageError().getDescription());
         } catch (JSONException ex) {
             Logger.getLogger(ReadMyUser.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (NullPointerException ex) {
             response.sendRedirect("./Login.jsp");
         }
-        response.setContentType("application/json");
         response.getWriter().print(data.toString());
 
     }

@@ -30,7 +30,6 @@ import javax.servlet.http.HttpServletResponse;
 import org.cerberus.crud.entity.CampaignParameter;
 import org.cerberus.crud.entity.MessageEvent;
 import org.cerberus.crud.service.ICampaignParameterService;
-import org.cerberus.crud.service.impl.CampaignParameterService;
 import org.cerberus.enums.MessageEventEnum;
 import org.cerberus.util.ParameterParserUtil;
 import org.cerberus.util.answer.AnswerItem;
@@ -49,7 +48,7 @@ import org.springframework.web.context.support.WebApplicationContextUtils;
 public class ReadCampaignParameter extends HttpServlet {
 
     ICampaignParameterService campaignParameterService;
-    
+
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
      * methods.
@@ -64,8 +63,11 @@ public class ReadCampaignParameter extends HttpServlet {
         String echo = request.getParameter("sEcho");
         ApplicationContext appContext = WebApplicationContextUtils.getWebApplicationContext(this.getServletContext());
 
+        response.setContentType("application/json");
+        response.setCharacterEncoding("utf8");
+
         String campaign = ParameterParserUtil.parseStringParamAndSanitize(request.getParameter("campaign"), "");
-        
+
         AnswerItem answer = new AnswerItem(new MessageEvent(MessageEventEnum.DATA_OPERATION_OK));
         try {
             JSONObject jsonResponse = new JSONObject();
@@ -81,12 +83,11 @@ public class ReadCampaignParameter extends HttpServlet {
             jsonResponse.put("message", answer.getResultMessage().getDescription());
             jsonResponse.put("sEcho", echo);
 
-            response.setContentType("application/json");
             response.getWriter().print(jsonResponse.toString());
         } catch (JSONException e) {
             org.apache.log4j.Logger.getLogger(ReadCampaignParameter.class.getName()).log(org.apache.log4j.Level.ERROR, null, e);
             //returns a default error message with the json format that is able to be parsed by the client-side
-            response.setContentType("application/json");
+
             MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
             StringBuilder errorMessage = new StringBuilder();
             errorMessage.append("{'messageType':'").append(msg.getCode()).append("', ");

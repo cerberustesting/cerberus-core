@@ -66,6 +66,9 @@ public class ReadTag extends HttpServlet {
             throws ServletException, IOException, CerberusException {
         ApplicationContext appContext = WebApplicationContextUtils.getWebApplicationContext(this.getServletContext());
 
+        response.setContentType("application/json");
+        response.setCharacterEncoding("utf8");
+
         int tagNumber = Integer.valueOf(ParameterParserUtil.parseStringParam(request.getParameter("tagNumber"), "0"));
 
         try {
@@ -82,7 +85,7 @@ public class ReadTag extends HttpServlet {
 
             jsonResponse.put("messageType", answer.getResultMessage().getMessage().getCodeString());
             jsonResponse.put("message", answer.getResultMessage().getDescription());
-            response.setContentType("application/json");
+
             response.getWriter().print(jsonResponse.toString());
         } catch (JSONException ex) {
             org.apache.log4j.Logger.getLogger(ReadTestCaseExecution.class.getName()).log(org.apache.log4j.Level.ERROR, null, ex);

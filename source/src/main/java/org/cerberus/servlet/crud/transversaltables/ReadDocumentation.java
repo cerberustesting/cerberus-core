@@ -53,19 +53,21 @@ public class ReadDocumentation extends HttpServlet {
         List<Documentation> result = new ArrayList<Documentation>();
         JSONObject format = new JSONObject();
 
+        response.setContentType("application/json");
+        response.setCharacterEncoding("utf8");
+
         String lang = ParameterParserUtil.parseStringParam(policy.sanitize(httpServletRequest.getParameter("lang")), "en");
 
         result = docService.findAllWithEmptyDocLabel(lang);
-        format = docService.formatGroupByDocTable(result);  
+        format = docService.formatGroupByDocTable(result);
         try {
             jsonResponse.put("labelTable", format);
         } catch (JSONException ex) {
             Logger.getLogger(ReadDocumentation.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         }
-        response.setContentType("application/json");
         response.getWriter().print(jsonResponse.toString());
     }
-    
+
     private JSONObject convertDocToJSONObject(Documentation doc) throws JSONException {
 
         Gson gson = new Gson();

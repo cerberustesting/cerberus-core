@@ -63,67 +63,65 @@ public class ReadTestCaseStep extends HttpServlet {
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         ApplicationContext appContext = WebApplicationContextUtils.getWebApplicationContext(this.getServletContext());
-        
+
+        response.setContentType("application/json");
+        response.setCharacterEncoding("utf8");
+
         try {
-        
-            JSONObject jsonResponse = new JSONObject();         
-            
+
+            JSONObject jsonResponse = new JSONObject();
+
             AnswerItem answer = new AnswerItem(new MessageEvent(MessageEventEnum.DATA_OPERATION_OK));
             String test = request.getParameter("test");
             String testCase = request.getParameter("testcase");
             int step = Integer.parseInt(request.getParameter("step"));
-            
+
             ITestCaseStepService stepService = appContext.getBean(TestCaseStepService.class);
             ITestCaseStepActionService stepActionService = appContext.getBean(TestCaseStepActionService.class);
             ITestCaseStepActionControlService stepActionControlService = appContext.getBean(TestCaseStepActionControlService.class);
-            
+
             TestCaseStep testCaseStep = stepService.findTestCaseStep(test, testCase, step);
-        
+
             Gson gson = new Gson();
             JSONObject result = new JSONObject(gson.toJson(testCaseStep));
             jsonResponse.put("step", result);
             //jsonResponse.put("step", testCaseStep);
-            
-            List<TestCaseStepAction> tcsActionList =  stepActionService.getListOfAction(test, testCase, step);
-            
-            
-            if(tcsActionList != null){
+
+            List<TestCaseStepAction> tcsActionList = stepActionService.getListOfAction(test, testCase, step);
+
+            if (tcsActionList != null) {
                 JSONArray list = new JSONArray();
-                for(TestCaseStepAction t : tcsActionList){                    
+                for (TestCaseStepAction t : tcsActionList) {
                     JSONObject obj = new JSONObject(gson.toJson(t));
                     obj.put("controlList", new JSONArray());
                     obj.put("objType", "action");
                     list.put(obj);
-                }                
+                }
                 jsonResponse.put("tcsActionList", list);
             }
-            
-           
-            
+
             List<TestCaseStepActionControl> tcsActionControlList = stepActionControlService.findControlByTestTestCaseStep(test, testCase, step);
-            
-            if(tcsActionControlList != null){
+
+            if (tcsActionControlList != null) {
                 JSONArray list2 = new JSONArray();
-                for(TestCaseStepActionControl t : tcsActionControlList){
+                for (TestCaseStepActionControl t : tcsActionControlList) {
                     JSONObject obj = new JSONObject(gson.toJson(t));
                     list2.put(obj);
                 }
-                jsonResponse.put("tcsActionControlList", list2); 
+                jsonResponse.put("tcsActionControlList", list2);
             }
-            
+
             jsonResponse.put("messageType", "OK");
-            jsonResponse.put("message", answer.getResultMessage().getDescription());         
-            
-            response.setContentType("application/json");
-            response.getWriter().print(jsonResponse.toString()); 
-            
+            jsonResponse.put("message", answer.getResultMessage().getDescription());
+
+            response.getWriter().print(jsonResponse.toString());
+
         } catch (JSONException e) {
-            org.apache.log4j.Logger.getLogger(ReadTestCaseStep.class.getName()).log(org.apache.log4j.Level.ERROR, e.getMessage(), e); 
+            org.apache.log4j.Logger.getLogger(ReadTestCaseStep.class.getName()).log(org.apache.log4j.Level.ERROR, e.getMessage(), e);
             //returns a default error message with the json format that is able to be parsed by the client-side
-            response.setContentType("application/json"); 
-            response.getWriter().print(AnswerUtil.createGenericErrorAnswer());            
+            response.getWriter().print(AnswerUtil.createGenericErrorAnswer());
         }
-        
+
     }
 
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
