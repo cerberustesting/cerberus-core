@@ -541,7 +541,7 @@
                 List<Invariant> countryListInvariant = (List<Invariant>)answerCountry.getDataList();
                 List<String> countryListTestcase = testCaseCountryService.findListOfCountryByTestTestCase(test, testcase);
                 TestCaseExecution tce = testCaseExecutionService.findLastTestCaseExecutionNotPE(test, testcase);
-                List<BuildRevisionInvariant> listBuildRev = buildRevisionInvariantService.findAllBuildRevisionInvariantBySystemLevel(MySystem, 1);
+                List<BuildRevisionInvariant> listBuildRev = buildRevisionInvariantService.convert(buildRevisionInvariantService.readBySystemLevel(MySystem, 1));
                 List<TestCaseCountryProperties> tccpList = tccpService.findDistinctPropertiesOfTestCase(test, testcase);
 
                 group = tcase.getGroup();
@@ -866,7 +866,7 @@
                                             <select id="editFromRev" name="editFromRev" class="active" style="width: 50px" >
                                                 <option style="width: 100px" value="" <%=fromRev.compareTo("") == 0 ? " SELECTED " : ""%>>----</option>
                                                 <%
-                                                    listBuildRev = buildRevisionInvariantService.findAllBuildRevisionInvariantBySystemLevel(MySystem, 2);
+                                                    listBuildRev = buildRevisionInvariantService.convert(buildRevisionInvariantService.readBySystemLevel(MySystem, 2));
                                                     for (BuildRevisionInvariant myBR : listBuildRev) {
                                                 %><option style="width: 100px" value="<%= myBR.getVersionName()%>" <%=fromRev.compareTo(myBR.getVersionName()) == 0 ? " SELECTED " : ""%>><%= myBR.getVersionName()%></option>
                                                 <% }%>
@@ -876,7 +876,7 @@
                                             <select id="editToBuild" name="editToBuild" class="active" style="width: 70px" >
                                                 <option style="width: 100px" value="" <%=toBuild.compareTo("") == 0 ? " SELECTED " : ""%>>----</option>
                                                 <%
-                                                    listBuildRev = buildRevisionInvariantService.findAllBuildRevisionInvariantBySystemLevel(MySystem, 1);
+                                                    listBuildRev = buildRevisionInvariantService.convert(buildRevisionInvariantService.readBySystemLevel(MySystem, 1));
                                                     for (BuildRevisionInvariant myBR : listBuildRev) {
                                                 %><option style="width: 100px" value="<%= myBR.getVersionName()%>" <%=toBuild.compareTo(myBR.getVersionName()) == 0 ? " SELECTED " : ""%>><%= myBR.getVersionName()%></option>
                                                 <% }%>
@@ -886,7 +886,7 @@
                                             <select id="editToRev" name="editToRev" class="active" style="width: 50px" >
                                                 <option style="width: 100px" value="" <%=toRev.compareTo("") == 0 ? " SELECTED " : ""%>>----</option>
                                                 <%
-                                                    listBuildRev = buildRevisionInvariantService.findAllBuildRevisionInvariantBySystemLevel(MySystem, 2);
+                                                    listBuildRev = buildRevisionInvariantService.convert(buildRevisionInvariantService.readBySystemLevel(MySystem, 2));
                                                     for (BuildRevisionInvariant myBR : listBuildRev) {
                                                 %><option style="width: 100px" value="<%= myBR.getVersionName()%>" <%=toRev.compareTo(myBR.getVersionName()) == 0 ? " SELECTED " : ""%>><%= myBR.getVersionName()%></option>
                                                 <% }
@@ -899,7 +899,7 @@
                                             <select id="editTargetBuild" name="editTargetBuild" class="active" style="width: 70px" >
                                                 <option style="width: 100px" value="" <%=targetBuild.compareTo("") == 0 ? " SELECTED " : ""%>>----</option>
                                                 <%
-                                                    listBuildRev = buildRevisionInvariantService.findAllBuildRevisionInvariantBySystemLevel(MySystem, 1);
+                                                    listBuildRev = buildRevisionInvariantService.convert(buildRevisionInvariantService.readBySystemLevel(MySystem, 1));
                                                     for (BuildRevisionInvariant myBR : listBuildRev) {
                                                 %><option style="width: 100px" value="<%= myBR.getVersionName()%>" <%=targetBuild.compareTo(myBR.getVersionName()) == 0 ? " SELECTED " : ""%>><%= myBR.getVersionName()%></option>
                                                 <% }%>
@@ -909,7 +909,7 @@
                                             <select id="editTargetRev" name="editTargetRev" class="active" style="width: 50px" >
                                                 <option style="width: 100px" value="" <%=targetRev.compareTo("") == 0 ? " SELECTED " : ""%>>----</option>
                                                 <%
-                                                    listBuildRev = buildRevisionInvariantService.findAllBuildRevisionInvariantBySystemLevel(MySystem, 2);
+                                                    listBuildRev = buildRevisionInvariantService.convert(buildRevisionInvariantService.readBySystemLevel(MySystem, 2));
                                                     for (BuildRevisionInvariant myBR : listBuildRev) {
                                                 %><option style="width: 100px" value="<%= myBR.getVersionName()%>" <%=targetRev.compareTo(myBR.getVersionName()) == 0 ? " SELECTED " : ""%>><%= myBR.getVersionName()%></option>
                                                 <% } %>
