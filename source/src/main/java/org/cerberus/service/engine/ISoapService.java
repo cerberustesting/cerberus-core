@@ -23,8 +23,8 @@ import java.io.IOException;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.soap.SOAPException;
 import javax.xml.soap.SOAPMessage;
-import org.cerberus.crud.entity.MessageEvent;
 import org.cerberus.exception.CerberusException;
+import org.cerberus.util.answer.AnswerItem;
 import org.xml.sax.SAXException;
 
 /**
@@ -47,22 +47,20 @@ public interface ISoapService {
     
     /**
      * 
-     * @param uuid uuid of the execution or of the request
-     * @param envelope The envelope of the the SOAP
-     * @param servicePath The servicePath (WSDL) of the SOAP
-     * @param method The name of the method of the SOAP
-     * @param attachmentUrl
-     * @param isToSaveRequest - true - the request is saved, false - the request is not saved
-     * @return MessageEvent with the status of the call
-     */
-    MessageEvent callSOAPAndStoreResponseInMemory(String uuid, final String envelope, final String servicePath, final String method, final String attachmentUrl, boolean isToSaveRequest);
-    
-    /**
-     * 
      * @param message
      * @param url 
      * @throws org.cerberus.exception.CerberusException 
      */
     void addAttachmentPart(SOAPMessage message, String url) throws CerberusException;
+    
+    /**
+     * Call Soap Message 
+     * @param envelope
+     * @param servicePath
+     * @param method
+     * @param attachmentUrl
+     * @return 
+     */
+    AnswerItem callSOAP(String envelope, String servicePath, String method, String attachmentUrl);
     
 }

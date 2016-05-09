@@ -35,7 +35,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import org.apache.commons.lang3.StringEscapeUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.cerberus.crud.entity.ExecutionSOAPResponse;
 import org.cerberus.crud.entity.ExecutionUUID;
 import org.cerberus.crud.entity.MessageGeneral;
 import org.cerberus.crud.entity.Parameter;
@@ -52,6 +51,7 @@ import org.cerberus.crud.service.IParameterService;
 import org.cerberus.crud.service.IRobotService;
 import org.cerberus.crud.service.ITestCaseCountryService;
 import org.cerberus.crud.service.ITestCaseExecutionInQueueService;
+import org.cerberus.crud.service.ITestCaseExecutionService;
 import org.cerberus.crud.service.impl.LogEventService;
 import org.cerberus.enums.MessageGeneralEnum;
 import org.cerberus.exception.CerberusException;
@@ -297,7 +297,7 @@ public class RunTestCase extends HttpServlet {
                 IRunTestCaseService runTestCaseService = appContext.getBean(RunTestCaseService.class);
                 IFactoryTCase factoryTCase = appContext.getBean(IFactoryTCase.class);
                 IFactoryTestCaseExecution factoryTCExecution = appContext.getBean(IFactoryTestCaseExecution.class);
-
+                ITestCaseExecutionService tces = appContext.getBean(ITestCaseExecutionService.class);
                 TCase tCase = factoryTCase.create(test, testCase);
 
                 TestCaseExecution tCExecution = factoryTCExecution.create(0, test, testCase, null, null, environment, country, browser, version, platform, "",
@@ -318,9 +318,6 @@ public class RunTestCase extends HttpServlet {
                 tCExecution.setExecutionUUID(executionUUID.toString());
                 org.apache.log4j.Logger.getLogger(RunTestCase.class.getName()).log(org.apache.log4j.Level.INFO, "Execution Requested : UUID=" + executionUUID);
                 //MyLogger.log(RunTestCase.class.getName(), Level.INFO, "Execution Requested : UUID=" + executionUUID);
-
-                ExecutionSOAPResponse eSResponse = appContext.getBean(ExecutionSOAPResponse.class);
-                eSResponse.setExecutionSOAPResponse(executionUUID.toString(), "init");
 
                 /**
                  * Set Session
@@ -390,7 +387,9 @@ public class RunTestCase extends HttpServlet {
                 } catch (CerberusException ex) {
                     org.apache.log4j.Logger.getLogger(RunTestCase.class.getName()).log(org.apache.log4j.Level.ERROR, "Error while performin testcase in queue ", ex);
                 }
-
+                
+                TestCaseExecution t = (TestCaseExecution) tces.readByKeyWithDependency(tCExecution.getId()).getItem();
+                org.apache.log4j.Logger.getLogger(RunTestCase.class.getName()).log(org.apache.log4j.Level.ERROR, "CerberusExecution "+ t.toJson());
                 /**
              * Clean memory in case testcase has not been launched(Remove all
              * object put in memory)
@@ -400,10 +399,6 @@ public class RunTestCase extends HttpServlet {
                         executionUUIDObject.removeExecutionUUID(tCExecution.getExecutionUUID());
                         org.apache.log4j.Logger.getLogger(RunTestCase.class.getName()).log(org.apache.log4j.Level.DEBUG, "Clean ExecutionUUID");
 
-                        if (eSResponse.getExecutionSOAPResponse(tCExecution.getExecutionUUID()) != null) {
-                            eSResponse.removeExecutionSOAPResponse(tCExecution.getExecutionUUID());
-                            org.apache.log4j.Logger.getLogger(RunTestCase.class.getName()).log(org.apache.log4j.Level.DEBUG, "ExecutionSOAPResponse ExecutionUUID");                        
-                        }
                     }
                 } catch (Exception ex) {
                     org.apache.log4j.Logger.getLogger(RunTestCase.class.getName()).log(org.apache.log4j.Level.ERROR, "Exception cleaning Memory: ", ex);

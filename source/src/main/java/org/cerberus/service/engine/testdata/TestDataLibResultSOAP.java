@@ -20,6 +20,7 @@
 package org.cerberus.service.engine.testdata;
 
 import org.cerberus.crud.entity.MessageEvent;
+import org.cerberus.crud.entity.SOAPExecution;
 import org.cerberus.crud.entity.TestDataLibData;
 import org.cerberus.enums.TestDataLibTypeEnum;
 import org.cerberus.enums.MessageEventEnum;
@@ -36,6 +37,7 @@ import org.w3c.dom.NodeList;
 public class TestDataLibResultSOAP extends TestDataLibResult {
     public Document rawData;
     private String soapResponseKey;
+    private AnswerItem soapExecution;
 
    
 
@@ -106,5 +108,14 @@ public class TestDataLibResultSOAP extends TestDataLibResult {
     public void setSoapResponseKey(String soapResponseKey) {
         this.soapResponseKey = soapResponseKey;
     }
+
+    public AnswerItem getSoapExecution() {
+        return soapExecution;
+    }
+
+    public void setSoapExecution(AnswerItem soapExecution) {
+        this.soapExecution = soapExecution;
+    }
+    
     
 }

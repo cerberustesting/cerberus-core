@@ -22,6 +22,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import org.cerberus.util.answer.AnswerItem;
 import org.cerberus.util.answer.AnswerList;
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -95,6 +96,7 @@ public class TestCaseExecution {
     private boolean synchroneous;
     private String timeout;
     private AnswerList testCaseStepExecutionAnswerList;
+    private AnswerItem lastSOAPCalled;
 
     public String getUserAgent() {
         return userAgent;
@@ -615,4 +617,14 @@ public class TestCaseExecution {
         }
         return result;
     }
+
+    public AnswerItem getLastSOAPCalled() {
+        return lastSOAPCalled;
+    }
+
+    public void setLastSOAPCalled(AnswerItem lastSOAPCalled) {
+        this.lastSOAPCalled = lastSOAPCalled;
+    }
+    
+    
 }

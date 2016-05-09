@@ -56,7 +56,7 @@ public enum MessageEventEnum {
     PROPERTY_SUCCESS_GETFROMCOOKIE(100, "OK", "Parameter '%PARAM%' from cookie '%COOKIE%' has been found and returned '%VALUE%'.", false, false, false, MessageGeneralEnum.EXECUTION_PE_TESTSTARTED),
     PROPERTY_SUCCESS_GETFROMJSON(100, "OK", "Value '%PARAM%' from Json '%URL%' has been found and returned '%VALUE%'.", false, false, false, MessageGeneralEnum.EXECUTION_PE_TESTSTARTED),
     PROPERTY_SUCCESS_TESTDATA(100, "OK", "TestData %PROPERTY% correctly returned '%VALUE%'.", false, false, false, MessageGeneralEnum.EXECUTION_PE_TESTSTARTED),
-    PROPERTY_SUCCESS_SOAP(100, "OK", "SOAP Request executed", false, false, false, MessageGeneralEnum.EXECUTION_PE_TESTSTARTED),
+    PROPERTY_SUCCESS_SOAP(100, "OK", "SOAP Request executed. <a href='%REQUEST_PATH%'>Request</a> / <a href='%RESPONSE_PATH%'>Response</a>", false, false, false, MessageGeneralEnum.EXECUTION_PE_TESTSTARTED),
     PROPERTY_SUCCESS_GETFROMDATALIB(100, "OK", "Data Library entry %ENTRY% (%ENTRYID%) retrieved with success. First result fetch from SQL executed against database '%DB%' and JDBCPOOL '%JDBCPOOLNAME%'. SQL : '%SQL%'", false, false, false, MessageGeneralEnum.EXECUTION_PE_TESTSTARTED),
     PROPERTY_SUCCESS_GETFROMDATALIB_SQL_RANDOM(100, "OK", "Data Library entry %ENTRY% (%ENTRYID%) retrieved with success. Random result (position %POS% from %TOTALPOS%) fetch from SQL executed against database '%DB%' and JDBCPOOL '%JDBCPOOLNAME%'. SQL : '%SQL%'", false, false, false, MessageGeneralEnum.EXECUTION_PE_TESTSTARTED),
     PROPERTY_SUCCESS_GETFROMDATALIBDATA(100, "OK", "Property %VALUE2% retrieved from library %VALUE1% and calculated with success.", false, false, false, MessageGeneralEnum.EXECUTION_PE_TESTSTARTED),
@@ -99,6 +99,7 @@ public enum MessageEventEnum {
     PROPERTY_FAILED_GETFROMDATALIBDATA_XML_NOTFOUND(197, "FA", "No elements found! The evaluation of the xpath expression '%XPATH%' specified in the sub-data entry '%SUBDATA%' for the library entry '%ENTRY%' didn't match any XML elements!", true, false, false, MessageGeneralEnum.EXECUTION_FA),
     PROPERTY_FAILED_GETFROMDATALIBDATA_CHECK_XPATH(197, "FA", "A XML element was found, but no data was retrieved! Please verify the xpath expression '%XPATH%' specified in the sub-data entry '%SUBDATA%' for the library entry '%ENTRY%' didn't match any XML elements!", true, false, false, MessageGeneralEnum.EXECUTION_FA),
     PROPERTY_FAILED_FEATURENOTIMPLEMENTED(197, "FA", "Feature '%FEATURE%' is not yet implemented!", true, false, false, MessageGeneralEnum.EXECUTION_FA),
+    PROPERTY_FAILED_SOAP_NODATA(198, "NA", "SOAP Request executed but returned no data. <a href='%REQUEST_PATH%'>Request</a> / <a href='%RESPONSE_PATH%'>Response</a>.", true, false, false, MessageGeneralEnum.EXECUTION_NA),
     PROPERTY_PENDING(199, "PE", "Calculating property...", false, false, false, MessageGeneralEnum.EXECUTION_PE_TESTSTARTED),
     // *********** EXECUTION ACTIONS ***********
     ACTION_SUCCESS(200, "OK", "", false, false, false, MessageGeneralEnum.EXECUTION_PE_TESTSTARTED),

@@ -29,6 +29,7 @@ import org.cerberus.crud.entity.Identifier;
 import org.cerberus.crud.entity.MessageEvent;
 import org.cerberus.enums.MessageEventEnum;
 import org.cerberus.crud.entity.MessageGeneral;
+import org.cerberus.crud.entity.SOAPExecution;
 import org.cerberus.crud.entity.TestCaseExecution;
 import org.cerberus.crud.entity.TestCaseStepActionControlExecution;
 import org.cerberus.crud.entity.TestCaseStepActionExecution;
@@ -42,6 +43,7 @@ import org.cerberus.service.engine.ISikuliService;
 import org.cerberus.service.engine.IWebDriverService;
 import org.cerberus.service.engine.IXmlUnitService;
 import org.cerberus.util.StringUtil;
+import org.cerberus.util.SoapUtil;
 import org.openqa.selenium.NoSuchElementException;
 import org.openqa.selenium.WebDriverException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -71,7 +73,7 @@ public class ControlService implements IControlService {
     private ISikuliService sikuliService;
     @Autowired
     private IRecorderService recorderService;
-
+    
     @Override
     public TestCaseStepActionControlExecution doControl(TestCaseStepActionControlExecution testCaseStepActionControlExecution) {
         MessageEvent res;
@@ -395,7 +397,9 @@ public class ControlService implements IControlService {
                     return parseWebDriverException(exception);
                 }
             } else if (tCExecution.getApplication().getType().equalsIgnoreCase("WS")) {
-                if (xmlUnitService.isElementPresent(tCExecution, html)) {
+                SOAPExecution lastSoapCalled = (SOAPExecution) tCExecution.getLastSOAPCalled().getItem();
+                String xmlResponse = SoapUtil.convertSoapMessageToString(lastSoapCalled.getSOAPResponse());
+                if (xmlUnitService.isElementPresent(xmlResponse, html)) {
                     mes = new MessageEvent(MessageEventEnum.CONTROL_SUCCESS_PRESENT);
                     mes.setDescription(mes.getDescription().replaceAll("%STRING1%", html));
                     return mes;
@@ -537,7 +541,9 @@ public class ControlService implements IControlService {
         }
 
         // Check if element on the given xpath is equal to the given expected element
-        mes = xmlUnitService.isElementEquals(tCExecution, xpath, expectedElement) ? new MessageEvent(MessageEventEnum.CONTROL_SUCCESS_ELEMENTEQUALS) : new MessageEvent(MessageEventEnum.CONTROL_FAILED_ELEMENTEQUALS);
+        SOAPExecution lastSoapCalled = (SOAPExecution) tCExecution.getLastSOAPCalled().getItem();
+        String xmlResponse = SoapUtil.convertSoapMessageToString(lastSoapCalled.getSOAPResponse());
+        mes = xmlUnitService.isElementEquals(xmlResponse, xpath, expectedElement) ? new MessageEvent(MessageEventEnum.CONTROL_SUCCESS_ELEMENTEQUALS) : new MessageEvent(MessageEventEnum.CONTROL_FAILED_ELEMENTEQUALS);
         mes.setDescription(mes.getDescription().replaceAll("%XPATH%", xpath));
         mes.setDescription(mes.getDescription().replaceAll("%EXPECTED_ELEMENT%", expectedElement));
         // TODO Give the actual element found into the description.
@@ -556,7 +562,9 @@ public class ControlService implements IControlService {
         }
 
         // Check if element on the given xpath is different from the given different element
-        mes = xmlUnitService.isElementEquals(tCExecution, xpath, differentElement) ? new MessageEvent(MessageEventEnum.CONTROL_FAILED_ELEMENTDIFFERENT) : new MessageEvent(MessageEventEnum.CONTROL_SUCCESS_ELEMENTDIFFERENT);
+        SOAPExecution lastSoapCalled = (SOAPExecution) tCExecution.getLastSOAPCalled().getItem();
+        String xmlResponse = SoapUtil.convertSoapMessageToString(lastSoapCalled.getSOAPResponse());
+        mes = xmlUnitService.isElementEquals(xmlResponse, xpath, differentElement) ? new MessageEvent(MessageEventEnum.CONTROL_FAILED_ELEMENTDIFFERENT) : new MessageEvent(MessageEventEnum.CONTROL_SUCCESS_ELEMENTDIFFERENT);
         mes.setDescription(mes.getDescription().replaceAll("%XPATH%", xpath));
         mes.setDescription(mes.getDescription().replaceAll("%DIFFERENT_ELEMENT%", differentElement));
         // TODO Give the actual element found into the description.
@@ -576,10 +584,12 @@ public class ControlService implements IControlService {
             if ("GUI".equalsIgnoreCase(applicationType) || "APK".equalsIgnoreCase(applicationType)) {
                 actual = webdriverService.getValueFromHTML(tCExecution.getSession(), identifier);
             } else if ("WS".equalsIgnoreCase(applicationType)) {
-                if (!xmlUnitService.isElementPresent(tCExecution, path)) {
+                SOAPExecution lastSoapCalled = (SOAPExecution) tCExecution.getLastSOAPCalled().getItem();
+                String xmlResponse = SoapUtil.convertSoapMessageToString(lastSoapCalled.getSOAPResponse());
+                if (!xmlUnitService.isElementPresent(xmlResponse, path)) {
                     throw new NoSuchElementException("Unable to find element " + path);
                 }
-                actual = xmlUnitService.getFromXml(tCExecution.getExecutionUUID(), null, path);
+                actual = xmlUnitService.getFromXml(xmlResponse, null, path);
             } else {
                 MessageEvent mes = new MessageEvent(MessageEventEnum.CONTROL_NOTEXECUTED_NOTSUPPORTED_FOR_APPLICATION);
                 mes.setDescription(mes.getDescription().replaceAll("%CONTROL%", "verifyTextInElement"));
@@ -622,10 +632,12 @@ public class ControlService implements IControlService {
             if ("GUI".equalsIgnoreCase(applicationType) || "APK".equalsIgnoreCase(applicationType)) {
                 actual = webdriverService.getValueFromHTML(tCExecution.getSession(), identifier);
             } else if ("WS".equalsIgnoreCase(applicationType)) {
-                if (!xmlUnitService.isElementPresent(tCExecution, path)) {
+                SOAPExecution lastSoapCalled = (SOAPExecution) tCExecution.getLastSOAPCalled().getItem();
+                String xmlResponse = SoapUtil.convertSoapMessageToString(lastSoapCalled.getSOAPResponse());
+                if (!xmlUnitService.isElementPresent(xmlResponse, path)) {
                     throw new NoSuchElementException("Unable to find element " + path);
                 }
-                actual = xmlUnitService.getFromXml(tCExecution.getExecutionUUID(), null, path);
+                actual = xmlUnitService.getFromXml(xmlResponse, null, path);
             } else {
                 MessageEvent mes = new MessageEvent(MessageEventEnum.CONTROL_NOTEXECUTED_NOTSUPPORTED_FOR_APPLICATION);
                 mes.setDescription(mes.getDescription().replaceAll("%CONTROL%", "verifyTextNotInElement"));
@@ -859,8 +871,9 @@ public class ControlService implements IControlService {
         MyLogger.log(ControlService.class.getName(), Level.DEBUG, "Control : verifyXmlTreeStructure on : " + controlProperty);
         MessageEvent mes;
         try {
-
-            if (this.xmlUnitService.isSimilarTree(tCExecution, controlProperty, controlValue)) {
+            SOAPExecution lastSoapCalled = (SOAPExecution) tCExecution.getLastSOAPCalled().getItem();
+            String xmlResponse = SoapUtil.convertSoapMessageToString(lastSoapCalled.getSOAPResponse());
+            if (this.xmlUnitService.isSimilarTree(xmlResponse, controlProperty, controlValue)) {
                 mes = new MessageEvent(MessageEventEnum.CONTROL_SUCCESS_SIMILARTREE);
                 mes.setDescription(mes.getDescription().replaceAll("%STRING1%", StringUtil.sanitize(controlProperty)));
                 mes.setDescription(mes.getDescription().replaceAll("%STRING2%", StringUtil.sanitize(controlValue)));

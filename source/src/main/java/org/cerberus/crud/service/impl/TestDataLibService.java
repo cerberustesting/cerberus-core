@@ -24,6 +24,7 @@ import java.util.HashMap;
 import java.util.List;
 import org.apache.log4j.Level;
 import org.cerberus.crud.dao.ITestDataLibDAO;
+import org.cerberus.crud.entity.SOAPExecution;
 import org.cerberus.crud.entity.MessageEvent;
 import org.cerberus.crud.entity.TestDataLib;
 import org.cerberus.crud.entity.TestDataLibData;
@@ -41,6 +42,7 @@ import org.cerberus.service.engine.testdata.TestDataLibResult;
 import org.cerberus.service.engine.testdata.TestDataLibResultSOAP;
 import org.cerberus.service.engine.testdata.TestDataLibResultSQL;
 import org.cerberus.service.engine.testdata.TestDataLibResultStatic;
+import org.cerberus.util.SoapUtil;
 import org.cerberus.util.answer.Answer;
 import org.cerberus.util.answer.AnswerItem;
 import org.cerberus.util.answer.AnswerList;
@@ -214,18 +216,18 @@ public class TestDataLibService implements ITestDataLibService {
 
         if (lib.getType().equals(TestDataLibTypeEnum.STATIC.getCode())) {
             result = fetchDataStatic(lib);
+            answer.setItem(result);
 
         } else if (lib.getType().equals(TestDataLibTypeEnum.SQL.getCode())) {
             AnswerItem sqlResult = fetchDataSQL(lib, rowLimit, propertyNature);
             result = (TestDataLibResult) sqlResult.getItem();
             msg = sqlResult.getResultMessage();
-
+            answer.setItem(result);
         } else if (lib.getType().equals(TestDataLibTypeEnum.SOAP.getCode())) {
             AnswerItem soapResult = fetchDataSOAP(lib);
-            result = (TestDataLibResult) soapResult.getItem();
             msg = soapResult.getResultMessage();
+            answer.setItem(soapResult.getItem());
         }
-        answer.setItem(result);
         answer.setResultMessage(msg);
         return answer;
     }
@@ -264,15 +266,15 @@ public class TestDataLibService implements ITestDataLibService {
                     .replace("%DATABASE%", lib.getDatabase()));
             answer.setItem(result);
             answer.setResultMessage(msg);
-            
+
         } else {
             //other error had occured
             answer.setItem(result);
-            msg=answer.getResultMessage();
+            msg = answer.getResultMessage();
             msg.setDescription(msg.getDescription().replace("%ENTRY%", lib.getName()).replace("%SQL%", lib.getScript()).replace("%ENTRYID%", lib.getTestDataLibID().toString())
                     .replace("%DATABASE%", lib.getDatabase()));
             answer.setResultMessage(msg);
-            
+
         }
         return answer;
     }
@@ -281,17 +283,22 @@ public class TestDataLibService implements ITestDataLibService {
         AnswerItem answer = new AnswerItem();
         MessageEvent msg;
         TestDataLibResult result = null;
+        SOAPExecution executionSoap = new SOAPExecution();
 
         //soap data needs to get the soap response
         String key = TestDataLibTypeEnum.SOAP.getCode() + lib.getTestDataLibID();
-        msg = soapService.callSOAPAndStoreResponseInMemory(key, lib.getEnvelope(), lib.getServicePath(),
-                lib.getMethod(), null, true);
+        AnswerItem ai = soapService.callSOAP(lib.getEnvelope(), lib.getServicePath(),
+                lib.getMethod(), null);
+        executionSoap = (SOAPExecution) ai.getItem();
+        msg = ai.getResultMessage();
+
         //if the call returns success then we can process the soap ressponse
         if (msg.getCode() == MessageEventEnum.ACTION_SUCCESS_CALLSOAP.getCode()) {
             result = new TestDataLibResultSOAP();
+            ((TestDataLibResultSOAP) result).setSoapExecution(ai);
             ((TestDataLibResultSOAP) result).setSoapResponseKey(key);
             result.setTestDataLibID(lib.getTestDataLibID());
-            Document xmlDocument = xmlUnitService.getXmlDocument(key);
+            Document xmlDocument = xmlUnitService.getXmlDocument(SoapUtil.convertSoapMessageToString(executionSoap.getSOAPResponse()));
             ((TestDataLibResultSOAP) result).setData(xmlDocument);
             //the code for action success call soap is different from the
             //code return from the property success soap

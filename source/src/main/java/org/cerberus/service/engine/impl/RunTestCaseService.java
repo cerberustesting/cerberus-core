@@ -20,7 +20,6 @@
 package org.cerberus.service.engine.impl;
 
 import org.apache.log4j.Level;
-import org.cerberus.crud.entity.ExecutionSOAPResponse;
 import org.cerberus.crud.entity.ExecutionUUID;
 import org.cerberus.crud.entity.TestCaseExecution;
 import org.cerberus.exception.CerberusException;
@@ -45,11 +44,7 @@ public class RunTestCaseService implements IRunTestCaseService {
     private IExecutionStartService executionStartService;
     @Autowired
     private IExecutionRunService executionRunService;
-    @Autowired
-    private ExecutionUUID executionUUID;
-    @Autowired
-    private ExecutionSOAPResponse eSResponse;
-
+    
     @Override
     public TestCaseExecution runTestCase(TestCaseExecution tCExecution) {
 

@@ -19,6 +19,7 @@
  */
 package org.cerberus.service.engine;
 
+import org.cerberus.crud.entity.SOAPExecution;
 import org.cerberus.crud.entity.TestCaseExecution;
 import org.w3c.dom.Document;
 
@@ -31,14 +32,13 @@ public interface IXmlUnitService {
 	/**
 	 * If and element is present or not from the last SOAP call
 	 * 
-	 * @param tCExecution
-	 *            the associated {@link TestCaseExecution}
+	 * @param SOAPResponse String of the xml soap response
 	 * @param xpath
 	 *            to the element to find from the last SOAP call
 	 * @return <code>true</code> if element is present from the last SOAP call,
 	 *         <code>false</code> otherwise
 	 */
-	boolean isElementPresent(TestCaseExecution tCExecution, String xpath);
+	boolean isElementPresent(String SOAPResponse, String xpath);
 
 	/**
 	 * If the given tree is similar to the element which is located to the xpath
@@ -48,8 +48,7 @@ public interface IXmlUnitService {
 	 * Similar trees have the same structure but can have not same values
 	 * </p>
 	 * 
-	 * @param tCExecution
-	 *            the associated {@link TestCaseExecution}
+	 * @param SoapResponse - String of the xml soap response
 	 * @param xpath
 	 *            to the element to find from the last SOAP call
 	 * @param tree
@@ -58,13 +57,12 @@ public interface IXmlUnitService {
 	 * @return <code>true</code> if trees are similars, <code>false</code>
 	 *         otherwise
 	 */
-	boolean isSimilarTree(TestCaseExecution tCExecution, String xpath, String tree);
+	boolean isSimilarTree(String SOAPResponse, String xpath, String tree);
 
 	/**
 	 * Gets a text value contained from the given URL or last SOAP call
 	 * 
-	 * @param uuid
-	 *            the associated execution UUID
+	 * @param SoapResponse - String of the xml soap response
 	 * @param url
 	 *            if not <code>null</code> then use this URL to get the value.
 	 *            If <code>null</code> then use the last SOAP call
@@ -73,7 +71,7 @@ public interface IXmlUnitService {
 	 * @return the text value from the given URL or last SOAP call which is
 	 *         located to the given xpath
 	 */
-	String getFromXml(String uuid, String url, String xpath);
+	String getFromXml(String SOAPResponse, String url, String xpath);
 
 	/**
 	 * Gets differences from XML representations given in argument.
@@ -131,8 +129,7 @@ public interface IXmlUnitService {
 	 * Checks if the element contained into the given xpath from the last SOAP
 	 * call is equal to the expected given one.
 	 * 
-	 * @param tCExecution
-	 *            the associated {@link TestCaseExecution}
+	 * @param SoapResponse - String of the xml soap response
 	 * @param xpath
 	 *            the xpath to the element to test from the last SOAP call
 	 * @param expectedElement
@@ -141,11 +138,11 @@ public interface IXmlUnitService {
 	 * @return <code>true</code> if the given xpath from the last SOAP call is
 	 *         equal to the expected one, <code>false</code> otherwise
 	 */
-	boolean isElementEquals(TestCaseExecution tCExecution, String xpath, String expectedElement);
+	boolean isElementEquals(String SOAPResponse, String xpath, String expectedElement);
           /**
-         * Method that retrieves a XML document from the memory
-         * @param uuid - unique key for the entry
+         * Method that retrieves a XML document from the ExecutionSOAP of the testCaseExecution
+         * @param SoapResponse - String of the last Soap Response
          * @return XML Document
          */
-        Document getXmlDocument(String uuid);
+        Document getXmlDocument(String SOAPResponse);
 }

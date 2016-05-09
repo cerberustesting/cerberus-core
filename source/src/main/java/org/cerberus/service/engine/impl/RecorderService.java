@@ -19,32 +19,27 @@
  */
 package org.cerberus.service.engine.impl;
 
-
 import java.io.ByteArrayOutputStream;
 import java.io.DataOutputStream;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.util.Collection;
-import java.util.HashMap;
 import java.util.logging.Logger;
+import javax.xml.soap.SOAPMessage;
 import org.apache.commons.io.FileUtils;
 import org.apache.log4j.Level;
-import org.cerberus.crud.entity.ExecutionSOAPResponse;
 import org.cerberus.crud.entity.Parameter;
+import org.cerberus.crud.entity.SOAPExecution;
 import org.cerberus.crud.entity.TestCaseExecution;
 import org.cerberus.crud.entity.TestCaseStepActionControlExecution;
 import org.cerberus.crud.entity.TestCaseStepActionExecution;
 import org.cerberus.crud.service.IParameterService;
-import org.cerberus.enums.TestDataLibTypeEnum;
 import org.cerberus.exception.CerberusException;
 import org.cerberus.log.MyLogger;
 import org.cerberus.service.engine.IRecorderService;
-import org.cerberus.service.engine.testdata.TestDataLibResult;
-import org.cerberus.service.engine.testdata.TestDataLibResultSOAP;
 import org.cerberus.util.FileUtil;
-import org.cerberus.util.StringUtil;
+import org.cerberus.util.SoapUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -57,8 +52,6 @@ public class RecorderService implements IRecorderService {
 
     @Autowired
     IParameterService parameterService;
-    @Autowired
-    ExecutionSOAPResponse eSResponse;
     @Autowired
     WebDriverService webdriverService;
 
@@ -75,38 +68,38 @@ public class RecorderService implements IRecorderService {
 
         //used for logging purposes
         String testDescription = "[" + test + " - " + testCase + " - step: " + step + " action: " + sequence + "]";
-        
+
         MyLogger.log(RecorderService.class.getName(), Level.INFO, testDescription + "Doing screenshot.");
         /**
          * Generate FileName
          */
         String screenshotFilename = FileUtil.generateScreenshotFilename(test, testCase, step, sequence, controlString, null, "jpg");
-        
+
         /**
          * Take Screenshot and write it
          */
         File newImage = this.webdriverService.takeScreenShotFile(testCaseExecution.getSession());
-        if(newImage != null){
+        if (newImage != null) {
             try {
                 String imgPath = parameterService.findParameterByKey("cerberus_picture_path", "").getValue();
                 File dir = new File(imgPath + runId);
-                if(!dir.exists()){
+                if (!dir.exists()) {
                     MyLogger.log(RecorderService.class.getName(), Level.INFO, testDescription + "Create directory for execution " + runId);
                     dir.mkdirs();
                 }
                 long maxSize = 1048576; //default max size that should be saved in the database
                 Parameter paramMaxSize = parameterService.findParameterByKey("cerberus_screenshot_max_size", "");
-                if(paramMaxSize != null){
-                    maxSize = Long.valueOf(paramMaxSize.getValue());                
+                if (paramMaxSize != null) {
+                    maxSize = Long.valueOf(paramMaxSize.getValue());
                 }
-                if(maxSize < newImage.length()){
-                    MyLogger.log(RecorderService.class.getName(), Level.WARN, testDescription + "Screen-shot size exceeds the maximum defined in configurations " + 
-                            newImage.getName() + " destination: " + screenshotFilename);
+                if (maxSize < newImage.length()) {
+                    MyLogger.log(RecorderService.class.getName(), Level.WARN, testDescription + "Screen-shot size exceeds the maximum defined in configurations "
+                            + newImage.getName() + " destination: " + screenshotFilename);
                 }
                 //copies the temp file to the execution file
                 FileUtils.copyFile(newImage, new File(imgPath + runId + File.separator + screenshotFilename));
                 MyLogger.log(RecorderService.class.getName(), Level.INFO, testDescription + "Copy file finished with success - source: " + newImage.getName() + " destination: " + screenshotFilename);
-                                
+
                 //deletes the temporary file
                 FileUtils.forceDelete(newImage);
                 MyLogger.log(RecorderService.class.getName(), Level.INFO, testDescription + "Temp file deleted with success " + newImage.getName());
@@ -114,71 +107,39 @@ public class RecorderService implements IRecorderService {
                 Logger.getLogger(RecorderService.class.getName()).log(java.util.logging.Level.SEVERE, testDescription, ex);
             } catch (CerberusException ex) {
                 Logger.getLogger(RecorderService.class.getName()).log(java.util.logging.Level.SEVERE, testDescription, ex);
-            } 
-        }else{
-            MyLogger.log(RecorderService.class.getName(), Level.WARN, testDescription + "Screenshot returned null " );        
+            }
+        } else {
+            MyLogger.log(RecorderService.class.getName(), Level.WARN, testDescription + "Screenshot returned null ");
         }
-//old version  TODO:delete      
-//        String imgPath;
-//            try {
-//                BufferedImage newImage = this.webdriverService.takeScreenShot(testCaseExecution.getSession());
-//                    imgPath = parameterService.findParameterByKey("cerberus_picture_path", "").getValue();
-//                    File dir = new File(imgPath + runId);
-//                    dir.mkdirs();
-//                ImageIO.write(newImage, "jpg", new File(imgPath + runId + File.separator + screenshotFilename));
-//            } catch (CerberusException ex) {
-//                Logger.getLogger(RecorderService.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-//            } catch (IOException ex) {
-//                Logger.getLogger(RecorderService.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-//            } catch (IllegalArgumentException ex) {
-//                Logger.getLogger(RecorderService.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-//            }
+
         String screenshotPath = Long.toString(testCaseStepActionExecution.getTestCaseStepExecution().gettCExecution().getId()) + File.separator + screenshotFilename;
-        MyLogger.log(RecorderService.class.getName(), Level.DEBUG, testDescription +  "Screenshot done in : " + screenshotPath);
+        MyLogger.log(RecorderService.class.getName(), Level.DEBUG, testDescription + "Screenshot done in : " + screenshotPath);
 
         return screenshotPath;
 
     }
 
-    
-
     @Override
-    public String recordXMLAndGetName(TestCaseExecution testCaseExecution, TestCaseStepActionExecution testCaseStepActionExecution, Integer control) {
+    public String recordXMLAndGetName(Long executionId, String fileName, String content) {
 
         MyLogger.log(RecorderService.class.getName(), Level.INFO, "Saving File.");
 
-        String test = testCaseExecution.getTest();
-        String testCase = testCaseExecution.getTestCase();
-        String step = String.valueOf(testCaseStepActionExecution.getStep());
-        String sequence = String.valueOf(testCaseStepActionExecution.getSequence());
-        String controlString = control.equals(0) ? null : String.valueOf(control);
-        String fileName = testCaseStepActionExecution.getProperty().equalsIgnoreCase("") ? null : testCaseStepActionExecution.getProperty();
-
-        String screenshotFilename = FileUtil.generateScreenshotFilename(test, testCase, step, sequence, controlString, fileName, "xml");
-
+        String screenshotFilename = FileUtil.generateScreenshotFilename(null, null, null, null, null, fileName, "xml");
         String imgPath = "";
+        StringBuilder filePath = new StringBuilder();
+            
         try {
-            imgPath = parameterService.findParameterByKey("cerberus_picture_path", "").getValue();
+            filePath.append(parameterService.findParameterByKey("cerberus_picture_path", "").getValue());
+            filePath.append(File.separator);
+            filePath.append(executionId);
+            filePath.append(File.separator);
         } catch (CerberusException ex) {
             Logger.getLogger(ExecutionRunService.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         }
-        File dir = new File(imgPath + testCaseStepActionExecution.getTestCaseStepExecution().gettCExecution().getId());
-        dir.mkdirs();
-
-        File file = new File(dir.getAbsolutePath() + File.separator + screenshotFilename);
-
-        FileOutputStream fileOutputStream;
-        try {
-            fileOutputStream = new FileOutputStream(file);
-            fileOutputStream.write(eSResponse.getExecutionSOAPResponse(testCaseStepActionExecution.getTestCaseStepExecution().gettCExecution().getExecutionUUID()).getBytes());
-            fileOutputStream.close();
-        } catch (FileNotFoundException ex) {
-            Logger.getLogger(ExecutionRunService.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (IOException ex) {
-            Logger.getLogger(ExecutionRunService.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        }
-
-        String screenshotPath = Long.toString(testCaseStepActionExecution.getTestCaseStepExecution().gettCExecution().getId()) + File.separator + screenshotFilename;
+        
+        recordFile(filePath.toString(), screenshotFilename, content);
+        
+        String screenshotPath = Long.toString(executionId) + File.separator + screenshotFilename;
         MyLogger.log(RecorderService.class.getName(), Level.DEBUG, "Screenshot done in : " + screenshotPath);
 
         return screenshotPath;
@@ -226,49 +187,49 @@ public class RecorderService implements IRecorderService {
 
     @Override
     public String recordSeleniumLogAndGetName(TestCaseExecution testCaseExecution) {
-        if (testCaseExecution.getApplication().getType().equals("GUI")){
-        if (testCaseExecution.getSeleniumLog()==2 || (testCaseExecution.getSeleniumLog()==1 && !testCaseExecution.getControlStatus().equals("OK"))){
-        MyLogger.log(RecorderService.class.getName(), Level.INFO, "Saving File.");
+        if (testCaseExecution.getApplication().getType().equals("GUI")) {
+            if (testCaseExecution.getSeleniumLog() == 2 || (testCaseExecution.getSeleniumLog() == 1 && !testCaseExecution.getControlStatus().equals("OK"))) {
+                MyLogger.log(RecorderService.class.getName(), Level.INFO, "Saving File.");
 
-        String logFilename = "selenium_log.txt";
+                String logFilename = "selenium_log.txt";
 
-        String imgPath = "";
-        try {
-            imgPath = parameterService.findParameterByKey("cerberus_picture_path", "").getValue();
-        } catch (CerberusException ex) {
-            Logger.getLogger(ExecutionRunService.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        }
-        File dir = new File(imgPath + testCaseExecution.getId());
-        dir.mkdirs();
+                String imgPath = "";
+                try {
+                    imgPath = parameterService.findParameterByKey("cerberus_picture_path", "").getValue();
+                } catch (CerberusException ex) {
+                    Logger.getLogger(ExecutionRunService.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+                }
+                File dir = new File(imgPath + testCaseExecution.getId());
+                dir.mkdirs();
 
-        File file = new File(dir.getAbsolutePath() + File.separator + logFilename);
+                File file = new File(dir.getAbsolutePath() + File.separator + logFilename);
 
-        FileOutputStream fileOutputStream;
-        try {
-            fileOutputStream = new FileOutputStream(file);
-            ByteArrayOutputStream baos = new ByteArrayOutputStream();
-            DataOutputStream out = new DataOutputStream(baos);
-            for (String element : this.webdriverService.getSeleniumLog(testCaseExecution.getSession())) {
-                out.writeBytes(element);
+                FileOutputStream fileOutputStream;
+                try {
+                    fileOutputStream = new FileOutputStream(file);
+                    ByteArrayOutputStream baos = new ByteArrayOutputStream();
+                    DataOutputStream out = new DataOutputStream(baos);
+                    for (String element : this.webdriverService.getSeleniumLog(testCaseExecution.getSession())) {
+                        out.writeBytes(element);
+                    }
+                    byte[] bytes = baos.toByteArray();
+                    fileOutputStream.write(bytes);
+                    out.close();
+                    baos.close();
+                    fileOutputStream.close();
+                } catch (FileNotFoundException ex) {
+                    Logger.getLogger(ExecutionRunService.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+                } catch (IOException ex) {
+                    Logger.getLogger(ExecutionRunService.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+                }
+
+                String seleniumLogPath = Long.toString(testCaseExecution.getId()) + File.separator + logFilename;
+                MyLogger.log(RecorderService.class.getName(), Level.DEBUG, "Log recorded in : " + logFilename);
+
+                return seleniumLogPath;
             }
-            byte[] bytes = baos.toByteArray();
-            fileOutputStream.write(bytes);
-            out.close();
-            baos.close();
-            fileOutputStream.close();
-        } catch (FileNotFoundException ex) {
-            Logger.getLogger(ExecutionRunService.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (IOException ex) {
-            Logger.getLogger(ExecutionRunService.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        }
-
-        String seleniumLogPath = Long.toString(testCaseExecution.getId()) + File.separator + logFilename;
-        MyLogger.log(RecorderService.class.getName(), Level.DEBUG, "Log recorded in : " + logFilename);
-
-        return seleniumLogPath;
-        }
         } else {
-        MyLogger.log(RecorderService.class.getName(), Level.INFO, "Selenium Log not recorded because test on non GUI application");
+            MyLogger.log(RecorderService.class.getName(), Level.INFO, "Selenium Log not recorded because test on non GUI application");
         }
         return null;
     }
@@ -282,7 +243,7 @@ public class RecorderService implements IRecorderService {
         String applicationType;
         String returnCode;
         Integer controlNumber = 0;
-        
+
         if (testCaseStepActionControlExecution == null) {
             myExecution = testCaseStepActionExecution.getTestCaseStepExecution().gettCExecution();
             doScreenshot = testCaseStepActionExecution.getActionResultMessage().isDoScreenshot();
@@ -305,8 +266,8 @@ public class RecorderService implements IRecorderService {
          */
         if ((myExecution.getScreenshot() == 2) || ((myExecution.getScreenshot() == 1) && (doScreenshot))) {
 
-            if (applicationType.equals("GUI") 
-                    || applicationType.equals("APK") 
+            if (applicationType.equals("GUI")
+                    || applicationType.equals("APK")
                     || applicationType.equals("IPA")) {
                 /**
                  * Only if the return code is not equal to Cancel, meaning lost
@@ -325,11 +286,17 @@ public class RecorderService implements IRecorderService {
                 }
 
             } else if (applicationType.equals("WS")) {
-                String screenshotPath = recordXMLAndGetName(testCaseStepActionExecution.getTestCaseStepExecution().gettCExecution(), testCaseStepActionExecution, controlNumber);
+                //Record the Request and Response.
+                TestCaseExecution tce = testCaseStepActionExecution.getTestCaseStepExecution().gettCExecution();
+                String name = testCaseStepActionExecution.getProperty();
+                SOAPExecution se = (SOAPExecution) testCaseStepActionExecution.getTestCaseStepExecution().gettCExecution().getLastSOAPCalled().getItem();
+                String responseFilePath = recordXMLAndGetName(tce.getId(), name  , SoapUtil.convertSoapMessageToString(se.getSOAPResponse()));
+                String requestFilePath = recordXMLAndGetName(tce.getId(), name +"_request" , SoapUtil.convertSoapMessageToString(se.getSOAPRequest()));
+                
                 if (testCaseStepActionControlExecution == null) {
-                    testCaseStepActionExecution.setScreenshotFilename(screenshotPath);
+                    testCaseStepActionExecution.setScreenshotFilename(responseFilePath);
                 } else {
-                    testCaseStepActionControlExecution.setScreenshotFilename(screenshotPath);
+                    testCaseStepActionControlExecution.setScreenshotFilename(responseFilePath);
                 }
             }
         } else {
@@ -357,11 +324,17 @@ public class RecorderService implements IRecorderService {
                     MyLogger.log(RecorderService.class.getName(), Level.DEBUG, "Not Doing screenshot because connectivity with selenium server lost.");
                 }
             } else if (applicationType.equals("WS")) {
-                String screenshotPath = recordXMLAndGetName(testCaseStepActionExecution.getTestCaseStepExecution().gettCExecution(), testCaseStepActionExecution, controlNumber);
+                //Record the Request and Response.
+                TestCaseExecution tce = testCaseStepActionExecution.getTestCaseStepExecution().gettCExecution();
+                String name = testCaseStepActionExecution.getProperty();
+                SOAPExecution se = (SOAPExecution) testCaseStepActionExecution.getTestCaseStepExecution().gettCExecution().getLastSOAPCalled().getItem();
+                String responseFilePath = recordXMLAndGetName(tce.getId(), name  , SoapUtil.convertSoapMessageToString(se.getSOAPResponse()));
+                String requestFilePath = recordXMLAndGetName(tce.getId(), name +"_request" , SoapUtil.convertSoapMessageToString(se.getSOAPRequest()));
+                
                 if (testCaseStepActionControlExecution == null) {
-                    testCaseStepActionExecution.setPageSourceFilename(screenshotPath);
+                    testCaseStepActionExecution.setPageSourceFilename(responseFilePath);
                 } else {
-                    testCaseStepActionControlExecution.setPageSourceFilename(screenshotPath);
+                    testCaseStepActionControlExecution.setPageSourceFilename(responseFilePath);
                 }
             }
         } else {
@@ -369,92 +342,22 @@ public class RecorderService implements IRecorderService {
         }
 
         if (testCaseStepActionExecution.getActionResultMessage().isGetPageSource()) {
-            //TODO: to be updated / ensures that the old actions callSoap and callSoapWithBase are still saving the xml file
-            if (testCaseStepActionExecution.getAction().equals("callSoap") || 
-                    testCaseStepActionExecution.getAction().equals("callSoapWithBase")) {
-                String screenshotPath = recordXMLAndGetName(testCaseStepActionExecution.getTestCaseStepExecution().gettCExecution(), testCaseStepActionExecution, controlNumber);
-                testCaseStepActionExecution.setScreenshotFilename(screenshotPath);
-            }
-        }
-        //saves the soap responses that were collected during action execution
-        recordXMLSOAPResponses(testCaseStepActionExecution, controlNumber);
-    }
-    
-    private void recordXMLSOAPResponses(TestCaseStepActionExecution testCaseStepActionExecution, Integer controlNumber) {
-        //checks if soap calls were performed and save the data into the database
-         HashMap<String, TestDataLibResult> data = testCaseStepActionExecution.getTestCaseStepExecution().gettCExecution().getDataLibraryExecutionDataList();
-         
-        if ( data != null && !data.isEmpty()) {
-            //if the data library contains entries for xml, then save that xml
-            
-            //list of entries
-            Long executionId = testCaseStepActionExecution.getTestCaseStepExecution().gettCExecution().getId();
-            Collection<TestDataLibResult> itValues = testCaseStepActionExecution.getTestCaseStepExecution().gettCExecution().getDataLibraryExecutionDataList().values();
-            String test = testCaseStepActionExecution.getTestCaseStepExecution().gettCExecution().getTest();
-            String testCase = testCaseStepActionExecution.getTestCaseStepExecution().gettCExecution().getTestCase();
-            String step = String.valueOf(testCaseStepActionExecution.getStep());
-            String sequence = String.valueOf(testCaseStepActionExecution.getSequence());            
-            String controlString = controlNumber.equals(0) ? null : String.valueOf(controlNumber);
-            
-            
-            for(TestDataLibResult result : itValues){
-                //xml that was retrieved during execution will be saved for debug purposes
-                if(result.getType().equals(TestDataLibTypeEnum.SOAP.getCode())){
-                    TestDataLibResultSOAP soapCallToBeSaved = ((TestDataLibResultSOAP)result);
-                    String responseKeyID = soapCallToBeSaved.getSoapResponseKey();
-                    //if the key is still in the execution data, we must remove it
-                    if(eSResponse.getExecutionSOAPResponse(responseKeyID) != null){
-                        //gets the xml associated with the entry
-                        String soapResponse = eSResponse.getExecutionSOAPResponse(responseKeyID); 
-                        String envelope = eSResponse.getExecutionSOAPResponse(responseKeyID + "_request"); 
-                        //the XML execution is available in the entry
-                        try {
-                            //name of the generated files
-                            String fileName, requestFileName;
-                            String descId = Long.toString(testCaseStepActionExecution.getTestCaseStepExecution().gettCExecution().getId());
-                            
-                            if((StringUtil.isNullOrEmpty(testCaseStepActionExecution.getProperty()) && testCaseStepActionExecution.getAction().startsWith("callSoap")) || 
-                                    !testCaseStepActionExecution.getAction().startsWith("callSoap")){ 
-                                //if the response name is not defined then we need to define it
-                                fileName = FileUtil.generateScreenshotFilename(test, testCase, step, sequence, controlString, null,  "xml") ;
-                                requestFileName = fileName.replace(".xml", "_request.xml");
-                                //updates the return message with the new generated file name
-                                String returnMessage = testCaseStepActionExecution.getReturnMessage().replace("%REQUEST_NAME%" , 
-                                    descId + File.separator + requestFileName).replace("%RESPONSE_NAME%", descId + File.separator + fileName);
-                                testCaseStepActionExecution.setReturnMessage(returnMessage);
-                            }else{
-                                fileName = testCaseStepActionExecution.getProperty() + ".xml";
-                                requestFileName = testCaseStepActionExecution.getProperty() + "_request.xml";
-                            }     
-                            
-                            String path = parameterService.findParameterByKey("cerberus_picture_path", "").getValue() + executionId + File.separator;
-                            //name of the requested file
-                                                        
-                            //saves the xml file when is the getPageSource option is activated
-                            if (testCaseStepActionExecution.getActionResultMessage().isGetPageSource()) {
-                                testCaseStepActionExecution.setScreenshotFilename(descId + File.separator + fileName);
-                            }
-                            
-                            
-                            //save the request and response files
-                            recordFile(path, requestFileName, envelope);
-                            recordFile(path, fileName, soapResponse);
-                        } catch (CerberusException ex) {
-                            MyLogger.log(RecorderService.class.getName(), Level.DEBUG, "XML file was not saved due to unexpected error." + ex.toString());
-                        }
-                        
-                        
-                        //after saving then remove it from the list
-                        eSResponse.removeExecutionSOAPResponse(responseKeyID);
-                        eSResponse.removeExecutionSOAPResponse(responseKeyID + "_request");
-                    }
-                }
+            if (testCaseStepActionExecution.getAction().startsWith("callSoap")) {
+                //Record the Request and Response.
+                TestCaseExecution tce = testCaseStepActionExecution.getTestCaseStepExecution().gettCExecution();
+                String name = testCaseStepActionExecution.getProperty();
+                SOAPExecution se = (SOAPExecution) testCaseStepActionExecution.getTestCaseStepExecution().gettCExecution().getLastSOAPCalled().getItem();
+                String responseFilePath = recordXMLAndGetName(tce.getId(), name  , SoapUtil.convertSoapMessageToString(se.getSOAPResponse()));
+                String requestFilePath = recordXMLAndGetName(tce.getId(), name +"_request" , SoapUtil.convertSoapMessageToString(se.getSOAPRequest()));
+                
+                testCaseStepActionExecution.setScreenshotFilename(responseFilePath);
             }
         }
     }
 
     /**
      * Auxiliary method that saves a file
+     *
      * @param path - directory path
      * @param fileName - name of the file
      * @param content -content of the file
@@ -463,7 +366,7 @@ public class RecorderService implements IRecorderService {
         MyLogger.log(RecorderService.class.getName(), Level.INFO, "Saving File.");
 
         File dir = new File(path);
-        if(!dir.exists()){
+        if (!dir.exists()) {
             dir.mkdirs();
         }
         FileOutputStream fileOutputStream;
@@ -477,5 +380,26 @@ public class RecorderService implements IRecorderService {
         } catch (IOException ex) {
             MyLogger.log(RecorderService.class.getName(), Level.DEBUG, "Unable to save : " + path + File.separator + fileName + " ex: " + ex);
         }
+    }
+
+    @Override
+    public String recordSoapMessageAndGetPath(Long executionId, SOAPMessage soapMessage, String fileName) {
+
+        //list of entries
+        String path = "";
+
+        try {
+            String mes = SoapUtil.convertSoapMessageToString(soapMessage);
+
+            //name of the generated files
+            path = parameterService.findParameterByKey("cerberus_picture_path", "").getValue() + executionId + File.separator;
+
+            //save the request and response files
+            recordFile(path, fileName, mes);
+        } catch (CerberusException ex) {
+            MyLogger.log(RecorderService.class.getName(), Level.DEBUG, "XML file was not saved due to unexpected error." + ex.toString());
+        }
+
+        return path + fileName;
     }
 }

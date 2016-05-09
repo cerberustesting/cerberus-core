@@ -27,7 +27,6 @@ import java.util.logging.Logger;
 import org.apache.log4j.Level;
 import org.cerberus.crud.entity.CountryEnvLink;
 import org.cerberus.crud.entity.CountryEnvParam;
-import org.cerberus.crud.entity.ExecutionSOAPResponse;
 import org.cerberus.crud.entity.ExecutionUUID;
 import org.cerberus.crud.entity.MessageEvent;
 import org.cerberus.enums.MessageEventEnum;
@@ -131,8 +130,6 @@ public class ExecutionRunService implements IExecutionRunService {
     private IFactoryTestCaseExecutionData factoryTestCaseExecutionData;
     @Autowired
     private IFactoryTestCaseExecutionSysVer factoryTestCaseExecutionSysVer;
-    @Autowired
-    private ExecutionSOAPResponse eSResponse;
     @Autowired
     private ExecutionUUID executionUUID;
     @Autowired
@@ -356,11 +353,6 @@ public class ExecutionRunService implements IExecutionRunService {
             try {
                 executionUUID.removeExecutionUUID(tCExecution.getExecutionUUID());
                 MyLogger.log(ExecutionRunService.class.getName(), Level.DEBUG, "Clean ExecutionUUID");
-
-                if (eSResponse.getExecutionSOAPResponse(tCExecution.getExecutionUUID()) != null) {
-                    eSResponse.removeExecutionSOAPResponse(tCExecution.getExecutionUUID());
-                    MyLogger.log(ExecutionRunService.class.getName(), Level.DEBUG, "Clean ExecutionSOAPResponse");
-                }
 
             } catch (Exception ex) {
                 MyLogger.log(ExecutionRunService.class.getName(), Level.FATAL, "Exception cleaning Memory: " + ex.toString());

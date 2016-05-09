@@ -19,7 +19,9 @@
  */
 package org.cerberus.service.engine;
 
+import javax.xml.soap.SOAPMessage;
 import org.cerberus.crud.entity.TestCaseExecution;
+import org.cerberus.crud.entity.TestCaseExecutionData;
 import org.cerberus.crud.entity.TestCaseStepActionControlExecution;
 import org.cerberus.crud.entity.TestCaseStepActionExecution;
 
@@ -32,8 +34,9 @@ public interface IRecorderService {
     String recordScreenshotAndGetName(TestCaseExecution testCaseExecution,
             TestCaseStepActionExecution testCaseStepActionExecution, Integer control);
 
-    String recordXMLAndGetName(TestCaseExecution testCaseExecution,
-            TestCaseStepActionExecution testCaseStepActionExecution, Integer control);
+    String recordXMLAndGetName(Long executionId,String fileName, String content);
+    
+    String recordSoapMessageAndGetPath(Long executionId, SOAPMessage soapMessage, String fileName);
 
     String recordPageSourceAndGetName(TestCaseExecution testCaseExecution,
             TestCaseStepActionExecution testCaseStepActionExecution, Integer control);

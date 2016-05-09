@@ -49,6 +49,7 @@ import org.cerberus.service.engine.IWebDriverService;
 import org.cerberus.service.engine.IXmlUnitService;
 import org.cerberus.util.StringUtil;
 import org.cerberus.util.answer.Answer;
+import org.cerberus.util.answer.AnswerItem;
 import org.cerberus.util.answer.MessageEventUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -848,7 +849,9 @@ public class ActionService implements IActionService {
              } else {
              attachement = soapLibrary.getAttachmentUrl();
              }*/
-            return soapService.callSOAPAndStoreResponseInMemory(tCExecution.getExecutionUUID(), decodedEnveloppe, servicePath, soapLibrary.getMethod(), attachement, false);
+            AnswerItem lastSoapCalled = soapService.callSOAP(decodedEnveloppe, servicePath, soapLibrary.getMethod(), attachement);
+            tCExecution.setLastSOAPCalled(lastSoapCalled);
+            return lastSoapCalled.getResultMessage();
         } catch (CerberusException ex) {
             message = new MessageEvent(MessageEventEnum.ACTION_FAILED_CALLSOAP);
             message.setDescription(message.getDescription().replaceAll("%SOAPNAME%", object));
