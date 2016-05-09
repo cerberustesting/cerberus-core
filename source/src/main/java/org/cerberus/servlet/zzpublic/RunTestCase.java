@@ -309,6 +309,7 @@ public class RunTestCase extends HttpServlet {
                  * Set UserAgent
                  */
                 tCExecution.setUserAgent(userAgent);
+
                 /**
                  * Set UUID
                  */
@@ -319,45 +320,15 @@ public class RunTestCase extends HttpServlet {
                 org.apache.log4j.Logger.getLogger(RunTestCase.class.getName()).log(org.apache.log4j.Level.INFO, "Execution Requested : UUID=" + executionUUID);
                 //MyLogger.log(RunTestCase.class.getName(), Level.INFO, "Execution Requested : UUID=" + executionUUID);
 
-                /**
-                 * Set Session
-                 */
-                IParameterService parameterService = appContext.getBean(IParameterService.class);
-                long defaultWait;
-                try {
-                    Parameter param = parameterService.findParameterByKey("selenium_defaultWait", "");
-                    String to = tCExecution.getTimeout().equals("") ? param.getValue() : tCExecution.getTimeout();
-                    defaultWait = Long.parseLong(to);
-                } catch (CerberusException ex) {
-                    //MyLogger.log(RunTestCase.class.getName(), Level.WARN, "Parameter (selenium_defaultWait) not in Parameter table, default wait set to 90 seconds");
-                    org.apache.log4j.Logger.getLogger(RunTestCase.class.getName()).log(org.apache.log4j.Level.WARN, "Parameter (selenium_defaultWait) not in Parameter table, default wait set to 90 seconds", ex);
-                    defaultWait = 90;
-                }
 
                 /**
                  * Set IdFromQueue
                  */
                 tCExecution.setIdFromQueue(idFromQueue);
 
-                List<SessionCapabilities> capabilities = new ArrayList();
-                SessionCapabilities sc = new SessionCapabilities();
-                sc.create("browser", browser);
-                capabilities.add(sc);
-                sc = new SessionCapabilities();
-                sc.create("platform", platform);
-                capabilities.add(sc);
-                sc = new SessionCapabilities();
-                sc.create("version", version);
-                capabilities.add(sc);
-
-                Session session = new Session();
-                session.setDefaultWait(defaultWait);
-                session.setHost(tCExecution.getSeleniumIP());
-                session.setPort(tCExecution.getPort());
-                session.setCapabilities(capabilities);
-
-                tCExecution.setSession(session);
-
+                /**
+                 * Loop on the execution of the testcase until we get an OK or reached the number of retries.
+                 */
                 while (tCExecution.getNumberOfRetries() >= 0 && !tCExecution.getResultMessage().getCodeString().equals("OK")) {
                     try {
                         org.apache.log4j.Logger.getLogger(RunTestCase.class.getName()).log(org.apache.log4j.Level.DEBUG, "Start execution " + tCExecution.getId());
@@ -368,19 +339,18 @@ public class RunTestCase extends HttpServlet {
                         break;
                     }
                 }
+                
                 /**
                  * If execution from queue, remove it from the queue or update
                  * information in Queue
-                 *
-                 * IdFromQueue must be different of 0 ReturnCode of Testcase
-                 * should be
                  */
                 try {
                     if (tCExecution.getIdFromQueue() != 0) {
                         ITestCaseExecutionInQueueService testCaseExecutionInQueueService = appContext.getBean(ITestCaseExecutionInQueueService.class);
-                        if (tCExecution.getResultMessage().getCode() == 63) {
+                        MessageGeneral mes = new MessageGeneral(MessageGeneralEnum.VALIDATION_FAILED_SELENIUM_COULDNOTCONNECT);
+                        if (tCExecution.getResultMessage().getCode() == mes.getCode()) { // There was an issue on the execution so we keep it in the queue and update the message.
                             testCaseExecutionInQueueService.updateComment(tCExecution.getIdFromQueue(), tCExecution.getResultMessage().getDescription());
-                        } else {
+                        } else { // Execution was fine (technically) so we remove it from the queue.
                             testCaseExecutionInQueueService.remove(tCExecution.getIdFromQueue());
                         }
                     }
@@ -391,8 +361,8 @@ public class RunTestCase extends HttpServlet {
                 TestCaseExecution t = (TestCaseExecution) tces.readByKeyWithDependency(tCExecution.getId()).getItem();
                 org.apache.log4j.Logger.getLogger(RunTestCase.class.getName()).log(org.apache.log4j.Level.ERROR, "CerberusExecution "+ t.toJson());
                 /**
-             * Clean memory in case testcase has not been launched(Remove all
-             * object put in memory)
+                 * Clean memory in case testcase has not been launched(Remove
+                 * all object put in memory)
                  */
                 try {
                     if (tCExecution.getId() == 0) {
@@ -404,6 +374,9 @@ public class RunTestCase extends HttpServlet {
                     org.apache.log4j.Logger.getLogger(RunTestCase.class.getName()).log(org.apache.log4j.Level.ERROR, "Exception cleaning Memory: ", ex);
                 }
 
+                /**
+                 * Execution is finished we report the result.
+                 */
                 long runID = tCExecution.getId();
                 if (outputFormat.equalsIgnoreCase("gui")) { // HTML GUI output. either the detailed execution page or an error page when the execution is not created.
                     if (runID > 0) { // Execution has been created.
@@ -453,6 +426,8 @@ public class RunTestCase extends HttpServlet {
                         out.println("</body>");
                         out.println("</html>");
                     }
+                } else if (outputFormat.equalsIgnoreCase("redirectToReport")) { // Redirect to the reporting page by tag.
+                    response.sendRedirect("./ReportingExecutionByTag.jsp?Tag=" + StringUtil.encodeAsJavaScriptURIComponent(tag));
                 } else if (outputFormat.equalsIgnoreCase("verbose-txt")) { // Text verbose output.
                     response.setContentType("text/plain");
                     String separator = " = ";
@@ -480,8 +455,6 @@ public class RunTestCase extends HttpServlet {
                     out.println("ReturnCode" + separator + tCExecution.getResultMessage().getCode());
                     out.println("ReturnCodeDescription" + separator + tCExecution.getResultMessage().getDescription());
                     out.println("ControlStatus" + separator + tCExecution.getResultMessage().getCodeString());
-                } else if (outputFormat.equalsIgnoreCase("redirectToReport")) { // Redirect to the reporting page by tag.
-                    response.sendRedirect("./ReportingExecutionByTag.jsp?Tag=" + StringUtil.encodeAsJavaScriptURIComponent(tag));
                 } else { // Default behaviour when not outputformat is defined : compact mode.
                     response.setContentType("text/plain");
                     DateFormat df = new SimpleDateFormat(DateUtil.DATE_FORMAT_DISPLAY);

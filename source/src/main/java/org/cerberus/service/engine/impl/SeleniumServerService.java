@@ -26,6 +26,9 @@ import java.io.InputStream;
 import java.io.StringWriter;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.TimeUnit;
 import java.util.logging.Logger;
 import org.apache.commons.io.IOUtils;
 import org.apache.http.HttpHost;
@@ -36,6 +39,7 @@ import org.apache.http.message.BasicHttpEntityEnclosingRequest;
 import org.apache.log4j.Level;
 import org.cerberus.crud.entity.Invariant;
 import org.cerberus.crud.entity.MessageGeneral;
+import org.cerberus.crud.entity.Parameter;
 import org.cerberus.crud.entity.Selenium;
 import org.cerberus.crud.entity.Session;
 import org.cerberus.crud.entity.SessionCapabilities;
@@ -77,11 +81,48 @@ public class SeleniumServerService implements ISeleniumServerService {
     @Autowired
     private IInvariantService invariantService;
 
+    private static final org.apache.log4j.Logger LOG = org.apache.log4j.Logger.getLogger(SeleniumServerService.class);
+
     @Override
     public void startServer(TestCaseExecution tCExecution) throws CerberusException {
         //message used for log purposes 
-        String testCaseDescription = "[" + tCExecution.getTest() + " - " + tCExecution.getTestCase() + "]";
+        String testCaseDescription = "[" + tCExecution.getTest() + " - " + tCExecution.getTestCase() + "] ";
         try {
+
+            /**
+             * Set Session
+             */
+            LOG.debug(testCaseDescription + "Setting the session.");
+            long defaultWait;
+            try {
+                Parameter param = parameterService.findParameterByKey("selenium_defaultWait", tCExecution.getApplication().getSystem());
+                String to = tCExecution.getTimeout().equals("") ? param.getValue() : tCExecution.getTimeout();
+                defaultWait = Long.parseLong(to);
+            } catch (CerberusException ex) {
+                //MyLogger.log(RunTestCase.class.getName(), Level.WARN, "Parameter (selenium_defaultWait) not in Parameter table, default wait set to 90 seconds");
+                LOG.warn("Parameter (selenium_defaultWait) not in Parameter table, default wait set to 90 seconds. "+ ex.toString());
+                defaultWait = 90;
+            }
+            LOG.debug("TimeOut defined on session : " + defaultWait);
+            List<SessionCapabilities> capabilities = new ArrayList();
+            SessionCapabilities sc = new SessionCapabilities();
+            sc.create("browser", tCExecution.getBrowser());
+            capabilities.add(sc);
+            sc = new SessionCapabilities();
+            sc.create("platform", tCExecution.getPlatform());
+            capabilities.add(sc);
+            sc = new SessionCapabilities();
+            sc.create("version", tCExecution.getVersion());
+            capabilities.add(sc);
+
+            Session session = new Session();
+            session.setDefaultWait(defaultWait);
+            session.setHost(tCExecution.getSeleniumIP());
+            session.setPort(tCExecution.getPort());
+            session.setCapabilities(capabilities);
+
+            tCExecution.setSession(session);
+            LOG.debug("Session is set.");
 
             /**
              * SetUp Capabilities
@@ -111,6 +152,14 @@ public class SeleniumServerService implements ISeleniumServerService {
                 driver = (WebDriver) appiumDriver;
             }
 
+            /**
+             * Defining the timeout at the driver level.
+             */
+            if (!(driver == null)) {
+                driver.manage().timeouts().pageLoadTimeout(tCExecution.getSession().getDefaultWait(), TimeUnit.SECONDS);
+                driver.manage().timeouts().implicitlyWait(tCExecution.getSession().getDefaultWait(), TimeUnit.SECONDS);
+                driver.manage().timeouts().setScriptTimeout(tCExecution.getSession().getDefaultWait(), TimeUnit.SECONDS);
+            }
             tCExecution.getSession().setDriver(driver);
             tCExecution.getSession().setAppiumDriver(appiumDriver);
 

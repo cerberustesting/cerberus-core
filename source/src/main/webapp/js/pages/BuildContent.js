@@ -32,24 +32,24 @@ function initPage() {
     var urlApplication = GetURLParameter('application');
 
     // Filter combo
-    displayBuildList('#selectBuild', getUser().defaultSystem, "1", urlBuild, "Y", "Y");
-    displayBuildList('#selectRevision', getUser().defaultSystem, "2", urlRevision, "Y", "Y");
+    displayBuildList('#selectBuild', getUser().defaultSystem, "1", urlBuild, "Y", "Y", true);
+    displayBuildList('#selectRevision', getUser().defaultSystem, "2", urlRevision, "Y", "Y", true);
 
     // Combo in install instruction Modal
-    displayBuildList('#selectBuildFrom', getUser().defaultSystem, "1", urlBuild, "N", "N");
-    displayBuildList('#selectRevisionFrom', getUser().defaultSystem, "2", urlRevision, "N", "Y");
-    displayBuildList('#selectBuildTo', getUser().defaultSystem, "1", urlBuild, "N", "N");
-    displayBuildList('#selectRevisionTo', getUser().defaultSystem, "2", urlRevision, "N", "N");
+    displayBuildList('#selectBuildFrom', getUser().defaultSystem, "1", urlBuild, "N", "N", false);
+    displayBuildList('#selectRevisionFrom', getUser().defaultSystem, "2", urlRevision, "N", "Y", false);
+    displayBuildList('#selectBuildTo', getUser().defaultSystem, "1", urlBuild, "N", "N", false);
+    displayBuildList('#selectRevisionTo', getUser().defaultSystem, "2", urlRevision, "N", "N", false);
 
     // Add and edit Modal combo
-    displayBuildList('#addBuild', getUser().defaultSystem, "1", urlBuild, "N", "Y");
-    displayBuildList('#addRevision', getUser().defaultSystem, "2", urlRevision, "N", "Y");
-    displayBuildList('#editBuild', getUser().defaultSystem, "1", urlBuild, "N", "Y");
-    displayBuildList('#editRevision', getUser().defaultSystem, "2", urlRevision, "N", "Y");
+    displayBuildList('#addBuild', getUser().defaultSystem, "1", urlBuild, "N", "Y", false);
+    displayBuildList('#addRevision', getUser().defaultSystem, "2", urlRevision, "N", "Y", false);
+    displayBuildList('#editBuild', getUser().defaultSystem, "1", urlBuild, "N", "Y", false);
+    displayBuildList('#editRevision', getUser().defaultSystem, "2", urlRevision, "N", "Y", false);
 
     // Mass Action Modal combo
-    displayBuildList('#massBuild', getUser().defaultSystem, "1", null, "N", "Y");
-    displayBuildList('#massRevision', getUser().defaultSystem, "2", null, "N", "Y");
+    displayBuildList('#massBuild', getUser().defaultSystem, "1", null, "N", "Y", false);
+    displayBuildList('#massRevision', getUser().defaultSystem, "2", null, "N", "Y", false);
 
     // Feed Application combo with Application list.
     var select = $('#selectApplication');
@@ -303,7 +303,7 @@ function addEntryModalSaveHandler() {
 
     // Get the header data from the form.
     var dataForm = convertSerialToJSONObject(formAdd.serialize());
-    
+
     showLoaderInModal('#addBrpModal');
     var jqxhr = $.post("CreateBuildRevisionParameters", dataForm);
     $.when(jqxhr).then(function (data) {

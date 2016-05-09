@@ -67,7 +67,7 @@
                 IBuildRevisionInvariantService buildRevisionInvariantService = 
                         appContext.getBean(IBuildRevisionInvariantService.class);
                 List<BuildRevisionInvariant> myBuildRevisionInvariant = 
-                        buildRevisionInvariantService.findAllBuildRevisionInvariantBySystemLevel(MySystem, 1);
+                        buildRevisionInvariantService.convert(buildRevisionInvariantService.readBySystemLevel(MySystem, 1));
                 for (BuildRevisionInvariant bri : myBuildRevisionInvariant){
                     %>
                 <option value="<%=bri.getVersionName()%>"><%=bri.getVersionName()%></option>

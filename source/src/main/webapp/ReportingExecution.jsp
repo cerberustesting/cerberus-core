@@ -619,7 +619,7 @@
                 <div>
                     <%
                         options.clear();
-                        List<BuildRevisionInvariant> buildList = buildRevisionInvariantService.findAllBuildRevisionInvariantBySystemLevel(systemBR, 1);
+                        List<BuildRevisionInvariant> buildList = buildRevisionInvariantService.convert(buildRevisionInvariantService.readBySystemLevel(systemBR, 1));
                         for (BuildRevisionInvariant myBR : buildList) {
                             options.put(myBR.getVersionName(), myBR.getVersionName());
                         }
@@ -637,7 +637,7 @@
                 <div>
                     <%
                         options.clear();
-                        List<BuildRevisionInvariant> revisionList = buildRevisionInvariantService.findAllBuildRevisionInvariantBySystemLevel(systemBR, 2);
+                        List<BuildRevisionInvariant> revisionList = buildRevisionInvariantService.convert(buildRevisionInvariantService.readBySystemLevel(systemBR, 2));
                         for (BuildRevisionInvariant myBR : revisionList) {
                             options.put(myBR.getVersionName(), myBR.getVersionName());
                         }

@@ -80,6 +80,7 @@ public class ReadTestDataLib extends HttpServlet {
         AnswerItem answer = new AnswerItem(msg);
 
         response.setContentType("application/json");
+        response.setCharacterEncoding("utf8");
 
         /**
          * Parsing and securing all required parameters.

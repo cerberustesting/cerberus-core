@@ -7,18 +7,19 @@ public enum PropertyTypeEnum {
     GET_FROM_DATALIB("getFromDataLib_BETA"),
     EXECUTE_SQL("executeSql"),
     EXECUTE_SQL_FROM_LIB("executeSqlFromLib"), 
-    ACCESS_SUBDATA("accessSubData"), 
     TEXT("text"), 
     GET_FROM_HTML_VISIBLE("getFromHtmlVisible"), 
     GET_FROM_HTML("getFromHtml"), 
     GET_FROM_JS("getFromJS"), 
     GET_FROM_TEST_DATA("getFromTestData"), 
-    GET_ATTRIBUTE_FROM_HTML("getAttributeFromHtml"), 
+    GET_ATTRIBUTE_FROM_HTML("getAttributeFromHtml"),
     GET_FROM_COOKIE("getFromCookie"), 
     GET_FROM_XML("getFromXml"), 
     GET_FROM_JSON("getFromJson"), 
     EXECUTE_SOAP_FROM_LIB("executeSoapFromLib"), 
-    GET_DIFFERENCES_FROM_XML("getDifferencesFromXml");
+    GET_DIFFERENCES_FROM_XML("getDifferencesFromXml"),
+    ACCESS_SUBDATA("accessSubData") // Is not accessible from the GUI of Cerberus but is created by the engine when a subdata is used.
+    ;
     
     private final String propertyName;
 

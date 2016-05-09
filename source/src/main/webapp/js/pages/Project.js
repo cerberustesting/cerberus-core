@@ -55,7 +55,7 @@ function displayPageLabel() {
     $("[name='activeField']").html(doc.getDocOnline("project", "active"));
     $("[name='codeField']").html(doc.getDocOnline("project", "code"));
     $("[name='descriptionField']").html(doc.getDocOnline("project", "description"));
-    displayInvariantList("Active", "PROJECTACTIVE");
+    displayInvariantList("Active", "PROJECTACTIVE", false);
     displayFooter(doc);
 }
 

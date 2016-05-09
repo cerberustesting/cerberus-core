@@ -20,11 +20,11 @@
 package org.cerberus.crud.service;
 
 import java.util.List;
-import org.cerberus.crud.entity.CountryEnvParam;
 import org.cerberus.crud.entity.TCase;
 
 import org.cerberus.crud.entity.TestCaseExecution;
 import org.cerberus.exception.CerberusException;
+import org.cerberus.util.answer.Answer;
 import org.cerberus.util.answer.AnswerItem;
 import org.cerberus.util.answer.AnswerList;
 
@@ -36,6 +36,8 @@ public interface ITestCaseExecutionService {
     long insertTCExecution(TestCaseExecution tCExecution) throws CerberusException;
 
     void updateTCExecution(TestCaseExecution tCExecution) throws CerberusException;
+
+    AnswerItem readLastByCriteria(String application);
 
     TestCaseExecution findLastTCExecutionByCriteria(String test, String testCase, String environment, String country,
             String build, String revision) throws CerberusException;
@@ -133,24 +135,50 @@ public interface ITestCaseExecutionService {
     public AnswerList readDistinctColumnByTag(String tag, boolean env, boolean country, boolean browser, boolean app);
 
     List<TestCaseExecution> createAllTestCaseExecution(List<TCase> testCaseList, List<String> envList, List<String> country);
-    
-    AnswerList readBySystemByVarious(String system, List<String> testList, List<String> applicationList, List<String> projectList, List<String> tcstatusList, List<String> groupList, 
-            List<String> tcactiveList, List<String> priorityList, List<String> targetsprintList, List<String> targetrevisionList, List<String> creatorList, 
-            List<String> implementerList, List<String> buildList, List<String> revisionList, List<String> environmentList, List<String> countryList, List<String> browserList, List<String> tcestatusList, String ip, String port, String tag, String browserversion, 
+
+    AnswerList readBySystemByVarious(String system, List<String> testList, List<String> applicationList, List<String> projectList, List<String> tcstatusList, List<String> groupList,
+            List<String> tcactiveList, List<String> priorityList, List<String> targetsprintList, List<String> targetrevisionList, List<String> creatorList,
+            List<String> implementerList, List<String> buildList, List<String> revisionList, List<String> environmentList, List<String> countryList, List<String> browserList, List<String> tcestatusList, String ip, String port, String tag, String browserversion,
             String comment, String bugid, String ticket);
-    
+
     /**
      * Read TestCaseExecution knowing the Key
+     *
      * @param executionId : ID of the execution
      * @return AnswerItem with returncode and testcaseexecution object as item.
      */
     AnswerItem readByKey(long executionId);
-    
-        
+
     /**
      * Read TestCaseExecution knowing the Key
+     *
      * @param executionId : ID of the execution
      * @return AnswerItem with returncode and testcaseexecution object as item.
      */
     AnswerItem readByKeyWithDependency(long executionId);
+
+    /**
+     *
+     * @param answerItem
+     * @return
+     * @throws CerberusException
+     */
+    TestCaseExecution convert(AnswerItem answerItem) throws CerberusException;
+
+    /**
+     *
+     * @param answerList
+     * @return
+     * @throws CerberusException
+     */
+    List<TestCaseExecution> convert(AnswerList answerList) throws CerberusException;
+
+    /**
+     *
+     * @param answer
+     * @throws CerberusException
+     */
+    void convert(Answer answer) throws CerberusException;
+
+
 }

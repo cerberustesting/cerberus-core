@@ -44,7 +44,6 @@ import org.cerberus.service.email.IEmailGeneration;
 import org.cerberus.service.email.impl.sendMail;
 import org.cerberus.util.ParameterParserUtil;
 import org.cerberus.util.answer.Answer;
-import org.cerberus.util.answer.AnswerItem;
 import org.cerberus.util.answer.AnswerList;
 import org.cerberus.util.answer.AnswerUtil;
 import org.cerberus.version.Infos;
@@ -170,7 +169,7 @@ public class NewEnvironmentEventV000 extends HttpServlet {
                  * For each object, we can update it.
                  */
                 // Adding CountryEnvParam Log entry.
-                buildRevisionBatchService.createBatchEntry(cepData.getSystem(), cepData.getCountry(), cepData.getEnvironment(), cepData.getBuild(), cepData.getRevision(), event);
+                buildRevisionBatchService.create(cepData.getSystem(), cepData.getCountry(), cepData.getEnvironment(), cepData.getBuild(), cepData.getRevision(), event);
 
                 /**
                  * Email notification.

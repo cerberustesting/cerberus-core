@@ -56,38 +56,13 @@ public class BuildRevisionInvariantService implements IBuildRevisionInvariantSer
     }
 
     @Override
-    public BuildRevisionInvariant findBuildRevisionInvariantByKey(String system, Integer level, Integer seq) throws CerberusException {
-        return BuildRevisionInvariantDAO.findBuildRevisionInvariantByKey(system, level, seq);
+    public AnswerList readBySystemLevel(String system, Integer level) {
+        return BuildRevisionInvariantDAO.readByVariousByCriteria(system, level, 0, 0, null, null, null, null);
     }
 
     @Override
-    public BuildRevisionInvariant findBuildRevisionInvariantByKey(String system, Integer level, String versionName) throws CerberusException {
-        return BuildRevisionInvariantDAO.findBuildRevisionInvariantByKey(system, level, versionName);
-    }
-
-    @Override
-    public List<BuildRevisionInvariant> findAllBuildRevisionInvariantBySystemLevel(String system, Integer level) throws CerberusException {
-        return BuildRevisionInvariantDAO.findAllBuildRevisionInvariantBySystemLevel(system, level);
-    }
-
-    @Override
-    public List<BuildRevisionInvariant> findAllBuildRevisionInvariantBySystem(String system) throws CerberusException {
-        return BuildRevisionInvariantDAO.findAllBuildRevisionInvariantBySystem(system);
-    }
-
-    @Override
-    public boolean insertBuildRevisionInvariant(BuildRevisionInvariant buildRevisionInvariant) {
-        return BuildRevisionInvariantDAO.insertBuildRevisionInvariant(buildRevisionInvariant);
-    }
-
-    @Override
-    public boolean deleteBuildRevisionInvariant(BuildRevisionInvariant buildRevisionInvariant) {
-        return BuildRevisionInvariantDAO.deleteBuildRevisionInvariant(buildRevisionInvariant);
-    }
-
-    @Override
-    public boolean updateBuildRevisionInvariant(BuildRevisionInvariant buildRevisionInvariant) {
-        return BuildRevisionInvariantDAO.updateBuildRevisionInvariant(buildRevisionInvariant);
+    public AnswerList readBySystem(String system) {
+        return BuildRevisionInvariantDAO.readByVariousByCriteria(system, -1, 0, 0, null, null, null, null);
     }
 
     @Override

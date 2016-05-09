@@ -271,7 +271,7 @@
                                         <select id="Build" name="build" style="width: 60px" onchange="document.ExecFilters.submit()">
                                             <option style="width: 100px" value="" <%=build.compareTo("NONE") == 0 ? " SELECTED " : ""%>>----</option>
                                             <%
-                                                List<BuildRevisionInvariant> listBuildRev = buildRevisionInvariantService.findAllBuildRevisionInvariantBySystemLevel(MySystem, 1);
+                                                List<BuildRevisionInvariant> listBuildRev = buildRevisionInvariantService.convert(buildRevisionInvariantService.readBySystemLevel(MySystem, 1));
                                                 for (BuildRevisionInvariant myBR : listBuildRev) {
                                             %><option style="width: 100px" value="<%= myBR.getVersionName()%>" <%=build.compareTo(myBR.getVersionName()) == 0 ? " SELECTED " : ""%>><%= myBR.getVersionName()%></option>
                                             <% }
@@ -280,7 +280,7 @@
                                         <select id="Revision" name="revision" style="width:50px" onchange="document.ExecFilters.submit()">
                                             <option style="width: 100px" value="" <%=revision.compareTo("NONE") == 0 ? " SELECTED " : ""%>>----</option>
                                             <%
-                                                listBuildRev = buildRevisionInvariantService.findAllBuildRevisionInvariantBySystemLevel(MySystem, 2);
+                                                listBuildRev = buildRevisionInvariantService.convert(buildRevisionInvariantService.readBySystemLevel(MySystem, 2));
                                                 for (BuildRevisionInvariant myBR : listBuildRev) {
                                             %><option style="width: 100px" value="<%= myBR.getVersionName()%>" <%=revision.compareTo(myBR.getVersionName()) == 0 ? " SELECTED " : ""%>><%= myBR.getVersionName()%></option>
                                             <% }

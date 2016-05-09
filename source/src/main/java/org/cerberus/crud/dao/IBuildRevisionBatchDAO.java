@@ -20,7 +20,6 @@ package org.cerberus.crud.dao;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import org.cerberus.crud.entity.BuildRevisionBatch;
-import org.cerberus.crud.entity.CountryEnvParam_log;
 
 import org.cerberus.util.answer.Answer;
 import org.cerberus.util.answer.AnswerItem;
@@ -44,8 +43,6 @@ public interface IBuildRevisionBatchDAO {
      * @param system
      * @param country
      * @param environment
-     * @param build
-     * @param revision
      * @param startPosition
      * @param length
      * @param columnName

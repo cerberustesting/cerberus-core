@@ -20,10 +20,6 @@
 package org.cerberus.servlet.integration;
 
 import java.io.IOException;
-import java.io.PrintWriter;
-import java.sql.Connection;
-import java.sql.SQLException;
-import java.sql.Statement;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -32,15 +28,24 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import org.cerberus.crud.entity.CountryEnvParam;
+import org.cerberus.crud.entity.MessageEvent;
+import org.cerberus.crud.service.ICountryEnvParamService;
+import org.cerberus.crud.service.ICountryEnvParam_logService;
+import org.cerberus.crud.service.ILogEventService;
 
-import org.cerberus.database.DatabaseSpring;
-import org.cerberus.log.MyLogger;
 import org.cerberus.crud.service.IParameterService;
-import org.cerberus.crud.service.impl.ParameterService;
+import org.cerberus.crud.service.impl.LogEventService;
+import org.cerberus.enums.MessageEventEnum;
 import org.cerberus.service.email.IEmailGeneration;
-import org.cerberus.service.email.impl.EmailGeneration;
 import org.cerberus.service.email.impl.sendMail;
+import org.cerberus.util.answer.Answer;
+import org.cerberus.util.answer.AnswerItem;
 import org.cerberus.version.Infos;
+import org.json.JSONException;
+import org.json.JSONObject;
+import org.owasp.html.PolicyFactory;
+import org.owasp.html.Sanitizers;
 import org.springframework.context.ApplicationContext;
 import org.springframework.web.context.support.WebApplicationContextUtils;
 
@@ -50,136 +55,195 @@ import org.springframework.web.context.support.WebApplicationContextUtils;
 @WebServlet(name = "DisableEnvironment", urlPatterns = {"/DisableEnvironment"})
 public class DisableEnvironment extends HttpServlet {
 
+    private final String OBJECT_NAME = "CountryEnvParam";
+    private final String ITEM = "Environment";
+    private final String OPERATION = "Disable";
+
     /**
-     * Processes requests for both HTTP
-     * <code>GET</code> and
-     * <code>POST</code> methods.
+     * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
+     * methods.
      *
-     * @param request  servlet request
+     * @param request servlet request
      * @param response servlet response
      * @throws ServletException if a servlet-specific error occurs
-     * @throws IOException      if an I/O error occurs
+     * @throws IOException if an I/O error occurs
      */
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException {
-        response.setContentType("text/html;charset=UTF-8");
-        PrintWriter out = response.getWriter();
+            throws ServletException, IOException, JSONException {
+        JSONObject jsonResponse = new JSONObject();
+        AnswerItem answerItem = new AnswerItem();
+        MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
+        msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", ""));
+        answerItem.setResultMessage(msg);
+        PolicyFactory policy = Sanitizers.FORMATTING.and(Sanitizers.LINKS);
 
+        response.setContentType("application/json");
+
+        /**
+         * Parsing and securing all required parameters.
+         */
+        String system = policy.sanitize(request.getParameter("system"));
+        String country = policy.sanitize(request.getParameter("country"));
+        String env = policy.sanitize(request.getParameter("environment"));
+
+        // Init Answer with potencial error from Parsing parameter.
+//        AnswerItem answer = new AnswerItem(msg);
+        String eMailContent = "";
         ApplicationContext appContext = WebApplicationContextUtils.getWebApplicationContext(this.getServletContext());
-        DatabaseSpring database = appContext.getBean(DatabaseSpring.class);
+        IEmailGeneration emailService = appContext.getBean(IEmailGeneration.class);
+        IParameterService parameterService = appContext.getBean(IParameterService.class);
+        ICountryEnvParamService countryEnvParamService = appContext.getBean(ICountryEnvParamService.class);
+        ICountryEnvParam_logService countryEnvParam_logService = appContext.getBean(ICountryEnvParam_logService.class);
+        ILogEventService logEventService = appContext.getBean(LogEventService.class);
 
-        Connection connection = database.connect();
-        try {
-            String system = null;
-            if (request.getParameter("system") != null && request.getParameter("system").compareTo("") != 0) {
-                system = request.getParameter("system");
-            }
-            String country = null;
-            if (request.getParameter("country") != null && request.getParameter("country").compareTo("") != 0) {
-                country = request.getParameter("country");
-            }
-            String env = null;
-            if (request.getParameter("env") != null && request.getParameter("env").compareTo("") != 0) {
-                env = request.getParameter("env");
-            }
+        if (request.getParameter("system") == null) {
+            msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_EXPECTED);
+            msg.setDescription(msg.getDescription().replace("%ITEM%", ITEM)
+                    .replace("%OPERATION%", OPERATION)
+                    .replace("%REASON%", "System name is missing!"));
+            answerItem.setResultMessage(msg);
+        } else if (request.getParameter("country") == null) {
+            msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_EXPECTED);
+            msg.setDescription(msg.getDescription().replace("%ITEM%", ITEM)
+                    .replace("%OPERATION%", OPERATION)
+                    .replace("%REASON%", "Country is missing!"));
+            answerItem.setResultMessage(msg);
+        } else if (request.getParameter("environment") == null) {
+            msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_EXPECTED);
+            msg.setDescription(msg.getDescription().replace("%ITEM%", ITEM)
+                    .replace("%OPERATION%", OPERATION)
+                    .replace("%REASON%", "Environment is missing!"));
+            answerItem.setResultMessage(msg);
+        } else {   // All parameters are OK we can start performing the operation.
 
+            // Getting the contryEnvParam based on the parameters.
+            answerItem = countryEnvParamService.readByKey(system, country, env);
+            if (!(answerItem.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode()) && answerItem.getItem()!=null)) {
+                /**
+                 * Object could not be found. We stop here and report the error.
+                 */
+                msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_EXPECTED);
+                msg.setDescription(msg.getDescription().replace("%ITEM%", OBJECT_NAME)
+                        .replace("%OPERATION%", OPERATION)
+                        .replace("%REASON%", OBJECT_NAME + " ['" + system + "','" + country + "','" + env + "'] does not exist. Cannot disable it!"));
+                answerItem.setResultMessage(msg);
 
-            // Generate the content of the email
-            IEmailGeneration emailGenerationService = appContext.getBean(EmailGeneration.class);
+            } else {
+                /**
+                 * The service was able to perform the query and confirm the
+                 * object exist, then we can update it.
+                 */
+                CountryEnvParam cepData = (CountryEnvParam) answerItem.getItem();
+                cepData.setActive(false);
+                Answer answer = countryEnvParamService.update(cepData);
 
-            String eMailContent = emailGenerationService.EmailGenerationDisableEnv(system, country, env);
+                if (!(answer.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode()))) {
+                    /**
+                     * Object could not be updated. We stop here and report the
+                     * error.
+                     */
+                    answerItem.setResultMessage(answer.getResultMessage());
 
-            // Split the result to extract all the data
-            String[] eMailContentTable = eMailContent.split("///");
+                } else {
+                    /**
+                     * Update was successful.
+                     */
+                    // Adding Log entry.
+                    logEventService.createPrivateCalls("/DisableEnvironment", "UPDATE", "Updated CountryEnvParam : ['" + system + "','" + country + "','" + env + "']", request);
 
-            String to = eMailContentTable[0];
-            String cc = eMailContentTable[1];
-            String subject = eMailContentTable[2];
-            String body = eMailContentTable[3];
+                    // Adding CountryEnvParam Log entry.
+                    countryEnvParam_logService.createLogEntry(system, country, env, "","", "Disabled.", request.getUserPrincipal().getName());
 
+                    /**
+                     * Email notification.
+                     */
+                    // Email Calculation.
+                    String OutputMessage = "";
+                    eMailContent = emailService.EmailGenerationDisableEnv(system, country, env);
+                    String[] eMailContentTable = eMailContent.split("///");
+                    String to = eMailContentTable[0];
+                    String cc = eMailContentTable[1];
+                    String subject = eMailContentTable[2];
+                    String body = eMailContentTable[3];
 
-            // Transaction and database update.
-            Statement stmt = connection.createStatement();
+                    // Search the From, the Host and the Port defined in the parameters
+                    String from;
+                    String host;
+                    int port;
+                    try {
+                        from = parameterService.findParameterByKey("integration_smtp_from", system).getValue();
+                        host = parameterService.findParameterByKey("integration_smtp_host", system).getValue();
+                        port = Integer.valueOf(parameterService.findParameterByKey("integration_smtp_port", system).getValue());
 
-            try {
-                String req_update_active = "UPDATE countryenvparam "
-                        + " SET Active='N'"
-                        + "WHERE `System`='" + system + "' and Country='" + country + "' and Environment='" + env + "'";
-                stmt.executeUpdate(req_update_active);
+                        //Sending the email
+                        sendMail.sendHtmlMail(host, port, body, subject, from, to, cc);
+                    } catch (Exception e) {
+                        Logger.getLogger(DisableEnvironment.class.getName()).log(Level.SEVERE, Infos.getInstance().getProjectNameAndVersion() + " - Exception catched.", e);
+                        logEventService.createPrivateCalls("/DisableEnvironment", "DISABLE", "Warning on Disable environment : ['" + system + "','" + country + "','" + env + "'] " + e.getMessage(), request);
+                        OutputMessage = e.getMessage();
+                    }
 
-
-                String req_insert_log = "INSERT INTO  countryenvparam_log "
-                        + " ( `System`, `Country`, `Environment`, `Description`, `Creator`) "
-                        + " VALUES ('" + system + "', '" + country + "', '" + env + "', 'Disabled.', '" + request.getUserPrincipal().getName() + "') ";
-                stmt.execute(req_insert_log);
-            } finally {
-                stmt.close();
-            }
-
-
-            // Email sending.
-            // Search the From, the Host and the Port defined in the database
-            String from;
-            String host;
-            int port;
-
-            IParameterService parameterService = appContext.getBean(ParameterService.class);
-
-            from = parameterService.findParameterByKey("integration_smtp_from",system).getValue();
-            host = parameterService.findParameterByKey("integration_smtp_host",system).getValue();
-            port = Integer.valueOf(parameterService.findParameterByKey("integration_smtp_port",system).getValue());
-
-            //sendMail Mail = new sendMail();
-            sendMail.sendHtmlMail(host, port, body, subject, from, to, cc);
-
-            response.sendRedirect("Environment.jsp?system=" + system + "&country=" + country + "&env=" + env);
-
-        } catch (Exception e) {
-            Logger.getLogger(DisableEnvironment.class.getName()).log(Level.SEVERE, Infos.getInstance().getProjectNameAndVersion() + " - Exception catched.", e);
-            out.println(e.getMessage());
-        } finally {
-            out.close();
-            try {
-                if (connection != null) {
-                    connection.close();
+                    if (OutputMessage.equals("")) {
+                        msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
+                        msg.setDescription(msg.getDescription().replace("%ITEM%", "Environment")
+                                .replace("%OPERATION%", OPERATION));
+                        answerItem.setResultMessage(msg);
+                    } else {
+                        msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
+                        msg.setDescription(msg.getDescription().replace("%ITEM%", "Environment")
+                                .replace("%OPERATION%", OPERATION).concat(" Just one warning : ").concat(OutputMessage));
+                        answerItem.setResultMessage(msg);
+                    }
                 }
-            } catch (SQLException e) {
-                MyLogger.log(DisableEnvironment.class.getName(), org.apache.log4j.Level.WARN, e.toString());
             }
         }
+
+        /**
+         * Formating and returning the json result.
+         */
+        jsonResponse.put("messageType", answerItem.getResultMessage().getMessage().getCodeString());
+        jsonResponse.put("message", answerItem.getResultMessage().getDescription());
+
+        response.getWriter().print(jsonResponse);
+        response.getWriter().flush();
 
     }
 
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
-
     /**
-     * Handles the HTTP
-     * <code>GET</code> method.
+     * Handles the HTTP <code>GET</code> method.
      *
-     * @param request  servlet request
+     * @param request servlet request
      * @param response servlet response
      * @throws ServletException if a servlet-specific error occurs
-     * @throws IOException      if an I/O error occurs
+     * @throws IOException if an I/O error occurs
      */
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        processRequest(request, response);
+        try {
+            processRequest(request, response);
+        } catch (JSONException ex) {
+            Logger.getLogger(DisableEnvironment.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
 
     /**
-     * Handles the HTTP
-     * <code>POST</code> method.
+     * Handles the HTTP <code>POST</code> method.
      *
-     * @param request  servlet request
+     * @param request servlet request
      * @param response servlet response
      * @throws ServletException if a servlet-specific error occurs
-     * @throws IOException      if an I/O error occurs
+     * @throws IOException if an I/O error occurs
      */
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        processRequest(request, response);
+        try {
+            processRequest(request, response);
+        } catch (JSONException ex) {
+            Logger.getLogger(DisableEnvironment.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
 
     /**

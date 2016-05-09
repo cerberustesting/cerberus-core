@@ -139,7 +139,7 @@ function loadRequestContext() {
 
 function typeSelectHandler(test, testcase, environment, country) {
     var value = $("[name='typeSelect']:checked").val();
-    console.log(value);
+//    console.log(value);
     if (value === "filters") {
 
         $("#envSettingsAuto select").prop("disabled", false).val("");
@@ -167,7 +167,7 @@ function typeSelectHandler(test, testcase, environment, country) {
 }
 
 function loadTestCaseFromFilter(defTest, defTestcase) {
-    console.debug("loadTestCaseFromFilter Called" + defTest + defTestcase);
+//    console.debug("loadTestCaseFromFilter Called" + defTest + defTestcase);
     showLoader("#chooseTest");
     var testURL = ""
     if ((defTest !== null) && (defTest !== undefined)) { // If test is defined, we limit the testcase list on that test.
@@ -645,21 +645,62 @@ function loadInvariantMultiSelect(selectName, idName) {
 
 /** FUNCTIONS TO HANDLE ROBOT/EXECUTION PREFERENCES **/
 
-function loadSelect(idName, selectName) {
-    var jqXHR = $.ajax({
-        url: "FindInvariantByID",
-        method: "GET",
-        data: {idName: idName},
-        dataType: "json",
-        async: true,
-        success: function (data) {
-            for (var option in data) {
-                $("[name='" + selectName + "']").append($('<option></option>').text(data[option].value + " - " + data[option].description).val(data[option].value));
-            }
-        }
-    });
+function loadSelect(idName, selectName, forceReload) {
 
-    return jqXHR;
+//    console.debug("display Invariant " + idName + " " + forceReload);
+    if (forceReload === undefined) {
+        forceReload = false;
+    }
+
+    var cacheEntryName = idName + "INVARIANT";
+    if (forceReload) {
+//        console.debug("Purge " + cacheEntryName);
+        sessionStorage.removeItem(cacheEntryName);
+    }
+    var list = JSON.parse(sessionStorage.getItem(cacheEntryName));
+    var select = $("<select></select>").addClass("form-control input-sm");
+
+    if (list === null) {
+        $.ajax({
+            url: "FindInvariantByID",
+            data: {idName: idName},
+            async: true,
+            success: function (data) {
+                list = data;
+                sessionStorage.setItem(cacheEntryName, JSON.stringify(data));
+                for (var index = 0; index < list.length; index++) {
+                    var item = list[index].value;
+                    var desc = list[index].description;
+
+//                    $("[name='" + selectName + "']").append($('<option></option>').text(item).val(item));
+                    $("[name='" + selectName + "']").append($('<option></option>').text(item + " - " + desc).val(item));
+                }
+            }
+        });
+    } else {
+        for (var index = 0; index < list.length; index++) {
+            var item = list[index].value;
+            var desc = list[index].description;
+
+//            $("[name='" + selectName + "']").append($('<option></option>').text(item).val(item));
+            $("[name='" + selectName + "']").append($('<option></option>').text(item + " - " + desc).val(item));
+        }
+    }
+
+//    var jqXHR = $.ajax({
+//        url: "FindInvariantByID",
+//        method: "GET",
+//        data: {idName: idName},
+//        dataType: "json",
+//        async: true,
+//        success: function (data) {
+//            for (var option in data) {
+//                $("[name='" + selectName + "']").append($('<option></option>').text(data[option].value + " - " + data[option].description).val(data[option].value));
+//            }
+//        }
+//    });
+//
+//    return jqXHR;
 }
 
 function appendRobotList() {
@@ -729,6 +770,7 @@ function saveExecutionPreferences() {
 
 function loadExecForm(tag) {
     $.when(
+//    displayInvariantList("group", "GROUP", false);
             loadSelect("OUTPUTFORMAT", "outputformat"),
             loadSelect("VERBOSE", "Verbose"),
             loadSelect("SCREENSHOT", "Screenshot"),
@@ -785,7 +827,7 @@ function applyRobotPref(browser) {
             $("#robotConfig").val(pref.robotConfig);
             $("#seleniumIP").val(pref.ss_ip);
             $("#seleniumPort").val(pref.ss_p);
-            console.debug(browser);
+//            console.debug(browser);
             if (browser !== null) { // if browser defined from URL we take that value.
                 $("#browser").val(browser);
             } else {

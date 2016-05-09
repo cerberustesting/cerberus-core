@@ -21,36 +21,54 @@ package org.cerberus.service.engine.impl;
 
 import io.appium.java_client.AppiumDriver;
 import io.appium.java_client.TouchAction;
-
-import java.util.Set;
-
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.cerberus.crud.entity.Identifier;
 import org.cerberus.crud.entity.MessageEvent;
+import org.cerberus.crud.entity.Parameter;
 import org.cerberus.crud.entity.Session;
+import org.cerberus.service.engine.model.SwipeAction;
+import org.cerberus.crud.service.impl.ParameterService;
 import org.cerberus.enums.MessageEventEnum;
 import org.cerberus.log.MyLogger;
 import org.cerberus.service.engine.IAppiumService;
 import org.cerberus.util.ParameterParserUtil;
 import org.cerberus.util.StringUtil;
 import org.openqa.selenium.By;
+import org.openqa.selenium.Dimension;
 import org.openqa.selenium.NoSuchElementException;
 import org.openqa.selenium.TimeoutException;
 import org.openqa.selenium.WebDriverException;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
-import org.springframework.stereotype.Service;
+import org.springframework.beans.factory.annotation.Autowired;
+
+import java.awt.geom.Line2D;
+import java.util.Set;
 
 /**
- *
  * @author bcivel
  */
-@Service
-public class AppiumService implements IAppiumService {
+public abstract class AppiumService implements IAppiumService {
 
-    private static final Logger LOG = Logger.getLogger(AppiumService.class);
+    /**
+     * The associated {@link Logger} to this class
+     */
+    private static final Logger LOGGER = Logger.getLogger(AppiumService.class);
+
+    /**
+     * The Appium swipe duration parameter which is got thanks to the {@link ParameterService}
+     */
+    private static final String APPIUM_SWIPE_DURATION_PARAMETER = "appium_swipeDuration";
+
+    /**
+     * The default Appium swipe duration if no {@link AppiumService#APPIUM_SWIPE_DURATION_PARAMETER} has been defined
+     */
+    private static final int DEFAULT_APPIUM_SWIPE_DURATION = 2000;
+
+    @Autowired
+    private ParameterService parameters;
 
     @Override
     public MessageEvent switchToContext(Session session, Identifier identifier) {
@@ -78,7 +96,7 @@ public class AppiumService implements IAppiumService {
         try {
             if (!StringUtil.isNull(property)) {
                 TouchAction action = new TouchAction(session.getAppiumDriver());
-                action.press(this.getElement(session, identifier, true, true)).release().perform();
+                action.press(this.getElement(session, identifier, false, false)).release().perform();
                 session.getAppiumDriver().getKeyboard().pressKey(property);
             }
             message = new MessageEvent(MessageEventEnum.ACTION_SUCCESS_TYPE);
@@ -180,19 +198,78 @@ public class AppiumService implements IAppiumService {
     }
 
     @Override
-    public MessageEvent press(Session session, Identifier identifier) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-
-    @Override
-    public MessageEvent hideKeyboard(Session session) {
+    public MessageEvent swipe(Session session, SwipeAction action) {
         try {
-            session.getAppiumDriver().hideKeyboard();
-            return new MessageEvent(MessageEventEnum.ACTION_SUCCESS_HIDEKEYBOARD);
+            // Compute the swipe direction according to the given swipe action
+            Dimension window = session.getAppiumDriver().manage().window().getSize();
+            SwipeAction.Direction direction;
+            switch (action.getActionType()) {
+                case UP:
+                    direction = SwipeAction.Direction.fromLine(
+                            new Line2D.Double(
+                                    window.getWidth() / 2,
+                                    2 * window.getHeight() / 3,
+                                    window.getWidth() / 2,
+                                    window.getHeight() / 3
+                            )
+                    );
+                    break;
+                case DOWN:
+                    direction = SwipeAction.Direction.fromLine(
+                            new Line2D.Double(
+                                    window.getWidth() / 2,
+                                    window.getHeight() / 3,
+                                    window.getWidth() / 2,
+                                    2 * window.getHeight() / 3
+                            )
+                    );
+                    break;
+                case LEFT:
+                    direction = SwipeAction.Direction.fromLine(
+                            new Line2D.Double(
+                                    2 * window.getWidth() / 3,
+                                    window.getHeight() / 2,
+                                    window.getWidth() / 3,
+                                    window.getHeight() / 2
+                            )
+                    );
+                    break;
+                case RIGHT:
+                    direction = SwipeAction.Direction.fromLine(
+                            new Line2D.Double(
+                                    window.getWidth() / 3,
+                                    window.getHeight() / 2,
+                                    2 * window.getWidth() / 3,
+                                    window.getHeight() / 2
+                            )
+                    );
+                    break;
+                case CUSTOM:
+                    direction = action.getCustomDirection();
+                    break;
+                default:
+                    return new MessageEvent(MessageEventEnum.ACTION_FAILED_SWIPE)
+                            .resolveDescription("DIRECTION", action.getActionType().name())
+                            .resolveDescription("REASON", "Unknown direction");
+            }
+
+            // Get the parametrized swipe duration
+            Parameter duration = parameters.findParameterByKey(APPIUM_SWIPE_DURATION_PARAMETER, "");
+
+            // Do the swipe thanks to the Appium driver
+            session.getAppiumDriver().swipe(
+                    direction.getX1(),
+                    direction.getY1(),
+                    direction.getX2(),
+                    direction.getY2(),
+                    duration == null ? DEFAULT_APPIUM_SWIPE_DURATION : Integer.parseInt(duration.getValue())
+            );
+            return new MessageEvent(MessageEventEnum.ACTION_SUCCESS_SWIPE).resolveDescription("DIRECTION", action.getActionType().name());
         } catch (Exception e) {
-            LOG.warn("Unable to hide keyboard due to: " + e.getMessage(), e);
-            return new MessageEvent(MessageEventEnum.ACTION_FAILED_HIDEKEYBOARD);
+            LOGGER.warn("Unable to swipe screen due to " + e.getMessage(), e);
+            return new MessageEvent(MessageEventEnum.ACTION_FAILED_SWIPE)
+                    .resolveDescription("DIRECTION", action.getActionType().name())
+                    .resolveDescription("REASON", e.getMessage());
         }
     }
-
 }

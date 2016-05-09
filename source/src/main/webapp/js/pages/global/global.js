@@ -61,19 +61,54 @@ function getSubDataLabel(type) {
  * Method that display a combo box in all the selectName tags with the value retrieved from the invariant list
  * @param {String} selectName value name of the select tag in the html
  * @param {String} idName value that filters the invariants that will be retrieved
- * @param {String} defaultValue to be selected
+ * @param {String} forceReload true in order to force the reload of list from database.
+ * @param {String} defaultValue [optional] to be selected
  * @returns {void}
  */
-function displayInvariantList(selectName, idName, defaultValue) {
-    $.when($.getJSON("FindInvariantByID", "idName=" + idName)).then(function (data) {
-        for (var option in data) {
-            $("[name='" + selectName + "']").append($('<option></option>').text(data[option].value).val(data[option].value));
-        }
+function displayInvariantList(selectName, idName, forceReload, defaultValue) {
 
+//    console.debug("display Invariant " + idName + " " + forceReload);
+    if (forceReload === undefined) {
+        forceReload = true;
+    }
+
+    var cacheEntryName = idName + "INVARIANT";
+    if (forceReload) {
+//        console.debug("Purge " + cacheEntryName);
+        sessionStorage.removeItem(cacheEntryName);
+    }
+    var list = JSON.parse(sessionStorage.getItem(cacheEntryName));
+    var select = $("<select></select>").addClass("form-control input-sm");
+
+    if (list === null) {
+        $.ajax({
+            url: "FindInvariantByID",
+            data: {idName: idName},
+            async: true,
+            success: function (data) {
+                list = data;
+                sessionStorage.setItem(cacheEntryName, JSON.stringify(data));
+                for (var index = 0; index < list.length; index++) {
+                    var item = list[index].value;
+
+                    $("[name='" + selectName + "']").append($('<option></option>').text(item).val(item));
+                }
+                if (defaultValue !== undefined) {
+                    $("[name='" + selectName + "']").val(defaultValue);
+                }
+            }
+        });
+    } else {
+        for (var index = 0; index < list.length; index++) {
+            var item = list[index].value;
+
+            $("[name='" + selectName + "']").append($('<option></option>').text(item).val(item));
+        }
         if (defaultValue !== undefined) {
             $("[name='" + selectName + "']").val(defaultValue);
         }
-    });
+    }
+
 }
 
 /**
@@ -183,36 +218,70 @@ function displayBatchInvariantList(selectName, system, defaultValue) {
  * @param {String} defaultValue to be selected
  * @param {String} withAll "Y" in order to add a ALL entry
  * @param {String} withNone "Y" in order to add a NONE entry
+ * @param {String} forceReload true in order to force the reload of build rev list from database
  * @returns {void}
  */
-function displayBuildList(selectName, system, level, defaultValue, withAll, withNone) {
+function displayBuildList(selectName, system, level, defaultValue, withAll, withNone, forceReload) {
     var select = $(selectName);
 
-    $.ajax({
-        type: "GET",
-        url: "ReadBuildRevisionInvariant",
-        data: {iSortCol_0: "2", system: system, level: level},
-        async: false,
-        dataType: 'json',
-        success: function (data) {
-            if (withAll === "Y") {
-                select.append($('<option></option>').text("-- ALL --").val("ALL"));
-            }
-            if (withNone === "Y") {
-                select.append($('<option></option>').text("NONE").val("NONE"));
-            }
+//    console.debug("display Invariant Build Rev " + system + " " + forceReload);
+    if (forceReload === undefined) {
+        forceReload = true;
+    }
 
-            for (var option in data.contentTable) {
-                select.append($('<option></option>').text(data.contentTable[option].versionName).val(data.contentTable[option].versionName));
-            }
+    var cacheEntryName = "BRINVARIANT" + "-" + level + "-" + system;
+    if (forceReload) {
+//        console.debug("Purge " + cacheEntryName);
+        sessionStorage.removeItem(cacheEntryName);
+    }
+    var list = JSON.parse(sessionStorage.getItem(cacheEntryName));
 
-            if (defaultValue !== undefined) {
-                select.val(defaultValue);
-            }
+    if (list === null) {
+        $.ajax({
+            type: "GET",
+            url: "ReadBuildRevisionInvariant",
+            data: {iSortCol_0: "2", system: system, level: level},
+            async: false,
+            dataType: 'json',
+            success: function (data) {
 
-        },
-        error: showUnexpectedError
-    });
+                if (withAll === "Y") {
+                    select.append($('<option></option>').text("-- ALL --").val("ALL"));
+                }
+                if (withNone === "Y") {
+                    select.append($('<option></option>').text("NONE").val("NONE"));
+                }
+
+                list = data.contentTable;
+                sessionStorage.setItem(cacheEntryName, JSON.stringify(data.contentTable));
+                for (var index = 0; index < list.length; index++) {
+                    var item = list[index].versionName;
+                    select.append($('<option></option>').text(data.contentTable[index].versionName).val(data.contentTable[index].versionName));
+                }
+                if (defaultValue !== undefined) {
+                    select.val(defaultValue);
+                }
+            },
+            error: showUnexpectedError
+        });
+    } else {
+
+        if (withAll === "Y") {
+            select.append($('<option></option>').text("-- ALL --").val("ALL"));
+        }
+        if (withNone === "Y") {
+            select.append($('<option></option>').text("NONE").val("NONE"));
+        }
+
+        for (var index = 0; index < list.length; index++) {
+            var item = list[index].versionName;
+            select.append($('<option></option>').text(item).val(item));
+        }
+        if (defaultValue !== undefined) {
+            select.val(defaultValue);
+        }
+    }
+
 }
 
 /**
@@ -1046,7 +1115,7 @@ function createDataTable(tableConfigurations, callbackFunction, userCallbackFunc
 function createEntry(servletName, form, tableID) {
     // Get the header data from the form.
     var dataForm = convertSerialToJSONObject(form.serialize());
-    
+
     var jqxhr = $.post(servletName, dataForm);
     $.when(jqxhr).then(function (data) {
         hideLoaderInModal("#addEntryModal");
@@ -1071,7 +1140,7 @@ function createEntry(servletName, form, tableID) {
 function updateEntry(servletName, form, tableID) {
     // Get the header data from the form.
     var dataForm = convertSerialToJSONObject(form.serialize());
-    
+
     var jqxhr = $.post(servletName, dataForm);
     $.when(jqxhr).then(function (data) {
         hideLoaderInModal("#editEntryModal");

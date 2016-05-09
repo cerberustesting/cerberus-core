@@ -28,6 +28,7 @@ import org.cerberus.crud.entity.Identifier;
 import org.cerberus.crud.entity.MessageEvent;
 import org.cerberus.crud.entity.MessageGeneral;
 import org.cerberus.crud.entity.SoapLibrary;
+import org.cerberus.service.engine.model.SwipeAction;
 import org.cerberus.crud.entity.TestCaseExecution;
 import org.cerberus.crud.entity.TestCaseExecutionData;
 import org.cerberus.crud.entity.TestCaseStepActionExecution;
@@ -52,6 +53,7 @@ import org.cerberus.util.answer.Answer;
 import org.cerberus.util.answer.AnswerItem;
 import org.cerberus.util.answer.MessageEventUtil;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 
 /**
@@ -78,7 +80,11 @@ public class ActionService implements IActionService {
     @Autowired
     private IIdentifierService identifierService;
     @Autowired
-    private IAppiumService appiumService;
+    @Qualifier("AndroidAppiumService")
+    private IAppiumService androidAppiumService;
+    @Autowired
+    @Qualifier("IOSAppiumService")
+    private IAppiumService iosAppiumService;
     @Autowired
     private ISQLService sqlService;
     @Autowired
@@ -214,6 +220,9 @@ public class ActionService implements IActionService {
         } else if (testCaseStepActionExecution.getAction().equals("hideKeyboard")) {
             res = this.doActionHideKeyboard(tCExecution);
 
+        } else if (testCaseStepActionExecution.getAction().equals("swipe")) {
+            res = this.doActionSwipe(tCExecution, object, property);
+
         } else if (testCaseStepActionExecution.getAction().equals("takeScreenshot")) {
             res = this.doActionTakeScreenshot(testCaseStepActionExecution);
             res.setDescription(MESSAGE_DEPRECATED + " " + res.getDescription());
@@ -263,7 +272,6 @@ public class ActionService implements IActionService {
     }
 
     private MessageEvent doActionClick(TestCaseExecution tCExecution, String object, String property) {
-        MessageEvent message;
         String element;
         try {
             /**
@@ -283,15 +291,15 @@ public class ActionService implements IActionService {
                 } else {
                     return webdriverService.doSeleniumActionClick(tCExecution.getSession(), identifier, true, true);
                 }
-            } else if (tCExecution.getApplication().getType().equalsIgnoreCase("APK")
-                    || tCExecution.getApplication().getType().equalsIgnoreCase("IPA")) {
-                return appiumService.click(tCExecution.getSession(), identifier);
+            } else if (tCExecution.getApplication().getType().equalsIgnoreCase("APK")) {
+                return androidAppiumService.click(tCExecution.getSession(), identifier);
+            } else if (tCExecution.getApplication().getType().equalsIgnoreCase("IPA")) {
+                return iosAppiumService.click(tCExecution.getSession(), identifier);
+            } else {
+                return new MessageEvent(MessageEventEnum.ACTION_NOTEXECUTED_NOTSUPPORTED_FOR_APPLICATION)
+                        .resolveDescription("ACTION", "Click")
+                        .resolveDescription("APPLICATIONTYPE", tCExecution.getApplication().getType());
             }
-
-            message = new MessageEvent(MessageEventEnum.ACTION_NOTEXECUTED_NOTSUPPORTED_FOR_APPLICATION);
-            message.setDescription(message.getDescription().replaceAll("%ACTION%", "Click"));
-            message.setDescription(message.getDescription().replaceAll("%APPLICATIONTYPE%", tCExecution.getApplication().getType()));
-            return message;
         } catch (CerberusEventException ex) {
             LOG.fatal("Error doing Action Click :" + ex);
             return ex.getMessageError();
@@ -315,9 +323,6 @@ public class ActionService implements IActionService {
 
             if (tCExecution.getApplication().getType().equalsIgnoreCase("GUI")) {
                 return webdriverService.doSeleniumActionMouseDown(tCExecution.getSession(), identifier);
-            } else if (tCExecution.getApplication().getType().equalsIgnoreCase("APK")
-                    || tCExecution.getApplication().getType().equalsIgnoreCase("IPA")) {
-                return appiumService.press(tCExecution.getSession(), identifier);
             }
             message = new MessageEvent(MessageEventEnum.ACTION_NOTEXECUTED_NOTSUPPORTED_FOR_APPLICATION);
             message.setDescription(message.getDescription().replaceAll("%ACTION%", "MouseDown"));
@@ -390,7 +395,6 @@ public class ActionService implements IActionService {
     }
 
     private MessageEvent doActionSwitchToWindow(TestCaseExecution tCExecution, String object, String property) {
-        MessageEvent message;
         String element;
         try {
             /**
@@ -406,14 +410,15 @@ public class ActionService implements IActionService {
 
             if (tCExecution.getApplication().getType().equalsIgnoreCase("GUI")) {
                 return webdriverService.doSeleniumActionSwitchToWindow(tCExecution.getSession(), identifier);
-            } else if (tCExecution.getApplication().getType().equalsIgnoreCase("APK")
-                    || tCExecution.getApplication().getType().equalsIgnoreCase("IPA")) {
-                return appiumService.switchToContext(tCExecution.getSession(), identifier);
+            } else if (tCExecution.getApplication().getType().equalsIgnoreCase("APK")) {
+                return androidAppiumService.switchToContext(tCExecution.getSession(), identifier);
+            } else if (tCExecution.getApplication().getType().equalsIgnoreCase("IPA")) {
+                return iosAppiumService.switchToContext(tCExecution.getSession(), identifier);
+            } else {
+                return new MessageEvent(MessageEventEnum.ACTION_NOTEXECUTED_NOTSUPPORTED_FOR_APPLICATION)
+                        .resolveDescription("ACTION", "SwitchToWindow")
+                        .resolveDescription("APPLICATIONTYPE", tCExecution.getApplication().getType());
             }
-            message = new MessageEvent(MessageEventEnum.ACTION_NOTEXECUTED_NOTSUPPORTED_FOR_APPLICATION);
-            message.setDescription(message.getDescription().replaceAll("%ACTION%", "SwitchToWindow"));
-            message.setDescription(message.getDescription().replaceAll("%APPLICATIONTYPE%", tCExecution.getApplication().getType()));
-            return message;
         } catch (CerberusEventException ex) {
             LOG.fatal("Error doing Action SwitchToWindow :" + ex);
             return ex.getMessageError();
@@ -509,7 +514,6 @@ public class ActionService implements IActionService {
     }
 
     private MessageEvent doActionType(TestCaseExecution tCExecution, String object, String property, String propertyName) {
-        MessageEvent message;
         try {
             /**
              * Check object and property are not null
@@ -529,14 +533,15 @@ public class ActionService implements IActionService {
                 } else {
                     return webdriverService.doSeleniumActionType(tCExecution.getSession(), identifier, property, propertyName);
                 }
-            } else if (tCExecution.getApplication().getType().equalsIgnoreCase("APK")
-                    ||tCExecution.getApplication().getType().equalsIgnoreCase("IPA")) {
-                return appiumService.type(tCExecution.getSession(), identifier, property, propertyName);
+            } else if (tCExecution.getApplication().getType().equalsIgnoreCase("APK")) {
+                return androidAppiumService.type(tCExecution.getSession(), identifier, property, propertyName);
+            } else if (tCExecution.getApplication().getType().equalsIgnoreCase("IPA")) {
+                return iosAppiumService.type(tCExecution.getSession(), identifier, property, propertyName);
+            } else {
+                return new MessageEvent(MessageEventEnum.ACTION_NOTEXECUTED_NOTSUPPORTED_FOR_APPLICATION)
+                        .resolveDescription("ACTION", "Type")
+                        .resolveDescription("APPLICATIONTYPE", tCExecution.getApplication().getType());
             }
-            message = new MessageEvent(MessageEventEnum.ACTION_NOTEXECUTED_NOTSUPPORTED_FOR_APPLICATION);
-            message.setDescription(message.getDescription().replaceAll("%ACTION%", "Type"));
-            message.setDescription(message.getDescription().replaceAll("%APPLICATIONTYPE%", tCExecution.getApplication().getType()));
-            return message;
         } catch (CerberusEventException ex) {
             LOG.fatal("Error doing Action Type :" + ex);
             return ex.getMessageError();
@@ -662,8 +667,6 @@ public class ActionService implements IActionService {
     }
 
     private MessageEvent doActionKeyPress(TestCaseExecution tCExecution, String object, String property) {
-        MessageEvent message;
-
         try {
             /**
              * Check object and property are not null
@@ -683,11 +686,15 @@ public class ActionService implements IActionService {
                 } else {
                     return webdriverService.doSeleniumActionKeyPress(tCExecution.getSession(), identifier, property);
                 }
+            } else if (tCExecution.getApplication().getType().equalsIgnoreCase("APK")) {
+                return androidAppiumService.keyPress(tCExecution.getSession(), object);
+            } else if (tCExecution.getApplication().getType().equalsIgnoreCase("IPA")) {
+                return iosAppiumService.keyPress(tCExecution.getSession(), object);
+            } else {
+                return new MessageEvent(MessageEventEnum.ACTION_NOTEXECUTED_NOTSUPPORTED_FOR_APPLICATION)
+                        .resolveDescription("ACTION", "KeyPress")
+                        .resolveDescription("APPLICATIONTYPE", tCExecution.getApplication().getType());
             }
-            message = new MessageEvent(MessageEventEnum.ACTION_NOTEXECUTED_NOTSUPPORTED_FOR_APPLICATION);
-            message.setDescription(message.getDescription().replaceAll("%ACTION%", "KeyPress"));
-            message.setDescription(message.getDescription().replaceAll("%APPLICATIONTYPE%", tCExecution.getApplication().getType()));
-            return message;
         } catch (CerberusEventException ex) {
             LOG.fatal("Error doing Action KeyPress :" + ex);
             return ex.getMessageError();
@@ -1010,7 +1017,7 @@ public class ActionService implements IActionService {
                 options.put("request", descId + File.separator + property + "_request.xml");
                 options.put("response", descId + File.separator + property + ".xml");
             }
-            
+
             message = MessageEventUtil.createMessageDescriptionJSONFormat(MessageEventEnum.ACTION_SUCCESS_CALLSOAP, options);
         } else {
             message = new MessageEvent(MessageEventEnum.ACTION_FAILED_CALLSOAP);
@@ -1028,18 +1035,50 @@ public class ActionService implements IActionService {
             return new MessageEvent(MessageEventEnum.ACTION_FAILED_TYPE);
         }
 
-        // FIXME be compliant with the IPA application type
-        // See https://github.com/appium/appium/issues/5054 for the IOS case
+        // Hide keyboard according to application type
         String applicationType = tCExecution.getApplication().getType();
-        if (!"APK".equals(applicationType)) {
-            MessageEvent message = new MessageEvent(MessageEventEnum.ACTION_NOTEXECUTED_NOTSUPPORTED_FOR_APPLICATION);
-            message.setDescription(message.getDescription().replaceAll("%ACTION%", "hideKeyboard"));
-            message.setDescription(message.getDescription().replaceAll("%APPLICATIONTYPE%", tCExecution.getApplication().getType()));
-            return message;
+        if ("APK".equals(applicationType)) {
+            return androidAppiumService.hideKeyboard(tCExecution.getSession());
+        }
+        if ("IPA".equals(applicationType)) {
+            return iosAppiumService.hideKeyboard(tCExecution.getSession());
         }
 
-        // Hide keyboard by using the Appium service
-        return appiumService.hideKeyboard(tCExecution.getSession());
+        // Else we are faced with a non supported application
+        return new MessageEvent(MessageEventEnum.ACTION_NOTEXECUTED_NOTSUPPORTED_FOR_APPLICATION)
+                .resolveDescription("ACTION", "Hide keyboard")
+                .resolveDescription("APPLICATIONTYPE", tCExecution.getApplication().getType());
+    }
+
+    private MessageEvent doActionSwipe(TestCaseExecution tCExecution, String object, String property) {
+        // Check arguments
+        if (tCExecution == null || object == null) {
+            return new MessageEvent(MessageEventEnum.ACTION_FAILED_TYPE);
+        }
+
+        // Create the associated swipe action to the given arguments
+        SwipeAction action = null;
+        try {
+            action = SwipeAction.fromStrings(object, property);
+        } catch (Exception e) {
+            return new MessageEvent(MessageEventEnum.ACTION_FAILED_SWIPE)
+                    .resolveDescription("DIRECTION", action == null ? "Unknown" : action.getActionType().name())
+                    .resolveDescription("REASON", e.getMessage());
+        }
+
+        // Swipe screen according to the application type
+        String applicationType = tCExecution.getApplication().getType();
+        if ("APK".equals(applicationType)) {
+            return androidAppiumService.swipe(tCExecution.getSession(), action);
+        }
+        if ("IPA".equals(applicationType)) {
+            return iosAppiumService.swipe(tCExecution.getSession(), action);
+        }
+
+        // Else we are faced with a non supported application
+        return new MessageEvent(MessageEventEnum.ACTION_NOTEXECUTED_NOTSUPPORTED_FOR_APPLICATION)
+                .resolveDescription("ACTION", "Swipe screen")
+                .resolveDescription("APPLICATIONTYPE", tCExecution.getApplication().getType());
     }
 
 }

@@ -42,8 +42,8 @@ function initPage() {
     displayGlobalLabel(doc);
     displayPageLabel(doc);
     displayFooter(doc);
-    displayInvariantList("Active", "TESTACTIVE");
-    displayInvariantList("Automated", "TESTAUTOMATED");
+    displayInvariantList("Active", "TESTACTIVE", false);
+    displayInvariantList("Automated", "TESTAUTOMATED", false);
 
 }
 

@@ -21,7 +21,6 @@ package org.cerberus.service.engine.impl;
 
 import java.util.Date;
 import java.util.logging.Logger;
-import org.apache.log4j.Level;
 import org.cerberus.crud.entity.CountryEnvParam;
 import org.cerberus.crud.entity.CountryEnvironmentParameters;
 import org.cerberus.crud.entity.ExecutionUUID;
@@ -31,7 +30,6 @@ import org.cerberus.enums.MessageGeneralEnum;
 import org.cerberus.crud.entity.TCase;
 import org.cerberus.crud.entity.TestCaseExecution;
 import org.cerberus.exception.CerberusException;
-import org.cerberus.log.MyLogger;
 import org.cerberus.crud.service.IApplicationService;
 import org.cerberus.crud.service.ICountryEnvParamService;
 import org.cerberus.crud.service.IInvariantService;
@@ -41,12 +39,12 @@ import org.cerberus.crud.service.ITestService;
 import org.cerberus.service.engine.IExecutionCheckService;
 import org.cerberus.service.engine.IExecutionStartService;
 import org.cerberus.service.engine.ISeleniumServerService;
-import org.cerberus.util.ParameterParserUtil;
 import org.cerberus.util.StringUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.cerberus.crud.service.ICountryEnvironmentParametersService;
 import org.cerberus.crud.factory.IFactoryCountryEnvironmentParameters;
+import org.cerberus.crud.service.IParameterService;
 
 /**
  *
@@ -77,6 +75,10 @@ public class ExecutionStartService implements IExecutionStartService {
     ExecutionUUID executionUUIDObject;
     @Autowired
     private ISeleniumServerService serverService;
+    @Autowired
+    private IParameterService parameterService;
+
+    private static final org.apache.log4j.Logger LOG = org.apache.log4j.Logger.getLogger(ExecutionStartService.class);
 
     @Override
     public TestCaseExecution startExecution(TestCaseExecution tCExecution) throws CerberusException {
@@ -84,20 +86,20 @@ public class ExecutionStartService implements IExecutionStartService {
          * Start timestamp.
          */
         long executionStart = new Date().getTime();
-        MyLogger.log(RunTestCaseService.class.getName(), Level.DEBUG, "Initializing Start Timestamp : " + executionStart);
+        LOG.debug("Initializing Start Timestamp : " + executionStart);
         tCExecution.setStart(executionStart);
 
         /**
          * Checking the parameters.
          */
-        MyLogger.log(RunTestCaseService.class.getName(), Level.DEBUG, "Checking the parameters.");
+        LOG.debug("Checking the parameters.");
         Invariant myInvariant;
         try {
             myInvariant = this.invariantService.findInvariantByIdValue("OUTPUTFORMAT", tCExecution.getOutputFormat());
         } catch (CerberusException ex) {
             MessageGeneral mes = new MessageGeneral(MessageGeneralEnum.VALIDATION_FAILED_OUTPUTFORMAT_INVALID);
             mes.setDescription(mes.getDescription().replaceAll("%PARAM%", tCExecution.getOutputFormat()));
-            MyLogger.log(ExecutionStartService.class.getName(), Level.DEBUG, mes.getDescription());
+            LOG.debug(mes.getDescription());
             throw new CerberusException(mes);
         }
         try {
@@ -105,7 +107,7 @@ public class ExecutionStartService implements IExecutionStartService {
         } catch (CerberusException ex) {
             MessageGeneral mes = new MessageGeneral(MessageGeneralEnum.VALIDATION_FAILED_VERBOSE_INVALID);
             mes.setDescription(mes.getDescription().replaceAll("%PARAM%", String.valueOf(tCExecution.getVerbose())));
-            MyLogger.log(ExecutionStartService.class.getName(), Level.DEBUG, mes.getDescription());
+            LOG.debug(mes.getDescription());
             throw new CerberusException(mes);
         }
         try {
@@ -113,7 +115,7 @@ public class ExecutionStartService implements IExecutionStartService {
         } catch (CerberusException ex) {
             MessageGeneral mes = new MessageGeneral(MessageGeneralEnum.VALIDATION_FAILED_SCREENSHOT_INVALID);
             mes.setDescription(mes.getDescription().replaceAll("%PARAM%", String.valueOf(tCExecution.getScreenshot())));
-            MyLogger.log(ExecutionStartService.class.getName(), Level.DEBUG, mes.getDescription());
+            LOG.debug(mes.getDescription());
             throw new CerberusException(mes);
         }
 
@@ -122,7 +124,7 @@ public class ExecutionStartService implements IExecutionStartService {
          * object.
          */
         tCExecution.setResultMessage(new MessageGeneral(MessageGeneralEnum.EXECUTION_PE_LOADINGDATA));
-        MyLogger.log(ExecutionStartService.class.getName(), Level.DEBUG, "Loading Test Case Information. " + tCExecution.getTest() + "-" + tCExecution.getTestCase());
+        LOG.debug("Loading Test Case Information. " + tCExecution.getTest() + "-" + tCExecution.getTestCase());
         // Integrate this.loadTestCaseService.loadTestCase(tCExecution); inside with Dependency.
         try {
             TCase tCase = testCaseService.findTestCaseByKey(tCExecution.getTest(), tCExecution.getTestCase());
@@ -141,54 +143,54 @@ public class ExecutionStartService implements IExecutionStartService {
             MessageGeneral mes = new MessageGeneral(MessageGeneralEnum.VALIDATION_FAILED_TESTCASE_NOT_FOUND);
             mes.setDescription(mes.getDescription().replaceAll("%TEST%", tCExecution.getTest()));
             mes.setDescription(mes.getDescription().replaceAll("%TESTCASE%", tCExecution.getTestCase()));
-            MyLogger.log(ExecutionStartService.class.getName(), Level.DEBUG, mes.getDescription());
+            LOG.debug(mes.getDescription());
             throw new CerberusException(mes);
         }
-        MyLogger.log(RunTestCaseService.class.getName(), Level.DEBUG, "Test Case Information Loaded - " + tCExecution.getTest() + "-" + tCExecution.getTestCase());
+        LOG.debug("Test Case Information Loaded - " + tCExecution.getTest() + "-" + tCExecution.getTestCase());
 
         /**
          * Load Test information and Set TestObject to the TestCaseExecution
          * object.
          */
-        MyLogger.log(RunTestCaseService.class.getName(), Level.DEBUG, "Loading Test Information");
+        LOG.debug("Loading Test Information");
         try {
             tCExecution.setTestObj(this.testService.convert(this.testService.readByKey(tCExecution.getTest())));
         } catch (CerberusException ex) {
             MessageGeneral mes = new MessageGeneral(MessageGeneralEnum.VALIDATION_FAILED_TEST_NOT_FOUND);
             mes.setDescription(mes.getDescription().replaceAll("%TEST%", tCExecution.getTest()));
-            MyLogger.log(ExecutionStartService.class.getName(), Level.DEBUG, mes.getDescription());
+            LOG.debug(mes.getDescription());
             throw new CerberusException(mes);
         }
-        MyLogger.log(RunTestCaseService.class.getName(), Level.DEBUG, "Test Information Loaded - " + tCExecution.getTest());
+        LOG.debug("Test Information Loaded - " + tCExecution.getTest());
 
         /**
          * Load Application information and Set Application to the
          * TestCaseExecution object.
          */
-        MyLogger.log(RunTestCaseService.class.getName(), Level.DEBUG, "Loading Application Information");
+        LOG.debug("Loading Application Information");
         try {
             tCExecution.setApplication(this.applicationService.convert(this.applicationService.readByKey(tCExecution.gettCase().getApplication())));
         } catch (CerberusException ex) {
             MessageGeneral mes = new MessageGeneral(MessageGeneralEnum.VALIDATION_FAILED_APPLICATION_NOT_FOUND);
             mes.setDescription(mes.getDescription().replaceAll("%APPLI%", tCExecution.gettCase().getApplication()));
-            MyLogger.log(ExecutionStartService.class.getName(), Level.DEBUG, mes.getDescription());
+            LOG.debug(mes.getDescription());
             throw new CerberusException(mes);
         }
-        MyLogger.log(RunTestCaseService.class.getName(), Level.DEBUG, "Application Information Loaded - " + tCExecution.getApplication().getDescription());
+        LOG.debug("Application Information Loaded - " + tCExecution.getApplication().getDescription());
 
         /**
          * Load Country information and Set it to the TestCaseExecution object.
          */
-        MyLogger.log(RunTestCaseService.class.getName(), Level.DEBUG, "Loading Country Information");
+        LOG.debug("Loading Country Information");
         try {
             tCExecution.setCountryObj(this.invariantService.findInvariantByIdValue("COUNTRY", tCExecution.getCountry()));
         } catch (CerberusException ex) {
             MessageGeneral mes = new MessageGeneral(MessageGeneralEnum.VALIDATION_FAILED_COUNTRY_NOT_FOUND);
             mes.setDescription(mes.getDescription().replaceAll("%COUNTRY%", tCExecution.getCountry()));
-            MyLogger.log(ExecutionStartService.class.getName(), Level.DEBUG, mes.getDescription());
+            LOG.debug(mes.getDescription());
             throw new CerberusException(mes);
         }
-        MyLogger.log(RunTestCaseService.class.getName(), Level.DEBUG, "Country Information Loaded - " + tCExecution.getCountryObj().getDescription());
+        LOG.debug("Country Information Loaded - " + tCExecution.getCountryObj().getDescription());
 
         /**
          * Checking if execution is manual or automaticaly configured. If
@@ -199,12 +201,12 @@ public class ExecutionStartService implements IExecutionStartService {
          * forced to MANUAL if execution is manual.
          *
          */
-        MyLogger.log(RunTestCaseService.class.getName(), Level.DEBUG, "Checking if connectivity parameters are manual or automatic from the database. '" + tCExecution.isManualURL() + "'");
+        LOG.debug("Checking if connectivity parameters are manual or automatic from the database. '" + tCExecution.isManualURL() + "'");
         if (tCExecution.isManualURL()) {
-            MyLogger.log(RunTestCaseService.class.getName(), Level.DEBUG, "Execution will be done with manual application connectivity setting.");
+            LOG.debug("Execution will be done with manual application connectivity setting.");
             if (StringUtil.isNullOrEmpty(tCExecution.getMyHost())) {
                 MessageGeneral mes = new MessageGeneral(MessageGeneralEnum.VALIDATION_FAILED_MANUALURL_INVALID);
-                MyLogger.log(ExecutionStartService.class.getName(), Level.DEBUG, mes.getDescription());
+                LOG.debug(mes.getDescription());
                 throw new CerberusException(mes);
             } else {
                 CountryEnvironmentParameters cea;
@@ -214,7 +216,7 @@ public class ExecutionStartService implements IExecutionStartService {
                 tCExecution.setUrl(cea.getIp() + cea.getUrl());
                 cea.setUrlLogin(tCExecution.getMyLoginRelativeURL());
                 tCExecution.setCountryEnvironmentParameters(cea);
-                MyLogger.log(ExecutionStartService.class.getName(), Level.DEBUG, " -> Execution will be done with manual application connectivity setting. IP/URL/LOGIN : " + cea.getIp() + "-" + cea.getUrl() + "-" + cea.getUrlLogin());
+                LOG.debug(" -> Execution will be done with manual application connectivity setting. IP/URL/LOGIN : " + cea.getIp() + "-" + cea.getUrl() + "-" + cea.getUrlLogin());
             }
             /**
              * If execution is manual, we force the env at 'MANUAL-ENVDATA'
@@ -226,12 +228,12 @@ public class ExecutionStartService implements IExecutionStartService {
             /**
              * Automatic application configuration execution.
              */
-            MyLogger.log(ExecutionStartService.class.getName(), Level.DEBUG, "Execution will be done with automatic application connectivity setting.");
+            LOG.debug("Execution will be done with automatic application connectivity setting.");
             /**
              * Load Country/Environment/Application information and set them to
              * the TestCaseExecution object
              */
-            MyLogger.log(ExecutionStartService.class.getName(), Level.DEBUG, "Loading Country/Environment/Application Information. " + tCExecution.getCountry() + "-" + tCExecution.getEnvironment() + "-" + tCExecution.getApplication().getApplication());
+            LOG.debug("Loading Country/Environment/Application Information. " + tCExecution.getCountry() + "-" + tCExecution.getEnvironment() + "-" + tCExecution.getApplication().getApplication());
             CountryEnvironmentParameters cea;
             try {
                 cea = this.countryEnvironmentParametersService.findCountryEnvironmentParameterByKey(
@@ -247,38 +249,40 @@ public class ExecutionStartService implements IExecutionStartService {
                 mes.setDescription(mes.getDescription().replaceAll("%COUNTRY%", tCExecution.getCountry()));
                 mes.setDescription(mes.getDescription().replaceAll("%ENV%", tCExecution.getEnvironment()));
                 mes.setDescription(mes.getDescription().replaceAll("%APPLI%", tCExecution.gettCase().getApplication()));
-                MyLogger.log(ExecutionStartService.class.getName(), Level.DEBUG, mes.getDescription());
+                LOG.debug(mes.getDescription());
                 throw new CerberusException(mes);
             }
-            MyLogger.log(ExecutionStartService.class.getName(), Level.DEBUG, "-> Execution will be done with automatic application connectivity setting. IP/URL/LOGIN : " + cea.getIp() + "-" + cea.getUrl() + "-" + cea.getUrlLogin());
+            LOG.debug("-> Execution will be done with automatic application connectivity setting. IP/URL/LOGIN : " + cea.getIp() + "-" + cea.getUrl() + "-" + cea.getUrlLogin());
             tCExecution.setEnvironmentData(tCExecution.getEnvironment());
         }
 
         /**
          * Load Environment object from invariant table.
          */
+        LOG.debug("Loading Environment Information" + tCExecution.getEnvironmentData());
         try {
             tCExecution.setEnvironmentDataObj(this.invariantService.findInvariantByIdValue("ENVIRONMENT", tCExecution.getEnvironmentData()));
         } catch (CerberusException ex) {
             if (tCExecution.isManualURL()) {
                 MessageGeneral mes = new MessageGeneral(MessageGeneralEnum.VALIDATION_FAILED_ENVIRONMENT_DOESNOTEXIST_MAN);
                 mes.setDescription(mes.getDescription().replaceAll("%ENV%", tCExecution.getEnvironmentData()));
-                MyLogger.log(ExecutionStartService.class.getName(), Level.DEBUG, mes.getDescription());
+                LOG.debug(mes.getDescription());
                 throw new CerberusException(mes);
             } else {
                 MessageGeneral mes = new MessageGeneral(MessageGeneralEnum.VALIDATION_FAILED_ENVIRONMENT_DOESNOTEXIST);
                 mes.setDescription(mes.getDescription().replaceAll("%ENV%", tCExecution.getEnvironmentData()));
-                MyLogger.log(ExecutionStartService.class.getName(), Level.DEBUG, mes.getDescription());
+                LOG.debug(mes.getDescription());
                 throw new CerberusException(mes);
             }
         }
+        LOG.debug("Environment Information Loaded");
 
         /**
          * Load Country/Environment information and set them to the
          * TestCaseExecution object. Environment considered here is the data
          * environment.
          */
-        MyLogger.log(ExecutionStartService.class.getName(), Level.DEBUG, "Loading Country/Environment Information. " + tCExecution.getCountry() + "-" + tCExecution.getEnvironmentData());
+        LOG.debug("Loading Country/Environment Information. " + tCExecution.getCountry() + "-" + tCExecution.getEnvironmentData());
         CountryEnvParam countEnvParam;
         try {
             countEnvParam = this.countryEnvParamService.findCountryEnvParamByKey(tCExecution.getApplication().getSystem(), tCExecution.getCountry(), tCExecution.getEnvironmentData());
@@ -295,17 +299,21 @@ public class ExecutionStartService implements IExecutionStartService {
             mes.setDescription(mes.getDescription().replaceAll("%SYSTEM%", tCExecution.getApplication().getSystem()));
             mes.setDescription(mes.getDescription().replaceAll("%COUNTRY%", tCExecution.getCountry()));
             mes.setDescription(mes.getDescription().replaceAll("%ENV%", tCExecution.getEnvironmentData()));
-            MyLogger.log(ExecutionStartService.class.getName(), Level.DEBUG, mes.getDescription());
+            LOG.debug(mes.getDescription());
             throw new CerberusException(mes);
         }
 
+        /**
+         * What is that for ???
+         */
         tCExecution.setManualExecution("N");
+
         /**
          * Check if test can be executed TODO : Replace Message with try/catch
          * cerberus exception
          */
         tCExecution.setResultMessage(new MessageGeneral(MessageGeneralEnum.EXECUTION_PE_VALIDATIONSTARTING));
-        MyLogger.log(ExecutionStartService.class.getName(), Level.DEBUG, "Performing the Checks before starting the execution");
+        LOG.debug("Performing the Checks before starting the execution");
         MessageGeneral canExecuteTestCase = this.executionCheckService.checkTestCaseExecution(tCExecution);
         tCExecution.setResultMessage(canExecuteTestCase);
         /**
@@ -327,37 +335,31 @@ public class ExecutionStartService implements IExecutionStartService {
             } catch (CerberusException ex) {
                 MessageGeneral mes = new MessageGeneral(MessageGeneralEnum.VALIDATION_FAILED_BROWSER_NOT_SUPPORTED);
                 mes.setDescription(mes.getDescription().replaceAll("%BROWSER%", tCExecution.getBrowser()));
-                MyLogger.log(ExecutionStartService.class.getName(), Level.DEBUG, mes.getDescription());
+                LOG.debug(mes.getDescription());
                 throw new CerberusException(mes);
             }
 
             if (tCExecution.getIp().equalsIgnoreCase("")) {
                 MessageGeneral mes = new MessageGeneral(MessageGeneralEnum.VALIDATION_FAILED_SELENIUM_EMPTYORBADIP);
                 mes.setDescription(mes.getDescription().replaceAll("%IP%", tCExecution.getIp()));
-                MyLogger.log(ExecutionStartService.class.getName(), Level.DEBUG, mes.getDescription());
+                LOG.debug(mes.getDescription());
                 throw new CerberusException(mes);
             }
             if (tCExecution.getPort().equalsIgnoreCase("")) {
                 MessageGeneral mes = new MessageGeneral(MessageGeneralEnum.VALIDATION_FAILED_SELENIUM_EMPTYORBADPORT);
-                mes.setDescription(mes.getDescription().replaceAll("%IP%", tCExecution.getIp()));
-                MyLogger.log(ExecutionStartService.class.getName(), Level.DEBUG, mes.getDescription());
+                mes.setDescription(mes.getDescription().replaceAll("%PORT%", tCExecution.getPort()));
+                LOG.debug(mes.getDescription());
                 throw new CerberusException(mes);
             }
-
-//            if (!tCExecution.getManualExecution().equals("Y")){
-            MyLogger.log(ExecutionStartService.class.getName(), Level.DEBUG, "Application is GUI. Trying to reach selenium server.");
 
             /**
              * Start Selenium server
              */
-            String url = ParameterParserUtil.parseStringParam(tCExecution.getCountryEnvironmentParameters().getIp() + tCExecution.getCountryEnvironmentParameters().getUrl(), "");
-            String login = ParameterParserUtil.parseStringParam(tCExecution.getCountryEnvironmentParameters().getUrlLogin(), "");
-            MyLogger.log(ExecutionStartService.class.getName(), Level.DEBUG, "Starting Selenium Server.");
-
+            LOG.debug("Starting Selenium Server.");
             try {
                 this.serverService.startServer(tCExecution);
             } catch (CerberusException ex) {
-                MyLogger.log(ExecutionStartService.class.getName(), Level.DEBUG, ex.getMessageError().getDescription());
+                LOG.debug(ex.getMessageError().getDescription());
                 throw new CerberusException(ex.getMessageError());
             }
         }
@@ -367,7 +369,7 @@ public class ExecutionStartService implements IExecutionStartService {
          * Register RunID inside database.
          */
         tCExecution.setResultMessage(new MessageGeneral(MessageGeneralEnum.EXECUTION_PE_CREATINGRUNID));
-        MyLogger.log(RunTestCaseService.class.getName(), Level.DEBUG, "Registering Execution ID on database");
+        LOG.debug("Registering Execution ID on database");
         long runID = 0;
         try {
             runID = this.testCaseExecutionService.registerRunID(tCExecution);
@@ -378,7 +380,7 @@ public class ExecutionStartService implements IExecutionStartService {
             } else {
                 MessageGeneral mes = new MessageGeneral(MessageGeneralEnum.VALIDATION_FAILED_COULDNOTCREATE_RUNID);
                 tCExecution.setResultMessage(mes);
-                MyLogger.log(ExecutionStartService.class.getName(), Level.FATAL, "Could not create RunID, or cannot retreive the generated Key");
+                LOG.fatal("Could not create RunID, or cannot retreive the generated Key");
                 throw new CerberusException(mes);
             }
 
@@ -388,7 +390,7 @@ public class ExecutionStartService implements IExecutionStartService {
             throw new CerberusException(ex.getMessageError());
         }
 
-        MyLogger.log(ExecutionStartService.class.getName(), Level.DEBUG, tCExecution.getId() + " - RunID Registered on database.");
+        LOG.debug(tCExecution.getId() + " - RunID Registered on database.");
 
         /**
          * Stop the browser if executionID is equal to zero (to prevent database
@@ -399,7 +401,7 @@ public class ExecutionStartService implements IExecutionStartService {
                 this.serverService.stopServer(tCExecution.getSession());
             }
         } catch (Exception ex) {
-            MyLogger.log(ExecutionStartService.class.getName(), Level.WARN, ex.toString());
+            LOG.warn(ex.toString());
         }
 
         return tCExecution;

@@ -55,7 +55,7 @@ function displayPageLabel() {
     $("[name='levelField']").html(doc.getDocOnline("buildrevisioninvariant", "level"));
     $("[name='seqField']").html(doc.getDocOnline("buildrevisioninvariant", "seq"));
     $("[name='versionnameField']").html(doc.getDocOnline("buildrevisioninvariant", "versionName"));
-    displayInvariantList("system", "SYSTEM");
+    displayInvariantList("system", "SYSTEM", false);
     $("[name='level']").append($('<option></option>').text("1").val("1"));
     $("[name='level']").append($('<option></option>').text("2").val("2"));
     displayFooter(doc);

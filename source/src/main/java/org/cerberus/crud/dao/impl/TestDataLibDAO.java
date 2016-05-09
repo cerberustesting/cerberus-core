@@ -66,12 +66,14 @@ public class TestDataLibDAO implements ITestDataLibDAO {
         TestDataLib result = null;
         MessageEvent msg;
 
-        final String query = new StringBuilder("SELECT * FROM testdatalib where `name` LIKE ?")
+        final String query = new StringBuilder("SELECT * FROM testdatalib tdl")
+                .append(" LEFT OUTER JOIN testdatalibdata tdd ON tdl.TestDataLibID = tdd.TestDataLibID and tdd.Subdata='' ")
+                .append(" WHERE `name` LIKE ?")
                 .append(" and (`system` = ? or `system` = '')")
                 .append(" and (`environment` = ? or `environment` = '')")
                 .append(" and (`country` = ? or `country` = '')")
-                .append(" order by `name` DESC, system DESC, environment DESC, country DESC")
-                .append(" limit 1").toString();
+                .append(" ORDER BY `name` DESC, system DESC, environment DESC, country DESC")
+                .append(" LIMIT 1").toString();
 
         // Debug message on SQL.
         if (LOG.isDebugEnabled()) {
@@ -142,7 +144,7 @@ public class TestDataLibDAO implements ITestDataLibDAO {
         TestDataLib result = null;
         MessageEvent msg;
 
-        final String query = new StringBuilder("SELECT * FROM testdatalib where `name` LIKE ?")
+        final String query = new StringBuilder("SELECT * FROM testdatalib tdl where `name` LIKE ?")
                 .append(" and `system` = ? ")
                 .append(" and `environment` = ? ")
                 .append(" and `country` = ? ")
@@ -218,7 +220,7 @@ public class TestDataLibDAO implements ITestDataLibDAO {
         AnswerItem answer = new AnswerItem();
         MessageEvent msg;
         TestDataLib result;
-        final String query = "SELECT * FROM testdatalib where `TestDataLibID` = ?";
+        final String query = "SELECT * FROM testdatalib tdl where `TestDataLibID` = ?";
 
         // Debug message on SQL.
         if (LOG.isDebugEnabled()) {
@@ -295,7 +297,7 @@ public class TestDataLibDAO implements ITestDataLibDAO {
 
         StringBuilder query = new StringBuilder();
         query.append("select distinct(`name`) ");
-        query.append("from testdatalib where `name` like ? ");
+        query.append("from testdatalib tdl where `name` like ? ");
         query.append(" order by `name`  ");
         query.append(" limit ? ");
         if ((limit <= 0) || (limit >= MAX_ROW_SELECTED)) {
@@ -373,7 +375,7 @@ public class TestDataLibDAO implements ITestDataLibDAO {
         MessageEvent msg;
 
         List<TestDataLib> list = new ArrayList<TestDataLib>();
-        final String query = "SELECT * FROM testdatalib";
+        final String query = "SELECT * FROM testdatalib tdl";
 
         // Debug message on SQL.
         if (LOG.isDebugEnabled()) {
@@ -448,7 +450,7 @@ public class TestDataLibDAO implements ITestDataLibDAO {
         //were applied -- used for pagination p
         query.append("SELECT SQL_CALC_FOUND_ROWS * FROM testdatalib tdl ");
 
-        query.append("LEFT OUTER JOIN testdatalibdata tdld ON tdl.TestDataLibID=tdld.TestDataLibID and tdld.SubData='' ");
+        query.append("LEFT OUTER JOIN testdatalibdata tdd ON tdl.TestDataLibID=tdd.TestDataLibID and tdd.SubData='' ");
 
         gSearch.append(" where (tdl.`name` like '%").append(searchTerm).append("%'");
         gSearch.append(" or tdl.`group` like '%").append(searchTerm).append("%'");
@@ -834,30 +836,30 @@ public class TestDataLibDAO implements ITestDataLibDAO {
     }
 
     public TestDataLib loadFromResultSet(ResultSet resultSet) throws SQLException {
-        Integer testDataLibID = resultSet.getInt("testDataLibID");
-        String name = resultSet.getString("name");
-        String system = ParameterParserUtil.returnEmptyStringIfNull(resultSet.getString("system"));
-        String environment = ParameterParserUtil.returnEmptyStringIfNull(resultSet.getString("environment"));
-        String country = ParameterParserUtil.returnEmptyStringIfNull(resultSet.getString("country"));
-        String group = ParameterParserUtil.returnEmptyStringIfNull(resultSet.getString("group"));
-        String type = ParameterParserUtil.returnEmptyStringIfNull(resultSet.getString("type"));
-        String database = ParameterParserUtil.returnEmptyStringIfNull(resultSet.getString("database"));
-        String script = ParameterParserUtil.returnEmptyStringIfNull(resultSet.getString("script"));
-        String servicePath = ParameterParserUtil.returnEmptyStringIfNull(resultSet.getString("servicePath"));
-        String method = ParameterParserUtil.returnEmptyStringIfNull(resultSet.getString("method"));
-        String envelope = ParameterParserUtil.returnEmptyStringIfNull(resultSet.getString("envelope"));
-        String description = ParameterParserUtil.returnEmptyStringIfNull(resultSet.getString("description"));
-        String creator = ParameterParserUtil.returnEmptyStringIfNull(resultSet.getString("Creator"));
-        Timestamp created = resultSet.getTimestamp("Created");
-        String lastModifier = ParameterParserUtil.returnEmptyStringIfNull(resultSet.getString("LastModifier"));
-        Timestamp lastModified = resultSet.getTimestamp("LastModified");
+        Integer testDataLibID = resultSet.getInt("tdl.testDataLibID");
+        String name = resultSet.getString("tdl.name");
+        String system = ParameterParserUtil.returnEmptyStringIfNull(resultSet.getString("tdl.system"));
+        String environment = ParameterParserUtil.returnEmptyStringIfNull(resultSet.getString("tdl.environment"));
+        String country = ParameterParserUtil.returnEmptyStringIfNull(resultSet.getString("tdl.country"));
+        String group = ParameterParserUtil.returnEmptyStringIfNull(resultSet.getString("tdl.group"));
+        String type = ParameterParserUtil.returnEmptyStringIfNull(resultSet.getString("tdl.type"));
+        String database = ParameterParserUtil.returnEmptyStringIfNull(resultSet.getString("tdl.database"));
+        String script = ParameterParserUtil.returnEmptyStringIfNull(resultSet.getString("tdl.script"));
+        String servicePath = ParameterParserUtil.returnEmptyStringIfNull(resultSet.getString("tdl.servicePath"));
+        String method = ParameterParserUtil.returnEmptyStringIfNull(resultSet.getString("tdl.method"));
+        String envelope = ParameterParserUtil.returnEmptyStringIfNull(resultSet.getString("tdl.envelope"));
+        String description = ParameterParserUtil.returnEmptyStringIfNull(resultSet.getString("tdl.description"));
+        String creator = ParameterParserUtil.returnEmptyStringIfNull(resultSet.getString("tdl.Creator"));
+        Timestamp created = resultSet.getTimestamp("tdl.Created");
+        String lastModifier = ParameterParserUtil.returnEmptyStringIfNull(resultSet.getString("tdl.LastModifier"));
+        Timestamp lastModified = resultSet.getTimestamp("tdl.LastModified");
         String subDataValue = null;
         String subDataColumn = null;
         String subDataParsingAnswer = null;
         try {
-            subDataValue = ParameterParserUtil.returnEmptyStringIfNull(resultSet.getString("tdld.Value"));
-            subDataColumn = ParameterParserUtil.returnEmptyStringIfNull(resultSet.getString("tdld.Column"));
-            subDataParsingAnswer = ParameterParserUtil.returnEmptyStringIfNull(resultSet.getString("tdld.parsingAnswer"));
+            subDataValue = ParameterParserUtil.returnEmptyStringIfNull(resultSet.getString("tdd.Value"));
+            subDataColumn = ParameterParserUtil.returnEmptyStringIfNull(resultSet.getString("tdd.Column"));
+            subDataParsingAnswer = ParameterParserUtil.returnEmptyStringIfNull(resultSet.getString("tdd.parsingAnswer"));
         } catch (Exception ex) {
             MyLogger.log(TestDataLibDAO.class.getName(), Level.WARN, ex.toString());
         }

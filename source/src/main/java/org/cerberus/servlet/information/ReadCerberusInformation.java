@@ -54,14 +54,16 @@ public class ReadCerberusInformation extends HttpServlet {
         Infos infos = new Infos();
         JSONObject data = new JSONObject();
 
+        response.setContentType("application/json");
+        response.setCharacterEncoding("utf8");
+
         try {
             data.put("projectName", infos.getProjectName());
             data.put("projectVersion", infos.getProjectVersion());
             data.put("environment", System.getProperty("org.cerberus.environment"));
         } catch (JSONException ex) {
             Logger.getLogger(ReadCerberusInformation.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } 
-        response.setContentType("application/json");
+        }
         response.getWriter().print(data.toString());
     }
 

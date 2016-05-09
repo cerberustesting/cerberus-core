@@ -102,38 +102,45 @@
             <%
                 IDocumentationService docService = appContext.getBean(IDocumentationService.class);
 
-                    /*
+                /*
                      * Filter requests
-                     */
-                    IParameterService myParameterService = appContext.getBean(IParameterService.class);
-                    IApplicationService myApplicationService = appContext.getBean(IApplicationService.class);
-                    ITestCaseService testCaseService = appContext.getBean(ITestCaseService.class);
-                    ITestCaseExecutionService testCaseExecutionService = appContext.getBean(ITestCaseExecutionService.class);
+                 */
+                IParameterService myParameterService = appContext.getBean(IParameterService.class);
+                IApplicationService myApplicationService = appContext.getBean(IApplicationService.class);
+                ITestCaseService testCaseService = appContext.getBean(ITestCaseService.class);
+                ITestCaseExecutionService testCaseExecutionService = appContext.getBean(ITestCaseExecutionService.class);
 
-                    String PictureURL = myParameterService.findParameterByKey("cerberus_picture_url", "").getValue();
-                    
-                    String myLang = request.getAttribute("MyLang").toString();
+                String PictureURL = myParameterService.findParameterByKey("cerberus_picture_url", "").getValue();
 
+                String myLang = request.getAttribute("MyLang").toString();
 
-
-                    /*
+                /*
                      * Manage Filters
-                     */
-                    long iD = ParameterParserUtil.parseLongParam(request.getParameter("id_tc"), 0);
-                    String id_filter = "";
+                 */
+                String id_filter = "";
+                long iD;
+                if (request.getParameter("id_tc").equalsIgnoreCase("last")) {
+                    // Getting the last execution.
+                    TestCaseExecution last_exe;
+                    last_exe = testCaseExecutionService.convert(testCaseExecutionService.readLastByCriteria(null));
+                    id_filter = String.valueOf(last_exe.getId());
+                    iD = last_exe.getId();
+                } else {
+                    iD = ParameterParserUtil.parseLongParam(request.getParameter("id_tc"), 0);
                     if (request.getParameter("id_tc") != null) {
                         id_filter = request.getParameter("id_tc");
                     }
-                    String test = "";
-                    String testCase = "";
-                    String testCaseDesc = "";
-                    String country = "";
-                    String build = "";
-                    String revision = "";
-                    String browser = "";
-                    String browserFullVersion = "";
-                    String exedate = "";
-                    String appSystem = "";
+                }
+                String test = "";
+                String testCase = "";
+                String testCaseDesc = "";
+                String country = "";
+                String build = "";
+                String revision = "";
+                String browser = "";
+                String browserFullVersion = "";
+                String exedate = "";
+                String appSystem = "";
             %>
             <div class="filters" style="float:left; width:100%; height:30px">
                 <div style="float:left; width:100px"><p class="dttTitle">Filters</p></div>
@@ -151,24 +158,23 @@
                  * Get Execution Information
                  */
                 TestCaseExecution testCaseExecution = testCaseExecutionService.findTCExecutionByKey(Long.parseLong(id_filter));
-            
-                if(testCaseExecution != null) {
+
+                if (testCaseExecution != null) {
                     test = testCaseExecution.getTest();
                     testCase = testCaseExecution.getTestCase();
 
                     TCase tCase = testCaseService.findTestCaseByKey(test, testCase);
 
-                String max_id = String.valueOf(testCaseExecution.getId());
+                    String max_id = String.valueOf(testCaseExecution.getId());
 
-                String myApplication = tCase.getApplication();
-                String environment = testCaseExecution.getEnvironment();
+                    String myApplication = tCase.getApplication();
+                    String environment = testCaseExecution.getEnvironment();
 
-                String comment = tCase.getComment();
-                String bugid = tCase.getBugID();
-                String newBugURL = "";
-                String executor = testCaseExecution.getExecutor();
-                String controlStatus = testCaseExecution.getControlStatus();
-
+                    String comment = tCase.getComment();
+                    String bugid = tCase.getBugID();
+                    String newBugURL = "";
+                    String executor = testCaseExecution.getExecutor();
+                    String controlStatus = testCaseExecution.getControlStatus();
 
                     testCaseDesc = tCase.getShortDescription();
                     country = testCaseExecution.getCountry();
@@ -178,8 +184,7 @@
                     browser = testCaseExecution.getBrowser();
                     exedate = DateUtil.getFormatedMySQLTimestamp(testCaseExecution.getStart());
 
-
-                    if(executor == null) {
+                    if (executor == null) {
                         executor = "";
                     }
                     browserFullVersion = testCaseExecution.getBrowserFullVersion();
@@ -205,7 +210,7 @@
             <div style="clear:both" id="table">
                 <br>
 
-                <input id="statushidden" value="<%=controlStatus %>" hidden="hidden">
+                <input id="statushidden" value="<%=controlStatus%>" hidden="hidden">
                 <table class="tableBorder wrapAll" style="text-align: left" border="1" >
                     <tr id="header" style="font-style: italic">
                         <td style="font-weight: bold; width: 7%"><%out.print(docService.findLabelHTML("testcaseexecution", "id", "ID", myLang));%></td>
@@ -229,12 +234,12 @@
                     </tr>            
                     <tr>
 
-                        <td><span id="exeid"><%= max_id %></span></td>
+                        <td><span id="exeid"><%= max_id%></span></td>
                         <td id="testValue"><b><%= test%></b></td>
                         <td id="testcaseValue"><b><%= testCase%></b><br><%= testCaseDesc%></td>
                         <td id="countryValue"><b><%= country%></b></td>
                         <td><b><%= environment%></b></td>
-                        <td>[<%=appSystem%>]<br><%= build %> / <%= revision %></td>
+                        <td>[<%=appSystem%>]<br><%= build%> / <%= revision%></td>
                         <td>
                             <table>
                                 <%
@@ -254,20 +259,20 @@
                                 %>
                             </table>
                         </td>
-                        <td><%= myApplication %></td>
-                        <td><%= testCaseExecution.getUrl() %></td>
-                        <td><span id="exeip"><%= testCaseExecution.getIp() %></span><br><span id="exeport"><%= testCaseExecution.getPort() %></span></td>
-                        <td><span id="exebrowser"><%= browser %></span><br>[<span id="exebrowserver"><%= browserFullVersion %></span>]</td>
-                        <td><%= exedate %></td>
+                        <td><%= myApplication%></td>
+                        <td><%= testCaseExecution.getUrl()%></td>
+                        <td><span id="exeip"><%= testCaseExecution.getIp()%></span><br><span id="exeport"><%= testCaseExecution.getPort()%></span></td>
+                        <td><span id="exebrowser"><%= browser%></span><br>[<span id="exebrowserver"><%= browserFullVersion%></span>]</td>
+                        <td><%= exedate%></td>
                         <%
                             // If status is pending, there will be no end timestamp feeded 
                             // and we should not even try to display it.
-                            if("PE".equalsIgnoreCase(controlStatus)) {
-                                %><td>...</td><%
-                            } else {
-                                %><td><%= DateUtil.getFormatedMySQLTimestamp(testCaseExecution.getEnd()) %></td><%
+                            if ("PE".equalsIgnoreCase(controlStatus)) {
+                        %><td>...</td><%
+                        } else {
+                        %><td><%= DateUtil.getFormatedMySQLTimestamp(testCaseExecution.getEnd())%></td><%
                             }
-                            %><td class="<%=controlStatus%>"><a class="<%=controlStatus%>F"><span id="res_status"><%=controlStatus%></span></a></td>
+                        %><td class="<%=controlStatus%>"><a class="<%=controlStatus%>F"><span id="res_status"><%=controlStatus%></span></a></td>
                     </tr>
                     <tr style="font-style: italic">
                         <td style="font-weight: bold;" colspan=2><%out.print(docService.findLabelHTML("testcaseexecution", "tag", "Tag", myLang));%></td>
@@ -280,26 +285,26 @@
                         <td style="font-weight: bold;"><%out.print(docService.findLabelHTML("testcaseexecution", "crbversion", "Engine Version", myLang));%></td>
                     </tr>
                     <tr>
-                        <td colspan=2><span id="exetag"><code><pre><%= testCaseExecution.getTag() == null ? "" : StringEscapeUtils.escapeHtml4(testCaseExecution.getTag()) %>
+                        <td colspan=2><span id="exetag"><code><pre><%= testCaseExecution.getTag() == null ? "" : StringEscapeUtils.escapeHtml4(testCaseExecution.getTag())%>
                                                                 </pre> 
                                 </code><input type="button" name="editTag" value="edit" onclick="openChangeTagPopin('<%=id_filter%>')">
                             </span>
                                                                 
                         </td>
-                        <% 
+                        <%
                             String tagEncoded = testCaseExecution.getTag();
-                            if(testCaseExecution.getTag() != null){                                
-                                tagEncoded = StringUtil.encodeAsJavaScriptURIComponent(testCaseExecution.getTag());                                                                 
+                            if (testCaseExecution.getTag() != null) {
+                                tagEncoded = StringUtil.encodeAsJavaScriptURIComponent(testCaseExecution.getTag());
                             }
                         %>
-                        <td><span id="exetaglink"><%= testCaseExecution.getTag() == null ? "" : 
-                                "<a href='ReportingExecutionByTag.jsp?enc=1&Tag=" + tagEncoded.replace("'", "%27") + "'>link</a>"%></span></td>
-                        <td colspan=6><span id="exemsg"><%= testCaseExecution.getControlMessage() == null ? "" : testCaseExecution.getControlMessage() %></span></td>
+                        <td><span id="exetaglink"><%= testCaseExecution.getTag() == null ? ""
+                                : "<a href='ReportingExecutionByTag.jsp?enc=1&Tag=" + tagEncoded.replace("'", "%27") + "'>link</a>"%></span></td>
+                        <td colspan=6><span id="exemsg"><%= testCaseExecution.getControlMessage() == null ? "" : testCaseExecution.getControlMessage()%></span></td>
                         <td><span id="exescreensize"><%=testCaseExecution.getScreenSize()%></span></td>
                         <td><span id="exemsg"><%=executor%></span></td>
-                        <td><span id="exeverbose"><%= String.valueOf(testCaseExecution.getVerbose()) %></span></td>
-                        <td><span id="exestatus"><%= testCaseExecution.getStatus() == null ? "" : testCaseExecution.getStatus() %></span></td>
-                        <td><span id="execrbversion"><%= testCaseExecution.getCrbVersion() == null ? "" : testCaseExecution.getCrbVersion() %></span></td>
+                        <td><span id="exeverbose"><%= String.valueOf(testCaseExecution.getVerbose())%></span></td>
+                        <td><span id="exestatus"><%= testCaseExecution.getStatus() == null ? "" : testCaseExecution.getStatus()%></span></td>
+                        <td><span id="execrbversion"><%= testCaseExecution.getCrbVersion() == null ? "" : testCaseExecution.getCrbVersion()%></span></td>
                     </tr>
                     <tr style="font-style: italic">
                         <td style="font-weight: bold;" colspan=9><%out.print(docService.findLabelHTML("testcase", "Comment", "Comment", myLang));%></td>
@@ -314,7 +319,7 @@
                         </td>
                         <td colspan=1>
                             <span id="seleniumLog">
-                                <a href="<%=PictureURL+max_id+"/"%>selenium_log.txt">Logs</a>
+                                <a href="<%=PictureURL + max_id + "/"%>selenium_log.txt">Logs</a>
                             </span>
                         </td>
                         <td colspan=4><span id="bugid"><%
@@ -325,11 +330,11 @@
                                     String bugURL = myApplicationService.convert(myApplicationService.readByKey(myApplication)).getBugTrackerUrl();
                                     if (StringUtil.isNullOrEmpty(bugURL)) {
                                 %><%=bugid%><%
-                                    } else {
-                                        bugURL = bugURL.replaceAll("%BUGID%", bugid);
+                                } else {
+                                    bugURL = bugURL.replaceAll("%BUGID%", bugid);
                                 %><a href="<%= bugURL%>" target='_blank' title="title"><%=bugid%></a><%
-                                            }
                                         }
+                                    }
                                 %>
                         </td>
                     </tr>
@@ -340,7 +345,7 @@
             <div id="tablewwwsum">
                 <%
                     ITestCaseExecutionwwwSumService tcewwwsumService = appContext.getBean(ITestCaseExecutionwwwSumService.class);
-                        
+
                     List<TestCaseExecutionwwwSum> tcewwwsumdetails = tcewwwsumService.getAllDetailsFromTCEwwwSum(Integer.valueOf(id_filter));
                     if (tcewwwsumdetails != null) {
                         for (TestCaseExecutionwwwSum wwwsumdetails : tcewwwsumdetails) {
@@ -440,10 +445,10 @@
                     <p class="dttTitle">TestCase Execution Result</p>
                     <table id="stepTable" class="tableBorder" style="border-collapse: collapse">
                         <%
-                        for (TestCaseStepExecution myStepData : stepList) {
-                                if (!myStepData.getTest().equals("Pre Testing")){
+                            for (TestCaseStepExecution myStepData : stepList) {
+                                if (!myStepData.getTest().equals("Pre Testing")) {
                                     myKey++;
-                                    }
+                                }
                                 TestCaseStep myTCS;
                                 myTCS = testCaseStepService.findTestCaseStep(myStepData.getTest(), myStepData.getTestCase(), myStepData.getStep());
                                 String myTCSDesc = "";
@@ -480,10 +485,10 @@
                                            switchTableVisibleInvisible('dropDownUpArrow<%=stepIdentifier%>', 'dropDownDownArrow<%=stepIdentifier%>')"><img src="images/dropdown.gif"/></a>
                             </td>
                             <td align="right"><a href="./TestCase.jsp?Test=<%=myStepData.getTest()%>&TestCase=<%=myStepData.getTestCase()%>&Load=Load#stepAnchor_<%=myKey%>"><%=DateUtil.getFormatedDate(myStepData.getFullStart())%>  >>  
-                                <%=DateUtil.getFormatedDate(myStepData.getFullEnd())%> (
-                                <%=styleMainTestCase1%><%=myStepData.getTest()%><%=styleMainTestCase2%> / 
-                                <%=styleMainTestCase1%><%=myStepData.getTestCase()%><%=styleMainTestCase2%> / 
-                                <%=styleMainTestCase1%>Step <%=myStepData.getStep()%><%=styleMainTestCase2%> )
+                                    <%=DateUtil.getFormatedDate(myStepData.getFullEnd())%> (
+                                    <%=styleMainTestCase1%><%=myStepData.getTest()%><%=styleMainTestCase2%> / 
+                                    <%=styleMainTestCase1%><%=myStepData.getTestCase()%><%=styleMainTestCase2%> / 
+                                    <%=styleMainTestCase1%>Step <%=myStepData.getStep()%><%=styleMainTestCase2%> )
                                 </a>
                             </td>
                         </tr>
@@ -492,7 +497,7 @@
                                 <%
                                     ITestCaseStepActionExecutionService testCaseStepActionExecutionService = appContext.getBean(ITestCaseStepActionExecutionService.class);
                                     ITestCaseStepActionService testCaseStepActionService = appContext.getBean(ITestCaseStepActionService.class);
-         
+
                                     List<TestCaseStepActionExecution> actionList = testCaseStepActionExecutionService.findTestCaseStepActionExecutionByCriteria(iD, myStepData.getTest(), myStepData.getTestCase(), myStepData.getStep());%>
                                 <table id="actionTable<%=stepIdentifier%>"  style="border-collapse: collapse; display:<%=conditionalDisplay%>; width:100%">
                                     <%
@@ -500,8 +505,8 @@
                                         for (TestCaseStepActionExecution myActionData : actionList) {
                                             TestCaseStepAction myTCSA;
                                             String descAction = "";
-                                             
-                                            if( myTCS != null && myTCS.getUseStep() != null && !"".equals(myTCS.getUseStep())
+
+                                            if (myTCS != null && myTCS.getUseStep() != null && !"".equals(myTCS.getUseStep())
                                                     && myTCS.getUseStepStep() > 0) {
                                                 myTCSA = testCaseStepActionService.findTestCaseStepActionbyKey(myTCS.getUseStepTest(), myTCS.getUseStepTestCase(), myTCS.getUseStepStep(), myActionData.getSequence());
                                             } else {
@@ -537,34 +542,34 @@
                                         <td style="width:1%">&nbsp;&nbsp;&nbsp;&nbsp;</td>
                                         <td style="width:1%" class="<%=myActionData.getReturnCode()%>">>></td>
                                         <td colspan="9" class="<%=myActionData.getReturnCode()%>F">
-                                        <%
+                                            <%
                                                 //TODO:FN to refactor while converting the page -- this should be in a servlet or javascript file
                                                 String returnMessage = myActionData.getReturnMessage();
-                                                if(returnMessage.startsWith("{")){
-                                                    try{
+                                                if (returnMessage.startsWith("{")) {
+                                                    try {
                                                         JSONObject desc = new JSONObject(returnMessage);
                                                         String type = desc.get("type").toString();
                                                         StringBuilder finalMessage = new StringBuilder();
-                                                        if(type.equals("SOAP")){
+                                                        if (type.equals("SOAP")) {
                                                             finalMessage.append(desc.get("description").toString());
-                                                            if(!StringUtil.isNullOrEmpty(desc.get("request").toString())){
+                                                            if (!StringUtil.isNullOrEmpty(desc.get("request").toString())) {
                                                                 finalMessage.append(" <a target='_blank' href='").append(PictureURL);
                                                                 finalMessage.append(desc.get("request").toString()).append("'>SOAP request </a>");
                                                             }
-                                                            if(!StringUtil.isNullOrEmpty(desc.get("response").toString())){
+                                                            if (!StringUtil.isNullOrEmpty(desc.get("response").toString())) {
                                                                 finalMessage.append(" <a target='_blank' href='").append(PictureURL);
                                                                 finalMessage.append(desc.get("response").toString()).append("'>SOAP response</a>");
                                                             }
-                                                            
+
                                                         }
-                                                        
+
                                                         returnMessage = finalMessage.toString();
-                                                    }catch(JSONException ex){
+                                                    } catch (JSONException ex) {
                                                         //there is no need to parse 
-                                                        
+
                                                     }
                                                 }
-                                        %>
+                                            %>
 <code><pre><i><span id="ACTMES-<%=myStep + "-" + myActionData.getSequence()%>"><%=StringUtil.replaceUrlByLinkInString(returnMessage)%></span>
 </i></pre></code></td>
                                     </tr>
@@ -575,7 +580,7 @@
 
                                                 ITestCaseStepActionControlExecutionService testCaseStepActionControlExecutionService = appContext.getBean(ITestCaseStepActionControlExecutionService.class);
                                                 ITestCaseStepActionControlService testCaseStepActionControlService = appContext.getBean(ITestCaseStepActionControlService.class);
-               
+
                                                 List<TestCaseStepActionControlExecution> controlList = testCaseStepActionControlExecutionService.findTestCaseStepActionControlExecutionByCriteria(iD, myActionData.getTest(), myActionData.getTestCase(), myActionData.getStep(), myActionData.getSequence());%>
                                             <table id="controlTable"  style="border-collapse: collapse">
                                                 <%
@@ -583,14 +588,13 @@
 
                                                     for (TestCaseStepActionControlExecution myControlData : controlList) {
                                                         TestCaseStepActionControl myTCSAC;
-                                                        
-                                                        if(myTCS != null && myTCS.getUseStep() != null && !"".equals(myTCS.getUseStep())
+
+                                                        if (myTCS != null && myTCS.getUseStep() != null && !"".equals(myTCS.getUseStep())
                                                                 && myTCS.getUseStepStep() > 0) {
                                                             myTCSAC = testCaseStepActionControlService.findTestCaseStepActionControlByKey(myTCS.getUseStepTest(), myTCS.getUseStepTestCase(), myTCS.getUseStepStep(), myActionData.getSequence(), myControlData.getControl());
                                                         } else {
                                                             myTCSAC = testCaseStepActionControlService.findTestCaseStepActionControlByKey(myStepData.getTest(), myStepData.getTestCase(), myStepData.getStep(), myActionData.getSequence(), myControlData.getControl());
                                                         }
-
 
                                                         String controlDesc = "";
                                                         String descControl = "";
@@ -654,27 +658,27 @@
                         <%                            for (TestCaseExecutionData myData : dataList) {
                         %>
                         <tr>
-                            <td class="<%=myData.getRC()%>"><span class="<%=myData.getRC()%>F" id="PROPSTS-<%=myData.getProperty()%>"><%=myData.getRC()%></span></td>
-                            <td><%=DateUtil.getFormatedDate(myData.getStartLong())%></td>
-                            <td><%=DateUtil.getFormatedElapsed(myData.getStartLong(), myData.getEndLong())%></td>
-                            <td><b><span id="PROP-<%=myData.getProperty()%>"><%=myData.getProperty()%></span></b></td>
-                            <td><code><pre><b><i><span id="PROPVAL-<%=myData.getProperty()%>"><%=StringUtil.textToHtmlConvertingURLsToLinks(myData.getValue())%></span></i></b></pre></code></td>
-                            <td style="font-size: x-small"><%=myData.getType()%></td>
-                            <td style="font-size: x-small"><code><pre><%=StringUtil.textToHtmlConvertingURLsToLinks(myData.getValue1())%> / <%=myData.getValue2()%></pre></code></td>
-                            <% 
-                            String propMessage = myData.getrMessage();
-                            //TODO this should handled differently, in the servlet or javascript file
-                            if(propMessage.startsWith("{")){
-                                    try{
-                                        JSONObject desc = new JSONObject(propMessage);
-                                        propMessage = desc.get("description").toString();
-                                    }catch(JSONException ex){
-                                        //there is no need to parse 
-                                        //add some recovery code?
-                                    }
-                                }
-                            %>
-                            <td><code><pre><span id="PROPMES-<%=myData.getProperty()%>"><%=StringUtil.textToHtmlConvertingURLsToLinks(propMessage)%></span></pre></code></td>
+                            <td title="Status" class="<%=myData.getRC()%>"><span class="<%=myData.getRC()%>F" id="PROPSTS-<%=myData.getProperty()%>"><%=myData.getRC()%></span></td>
+                            <td title="Start Time"><%=DateUtil.getFormatedDate(myData.getStartLong())%></td>
+                            <td title="Elapse Time"><%=DateUtil.getFormatedElapsed(myData.getStartLong(), myData.getEndLong())%></td>
+                            <td title="Property name"><b><span id="PROP-<%=myData.getProperty()%>"><%=myData.getProperty()%></span></b></td>
+                            <td title="Value"><code><pre><b><i><span id="PROPVAL-<%=myData.getProperty()%>"><%=StringUtil.textToHtmlConvertingURLsToLinks(myData.getValue())%></span></i></b></pre></code></td>
+                            <td title="Type" style="font-size: x-small"><%=myData.getType()%></td>
+                            <td title="Value1 / Value2" style="font-size: x-small"><code><pre><%=StringUtil.textToHtmlConvertingURLsToLinks(myData.getValue1())%> / <%=myData.getValue2()%></pre></code></td>
+                                        <%
+                                            String propMessage = myData.getrMessage();
+                                            //TODO this should handled differently, in the servlet or javascript file
+                                            if (propMessage.startsWith("{")) {
+                                                try {
+                                                    JSONObject desc = new JSONObject(propMessage);
+                                                    propMessage = desc.get("description").toString();
+                                                } catch (JSONException ex) {
+                                                    //there is no need to parse 
+                                                    //add some recovery code?
+                                                }
+                                            }
+                                        %>
+                            <td title="Message"><code><pre><span id="PROPMES-<%=myData.getProperty()%>"><%=StringUtil.textToHtmlConvertingURLsToLinks(propMessage)%></span></pre></code></td>
                         </tr>
                         <%
                             }
@@ -682,37 +686,37 @@
                         %>                        
                     </table>
                 <br><br>
-                <%  if (!(myApplication.equalsIgnoreCase(""))) {
-                %>
+                    <%  if (!(myApplication.equalsIgnoreCase(""))) {
+                    %>
                 <h4>Contextual Actions</h4>
                 <table class="tableBorder"  style="text-align: left" border="1" >
                     <tr>
-                        <%if (tcGroup.equalsIgnoreCase("MANUAL") && !"PE".equalsIgnoreCase(controlStatus)) {%>
+                            <%if (tcGroup.equalsIgnoreCase("MANUAL") && !"PE".equalsIgnoreCase(controlStatus)) {%>
                             <td> 
                                 <button style="cursor:pointer; background:none; border:none;margin:0;padding:0;color: #008CDA;text-decoration: none;font-family: helvetica;font-size:11.2px " 
-                                        onclick="openRunManualPopin('<%=test%>','<%=testCase%>', '<%=environment%>','<%=country%>','','<%=testCaseExecution.getTag()==null?"" : tagEncoded%>', '<%=browser%>')" 
+                                        onclick="openRunManualPopin('<%=test%>', '<%=testCase%>', '<%=environment%>', '<%=country%>', '', '<%=testCaseExecution.getTag() == null ? "" : tagEncoded%>', '<%=browser%>')" 
                                         title="Allows the user to execute the current test case. It is executed with the exact same configurations: tag, environment, country...">
                                     Run the same Test Case again
                                 </button>
                             </td>
-                        <%}%>    
-                        <% if (tcGroup.equalsIgnoreCase("AUTOMATED")) {%>
-                            <td><a href="RunTests.jsp?Test=<%=test%>&TestCase=<%=testCase%>&MySystem=<%=appSystem%>&Country=<%=country%>&Environment=<%=environment%>&browser=<%=browser%>&Tag=<%=testCaseExecution.getTag()==null?"" : tagEncoded%>"
+                            <%}%>    
+                            <% if (tcGroup.equalsIgnoreCase("AUTOMATED")) {%>
+                            <td><a href="RunTests.jsp?Test=<%=test%>&TestCase=<%=testCase%>&MySystem=<%=appSystem%>&Country=<%=country%>&Environment=<%=environment%>&browser=<%=browser%>&Tag=<%=testCaseExecution.getTag() == null ? "" : tagEncoded%>"
                                    title="Allows the user to execute the current test case. The user can modify the configurations associated with the execution: tag, environment, country... ">
                                     Run the same Test Case again</a><br>
-                            <a href="RunTests1.jsp?test=<%=test%>&testcase=<%=testCase%>&country=<%=country%>&environment=<%=environment%>&browser=<%=browser%>&tag=<%=testCaseExecution.getTag()==null?"" : tagEncoded%>"
+                            <a href="RunTests1.jsp?test=<%=test%>&testcase=<%=testCase%>&country=<%=country%>&environment=<%=environment%>&browser=<%=browser%>&tag=<%=testCaseExecution.getTag() == null ? "" : tagEncoded%>"
                                    title="Allows the user to execute the current test case. The user can modify the configurations associated with the execution: tag, environment, country... ">
                                     Run the same Test Case again (Beta)</a></td>
-                        <% } else if (tcGroup.equalsIgnoreCase("MANUAL")){%>
+                                    <% } else if (tcGroup.equalsIgnoreCase("MANUAL")) {%>
                         <td>
-                            <a href="RunTests.jsp?Test=<%=test%>&TestCase=<%=testCase%>&MySystem=<%=appSystem%>&Country=<%=country%>&Environment=<%=environment%>&browser=<%=browser%>&Tag=<%=testCaseExecution.getTag()==null?"" : tagEncoded%>&manualExecution=Y"
+                            <a href="RunTests.jsp?Test=<%=test%>&TestCase=<%=testCase%>&MySystem=<%=appSystem%>&Country=<%=country%>&Environment=<%=environment%>&browser=<%=browser%>&Tag=<%=testCaseExecution.getTag() == null ? "" : tagEncoded%>&manualExecution=Y"
                                 title="Allows the user to execute the current test case. The user can modify the configurations associated with the execution: tag, environment, country... ">
                                 Edit configurations and Run the same Test Case again</a><br>
-                            <a href="RunTests1.jsp?test=<%=test%>&testcase=<%=testCase%>&country=<%=country%>&environment=<%=environment%>&browser=<%=browser%>&tag=<%=testCaseExecution.getTag()==null?"" : tagEncoded%>&manualExecution=Y"
+                            <a href="RunTests1.jsp?test=<%=test%>&testcase=<%=testCase%>&country=<%=country%>&environment=<%=environment%>&browser=<%=browser%>&tag=<%=testCaseExecution.getTag() == null ? "" : tagEncoded%>&manualExecution=Y"
                                 title="Allows the user to execute the current test case. The user can modify the configurations associated with the execution: tag, environment, country... ">
                                 Edit configurations and Run the same Test Case again (Beta)</a>
                         </td>
-                        <%}%>                           
+                            <%}%>                           
                         <td>
                             <a href="TestCase.jsp?Test=<%=test%>&TestCase=<%=testCase%>&Load=Load">Modify the Test Case.</a><br>
                             <a href="TestCaseScript.jsp?test=<%=test%>&testcase=<%=testCase%>">Modify the Test Case (Beta).</a>
@@ -721,99 +725,99 @@
                     <a href="ExecutionDetailList.jsp?test=<%=test%>&testcase=<%=testCase%>&MySystem=<%=appSystem%>">See Last Executions..</a>
                 </td>
                         <td>
-                            <%
-                                if (StringUtil.isNullOrEmpty(newBugURL)) {
-                            %>
+                                <%
+                                    if (StringUtil.isNullOrEmpty(newBugURL)) {
+                                %>
                             <a href="javascript:void(0)" title="Define the New Bug URL at the application level in order to open a bug from here.">Open a bug.</a> 
-                            <%
-                            } else {
-                            %>
+                                <%
+                                } else {
+                                %>
                             <a href="<%= newBugURL%>" target='_blank' title="title">Open a bug.</a> 
-                            <%                                }
+                                <%                                }
 
-                            %>
+                                %>
                         </td>
                     </tr>
                 </table>
-                <%  }
-                        }else {
+                    <%  }
+                    } else {
                     %>
                     <br><br><table id="arrond" style="text-align: left" border="1" >
                         <tr id="header" style="font-style: italic">
                             <td style="font-weight: bold; width: 140px"><b><i>Execution ID not found...</i></b></td>
                         </tr>
                     </table>
-                    <%              }          
+                    <%              }
                     %>
 
                 <input style="display:none" id="refreshAuto">
             </div>
             <div id="popin" title="Manual Execution"></div>
             <script>
-                $(document).ready(function() {
-                    var stat = document.getElementById("statushidden").value;
-                    var idtc = document.getElementById("exeid").innerHTML;
+                    $(document).ready(function () {
+                        var stat = document.getElementById("statushidden").value;
+                        var idtc = document.getElementById("exeid").innerHTML;
 
 
-                    if (stat === "PE") {
-                        setTimeout(function() {
-                            var refresh = document.getElementById("refreshAuto").value;
-                            if (refresh !== 'Stop') {
-                                location.href = './ExecutionDetail.jsp?id_tc=' + idtc
-                            }
-                        }, 5000);
+                        if (stat === "PE") {
+                            setTimeout(function () {
+                                var refresh = document.getElementById("refreshAuto").value;
+                                if (refresh !== 'Stop') {
+                                    location.href = './ExecutionDetail.jsp?id_tc=' + idtc
+                                }
+                            }, 5000);
 
+                        }
+
+                        // Zoombox is the lightbox to display image
+                        $('a.zoombox').zoombox({
+                            theme: 'zoombox', //available themes : zoombox,lightbox, prettyphoto, darkprettyphoto, simple
+                            opacity: 0.8, // Black overlay opacity
+                            duration: 800, // Animation duration
+                            animation: false, // Do we have to animate the box ?
+                            width: 600, // Default width
+                            height: 400, // Default height
+                            gallery: true, // Allow gallery thumb view
+                            overflow: true, // Allow gallery thumb view
+                            autoplay: false                // Autoplay for video
+                        });
+
+                        // Image links displayed as a group
+                        //$('a.zoombox').zoombox();
+
+                        $('td.control').css('cursor', 'pointer');
+                        $('td.control').click(function () {
+                            dialogTheDiff($(this).data('id'));
+                        });
+
+                    });
+
+
+                    function dialogTheDiff(controlId) {
+
+                        var text1 = $('#CTLPRP-' + controlId).html();
+                        var text2 = $('#CTLVAL-' + controlId).html();
+
+                        // create match library object
+                        var dmp = new diff_match_patch();
+
+                        // instanciate edit cost to 6 for clean up semantic method
+                        dmp.Diff_EditCost = 6;
+
+                        // make the diff between text1 and text2
+                        var d = dmp.diff_main(text1, text2);
+
+                        // generate semantic diff on text and clean it
+                        dmp.diff_cleanupSemantic(d);
+
+                        // another type of diff (like semantic)
+                        //dmp.diff_cleanupEfficiency(d);
+
+                        // generate pretty html diff and display it in popin dialog
+                        $('#dialogTheDiff').empty().html(dmp.diff_prettyHtml(d))
+                        $('#dialogTheDiff').dialog();
                     }
-
-                    // Zoombox is the lightbox to display image
-                    $('a.zoombox').zoombox({
-                        theme: 'zoombox', //available themes : zoombox,lightbox, prettyphoto, darkprettyphoto, simple
-                        opacity: 0.8, // Black overlay opacity
-                        duration: 800, // Animation duration
-                        animation: false, // Do we have to animate the box ?
-                        width: 600, // Default width
-                        height: 400, // Default height
-                        gallery: true, // Allow gallery thumb view
-                        overflow: true, // Allow gallery thumb view
-                        autoplay: false                // Autoplay for video
-                    });
-
-                    // Image links displayed as a group
-                    //$('a.zoombox').zoombox();
-
-                    $('td.control').css('cursor','pointer');
-                    $('td.control').click(function(){
-                        dialogTheDiff($(this).data('id'));
-                    });
-
-                });
-
-
-                function dialogTheDiff(controlId) {
-                    
-                    var text1 = $('#CTLPRP-'+controlId).html();
-                    var text2 = $('#CTLVAL-'+controlId).html();
-                    
-                    // create match library object
-                    var dmp = new diff_match_patch();
-                    
-                    // instanciate edit cost to 6 for clean up semantic method
-                    dmp.Diff_EditCost = 6;
-
-                    // make the diff between text1 and text2
-                    var d = dmp.diff_main(text1, text2);
-
-                    // generate semantic diff on text and clean it
-                    dmp.diff_cleanupSemantic(d);
-                    
-                    // another type of diff (like semantic)
-                    //dmp.diff_cleanupEfficiency(d);
-
-                    // generate pretty html diff and display it in popin dialog
-                    $('#dialogTheDiff').empty().html(dmp.diff_prettyHtml(d))
-                    $('#dialogTheDiff').dialog();
-                }
-            </script>
+                    </script>
                 <br><%=display_footer(DatePageStart)%>
                 <div id="dialogTheDiff"></div>
                 <div id="setTagToExecution">

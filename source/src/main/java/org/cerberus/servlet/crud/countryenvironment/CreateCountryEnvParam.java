@@ -1,6 +1,4 @@
-/*
- * Cerberus  Copyright (C) 2013  vertigo17
- * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
+/* DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
  *
  * This file is part of Cerberus.
  *
@@ -20,31 +18,40 @@
 package org.cerberus.servlet.crud.countryenvironment;
 
 import java.io.IOException;
-import java.io.PrintWriter;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.servlet.ServletException;
+import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import org.cerberus.crud.entity.CountryEnvParam;
+import org.cerberus.crud.entity.MessageEvent;
+import org.cerberus.enums.MessageEventEnum;
 import org.cerberus.exception.CerberusException;
 import org.cerberus.crud.factory.IFactoryCountryEnvParam;
-import org.cerberus.crud.factory.IFactoryLogEvent;
 import org.cerberus.crud.service.ICountryEnvParamService;
 import org.cerberus.crud.service.ILogEventService;
-import org.owasp.html.PolicyFactory;
-import org.owasp.html.Sanitizers;
+import org.cerberus.crud.service.impl.LogEventService;
+import org.cerberus.util.ParameterParserUtil;
+import org.cerberus.util.StringUtil;
+import org.cerberus.util.answer.Answer;
+import org.cerberus.util.servlet.ServletUtil;
+import org.json.JSONException;
+import org.json.JSONObject;
 import org.springframework.context.ApplicationContext;
 import org.springframework.web.context.support.WebApplicationContextUtils;
+import org.owasp.html.PolicyFactory;
+import org.owasp.html.Sanitizers;
 
 /**
  *
  * @author bcivel
  */
+@WebServlet(name = "CreateCountryEnvParam", urlPatterns = {"/CreateCountryEnvParam"})
 public class CreateCountryEnvParam extends HttpServlet {
 
-    private static final org.apache.log4j.Logger LOG = org.apache.log4j.Logger.getLogger(CreateCountryEnvParam.class);
+    private final String OBJECT_NAME = "CountryEnvParam";
 
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
@@ -54,52 +61,99 @@ public class CreateCountryEnvParam extends HttpServlet {
      * @param response servlet response
      * @throws ServletException if a servlet-specific error occurs
      * @throws IOException if an I/O error occurs
+     * @throws org.cerberus.exception.CerberusException
+     * @throws org.json.JSONException
      */
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException {
-        response.setContentType("text/html;charset=UTF-8");
-        final PrintWriter out = response.getWriter();
-        final PolicyFactory policy = Sanitizers.FORMATTING.and(Sanitizers.LINKS);
+            throws ServletException, IOException, CerberusException, JSONException {
+        JSONObject jsonResponse = new JSONObject();
+        Answer ans = new Answer();
+        MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
+        msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", ""));
+        ans.setResultMessage(msg);
+        PolicyFactory policy = Sanitizers.FORMATTING.and(Sanitizers.LINKS);
+        String charset = request.getCharacterEncoding();
 
-        try {
-            final String system = policy.sanitize(request.getParameter("System"));
-            final String country = policy.sanitize(request.getParameter("Country"));
-            final String environment = policy.sanitize(request.getParameter("Environment"));
-            final String description = policy.sanitize(request.getParameter("Description"));
-            final String build = policy.sanitize(request.getParameter("Build"));
-            final String revision = policy.sanitize(request.getParameter("Revision"));
-            final String chain = policy.sanitize(request.getParameter("Chain"));
-            final String distribList = policy.sanitize(request.getParameter("DistribList"));
-            final String emailBodyRevision = policy.sanitize(request.getParameter("EmailBodyRevision"));
-            final String type = policy.sanitize(request.getParameter("Type"));
-            final String emailBodyChain = policy.sanitize(request.getParameter("EmailBodyChain"));
-            final String emailBodyDisableEnvironment = policy.sanitize(request.getParameter("EmailBodyDisableEnvironment"));
-            final boolean active = "Y".equals(policy.sanitize(request.getParameter("Active"))) ? true : false;
-            final boolean maintenanceAct = "Y".equals(policy.sanitize(request.getParameter("MaintenanceAct"))) ? true : false;
-            String maintenanceStr = policy.sanitize(request.getParameter("MaintenanceStr"));
-            String maintenanceEnd = policy.sanitize(request.getParameter("MaintenanceEnd"));
-            maintenanceStr = maintenanceStr.isEmpty() ? "00:00:00" : maintenanceStr;
-            maintenanceEnd = maintenanceEnd.isEmpty() ? "00:00:00" : maintenanceEnd;
+        response.setContentType("application/json");
 
-            final ApplicationContext appContext = WebApplicationContextUtils.getWebApplicationContext(this.getServletContext());
-            final ICountryEnvParamService cepService = appContext.getBean(ICountryEnvParamService.class);
-            final IFactoryCountryEnvParam factoryCep = appContext.getBean(IFactoryCountryEnvParam.class);
+        // Calling Servlet Transversal Util.
+        ServletUtil.servletStart(request);
 
-            final CountryEnvParam cep = factoryCep.create(system, country, environment, description, build, revision, chain, distribList, emailBodyRevision, type, emailBodyChain, emailBodyDisableEnvironment, active, maintenanceAct, maintenanceStr, maintenanceEnd);
-            cepService.create_deprecated(cep);
+        /**
+         * Parsing and securing all required parameters.
+         */
+        // Parameter that are already controled by GUI (no need to decode) --> We SECURE them
+        String system = policy.sanitize(request.getParameter("system"));
+        String country = policy.sanitize(request.getParameter("country"));
+        String environment = policy.sanitize(request.getParameter("environment"));
+        String type = policy.sanitize(request.getParameter("type"));
+        boolean active = "Y".equals(policy.sanitize(request.getParameter("active"))) ? true : false;
+        boolean maintenanceAct = "Y".equals(policy.sanitize(request.getParameter("maintenanceAct"))) ? true : false;
+        // Parameter that needs to be secured --> We SECURE+DECODE them
+        String description = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("description"), "", charset);
+        String maintenanceStr = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("maintenanceStr"), "01:00:00", charset);
+        String maintenanceEnd = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("maintenanceEnd"), "01:00:00", charset);
+        maintenanceStr = maintenanceStr.isEmpty() ? "00:00:00" : maintenanceStr;
+        maintenanceEnd = maintenanceEnd.isEmpty() ? "00:00:00" : maintenanceEnd;
+        String build = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("build"), "", charset);
+        String revision = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("revision"), "", charset);
+        String chain = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("chain"), "", charset);
+        // Parameter that we cannot secure as we need the html --> We DECODE them
+        String distribList = ParameterParserUtil.parseStringParamAndDecode(request.getParameter("distribList"), "", charset);
+        String emailBodyRevision = ParameterParserUtil.parseStringParamAndDecode(request.getParameter("eMailBodyRevision"), "", charset);
+        String emailBodyChain = ParameterParserUtil.parseStringParamAndDecode(request.getParameter("eMailBodyChain"), "", charset);
+        String emailBodyDisableEnvironment = ParameterParserUtil.parseStringParamAndDecode(request.getParameter("eMailBodyDisableEnvironment"), "", charset);
 
+        /**
+         * Checking all constrains before calling the services.
+         */
+        if (StringUtil.isNullOrEmpty(system)) {
+            msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_EXPECTED);
+            msg.setDescription(msg.getDescription().replace("%ITEM%", OBJECT_NAME)
+                    .replace("%OPERATION%", "Create")
+                    .replace("%REASON%", "System is missing!"));
+            ans.setResultMessage(msg);
+        } else if (StringUtil.isNullOrEmpty(country)) {
+            msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_EXPECTED);
+            msg.setDescription(msg.getDescription().replace("%ITEM%", OBJECT_NAME)
+                    .replace("%OPERATION%", "Create")
+                    .replace("%REASON%", "Country is missing!"));
+            ans.setResultMessage(msg);
+        } else if (StringUtil.isNullOrEmpty(environment)) {
+            msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_EXPECTED);
+            msg.setDescription(msg.getDescription().replace("%ITEM%", OBJECT_NAME)
+                    .replace("%OPERATION%", "Create")
+                    .replace("%REASON%", "Environment is missing!"));
+            ans.setResultMessage(msg);
+        } else {
             /**
-             * Adding Log entry.
+             * All data seems cleans so we can call the services.
              */
-            ILogEventService logEventService = appContext.getBean(ILogEventService.class);
-            logEventService.createPrivateCalls("/CreateCountryEnvParam", "CREATE", "Create CountryEnvParam : " + system + "-" + country + "-" + environment, request);
+            ApplicationContext appContext = WebApplicationContextUtils.getWebApplicationContext(this.getServletContext());
+            ICountryEnvParamService countryEnvParamService = appContext.getBean(ICountryEnvParamService.class);
+            IFactoryCountryEnvParam factoryCountryEnvParam = appContext.getBean(IFactoryCountryEnvParam.class);
 
-            response.sendRedirect("EnvironmentManagement.jsp");
-        } catch (CerberusException ex) {
-            Logger.getLogger(CreateCountryEnvParam.class.getName()).log(Level.SEVERE, null, ex);
-        } finally {
-            out.close();
+            CountryEnvParam countryEnvParamData = factoryCountryEnvParam.create(system, country, environment, description, build, revision, chain, distribList, emailBodyRevision, type, emailBodyChain, emailBodyDisableEnvironment, active, maintenanceAct, maintenanceStr, maintenanceEnd);
+            ans = countryEnvParamService.create(countryEnvParamData);
+
+            if (ans.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
+                /**
+                 * Object created. Adding Log entry.
+                 */
+                ILogEventService logEventService = appContext.getBean(LogEventService.class);
+                logEventService.createPrivateCalls("/CreateCountryEnvParam", "CREATE", "Create CountryEnvParam : ['" + system + "'|'" + country + "'|'" + environment + "']", request);
+            }
         }
+
+        /**
+         * Formating and returning the json result.
+         */
+        jsonResponse.put("messageType", ans.getResultMessage().getMessage().getCodeString());
+        jsonResponse.put("message", ans.getResultMessage().getDescription());
+
+        response.getWriter().print(jsonResponse);
+        response.getWriter().flush();
+
     }
 
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
@@ -114,7 +168,13 @@ public class CreateCountryEnvParam extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        processRequest(request, response);
+        try {
+            processRequest(request, response);
+        } catch (CerberusException ex) {
+            Logger.getLogger(CreateCountryEnvParam.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (JSONException ex) {
+            Logger.getLogger(CreateCountryEnvParam.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
 
     /**
@@ -128,7 +188,13 @@ public class CreateCountryEnvParam extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        processRequest(request, response);
+        try {
+            processRequest(request, response);
+        } catch (CerberusException ex) {
+            Logger.getLogger(CreateCountryEnvParam.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (JSONException ex) {
+            Logger.getLogger(CreateCountryEnvParam.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
 
     /**
@@ -140,5 +206,4 @@ public class CreateCountryEnvParam extends HttpServlet {
     public String getServletInfo() {
         return "Short description";
     }// </editor-fold>
-
 }

@@ -312,8 +312,8 @@ public class ExecutionCheckService implements IExecutionCheckService {
 
     private int compareBuild(String build1, String build2, String system) {
         try {
-            BuildRevisionInvariant b1 = this.buildRevisionInvariantService.findBuildRevisionInvariantByKey(system, 1, build1);
-            BuildRevisionInvariant b2 = this.buildRevisionInvariantService.findBuildRevisionInvariantByKey(system, 1, build2);
+            BuildRevisionInvariant b1 = buildRevisionInvariantService.convert(buildRevisionInvariantService.readByKey(system, 1, build1));
+            BuildRevisionInvariant b2 = buildRevisionInvariantService.convert(buildRevisionInvariantService.readByKey(system, 1, build2));
 
             return b1.getSeq().compareTo(b2.getSeq());
         } catch (CerberusException e) {
@@ -323,8 +323,8 @@ public class ExecutionCheckService implements IExecutionCheckService {
 
     private int compareRevision(String rev1, String rev2, String system) {
         try {
-            BuildRevisionInvariant r1 = this.buildRevisionInvariantService.findBuildRevisionInvariantByKey(system, 2, rev1);
-            BuildRevisionInvariant r2 = this.buildRevisionInvariantService.findBuildRevisionInvariantByKey(system, 2, rev2);
+            BuildRevisionInvariant r1 = buildRevisionInvariantService.convert(buildRevisionInvariantService.readByKey(system, 2, rev1));
+            BuildRevisionInvariant r2 = buildRevisionInvariantService.convert(buildRevisionInvariantService.readByKey(system, 2, rev2));
 
             return r1.getSeq().compareTo(r2.getSeq());
         } catch (CerberusException e) {

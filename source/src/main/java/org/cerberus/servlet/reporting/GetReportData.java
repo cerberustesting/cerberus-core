@@ -74,6 +74,9 @@ public class GetReportData extends HttpServlet {
         ITestCaseExecutionService testCaseExecutionService = appContext.getBean(ITestCaseExecutionService.class);
         ITestCaseExecutionInQueueService testCaseExecutionInQueueService = appContext.getBean(ITestCaseExecutionInQueueService.class);
 
+        response.setContentType("application/json");
+        response.setCharacterEncoding("utf8");
+
         JSONObject jsonResult = new JSONObject();
         String tag = request.getParameter("Tag");
         boolean split = ParameterParserUtil.parseBooleanParam(request.getParameter("split"), false);
@@ -178,7 +181,6 @@ public class GetReportData extends HttpServlet {
 
         }
 
-        response.setContentType("application/json");
         response.getWriter().print(jsonResult);
     }
 
@@ -269,7 +271,7 @@ public class GetReportData extends HttpServlet {
     private JSONObject getStatByEnvCountryBrowser(List<TestCaseWithExecution> testCaseWithExecutions, HashMap<String, SummaryStatisticsDTO> statMap, boolean env, boolean country, boolean browser, boolean app) throws JSONException {
         SummaryStatisticsDTO total = new SummaryStatisticsDTO();
         total.setEnvironment("Total");
-        
+
         for (TestCaseWithExecution testCaseWithExecution : testCaseWithExecutions) {
             StringBuilder key = new StringBuilder();
 
@@ -286,7 +288,7 @@ public class GetReportData extends HttpServlet {
             }
             total.updateStatisticByStatus(testCaseWithExecution.getControlStatus());
         }
-        
+
         return extractSummaryData(statMap, total);
     }
 

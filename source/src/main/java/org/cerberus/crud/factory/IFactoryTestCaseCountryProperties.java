@@ -29,6 +29,7 @@ import org.cerberus.crud.entity.TestCaseSubDataAccessProperty;
 public interface IFactoryTestCaseCountryProperties {
 
     TestCaseCountryProperties create(String test, String testCase, String country, String property,
-                                     String type, String database, String value1, String value2, int length, int rowLimit, String nature);
+            String type, String database, String value1, String value2, int length, int rowLimit, String nature);
+
     TestCaseSubDataAccessProperty create(TestCaseCountryProperties tccp, String property, String libName, String subdataName);
 }

@@ -43,7 +43,9 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.web.context.support.WebApplicationContextUtils;
 
 /**
- * Servlet that handles the requests that need to read values from the invariant table.
+ * Servlet that handles the requests that need to read values from the invariant
+ * table.
+ *
  * @author FNogueira
  */
 public class ReadInvariant extends HttpServlet {
@@ -64,11 +66,12 @@ public class ReadInvariant extends HttpServlet {
         PolicyFactory policy = Sanitizers.FORMATTING.and(Sanitizers.LINKS);
 
         response.setContentType("application/json");
+        response.setCharacterEncoding("utf8");
+
         /**
          * Parsing and securing all required parameters.
          */
         // Nothing to do here as no parameter to check.
-
         //ReadInvariant with no id >> List of the invariant
         //ReadInvariant with parameter id (basically the key) >> the invariant needed
         //type=public or private? //TODO?
@@ -77,14 +80,14 @@ public class ReadInvariant extends HttpServlet {
             JSONObject jsonResponse;
             if (request.getParameter("idName") == null) {
                 //loads the list of invariants
-                answer = findInvariantList(appContext, request, response);                
+                answer = findInvariantList(appContext, request, response);
             } else {
                 String idName = policy.sanitize(request.getParameter("idName"));
                 answer = findInvariantListByIdName(appContext, idName);
             }
-            
-            jsonResponse = (JSONObject) answer.getItem(); 
-            
+
+            jsonResponse = (JSONObject) answer.getItem();
+
             jsonResponse.put("messageType", answer.getResultMessage().getMessage().getCodeString());
             jsonResponse.put("message", answer.getResultMessage().getDescription());
             jsonResponse.put("sEcho", echo); //TODO:FN check if this makes sense
@@ -143,8 +146,8 @@ public class ReadInvariant extends HttpServlet {
     public String getServletInfo() {
         return "Short description";
     }// </editor-fold>
-    
-    private AnswerItem findInvariantListByIdName(ApplicationContext appContext, String idName) throws JSONException{
+
+    private AnswerItem findInvariantListByIdName(ApplicationContext appContext, String idName) throws JSONException {
         AnswerList answerService;
         AnswerItem answer = new AnswerItem();
         JSONObject object = new JSONObject();
@@ -153,28 +156,28 @@ public class ReadInvariant extends HttpServlet {
         IInvariantService invariantService = appContext.getBean(InvariantService.class);
         answerService = invariantService.readByIdname(idName);
         JSONArray jsonArray = new JSONArray();
-        
+
         if (answerService.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
             //if the service returns an OK message then we can get the item and convert it to JSONformat
-            for(Invariant inv: (List<Invariant>) answerService.getDataList()){
+            for (Invariant inv : (List<Invariant>) answerService.getDataList()) {
                 jsonArray.put(convertInvariantToJSONObject(inv));
             }
         }
-        
+
         object.put("contentTable", jsonArray);
         object.put("iTotalRecords", answerService.getTotalRows());
         object.put("iTotalDisplayRecords", answerService.getTotalRows());
-        
+
         answer.setItem(object);
         answer.setResultMessage(answer.getResultMessage());
-        
+
         return answer;
     }
-    
+
     private AnswerItem findInvariantList(ApplicationContext appContext, HttpServletRequest request, HttpServletResponse response) throws JSONException {
         AnswerItem item = new AnswerItem();
         JSONObject jsonResponse = new JSONObject();
-        
+
         IInvariantService invariantService = appContext.getBean(IInvariantService.class);
 
         int startPosition = Integer.valueOf(ParameterParserUtil.parseStringParam(request.getParameter("iDisplayStart"), "0"));
@@ -183,7 +186,7 @@ public class ReadInvariant extends HttpServlet {
 
         String searchParameter = ParameterParserUtil.parseStringParam(request.getParameter("sSearch"), "");
         int columnToSortParameter = Integer.parseInt(ParameterParserUtil.parseStringParam(request.getParameter("iSortCol_0"), "0"));
-        String sColumns = ParameterParserUtil.parseStringParam(request.getParameter("sColumns"), 
+        String sColumns = ParameterParserUtil.parseStringParam(request.getParameter("sColumns"),
                 "idname,value,sort,description,VeryShortDesc, gp1,gp2,gp3");
         String columnToSort[] = sColumns.split(",");
         String columnName = columnToSort[columnToSortParameter];
@@ -193,7 +196,7 @@ public class ReadInvariant extends HttpServlet {
         JSONArray jsonArray = new JSONArray();
         //boolean userHasPermissions = request.isUserInRole("Integrator"); //TODO:need to chec
         if (answerService.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {//the service was able to perform the query, then we should get all values
-            for(Invariant inv: (List<Invariant>) answerService.getDataList()){
+            for (Invariant inv : (List<Invariant>) answerService.getDataList()) {
                 jsonArray.put(convertInvariantToJSONObject(inv));
             }
         }
@@ -206,12 +209,12 @@ public class ReadInvariant extends HttpServlet {
         item.setItem(jsonResponse);
         item.setResultMessage(answerService.getResultMessage());
         return item;
-         
+
     }
-    
+
     private JSONObject convertInvariantToJSONObject(Invariant invariant) throws JSONException {
         Gson gson = new Gson();
         JSONObject result = new JSONObject(gson.toJson(invariant));
         return result;
-    }   
+    }
 }

@@ -74,6 +74,7 @@ public class ReadProject extends HttpServlet {
         PolicyFactory policy = Sanitizers.FORMATTING.and(Sanitizers.LINKS);
 
         response.setContentType("application/json");
+        response.setCharacterEncoding("utf8");
 
         // Calling Servlet Transversal Util.
         ServletUtil.servletStart(request);

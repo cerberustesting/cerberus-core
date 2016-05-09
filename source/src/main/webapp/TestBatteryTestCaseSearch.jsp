@@ -176,7 +176,7 @@
                                     <%
                                         options.clear();
                                         options.put("NTB", "-- No Target Build --");
-                                        for (BuildRevisionInvariant invBuild : buildRevisionInvariantService.findAllBuildRevisionInvariantBySystemLevel(request.getParameter("system"), 1)) {
+                                        for (BuildRevisionInvariant invBuild : buildRevisionInvariantService.convert(buildRevisionInvariantService.readBySystemLevel(request.getParameter("system"), 1))) {
                                             if (invBuild.getVersionName() != null && !"".equals(invBuild.getVersionName().trim())) {
                                                 options.put(invBuild.getVersionName(), invBuild.getVersionName());
                                             }
@@ -192,7 +192,7 @@
                                     <%
                                         options.clear();
                                         options.put("NTR", "-- No Target Rev --");
-                                        for (BuildRevisionInvariant invRevision : buildRevisionInvariantService.findAllBuildRevisionInvariantBySystemLevel(request.getParameter("system"), 2)) {
+                                        for (BuildRevisionInvariant invRevision : buildRevisionInvariantService.convert(buildRevisionInvariantService.readBySystemLevel(request.getParameter("system"), 2))) {
                                             if (invRevision.getVersionName() != null && !"".equals(invRevision.getVersionName().trim())) {
                                                 options.put(invRevision.getVersionName(), invRevision.getVersionName());
                                             }

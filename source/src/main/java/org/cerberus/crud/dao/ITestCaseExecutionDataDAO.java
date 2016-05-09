@@ -32,12 +32,35 @@ import org.cerberus.exception.CerberusException;
 public interface ITestCaseExecutionDataDAO {
 
     TestCaseExecutionData findTestCaseExecutionDataByKey(long id, String property);
-    
-    void insertTestCaseExecutionData (TestCaseExecutionData testCaseExecutionData) throws CerberusException;
-    
-    void updateTestCaseExecutionData (TestCaseExecutionData testCaseExecutionData) throws CerberusException;
-    
+
+    void insertTestCaseExecutionData(TestCaseExecutionData testCaseExecutionData) throws CerberusException;
+
+    void updateTestCaseExecutionData(TestCaseExecutionData testCaseExecutionData) throws CerberusException;
+
+    /**
+     *
+     * @param propName
+     * @param test
+     * @param testCase
+     * @param build
+     * @param environment
+     * @param country
+     * @return
+     */
     List<String> getPastValuesOfProperty(String propName, String test, String testCase, String build, String environment, String country);
+
+    /**
+     * We get the list of values currently in used in the given COUNTRY,
+     * ENVIRONMENT, PROPERTY only STATUS = PE execution wil be used. Nb of
+     * seconds in timeout will be used to remove too old executions.
+     *
+     * @param propName
+     * @param environment
+     * @param timeoutInSecond
+     * @param country
+     * @return
+     */
+    List<String> getInUseValuesOfProperty(String propName, String environment, String country, Integer timeoutInSecond);
 
     /**
      *

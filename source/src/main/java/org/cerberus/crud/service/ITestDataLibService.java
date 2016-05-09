@@ -19,6 +19,8 @@ package org.cerberus.crud.service;
 
 import java.util.HashMap;
 import java.util.List;
+import org.cerberus.crud.entity.TestCaseCountryProperties;
+import org.cerberus.crud.entity.TestCaseExecution;
 import org.cerberus.crud.entity.TestDataLib;
 import org.cerberus.crud.entity.TestDataLibData;
 import org.cerberus.exception.CerberusException;
@@ -129,11 +131,11 @@ public interface ITestDataLibService {
      * from the database and webservice.
      *
      * @param lib testdatalib entry
-     * @param rowLimit
-     * @param propertyNature
+     * @param testCaseCountryProperty
+     * @param tCExecution
      * @return the result data for the library entry
      */
-    AnswerItem fetchData(TestDataLib lib, int rowLimit, String propertyNature);
+    AnswerItem fetchData(TestDataLib lib, TestCaseCountryProperties testCaseCountryProperty, TestCaseExecution tCExecution);
 
     Answer duplicate(TestDataLib lib);
 }

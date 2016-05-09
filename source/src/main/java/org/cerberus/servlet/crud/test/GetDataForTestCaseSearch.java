@@ -17,7 +17,6 @@
  * You should have received a copy of the GNU General Public License
  * along with Cerberus.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package org.cerberus.servlet.crud.test;
 
 import java.io.IOException;
@@ -70,7 +69,7 @@ public class GetDataForTestCaseSearch extends HttpServlet {
 
         JSONArray jsonResponse = new JSONArray();
         String[] columns = {"test", "project", "ticket", "bugID", "origine", "creator", "application", "priority",
-                "status", "group", "activePROD", "activeUAT", "activeQA", "tcActive"};
+            "status", "group", "activePROD", "activeUAT", "activeQA", "tcActive"};
 
         try {
             JSONObject data;
@@ -82,7 +81,7 @@ public class GetDataForTestCaseSearch extends HttpServlet {
             }
 
             JSONArray build = new JSONArray();
-            for(BuildRevisionInvariant bri : buildRevisionInvariantService.findAllBuildRevisionInvariantBySystemLevel(system, 1)){
+            for (BuildRevisionInvariant bri : buildRevisionInvariantService.convert(buildRevisionInvariantService.readBySystemLevel(system, 1))) {
                 build.put(bri.getVersionName());
             }
             data = new JSONObject();
@@ -99,7 +98,7 @@ public class GetDataForTestCaseSearch extends HttpServlet {
             jsonResponse.put(data);
 
             JSONArray revision = new JSONArray();
-            for(BuildRevisionInvariant bri : buildRevisionInvariantService.findAllBuildRevisionInvariantBySystemLevel(system, 2)){
+            for (BuildRevisionInvariant bri : buildRevisionInvariantService.convert(buildRevisionInvariantService.readBySystemLevel(system, 2))) {
                 revision.put(bri.getVersionName());
             }
             data = new JSONObject();
@@ -117,7 +116,7 @@ public class GetDataForTestCaseSearch extends HttpServlet {
 
             JSONArray env = new JSONArray();
             AnswerList answer = invariantService.readByIdname("ENVIRONMENT"); //TODO: handle if the response does not turn ok
-            for (Invariant i : (List<Invariant>)answer.getDataList()) {
+            for (Invariant i : (List<Invariant>) answer.getDataList()) {
                 env.put(i.getValue());
             }
             data = new JSONObject();
@@ -127,14 +126,14 @@ public class GetDataForTestCaseSearch extends HttpServlet {
 
             JSONArray country = new JSONArray();
             answer = invariantService.readByIdname("COUNTRY"); //TODO: handle if the response does not turn ok
-            for (Invariant i : (List<Invariant>)answer.getDataList()) {
+            for (Invariant i : (List<Invariant>) answer.getDataList()) {
                 country.put(i.getValue());
             }
             data = new JSONObject();
             data.put("data", country);
             data.put("name", "executionCountry");
             jsonResponse.put(data);
-            
+
             JSONArray campaign = new JSONArray();
             for (Campaign c : campaignService.findAll()) {
                 campaign.put(c.getCampaign());
@@ -143,7 +142,7 @@ public class GetDataForTestCaseSearch extends HttpServlet {
             data.put("data", campaign);
             data.put("name", "campaign");
             jsonResponse.put(data);
-            
+
             JSONArray battery = new JSONArray();
             for (TestBattery c : testBatteryService.findAll()) {
                 battery.put(c.getTestbattery());

@@ -26,6 +26,8 @@ import org.apache.log4j.Level;
 import org.cerberus.crud.dao.ITestDataLibDAO;
 import org.cerberus.crud.entity.SOAPExecution;
 import org.cerberus.crud.entity.MessageEvent;
+import org.cerberus.crud.entity.TestCaseCountryProperties;
+import org.cerberus.crud.entity.TestCaseExecution;
 import org.cerberus.crud.entity.TestDataLib;
 import org.cerberus.crud.entity.TestDataLibData;
 import org.cerberus.crud.factory.IFactoryTestDataLibData;
@@ -209,7 +211,7 @@ public class TestDataLibService implements ITestDataLibService {
     }
 
     @Override
-    public AnswerItem fetchData(TestDataLib lib, int rowLimit, String propertyNature) {
+    public AnswerItem fetchData(TestDataLib lib, TestCaseCountryProperties testCaseCountryProperty, TestCaseExecution tCExecution) {
         AnswerItem answer = new AnswerItem();
         MessageEvent msg = new MessageEvent(MessageEventEnum.PROPERTY_SUCCESS);
         TestDataLibResult result = null;
@@ -219,7 +221,7 @@ public class TestDataLibService implements ITestDataLibService {
             answer.setItem(result);
 
         } else if (lib.getType().equals(TestDataLibTypeEnum.SQL.getCode())) {
-            AnswerItem sqlResult = fetchDataSQL(lib, rowLimit, propertyNature);
+            AnswerItem sqlResult = fetchDataSQL(lib, testCaseCountryProperty, tCExecution);
             result = (TestDataLibResult) sqlResult.getItem();
             msg = sqlResult.getResultMessage();
             answer.setItem(result);
@@ -240,13 +242,13 @@ public class TestDataLibService implements ITestDataLibService {
         return result;
     }
 
-    private AnswerItem fetchDataSQL(TestDataLib lib, int rowLimit, String propertyNature) {
+    private AnswerItem fetchDataSQL(TestDataLib lib, TestCaseCountryProperties testCaseCountryProperty, TestCaseExecution tCExecution) {
         AnswerItem answer;
         MessageEvent msg = new MessageEvent(MessageEventEnum.PROPERTY_SUCCESS);
         TestDataLibResult result = null;
         //sql data needs to collect the values for the n columns
         answer = sQLService.calculateOnDatabaseNColumns(lib.getScript(), lib.getDatabase(),
-                lib.getSystem(), lib.getCountry(), lib.getEnvironment(), rowLimit, propertyNature);
+                lib.getSystem(), lib.getCountry(), lib.getEnvironment(), testCaseCountryProperty, lib.getSubDataColumn(), tCExecution);
 
         MyLogger.log(TestDataLibService.class.getName(), Level.INFO, "Test data lib service SQL " + lib.getScript());
 

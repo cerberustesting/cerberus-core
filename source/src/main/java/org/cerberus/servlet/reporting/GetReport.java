@@ -59,6 +59,9 @@ public class GetReport extends HttpServlet {
         this.applicationService = applicationContext.getBean(IApplicationService.class);
         IInvariantService invariantService = applicationContext.getBean(IInvariantService.class);
 
+        resp.setContentType("application/json");
+        resp.setCharacterEncoding("utf8");
+
         //Get all input parameters from user form
         TCase tCase = this.getTestCaseFromRequest(req);
         String environment = this.getValues(req, "Environment");
@@ -106,7 +109,6 @@ public class GetReport extends HttpServlet {
             json.put("iTotalDisplayRecords", data.length());
 
             //Return JSON response
-            resp.setContentType("application/json");
             resp.getWriter().print(json.toString());
 
         } catch (JSONException e) {
@@ -147,7 +149,7 @@ public class GetReport extends HttpServlet {
     /**
      * Get value from request parameter.
      *
-     * @param req       http request with all form input
+     * @param req http request with all form input
      * @param valueName name of the parameter to return
      * @return value of parameter or null if parameter null or 'All'
      */
@@ -162,9 +164,10 @@ public class GetReport extends HttpServlet {
     /**
      * Convert list of values from request parameter to string.
      *
-     * @param req       http request with all form input
+     * @param req http request with all form input
      * @param valueName name of the parameter to return
-     * @return string containing all values of parameter or null if parameter null
+     * @return string containing all values of parameter or null if parameter
+     * null
      */
     private String getValues(HttpServletRequest req, String valueName) {
         StringBuilder whereClause = new StringBuilder();
@@ -187,11 +190,14 @@ public class GetReport extends HttpServlet {
      * Convert map object to JSONObject, with all columns of list
      * <p/>
      * Convert Map object Map<Test, Map<Column, Value>>} to JSONObject
-     * {'aaData', [[Test 1, Value of Column 1, ..., Value of Column N, Total 1], ..., [Test N, Value of Column 1, ..., Value of Column N, Total N]]}
-     * This JSONObject will be decoded by Datatables plugin and converted to dynamic table.
+     * {'aaData', [[Test 1, Value of Column 1, ..., Value of Column N, Total 1],
+     * ..., [Test N, Value of Column 1, ..., Value of Column N, Total N]]} This
+     * JSONObject will be decoded by Datatables plugin and converted to dynamic
+     * table.
      *
-     * @param map     map object Map<Test, Map<Column, Value>>
-     * @param invList list of Invariant corresponding to the columns of the table
+     * @param map map object Map<Test, Map<Column, Value>>
+     * @p
+     * aram invList list of Invariant corresponding to the columns of the table
      * @return JSONObject with the array to populate the table
      * @throws JSONException
      */
@@ -221,7 +227,8 @@ public class GetReport extends HttpServlet {
      * Convert map object to JSONObject
      *
      * @param map object Map<Test, Map<Country, Map<Column, Value>>>
-     * @return JSONObject with the array to populate the table
+     * @retu
+     * rn JSONObject with the array to populate the table
      * @throws JSONException
      */
     private JSONObject getJSONObjectFromMap(Map<String, Map<String, Map<String, Integer>>> map) throws JSONException {
@@ -247,7 +254,7 @@ public class GetReport extends HttpServlet {
     }
 
     /**
-     * @param map   map that keep the values to count
+     * @param map map that keep the values to count
      * @param total map that keep the total to count
      * @param value string to increment
      */
@@ -266,27 +273,27 @@ public class GetReport extends HttpServlet {
     }
 
     /**
-     * @param tCaseList      list of test cases to calculate statistics
-     * @param countries      array of countries to search testcaseexecution
-     * @param browsers       array of browsers to search testcaseexecution
-     * @param tceStatus      list of control status
-     * @param mapTests       map for countries and control status
-     * @param mapGroups      map for test cases groups
-     * @param mapStatus      map for test cases status
-     * @param data           JSONObject for details table
-     * @param environment    environment for test case execution filter
-     * @param build          build for test case execution filter
-     * @param revision       revision for test case execution filter
+     * @param tCaseList list of test cases to calculate statistics
+     * @param countries array of countries to search testcaseexecution
+     * @param browsers array of browsers to search testcaseexecution
+     * @param tceStatus list of control status
+     * @param mapTests map for countries and control status
+     * @param mapGroups map for test cases groups
+     * @param mapStatus map for test cases status
+     * @param data JSONObject for details table
+     * @param environment environment for test case execution filter
+     * @param build build for test case execution filter
+     * @param revision revision for test case execution filter
      * @param browserVersion browser version for test case execution filter
-     * @param ip             ip of execution for test case execution filter
-     * @param port           port of execution for test case execution filter
-     * @param tag            tag for test case execution filter
+     * @param ip ip of execution for test case execution filter
+     * @param port port of execution for test case execution filter
+     * @param tag tag for test case execution filter
      * @throws JSONException
      */
     private void calculateStatistics(List<TCase> tCaseList, String[] countries, String[] browsers, List<Invariant> tceStatus,
-                                     Map<String, Map<String, Map<String, Integer>>> mapTests, Map<String, Map<String, Integer>> mapGroups,
-                                     Map<String, Map<String, Integer>> mapStatus, JSONArray data, String environment, String build,
-                                     String revision, String browserVersion, String ip, String port, String tag) throws JSONException {
+            Map<String, Map<String, Map<String, Integer>>> mapTests, Map<String, Map<String, Integer>> mapGroups,
+            Map<String, Map<String, Integer>> mapStatus, JSONArray data, String environment, String build,
+            String revision, String browserVersion, String ip, String port, String tag) throws JSONException {
 
         String oldTest = "";
         Map<String, Map<String, Integer>> map = new LinkedHashMap<String, Map<String, Integer>>();
@@ -359,21 +366,23 @@ public class GetReport extends HttpServlet {
                         status.put(tce.getControlStatus(), status.get(tce.getControlStatus()) + 1);
                         //add 1 to Test/Country/Browser/Total counter
                         statusTotal.put(tce.getControlStatus(), statusTotal.get(tce.getControlStatus()) + 1);
-                    } else try {
-                        //test if TestCase can run for the country
-                        if (testCaseCountryService.findTestCaseCountryByKey(tc.getTest(), tc.getTestCase(), country) != null) {
-                            JSONObject obj = new JSONObject();
-                            obj.put("result", "NotExecuted");
-                            obj.put("country", country);
-                            array.put(obj);
-                            array.put("");
-                        } else {
+                    } else {
+                        try {
+                            //test if TestCase can run for the country
+                            if (testCaseCountryService.findTestCaseCountryByKey(tc.getTest(), tc.getTestCase(), country) != null) {
+                                JSONObject obj = new JSONObject();
+                                obj.put("result", "NotExecuted");
+                                obj.put("country", country);
+                                array.put(obj);
+                                array.put("");
+                            } else {
+                                array.put("");
+                                array.put("");
+                            }
+                        } catch (CerberusException ex) {
                             array.put("");
                             array.put("");
                         }
-                    } catch (CerberusException ex) {
-                        array.put("");
-                        array.put("");
                     }
                 }
                 //add line to statistic table
