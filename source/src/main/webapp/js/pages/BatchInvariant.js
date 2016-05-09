@@ -53,7 +53,7 @@ function displayPageLabel() {
     $("[name='batchField']").html(doc.getDocOnline("batchinvariant", "Batch"));
     $("[name='systemField']").html(doc.getDocOnline("batchinvariant", "system"));
     $("[name='descriptionField']").html(doc.getDocOnline("batchinvariant", "Description"));
-    displayInvariantList("system", "SYSTEM", getUser().defaultSystem);
+    displayInvariantList("system", "SYSTEM", false, getUser().defaultSystem);
     displayFooter(doc);
 }
 

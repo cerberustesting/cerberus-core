@@ -40,15 +40,15 @@ $.when($.getScript("js/pages/global/global.js")).then(function () {
         displayHeaderLabel(doc);
         displayGlobalLabel(doc);
         displayFooter(doc);
-        displayInvariantList("group", "GROUP");
-        displayInvariantList("status", "TCSTATUS");
-        displayInvariantList("priority", "PRIORITY");
+        displayInvariantList("group", "GROUP", false);
+        displayInvariantList("status", "TCSTATUS", false);
+        displayInvariantList("priority", "PRIORITY", false);
         $('[name="origin"]').append('<option value="All">All</option>');
-        displayInvariantList("origin", "ORIGIN");
-        displayInvariantList("active", "TCACTIVE");
-        displayInvariantList("activeQA", "TCACTIVE");
-        displayInvariantList("activeUAT", "TCACTIVE");
-        displayInvariantList("activeProd", "TCACTIVE");
+        displayInvariantList("origin", "ORIGIN", false);
+        displayInvariantList("active", "TCACTIVE", false);
+        displayInvariantList("activeQA", "TCACTIVE", false);
+        displayInvariantList("activeUAT", "TCACTIVE", false);
+        displayInvariantList("activeProd", "TCACTIVE", false);
         displayApplicationList("application", getUser().defaultSystem);
         displayProjectList("project");
         tinymce.init({

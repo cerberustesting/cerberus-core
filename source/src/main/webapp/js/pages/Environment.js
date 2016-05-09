@@ -39,24 +39,24 @@ function initPage() {
 
     var select = $('#selectCountry');
     select.append($('<option></option>').text("-- ALL --").val("ALL"));
-    displayInvariantList("country", "COUNTRY", urlCountry);
+    displayInvariantList("country", "COUNTRY", false, urlCountry);
 
     var select = $('#selectEnvironment');
     select.append($('<option></option>').text("-- ALL --").val("ALL"));
-    displayInvariantList("environment", "ENVIRONMENT", urlEnvironment);
+    displayInvariantList("environment", "ENVIRONMENT", false, urlEnvironment);
 
     var select = $('#selectEnvGp');
     select.append($('<option></option>').text("-- ALL --").val("ALL"));
-    displayInvariantList("envGp", "ENVGP", urlEnvGp);
+    displayInvariantList("envGp", "ENVGP", false, urlEnvGp);
 
     var select = $('#selectActive');
     select.append($('<option></option>').text("-- ALL --").val("ALL"));
-    displayInvariantList("active", "ENVACTIVE", urlActive);
+    displayInvariantList("active", "ENVACTIVE", false, urlActive);
 
-    displayInvariantList("system", "SYSTEM");
-    displayInvariantList("type", "ENVTYPE");
-    displayInvariantList("maintenanceAct", "MNTACTIVE", "N");
-    displayInvariantList("chain", "CHAIN", "Y");
+    displayInvariantList("system", "SYSTEM", false);
+    displayInvariantList("type", "ENVTYPE", false);
+    displayInvariantList("maintenanceAct", "MNTACTIVE", false, "N");
+    displayInvariantList("chain", "CHAIN", false, "Y");
     displayBatchInvariantList('batch', getUser().defaultSystem);
 
     displayBuildList('#newBuild', getUser().defaultSystem, "1", "", "", "");
@@ -67,9 +67,9 @@ function initPage() {
     // Load the select needed in localStorage cache.
     getSelectApplication(getUser().defaultSystem, true);
     getSelectInvariant("PROPERTYDATABASE", true);
-    getSelectInvariant('SYSTEM', true);
-    getSelectInvariant('COUNTRY', true);
-    getSelectInvariant('ENVIRONMENT', true);
+    getSelectInvariant('SYSTEM', false);
+    getSelectInvariant('COUNTRY', false);
+    getSelectInvariant('ENVIRONMENT', false);
     getSelectDeployType(true);
 
     // handle the click for specific action buttons

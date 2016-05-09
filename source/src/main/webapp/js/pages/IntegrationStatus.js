@@ -29,8 +29,8 @@ $.when($.getScript("js/pages/global/global.js")).then(function () {
 
         var select = $('#selectEngGp');
         select.append($('<option></option>').text("-- ALL --").val("ALL"));
-        displayInvariantList("selectEngGp", "ENVGP");
-        displayInvariantList("selectSince", "FILTERNBDAYS");
+        displayInvariantList("selectEngGp", "ENVGP", false);
+        displayInvariantList("selectSince", "FILTERNBDAYS", false);
 
         //Loading interation status table
         loadBuildRevTable();

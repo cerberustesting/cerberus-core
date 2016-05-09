@@ -80,8 +80,8 @@ function displayPageLabel() {
     $("#ipHeader").html(doc.getDocOnline("countryenvironmentparameters", "IP") + '<br>' + doc.getDocOnline("countryenvironmentparameters", "URLLOGIN"));
     $("#urlHeader").html(doc.getDocOnline("countryenvironmentparameters", "URL") + '<br>' + doc.getDocOnline("countryenvironmentparameters", "domain"));
 
-    displayInvariantList("system", "SYSTEM");
-    displayInvariantList("type", "APPLITYPE");
+    displayInvariantList("system", "SYSTEM", false);
+    displayInvariantList("type", "APPLITYPE", false);
     displayDeployTypeList("deploytype");
     displayFooter(doc);
 }

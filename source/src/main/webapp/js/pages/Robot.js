@@ -59,7 +59,7 @@ function displayPageLabel() {
     $("[name='activeField']").html(doc.getDocOnline("robot", "active"));
     $("[name='useragentField']").html(doc.getDocOnline("robot", "useragent"));
     $("[name='descriptionField']").html(doc.getDocOnline("robot", "description"));
-    displayInvariantList("active", "ROBOTACTIVE");
+    displayInvariantList("active", "ROBOTACTIVE", false);
 
     displayFooter(doc);
 }
