@@ -4,14 +4,6 @@
 
 Here you will find Cerberus Docker compositions
 
-## How to run a composition
-
-Assume the Docker composition file is located to ./my-cerberus-compose.yml, you can run this composition as the following:
-
-    docker-compose -f ./my-cerberus-compose.yml up
-
-Then the Docker composition is running and exposed ports can be reached.
-
 ## Available compositions
 
 Hereafter the set of available Cerberus Docker compositions:
@@ -24,15 +16,21 @@ Name                                                                        | De
 
 The `cerberus-glassfish-mysql-compose` run Cerberus under the [Glassfish](https://glassfish.java.net/) application server and a [MySQL](https://www.mysql.com/) database.
 
-#### How to run
+#### How to run it
 
- 1. Execute the following command :
+ 1. Clone the [Cerberus Docker files repository](https://github.com/cerberustesting/cerberus-docker):
+
+    `git clone https://github.com/cerberustesting/cerberus-docker.git`
+
+ 2. Go to the `compositions` directory
+
+ 3. Execute the following command:
 
     `docker-compose -f ./cerberus-glassfish-mysql-compose.yml up`
 
- 2. Waiting for images startup
+ 4. Waiting for images startup
 
- 3. Open your browser and go to `<docker_host>:18080/Cerberus`, where `<docker_host>` is your Docker host
+ 5. Open your favorite browser and go to `<docker_host>:18080/Cerberus`, where `<docker_host>` is your Docker host
 
 #### Associated images
 

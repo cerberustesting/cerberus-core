@@ -4,17 +4,15 @@
 
 This project gather all Ceberus [Docker](https://www.docker.com/) related files.
 
-## Prerequisites
+## Get started
 
-Before to go, you have to be familiar with 
- - [Docker](https://docs.docker.com) 
- - [Docker compose](https://docs.docker.com/compose)
+Assume you already have [Docker](https://docs.docker.com)  and [Docker compose](https://docs.docker.com/compose) installed in your machine, then the most easiest way to use Cerberus Docker files is to deal with [Cerberus Docker compositions](./compositions).
 
-## Compositions and Images
+## Go deeper
 
-Then you can go through the documentation by looking at
- - [Cerberus Docker compositions](./compositions)
- - [Cerberus Docker images](./images)
+You can go deeper into the documentation by looking at
+ - [Cerberus Docker compositions](https://github.com/cerberustesting/cerberus-docker/tree/master/compositions)
+ - [Cerberus Docker images](https://github.com/cerberustesting/cerberus-docker/tree/master/images)
 
 
 ## License

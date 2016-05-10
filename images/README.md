@@ -8,10 +8,10 @@ Here you will find Ceberus Docker images.
 
 Hereafter the set of available Cerberus Docker images:
 
-Name                                                            | Description
-----------------------------------------------------------------|-----------------------------------------------------------
-[`cerberus/cerberus-as-glassfish`](./cerberus-as-glassfish)     | Run Cerberus under the Glassfish application server
-[`cerberus/cerberus-db-mysql`](./cerberus-db-mysql)             | Run a Cerberus dedicated MySQL database
+Name                                                                                                                                | Description
+------------------------------------------------------------------------------------------------------------------------------------|-----------------------------------------------------------
+[`cerberus/cerberus-as-glassfish`](https://github.com/cerberustesting/cerberus-docker/tree/master/images/cerberus-as-glassfish)     | Run Cerberus under the Glassfish application server
+[`cerberus/cerberus-db-mysql`](https://github.com/cerberustesting/cerberus-docker/tree/master/images/cerberus-db-mysql)             | Run a Cerberus dedicated MySQL database
 
 ## License
 

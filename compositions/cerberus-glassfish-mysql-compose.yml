@@ -20,9 +20,11 @@
 # Run a Cerberus instance with a Glassfish application server and a MySQL database.
 #
 # How to run:
+#   - $ git clone https://github.com/cerberustesting/cerberus-docker.git
+#   - $ cd cerberus-docker/compositions
 #   - $ docker-compose -f ./cerberus-glassfish-mysql-compose.yml up
 #   - Waiting for images startup
-#   - Open your browser and go to <docker_host>:18080/Cerberus, where <docker_host> is your Docker host
+#   - Open your favorite browser and go to <docker_host>:18080/Cerberus, where <docker_host> is your Docker host
 #
 # Exposed ports:
 #   - 13306: MySQL database access
