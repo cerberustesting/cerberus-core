@@ -225,6 +225,7 @@ public class TestDataLibService implements ITestDataLibService {
             result = (TestDataLibResult) sqlResult.getItem();
             msg = sqlResult.getResultMessage();
             answer.setItem(result);
+
         } else if (lib.getType().equals(TestDataLibTypeEnum.SOAP.getCode())) {
             AnswerItem soapResult = fetchDataSOAP(lib);
             msg = soapResult.getResultMessage();
@@ -248,7 +249,10 @@ public class TestDataLibService implements ITestDataLibService {
         TestDataLibResult result = null;
         //sql data needs to collect the values for the n columns
         answer = sQLService.calculateOnDatabaseNColumns(lib.getScript(), lib.getDatabase(),
-                lib.getSystem(), lib.getCountry(), lib.getEnvironment(), testCaseCountryProperty, lib.getSubDataColumn(), tCExecution);
+                tCExecution.getCountryEnvironmentParameters().getSystem(), 
+                tCExecution.getCountryEnvironmentParameters().getCountry(), 
+                tCExecution.getCountryEnvironmentParameters().getEnvironment(), 
+                testCaseCountryProperty, lib.getSubDataColumn(), tCExecution);
 
         MyLogger.log(TestDataLibService.class.getName(), Level.INFO, "Test data lib service SQL " + lib.getScript());
 

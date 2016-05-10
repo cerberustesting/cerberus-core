@@ -1093,23 +1093,11 @@ public class PropertyService implements IPropertyService {
             lib = (TestDataLib) answer.getItem();
 
             unescapeTestDataLibrary(lib);
-            //if the property was defined for all systems, then the query returned an empty value
-            if (StringUtil.isNullOrEmpty(lib.getSystem())) {
-                lib.setSystem(tCExecution.getCountryEnvironmentParameters().getSystem());
-            }
-            //if the property was defined for all environments, then the query returned an empty value
-            if (StringUtil.isNullOrEmpty(lib.getEnvironment())) {
-                lib.setEnvironment(tCExecution.getCountryEnvironmentParameters().getEnvironment());
-            }
-            //if the property was defined for all countries, then the query returned an empty value
-            if (StringUtil.isNullOrEmpty(lib.getCountry())) {
-                lib.setCountry(tCExecution.getCountryEnvironmentParameters().getCountry());
-            }
 
             AnswerItem serviceAnswer;
             //result = currentListResults.get(String.valueOf(lib.getTestDataLibID()));                 
             result = currentListResults.get(testCaseCountryProperty.getProperty());
-            //if is force calculation, then the entry will be recalculated
+            // If is force calculation, then the entry will be recalculated
             if (forceRecalculation || (!forceRecalculation && result == null)) {
 
                 if (forceRecalculation && result != null) {
@@ -1119,17 +1107,21 @@ public class PropertyService implements IPropertyService {
                 //check if there are properties defined in the data specification
                 calculateInnerProperties(lib, testCaseStepActionExecution);
                 //we need to recalculate the result for the lib
-                serviceAnswer = testDataLibService.fetchData(lib, testCaseCountryProperty.getRowLimit(), testCaseCountryProperty.getNature());
-                tCExecution.setLastSOAPCalled(((TestDataLibResultSOAP) serviceAnswer.getItem()).getSoapExecution());
+                serviceAnswer = testDataLibService.fetchData(lib, testCaseCountryProperty, tCExecution);
 
-                //Record the Request and Response.
-                SOAPExecution se = (SOAPExecution)((TestDataLibResultSOAP) serviceAnswer.getItem()).getSoapExecution().getItem();
+                if (lib.getType().equals(TestDataLibTypeEnum.SOAP.getCode())) {
+                    tCExecution.setLastSOAPCalled(((TestDataLibResultSOAP) serviceAnswer.getItem()).getSoapExecution());
 
-                String requestFilePath = recorderService.recordXMLAndGetName(tCExecution.getId(), 
-                        testCaseCountryProperty.getProperty() +"_request" , SoapUtil.convertSoapMessageToString(se.getSOAPRequest()));
-                String responseFilePath = recorderService.recordXMLAndGetName(tCExecution.getId(), 
-                        testCaseCountryProperty.getProperty() +"_response" , SoapUtil.convertSoapMessageToString(se.getSOAPRequest()));
-                
+                    //Record the Request and Response.
+                    SOAPExecution se = (SOAPExecution) ((TestDataLibResultSOAP) serviceAnswer.getItem()).getSoapExecution().getItem();
+
+                    String requestFilePath = recorderService.recordXMLAndGetName(tCExecution.getId(),
+                            testCaseCountryProperty.getProperty() + "_request", SoapUtil.convertSoapMessageToString(se.getSOAPRequest()));
+                    String responseFilePath = recorderService.recordXMLAndGetName(tCExecution.getId(),
+                            testCaseCountryProperty.getProperty() + "_response", SoapUtil.convertSoapMessageToString(se.getSOAPRequest()));
+
+                }
+
                 if (serviceAnswer.getResultMessage().getCode() != MessageEventEnum.PROPERTY_SUCCESS.getCode()) {
                     //if the fetch data fails then we will get the message and show it
                     res = serviceAnswer.getResultMessage();
@@ -1315,56 +1307,55 @@ public class PropertyService implements IPropertyService {
         TestCaseExecution testCaseExecution = testCaseStepActionExecution.getTestCaseStepExecution().gettCExecution();
         MessageEvent message;
 
-                //property exists
-                String libName = testCaseStepActionExecution.getObject();
-                String system = testCaseExecution.getApplication().getSystem();
-                String environment = testCaseExecution.getEnvironment();
-                String country = testCaseExecution.getCountry();
+        //property exists
+        String libName = testCaseStepActionExecution.getObject();
+        String system = testCaseExecution.getApplication().getSystem();
+        String environment = testCaseExecution.getEnvironment();
+        String country = testCaseExecution.getCountry();
 
-                AnswerItem answerLib = testDataLibService.readByNameBySystemByEnvironmentByCountry(libName, system, environment, country);
+        AnswerItem answerLib = testDataLibService.readByNameBySystemByEnvironmentByCountry(libName, system, environment, country);
 
-                if (answerLib.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode()) && answerLib.getItem() != null) {
-                    TestDataLib lib = (TestDataLib) answerLib.getItem();
-                    //unescape all attributes that were escaped: description, script, method, servicepath and envelope
-                    unescapeTestDataLibrary(lib);
-                    if (lib.getType().equals(TestDataLibTypeEnum.SOAP.getCode())) {
-                        //now we can call the soap entry
-                        calculateInnerProperties(lib, testCaseStepActionExecution);
-                        AnswerItem callAnswer = testDataLibService.fetchData(lib, 10000, "STATIC");
-                        //store request and response
-                        testCaseExecution.setLastSOAPCalled(((TestDataLibResultSOAP) callAnswer.getItem()).getSoapExecution());
-                        
-                        //updates the result data
-                        if (callAnswer.isCodeEquals(MessageEventEnum.PROPERTY_SUCCESS.getCode())) {
-                            //new need to update the results list and the execution operation
-                            TestDataLibResultSOAP resultSoap = (TestDataLibResultSOAP) callAnswer.getItem();
+        if (answerLib.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode()) && answerLib.getItem() != null) {
+            TestDataLib lib = (TestDataLib) answerLib.getItem();
+            //unescape all attributes that were escaped: description, script, method, servicepath and envelope
+            unescapeTestDataLibrary(lib);
+            if (lib.getType().equals(TestDataLibTypeEnum.SOAP.getCode())) {
+                //now we can call the soap entry
+                calculateInnerProperties(lib, testCaseStepActionExecution);
+                AnswerItem callAnswer = testDataLibService.fetchData(lib, null, null);
+                //store request and response
+                testCaseExecution.setLastSOAPCalled(((TestDataLibResultSOAP) callAnswer.getItem()).getSoapExecution());
 
-                            HashMap<String, TestDataLibResult> currentListResults = testCaseExecution.getDataLibraryExecutionDataList();
-                            if (currentListResults == null) {
-                                currentListResults = new HashMap<String, TestDataLibResult>();
-                            }
-                            if (currentListResults.get(propertyName) != null) {
-                                currentListResults.remove(propertyName);
-                            }
-                            currentListResults.put(propertyName, resultSoap);
-                            //updates the execution data list
-                            testCaseExecution.setDataLibraryExecutionDataList(currentListResults);
-                        }
-                        message = callAnswer.getResultMessage();
-                    } else {
-                        message = new MessageEvent(MessageEventEnum.PROPERTY_FAILED_GETFROMDATALIB_NOTSOAP);
-                        message.setDescription(message.getDescription().replace("%ENTRY%", libName));
+                //updates the result data
+                if (callAnswer.isCodeEquals(MessageEventEnum.PROPERTY_SUCCESS.getCode())) {
+                    //new need to update the results list and the execution operation
+                    TestDataLibResultSOAP resultSoap = (TestDataLibResultSOAP) callAnswer.getItem();
+
+                    HashMap<String, TestDataLibResult> currentListResults = testCaseExecution.getDataLibraryExecutionDataList();
+                    if (currentListResults == null) {
+                        currentListResults = new HashMap<String, TestDataLibResult>();
                     }
-                } else {
-                    //library entry is not defined for the specified: name + country + system + environment
-                    message = new MessageEvent(MessageEventEnum.TESTDATALIB_NOT_FOUND_ERROR);
-                    message.setDescription(message.getDescription().replace("%ITEM%", libName).
-                            replace("%COUNTRY%", country).
-                            replace("%ENVIRONMENT%", environment).
-                            replace("%SYSTEM%", system));
+                    if (currentListResults.get(propertyName) != null) {
+                        currentListResults.remove(propertyName);
+                    }
+                    currentListResults.put(propertyName, resultSoap);
+                    //updates the execution data list
+                    testCaseExecution.setDataLibraryExecutionDataList(currentListResults);
                 }
+                message = callAnswer.getResultMessage();
+            } else {
+                message = new MessageEvent(MessageEventEnum.PROPERTY_FAILED_GETFROMDATALIB_NOTSOAP);
+                message.setDescription(message.getDescription().replace("%ENTRY%", libName));
+            }
+        } else {
+            //library entry is not defined for the specified: name + country + system + environment
+            message = new MessageEvent(MessageEventEnum.PROPERTY_FAILED_GETFROMDATALIB_NOT_FOUND_ERROR);
+            message.setDescription(message.getDescription().replace("%ITEM%", libName).
+                    replace("%COUNTRY%", country).
+                    replace("%ENVIRONMENT%", environment).
+                    replace("%SYSTEM%", system));
+        }
 
-        
         answerItem.setResultMessage(message);
         return answerItem;
     }
