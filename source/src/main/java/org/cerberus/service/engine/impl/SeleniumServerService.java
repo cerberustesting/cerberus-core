@@ -154,8 +154,9 @@ public class SeleniumServerService implements ISeleniumServerService {
 
             /**
              * Defining the timeout at the driver level.
+             * Only in case of not Appium Driver (see https://github.com/vertigo17/Cerberus/issues/754)
              */
-            if (!(driver == null)) {
+            if (driver != null && appiumDriver == null) {
                 driver.manage().timeouts().pageLoadTimeout(tCExecution.getSession().getDefaultWait(), TimeUnit.SECONDS);
                 driver.manage().timeouts().implicitlyWait(tCExecution.getSession().getDefaultWait(), TimeUnit.SECONDS);
                 driver.manage().timeouts().setScriptTimeout(tCExecution.getSession().getDefaultWait(), TimeUnit.SECONDS);
