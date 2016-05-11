@@ -5822,6 +5822,29 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLS.append("ADD INDEX `IX_testdatalib_01` (`Name` ASC, `system` ASC, `Environment` ASC, `Country` ASC) ;");
         SQLInstruction.add(SQLS.toString());
 
+        // Add the RobotCapability table
+        //-- ------------------------ 778-779
+        SQLS = new StringBuilder();
+        SQLS.append("CREATE TABLE `robotcapability` (\n" +
+                "  `id` int(11) NOT NULL AUTO_INCREMENT,\n" +
+                "  `robot` varchar(100) NOT NULL,\n" +
+                "  `capability` varchar(45) NOT NULL,\n" +
+                "  `value` varchar(255) NOT NULL,\n" +
+                "  PRIMARY KEY (`id`),\n" +
+                "  UNIQUE KEY `uq_capability_value_idx` (`capability`,`value`,`robot`),\n" +
+                "  KEY `fk_robot_idx` (`robot`),\n" +
+                "  CONSTRAINT `fk_robot` FOREIGN KEY (`robot`) REFERENCES `robot` (`robot`) ON DELETE CASCADE ON UPDATE CASCADE\n" +
+                ") ENGINE=InnoDB DEFAULT CHARSET=utf8;\n");
+        SQLInstruction.add(SQLS.toString());
+        SQLS = new StringBuilder();
+        SQLS.append("INSERT INTO `robotcapability` (`robot`, `value`, `capability`)  \n" +
+                "\tSELECT `robot`, `platform`, 'platform' AS `capability` FROM `robot`\n" +
+                "    UNION\n" +
+                "    SELECT `robot`, `browser`, 'browser' AS `capability` FROM `robot`\n" +
+                "    UNION\n" +
+                "    SELECT `robot`, `version`, 'version' AS `capability` FROM `robot`");
+        SQLInstruction.add(SQLS.toString());
+
         return SQLInstruction;
     }
 

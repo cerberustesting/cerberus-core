@@ -27,6 +27,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import org.apache.log4j.Logger;
+import org.cerberus.crud.dao.IRobotCapabilitiesDAO;
 import org.cerberus.crud.dao.IRobotDAO;
 import org.cerberus.database.DatabaseSpring;
 import org.cerberus.crud.entity.MessageEvent;
@@ -471,11 +472,15 @@ public class RobotDAO implements IRobotDAO {
         String robot = ParameterParserUtil.parseStringParam(rs.getString("robot"), "");
         String host = ParameterParserUtil.parseStringParam(rs.getString("host"), "");
         String port = ParameterParserUtil.parseStringParam(rs.getString("port"), "");
+        // TODO prefer use the Robot Capbility table to get this capability (see #fillCapabilities)
         String platform = ParameterParserUtil.parseStringParam(rs.getString("platform"), "");
+        // TODO prefer use the Robot Capbility table to get this capability (see #fillCapabilities)
         String browser = ParameterParserUtil.parseStringParam(rs.getString("browser"), "");
+        // TODO prefer use the Robot Capbility table to get this capability (see #fillCapabilities)
         String version = ParameterParserUtil.parseStringParam(rs.getString("version"), "");
         String active = ParameterParserUtil.parseStringParam(rs.getString("active"), "");
         String description = ParameterParserUtil.parseStringParam(rs.getString("description"), "");
+        // TODO prefer use the Robot Capbility table to get this capability (see #fillCapabilities)
         String userAgent = ParameterParserUtil.parseStringParam(rs.getString("useragent"), "");
         //TODO remove when working in test with mockito and autowired
         factoryRobot = new FactoryRobot();

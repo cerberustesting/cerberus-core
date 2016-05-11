@@ -19,23 +19,14 @@
  */
 package org.cerberus.servlet.crud.testexecution;
 
-import com.google.gson.Gson;
-import java.io.IOException;
-import java.util.List;
-import java.util.logging.Logger;
-
-import javax.servlet.ServletException;
-import javax.servlet.annotation.WebServlet;
-import javax.servlet.http.HttpServlet;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.cerberus.crud.entity.MessageEvent;
 import org.cerberus.crud.entity.Robot;
-import org.cerberus.enums.MessageEventEnum;
-import org.cerberus.exception.CerberusException;
 import org.cerberus.crud.service.IRobotService;
 import org.cerberus.crud.service.impl.RobotService;
+import org.cerberus.enums.MessageEventEnum;
+import org.cerberus.exception.CerberusException;
 import org.cerberus.util.ParameterParserUtil;
 import org.cerberus.util.answer.AnswerItem;
 import org.cerberus.util.answer.AnswerList;
@@ -46,6 +37,15 @@ import org.owasp.html.PolicyFactory;
 import org.owasp.html.Sanitizers;
 import org.springframework.context.ApplicationContext;
 import org.springframework.web.context.support.WebApplicationContextUtils;
+
+import javax.servlet.ServletException;
+import javax.servlet.annotation.WebServlet;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
+import java.util.List;
+import java.util.logging.Logger;
 
 /**
  *
@@ -127,7 +127,7 @@ public class ReadRobot extends HttpServlet {
 
             response.getWriter().print(jsonResponse.toString());
 
-        } catch (JSONException e) {
+        } catch (JSONException | JsonProcessingException e) {
             org.apache.log4j.Logger.getLogger(ReadRobot.class.getName()).log(org.apache.log4j.Level.ERROR, null, e);
             //returns a default error message with the json format that is able to be parsed by the client-side
             response.setContentType("application/json");
@@ -188,7 +188,7 @@ public class ReadRobot extends HttpServlet {
         return "Short description";
     }// </editor-fold>
 
-    private AnswerItem findRobotList(ApplicationContext appContext, boolean userHasPermissions, HttpServletRequest request) throws JSONException {
+    private AnswerItem findRobotList(ApplicationContext appContext, boolean userHasPermissions, HttpServletRequest request) throws JSONException, JsonProcessingException {
 
         AnswerItem item = new AnswerItem();
         JSONObject object = new JSONObject();
@@ -223,7 +223,7 @@ public class ReadRobot extends HttpServlet {
         return item;
     }
 
-    private AnswerItem findRobotByKeyTech(Integer id, ApplicationContext appContext, boolean userHasPermissions) throws JSONException, CerberusException {
+    private AnswerItem findRobotByKeyTech(Integer id, ApplicationContext appContext, boolean userHasPermissions) throws JSONException, CerberusException, JsonProcessingException {
         AnswerItem item = new AnswerItem();
         JSONObject object = new JSONObject();
 
@@ -246,7 +246,7 @@ public class ReadRobot extends HttpServlet {
         return item;
     }
 
-    private AnswerItem findRobotByKey(String robot, ApplicationContext appContext, boolean userHasPermissions) throws JSONException, CerberusException {
+    private AnswerItem findRobotByKey(String robot, ApplicationContext appContext, boolean userHasPermissions) throws JSONException, CerberusException, JsonProcessingException {
         AnswerItem item = new AnswerItem();
         JSONObject object = new JSONObject();
 
@@ -269,10 +269,9 @@ public class ReadRobot extends HttpServlet {
         return item;
     }
 
-    private JSONObject convertRobotToJSONObject(Robot robot) throws JSONException {
-
-        Gson gson = new Gson();
-        JSONObject result = new JSONObject(gson.toJson(robot));
+    private JSONObject convertRobotToJSONObject(Robot robot) throws JSONException, JsonProcessingException {
+        ObjectMapper mapper = new ObjectMapper();
+        JSONObject result = new JSONObject(mapper.writeValueAsString(robot));
         return result;
     }
 
