@@ -122,6 +122,11 @@
             <version>${mysql-connector-java.version}</version>
         </dependency>
         <dependency>
+            <groupId>org.liquibase</groupId>
+            <artifactId>liquibase-core</artifactId>
+            <version>3.4.2</version>
+        </dependency>
+        <dependency>
             <groupId>org.json</groupId>
             <artifactId>json</artifactId>
             <version>${json.version}</version>
@@ -340,6 +345,13 @@
                     <include>xsd/**/*.xsd</include>
                 </includes>
                 <filtering>true</filtering>
+            </resource>
+            <resource>
+                <directory>src/main/resources</directory>
+                <includes>
+                    <include>db/**</include>
+                </includes>
+                <filtering>false</filtering>
             </resource>
         </resources>
         

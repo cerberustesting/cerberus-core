@@ -24,7 +24,6 @@
 <%@page import="org.cerberus.crud.entity.Invariant"%>
 <%@page import="java.util.List"%>
 <%@page import="org.cerberus.crud.service.IInvariantService"%>
-<%@page import="org.cerberus.database.IDatabaseVersioningService"%>
 
 <%@page contentType="text/html" pageEncoding="UTF-8"%><!DOCTYPE HTML>
 <!DOCTYPE html>
@@ -40,21 +39,6 @@
     <body>
         <%@ include file="include/header.html"%>
         <%@ include file="include/homepage/tagSettingsModal.html" %>
-        <%
-            ApplicationContext appContext = WebApplicationContextUtils.getWebApplicationContext(this.getServletContext());
-
-            IDatabaseVersioningService DatabaseVersioningService = appContext.getBean(IDatabaseVersioningService.class);
-            if (!(DatabaseVersioningService.isDatabaseUptodate()) && request.isUserInRole("Administrator")) {%>
-        <script>
-            var r = confirm("WARNING : Database Not Uptodate >> Redirect to the DatabaseMaintenance page ?");
-            if (r == true)
-            {
-                location.href = './DatabaseMaintenance.jsp';
-            }
-        </script>
-
-        <% }
-        %>
         <style>
 
             .DataTables_sort_wrapper { font-size:9px }

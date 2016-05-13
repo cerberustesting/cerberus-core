@@ -23,7 +23,6 @@
 <%@page import="org.cerberus.crud.entity.UserSystem"%>
 <%@page import="org.apache.log4j.Level"%>
 <%@page import="org.cerberus.log.MyLogger"%>
-<%@page import="org.cerberus.database.IDatabaseVersioningService"%>
 <%@page import="org.cerberus.crud.entity.Invariant"%>
 <%@page import="org.cerberus.crud.service.IInvariantService"%>
 <%@page import="org.cerberus.crud.service.IUserService"%>
@@ -132,7 +131,6 @@
                 <ul class="subnav" id="subnavlist">
                     <li id="subactive"><a name="menu" id="menuUsersManager" href="UserManager.jsp" style="width:200px">Users Manager</a></li>
                     <li id="subactive"><a name="menu" id="menuLogViewer" href="LogViewer.jsp" style="width:200px">Log Viewer</a></li>
-                    <li id="subactive"><a name="menu" id="menuDatabaseMaintenance" href="DatabaseMaintenance.jsp" style="width:200px">Database Maintenance</a></li>
                     <li id="subactive"><a name="menu" id="menuParameter" href="Parameter.jsp" style="width:200px">Parameters</a></li>
                     <li id="subactive"><a name="menu" id="menuInvariantPublic" href="InvariantPublic.jsp" style="width:200px">Edit Public Invariants</a></li>
                     <li id="subactive"><a name="menu" id="menuInvariantPrivate" href="InvariantPrivate.jsp" style="width:200px">See Private Invariants</a></li>
@@ -156,59 +154,8 @@
                     ApplicationContext context = WebApplicationContextUtils.getWebApplicationContext(this.getServletConfig().getServletContext());
                     
                     IUserService myUserService = context.getBean(IUserService.class);
-                    IDatabaseVersioningService DatabaseVersioningService = context.getBean(IDatabaseVersioningService.class);
                     IInvariantService myInvariantService = context.getBean(IInvariantService.class);
                     
-                    // We access and update the user object only if database is uptodate. This is to prenvent 500 error 
-                    //   when adding new column on user table and trying to access this column even if it does not exist yet.
-                    //   Than means that system cannot be saved until database has been updated by administrator.
-                    if (DatabaseVersioningService.isDatabaseUptodate()) {
-                        if (!(MyUser.equals(""))) {
-
-                            // We load the user object.
-                            User MyUserobj = myUserService.findUserByKeyWithDependencies(MyUser);
-
-                            // If we are not already in changepassword page and user needs to change its password,
-                            //    --> we redirect to Change Password page.
-                            if (!request.getRequestURI().contains("Logout.jsp") && !(request.getRequestURI().contains("ChangePassword.jsp"))) {
-                                if (MyUserobj.getRequest().equalsIgnoreCase("Y")) {
-                                    request.getRequestDispatcher("/ChangePassword.jsp").forward(request, response);
-                                }
-                            }
-
-                            // Update MyDefaultSystem if different from user.
-                            if (MySystem.equals("")) {
-                                MySystem = MyUserobj.getDefaultSystem();
-                            } else {
-                                if (!(MyUserobj.getDefaultSystem().equals(MySystem))) {
-                                    List<String> systems = new ArrayList<String>();
-                                    for (UserSystem us : MyUserobj.getUserSystems()) {
-                                        systems.add(us.getSystem());
-                                    }
-                                    if (!systems.contains(MySystem)) {
-                %>
-                <script>alert("You're not allowed to navigate on this part !\n\nPlease, contact your Cerberus Administrator to modify your account permission.\n\nYou'll be redirected to your Default System.");
-                    location.href = location;
-                </script><%
-                                      } else {
-
-                                          MyUserobj.setDefaultSystem(MySystem);
-                                          myUserService.updateUser(MyUserobj);
-                                      }
-                                  }
-                              }
-
-                            // Update Language if different from user.
-                            if (MyLang.equals("")) {
-                                MyLang = MyUserobj.getLanguage();
-                            } else {
-                                MyUserobj.setLanguage(MyLang);
-                                myUserService.updateUser(MyUserobj);
-                            }
-                            
-                          }
-                      }
-
                       request.setAttribute("MySystem", MySystem);
                       request.setAttribute("MyLang", MyLang);
                 %>                
