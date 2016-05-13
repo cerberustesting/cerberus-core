@@ -72,12 +72,13 @@ public class TestDataLibDAO implements ITestDataLibDAO {
                 .append(" and (`system` = ? or `system` = '')")
                 .append(" and (`environment` = ? or `environment` = '')")
                 .append(" and (`country` = ? or `country` = '')")
-                .append(" ORDER BY `name` DESC, system DESC, environment DESC, country DESC")
+                .append(" ORDER BY `name` DESC, system DESC, environment DESC, country DESC, tdl.TestDataLibID ASC")
                 .append(" LIMIT 1").toString();
 
         // Debug message on SQL.
         if (LOG.isDebugEnabled()) {
             LOG.debug("SQL : " + query);
+            LOG.debug("SQL name : " + name);
             LOG.debug("SQL system : " + system);
             LOG.debug("SQL environment : " + environment);
             LOG.debug("SQL country : " + country);
@@ -148,7 +149,7 @@ public class TestDataLibDAO implements ITestDataLibDAO {
                 .append(" and `system` = ? ")
                 .append(" and `environment` = ? ")
                 .append(" and `country` = ? ")
-                .append(" order by `name` DESC, system DESC, environment DESC, country DESC")
+                .append(" order by `name` DESC, system DESC, environment DESC, country DESC, tdl.TestDataLibID ASC")
                 .append(" limit 1").toString();
 
         // Debug message on SQL.

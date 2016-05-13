@@ -374,15 +374,15 @@
         <servlet-class>org.cerberus.servlet.crud.test.ReadApplication</servlet-class>
     </servlet>
     <servlet>
-        <servlet-name>NewBuildRev1</servlet-name>
+        <servlet-name>NewBuildRev</servlet-name>
         <servlet-class>org.cerberus.servlet.integration.NewBuildRev</servlet-class>
     </servlet>
     <servlet>
-        <servlet-name>DisableEnvironment1</servlet-name>
+        <servlet-name>DisableEnvironment</servlet-name>
         <servlet-class>org.cerberus.servlet.integration.DisableEnvironment</servlet-class>
     </servlet>
     <servlet>
-        <servlet-name>NewChain1</servlet-name>
+        <servlet-name>NewChain</servlet-name>
         <servlet-class>org.cerberus.servlet.integration.NewChain</servlet-class>
     </servlet>
     <servlet>
@@ -749,15 +749,15 @@
         <servlet-class>org.cerberus.servlet.crud.buildrevisionchange.UpdateBuildRevisionParameters</servlet-class>
     </servlet>
     <servlet>
-        <servlet-name>UpdateCountryEnvParam1</servlet-name>
+        <servlet-name>UpdateCountryEnvParam</servlet-name>
         <servlet-class>org.cerberus.servlet.crud.countryenvironment.UpdateCountryEnvParam</servlet-class>
     </servlet>
     <servlet>
-        <servlet-name>CreateCountryEnvParam1</servlet-name>
+        <servlet-name>CreateCountryEnvParam</servlet-name>
         <servlet-class>org.cerberus.servlet.crud.countryenvironment.CreateCountryEnvParam</servlet-class>
     </servlet>
     <servlet>
-        <servlet-name>DeleteCountryEnvParam1</servlet-name>
+        <servlet-name>DeleteCountryEnvParam</servlet-name>
         <servlet-class>org.cerberus.servlet.crud.countryenvironment.DeleteCountryEnvParam</servlet-class>
     </servlet>
     <servlet>
@@ -1209,16 +1209,16 @@
         <url-pattern>/GetNotification</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
-        <servlet-name>NewBuildRev1</servlet-name>
-        <url-pattern>/NewBuildRev1</url-pattern>
+        <servlet-name>NewBuildRev</servlet-name>
+        <url-pattern>/NewBuildRev</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
-        <servlet-name>DisableEnvironment1</servlet-name>
-        <url-pattern>/DisableEnvironment1</url-pattern>
+        <servlet-name>DisableEnvironment</servlet-name>
+        <url-pattern>/DisableEnvironment</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
-        <servlet-name>NewChain1</servlet-name>
-        <url-pattern>/NewChain1</url-pattern>
+        <servlet-name>NewChain</servlet-name>
+        <url-pattern>/NewChain</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
         <servlet-name>NewBuildRevisionV000</servlet-name>
@@ -1569,16 +1569,16 @@
         <url-pattern>/UpdateBuildRevisionParameters</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
-        <servlet-name>UpdateCountryEnvParam1</servlet-name>
-        <url-pattern>/UpdateCountryEnvParam1</url-pattern>
+        <servlet-name>UpdateCountryEnvParam</servlet-name>
+        <url-pattern>/UpdateCountryEnvParam</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
-        <servlet-name>CreateCountryEnvParam1</servlet-name>
-        <url-pattern>/CreateCountryEnvParam1</url-pattern>
+        <servlet-name>CreateCountryEnvParam</servlet-name>
+        <url-pattern>/CreateCountryEnvParam</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
-        <servlet-name>DeleteCountryEnvParam1</servlet-name>
-        <url-pattern>/DeleteCountryEnvParam1</url-pattern>
+        <servlet-name>DeleteCountryEnvParam</servlet-name>
+        <url-pattern>/DeleteCountryEnvParam</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
         <servlet-name>ExecutionThreadReset</servlet-name>
@@ -1926,13 +1926,8 @@
             <url-pattern>/BuildContent.jsp</url-pattern>
             <url-pattern>/BuildRevDefinition.jsp</url-pattern>
             <url-pattern>/Environment.jsp</url-pattern>
-            <url-pattern>/Environment1.jsp</url-pattern>
-            <url-pattern>/EnvironmentList.jsp</url-pattern>
             <url-pattern>/IntegrationStatus.jsp</url-pattern>
-            <url-pattern>/IntegrationStatus1.jsp</url-pattern>
-            <url-pattern>/Notification.jsp</url-pattern>
             <url-pattern>/Project.jsp</url-pattern>
-            <url-pattern>/EnvironmentManagement.jsp</url-pattern>
             <url-pattern>/DeployType.jsp</url-pattern>
             <url-pattern>/BatchInvariant.jsp</url-pattern>
         </web-resource-collection>
@@ -1983,9 +1978,6 @@
             <url-pattern>/CreateCountryEnvParam</url-pattern>
             <url-pattern>/UpdateCountryEnvParam</url-pattern>
             <url-pattern>/DeleteCountryEnvParam</url-pattern>
-            <url-pattern>/CreateCountryEnvParam1</url-pattern>
-            <url-pattern>/UpdateCountryEnvParam1</url-pattern>
-            <url-pattern>/DeleteCountryEnvParam1</url-pattern>
             <url-pattern>/CreateCountryEnvironmentParameter</url-pattern>
             <url-pattern>/UpdateCountryEnvironmentParameter</url-pattern>
             <url-pattern>/DeleteCountryEnvironmentParameter</url-pattern>
@@ -2014,7 +2006,6 @@
             <web-resource-name>servlet</web-resource-name>
             <description>servlet</description>
             <url-pattern>/NewChain</url-pattern>
-            <url-pattern>/NewChain1</url-pattern>
         </web-resource-collection>
         <auth-constraint>
             <description>IntegratorNewChain</description>
@@ -2028,8 +2019,6 @@
             <description>servlet</description>
             <url-pattern>/DisableEnvironment</url-pattern>
             <url-pattern>/NewBuildRev</url-pattern>
-            <url-pattern>/DisableEnvironment1</url-pattern>
-            <url-pattern>/NewBuildRev1</url-pattern>
             <url-pattern>/JenkinsDeploy</url-pattern>
         </web-resource-collection>
         <auth-constraint>
