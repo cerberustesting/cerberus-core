@@ -1,0 +1,1424 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog" xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.4.xsd">
+    <changeSet author="nmervaillie (generated)" id="1463152249630-1">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="application"/>
+            </not>
+        </preConditions>
+        <createTable tableName="abonnement">
+            <column autoIncrement="true" name="idabonnement" type="INT">
+                <constraints primaryKey="true"/>
+            </column>
+            <column name="email" type="VARCHAR(45)"/>
+            <column name="notification" type="VARCHAR(1000)"/>
+            <column name="frequency" type="VARCHAR(45)"/>
+            <column name="LastNotification" type="VARCHAR(45)"/>
+        </createTable>
+        <createTable tableName="application">
+            <column name="Application" type="VARCHAR(200)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="description" type="VARCHAR(200)"/>
+            <column defaultValueNumeric="10" name="sort" type="INT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="type" type="VARCHAR(10)"/>
+            <column defaultValue="DEFAULT" name="System" type="VARCHAR(45)">
+                <constraints nullable="false"/>
+            </column>
+            <column defaultValue="" name="SubSystem" type="VARCHAR(45)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="svnurl" type="VARCHAR(150)"/>
+            <column defaultValue="" name="BugTrackerUrl" type="VARCHAR(5000)"/>
+            <column defaultValue="" name="BugTrackerNewUrl" type="VARCHAR(5000)"/>
+            <column name="deploytype" type="VARCHAR(50)"/>
+            <column defaultValue="" name="mavengroupid" type="VARCHAR(50)"/>
+        </createTable>
+        <createTable tableName="batchinvariant">
+            <column name="system" type="VARCHAR(45)">
+                <constraints nullable="false"/>
+            </column>
+            <column defaultValue="" name="Batch" type="VARCHAR(100)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="Description" type="VARCHAR(200)"/>
+        </createTable>
+        <createTable tableName="buildrevisionbatch">
+            <column autoIncrement="true" name="ID" type="INT">
+                <constraints primaryKey="true"/>
+            </column>
+            <column name="Batch" type="VARCHAR(100)">
+                <constraints nullable="false"/>
+            </column>
+            <column defaultValue="" name="system" type="VARCHAR(45)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="Country" type="VARCHAR(45)"/>
+            <column name="Environment" type="VARCHAR(45)"/>
+            <column name="Build" type="VARCHAR(45)"/>
+            <column name="Revision" type="VARCHAR(45)"/>
+            <column defaultValueComputed="CURRENT_TIMESTAMP" name="DateBatch" type="TIMESTAMP">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+        <createTable tableName="buildrevisioninvariant">
+            <column defaultValue="" name="system" type="VARCHAR(45)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="level" type="INT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="seq" type="INT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="versionname" type="VARCHAR(20)"/>
+        </createTable>
+        <createTable tableName="buildrevisionparameters">
+            <column autoIncrement="true" name="ID" type="INT">
+                <constraints primaryKey="true"/>
+            </column>
+            <column name="Build" type="VARCHAR(10)"/>
+            <column name="Revision" type="VARCHAR(20)"/>
+            <column name="Release" type="VARCHAR(200)"/>
+            <column name="Application" type="VARCHAR(200)"/>
+            <column defaultValue="" name="Project" type="VARCHAR(45)"/>
+            <column defaultValue="" name="TicketIDFixed" type="VARCHAR(45)"/>
+            <column defaultValue="" name="BugIDFixed" type="VARCHAR(45)"/>
+            <column defaultValue="" name="Link" type="VARCHAR(300)"/>
+            <column defaultValue="" name="ReleaseOwner" type="VARCHAR(100)">
+                <constraints nullable="false"/>
+            </column>
+            <column defaultValue="" name="Subject" type="VARCHAR(1000)"/>
+            <column defaultValueComputed="CURRENT_TIMESTAMP" name="datecre" type="TIMESTAMP">
+                <constraints nullable="false"/>
+            </column>
+            <column defaultValue="" name="jenkinsbuildid" type="VARCHAR(200)"/>
+            <column defaultValue="" name="mavengroupid" type="VARCHAR(200)"/>
+            <column defaultValue="" name="mavenartifactid" type="VARCHAR(200)"/>
+            <column defaultValue="" name="mavenversion" type="VARCHAR(200)"/>
+            <column defaultValue="" name="repositoryurl" type="VARCHAR(1000)"/>
+        </createTable>
+        <createTable tableName="campaign">
+            <column autoIncrement="true" name="campaignID" type="INT UNSIGNED">
+                <constraints primaryKey="true"/>
+            </column>
+            <column name="campaign" type="VARCHAR(45)">
+                <constraints nullable="false"/>
+            </column>
+            <column defaultValue="" name="Description" type="VARCHAR(300)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+        <createTable tableName="campaigncontent">
+            <column autoIncrement="true" name="campaigncontentID" type="INT UNSIGNED">
+                <constraints primaryKey="true"/>
+            </column>
+            <column name="campaign" type="VARCHAR(45)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="testbattery" type="VARCHAR(45)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+        <createTable tableName="campaignparameter">
+            <column autoIncrement="true" name="campaignparameterID" type="INT UNSIGNED">
+                <constraints primaryKey="true"/>
+            </column>
+            <column name="campaign" type="VARCHAR(45)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="Parameter" type="VARCHAR(100)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="Value" type="VARCHAR(100)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+        <createTable tableName="countryenvdeploytype">
+            <column defaultValue="" name="system" type="VARCHAR(45)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="Country" type="VARCHAR(45)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="Environment" type="VARCHAR(45)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="deploytype" type="VARCHAR(50)">
+                <constraints nullable="false"/>
+            </column>
+            <column defaultValue="" name="JenkinsAgent" type="VARCHAR(50)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+        <createTable tableName="countryenvironmentdatabase">
+            <column defaultValue="" name="system" type="VARCHAR(45)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="Country" type="VARCHAR(45)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="Environment" type="VARCHAR(45)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="Database" type="VARCHAR(45)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="ConnectionPoolName" type="VARCHAR(25)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+        <createTable tableName="countryenvironmentparameters">
+            <column defaultValue="" name="system" type="VARCHAR(45)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="Country" type="VARCHAR(45)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="Environment" type="VARCHAR(45)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="Application" type="VARCHAR(200)">
+                <constraints nullable="false"/>
+            </column>
+            <column defaultValue="" name="IP" type="VARCHAR(150)">
+                <constraints nullable="false"/>
+            </column>
+            <column defaultValue="" name="domain" type="VARCHAR(150)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="URL" type="VARCHAR(150)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="URLLOGIN" type="VARCHAR(150)"/>
+        </createTable>
+        <createTable tableName="countryenvlink">
+            <column defaultValue="" name="system" type="VARCHAR(45)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="Country" type="VARCHAR(45)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="Environment" type="VARCHAR(45)">
+                <constraints nullable="false"/>
+            </column>
+            <column defaultValue="" name="systemLink" type="VARCHAR(45)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="CountryLink" type="VARCHAR(2)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="EnvironmentLink" type="VARCHAR(45)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+        <createTable tableName="countryenvparam">
+            <column defaultValue="" name="system" type="VARCHAR(45)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="Country" type="VARCHAR(45)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="Environment" type="VARCHAR(45)">
+                <constraints nullable="false"/>
+            </column>
+            <column defaultValue="" name="Description" type="VARCHAR(200)">
+                <constraints nullable="false"/>
+            </column>
+            <column defaultValue="" name="Build" type="VARCHAR(10)">
+                <constraints nullable="false"/>
+            </column>
+            <column defaultValue="" name="Revision" type="VARCHAR(20)">
+                <constraints nullable="false"/>
+            </column>
+            <column defaultValue="" name="Chain" type="VARCHAR(20)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="DistribList" type="TEXT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="EMailBodyRevision" type="TEXT">
+                <constraints nullable="false"/>
+            </column>
+            <column defaultValue="" name="Type" type="VARCHAR(20)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="EMailBodyChain" type="TEXT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="EMailBodyDisableEnvironment" type="TEXT">
+                <constraints nullable="false"/>
+            </column>
+            <column defaultValue="N" name="active" type="VARCHAR(1)">
+                <constraints nullable="false"/>
+            </column>
+            <column defaultValue="N" name="maintenanceact" type="VARCHAR(1)">
+                <constraints nullable="false"/>
+            </column>
+            <column defaultValue="00:00:00" name="maintenancestr" type="time">
+                <constraints nullable="false"/>
+            </column>
+            <column defaultValue="00:00:00" name="maintenanceend" type="time">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+        <createTable tableName="countryenvparam_log">
+            <column autoIncrement="true" name="id" type="INT UNSIGNED">
+                <constraints primaryKey="true"/>
+            </column>
+            <column defaultValue="" name="system" type="VARCHAR(45)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="Country" type="VARCHAR(45)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="Environment" type="VARCHAR(45)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="Build" type="VARCHAR(10)"/>
+            <column name="Revision" type="VARCHAR(20)"/>
+            <column name="Chain" type="INT UNSIGNED"/>
+            <column name="Description" type="VARCHAR(150)"/>
+            <column defaultValueComputed="CURRENT_TIMESTAMP" name="datecre" type="TIMESTAMP">
+                <constraints nullable="false"/>
+            </column>
+            <column name="Creator" type="VARCHAR(10)"/>
+        </createTable>
+        <createTable tableName="deploytype">
+            <column name="deploytype" type="VARCHAR(50)">
+                <constraints nullable="false"/>
+            </column>
+            <column defaultValue="" name="description" type="VARCHAR(200)"/>
+        </createTable>
+        <createTable tableName="documentation">
+            <column name="DocTable" type="VARCHAR(50)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="DocField" type="VARCHAR(45)">
+                <constraints nullable="false"/>
+            </column>
+            <column defaultValue="" name="DocValue" type="VARCHAR(60)">
+                <constraints nullable="false"/>
+            </column>
+            <column defaultValue="en" name="Lang" type="VARCHAR(45)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="DocLabel" type="VARCHAR(300)"/>
+            <column name="DocDesc" type="TEXT"/>
+        </createTable>
+        <createTable tableName="host">
+            <column defaultValue="" name="system" type="VARCHAR(45)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="Country" type="VARCHAR(45)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="Environment" type="VARCHAR(45)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="Session" type="VARCHAR(20)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="Server" type="VARCHAR(20)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="host" type="VARCHAR(20)"/>
+            <column defaultValue="N" name="secure" type="VARCHAR(1)"/>
+            <column name="port" type="VARCHAR(20)"/>
+            <column defaultValue="Y" name="active" type="VARCHAR(1)"/>
+        </createTable>
+        <createTable tableName="invariant">
+            <column name="idname" type="VARCHAR(50)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="value" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column defaultValueNumeric="0" name="sort" type="INT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="description" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column defaultValue="" name="VeryShortDesc" type="VARCHAR(45)"/>
+            <column name="gp1" type="VARCHAR(255)"/>
+            <column name="gp2" type="VARCHAR(255)"/>
+            <column name="gp3" type="VARCHAR(255)"/>
+        </createTable>
+        <createTable tableName="log">
+            <column autoIncrement="true" name="id" type="INT">
+                <constraints primaryKey="true"/>
+            </column>
+            <column defaultValueComputed="CURRENT_TIMESTAMP" name="datecre" type="TIMESTAMP">
+                <constraints nullable="false"/>
+            </column>
+            <column name="desc" type="VARCHAR(20)"/>
+            <column name="longdesc" type="VARCHAR(400)"/>
+            <column name="remoteIP" type="VARCHAR(20)"/>
+            <column name="localIP" type="VARCHAR(20)"/>
+        </createTable>
+        <createTable tableName="logevent">
+            <column autoIncrement="true" name="LogEventID" type="BIGINT UNSIGNED">
+                <constraints primaryKey="true"/>
+            </column>
+            <column name="UserID" type="INT UNSIGNED">
+                <constraints nullable="false"/>
+            </column>
+            <column defaultValue="" name="Login" type="VARCHAR(30)">
+                <constraints nullable="false"/>
+            </column>
+            <column defaultValueComputed="CURRENT_TIMESTAMP" name="Time" type="TIMESTAMP">
+                <constraints nullable="false"/>
+            </column>
+            <column name="Page" type="VARCHAR(200)"/>
+            <column name="Action" type="VARCHAR(50)"/>
+            <column name="Log" type="VARCHAR(500)"/>
+            <column name="remoteIP" type="VARCHAR(20)"/>
+            <column name="localIP" type="VARCHAR(20)"/>
+        </createTable>
+        <createTable tableName="myversion">
+            <column defaultValue="" name="Key" type="VARCHAR(45)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="Value" type="INT"/>
+        </createTable>
+        <createTable tableName="parameter">
+            <column name="system" type="VARCHAR(45)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="param" type="VARCHAR(100)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="value" type="VARCHAR(10000)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="description" type="VARCHAR(5000)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+        <createTable tableName="project">
+            <column name="idproject" type="VARCHAR(45)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="VCCode" type="VARCHAR(20)"/>
+            <column name="Description" type="VARCHAR(45)"/>
+            <column defaultValue="Y" name="active" type="VARCHAR(1)"/>
+            <column defaultValueComputed="CURRENT_TIMESTAMP" name="datecre" type="TIMESTAMP"/>
+        </createTable>
+        <createTable tableName="qualitynonconformities">
+            <column autoIncrement="true" name="idqualitynonconformities" type="INT">
+                <constraints primaryKey="true"/>
+            </column>
+            <column name="Country" type="VARCHAR(45)"/>
+            <column name="Application" type="VARCHAR(45)"/>
+            <column name="ProblemCategory" type="VARCHAR(100)"/>
+            <column name="ProblemDescription" type="VARCHAR(2500)"/>
+            <column name="StartDate" type="VARCHAR(45)"/>
+            <column name="StartTime" type="VARCHAR(45)"/>
+            <column name="EndDate" type="VARCHAR(45)"/>
+            <column name="EndTime" type="VARCHAR(45)"/>
+            <column name="TeamContacted" type="VARCHAR(250)"/>
+            <column name="Actions" type="VARCHAR(2500)"/>
+            <column name="RootCauseCategory" type="VARCHAR(100)"/>
+            <column name="RootCauseDescription" type="VARCHAR(2500)"/>
+            <column name="ImpactOrCost" type="VARCHAR(45)"/>
+            <column name="Responsabilities" type="VARCHAR(250)"/>
+            <column name="Status" type="VARCHAR(45)"/>
+            <column name="Comments" type="VARCHAR(1000)"/>
+            <column name="Severity" type="VARCHAR(45)"/>
+        </createTable>
+        <createTable tableName="qualitynonconformitiesimpact">
+            <column autoIncrement="true" name="idqualitynonconformitiesimpact" type="BIGINT">
+                <constraints primaryKey="true"/>
+            </column>
+            <column name="idqualitynonconformities" type="INT"/>
+            <column name="Country" type="VARCHAR(45)"/>
+            <column name="Application" type="VARCHAR(45)"/>
+            <column name="StartDate" type="VARCHAR(45)"/>
+            <column name="StartTime" type="VARCHAR(45)"/>
+            <column name="EndDate" type="VARCHAR(45)"/>
+            <column name="EndTime" type="VARCHAR(45)"/>
+            <column name="ImpactOrCost" type="VARCHAR(250)"/>
+        </createTable>
+        <createTable tableName="robot">
+            <column autoIncrement="true" name="robotID" type="INT">
+                <constraints primaryKey="true"/>
+            </column>
+            <column name="robot" type="VARCHAR(100)">
+                <constraints nullable="false"/>
+            </column>
+            <column defaultValue="" name="host" type="VARCHAR(150)">
+                <constraints nullable="false"/>
+            </column>
+            <column defaultValue="" name="port" type="VARCHAR(20)">
+                <constraints nullable="false"/>
+            </column>
+            <column defaultValue="" name="platform" type="VARCHAR(45)">
+                <constraints nullable="false"/>
+            </column>
+            <column defaultValue="" name="browser" type="VARCHAR(45)">
+                <constraints nullable="false"/>
+            </column>
+            <column defaultValue="" name="version" type="VARCHAR(45)">
+                <constraints nullable="false"/>
+            </column>
+            <column defaultValue="Y" name="active" type="VARCHAR(1)">
+                <constraints nullable="false"/>
+            </column>
+            <column defaultValue="" name="useragent" type="VARCHAR(250)">
+                <constraints nullable="false"/>
+            </column>
+            <column defaultValue="" name="description" type="VARCHAR(250)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+        <createTable tableName="soaplibrary">
+            <column defaultValue="" name="Name" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="Type" type="VARCHAR(45)"/>
+            <column name="ServicePath" type="VARCHAR(250)"/>
+            <column name="Method" type="VARCHAR(255)"/>
+            <column name="Envelope" type="MEDIUMTEXT"/>
+            <column name="ParsingAnswer" type="TEXT"/>
+            <column name="Description" type="VARCHAR(1000)"/>
+        </createTable>
+        <createTable tableName="sqllibrary">
+            <column name="Name" type="VARCHAR(45)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="Type" type="VARCHAR(45)">
+                <constraints nullable="false"/>
+            </column>
+            <column defaultValue="" name="Database" type="VARCHAR(45)"/>
+            <column name="Script" type="VARCHAR(2500)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="Description" type="VARCHAR(1000)"/>
+        </createTable>
+        <createTable tableName="test">
+            <column name="Test" type="VARCHAR(45)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="Description" type="VARCHAR(300)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="Active" type="VARCHAR(1)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="Automated" type="VARCHAR(1)">
+                <constraints nullable="false"/>
+            </column>
+            <column defaultValueComputed="CURRENT_TIMESTAMP" name="TDateCrea" type="TIMESTAMP">
+                <constraints nullable="false"/>
+            </column>
+            <column defaultValue="0000-00-00 00:00:00" name="last_modified" type="TIMESTAMP"/>
+        </createTable>
+        <createTable tableName="testbattery">
+            <column autoIncrement="true" name="testbatteryID" type="INT UNSIGNED">
+                <constraints primaryKey="true"/>
+            </column>
+            <column name="testbattery" type="VARCHAR(45)">
+                <constraints nullable="false"/>
+            </column>
+            <column defaultValue="" name="Description" type="VARCHAR(300)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+        <createTable tableName="testbatterycontent">
+            <column autoIncrement="true" name="testbatterycontentID" type="INT UNSIGNED">
+                <constraints primaryKey="true"/>
+            </column>
+            <column name="testbattery" type="VARCHAR(45)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="Test" type="VARCHAR(45)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="TestCase" type="VARCHAR(45)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+        <createTable tableName="testcase">
+            <column name="Test" type="VARCHAR(45)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="TestCase" type="VARCHAR(45)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="Application" type="VARCHAR(200)"/>
+            <column name="Project" type="VARCHAR(45)"/>
+            <column defaultValue="" name="Ticket" type="VARCHAR(20)"/>
+            <column name="Description" type="VARCHAR(500)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="BehaviorOrValueExpected" type="TEXT"/>
+            <column defaultValue="N" name="ReadOnly" type="VARCHAR(1)"/>
+            <column name="ChainNumberNeeded" type="INT UNSIGNED"/>
+            <column name="Priority" type="INT UNSIGNED">
+                <constraints nullable="false"/>
+            </column>
+            <column name="Status" type="VARCHAR(25)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="TcActive" type="VARCHAR(1)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="Group" type="VARCHAR(45)"/>
+            <column name="Origine" type="VARCHAR(45)"/>
+            <column name="RefOrigine" type="VARCHAR(45)"/>
+            <column name="HowTo" type="TEXT"/>
+            <column name="Comment" type="VARCHAR(500)"/>
+            <column defaultValueComputed="CURRENT_TIMESTAMP" name="TCDateCrea" type="TIMESTAMP">
+                <constraints nullable="false"/>
+            </column>
+            <column name="FromBuild" type="VARCHAR(10)"/>
+            <column name="FromRev" type="VARCHAR(20)"/>
+            <column name="ToBuild" type="VARCHAR(10)"/>
+            <column name="ToRev" type="VARCHAR(20)"/>
+            <column name="BugID" type="VARCHAR(10)"/>
+            <column name="TargetBuild" type="VARCHAR(10)"/>
+            <column name="TargetRev" type="VARCHAR(20)"/>
+            <column name="Creator" type="VARCHAR(45)"/>
+            <column name="Implementer" type="VARCHAR(45)"/>
+            <column name="LastModifier" type="VARCHAR(45)"/>
+            <column defaultValue="Y" name="activeQA" type="VARCHAR(1)"/>
+            <column defaultValue="Y" name="activeUAT" type="VARCHAR(1)"/>
+            <column defaultValue="N" name="activePROD" type="VARCHAR(1)"/>
+            <column defaultValue="" name="function" type="VARCHAR(500)"/>
+            <column defaultValue="0000-00-00 00:00:00" name="last_modified" type="TIMESTAMP"/>
+        </createTable>
+        <createTable tableName="testcasecountry">
+            <column name="Test" type="VARCHAR(45)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="TestCase" type="VARCHAR(45)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="Country" type="VARCHAR(45)">
+                <constraints nullable="false"/>
+            </column>
+            <column defaultValue="0000-00-00 00:00:00" name="last_modified" type="TIMESTAMP"/>
+        </createTable>
+        <createTable tableName="testcasecountryproperties">
+            <column name="Test" type="VARCHAR(45)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="TestCase" type="VARCHAR(45)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="Country" type="VARCHAR(45)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="Property" type="VARCHAR(150)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="Type" type="VARCHAR(45)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="Database" type="VARCHAR(45)"/>
+            <column defaultValue="" name="Value1" type="VARCHAR(2500)"/>
+            <column defaultValue="" name="Value2" type="VARCHAR(2500)"/>
+            <column name="Length" type="INT UNSIGNED">
+                <constraints nullable="false"/>
+            </column>
+            <column name="RowLimit" type="INT UNSIGNED">
+                <constraints nullable="false"/>
+            </column>
+            <column name="Nature" type="VARCHAR(45)">
+                <constraints nullable="false"/>
+            </column>
+            <column defaultValue="0000-00-00 00:00:00" name="last_modified" type="TIMESTAMP"/>
+        </createTable>
+        <createTable tableName="testcaseexecution">
+            <column autoIncrement="true" name="ID" type="BIGINT UNSIGNED">
+                <constraints primaryKey="true"/>
+            </column>
+            <column name="Test" type="VARCHAR(45)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="TestCase" type="VARCHAR(45)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="Build" type="VARCHAR(10)"/>
+            <column name="Revision" type="VARCHAR(20)"/>
+            <column name="Environment" type="VARCHAR(45)"/>
+            <column name="Country" type="VARCHAR(45)"/>
+            <column name="Browser" type="VARCHAR(45)"/>
+            <column defaultValue="" name="Version" type="VARCHAR(45)">
+                <constraints nullable="false"/>
+            </column>
+            <column defaultValue="" name="Platform" type="VARCHAR(45)">
+                <constraints nullable="false"/>
+            </column>
+            <column defaultValue="" name="BrowserFullVersion" type="VARCHAR(200)"/>
+            <column defaultValueComputed="CURRENT_TIMESTAMP" name="Start" type="TIMESTAMP"/>
+            <column defaultValue="0000-00-00 00:00:00" name="End" type="TIMESTAMP"/>
+            <column name="ControlStatus" type="VARCHAR(2)"/>
+            <column name="ControlMessage" type="VARCHAR(500)"/>
+            <column name="Application" type="VARCHAR(200)"/>
+            <column name="IP" type="VARCHAR(150)"/>
+            <column name="URL" type="VARCHAR(150)"/>
+            <column name="Port" type="VARCHAR(45)"/>
+            <column name="Tag" type="VARCHAR(50)"/>
+            <column name="Finished" type="VARCHAR(1)"/>
+            <column name="Verbose" type="VARCHAR(1)"/>
+            <column name="Status" type="VARCHAR(25)"/>
+            <column name="CrbVersion" type="VARCHAR(45)"/>
+            <column name="Executor" type="VARCHAR(10)"/>
+            <column name="screensize" type="VARCHAR(45)"/>
+        </createTable>
+        <createTable tableName="testcaseexecutiondata">
+            <column autoIncrement="true" name="ID" type="BIGINT UNSIGNED">
+                <constraints primaryKey="true"/>
+            </column>
+            <column name="Property" type="VARCHAR(150)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="Value" type="VARCHAR(3000)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="Type" type="VARCHAR(200)"/>
+            <column name="Value1" type="VARCHAR(3000)"/>
+            <column name="Value2" type="VARCHAR(3000)"/>
+            <column name="RC" type="VARCHAR(10)"/>
+            <column defaultValue="" name="RMessage" type="VARCHAR(3000)"/>
+            <column name="Start" type="TIMESTAMP"/>
+            <column name="End" type="TIMESTAMP"/>
+            <column name="StartLong" type="BIGINT"/>
+            <column name="EndLong" type="BIGINT"/>
+        </createTable>
+        <createTable tableName="testcaseexecutionqueue">
+            <column autoIncrement="true" name="ID" type="BIGINT UNSIGNED">
+                <constraints primaryKey="true"/>
+            </column>
+            <column name="Test" type="VARCHAR(45)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="TestCase" type="VARCHAR(45)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="Country" type="VARCHAR(45)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="Environment" type="VARCHAR(45)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="Robot" type="VARCHAR(100)"/>
+            <column name="RobotIP" type="VARCHAR(150)"/>
+            <column name="RobotPort" type="VARCHAR(20)"/>
+            <column name="Browser" type="VARCHAR(45)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="BrowserVersion" type="VARCHAR(45)"/>
+            <column name="Platform" type="VARCHAR(45)"/>
+            <column defaultValueNumeric="0" name="ManualURL" type="BIT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="ManualHost" type="VARCHAR(255)"/>
+            <column name="ManualContextRoot" type="VARCHAR(255)"/>
+            <column name="ManualLoginRelativeURL" type="VARCHAR(255)"/>
+            <column name="ManualEnvData" type="VARCHAR(255)"/>
+            <column name="Tag" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column defaultValue="gui" name="OutputFormat" type="VARCHAR(20)">
+                <constraints nullable="false"/>
+            </column>
+            <column defaultValueNumeric="0" name="Screenshot" type="INT">
+                <constraints nullable="false"/>
+            </column>
+            <column defaultValueNumeric="0" name="Verbose" type="INT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="Timeout" type="MEDIUMTEXT"/>
+            <column defaultValueNumeric="0" name="Synchroneous" type="BIT">
+                <constraints nullable="false"/>
+            </column>
+            <column defaultValueNumeric="1" name="PageSource" type="INT">
+                <constraints nullable="false"/>
+            </column>
+            <column defaultValueNumeric="1" name="SeleniumLog" type="INT">
+                <constraints nullable="false"/>
+            </column>
+            <column defaultValueComputed="CURRENT_TIMESTAMP" name="RequestDate" type="TIMESTAMP">
+                <constraints nullable="false"/>
+            </column>
+            <column defaultValueNumeric="0" name="Proceeded" type="BIT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="comment" type="VARCHAR(250)"/>
+            <column defaultValueNumeric="0" name="retries" type="BIT">
+                <constraints nullable="false"/>
+            </column>
+            <column defaultValue="N" name="manualexecution" type="VARCHAR(1)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+        <createTable tableName="testcaseexecutionsysver">
+            <column name="ID" type="BIGINT UNSIGNED">
+                <constraints nullable="false"/>
+            </column>
+            <column name="system" type="VARCHAR(45)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="Build" type="VARCHAR(10)"/>
+            <column name="Revision" type="VARCHAR(20)"/>
+        </createTable>
+        <createTable tableName="testcaseexecutionwwwdet">
+            <column autoIncrement="true" name="ID" type="BIGINT">
+                <constraints primaryKey="true"/>
+            </column>
+            <column name="ExecID" type="BIGINT UNSIGNED">
+                <constraints nullable="false"/>
+            </column>
+            <column name="Start" type="VARCHAR(45)"/>
+            <column name="url" type="VARCHAR(500)"/>
+            <column name="End" type="VARCHAR(45)"/>
+            <column name="ext" type="VARCHAR(10)"/>
+            <column name="statusCode" type="INT"/>
+            <column name="method" type="VARCHAR(10)"/>
+            <column name="bytes" type="INT"/>
+            <column name="timeInMillis" type="INT"/>
+            <column name="ReqHeader_Host" type="VARCHAR(45)"/>
+            <column name="ResHeader_ContentType" type="VARCHAR(45)"/>
+            <column name="ReqPage" type="VARCHAR(500)"/>
+        </createTable>
+        <createTable tableName="testcaseexecutionwwwsum">
+            <column name="ID" type="BIGINT UNSIGNED">
+                <constraints nullable="false"/>
+            </column>
+            <column name="tot_nbhits" type="INT"/>
+            <column name="tot_tps" type="INT"/>
+            <column name="tot_size" type="INT"/>
+            <column name="nb_rc2xx" type="INT"/>
+            <column name="nb_rc3xx" type="INT"/>
+            <column name="nb_rc4xx" type="INT"/>
+            <column name="nb_rc5xx" type="INT"/>
+            <column name="img_nb" type="INT"/>
+            <column name="img_tps" type="INT"/>
+            <column name="img_size_tot" type="INT"/>
+            <column name="img_size_max" type="INT"/>
+            <column name="js_nb" type="INT"/>
+            <column name="js_tps" type="INT"/>
+            <column name="js_size_tot" type="INT"/>
+            <column name="js_size_max" type="INT"/>
+            <column name="css_nb" type="INT"/>
+            <column name="css_tps" type="INT"/>
+            <column name="css_size_tot" type="INT"/>
+            <column name="css_size_max" type="INT"/>
+            <column name="img_size_max_url" type="VARCHAR(500)"/>
+            <column name="js_size_max_url" type="VARCHAR(500)"/>
+            <column name="css_size_max_url" type="VARCHAR(500)"/>
+        </createTable>
+        <createTable tableName="testcasestep">
+            <column name="Test" type="VARCHAR(45)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="TestCase" type="VARCHAR(45)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="Step" type="INT UNSIGNED">
+                <constraints nullable="false"/>
+            </column>
+            <column name="Description" type="VARCHAR(150)">
+                <constraints nullable="false"/>
+            </column>
+            <column defaultValue="N" name="useStep" type="VARCHAR(1)"/>
+            <column defaultValue="" name="useStepTest" type="VARCHAR(45)">
+                <constraints nullable="false"/>
+            </column>
+            <column defaultValue="" name="useStepTestCase" type="VARCHAR(45)">
+                <constraints nullable="false"/>
+            </column>
+            <column defaultValueNumeric="0" name="useStepStep" type="INT">
+                <constraints nullable="false"/>
+            </column>
+            <column defaultValue="N" name="inlibrary" type="VARCHAR(1)"/>
+            <column defaultValue="0000-00-00 00:00:00" name="last_modified" type="TIMESTAMP"/>
+        </createTable>
+        <createTable tableName="testcasestepaction">
+            <column name="Test" type="VARCHAR(45)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="TestCase" type="VARCHAR(45)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="Step" type="INT UNSIGNED">
+                <constraints nullable="false"/>
+            </column>
+            <column name="Sequence" type="INT UNSIGNED">
+                <constraints nullable="false"/>
+            </column>
+            <column defaultValue="" name="Action" type="VARCHAR(45)">
+                <constraints nullable="false"/>
+            </column>
+            <column defaultValue="" name="Object" type="VARCHAR(200)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="Property" type="VARCHAR(150)"/>
+            <column defaultValue="" name="Description" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="ScreenshotFileName" type="VARCHAR(150)"/>
+            <column defaultValue="0000-00-00 00:00:00" name="last_modified" type="TIMESTAMP"/>
+        </createTable>
+        <createTable tableName="testcasestepactioncontrol">
+            <column name="Test" type="VARCHAR(45)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="TestCase" type="VARCHAR(45)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="Step" type="INT UNSIGNED">
+                <constraints nullable="false"/>
+            </column>
+            <column name="Sequence" type="INT UNSIGNED">
+                <constraints nullable="false"/>
+            </column>
+            <column name="Control" type="INT UNSIGNED">
+                <constraints nullable="false"/>
+            </column>
+            <column defaultValue="" name="Type" type="VARCHAR(200)">
+                <constraints nullable="false"/>
+            </column>
+            <column defaultValue="" name="ControlValue" type="VARCHAR(200)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="ControlProperty" type="VARCHAR(200)"/>
+            <column defaultValue="" name="ControlDescription" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column defaultValue="Y" name="Fatal" type="VARCHAR(1)"/>
+            <column name="ScreenshotFileName" type="VARCHAR(150)"/>
+            <column defaultValue="0000-00-00 00:00:00" name="last_modified" type="TIMESTAMP"/>
+        </createTable>
+        <createTable tableName="testcasestepactioncontrolexecution">
+            <column name="ID" type="BIGINT UNSIGNED">
+                <constraints nullable="false"/>
+            </column>
+            <column defaultValue="" name="Test" type="VARCHAR(45)">
+                <constraints nullable="false"/>
+            </column>
+            <column defaultValue="" name="TestCase" type="VARCHAR(45)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="Step" type="INT UNSIGNED">
+                <constraints nullable="false"/>
+            </column>
+            <column name="Sequence" type="INT UNSIGNED">
+                <constraints nullable="false"/>
+            </column>
+            <column name="Control" type="INT UNSIGNED">
+                <constraints nullable="false"/>
+            </column>
+            <column name="ReturnCode" type="VARCHAR(2)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="ReturnMessage" type="VARCHAR(500)"/>
+            <column name="ControlType" type="VARCHAR(200)"/>
+            <column name="ControlProperty" type="VARCHAR(2500)"/>
+            <column name="ControlValue" type="VARCHAR(200)"/>
+            <column name="Fatal" type="VARCHAR(1)"/>
+            <column name="Start" type="TIMESTAMP"/>
+            <column name="End" type="TIMESTAMP"/>
+            <column name="StartLong" type="BIGINT"/>
+            <column name="EndLong" type="BIGINT"/>
+            <column name="ScreenshotFilename" type="VARCHAR(150)"/>
+            <column name="PageSourceFilename" type="VARCHAR(150)"/>
+        </createTable>
+        <createTable tableName="testcasestepactionexecution">
+            <column name="ID" type="BIGINT UNSIGNED">
+                <constraints nullable="false"/>
+            </column>
+            <column defaultValue="" name="Test" type="VARCHAR(45)">
+                <constraints nullable="false"/>
+            </column>
+            <column defaultValue="" name="TestCase" type="VARCHAR(45)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="Step" type="INT UNSIGNED">
+                <constraints nullable="false"/>
+            </column>
+            <column name="Sequence" type="INT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="ReturnCode" type="VARCHAR(2)"/>
+            <column name="ReturnMessage" type="VARCHAR(500)"/>
+            <column name="Action" type="VARCHAR(45)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="Object" type="VARCHAR(200)"/>
+            <column name="Property" type="VARCHAR(200)"/>
+            <column name="Start" type="TIMESTAMP"/>
+            <column name="End" type="TIMESTAMP"/>
+            <column name="StartLong" type="BIGINT"/>
+            <column name="EndLong" type="BIGINT"/>
+            <column name="ScreenshotFilename" type="VARCHAR(150)"/>
+            <column name="PageSourceFileName" type="VARCHAR(150)"/>
+        </createTable>
+        <createTable tableName="testcasestepbatch">
+            <column name="Test" type="VARCHAR(45)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="TestCase" type="VARCHAR(45)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="Step" type="VARCHAR(45)">
+                <constraints nullable="false"/>
+            </column>
+            <column defaultValue="" name="Batch" type="VARCHAR(100)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+        <createTable tableName="testcasestepexecution">
+            <column name="ID" type="BIGINT UNSIGNED">
+                <constraints nullable="false"/>
+            </column>
+            <column defaultValue="" name="Test" type="VARCHAR(45)">
+                <constraints nullable="false"/>
+            </column>
+            <column defaultValue="" name="TestCase" type="VARCHAR(45)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="Step" type="INT UNSIGNED">
+                <constraints nullable="false"/>
+            </column>
+            <column name="BatNumExe" type="VARCHAR(45)"/>
+            <column defaultValueComputed="CURRENT_TIMESTAMP" name="Start" type="TIMESTAMP">
+                <constraints nullable="false"/>
+            </column>
+            <column defaultValue="0000-00-00 00:00:00" name="End" type="TIMESTAMP">
+                <constraints nullable="false"/>
+            </column>
+            <column name="FullStart" type="BIGINT UNSIGNED"/>
+            <column name="FullEnd" type="BIGINT UNSIGNED"/>
+            <column name="TimeElapsed" type="DECIMAL(10, 3)"/>
+            <column name="ReturnCode" type="VARCHAR(2)"/>
+            <column name="ReturnMessage" type="VARCHAR(500)"/>
+        </createTable>
+        <createTable tableName="testdata">
+            <column name="key" type="VARCHAR(200)">
+                <constraints nullable="false"/>
+            </column>
+            <column defaultValue="" name="value" type="VARCHAR(5000)">
+                <constraints nullable="false"/>
+            </column>
+            <column defaultValue="" name="Description" type="VARCHAR(1000)"/>
+            <column defaultValue="" name="Application" type="VARCHAR(200)">
+                <constraints nullable="false"/>
+            </column>
+            <column defaultValue="" name="Country" type="VARCHAR(45)">
+                <constraints nullable="false"/>
+            </column>
+            <column defaultValue="" name="Environment" type="VARCHAR(45)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+        <createTable tableName="testdatalib">
+            <column autoIncrement="true" name="TestDataLibID" type="INT UNSIGNED">
+                <constraints primaryKey="true"/>
+            </column>
+            <column name="Name" type="VARCHAR(200)">
+                <constraints nullable="false"/>
+            </column>
+            <column defaultValue="" name="system" type="VARCHAR(45)">
+                <constraints nullable="false"/>
+            </column>
+            <column defaultValue="" name="Environment" type="VARCHAR(45)">
+                <constraints nullable="false"/>
+            </column>
+            <column defaultValue="" name="Country" type="VARCHAR(45)">
+                <constraints nullable="false"/>
+            </column>
+            <column defaultValue="" name="Group" type="VARCHAR(200)">
+                <constraints nullable="false"/>
+            </column>
+            <column defaultValue="" name="Type" type="VARCHAR(45)">
+                <constraints nullable="false"/>
+            </column>
+            <column defaultValue="" name="Database" type="VARCHAR(45)">
+                <constraints nullable="false"/>
+            </column>
+            <column defaultValue="" name="Script" type="VARCHAR(2500)">
+                <constraints nullable="false"/>
+            </column>
+            <column defaultValue="" name="ServicePath" type="VARCHAR(250)">
+                <constraints nullable="false"/>
+            </column>
+            <column defaultValue="" name="Method" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="Envelope" type="TEXT"/>
+            <column defaultValue="" name="Description" type="VARCHAR(1000)">
+                <constraints nullable="false"/>
+            </column>
+            <column defaultValue="" name="Creator" type="VARCHAR(45)">
+                <constraints nullable="false"/>
+            </column>
+            <column defaultValueComputed="CURRENT_TIMESTAMP" name="Created" type="TIMESTAMP">
+                <constraints nullable="false"/>
+            </column>
+            <column defaultValue="" name="LastModifier" type="VARCHAR(45)">
+                <constraints nullable="false"/>
+            </column>
+            <column defaultValueDate="2000-01-01 00:00:00.0" name="LastModified" type="TIMESTAMP">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+        <createTable tableName="testdatalibdata">
+            <column autoIncrement="true" name="TestDataLibDataID" type="BIGINT UNSIGNED">
+                <constraints primaryKey="true"/>
+            </column>
+            <column defaultValueNumeric="0" name="TestDataLibID" type="INT UNSIGNED">
+                <constraints nullable="false"/>
+            </column>
+            <column defaultValue="" name="SubData" type="VARCHAR(200)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="Value" type="TEXT"/>
+            <column defaultValue="" name="Column" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="ParsingAnswer" type="TEXT"/>
+            <column defaultValue="" name="Description" type="VARCHAR(1000)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+        <createTable tableName="user">
+            <column autoIncrement="true" name="UserID" type="INT UNSIGNED">
+                <constraints primaryKey="true"/>
+            </column>
+            <column name="Login" type="VARCHAR(10)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="Password" type="CHAR(40)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="Request" type="VARCHAR(5)"/>
+            <column name="Name" type="VARCHAR(25)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="Team" type="VARCHAR(45)"/>
+            <column defaultValue="en" name="Language" type="VARCHAR(45)"/>
+            <column name="ReportingFavorite" type="VARCHAR(1000)"/>
+            <column defaultValue="" name="robotHost" type="VARCHAR(150)">
+                <constraints nullable="false"/>
+            </column>
+            <column defaultValue="" name="robotPort" type="VARCHAR(20)">
+                <constraints nullable="false"/>
+            </column>
+            <column defaultValue="" name="robotPlatform" type="VARCHAR(45)">
+                <constraints nullable="false"/>
+            </column>
+            <column defaultValue="" name="robotBrowser" type="VARCHAR(45)">
+                <constraints nullable="false"/>
+            </column>
+            <column defaultValue="" name="robotVersion" type="VARCHAR(45)">
+                <constraints nullable="false"/>
+            </column>
+            <column defaultValue="" name="robot" type="VARCHAR(100)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="DefaultSystem" type="VARCHAR(45)"/>
+            <column name="Email" type="VARCHAR(100)"/>
+        </createTable>
+        <createTable tableName="usergroup">
+            <column name="Login" type="VARCHAR(10)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="GroupName" type="VARCHAR(45)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+        <createTable tableName="usersystem">
+            <column name="Login" type="VARCHAR(10)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="System" type="VARCHAR(45)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+        <addPrimaryKey columnNames="Application" constraintName="PRIMARY" tableName="application"/>
+        <addPrimaryKey columnNames="Batch" constraintName="PRIMARY" tableName="batchinvariant"/>
+        <addPrimaryKey columnNames="system, level, seq" constraintName="PRIMARY" tableName="buildrevisioninvariant"/>
+        <addPrimaryKey columnNames="system, Country, Environment, deploytype, JenkinsAgent" constraintName="PRIMARY" tableName="countryenvdeploytype"/>
+        <addPrimaryKey columnNames="system, Country, Environment, Database" constraintName="PRIMARY" tableName="countryenvironmentdatabase"/>
+        <addPrimaryKey columnNames="system, Country, Environment, Application" constraintName="PRIMARY" tableName="countryenvironmentparameters"/>
+        <addPrimaryKey columnNames="system, Country, Environment, systemLink" constraintName="PRIMARY" tableName="countryenvlink"/>
+        <addPrimaryKey columnNames="system, Country, Environment" constraintName="PRIMARY" tableName="countryenvparam"/>
+        <addPrimaryKey columnNames="deploytype" constraintName="PRIMARY" tableName="deploytype"/>
+        <addPrimaryKey columnNames="DocTable, DocField, DocValue, Lang" constraintName="PRIMARY" tableName="documentation"/>
+        <addPrimaryKey columnNames="system, Country, Environment, Session, Server" constraintName="PRIMARY" tableName="host"/>
+        <addPrimaryKey columnNames="idname, value" constraintName="PRIMARY" tableName="invariant"/>
+        <addPrimaryKey columnNames="Key" constraintName="PRIMARY" tableName="myversion"/>
+        <addPrimaryKey columnNames="system, param" constraintName="PRIMARY" tableName="parameter"/>
+        <addPrimaryKey columnNames="idproject" constraintName="PRIMARY" tableName="project"/>
+        <addPrimaryKey columnNames="Name" constraintName="PRIMARY" tableName="soaplibrary"/>
+        <addPrimaryKey columnNames="Name" constraintName="PRIMARY" tableName="sqllibrary"/>
+        <addPrimaryKey columnNames="Test" constraintName="PRIMARY" tableName="test"/>
+        <addPrimaryKey columnNames="Test, TestCase" constraintName="PRIMARY" tableName="testcase"/>
+        <addPrimaryKey columnNames="Test, TestCase, Country" constraintName="PRIMARY" tableName="testcasecountry"/>
+        <addPrimaryKey columnNames="Test, TestCase, Country, Property" constraintName="PRIMARY" tableName="testcasecountryproperties"/>
+        <addPrimaryKey columnNames="ID, system" constraintName="PRIMARY" tableName="testcaseexecutionsysver"/>
+        <addPrimaryKey columnNames="ID" constraintName="PRIMARY" tableName="testcaseexecutionwwwsum"/>
+        <addPrimaryKey columnNames="Test, TestCase, Step" constraintName="PRIMARY" tableName="testcasestep"/>
+        <addPrimaryKey columnNames="Test, TestCase, Step, Sequence" constraintName="PRIMARY" tableName="testcasestepaction"/>
+        <addPrimaryKey columnNames="Test, Sequence, Step, TestCase, Control" constraintName="PRIMARY" tableName="testcasestepactioncontrol"/>
+        <addPrimaryKey columnNames="ID, Test, TestCase, Step, Sequence, Control" constraintName="PRIMARY" tableName="testcasestepactioncontrolexecution"/>
+        <addPrimaryKey columnNames="ID, Test, TestCase, Step, Sequence" constraintName="PRIMARY" tableName="testcasestepactionexecution"/>
+        <addPrimaryKey columnNames="Test, TestCase, Step, Batch" constraintName="PRIMARY" tableName="testcasestepbatch"/>
+        <addPrimaryKey columnNames="ID, Test, TestCase, Step" constraintName="PRIMARY" tableName="testcasestepexecution"/>
+        <addPrimaryKey columnNames="key, Environment, Country, Application" constraintName="PRIMARY" tableName="testdata"/>
+        <addPrimaryKey columnNames="Login, GroupName" constraintName="PRIMARY" tableName="usergroup"/>
+        <addPrimaryKey columnNames="Login, System" constraintName="PRIMARY" tableName="usersystem"/>
+        <addUniqueConstraint columnNames="system, level, versionname" constraintName="IX_buildrevisioninvariant_01" tableName="buildrevisioninvariant"/>
+        <addUniqueConstraint columnNames="campaign" constraintName="IX_campaign_01" tableName="campaign"/>
+        <addUniqueConstraint columnNames="campaign, testbattery" constraintName="IX_campaigncontent_01" tableName="campaigncontent"/>
+        <addUniqueConstraint columnNames="campaign, Parameter, Value" constraintName="IX_campaignparameter_01" tableName="campaignparameter"/>
+        <addUniqueConstraint columnNames="robot" constraintName="IX_robot_01" tableName="robot"/>
+        <addUniqueConstraint columnNames="testbattery" constraintName="IX_testbattery_01" tableName="testbattery"/>
+        <addUniqueConstraint columnNames="testbattery, Test, TestCase" constraintName="IX_testbatterycontent_01" tableName="testbatterycontent"/>
+        <addUniqueConstraint columnNames="Name, system, Environment, Country" constraintName="IX_testdatalib_01" tableName="testdatalib"/>
+        <addUniqueConstraint columnNames="TestDataLibID, SubData" constraintName="IX_testdatalibdata_01" tableName="testdatalibdata"/>
+        <addUniqueConstraint columnNames="Login" constraintName="IX_user_01" tableName="user"/>
+        <createIndex indexName="FK_application_01_IX" tableName="application">
+            <column name="deploytype"/>
+        </createIndex>
+        <createIndex indexName="FK_buildrevisionbatch_01_IX" tableName="buildrevisionbatch">
+            <column name="Batch"/>
+        </createIndex>
+        <createIndex indexName="FK_buildrevisionbatch_02_IX" tableName="buildrevisionbatch">
+            <column name="system"/>
+            <column name="Country"/>
+            <column name="Environment"/>
+        </createIndex>
+        <createIndex indexName="FK_buildrevisionparameters_01_IX" tableName="buildrevisionparameters">
+            <column name="Application"/>
+        </createIndex>
+        <createIndex indexName="FK_campaigncontent_02" tableName="campaigncontent">
+            <column name="testbattery"/>
+        </createIndex>
+        <createIndex indexName="FK_countryenvdeploytype_01_IX" tableName="countryenvdeploytype">
+            <column name="system"/>
+            <column name="Country"/>
+            <column name="Environment"/>
+        </createIndex>
+        <createIndex indexName="FK_countryenvdeploytype_02_IX" tableName="countryenvdeploytype">
+            <column name="deploytype"/>
+        </createIndex>
+        <createIndex indexName="FK_countryenvironmentdatabase_01_IX" tableName="countryenvironmentdatabase">
+            <column name="system"/>
+            <column name="Country"/>
+            <column name="Environment"/>
+        </createIndex>
+        <createIndex indexName="FK_countryenvironmentparameters_01_IX" tableName="countryenvironmentparameters">
+            <column name="system"/>
+            <column name="Country"/>
+            <column name="Environment"/>
+        </createIndex>
+        <createIndex indexName="FK_countryenvironmentparameters_02_IX" tableName="countryenvironmentparameters">
+            <column name="Application"/>
+        </createIndex>
+        <createIndex indexName="FK_countryenvlink_01_IX" tableName="countryenvlink">
+            <column name="system"/>
+            <column name="Country"/>
+            <column name="Environment"/>
+        </createIndex>
+        <createIndex indexName="FK_countryenvlink_02_IX" tableName="countryenvlink">
+            <column name="systemLink"/>
+            <column name="CountryLink"/>
+            <column name="EnvironmentLink"/>
+        </createIndex>
+        <createIndex indexName="FK_countryenvparam_log_01_IX" tableName="countryenvparam_log">
+            <column name="system"/>
+            <column name="Country"/>
+            <column name="Environment"/>
+        </createIndex>
+        <createIndex indexName="FK_countryenvparam_log_02_IX" tableName="countryenvparam_log">
+            <column name="system"/>
+            <column name="Build"/>
+            <column name="Revision"/>
+        </createIndex>
+        <createIndex indexName="FK_host_01_IX" tableName="host">
+            <column name="system"/>
+            <column name="Country"/>
+            <column name="Environment"/>
+        </createIndex>
+        <createIndex indexName="FK_testcaseexecutionsysver_01_IX" tableName="testcaseexecutionsysver">
+            <column name="ID"/>
+        </createIndex>
+        <createIndex indexName="FK_testcaseexecutionwwwdet_01_IX" tableName="testcaseexecutionwwwdet">
+            <column name="ExecID"/>
+        </createIndex>
+        <createIndex indexName="FK_testcasestepactioncontrol_01_IX" tableName="testcasestepactioncontrol">
+            <column name="Test"/>
+            <column name="TestCase"/>
+            <column name="Step"/>
+            <column name="Sequence"/>
+        </createIndex>
+        <createIndex indexName="IX_buildrevisionparameters_02" tableName="buildrevisionparameters">
+            <column name="Build"/>
+            <column name="Revision"/>
+            <column name="Application"/>
+        </createIndex>
+        <createIndex indexName="IX_campaigncontent_02" tableName="campaigncontent">
+            <column name="campaign"/>
+        </createIndex>
+        <createIndex indexName="IX_campaignparameter_02" tableName="campaignparameter">
+            <column name="campaign"/>
+        </createIndex>
+        <createIndex indexName="IX_invariant_01" tableName="invariant">
+            <column name="idname"/>
+            <column name="sort"/>
+        </createIndex>
+        <createIndex indexName="IX_log_01" tableName="log">
+            <column name="datecre"/>
+        </createIndex>
+        <createIndex indexName="IX_logevent_01" tableName="logevent">
+            <column name="Time"/>
+        </createIndex>
+        <createIndex indexName="IX_test_01" tableName="test">
+            <column name="Test"/>
+            <column name="Active"/>
+        </createIndex>
+        <createIndex indexName="IX_testbatterycontent_02" tableName="testbatterycontent">
+            <column name="testbattery"/>
+        </createIndex>
+        <createIndex indexName="IX_testbatterycontent_03" tableName="testbatterycontent">
+            <column name="Test"/>
+            <column name="TestCase"/>
+        </createIndex>
+        <createIndex indexName="IX_testcase_01" tableName="testcase">
+            <column name="Group"/>
+        </createIndex>
+        <createIndex indexName="IX_testcase_02" tableName="testcase">
+            <column name="Test"/>
+            <column name="TestCase"/>
+            <column name="Application"/>
+            <column name="TcActive"/>
+            <column name="Group"/>
+        </createIndex>
+        <createIndex indexName="IX_testcase_03" tableName="testcase">
+            <column name="Application"/>
+        </createIndex>
+        <createIndex indexName="IX_testcase_04" tableName="testcase">
+            <column name="Project"/>
+        </createIndex>
+        <createIndex indexName="IX_testcaseexecution_01" tableName="testcaseexecution">
+            <column name="Test"/>
+            <column name="TestCase"/>
+        </createIndex>
+        <createIndex indexName="IX_testcaseexecution_01" tableName="testcaseexecutionqueue">
+            <column name="Test"/>
+            <column name="TestCase"/>
+            <column name="Country"/>
+        </createIndex>
+        <createIndex indexName="IX_testcaseexecution_02" tableName="testcaseexecution">
+            <column name="Tag"/>
+        </createIndex>
+        <createIndex indexName="IX_testcaseexecution_02" tableName="testcaseexecutionqueue">
+            <column name="Tag"/>
+        </createIndex>
+        <createIndex indexName="IX_testcaseexecution_03" tableName="testcaseexecution">
+            <column name="Start"/>
+        </createIndex>
+        <createIndex indexName="IX_testcaseexecution_04" tableName="testcaseexecution">
+            <column name="Test"/>
+            <column name="TestCase"/>
+            <column name="Country"/>
+            <column name="Browser"/>
+            <column name="Start"/>
+            <column name="ControlStatus"/>
+        </createIndex>
+        <createIndex indexName="IX_testcaseexecution_05" tableName="testcaseexecution">
+            <column name="Build"/>
+            <column name="Revision"/>
+        </createIndex>
+        <createIndex indexName="IX_testcaseexecution_06" tableName="testcaseexecution">
+            <column name="Test"/>
+        </createIndex>
+        <createIndex indexName="IX_testcaseexecution_07" tableName="testcaseexecution">
+            <column name="Test"/>
+            <column name="TestCase"/>
+            <column name="Build"/>
+            <column name="Revision"/>
+            <column name="Environment"/>
+            <column name="Country"/>
+            <column name="ID"/>
+        </createIndex>
+        <createIndex indexName="IX_testcaseexecution_08" tableName="testcaseexecution">
+            <column name="Application"/>
+        </createIndex>
+        <createIndex indexName="IX_testcaseexecutiondata_01" tableName="testcaseexecutiondata">
+            <column name="Property"/>
+            <column name="Start"/>
+        </createIndex>
+        <createIndex indexName="IX_testcaseexecutiondata_02" tableName="testcaseexecutiondata">
+            <column name="Start"/>
+        </createIndex>
+        <createIndex indexName="IX_testcaseexecutionsysver_02" tableName="testcaseexecutionsysver">
+            <column name="system"/>
+            <column name="Build"/>
+            <column name="Revision"/>
+        </createIndex>
+        <createIndex indexName="IX_testcaseexecutionwwwdet_01" tableName="testcaseexecutionwwwdet">
+            <column name="Start"/>
+        </createIndex>
+        <createIndex indexName="IX_testcasestepactioncontrolexecution_01" tableName="testcasestepactioncontrolexecution">
+            <column name="Start"/>
+        </createIndex>
+        <createIndex indexName="IX_testcasestepactionexecution_01" tableName="testcasestepactionexecution">
+            <column name="Start"/>
+        </createIndex>
+        <createIndex indexName="IX_testcasestepbatch_01" tableName="testcasestepbatch">
+            <column name="Batch"/>
+        </createIndex>
+        <createIndex indexName="IX_testcasestepexecution_01" tableName="testcasestepexecution">
+            <column name="Start"/>
+        </createIndex>
+        <addForeignKeyConstraint baseColumnNames="deploytype" baseTableName="application" constraintName="FK_application_01" deferrable="false" initiallyDeferred="false" onDelete="SET NULL" onUpdate="CASCADE" referencedColumnNames="deploytype" referencedTableName="deploytype"/>
+        <addForeignKeyConstraint baseColumnNames="Batch" baseTableName="buildrevisionbatch" constraintName="FK_buildrevisionbatch_01" deferrable="false" initiallyDeferred="false" onDelete="CASCADE" onUpdate="CASCADE" referencedColumnNames="Batch" referencedTableName="batchinvariant"/>
+        <addForeignKeyConstraint baseColumnNames="system,Country,Environment" baseTableName="buildrevisionbatch" constraintName="FK_buildrevisionbatch_02" deferrable="false" initiallyDeferred="false" onDelete="CASCADE" onUpdate="CASCADE" referencedColumnNames="system,Country,Environment" referencedTableName="countryenvparam"/>
+        <addForeignKeyConstraint baseColumnNames="Application" baseTableName="buildrevisionparameters" constraintName="FK_buildrevisionparameters_01" deferrable="false" initiallyDeferred="false" onDelete="CASCADE" onUpdate="CASCADE" referencedColumnNames="Application" referencedTableName="application"/>
+        <addForeignKeyConstraint baseColumnNames="campaign" baseTableName="campaigncontent" constraintName="FK_campaigncontent_01" deferrable="false" initiallyDeferred="false" onDelete="CASCADE" onUpdate="CASCADE" referencedColumnNames="campaign" referencedTableName="campaign"/>
+        <addForeignKeyConstraint baseColumnNames="testbattery" baseTableName="campaigncontent" constraintName="FK_campaigncontent_02" deferrable="false" initiallyDeferred="false" onDelete="CASCADE" onUpdate="CASCADE" referencedColumnNames="testbattery" referencedTableName="testbattery"/>
+        <addForeignKeyConstraint baseColumnNames="campaign" baseTableName="campaignparameter" constraintName="FK_campaignparameter_01" deferrable="false" initiallyDeferred="false" onDelete="CASCADE" onUpdate="CASCADE" referencedColumnNames="campaign" referencedTableName="campaign"/>
+        <addForeignKeyConstraint baseColumnNames="system,Country,Environment" baseTableName="countryenvdeploytype" constraintName="FK_countryenvdeploytype_01" deferrable="false" initiallyDeferred="false" onDelete="CASCADE" onUpdate="CASCADE" referencedColumnNames="system,Country,Environment" referencedTableName="countryenvparam"/>
+        <addForeignKeyConstraint baseColumnNames="deploytype" baseTableName="countryenvdeploytype" constraintName="FK_countryenvdeploytype_02" deferrable="false" initiallyDeferred="false" onDelete="CASCADE" onUpdate="CASCADE" referencedColumnNames="deploytype" referencedTableName="deploytype"/>
+        <addForeignKeyConstraint baseColumnNames="system,Country,Environment" baseTableName="countryenvironmentdatabase" constraintName="FK_countryenvironmentdatabase_01" deferrable="false" initiallyDeferred="false" onDelete="CASCADE" onUpdate="CASCADE" referencedColumnNames="system,Country,Environment" referencedTableName="countryenvparam"/>
+        <addForeignKeyConstraint baseColumnNames="system,Country,Environment" baseTableName="countryenvironmentparameters" constraintName="FK_countryenvironmentparameters_01" deferrable="false" initiallyDeferred="false" onDelete="CASCADE" onUpdate="CASCADE" referencedColumnNames="system,Country,Environment" referencedTableName="countryenvparam"/>
+        <addForeignKeyConstraint baseColumnNames="Application" baseTableName="countryenvironmentparameters" constraintName="FK_countryenvironmentparameters_02" deferrable="false" initiallyDeferred="false" onDelete="CASCADE" onUpdate="CASCADE" referencedColumnNames="Application" referencedTableName="application"/>
+        <addForeignKeyConstraint baseColumnNames="system,Country,Environment" baseTableName="countryenvlink" constraintName="FK_countryenvlink_01" deferrable="false" initiallyDeferred="false" onDelete="CASCADE" onUpdate="CASCADE" referencedColumnNames="system,Country,Environment" referencedTableName="countryenvparam"/>
+        <addForeignKeyConstraint baseColumnNames="systemLink,CountryLink,EnvironmentLink" baseTableName="countryenvlink" constraintName="FK_countryenvlink_02" deferrable="false" initiallyDeferred="false" onDelete="CASCADE" onUpdate="CASCADE" referencedColumnNames="system,Country,Environment" referencedTableName="countryenvparam"/>
+        <addForeignKeyConstraint baseColumnNames="system,Country,Environment" baseTableName="countryenvparam_log" constraintName="FK_countryenvparam_log_01" deferrable="false" initiallyDeferred="false" onDelete="CASCADE" onUpdate="CASCADE" referencedColumnNames="system,Country,Environment" referencedTableName="countryenvparam"/>
+        <addForeignKeyConstraint baseColumnNames="system,Country,Environment" baseTableName="host" constraintName="FK_host_01" deferrable="false" initiallyDeferred="false" onDelete="CASCADE" onUpdate="CASCADE" referencedColumnNames="system,Country,Environment" referencedTableName="countryenvparam"/>
+        <addForeignKeyConstraint baseColumnNames="testbattery" baseTableName="testbatterycontent" constraintName="FK_testbatterycontent_01" deferrable="false" initiallyDeferred="false" onDelete="CASCADE" onUpdate="CASCADE" referencedColumnNames="testbattery" referencedTableName="testbattery"/>
+        <addForeignKeyConstraint baseColumnNames="Test,TestCase" baseTableName="testbatterycontent" constraintName="FK_testbatterycontent_02" deferrable="false" initiallyDeferred="false" onDelete="CASCADE" onUpdate="CASCADE" referencedColumnNames="Test,TestCase" referencedTableName="testcase"/>
+        <addForeignKeyConstraint baseColumnNames="Test" baseTableName="testcase" constraintName="FK_testcase_01" deferrable="false" initiallyDeferred="false" onDelete="CASCADE" onUpdate="CASCADE" referencedColumnNames="Test" referencedTableName="test"/>
+        <addForeignKeyConstraint baseColumnNames="Application" baseTableName="testcase" constraintName="FK_testcase_02" deferrable="false" initiallyDeferred="false" onDelete="CASCADE" onUpdate="CASCADE" referencedColumnNames="Application" referencedTableName="application"/>
+        <addForeignKeyConstraint baseColumnNames="Project" baseTableName="testcase" constraintName="FK_testcase_03" deferrable="false" initiallyDeferred="false" onDelete="SET NULL" onUpdate="CASCADE" referencedColumnNames="idproject" referencedTableName="project"/>
+        <addForeignKeyConstraint baseColumnNames="Test,TestCase" baseTableName="testcasecountry" constraintName="FK_testcasecountry_01" deferrable="false" initiallyDeferred="false" onDelete="CASCADE" onUpdate="CASCADE" referencedColumnNames="Test,TestCase" referencedTableName="testcase"/>
+        <addForeignKeyConstraint baseColumnNames="Test,TestCase,Country" baseTableName="testcasecountryproperties" constraintName="FK_testcasecountryproperties_01" deferrable="false" initiallyDeferred="false" onDelete="CASCADE" onUpdate="CASCADE" referencedColumnNames="Test,TestCase,Country" referencedTableName="testcasecountry"/>
+        <addForeignKeyConstraint baseColumnNames="Test,TestCase" baseTableName="testcaseexecution" constraintName="FK_testcaseexecution_01" deferrable="false" initiallyDeferred="false" onDelete="CASCADE" onUpdate="CASCADE" referencedColumnNames="Test,TestCase" referencedTableName="testcase"/>
+        <addForeignKeyConstraint baseColumnNames="Application" baseTableName="testcaseexecution" constraintName="FK_testcaseexecution_02" deferrable="false" initiallyDeferred="false" onDelete="CASCADE" onUpdate="CASCADE" referencedColumnNames="Application" referencedTableName="application"/>
+        <addForeignKeyConstraint baseColumnNames="ID" baseTableName="testcaseexecutiondata" constraintName="FK_testcaseexecutiondata_01" deferrable="false" initiallyDeferred="false" onDelete="CASCADE" onUpdate="CASCADE" referencedColumnNames="ID" referencedTableName="testcaseexecution"/>
+        <addForeignKeyConstraint baseColumnNames="Test,TestCase,Country" baseTableName="testcaseexecutionqueue" constraintName="FK_testcaseexecutionqueue_01" deferrable="false" initiallyDeferred="false" onDelete="CASCADE" onUpdate="CASCADE" referencedColumnNames="Test,TestCase,Country" referencedTableName="testcasecountry"/>
+        <addForeignKeyConstraint baseColumnNames="ID" baseTableName="testcaseexecutionsysver" constraintName="FK_testcaseexecutionsysver_01" deferrable="false" initiallyDeferred="false" onDelete="CASCADE" onUpdate="CASCADE" referencedColumnNames="ID" referencedTableName="testcaseexecution"/>
+        <addForeignKeyConstraint baseColumnNames="ExecID" baseTableName="testcaseexecutionwwwdet" constraintName="FK_testcaseexecutionwwwdet_01" deferrable="false" initiallyDeferred="false" onDelete="CASCADE" onUpdate="CASCADE" referencedColumnNames="ID" referencedTableName="testcaseexecution"/>
+        <addForeignKeyConstraint baseColumnNames="ID" baseTableName="testcaseexecutionwwwsum" constraintName="FK_testcaseexecutionwwwsum_01" deferrable="false" initiallyDeferred="false" onDelete="CASCADE" onUpdate="CASCADE" referencedColumnNames="ID" referencedTableName="testcaseexecution"/>
+        <addForeignKeyConstraint baseColumnNames="Test,TestCase" baseTableName="testcasestep" constraintName="FK_testcasestep_01" deferrable="false" initiallyDeferred="false" onDelete="CASCADE" onUpdate="CASCADE" referencedColumnNames="Test,TestCase" referencedTableName="testcase"/>
+        <addForeignKeyConstraint baseColumnNames="Test,TestCase,Step" baseTableName="testcasestepaction" constraintName="FK_testcasestepaction_01" deferrable="false" initiallyDeferred="false" onDelete="CASCADE" onUpdate="CASCADE" referencedColumnNames="Test,TestCase,Step" referencedTableName="testcasestep"/>
+        <addForeignKeyConstraint baseColumnNames="Test,TestCase,Step,Sequence" baseTableName="testcasestepactioncontrol" constraintName="FK_testcasestepactioncontrol_01" deferrable="false" initiallyDeferred="false" onDelete="CASCADE" onUpdate="CASCADE" referencedColumnNames="Test,TestCase,Step,Sequence" referencedTableName="testcasestepaction"/>
+        <addForeignKeyConstraint baseColumnNames="ID,Test,TestCase,Step" baseTableName="testcasestepactioncontrolexecution" constraintName="FK_testcasestepactioncontrolexecution_01" deferrable="false" initiallyDeferred="false" onDelete="CASCADE" onUpdate="CASCADE" referencedColumnNames="ID,Test,TestCase,Step" referencedTableName="testcasestepexecution"/>
+        <addForeignKeyConstraint baseColumnNames="ID,Test,TestCase,Step" baseTableName="testcasestepactionexecution" constraintName="FK_testcasestepactionexecution_01" deferrable="false" initiallyDeferred="false" onDelete="CASCADE" onUpdate="CASCADE" referencedColumnNames="ID,Test,TestCase,Step" referencedTableName="testcasestepexecution"/>
+        <addForeignKeyConstraint baseColumnNames="Test,TestCase" baseTableName="testcasestepbatch" constraintName="FK_testcasestepbatch_01" deferrable="false" initiallyDeferred="false" onDelete="CASCADE" onUpdate="CASCADE" referencedColumnNames="Test,TestCase" referencedTableName="testcase"/>
+        <addForeignKeyConstraint baseColumnNames="Batch" baseTableName="testcasestepbatch" constraintName="FK_testcasestepbatch_02" deferrable="false" initiallyDeferred="false" onDelete="CASCADE" onUpdate="CASCADE" referencedColumnNames="Batch" referencedTableName="batchinvariant"/>
+        <addForeignKeyConstraint baseColumnNames="ID" baseTableName="testcasestepexecution" constraintName="FK_testcasestepexecution_01" deferrable="false" initiallyDeferred="false" onDelete="CASCADE" onUpdate="CASCADE" referencedColumnNames="ID" referencedTableName="testcaseexecution"/>
+        <addForeignKeyConstraint baseColumnNames="TestDataLibID" baseTableName="testdatalibdata" constraintName="FK_testdatalibdata_01" deferrable="false" initiallyDeferred="false" onDelete="CASCADE" onUpdate="CASCADE" referencedColumnNames="TestDataLibID" referencedTableName="testdatalib"/>
+        <addForeignKeyConstraint baseColumnNames="Login" baseTableName="usergroup" constraintName="FK_usergroup_01" deferrable="false" initiallyDeferred="false" onDelete="CASCADE" onUpdate="CASCADE" referencedColumnNames="Login" referencedTableName="user"/>
+        <addForeignKeyConstraint baseColumnNames="Login" baseTableName="usersystem" constraintName="FK_usersystem_01" deferrable="false" initiallyDeferred="false" onDelete="CASCADE" onUpdate="CASCADE" referencedColumnNames="Login" referencedTableName="user"/>
+    </changeSet>
+</databaseChangeLog>

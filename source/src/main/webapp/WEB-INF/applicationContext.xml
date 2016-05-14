@@ -29,6 +29,11 @@
         <property name="resourceRef" value="true"/>
     </bean>
 
+    <bean id="liquibase" class="liquibase.integration.spring.SpringLiquibase">
+        <property name="dataSource" ref="dataSource"/>
+        <property name="changeLog" value="classpath:/db/changelog/master.xml"/>
+    </bean>
+
     <context:annotation-config/>
 
     <context:component-scan base-package="org.cerberus.*">
