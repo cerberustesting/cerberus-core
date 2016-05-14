@@ -21,7 +21,6 @@ package org.cerberus.crud.dao;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.List;
 import org.cerberus.crud.entity.CountryEnvDeployType;
 import org.cerberus.util.answer.Answer;
 import org.cerberus.util.answer.AnswerList;
@@ -32,17 +31,8 @@ public interface ICountryEnvDeployTypeDAO {
      *
      * @param system
      * @param country
-     * @param env
-     * @param deploy
-     * @return
-     */
-    List<String> findJenkinsAgentByKey(String system, String country, String env, String deploy);
-
-    /**
-     *
-     * @param system
-     * @param country
      * @param environment
+     * @param deployType
      * @param startPosition
      * @param length
      * @param columnName
@@ -51,7 +41,7 @@ public interface ICountryEnvDeployTypeDAO {
      * @param string
      * @return
      */
-    AnswerList readByVariousByCriteria(String system, String country, String environment, int startPosition, int length, String columnName, String sort, String searchParameter, String string);
+    AnswerList readByVariousByCriteria(String system, String country, String environment, String deployType, int startPosition, int length, String columnName, String sort, String searchParameter, String string);
 
     /**
      *

@@ -27,6 +27,7 @@ import java.util.List;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.cerberus.crud.dao.ICountryEnvironmentParametersDAO;
+import org.cerberus.crud.entity.BuildRevisionInvariant;
 import org.cerberus.database.DatabaseSpring;
 import org.cerberus.crud.entity.CountryEnvironmentParameters;
 import org.cerberus.crud.entity.MessageEvent;
@@ -42,6 +43,7 @@ import org.cerberus.util.answer.AnswerList;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 import org.cerberus.crud.factory.IFactoryCountryEnvironmentParameters;
+import org.cerberus.util.answer.AnswerItem;
 
 /**
  * {Insert class description here}
@@ -57,7 +59,7 @@ public class CountryEnvironmentParametersDAO implements ICountryEnvironmentParam
     private DatabaseSpring databaseSpring;
     @Autowired
     private IFactoryCountryEnvironmentParameters factoryCountryEnvironmentParameters;
-    
+
     private final String OBJECT_NAME = "CountryEnvironmentParameters";
     private final String SQL_DUPLICATED_CODE = "23000";
     private final int MAX_ROW_SELECTED = 100000;
@@ -65,10 +67,12 @@ public class CountryEnvironmentParametersDAO implements ICountryEnvironmentParam
     private static final Logger LOG = Logger.getLogger(CountryEnvironmentParametersDAO.class);
 
     @Override
-    public CountryEnvironmentParameters findCountryEnvironmentParameterByKey(String system, String country, String environment, String application) throws CerberusException {
-        boolean throwException = false;
+    public AnswerItem readByKey(String system, String country, String environment, String application) {
+        AnswerItem ans = new AnswerItem();
         CountryEnvironmentParameters result = null;
         final String query = "SELECT * FROM countryenvironmentparameters WHERE `system` = ? AND country = ? AND environment = ? AND application = ?";
+        MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
+        msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", ""));
 
         Connection connection = this.databaseSpring.connect();
         try {
@@ -78,43 +82,47 @@ public class CountryEnvironmentParametersDAO implements ICountryEnvironmentParam
                 preStat.setString(2, country);
                 preStat.setString(3, environment);
                 preStat.setString(4, application);
-
                 ResultSet resultSet = preStat.executeQuery();
                 try {
                     if (resultSet.first()) {
-                        String ip = resultSet.getString("IP");
-                        String domain = resultSet.getString("domain");
-                        String url = resultSet.getString("URL");
-                        String urlLogin = resultSet.getString("URLLOGIN");
-                        result = factoryCountryEnvironmentParameters.create(system, country, environment, application, ip, domain, url, urlLogin);
+                        result = loadFromResultSet(resultSet);
+                        msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
+                        msg.setDescription(msg.getDescription().replace("%ITEM%", OBJECT_NAME).replace("%OPERATION%", "SELECT"));
+                        ans.setItem(result);
                     } else {
-                        throwException = true;
+                        msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_NO_DATA_FOUND);
                     }
                 } catch (SQLException exception) {
-                    MyLogger.log(CountryEnvironmentParametersDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
+                    LOG.error("Unable to execute query : " + exception.toString());
+                    msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
+                    msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", exception.toString()));
                 } finally {
                     resultSet.close();
                 }
             } catch (SQLException exception) {
-                MyLogger.log(CountryEnvironmentParametersDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
+                LOG.error("Unable to execute query : " + exception.toString());
+                msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
+                msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", exception.toString()));
             } finally {
                 preStat.close();
             }
         } catch (SQLException exception) {
-            MyLogger.log(CountryEnvironmentParametersDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
+            LOG.error("Unable to execute query : " + exception.toString());
+            msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
+            msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", exception.toString()));
         } finally {
             try {
                 if (connection != null) {
                     connection.close();
                 }
-            } catch (SQLException e) {
-                MyLogger.log(CountryEnvironmentParametersDAO.class.getName(), Level.WARN, e.toString());
+            } catch (SQLException exception) {
+                LOG.warn("Unable to close connection : " + exception.toString());
             }
         }
-        if (throwException) {
-            throw new CerberusException(new MessageGeneral(MessageGeneralEnum.NO_DATA_FOUND));
-        }
-        return result;
+
+        //sets the message
+        ans.setResultMessage(msg);
+        return ans;
     }
 
     @Override
@@ -232,424 +240,6 @@ public class CountryEnvironmentParametersDAO implements ICountryEnvironmentParam
         return result;
     }
 
-    @Override
-    public List<String> getDistinctEnvironmentNames() throws CerberusException {
-        List<String> result = new ArrayList<String>();
-        boolean throwex = false;
-        StringBuilder query = new StringBuilder();
-        query.append("SELECT DISTINCT environment FROM countryenvironmentparameters ");
-
-        Connection connection = this.databaseSpring.connect();
-        try {
-            PreparedStatement preStat = connection.prepareStatement(query.toString());
-            try {
-                ResultSet resultSet = preStat.executeQuery();
-                try {
-                    while (resultSet.next()) {
-                        if (resultSet.getString("environment") != null) {
-                            result.add(resultSet.getString("environment"));
-                        }
-                    }
-                } catch (SQLException exception) {
-                    MyLogger.log(CountryEnvironmentParametersDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
-                } finally {
-                    resultSet.close();
-                }
-            } catch (SQLException exception) {
-                MyLogger.log(CountryEnvironmentParametersDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
-            } finally {
-                preStat.close();
-            }
-        } catch (SQLException exception) {
-            MyLogger.log(CountryEnvironmentParametersDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
-        } finally {
-            try {
-                if (connection != null) {
-                    connection.close();
-                }
-            } catch (SQLException e) {
-                MyLogger.log(CountryEnvironmentParametersDAO.class.getName(), Level.WARN, e.toString());
-            }
-        }
-        if (throwex) {
-            throw new CerberusException(new MessageGeneral(MessageGeneralEnum.NO_DATA_FOUND));
-        }
-        return result;
-    }
-
-    @Override
-    public List<CountryEnvironmentParameters> findAll(String system) throws CerberusException {
-        boolean throwEx = false;
-        final String query = "SELECT * FROM countryenvironmentparameters c where `system`=?";
-
-        List<CountryEnvironmentParameters> result = new ArrayList<CountryEnvironmentParameters>();
-        Connection connection = this.databaseSpring.connect();
-        try {
-            PreparedStatement preStat = connection.prepareStatement(query);
-            try {
-                ResultSet resultSet = preStat.executeQuery();
-                try {
-                    while (resultSet.next()) {
-                        result.add(this.loadFromResultSet(resultSet));
-                    }
-                } catch (SQLException exception) {
-                    LOG.error("Unable to execute query : " + exception.toString());
-                    throwEx = true;
-                } finally {
-                    resultSet.close();
-                }
-            } catch (SQLException exception) {
-                LOG.error("Unable to execute query : " + exception.toString());
-                throwEx = true;
-            } finally {
-                preStat.close();
-            }
-        } catch (SQLException exception) {
-            LOG.error("Unable to execute query : " + exception.toString());
-            throwEx = true;
-        } finally {
-            try {
-                if (connection != null) {
-                    connection.close();
-                }
-            } catch (SQLException e) {
-                LOG.warn("Exception closing the connection :" + e.toString());
-            }
-        }
-        if (throwEx) {
-            throw new CerberusException(new MessageGeneral(MessageGeneralEnum.NO_DATA_FOUND));
-        }
-        return result;
-    }
-
-    @Override
-    public void update_deprecated(CountryEnvironmentParameters cea) throws CerberusException {
-        final StringBuilder query = new StringBuilder("UPDATE `countryenvironmentparameters` SET `IP`=?, ");
-        query.append("`URL`=?, `URLLOGIN`=?, `domain`=? ");
-        query.append(" where `system`=? and `country`=? and `environment`=? and `application`=?");
-
-        Connection connection = this.databaseSpring.connect();
-        try {
-            PreparedStatement preStat = connection.prepareStatement(query.toString());
-            preStat.setString(1, cea.getIp());
-            preStat.setString(2, cea.getUrl());
-            preStat.setString(3, cea.getUrlLogin());
-            preStat.setString(4, cea.getDomain());
-            preStat.setString(5, cea.getSystem());
-            preStat.setString(6, cea.getCountry());
-            preStat.setString(7, cea.getEnvironment());
-            preStat.setString(8, cea.getApplication());
-
-            try {
-                preStat.executeUpdate();
-            } catch (SQLException exception) {
-                MyLogger.log(CampaignDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
-            } finally {
-                preStat.close();
-            }
-        } catch (SQLException exception) {
-            MyLogger.log(CampaignDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
-        } finally {
-            try {
-                if (connection != null) {
-                    connection.close();
-                }
-            } catch (SQLException e) {
-                LOG.warn("Exception closing the connection :" + e.toString());
-            }
-        }
-    }
-
-    @Override
-    public void delete_deprecated(CountryEnvironmentParameters cea) throws CerberusException {
-        final StringBuilder query = new StringBuilder("DELETE FROM `countryenvironmentparameters` WHERE `system`=? and `country`=? and `environment`=? and `application`=?");
-
-        Connection connection = this.databaseSpring.connect();
-        try {
-            PreparedStatement preStat = connection.prepareStatement(query.toString());
-            preStat.setString(1, cea.getSystem());
-            preStat.setString(2, cea.getCountry());
-            preStat.setString(3, cea.getEnvironment());
-            preStat.setString(4, cea.getApplication());
-
-            try {
-                preStat.executeUpdate();
-            } catch (SQLException exception) {
-                LOG.error("Unable to execute query : " + exception.toString());
-            } finally {
-                preStat.close();
-            }
-        } catch (SQLException exception) {
-            LOG.error("Unable to execute query : " + exception.toString());
-        } finally {
-            try {
-                if (connection != null) {
-                    connection.close();
-                }
-            } catch (SQLException e) {
-                LOG.warn("Exception closing the connection :" + e.toString());
-            }
-        }
-    }
-
-    @Override
-    public void create_deprecated(CountryEnvironmentParameters cea) throws CerberusException {
-        final StringBuilder query = new StringBuilder("INSERT INTO `countryenvironmentparameters` ");
-        query.append("(`system`, `country`, `environment`, `application`, `ip`, `domain`, `url`, `urllogin`) VALUES ");
-        query.append("(?,?,?,?,?,?,?,?)");
-
-        Connection connection = this.databaseSpring.connect();
-        try {
-            PreparedStatement preStat = connection.prepareStatement(query.toString());
-            preStat.setString(1, cea.getSystem());
-            preStat.setString(2, cea.getCountry());
-            preStat.setString(3, cea.getEnvironment());
-            preStat.setString(4, cea.getApplication());
-            preStat.setString(5, cea.getIp());
-            preStat.setString(6, cea.getDomain());
-            preStat.setString(7, cea.getUrl());
-            preStat.setString(8, cea.getUrlLogin());
-
-            try {
-                preStat.executeUpdate();
-            } catch (SQLException exception) {
-                LOG.error("Unable to execute query : " + exception.toString());
-            } finally {
-                preStat.close();
-            }
-        } catch (SQLException exception) {
-            LOG.error("Unable to execute query : " + exception.toString());
-        } finally {
-            try {
-                if (connection != null) {
-                    connection.close();
-                }
-            } catch (SQLException e) {
-                LOG.warn("Exception closing the connection :" + e.toString());
-            }
-        }
-    }
-
-    @Override
-    public Integer count(String searchTerm, String inds) {
-        Integer result = 0;
-        StringBuilder query = new StringBuilder();
-        StringBuilder gSearch = new StringBuilder();
-        String searchSQL = "";
-
-        query.append("SELECT count(*) FROM countryenvironmentparameters");
-
-        gSearch.append(" where (`system` like '%");
-        gSearch.append(searchTerm);
-        gSearch.append("%'");
-        gSearch.append(" or `country` like '%");
-        gSearch.append(searchTerm);
-        gSearch.append("%'");
-        gSearch.append(" or `environment` like '%");
-        gSearch.append(searchTerm);
-        gSearch.append("%'");
-        gSearch.append(" or `application` like '%");
-        gSearch.append(searchTerm);
-        gSearch.append("%'");
-        gSearch.append(" or `ip` like '%");
-        gSearch.append(searchTerm);
-        gSearch.append("%'");
-        gSearch.append(" or `domain` like '%");
-        gSearch.append(searchTerm);
-        gSearch.append("%'");
-        gSearch.append(" or `url` like '%");
-        gSearch.append(searchTerm);
-        gSearch.append("%'");
-        gSearch.append(" or `urllogin` like '%");
-        gSearch.append(searchTerm);
-        gSearch.append("%')");
-
-        if (!searchTerm.equals("") && !inds.equals("")) {
-            searchSQL = gSearch.toString() + " and " + inds;
-        } else if (!inds.equals("")) {
-            searchSQL = " where " + inds;
-        } else if (!searchTerm.equals("")) {
-            searchSQL = gSearch.toString();
-        }
-
-        query.append(searchSQL);
-
-        Connection connection = this.databaseSpring.connect();
-        try {
-            PreparedStatement preStat = connection.prepareStatement(query.toString());
-            try {
-                ResultSet resultSet = preStat.executeQuery();
-                try {
-
-                    if (resultSet.first()) {
-                        result = resultSet.getInt(1);
-                    }
-
-                } catch (SQLException exception) {
-                    LOG.error("Unable to execute query : " + exception.toString());
-                } finally {
-                    resultSet.close();
-                }
-
-            } catch (SQLException exception) {
-                LOG.error("Unable to execute query : " + exception.toString());
-            } finally {
-                preStat.close();
-            }
-
-        } catch (SQLException exception) {
-            LOG.error("Unable to execute query : " + exception.toString());
-        } finally {
-            try {
-                if (connection != null) {
-                    connection.close();
-                }
-            } catch (SQLException e) {
-                LOG.error(e.toString());
-            }
-        }
-        return result;
-    }
-
-    @Override
-    public List<CountryEnvironmentParameters> findListByCriteria(String system, String country, String env, int start, int amount, String column, String dir, String searchTerm, String individualSearch) {
-        List<CountryEnvironmentParameters> result = new ArrayList<CountryEnvironmentParameters>();
-        StringBuilder gSearch = new StringBuilder();
-        StringBuilder searchSQL = new StringBuilder();
-
-        StringBuilder query = new StringBuilder();
-        query.append("SELECT * FROM countryenvironmentparameters where `system` = ? and `country` = ? and `environment` = ? ");
-
-        gSearch.append(" and (`application` like '%");
-        gSearch.append(searchTerm);
-        gSearch.append("%'");
-        gSearch.append(" or `ip` like '%");
-        gSearch.append(searchTerm);
-        gSearch.append("%'");
-        gSearch.append(" or `domain` like '%");
-        gSearch.append(searchTerm);
-        gSearch.append("%'");
-        gSearch.append(" or `url` like '%");
-        gSearch.append(searchTerm);
-        gSearch.append("%'");
-        gSearch.append(" or `urlLogin` like '%");
-        gSearch.append(searchTerm);
-        gSearch.append("%')");
-
-        if (!searchTerm.equals("") && !individualSearch.equals("")) {
-            searchSQL.append(gSearch.toString());
-            searchSQL.append(" and ");
-            searchSQL.append(individualSearch);
-        } else if (!individualSearch.equals("")) {
-            searchSQL.append(" and `");
-            searchSQL.append(individualSearch);
-            searchSQL.append("`");
-        } else if (!searchTerm.equals("")) {
-            searchSQL.append(gSearch.toString());
-        }
-
-        query.append(searchSQL);
-        query.append("order by `");
-        query.append(column);
-        query.append("` ");
-        query.append(dir);
-        query.append(" limit ");
-        query.append(start);
-        query.append(" , ");
-        query.append(amount);
-
-        Connection connection = this.databaseSpring.connect();
-        try {
-            PreparedStatement preStat = connection.prepareStatement(query.toString());
-            preStat.setString(1, system);
-            preStat.setString(2, country);
-            preStat.setString(3, env);
-            
-            try {
-                ResultSet resultSet = preStat.executeQuery();
-                try {
-
-                    while (resultSet.next()) {
-                        result.add(this.loadFromResultSet(resultSet));
-                    }
-
-                } catch (SQLException exception) {
-                    LOG.error("Unable to execute query : " + exception.toString());
-                } finally {
-                    resultSet.close();
-                }
-
-            } catch (SQLException exception) {
-               LOG.error("Unable to execute query : " + exception.toString());
-            } finally {
-                preStat.close();
-            }
-
-        } catch (SQLException exception) {
-            LOG.error("Unable to execute query : " + exception.toString());
-        } finally {
-            try {
-                if (connection != null) {
-                    connection.close();
-                }
-            } catch (SQLException e) {
-                LOG.error("Unable to execute query : " + e.toString());
-            }
-        }
-        return result;
-    }
-
-    @Override
-    public List<CountryEnvironmentParameters> findListByCriteria(String system, String country, String environment) {
-        List<CountryEnvironmentParameters> result = new ArrayList<CountryEnvironmentParameters>();
-        StringBuilder gSearch = new StringBuilder();
-        StringBuilder searchSQL = new StringBuilder();
-
-        StringBuilder query = new StringBuilder();
-        query.append("SELECT * FROM countryenvironmentparameters where `system` = ? and `country` = ? and `environment` = ? ");
-
-
-        Connection connection = this.databaseSpring.connect();
-        try {
-            PreparedStatement preStat = connection.prepareStatement(query.toString());
-            preStat.setString(1, system);
-            preStat.setString(2, country);
-            preStat.setString(3, environment);
-            
-            try {
-                ResultSet resultSet = preStat.executeQuery();
-                try {
-
-                    while (resultSet.next()) {
-                        result.add(this.loadFromResultSet(resultSet));
-                    }
-
-                } catch (SQLException exception) {
-                    LOG.error("Unable to execute query : " + exception.toString());
-                } finally {
-                    resultSet.close();
-                }
-
-            } catch (SQLException exception) {
-               LOG.error("Unable to execute query : " + exception.toString());
-            } finally {
-                preStat.close();
-            }
-
-        } catch (SQLException exception) {
-            LOG.error("Unable to execute query : " + exception.toString());
-        } finally {
-            try {
-                if (connection != null) {
-                    connection.close();
-                }
-            } catch (SQLException e) {
-                LOG.error("Unable to execute query : " + e.toString());
-            }
-        }
-        return result;
-    }
-    
     @Override
     public AnswerList readByVariousByCriteria(String system, String country, String environment, String application, int start, int amount, String column, String dir, String searchTerm, String individualSearch) {
         AnswerList response = new AnswerList();
@@ -967,5 +557,5 @@ public class CountryEnvironmentParametersDAO implements ICountryEnvironmentParam
         String urllogin = resultSet.getString("urllogin");
         return factoryCountryEnvironmentParameters.create(system, count, env, application, ip, domain, url, urllogin);
     }
-    
+
 }

@@ -65,54 +65,6 @@ public class CountryEnvLinkDAO implements ICountryEnvLinkDAO {
     private final int MAX_ROW_SELECTED = 100000;
 
     @Override
-    public List<CountryEnvLink> findCountryEnvLinkByCriteria(String system, String country, String environment) {
-        List<CountryEnvLink> result = null;
-        CountryEnvLink resultData;
-        final String query = "SELECT * FROM countryenvlink WHERE `system` = ? and country = ? and environment = ? ";
-
-        Connection connection = this.databaseSpring.connect();
-        try {
-            PreparedStatement preStat = connection.prepareStatement(query);
-            try {
-                preStat.setString(1, system);
-                preStat.setString(2, country);
-                preStat.setString(3, environment);
-
-                ResultSet resultSet = preStat.executeQuery();
-                result = new ArrayList<CountryEnvLink>();
-                try {
-                    while (resultSet.next()) {
-                        String systemLink = resultSet.getString("systemLink");
-                        String countryLink = resultSet.getString("countryLink");
-                        String environmentLink = resultSet.getString("environmentLink");
-                        resultData = factoryCountryEnvLink.create(system, country, environment, systemLink, countryLink, environmentLink);
-                        result.add(resultData);
-                    }
-                } catch (SQLException exception) {
-                    MyLogger.log(CountryEnvLinkDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
-                } finally {
-                    resultSet.close();
-                }
-            } catch (SQLException exception) {
-                MyLogger.log(CountryEnvLinkDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
-            } finally {
-                preStat.close();
-            }
-        } catch (SQLException exception) {
-            MyLogger.log(CountryEnvLinkDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
-        } finally {
-            try {
-                if (connection != null) {
-                    connection.close();
-                }
-            } catch (SQLException e) {
-                MyLogger.log(TestCaseStepActionControlDAO.class.getName(), Level.WARN, e.toString());
-            }
-        }
-        return result;
-    }
-
-    @Override
     public AnswerList readByVariousByCriteria(String system, String country, String environment, int start, int amount, String column, String dir, String searchTerm, String individualSearch) {
         AnswerList response = new AnswerList();
         MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);

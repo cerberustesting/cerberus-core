@@ -29,7 +29,6 @@ import java.util.List;
 import org.apache.log4j.Logger;
 import org.cerberus.crud.dao.ICountryEnvParam_logDAO;
 import org.cerberus.crud.entity.CountryEnvParam_log;
-import org.cerberus.crud.entity.Invariant;
 import org.cerberus.database.DatabaseSpring;
 import org.cerberus.crud.entity.MessageEvent;
 import org.cerberus.enums.MessageEventEnum;

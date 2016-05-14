@@ -84,8 +84,8 @@ public class SQLService implements ISQLService {
         MessageEvent mes = new MessageEvent(MessageEventEnum.PROPERTY_SUCCESS_SQL);
 
         try {
-            countryEnvironmentDatabase = this.countryEnvironmentDatabaseService.findCountryEnvironmentDatabaseByKey(tCExecution.getApplication().getSystem(),
-                    testCaseProperties.getCountry(), tCExecution.getEnvironmentData(), db);
+            countryEnvironmentDatabase = this.countryEnvironmentDatabaseService.convert(this.countryEnvironmentDatabaseService.readByKey(tCExecution.getApplication().getSystem(),
+                    testCaseProperties.getCountry(), tCExecution.getEnvironmentData(), db));
             connectionName = countryEnvironmentDatabase.getConnectionPoolName();
 
             if (!(StringUtil.isNullOrEmpty(connectionName))) {
@@ -156,8 +156,8 @@ public class SQLService implements ISQLService {
 
             } else {
 
-                countryEnvironmentDatabase = this.countryEnvironmentDatabaseService.findCountryEnvironmentDatabaseByKey(system,
-                        country, environment, db);
+                countryEnvironmentDatabase = this.countryEnvironmentDatabaseService.convert(this.countryEnvironmentDatabaseService.readByKey(system,
+                        country, environment, db));
                 connectionName = countryEnvironmentDatabase.getConnectionPoolName();
 
                 if (!(StringUtil.isNullOrEmpty(connectionName))) {
@@ -567,8 +567,8 @@ public class SQLService implements ISQLService {
         MessageEvent msg = new MessageEvent(MessageEventEnum.ACTION_FAILED);
 
         try {
-            countryEnvironmentDatabase = this.countryEnvironmentDatabaseService.findCountryEnvironmentDatabaseByKey(system,
-                    country, environment, database);
+            countryEnvironmentDatabase = this.countryEnvironmentDatabaseService.convert(this.countryEnvironmentDatabaseService.readByKey(system,
+                    country, environment, database));
             connectionName = countryEnvironmentDatabase.getConnectionPoolName();
             msg = new MessageEvent(MessageEventEnum.ACTION_FAILED_SQL_GENERIC);
             msg.setDescription(msg.getDescription().replaceAll("%JDBC%", "jdbc/" + connectionName));
@@ -626,8 +626,8 @@ public class SQLService implements ISQLService {
         MessageEvent msg = new MessageEvent(MessageEventEnum.ACTION_FAILED);
 
         try {
-            countryEnvironmentDatabase = this.countryEnvironmentDatabaseService.findCountryEnvironmentDatabaseByKey(system,
-                    country, environment, database);
+            countryEnvironmentDatabase = this.countryEnvironmentDatabaseService.convert(this.countryEnvironmentDatabaseService.readByKey(system,
+                    country, environment, database));
             connectionName = countryEnvironmentDatabase.getConnectionPoolName();
             msg = new MessageEvent(MessageEventEnum.ACTION_FAILED_SQL_GENERIC);
             msg.setDescription(msg.getDescription().replaceAll("%JDBC%", "jdbc/" + connectionName));

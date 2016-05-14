@@ -23,26 +23,11 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import org.cerberus.crud.entity.BuildRevisionParameters;
 
-import java.util.List;
 import org.cerberus.util.answer.Answer;
 import org.cerberus.util.answer.AnswerItem;
 import org.cerberus.util.answer.AnswerList;
 
 public interface IBuildRevisionParametersDAO {
-
-    public List<BuildRevisionParameters> findBuildRevisionParametersByCriteria(String system, String build, String revision);
-
-    String getMaxBuildBySystem(String system);
-
-    String getMaxRevisionBySystemAndBuild(String system, String build);
-
-    void insertBuildRevisionParameters(BuildRevisionParameters brp);
-
-    boolean deleteBuildRevisionParameters(int id);
-
-    boolean updateBuildRevisionParameters(BuildRevisionParameters brp);
-
-    BuildRevisionParameters findBuildRevisionParametersByKey(int id);
 
     /**
      *
@@ -57,6 +42,17 @@ public interface IBuildRevisionParametersDAO {
      * @return
      */
     AnswerItem readLastBySystem(String system);
+
+    /**
+     *
+     * @param build
+     * @param revision
+     * @param release
+     * @param application
+     * @return A list of BuildRevisionParameters object for a build, revision,
+     * release, application
+     */
+    AnswerItem readByVarious2(String build, String revision, String release, String application);
 
     /**
      *
@@ -119,16 +115,6 @@ public interface IBuildRevisionParametersDAO {
      * @return
      */
     Answer update(BuildRevisionParameters brp);
-    
-    /**
-     * 
-     * @param build
-     * @param revision
-     * @param release
-     * @param application
-     * @return A list of BuildRevisionParameters object for a build, revision, release, application
-     */
-    AnswerItem readByVarious2(String build, String revision, String release, String application);
 
     /**
      *

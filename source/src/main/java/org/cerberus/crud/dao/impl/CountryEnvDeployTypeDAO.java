@@ -38,6 +38,7 @@ import org.cerberus.crud.factory.impl.FactoryCountryEnvDeployType;
 import org.cerberus.enums.MessageEventEnum;
 import org.cerberus.util.StringUtil;
 import org.cerberus.util.answer.Answer;
+import org.cerberus.util.answer.AnswerItem;
 import org.cerberus.util.answer.AnswerList;
 
 @Repository
@@ -55,65 +56,7 @@ public class CountryEnvDeployTypeDAO implements ICountryEnvDeployTypeDAO {
     private final int MAX_ROW_SELECTED = 100000;
 
     @Override
-    public List<String> findJenkinsAgentByKey(String system, String country, String env, String deploy) {
-        List<String> list = null;
-        final String query = "SELECT jenkinsagent "
-                + " FROM countryenvdeploytype "
-                + " WHERE country = ?"
-                + " AND `system` = ?"
-                + " AND environment = ?"
-                + " AND deploytype = ?";
-
-        // Debug message on SQL.
-        if (LOG.isDebugEnabled()) {
-            LOG.debug("SQL : " + query);
-            LOG.debug("SQL.param : " + country);
-            LOG.debug("SQL.param : " + system);
-            LOG.debug("SQL.param : " + env);
-            LOG.debug("SQL.param : " + deploy);
-        }
-
-        Connection connection = this.databaseSpring.connect();
-        try {
-            PreparedStatement preStat = connection.prepareStatement(query);
-            try {
-                preStat.setString(1, country);
-                preStat.setString(2, system);
-                preStat.setString(3, env);
-                preStat.setString(4, deploy);
-
-                ResultSet resultSet = preStat.executeQuery();
-                try {
-                    list = new ArrayList<String>();
-                    while (resultSet.next()) {
-                        list.add(resultSet.getString("jenkinsagent"));
-                    }
-                } catch (SQLException exception) {
-                    LOG.error("Unable to execute query : " + exception);
-                } finally {
-                    resultSet.close();
-                }
-            } catch (SQLException exception) {
-                LOG.error("Unable to execute query : " + exception);
-            } finally {
-                preStat.close();
-            }
-        } catch (SQLException exception) {
-            LOG.error("Unable to execute query : " + exception);
-        } finally {
-            try {
-                if (connection != null) {
-                    connection.close();
-                }
-            } catch (SQLException e) {
-                LOG.warn(e.toString());
-            }
-        }
-        return list;
-    }
-
-    @Override
-    public AnswerList readByVariousByCriteria(String system, String country, String environment, int start, int amount, String column, String dir, String searchTerm, String individualSearch) {
+    public AnswerList readByVariousByCriteria(String system, String country, String environment, String deployType, int start, int amount, String column, String dir, String searchTerm, String individualSearch) {
         AnswerList response = new AnswerList();
         MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
         msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", ""));
@@ -145,6 +88,9 @@ public class CountryEnvDeployTypeDAO implements ICountryEnvDeployTypeDAO {
         }
         if (!StringUtil.isNullOrEmpty(environment)) {
             searchSQL.append(" and (`Environment` = ? )");
+        }
+        if (!StringUtil.isNullOrEmpty(deployType)) {
+            searchSQL.append(" and (`deploytype` = ? )");
         }
         query.append(searchSQL);
 

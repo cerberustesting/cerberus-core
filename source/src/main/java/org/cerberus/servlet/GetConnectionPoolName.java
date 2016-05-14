@@ -44,9 +44,8 @@ import org.springframework.web.context.support.WebApplicationContextUtils;
 public class GetConnectionPoolName extends HttpServlet {
 
     /**
-     * Processes requests for both HTTP
-     * <code>GET</code> and
-     * <code>POST</code> methods.
+     * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
+     * methods.
      *
      * @param request servlet request
      * @param response servlet response
@@ -68,13 +67,12 @@ public class GetConnectionPoolName extends HttpServlet {
 
             String result = "";
             try {
-                result = cedService.findCountryEnvironmentDatabaseByKey(system, country, environment, database).getConnectionPoolName();
+                result = cedService.convert(cedService.readByKey(system, country, environment, database)).getConnectionPoolName();
             } catch (CerberusException ex) {
                 Logger.getLogger(GetConnectionPoolName.class.getName()).log(Level.SEVERE, null, ex);
             }
 
             out.print(result);
-
 
         } finally {
             out.close();
@@ -83,8 +81,7 @@ public class GetConnectionPoolName extends HttpServlet {
 
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
     /**
-     * Handles the HTTP
-     * <code>GET</code> method.
+     * Handles the HTTP <code>GET</code> method.
      *
      * @param request servlet request
      * @param response servlet response
@@ -98,8 +95,7 @@ public class GetConnectionPoolName extends HttpServlet {
     }
 
     /**
-     * Handles the HTTP
-     * <code>POST</code> method.
+     * Handles the HTTP <code>POST</code> method.
      *
      * @param request servlet request
      * @param response servlet response

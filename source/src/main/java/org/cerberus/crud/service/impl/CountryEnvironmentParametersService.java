@@ -51,49 +51,13 @@ public class CountryEnvironmentParametersService implements ICountryEnvironmentP
     private static final org.apache.log4j.Logger LOG = org.apache.log4j.Logger.getLogger(CountryEnvironmentParametersService.class);
 
     @Override
-    public CountryEnvironmentParameters findCountryEnvironmentParameterByKey(String system, String country, String environment, String application) throws CerberusException {
-        CountryEnvironmentParameters cea = this.countryEnvironmentParametersDao.findCountryEnvironmentParameterByKey(system, country, environment, application);
-        return cea;
-    }
-
-    @Override
-    public List<String[]> getEnvironmentAvailable(String country, String application) {
-        return countryEnvironmentParametersDao.getEnvironmentAvailable(country, application);
+    public AnswerItem readByKey(String system, String country, String environment, String application) {
+        return countryEnvironmentParametersDao.readByKey(system, country, environment, application);
     }
 
     @Override
     public List<CountryEnvironmentParameters> findCountryEnvironmentParametersByCriteria(CountryEnvironmentParameters countryEnvironmentParameter) throws CerberusException {
         return countryEnvironmentParametersDao.findCountryEnvironmentParametersByCriteria(countryEnvironmentParameter);
-    }
-
-    @Override
-    public List<String> getDistinctEnvironmentNames() throws CerberusException {
-        return countryEnvironmentParametersDao.getDistinctEnvironmentNames();
-    }
-
-    @Override
-    public List<CountryEnvironmentParameters> findAll(String system) throws CerberusException {
-        return countryEnvironmentParametersDao.findAll(system);
-    }
-
-    @Override
-    public void update_deprecated(CountryEnvironmentParameters cea) throws CerberusException {
-        countryEnvironmentParametersDao.update_deprecated(cea);
-    }
-
-    @Override
-    public void delete_deprecated(CountryEnvironmentParameters cea) throws CerberusException {
-        countryEnvironmentParametersDao.delete_deprecated(cea);
-    }
-
-    @Override
-    public void create_deprecated(CountryEnvironmentParameters cea) throws CerberusException {
-        countryEnvironmentParametersDao.create_deprecated(cea);
-    }
-
-    @Override
-    public List<CountryEnvironmentParameters> findListByCriteria(String system, String country, String env, int start, int amount, String column, String dir, String searchTerm, String individualSearch) {
-        return countryEnvironmentParametersDao.findListByCriteria(system, country, env, start, amount, column, dir, searchTerm, individualSearch);
     }
 
     @Override
@@ -104,16 +68,6 @@ public class CountryEnvironmentParametersService implements ICountryEnvironmentP
     @Override
     public AnswerList readByVariousByCriteria(String system, String country, String environment, String application, int start, int amount, String column, String dir, String searchTerm, String individualSearch) {
         return countryEnvironmentParametersDao.readByVariousByCriteria(system, country, environment, application, start, amount, column, dir, searchTerm, individualSearch);
-    }
-
-    @Override
-    public Integer countPerCriteria(String searchTerm, String inds) {
-        return countryEnvironmentParametersDao.count(searchTerm, inds);
-    }
-
-    @Override
-    public List<CountryEnvironmentParameters> findListByCriteria(String system, String country, String environment) {
-        return countryEnvironmentParametersDao.findListByCriteria(system, country, environment);
     }
 
     @Override

@@ -32,6 +32,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import org.cerberus.crud.entity.Application;
 import org.cerberus.crud.entity.BuildRevisionParameters;
+import org.cerberus.crud.entity.CountryEnvDeployType;
 
 import org.cerberus.crud.entity.MessageEvent;
 import org.cerberus.crud.service.IApplicationService;
@@ -310,10 +311,10 @@ public class ReadBuildRevisionParameters extends HttpServlet {
                 Application app;
                 try {
                     app = appService.convert(appService.readByKey(brp.getApplication()));
-                    for (String JenkinsAgent : cedtService.findJenkinsAgentByKey(system, country, environment, app.getDeploytype())) {
-                        String DeployURL = "JenkinsDeploy?application=" + brp.getApplication() + "&jenkinsagent=" + JenkinsAgent + "&country=" + country + "&deploytype=" + app.getDeploytype() + "&release=" + brp.getRelease() + "&jenkinsbuildid=" + brp.getJenkinsBuildId() + "&repositoryurl=" + brp.getRepositoryUrl();
+                    for (CountryEnvDeployType JenkinsAgent : cedtService.convert(cedtService.readByVarious(system, country, environment, app.getDeploytype()))) {
+                        String DeployURL = "JenkinsDeploy?application=" + brp.getApplication() + "&jenkinsagent=" + JenkinsAgent.getJenkinsAgent() + "&country=" + country + "&deploytype=" + app.getDeploytype() + "&release=" + brp.getRelease() + "&jenkinsbuildid=" + brp.getJenkinsBuildId() + "&repositoryurl=" + brp.getRepositoryUrl();
                         JSONObject newSubObjContent = new JSONObject();
-                        newSubObjContent.put("jenkinsAgent", JenkinsAgent);
+                        newSubObjContent.put("jenkinsAgent", JenkinsAgent.getJenkinsAgent());
                         newSubObjContent.put("link", DeployURL);
                         newSubObj.append("install", newSubObjContent);
                     }

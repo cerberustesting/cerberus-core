@@ -48,18 +48,13 @@ public class CountryEnvDeployTypeService implements ICountryEnvDeployTypeService
     private static final org.apache.log4j.Logger LOG = org.apache.log4j.Logger.getLogger(CountryEnvDeployTypeService.class);
 
     @Override
-    public List<String> findJenkinsAgentByKey(String system, String country, String env, String deploy) {
-        return this.countryEnvDeployTypeDAO.findJenkinsAgentByKey(system, country, env, deploy);
+    public AnswerList readByVarious(String system, String country, String environment, String deployType) {
+        return countryEnvDeployTypeDAO.readByVariousByCriteria(system, country, environment, deployType, 0, 0, null, null, null, null);
     }
 
     @Override
-    public AnswerList readByVarious(String system, String country, String environment) {
-        return countryEnvDeployTypeDAO.readByVariousByCriteria(system, country, environment, 0, 0, null, null, null, null);
-    }
-
-    @Override
-    public AnswerList readByVariousByCriteria(String system, String country, String environment, int start, int amount, String column, String dir, String searchTerm, String individualSearch) {
-        return countryEnvDeployTypeDAO.readByVariousByCriteria(system, country, environment, start, amount, column, dir, searchTerm, individualSearch);
+    public AnswerList readByVariousByCriteria(String system, String country, String environment, String deployType, int start, int amount, String column, String dir, String searchTerm, String individualSearch) {
+        return countryEnvDeployTypeDAO.readByVariousByCriteria(system, country, environment, deployType, start, amount, column, dir, searchTerm, individualSearch);
     }
 
     @Override
@@ -104,7 +99,7 @@ public class CountryEnvDeployTypeService implements ICountryEnvDeployTypeService
 
         List<CountryEnvDeployType> oldList = new ArrayList();
         try {
-            oldList = this.convert(this.readByVarious(system, country, environement));
+            oldList = this.convert(this.readByVarious(system, country, environement, null));
         } catch (CerberusException ex) {
             LOG.error(ex);
         }

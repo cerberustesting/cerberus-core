@@ -236,8 +236,8 @@ public class ExecutionStartService implements IExecutionStartService {
             LOG.debug("Loading Country/Environment/Application Information. " + tCExecution.getCountry() + "-" + tCExecution.getEnvironment() + "-" + tCExecution.getApplication().getApplication());
             CountryEnvironmentParameters cea;
             try {
-                cea = this.countryEnvironmentParametersService.findCountryEnvironmentParameterByKey(
-                        tCExecution.getApplication().getSystem(), tCExecution.getCountry(), tCExecution.getEnvironment(), tCExecution.getApplication().getApplication());
+                cea = this.countryEnvironmentParametersService.convert(this.countryEnvironmentParametersService.readByKey(
+                        tCExecution.getApplication().getSystem(), tCExecution.getCountry(), tCExecution.getEnvironment(), tCExecution.getApplication().getApplication()));
                 tCExecution.setCountryEnvironmentParameters(cea);
                 tCExecution.setUrl(cea.getIp() + cea.getUrl());
                 /**
@@ -285,7 +285,7 @@ public class ExecutionStartService implements IExecutionStartService {
         LOG.debug("Loading Country/Environment Information. " + tCExecution.getCountry() + "-" + tCExecution.getEnvironmentData());
         CountryEnvParam countEnvParam;
         try {
-            countEnvParam = this.countryEnvParamService.findCountryEnvParamByKey(tCExecution.getApplication().getSystem(), tCExecution.getCountry(), tCExecution.getEnvironmentData());
+            countEnvParam = this.countryEnvParamService.convert(this.countryEnvParamService.readByKey(tCExecution.getApplication().getSystem(), tCExecution.getCountry(), tCExecution.getEnvironmentData()));
             tCExecution.setCountryEnvParam(countEnvParam);
             /**
              * Copy the Build/Revision of the environment to the Execution. This

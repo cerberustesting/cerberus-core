@@ -161,14 +161,14 @@ public class ExecutionRunService implements IExecutionRunService {
                  */
                 try {
                     List<CountryEnvLink> ceLink = null;
-                    ceLink = countryEnvLinkService.findCountryEnvLinkByCriteria(tCExecution.getApplication().getSystem(), tCExecution.getCountry(), tCExecution.getEnvironment());
+                    ceLink = countryEnvLinkService.convert(countryEnvLinkService.readByVarious(tCExecution.getApplication().getSystem(), tCExecution.getCountry(), tCExecution.getEnvironment()));
                     MyLogger.log(ExecutionRunService.class.getName(), Level.DEBUG, tCExecution.getId() + " - Linked environment found.");
                     for (CountryEnvLink myCeLink : ceLink) {
                         MyLogger.log(ExecutionRunService.class.getName(), Level.DEBUG, tCExecution.getId() + " - Linked environment found : " + myCeLink.getSystemLink() + myCeLink.getCountryLink() + myCeLink.getEnvironmentLink());
 
                         CountryEnvParam mycountEnvParam;
                         try {
-                            mycountEnvParam = this.countryEnvParamService.findCountryEnvParamByKey(myCeLink.getSystemLink(), myCeLink.getCountryLink(), myCeLink.getEnvironmentLink());
+                            mycountEnvParam = this.countryEnvParamService.convert(this.countryEnvParamService.readByKey(myCeLink.getSystemLink(), myCeLink.getCountryLink(), myCeLink.getEnvironmentLink()));
                             myExeSysVer = factoryTestCaseExecutionSysVer.create(runID, myCeLink.getSystemLink(), mycountEnvParam.getBuild(), mycountEnvParam.getRevision());
                             testCaseExecutionSysVerService.insertTestCaseExecutionSysVer(myExeSysVer);
                         } catch (CerberusException ex) {

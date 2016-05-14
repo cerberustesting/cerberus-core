@@ -148,7 +148,7 @@ public class CalculatePropertyForTestCase extends HttpServlet {
                     ICountryEnvironmentDatabaseService countryEnvironmentDatabaseService = appContext.getBean(CountryEnvironmentDatabaseService.class);
 
                     CountryEnvironmentDatabase countryEnvironmentDatabase;
-                    countryEnvironmentDatabase = countryEnvironmentDatabaseService.findCountryEnvironmentDatabaseByKey(system, country, environment, database);
+                    countryEnvironmentDatabase = countryEnvironmentDatabaseService.convert(countryEnvironmentDatabaseService.readByKey(system, country, environment, database));
                     String connectionName = countryEnvironmentDatabase.getConnectionPoolName();
 
                     if (type.equals("executeSqlFromLib")) {

@@ -29,64 +29,7 @@ import org.cerberus.util.answer.AnswerList;
  */
 public interface ICountryEnvParamDAO {
 
-    CountryEnvParam findCountryEnvParamByKey(String system, String country, String environment) throws CerberusException;
-
     List<CountryEnvParam> findCountryEnvParamByCriteria(CountryEnvParam countryEnvParam) throws CerberusException;
-
-    /**
-     * Find all countryEnvParam by System
-     *
-     * @param system
-     * @return
-     * @throws CerberusException
-     */
-    List<CountryEnvParam> findAll(String system) throws CerberusException;
-
-    /**
-     * Update countryEnvParam
-     *
-     * @param cep
-     * @throws CerberusException
-     */
-    void update_deprecated(CountryEnvParam cep) throws CerberusException;
-
-    /**
-     * Delete countryEnvParam
-     *
-     * @param cep
-     * @throws CerberusException
-     */
-    void delete_deprecated(CountryEnvParam cep) throws CerberusException;
-
-    /**
-     * Create countryEnvParam
-     *
-     * @param cep
-     * @throws CerberusException
-     */
-    void create_deprecated(CountryEnvParam cep) throws CerberusException;
-
-    /**
-     *
-     * @param start
-     * @param amount
-     * @param column
-     * @param dir
-     * @param searchTerm
-     * @param individualSearch
-     * @return
-     */
-    public List<CountryEnvParam> findListByCriteria(String system, int start, int amount, String column, String dir, String searchTerm, String individualSearch);
-
-    /**
-     *
-     * @param searchTerm
-     * @param inds
-     * @return
-     */
-    public Integer count(String searchTerm, String inds);
-
-    public List<CountryEnvParam> findListByCriteria(String system);
 
     /**
      *
@@ -134,6 +77,25 @@ public interface ICountryEnvParamDAO {
      * @return
      */
     public AnswerList readByVariousByCriteria(String system, String country, String environment, String build, String revision, String active, String envGp, int startPosition, int length, String columnName, String sort, String searchParameter, String string);
+
+    /**
+     *
+     * @param system
+     * @param country
+     * @param environment
+     * @param build
+     * @param revision
+     * @param active
+     * @param envGp
+     * @param startPosition
+     * @param length
+     * @param columnName
+     * @param sort
+     * @param searchParameter
+     * @param string
+     * @return
+     */
+    public AnswerList readDistinctEnvironmentByVariousByCriteria(String system, String country, String environment, String build, String revision, String active, String envGp, int startPosition, int length, String columnName, String sort, String searchParameter, String string);
 
     /**
      *

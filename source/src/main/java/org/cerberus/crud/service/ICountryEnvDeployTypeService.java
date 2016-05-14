@@ -32,17 +32,8 @@ public interface ICountryEnvDeployTypeService {
      *
      * @param system
      * @param country
-     * @param env
-     * @param deploy
-     * @return
-     */
-    List<String> findJenkinsAgentByKey(String system, String country, String env, String deploy);
-
-    /**
-     *
-     * @param system
-     * @param country
      * @param environment
+     * @param deployType
      * @param start
      * @param amount
      * @param column
@@ -51,16 +42,17 @@ public interface ICountryEnvDeployTypeService {
      * @param individualSearch
      * @return
      */
-    public AnswerList readByVariousByCriteria(String system, String country, String environment, int start, int amount, String column, String dir, String searchTerm, String individualSearch);
+    public AnswerList readByVariousByCriteria(String system, String country, String environment, String deployType, int start, int amount, String column, String dir, String searchTerm, String individualSearch);
 
     /**
      *
      * @param system
      * @param country
      * @param environment
+     * @param deployType
      * @return
      */
-    public AnswerList readByVarious(String system, String country, String environment);
+    public AnswerList readByVarious(String system, String country, String environment, String deployType);
 
     /**
      *

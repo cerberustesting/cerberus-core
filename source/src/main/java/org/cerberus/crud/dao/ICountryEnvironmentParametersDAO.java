@@ -22,6 +22,7 @@ import java.util.List;
 import org.cerberus.crud.entity.CountryEnvironmentParameters;
 import org.cerberus.exception.CerberusException;
 import org.cerberus.util.answer.Answer;
+import org.cerberus.util.answer.AnswerItem;
 import org.cerberus.util.answer.AnswerList;
 
 /**
@@ -33,52 +34,19 @@ import org.cerberus.util.answer.AnswerList;
  */
 public interface ICountryEnvironmentParametersDAO {
 
-    CountryEnvironmentParameters findCountryEnvironmentParameterByKey(String system, String country, String environment, String application) throws CerberusException;
+    /**
+     *
+     * @param system
+     * @param country
+     * @param environment
+     * @param application
+     * @return
+     */
+    AnswerItem readByKey(String system, String country, String environment, String application);
 
     List<String[]> getEnvironmentAvailable(String country, String application);
 
     List<CountryEnvironmentParameters> findCountryEnvironmentParametersByCriteria(CountryEnvironmentParameters countryEnvironmentParameter) throws CerberusException;
-
-    List<String> getDistinctEnvironmentNames() throws CerberusException;
-
-    /**
-     * Find all CountryEnvironmentParameters by System
-     *
-     * @param system
-     * @return
-     * @throws CerberusException
-     */
-    List<CountryEnvironmentParameters> findAll(String system) throws CerberusException;
-
-    /**
-     * Update CountryEnvironmentParameters
-     *
-     * @param cea
-     * @throws CerberusException
-     */
-    void update_deprecated(CountryEnvironmentParameters cea) throws CerberusException;
-
-    /**
-     * Delete CountryEnvironmentParameters
-     *
-     * @param cea
-     * @throws CerberusException
-     */
-    void delete_deprecated(CountryEnvironmentParameters cea) throws CerberusException;
-
-    /**
-     * Create CountryEnvironmentParameters
-     *
-     * @param cea
-     * @throws CerberusException
-     */
-    void create_deprecated(CountryEnvironmentParameters cea) throws CerberusException;
-
-    Integer count(String searchTerm, String inds);
-
-    List<CountryEnvironmentParameters> findListByCriteria(String system, String country, String env, int start, int amount, String column, String dir, String searchTerm, String individualSearch);
-
-    List<CountryEnvironmentParameters> findListByCriteria(String system, String country, String environment);
 
     /**
      *

@@ -311,9 +311,12 @@ function displayEnvList(selectName, system, defaultValue) {
  * @returns {void}
  */
 function displayUniqueEnvList(selectName, system, defaultValue) {
-    $.when($.getJSON("ReadCountryEnvParam", "unique=true&active=Y&system=" + system)).then(function (data) {
+    $.when($.getJSON("ReadCountryEnvParam", "unique=true&system=" + system)).then(function (data) {
         for (var option in data.contentTable) {
-            $("[name='" + selectName + "']").append($('<option></option>').text(data.contentTable[option].environment).val(data.contentTable[option].environment));
+            var text = data.contentTable[option].environment;
+            if (data.contentTable[option].active === false )
+                text = text + " [Currently Disabled]";
+            $("[name='" + selectName + "']").append($('<option></option>').text(text).val(data.contentTable[option].environment));
         }
 
         if (defaultValue !== undefined) {

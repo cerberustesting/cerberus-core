@@ -29,20 +29,6 @@ import org.cerberus.util.answer.AnswerList;
 
 public interface IBuildRevisionParametersService {
 
-    public List<BuildRevisionParameters> findBuildRevisionParametersByCriteria(String application, String build, String revision);
-
-    String getMaxBuildBySystem(String system);
-
-    String getMaxRevisionBySystemAndBuild(String system, String build);
-
-    void insertBuildRevisionParameters(BuildRevisionParameters brp);
-
-    void deleteBuildRevisionParameters(int id);
-
-    void updateBuildRevisionParameters(BuildRevisionParameters brp);
-
-    BuildRevisionParameters findBuildRevisionParametersByKey(int id);
-
     /**
      *
      * @param id
@@ -56,6 +42,18 @@ public interface IBuildRevisionParametersService {
      * @return
      */
     AnswerItem readLastBySystem(String system);
+
+    /**
+     * This service is used to retrieve the buildRevisionParameters from
+     * database knowing the build, revision, release and application
+     *
+     * @param build
+     * @param revision
+     * @param release
+     * @param application
+     * @return buildRevisionParameters Object
+     */
+    AnswerItem readByVarious2(String build, String revision, String release, String application);
 
     /**
      *
@@ -117,6 +115,19 @@ public interface IBuildRevisionParametersService {
     Answer update(BuildRevisionParameters brp);
 
     /**
+     * This service is used to control that a given build and revision is
+     * already used inside a system (ie a deploy has already been made on at
+     * least 1 environment).
+     *
+     * @param application
+     * @param build
+     * @param revision
+     * @return true if the build revision of the system is already used
+     * (deployed in any environment)
+     */
+    boolean check_buildRevisionAlreadyUsed(String application, String build, String revision);
+
+    /**
      *
      * @param answerItem
      * @return
@@ -139,27 +150,4 @@ public interface IBuildRevisionParametersService {
      */
     void convert(Answer answer) throws CerberusException;
 
-    /**
-     * This service is used to control that a given build and revision is
-     * already used inside a system (ie a deploy has already been made on at
-     * least 1 environment).
-     *
-     * @param application
-     * @param build
-     * @param revision
-     * @return true if the build revision of the system is already used
-     * (deployed in any environment)
-     */
-    boolean check_buildRevisionAlreadyUsed(String application, String build, String revision);
-
-    /**
-     * This service is used to retrieve the buildRevisionParameters from database
-     * knowing the build, revision, release and application
-     * @param build
-     * @param revision
-     * @param release
-     * @param application
-     * @return buildRevisionParameters Object 
-     */
-    AnswerItem readByVarious2(String build, String revision, String release, String application);
 }

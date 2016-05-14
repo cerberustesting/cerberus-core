@@ -19,11 +19,9 @@ package org.cerberus.crud.dao;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.List;
 import org.cerberus.crud.entity.Application;
 
 import org.cerberus.crud.entity.CountryEnvLink;
-import org.cerberus.exception.CerberusException;
 import org.cerberus.util.answer.Answer;
 import org.cerberus.util.answer.AnswerList;
 
@@ -31,8 +29,6 @@ import org.cerberus.util.answer.AnswerList;
  * @author bcivel
  */
 public interface ICountryEnvLinkDAO {
-
-    List<CountryEnvLink> findCountryEnvLinkByCriteria(String system, String country, String environment) throws CerberusException;
 
     /**
      *

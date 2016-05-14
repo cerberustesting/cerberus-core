@@ -52,11 +52,6 @@ public class CountryEnvLinkService implements ICountryEnvLinkService {
     private static final org.apache.log4j.Logger LOG = org.apache.log4j.Logger.getLogger(CountryEnvLinkService.class);
 
     @Override
-    public List<CountryEnvLink> findCountryEnvLinkByCriteria(String system, String country, String environment) throws CerberusException {
-        return countryEnvLinkDao.findCountryEnvLinkByCriteria(system, country, environment);
-    }
-
-    @Override
     public AnswerList readByVarious(String system, String country, String environment) {
         return countryEnvLinkDao.readByVariousByCriteria(system, country, environment, 0, 0, null, null, null, null);
     }

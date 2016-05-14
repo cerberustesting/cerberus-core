@@ -52,41 +52,6 @@ public class BuildRevisionParametersService implements IBuildRevisionParametersS
     ICountryEnvParam_logService countryEnvParamLogService;
 
     @Override
-    public List<BuildRevisionParameters> findBuildRevisionParametersByCriteria(String system, String build, String revision) {
-        return this.buildRevisionParametersDAO.findBuildRevisionParametersByCriteria(system, build, revision);
-    }
-
-    @Override
-    public String getMaxBuildBySystem(String system) {
-        return this.buildRevisionParametersDAO.getMaxBuildBySystem(system);
-    }
-
-    @Override
-    public String getMaxRevisionBySystemAndBuild(String system, String build) {
-        return this.buildRevisionParametersDAO.getMaxRevisionBySystemAndBuild(system, build);
-    }
-
-    @Override
-    public void insertBuildRevisionParameters(BuildRevisionParameters brp) {
-        this.buildRevisionParametersDAO.insertBuildRevisionParameters(brp);
-    }
-
-    @Override
-    public void deleteBuildRevisionParameters(int id) {
-        this.buildRevisionParametersDAO.deleteBuildRevisionParameters(id);
-    }
-
-    @Override
-    public void updateBuildRevisionParameters(BuildRevisionParameters brp) {
-        this.buildRevisionParametersDAO.updateBuildRevisionParameters(brp);
-    }
-
-    @Override
-    public BuildRevisionParameters findBuildRevisionParametersByKey(int id) {
-        return this.buildRevisionParametersDAO.findBuildRevisionParametersByKey(id);
-    }
-
-    @Override
     public AnswerItem readByKeyTech(int id) {
         return this.buildRevisionParametersDAO.readByKeyTech(id);
     }
@@ -94,6 +59,11 @@ public class BuildRevisionParametersService implements IBuildRevisionParametersS
     @Override
     public AnswerItem readLastBySystem(String system) {
         return this.buildRevisionParametersDAO.readLastBySystem(system);
+    }
+
+    @Override
+    public AnswerItem readByVarious2(String build, String revision, String release, String application) {
+        return buildRevisionParametersDAO.readByVarious2(build, revision, release, application);
     }
 
     @Override
@@ -182,6 +152,26 @@ public class BuildRevisionParametersService implements IBuildRevisionParametersS
     }
 
     @Override
+    public boolean check_buildRevisionAlreadyUsed(String application, String build, String revision) {
+        try {
+            // First set is to get the system value
+            String system = "";
+            system = applicationService.convert(applicationService.readByKey(application)).getSystem();
+
+            // Then we check here inside countryenvparam_log table is the build revision has already been used.
+            AnswerList resp = countryEnvParamLogService.readByVariousByCriteria(system, null, null, build, revision, 0, 0, "id", "asc", null, null);
+            if (resp.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode()) && resp.getTotalRows() > 0) {
+                return true;
+            } else {
+                return false;
+            }
+        } catch (CerberusException ex) {
+            LOG.error(ex);
+        }
+        return true;
+    }
+
+    @Override
     public BuildRevisionParameters convert(AnswerItem answerItem) throws CerberusException {
         if (answerItem.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
             //if the service returns an OK message then we can get the item
@@ -206,31 +196,6 @@ public class BuildRevisionParametersService implements IBuildRevisionParametersS
             return;
         }
         throw new CerberusException(new MessageGeneral(MessageGeneralEnum.DATA_OPERATION_ERROR));
-    }
-
-    @Override
-    public boolean check_buildRevisionAlreadyUsed(String application, String build, String revision) {
-        try {
-            // First set is to get the system value
-            String system = "";
-            system = applicationService.convert(applicationService.readByKey(application)).getSystem();
-
-            // Then we check here inside countryenvparam_log table is the build revision has already been used.
-            AnswerList resp = countryEnvParamLogService.readByVariousByCriteria(system, null, null, build, revision, 0, 0, "id", "asc", null, null);
-            if (resp.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode()) && resp.getTotalRows() > 0) {
-                return true;
-            } else {
-                return false;
-            }
-        } catch (CerberusException ex) {
-            LOG.error(ex);
-        }
-        return true;
-    }
-
-    @Override
-    public AnswerItem readByVarious2(String build, String revision, String release, String application) {
-        return buildRevisionParametersDAO.readByVarious2(build, revision, release, application);
     }
 
 }

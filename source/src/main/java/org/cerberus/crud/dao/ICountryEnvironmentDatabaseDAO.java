@@ -43,34 +43,8 @@ public interface ICountryEnvironmentDatabaseDAO {
      */
     AnswerItem readByKey(String system, String country, String environment, String database);
 
-    /**
-     *
-     * @param system
-     * @param country
-     * @param environment
-     * @param database
-     * @return
-     * @throws CerberusException
-     */
-    CountryEnvironmentDatabase findCountryEnvironmentDatabaseByKey(String system, String country, String environment, String database) throws CerberusException;
 
-    /**
-     * Find all countryEnvironmentDatabase by System
-     * @param system
-     * @return
-     * @throws CerberusException 
-     */
-    List<CountryEnvironmentDatabase> findAll(String system) throws CerberusException;
     
-    /**
-     *
-     * @param system
-     * @param country
-     * @param environment
-     * @return
-     * @throws CerberusException
-     */
-    List<CountryEnvironmentDatabase> findListByCriteria(String system, String country, String environment) throws CerberusException;
     
     /**
      *
@@ -87,26 +61,8 @@ public interface ICountryEnvironmentDatabaseDAO {
      */
     AnswerList readByVariousByCriteria(String system, String country, String environment, int start, int amount, String column, String dir, String searchTerm, String individualSearch);
     
-    /**
-     * Update countryEnvironmentDatabase
-     * @param ced
-     * @throws CerberusException 
-     */
-    void update_deprecated(CountryEnvironmentDatabase ced) throws CerberusException;
     
-    /**
-     * Delete countryEnvironmentDatabase
-     * @param ced
-     * @throws CerberusException 
-     */
-    void delete_deprecated(CountryEnvironmentDatabase ced) throws CerberusException;
     
-    /**
-     * Create countryEnvironmentDatabase
-     * @param ced
-     * @throws CerberusException 
-     */
-    void create_deprecated(CountryEnvironmentDatabase ced) throws CerberusException;
     
     /**
      *

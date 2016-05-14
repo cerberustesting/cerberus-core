@@ -56,21 +56,6 @@ public class CountryEnvironmentDatabaseService implements ICountryEnvironmentDat
     }
 
     @Override
-    public CountryEnvironmentDatabase findCountryEnvironmentDatabaseByKey(String system, String country, String environment, String database) throws CerberusException {
-        return countryEnvironmentDatabaseDao.findCountryEnvironmentDatabaseByKey(system, country, environment, database);
-    }
-
-    @Override
-    public List<CountryEnvironmentDatabase> findAll(String system) throws CerberusException {
-        return countryEnvironmentDatabaseDao.findAll(system);
-    }
-
-    @Override
-    public List<CountryEnvironmentDatabase> findListByCriteria(int start, int amount, String column, String dir, String searchTerm, String individualSearch) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-
-    @Override
     public AnswerList readByVarious(String system, String country, String environment) {
         return countryEnvironmentDatabaseDao.readByVariousByCriteria(system, country, environment, 0, 0, null, null, null, null);
     }
@@ -78,31 +63,6 @@ public class CountryEnvironmentDatabaseService implements ICountryEnvironmentDat
     @Override
     public AnswerList readByVariousByCriteria(String system, String country, String environment, int start, int amount, String column, String dir, String searchTerm, String individualSearch) {
         return countryEnvironmentDatabaseDao.readByVariousByCriteria(system, country, environment, start, amount, column, dir, searchTerm, individualSearch);
-    }
-
-    @Override
-    public Integer count(String searchTerm) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-
-    @Override
-    public List<CountryEnvironmentDatabase> findListByCriteria(String system, String country, String environment) throws CerberusException {
-        return countryEnvironmentDatabaseDao.findListByCriteria(system, country, environment);
-    }
-
-    @Override
-    public void update_deprecated(CountryEnvironmentDatabase ced) throws CerberusException {
-        countryEnvironmentDatabaseDao.update_deprecated(ced);
-    }
-
-    @Override
-    public void delete_deprecated(CountryEnvironmentDatabase ced) throws CerberusException {
-        countryEnvironmentDatabaseDao.delete_deprecated(ced);
-    }
-
-    @Override
-    public void create_deprecated(CountryEnvironmentDatabase ced) throws CerberusException {
-        countryEnvironmentDatabaseDao.create_deprecated(ced);
     }
 
     @Override

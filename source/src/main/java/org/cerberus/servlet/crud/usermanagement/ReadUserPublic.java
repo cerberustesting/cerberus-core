@@ -98,7 +98,7 @@ public class ReadUserPublic extends HttpServlet {
         try {
             JSONObject jsonResponse = new JSONObject();
             if ((request.getParameter("id") != null) && !(brpid_error)) { // ID parameter is specified so we return the unique record of object.
-//                answer = findBuildRevisionParametersByKey(appContext, brpid); // TODO
+//                answer = readByKey(appContext, brpid); // TODO
                 jsonResponse = (JSONObject) answer.getItem();
             } else { // Default behaviour, we return the simple list of objects.
                 answer = findUserList(appContext, request, response);

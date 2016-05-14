@@ -59,14 +59,8 @@ public class CountryEnvParamService implements ICountryEnvParamService {
     ICountryEnvironmentParametersService countryEnvironmentParametersService;
 
     @Override
-    public CountryEnvParam findCountryEnvParamByKey(String system, String country, String environment) throws CerberusException {
-        return countryEnvParamDao.findCountryEnvParamByKey(system, country, environment);
-    }
-
-    @Override
     public List<CountryEnvParam> findCountryEnvParamByCriteria(CountryEnvParam countryEnvParam) throws CerberusException {
         return countryEnvParamDao.findCountryEnvParamByCriteria(countryEnvParam);
-
     }
 
     @Override
@@ -101,41 +95,6 @@ public class CountryEnvParamService implements ICountryEnvParamService {
     }
 
     @Override
-    public List<CountryEnvParam> findAll(String system) throws CerberusException {
-        return countryEnvParamDao.findAll(system);
-    }
-
-    @Override
-    public void update_deprecated(CountryEnvParam cep) throws CerberusException {
-        countryEnvParamDao.update_deprecated(cep);
-    }
-
-    @Override
-    public void delete_deprecated(CountryEnvParam cep) throws CerberusException {
-        countryEnvParamDao.delete_deprecated(cep);
-    }
-
-    @Override
-    public void create_deprecated(CountryEnvParam cep) throws CerberusException {
-        countryEnvParamDao.create_deprecated(cep);
-    }
-
-    @Override
-    public List<CountryEnvParam> findListByCriteria(String system, int start, int amount, String column, String dir, String searchTerm, String individualSearch) {
-        return countryEnvParamDao.findListByCriteria(system, start, amount, column, dir, searchTerm, individualSearch);
-    }
-
-    @Override
-    public Integer count(String searchTerm, String inds) {
-        return countryEnvParamDao.count(searchTerm, inds);
-    }
-
-    @Override
-    public List<CountryEnvParam> findListByCriteria(String system) {
-        return countryEnvParamDao.findListByCriteria(system);
-    }
-
-    @Override
     public AnswerItem readByKey(String system, String country, String environment) {
         return countryEnvParamDao.readByKey(system, country, environment);
     }
@@ -158,6 +117,11 @@ public class CountryEnvParamService implements ICountryEnvParamService {
     @Override
     public AnswerList readByVarious(String system, String country, String environment, String build, String revision, String active) {
         return countryEnvParamDao.readByVariousByCriteria(system, country, environment, build, revision, active, null, 0, 0, null, null, null, null);
+    }
+
+    @Override
+    public AnswerList readDistinctEnvironmentByVarious(String system, String country, String environment, String build, String revision, String active) {
+        return countryEnvParamDao.readDistinctEnvironmentByVariousByCriteria(system, country, environment, build, revision, active, null, 0, 0, null, null, null, null);
     }
 
     @Override

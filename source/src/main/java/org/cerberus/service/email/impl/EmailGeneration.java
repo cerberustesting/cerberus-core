@@ -65,7 +65,7 @@ public class EmailGeneration implements IEmailGeneration {
         Connection conn = databaseSpring.connect();
         try {
             CountryEnvParam myCountryEnvParam;
-            myCountryEnvParam = countryEnvParamService.findCountryEnvParamByKey(system, country, env);
+            myCountryEnvParam = countryEnvParamService.convert(countryEnvParamService.readByKey(system, country, env));
 
             /* Pick the datas from the database */
             String to = parameterService.findParameterByKey("integration_notification_newbuildrevision_to", system).getValue();
@@ -135,7 +135,7 @@ public class EmailGeneration implements IEmailGeneration {
         String result = "";
         try {
             CountryEnvParam myCountryEnvParam;
-            myCountryEnvParam = countryEnvParamService.findCountryEnvParamByKey(system, country, env);
+            myCountryEnvParam = countryEnvParamService.convert(countryEnvParamService.readByKey(system, country, env));
 
             String to = parameterService.findParameterByKey("integration_notification_disableenvironment_to", system).getValue();
             String cc = parameterService.findParameterByKey("integration_notification_disableenvironment_cc", system).getValue();
@@ -179,7 +179,7 @@ public class EmailGeneration implements IEmailGeneration {
             /* Page Display - START */
 
             CountryEnvParam myCountryEnvParam;
-            myCountryEnvParam = countryEnvParamService.findCountryEnvParamByKey(system, country, env);
+            myCountryEnvParam = countryEnvParamService.convert(countryEnvParamService.readByKey(system, country, env));
 
             BatchInvariant myBatchInvariant;
             myBatchInvariant = batchInvariantService.convert(batchInvariantService.readByKey(chain));

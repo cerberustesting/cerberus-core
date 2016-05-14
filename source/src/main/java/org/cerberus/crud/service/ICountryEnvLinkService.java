@@ -38,10 +38,9 @@ public interface ICountryEnvLinkService {
      * @param system
      * @param country
      * @param environment
-     * @return List of testCaseStepExecution that correspond to the Id.
-     * @throws org.cerberus.exception.CerberusException
+     * @return
      */
-    List<CountryEnvLink> findCountryEnvLinkByCriteria(String system, String country, String environment) throws CerberusException;
+    public AnswerList readByVarious(String system, String country, String environment);
 
     /**
      *
@@ -57,15 +56,6 @@ public interface ICountryEnvLinkService {
      * @return
      */
     public AnswerList readByVariousByCriteria(String system, String country, String environment, int start, int amount, String column, String dir, String searchTerm, String individualSearch);
-
-    /**
-     *
-     * @param system
-     * @param country
-     * @param environment
-     * @return
-     */
-    public AnswerList readByVarious(String system, String country, String environment);
 
     /**
      *

@@ -90,7 +90,7 @@ public class SaveManualExecution extends HttpServlet {
             }
             CountryEnvParam countryEnvParam;
             try {
-                countryEnvParam = countryEnvParamService.findCountryEnvParamByKey(application.getSystem(), country, env);
+                countryEnvParam = countryEnvParamService.convert(countryEnvParamService.readByKey(application.getSystem(), country, env));
             } catch (CerberusException e) {
                 CerberusException ex = new CerberusException(new MessageGeneral(MessageGeneralEnum.NO_DATA_FOUND));
                 ex.getMessageError().setDescription("Combination Environment: '" + env + "' and Country: '" + country

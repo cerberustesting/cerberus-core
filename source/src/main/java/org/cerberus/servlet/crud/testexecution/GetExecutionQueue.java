@@ -208,7 +208,7 @@ public class GetExecutionQueue extends HttpServlet {
                 execution.setEnvironmentData(execution.getEnvironment());
 
                 try {
-                    execution.setCountryEnvParam(cepService.findCountryEnvParamByKey(execution.getApplication().getSystem(), execution.getCountry(), execution.getEnvironment()));
+                    execution.setCountryEnvParam(cepService.convert(cepService.readByKey(execution.getApplication().getSystem(), execution.getCountry(), execution.getEnvironment())));
                 } catch (CerberusException ex) {
                     MessageGeneral mes = new MessageGeneral(MessageGeneralEnum.VALIDATION_FAILED_COUNTRYENV_NOT_FOUND);
                     mes.setDescription(mes.getDescription().replaceAll("%SYSTEM%", execution.getApplication().getSystem()));
