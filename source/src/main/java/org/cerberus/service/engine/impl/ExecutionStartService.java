@@ -238,8 +238,17 @@ public class ExecutionStartService implements IExecutionStartService {
             try {
                 cea = this.countryEnvironmentParametersService.convert(this.countryEnvironmentParametersService.readByKey(
                         tCExecution.getApplication().getSystem(), tCExecution.getCountry(), tCExecution.getEnvironment(), tCExecution.getApplication().getApplication()));
-                tCExecution.setCountryEnvironmentParameters(cea);
-                tCExecution.setUrl(cea.getIp() + cea.getUrl());
+                if (cea != null) {
+                    tCExecution.setCountryEnvironmentParameters(cea);
+                    tCExecution.setUrl(cea.getIp() + cea.getUrl());
+                } else {
+                    MessageGeneral mes = new MessageGeneral(MessageGeneralEnum.VALIDATION_FAILED_COUNTRYENVAPP_NOT_FOUND);
+                    mes.setDescription(mes.getDescription().replaceAll("%COUNTRY%", tCExecution.getCountry()));
+                    mes.setDescription(mes.getDescription().replaceAll("%ENV%", tCExecution.getEnvironment()));
+                    mes.setDescription(mes.getDescription().replaceAll("%APPLI%", tCExecution.gettCase().getApplication()));
+                    LOG.error(mes.getDescription());
+                    throw new CerberusException(mes);
+                }
                 /**
                  * Forcing the IP URL and Login config from DevIP, DevURL and
                  * DevLogin parameter only if DevURL is defined.
@@ -249,7 +258,7 @@ public class ExecutionStartService implements IExecutionStartService {
                 mes.setDescription(mes.getDescription().replaceAll("%COUNTRY%", tCExecution.getCountry()));
                 mes.setDescription(mes.getDescription().replaceAll("%ENV%", tCExecution.getEnvironment()));
                 mes.setDescription(mes.getDescription().replaceAll("%APPLI%", tCExecution.gettCase().getApplication()));
-                LOG.debug(mes.getDescription());
+                LOG.error(mes.getDescription());
                 throw new CerberusException(mes);
             }
             LOG.debug("-> Execution will be done with automatic application connectivity setting. IP/URL/LOGIN : " + cea.getIp() + "-" + cea.getUrl() + "-" + cea.getUrlLogin());

@@ -44,7 +44,7 @@ public class TestDataLibResultSQL extends TestDataLibResult {
         AnswerItem ansGetValue = new AnswerItem();
 
         //checks if the column was already retrieved
-        if (!values.containsKey(entry.getSubData())) {
+        if (!rawData.containsKey(entry.getSubData())) {
             //if the map don't contain the entry that we want, we will get it
             String value = rawData.get(entry.getColumn().toUpperCase()); //columns are store in UPPERCASE
             //associates the subdata with the column data retrieved by the query
@@ -59,16 +59,16 @@ public class TestDataLibResultSQL extends TestDataLibResult {
         }
 
         ansGetValue.setResultMessage(msg);
-        ansGetValue.setItem(values.get(entry.getSubData()));
+        ansGetValue.setItem(rawData.get(entry.getSubData()));
 
         return ansGetValue;
     }
 
-    public HashMap<String, String> getData() {
+    public HashMap<String, String> getRawData() {
         return rawData;
     }
 
-    public void setData(HashMap<String, String> data) {
+    public void setRawData(HashMap<String, String> data) {
         this.rawData = data;
     }
 }

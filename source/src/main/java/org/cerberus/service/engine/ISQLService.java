@@ -19,6 +19,7 @@
  */
 package org.cerberus.service.engine;
 
+import java.util.HashMap;
 import java.util.List;
 import org.cerberus.crud.entity.MessageEvent;
 import org.cerberus.crud.entity.TestCaseCountryProperties;
@@ -56,12 +57,15 @@ public interface ISQLService {
      * @param country - country where the query should be performed
      * @param environment - environment where the query should be performed
      * @param testCaseCountryProperty
-     * @param keyColumn - sring with the column that contain the key (used for
+     * @param keyColumn - string with the column that contain the key (used for
      * some propertyNature).
-     * @param tCExecution - Execution context is required for RANDOMNEW and NOTINUSE Natures (that requires test, testcase, build, environment, etc,...)
+     * @param tCExecution - Execution context is required for RANDOMNEW and
+     * NOTINUSE Natures (that requires test, testcase, build, environment,
+     * etc,...)
+     * @param dataLibID ID of the dataLib beeing calculated. This is used to get the detail list of columns to retreive.
      * @return a row with several columns
      */
-    AnswerItem calculateOnDatabaseNColumns(String sql, String db, String system, String country, String environment, TestCaseCountryProperties testCaseCountryProperty, String keyColumn, TestCaseExecution tCExecution);
+    AnswerItem<HashMap<String, String>> calculateOnDatabaseNColumns(String sql, String db, String system, String country, String environment, TestCaseCountryProperties testCaseCountryProperty, String keyColumn, TestCaseExecution tCExecution, Integer dataLibID);
 
     public MessageEvent executeUpdate(String system, String country, String environment, String db, String sql);
 

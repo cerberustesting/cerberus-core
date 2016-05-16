@@ -19,8 +19,6 @@ package org.cerberus.crud.service;
 
 import java.util.HashMap;
 import java.util.List;
-import org.cerberus.crud.entity.TestCaseCountryProperties;
-import org.cerberus.crud.entity.TestCaseExecution;
 import org.cerberus.crud.entity.TestDataLib;
 import org.cerberus.crud.entity.TestDataLibData;
 import org.cerberus.exception.CerberusException;
@@ -44,15 +42,17 @@ public interface ITestDataLibService {
      * @return
      */
     AnswerItem readByNameBySystemByEnvironmentByCountry(String name, String system, String environment, String country);
+
     /**
-     * 
+     *
      * @param name
      * @param system
      * @param environment
      * @param country
-     * @return 
+     * @return
      */
     AnswerItem readByKey(String name, String system, String environment, String country);
+
     /**
      *
      * @param testDatalib
@@ -85,7 +85,7 @@ public interface ITestDataLibService {
      * resultSet
      * @return
      */
-    AnswerList readByCriteria(int start, int amount, String column, String dir, String searchTerm, String individualSearch);
+    AnswerList readByVariousByCriteria(String name, String system, String environment, String country, String type, int start, int amount, String column, String dir, String searchTerm, String individualSearch);
 
     /**
      * Auxiliary method that retrieves all the group names that were already
@@ -94,6 +94,22 @@ public interface ITestDataLibService {
      * @return list of group values for the type
      */
     AnswerList readDistinctGroups();
+
+    /**
+     * Method that gets all the Static DataLib that match the criterias
+     * dataName, dataSystem, dataCountry and dataEnviroenment and for each of
+     * them feeds a HasMap with all the columns detail from dataLibData.
+     *
+     * @param dataName Name of the DataLib to take.
+     * @param dataSystem System of the DataLib to take.
+     * @param dataCountry Country of the DataLib to take.
+     * @param dataEnvironment Envirnment of the DataLib to take.
+     * @param rowLimit max number of row to be taken
+     * @param system context system in order to get the calculation. It is used
+     * to get the potencial parameters.
+     * @return
+     */
+    AnswerList<List<HashMap<String, String>>> readSTATICWithSubdataByCriteria(String dataName, String dataSystem, String dataCountry, String dataEnvironment, int rowLimit, String system);
 
     /**
      *
@@ -111,31 +127,21 @@ public interface ITestDataLibService {
     Answer create(TestDataLib testDataLib, List<TestDataLibData> subDataList);
 
     Answer create(HashMap<TestDataLib, List<TestDataLibData>> entries);
+
     /**
      * Deletes a testdatalib entry
+     *
      * @param testDataLib
      * @return
      */
     Answer delete(TestDataLib testDataLib);
- 
+
     /**
      *
      * @param testDataLib TestData to update using the key
      * @return
      */
     Answer update(TestDataLib testDataLib);
-
-    /**
-     * Gets the rawData associated to the library; for SQL and SOAP, the
-     * corresponding instructions will be executed in order to retrieve the data
-     * from the database and webservice.
-     *
-     * @param lib testdatalib entry
-     * @param testCaseCountryProperty
-     * @param tCExecution
-     * @return the result data for the library entry
-     */
-    AnswerItem fetchData(TestDataLib lib, TestCaseCountryProperties testCaseCountryProperty, TestCaseExecution tCExecution);
 
     Answer duplicate(TestDataLib lib);
 }

@@ -40,7 +40,16 @@ public abstract class TestDataLibResult {
      * Type for the Result
      */
     protected  String type;
-      
+    private HashMap<String, String> dataLibRawData; // Have the raw data of all subdata when comming from testDataLibrary
+
+    public HashMap<String, String> getDataLibRawData() {
+        return dataLibRawData;
+    }
+
+    public void setDataLibRawData(HashMap<String, String> dataLibRawData) {
+        this.dataLibRawData = dataLibRawData;
+    }
+    
     public TestDataLibResult(){
         this.values = new HashMap<String, String>();
     }
@@ -54,7 +63,7 @@ public abstract class TestDataLibResult {
     }
     
     public String getValue(String key){
-        return values.get(key);
+        return dataLibRawData.get(key);
     }
     public String getType() {
         return type;

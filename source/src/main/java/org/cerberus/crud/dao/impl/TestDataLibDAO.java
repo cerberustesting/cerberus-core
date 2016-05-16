@@ -34,6 +34,7 @@ import org.cerberus.crud.entity.TestDataLib;
 import org.cerberus.crud.factory.IFactoryTestDataLib;
 import org.cerberus.log.MyLogger;
 import org.cerberus.util.ParameterParserUtil;
+import org.cerberus.util.StringUtil;
 import org.cerberus.util.answer.Answer;
 import org.cerberus.util.answer.AnswerItem;
 import org.cerberus.util.answer.AnswerList;
@@ -436,14 +437,13 @@ public class TestDataLibDAO implements ITestDataLibDAO {
     }
 
     @Override
-    public AnswerList readByCriteria(int start, int amount, String colName, String dir, String searchTerm, String individualSearch) {
+    public AnswerList readByVariousByCriteria(String name, String system, String environment, String country, String type, int start, int amount, String column, String dir, String searchTerm, String individualSearch) {
 
         AnswerList answer = new AnswerList();
         MessageEvent msg;
         int nrTotalRows = 0;
-        List<TestDataLib> testDataLibList = new ArrayList<TestDataLib>();
+        List<TestDataLib> objectList = new ArrayList<TestDataLib>();
 
-        StringBuilder gSearch = new StringBuilder();
         StringBuilder searchSQL = new StringBuilder();
 
         StringBuilder query = new StringBuilder();
@@ -453,36 +453,45 @@ public class TestDataLibDAO implements ITestDataLibDAO {
 
         query.append("LEFT OUTER JOIN testdatalibdata tdd ON tdl.TestDataLibID=tdd.TestDataLibID and tdd.SubData='' ");
 
-        gSearch.append(" where (tdl.`name` like '%").append(searchTerm).append("%'");
-        gSearch.append(" or tdl.`group` like '%").append(searchTerm).append("%'");
-        gSearch.append(" or tdl.`type` like '%").append(searchTerm).append("%'");
-        gSearch.append(" or tdl.`database` like '%").append(searchTerm).append("%'");
-        gSearch.append(" or tdl.`script` like '%").append(searchTerm).append("%'");
-        gSearch.append(" or tdl.`servicepath` like '%").append(searchTerm).append("%'");
-        gSearch.append(" or tdl.`method` like '%").append(searchTerm).append("%'");
-        gSearch.append(" or tdl.`envelope` like '%").append(searchTerm).append("%'");
-        gSearch.append(" or tdl.`description` like '%").append(searchTerm).append("%'");
-        gSearch.append(" or tdl.`system` like '%").append(searchTerm).append("%'");
-        gSearch.append(" or tdl.`environment` like '%").append(searchTerm).append("%'");
-        gSearch.append(" or tdl.`country` like '%").append(searchTerm).append("%') ");
+        searchSQL.append(" where 1=1 ");
 
-        if (!searchTerm.equals("") && !individualSearch.equals("")) {
-            searchSQL.append(gSearch.toString());
-            searchSQL.append(" and ");
-            searchSQL.append(individualSearch);
-        } else if (!individualSearch.equals("")) {
-            searchSQL.append(" where `");
-            searchSQL.append(individualSearch);
-            searchSQL.append("`");
-        } else if (!searchTerm.equals("")) {
-            searchSQL.append(gSearch.toString());
+        if (!StringUtil.isNullOrEmpty(searchTerm)) {
+            searchSQL.append(" and (tdl.`name` like ?");
+            searchSQL.append(" or tdl.`group` like ?");
+            searchSQL.append(" or tdl.`type` like ?");
+            searchSQL.append(" or tdl.`database` like ?");
+            searchSQL.append(" or tdl.`script` like ?");
+            searchSQL.append(" or tdl.`servicepath` like ?");
+            searchSQL.append(" or tdl.`method` like ?");
+            searchSQL.append(" or tdl.`envelope` like ?");
+            searchSQL.append(" or tdl.`description` like ?");
+            searchSQL.append(" or tdl.`system` like ?");
+            searchSQL.append(" or tdl.`environment` like ?");
+            searchSQL.append(" or tdl.`country` like ?) ");
         }
-
+        if (!StringUtil.isNullOrEmpty(individualSearch)) {
+            searchSQL.append(" and (`?`)");
+        }
+        if (!StringUtil.isNullOrEmpty(name)) {
+            searchSQL.append(" and tdl.`name` = ? ");
+        }
+        if (!StringUtil.isNullOrEmpty(system)) {
+            searchSQL.append(" and tdl.`system` = ? ");
+        }
+        if (!StringUtil.isNullOrEmpty(environment)) {
+            searchSQL.append(" and tdl.`environment` = ? ");
+        }
+        if (!StringUtil.isNullOrEmpty(country)) {
+            searchSQL.append(" and tdl.`country` = ? ");
+        }
+        if (!StringUtil.isNullOrEmpty(type)) {
+            searchSQL.append(" and tdl.`type` = ? ");
+        }
         query.append(searchSQL);
-        query.append("order by `");
-        query.append(colName);
-        query.append("` ");
-        query.append(dir);
+
+        if (!StringUtil.isNullOrEmpty(column)) {
+            query.append(" order by ").append(column).append(" ").append(dir);
+        }
 
         if ((amount <= 0) || (amount >= MAX_ROW_SELECTED)) {
             query.append(" limit ").append(start).append(" , ").append(MAX_ROW_SELECTED);
@@ -493,17 +502,55 @@ public class TestDataLibDAO implements ITestDataLibDAO {
         // Debug message on SQL.
         if (LOG.isDebugEnabled()) {
             LOG.debug("SQL : " + query);
+            LOG.debug("SQL.name : " + name);
+            LOG.debug("SQL.system : " + system);
+            LOG.debug("SQL.environment : " + environment);
+            LOG.debug("SQL.country : " + country);
+            LOG.debug("SQL.type : " + type);
         }
 
         Connection connection = this.databaseSpring.connect();
         try {
             PreparedStatement preStat = connection.prepareStatement(query.toString());
             try {
+                int i = 1;
+                if (!StringUtil.isNullOrEmpty(searchTerm)) {
+                    preStat.setString(i++, "%" + searchTerm + "%");
+                    preStat.setString(i++, "%" + searchTerm + "%");
+                    preStat.setString(i++, "%" + searchTerm + "%");
+                    preStat.setString(i++, "%" + searchTerm + "%");
+                    preStat.setString(i++, "%" + searchTerm + "%");
+                    preStat.setString(i++, "%" + searchTerm + "%");
+                    preStat.setString(i++, "%" + searchTerm + "%");
+                    preStat.setString(i++, "%" + searchTerm + "%");
+                    preStat.setString(i++, "%" + searchTerm + "%");
+                    preStat.setString(i++, "%" + searchTerm + "%");
+                    preStat.setString(i++, "%" + searchTerm + "%");
+                    preStat.setString(i++, "%" + searchTerm + "%");
+                }
+                if (!StringUtil.isNullOrEmpty(individualSearch)) {
+                    preStat.setString(i++, individualSearch);
+                }
+                if (!StringUtil.isNullOrEmpty(name)) {
+                    preStat.setString(i++, name);
+                }
+                if (!StringUtil.isNullOrEmpty(system)) {
+                    preStat.setString(i++, system);
+                }
+                if (!StringUtil.isNullOrEmpty(environment)) {
+                    preStat.setString(i++, environment);
+                }
+                if (!StringUtil.isNullOrEmpty(country)) {
+                    preStat.setString(i++, country);
+                }
+                if (!StringUtil.isNullOrEmpty(type)) {
+                    preStat.setString(i++, type);
+                }
                 ResultSet resultSet = preStat.executeQuery();
                 try {
                     //gets the data
                     while (resultSet.next()) {
-                        testDataLibList.add(this.loadFromResultSet(resultSet));
+                        objectList.add(this.loadFromResultSet(resultSet));
                     }
 
                     //get the total number of rows
@@ -512,11 +559,11 @@ public class TestDataLibDAO implements ITestDataLibDAO {
                     if (resultSet != null && resultSet.next()) {
                         nrTotalRows = resultSet.getInt(1);
                     }
-                    if (testDataLibList.size() >= MAX_ROW_SELECTED) { // Result of SQl was limited by MAX_ROW_SELECTED constrain. That means that we may miss some lines in the resultList.
+                    if (objectList.size() >= MAX_ROW_SELECTED) { // Result of SQl was limited by MAX_ROW_SELECTED constrain. That means that we may miss some lines in the resultList.
                         MyLogger.log(TestDataLibDAO.class.getName(), Level.INFO, "Partial Result in the query.");
                         msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_WARNING_PARTIAL_RESULT);
                         msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", "Maximum row reached : " + MAX_ROW_SELECTED));
-                    } else if (testDataLibList.isEmpty()) {
+                    } else if (objectList.isEmpty()) {
                         msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_NO_DATA_FOUND);
                     } else {
                         msg = MessageEventUtil.createSelectSuccessMessageDAO(OBJECT_NAME);
@@ -525,7 +572,7 @@ public class TestDataLibDAO implements ITestDataLibDAO {
                 } catch (SQLException exception) {
                     MyLogger.log(TestDataLibDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
                     msg = MessageEventUtil.createSelectUnexpectedErrorMessageDAO();
-                    testDataLibList.clear();
+                    objectList.clear();
                 } finally {
                     if (resultSet != null) {
                         resultSet.close();
@@ -557,7 +604,7 @@ public class TestDataLibDAO implements ITestDataLibDAO {
         }
         answer.setTotalRows(nrTotalRows);
         answer.setResultMessage(msg);
-        answer.setDataList(testDataLibList);
+        answer.setDataList(objectList);
         return answer;
     }
 

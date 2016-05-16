@@ -678,7 +678,7 @@
                                                 }
                                             }
                                         %>
-                            <td title="Message"><code><pre><span id="PROPMES-<%=myData.getProperty()%>"><%=StringUtil.textToHtmlConvertingURLsToLinks(propMessage)%></span></pre></code></td>
+                            <td title="Message" ><code><span id="PROPMES-<%=myData.getProperty()%>"><%=StringUtil.textToHtmlConvertingURLsToLinks(propMessage)%></span></code></td>
                         </tr>
                         <%
                             }

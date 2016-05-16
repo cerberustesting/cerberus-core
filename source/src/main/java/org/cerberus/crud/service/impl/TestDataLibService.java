@@ -22,35 +22,22 @@ package org.cerberus.crud.service.impl;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import org.apache.log4j.Level;
 import org.cerberus.crud.dao.ITestDataLibDAO;
-import org.cerberus.crud.entity.SOAPExecution;
 import org.cerberus.crud.entity.MessageEvent;
-import org.cerberus.crud.entity.TestCaseCountryProperties;
-import org.cerberus.crud.entity.TestCaseExecution;
 import org.cerberus.crud.entity.TestDataLib;
 import org.cerberus.crud.entity.TestDataLibData;
 import org.cerberus.crud.factory.IFactoryTestDataLibData;
+import org.cerberus.crud.service.IParameterService;
 import org.cerberus.crud.service.ITestDataLibDataService;
 import org.cerberus.crud.service.ITestDataLibService;
 import org.cerberus.database.DatabaseSpring;
 import org.cerberus.enums.MessageEventEnum;
-import org.cerberus.enums.TestDataLibTypeEnum;
-import org.cerberus.log.MyLogger;
-import org.cerberus.service.engine.ISQLService;
-import org.cerberus.service.engine.ISoapService;
-import org.cerberus.service.engine.IXmlUnitService;
-import org.cerberus.service.engine.testdata.TestDataLibResult;
-import org.cerberus.service.engine.testdata.TestDataLibResultSOAP;
-import org.cerberus.service.engine.testdata.TestDataLibResultSQL;
-import org.cerberus.service.engine.testdata.TestDataLibResultStatic;
-import org.cerberus.util.SoapUtil;
+import org.cerberus.exception.CerberusException;
 import org.cerberus.util.answer.Answer;
 import org.cerberus.util.answer.AnswerItem;
 import org.cerberus.util.answer.AnswerList;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.w3c.dom.Document;
 
 @Service
 public class TestDataLibService implements ITestDataLibService {
@@ -58,17 +45,15 @@ public class TestDataLibService implements ITestDataLibService {
     @Autowired
     private DatabaseSpring dbManager;
     @Autowired
-    ITestDataLibDAO testDataLibDAO;
+    private ITestDataLibDAO testDataLibDAO;
     @Autowired
-    IFactoryTestDataLibData testDataLibDataFactory;
-    @Autowired
-    private ISoapService soapService;
-    @Autowired
-    private ISQLService sQLService;
-    @Autowired
-    private IXmlUnitService xmlUnitService;
+    private IFactoryTestDataLibData testDataLibDataFactory;
     @Autowired
     private ITestDataLibDataService testDataLibDataService;
+    @Autowired
+    private IParameterService parameterService;
+
+    private static final org.apache.log4j.Logger LOG = org.apache.log4j.Logger.getLogger(TestDataLibService.class);
 
     @Override
     public AnswerItem readByNameBySystemByEnvironmentByCountry(String name, String system, String environment, String country) {
@@ -96,13 +81,54 @@ public class TestDataLibService implements ITestDataLibService {
     }
 
     @Override
-    public AnswerList readByCriteria(int start, int amount, String column, String dir, String searchTerm, String individualSearch) {
-        return testDataLibDAO.readByCriteria(start, amount, column, dir, searchTerm, individualSearch);
+    public AnswerList readByVariousByCriteria(String name, String system, String environment, String country, String type, int start, int amount, String column, String dir, String searchTerm, String individualSearch) {
+        return testDataLibDAO.readByVariousByCriteria(name, system, environment, country, type, start, amount, column, dir, searchTerm, individualSearch);
     }
 
     @Override
     public AnswerList<String> readDistinctGroups() {
         return testDataLibDAO.readDistinctGroups();
+    }
+
+    @Override
+    public AnswerList<List<HashMap<String, String>>> readSTATICWithSubdataByCriteria(String dataName, String dataSystem, String dataCountry, String dataEnvironment, int rowLimit, String system) {
+        AnswerList answer = new AnswerList();
+        AnswerList answerData = new AnswerList();
+        MessageEvent msg;
+
+        List<HashMap<String, String>> result = new ArrayList<HashMap<String, String>>();
+
+        // We start by calculating the max nb of row we can fetch. Either specified by rowLimit either defined by a parameter.
+        int maxSecurityFetch = 100;
+        try {
+            String maxSecurityFetch1 = parameterService.findParameterByKey("cerberus_testdatalib_fetchmax", system).getValue();
+            maxSecurityFetch = Integer.valueOf(maxSecurityFetch1);
+        } catch (CerberusException ex) {
+            LOG.error(ex);
+        }
+        int maxFetch = maxSecurityFetch;
+        if (rowLimit > 0 && rowLimit < maxSecurityFetch) {
+            maxFetch = rowLimit;
+        } else {
+            maxFetch = maxSecurityFetch;
+        }
+        answer = this.readByVariousByCriteria(dataName, dataSystem, dataEnvironment, dataCountry, "STATIC", 0, maxFetch, null, null, null, null);
+        List<TestDataLib> objectList = new ArrayList<TestDataLib>();
+        objectList = answer.getDataList();
+        for (TestDataLib tdl : objectList) {
+
+            answerData = testDataLibDataService.readByKey(tdl.getTestDataLibID());
+            List<TestDataLibData> objectDataList = new ArrayList<TestDataLibData>();
+            objectDataList = answerData.getDataList();
+            HashMap<String, String> row = new HashMap<String, String>();
+            for (TestDataLibData tdld : objectDataList) {
+                row.put(tdld.getSubData(), tdld.getValue());
+            }
+            row.put("TestDataLibID", String.valueOf(tdl.getTestDataLibID()));
+            result.add(row);
+        }
+        answer.setDataList(result);
+        return answer;
     }
 
     @Override
@@ -208,112 +234,6 @@ public class TestDataLibService implements ITestDataLibService {
     @Override
     public Answer update(TestDataLib testDataLib) {
         return testDataLibDAO.update(testDataLib);
-    }
-
-    @Override
-    public AnswerItem fetchData(TestDataLib lib, TestCaseCountryProperties testCaseCountryProperty, TestCaseExecution tCExecution) {
-        AnswerItem answer = new AnswerItem();
-        MessageEvent msg = new MessageEvent(MessageEventEnum.PROPERTY_SUCCESS);
-        TestDataLibResult result = null;
-
-        if (lib.getType().equals(TestDataLibTypeEnum.STATIC.getCode())) {
-            result = fetchDataStatic(lib);
-            answer.setItem(result);
-
-        } else if (lib.getType().equals(TestDataLibTypeEnum.SQL.getCode())) {
-            AnswerItem sqlResult = fetchDataSQL(lib, testCaseCountryProperty, tCExecution);
-            result = (TestDataLibResult) sqlResult.getItem();
-            msg = sqlResult.getResultMessage();
-            answer.setItem(result);
-
-        } else if (lib.getType().equals(TestDataLibTypeEnum.SOAP.getCode())) {
-            AnswerItem soapResult = fetchDataSOAP(lib);
-            msg = soapResult.getResultMessage();
-            answer.setItem(soapResult.getItem());
-        }
-        answer.setResultMessage(msg);
-        return answer;
-    }
-
-    private TestDataLibResult fetchDataStatic(TestDataLib lib) {
-        //static data does need pre processing to retrieve the subdataentries
-        TestDataLibResult result = new TestDataLibResultStatic();
-        result.setTestDataLibID(lib.getTestDataLibID());
-
-        return result;
-    }
-
-    private AnswerItem fetchDataSQL(TestDataLib lib, TestCaseCountryProperties testCaseCountryProperty, TestCaseExecution tCExecution) {
-        AnswerItem answer;
-        MessageEvent msg = new MessageEvent(MessageEventEnum.PROPERTY_SUCCESS);
-        TestDataLibResult result = null;
-        //sql data needs to collect the values for the n columns
-        answer = sQLService.calculateOnDatabaseNColumns(lib.getScript(), lib.getDatabase(),
-                tCExecution.getCountryEnvironmentParameters().getSystem(), 
-                tCExecution.getCountryEnvironmentParameters().getCountry(), 
-                tCExecution.getCountryEnvironmentParameters().getEnvironment(), 
-                testCaseCountryProperty, lib.getSubDataColumn(), tCExecution);
-
-        MyLogger.log(TestDataLibService.class.getName(), Level.INFO, "Test data lib service SQL " + lib.getScript());
-
-        //if the sql service returns a success message then we can process it
-        if (answer.getResultMessage().getCode() == MessageEventEnum.PROPERTY_SUCCESS_SQL.getCode()) {
-            HashMap<String, String> columns = (HashMap<String, String>) answer.getItem();
-            result = new TestDataLibResultSQL();
-            result.setTestDataLibID(lib.getTestDataLibID());
-
-            ((TestDataLibResultSQL) result).setData(columns);
-            answer.setItem(result);
-
-        } else if (answer.getResultMessage().getCode() == MessageEventEnum.PROPERTY_FAILED_SQL_NODATA.getCode()) {
-            //if the script does not return 
-            msg = new MessageEvent(MessageEventEnum.PROPERTY_FAILED_GETFROMDATALIB_NODATA);
-            msg.setDescription(msg.getDescription().replace("%ENTRY%", lib.getName()).replace("%SQL%", lib.getScript())
-                    .replace("%DATABASE%", lib.getDatabase()));
-            answer.setItem(result);
-            answer.setResultMessage(msg);
-
-        } else {
-            //other error had occured
-            answer.setItem(result);
-            msg = answer.getResultMessage();
-            msg.setDescription(msg.getDescription().replace("%ENTRY%", lib.getName()).replace("%SQL%", lib.getScript()).replace("%ENTRYID%", lib.getTestDataLibID().toString())
-                    .replace("%DATABASE%", lib.getDatabase()));
-            answer.setResultMessage(msg);
-
-        }
-        return answer;
-    }
-
-    private AnswerItem fetchDataSOAP(TestDataLib lib) {
-        AnswerItem answer = new AnswerItem();
-        MessageEvent msg;
-        TestDataLibResult result = null;
-        SOAPExecution executionSoap = new SOAPExecution();
-
-        //soap data needs to get the soap response
-        String key = TestDataLibTypeEnum.SOAP.getCode() + lib.getTestDataLibID();
-        AnswerItem ai = soapService.callSOAP(lib.getEnvelope(), lib.getServicePath(),
-                lib.getMethod(), null);
-        executionSoap = (SOAPExecution) ai.getItem();
-        msg = ai.getResultMessage();
-
-        //if the call returns success then we can process the soap ressponse
-        if (msg.getCode() == MessageEventEnum.ACTION_SUCCESS_CALLSOAP.getCode()) {
-            result = new TestDataLibResultSOAP();
-            ((TestDataLibResultSOAP) result).setSoapExecution(ai);
-            ((TestDataLibResultSOAP) result).setSoapResponseKey(key);
-            result.setTestDataLibID(lib.getTestDataLibID());
-            Document xmlDocument = xmlUnitService.getXmlDocument(SoapUtil.convertSoapMessageToString(executionSoap.getSOAPResponse()));
-            ((TestDataLibResultSOAP) result).setData(xmlDocument);
-            //the code for action success call soap is different from the
-            //code return from the property success soap
-            //if the action succeeds then, we can assume that the SOAP request was performed with success
-            msg = new MessageEvent(MessageEventEnum.PROPERTY_SUCCESS_SOAP);
-        }
-        answer.setItem(result);
-        answer.setResultMessage(msg);
-        return answer;
     }
 
     @Override

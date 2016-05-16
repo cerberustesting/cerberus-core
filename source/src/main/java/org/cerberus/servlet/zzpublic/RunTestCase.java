@@ -24,9 +24,7 @@ import java.io.PrintWriter;
 import java.sql.Timestamp;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Date;
-import java.util.List;
 import java.util.UUID;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -37,17 +35,13 @@ import org.apache.commons.lang3.StringEscapeUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.cerberus.crud.entity.ExecutionUUID;
 import org.cerberus.crud.entity.MessageGeneral;
-import org.cerberus.crud.entity.Parameter;
 import org.cerberus.crud.entity.Robot;
-import org.cerberus.crud.entity.Session;
-import org.cerberus.crud.entity.SessionCapabilities;
 import org.cerberus.crud.entity.TCase;
 import org.cerberus.crud.entity.TestCaseCountry;
 import org.cerberus.crud.entity.TestCaseExecution;
 import org.cerberus.crud.factory.IFactoryTCase;
 import org.cerberus.crud.factory.IFactoryTestCaseExecution;
 import org.cerberus.crud.service.ILogEventService;
-import org.cerberus.crud.service.IParameterService;
 import org.cerberus.crud.service.IRobotService;
 import org.cerberus.crud.service.ITestCaseCountryService;
 import org.cerberus.crud.service.ITestCaseExecutionInQueueService;
@@ -320,14 +314,14 @@ public class RunTestCase extends HttpServlet {
                 org.apache.log4j.Logger.getLogger(RunTestCase.class.getName()).log(org.apache.log4j.Level.INFO, "Execution Requested : UUID=" + executionUUID);
                 //MyLogger.log(RunTestCase.class.getName(), Level.INFO, "Execution Requested : UUID=" + executionUUID);
 
-
                 /**
                  * Set IdFromQueue
                  */
                 tCExecution.setIdFromQueue(idFromQueue);
 
                 /**
-                 * Loop on the execution of the testcase until we get an OK or reached the number of retries.
+                 * Loop on the execution of the testcase until we get an OK or
+                 * reached the number of retries.
                  */
                 while (tCExecution.getNumberOfRetries() >= 0 && !tCExecution.getResultMessage().getCodeString().equals("OK")) {
                     try {
@@ -339,7 +333,7 @@ public class RunTestCase extends HttpServlet {
                         break;
                     }
                 }
-                
+
                 /**
                  * If execution from queue, remove it from the queue or update
                  * information in Queue
@@ -357,9 +351,15 @@ public class RunTestCase extends HttpServlet {
                 } catch (CerberusException ex) {
                     org.apache.log4j.Logger.getLogger(RunTestCase.class.getName()).log(org.apache.log4j.Level.ERROR, "Error while performin testcase in queue ", ex);
                 }
-                
-                TestCaseExecution t = (TestCaseExecution) tces.readByKeyWithDependency(tCExecution.getId()).getItem();
-                org.apache.log4j.Logger.getLogger(RunTestCase.class.getName()).log(org.apache.log4j.Level.ERROR, "CerberusExecution "+ t.toJson());
+
+                /**
+                 * If execution happened, we Log the Execution.
+                 */
+                if (tCExecution.getId() != 0) {
+                    TestCaseExecution t = (TestCaseExecution) tces.readByKeyWithDependency(tCExecution.getId()).getItem();
+                    org.apache.log4j.Logger.getLogger(RunTestCase.class.getName()).log(org.apache.log4j.Level.ERROR, "CerberusExecution " + t.toJson());
+                }
+
                 /**
                  * Clean memory in case testcase has not been launched(Remove
                  * all object put in memory)

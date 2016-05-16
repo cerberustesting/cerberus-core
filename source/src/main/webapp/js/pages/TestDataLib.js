@@ -1403,7 +1403,7 @@ function aoColumnsFuncTestDataLib(tableId) {
             }
         },
         {
-            "sName": "TestDataLibID",
+            "sName": "tdl.TestDataLibID",
             "data": "testDataLibID",
             "sWidth": "50px",
             "title": doc.getDocOnline("testdatalib", "testdatalibid")

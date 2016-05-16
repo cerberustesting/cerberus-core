@@ -23,18 +23,13 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
-import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.cerberus.crud.dao.ICountryEnvironmentDatabaseDAO;
 import org.cerberus.database.DatabaseSpring;
 import org.cerberus.crud.entity.CountryEnvironmentDatabase;
 import org.cerberus.crud.entity.MessageEvent;
-import org.cerberus.crud.entity.MessageGeneral;
-import org.cerberus.enums.MessageGeneralEnum;
-import org.cerberus.exception.CerberusException;
 import org.cerberus.crud.factory.IFactoryCountryEnvironmentDatabase;
 import org.cerberus.enums.MessageEventEnum;
-import org.cerberus.log.MyLogger;
 import org.cerberus.util.StringUtil;
 import org.cerberus.util.answer.Answer;
 import org.cerberus.util.answer.AnswerItem;
@@ -78,10 +73,10 @@ public class CountryEnvironmentDatabaseDAO implements ICountryEnvironmentDatabas
         try {
             PreparedStatement preStat = connection.prepareStatement(query);
             try {
-                preStat.setString(1, system);
-                preStat.setString(1, country);
-                preStat.setString(1, environment);
                 preStat.setString(1, database);
+                preStat.setString(2, environment);
+                preStat.setString(3, country);
+                preStat.setString(4, system);
                 ResultSet resultSet = preStat.executeQuery();
                 try {
                     if (resultSet.first()) {

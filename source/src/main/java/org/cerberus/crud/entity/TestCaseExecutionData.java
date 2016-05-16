@@ -17,6 +17,8 @@
  */
 package org.cerberus.crud.entity;
 
+import java.util.HashMap;
+
 /**
  *
  * @author bcivel
@@ -43,6 +45,15 @@ public class TestCaseExecutionData {
     private MessageGeneral executionResultMessage;
     private boolean stopExecution;
     private TestCaseCountryProperties testCaseCountryProperties;
+    private HashMap<String, String> dataLibRawData; // Have the raw data of all subdata when comming from testDataLibrary
+
+    public HashMap<String, String> getDataLibRawData() {
+        return dataLibRawData;
+    }
+
+    public void setDataLibRawData(HashMap<String, String> dataLibRawData) {
+        this.dataLibRawData = dataLibRawData;
+    }
 
     public TestCaseCountryProperties getTestCaseCountryProperties() {
         return testCaseCountryProperties;
