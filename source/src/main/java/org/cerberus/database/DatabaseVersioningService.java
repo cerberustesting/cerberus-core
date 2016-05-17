@@ -4655,13 +4655,13 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLS.append("ALTER TABLE `batchinvariant` ADD COLUMN `system` VARCHAR(45) NOT NULL FIRST, DROP COLUMN `Unit`, DROP COLUMN `IncIni`, CHANGE COLUMN `Batch` `Batch` VARCHAR(100) NOT NULL DEFAULT '', CHANGE COLUMN `Description` `Description` VARCHAR(200) NULL DEFAULT NULL ;");
         SQLInstruction.add(SQLS.toString());
         SQLS = new StringBuilder();
-        SQLS.append("ALTER TABLE `buildrevisionbatch` CHANGE COLUMN `Batch` `Batch` VARCHAR(100) NOT NULL COMMENT '' ;");
+        SQLS.append("ALTER TABLE `buildrevisionbatch` CHANGE COLUMN `Batch` `Batch` VARCHAR(100) NOT NULL ;");
         SQLInstruction.add(SQLS.toString());
         SQLS = new StringBuilder();
         SQLS.append("ALTER TABLE `buildrevisionbatch` ADD CONSTRAINT `FK_buildrevisionbatch_01` FOREIGN KEY (`Batch`) REFERENCES `batchinvariant` (`Batch`) ON DELETE CASCADE ON UPDATE CASCADE;");
         SQLInstruction.add(SQLS.toString());
         SQLS = new StringBuilder();
-        SQLS.append("ALTER TABLE `testcasestepbatch` CHANGE COLUMN `Batch` `Batch` VARCHAR(100) NOT NULL DEFAULT '' COMMENT '' ;");
+        SQLS.append("ALTER TABLE `testcasestepbatch` CHANGE COLUMN `Batch` `Batch` VARCHAR(100) NOT NULL DEFAULT '' ;");
         SQLInstruction.add(SQLS.toString());
         SQLS = new StringBuilder();
         SQLS.append("ALTER TABLE `testcasestepbatch` ADD CONSTRAINT `FK_testcasestepbatch_02` FOREIGN KEY (`Batch`) REFERENCES `batchinvariant` (`Batch`) ON DELETE CASCADE ON UPDATE CASCADE;");
@@ -5819,7 +5819,7 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLS = new StringBuilder();
         SQLS.append("ALTER TABLE `testdatalib` ");
         SQLS.append("DROP INDEX `IX_testdatalib_01` ,");
-        SQLS.append("ADD INDEX `IX_testdatalib_01` (`Name` ASC, `system` ASC, `Environment` ASC, `Country` ASC)  COMMENT '';");
+        SQLS.append("ADD INDEX `IX_testdatalib_01` (`Name` ASC, `system` ASC, `Environment` ASC, `Country` ASC) ;");
         SQLInstruction.add(SQLS.toString());
 
         return SQLInstruction;
