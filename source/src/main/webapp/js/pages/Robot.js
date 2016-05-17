@@ -73,7 +73,7 @@ function renderOptionsForRobot(data) {
             " + doc.getDocLabel("page_robot", "button_create") + "</button></div>";
 
             $("#robotsTable_wrapper div.ColVis").before(contentToAdd);
-            $('#robot #createRobotButton').click(addEntryClick);
+            $('#robotList #createRobotButton').click(addEntryClick);
         }
     }
 }
