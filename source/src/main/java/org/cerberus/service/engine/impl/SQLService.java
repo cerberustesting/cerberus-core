@@ -513,6 +513,8 @@ public class SQLService implements ISQLService {
         }
         int nbFetch = 0;
         int nbColMatch = 0;
+        String error_desc = "";
+
         MessageEvent msg = new MessageEvent(MessageEventEnum.PROPERTY_SUCCESS);
         msg.setDescription(msg.getDescription().replaceAll("%JDBC%", "jdbc/" + connectionName));
 
@@ -520,6 +522,7 @@ public class SQLService implements ISQLService {
         try {
             PreparedStatement preStat = connection.prepareStatement(sql);
             try {
+                LOG.info("Sending SQL to external Database : " + sql);
                 ResultSet resultSet = preStat.executeQuery();
 
                 int nrColumns = resultSet.getMetaData().getColumnCount();
@@ -531,27 +534,39 @@ public class SQLService implements ISQLService {
                         nbColMatch = 0;
                         HashMap<String, String> row = new HashMap<String, String>();
 
-                        for (int i = 1; i <= nrColumns; i++) {
-                            String col = resultSet.getMetaData().getColumnName(i);
-                            if (columnsToGet.get(col) != null) {
-                                row.put(columnsToGet.get(col).toUpperCase(), //the key is a string in UPPERCASE
-                                        String.valueOf(resultSet.getObject(i)));
+                        for (Map.Entry<String, String> entry : columnsToGet.entrySet()) {
+                            String column = entry.getKey();
+                            String name = entry.getValue();
+                            try {
+                                String valueSQL = resultSet.getString(column);
+                                row.put(name.toUpperCase(), //the key is a string in UPPERCASE
+                                        valueSQL);
                                 nbColMatch++;
+                            } catch (SQLException exception) {
+                                if (nbFetch == 0) {
+                                    if ("".equals(error_desc))  {
+                                        error_desc = column;
+                                    } else {
+                                        error_desc = error_desc + ", " + column;
+                                    }
+                                }
                             }
                         }
 
-                        if (!(row.isEmpty())) {
-                            list.add(row);
-                            nbFetch++;
-                        }
+                        list.add(row);
+                        nbFetch++;
 
                     }
                     listResult.setDataList(list);
                     listResult.setTotalRows(list.size());
 
-                    if (nbColMatch == 0) { // No columns were found
+                    if (nbColMatch==0) { // None of the columns could be match.
                         msg = new MessageEvent(MessageEventEnum.PROPERTY_FAILED_GETFROMDATALIB_SQL_NOCOLUMNMATCH);
-                    } else if (list.isEmpty()) { // At least a column was found but no data was fetched.
+                        msg.setDescription(msg.getDescription().replaceAll("%BADCOLUMNS%", error_desc));
+                    }else if (!("".equals(error_desc))) { // At least a column could not be parsed
+                        msg = new MessageEvent(MessageEventEnum.PROPERTY_FAILED_GETFROMDATALIB_SQL_COLUMNNOTMATCHING);
+                        msg.setDescription(msg.getDescription().replaceAll("%BADCOLUMNS%", error_desc));
+                    } else if (list.isEmpty()) { // All columns were found but no data was fetched.
                         msg = new MessageEvent(MessageEventEnum.PROPERTY_FAILED_SQL_NODATA);
                     }
 
