@@ -148,6 +148,7 @@ while ($threads[$index]) {
 
 if($tag) {
 	my $resultOfCampaign = get($parameters{'cerberus'}."/ResultCI?tag=".$parameters{'tag'});
+    print "Final result: $resultOfCampaign\n";
 
 	if($resultOfCampaign eq "OK") {
 		exit 0;
