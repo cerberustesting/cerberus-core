@@ -109,7 +109,7 @@ sub execute_tests {
 		my $TestURL = $listOfTest[$i].'&Environment='.$args{'environment'};
 
 		# display some information in the terminal
-		print "Execute Test $i/$numberOfTests of from=".$args{'from'}." on=".$args{'on'}."\n";
+		print "Execute Test " . ($i+1) . "/$numberOfTests of from=".$args{'from'}." on=".$args{'on'}."\n";
 		# display URL currently executed by the tread
 		$TestURL =~ s/Browser/browser/;
 
@@ -149,7 +149,7 @@ while ($threads[$index]) {
 if($tag) {
 	my $resultOfCampaign = get($parameters{'cerberus'}."/ResultCI?tag=".$parameters{'tag'});
 
-	if($resultOfCampaign === "OK") {
+	if($resultOfCampaign eq "OK") {
 		exit 0;
 	} else {
 		exit 1;
