@@ -192,7 +192,8 @@ public class ResultCI extends HttpServlet {
 
                 String result;
                 float resultCal = (nbkop1 * pond1) + (nbkop2 * pond2) + (nbkop3 * pond3) + (nbkop4 * pond4);
-                if ((resultCal < 1) && (nbkop1 + nbkop2 + nbkop3 + nbkop4 > 0)) {
+                // FIXME: send KO if no execution has been done
+                if (resultCal < 1) {
                     result = "OK";
                 } else {
                     result = "KO";
