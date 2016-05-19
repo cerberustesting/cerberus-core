@@ -119,12 +119,11 @@ sub execute_tests {
 		# Generate cerberus RunTest URL by added environment parameter
 		my $TestURL = $listOfTest[$i].'&Environment='.$args{'environment'};
 
-		# display some information in the terminal
-		print "Execute Test " . ($i+1) . "/$numberOfTests of from=".$args{'from'}." on=".$args{'on'}."\n";
 		# display URL currently executed by the tread
 		$TestURL =~ s/Browser/browser/;
 
-		print $TestURL."\n\n";
+		$TestURL =~ /&Test=([^&]+).*&TestCase=([^&]+).*&Country=([^&]+)/;
+		print "Executing test case '$2', from test '$1' on '$3' environment...\n";
 
 		# retrieve the content of the URL (nothing done with it for the moment)
 		$content = get("$TestURL");
@@ -159,8 +158,8 @@ while ($threads[$index]) {
 
 if($tag) {
 	my $resultOfCampaign = get($parameters{'cerberus'}."/ResultCI?tag=".$parameters{'tag'});
-    print "Final result: $resultOfCampaign\n";
-	print "See the execution report at: $cerberusUrl/ReportingExecutionByTag.jsp?Tag=$tag\n";
+    print "Campaign result: $resultOfCampaign\n";
+	print "Campaign report: $cerberusUrl/ReportingExecutionByTag.jsp?Tag=$tag\n";
 
 	if($resultOfCampaign eq "OK") {
 		exit 0;
