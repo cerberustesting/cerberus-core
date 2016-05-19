@@ -8,10 +8,11 @@ This Docker image run a Cerberus instance into a [Glassfish](https://glassfish.j
 
 Hereafter list of available tags:
 
-Tag    | Description                        | Source
--------|------------------------------------|-------------------------------
-latest | Use the latest Cerberus version    | [latest/Dockerfile](https://github.com/cerberustesting/cerberus-docker/blob/master/images/cerberus-as-glassfish/1.1.3/Dockerfile)
-1.1.3  | Use the 1.1.3 Cerberus version     | [1.1.3/Dockerfile](https://github.com/cerberustesting/cerberus-docker/blob/master/images/cerberus-as-glassfish/1.1.3/Dockerfile)
+Tag     | Description                        | Source
+--------|------------------------------------|-------------------------------
+latest  | Use the latest Cerberus version    | [latest/Dockerfile](https://github.com/cerberustesting/cerberus-docker/blob/master/images/cerberus-as-glassfish/1.1.3.1/Dockerfile)
+1.1.3.1 | Use the 1.1.3.1 Cerberus version   | [1.1.3.1/Dockerfile](https://github.com/cerberustesting/cerberus-docker/blob/master/images/cerberus-as-glassfish/1.1.3.1/Dockerfile)
+1.1.3   | Use the 1.1.3 Cerberus version     | [1.1.3/Dockerfile](https://github.com/cerberustesting/cerberus-docker/blob/master/images/cerberus-as-glassfish/1.1.3/Dockerfile)
 
 ## Prerequisites
 
@@ -66,6 +67,15 @@ Where `<docker_host>` is your Docker host URL.
 With this example, you could access to the Glassfish administration console by reaching the following URL:
 
     <docker_host>:14848
+
+## Volumes
+
+From the [1.1.3.1](https://github.com/cerberustesting/cerberus-docker/blob/master/images/cerberus-as-glassfish/1.1.3.1/Dockerfile) version, the new `/opt/cerberus-screenshots` directory has been created to store Cerberus execution screenshots.
+Don't forget to map it to an existing folder out of your Docker host in order to make them persistent. Example:
+
+    docker run [...] -v /your/cerberus/screenshots/directory:/opt/cerberus-screenshots cerberus/cerberus-as-glassfish:latest
+
+Where `/your/cerberus/screenshots/directory` in your directory to store Cerberus execution screenshots out of the Docker host.
 
 ## Existing Glassfish instance
 

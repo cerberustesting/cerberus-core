@@ -1,1 +1,3 @@
 *.iml
+/localdata/*/**
+!/localdata/**/README.md

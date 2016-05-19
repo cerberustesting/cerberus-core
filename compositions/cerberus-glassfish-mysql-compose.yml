@@ -32,10 +32,15 @@
 #   - 14848: Glassfsh administration console access
 #
 # Volumes:
-#   - MySQL data directory: FROM ../images/cerberus-db-mysql/data TO /var/lib/mysql
+#   - MySQL data directory                      : FROM /var/lib/mysql             TO ../localdata/mysql-db
+#   - Cerberus execution screenshots directory  : FROM /opt/cerberus-screenshots  TO ../localdata/screenshots
 #     ** IMPORTANT **
-#     The default ../images/cerberus-db-mysql/data mapping value is for test only.
-#     Change this default value to be more relevant with your configuration.
+#     The default mapping values are for test only. Don't forget to change them to be more relevant with your configuration.
+#
+# Notes:
+#   - Cerberus execution screenshots:
+#       To make the volume mapping working, then you have to set the cerberus_picture_path Cerberus parameter to the right value (/opt/cerberus-screenshots/ by default.
+#       Then, don't forget to set this parameter from the GUI.
 version: '2'
 services:
   cerberus-db-mysql:
@@ -45,7 +50,7 @@ services:
     ports:
       - "13306:3306"
     volumes:
-      - ../images/cerberus-db-mysql/data:/var/lib/mysql
+      - ../localdata/mysql-db:/var/lib/mysql
   cerberus-as-glassfish:
     image: cerberustesting/cerberus-as-glassfish:latest
     environment:
@@ -54,6 +59,8 @@ services:
     ports:
       - "18080:8080"
       - "14848:4848"
+    volumes:
+      - ../localdata/screenshots:/opt/cerberus-screenshots
     depends_on:
       - cerberus-db-mysql
     links:

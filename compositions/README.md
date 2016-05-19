@@ -49,6 +49,17 @@ Port             | Description
 `14848`          | the Glassfish administration console access port
 `13306`          | the MySQL database access port
 
+#### Mapped volumes
+
+Hereafter list of mapped volumes:
+
+Data volume (Source)        | Host volume (Destination). Default values             | Description
+----------------------------|-------------------------------------------------------| ---------------------
+`/var/lib/mysql`            | `../localdata/mysql-db`                               | The MySQL local database directory
+`/opt/cerberus-screenshots` | ../localdata/screenshots                              | The Cerberus execution screenshots directory (beware to set from GUI the `cerberus_picture_path` Cerberus parameter with the associated value (`/opt/cerberus-screenshots/` by default) to get this mapping working).
+
+Don't forget to change host volume default values to fit to your need.
+
 ## License
 
 Cerberus Copyright (C) 2016 Cerberus Testing
