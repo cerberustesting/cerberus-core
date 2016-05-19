@@ -844,6 +844,10 @@
         <servlet-name>ReadInvariant</servlet-name>
         <servlet-class>org.cerberus.servlet.crud.transversaltables.ReadInvariant</servlet-class>
     </servlet>
+    <servlet>
+        <servlet-name>DummySoap</servlet-name>
+        <servlet-class>org.cerberus.service.dummy.DummySoap</servlet-class>
+    </servlet>
     <servlet-mapping>
         <servlet-name>ExecutionThreadMonitoring</servlet-name>
         <url-pattern>/ExecutionThreadMonitoring</url-pattern>
@@ -1668,6 +1672,10 @@
         <servlet-name>GetEnvironmentsLastChangePerCountry</servlet-name>
         <url-pattern>/GetEnvironmentsLastChangePerCountry</url-pattern>
     </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>DummySoap</servlet-name>
+        <url-pattern>/DummySoap</url-pattern>
+    </servlet-mapping>
     <session-config>
         <session-timeout>60</session-timeout>
     </session-config>
@@ -2133,6 +2141,7 @@
             <url-pattern>/NewBuildRevisionV000</url-pattern>
             <url-pattern>/DisableEnvironmentV000</url-pattern>
             <url-pattern>/NewEnvironmentEventV000</url-pattern>
+            <url-pattern>/DummySoap</url-pattern>
         </web-resource-collection>
     </security-constraint>
     <security-constraint>
