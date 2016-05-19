@@ -27,6 +27,7 @@ my $campaignName = '';
 my $environment = '';
 my $on = 3;
 my $robot = 'MyRobot';
+my $screenshot = 1;
 my $tag = $campaignName . '-' . time();
 my $cerberusUrl = 'http://localhost:8080/Cerberus/';
 
@@ -37,6 +38,7 @@ GetOptions(
 	'environment=s'	=> \$environment,
 	'on=i'		=> \$on,
 	'robot=s'		=> \$robot,
+	'screenshot=i'	=>\$screenshot,
 	'tag=s'		=> \$tag,
 	'cerberusUrl=s' => \$cerberusUrl,
 	'help!'		=> \$help,
@@ -48,6 +50,7 @@ my %parameters = ('campaign'=>$campaign,
 	'environment'=>$environment,
 	'on' => $on,
 	'robot'=>$robot,
+	'screenshot'=>$screenshot,
 	'tag'=>$tag,
 	'cerberus'=> $cerberusUrl,
 	'servlet'=> 'GetCampaignExecutionsCommand',
