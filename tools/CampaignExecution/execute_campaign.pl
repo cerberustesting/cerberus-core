@@ -12,33 +12,44 @@ use warnings;
 use LWP::Simple qw($ua get);
 use Getopt::Long;
 
+# Autoflush error and standard outputs.
+select(STDERR);
+$| = 1;
+select(STDOUT); # default
+$| = 1;
+
 my $debug = 0;
 
 # Specify default parameters value
 my $help = 0;
 my $campaign = 2;
-my $environment = 'QA';
+my $campaignName = '';
+my $environment = '';
 my $on = 3;
 my $robot = 'MyRobot';
-my $tag = '';
+my $tag = $campaignName . '-' . time();
+my $cerberusUrl = 'http://localhost:8080/Cerberus/';
 
 # Retrieve value of parameters
 GetOptions(
 	'campaign=i'	=> \$campaign,
+	'campaignName=s'	=> \$campaignName,
 	'environment=s'	=> \$environment,
 	'on=i'		=> \$on,
 	'robot=s'		=> \$robot,
 	'tag=s'		=> \$tag,
+	'cerberusUrl=s' => \$cerberusUrl,
 	'help!'		=> \$help,
 ) or die "Usage incorrect!\n";
 
 # Set parameter values
 my %parameters = ('campaign'=>$campaign,
+	'campaignName'=>$campaignName,
 	'environment'=>$environment,
 	'on' => $on,
 	'robot'=>$robot,
 	'tag'=>$tag,
-	'cerberus'=> 'http://localhost:8080/Cerberus-0.9.2-SNAPSHOT/',
+	'cerberus'=> $cerberusUrl,
 	'servlet'=> 'GetCampaignExecutionsCommand',
 	'timeout'=> 150000
 );
@@ -149,6 +160,7 @@ while ($threads[$index]) {
 if($tag) {
 	my $resultOfCampaign = get($parameters{'cerberus'}."/ResultCI?tag=".$parameters{'tag'});
     print "Final result: $resultOfCampaign\n";
+	print "See the execution report at: $cerberusUrl/ReportingExecutionByTag.jsp?Tag=$tag\n";
 
 	if($resultOfCampaign eq "OK") {
 		exit 0;
