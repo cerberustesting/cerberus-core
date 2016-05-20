@@ -5845,6 +5845,28 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
                 "    SELECT `robot`, `version`, 'version' AS `capability` FROM `robot`");
         SQLInstruction.add(SQLS.toString());
 
+        // Apply changes on RobotCapability indexes/keys to follow naming convention
+        //-- ------------------------ 780-782
+        SQLS = new StringBuilder();
+        SQLS.append("ALTER TABLE `robotcapability` \n" +
+                "DROP FOREIGN KEY `fk_robot`;");
+        SQLInstruction.add(SQLS.toString());
+        SQLS = new StringBuilder();
+        SQLS.append("ALTER TABLE `robotcapability` \n" +
+                "DROP INDEX `uq_capability_value_idx` ,\n" +
+                "ADD UNIQUE INDEX `IX_robotcapability_01` (`capability` ASC, `value` ASC, `robot` ASC),\n" +
+                "DROP INDEX `fk_robot_idx` ,\n" +
+                "ADD INDEX `IX_robotcapability_02` (`robot` ASC);");
+        SQLInstruction.add(SQLS.toString());
+        SQLS = new StringBuilder();
+        SQLS.append("ALTER TABLE `robotcapability` \n" +
+                "ADD CONSTRAINT `FK_robotcapability_01`\n" +
+                "  FOREIGN KEY (`robot`)\n" +
+                "  REFERENCES `robot` (`robot`)\n" +
+                "  ON DELETE CASCADE\n" +
+                "  ON UPDATE CASCADE;");
+        SQLInstruction.add(SQLS.toString());
+
         return SQLInstruction;
     }
 
