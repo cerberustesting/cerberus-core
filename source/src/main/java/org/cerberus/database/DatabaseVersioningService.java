@@ -195,7 +195,7 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
 
         SQLS = new StringBuilder();
         SQLS.append("INSERT INTO `parameter` VALUES ('cerberus_homepage_nbbuildhistorydetail','5','Define the number of build/revision that are displayed in the homepage.')");
-        SQLS.append(",('cerberus_picture_path','/home/vertigo/dev/CerberusPictures/','Path to store the Cerberus Selenium Screenshot')");
+        SQLS.append(",('cerberus_picture_path','/opt/cerberus-screenshots/','Path to store the Cerberus Selenium Screenshot')");
         SQLS.append(",('cerberus_picture_url','http://localhost/CerberusPictures/','Link to the Cerberus Selenium Screenshot. The following variable can be used : %ID% and %SCREENSHOT%')");
         SQLS.append(",('cerberus_reporting_url','http://IP/Cerberus/ReportingExecution.jsp?Application=%appli%&TcActive=Y&Priority=All&Environment=%env%&Build=%build%&Revision=%rev%&Country=%country%&Status=WORKING&Apply=Apply','URL to Cerberus reporting screen. the following variables can be used : %country%, %env%,  %appli%, %build% and %rev%.')");
         SQLS.append(",('cerberus_selenium_plugins_path','/tmp/','Path to load firefox plugins (Firebug + netExport) to do network traffic')");
