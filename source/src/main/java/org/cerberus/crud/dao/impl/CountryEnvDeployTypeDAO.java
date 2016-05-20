@@ -132,6 +132,9 @@ public class CountryEnvDeployTypeDAO implements ICountryEnvDeployTypeDAO {
                 if (!StringUtil.isNullOrEmpty(environment)) {
                     preStat.setString(i++, environment);
                 }
+                if (!StringUtil.isNullOrEmpty(deployType)) {
+                    preStat.setString(i++, deployType);
+                }
                 ResultSet resultSet = preStat.executeQuery();
                 try {
                     //gets the data
