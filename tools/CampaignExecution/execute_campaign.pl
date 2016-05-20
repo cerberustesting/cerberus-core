@@ -46,7 +46,7 @@ GetOptions(
 
 # Set parameter values
 my %parameters = ('campaign'=>$campaign,
-	'campaignName'=>$campaignName,
+	'campaignname'=>$campaignName,
 	'environment'=>$environment,
 	'on' => $on,
 	'robot'=>$robot,
