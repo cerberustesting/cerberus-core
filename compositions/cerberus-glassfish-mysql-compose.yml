@@ -32,8 +32,8 @@
 #   - 14848: Glassfsh administration console access
 #
 # Volumes:
-#   - MySQL data directory                      : FROM /var/lib/mysql             TO ../localdata/mysql-db
-#   - Cerberus execution screenshots directory  : FROM /opt/cerberus-screenshots  TO ../localdata/screenshots
+#   - MySQL data directory                      : FROM /var/lib/mysql             TO ../localdata/mysql-db      (SERVICE cerberus-db-mysql)
+#   - Cerberus execution screenshots directory  : FROM /opt/cerberus-screenshots  TO ../localdata/screenshots   (SERVICE cerberus-as-glassfish)
 #     ** IMPORTANT **
 #     The default mapping values are for test only. Don't forget to change them to be more relevant with your configuration.
 version: '2'
