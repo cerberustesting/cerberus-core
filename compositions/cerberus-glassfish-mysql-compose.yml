@@ -36,11 +36,6 @@
 #   - Cerberus execution screenshots directory  : FROM /opt/cerberus-screenshots  TO ../localdata/screenshots
 #     ** IMPORTANT **
 #     The default mapping values are for test only. Don't forget to change them to be more relevant with your configuration.
-#
-# Notes:
-#   - Cerberus execution screenshots:
-#       To make the volume mapping working, then you have to set the cerberus_picture_path Cerberus parameter to the right value (/opt/cerberus-screenshots/ by default.
-#       Then, don't forget to set this parameter from the GUI.
 version: '2'
 services:
   cerberus-db-mysql:
