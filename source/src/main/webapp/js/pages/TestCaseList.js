@@ -279,7 +279,7 @@ function addEntryClick() {
         $('#testAdd option[value="' + test + '"]').attr("selected", "selected");
     }
     // TestCase is taken from the last value in database +1. This is an auto sequence. 
-    // It is already taken from the change event of the test combo.
+    feedTestCase();
 
     // By default we desactivate the execution of the testcase in production environment.
     $('#addEntryModalForm #actProd option[value="N"]').attr("selected", "selected");
