@@ -25,16 +25,18 @@ import java.util.List;
 import org.apache.log4j.Level;
 import org.cerberus.crud.dao.ITestCaseCountryPropertiesDAO;
 import org.cerberus.crud.dao.ITestCaseStepActionDAO;
+import org.cerberus.crud.entity.MessageEvent;
 import org.cerberus.database.DatabaseSpring;
 import org.cerberus.enums.MessageEventEnum;
-import org.cerberus.crud.entity.TCase; 
+import org.cerberus.crud.entity.TCase;
 import org.cerberus.crud.entity.TestCaseCountryProperties;
 import org.cerberus.exception.CerberusException;
 import org.cerberus.log.MyLogger;
-import org.cerberus.crud.service.ITestCaseCountryPropertiesService; 
-import org.cerberus.crud.service.ITestCaseService; 
+import org.cerberus.crud.service.ITestCaseCountryPropertiesService;
+import org.cerberus.crud.service.ITestCaseService;
 import org.cerberus.util.answer.Answer;
 import org.cerberus.util.answer.AnswerList;
+import org.cerberus.util.answer.AnswerUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -54,10 +56,14 @@ public class TestCaseCountryPropertiesService implements ITestCaseCountryPropert
     ITestCaseService testCaseService;
     @Autowired
     private DatabaseSpring dbmanager;
-            
+
+    private final String OBJECT_NAME = "TestCaseCountryProperties";
+
+    private static final org.apache.log4j.Logger LOG = org.apache.log4j.Logger.getLogger(CountryEnvironmentDatabaseService.class);
+
     @Override
     public List<TestCaseCountryProperties> findListOfPropertyPerTestTestCaseCountry(String test, String testCase, String country) {
-        return testCaseCountryPropertiesDAO.findListOfPropertyPerTestTestCaseCountry(test, testCase, country); 
+        return testCaseCountryPropertiesDAO.findListOfPropertyPerTestTestCaseCountry(test, testCase, country);
     }
 
     @Override
@@ -79,15 +85,15 @@ public class TestCaseCountryPropertiesService implements ITestCaseCountryPropert
     public TestCaseCountryProperties findTestCaseCountryPropertiesByKey(String test, String testCase, String country, String property) throws CerberusException {
         return testCaseCountryPropertiesDAO.findTestCaseCountryPropertiesByKey(test, testCase, country, property);
     }
-      
+
     @Override
     public void insertTestCaseCountryProperties(TestCaseCountryProperties testCaseCountryProperties) throws CerberusException {
         testCaseCountryPropertiesDAO.insertTestCaseCountryProperties(testCaseCountryProperties);
     }
-    
+
     @Override
     public boolean insertListTestCaseCountryProperties(List<TestCaseCountryProperties> testCaseCountryPropertiesList) {
-        for (TestCaseCountryProperties tccp : testCaseCountryPropertiesList){
+        for (TestCaseCountryProperties tccp : testCaseCountryPropertiesList) {
             try {
                 insertTestCaseCountryProperties(tccp);
             } catch (CerberusException ex) {
@@ -97,7 +103,7 @@ public class TestCaseCountryPropertiesService implements ITestCaseCountryPropert
         }
         return true;
     }
-    
+
     @Override
     public void updateTestCaseCountryProperties(TestCaseCountryProperties testCaseCountryProperties) throws CerberusException {
         testCaseCountryPropertiesDAO.updateTestCaseCountryProperties(testCaseCountryProperties);
@@ -110,7 +116,7 @@ public class TestCaseCountryPropertiesService implements ITestCaseCountryPropert
 
     @Override
     public void deleteListTestCaseCountryProperties(List<TestCaseCountryProperties> tccpToDelete) throws CerberusException {
-        for (TestCaseCountryProperties tccp : tccpToDelete){
+        for (TestCaseCountryProperties tccp : tccpToDelete) {
             deleteTestCaseCountryProperties(tccp);
         }
     }
@@ -119,50 +125,48 @@ public class TestCaseCountryPropertiesService implements ITestCaseCountryPropert
     public void deleteTestCaseCountryProperties(TestCaseCountryProperties tccp) throws CerberusException {
         testCaseCountryPropertiesDAO.deleteTestCaseCountryProperties(tccp);
     }
-    
+
     @Override
     public List<TestCaseCountryProperties> findAllWithDependencies(String test, String testcase, String country) throws CerberusException {
         List<TestCaseCountryProperties> tccpList = new ArrayList();
         List<TestCaseCountryProperties> tccpListPerCountry = new ArrayList();
         TCase mainTC = testCaseService.findTestCaseByKey(test, testcase);
-        
+
         //find all properties of preTests
         List<TCase> tcptList = testCaseService.findTestCaseActiveByCriteria("Pre Testing", mainTC.getApplication(), country);
-        for (TCase tcase : tcptList){
+        for (TCase tcase : tcptList) {
             tccpList.addAll(testCaseCountryPropertiesDAO.findListOfPropertyPerTestTestCase(tcase.getTest(), tcase.getTestCase()));
             tccpListPerCountry.addAll(testCaseCountryPropertiesDAO.findListOfPropertyPerTestTestCaseCountry(tcase.getTest(), tcase.getTestCase(), country));
         }
-        
+
         //find all properties of the used step
         List<TCase> tcList = testCaseService.findUseTestCaseList(test, testcase);
-        for (TCase tcase : tcList){
-            tccpList.addAll(testCaseCountryPropertiesDAO.findListOfPropertyPerTestTestCase(tcase.getTest(), tcase.getTestCase()));            
+        for (TCase tcase : tcList) {
+            tccpList.addAll(testCaseCountryPropertiesDAO.findListOfPropertyPerTestTestCase(tcase.getTest(), tcase.getTestCase()));
             tccpListPerCountry.addAll(testCaseCountryPropertiesDAO.findListOfPropertyPerTestTestCaseCountry(tcase.getTest(), tcase.getTestCase(), country));
         }
-        
+
         //find all properties of the testcase
         tccpList.addAll(testCaseCountryPropertiesDAO.findListOfPropertyPerTestTestCase(test, testcase));
         tccpListPerCountry.addAll(testCaseCountryPropertiesDAO.findListOfPropertyPerTestTestCaseCountry(test, testcase, country));
-        
+
         //Keep only one property by name
         //all properties that are defined for the country are included
         HashMap tccpMap = new HashMap();
-        for (TestCaseCountryProperties tccp : tccpListPerCountry){
+        for (TestCaseCountryProperties tccp : tccpListPerCountry) {
             tccpMap.put(tccp.getProperty(), tccp);
         }
         //These if/else instructions are done because of the way how the propertyService verifies if
         //the properties exist for the country. 
-        for (TestCaseCountryProperties tccp : tccpList){
-            TestCaseCountryProperties p = (TestCaseCountryProperties)tccpMap.get(tccp.getProperty());
-            if(p == null){
+        for (TestCaseCountryProperties tccp : tccpList) {
+            TestCaseCountryProperties p = (TestCaseCountryProperties) tccpMap.get(tccp.getProperty());
+            if (p == null) {
                 tccpMap.put(tccp.getProperty(), tccp);
-            }else{
-                if(p.getCountry().compareTo(country) != 0 && tccp.getCountry().compareTo(country) == 0){
-                    tccpMap.put(tccp.getProperty(), tccp);
-                }
+            } else if (p.getCountry().compareTo(country) != 0 && tccp.getCountry().compareTo(country) == 0) {
+                tccpMap.put(tccp.getProperty(), tccp);
             }
         }
-        
+
         List<TestCaseCountryProperties> result = new ArrayList<TestCaseCountryProperties>(tccpMap.values());
         return result;
     }
@@ -173,17 +177,110 @@ public class TestCaseCountryPropertiesService implements ITestCaseCountryPropert
     }
 
     @Override
-    public Answer createListTestCaseCountryPropertiesBatch(List<TestCaseCountryProperties> listOfPropertiesToInsert) {
-        
+    public Answer createListTestCaseCountryPropertiesBatch(List<TestCaseCountryProperties> objectList) {
+
         dbmanager.beginTransaction();
-        Answer answer = testCaseCountryPropertiesDAO.createTestCaseCountryPropertiesBatch(listOfPropertiesToInsert);
-        
-        if(!answer.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())){
+        Answer answer = testCaseCountryPropertiesDAO.createTestCaseCountryPropertiesBatch(objectList);
+
+        if (!answer.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
             dbmanager.abortTransaction();
-        }else{
+        } else {
             dbmanager.commitTransaction();
         }
         return answer;
+    }
+
+    @Override
+    public Answer create(TestCaseCountryProperties object) {
+        return testCaseCountryPropertiesDAO.create(object);
+    }
+
+    @Override
+    public Answer delete(TestCaseCountryProperties object) {
+        return testCaseCountryPropertiesDAO.delete(object);
+    }
+
+    @Override
+    public Answer update(TestCaseCountryProperties object) {
+        return testCaseCountryPropertiesDAO.update(object);
+    }
+
+    @Override
+    public Answer createList(List<TestCaseCountryProperties> objectList) {
+        Answer ans = new Answer(null);
+        for (TestCaseCountryProperties objectToCreate : objectList) {
+            ans = testCaseCountryPropertiesDAO.create(objectToCreate);
+        }
+        return ans;
+    }
+
+    @Override
+    public Answer deleteList(List<TestCaseCountryProperties> objectList) {
+        Answer ans = new Answer(null);
+        for (TestCaseCountryProperties objectToDelete : objectList) {
+            ans = testCaseCountryPropertiesDAO.delete(objectToDelete);
+        }
+        return ans;
+    }
+
+    @Override
+    public Answer compareListAndUpdateInsertDeleteElements(String test, String testCase, List<TestCaseCountryProperties> newList) {
+        Answer ans = new Answer(null);
+
+        MessageEvent msg1 = new MessageEvent(MessageEventEnum.GENERIC_OK);
+        Answer finalAnswer = new Answer(msg1);
+
+        List<TestCaseCountryProperties> oldList = new ArrayList();
+//        try {
+        oldList = this.findListOfPropertyPerTestTestCase(test, testCase);
+//        } catch (CerberusException ex) {
+//            LOG.error(ex);
+//        }
+
+        /**
+         * Iterate on (Object From Page - Object From Database) If Object in
+         * Database has same key : Update and remove from the list. If Object in
+         * database does ot exist : Insert it.
+         */
+        List<TestCaseCountryProperties> listToUpdateOrInsert = new ArrayList(newList);
+        listToUpdateOrInsert.removeAll(oldList);
+        List<TestCaseCountryProperties> listToUpdateOrInsertToIterate = new ArrayList(listToUpdateOrInsert);
+
+        for (TestCaseCountryProperties objectDifference : listToUpdateOrInsertToIterate) {
+            for (TestCaseCountryProperties objectInDatabase : oldList) {
+                if (objectDifference.hasSameKey(objectInDatabase)) {
+                    ans = this.update(objectDifference);
+                    finalAnswer = AnswerUtil.agregateAnswer(finalAnswer, (Answer) ans);
+                    listToUpdateOrInsert.remove(objectDifference);
+                }
+            }
+        }
+        if (!listToUpdateOrInsert.isEmpty()) {
+            ans = this.createList(listToUpdateOrInsert);
+            finalAnswer = AnswerUtil.agregateAnswer(finalAnswer, (Answer) ans);
+        }
+
+        /**
+         * Iterate on (Object From Database - Object From Page). If Object in
+         * Page has same key : remove from the list. Then delete the list of
+         * Object
+         */
+        List<TestCaseCountryProperties> listToDelete = new ArrayList(oldList);
+        listToDelete.removeAll(newList);
+        List<TestCaseCountryProperties> listToDeleteToIterate = new ArrayList(listToDelete);
+
+        for (TestCaseCountryProperties objectDifference : listToDeleteToIterate) {
+            for (TestCaseCountryProperties objectInPage : newList) {
+                if (objectDifference.hasSameKey(objectInPage)) {
+                    listToDelete.remove(objectDifference);
+                }
+            }
+        }
+        if (!listToDelete.isEmpty()) {
+            ans = this.deleteList(listToDelete);
+            finalAnswer = AnswerUtil.agregateAnswer(finalAnswer, (Answer) ans);
+        }
+        return finalAnswer;
     }
 
 }

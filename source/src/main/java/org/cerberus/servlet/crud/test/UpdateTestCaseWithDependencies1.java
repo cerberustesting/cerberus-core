@@ -42,21 +42,15 @@ import org.cerberus.crud.factory.IFactoryTestCaseCountryProperties;
 import org.cerberus.crud.factory.IFactoryTestCaseStep;
 import org.cerberus.crud.factory.IFactoryTestCaseStepAction;
 import org.cerberus.crud.factory.IFactoryTestCaseStepActionControl;
-import org.cerberus.crud.service.IGroupService;
-import org.cerberus.crud.service.IInvariantService;
 import org.cerberus.crud.service.ILogEventService;
 import org.cerberus.crud.service.ITestCaseCountryPropertiesService;
-import org.cerberus.crud.service.ITestCaseCountryService;
 import org.cerberus.crud.service.ITestCaseService;
 import org.cerberus.crud.service.ITestCaseStepActionControlService;
 import org.cerberus.crud.service.ITestCaseStepActionService;
 import org.cerberus.crud.service.ITestCaseStepService;
-import org.cerberus.crud.service.ITestService;
-import org.cerberus.crud.service.IUserService;
 import org.cerberus.crud.service.impl.LogEventService;
 import org.cerberus.enums.MessageEventEnum;
 import org.cerberus.exception.CerberusException;
-import org.cerberus.util.ParameterParserUtil;
 import org.cerberus.util.StringUtil;
 import org.cerberus.util.answer.Answer;
 import org.cerberus.util.answer.AnswerItem;
@@ -130,7 +124,7 @@ public class UpdateTestCaseWithDependencies1 extends HttpServlet {
 
             AnswerItem resp = testCaseService.readByKey(test, testCase);
             TCase tc = (TCase) resp.getItem();
-            if (!(resp.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode()) && resp.getItem()!=null)) {
+            if (!(resp.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode()) && resp.getItem() != null)) {
                 /**
                  * Object could not be found. We stop here and report the error.
                  */
@@ -144,7 +138,8 @@ public class UpdateTestCaseWithDependencies1 extends HttpServlet {
              * The service was able to perform the query and confirm the object
              * exist, then we can update it.
              */
-             if (!request.isUserInRole("Test")) { // We cannot update the testcase if the user is not at least in Test role.
+            {
+                if (!request.isUserInRole("Test")) { // We cannot update the testcase if the user is not at least in Test role.
                     msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_EXPECTED);
                     msg.setDescription(msg.getDescription().replace("%ITEM%", "TestCase")
                             .replace("%OPERATION%", "Update")
@@ -162,56 +157,12 @@ public class UpdateTestCaseWithDependencies1 extends HttpServlet {
 
                     // Test Case exist and we can update it so Global update start here //
                     /**
-                     * For the list of testcase country verify it exists. If it
-                     * does not exists > create it If it exist, verify if it's
-                     * the
+                     * TestcaseCountryProperties Update.
                      */
                     List<TestCaseCountryProperties> tccpFromPage = getTestCaseCountryPropertiesFromParameter(request, appContext, test, testCase);
-                    List<TestCaseCountryProperties> tccpFromDtb = tccpService.findListOfPropertyPerTestTestCase(initialTest, initialTestCase);
+                    tccpService.compareListAndUpdateInsertDeleteElements(initialTest, initialTestCase, tccpFromPage);
+                    
 
-                    /**
-                     * Iterate on (TestCaseCountryProperties From Page -
-                     * TestCaseCountryProperties From Database) If
-                     * TestCaseCountryProperties in Database has same key :
-                     * Update and remove from the list. If
-                     * TestCaseCountryProperties in database does ot exist :
-                     * Insert it.
-                     */
-                    List<TestCaseCountryProperties> tccpToUpdateOrInsert = new ArrayList(tccpFromPage);
-                    tccpToUpdateOrInsert.removeAll(tccpFromDtb);
-                    List<TestCaseCountryProperties> tccpToUpdateOrInsertToIterate = new ArrayList(tccpToUpdateOrInsert);
-
-                    for (TestCaseCountryProperties tccpDifference : tccpToUpdateOrInsertToIterate) {
-                        for (TestCaseCountryProperties tccpInDatabase : tccpFromDtb) {
-                            if (tccpDifference.hasSameKey(tccpInDatabase)) {
-                                tccpService.updateTestCaseCountryProperties(tccpDifference);
-                                tccpToUpdateOrInsert.remove(tccpDifference);
-                            }
-                        }
-                    }
-                    tccpService.insertListTestCaseCountryProperties(tccpToUpdateOrInsert);
-
-                    /**
-                     * Iterate on (TestCaseCountryProperties From Database -
-                     * TestCaseCountryProperties From Page). If
-                     * TestCaseCountryProperties in Page has same key : remove
-                     * from the list. Then delete the list of
-                     * TestCaseCountryProperties
-                     */
-                    if (!duplicate) {
-                        List<TestCaseCountryProperties> tccpToDelete = new ArrayList(tccpFromDtb);
-                        tccpToDelete.removeAll(tccpFromPage);
-                        List<TestCaseCountryProperties> tccpToDeleteToIterate = new ArrayList(tccpToDelete);
-
-                        for (TestCaseCountryProperties tccpDifference : tccpToDeleteToIterate) {
-                            for (TestCaseCountryProperties tccpInPage : tccpFromPage) {
-                                if (tccpDifference.hasSameKey(tccpInPage)) {
-                                    tccpToDelete.remove(tccpDifference);
-                                }
-                            }
-                        }
-                        tccpService.deleteListTestCaseCountryProperties(tccpToDelete);
-                    }
                     /**
                      * For the list of testcasestep verify it exists. If it does
                      * not exists > create it If it exist, verify if it's the
@@ -297,6 +248,7 @@ public class UpdateTestCaseWithDependencies1 extends HttpServlet {
                     }
 
                 }
+            }
         }
 
         /**

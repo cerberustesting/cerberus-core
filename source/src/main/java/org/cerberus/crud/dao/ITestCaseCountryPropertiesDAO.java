@@ -54,4 +54,11 @@ public interface ITestCaseCountryPropertiesDAO {
     AnswerList findTestCaseCountryPropertiesByValue1(int testDataLib, String name, String country, String propertyType);
 
     Answer createTestCaseCountryPropertiesBatch(List<TestCaseCountryProperties> listOfPropertiesToInsert);
+
+    Answer create(TestCaseCountryProperties object);
+
+    Answer delete(TestCaseCountryProperties object);
+
+    Answer update(TestCaseCountryProperties object);
+
 }
