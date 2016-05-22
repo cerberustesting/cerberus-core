@@ -147,13 +147,13 @@ public class PropertyService implements IPropertyService {
          * Decode Property replacing properties encapsulated with %
          */
         if (testCaseCountryProperty.getValue1().contains("%")) {
-            String decodedValue = decodeValue(testCaseCountryProperty.getValue1(), tCExecution);
+            String decodedValue = decodeValueWithSystemVariable(testCaseCountryProperty.getValue1(), tCExecution);
             decodedValue = this.replaceWithCalculatedProperty(decodedValue, tCExecution);
             testCaseExecutionData.setValue1(decodedValue);
         }
 
         if (testCaseCountryProperty.getValue2() != null && testCaseCountryProperty.getValue2().contains("%")) {
-            String decodedValue = decodeValue(testCaseCountryProperty.getValue2(), tCExecution);
+            String decodedValue = decodeValueWithSystemVariable(testCaseCountryProperty.getValue2(), tCExecution);
             decodedValue = this.replaceWithCalculatedProperty(decodedValue, tCExecution);
             testCaseExecutionData.setValue2(decodedValue);
         }
@@ -255,14 +255,13 @@ public class PropertyService implements IPropertyService {
             //adds the property to the data list
             tCExecution.getTestCaseExecutionDataList().add(tecdAuxiliary);
 
-            try {
-                testCaseExecutionDataService.insertOrUpdateTestCaseExecutionData(tecdAuxiliary);
-            } catch (CerberusException cex) {
-                LOG.error(cex.getMessage(), cex);
-            }
-
+//            try {
+//                testCaseExecutionDataService.insertOrUpdateTestCaseExecutionData(tecdAuxiliary);
+//            } catch (CerberusException cex) {
+//                LOG.error(cex.getMessage(), cex);
+//            }
             //the value for value 1 for the subdata access proprerty is the id of the library entry
-            testCaseExecutionData.setValue1(tecdAuxiliary.getValue());
+//            testCaseExecutionData.setValue1(tecdAuxiliary.getValue());
         }
 
         if (tecdAuxiliary.getPropertyResultMessage().getCode() == MessageEventEnum.PROPERTY_SUCCESS_GETFROMDATALIB.getCode()) {
@@ -270,7 +269,7 @@ public class PropertyService implements IPropertyService {
             //if the property that is being calculated is the value from a subdata entry, then we need to calculate it e.g., format: Entry(Key)
             //if(eachTccp instanceof TestCaseSubDataAccessProperty){
             //after calculating the property base we can access the subdata entry
-            calculateSubDataEntry(tCExecution, testCaseExecutionData, inner.getProperty());//calculates the subdata entry
+            calculateSubDataEntry(tCExecution, testCaseExecutionData, ((TestCaseSubDataAccessProperty) testCaseCountryProperty).getLibraryValue(), ((TestCaseSubDataAccessProperty) testCaseCountryProperty).getSubDataValue());//calculates the subdata entry
         } else //if the getFromDataLib does not succeed than it means that we are not able to perform the sub-data access 
          if (tecdAuxiliary.getPropertyResultMessage().getCode() == MessageEventEnum.PROPERTY_FAILED_GETFROMDATALIB_NOT_FOUND_ERROR.getCode()
                     || tecdAuxiliary.getPropertyResultMessage().getCode() == MessageEventEnum.PROPERTY_FAILED_GETFROMDATALIB_SQL_GENERIC.getCode() //same code as PROPERTY_FAILED_GETFROMDATALIB_NODATA
@@ -309,7 +308,7 @@ public class PropertyService implements IPropertyService {
         if (LOG.isDebugEnabled()) {
             LOG.debug("Value before system variable decode : " + stringToDecode);
         }
-        stringToDecode = decodeValue(stringToDecode, tCExecution);
+        stringToDecode = decodeValueWithSystemVariable(stringToDecode, tCExecution);
         if (LOG.isDebugEnabled()) {
             LOG.debug("Value after system variable decode : " + stringToDecode);
         }
@@ -561,7 +560,7 @@ public class PropertyService implements IPropertyService {
      * @param keyDataList key used to retrieve the information from the library
      * that was previously calculated.
      */
-    private void calculateSubDataEntry(TestCaseExecution tCExecution, TestCaseExecutionData tecd, String keyDataList) {
+    private void calculateSubDataEntry(TestCaseExecution tCExecution, TestCaseExecutionData tecd, String keyDataList, String subData) {
         //we are going to retrieve the subdata entry
         //means that is library + subdata call -> LIBRARY(ATTRIBUTE) and that we have already the subdata property
         //gets the value for the library entry with basis on
@@ -569,40 +568,56 @@ public class PropertyService implements IPropertyService {
         Map<String, TestDataLibResult> currentListResults = tCExecution.getDataLibraryExecutionDataList();
 
         TestDataLibResult result = currentListResults.get(keyDataList);
-        String subDataValue = result.getValue(tecd.getValue2()); //temporary use of the value2
+        String subDataValue = result.getValue(subData);
 
         String value = "";
-        MessageEvent res = new MessageEvent(MessageEventEnum.PROPERTY_SUCCESS_GETFROMDATALIBDATA);
-        if (subDataValue == null) {
-            //the entry does not exist yet so we need to calculate it
-            //gets the entry that we want to collect 
-            TestDataLibData subDataEntry;
+        MessageEvent res = new MessageEvent(MessageEventEnum.PROPERTY_SUCCESS_GETFROMDATALIBDATA_GETSUBDATA);
 
-            AnswerItem ansSubDataEntry = testDataLibDataService.readByKey(Integer.parseInt(tecd.getValue1()), tecd.getValue2());
-            subDataEntry = (TestDataLibData) ansSubDataEntry.getItem();
-            if (subDataEntry != null) {
-                //extract the subdata entry value
-                AnswerItem ansFetchData = testDataLibDataService.fetchSubData(result, subDataEntry);
-                value = (String) ansFetchData.getItem();
-                if (value == null) {
-                    //if value is null then the key was valid but 
-                    res = ansFetchData.getResultMessage();
-                }
-            } else {
+        if (result.getType().equalsIgnoreCase("STATIC") || result.getType().equalsIgnoreCase("SQL")) {
+            
+            if (subDataValue == null) {
+                // The entry does not exist so we report the error.
                 res = new MessageEvent(MessageEventEnum.PROPERTY_FAILED_GETFROMDATALIBDATA);
             }
+            res.setDescription(res.getDescription().replace("%SUBDATA%", subData).replace("%PROP%", keyDataList));
+            res.setDescription(res.getDescription().replace("%ENTRY%", tecd.getValue1()));
+
+        } else { // TODO vertigo17 : SOAP Library not yet Refactor.
+            
+            if (subDataValue == null) {
+                //the entry does not exist yet so we need to calculate it
+                //gets the entry that we want to collect 
+                TestDataLibData subDataEntry;
+
+                AnswerItem ansSubDataEntry = testDataLibDataService.readByKey(Integer.parseInt(tecd.getValue1()), tecd.getValue2());
+                subDataEntry = (TestDataLibData) ansSubDataEntry.getItem();
+                if (subDataEntry != null) {
+                    //extract the subdata entry value
+                    AnswerItem ansFetchData = testDataLibDataService.fetchSubData(result, subDataEntry);
+                    value = (String) ansFetchData.getItem();
+                    if (value == null) {
+                        //if value is null then the key was valid but 
+                        res = ansFetchData.getResultMessage();
+                    }
+                } else {
+                    res = new MessageEvent(MessageEventEnum.PROPERTY_FAILED_GETFROMDATALIBDATA);
+                }
+            }
+            tCExecution.getDataLibraryExecutionDataList().put(keyDataList, result);
+            res.setDescription(res.getDescription().replace("%VALUE1%", tecd.getValue1()).replace("%VALUE2%", tecd.getValue2()));
+            
         }
-        res.setDescription(res.getDescription().replace("%VALUE1%", tecd.getValue1()).replace("%VALUE2%", tecd.getValue2()));
+        
+        res.setDescription(res.getDescription().replace("%SUBDATA%", subData).replace("%PROP%", keyDataList));
         res.setDescription(res.getDescription().replace("%ENTRY%", tecd.getValue1()));
         //retrieved the information
         //we add the entry value into the execution data
         tecd.setValue(subDataValue);
 
         //updates the result data
-        tCExecution.getDataLibraryExecutionDataList().put(keyDataList, result);
+//        tCExecution.getDataLibraryExecutionDataList().put(keyDataList, result);
         //updates the execution data list
         //tCExecution.setDataLibraryExecutionDataList(currentListResults);
-
         tecd.setPropertyResultMessage(res);
     }
 
@@ -670,7 +685,7 @@ public class PropertyService implements IPropertyService {
         return result;
     }
 
-    private String decodeValue(String stringToDecode, TestCaseExecution tCExecution) {
+    private String decodeValueWithSystemVariable(String stringToDecode, TestCaseExecution tCExecution) {
         /**
          * Trying to replace by system environment variables .
          */
@@ -1628,7 +1643,7 @@ public class PropertyService implements IPropertyService {
                         List<Map<String, String>> listToremove = new ArrayList<Map<String, String>>();
                         for (String valueToRemove : pastValues) {
                             for (Map<String, String> curentRow : list) {
-                                if (curentRow.get("".toUpperCase()).equals(valueToRemove)) {
+                                if (curentRow.get("").equals(valueToRemove)) {
                                     if (true) {
                                         listToremove.add(curentRow);
                                         removedNB++;
@@ -1666,7 +1681,7 @@ public class PropertyService implements IPropertyService {
                         List<Map<String, String>> listToremove = new ArrayList<Map<String, String>>();
                         for (String valueToRemove : pastValues) {
                             for (Map<String, String> curentRow : list) {
-                                if (curentRow.get("".toUpperCase()).equals(valueToRemove)) {
+                                if (curentRow.get("").equals(valueToRemove)) {
                                     if (true) {
                                         listToremove.add(curentRow);
                                         removedNB++;

@@ -46,7 +46,7 @@ public class TestDataLibResultSQL extends TestDataLibResult {
         //checks if the column was already retrieved
         if (!rawData.containsKey(entry.getSubData())) {
             //if the map don't contain the entry that we want, we will get it
-            String value = rawData.get(entry.getColumn().toUpperCase()); //columns are store in UPPERCASE
+            String value = rawData.get(entry.getColumn());
             //associates the subdata with the column data retrieved by the query
 
             if (value == null) {

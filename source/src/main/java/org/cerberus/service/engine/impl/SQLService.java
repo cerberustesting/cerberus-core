@@ -217,7 +217,7 @@ public class SQLService implements ISQLService {
                                     List<Map<String, String>> listToremove = new ArrayList<Map<String, String>>();
                                     for (String valueToRemove : pastValues) {
                                         for (Map<String, String> curentRow : list) {
-                                            if (curentRow.get(keyColumn.toUpperCase()).equals(valueToRemove)) {
+                                            if (curentRow.get("").equals(valueToRemove)) {
                                                 if (true) {
                                                     listToremove.add(curentRow);
                                                     removedNB++;
@@ -254,7 +254,7 @@ public class SQLService implements ISQLService {
                                     List<Map<String, String>> listToremove = new ArrayList<Map<String, String>>();
                                     for (String valueToRemove : pastValues) {
                                         for (Map<String, String> curentRow : list) {
-                                            if (curentRow.get(keyColumn.toUpperCase()).equals(valueToRemove)) {
+                                            if (curentRow.get("").equals(valueToRemove)) {
                                                 if (true) {
                                                     listToremove.add(curentRow);
                                                     removedNB++;
@@ -522,7 +522,7 @@ public class SQLService implements ISQLService {
         try {
             PreparedStatement preStat = connection.prepareStatement(sql);
             try {
-                LOG.info("Sending SQL to external Database : " + sql);
+                LOG.info("Sending to external Database : '" + connectionName + "' SQL '" + sql + "'");
                 ResultSet resultSet = preStat.executeQuery();
 
                 int nrColumns = resultSet.getMetaData().getColumnCount();
@@ -539,12 +539,11 @@ public class SQLService implements ISQLService {
                             String name = entry.getValue();
                             try {
                                 String valueSQL = resultSet.getString(column);
-                                row.put(name.toUpperCase(), //the key is a string in UPPERCASE
-                                        valueSQL);
+                                row.put(name, valueSQL); // We put the result of the subData.
                                 nbColMatch++;
                             } catch (SQLException exception) {
                                 if (nbFetch == 0) {
-                                    if ("".equals(error_desc))  {
+                                    if ("".equals(error_desc)) {
                                         error_desc = column;
                                     } else {
                                         error_desc = error_desc + ", " + column;
@@ -560,10 +559,10 @@ public class SQLService implements ISQLService {
                     listResult.setDataList(list);
                     listResult.setTotalRows(list.size());
 
-                    if (nbColMatch==0) { // None of the columns could be match.
+                    if (nbColMatch == 0) { // None of the columns could be match.
                         msg = new MessageEvent(MessageEventEnum.PROPERTY_FAILED_GETFROMDATALIB_SQL_NOCOLUMNMATCH);
                         msg.setDescription(msg.getDescription().replaceAll("%BADCOLUMNS%", error_desc));
-                    }else if (!("".equals(error_desc))) { // At least a column could not be parsed
+                    } else if (!("".equals(error_desc))) { // At least a column could not be parsed
                         msg = new MessageEvent(MessageEventEnum.PROPERTY_FAILED_GETFROMDATALIB_SQL_COLUMNNOTMATCHING);
                         msg.setDescription(msg.getDescription().replaceAll("%BADCOLUMNS%", error_desc));
                     } else if (list.isEmpty()) { // All columns were found but no data was fetched.

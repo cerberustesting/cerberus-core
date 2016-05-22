@@ -472,16 +472,16 @@ public class TestDataLibDAO implements ITestDataLibDAO {
         if (!StringUtil.isNullOrEmpty(individualSearch)) {
             searchSQL.append(" and (`?`)");
         }
-        if (!StringUtil.isNullOrEmpty(name)) {
+        if (name!=null) {
             searchSQL.append(" and tdl.`name` = ? ");
         }
-        if (!StringUtil.isNullOrEmpty(system)) {
+        if (system!=null) {
             searchSQL.append(" and tdl.`system` = ? ");
         }
-        if (!StringUtil.isNullOrEmpty(environment)) {
+        if (environment!=null) {
             searchSQL.append(" and tdl.`environment` = ? ");
         }
-        if (!StringUtil.isNullOrEmpty(country)) {
+        if (country!=null) {
             searchSQL.append(" and tdl.`country` = ? ");
         }
         if (!StringUtil.isNullOrEmpty(type)) {
@@ -531,16 +531,16 @@ public class TestDataLibDAO implements ITestDataLibDAO {
                 if (!StringUtil.isNullOrEmpty(individualSearch)) {
                     preStat.setString(i++, individualSearch);
                 }
-                if (!StringUtil.isNullOrEmpty(name)) {
+                if (name!=null) {
                     preStat.setString(i++, name);
                 }
-                if (!StringUtil.isNullOrEmpty(system)) {
+                if (system!=null) {
                     preStat.setString(i++, system);
                 }
-                if (!StringUtil.isNullOrEmpty(environment)) {
+                if (environment!=null) {
                     preStat.setString(i++, environment);
                 }
-                if (!StringUtil.isNullOrEmpty(country)) {
+                if (country!=null) {
                     preStat.setString(i++, country);
                 }
                 if (!StringUtil.isNullOrEmpty(type)) {

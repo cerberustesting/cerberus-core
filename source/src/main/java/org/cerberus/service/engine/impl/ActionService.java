@@ -27,12 +27,14 @@ import org.apache.log4j.Logger;
 import org.cerberus.crud.entity.Identifier;
 import org.cerberus.crud.entity.MessageEvent;
 import org.cerberus.crud.entity.MessageGeneral;
+import org.cerberus.crud.entity.Parameter;
 import org.cerberus.crud.entity.SoapLibrary;
 import org.cerberus.service.engine.model.SwipeAction;
 import org.cerberus.crud.entity.TestCaseExecution;
 import org.cerberus.crud.entity.TestCaseExecutionData;
 import org.cerberus.crud.entity.TestCaseStepActionExecution;
 import org.cerberus.crud.service.ILogEventService;
+import org.cerberus.crud.service.IParameterService;
 import org.cerberus.crud.service.ISoapLibraryService;
 import org.cerberus.enums.MessageEventEnum;
 import org.cerberus.exception.CerberusEventException;
@@ -63,6 +65,8 @@ import org.springframework.stereotype.Service;
 @Service
 public class ActionService implements IActionService {
 
+    @Autowired
+    private IParameterService parameterService;
     @Autowired
     private IPropertyService propertyService;
     @Autowired
@@ -106,6 +110,7 @@ public class ActionService implements IActionService {
                 isCalledFromCalculateProperty = true;
             }
             try {
+                // We decode here the object with any potencial variables (ex : %TOTO%). If the Current action if calculateProperty, we force a new calculation of the Property.
                 testCaseStepActionExecution.setObject(propertyService.getValue(testCaseStepActionExecution.getObject(), testCaseStepActionExecution, isCalledFromCalculateProperty));
                 //if the getvalue() indicates that the execution should stop then we stop it before the doAction 
                 //or if the property service was unable to decode the property that is specified in the object, 
@@ -194,7 +199,7 @@ public class ActionService implements IActionService {
             res = this.doActionCallSoapFromDataLib(testCaseStepActionExecution, object, property);
 
         } else if (testCaseStepActionExecution.getAction().equals("callSoap")) {
-            res = this.doActionMakeSoapCall(testCaseStepActionExecution, object, property, false); 
+            res = this.doActionMakeSoapCall(testCaseStepActionExecution, object, property, false);
 
         } else if (testCaseStepActionExecution.getAction().equals("callSoap_BETA")) { // ACTION that is plugged to the TestDataLib
             res = this.doActionCallSoapFromDataLib(testCaseStepActionExecution, object, property);
@@ -619,7 +624,7 @@ public class ActionService implements IActionService {
     private MessageEvent doActionWait(TestCaseExecution tCExecution, String object, String property) {
         MessageEvent message;
         String element;
-        long timeToWait = 0;
+        long timeToWaitInMs = 0;
         Identifier identifier = null;
         try {
             /**
@@ -627,39 +632,52 @@ public class ActionService implements IActionService {
              * object empty, null if both are empty
              */
             element = getElementToUse(object, property, "wait", tCExecution);
-            /**
-             * if element is integer, set time to that value else Get Identifier
-             * (identifier, locator)
-             */
-            if (element == null) {
-                timeToWait = 1000 * tCExecution.getSession().getDefaultWait();
-            } else {
-                if (StringUtil.isNumeric(element)) {
-                    timeToWait = Long.valueOf(element);
+
+            if (tCExecution.getApplication().getType().equalsIgnoreCase("GUI")
+                    || tCExecution.getApplication().getType().equalsIgnoreCase("APK")
+                    || tCExecution.getApplication().getType().equalsIgnoreCase("IPA")) { // If application are Selenium or appium based, we have a session and can use it to wait.
+
+                /**
+                 * if element is integer, set time to that value else Get
+                 * Identifier (identifier, locator)
+                 */
+                if (StringUtil.isNullOrEmpty(element)) {
+                    timeToWaitInMs = 1000 * tCExecution.getSession().getDefaultWait();
+                } else if (StringUtil.isNumeric(element)) {
+                    timeToWaitInMs = Long.valueOf(element);
                 } else {
                     identifier = identifierService.convertStringToIdentifier(element);
                     identifierService.checkWebElementIdentifier(identifier.getIdentifier());
                 }
-            }
 
-            if (tCExecution.getApplication().getType().equalsIgnoreCase("GUI")
-                    || tCExecution.getApplication().getType().equalsIgnoreCase("APK")
-                    || tCExecution.getApplication().getType().equalsIgnoreCase("IPA")){
                 if (identifier != null && identifier.getIdentifier().equals("picture")) {
                     return sikuliService.doSikuliAction(tCExecution.getSession(), "wait", identifier.getLocator(), "");
                 } else if (identifier != null) {
                     return webdriverService.doSeleniumActionWait(tCExecution.getSession(), identifier);
                 } else {
-                    return this.waitTime(timeToWait);
+                    return this.waitTime(timeToWaitInMs);
                 }
+            } else { // For any other application we wait for the integer value.
+                if (StringUtil.isNullOrEmpty(element)) {
+                    // Get default wait from parameter
+                    long defaultWait;
+                    try {
+                        Parameter param = parameterService.findParameterByKey("selenium_defaultWait", tCExecution.getApplication().getSystem());
+                        String to = tCExecution.getTimeout().equals("") ? param.getValue() : tCExecution.getTimeout();
+                        defaultWait = Long.parseLong(to);
+                    } catch (CerberusException ex) {
+                        //MyLogger.log(RunTestCase.class.getName(), Level.WARN, "Parameter (selenium_defaultWait) not in Parameter table, default wait set to 90 seconds");
+                        LOG.warn("Parameter (selenium_defaultWait) not in Parameter table, default wait set to 90 seconds. " + ex.toString());
+                        defaultWait = 90;
+                    }
+
+                    timeToWaitInMs = 1000 * defaultWait;
+                } else if (StringUtil.isNumeric(element)) {
+                    timeToWaitInMs = Long.valueOf(element);
+                }
+                return this.waitTime(timeToWaitInMs);
             }
-            if (tCExecution.getApplication().getType().equalsIgnoreCase("CMP")) {
-                return this.waitTime(timeToWait);
-            }
-            message = new MessageEvent(MessageEventEnum.ACTION_NOTEXECUTED_NOTSUPPORTED_FOR_APPLICATION);
-            message.setDescription(message.getDescription().replaceAll("%ACTION%", "Wait"));
-            message.setDescription(message.getDescription().replaceAll("%APPLICATIONTYPE%", tCExecution.getApplication().getType()));
-            return message;
+
         } catch (CerberusEventException ex) {
             LOG.fatal("Error doing Action Wait :" + ex);
             return ex.getMessageError();
@@ -947,7 +965,7 @@ public class ActionService implements IActionService {
             return object;
         } else if (!StringUtil.isNullOrEmpty(property)) {
             logEventService.createPrivateCalls("ENGINE", action, MESSAGE_DEPRECATED + " Beware, in future release, it won't be allowed to use action without using field value1. Triggered by TestCase : ['" + tCExecution.getTest() + "'|'" + tCExecution.getTestCase() + "'] Property : " + property);
-            LOG.warn(MESSAGE_DEPRECATED + " Action : "+ action + ". Beware, in future release, it won't be allowed to use action without using field value1. Triggered by TestCase : ['" + tCExecution.getTest() + "'|'" + tCExecution.getTestCase() + "'] Property : " + property);
+            LOG.warn(MESSAGE_DEPRECATED + " Action : " + action + ". Beware, in future release, it won't be allowed to use action without using field value1. Triggered by TestCase : ['" + tCExecution.getTest() + "'|'" + tCExecution.getTestCase() + "'] Property : " + property);
             return property;
         }
         if (!(action.equals("wait"))) { // Wait is the only action can be excuted with no parameters. For all other actions we raize an exception as this should never happen.
@@ -958,20 +976,20 @@ public class ActionService implements IActionService {
         return null;
     }
 
-    private MessageEvent waitTime(Long timeToWait) {
+    private MessageEvent waitTime(Long timeToWaitMs) {
         MessageEvent message;
         /**
          * if timeToWait is null, throw CerberusException
          */
-        if (timeToWait == 0) {
+        if (timeToWaitMs == 0) {
             message = new MessageEvent(MessageEventEnum.ACTION_FAILED_WAIT_INVALID_FORMAT);
             return message;
         }
         try {
-            org.apache.log4j.Logger.getLogger(ActionService.class.getName()).log(org.apache.log4j.Level.DEBUG, "TIME TO WAIT = " + timeToWait);
-            Thread.sleep(timeToWait);
+            org.apache.log4j.Logger.getLogger(ActionService.class.getName()).log(org.apache.log4j.Level.DEBUG, "TIME TO WAIT = " + timeToWaitMs);
+            Thread.sleep(timeToWaitMs);
             message = new MessageEvent(MessageEventEnum.ACTION_SUCCESS_WAIT_TIME);
-            message.setDescription(message.getDescription().replaceAll("%TIME%", String.valueOf(timeToWait)));
+            message.setDescription(message.getDescription().replaceAll("%TIME%", String.valueOf(timeToWaitMs)));
             return message;
         } catch (InterruptedException exception) {
             MyLogger.log(ActionService.class.getName(), Level.INFO, exception.toString());
@@ -1009,10 +1027,10 @@ public class ActionService implements IActionService {
             options.put("description", MessageEventEnum.ACTION_SUCCESS_CALLSOAP.getDescription().
                     replaceAll("%SOAPNAME%", object));
 
-            if(StringUtil.isNullOrEmpty(property)){
+            if (StringUtil.isNullOrEmpty(property)) {
                 options.put("request", "%REQUEST_NAME%");
                 options.put("response", "%RESPONSE_NAME%");
-            }else{
+            } else {
                 String descId = String.valueOf(testCaseStepActionExecution.getTestCaseStepExecution().gettCExecution().getId());
                 options.put("request", descId + File.separator + property + "_request.xml");
                 options.put("response", descId + File.separator + property + ".xml");
