@@ -71,13 +71,14 @@ public class SoapService implements ISoapService {
     @Override
     public SOAPMessage createSoapRequest(String envelope, String method) throws SOAPException, IOException, SAXException, ParserConfigurationException {
         String unescapedEnvelope = StringEscapeUtils.unescapeXml(envelope);
+        boolean is12SoapVersion = SOAP_1_2_NAMESPACE_PATTERN.matcher(unescapedEnvelope).matches();
 
         MimeHeaders headers = new MimeHeaders();
         headers.addHeader("SOAPAction", method);
-        headers.addHeader("Content-Type", SOAP_1_2_NAMESPACE_PATTERN.matcher(unescapedEnvelope).matches() ? SOAPConstants.SOAP_1_2_CONTENT_TYPE : SOAPConstants.SOAP_1_1_CONTENT_TYPE);
+        headers.addHeader("Content-Type", is12SoapVersion ? SOAPConstants.SOAP_1_2_CONTENT_TYPE : SOAPConstants.SOAP_1_1_CONTENT_TYPE);
 
         InputStream input = new ByteArrayInputStream(unescapedEnvelope.getBytes("UTF-8"));
-        MessageFactory messageFactory = MessageFactory.newInstance(SOAPConstants.DYNAMIC_SOAP_PROTOCOL);
+        MessageFactory messageFactory = MessageFactory.newInstance(is12SoapVersion ? SOAPConstants.SOAP_1_2_PROTOCOL : SOAPConstants.SOAP_1_1_PROTOCOL);
         return messageFactory.createMessage(headers, input);
     }
 
@@ -150,7 +151,6 @@ public class SoapService implements ISoapService {
 
                 message = new MessageEvent(MessageEventEnum.ACTION_SUCCESS_CALLSOAP);
                 message.setDescription(message.getDescription().replaceAll("%SOAPNAME%", method));
-                result.setResultMessage(message);
                 result.setItem(executionSOAP);
 
             } catch (SOAPException e) {
@@ -191,6 +191,8 @@ public class SoapService implements ISoapService {
                     Logger.getLogger(SoapService.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
                 } catch (IOException ex) {
                     Logger.getLogger(SoapService.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+                } finally {
+                    result.setResultMessage(message);
                 }
             }
         }
