@@ -153,27 +153,7 @@ public class SoapService implements ISoapService {
                 message.setDescription(message.getDescription().replaceAll("%SOAPNAME%", method));
                 result.setItem(executionSOAP);
 
-            } catch (SOAPException e) {
-                MyLogger.log(SoapService.class.getName(), Level.ERROR, e.toString());
-                message = new MessageEvent(MessageEventEnum.ACTION_FAILED_CALLSOAP);
-                message.setDescription(message.getDescription().replaceAll("%SOAPNAME%", method));
-                message.setDescription(message.getDescription().replaceAll("%DESCRIPTION%", e.getMessage()));
-            } catch (IOException e) {
-                MyLogger.log(SoapService.class.getName(), Level.ERROR, e.toString());
-                message = new MessageEvent(MessageEventEnum.ACTION_FAILED_CALLSOAP);
-                message.setDescription(message.getDescription().replaceAll("%SOAPNAME%", method));
-                message.setDescription(message.getDescription().replaceAll("%DESCRIPTION%", e.getMessage()));
-            } catch (ParserConfigurationException e) {
-                MyLogger.log(SoapService.class.getName(), Level.ERROR, e.toString());
-                message = new MessageEvent(MessageEventEnum.ACTION_FAILED_CALLSOAP);
-                message.setDescription(message.getDescription().replaceAll("%SOAPNAME%", method));
-                message.setDescription(message.getDescription().replaceAll("%DESCRIPTION%", e.getMessage()));
-            } catch (SAXException e) {
-                MyLogger.log(SoapService.class.getName(), Level.ERROR, e.toString());
-                message = new MessageEvent(MessageEventEnum.ACTION_FAILED_CALLSOAP);
-                message.setDescription(message.getDescription().replaceAll("%SOAPNAME%", method));
-                message.setDescription(message.getDescription().replaceAll("%DESCRIPTION%", e.getMessage()));
-            } catch (CerberusException e) {
+            } catch (Exception e) {
                 MyLogger.log(SoapService.class.getName(), Level.ERROR, e.toString());
                 message = new MessageEvent(MessageEventEnum.ACTION_FAILED_CALLSOAP);
                 message.setDescription(message.getDescription().replaceAll("%SOAPNAME%", method));
