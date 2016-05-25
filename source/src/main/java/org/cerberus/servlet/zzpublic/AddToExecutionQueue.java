@@ -41,7 +41,7 @@ import org.cerberus.crud.service.ICampaignService;
 import org.cerberus.crud.service.IParameterService;
 import org.cerberus.crud.service.ITestCaseExecutionInQueueService;
 import org.cerberus.crud.service.ITestCaseService;
-import org.cerberus.service.executor.ExecutionThreadPoolService;
+import org.cerberus.engine.threadpool.ExecutionThreadPoolService;
 import org.cerberus.util.ParameterParserUtil;
 import org.cerberus.util.StringUtil;
 import org.springframework.context.ApplicationContext;

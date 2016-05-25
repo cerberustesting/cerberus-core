@@ -26,7 +26,7 @@ import org.cerberus.crud.entity.Selenium;
 import org.cerberus.crud.entity.TestCaseExecution;
 import org.cerberus.crud.entity.TestCaseStepActionExecution;
 import org.cerberus.crud.entity.TestCaseStepExecution;
-import org.cerberus.service.engine.impl.ActionService;
+import org.cerberus.engine.gwt.impl.ActionService;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
