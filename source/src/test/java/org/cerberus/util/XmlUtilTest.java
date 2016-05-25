@@ -28,9 +28,9 @@ import java.util.List;
 
 import junit.framework.Assert;
 
-import org.cerberus.service.engine.impl.XmlUnitService;
-import org.cerberus.service.engine.impl.diff.Differences;
-import org.cerberus.service.engine.impl.diff.DifferencesException;
+import org.cerberus.service.xmlunit.impl.XmlUnitService;
+import org.cerberus.service.xmlunit.Differences;
+import org.cerberus.service.xmlunit.DifferencesException;
 import org.custommonkey.xmlunit.DetailedDiff;
 import org.custommonkey.xmlunit.XMLUnit;
 import org.junit.Before;

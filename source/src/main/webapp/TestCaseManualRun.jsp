@@ -189,8 +189,8 @@
                 }
                 CountryEnvParam countryEnvParam;
                 try {
-                    countryEnvParam = countryEnvParamService.findCountryEnvParamByKey(myApp.getSystem(), country, environment);
-                } catch (CerberusException e) {
+                    countryEnvParam = (CountryEnvParam) countryEnvParamService.readByKey(myApp.getSystem(), country, environment).getItem();
+                } catch (Exception e) {
                     CerberusException ex = new CerberusException(new MessageGeneral(MessageGeneralEnum.NO_DATA_FOUND));
                     ex.getMessageError().setDescription("Combination Environment: '" + environment + "' and Country: '" + country
                             + "' not defined for System/Application: " + myApp.getSystem() + "/" + myApp.getApplication());
@@ -198,8 +198,8 @@
                 }
                 CountryEnvironmentParameters countryEnvironmentParameter;
                 try {
-                    countryEnvironmentParameter = countryEnvironmentParametersService.findCountryEnvironmentParameterByKey(myApp.getSystem(), country, environment, myApp.getApplication());
-                } catch (CerberusException e) {
+                    countryEnvironmentParameter = (CountryEnvironmentParameters) countryEnvironmentParametersService.readByKey(myApp.getSystem(), country, environment, myApp.getApplication()).getItem();
+                } catch (Exception e) {
                     CerberusException ex = new CerberusException(new MessageGeneral(MessageGeneralEnum.NO_DATA_FOUND));
                     throw ex;
                 }
