@@ -846,7 +846,7 @@
     </servlet>
     <servlet>
         <servlet-name>DummySoap</servlet-name>
-        <servlet-class>org.cerberus.service.dummy.DummySoap</servlet-class>
+        <servlet-class>org.cerberus.service.soap.impl.DummySoap</servlet-class>
     </servlet>
     <servlet-mapping>
         <servlet-name>ExecutionThreadMonitoring</servlet-name>

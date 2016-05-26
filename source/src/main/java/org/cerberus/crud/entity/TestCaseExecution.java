@@ -17,7 +17,7 @@
  */
 package org.cerberus.crud.entity;
 
-import org.cerberus.service.engine.testdata.TestDataLibResult;
+import org.cerberus.engine.entity.TestDataLibResult;
 import java.util.HashMap;
 import java.util.List;
 import java.util.logging.Level;
