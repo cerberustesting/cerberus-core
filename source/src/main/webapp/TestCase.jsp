@@ -1495,14 +1495,14 @@
                                                                         <div style="float:left;"><p name="labelTestCaseStepActionControlProperty" style="float:right;font-weight:bold;" link="white" >Property</p>
                                                                         </div>
                                                                         <input class="wob" style="width: 70%;border: 1px solid white;  color:<%=actionFontColor%>"
-                                                                               value="<%=tcsac.getControlProperty()%>" 
+                                                                               value="<%=tcsac.getControlProperty().replace("\"","&quot;")%>" 
                                                                                id="control_property_<%=incrementStep%>_<%=incrementAction%>_<%=incrementControl%>"
                                                                                name="control_property_<%=incrementStep%>_<%=incrementAction%>_<%=incrementControl%>" <%if (useStep) {%>readonly<%}%> />
                                                                     </div>
                                                                     <div class="technical_part" style="width:30%;float:left; ">
                                                                         <div style="float:left;"><p name="labelTestCaseStepActionControlValue" style="float:right;font-weight:bold;" link="white" >Value</p>
                                                                         </div><input class="wob" style="width: 70%;border: 1px solid white; color:<%=actionFontColor%>"
-                                                                                     value="<%=tcsac.getControlValue()%>" 
+                                                                                     value="<%=tcsac.getControlValue().replace("\"","&quot;")%>" 
                                                                                      id="control_value_<%=incrementStep%>_<%=incrementAction%>_<%=incrementControl%>"
                                                                                      name="control_value_<%=incrementStep%>_<%=incrementAction%>_<%=incrementControl%>" <%if (useStep) {%>readonly<%}%> />
                                                                     </div>

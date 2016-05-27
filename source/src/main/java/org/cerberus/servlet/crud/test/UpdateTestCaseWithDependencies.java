@@ -631,8 +631,8 @@ public class UpdateTestCaseWithDependencies extends HttpServlet {
                 int sequence = Integer.valueOf(getParameterIfExists(request, "control_sequence_" + stepInc + "_" + actionInc + "_" + inc) == null ? "0" : getParameterIfExists(request, "control_sequence_" + stepInc + "_" + actionInc + "_" + inc));
                 int control = Integer.valueOf(getParameterIfExists(request, "control_control_" + stepInc + "_" + actionInc + "_" + inc) == null ? "0" : getParameterIfExists(request, "control_control_" + stepInc + "_" + actionInc + "_" + inc));
                 String type = getParameterIfExists(request, "control_type_" + stepInc + "_" + actionInc + "_" + inc);
-                String controlValue = getParameterIfExists(request, "control_value_" + stepInc + "_" + actionInc + "_" + inc);
-                String controlProperty = getParameterIfExists(request, "control_property_" + stepInc + "_" + actionInc + "_" + inc);
+                String controlValue = getParameterIfExists(request, "control_value_" + stepInc + "_" + actionInc + "_" + inc).replaceAll("\"", "\\\"");
+                String controlProperty = getParameterIfExists(request, "control_property_" + stepInc + "_" + actionInc + "_" + inc).replaceAll("\"", "\\\"");
                 String fatal = getParameterIfExists(request, "control_fatal_" + stepInc + "_" + actionInc + "_" + inc);
                 String description = HtmlUtils.htmlEscape(getParameterIfExists(request, "control_description_" + stepInc + "_" + actionInc + "_" + inc));
                 String screenshot = getParameterIfExists(request, "control_screenshot_" + stepInc + "_" + actionInc + "_" + inc);
