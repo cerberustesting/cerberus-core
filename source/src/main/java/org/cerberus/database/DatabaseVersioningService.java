@@ -5866,6 +5866,12 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
                 "  ON DELETE CASCADE\n" +
                 "  ON UPDATE CASCADE;");
         SQLInstruction.add(SQLS.toString());
+        
+        //Add IPA application type inside 
+        SQLS = new StringBuilder();
+        SQLS.append("INSERT INTO `invariant` (`idname`, `value`, `sort`, `description`) ");
+        SQLS.append("VALUES ('APPLITYPE', 'IPA', '50', 'IOS Application');");
+        SQLInstruction.add(SQLS.toString());
 
         return SQLInstruction;
     }
