@@ -89,10 +89,16 @@ $.when($.getScript("js/pages/global/global.js")).then(function () {
          * Handles the change of the type when adding a new test data lib entry
          */
         $('#addTestDataLibModal #type').change(function () {
+            console.debug("expand");
             if ($(this).val() === "SQL") {
                 $("#panelSQL").collapse("show");
+                $("#panelSOAP").collapse("hide");
             } else if ($(this).val() === "SOAP") {
+                $("#panelSQL").collapse("hide");
                 $("#panelSOAP").collapse("show");
+            } else {
+                $("#panelSQL").collapse("hide");
+                $("#panelSOAP").collapse("hide");
             }
         });
 
@@ -102,18 +108,28 @@ $.when($.getScript("js/pages/global/global.js")).then(function () {
         $('#editTestDataLibModal #type').change(function () {
             if ($(this).val() === "SQL") {
                 $("#panelSQLEdit").collapse("show");
+                $("#panelSOAPEdit").collapse("hide");
             } else if ($(this).val() === "SOAP") {
+                $("#panelSQLEdit").collapse("hide");
                 $("#panelSOAPEdit").collapse("show");
+            } else {
+                $("#panelSQLEdit").collapse("hide");
+                $("#panelSOAPEdit").collapse("hide");
             }
         });
         /*
-         * Handles the change of the type select  when editing a test data lib entry
+         * Handles the change of the type select  when duplicating a test data lib entry
          */
         $('#duplicateTestDataLibModal #type').change(function () {
             if ($(this).val() === "SQL") {
                 $("#panelSQLDuplicate").collapse("show");
+                $("#panelSOAPDuplicate").collapse("hide");
             } else if ($(this).val() === "SOAP") {
+                $("#panelSQLDuplicate").collapse("hide");
                 $("#panelSOAPDuplicate").collapse("show");
+            } else {
+                $("#panelSQLDuplicate").collapse("hide");
+                $("#panelSOAPDuplicate").collapse("hide");
             }
         });
         /**

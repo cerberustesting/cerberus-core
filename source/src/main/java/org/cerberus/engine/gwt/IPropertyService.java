@@ -24,7 +24,6 @@ import java.util.List;
 import org.cerberus.crud.entity.TestCaseCountryProperties;
 import org.cerberus.crud.entity.TestCaseStepActionExecution;
 import org.cerberus.exception.CerberusEventException;
-import org.cerberus.util.answer.Answer;
 
 /**
  * {Insert class description here}
@@ -39,6 +38,5 @@ public interface IPropertyService {
         
     List<TestCaseCountryProperties> getListOfPropertiesLinkedToProperty(String test, String testCase, String country, String property, String usedTest, String usedTestCase, List<String> crossedProperties, List<TestCaseCountryProperties> propertieOfTestcase) ;
     
-    Answer callSoapProperty(TestCaseStepActionExecution testCaseStepActionExecution, String propertyName);
         
 }

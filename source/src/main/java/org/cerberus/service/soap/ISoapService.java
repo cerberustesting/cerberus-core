@@ -23,7 +23,10 @@ import java.io.IOException;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.soap.SOAPException;
 import javax.xml.soap.SOAPMessage;
+import org.cerberus.crud.entity.TestCaseStepActionExecution;
+import org.cerberus.engine.entity.SOAPExecution;
 import org.cerberus.exception.CerberusException;
+import org.cerberus.util.answer.Answer;
 import org.cerberus.util.answer.AnswerItem;
 import org.xml.sax.SAXException;
 
@@ -61,6 +64,7 @@ public interface ISoapService {
      * @param attachmentUrl
      * @return 
      */
-    AnswerItem callSOAP(String envelope, String servicePath, String method, String attachmentUrl);
+    AnswerItem<SOAPExecution> callSOAP(String envelope, String servicePath, String method, String attachmentUrl);
     
+    Answer callSoapProperty(TestCaseStepActionExecution testCaseStepActionExecution, String propertyName);
 }

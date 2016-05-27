@@ -20,27 +20,45 @@
                                 </button>
                             </div>
                         </div>
+                        <input type="hidden" value="-1" id="ID" name="ID" class="ncdetailstext" />
+                        <div id="panelCommon" class="row">
+                            <div  class="form-group col-xs-6">
+                                <label id="lbl_name" for="name">Name</label>
+                                <input type="text" class="form-control" name="name" id="name" maxlength="200" />
+                            </div> 
+                            <div class="form-group col-xs-6">
+                                <label id="lbl_type" for="type">Select Type</label>
+                                <select class="form-control"  id="type" name="type">
+                                </select>
+                            </div>  
+                        </div>
+
+                        <div class="row" style="margin-top:10px">
+                            <div class="form-group col-xs-4">
+                                <label id="lbl_system" for="system">System</label>
+                                <select id="system" name="system" class="form-control">
+                                </select>
+
+                            </div>        
+                            <div class="form-group col-xs-4">
+                                <label id="lbl_environment" for="environment">Environment</label>
+                                <select id="environment" name="environment" class="form-control">
+                                </select>
+                            </div>    
+                            <div class="form-group col-xs-4">
+                                <label id="lbl_country" for="country">Country</label>
+                                <select id="country" name="country" class="form-control">
+                                </select>
+                            </div>    
+                        </div>  
                         <!-- tabs definition-->
                         <ul id="tabs" class="nav nav-tabs" data-tabs="tabs">
-                            <li class="active"><a data-toggle="tab" id="tab1Text" href="#tabs-1">Entry</a></li>
-                            <li><a data-toggle="tab" href="#tabs-2" id="tab2Text">Sub data (1 entries) </a></li>
+                            <li class="active"><a data-toggle="tab" id="tab1Text" href="#tabs-1">Definition</a></li>
+                            <li><a data-toggle="tab" href="#tabs-2" id="tab2Text">Sub data</a></li>
                         </ul>
                         <div class="tab-content">   
                             <div class="center marginTop25 tab-pane fade in active" id="tabs-1">
-                                <input type="hidden" value="-1" id="ID" name="ID" class="ncdetailstext" />
-                                <div id="panelCommon" class="row">
-                                    <div  class="form-group col-xs-6">
-                                        <label id="lbl_name" for="name">Name</label>
-                                        <input type="text" class="form-control" name="name" id="name" maxlength="200" />
-                                    </div> 
-                                    <div class="form-group col-xs-6">
-                                        <label id="lbl_type" for="type">Select Type</label>
-                                        <select class="form-control"  id="type" name="type">
 
-                                        </select>
-
-                                    </div>  
-                                </div>
                                 <!--group infomation -->
                                 <div class="row">
                                     <div class="form-group col-xs-6">
@@ -55,25 +73,6 @@
                                         <input id="groupinput" name="group" class="form-control" type="text" maxlength="200"  />     
                                     </div>                  
                                 </div>
-
-                                <div class="row" style="margin-top:10px">
-                                    <div class="form-group col-xs-4">
-                                        <label id="lbl_system" for="system">System</label>
-                                        <select id="system" name="system" class="form-control">
-                                        </select>
-
-                                    </div>        
-                                    <div class="form-group col-xs-4">
-                                        <label id="lbl_environment" for="environment">Environment</label>
-                                        <select id="environment" name="environment" class="form-control">
-                                        </select>
-                                    </div>    
-                                    <div class="form-group col-xs-4">
-                                        <label id="lbl_country" for="country">Country</label>
-                                        <select id="country" name="country" class="form-control">
-                                        </select>
-                                    </div>    
-                                </div>  
 
                                 <!--description-->
                                 <div class="row">

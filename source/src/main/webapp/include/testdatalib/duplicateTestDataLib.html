@@ -20,7 +20,7 @@
                         </div>
                         <!-- type and system-->
                         <div class="row">
-                             <div class="form-group col-xs-2">
+                            <div class="form-group col-xs-2">
                                 <label id="lbl_id_edit" for="testdatalibid">ID</label>
                                 <div>
                                     <input id="testdatalibid" name="testdatalibid" class="form-control" readonly="readonly"/>     
@@ -42,20 +42,6 @@
                             </div> 
 
                         </div>    
-                        <!--group information -->
-                        <div class="row">
-                            <div class="form-group col-xs-6">
-                                <label id="lbl_choose_group_duplicate" for="groupduplicate">Choose an existing group</label>
-                                <span>
-                                    <select class="form-control"  id="groupduplicate" name="group">                                                
-                                    </select>
-                                </span>                                         
-                            </div> 
-                            <div class="form-group col-xs-6">
-                                <label id="lbl_enter_group_duplicate"  for="groupinputduplicate">or enter new group</label>
-                                <input id="groupinputduplicate" name="group" class="form-control" />     
-                            </div>                  
-                        </div>
                         <!--environment + country-->
                         <div class="row">
                             <div class="form-group col-xs-4">
@@ -79,70 +65,95 @@
                             </div>            
                         </div>    
 
+                        <!-- tabs definition-->
+                        <ul id="duptabs" class="nav nav-tabs" data-tabs="tabs">
+                            <li class="active"><a data-toggle="tab" id="tab1Text" href="#tabsdup-1">Definition</a></li>
+                            <li><a data-toggle="tab" href="#tabsdup-2" id="tab2Text">Sub data</a></li>
+                        </ul>
+                        <div class="tab-content">   
+                            <div class="center marginTop25 tab-pane fade in active" id="tabsdup-1">
 
-                        <!--description-->
-                        <div class="row">
-                            <div class="form-group col-xs-12">
-                                <label id="lbl_description_duplicate" for="libdescription">Description</label>
-                                <textarea id="libdescription" name="libdescription" class="form-control"></textarea> 
-                            </div>
-                        </div>  
-                        <!--SOAP-->
-                        <div class="row" >
-                            <div class="col-xs-12" id="soapConfigurationsPanelEdit">
-                                <div class="panel panel-default">
-                                    <div class="panel-heading card" data-toggle="collapse" data-target="#panelSOAPDuplicate">
-                                        <label id="soapConfigurationsLbl_duplicate">SOAP Configurations </label>
-                                        <span class="toggle glyphicon glyphicon-chevron-right pull-right"></span>
-                                    </div>
-                                    <div id="panelSOAPDuplicate" class="panel-body collapse">
-                                        <div class="row">
-                                            <div class="form-group col-xs-6" >
-                                                <label id="lbl_service_path_duplicate" for="servicepath">Service Path</label>
-                                                <input id="servicepath" name="servicepath"  class="form-control" maxlength="250"  />  
-                                            </div>
-                                            <div class="form-group col-xs-6">
-                                                <label id="lbl_method_duplicate" for="method">Method</label>
-                                                <input id="method" name="method" class="form-control" maxlength="45"  />
-                                            </div>
-                                        </div>    
-                                        <div class="form-group">
-                                            <label id="lbl_envelope_duplicate" for="envelope">Envelope</label>                    
-                                            <textarea id="envelope" name="envelope" 
-                                                      class="form-control"></textarea>     
-                                        </div> 
+                                <!--group information -->
+                                <div class="row">
+                                    <div class="form-group col-xs-6">
+                                        <label id="lbl_choose_group_duplicate" for="groupduplicate">Choose an existing group</label>
+                                        <span>
+                                            <select class="form-control"  id="groupduplicate" name="group">                                                
+                                            </select>
+                                        </span>                                         
                                     </div> 
+                                    <div class="form-group col-xs-6">
+                                        <label id="lbl_enter_group_duplicate"  for="groupinputduplicate">or enter new group</label>
+                                        <input id="groupinputduplicate" name="group" class="form-control" />     
+                                    </div>                  
                                 </div>
-                            </div>
-                        </div>
-                        <!--SQL-->
-                        <div class="row" >
-                            <div class="col-xs-12" id="sqlConfigurationsPanelEdit">
-                                <div class="panel panel-default">
-                                    <div class="panel-heading card" data-toggle="collapse" data-target="#panelSQLDuplicate">
-                                        <label id="sqlConfigurationsLbl_duplicate">SQL Configurations </label>
-                                        <span class="toggle glyphicon glyphicon-chevron-right pull-right"></span>
+                                <!--description-->
+                                <div class="row">
+                                    <div class="form-group col-xs-12">
+                                        <label id="lbl_description_duplicate" for="libdescription">Description</label>
+                                        <textarea id="libdescription" name="libdescription" class="form-control"></textarea> 
                                     </div>
-                                    <div id="panelSQLDuplicate" class="panel-body collapse">
-                                        <div class="row form-group  col-xs-6"> 
-                                            <label id="lbl_database_duplicate" for="database">Database</label> 
-                                            <select class="form-control" id="database" name="database">
-                                            </select> 
-                                        </div>    
-                                        <div class="row">
-                                            <div class="form-group col-xs-12"> 
-                                                <label id="lbl_script_duplicate" for="script">Script</label> 
-                                                <textarea id="script" name="script" 
-                                                          class="form-control"></textarea>     
-                                            </div>                       
+                                </div>  
+                                <!--SOAP-->
+                                <div class="row" >
+                                    <div class="col-xs-12" id="soapConfigurationsPanelEdit">
+                                        <div class="panel panel-default">
+                                            <div class="panel-heading card" data-toggle="collapse" data-target="#panelSOAPDuplicate">
+                                                <label id="soapConfigurationsLbl_duplicate">SOAP Configurations </label>
+                                                <span class="toggle glyphicon glyphicon-chevron-right pull-right"></span>
+                                            </div>
+                                            <div id="panelSOAPDuplicate" class="panel-body collapse">
+                                                <div class="row">
+                                                    <div class="form-group col-xs-6" >
+                                                        <label id="lbl_service_path_duplicate" for="servicepath">Service Path</label>
+                                                        <input id="servicepath" name="servicepath"  class="form-control" maxlength="250"  />  
+                                                    </div>
+                                                    <div class="form-group col-xs-6">
+                                                        <label id="lbl_method_duplicate" for="method">Method</label>
+                                                        <input id="method" name="method" class="form-control" maxlength="45"  />
+                                                    </div>
+                                                </div>    
+                                                <div class="form-group">
+                                                    <label id="lbl_envelope_duplicate" for="envelope">Envelope</label>                    
+                                                    <textarea id="envelope" name="envelope" 
+                                                              class="form-control"></textarea>     
+                                                </div> 
+                                            </div> 
                                         </div>
-
-                                    </div> 
+                                    </div>
                                 </div>
-                            </div>
-                        </div>
+                                <!--SQL-->
+                                <div class="row" >
+                                    <div class="col-xs-12" id="sqlConfigurationsPanelEdit">
+                                        <div class="panel panel-default">
+                                            <div class="panel-heading card" data-toggle="collapse" data-target="#panelSQLDuplicate">
+                                                <label id="sqlConfigurationsLbl_duplicate">SQL Configurations </label>
+                                                <span class="toggle glyphicon glyphicon-chevron-right pull-right"></span>
+                                            </div>
+                                            <div id="panelSQLDuplicate" class="panel-body collapse">
+                                                <div class="row form-group  col-xs-6"> 
+                                                    <label id="lbl_database_duplicate" for="database">Database</label> 
+                                                    <select class="form-control" id="database" name="database">
+                                                    </select> 
+                                                </div>    
+                                                <div class="row">
+                                                    <div class="form-group col-xs-12"> 
+                                                        <label id="lbl_script_duplicate" for="script">Script</label> 
+                                                        <textarea id="script" name="script" 
+                                                                  class="form-control"></textarea>     
+                                                    </div>                       
+                                                </div>
 
-                        
+                                            </div> 
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>       
+                            <div class="center tab-pane fade marginTop25" id="tabsdup-2">
+                            </div>       
+                        </div>       
+
+
                     </form>  
 
                 </div> 

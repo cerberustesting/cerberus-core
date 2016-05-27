@@ -27,6 +27,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.HashMap;
 import java.util.logging.Logger;
 import java.util.regex.Pattern;
 import javax.activation.DataHandler;
@@ -45,13 +46,26 @@ import org.cerberus.engine.entity.SOAPExecution;
 import org.cerberus.crud.entity.MessageEvent;
 import org.cerberus.enums.MessageEventEnum;
 import org.cerberus.crud.entity.MessageGeneral;
+import org.cerberus.crud.entity.TestCaseExecution;
+import org.cerberus.crud.entity.TestCaseStepActionExecution;
+import org.cerberus.crud.entity.TestDataLib;
+import org.cerberus.crud.service.ITestDataLibService;
+import org.cerberus.engine.entity.TestDataLibResult;
+import org.cerberus.engine.entity.TestDataLibResultSOAP;
+import org.cerberus.engine.gwt.IPropertyService;
+import org.cerberus.engine.gwt.impl.PropertyService;
 import org.cerberus.enums.MessageGeneralEnum;
+import org.cerberus.enums.TestDataLibTypeEnum;
+import org.cerberus.exception.CerberusEventException;
 import org.cerberus.exception.CerberusException;
 import org.cerberus.log.MyLogger;
 import org.cerberus.service.soap.ISoapService;
+import org.cerberus.service.xmlunit.IXmlUnitService;
+import org.cerberus.util.SoapUtil;
 import org.cerberus.util.answer.AnswerItem;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.w3c.dom.Document;
 import org.xml.sax.SAXException;
 
 /**
@@ -68,6 +82,12 @@ public class SoapService implements ISoapService {
 
     @Autowired
     RecorderService recorderService;
+    @Autowired
+    private ITestDataLibService testDataLibService;
+    @Autowired
+    private IPropertyService propertyService;
+    @Autowired
+    private IXmlUnitService xmlUnitService;
 
     @Override
     public SOAPMessage createSoapRequest(String envelope, String method) throws SOAPException, IOException, SAXException, ParserConfigurationException {
@@ -107,7 +127,7 @@ public class SoapService implements ISoapService {
     }
 
     @Override
-    public AnswerItem callSOAP(String envelope, String servicePath, String method, String attachmentUrl) {
+    public AnswerItem<SOAPExecution> callSOAP(String envelope, String servicePath, String method, String attachmentUrl) {
         AnswerItem result = new AnswerItem();
         SOAPExecution executionSOAP = new SOAPExecution();
         ByteArrayOutputStream out = null;
@@ -179,6 +199,143 @@ public class SoapService implements ISoapService {
         }
 
         return result;
+    }
+
+    @Override
+    public AnswerItem callSoapProperty(TestCaseStepActionExecution testCaseStepActionExecution, String propertyName) {
+        AnswerItem answerItem = new AnswerItem();
+        TestCaseExecution testCaseExecution = testCaseStepActionExecution.getTestCaseStepExecution().gettCExecution();
+        MessageEvent message;
+
+        //property exists
+        String libName = testCaseStepActionExecution.getObject();
+        String system = testCaseExecution.getApplication().getSystem();
+        String environment = testCaseExecution.getEnvironment();
+        String country = testCaseExecution.getCountry();
+
+        AnswerItem answerLib = testDataLibService.readByNameBySystemByEnvironmentByCountry(libName, system, environment, country);
+
+        if (answerLib.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode()) && answerLib.getItem() != null) {
+            TestDataLib lib = (TestDataLib) answerLib.getItem();
+            //unescape all attributes that were escaped: description, script, method, servicepath and envelope
+            this.unescapeTestDataLibrary(lib);
+            if (lib.getType().equals(TestDataLibTypeEnum.SOAP.getCode())) {
+                //now we can call the soap entry
+                this.calculateInnerProperties(lib, testCaseStepActionExecution);
+                AnswerItem callAnswer = this.fetchDataSOAP(lib);
+                //store request and response
+                testCaseExecution.setLastSOAPCalled(((TestDataLibResultSOAP) callAnswer.getItem()).getSoapExecution());
+
+                //updates the result data
+                if (callAnswer.isCodeEquals(MessageEventEnum.PROPERTY_SUCCESS.getCode())) {
+                    //new need to update the results list and the execution operation
+                    TestDataLibResultSOAP resultSoap = (TestDataLibResultSOAP) callAnswer.getItem();
+
+                    HashMap<String, TestDataLibResult> currentListResults = testCaseExecution.getDataLibraryExecutionDataList();
+                    if (currentListResults == null) {
+                        currentListResults = new HashMap<String, TestDataLibResult>();
+                    }
+                    if (currentListResults.get(propertyName) != null) {
+                        currentListResults.remove(propertyName);
+                    }
+                    currentListResults.put(propertyName, resultSoap);
+                    //updates the execution data list
+                    testCaseExecution.setDataLibraryExecutionDataList(currentListResults);
+                }
+                message = callAnswer.getResultMessage();
+            } else {
+                message = new MessageEvent(MessageEventEnum.PROPERTY_FAILED_GETFROMDATALIB_NOTSOAP);
+                message.setDescription(message.getDescription().replace("%ENTRY%", libName));
+            }
+        } else {
+            //library entry is not defined for the specified: name + country + system + environment
+            message = new MessageEvent(MessageEventEnum.PROPERTY_FAILED_GETFROMDATALIB_NOT_FOUND_ERROR);
+            message.setDescription(message.getDescription().replace("%ITEM%", libName).
+                    replace("%COUNTRY%", country).
+                    replace("%ENVIRONMENT%", environment).
+                    replace("%SYSTEM%", system));
+        }
+
+        answerItem.setResultMessage(message);
+        return answerItem;
+    }
+
+    private void unescapeTestDataLibrary(TestDataLib lib) {
+        //unescape all data  
+        lib.setDescription(StringEscapeUtils.unescapeHtml4(lib.getDescription()));
+        //SQL
+        lib.setScript(StringEscapeUtils.unescapeHtml4(lib.getScript()));
+
+        //SOAP
+        lib.setServicePath(StringEscapeUtils.unescapeHtml4(lib.getServicePath()));
+        lib.setMethod(StringEscapeUtils.unescapeHtml4(lib.getMethod()));
+        lib.setEnvelope(StringEscapeUtils.unescapeXml(lib.getEnvelope()));
+    }
+
+    private AnswerItem fetchDataSOAP(TestDataLib lib) {
+        AnswerItem answer = new AnswerItem();
+        MessageEvent msg;
+        TestDataLibResult result = null;
+        SOAPExecution executionSoap = new SOAPExecution();
+
+        //soap data needs to get the soap response
+        String key = TestDataLibTypeEnum.SOAP.getCode() + lib.getTestDataLibID();
+        AnswerItem ai = this.callSOAP(lib.getEnvelope(), lib.getServicePath(),
+                lib.getMethod(), null);
+        executionSoap = (SOAPExecution) ai.getItem();
+        msg = ai.getResultMessage();
+
+        //if the call returns success then we can process the soap ressponse
+        if (msg.getCode() == MessageEventEnum.ACTION_SUCCESS_CALLSOAP.getCode()) {
+            result = new TestDataLibResultSOAP();
+            ((TestDataLibResultSOAP) result).setSoapExecution(ai);
+            ((TestDataLibResultSOAP) result).setSoapResponseKey(key);
+            result.setTestDataLibID(lib.getTestDataLibID());
+            Document xmlDocument = xmlUnitService.getXmlDocument(SoapUtil.convertSoapMessageToString(executionSoap.getSOAPResponse()));
+            ((TestDataLibResultSOAP) result).setData(xmlDocument);
+            //the code for action success call soap is different from the
+            //code return from the property success soap
+            //if the action succeeds then, we can assume that the SOAP request was performed with success
+            msg = new MessageEvent(MessageEventEnum.PROPERTY_SUCCESS_SOAP);
+
+            // saving the raw data to the result.
+            result.setDataLibRawData(null);
+
+        }
+        answer.setItem(result);
+        answer.setResultMessage(msg);
+        return answer;
+    }
+
+    /**
+     * Auxiliary method that calculates the inner properties that are defined in
+     * a test data library entry
+     *
+     * @param lib - test data library entry
+     * @param testCaseStepActionExecution step action execution
+     */
+    private void calculateInnerProperties(TestDataLib lib, TestCaseStepActionExecution testCaseStepActionExecution) {
+        try {
+            if (lib.getType().equals(TestDataLibTypeEnum.SOAP.getCode())) {
+                //check if the servicepath contains properties that needs to be calculated
+                String decodedServicePath = propertyService.getValue(lib.getServicePath(), testCaseStepActionExecution, false);
+                lib.setServicePath(decodedServicePath);
+                //check if the method contains properties that needs to be calculated
+                String decodedMethod = propertyService.getValue(lib.getMethod(), testCaseStepActionExecution, false);
+                lib.setMethod(decodedMethod);
+                //check if the envelope contains properties that needs to be calculated
+                String decodedEnvelope = propertyService.getValue(lib.getEnvelope(), testCaseStepActionExecution, false);
+                lib.setEnvelope(decodedEnvelope);
+
+            } else if (lib.getType().equals(TestDataLibTypeEnum.SQL.getCode())) {
+                //check if the script contains properties that needs to be calculated
+                String decodedScript = propertyService.getValue(lib.getScript(), testCaseStepActionExecution, false);
+                lib.setScript(decodedScript);
+
+            }
+        } catch (CerberusEventException cex) {
+            Logger.getLogger(PropertyService.class.getName()).log(java.util.logging.Level.SEVERE, "calculateInnerProperties", cex);
+        }
     }
 
 }
