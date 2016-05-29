@@ -117,7 +117,7 @@ public class TestDataLibService implements ITestDataLibService {
         objectList = answer.getDataList();
         for (TestDataLib tdl : objectList) {
 
-            answerData = testDataLibDataService.readByKey(tdl.getTestDataLibID());
+            answerData = testDataLibDataService.readByVarious(tdl.getTestDataLibID(), null, null);
             List<TestDataLibData> objectDataList = new ArrayList<TestDataLibData>();
             objectDataList = answerData.getDataList();
             HashMap<String, String> row = new HashMap<String, String>();
@@ -246,7 +246,7 @@ public class TestDataLibService implements ITestDataLibService {
         answer = testDataLibDAO.create(lib);
 
         if (answer.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
-            answer = testDataLibDataService.readByKey(originalID);
+            answer = testDataLibDataService.readByVarious(originalID, null, null);
             if (answer.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
                 //if there were no problems retrieving the sub-data list
                 //gets the subdatalist

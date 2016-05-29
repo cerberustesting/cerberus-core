@@ -66,5 +66,5 @@ public interface ISoapService {
      */
     AnswerItem<SOAPExecution> callSOAP(String envelope, String servicePath, String method, String attachmentUrl);
     
-    Answer callSoapProperty(TestCaseStepActionExecution testCaseStepActionExecution, String propertyName);
+    Answer callSoapFromDataLib(TestCaseStepActionExecution testCaseStepActionExecution, String propertyName);
 }

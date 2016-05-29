@@ -34,64 +34,59 @@ import org.w3c.dom.NodeList;
  * @author FNogueira
  */
 public class TestDataLibResultSOAP extends TestDataLibResult {
+
     public Document rawData;
     private String soapResponseKey;
     private AnswerItem soapExecution;
 
-   
-
-    public TestDataLibResultSOAP(){
+    public TestDataLibResultSOAP() {
         this.type = TestDataLibTypeEnum.SOAP.getCode();
     }
-
 
     @Override
     public AnswerItem<String> getValue(TestDataLibData entry) {
         MessageEvent msg = new MessageEvent(MessageEventEnum.PROPERTY_SUCCESS_GETFROMDATALIBDATA);
         AnswerItem ansGetValue = new AnswerItem(msg);
-        
-        if(!values.containsKey(entry.getSubData())){
+
+        if (!values.containsKey(entry.getSubData())) {
             try {
-                
+
                 NodeList candidates = XmlUtil.evaluate(rawData, entry.getParsingAnswer());
-                if(candidates.getLength() > 0){
+                if (candidates.getLength() > 0) {
                     //if the map don't contain the entry that we want, we will get it
-                   String value = candidates.item(0).getNodeValue();        
-                    
-                    if(value == null){
-                        if(candidates.item(0) != null){
+                    String value = candidates.item(0).getNodeValue();
+
+                    if (value == null) {
+                        if (candidates.item(0) != null) {
                             msg = new MessageEvent(MessageEventEnum.PROPERTY_FAILED_GETFROMDATALIBDATA_CHECK_XPATH);
                             msg.setDescription(msg.getDescription().replace("%XPATH%", entry.getParsingAnswer()).replace("%SUBDATA%", entry.getSubData()).
-                            replace("%ENTRY%", entry.getTestDataLibID().toString()));   
+                                    replace("%ENTRY%", entry.getTestDataLibID().toString()));
                         }
-                    }else {
+                    } else {
                         //associates the subdata with the xpath expression data retrieved by the query
                         values.put(entry.getSubData(), value);
                     }
 
-
-                }else{
+                } else {
                     //no elements were returned by the XPATH expression
-                    msg = new MessageEvent(MessageEventEnum.PROPERTY_FAILED_GETFROMDATALIBDATA_XML_NOTFOUND);                
+                    msg = new MessageEvent(MessageEventEnum.PROPERTY_FAILED_GETFROMDATALIBDATA_XML_NOTFOUND);
                     msg.setDescription(msg.getDescription().replace("%XPATH%", entry.getParsingAnswer()).replace("%SUBDATA%", entry.getSubData()).
-                        replace("%ENTRY%", entry.getTestDataLibID().toString()));    
-                }      
+                            replace("%ENTRY%", entry.getTestDataLibID().toString()));
+                }
             } catch (XmlUtilException ex) {
-                msg = new MessageEvent(MessageEventEnum.PROPERTY_FAILED_GETFROMDATALIBDATA_XMLEXCEPTION);            
+                msg = new MessageEvent(MessageEventEnum.PROPERTY_FAILED_GETFROMDATALIBDATA_XMLEXCEPTION);
                 msg.setDescription(msg.getDescription().replace("%XPATH%", entry.getParsingAnswer()).replace("%SUBDATA%", entry.getSubData()).
                         replace("%ENTRY%", entry.getTestDataLibID().toString()).replace("%REASON%", ex.toString()));
 
             }
         }
-        
-        
-        
-    
-        ansGetValue.setResultMessage(msg);    
+
+        ansGetValue.setResultMessage(msg);
         ansGetValue.setItem(values.get(entry.getSubData()));
-        
+
         return ansGetValue;
     }
+
     public Document getData() {
         return rawData;
     }
@@ -99,7 +94,7 @@ public class TestDataLibResultSOAP extends TestDataLibResult {
     public void setData(Document data) {
         this.rawData = data;
     }
-    
+
     public String getSoapResponseKey() {
         return soapResponseKey;
     }
@@ -115,6 +110,5 @@ public class TestDataLibResultSOAP extends TestDataLibResult {
     public void setSoapExecution(AnswerItem soapExecution) {
         this.soapExecution = soapExecution;
     }
-    
-    
+
 }

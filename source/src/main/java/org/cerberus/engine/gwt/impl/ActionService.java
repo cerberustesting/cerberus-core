@@ -1020,7 +1020,7 @@ public class ActionService implements IActionService {
     private MessageEvent doActionCallSoapFromDataLib(TestCaseStepActionExecution testCaseStepActionExecution,
             String object, String property) {
         MessageEvent message;
-        Answer ansCallSoap = soapService.callSoapProperty(testCaseStepActionExecution, object);
+        Answer ansCallSoap = soapService.callSoapFromDataLib(testCaseStepActionExecution, object);
 
         if (ansCallSoap.isCodeEquals(MessageEventEnum.PROPERTY_SUCCESS.getCode())) {
             HashMap<String, String> options = new HashMap<String, String>();

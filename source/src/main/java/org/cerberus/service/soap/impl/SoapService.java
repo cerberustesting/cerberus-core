@@ -132,69 +132,81 @@ public class SoapService implements ISoapService {
         SOAPExecution executionSOAP = new SOAPExecution();
         ByteArrayOutputStream out = null;
         MessageEvent message = null;
-        if (envelope != null && servicePath != null && method != null) {
 
-            SOAPConnectionFactory soapConnectionFactory;
-            SOAPConnection soapConnection = null;
+        if (StringUtils.isNullOrEmpty(servicePath)) {
+            message = new MessageEvent(MessageEventEnum.ACTION_FAILED_CALLSOAP_SERVICEPATHMISSING);
+            result.setResultMessage(message);
+            return result;
+        }
+        if (StringUtils.isNullOrEmpty(method)) {
+            message = new MessageEvent(MessageEventEnum.ACTION_FAILED_CALLSOAP_METHODMISSING);
+            result.setResultMessage(message);
+            return result;
+        }
+        if (StringUtils.isNullOrEmpty(envelope)) {
+            message = new MessageEvent(MessageEventEnum.ACTION_FAILED_CALLSOAP_ENVELOPEMISSING);
+            result.setResultMessage(message);
+            return result;
+        }
+
+        SOAPConnectionFactory soapConnectionFactory;
+        SOAPConnection soapConnection = null;
+        try {
+            //Initialize SOAP Connection
+            soapConnectionFactory = SOAPConnectionFactory.newInstance();
+            soapConnection = soapConnectionFactory.createConnection();
+            MyLogger.log(SoapService.class.getName(), Level.DEBUG, "Connection opened");
+
+            // Create SOAP Request
+            MyLogger.log(SoapService.class.getName(), Level.DEBUG, "Create request");
+            SOAPMessage input = createSoapRequest(envelope, method);
+
+            //Add attachment File if specified
+            //TODO: this feature is not implemented yet therefore is always empty!
+            if (!StringUtils.isNullOrEmpty(attachmentUrl)) {
+                this.addAttachmentPart(input, attachmentUrl);
+            }
+
+            // Store the SOAP Call
+            out = new ByteArrayOutputStream();
+            input.writeTo(out);
+            MyLogger.log(SoapService.class.getName(), Level.DEBUG, "WS call : " + out.toString());
+            executionSOAP.setSOAPRequest(input);
+
+            // Call the WS
+            MyLogger.log(SoapService.class.getName(), Level.DEBUG, "Calling WS");
+            SOAPMessage soapResponse = soapConnection.call(input, servicePath);
+            MyLogger.log(SoapService.class.getName(), Level.DEBUG, "Called WS");
+            out = new ByteArrayOutputStream();
+
+            // Store the response
+            soapResponse.writeTo(out);
+            MyLogger.log(SoapService.class.getName(), Level.DEBUG, "WS response received");
+            MyLogger.log(SoapService.class.getName(), Level.DEBUG, "WS response : " + out.toString());
+            executionSOAP.setSOAPResponse(soapResponse);
+
+            message = new MessageEvent(MessageEventEnum.ACTION_SUCCESS_CALLSOAP);
+            message.setDescription(message.getDescription().replaceAll("%SOAPNAME%", method));
+            result.setItem(executionSOAP);
+
+        } catch (SOAPException | UnsupportedOperationException | IOException | SAXException | ParserConfigurationException | CerberusException e) {
+            MyLogger.log(SoapService.class.getName(), Level.ERROR, e.toString());
+            message = new MessageEvent(MessageEventEnum.ACTION_FAILED_CALLSOAP);
+            message.setDescription(message.getDescription().replaceAll("%SOAPNAME%", method));
+            message.setDescription(message.getDescription().replaceAll("%DESCRIPTION%", e.getMessage()));
+        } finally {
             try {
-                //Initialize SOAP Connection
-                soapConnectionFactory = SOAPConnectionFactory.newInstance();
-                soapConnection = soapConnectionFactory.createConnection();
-                MyLogger.log(SoapService.class.getName(), Level.DEBUG, "Connection opened");
-
-                // Create SOAP Request
-                MyLogger.log(SoapService.class.getName(), Level.DEBUG, "Create request");
-                SOAPMessage input = createSoapRequest(envelope, method);
-
-                //Add attachment File if specified
-                //TODO: this feature is not implemented yet therefore is always empty!
-                if (!StringUtils.isNullOrEmpty(attachmentUrl)) {
-                    this.addAttachmentPart(input, attachmentUrl);
+                if (soapConnection != null) {
+                    soapConnection.close();
                 }
-
-                // Store the SOAP Call
-                out = new ByteArrayOutputStream();
-                input.writeTo(out);
-                MyLogger.log(SoapService.class.getName(), Level.DEBUG, "WS call : " + out.toString());
-                executionSOAP.setSOAPRequest(input);
-
-                // Call the WS
-                MyLogger.log(SoapService.class.getName(), Level.DEBUG, "Calling WS");
-                SOAPMessage soapResponse = soapConnection.call(input, servicePath);
-                MyLogger.log(SoapService.class.getName(), Level.DEBUG, "Called WS");
-                out = new ByteArrayOutputStream();
-
-                // Store the response
-                soapResponse.writeTo(out);
-                MyLogger.log(SoapService.class.getName(), Level.DEBUG, "WS response received");
-                MyLogger.log(SoapService.class.getName(), Level.DEBUG, "WS response : " + out.toString());
-                executionSOAP.setSOAPResponse(soapResponse);
-
-                message = new MessageEvent(MessageEventEnum.ACTION_SUCCESS_CALLSOAP);
-                message.setDescription(message.getDescription().replaceAll("%SOAPNAME%", method));
-                result.setItem(executionSOAP);
-
-            } catch (Exception e) {
-                MyLogger.log(SoapService.class.getName(), Level.ERROR, e.toString());
-                message = new MessageEvent(MessageEventEnum.ACTION_FAILED_CALLSOAP);
-                message.setDescription(message.getDescription().replaceAll("%SOAPNAME%", method));
-                message.setDescription(message.getDescription().replaceAll("%DESCRIPTION%", e.getMessage()));
+                if (out != null) {
+                    out.close();
+                }
+                MyLogger.log(SoapService.class.getName(), Level.INFO, "Connection and ByteArray closed");
+            } catch (SOAPException | IOException ex) {
+                Logger.getLogger(SoapService.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
             } finally {
-                try {
-                    if (soapConnection != null) {
-                        soapConnection.close();
-                    }
-                    if (out != null) {
-                        out.close();
-                    }
-                    MyLogger.log(SoapService.class.getName(), Level.INFO, "Connection and ByteArray closed");
-                } catch (SOAPException ex) {
-                    Logger.getLogger(SoapService.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-                } catch (IOException ex) {
-                    Logger.getLogger(SoapService.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-                } finally {
-                    result.setResultMessage(message);
-                }
+                result.setResultMessage(message);
             }
         }
 
@@ -202,7 +214,7 @@ public class SoapService implements ISoapService {
     }
 
     @Override
-    public AnswerItem callSoapProperty(TestCaseStepActionExecution testCaseStepActionExecution, String propertyName) {
+    public AnswerItem callSoapFromDataLib(TestCaseStepActionExecution testCaseStepActionExecution, String propertyName) {
         AnswerItem answerItem = new AnswerItem();
         TestCaseExecution testCaseExecution = testCaseStepActionExecution.getTestCaseStepExecution().gettCExecution();
         MessageEvent message;

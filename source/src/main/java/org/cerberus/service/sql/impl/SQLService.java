@@ -178,7 +178,7 @@ public class SQLService implements ISQLService {
 
                         // Gets the list of colomns to get from TestDataLibData.
                         AnswerList answerData = new AnswerList();
-                        answerData = testDataLibDataService.readByKey(dataLibID);
+                        answerData = testDataLibDataService.readByVarious(dataLibID, "N", null);
                         List<TestDataLibData> objectDataList = new ArrayList<TestDataLibData>();
                         objectDataList = answerData.getDataList();
                         HashMap<String, String> row = new HashMap<String, String>();
