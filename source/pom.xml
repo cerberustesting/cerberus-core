@@ -41,7 +41,6 @@
         <elfinder-servlet.version>1.2.0</elfinder-servlet.version>
         <websocket.version>1.0</websocket.version>
         <gson.version>2.3.1</gson.version>
-        <jackson.version>2.7.4</jackson.version>
         <jsonxpath.version>1.2.0</jsonxpath.version>
         <poi.version>3.13</poi.version>
         
@@ -231,11 +230,6 @@
             <groupId>com.jayway.jsonpath</groupId>
             <artifactId>json-path</artifactId>
             <version>${jsonxpath.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>com.fasterxml.jackson.core</groupId>
-            <artifactId>jackson-databind</artifactId>
-            <version>${jackson.version}</version>
         </dependency>
         <dependency>
             <groupId>org.apache.poi</groupId>
