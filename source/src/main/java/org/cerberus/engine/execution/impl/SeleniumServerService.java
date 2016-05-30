@@ -40,6 +40,7 @@ import org.apache.log4j.Level;
 import org.cerberus.crud.entity.Invariant;
 import org.cerberus.crud.entity.MessageGeneral;
 import org.cerberus.crud.entity.Parameter;
+import org.cerberus.crud.entity.RobotCapability;
 import org.cerberus.crud.entity.Selenium;
 import org.cerberus.crud.entity.Session;
 import org.cerberus.crud.entity.SessionCapabilities;
@@ -114,7 +115,17 @@ public class SeleniumServerService implements ISeleniumServerService {
             sc = new SessionCapabilities();
             sc.create("version", tCExecution.getVersion());
             capabilities.add(sc);
-
+            
+            // Add additional capabilities if necessary
+            List<RobotCapability> additionalCapabilities = tCExecution.getCapabilities();
+            if (additionalCapabilities != null) {
+            	for (RobotCapability additionalCapability : additionalCapabilities) {
+            		sc = new SessionCapabilities();
+            		sc.create(additionalCapability.getCapability(), additionalCapability.getValue());
+            		capabilities.add(sc);
+            	}
+            }
+            
             Session session = new Session();
             session.setDefaultWait(defaultWait);
             session.setHost(tCExecution.getSeleniumIP());

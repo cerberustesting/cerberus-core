@@ -1,0 +1,111 @@
+package org.cerberus.crud.dao.impl;
+
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
+
+import org.apache.log4j.Logger;
+import org.cerberus.crud.dao.IRobotCapabilityDAO;
+import org.cerberus.crud.entity.MessageEvent;
+import org.cerberus.crud.entity.Robot;
+import org.cerberus.crud.entity.RobotCapability;
+import org.cerberus.crud.factory.IFactoryRobotCapability;
+import org.cerberus.database.DatabaseSpring;
+import org.cerberus.enums.MessageEventEnum;
+import org.cerberus.util.answer.AnswerList;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Repository;
+
+/**
+ * Default {@link IRobotCapabilityDAO} implementation
+ * 
+ * @author Aurelien Bourdon
+ */
+@Repository
+public class RobotCapabilityDAO implements IRobotCapabilityDAO {
+
+	/**
+	 * Declare SQL queries used by this {@link RobotCapabilityDAO}
+	 * 
+	 * @author Aurelien Bourdon
+	 */
+	private static interface Query {
+
+		/**
+		 * Get list of {@link RobotCapability} associated with the given
+		 * {@link Robot}'s name
+		 */
+		String READ_BY_ROBOT = "SELECT * FROM `robotcapability` WHERE `robot` = ?";
+
+	}
+
+	/** The associated {@link Logger} to this class */
+	private static final Logger LOG = Logger.getLogger(RobotCapabilityDAO.class);
+
+	/** The associated entity name to this DAO */
+	private static final String OBJECT_NAME = RobotCapability.class.getSimpleName();
+
+	@Autowired
+	private DatabaseSpring databaseSpring;
+
+	@Autowired
+	private IFactoryRobotCapability robotCapabilityFactory;
+
+	@Override
+	public AnswerList<RobotCapability> readByRobot(String robot) {
+		AnswerList<RobotCapability> ans = new AnswerList<>();
+		MessageEvent msg = null;
+
+		try (Connection connection = this.databaseSpring.connect();
+				PreparedStatement preStat = connection.prepareStatement(Query.READ_BY_ROBOT)) {
+			// Prepare and execute query
+			preStat.setString(1, robot);
+			ResultSet resultSet = preStat.executeQuery();
+
+			// Parse query
+			List<RobotCapability> result = new ArrayList<>();
+			while (resultSet.next()) {
+				result.add(loadFromResultSet(resultSet));
+			}
+			if (result.isEmpty()) {
+				msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_NO_DATA_FOUND);
+			} else {
+				msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK).resolveDescription("ITEM", OBJECT_NAME)
+						.resolveDescription("OPERATION", "SELECT");
+				ans.setDataList(result);
+			}
+		} catch (Exception e) {
+			LOG.error("Unable to execute query : " + e.toString());
+			msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED).resolveDescription("DESCRIPTION",
+					e.toString());
+		} finally {
+			// We always set the result message
+			ans.setResultMessage(msg);
+		}
+
+		return ans;
+	}
+
+	/**
+	 * Load a {@link RobotCapability} instance from the given {@link ResultSet}
+	 * 
+	 * @param resultSet
+	 *            the {@link ResultSet} from which get the
+	 *            {@link RobotCapability} instance
+	 * @return a {@link RobotCapability} instance from the given
+	 *         {@link ResultSet}
+	 * @throws SQLException
+	 *             if a SQL error occurred
+	 */
+	private RobotCapability loadFromResultSet(ResultSet resultSet) throws SQLException {
+		int id = resultSet.getInt("id");
+		String robot = resultSet.getString("robot");
+		String capability = resultSet.getString("capability");
+		String value = resultSet.getString("value");
+		return robotCapabilityFactory.create(id, robot, capability, value);
+	}
+
+}

@@ -37,20 +37,20 @@ public interface IRobotService {
      * @param robotid
      * @return
      */
-    AnswerItem readByKeyTech(Integer robotid);
+    AnswerItem<Robot> readByKeyTech(Integer robotid);
 
     /**
      *
      * @param robot
      * @return
      */
-    AnswerItem readByKey(String robot);
+    AnswerItem<Robot> readByKey(String robot);
 
     /**
      *
      * @return
      */
-    AnswerList readAll();
+    AnswerList<Robot> readAll();
 
     /**
      *
@@ -62,7 +62,7 @@ public interface IRobotService {
      * @param string
      * @return
      */
-    AnswerList readByCriteria(int startPosition, int length, String columnName, String sort, String searchParameter, String string);
+    AnswerList<Robot> readByCriteria(int startPosition, int length, String columnName, String sort, String searchParameter, String string);
 
     /**
      *
@@ -91,7 +91,7 @@ public interface IRobotService {
      * @return
      * @throws CerberusException
      */
-    Robot convert(AnswerItem answerItem) throws CerberusException;
+    Robot convert(AnswerItem<Robot> answerItem) throws CerberusException;
 
     /**
      *
@@ -99,7 +99,7 @@ public interface IRobotService {
      * @return
      * @throws CerberusException
      */
-    List<Robot> convert(AnswerList answerList) throws CerberusException;
+    List<Robot> convert(AnswerList<Robot> answerList) throws CerberusException;
 
     /**
      *

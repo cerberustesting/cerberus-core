@@ -97,6 +97,7 @@ public class TestCaseExecution {
     private String timeout;
     private AnswerList testCaseStepExecutionAnswerList;
     private AnswerItem lastSOAPCalled;
+    private List<RobotCapability> capabilities;
 
     public String getUserAgent() {
         return userAgent;
@@ -590,6 +591,7 @@ public class TestCaseExecution {
             result.append("country", this.getCountry());
             result.append("browser", this.getBrowser());
             result.append("version", this.getVersion());
+            result.append("capabilities", this.getCapabilities());
             result.append("platform", this.getPlatform());
             result.append("browserFullVersion", this.getBrowserFullVersion());
             result.append("start", this.getStart());
@@ -625,6 +627,13 @@ public class TestCaseExecution {
     public void setLastSOAPCalled(AnswerItem lastSOAPCalled) {
         this.lastSOAPCalled = lastSOAPCalled;
     }
-    
+
+	public List<RobotCapability> getCapabilities() {
+		return capabilities;
+	}
+
+	public void setCapabilities(List<RobotCapability> capabilities) {
+		this.capabilities = capabilities;
+	}
     
 }

@@ -35,14 +35,14 @@ public interface IRobotDAO {
      * @param robotid
      * @return
      */
-    AnswerItem readByKeyTech(Integer robotid);
+    AnswerItem<Robot> readByKeyTech(Integer robotid);
 
     /**
      *
      * @param robot
      * @return
      */
-    AnswerItem readByKey(String robot);
+    AnswerItem<Robot> readByKey(String robot);
 
     /**
      *
@@ -54,7 +54,7 @@ public interface IRobotDAO {
      * @param string
      * @return
      */
-    AnswerList readByCriteria(int startPosition, int length, String columnName, String sort, String searchParameter, String string);
+    AnswerList<Robot> readByCriteria(int startPosition, int length, String columnName, String sort, String searchParameter, String string);
 
     /**
      *

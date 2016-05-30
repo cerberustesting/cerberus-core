@@ -25,6 +25,7 @@ import org.cerberus.crud.entity.Application;
 import org.cerberus.crud.entity.CountryEnvParam;
 import org.cerberus.crud.entity.CountryEnvironmentParameters;
 import org.cerberus.crud.entity.MessageGeneral;
+import org.cerberus.crud.entity.RobotCapability;
 import org.cerberus.crud.entity.TestCaseExecution;
 import org.cerberus.crud.entity.TCase;
 import org.cerberus.crud.entity.TestCaseStepExecution;
@@ -103,5 +104,21 @@ public class FactoryTestCaseExecution implements IFactoryTestCaseExecution {
         newTce.setScreenSize(screenSize);
         return newTce;
     }
+
+	@Override
+	public TestCaseExecution create(long id, String test, String testCase, String build, String revision,
+			String environment, String country, String browser, String version, String platform,
+			String browserFullVersion, List<RobotCapability> capabilities, long start, long end, String controlStatus,
+			String controlMessage, Application application, String ip, String url, String port, String tag,
+			String finished, int verbose, int screenshot, int pageSource, int seleniumLog, boolean synchroneous,
+			String timeout, String outputFormat, String status, String crbVersion, TCase tCase,
+			CountryEnvParam countryEnvParam, CountryEnvironmentParameters countryEnvironmentParameters,
+			boolean manualURL, String myHost, String myContextRoot, String myLoginRelativeURL, String myEnvData,
+			String seleniumIP, String seleniumPort, List<TestCaseStepExecution> testCaseStepExecution,
+			MessageGeneral resultMessage, String executor, int numberOfRetries, String screenSize) {
+		TestCaseExecution newTce = create(id, test, testCase, build, revision, environment, country, browser, version, platform, browserFullVersion, start, end, controlStatus, controlMessage, application, ip, url, port, tag, finished, verbose, screenshot, pageSource, seleniumLog, synchroneous, timeout, outputFormat, status, crbVersion, tCase, countryEnvParam, countryEnvironmentParameters, manualURL, myHost, myContextRoot, myLoginRelativeURL, myEnvData, seleniumIP, seleniumPort, testCaseStepExecution, resultMessage, executor, numberOfRetries, screenSize);
+		newTce.setCapabilities(capabilities);
+		return newTce;
+	}
 
 }

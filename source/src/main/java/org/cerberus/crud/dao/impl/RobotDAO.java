@@ -62,8 +62,8 @@ public class RobotDAO implements IRobotDAO {
     private final int MAX_ROW_SELECTED = 100000;
 
     @Override
-    public AnswerItem readByKeyTech(Integer robotid) {
-        AnswerItem ans = new AnswerItem();
+    public AnswerItem<Robot> readByKeyTech(Integer robotid) {
+        AnswerItem<Robot> ans = new AnswerItem<>();
         Robot result = null;
         final String query = "SELECT * FROM `robot` WHERE `robotID` = ?";
         MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
@@ -122,8 +122,8 @@ public class RobotDAO implements IRobotDAO {
     }
 
     @Override
-    public AnswerItem readByKey(String robot) {
-        AnswerItem ans = new AnswerItem();
+    public AnswerItem<Robot> readByKey(String robot) {
+        AnswerItem<Robot> ans = new AnswerItem<>();
         Robot result = null;
         final String query = "SELECT * FROM `robot` WHERE `robot` = ?";
         MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
@@ -182,8 +182,8 @@ public class RobotDAO implements IRobotDAO {
     }
 
     @Override
-    public AnswerList readByCriteria(int start, int amount, String column, String dir, String searchTerm, String individualSearch) {
-        AnswerList response = new AnswerList();
+    public AnswerList<Robot> readByCriteria(int start, int amount, String column, String dir, String searchTerm, String individualSearch) {
+        AnswerList<Robot> response = new AnswerList<>();
         MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
         msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", ""));
         List<Robot> robotList = new ArrayList<Robot>();
@@ -262,14 +262,14 @@ public class RobotDAO implements IRobotDAO {
                         LOG.error("Partial Result in the query.");
                         msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_WARNING_PARTIAL_RESULT);
                         msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", "Maximum row reached : " + MAX_ROW_SELECTED));
-                        response = new AnswerList(robotList, nrTotalRows);
+                        response = new AnswerList<Robot>(robotList, nrTotalRows);
                     } else if (robotList.size() <= 0) {
                         msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_NO_DATA_FOUND);
-                        response = new AnswerList(robotList, nrTotalRows);
+                        response = new AnswerList<Robot>(robotList, nrTotalRows);
                     } else {
                         msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
                         msg.setDescription(msg.getDescription().replace("%ITEM%", OBJECT_NAME).replace("%OPERATION%", "SELECT"));
-                        response = new AnswerList(robotList, nrTotalRows);
+                        response = new AnswerList<Robot>(robotList, nrTotalRows);
                     }
 
                 } catch (SQLException exception) {
