@@ -209,7 +209,7 @@ public class SQLService implements ISQLService {
 
                                     int initNB = list.size();
                                     // We get the list of values that are already used.
-                                    List<String> pastValues = this.testCaseExecutionDataDAO.getPastValuesOfProperty(testCaseCountryProperty.getProperty(), tCExecution.getTest(),
+                                    List<String> pastValues = this.testCaseExecutionDataDAO.getPastValuesOfProperty(tCExecution.getId(), testCaseCountryProperty.getProperty(), tCExecution.getTest(),
                                             tCExecution.getTestCase(), tCExecution.getCountryEnvParam().getBuild(), tCExecution.getEnvironmentData(),
                                             tCExecution.getCountry());
 
@@ -248,7 +248,7 @@ public class SQLService implements ISQLService {
                                     int initNB = list.size();
                                     // We get the list of values that are already used.
                                     Integer peTimeout = Integer.valueOf(parameterService.findParameterByKey("cerberus_notinuse_timeout", system).getValue());
-                                    List<String> pastValues = this.testCaseExecutionDataDAO.getInUseValuesOfProperty(testCaseCountryProperty.getProperty(), tCExecution.getEnvironmentData(), tCExecution.getCountry(), peTimeout);
+                                    List<String> pastValues = this.testCaseExecutionDataDAO.getInUseValuesOfProperty(tCExecution.getId(), testCaseCountryProperty.getProperty(), tCExecution.getEnvironmentData(), tCExecution.getCountry(), peTimeout);
 
                                     int removedNB = 0;
                                     // We save all rows that needs to be removed to listToremove.
@@ -423,7 +423,7 @@ public class SQLService implements ISQLService {
 
     private String calculateNatureRandomNew(List<String> list, String propName, TestCaseExecution tCExecution) {
         //TODO clean code
-        List<String> pastValues = this.testCaseExecutionDataDAO.getPastValuesOfProperty(propName, tCExecution.getTest(),
+        List<String> pastValues = this.testCaseExecutionDataDAO.getPastValuesOfProperty(tCExecution.getId(), propName, tCExecution.getTest(),
                 tCExecution.getTestCase(), tCExecution.getCountryEnvParam().getBuild(), tCExecution.getEnvironmentData(),
                 tCExecution.getCountry());
 
