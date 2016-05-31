@@ -5867,10 +5867,17 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
                 "  ON UPDATE CASCADE;");
         SQLInstruction.add(SQLS.toString());
         
-        //Add IPA application type inside 
+        //Add IPA application type inside
+        //-- ------------------------ 783
         SQLS = new StringBuilder();
         SQLS.append("INSERT INTO `invariant` (`idname`, `value`, `sort`, `description`) ");
         SQLS.append("VALUES ('APPLITYPE', 'IPA', '50', 'IOS Application');");
+        SQLInstruction.add(SQLS.toString());
+        
+        // Reverting changes on RobotCapability table
+        //-- ------------------------ 784
+        SQLS = new StringBuilder();
+        SQLS.append("DELETE FROM `robotcapability`;");
         SQLInstruction.add(SQLS.toString());
 
         return SQLInstruction;

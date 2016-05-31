@@ -19,8 +19,6 @@
  */
 package org.cerberus.crud.entity;
 
-import com.google.gson.annotations.Expose;
-
 /**
  *
  * @author bcivel
@@ -31,20 +29,12 @@ public class Robot {
     String robot;
     String host;
     String port;
+    String platform;
+    String browser;
+    String version;
     String active;
     String description;
-    // FIXME Do not use user agent as a direct Robot attribute
     String userAgent;
-
-    private RobotCapabilities capabilities;
-
-    public Robot() {
-        initCapabilities();
-    }
-
-    private void initCapabilities() {
-        setCapabilities(new RobotCapabilities(this));
-    }
 
     public String getUserAgent() {
         return userAgent;
@@ -53,7 +43,7 @@ public class Robot {
     public void setUserAgent(String userAgent) {
         this.userAgent = userAgent;
     }
-
+    
     public String getPort() {
         return port;
     }
@@ -103,39 +93,27 @@ public class Robot {
     }
 
     public String getPlatform() {
-        return capabilities.getCapability(RobotCapabilities.Capability.PLATFORM);
+        return platform;
     }
 
     public void setPlatform(String platform) {
-        capabilities.putCapability(RobotCapabilities.Capability.PLATFORM, platform);
+        this.platform = platform;
     }
 
     public String getBrowser() {
-        return capabilities.getCapability(RobotCapabilities.Capability.BROWSER);
+        return browser;
     }
 
     public void setBrowser(String browser) {
-        capabilities.putCapability(RobotCapabilities.Capability.BROWSER, browser);
+        this.browser = browser;
     }
 
     public String getVersion() {
-        return capabilities.getCapability(RobotCapabilities.Capability.VERSION);
+        return version;
     }
 
     public void setVersion(String version) {
-        capabilities.putCapability(RobotCapabilities.Capability.VERSION, version);
-    }
-
-    public RobotCapabilities getCapabilities() {
-        return capabilities;
-    }
-
-    public void setCapabilities(RobotCapabilities capabilities) {
-        if (capabilities == null) {
-            throw new IllegalArgumentException("Unable to set null capabilities for robot " + getRobotID());
-        }
-        this.capabilities = capabilities;
-        this.capabilities.setRobot(this);
+        this.version = version;
     }
 
 }
