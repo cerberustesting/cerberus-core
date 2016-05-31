@@ -335,6 +335,7 @@ public class SeleniumServerService implements ISeleniumServerService {
                     } else {
                         caps.setCapability(cap.getCapability(), cap.getValue());
                     }
+                    // FIXME remove this hard coded initialization and use robot capabilities
                     if (caps.getPlatform().is(Platform.ANDROID)) {
                         caps = new DesiredCapabilities();
                         caps.setCapability("deviceName", "Android");
@@ -346,6 +347,7 @@ public class SeleniumServerService implements ISeleniumServerService {
                     }
                 }
             }
+            // FIXME remove this hard coded initialization and use robot capabilities
             if (tCExecution.getApplication().getType().equalsIgnoreCase("APK")) {
                 caps.setCapability(CapabilityType.BROWSER_NAME, "");
                 caps.setCapability("deviceName", "Android");
@@ -353,6 +355,7 @@ public class SeleniumServerService implements ISeleniumServerService {
                 caps.setCapability("platformName", "Android");
                 caps.setCapability("autoWebview", true);
             }
+            // FIXME remove this hard coded initialization and use robot capabilities
             if (tCExecution.getApplication().getType().equalsIgnoreCase("IPA")) {
                 caps.setCapability(CapabilityType.BROWSER_NAME, "");
                 caps.setCapability("deviceName", "iPhone 5s");
