@@ -5879,6 +5879,20 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLS = new StringBuilder();
         SQLS.append("DELETE FROM `robotcapability`;");
         SQLInstruction.add(SQLS.toString());
+        
+        // Add main robot capability invariants
+        //-- ------------------------ 785
+        SQLS = new StringBuilder();
+        SQLS.append("INSERT INTO `invariant` (`idname`, `value`, `sort`, `description`, `VeryShortDesc`) VALUES ");
+        SQLS.append("('INVARIANTPUBLIC', 'CAPABILITY', '500', 'Robot capabilities', ''), ");
+        SQLS.append("('CAPABILITY', 'automationName', '1', 'Automation name, e.g.: Appium)', ''), ");
+        SQLS.append("('CAPABILITY', 'deviceName', '2', 'Device name (useful for Appium)', ''), ");
+        SQLS.append("('CAPABILITY', 'app', '3', 'Application name (useful for Appium)', ''), ");
+        SQLS.append("('CAPABILITY', 'platformName', '4', 'Platform name (useful for Appium)', ''), ");
+        SQLS.append("('CAPABILITY', 'platformVersion', '5', 'Platform version (useful for Appium)', ''), ");
+        SQLS.append("('CAPABILITY', 'browserName', '6', 'Browser name (useful for Appium)', ''), ");
+        SQLS.append("('CAPABILITY', 'autoWebview', '7', 'If auto web view has to be enabled (useful for Appium, e.g.: true) ', '');");
+        SQLInstruction.add(SQLS.toString());
 
         return SQLInstruction;
     }
