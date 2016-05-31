@@ -762,7 +762,7 @@
     </servlet>
     <servlet>
         <servlet-name>ExecutionThreadMonitoring</servlet-name>
-        <servlet-class>org.cerberus.servlet.information.ExecutionThreadMonitoring</servlet-class>
+        <servlet-class>org.cerberus.servlet.information.ReadCerberusDetailInformation</servlet-class>
     </servlet>
     <servlet>
         <servlet-name>ExecutionThreadReset</servlet-name>
