@@ -32,11 +32,6 @@ function displayPageLabel() {
     var doc = new Doc();
 
     displayHeaderLabel(doc);
-    $("#pageTitle").html(doc.getDocLabel("page_application", "title"));
-    $("#title").html(doc.getDocOnline("page_application", "title"));
-
-    $("[name='createApplicationField']").html(doc.getDocLabel("page_application", "button_create"));
-    $("#environmentHeader").html(doc.getDocOnline("invariant", "ENVIRONMENT"));
 
     feedContent();
 
@@ -45,100 +40,112 @@ function displayPageLabel() {
 
 
 function feedContent() {
-    var table = $("#cerberusTableBody");
-    var row = $("<tr></tr>");
-    var cel1 = $("<td></td>").append("cel1");
-    var cel2 = $("<td></td>").append("cel2");
-    var cel3 = $("<td></td>").append("cel3");
-    row.append(cel1);
-    row.append(cel2);
-    row.append(cel3);
-    table.append(row);
-    
-    var table = $("#jvmTableBody");
-    var row = $("<tr></tr>");
-    var cel1 = $("<td></td>").append("cel1");
-    row.append(cel1);
-    table.append(row);
-    
-    var table = $("#sessionNbTableBody");
-    var row = $("<tr></tr>");
-    var cel1 = $("<td></td>").append("9999");
-    row.append(cel1);
-    table.append(row);
-    
-    var table = $("#sessionTableBody");
-    var row = $("<tr></tr>");
-    var cel1 = $("<td></td>").append("user1");
-    row.append(cel1);
-    table.append(row);
-    var row = $("<tr></tr>");
-    var cel1 = $("<td></td>").append("user1");
-    row.append(cel1);
-    table.append(row);
-    
-    var table = $("#exeNbTableBody");
-    var row = $("<tr></tr>");
-    var cel1 = $("<td></td>").append("8888");
-    row.append(cel1);
-    table.append(row);
-    
-    var table = $("#exeTableBody");
-    var row = $("<tr></tr>");
-    var cel1 = $("<td></td>").append("test1");
-    row.append(cel1);
-    var cel1 = $("<td></td>").append("testcase1");
-    row.append(cel1);
-    var cel1 = $("<td></td>").append("application1");
-    row.append(cel1);
-    table.append(row);
-    var row = $("<tr></tr>");
-    var cel1 = $("<td></td>").append("test2");
-    row.append(cel1);
-    var cel1 = $("<td></td>").append("testcase2");
-    row.append(cel1);
-    var cel1 = $("<td></td>").append("application2");
-    row.append(cel1);
-    table.append(row);
-    
-    var table = $("#threadTableBody");
-    var row = $("<tr></tr>");
-    var cel1 = $("<td></td>").append("cel1");
-    var cel2 = $("<td></td>").append("cel2");
-    row.append(cel1);
-    row.append(cel2);
-    table.append(row);
-    
-    var table = $("#databaseTableBody");
-    var row = $("<tr></tr>");
-    var cel1 = $("<td></td>").append("cel1");
-    var cel2 = $("<td></td>").append("cel2");
-    var cel3 = $("<td></td>").append("cel3");
-    var cel4 = $("<td></td>").append("cel4");
-    row.append(cel1);
-    row.append(cel2);
-    row.append(cel3);
-    row.append(cel4);
-    table.append(row);
-    
-    var table = $("#driverTableBody");
-    var row = $("<tr></tr>");
-    var cel1 = $("<td></td>").append("cel1");
-    var cel2 = $("<td></td>").append("cel2");
-    var cel3 = $("<td></td>").append("cel3");
-    var cel4 = $("<td></td>").append("cel4");
-    row.append(cel1);
-    row.append(cel2);
-    row.append(cel3);
-    row.append(cel4);
-    table.append(row);
-    
-    var table = $("#jdbcTableBody");
-    var row = $("<tr></tr>");
-    var cel1 = $("<td></td>").append("cel1");
-    var cel2 = $("<td></td>").append("cel2");
-    row.append(cel1);
-    row.append(cel2);
-    table.append(row);
-    
+
+    var jqxhr = $.getJSON("ReadCerberusDetailInformation");
+    $.when(jqxhr).then(function (data) {
+        var table = $("#cerberusTableBody");
+        var row = $("<tr></tr>");
+        var cel1 = $("<td></td>").append(data.projectName);
+        var cel2 = $("<td></td>").append(data.projectVersion);
+        var cel3 = $("<td></td>").append(data.environment);
+        row.append(cel1);
+        row.append(cel2);
+        row.append(cel3);
+        table.append(row);
+
+        var table = $("#jvmTableBody");
+        var row = $("<tr></tr>");
+        var cel1 = $("<td></td>").append(data.javaVersion);
+        row.append(cel1);
+        table.append(row);
+
+        var table = $("#sessionNbTableBody");
+        var row = $("<tr></tr>");
+        var cel1 = $("<td></td>").append(data.simultaneous_session);
+        row.append(cel1);
+        table.append(row);
+
+        var table = $("#sessionTableBody");
+        $.each(data["active_users"], function (idx, obj) {
+            var row = $("<tr></tr>");
+            var cel1 = $("<td></td>").append(obj);
+            row.append(cel1);
+            table.append(row);
+        });
+
+        var table = $("#exeNbTableBody");
+        var row = $("<tr></tr>");
+        var cel1 = $("<td></td>").append(data.simultaneous_execution);
+        row.append(cel1);
+        table.append(row);
+
+        var table = $("#exeTableBody");
+        $.each(data["simultaneous_execution_list"], function (idx, obj) {
+            var row = $("<tr></tr>");
+            var cel1 = $("<td></td>").append(obj.id);
+            row.append(cel1);
+            var cel1 = $("<td></td>").append(obj.test);
+            row.append(cel1);
+            var cel1 = $("<td></td>").append(obj.testcase);
+            row.append(cel1);
+            var cel1 = $("<td></td>").append(obj.system);
+            row.append(cel1);
+            var cel1 = $("<td></td>").append(obj.application);
+            row.append(cel1);
+            var cel1 = $("<td></td>").append(obj.environment);
+            row.append(cel1);
+            var cel1 = $("<td></td>").append(obj.country);
+            row.append(cel1);
+            var cel1 = $("<td></td>").append(obj.robotIP);
+            row.append(cel1);
+            table.append(row);
+        });
+
+        var table = $("#threadTableBody");
+        var row = $("<tr></tr>");
+        var cel1 = $("<td></td>").append(data.queue_in_execution + " / " + data.size_queue);
+        var cel2 = $("<td></td>").append(data.number_of_thread);
+        row.append(cel1);
+        row.append(cel2);
+        table.append(row);
+
+        var table = $("#databaseTableBody");
+        var row = $("<tr></tr>");
+        var cel1 = $("<td></td>").append(data.DatabaseProductName);
+        var cel2 = $("<td></td>").append(data.DatabaseProductVersion);
+        var cel3 = $("<td></td>").append(data.DatabaseMajorVersion);
+        var cel4 = $("<td></td>").append(data.DatabaseMinorVersion);
+        row.append(cel1);
+        row.append(cel2);
+        row.append(cel3);
+        row.append(cel4);
+        table.append(row);
+
+        var table = $("#driverTableBody");
+        var row = $("<tr></tr>");
+        var cel1 = $("<td></td>").append(data.DriverName);
+        var cel2 = $("<td></td>").append(data.DriverVersion);
+        var cel3 = $("<td></td>").append(data.DriverMajorVersion);
+        var cel4 = $("<td></td>").append(data.DriverMinorVersion);
+        row.append(cel1);
+        row.append(cel2);
+        row.append(cel3);
+        row.append(cel4);
+        table.append(row);
+
+        var table = $("#jdbcTableBody");
+        var row = $("<tr></tr>");
+        var cel1 = $("<td></td>").append(data.JDBCMinorVersion);
+        var cel2 = $("<td></td>").append(data.JDBCMajorVersion);
+        row.append(cel1);
+        row.append(cel2);
+        table.append(row);
+    });
+
+}
+
+function resetThreadPool() {
+    $.get('ExecutionThreadReset', function (data) {
+        alert('Thread Pool Cleaned');
+    });
 }
