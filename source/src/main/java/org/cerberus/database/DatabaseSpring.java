@@ -47,6 +47,7 @@ public class DatabaseSpring {
     private DataSource dataSource;
     private boolean onTransaction = false;
     private Connection conn;
+
     /**
      * Create connection.
      * <p/>
@@ -55,11 +56,11 @@ public class DatabaseSpring {
      * necessity of creating another. Then update the status.
      *
      * @return Connection Object with the connection created by DataSource
-     *         object.
+     * object.
      */
     public Connection connect() {
         try {
-            if(onTransaction){ //if the connection is in a transaction, it will return the current connection
+            if (onTransaction) { //if the connection is in a transaction, it will return the current connection
                 return this.conn;
             }
             return this.dataSource.getConnection();
@@ -70,10 +71,10 @@ public class DatabaseSpring {
         return null;
     }
 
-     public void closeConnection(){
+    public void closeConnection() {
         //if the connection is in a transaction, it will not be close, it 
         //will be closed when the user calls the endTransaction
-        if(onTransaction){
+        if (onTransaction) {
             try {
                 //automatically commits the changes
                 this.conn.commit();
@@ -81,17 +82,17 @@ public class DatabaseSpring {
                 Logger.getLogger(DatabaseSpring.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
             }
         }
-        if(this.conn != null){
+        if (this.conn != null) {
             try {
                 this.conn.close();
             } catch (SQLException ex) {
                 MyLogger.log(DatabaseSpring.class.getName(), Level.ERROR, "Can't end/close the connection to datasource jdbc/cerberus" + System.getProperty("org.cerberus.environment") + " : " + ex.toString());
             }
-        }            
-        
+        }
+
     }
 
-    public void beginTransaction(){
+    public void beginTransaction() {
         onTransaction = true;
         try {
             this.conn = this.dataSource.getConnection();
@@ -100,30 +101,32 @@ public class DatabaseSpring {
             MyLogger.log(DatabaseSpring.class.getName(), Level.ERROR, "Cannot connect to datasource jdbc/cerberus" + System.getProperty("org.cerberus.environment") + " : " + exception.toString());
         }
     }
-    private void endTransaction(boolean success){
+
+    private void endTransaction(boolean success) {
         onTransaction = false;
         try {
-            if(success){
+            if (success) {
                 this.conn.commit();
-            }else{
+            } else {
                 this.conn.rollback();
             }
-            if(this.conn != null){
+            if (this.conn != null) {
                 this.conn.close();
-            }            
+            }
         } catch (SQLException ex) {
             MyLogger.log(DatabaseSpring.class.getName(), Level.ERROR, "Can't end/close the connection to datasource jdbc/cerberus" + System.getProperty("org.cerberus.environment") + " : " + ex.toString());
         }
     }
-    
-    public void commitTransaction(){
+
+    public void commitTransaction() {
         endTransaction(true);
-        
+
     }
-    public void abortTransaction(){
+
+    public void abortTransaction() {
         endTransaction(false);
     }
-    
+
     public Connection connect(final String connection) {
         try {
             InitialContext ic = new InitialContext();
@@ -136,8 +139,7 @@ public class DatabaseSpring {
         }
         return null;
     }
-    
-    
+
     public boolean isOnTransaction() {
         return onTransaction;
     }

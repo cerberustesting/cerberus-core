@@ -1,6 +1,4 @@
-/*
- * Cerberus  Copyright (C) 2016  vertigo17
- * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
+/* DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
  *
  * This file is part of Cerberus.
  *
@@ -19,28 +17,22 @@
  */
 package org.cerberus.crud.dao;
 
-import org.cerberus.crud.entity.Robot;
-import org.cerberus.crud.entity.RobotCapabilities;
-import org.cerberus.util.answer.Answer;
 import org.cerberus.util.answer.AnswerItem;
-import org.cerberus.util.answer.AnswerList;
-
-import java.sql.ResultSet;
-import java.sql.SQLException;
 
 /**
- * {@link RobotCapabilities} DAO
+ * Interface that defines the public methods to manage Application data on table
+ * Insert, Delete, Update, Find
  *
- * @author Aurelien Bourdon
+ * @author tbernardes
+ * @version 1.0, 15/10/13
+ * @since 0.9.0
  */
-public interface IRobotCapabilitiesDAO {
+public interface ICerberusInformationDAO {
 
-    Answer create(RobotCapabilities capabilities);
-
-    Answer update(RobotCapabilities capabilities);
-
-    Answer delete(RobotCapabilities capabilities);
-
-    AnswerItem<RobotCapabilities> findFromRobot(Robot robot);
+    /**
+     *
+     * @return
+     */
+    AnswerItem getDatabaseInformation();
 
 }

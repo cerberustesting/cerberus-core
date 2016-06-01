@@ -662,9 +662,9 @@
                             <td title="Start Time"><%=DateUtil.getFormatedDate(myData.getStartLong())%></td>
                             <td title="Elapse Time"><%=DateUtil.getFormatedElapsed(myData.getStartLong(), myData.getEndLong())%></td>
                             <td title="Property name"><b><span id="PROP-<%=myData.getProperty()%>"><%=myData.getProperty()%></span></b></td>
-                            <td title="Value"><code><pre><b><i><span id="PROPVAL-<%=myData.getProperty()%>"><%=StringUtil.textToHtmlConvertingURLsToLinks(myData.getValue())%></span></i></b></pre></code></td>
+                            <td title="Value"><code><b><i><span id="PROPVAL-<%=myData.getProperty()%>"><%=StringUtil.textToHtmlConvertingURLsToLinks(myData.getValue())%></span></i></b></code></td>
                             <td title="Type" style="font-size: x-small"><%=myData.getType()%></td>
-                            <td title="Value1 / Value2" style="font-size: x-small"><code><pre><%=StringUtil.textToHtmlConvertingURLsToLinks(myData.getValue1())%> / <%=myData.getValue2()%></pre></code></td>
+                            <td title="Value1 / Value2" style="font-size: x-small"><code><%=StringUtil.textToHtmlConvertingURLsToLinks(myData.getValue1())%> / <%=myData.getValue2()%></code></td>
                                         <%
                                             String propMessage = myData.getrMessage();
                                             //TODO this should handled differently, in the servlet or javascript file

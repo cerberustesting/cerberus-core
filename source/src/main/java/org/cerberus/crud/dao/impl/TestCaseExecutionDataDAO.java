@@ -186,10 +186,10 @@ public class TestCaseExecutionDataDAO implements ITestCaseExecutionDataDAO {
     }
 
     @Override
-    public List<String> getPastValuesOfProperty(String propName, String test, String testCase, String build, String environment, String country) {
+    public List<String> getPastValuesOfProperty(long id, String propName, String test, String testCase, String build, String environment, String country) {
         List<String> list = null;
         final String query = "SELECT distinct `VALUE` FROM testcaseexecutiondata WHERE Property = ? AND ID IN "
-                + "(SELECT id FROM testcaseexecution WHERE test = ? AND testcase = ? AND build = ? AND environment = ? AND country = ?) "
+                + "(SELECT id FROM testcaseexecution WHERE test = ? AND testcase = ? AND build = ? AND environment = ? AND country = ? AND id <> ?) "
                 + "ORDER BY ID DESC";
 
         // Debug message on SQL.
@@ -201,6 +201,7 @@ public class TestCaseExecutionDataDAO implements ITestCaseExecutionDataDAO {
             LOG.debug("SQL.param : " + build);
             LOG.debug("SQL.param : " + environment);
             LOG.debug("SQL.param : " + country);
+            LOG.debug("SQL.param : " + id);
         }
 
         Connection connection = this.databaseSpring.connect();
@@ -213,6 +214,7 @@ public class TestCaseExecutionDataDAO implements ITestCaseExecutionDataDAO {
                 preStat.setString(4, build);
                 preStat.setString(5, environment);
                 preStat.setString(6, country);
+                preStat.setLong(7, id);
 
                 ResultSet resultSet = preStat.executeQuery();
                 try {
@@ -246,11 +248,11 @@ public class TestCaseExecutionDataDAO implements ITestCaseExecutionDataDAO {
     }
 
     @Override
-    public List<String> getInUseValuesOfProperty(String propName, String environment, String country, Integer timeoutInSecond) {
+    public List<String> getInUseValuesOfProperty(long id, String propName, String environment, String country, Integer timeoutInSecond) {
         List<String> list = null;
         final String query = "SELECT distinct `VALUE` FROM testcaseexecutiondata WHERE Property = ? AND ID IN "
                 + "(SELECT id FROM testcaseexecution WHERE environment = ? AND country = ? AND ControlSTATUS = 'PE' "
-                + " AND TO_SECONDS(NOW()) - TO_SECONDS(start) < ? "
+                + " AND TO_SECONDS(NOW()) - TO_SECONDS(start) < ? AND ID <> ? "
                 + ")";
 
         // Debug message on SQL.
@@ -260,6 +262,7 @@ public class TestCaseExecutionDataDAO implements ITestCaseExecutionDataDAO {
             LOG.debug("SQL.param : " + environment);
             LOG.debug("SQL.param : " + country);
             LOG.debug("SQL.param : " + String.valueOf(timeoutInSecond));
+            LOG.debug("SQL.param : " + id);
         }
 
         Connection connection = this.databaseSpring.connect();
@@ -270,6 +273,7 @@ public class TestCaseExecutionDataDAO implements ITestCaseExecutionDataDAO {
                 preStat.setString(2, environment);
                 preStat.setString(3, country);
                 preStat.setInt(4, timeoutInSecond);
+                preStat.setLong(5, id);
 
                 ResultSet resultSet = preStat.executeQuery();
                 try {
