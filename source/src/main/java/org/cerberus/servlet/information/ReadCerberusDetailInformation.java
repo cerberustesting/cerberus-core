@@ -33,13 +33,11 @@ import org.cerberus.engine.entity.ExecutionThreadPool;
 import org.cerberus.engine.entity.ExecutionUUID;
 import org.cerberus.crud.entity.SessionCounter;
 import org.cerberus.crud.entity.TestCaseExecution;
-import org.cerberus.crud.service.IBuildRevisionBatchService;
 import org.cerberus.util.answer.AnswerItem;
 import org.cerberus.version.Infos;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.web.context.support.WebApplicationContextUtils;
 
@@ -81,6 +79,11 @@ public class ReadCerberusDetailInformation extends HttpServlet {
                 object.put("id", execution.getId());
                 object.put("test", execution.getTest());
                 object.put("testcase", execution.getTestCase());
+                object.put("system", execution.getApplication().getSystem());
+                object.put("application", execution.getApplication());
+                object.put("environment", execution.getEnvironmentData());
+                object.put("country", execution.getCountry());
+                object.put("robotIP", execution.getSeleniumIP());
                 executionArray.put(object);
             }
             jsonResponse.put("simultaneous_execution_list", executionArray);

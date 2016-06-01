@@ -429,7 +429,7 @@ public class PropertyService implements IPropertyService {
                     || tecd.getPropertyResultMessage().getCode() == MessageEventEnum.PROPERTY_FAILED_SUBDATAACCESS.getCode() //a problem occurred while accesing a sub-data entry
                     || tecd.getPropertyResultMessage().getCode() == MessageEventEnum.PROPERTY_FAILED_GETFROMDATALIBDATA_INVALID_COLUMN.getCode() //a problem occurred while accesing a sub-data entry
                     || tecd.getPropertyResultMessage().getCode() == MessageEventEnum.PROPERTY_FAILED_GETFROMDATALIB_SQL_GENERIC.getCode()//the same code as PROPERTY_FAILED_GETFROMDATALIB_NODATA
-                    || tecd.getPropertyResultMessage().getCode() == MessageEventEnum.PROPERTY_FAILED_GETFROMDATALIBDATA_XMLEXCEPTION.getCode()) { //the same code as PROPERTY_FAILED_GETFROMDATALIBDATA_XML_NOTFOUND and PROPERTY_FAILED_GETFROMDATALIBDATA_CHECK_XPATH
+                    || tecd.getPropertyResultMessage().getCode() == MessageEventEnum.PROPERTY_FAILED_GETFROMDATALIB_SOAP_XMLEXCEPTION.getCode()) { //the same code as PROPERTY_FAILED_GETFROMDATALIBDATA_XML_NOTFOUND and PROPERTY_FAILED_GETFROMDATALIBDATA_CHECK_XPATH
                 //if is to stop the calculating process 
                 failedCalls.add(tecd);
             }
@@ -927,7 +927,7 @@ public class PropertyService implements IPropertyService {
                     res.setDescription(res.getDescription().replaceAll("%REQUEST_PATH%", responseFilePath));
                     testCaseExecutionData.setPropertyResultMessage(res);
                 } else {
-                    MessageEvent res = new MessageEvent(MessageEventEnum.PROPERTY_FAILED_SOAP_NODATA);
+                    MessageEvent res = new MessageEvent(MessageEventEnum.PROPERTY_FAILED_SOAPFROMLIB_NODATA);
                     res.setDescription(res.getDescription().replaceAll("%REQUEST_PATH%", requestFilePath));
                     res.setDescription(res.getDescription().replaceAll("%REQUEST_PATH%", responseFilePath));
                     testCaseExecutionData.setPropertyResultMessage(res);
@@ -1466,7 +1466,7 @@ public class PropertyService implements IPropertyService {
 
                                 if (value == null) { // No value found.
                                     if (candidates.item(i) != null) {
-                                        msg = new MessageEvent(MessageEventEnum.PROPERTY_FAILED_GETFROMDATALIBDATA_CHECK_XPATH);
+                                        msg = new MessageEvent(MessageEventEnum.PROPERTY_FAILED_GETFROMDATALIB_SOAP_CHECK_XPATH);
                                         msg.setDescription(msg.getDescription()
                                                 .replace("%XPATH%", subDataParsingAnswer)
                                                 .replace("%SUBDATA%", subDataColumnToTreat)
@@ -1474,7 +1474,7 @@ public class PropertyService implements IPropertyService {
                                                 .replace("%ENTRYID%", lib.getTestDataLibID().toString()));
                                     } else {
                                         //no elements were returned by the XPATH expression
-                                        msg = new MessageEvent(MessageEventEnum.PROPERTY_FAILED_GETFROMDATALIBDATA_XML_NOTFOUND);
+                                        msg = new MessageEvent(MessageEventEnum.PROPERTY_FAILED_GETFROMDATALIB_SOAP_XML_NOTFOUND);
                                         msg.setDescription(msg.getDescription()
                                                 .replace("%XPATH%", subDataParsingAnswer)
                                                 .replace("%SUBDATA%", subDataColumnToTreat)
@@ -1500,7 +1500,7 @@ public class PropertyService implements IPropertyService {
 
                         } else {
                             //no elements were returned by the XPATH expression
-                            msg = new MessageEvent(MessageEventEnum.PROPERTY_FAILED_GETFROMDATALIBDATA_XML_NOTFOUND);
+                            msg = new MessageEvent(MessageEventEnum.PROPERTY_FAILED_GETFROMDATALIB_SOAP_XML_NOTFOUND);
                             msg.setDescription(msg.getDescription()
                                     .replace("%XPATH%", subDataParsingAnswer)
                                     .replace("%SUBDATA%", subDataColumnToTreat)
@@ -1510,7 +1510,7 @@ public class PropertyService implements IPropertyService {
                             );
                         }
                     } catch (XmlUtilException ex) {
-                        msg = new MessageEvent(MessageEventEnum.PROPERTY_FAILED_GETFROMDATALIBDATA_XMLEXCEPTION);
+                        msg = new MessageEvent(MessageEventEnum.PROPERTY_FAILED_GETFROMDATALIB_SOAP_XMLEXCEPTION);
                         msg.setDescription(msg.getDescription()
                                 .replace("%XPATH%", subDataParsingAnswer)
                                 .replace("%SUBDATA%", subDataColumnToTreat)
@@ -1650,7 +1650,7 @@ public class PropertyService implements IPropertyService {
                 result.setTestDataLibID(lib.getTestDataLibID());
 
             } catch (Exception ex) {
-                msg = new MessageEvent(MessageEventEnum.PROPERTY_FAILED_GETFROMDATALIBDATA_XMLEXCEPTION);
+                msg = new MessageEvent(MessageEventEnum.PROPERTY_FAILED_GETFROMDATALIB_SOAP_XMLEXCEPTION);
                 msg.setDescription(msg.getDescription()
                         .replace("%XPATH%", lib.getSubDataParsingAnswer())
                         .replace("%SUBDATA%", "")

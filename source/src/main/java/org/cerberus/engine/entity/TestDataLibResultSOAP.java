@@ -58,7 +58,7 @@ public class TestDataLibResultSOAP extends TestDataLibResult {
 
                     if (value == null) {
                         if (candidates.item(0) != null) {
-                            msg = new MessageEvent(MessageEventEnum.PROPERTY_FAILED_GETFROMDATALIBDATA_CHECK_XPATH);
+                            msg = new MessageEvent(MessageEventEnum.PROPERTY_FAILED_GETFROMDATALIB_SOAP_CHECK_XPATH);
                             msg.setDescription(msg.getDescription().replace("%XPATH%", entry.getParsingAnswer()).replace("%SUBDATA%", entry.getSubData()).
                                     replace("%ENTRY%", entry.getTestDataLibID().toString()));
                         }
@@ -69,12 +69,12 @@ public class TestDataLibResultSOAP extends TestDataLibResult {
 
                 } else {
                     //no elements were returned by the XPATH expression
-                    msg = new MessageEvent(MessageEventEnum.PROPERTY_FAILED_GETFROMDATALIBDATA_XML_NOTFOUND);
+                    msg = new MessageEvent(MessageEventEnum.PROPERTY_FAILED_GETFROMDATALIB_SOAP_XML_NOTFOUND);
                     msg.setDescription(msg.getDescription().replace("%XPATH%", entry.getParsingAnswer()).replace("%SUBDATA%", entry.getSubData()).
                             replace("%ENTRY%", entry.getTestDataLibID().toString()));
                 }
             } catch (XmlUtilException ex) {
-                msg = new MessageEvent(MessageEventEnum.PROPERTY_FAILED_GETFROMDATALIBDATA_XMLEXCEPTION);
+                msg = new MessageEvent(MessageEventEnum.PROPERTY_FAILED_GETFROMDATALIB_SOAP_XMLEXCEPTION);
                 msg.setDescription(msg.getDescription().replace("%XPATH%", entry.getParsingAnswer()).replace("%SUBDATA%", entry.getSubData()).
                         replace("%ENTRY%", entry.getTestDataLibID().toString()).replace("%REASON%", ex.toString()));
 
