@@ -43,6 +43,7 @@ public class TestCaseStepExecution {
     private BigDecimal timeElapsed;
     private String returnCode;
     private String returnMessage;
+    private String description;
     /**
      * From here are data outside database model.
      */
@@ -245,6 +246,14 @@ public class TestCaseStepExecution {
         return testCaseStepActionExecutionList;
     }
 
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+    
     public JSONObject toJson() {
         JSONObject result = new JSONObject();
         try {
@@ -260,6 +269,7 @@ public class TestCaseStepExecution {
             result.append("timeElapsed", this.getTimeElapsed());
             result.append("returnCode", this.getReturnCode());
             result.append("returnMessage", this.getReturnMessage());
+            result.append("description", this.getDescription());
             JSONArray array = new JSONArray();
             for (Object testCaseStepExecution : this.getTestCaseStepActionExecutionList().getDataList()) {
                 array.put(((TestCaseStepActionExecution)testCaseStepExecution).toJson());
