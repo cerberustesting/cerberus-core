@@ -5825,59 +5825,104 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         // Add the RobotCapability table
         //-- ------------------------ 778-779
         SQLS = new StringBuilder();
-        SQLS.append("CREATE TABLE `robotcapability` (\n" +
-                "  `id` int(11) NOT NULL AUTO_INCREMENT,\n" +
-                "  `robot` varchar(100) NOT NULL,\n" +
-                "  `capability` varchar(45) NOT NULL,\n" +
-                "  `value` varchar(255) NOT NULL,\n" +
-                "  PRIMARY KEY (`id`),\n" +
-                "  UNIQUE KEY `uq_capability_value_idx` (`capability`,`value`,`robot`),\n" +
-                "  KEY `fk_robot_idx` (`robot`),\n" +
-                "  CONSTRAINT `fk_robot` FOREIGN KEY (`robot`) REFERENCES `robot` (`robot`) ON DELETE CASCADE ON UPDATE CASCADE\n" +
-                ") ENGINE=InnoDB DEFAULT CHARSET=utf8;\n");
+        SQLS.append("CREATE TABLE `robotcapability` (\n"
+                + "  `id` int(11) NOT NULL AUTO_INCREMENT,\n"
+                + "  `robot` varchar(100) NOT NULL,\n"
+                + "  `capability` varchar(45) NOT NULL,\n"
+                + "  `value` varchar(255) NOT NULL,\n"
+                + "  PRIMARY KEY (`id`),\n"
+                + "  UNIQUE KEY `uq_capability_value_idx` (`capability`,`value`,`robot`),\n"
+                + "  KEY `fk_robot_idx` (`robot`),\n"
+                + "  CONSTRAINT `fk_robot` FOREIGN KEY (`robot`) REFERENCES `robot` (`robot`) ON DELETE CASCADE ON UPDATE CASCADE\n"
+                + ") ENGINE=InnoDB DEFAULT CHARSET=utf8;\n");
         SQLInstruction.add(SQLS.toString());
         SQLS = new StringBuilder();
-        SQLS.append("INSERT INTO `robotcapability` (`robot`, `value`, `capability`)  \n" +
-                "\tSELECT `robot`, `platform`, 'platform' AS `capability` FROM `robot`\n" +
-                "    UNION\n" +
-                "    SELECT `robot`, `browser`, 'browser' AS `capability` FROM `robot`\n" +
-                "    UNION\n" +
-                "    SELECT `robot`, `version`, 'version' AS `capability` FROM `robot`");
+        SQLS.append("INSERT INTO `robotcapability` (`robot`, `value`, `capability`)  \n"
+                + "\tSELECT `robot`, `platform`, 'platform' AS `capability` FROM `robot`\n"
+                + "    UNION\n"
+                + "    SELECT `robot`, `browser`, 'browser' AS `capability` FROM `robot`\n"
+                + "    UNION\n"
+                + "    SELECT `robot`, `version`, 'version' AS `capability` FROM `robot`");
         SQLInstruction.add(SQLS.toString());
 
         // Apply changes on RobotCapability indexes/keys to follow naming convention
         //-- ------------------------ 780-782
         SQLS = new StringBuilder();
-        SQLS.append("ALTER TABLE `robotcapability` \n" +
-                "DROP FOREIGN KEY `fk_robot`;");
+        SQLS.append("ALTER TABLE `robotcapability` \n"
+                + "DROP FOREIGN KEY `fk_robot`;");
         SQLInstruction.add(SQLS.toString());
         SQLS = new StringBuilder();
-        SQLS.append("ALTER TABLE `robotcapability` \n" +
-                "DROP INDEX `uq_capability_value_idx` ,\n" +
-                "ADD UNIQUE INDEX `IX_robotcapability_01` (`capability` ASC, `value` ASC, `robot` ASC),\n" +
-                "DROP INDEX `fk_robot_idx` ,\n" +
-                "ADD INDEX `IX_robotcapability_02` (`robot` ASC);");
+        SQLS.append("ALTER TABLE `robotcapability` \n"
+                + "DROP INDEX `uq_capability_value_idx` ,\n"
+                + "ADD UNIQUE INDEX `IX_robotcapability_01` (`capability` ASC, `value` ASC, `robot` ASC),\n"
+                + "DROP INDEX `fk_robot_idx` ,\n"
+                + "ADD INDEX `IX_robotcapability_02` (`robot` ASC);");
         SQLInstruction.add(SQLS.toString());
         SQLS = new StringBuilder();
-        SQLS.append("ALTER TABLE `robotcapability` \n" +
-                "ADD CONSTRAINT `FK_robotcapability_01`\n" +
-                "  FOREIGN KEY (`robot`)\n" +
-                "  REFERENCES `robot` (`robot`)\n" +
-                "  ON DELETE CASCADE\n" +
-                "  ON UPDATE CASCADE;");
+        SQLS.append("ALTER TABLE `robotcapability` \n"
+                + "ADD CONSTRAINT `FK_robotcapability_01`\n"
+                + "  FOREIGN KEY (`robot`)\n"
+                + "  REFERENCES `robot` (`robot`)\n"
+                + "  ON DELETE CASCADE\n"
+                + "  ON UPDATE CASCADE;");
         SQLInstruction.add(SQLS.toString());
-        
-        //Add IPA application type inside
-        //-- ------------------------ 783
+
+        //Add IPA application type inside 783
         SQLS = new StringBuilder();
         SQLS.append("INSERT INTO `invariant` (`idname`, `value`, `sort`, `description`) ");
         SQLS.append("VALUES ('APPLITYPE', 'IPA', '50', 'IOS Application');");
         SQLInstruction.add(SQLS.toString());
-        
+
         // Reverting changes on RobotCapability table
         //-- ------------------------ 784
         SQLS = new StringBuilder();
         SQLS.append("DELETE FROM `robotcapability`;");
+        SQLInstruction.add(SQLS.toString());
+
+        // Update testcaseexecution and testcasestepexecution to set default end to null.
+        // Update last_modified timestamp default value
+        //-- ------------------------ 785 - 794
+        SQLS = new StringBuilder();
+        SQLS.append("ALTER TABLE `testcaseexecution` ");
+        SQLS.append("CHANGE COLUMN `End` `End` TIMESTAMP NOT NULL DEFAULT '1970-01-01 01:01:01',");
+        SQLS.append("CHANGE COLUMN `Start` `Start` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP;");
+        SQLInstruction.add(SQLS.toString());
+        SQLS = new StringBuilder();
+        SQLS.append("ALTER TABLE `testcasestepexecution` ");
+        SQLS.append("CHANGE COLUMN `End` `End` TIMESTAMP NOT NULL DEFAULT '1970-01-01 01:01:01',");
+        SQLS.append("CHANGE COLUMN `Start` `Start` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP;");
+        SQLInstruction.add(SQLS.toString());
+        SQLS = new StringBuilder();
+        SQLS.append("ALTER TABLE `testdatalib` ");
+        SQLS.append("CHANGE COLUMN `LastModified` `LastModified` TIMESTAMP NOT NULL DEFAULT '1970-01-01 01:01:01';");
+        SQLInstruction.add(SQLS.toString());
+        SQLS = new StringBuilder();
+        SQLS.append("ALTER TABLE `test` ");
+        SQLS.append("CHANGE COLUMN `last_modified` `last_modified` TIMESTAMP NOT NULL DEFAULT '1970-01-01 01:01:01';");
+        SQLInstruction.add(SQLS.toString());
+        SQLS = new StringBuilder();
+        SQLS.append("ALTER TABLE `testcase` ");
+        SQLS.append("CHANGE COLUMN `last_modified` `last_modified` TIMESTAMP NOT NULL DEFAULT '1970-01-01 01:01:01';");
+        SQLInstruction.add(SQLS.toString());
+        SQLS = new StringBuilder();
+        SQLS.append("ALTER TABLE `testcasecountry` ");
+        SQLS.append("CHANGE COLUMN `last_modified` `last_modified` TIMESTAMP NOT NULL DEFAULT '1970-01-01 01:01:01';");
+        SQLInstruction.add(SQLS.toString());
+        SQLS = new StringBuilder();
+        SQLS.append("ALTER TABLE `testcasecountryproperties` ");
+        SQLS.append("CHANGE COLUMN `last_modified` `last_modified` TIMESTAMP NOT NULL DEFAULT '1970-01-01 01:01:01';");
+        SQLInstruction.add(SQLS.toString());
+        SQLS = new StringBuilder();
+        SQLS.append("ALTER TABLE `testcasestep` ");
+        SQLS.append("CHANGE COLUMN `last_modified` `last_modified` TIMESTAMP NOT NULL DEFAULT '1970-01-01 01:01:01';");
+        SQLInstruction.add(SQLS.toString());
+        SQLS = new StringBuilder();
+        SQLS.append("ALTER TABLE `testcasestepaction` ");
+        SQLS.append("CHANGE COLUMN `last_modified` `last_modified` TIMESTAMP NOT NULL DEFAULT '1970-01-01 01:01:01';");
+        SQLInstruction.add(SQLS.toString());
+        SQLS = new StringBuilder();
+        SQLS.append("ALTER TABLE `testcasestepactioncontrol` ");
+        SQLS.append("CHANGE COLUMN `last_modified` `last_modified` TIMESTAMP NOT NULL DEFAULT '1970-01-01 01:01:01';");
         SQLInstruction.add(SQLS.toString());
 
         return SQLInstruction;

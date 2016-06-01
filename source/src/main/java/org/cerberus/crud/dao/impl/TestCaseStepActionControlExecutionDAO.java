@@ -86,12 +86,12 @@ public class TestCaseStepActionControlExecutionDAO implements ITestCaseStepActio
                 if (testCaseStepActionControlExecution.getStart() != 0) {
                     preStat.setTimestamp(10, new Timestamp(testCaseStepActionControlExecution.getStart()));
                 } else {
-                    preStat.setString(10, "0000-00-00 00:00:00");
+                    preStat.setString(10, "1970-01-01 00:00:00");
                 }
                 if (testCaseStepActionControlExecution.getEnd() != 0) {
                     preStat.setTimestamp(11, new Timestamp(testCaseStepActionControlExecution.getEnd()));
                 } else {
-                    preStat.setString(11, "0000-00-00 00:00:00");
+                    preStat.setString(11, "1970-01-01 00:00:00");
                 }
                 DateFormat df = new SimpleDateFormat(DateUtil.DATE_FORMAT_TIMESTAMP);
                 preStat.setString(12, df.format(testCaseStepActionControlExecution.getStart()));
@@ -142,12 +142,12 @@ public class TestCaseStepActionControlExecutionDAO implements ITestCaseStepActio
                 if (testCaseStepActionControlExecution.getStart() != 0) {
                     preStat.setTimestamp(6, new Timestamp(testCaseStepActionControlExecution.getStart()));
                 } else {
-                    preStat.setString(6, "0000-00-00 00:00:00");
+                    preStat.setString(6, "1970-01-01 01:01:01");
                 }
                 if (testCaseStepActionControlExecution.getEnd() != 0) {
                     preStat.setTimestamp(7, new Timestamp(testCaseStepActionControlExecution.getEnd()));
                 } else {
-                    preStat.setString(7, "0000-00-00 00:00:00");
+                    preStat.setString(7, "1970-01-01 01:01:01");
                 }
                 DateFormat df = new SimpleDateFormat(DateUtil.DATE_FORMAT_TIMESTAMP);
                 preStat.setString(8, df.format(testCaseStepActionControlExecution.getStart()));
@@ -315,20 +315,8 @@ public class TestCaseStepActionControlExecutionDAO implements ITestCaseStepActio
         String controlProperty = resultSet.getString("ControlProperty");
         String controlValue = resultSet.getString("controlValue");
         String fatal = resultSet.getString("fatal");
-        long start;
-        try { // Managing the case where the date is 0000-00-00 00:00:00 inside MySQL
-            start = resultSet.getTimestamp("start").getTime();
-        } catch (Exception e) {
-            LOG.warn("Start date on execution not definied. " + e.toString());
-            start = 0;
-        }
-        long end;
-        try { // Managing the case where the date is 0000-00-00 00:00:00 inside MySQL
-            end = resultSet.getTimestamp("end").getTime();
-        } catch (Exception e) {
-            LOG.warn("End date on execution not definied. " + e.toString());
-            end = 0;
-        }
+        long start = resultSet.getTimestamp("start")==null?0:resultSet.getTimestamp("start").getTime();
+        long end = resultSet.getTimestamp("end")==null?0:resultSet.getTimestamp("end").getTime();
         long startlong = resultSet.getLong("startlong");
         long endlong = resultSet.getLong("endlong");
         String screenshot = resultSet.getString("ScreenshotFilename");
