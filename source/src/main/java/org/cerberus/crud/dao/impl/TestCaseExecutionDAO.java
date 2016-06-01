@@ -80,8 +80,8 @@ public class TestCaseExecutionDAO implements ITestCaseExecutionDAO {
     public long insertTCExecution(TestCaseExecution tCExecution) throws CerberusException {
         boolean throwEx = false;
         final String query = "INSERT INTO testcaseexecution(test, testcase, build, revision, environment, country, browser, application, ip, "
-                + "url, port, tag, verbose, status, start, end, controlstatus, controlMessage, crbversion, finished, browserFullVersion, executor, screensize) "
-                + "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+                + "url, port, tag, verbose, status, start, controlstatus, controlMessage, crbversion, finished, browserFullVersion, executor, screensize) "
+                + "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
         Connection connection = this.databaseSpring.connect();
         try {
@@ -101,23 +101,14 @@ public class TestCaseExecutionDAO implements ITestCaseExecutionDAO {
                 preStat.setString(12, tCExecution.getTag());
                 preStat.setInt(13, tCExecution.getVerbose());
                 preStat.setString(14, tCExecution.getStatus());
-                if (tCExecution.getStart() != 0) {
-                    preStat.setTimestamp(15, new Timestamp(tCExecution.getStart()));
-                } else {
-                    preStat.setString(15, "0000-00-00 00:00:00");
-                }
-                if (tCExecution.getEnd() != 0) {
-                    preStat.setTimestamp(16, new Timestamp(tCExecution.getEnd()));
-                } else {
-                    preStat.setString(16, "0000-00-00 00:00:00");
-                }
-                preStat.setString(17, tCExecution.getControlStatus());
-                preStat.setString(18, StringUtil.getLeftString(tCExecution.getControlMessage(), 500));
-                preStat.setString(19, tCExecution.getCrbVersion());
-                preStat.setString(20, tCExecution.getFinished());
-                preStat.setString(21, tCExecution.getBrowserFullVersion());
-                preStat.setString(22, tCExecution.getExecutor());
-                preStat.setString(23, tCExecution.getScreenSize());
+                preStat.setTimestamp(15, new Timestamp(tCExecution.getStart()));
+                preStat.setString(16, tCExecution.getControlStatus());
+                preStat.setString(17, StringUtil.getLeftString(tCExecution.getControlMessage(), 500));
+                preStat.setString(18, tCExecution.getCrbVersion());
+                preStat.setString(19, tCExecution.getFinished());
+                preStat.setString(20, tCExecution.getBrowserFullVersion());
+                preStat.setString(21, tCExecution.getExecutor());
+                preStat.setString(22, tCExecution.getScreenSize());
 
                 preStat.executeUpdate();
                 ResultSet resultSet = preStat.getGeneratedKeys();
@@ -182,15 +173,11 @@ public class TestCaseExecutionDAO implements ITestCaseExecutionDAO {
                 preStat.setString(12, tCExecution.getTag());
                 preStat.setInt(13, tCExecution.getVerbose());
                 preStat.setString(14, tCExecution.getStatus());
-                if (tCExecution.getStart() != 0) {
-                    preStat.setTimestamp(15, new Timestamp(tCExecution.getStart()));
-                } else {
-                    preStat.setString(15, "0000-00-00 00:00:00");
-                }
+                preStat.setTimestamp(15, new Timestamp(tCExecution.getStart()));
                 if (tCExecution.getEnd() != 0) {
                     preStat.setTimestamp(16, new Timestamp(tCExecution.getEnd()));
                 } else {
-                    preStat.setString(16, "0000-00-00 00:00:00");
+                    preStat.setString(16, "1970-01-01 01:01:01");
                 }
                 preStat.setString(17, tCExecution.getControlStatus());
                 preStat.setString(18, StringUtil.getLeftString(tCExecution.getControlMessage(), 500));
@@ -537,30 +524,8 @@ public class TestCaseExecutionDAO implements ITestCaseExecutionDAO {
         String version = resultSet.getString("version");
         String platform = resultSet.getString("platform");
         String browserFullVersion = resultSet.getString("browserFullVersion");
-        long start;
-        try { // Managing the case where the date is 0000-00-00 00:00:00 inside MySQL
-            start = resultSet.getTimestamp("start").getTime();
-//            if (resultSet.getLong("start") != 0L) {
-//                start = resultSet.getTimestamp("start").getTime();
-//            } else {
-//                start = 0L;
-//            }
-        } catch (Exception e) {
-            LOG.warn("Start date on execution not definied. " + e.toString());
-            start = 0;
-        }
-        long end;
-        try { // Managing the case where the date is 0000-00-00 00:00:00 inside MySQL
-            end = resultSet.getTimestamp("end").getTime();
-//            if (resultSet.getLong("end") != 0L) {
-//                end = resultSet.getTimestamp("end").getTime();
-//            } else {
-//                end = 0L;
-//            }
-        } catch (Exception e) {
-            LOG.warn("End date on execution not definied. " + e.toString());
-            end = 0;
-        }
+        long start = resultSet.getTimestamp("start")==null?0:resultSet.getTimestamp("start").getTime();
+        long end = resultSet.getTimestamp("end")==null?0:resultSet.getTimestamp("end").getTime();
         String controlStatus = resultSet.getString("controlStatus");
         String controlMessage = resultSet.getString("controlMessage");
         //TODO get Application
@@ -1331,11 +1296,7 @@ public class TestCaseExecutionDAO implements ITestCaseExecutionDAO {
         } else {
             testCaseWithExecution.setStart(start);
         }
-        try { // Managing the case where the date is 0000-00-00 00:00:00 inside MySQL
-            testCaseWithExecution.setEnd(resultSet.getString("End"));
-        } catch (Exception e) {
-            testCaseWithExecution.setEnd("0000-00-00 00:00:00");
-        }
+        testCaseWithExecution.setEnd(resultSet.getString("End"));
         testCaseWithExecution.setStatusExecutionID(resultSet.getLong("statusExecutionID"));
         testCaseWithExecution.setControlStatus(resultSet.getString("ControlStatus"));
         testCaseWithExecution.setControlMessage(resultSet.getString("ControlMessage"));
@@ -1741,20 +1702,8 @@ public class TestCaseExecutionDAO implements ITestCaseExecutionDAO {
         String version = resultSet.getString("version");
         String platform = resultSet.getString("platform");
         String browserFullVersion = resultSet.getString("browserFullVersion");
-        long start;
-        try { // Managing the case where the date is 0000-00-00 00:00:00 inside MySQL
-            start = resultSet.getTimestamp("start").getTime();
-        } catch (Exception e) {
-            LOG.warn("Start date on execution not definied. " + e.toString());
-            start = 0;
-        }
-        long end;
-        try { // Managing the case where the date is 0000-00-00 00:00:00 inside MySQL
-            end = resultSet.getTimestamp("end").getTime();
-        } catch (Exception e) {
-            LOG.warn("End date on execution not definied. " + e.toString());
-            end = 0;
-        }
+        long start = resultSet.getTimestamp("start").getTime();
+        long end = resultSet.getTimestamp("end")==null?0:resultSet.getTimestamp("end").getTime();
         String controlStatus = resultSet.getString("controlStatus");
         String controlMessage = resultSet.getString("controlMessage");
         String application = resultSet.getString("application");

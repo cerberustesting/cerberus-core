@@ -80,12 +80,12 @@ public class TestCaseStepActionExecutionDAO implements ITestCaseStepActionExecut
                 if (testCaseStepActionExecution.getStart() != 0) {
                     preStat.setTimestamp(4, new Timestamp(testCaseStepActionExecution.getStart()));
                 } else {
-                    preStat.setString(4, "0000-00-00 00:00:00");
+                    preStat.setString(4, "1970-01-01 00:00:00");
                 }
                 if (testCaseStepActionExecution.getEnd() != 0) {
                     preStat.setTimestamp(5, new Timestamp(testCaseStepActionExecution.getEnd()));
                 } else {
-                    preStat.setString(5, "0000-00-00 00:00:00");
+                    preStat.setString(5, "1970-01-01 00:00:00");
                 }
                 DateFormat df = new SimpleDateFormat(DateUtil.DATE_FORMAT_TIMESTAMP);
                 preStat.setString(6, df.format(testCaseStepActionExecution.getStart()));
@@ -139,12 +139,12 @@ public class TestCaseStepActionExecutionDAO implements ITestCaseStepActionExecut
                 if (testCaseStepActionExecution.getStart() != 0) {
                     preStat.setTimestamp(7, new Timestamp(testCaseStepActionExecution.getStart()));
                 } else {
-                    preStat.setString(7, "0000-00-00 00:00:00");
+                    preStat.setString(7, "1970-01-01 00:00:00");
                 }
                 if (testCaseStepActionExecution.getEnd() != 0) {
                     preStat.setTimestamp(8, new Timestamp(testCaseStepActionExecution.getEnd()));
                 } else {
-                    preStat.setString(8, "0000-00-00 00:00:00");
+                    preStat.setString(8, "1970-01-01 00:00:00");
                 }
                 DateFormat df = new SimpleDateFormat(DateUtil.DATE_FORMAT_TIMESTAMP);
                 preStat.setString(9, df.format(testCaseStepActionExecution.getStart()));
@@ -372,20 +372,8 @@ public class TestCaseStepActionExecutionDAO implements ITestCaseStepActionExecut
         String action = resultSet.getString("action");
         String object = resultSet.getString("object");
         String property = resultSet.getString("property");
-        long start;
-        try { // Managing the case where the date is 0000-00-00 00:00:00 inside MySQL
-            start = resultSet.getTimestamp("start").getTime();
-        } catch (Exception e) {
-            LOG.warn("Start date on execution not definied. " + e.toString());
-            start = 0;
-        }
-        long end;
-        try { // Managing the case where the date is 0000-00-00 00:00:00 inside MySQL
-            end = resultSet.getTimestamp("end").getTime();
-        } catch (Exception e) {
-            LOG.warn("End date on execution not definied. " + e.toString());
-            end = 0;
-        }
+        long start = resultSet.getTimestamp("start")==null?0:resultSet.getTimestamp("start").getTime();
+        long end = resultSet.getTimestamp("end")==null?0:resultSet.getTimestamp("end").getTime();
         long startlong = resultSet.getLong("startlong");
         long endlong = resultSet.getLong("endlong");
         String screenshot = resultSet.getString("ScreenshotFilename");
