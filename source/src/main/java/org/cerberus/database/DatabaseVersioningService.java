@@ -5973,6 +5973,10 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLS.append("UPDATE `testcasestepactioncontrol` ");
         SQLS.append("SET `last_modified` =  '1970-01-01 01:01:01' WHERE `last_modified` = '0000-00-00 00:00:00';");
         SQLInstruction.add(SQLS.toString());
+        SQLS = new StringBuilder();
+        SQLS.append("UPDATE `testcase` ");
+        SQLS.append("SET `TCDateCrea` =  '1970-01-01 01:01:01' WHERE `TCDateCrea` = '0000-00-00 00:00:00';");
+        SQLInstruction.add(SQLS.toString());
 
         return SQLInstruction;
     }
