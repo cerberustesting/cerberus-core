@@ -560,14 +560,14 @@ public class SQLService implements ISQLService {
                     listResult.setDataList(list);
                     listResult.setTotalRows(list.size());
 
-                    if (nbColMatch == 0) { // None of the columns could be match.
+                    if (list.isEmpty()) { // No data was fetched.
+                        msg = new MessageEvent(MessageEventEnum.PROPERTY_FAILED_GETFROMDATALIB_SQL_NODATA);
+                    } else if (nbColMatch == 0) { // None of the columns could be match.
                         msg = new MessageEvent(MessageEventEnum.PROPERTY_FAILED_GETFROMDATALIB_SQL_NOCOLUMNMATCH);
                         msg.setDescription(msg.getDescription().replaceAll("%BADCOLUMNS%", error_desc));
                     } else if (!("".equals(error_desc))) { // At least a column could not be parsed
                         msg = new MessageEvent(MessageEventEnum.PROPERTY_FAILED_GETFROMDATALIB_SQL_COLUMNNOTMATCHING);
                         msg.setDescription(msg.getDescription().replaceAll("%BADCOLUMNS%", error_desc));
-                    } else if (list.isEmpty()) { // All columns were found but no data was fetched.
-                        msg = new MessageEvent(MessageEventEnum.PROPERTY_FAILED_SQL_NODATA);
                     }
 
                 } catch (SQLException exception) {
