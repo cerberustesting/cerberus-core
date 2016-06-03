@@ -19,7 +19,11 @@
  */
 package org.cerberus.servlet.crud.testexecution;
 
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 import java.io.IOException;
+import java.util.Collections;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.servlet.ServletException;
@@ -29,11 +33,13 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import org.cerberus.crud.entity.MessageEvent;
 import org.cerberus.crud.entity.Robot;
+import org.cerberus.crud.entity.RobotCapability;
 import org.cerberus.enums.MessageEventEnum;
 import org.cerberus.exception.CerberusException;
 import org.cerberus.crud.service.ILogEventService;
 import org.cerberus.crud.service.IRobotService;
 import org.cerberus.crud.service.impl.LogEventService;
+import org.cerberus.util.ParameterParserUtil;
 import org.cerberus.util.StringUtil;
 import org.cerberus.util.answer.Answer;
 import org.cerberus.util.answer.AnswerItem;
@@ -64,25 +70,32 @@ public class UpdateRobot extends HttpServlet {
             throws ServletException, IOException, CerberusException, JSONException {
         JSONObject jsonResponse = new JSONObject();
         Answer ans = new Answer();
+        Gson gson = new Gson();
         MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
         msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", ""));
         ans.setResultMessage(msg);
         PolicyFactory policy = Sanitizers.FORMATTING.and(Sanitizers.LINKS);
 
         response.setContentType("application/json");
+        String charset = request.getCharacterEncoding();
 
         /**
          * Parsing and securing all required parameters.
          */
-        String robot = policy.sanitize(request.getParameter("robot"));
-        String host = policy.sanitize(request.getParameter("host"));
-        String port = policy.sanitize(request.getParameter("port"));
-        String platform = policy.sanitize(request.getParameter("platform"));
-        String browser = policy.sanitize(request.getParameter("browser"));
-        String version = policy.sanitize(request.getParameter("version"));
-        String active = policy.sanitize(request.getParameter("active"));
-        String description = policy.sanitize(request.getParameter("description"));
-        String userAgent = policy.sanitize(request.getParameter("useragent"));
+        String robot = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("robot"), null, charset);
+        String host = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("host"), null, charset);
+        String port = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("port"), null, charset);
+        String platform = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("platform"), null, charset);
+        String browser = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("browser"), null, charset);
+        String version = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("version"), "", charset);
+        String active = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("active"), "Y", charset);
+        String description = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("description"), "", charset);
+        String userAgent = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("useragent"), "", charset);
+        List<RobotCapability> capabilities = (List<RobotCapability>) (request.getParameter("capabilities") == null ? Collections.emptyList() : gson.fromJson(request.getParameter("capabilities"), new TypeToken<List<RobotCapability>>(){}.getType()));
+        // Securing capabilities by setting them the associated robot name
+        for (RobotCapability capability : capabilities) {
+            capability.setRobot(robot);
+        }
         Integer robotid = 0;
         boolean robotid_error = true;
         try {
@@ -102,6 +115,30 @@ public class UpdateRobot extends HttpServlet {
             msg.setDescription(msg.getDescription().replace("%ITEM%", "Robot")
                     .replace("%OPERATION%", "Update")
                     .replace("%REASON%", "Robot name is missing."));
+            ans.setResultMessage(msg);
+        } else if (StringUtil.isNullOrEmpty(host)) {
+            msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_EXPECTED);
+            msg.setDescription(msg.getDescription().replace("%ITEM%", "Robot")
+                    .replace("%OPERATION%", "Update")
+                    .replace("%REASON%", "Robot host is missing."));
+            ans.setResultMessage(msg);
+        } else if (StringUtil.isNullOrEmpty(port)) {
+            msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_EXPECTED);
+            msg.setDescription(msg.getDescription().replace("%ITEM%", "Robot")
+                    .replace("%OPERATION%", "Update")
+                    .replace("%REASON%", "Robot port is missing."));
+            ans.setResultMessage(msg);
+        } else if (StringUtil.isNullOrEmpty(platform)) {
+            msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_EXPECTED);
+            msg.setDescription(msg.getDescription().replace("%ITEM%", "Robot")
+                    .replace("%OPERATION%", "Update")
+                    .replace("%REASON%", "Robot platform is missing."));
+            ans.setResultMessage(msg);
+        } else if (StringUtil.isNullOrEmpty(browser)) {
+            msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_EXPECTED);
+            msg.setDescription(msg.getDescription().replace("%ITEM%", "Robot")
+                    .replace("%OPERATION%", "Update")
+                    .replace("%REASON%", "Robot browser is missing."));
             ans.setResultMessage(msg);
         } else if (robotid_error) {
             msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_EXPECTED);
@@ -142,6 +179,7 @@ public class UpdateRobot extends HttpServlet {
                 robotData.setActive(active);
                 robotData.setDescription(description);
                 robotData.setUserAgent(userAgent);
+                robotData.setCapabilities(capabilities);
                 ans = robotService.update(robotData);
 
                 if (ans.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
@@ -163,6 +201,7 @@ public class UpdateRobot extends HttpServlet {
         response.getWriter().print(jsonResponse);
         response.getWriter().flush();
     }
+    private static final Logger LOG = Logger.getLogger(UpdateRobot.class.getName());
 
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
     /**

@@ -89,13 +89,9 @@ public class RobotCapabilityDAO implements IRobotCapabilityDAO {
             while (resultSet.next()) {
                 result.add(loadFromResultSet(resultSet));
             }
-            if (result.isEmpty()) {
-                msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_NO_DATA_FOUND);
-            } else {
-                msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK).resolveDescription("ITEM", OBJECT_NAME)
+            ans.setDataList(result);
+            msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK).resolveDescription("ITEM", OBJECT_NAME)
                         .resolveDescription("OPERATION", "SELECT");
-                ans.setDataList(result);
-            }
         } catch (Exception e) {
             LOG.warn("Unable to execute query : " + e.toString());
             msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED).resolveDescription("DESCRIPTION",
@@ -116,9 +112,9 @@ public class RobotCapabilityDAO implements IRobotCapabilityDAO {
         try (Connection connection = databaseSpring.connect();
                 PreparedStatement preStat = connection.prepareStatement(Query.CREATE)) {
             // Prepare and execute query
-            preStat.setString(0, capability.getRobot());
-            preStat.setString(1, capability.getCapability());
-            preStat.setString(2, capability.getValue());
+            preStat.setString(1, capability.getRobot());
+            preStat.setString(2, capability.getCapability());
+            preStat.setString(3, capability.getValue());
             preStat.executeUpdate();
 
             // Set the final message
@@ -143,9 +139,9 @@ public class RobotCapabilityDAO implements IRobotCapabilityDAO {
         try (Connection connection = databaseSpring.connect();
                 PreparedStatement preStat = connection.prepareStatement(Query.UPDATE)) {
             // Prepare and execute query
-            preStat.setString(0, capability.getValue());
-            preStat.setString(1, capability.getRobot());
-            preStat.setString(2, capability.getValue());
+            preStat.setString(1, capability.getValue());
+            preStat.setString(2, capability.getRobot());
+            preStat.setString(3, capability.getCapability());
             preStat.executeUpdate();
 
             // Set the final message
@@ -168,10 +164,10 @@ public class RobotCapabilityDAO implements IRobotCapabilityDAO {
         MessageEvent msg = null;
 
         try (Connection connection = databaseSpring.connect();
-                PreparedStatement preStat = connection.prepareStatement(Query.UPDATE)) {
+                PreparedStatement preStat = connection.prepareStatement(Query.DELETE)) {
             // Prepare and execute query
-            preStat.setString(0, capability.getRobot());
-            preStat.setString(1, capability.getCapability());
+            preStat.setString(1, capability.getRobot());
+            preStat.setString(2, capability.getCapability());
             preStat.executeUpdate();
 
             // Set the final message

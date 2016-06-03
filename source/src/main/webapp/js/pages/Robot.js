@@ -26,6 +26,10 @@ $.when($.getScript("js/pages/global/global.js")).then(function () {
 
 function initPage() {
     displayPageLabel();
+    
+    // Load the select needed in localStorage cache.
+    getSelectInvariant("CAPABILITY", true);
+    
     // handle the click for specific action buttons
     $("#addEntryButton").click(addEntryModalSaveHandler);
     $("#editEntryButton").click(editEntryModalSaveHandler);
@@ -33,6 +37,10 @@ function initPage() {
     //clear the modals fields when closed
     $('#addEntryModal').on('hidden.bs.modal', {extra: "#addEntryModal"}, buttonCloseHandler);
     $('#editEntryModal').on('hidden.bs.modal', {extra: "#editEntryModal"}, buttonCloseHandler);
+    
+    // Adding rows in modals.
+    $("#addAddCapabilitiy").click(addNewCapabilityRow.bind(null, "addCapabilitiesTableBody"));
+    $("#addEditCapabilitiy").click(addNewCapabilityRow.bind(null, "editCapabilitiesTableBody"));
 
     //configure and create the dataTable
     var configurations = new TableConfigurationsServerSide("robotsTable", "ReadRobot", "contentTable", aoColumnsFunc("robotsTable"), [1, 'asc']);
@@ -128,13 +136,28 @@ function addEntryModalSaveHandler() {
     if (nameElementEmpty)
         return;
 
+    // Getting Data from Capabilities TAB
+    var capabilityTable = $("#addCapabilitiesTableBody tr");
+    var capabilities = [];
+    for (var i = 0; i < capabilityTable.length; i++) {
+        var capability = $(capabilityTable[i]).data("capability");
+        if (!capability.toDelete) {
+            capabilities.push(capability);
+        }
+    }
+    
+    // Get the header data from the form.
+    var data = convertSerialToJSONObject(formAdd.serialize());
+    data.capabilities = JSON.stringify(capabilities);
+
     showLoaderInModal('#addEntryModal');
-    saveEntry("CreateRobot", "#addEntryModal", formAdd);
+    saveEntry("CreateRobot", "#addEntryModal", data);
 
 }
 
 function addEntryClick() {
     clearResponseMessageMainPage();
+    $('#addCapabilitiesTableBody tr').remove();
     $('#addEntryModal').modal('show');
 }
 
@@ -142,8 +165,22 @@ function editEntryModalSaveHandler() {
     clearResponseMessage($('#editEntryModal'));
     var formEdit = $('#editEntryModal #editEntryModalForm');
 
+    // Getting Data from Capabilities TAB
+    var capabilityTable = $("#editCapabilitiesTableBody tr");
+    var capabilities = [];
+    for (var i = 0; i < capabilityTable.length; i++) {
+        var capability = $(capabilityTable[i]).data("capability");
+        if (!capability.toDelete) {
+            capabilities.push(capability);
+        }
+    }
+    
+    // Get the header data from the form.
+    var data = convertSerialToJSONObject(formEdit.serialize());
+    data.capabilities = JSON.stringify(capabilities);
+
     showLoaderInModal('#editEntryModal');
-    saveEntry("UpdateRobot", "#editEntryModal", formEdit);
+    saveEntry("UpdateRobot", "#editEntryModal", data);
 }
 
 function editEntryClick(id) {
@@ -180,23 +217,80 @@ function editEntryClick(id) {
             $('#editEntryButton').attr('hidden', 'hidden');
         }
 
+        loadCapabilitiesTable("editCapabilitiesTableBody", obj["capabilities"]);
+
         formEdit.modal('show');
     });
 }
 
-function saveEntry(servletName, modalID, form) {
-    var jqxhr = $.post(servletName, form.serialize());
-    $.when(jqxhr).then(function (data) {
-        hideLoaderInModal(modalID);
-        if (getAlertType(data.messageType) === 'success') {
-            var oTable = $("#robotsTable").dataTable();
-            oTable.fnDraw(true);
-            showMessage(data);
-            $(modalID).modal('hide');
+function loadCapabilitiesTable(tableBody, capabilities) {
+    $('#' + tableBody + ' tr').remove();
+    $.each(capabilities, function (idx, capability) {
+        capability.toDelete = false;
+        appendCapabilityRow(tableBody, capability);
+    });
+}
+
+function appendCapabilityRow(tableBody, capability) {
+    var doc = new Doc();
+    var deleteBtn = $("<button type=\"button\"></button>").addClass("btn btn-default btn-xs").append($("<span></span>").addClass("glyphicon glyphicon-trash"));
+    var selectCapability = getSelectInvariant("CAPABILITY", false);
+    var valueInput = $("<input  maxlength=\"150\" placeholder=\"-- " + doc.getDocLabel("countryenvironmentparameters", "IP") + " --\">").addClass("form-control input-sm").val(capability.value);
+    var table = $("#" + tableBody);
+
+    var row = $("<tr></tr>");
+    var deleteBtnRow = $("<td></td>").append(deleteBtn);
+    var cap = $("<td></td>").append(selectCapability.val(capability.capability));
+    var value = $("<td></td>").append(valueInput);
+    deleteBtn.click(function () {
+        capability.toDelete = (capability.toDelete) ? false : true;
+        if (capability.toDelete) {
+            row.addClass("danger");
         } else {
-            showMessage(data, $(modalID));
+            row.removeClass("danger");
         }
-    }).fail(handleErrorAjaxAfterTimeout);
+    });
+    selectCapability.change(function () {
+        capability.capability = $(this).val();
+    });
+    valueInput.change(function () {
+        capability.value = $(this).val();
+    });
+    row.append(deleteBtnRow);
+    row.append(cap);
+    row.append(value);
+    capability.capability = selectCapability.prop("value"); // Value that has been requested by dtb parameter may not exist in combo vlaues so we take the real selected value.
+    row.data("capability", capability);
+    table.append(row);
+}
+
+function addNewCapabilityRow(tableBody) {
+    var newCapability = {
+        capability: "",
+        value: ""
+    };
+    appendCapabilityRow(tableBody, newCapability);
+}
+
+function saveEntry(servletName, modalID, data) {
+    $.ajax({
+        url: servletName,
+        async: true,
+        method: "POST",
+        data: data,
+        success: function (data) {
+            hideLoaderInModal(modalID);
+            if (getAlertType(data.messageType) === 'success') {
+                var oTable = $("#robotsTable").dataTable();
+                oTable.fnDraw(true);
+                showMessage(data);
+                $(modalID).modal('hide');
+            } else {
+                showMessage(data, $(modalID));
+            }
+        },
+        error: showUnexpectedError
+    });
 }
 
 function buttonCloseHandler(event) {
