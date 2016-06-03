@@ -146,11 +146,13 @@ public class TestDataLibDAO implements ITestDataLibDAO {
         TestDataLib result = null;
         MessageEvent msg;
 
-        final String query = new StringBuilder("SELECT * FROM testdatalib tdl where `name` LIKE ?")
-                .append(" and `system` = ? ")
-                .append(" and `environment` = ? ")
-                .append(" and `country` = ? ")
-                .append(" order by `name` DESC, system DESC, environment DESC, country DESC, tdl.TestDataLibID ASC")
+        final String query = new StringBuilder("SELECT * FROM testdatalib tdl ")
+                .append(" LEFT OUTER JOIN testdatalibdata tdd ON tdl.TestDataLibID = tdd.TestDataLibID and tdd.Subdata='' ")
+                .append("WHERE tdl.`name` LIKE ? ")
+                .append(" and tdl.`system` = ? ")
+                .append(" and tdl.`environment` = ? ")
+                .append(" and tdl.`country` = ? ")
+                .append(" order by tdl.`name` DESC, tdl.system DESC, tdl.environment DESC, tdl.country DESC, tdl.TestDataLibID ASC")
                 .append(" limit 1").toString();
 
         // Debug message on SQL.
@@ -222,7 +224,9 @@ public class TestDataLibDAO implements ITestDataLibDAO {
         AnswerItem answer = new AnswerItem();
         MessageEvent msg;
         TestDataLib result;
-        final String query = "SELECT * FROM testdatalib tdl where `TestDataLibID` = ?";
+        final String query = "SELECT * FROM testdatalib tdl "
+                + " LEFT OUTER JOIN testdatalibdata tdd ON tdl.TestDataLibID = tdd.TestDataLibID and tdd.Subdata='' "
+                + " WHERE tdl.`TestDataLibID` = ? ;";
 
         // Debug message on SQL.
         if (LOG.isDebugEnabled()) {
@@ -283,14 +287,6 @@ public class TestDataLibDAO implements ITestDataLibDAO {
         return answer;
     }
 
-    /**
-     * Searches for the testdatalib names that match (totally or partially) the
-     * name provided. Used by the autocomplete feature.
-     *
-     * @param testDataLibName
-     * @param limit
-     * @return
-     */
     @Override
     public AnswerList readNameListByName(String testDataLibName, int limit) {
         AnswerList answer = new AnswerList();
@@ -298,10 +294,12 @@ public class TestDataLibDAO implements ITestDataLibDAO {
         List<String> namesList = new ArrayList<String>();
 
         StringBuilder query = new StringBuilder();
-        query.append("select distinct(`name`) ");
-        query.append("from testdatalib tdl where `name` like ? ");
-        query.append(" order by `name`  ");
-        query.append(" limit ? ");
+        query.append("SELECT distinct(`name`) ")
+                .append("FROM testdatalib tdl ")
+                .append(" WHERE `name` like ? ")
+                .append(" order by `name`  ")
+                .append(" limit ? ");
+
         if ((limit <= 0) || (limit >= MAX_ROW_SELECTED)) {
             limit = MAX_ROW_SELECTED;
         }
@@ -321,7 +319,7 @@ public class TestDataLibDAO implements ITestDataLibDAO {
                 try {
 
                     while (resultSet.next()) {
-                        String name = resultSet.getString("Name");
+                        String name = resultSet.getString("tdl.Name");
                         namesList.add(name);
                     }
 
@@ -377,7 +375,8 @@ public class TestDataLibDAO implements ITestDataLibDAO {
         MessageEvent msg;
 
         List<TestDataLib> list = new ArrayList<TestDataLib>();
-        final String query = "SELECT * FROM testdatalib tdl";
+        final String query = "SELECT * FROM testdatalib tdl"
+                + " LEFT OUTER JOIN testdatalibdata tdd ON tdl.TestDataLibID = tdd.TestDataLibID and tdd.Subdata=''; ";
 
         // Debug message on SQL.
         if (LOG.isDebugEnabled()) {
@@ -453,7 +452,7 @@ public class TestDataLibDAO implements ITestDataLibDAO {
 
         query.append("LEFT OUTER JOIN testdatalibdata tdd ON tdl.TestDataLibID=tdd.TestDataLibID and tdd.SubData='' ");
 
-        searchSQL.append(" where 1=1 ");
+        searchSQL.append(" WHERE 1=1 ");
 
         if (!StringUtil.isNullOrEmpty(searchTerm)) {
             searchSQL.append(" and (tdl.`name` like ?");
@@ -472,16 +471,16 @@ public class TestDataLibDAO implements ITestDataLibDAO {
         if (!StringUtil.isNullOrEmpty(individualSearch)) {
             searchSQL.append(" and (`?`)");
         }
-        if (name!=null) {
+        if (name != null) {
             searchSQL.append(" and tdl.`name` = ? ");
         }
-        if (system!=null) {
+        if (system != null) {
             searchSQL.append(" and tdl.`system` = ? ");
         }
-        if (environment!=null) {
+        if (environment != null) {
             searchSQL.append(" and tdl.`environment` = ? ");
         }
-        if (country!=null) {
+        if (country != null) {
             searchSQL.append(" and tdl.`country` = ? ");
         }
         if (!StringUtil.isNullOrEmpty(type)) {
@@ -531,16 +530,16 @@ public class TestDataLibDAO implements ITestDataLibDAO {
                 if (!StringUtil.isNullOrEmpty(individualSearch)) {
                     preStat.setString(i++, individualSearch);
                 }
-                if (name!=null) {
+                if (name != null) {
                     preStat.setString(i++, name);
                 }
-                if (system!=null) {
+                if (system != null) {
                     preStat.setString(i++, system);
                 }
-                if (environment!=null) {
+                if (environment != null) {
                     preStat.setString(i++, environment);
                 }
-                if (country!=null) {
+                if (country != null) {
                     preStat.setString(i++, country);
                 }
                 if (!StringUtil.isNullOrEmpty(type)) {
@@ -613,7 +612,7 @@ public class TestDataLibDAO implements ITestDataLibDAO {
         AnswerList answerList = new AnswerList();
         ArrayList<String> listOfGroups = new ArrayList<String>();
         MessageEvent msg;
-        String query = "SELECT distinct(`Group`) FROM testdatalib  where `Group` <> '' order by `Group`";
+        String query = "SELECT distinct(`Group`) FROM testdatalib  WHERE `Group` <> '' ORDER BY `Group`";
 
         // Debug message on SQL.
         if (LOG.isDebugEnabled()) {
@@ -761,7 +760,7 @@ public class TestDataLibDAO implements ITestDataLibDAO {
         Answer ans = new Answer();
         MessageEvent msg;
         StringBuilder query = new StringBuilder();
-        query.append("delete from testdatalib where testdatalibid = ?");
+        query.append("DELETE FROM testdatalib WHERE testdatalibid = ?");
 
         // Debug message on SQL.
         if (LOG.isDebugEnabled()) {
@@ -814,8 +813,8 @@ public class TestDataLibDAO implements ITestDataLibDAO {
     public Answer update(TestDataLib testDataLib) {
         Answer answer = new Answer();
         MessageEvent msg;
-        String query = "update testdatalib set `type`=?, `group`= ?, `system`=?, `environment`=?, `country`=?, `database`= ? , `script`= ? , "
-                + "`servicepath`= ? , `method`= ? , `envelope`= ? , `description`= ? , `LastModifier`= ?, `LastModified` = NOW() where "
+        String query = "UPDATE testdatalib SET `type`=?, `group`= ?, `system`=?, `environment`=?, `country`=?, `database`= ? , `script`= ? , "
+                + "`servicepath`= ? , `method`= ? , `envelope`= ? , `description`= ? , `LastModifier`= ?, `LastModified` = NOW() WHERE "
                 + "`TestDataLibID`= ?";
 
         // Debug message on SQL.
@@ -883,6 +882,7 @@ public class TestDataLibDAO implements ITestDataLibDAO {
         return answer;
     }
 
+    @Override
     public TestDataLib loadFromResultSet(ResultSet resultSet) throws SQLException {
         Integer testDataLibID = resultSet.getInt("tdl.testDataLibID");
         String name = resultSet.getString("tdl.name");

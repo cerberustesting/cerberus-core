@@ -256,7 +256,7 @@ public class SoapService implements ISoapService {
                 }
                 message = callAnswer.getResultMessage();
             } else {
-                message = new MessageEvent(MessageEventEnum.PROPERTY_FAILED_GETFROMDATALIB_NOTSOAP);
+                message = new MessageEvent(MessageEventEnum.ACTION_FAILED_CALLSOAPBETA_NOTSOAP);
                 message.setDescription(message.getDescription().replace("%ENTRY%", libName));
             }
         } else {

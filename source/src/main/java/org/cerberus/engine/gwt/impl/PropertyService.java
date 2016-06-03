@@ -273,7 +273,8 @@ public class PropertyService implements IPropertyService {
             //after calculating the property base we can access the subdata entry
             calculateSubDataEntry(tCExecution, testCaseExecutionData, ((TestCaseSubDataAccessProperty) testCaseCountryProperty).getLibraryValue(), ((TestCaseSubDataAccessProperty) testCaseCountryProperty).getSubDataValue());//calculates the subdata entry
         } else //if the getFromDataLib does not succeed than it means that we are not able to perform the sub-data access 
-         if (tecdAuxiliary.getPropertyResultMessage().getCode() == MessageEventEnum.PROPERTY_FAILED_GETFROMDATALIB_NOT_FOUND_ERROR.getCode()
+        {
+            if (tecdAuxiliary.getPropertyResultMessage().getCode() == MessageEventEnum.PROPERTY_FAILED_GETFROMDATALIB_NOT_FOUND_ERROR.getCode()
                     || tecdAuxiliary.getPropertyResultMessage().getCode() == MessageEventEnum.PROPERTY_FAILED_GETFROMDATALIB_SQL_GENERIC.getCode() //same code as PROPERTY_FAILED_GETFROMDATALIB_NODATA
                     || tecdAuxiliary.getPropertyResultMessage().getCode() == MessageEventEnum.ACTION_FAILED_CALLSOAP.getCode()) { //error related with the soap call 
                 //redefinition of the error message
@@ -285,6 +286,7 @@ public class PropertyService implements IPropertyService {
                 //the result message is the same returned by the getFromDataLib operation
                 testCaseExecutionData.setPropertyResultMessage(tecdAuxiliary.getPropertyResultMessage());
             }
+        }
 
         return testCaseExecutionData;
     }
@@ -427,7 +429,7 @@ public class PropertyService implements IPropertyService {
                     || tecd.getPropertyResultMessage().getCode() == MessageEventEnum.PROPERTY_FAILED_SUBDATAACCESS.getCode() //a problem occurred while accesing a sub-data entry
                     || tecd.getPropertyResultMessage().getCode() == MessageEventEnum.PROPERTY_FAILED_GETFROMDATALIBDATA_INVALID_COLUMN.getCode() //a problem occurred while accesing a sub-data entry
                     || tecd.getPropertyResultMessage().getCode() == MessageEventEnum.PROPERTY_FAILED_GETFROMDATALIB_SQL_GENERIC.getCode()//the same code as PROPERTY_FAILED_GETFROMDATALIB_NODATA
-                    || tecd.getPropertyResultMessage().getCode() == MessageEventEnum.PROPERTY_FAILED_GETFROMDATALIBDATA_XMLEXCEPTION.getCode()) { //the same code as PROPERTY_FAILED_GETFROMDATALIBDATA_XML_NOTFOUND and PROPERTY_FAILED_GETFROMDATALIBDATA_CHECK_XPATH
+                    || tecd.getPropertyResultMessage().getCode() == MessageEventEnum.PROPERTY_FAILED_GETFROMDATALIB_SOAP_XMLEXCEPTION.getCode()) { //the same code as PROPERTY_FAILED_GETFROMDATALIBDATA_XML_NOTFOUND and PROPERTY_FAILED_GETFROMDATALIBDATA_CHECK_XPATH
                 //if is to stop the calculating process 
                 failedCalls.add(tecd);
             }
@@ -925,7 +927,7 @@ public class PropertyService implements IPropertyService {
                     res.setDescription(res.getDescription().replaceAll("%REQUEST_PATH%", responseFilePath));
                     testCaseExecutionData.setPropertyResultMessage(res);
                 } else {
-                    MessageEvent res = new MessageEvent(MessageEventEnum.PROPERTY_FAILED_SOAP_NODATA);
+                    MessageEvent res = new MessageEvent(MessageEventEnum.PROPERTY_FAILED_SOAPFROMLIB_NODATA);
                     res.setDescription(res.getDescription().replaceAll("%REQUEST_PATH%", requestFilePath));
                     res.setDescription(res.getDescription().replaceAll("%REQUEST_PATH%", responseFilePath));
                     testCaseExecutionData.setPropertyResultMessage(res);
@@ -953,7 +955,6 @@ public class PropertyService implements IPropertyService {
                 res.setDescription(res.getDescription().replaceAll("%VALUE1%", testCaseExecutionData.getValue1()));
                 res.setDescription(res.getDescription().replaceAll("%VALUE2%", testCaseExecutionData.getValue2()));
                 testCaseExecutionData.setPropertyResultMessage(res);
-
             }
         } catch (Exception ex) {
             MyLogger.log(PropertyService.class
@@ -1464,7 +1465,7 @@ public class PropertyService implements IPropertyService {
 
                                 if (value == null) { // No value found.
                                     if (candidates.item(i) != null) {
-                                        msg = new MessageEvent(MessageEventEnum.PROPERTY_FAILED_GETFROMDATALIBDATA_CHECK_XPATH);
+                                        msg = new MessageEvent(MessageEventEnum.PROPERTY_FAILED_GETFROMDATALIB_SOAP_CHECK_XPATH);
                                         msg.setDescription(msg.getDescription()
                                                 .replace("%XPATH%", subDataParsingAnswer)
                                                 .replace("%SUBDATA%", subDataColumnToTreat)
@@ -1472,7 +1473,7 @@ public class PropertyService implements IPropertyService {
                                                 .replace("%ENTRYID%", lib.getTestDataLibID().toString()));
                                     } else {
                                         //no elements were returned by the XPATH expression
-                                        msg = new MessageEvent(MessageEventEnum.PROPERTY_FAILED_GETFROMDATALIBDATA_XML_NOTFOUND);
+                                        msg = new MessageEvent(MessageEventEnum.PROPERTY_FAILED_GETFROMDATALIB_SOAP_XML_NOTFOUND);
                                         msg.setDescription(msg.getDescription()
                                                 .replace("%XPATH%", subDataParsingAnswer)
                                                 .replace("%SUBDATA%", subDataColumnToTreat)
@@ -1498,7 +1499,7 @@ public class PropertyService implements IPropertyService {
 
                         } else {
                             //no elements were returned by the XPATH expression
-                            msg = new MessageEvent(MessageEventEnum.PROPERTY_FAILED_GETFROMDATALIBDATA_XML_NOTFOUND);
+                            msg = new MessageEvent(MessageEventEnum.PROPERTY_FAILED_GETFROMDATALIB_SOAP_XML_NOTFOUND);
                             msg.setDescription(msg.getDescription()
                                     .replace("%XPATH%", subDataParsingAnswer)
                                     .replace("%SUBDATA%", subDataColumnToTreat)
@@ -1508,7 +1509,7 @@ public class PropertyService implements IPropertyService {
                             );
                         }
                     } catch (XmlUtilException ex) {
-                        msg = new MessageEvent(MessageEventEnum.PROPERTY_FAILED_GETFROMDATALIBDATA_XMLEXCEPTION);
+                        msg = new MessageEvent(MessageEventEnum.PROPERTY_FAILED_GETFROMDATALIB_SOAP_XMLEXCEPTION);
                         msg.setDescription(msg.getDescription()
                                 .replace("%XPATH%", subDataParsingAnswer)
                                 .replace("%SUBDATA%", subDataColumnToTreat)
@@ -1561,7 +1562,7 @@ public class PropertyService implements IPropertyService {
 
                         int initNB = listResult.size();
                         // We get the list of values that are already used.
-                        List<String> pastValues = this.testCaseExecutionDataDAO.getPastValuesOfProperty(testCaseCountryProperty.getProperty(), tCExecution.getTest(),
+                        List<String> pastValues = this.testCaseExecutionDataDAO.getPastValuesOfProperty(tCExecution.getId(), testCaseCountryProperty.getProperty(), tCExecution.getTest(),
                                 tCExecution.getTestCase(), tCExecution.getCountryEnvParam().getBuild(), tCExecution.getEnvironmentData(),
                                 tCExecution.getCountry());
 
@@ -1601,7 +1602,7 @@ public class PropertyService implements IPropertyService {
                         int initNB = listResult.size();
                         // We get the list of values that are already used.
                         Integer peTimeout = Integer.valueOf(parameterService.findParameterByKey("cerberus_notinuse_timeout", system).getValue());
-                        List<String> pastValues = this.testCaseExecutionDataDAO.getInUseValuesOfProperty(testCaseCountryProperty.getProperty(), tCExecution.getEnvironmentData(), tCExecution.getCountry(), peTimeout);
+                        List<String> pastValues = this.testCaseExecutionDataDAO.getInUseValuesOfProperty(tCExecution.getId(), testCaseCountryProperty.getProperty(), tCExecution.getEnvironmentData(), tCExecution.getCountry(), peTimeout);
 
                         int removedNB = 0;
                         // We save all rows that needs to be removed to listToremove.
@@ -1648,7 +1649,7 @@ public class PropertyService implements IPropertyService {
                 result.setTestDataLibID(lib.getTestDataLibID());
 
             } catch (Exception ex) {
-                msg = new MessageEvent(MessageEventEnum.PROPERTY_FAILED_GETFROMDATALIBDATA_XMLEXCEPTION);
+                msg = new MessageEvent(MessageEventEnum.PROPERTY_FAILED_GETFROMDATALIB_SOAP_XMLEXCEPTION);
                 msg.setDescription(msg.getDescription()
                         .replace("%XPATH%", lib.getSubDataParsingAnswer())
                         .replace("%SUBDATA%", "")
@@ -1706,7 +1707,7 @@ public class PropertyService implements IPropertyService {
 
                         int initNB = list.size();
                         // We get the list of values that are already used.
-                        List<String> pastValues = this.testCaseExecutionDataDAO.getPastValuesOfProperty(testCaseCountryProperty.getProperty(), tCExecution.getTest(),
+                        List<String> pastValues = this.testCaseExecutionDataDAO.getPastValuesOfProperty(tCExecution.getId(), testCaseCountryProperty.getProperty(), tCExecution.getTest(),
                                 tCExecution.getTestCase(), tCExecution.getCountryEnvParam().getBuild(), tCExecution.getEnvironmentData(),
                                 tCExecution.getCountry());
 
@@ -1746,7 +1747,7 @@ public class PropertyService implements IPropertyService {
                         int initNB = list.size();
                         // We get the list of values that are already used.
                         Integer peTimeout = Integer.valueOf(parameterService.findParameterByKey("cerberus_notinuse_timeout", system).getValue());
-                        List<String> pastValues = this.testCaseExecutionDataDAO.getInUseValuesOfProperty(testCaseCountryProperty.getProperty(), tCExecution.getEnvironmentData(), tCExecution.getCountry(), peTimeout);
+                        List<String> pastValues = this.testCaseExecutionDataDAO.getInUseValuesOfProperty(tCExecution.getId(), testCaseCountryProperty.getProperty(), tCExecution.getEnvironmentData(), tCExecution.getCountry(), peTimeout);
 
                         int removedNB = 0;
                         // We save all rows that needs to be removed to listToremove.

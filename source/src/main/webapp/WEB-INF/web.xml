@@ -761,8 +761,8 @@
         <servlet-class>org.cerberus.servlet.crud.countryenvironment.DeleteCountryEnvParam</servlet-class>
     </servlet>
     <servlet>
-        <servlet-name>ExecutionThreadMonitoring</servlet-name>
-        <servlet-class>org.cerberus.servlet.information.ExecutionThreadMonitoring</servlet-class>
+        <servlet-name>ReadCerberusDetailInformation</servlet-name>
+        <servlet-class>org.cerberus.servlet.information.ReadCerberusDetailInformation</servlet-class>
     </servlet>
     <servlet>
         <servlet-name>ExecutionThreadReset</servlet-name>
@@ -849,8 +849,8 @@
         <servlet-class>org.cerberus.service.soap.impl.DummySoap</servlet-class>
     </servlet>
     <servlet-mapping>
-        <servlet-name>ExecutionThreadMonitoring</servlet-name>
-        <url-pattern>/ExecutionThreadMonitoring</url-pattern>
+        <servlet-name>ReadCerberusDetailInformation</servlet-name>
+        <url-pattern>/ReadCerberusDetailInformation</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
         <servlet-name>RunTestCase</servlet-name>
@@ -1802,7 +1802,6 @@
             <web-resource-name>jsp</web-resource-name>
             <description>jsp</description>
             <url-pattern>/SqlLib.jsp</url-pattern>
-            <url-pattern>/TestCaseCreate.jsp</url-pattern>
             <url-pattern>/TestCaseImport.jsp</url-pattern>
             <url-pattern>/ImportTestCase.jsp</url-pattern>
             <url-pattern>/TestData.jsp</url-pattern>
@@ -1851,7 +1850,7 @@
         <web-resource-collection>
             <web-resource-name>jsp</web-resource-name>
             <description>jsp</description>
-            <url-pattern>/TestCreate.jsp</url-pattern>
+            <url-pattern>/NoPaternDefined.jsp</url-pattern>
         </web-resource-collection>
         <web-resource-collection>
             <web-resource-name>servlet</web-resource-name>
@@ -2045,6 +2044,7 @@
             <url-pattern>/InvariantPublic.jsp</url-pattern>
             <url-pattern>/InvariantPrivate.jsp</url-pattern>
             <url-pattern>/ExecutionThreadMonitoring.jsp</url-pattern>
+            <url-pattern>/CerberusInformation.jsp</url-pattern>
         </web-resource-collection>
         <web-resource-collection>
             <web-resource-name>servlet</web-resource-name>
@@ -2064,7 +2064,7 @@
             <url-pattern>/UpdateInvariant</url-pattern>
             <url-pattern>/DeleteInvariant</url-pattern>
             <url-pattern>/DeleteApplication</url-pattern>
-            <url-pattern>/ExecutionThreadMonitoring</url-pattern>
+            <url-pattern>/ReadCerberusDetailInformation</url-pattern>
         </web-resource-collection>
         <auth-constraint>
             <description>Administrator</description>

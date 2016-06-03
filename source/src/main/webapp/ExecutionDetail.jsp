@@ -503,30 +503,15 @@
                                     <%
                                         myStep = String.valueOf(myKey);
                                         for (TestCaseStepActionExecution myActionData : actionList) {
-                                            TestCaseStepAction myTCSA;
-                                            String descAction = "";
-
-                                            if (myTCS != null && myTCS.getUseStep() != null && !"".equals(myTCS.getUseStep())
-                                                    && myTCS.getUseStepStep() > 0) {
-                                                myTCSA = testCaseStepActionService.findTestCaseStepActionbyKey(myTCS.getUseStepTest(), myTCS.getUseStepTestCase(), myTCS.getUseStepStep(), myActionData.getSequence());
-                                            } else {
-                                                myTCSA = testCaseStepActionService.findTestCaseStepActionbyKey(myStepData.getTest(), myStepData.getTestCase(), myStepData.getStep(), myActionData.getSequence());
-                                            }
-
-                                            String actionDesc = "";
-                                            if ((myTCSA != null) && !(myTCSA.getDescription().trim().equalsIgnoreCase(""))) {
-                                                actionDesc = " title='" + myTCSA.getDescription() + "'";
-                                                descAction = myTCSA.getDescription();
-                                            }
-                                    %>
+//                                  %>
                                     <tr class="tableContent">
                                         <td style="width:1%">&nbsp;&nbsp;&nbsp;&nbsp;</td>
                                         <td style="width:1%" class="<%=myActionData.getReturnCode()%>"><span class="<%=myActionData.getReturnCode()%>F" id="ACTSTS-<%=myStep + "-" + myActionData.getSequence()%>"><%=myActionData.getReturnCode()%></span></td>
                                         <td style="width:4%"><%=DateUtil.getFormatedDate(myActionData.getStartLong())%></td>
                                         <td style="width:5%"><%=DateUtil.getFormatedElapsed(myActionData.getStartLong(), myActionData.getEndLong())%></td>
                                         <td style="width:5%"><%=myActionData.getSequence()%></td>
-                                        <td style="width:20%"<%=actionDesc%>><%=descAction%></td>
-                                        <td style="width:20%"<%=actionDesc%>><b><%=myActionData.getAction()%></b></td>
+                                        <td style="width:20%" title="<%=myActionData.getDescription()%>"><%=myActionData.getDescription()%></td>
+                                        <td style="width:20%" title="<%=myActionData.getDescription()%>"><b><%=myActionData.getAction()%></b></td>
                                         <td style="width:20%"><code><pre><%=StringUtil.textToHtmlConvertingURLsToLinks(myActionData.getObject())%></pre></code></td>
                                         <td style="width:20%"><code><pre><%=StringUtil.textToHtmlConvertingURLsToLinks(myActionData.getProperty())%></pre></code></td>
                                         <td style="width:2%"><%if (myActionData.getScreenshotFilename() != null) {%>
@@ -587,23 +572,7 @@
                                                     myAction = myStep + "-" + myActionData.getSequence();
 
                                                     for (TestCaseStepActionControlExecution myControlData : controlList) {
-                                                        TestCaseStepActionControl myTCSAC;
-
-                                                        if (myTCS != null && myTCS.getUseStep() != null && !"".equals(myTCS.getUseStep())
-                                                                && myTCS.getUseStepStep() > 0) {
-                                                            myTCSAC = testCaseStepActionControlService.findTestCaseStepActionControlByKey(myTCS.getUseStepTest(), myTCS.getUseStepTestCase(), myTCS.getUseStepStep(), myActionData.getSequence(), myControlData.getControl());
-                                                        } else {
-                                                            myTCSAC = testCaseStepActionControlService.findTestCaseStepActionControlByKey(myStepData.getTest(), myStepData.getTestCase(), myStepData.getStep(), myActionData.getSequence(), myControlData.getControl());
-                                                        }
-
-                                                        String controlDesc = "";
-                                                        String descControl = "";
-                                                        if ((myTCSAC != null) && !(myTCSAC.getDescription().trim().equalsIgnoreCase(""))) {
-                                                            controlDesc = " title='" + myTCSAC.getDescription() + "'";
-                                                            descControl = myTCSAC.getDescription();
-                                                        }
-
-                                                %>
+//                                              %>
                                                 <tr class="tableContent">
                                                     <td style="width:20px">&nbsp;&nbsp;&nbsp;&nbsp;</td>
                                                     <td style="width:20px">&nbsp;&nbsp;&nbsp;&nbsp;</td>
@@ -611,8 +580,8 @@
                                                     <td><%=DateUtil.getFormatedDate(myControlData.getStartLong())%></td>
                                                     <td><%=DateUtil.getFormatedElapsed(myControlData.getStartLong(), myControlData.getEndLong())%></td>
                                                     <td data-id="<%=myAction + "-" + myControlData.getControl()%>" class="control <%=myControlData.getControl()%>"><%=myControlData.getControl()%></td>
-                                                    <td<%=controlDesc%>><%=descControl%></td>
-                                                    <td<%=controlDesc%>><b><%=myControlData.getControlType()%></b></td>
+                                                    <td title="<%=myControlData.getDescription()%>"><%=myControlData.getDescription()%></td>
+                                                    <td title="<%=myControlData.getDescription()%>"><b><%=myControlData.getControlType()%></b></td>
                                                     <td id="CTLPRP-<%=myAction + "-" + myControlData.getControl()%>"><%=StringUtil.textToHtmlConvertingURLsToLinks(myControlData.getControlProperty())%></td>
                                                     <td><code><pre id="CTLVAL-<%=myAction + "-" + myControlData.getControl()%>"><%=StringUtil.textToHtmlConvertingURLsToLinks(myControlData.getControlValue())%></pre></code></td>
                                                     <td><%=myControlData.getFatal()%></td>
@@ -662,9 +631,9 @@
                             <td title="Start Time"><%=DateUtil.getFormatedDate(myData.getStartLong())%></td>
                             <td title="Elapse Time"><%=DateUtil.getFormatedElapsed(myData.getStartLong(), myData.getEndLong())%></td>
                             <td title="Property name"><b><span id="PROP-<%=myData.getProperty()%>"><%=myData.getProperty()%></span></b></td>
-                            <td title="Value"><code><pre><b><i><span id="PROPVAL-<%=myData.getProperty()%>"><%=StringUtil.textToHtmlConvertingURLsToLinks(myData.getValue())%></span></i></b></pre></code></td>
+                            <td title="Value"><code><b><i><span id="PROPVAL-<%=myData.getProperty()%>"><%=StringUtil.textToHtmlConvertingURLsToLinks(myData.getValue())%></span></i></b></code></td>
                             <td title="Type" style="font-size: x-small"><%=myData.getType()%></td>
-                            <td title="Value1 / Value2" style="font-size: x-small"><code><pre><%=StringUtil.textToHtmlConvertingURLsToLinks(myData.getValue1())%> / <%=myData.getValue2()%></pre></code></td>
+                            <td title="Value1 / Value2" style="font-size: x-small"><code><%=StringUtil.textToHtmlConvertingURLsToLinks(myData.getValue1())%> / <%=myData.getValue2()%></code></td>
                                         <%
                                             String propMessage = myData.getrMessage();
                                             //TODO this should handled differently, in the servlet or javascript file

@@ -39,19 +39,6 @@ public enum MessageEventEnum {
      * <p/>
      * Code standard is : All SUCCESS are x00 (same code for all). All FAILED
      * are from x50 to x99 (different code for each). Pending is x99.
-     *//**
-     * Message is used to feedback the result of any Cerberus event. Events
-     * could by Property, Action, Control or even Step. For every event, we
-     * have: - a number - a 2 digit code that report the status of the event. -
-     * a clear message that will be reported to the user. describing what was
-     * done or the error that occured. - a boolean that define whether the
-     * complete test execution should stop or not. - a boolean that define
-     * whether a screenshot will be done in case of problem (only if screenshot
-     * option is set to 1). - the corresponding Execution message that will be
-     * updated at the execution level.
-     * <p/>
-     * Code standard is : All SUCCESS are x00 (same code for all). All FAILED
-     * are from x50 to x99 (different code for each). Pending is x99.
      */
     PROPERTY_SUCCESS(100, "OK", "Property calculated successfully.", false, false, false, MessageGeneralEnum.EXECUTION_PE_TESTSTARTED),
     PROPERTY_SUCCESS_SQL(100, "OK", "SQL executed against database '%DB%' and JDBCPOOL '%JDBCPOOLNAME%'. SQL : '%SQL%'", false, false, false, MessageGeneralEnum.EXECUTION_PE_TESTSTARTED),
@@ -123,20 +110,19 @@ public enum MessageEventEnum {
     PROPERTY_FAILED_GETFROMDATALIB_SQL_DATABASEEMPTY(192, "FA", "An error occurred while calculating the SQL from test data library entry '%ENTRY%' (%ENTRYID%)! Database is not defined.", true, false, false, MessageGeneralEnum.EXECUTION_FA),
     PROPERTY_FAILED_GETFROMDATALIB_SQL_DATABASENOTCONFIGURED(192, "FA", "An error occurred while calculating the SQL from test data library entry '%ENTRY%' (%ENTRYID%)! Database %DATABASE% is not configured on the system %SYSTEM%, country %COUNTRY%, environment %ENV%.", true, false, false, MessageGeneralEnum.EXECUTION_FA),
     PROPERTY_FAILED_GETFROMDATALIB_SQL_JDBCRESSOURCEMPTY(192, "FA", "An error occurred while calculating the SQL from test data library entry '%ENTRY%' (%ENTRYID%)! Database %DATABASE% is configured on the system %SYSTEM%, country %COUNTRY%, environment %ENV% but JDBC Ressource is empty.", true, false, false, MessageGeneralEnum.EXECUTION_FA),
-    PROPERTY_FAILED_GETFROMDATALIB_SQL_NODATA(192, "FA", "No data found for SQL test data library entry '%ENTRY%'! Database: %DATABASE%, SQL: %SQL%", true, false, false, MessageGeneralEnum.EXECUTION_FA),
+    PROPERTY_FAILED_GETFROMDATALIB_SQL_NODATA(192, "FA", "SQL return no result for SQL test data library entry '%ENTRY%' (%ENTRYID%) ! Database: %DATABASE%, SQL: %SQL%", true, false, false, MessageGeneralEnum.EXECUTION_FA),
     PROPERTY_FAILED_GETFROMDATALIB_SQL_RANDOMNEW_NOMORERECORD(904, "FA", "Data Library entry %ENTRY% (%ENTRYID%) retrieved but there are no more data available. All %TOTNB% entries, has been removed (Already used for the same property name, testcase in the same country environment and build). Data fetched from SQL executed against database '%DB%' and JDBCPOOL '%JDBCPOOLNAME%'. SQL : '%SQL%'", true, false, false, MessageGeneralEnum.EXECUTION_FA),
     PROPERTY_FAILED_GETFROMDATALIB_SQL_NOTINUSE_NOMORERECORD(904, "FA", "Data Library entry %ENTRY% (%ENTRYID%) retrieved but there are no more data available. All %TOTNB% entries, has been removed (Recent pending (PE) executions for the same property name in the same country, environment). Data fetched from SQL executed against database '%DB%' and JDBCPOOL '%JDBCPOOLNAME%'. SQL : '%SQL%'", true, false, false, MessageGeneralEnum.EXECUTION_FA),
-    PROPERTY_FAILED_GETFROMDATALIB_NOTSOAP(192, "FA", "The library entry '%ENTRY%' is currently not of type SOAP!", true, false, false, MessageGeneralEnum.EXECUTION_FA),
     PROPERTY_FAILED_GETFROMDATALIB_SOAP_RANDOMNEW_NOMORERECORD(904, "FA", "Data Library entry %ENTRY% (%ENTRYID%) retrieved but there are no more data available. All %TOTNB% entries, has been removed (Already used for the same property name, testcase in the same country environment and build). Data fetched from XML from Service '%SERVICE%' and Operation '%OPERATION%'..", true, false, false, MessageGeneralEnum.EXECUTION_FA),
     PROPERTY_FAILED_GETFROMDATALIB_SOAP_NOTINUSE_NOMORERECORD(904, "FA", "Data Library entry %ENTRY% (%ENTRYID%) retrieved but there are no more data available. All %TOTNB% entries, has been removed (Recent pending (PE) executions for the same property name in the same country, environment). Data fetched from XML from Service '%SERVICE%' and Operation '%OPERATION%'..", true, false, false, MessageGeneralEnum.EXECUTION_FA),
+    PROPERTY_FAILED_GETFROMDATALIB_SOAP_XMLEXCEPTION(197, "FA", "The evaluation of the xpath expression '%XPATH%' specified in the sub-data entry '%SUBDATA%' for the library entry '%ENTRY%' (%ENTRYID%) has failed! '%REASON%'", true, false, false, MessageGeneralEnum.EXECUTION_FA),
+    PROPERTY_FAILED_GETFROMDATALIB_SOAP_XML_NOTFOUND(197, "FA", "No elements found! The evaluation of the xpath expression '%XPATH%' specified in the sub-data entry '%SUBDATA%' for the library entry '%ENTRY%' (%ENTRYID%) didn't match any XML elements! inside XML %XMLCONTENT%", true, false, false, MessageGeneralEnum.EXECUTION_FA),
+    PROPERTY_FAILED_GETFROMDATALIB_SOAP_CHECK_XPATH(197, "FA", "The Element specified on the xpath '%XPATH%' is correct but no data was retrieved! Please verify the xpath expression '%XPATH%' specified in the sub-data entry '%SUBDATA%' for the library entry '%ENTRY%' (%ENTRYID%) ! If not already done, you can try to add /text() and the end of the xpath.", true, false, false, MessageGeneralEnum.EXECUTION_FA),
     PROPERTY_FAILED_GETFROMDATALIBDATA(193, "FA", "Failed to get Data from Property '%PROP%' because could not find subData '%SUBDATA%' inside DataLib %ENTRY%!", true, false, false, MessageGeneralEnum.EXECUTION_FA),
+    PROPERTY_FAILED_SOAPFROMLIB_NODATA(198, "NA", "SOAP Request executed but returned no data. <a href='%REQUEST_PATH%'>Request</a> / <a href='%RESPONSE_PATH%'>Response</a>.", true, false, false, MessageGeneralEnum.EXECUTION_NA),
     PROPERTY_FAILED_INNERPROPERTY_GETFROMDATALIB_NOTFOUND(194, "FA", "Failed to execute because inner property '%PROPERTY%'  accesses invalid test data library entries: %ITEM%. ", true, false, false, MessageGeneralEnum.EXECUTION_FA),
     PROPERTY_FAILED_SUBDATAACCESS(195, "FA", "Failed to calculate %SUBDATAACCCESS% because '%PROPERTY%' was not calculated!", true, false, false, MessageGeneralEnum.EXECUTION_FA),
-    PROPERTY_FAILED_GETFROMDATALIBDATA_XMLEXCEPTION(197, "FA", "The evaluation of the xpath expression '%XPATH%' specified in the sub-data entry '%SUBDATA%' for the library entry '%ENTRY%' (%ENTRYID%) has failed! '%REASON%'", true, false, false, MessageGeneralEnum.EXECUTION_FA),
-    PROPERTY_FAILED_GETFROMDATALIBDATA_XML_NOTFOUND(197, "FA", "No elements found! The evaluation of the xpath expression '%XPATH%' specified in the sub-data entry '%SUBDATA%' for the library entry '%ENTRY%' (%ENTRYID%) didn't match any XML elements! inside XML %XMLCONTENT%", true, false, false, MessageGeneralEnum.EXECUTION_FA),
-    PROPERTY_FAILED_GETFROMDATALIBDATA_CHECK_XPATH(197, "FA", "A XML element was found, but no data was retrieved! Please verify the xpath expression '%XPATH%' specified in the sub-data entry '%SUBDATA%' for the library entry '%ENTRY%' (%ENTRYID%) !", true, false, false, MessageGeneralEnum.EXECUTION_FA),
     PROPERTY_FAILED_FEATURENOTIMPLEMENTED(197, "FA", "Feature '%FEATURE%' is not yet implemented!", true, false, false, MessageGeneralEnum.EXECUTION_FA),
-    PROPERTY_FAILED_SOAP_NODATA(198, "NA", "SOAP Request executed but returned no data. <a href='%REQUEST_PATH%'>Request</a> / <a href='%RESPONSE_PATH%'>Response</a>.", true, false, false, MessageGeneralEnum.EXECUTION_NA),
     PROPERTY_PENDING(199, "PE", "Calculating property...", false, false, false, MessageGeneralEnum.EXECUTION_PE_TESTSTARTED),
     // *********** EXECUTION ACTIONS ***********
     ACTION_SUCCESS(200, "OK", "", false, false, false, MessageGeneralEnum.EXECUTION_PE_TESTSTARTED),
@@ -216,6 +202,7 @@ public enum MessageEventEnum {
     ACTION_FAILED_CALLSOAP_ENVELOPEMISSING(286, "FA", "Failed to call the SOAP because Envelope is not defined.%ERRORDETAILMESSAGE%", true, true, false, MessageGeneralEnum.EXECUTION_FA_ACTION),
     ACTION_FAILED_CALLSOAP_SERVICEPATHMISSING(286, "FA", "Failed to call the SOAP because Service Path is not defined.%ERRORDETAILMESSAGE%", true, true, false, MessageGeneralEnum.EXECUTION_FA_ACTION),
     ACTION_FAILED_CALLSOAP_METHODMISSING(286, "FA", "Failed to call the SOAP because Method is not defined.%ERRORDETAILMESSAGE%", true, true, false, MessageGeneralEnum.EXECUTION_FA_ACTION),
+    ACTION_FAILED_CALLSOAPBETA_NOTSOAP(192, "FA", "The library entry '%ENTRY%' is currently not of type SOAP!", true, false, false, MessageGeneralEnum.EXECUTION_FA),
     ACTION_FAILED_REMOVEDIFFERENCE(287, "FA", "Failed to remove difference '%DIFFERENCE%' from '%DIFFERENCES%'", true, true, false, MessageGeneralEnum.EXECUTION_FA_ACTION),
     ACTION_FAILED_RIGHTCLICK_NO_SUCH_ELEMENT(288, "FA", "Failed to Right Click on element %ELEMENT% because could not find element '%ELEMENT%'!", true, true, true, MessageGeneralEnum.EXECUTION_FA_ACTION),
     ACTION_FAILED_SIKULI_SERVER_NOT_REACHABLE(289, "FA", "Sikuli Server is not reachable at %URL%. Please verify that the required dependencies are present.", true, true, false, MessageGeneralEnum.EXECUTION_FA_ACTION),

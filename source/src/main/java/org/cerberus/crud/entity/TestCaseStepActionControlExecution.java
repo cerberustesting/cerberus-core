@@ -46,6 +46,7 @@ public class TestCaseStepActionControlExecution {
     private long endLong;
     private String screenshotFilename;
     private String pageSourceFilename;
+    private String description;
     /**
      *
      */
@@ -233,6 +234,14 @@ public class TestCaseStepActionControlExecution {
     public void setTestCase(String testCase) {
         this.testCase = testCase;
     }
+    
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
 
     public JSONObject toJson() {
         JSONObject result = new JSONObject();
@@ -253,6 +262,7 @@ public class TestCaseStepActionControlExecution {
             result.append("endlong", this.getEnd());
             result.append("screenshotFilename", this.getScreenshotFilename());
             result.append("pageSourceFilename", this.getPageSourceFilename());
+            result.append("description", this.getDescription());
         } catch (JSONException ex) {
             Logger.getLogger(TestCaseStepExecution.class.getName()).log(Level.SEVERE, null, ex);
         }

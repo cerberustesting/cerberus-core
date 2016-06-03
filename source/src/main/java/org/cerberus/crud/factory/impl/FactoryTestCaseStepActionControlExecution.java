@@ -35,7 +35,7 @@ public class FactoryTestCaseStepActionControlExecution implements IFactoryTestCa
     public TestCaseStepActionControlExecution create(long id, String test, String testCase, int step, int sequence,
                                                      int control, String returnCode, String returnMessage, String controlType, String controlProperty,
                                                      String controlValue, String fatal, long start, long end, long startLong, long endLong,
-                                                     String screenshotFilename, String pageSourceFilename, TestCaseStepActionExecution testCaseStepActionExecution, MessageEvent resultMessage) {
+                                                     String screenshotFilename, String pageSourceFilename, String description, TestCaseStepActionExecution testCaseStepActionExecution, MessageEvent resultMessage) {
         TestCaseStepActionControlExecution testCaseStepActionControlExecution = new TestCaseStepActionControlExecution();
         testCaseStepActionControlExecution.setId(id);
         testCaseStepActionControlExecution.setTest(test);
@@ -57,7 +57,7 @@ public class FactoryTestCaseStepActionControlExecution implements IFactoryTestCa
         testCaseStepActionControlExecution.setTestCaseStepActionExecution(testCaseStepActionExecution);
         testCaseStepActionControlExecution.setControlResultMessage(resultMessage);
         testCaseStepActionControlExecution.setPageSourceFilename(pageSourceFilename);
-
+        testCaseStepActionControlExecution.setDescription(description);
         return testCaseStepActionControlExecution;
     }
 

@@ -46,6 +46,7 @@ public class TestCaseStepActionExecution {
     private long endLong;
     private String screenshotFilename;
     private String pageSourceFilename;
+    private String description;
     /**
      * From here are data outside database model.
      */
@@ -253,6 +254,14 @@ public class TestCaseStepActionExecution {
     public AnswerList getTestCaseStepActionControlExecutionList(){
         return testCaseStepActionControlExecutionList;
     }
+    
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
 
     public JSONObject toJson() {
         JSONObject result = new JSONObject();
@@ -271,6 +280,7 @@ public class TestCaseStepActionExecution {
             result.append("endlong", this.getEnd());
             result.append("screenshotFilename", this.getScreenshotFilename());
             result.append("pageSourceFilename", this.getPageSourceFilename());
+            result.append("description", this.getDescription());
             JSONArray array = new JSONArray();
             for (Object testCaseStepActionControlExecution : this.getTestCaseStepActionControlExecutionList().getDataList()) {
                 array.put(((TestCaseStepActionControlExecution)testCaseStepActionControlExecution).toJson());

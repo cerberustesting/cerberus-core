@@ -136,7 +136,7 @@
                     <li id="subactive"><a name="menu" id="menuParameter" href="Parameter.jsp" style="width:200px">Parameters</a></li>
                     <li id="subactive"><a name="menu" id="menuInvariantPublic" href="InvariantPublic.jsp" style="width:200px">Edit Public Invariants</a></li>
                     <li id="subactive"><a name="menu" id="menuInvariantPrivate" href="InvariantPrivate.jsp" style="width:200px">See Private Invariants</a></li>
-                    <li id="subactive"><a name="menu" id="menuReportingExecutionThreadMonitoring" href="ExecutionThreadMonitoring.jsp" style="width:200px">Monitoring</a></li>
+                    <li id="subactive"><a name="menu" id="menuReportingExecutionThreadMonitoring" href="CerberusInformation.jsp" style="width:200px">Monitoring</a></li>
                 </ul>
             </li>
             <% }%>

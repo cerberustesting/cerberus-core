@@ -17,6 +17,8 @@
  */
 package org.cerberus.crud.dao;
 
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import org.cerberus.crud.entity.TestDataLib;
 import org.cerberus.util.answer.Answer;
 import org.cerberus.util.answer.AnswerItem;
@@ -115,4 +117,11 @@ public interface ITestDataLibDAO {
      */
     Answer update(TestDataLib testDataLib);
 
+    /**
+     *
+     * @param resultSet
+     * @return
+     * @throws SQLException
+     */
+    TestDataLib loadFromResultSet(ResultSet resultSet) throws SQLException;
 }
