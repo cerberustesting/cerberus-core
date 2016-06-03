@@ -5893,6 +5893,16 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLS.append("('CAPABILITY', 'browserName', '6', 'Browser name (useful for Appium)', ''), ");
         SQLS.append("('CAPABILITY', 'autoWebview', '7', 'If auto web view has to be enabled (useful for Appium, e.g.: true) ', '');");
         SQLInstruction.add(SQLS.toString());
+        
+        // Add documentation on robot capability
+        //-- ------------------------ 786
+        SQLS = new StringBuilder();
+        SQLS.append("INSERT INTO `documentation` (`DocTable`, `DocField`, `DocValue`, `Lang`, `DocLabel`, `DocDesc`) VALUES ");
+        SQLS.append("('robot', 'capabilityCapability', '', 'fr', 'Capabilité', 'Nom de la capabilité.'), ");
+        SQLS.append("('robot', 'capabilityCapability', '', 'en', 'Capability', 'Capability name.'), ");
+        SQLS.append("('robot', 'capabilityValue', '', 'fr', 'Valeur', 'Valeur de la capabilité.'), ");
+        SQLS.append("('robot', 'capabilityValue', '', 'en', 'Value', 'Capability value.');");
+        SQLInstruction.add(SQLS.toString());
 
         return SQLInstruction;
     }

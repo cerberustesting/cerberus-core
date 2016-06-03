@@ -67,6 +67,10 @@ function displayPageLabel() {
     $("[name='activeField']").html(doc.getDocOnline("robot", "active"));
     $("[name='useragentField']").html(doc.getDocOnline("robot", "useragent"));
     $("[name='descriptionField']").html(doc.getDocOnline("robot", "description"));
+    $("[name='addCapabilityHeader']").html(doc.getDocOnline("robot", "capabilityCapability"));
+    $("[name='addValueHeader']").html(doc.getDocOnline("robot", "capabilityValue"));
+    $("[name='editCapabilityHeader']").html(doc.getDocOnline("robot", "capabilityCapability"));
+    $("[name='editValueHeader']").html(doc.getDocOnline("robot", "capabilityValue"));
     displayInvariantList("active", "ROBOTACTIVE", false);
 
     displayFooter(doc);
@@ -201,6 +205,8 @@ function editEntryClick(id) {
         formEdit.find("#version").prop("value", obj["version"]);
         formEdit.find("#useragent").prop("value", obj["userAgent"]);
         formEdit.find("#Description").prop("value", obj["description"]);
+        
+        loadCapabilitiesTable("editCapabilitiesTableBody", obj["capabilities"]);
 
         if (!(data["hasPermissions"])) { // If readonly, we only readonly all fields
             formEdit.find("#robot").prop("readonly", "readonly");
@@ -215,9 +221,10 @@ function editEntryClick(id) {
 
             $('#editEntryButton').attr('class', '');
             $('#editEntryButton').attr('hidden', 'hidden');
+            
+            $('#addEditCapabilitiy').attr('class', '');
+            $('#addEditCapabilitiy').attr('hidden', 'hidden');
         }
-
-        loadCapabilitiesTable("editCapabilitiesTableBody", obj["capabilities"]);
 
         formEdit.modal('show');
     });
@@ -235,7 +242,7 @@ function appendCapabilityRow(tableBody, capability) {
     var doc = new Doc();
     var deleteBtn = $("<button type=\"button\"></button>").addClass("btn btn-default btn-xs").append($("<span></span>").addClass("glyphicon glyphicon-trash"));
     var selectCapability = getSelectInvariant("CAPABILITY", false);
-    var valueInput = $("<input  maxlength=\"150\" placeholder=\"-- " + doc.getDocLabel("countryenvironmentparameters", "IP") + " --\">").addClass("form-control input-sm").val(capability.value);
+    var valueInput = $("<input  maxlength=\"150\" placeholder=\"-- " + doc.getDocLabel("robot", "capabilityValue") + " --\">").addClass("form-control input-sm").val(capability.value);
     var table = $("#" + tableBody);
 
     var row = $("<tr></tr>");
