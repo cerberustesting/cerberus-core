@@ -35,7 +35,7 @@ public class FactoryTestCaseStepActionExecution implements IFactoryTestCaseStepA
     @Override
     public TestCaseStepActionExecution create(long id, String test, String testCase, int step, int sequence, String returnCode, String returnMessage, String action,
             String object, String property, long start, long end, long startLong, long endLong, String screenshotFilename, String pageSourceFilename,
-            MessageEvent resultMessage, TestCaseStepAction testCaseStepAction, TestCaseStepExecution testCaseStepExecution) {
+            MessageEvent resultMessage, String description, TestCaseStepAction testCaseStepAction, TestCaseStepExecution testCaseStepExecution) {
         TestCaseStepActionExecution testCaseStepActionExecution = new TestCaseStepActionExecution();
         testCaseStepActionExecution.setAction(action);
         testCaseStepActionExecution.setEnd(end);
@@ -56,6 +56,7 @@ public class FactoryTestCaseStepActionExecution implements IFactoryTestCaseStepA
         testCaseStepActionExecution.setTestCaseStepAction(testCaseStepAction);
         testCaseStepActionExecution.setTestCaseStepExecution(testCaseStepExecution);
         testCaseStepActionExecution.setPageSourceFilename(pageSourceFilename);
+        testCaseStepActionExecution.setDescription(description);
         return testCaseStepActionExecution;
     }
 

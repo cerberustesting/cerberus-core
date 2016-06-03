@@ -232,7 +232,7 @@ public class RunManualTest extends HttpServlet {
                 String stepReturnCode = getParameterIfExists(request, "stepStatus_" + inc);
 
                 result.add(testCaseStepExecutionFactory.create(executionId, test, testCase, step, null, now, now, now, now,
-                        new BigDecimal("0"), stepReturnCode, stepResultMessage));
+                        new BigDecimal("0"), stepReturnCode, stepResultMessage, ""));
             }
         }
         return result;
@@ -262,7 +262,7 @@ public class RunManualTest extends HttpServlet {
 
                 result.add(testCaseStepActionExecutionFactory.create(executionId, test, testCase, step, sequence, actionReturnCode,
                         actionReturnMessage, "Manual Action", null, null, now, now, now, now,
-                        actionScreenshotFileName, null, null, null, null));
+                        actionScreenshotFileName, null, null, "", null, null));
             }
         }
         return result;
@@ -294,7 +294,7 @@ public class RunManualTest extends HttpServlet {
 
                 result.add(testCaseStepActionExecutionFactory.create(executionId, test, testCase, step, sequence, control,
                         controlReturnCode, controlReturnMessage, "Manual Control", null, null, null, now, now,
-                        now, now, controlScreenshot, null, null, null));
+                        now, now, controlScreenshot, null,"", null, null));
             }
         }
         return result;

@@ -36,7 +36,7 @@ public class FactoryTestCaseStepExecution implements IFactoryTestCaseStepExecuti
     @Override
     public TestCaseStepExecution create(long id, String test, String testCase, int step, String batNumExe, long start, long end, long fullStart, long fullEnd, BigDecimal timeElapsed,
             String returnCode, MessageEvent stepResultMessage, TestCaseStep testCaseStep, TestCaseExecution tCExecution, String useStep, String useStepTest, 
-                                 String useStepTestCase, int useStepTestCaseStep) {
+                                 String useStepTestCase, int useStepTestCaseStep, String description) {
         TestCaseStepExecution testCaseStepExecution = new TestCaseStepExecution();
         testCaseStepExecution.setBatNumExe(batNumExe);
         testCaseStepExecution.setEnd(end);
@@ -56,11 +56,15 @@ public class FactoryTestCaseStepExecution implements IFactoryTestCaseStepExecuti
         testCaseStepExecution.setUseStepTest(useStepTest);
         testCaseStepExecution.setUseStepTestCase(useStepTestCase);
         testCaseStepExecution.setUseStepTestCaseStep(useStepTestCaseStep);
+        testCaseStepExecution.setDescription(description);
         return testCaseStepExecution;
     }
 
     @Override
-    public TestCaseStepExecution create(long id, String test, String testCase, int step, String batNumExe, long start, long end, long fullStart, long fullEnd, BigDecimal timeElapsed, String returnCode, String returnMessage) {
+    public TestCaseStepExecution create(long id, String test, String testCase, 
+            int step, String batNumExe, long start, long end, long fullStart, 
+            long fullEnd, BigDecimal timeElapsed, String returnCode, 
+            String returnMessage, String description) {
         TestCaseStepExecution testCaseStepExecution = new TestCaseStepExecution();
         testCaseStepExecution.setBatNumExe(batNumExe);
         testCaseStepExecution.setEnd(end);
@@ -74,6 +78,7 @@ public class FactoryTestCaseStepExecution implements IFactoryTestCaseStepExecuti
         testCaseStepExecution.setTestCase(testCase);
         testCaseStepExecution.setTimeElapsed(timeElapsed);
         testCaseStepExecution.setReturnMessage(returnMessage);
+        testCaseStepExecution.setDescription(description);
         return testCaseStepExecution;
     }
 
