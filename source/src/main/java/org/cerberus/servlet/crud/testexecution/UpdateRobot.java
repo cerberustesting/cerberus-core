@@ -23,7 +23,9 @@ import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import java.io.IOException;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.servlet.ServletException;
@@ -93,7 +95,10 @@ public class UpdateRobot extends HttpServlet {
         String userAgent = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("useragent"), "", charset);
         List<RobotCapability> capabilities = (List<RobotCapability>) (request.getParameter("capabilities") == null ? Collections.emptyList() : gson.fromJson(request.getParameter("capabilities"), new TypeToken<List<RobotCapability>>(){}.getType()));
         // Securing capabilities by setting them the associated robot name
+        // Check also if there is no duplicated capability
+        Map<String, Object> capabilityMap = new HashMap<String, Object>();
         for (RobotCapability capability : capabilities) {
+            capabilityMap.put(capability.getCapability(), null);
             capability.setRobot(robot);
         }
         Integer robotid = 0;
@@ -145,6 +150,12 @@ public class UpdateRobot extends HttpServlet {
             msg.setDescription(msg.getDescription().replace("%ITEM%", "Robot")
                     .replace("%OPERATION%", "Update")
                     .replace("%REASON%", "Could not manage to convert robotid to an integer value or robotid is missing."));
+            ans.setResultMessage(msg);
+        } else if (capabilityMap.size() != capabilities.size()) {
+            msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_EXPECTED);
+            msg.setDescription(msg.getDescription().replace("%ITEM%", "Robot")
+                    .replace("%OPERATION%", "Create")
+                    .replace("%REASON%", "There is at least one duplicated capability. Please edit or remove it to continue."));
             ans.setResultMessage(msg);
         } else {
             /**
