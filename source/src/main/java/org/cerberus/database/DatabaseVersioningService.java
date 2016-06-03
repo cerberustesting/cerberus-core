@@ -5940,6 +5940,39 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLS.append("ALTER TABLE `testcasestepactioncontrolexecution`  ");
         SQLS.append("ADD COLUMN `Description` VARCHAR(255) NOT NULL DEFAULT '' AFTER `PageSourceFilename`;");
         SQLInstruction.add(SQLS.toString());
+        
+        SQLS = new StringBuilder();
+        SQLS.append("UPDATE `testdatalib` ");
+        SQLS.append("SET `LastModified` =  '1970-01-01 01:01:01' WHERE `LastModified` = '0000-00-00 00:00:00';");
+        SQLInstruction.add(SQLS.toString());
+        SQLS = new StringBuilder();
+        SQLS.append("UPDATE `test` ");
+        SQLS.append("SET `last_modified` =  '1970-01-01 01:01:01' WHERE `last_modified` = '0000-00-00 00:00:00';");
+        SQLInstruction.add(SQLS.toString());
+        SQLS = new StringBuilder();
+        SQLS.append("UPDATE `testcase` ");
+        SQLS.append("SET `last_modified` =  '1970-01-01 01:01:01' WHERE `last_modified` = '0000-00-00 00:00:00';");
+        SQLInstruction.add(SQLS.toString());
+        SQLS = new StringBuilder();
+        SQLS.append("UPDATE `testcasecountry` ");
+        SQLS.append("SET `last_modified` =  '1970-01-01 01:01:01' WHERE `last_modified` = '0000-00-00 00:00:00';");
+        SQLInstruction.add(SQLS.toString());
+        SQLS = new StringBuilder();
+        SQLS.append("UPDATE `testcasecountryproperties` ");
+        SQLS.append("SET `last_modified` =  '1970-01-01 01:01:01' WHERE `last_modified` = '0000-00-00 00:00:00';");
+        SQLInstruction.add(SQLS.toString());
+        SQLS = new StringBuilder();
+        SQLS.append("UPDATE `testcasestep` ");
+        SQLS.append("SET `last_modified` =  '1970-01-01 01:01:01' WHERE `last_modified` = '0000-00-00 00:00:00';");
+        SQLInstruction.add(SQLS.toString());
+        SQLS = new StringBuilder();
+        SQLS.append("UPDATE `testcasestepaction` ");
+        SQLS.append("SET `last_modified` =  '1970-01-01 01:01:01' WHERE `last_modified` = '0000-00-00 00:00:00';");
+        SQLInstruction.add(SQLS.toString());
+        SQLS = new StringBuilder();
+        SQLS.append("UPDATE `testcasestepactioncontrol` ");
+        SQLS.append("SET `last_modified` =  '1970-01-01 01:01:01' WHERE `last_modified` = '0000-00-00 00:00:00';");
+        SQLInstruction.add(SQLS.toString());
 
         return SQLInstruction;
     }
