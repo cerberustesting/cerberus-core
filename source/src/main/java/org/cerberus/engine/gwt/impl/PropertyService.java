@@ -955,7 +955,6 @@ public class PropertyService implements IPropertyService {
                 res.setDescription(res.getDescription().replaceAll("%VALUE1%", testCaseExecutionData.getValue1()));
                 res.setDescription(res.getDescription().replaceAll("%VALUE2%", testCaseExecutionData.getValue2()));
                 testCaseExecutionData.setPropertyResultMessage(res);
-
             }
         } catch (Exception ex) {
             MyLogger.log(PropertyService.class

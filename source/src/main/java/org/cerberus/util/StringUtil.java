@@ -317,4 +317,12 @@ public final class StringUtil {
 
     }
 
+    public static String addSuffixIfNotAlready(String text, String suffix) {
+        if (text.toUpperCase().endsWith(suffix.toUpperCase())) {
+            return text;
+        } else {
+            return text + suffix;
+        }
+    }
+
 }

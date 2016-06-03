@@ -25,24 +25,15 @@ import java.util.logging.Level;
 import java.util.regex.Pattern;
 
 import javax.annotation.PostConstruct;
-import javax.xml.soap.SOAPException;
 
 import org.apache.log4j.Logger;
-import org.cerberus.engine.entity.SOAPExecution;
-import org.cerberus.crud.entity.TestCaseExecution;
 import org.cerberus.service.xmlunit.IXmlUnitService;
-import org.cerberus.service.xmlunit.Differences;
-import org.cerberus.service.xmlunit.DifferencesException;
-import org.cerberus.service.xmlunit.AInputTranslator;
 import org.cerberus.service.xmlunit.AInputTranslator;
 import org.cerberus.service.xmlunit.Differences;
 import org.cerberus.service.xmlunit.DifferencesException;
 import org.cerberus.service.xmlunit.InputTranslator;
 import org.cerberus.service.xmlunit.InputTranslatorException;
-import org.cerberus.service.xmlunit.InputTranslatorException;
 import org.cerberus.service.xmlunit.InputTranslatorManager;
-import org.cerberus.service.xmlunit.InputTranslatorManager;
-import org.cerberus.service.xmlunit.InputTranslatorUtil;
 import org.cerberus.service.xmlunit.InputTranslatorUtil;
 import org.cerberus.util.XmlUtil;
 import org.cerberus.util.XmlUtilException;
@@ -74,7 +65,7 @@ public class XmlUnitService implements IXmlUnitService {
     /**
      * The default value for the getFromXML action
      */
-    public static final String DEFAULT_GET_FROM_XML_VALUE = "";
+    public static final String DEFAULT_GET_FROM_XML_VALUE = null;
 
     /**
      * Prefixed input handling
@@ -188,7 +179,7 @@ public class XmlUnitService implements IXmlUnitService {
 
         try {
             Document document = url == null ? XmlUtil.fromString(lastSOAPResponse) : XmlUtil.fromURL(new URL(url));
-            NodeList candidates = XmlUtil.evaluate(document, xpath + "/text()");
+            NodeList candidates = XmlUtil.evaluate(document, xpath);
             // Not that in case of multiple values then send the first one
             return candidates != null && candidates.getLength() > 0 ? candidates.item(0).getNodeValue() : DEFAULT_GET_FROM_XML_VALUE;
         } catch (XmlUtilException e) {
@@ -293,7 +284,7 @@ public class XmlUnitService implements IXmlUnitService {
             LOG.warn("Unable to check if element equality", xue);
         } catch (DifferencesException de) {
             LOG.warn("Unable to check if element equality", de);
-        } 
+        }
 
         return false;
     }

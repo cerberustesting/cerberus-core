@@ -73,7 +73,7 @@ public class ControlService implements IControlService {
     private ISikuliService sikuliService;
     @Autowired
     private IRecorderService recorderService;
-    
+
     @Override
     public TestCaseStepActionControlExecution doControl(TestCaseStepActionControlExecution testCaseStepActionControlExecution) {
         MessageEvent res;
@@ -581,21 +581,26 @@ public class ControlService implements IControlService {
         try {
             Identifier identifier = identifierService.convertStringToIdentifier(path);
             String applicationType = tCExecution.getApplication().getType();
+
             if ("GUI".equalsIgnoreCase(applicationType) || "APK".equalsIgnoreCase(applicationType)) {
                 actual = webdriverService.getValueFromHTML(tCExecution.getSession(), identifier);
+
             } else if ("WS".equalsIgnoreCase(applicationType)) {
                 SOAPExecution lastSoapCalled = (SOAPExecution) tCExecution.getLastSOAPCalled().getItem();
                 String xmlResponse = SoapUtil.convertSoapMessageToString(lastSoapCalled.getSOAPResponse());
                 if (!xmlUnitService.isElementPresent(xmlResponse, path)) {
                     throw new NoSuchElementException("Unable to find element " + path);
                 }
-                actual = xmlUnitService.getFromXml(xmlResponse, null, path);
+                String newPath = StringUtil.addSuffixIfNotAlready(path, "/text()");
+                actual = xmlUnitService.getFromXml(xmlResponse, null, newPath);
+
             } else {
                 MessageEvent mes = new MessageEvent(MessageEventEnum.CONTROL_NOTEXECUTED_NOTSUPPORTED_FOR_APPLICATION);
                 mes.setDescription(mes.getDescription().replaceAll("%CONTROL%", "verifyTextInElement"));
                 mes.setDescription(mes.getDescription().replaceAll("%APPLICATIONTYPE%", tCExecution.getApplication().getType()));
                 return mes;
             }
+
         } catch (NoSuchElementException exception) {
             MessageEvent mes = new MessageEvent(MessageEventEnum.CONTROL_FAILED_TEXTINELEMENT_NO_SUCH_ELEMENT);
             mes.setDescription(mes.getDescription().replaceAll("%ELEMENT%", path));
@@ -629,21 +634,26 @@ public class ControlService implements IControlService {
         try {
             Identifier identifier = identifierService.convertStringToIdentifier(path);
             String applicationType = tCExecution.getApplication().getType();
+
             if ("GUI".equalsIgnoreCase(applicationType) || "APK".equalsIgnoreCase(applicationType)) {
                 actual = webdriverService.getValueFromHTML(tCExecution.getSession(), identifier);
+
             } else if ("WS".equalsIgnoreCase(applicationType)) {
                 SOAPExecution lastSoapCalled = (SOAPExecution) tCExecution.getLastSOAPCalled().getItem();
                 String xmlResponse = SoapUtil.convertSoapMessageToString(lastSoapCalled.getSOAPResponse());
                 if (!xmlUnitService.isElementPresent(xmlResponse, path)) {
                     throw new NoSuchElementException("Unable to find element " + path);
                 }
-                actual = xmlUnitService.getFromXml(xmlResponse, null, path);
+                String newPath = StringUtil.addSuffixIfNotAlready(path, "/text()");
+                actual = xmlUnitService.getFromXml(xmlResponse, null, newPath);
+
             } else {
                 MessageEvent mes = new MessageEvent(MessageEventEnum.CONTROL_NOTEXECUTED_NOTSUPPORTED_FOR_APPLICATION);
                 mes.setDescription(mes.getDescription().replaceAll("%CONTROL%", "verifyTextNotInElement"));
                 mes.setDescription(mes.getDescription().replaceAll("%APPLICATIONTYPE%", tCExecution.getApplication().getType()));
                 return mes;
             }
+
         } catch (NoSuchElementException exception) {
             MessageEvent mes = new MessageEvent(MessageEventEnum.CONTROL_FAILED_TEXTNOTINELEMENT_NO_SUCH_ELEMENT);
             mes.setDescription(mes.getDescription().replaceAll("%ELEMENT%", path));
