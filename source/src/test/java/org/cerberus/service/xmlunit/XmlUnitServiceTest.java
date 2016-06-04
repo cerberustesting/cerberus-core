@@ -169,21 +169,21 @@ public class XmlUnitServiceTest {
     public void testGetFromXmlWithNullURLAndExistingElement() {
         String xmlResponse = "<root><a>1</a><a>2</a></root>";
 
-        Assert.assertEquals("2", xmlUnitService.getFromXml(xmlResponse, null, "/root/a[2]"));
+        Assert.assertEquals("2", xmlUnitService.getFromXml(xmlResponse, null, "/root/a[2]/text()"));
     }
 
     @Test
     public void testGetFromXmlWithNullURLAndExistingElementJustTheFirstOne() {
         String xmlResponse = "<root><a>1</a><a>2</a></root>";
 
-        Assert.assertEquals("1", xmlUnitService.getFromXml(xmlResponse, null, "/root/a"));
+        Assert.assertEquals("1", xmlUnitService.getFromXml(xmlResponse, null, "/root/a/text()"));
     }
 
     @Test
     public void testGetFromXmlWithNullURLAndExistingElementWithNamespace() {
         String xmlResponse = "<root xmlns:prefix=\"http://prefix\"><prefix:a>1</prefix:a><prefix:a>2</prefix:a></root>";
 
-        Assert.assertEquals("2", xmlUnitService.getFromXml(xmlResponse, null, "/root/prefix:a[2]"));
+        Assert.assertEquals("2", xmlUnitService.getFromXml(xmlResponse, null, "/root/prefix:a[2]/text()"));
     }
 
     @Test
