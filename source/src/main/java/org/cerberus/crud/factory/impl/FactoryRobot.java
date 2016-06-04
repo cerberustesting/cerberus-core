@@ -19,7 +19,10 @@
  */
 package org.cerberus.crud.factory.impl;
 
+import java.util.ArrayList;
+import java.util.List;
 import org.cerberus.crud.entity.Robot;
+import org.cerberus.crud.entity.RobotCapability;
 import org.cerberus.crud.factory.IFactoryRobot;
 import org.springframework.stereotype.Service;
 
@@ -32,6 +35,11 @@ public class FactoryRobot implements IFactoryRobot {
     @Override
     public Robot create(Integer robotID, String robot, String host, String port, String platform ,
     String browser, String version, String active, String description, String userAgent) {
+        return create(robotID, robot, host, port, platform, browser, version, active, description, userAgent, new ArrayList<RobotCapability>());
+    }
+
+    @Override
+    public Robot create(Integer robotID, String robot, String host, String port, String platform, String browser, String version, String active, String description, String userAgent, List<RobotCapability> capabilities) {
         Robot newRobot = new Robot();
         newRobot.setRobotID(robotID);
         newRobot.setRobot(robot);
@@ -43,8 +51,9 @@ public class FactoryRobot implements IFactoryRobot {
         newRobot.setActive(active);
         newRobot.setDescription(description);
         newRobot.setUserAgent(userAgent);
+        newRobot.setCapabilities(capabilities);
         return newRobot;
     }
 
-
+    
 }

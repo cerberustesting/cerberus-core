@@ -19,23 +19,30 @@
  */
 package org.cerberus.crud.entity;
 
+import java.util.List;
+
 /**
  *
  * @author bcivel
  */
 public class Robot {
 
-    Integer robotID;
-    String robot;
-    String host;
-    String port;
-    String platform;
-    String browser;
-    String version;
-    String active;
-    String description;
-    String userAgent;
-
+    private Integer robotID;
+    private String robot;
+    private String host;
+    private String port;
+    private String platform;
+    private String browser;
+    private String version;
+    private String active;
+    private String description;
+    private String userAgent;
+    
+    /**
+     * From here are data outside database model.
+     */
+    private List<RobotCapability> capabilities;
+    
     public String getUserAgent() {
         return userAgent;
     }
@@ -115,5 +122,13 @@ public class Robot {
     public void setVersion(String version) {
         this.version = version;
     }
+
+	public List<RobotCapability> getCapabilities() {
+		return capabilities;
+	}
+
+	public void setCapabilities(List<RobotCapability> capabilities) {
+		this.capabilities = capabilities;
+	}
 
 }

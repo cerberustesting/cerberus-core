@@ -20,16 +20,21 @@
 package org.cerberus.crud.service.impl;
 
 import java.util.List;
+
+import org.apache.log4j.Logger;
 import org.cerberus.crud.dao.IRobotDAO;
 import org.cerberus.crud.entity.MessageGeneral;
 import org.cerberus.crud.entity.Robot;
+import org.cerberus.crud.entity.RobotCapability;
+import org.cerberus.crud.service.IRobotCapabilityService;
+import org.cerberus.crud.service.IRobotService;
 import org.cerberus.enums.MessageEventEnum;
 import org.cerberus.enums.MessageGeneralEnum;
 import org.cerberus.exception.CerberusException;
-import org.cerberus.crud.service.IRobotService;
 import org.cerberus.util.answer.Answer;
 import org.cerberus.util.answer.AnswerItem;
 import org.cerberus.util.answer.AnswerList;
+import org.cerberus.util.answer.AnswerUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -40,58 +45,99 @@ import org.springframework.stereotype.Service;
 @Service
 public class RobotService implements IRobotService {
 
+    /**
+     * The associated {@link Logger} to this class
+     */
+    private static final Logger LOGGER = Logger.getLogger(RobotService.class);
+
     @Autowired
     private IRobotDAO robotDao;
 
+    @Autowired
+    private IRobotCapabilityService robotCapabilityService;
+
     @Override
-    public AnswerItem readByKeyTech(Integer robotid) {
-        return robotDao.readByKeyTech(robotid);
+    public AnswerItem<Robot> readByKeyTech(Integer robotid) {
+        return fillCapabilities(robotDao.readByKeyTech(robotid));
     }
 
     @Override
-    public AnswerItem readByKey(String robot) {
-        return robotDao.readByKey(robot);
+    public AnswerItem<Robot> readByKey(String robot) {
+        return fillCapabilities(robotDao.readByKey(robot));
     }
 
     @Override
-    public AnswerList readAll() {
+    public AnswerList<Robot> readAll() {
         return readByCriteria(0, 0, "robot", "asc", null, null);
     }
 
     @Override
-    public AnswerList readByCriteria(int startPosition, int length, String columnName, String sort, String searchParameter, String string) {
-        return robotDao.readByCriteria(startPosition, length, columnName, sort, searchParameter, string);
+    public AnswerList<Robot> readByCriteria(int startPosition, int length, String columnName, String sort,
+            String searchParameter, String string) {
+        return fillCapabilities(robotDao.readByCriteria(startPosition, length, columnName, sort, searchParameter, string));
     }
 
     @Override
     public Answer create(Robot robot) {
-        return robotDao.create(robot);
+        // First, create the robot
+        Answer finalAnswer = robotDao.create(robot);
+        if (!finalAnswer.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
+            return finalAnswer;
+        }
+
+        // Second, create its capabilities
+        for (RobotCapability capability : robot.getCapabilities()) {
+            Answer robotCapabilityAnswer = robotCapabilityService.create(capability);
+            // We try to create as many capabilities as possible, even if an error occurred.
+            AnswerUtil.agregateAnswer(finalAnswer, robotCapabilityAnswer);
+        }
+        return finalAnswer;
     }
 
     @Override
     public Answer delete(Robot robot) {
-        return robotDao.delete(robot);
+        // First, delete the robot
+        Answer finalAnswer = robotDao.delete(robot);
+        if (!finalAnswer.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
+            return finalAnswer;
+        }
+
+        // Second, delete its capabilities
+        AnswerUtil.agregateAnswer(finalAnswer, robotCapabilityService.delete(robot.getCapabilities()));
+        
+        // Finally return aggregated answer
+        return finalAnswer;
     }
 
     @Override
     public Answer update(Robot robot) {
-        return robotDao.update(robot);
+        // First, update the robot
+        Answer finalAnswer = robotDao.update(robot);
+        if (!finalAnswer.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
+            return finalAnswer;
+        }
+
+        // Second, update its capabilities
+        AnswerUtil.agregateAnswer(finalAnswer, robotCapabilityService.compareListAndUpdateInsertDeleteElements(robot.getRobot(), robot.getCapabilities()));
+
+        // Finally return aggregated answer
+        return finalAnswer;
     }
 
     @Override
-    public Robot convert(AnswerItem answerItem) throws CerberusException {
+    public Robot convert(AnswerItem<Robot> answerItem) throws CerberusException {
         if (answerItem.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
-            //if the service returns an OK message then we can get the item
-            return (Robot) answerItem.getItem();
+            // if the service returns an OK message then we can get the item
+            return answerItem.getItem();
         }
         throw new CerberusException(new MessageGeneral(MessageGeneralEnum.DATA_OPERATION_ERROR));
     }
 
     @Override
-    public List<Robot> convert(AnswerList answerList) throws CerberusException {
+    public List<Robot> convert(AnswerList<Robot> answerList) throws CerberusException {
         if (answerList.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
-            //if the service returns an OK message then we can get the item
-            return (List<Robot>) answerList.getDataList();
+            // if the service returns an OK message then we can get the item
+            return answerList.getDataList();
         }
         throw new CerberusException(new MessageGeneral(MessageGeneralEnum.DATA_OPERATION_ERROR));
     }
@@ -99,10 +145,35 @@ public class RobotService implements IRobotService {
     @Override
     public void convert(Answer answer) throws CerberusException {
         if (answer.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
-            //if the service returns an OK message then we can get the item
+            // if the service returns an OK message then we can get the item
             return;
         }
         throw new CerberusException(new MessageGeneral(MessageGeneralEnum.DATA_OPERATION_ERROR));
+    }
+
+    private AnswerItem<Robot> fillCapabilities(AnswerItem<Robot> robotItem) {
+        try {
+            Robot robot = convert(robotItem);
+            robot.setCapabilities(robotCapabilityService.convert(robotCapabilityService.readByRobot(robot.getRobot())));
+        } catch (CerberusException e) {
+            LOGGER.warn("Unable to flll robot capabilities due to " + e.getMessage());
+        }
+        return robotItem;
+    }
+
+    private AnswerList<Robot> fillCapabilities(AnswerList<Robot> robotList) {
+        try {
+            List<Robot> robots = convert(robotList);
+            if (robots != null) {
+                for (Robot robot : robots) {
+                    robot.setCapabilities(
+                            robotCapabilityService.convert(robotCapabilityService.readByRobot(robot.getRobot())));
+                }
+            }
+        } catch (CerberusException e) {
+            LOGGER.warn("Unable to fill robot capabilities due to " + e.getMessage());
+        }
+        return robotList;
     }
 
 }
