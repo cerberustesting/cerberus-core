@@ -5878,7 +5878,7 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLS = new StringBuilder();
         SQLS.append("DELETE FROM `robotcapability`;");
         SQLInstruction.add(SQLS.toString());
-
+        
         // Update testcaseexecution and testcasestepexecution to set default end to null.
         // Update last_modified timestamp default value
         //-- ------------------------ 785 - 794
@@ -5978,6 +5978,30 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLS = new StringBuilder();
         SQLS.append("UPDATE `testcase` ");
         SQLS.append("SET `TCDateCrea` =  '1970-01-01 01:01:01' WHERE `TCDateCrea` = '0000-00-00 00:00:00';");
+        SQLInstruction.add(SQLS.toString());
+        
+        // Add main robot capability invariants
+        //-- ------------------------ 807
+        SQLS = new StringBuilder();
+        SQLS.append("INSERT INTO `invariant` (`idname`, `value`, `sort`, `description`, `VeryShortDesc`) VALUES ");
+        SQLS.append("('INVARIANTPUBLIC', 'CAPABILITY', '500', 'Robot capabilities', ''), ");
+        SQLS.append("('CAPABILITY', 'automationName', '1', 'Automation name, e.g.: Appium)', ''), ");
+        SQLS.append("('CAPABILITY', 'deviceName', '2', 'Device name (useful for Appium)', ''), ");
+        SQLS.append("('CAPABILITY', 'app', '3', 'Application name (useful for Appium)', ''), ");
+        SQLS.append("('CAPABILITY', 'platformName', '4', 'Platform name (useful for Appium)', ''), ");
+        SQLS.append("('CAPABILITY', 'platformVersion', '5', 'Platform version (useful for Appium)', ''), ");
+        SQLS.append("('CAPABILITY', 'browserName', '6', 'Browser name (useful for Appium)', ''), ");
+        SQLS.append("('CAPABILITY', 'autoWebview', '7', 'If auto web view has to be enabled (useful for Appium, e.g.: true) ', '');");
+        SQLInstruction.add(SQLS.toString());
+        
+        // Add documentation on robot capability
+        //-- ------------------------ 808
+        SQLS = new StringBuilder();
+        SQLS.append("INSERT INTO `documentation` (`DocTable`, `DocField`, `DocValue`, `Lang`, `DocLabel`, `DocDesc`) VALUES ");
+        SQLS.append("('robot', 'capabilityCapability', '', 'fr', 'Capabilité', 'Nom de la capabilité.'), ");
+        SQLS.append("('robot', 'capabilityCapability', '', 'en', 'Capability', 'Capability name.'), ");
+        SQLS.append("('robot', 'capabilityValue', '', 'fr', 'Valeur', 'Valeur de la capabilité.'), ");
+        SQLS.append("('robot', 'capabilityValue', '', 'en', 'Value', 'Capability value.');");
         SQLInstruction.add(SQLS.toString());
 
         return SQLInstruction;

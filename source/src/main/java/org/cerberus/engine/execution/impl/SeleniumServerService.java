@@ -40,6 +40,7 @@ import org.apache.log4j.Level;
 import org.cerberus.crud.entity.Invariant;
 import org.cerberus.crud.entity.MessageGeneral;
 import org.cerberus.crud.entity.Parameter;
+import org.cerberus.crud.entity.RobotCapability;
 import org.cerberus.crud.entity.Selenium;
 import org.cerberus.crud.entity.Session;
 import org.cerberus.crud.entity.SessionCapabilities;
@@ -114,7 +115,17 @@ public class SeleniumServerService implements ISeleniumServerService {
             sc = new SessionCapabilities();
             sc.create("version", tCExecution.getVersion());
             capabilities.add(sc);
-
+            
+            // Add additional capabilities if necessary
+            List<RobotCapability> additionalCapabilities = tCExecution.getCapabilities();
+            if (additionalCapabilities != null) {
+            	for (RobotCapability additionalCapability : additionalCapabilities) {
+            		sc = new SessionCapabilities();
+            		sc.create(additionalCapability.getCapability(), additionalCapability.getValue());
+            		capabilities.add(sc);
+            	}
+            }
+            
             Session session = new Session();
             session.setDefaultWait(defaultWait);
             session.setHost(tCExecution.getSeleniumIP());
@@ -316,52 +327,89 @@ public class SeleniumServerService implements ISeleniumServerService {
 
     private DesiredCapabilities setCapabilities(TestCaseExecution tCExecution) throws CerberusException {
         DesiredCapabilities caps = new DesiredCapabilities();
+        
+        // First, add all capabilities from test case execution
         for (SessionCapabilities cap : tCExecution.getSession().getCapabilities()) {
-            if (!cap.getValue().equals("")) {
-                if (tCExecution.getApplication().getType().equalsIgnoreCase("GUI")) {
-                    if (cap.getCapability().equalsIgnoreCase("browser")) {
-                        caps = this.setCapabilityBrowser(caps, cap.getValue(), tCExecution);
-                    } else {
-                        caps.setCapability(cap.getCapability(), cap.getValue());
-                    }
-                    if (caps.getPlatform().is(Platform.ANDROID)) {
-                        caps = new DesiredCapabilities();
-                        caps.setCapability("deviceName", "Android");
-                        caps.setCapability("platformName", "Android");
-                        caps.setCapability(CapabilityType.PLATFORM, Platform.ANDROID);
-                        caps.setCapability("app", "Chrome");
-                        caps.setCapability("browserName", "");
-                        caps.setCapability("automationName", "Appium");
-                    }
-                }
+            // Only those with valid value
+            if (StringUtil.isNullOrEmpty(cap.getValue())) {
+                continue;
             }
-            if (tCExecution.getApplication().getType().equalsIgnoreCase("APK")) {
-                caps.setCapability(CapabilityType.BROWSER_NAME, "");
-                caps.setCapability("deviceName", "Android");
-                caps.setCapability("automationName", "Appium");
-                caps.setCapability("platformName", "Android");
-                caps.setCapability("autoWebview", true);
+            
+            // Special case if capability if the browser
+            if (tCExecution.getApplication().getType().equalsIgnoreCase("GUI") && cap.getCapability().equalsIgnoreCase("browser")) {
+                caps = this.setCapabilityBrowser(caps, cap.getValue(), tCExecution);
+                continue;
             }
-            if (tCExecution.getApplication().getType().equalsIgnoreCase("IPA")) {
-                caps.setCapability(CapabilityType.BROWSER_NAME, "");
-                caps.setCapability("deviceName", "iPhone 5s");
-                caps.setCapability("automationName", "Appium");
-                caps.setCapability("platformName", "iOS");
-                caps.setCapability("platformVersion", "9.1");
-                caps.setCapability("autoWebview", true);
-
-            }
-
+            
+            // Otherwise, add the capability as is
+            caps.setCapability(cap.getCapability(), cap.getValue());
         }
-        /**
-         * If android app, set app capability with the link where is stored the
-         * apk
-         */
+
+        // Second, if application is a mobile one, then set the "app" capability to the application binary path
         if (tCExecution.getApplication().getType().equalsIgnoreCase("APK")
                 || tCExecution.getApplication().getType().equalsIgnoreCase("IPA")) {
-            File app = new File(tCExecution.getCountryEnvironmentParameters().getIp());
+            // Set the app capability with the application path
             caps.setCapability("app", tCExecution.getCountryEnvironmentParameters().getIp());
         }
+
+        // Finally, be compliant with legacy code.
+        // FIXME: remove this code when initialization will be done
+        if (tCExecution.getApplication().getType().equalsIgnoreCase("GUI") && caps.getPlatform().is(Platform.ANDROID)) {
+            if (caps.getCapability("decviceName") == null) {
+                caps.setCapability("deviceName", "Android");
+            }
+            if (caps.getCapability("platformName") == null) {
+                caps.setCapability("platformName", "Android");
+            }
+            if (caps.getCapability("platform") == null) {
+                caps.setCapability("platform", Platform.ANDROID);
+            }
+            if (caps.getCapability("app") == null) {
+                caps.setCapability("app", "Chrome");
+            }
+            if (caps.getCapability("browserName") == null) {
+                caps.setCapability("browserName", "");
+            }
+            if (caps.getCapability("automationName") == null) {
+                caps.setCapability("automationName", "Appium");
+            }
+        } else if (tCExecution.getApplication().getType().equalsIgnoreCase("APK")) {
+            if (caps.getCapability("browserName") == null) {
+                caps.setCapability("browserName", "");
+            }
+            if (caps.getCapability("deviceName") == null) {
+                caps.setCapability("deviceName", "Android");
+            }
+            if (caps.getCapability("automationName") == null) {
+                caps.setCapability("automationName", "Appium");
+            }
+            if (caps.getCapability("platformName") == null) {
+                caps.setCapability("platformName", "Android");
+            }
+            if (caps.getCapability("autoWebview") == null) {
+                caps.setCapability("autoWebview", true);
+            }
+        } else if (tCExecution.getApplication().getType().equalsIgnoreCase("IPA")) {
+            if (caps.getCapability("browserName") == null) {
+                caps.setCapability("browserName", "");
+            }
+            if (caps.getCapability("deviceName") == null) {
+                caps.setCapability("deviceName", "iPhone 5s");
+            }
+            if (caps.getCapability("automationName") == null) {
+                caps.setCapability("automationName", "Appium");
+            }
+            if (caps.getCapability("platformName") == null) {
+                caps.setCapability("platformName", "iOS");
+            }
+            if (caps.getCapability("platformVersion") == null) {
+                caps.setCapability("platformVersion", "9.1");
+            }
+            if (caps.getCapability("autoWebview") == null) {
+                caps.setCapability("autoWebview", true);
+            }
+        }
+
         return caps;
     }
 

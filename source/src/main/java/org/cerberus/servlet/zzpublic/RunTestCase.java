@@ -25,6 +25,7 @@ import java.sql.Timestamp;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.List;
 import java.util.UUID;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -36,6 +37,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.cerberus.engine.entity.ExecutionUUID;
 import org.cerberus.crud.entity.MessageGeneral;
 import org.cerberus.crud.entity.Robot;
+import org.cerberus.crud.entity.RobotCapability;
 import org.cerberus.crud.entity.TCase;
 import org.cerberus.crud.entity.TestCaseCountry;
 import org.cerberus.crud.entity.TestCaseExecution;
@@ -131,6 +133,7 @@ public class RunTestCase extends HttpServlet {
         int getPageSource = 0;
         int getSeleniumLog = 0;
         String manualExecution = "";
+        List<RobotCapability> capabilities = null;
 
         //Test
         String test = ParameterParserUtil.parseStringParam(policy.sanitize(request.getParameter("Test")), "");
@@ -251,6 +254,7 @@ public class RunTestCase extends HttpServlet {
                 platform = ParameterParserUtil.parseStringParam(robObj.getPlatform(), platform);
                 active = robObj.getActive();
                 userAgent = robObj.getUserAgent();
+                capabilities = robObj.getCapabilities();
             } catch (CerberusException ex) {
                 out.println("Error - Robot [" + robot + "] does not exist.");
                 error = true;
@@ -294,7 +298,7 @@ public class RunTestCase extends HttpServlet {
                 ITestCaseExecutionService tces = appContext.getBean(ITestCaseExecutionService.class);
                 TCase tCase = factoryTCase.create(test, testCase);
 
-                TestCaseExecution tCExecution = factoryTCExecution.create(0, test, testCase, null, null, environment, country, browser, version, platform, "",
+                TestCaseExecution tCExecution = factoryTCExecution.create(0, test, testCase, null, null, environment, country, browser, version, platform, "", capabilities, 
                         0, 0, "", "", null, ss_ip, null, ss_p, tag, "N", verbose, screenshot, getPageSource, getSeleniumLog, synchroneous, timeout, outputFormat, null,
                         Infos.getInstance().getProjectNameAndVersion(), tCase, null, null, manualURL, myHost, myContextRoot, myLoginRelativeURL, myEnvData, ss_ip, ss_p,
                         null, new MessageGeneral(MessageGeneralEnum.EXECUTION_PE_TESTSTARTED), "Selenium", numberOfRetries, screenSize);
