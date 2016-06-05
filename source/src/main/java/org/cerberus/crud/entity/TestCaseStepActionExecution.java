@@ -266,26 +266,28 @@ public class TestCaseStepActionExecution {
     public JSONObject toJson() {
         JSONObject result = new JSONObject();
         try {
-            result.append("id", this.getId());
-            result.append("test", this.getTest());
-            result.append("testcase", this.getTestCase());
-            result.append("step", this.getStep());
-            result.append("sequence", this.getSequence());
-            result.append("action", this.getAction());
-            result.append("object", this.getObject());
-            result.append("property", this.getProperty());
-            result.append("start", this.getStart());
-            result.append("end", this.getEndLong());
-            result.append("startlong", this.getStartLong());
-            result.append("endlong", this.getEnd());
-            result.append("screenshotFilename", this.getScreenshotFilename());
-            result.append("pageSourceFilename", this.getPageSourceFilename());
-            result.append("description", this.getDescription());
+            result.put("id", this.getId());
+            result.put("test", this.getTest());
+            result.put("testcase", this.getTestCase());
+            result.put("step", this.getStep());
+            result.put("sequence", this.getSequence());
+            result.put("action", this.getAction());
+            result.put("object", this.getObject());
+            result.put("property", this.getProperty());
+            result.put("start", this.getStart());
+            result.put("end", this.getEndLong());
+            result.put("startlong", this.getStartLong());
+            result.put("endlong", this.getEnd());
+            result.put("screenshotFilename", this.getScreenshotFilename());
+            result.put("pageSourceFilename", this.getPageSourceFilename());
+            result.put("description", this.getDescription());
+            result.put("returnCode", this.getReturnCode());
+            result.put("returnMessage", this.getReturnMessage());
             JSONArray array = new JSONArray();
             for (Object testCaseStepActionControlExecution : this.getTestCaseStepActionControlExecutionList().getDataList()) {
                 array.put(((TestCaseStepActionControlExecution)testCaseStepActionControlExecution).toJson());
             }
-            result.append("testCaseStepActionControlExecutionList", array);
+            result.put("testCaseStepActionControlExecutionList", array);
         } catch (JSONException ex) {
             Logger.getLogger(TestCaseStepActionExecution.class.getName()).log(Level.SEVERE, null, ex);
         }
