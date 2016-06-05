@@ -21,8 +21,8 @@
 #
 # How to run:
 #   - $ git clone https://github.com/cerberustesting/cerberus-docker.git
-#   - $ cd cerberus-docker/compositions
-#   - $ docker-compose -f ./cerberus-glassfish-mysql-compose.yml up
+#   - $ cd cerberus-docker/compositions/cerberus-glassfish-mysql
+#   - $ docker-compose up
 #   - Waiting for images startup
 #   - Open your favorite browser and go to <docker_host>:18080/Cerberus, where <docker_host> is your Docker host
 #
@@ -45,7 +45,7 @@ services:
     ports:
       - "13306:3306"
     volumes:
-      - ../localdata/mysql-db:/var/lib/mysql
+      - ./localdata/mysql-db:/var/lib/mysql
   cerberus-as-glassfish:
     image: cerberustesting/cerberus-as-glassfish:latest
     environment:
@@ -55,7 +55,7 @@ services:
       - "18080:8080"
       - "14848:4848"
     volumes:
-      - ../localdata/screenshots:/opt/cerberus-screenshots
+      - ./localdata/screenshots:/opt/cerberus-screenshots
     depends_on:
       - cerberus-db-mysql
     links:
