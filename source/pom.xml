@@ -43,6 +43,7 @@
         <gson.version>2.3.1</gson.version>
         <jsonxpath.version>1.2.0</jsonxpath.version>
         <poi.version>3.13</poi.version>
+        <appium.version>3.4.1</appium.version>
         
         <!-- Maven plugin version -->
         <maven-compiler-plugin.version>2.3.2</maven-compiler-plugin.version>
@@ -129,7 +130,7 @@
         <dependency>
             <groupId>io.appium</groupId>
             <artifactId>java-client</artifactId>
-            <version>1.6.1</version>
+            <version>${appium.version}</version>
             <exclusions>
                 <exclusion>
                     <groupId>asm</groupId>

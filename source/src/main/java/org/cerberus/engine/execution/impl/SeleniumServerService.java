@@ -20,6 +20,8 @@
 package org.cerberus.engine.execution.impl;
 
 import io.appium.java_client.AppiumDriver;
+import io.appium.java_client.android.AndroidDriver;
+import io.appium.java_client.ios.IOSDriver;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -150,16 +152,16 @@ public class SeleniumServerService implements ISeleniumServerService {
             if (tCExecution.getApplication().getType().equalsIgnoreCase("GUI")) {
                 if (caps.getPlatform().is(Platform.ANDROID)) {
 
-                    appiumDriver = new AppiumDriver(new URL("http://" + tCExecution.getSession().getHost() + ":" + tCExecution.getSession().getPort() + "/wd/hub"), caps);
+                    appiumDriver = new AndroidDriver(new URL("http://" + tCExecution.getSession().getHost() + ":" + tCExecution.getSession().getPort() + "/wd/hub"), caps);
                     driver = (WebDriver) appiumDriver;
                 } else {
                     driver = new RemoteWebDriver(new URL("http://" + tCExecution.getSession().getHost() + ":" + tCExecution.getSession().getPort() + "/wd/hub"), caps);
                 }
             } else if (tCExecution.getApplication().getType().equalsIgnoreCase("APK")) {
-                appiumDriver = new AppiumDriver(new URL("http://" + tCExecution.getSession().getHost() + ":" + tCExecution.getSession().getPort() + "/wd/hub"), caps);
+                appiumDriver = new AndroidDriver(new URL("http://" + tCExecution.getSession().getHost() + ":" + tCExecution.getSession().getPort() + "/wd/hub"), caps);
                 driver = (WebDriver) appiumDriver;
             } else if (tCExecution.getApplication().getType().equalsIgnoreCase("IPA")) {
-                appiumDriver = new AppiumDriver(new URL("http://" + tCExecution.getSession().getHost() + ":" + tCExecution.getSession().getPort() + "/wd/hub"), caps);
+                appiumDriver = new IOSDriver(new URL("http://" + tCExecution.getSession().getHost() + ":" + tCExecution.getSession().getPort() + "/wd/hub"), caps);
                 driver = (WebDriver) appiumDriver;
             }
 
