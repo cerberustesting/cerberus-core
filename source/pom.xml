@@ -44,6 +44,7 @@
         <jsonxpath.version>1.2.0</jsonxpath.version>
         <poi.version>3.13</poi.version>
         <appium.version>3.4.1</appium.version>
+        <java-persistence.version>2.0.5</java-persistence.version>
         
         <!-- Maven plugin version -->
         <maven-compiler-plugin.version>2.3.2</maven-compiler-plugin.version>
@@ -144,7 +145,16 @@
                     <groupId>cglib</groupId>
                     <artifactId>cglib</artifactId>
                 </exclusion>
+                <exclusion>
+                    <groupId>org.eclipse.persistence</groupId>
+                    <artifactId>javax.persistence</artifactId>
+                </exclusion>
             </exclusions> 
+        </dependency>
+        <dependency>
+            <groupId>org.eclipse.persistence</groupId>
+            <artifactId>javax.persistence</artifactId>
+            <version>${java-persistence.version}</version>
         </dependency>
         <dependency>
             <groupId>org.seleniumhq.selenium</groupId>
