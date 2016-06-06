@@ -16,14 +16,14 @@
         <spring.version>3.1.1.RELEASE</spring.version>
         <harlib.version>1.1.1</harlib.version>
         <eclipselink.version>2.3.2</eclipselink.version>
-        <javax.persistence.version>2.0.3</javax.persistence.version>
+        <javax.persistence.version>2.0.5</javax.persistence.version>
         <org.eclipse.persistence.jpa.modelgen.processor.version>2.3.2</org.eclipse.persistence.jpa.modelgen.processor.version>
         <commons-email.version>1.2</commons-email.version>
         <javaee-web-api>6.0</javaee-web-api>
         <junit.version>4.9</junit.version>
         <mysql-connector-java.version>5.1.20</mysql-connector-java.version>
         <json.version>20080701</json.version>
-        <selenium.version>2.44.0</selenium.version>
+        <selenium.version>2.53.0</selenium.version>
         <owasp-java-html-sanitizer.version>r223</owasp-java-html-sanitizer.version>
         <log4j.version>1.2.9</log4j.version>
         <jackson-core-asl.version>1.7.1</jackson-core-asl.version>
@@ -150,12 +150,6 @@
             <groupId>org.seleniumhq.selenium</groupId>
             <artifactId>selenium-java</artifactId>
             <version>${selenium.version}</version>   
-            <exclusions>
-                <exclusion>
-                    <groupId>org.seleniumhq.selenium</groupId>
-                    <artifactId>selenium-firefox-driver</artifactId>
-                </exclusion>
-            </exclusions>             
         </dependency>
         <dependency>
             <groupId>org.seleniumhq.selenium</groupId>
@@ -310,13 +304,6 @@
             <version>${elfinder-servlet.version}</version>
             <scope>system</scope>
             <systemPath>${basedir}/src/main/webapp/WEB-INF/lib/elfinder-servlet-${elfinder-servlet.version}.jar</systemPath>
-        </dependency>
-        <dependency>
-            <groupId>org.seleniumhq.selenium</groupId>
-            <artifactId>selenium-firefox-driver</artifactId>
-            <version>${selenium.version}</version>
-            <scope>system</scope>
-            <systemPath>${basedir}/src/main/webapp/WEB-INF/lib/selenium-firefox-driver-${selenium.version}.jar</systemPath>
         </dependency>
     </dependencies>
     <dependencyManagement>
