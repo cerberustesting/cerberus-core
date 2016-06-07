@@ -80,12 +80,12 @@ public class TestCaseStepActionExecutionDAO implements ITestCaseStepActionExecut
                 if (testCaseStepActionExecution.getStart() != 0) {
                     preStat.setTimestamp(4, new Timestamp(testCaseStepActionExecution.getStart()));
                 } else {
-                    preStat.setString(4, "1970-01-01 00:00:00");
+                    preStat.setString(4, "1970-01-01 01:01:01");
                 }
                 if (testCaseStepActionExecution.getEnd() != 0) {
                     preStat.setTimestamp(5, new Timestamp(testCaseStepActionExecution.getEnd()));
                 } else {
-                    preStat.setString(5, "1970-01-01 00:00:00");
+                    preStat.setString(5, "1970-01-01 01:01:01");
                 }
                 DateFormat df = new SimpleDateFormat(DateUtil.DATE_FORMAT_TIMESTAMP);
                 preStat.setString(6, df.format(testCaseStepActionExecution.getStart()));
@@ -140,12 +140,12 @@ public class TestCaseStepActionExecutionDAO implements ITestCaseStepActionExecut
                 if (testCaseStepActionExecution.getStart() != 0) {
                     preStat.setTimestamp(7, new Timestamp(testCaseStepActionExecution.getStart()));
                 } else {
-                    preStat.setString(7, "1970-01-01 00:00:00");
+                    preStat.setString(7, "1970-01-01 01:01:01");
                 }
                 if (testCaseStepActionExecution.getEnd() != 0) {
                     preStat.setTimestamp(8, new Timestamp(testCaseStepActionExecution.getEnd()));
                 } else {
-                    preStat.setString(8, "1970-01-01 00:00:00");
+                    preStat.setString(8, "1970-01-01 01:01:01");
                 }
                 DateFormat df = new SimpleDateFormat(DateUtil.DATE_FORMAT_TIMESTAMP);
                 preStat.setString(9, df.format(testCaseStepActionExecution.getStart()));
