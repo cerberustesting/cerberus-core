@@ -188,9 +188,10 @@ public class TestCaseExecutionDataDAO implements ITestCaseExecutionDataDAO {
     @Override
     public List<String> getPastValuesOfProperty(long id, String propName, String test, String testCase, String build, String environment, String country) {
         List<String> list = null;
-        final String query = "SELECT distinct `VALUE` FROM testcaseexecutiondata WHERE Property = ? AND ID IN "
-                + "(SELECT id FROM testcaseexecution WHERE test = ? AND testcase = ? AND build = ? AND environment = ? AND country = ? AND id <> ?) "
-                + "ORDER BY ID DESC";
+        final String query = "SELECT distinct exd.`VALUE` FROM testcaseexecution exe "
+                + "JOIN testcaseexecutiondata exd ON exd.Property = ? and exd.ID = exe.ID "
+                + "WHERE exe.test = ? AND exe.testcase = ? AND exe.build = ? AND exe.environment = ? "
+                + "AND exe.country = ? AND exe.id <> ? ;";
 
         // Debug message on SQL.
         if (LOG.isDebugEnabled()) {
@@ -250,10 +251,10 @@ public class TestCaseExecutionDataDAO implements ITestCaseExecutionDataDAO {
     @Override
     public List<String> getInUseValuesOfProperty(long id, String propName, String environment, String country, Integer timeoutInSecond) {
         List<String> list = null;
-        final String query = "SELECT distinct `VALUE` FROM testcaseexecutiondata WHERE Property = ? AND ID IN "
-                + "(SELECT id FROM testcaseexecution WHERE environment = ? AND country = ? AND ControlSTATUS = 'PE' "
-                + " AND TO_SECONDS(NOW()) - TO_SECONDS(start) < ? AND ID <> ? "
-                + ")";
+        final String query = "SELECT distinct exd.`VALUE` FROM testcaseexecution exe "
+                + "JOIN testcaseexecutiondata exd ON exd.Property = ? and exd.ID = exe.ID "
+                + "WHERE exe.environment = ? AND exe.country = ? AND exe.ControlSTATUS = 'PE' "
+                + "AND TO_SECONDS(NOW()) - TO_SECONDS(exe.start) < ? AND exe.ID <> ? ;";
 
         // Debug message on SQL.
         if (LOG.isDebugEnabled()) {

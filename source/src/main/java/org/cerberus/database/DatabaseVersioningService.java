@@ -6002,6 +6002,22 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLS.append("('robot', 'capabilityValue', '', 'en', 'Value', 'Capability value.');");
         SQLInstruction.add(SQLS.toString());
 
+        // Correct property to add the /text() in xpath.
+        //-- ------------------------ 809
+        SQLS = new StringBuilder();
+        SQLS.append("UPDATE testcasecountryproperties SET value2 = concat(value2, '/text()')");
+        SQLS.append(" WHERE `type` = 'getFromXML' and value2 not like '%ext()';    ");    
+        SQLInstruction.add(SQLS.toString());
+
+        // Adding missing index in order to support RANDOMNEW and NOTINUSE
+        //-- ------------------------ 810
+        SQLS = new StringBuilder();
+        SQLS.append("ALTER TABLE `testcaseexecution` ");
+        SQLS.append(" ADD INDEX `IX_testcaseexecution_09` (`Country` ASC, `Environment` ASC, `ControlStatus` ASC), "); // Used for NOTINUSE   
+        SQLS.append(" ADD INDEX `IX_testcaseexecution_10` (`Test` ASC, `TestCase` ASC, `Environment` ASC, `Country` ASC, `Build` ASC) ;"); // Used for RANDOMNEW
+        SQLInstruction.add(SQLS.toString());
+        
+        
         return SQLInstruction;
     }
 
