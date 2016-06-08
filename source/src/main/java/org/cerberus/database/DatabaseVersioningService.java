@@ -6019,7 +6019,14 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLS.append(" ADD INDEX `IX_testcaseexecution_10` (`Test` ASC, `TestCase` ASC, `Environment` ASC, `Country` ASC, `Build` ASC) ;"); // Used for RANDOMNEW
         SQLInstruction.add(SQLS.toString());
         
-        
+        // Adding Soap URL on database table
+        //-- ------------------------ 811
+        SQLS = new StringBuilder();
+        SQLS.append("ALTER TABLE `countryenvironmentdatabase` "); 
+        SQLS.append("ADD COLUMN `SoapUrl` VARCHAR(200) NOT NULL DEFAULT ''  AFTER `ConnectionPoolName`;"); 
+        SQLInstruction.add(SQLS.toString());
+
+
         return SQLInstruction;
     }
 
