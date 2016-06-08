@@ -86,12 +86,12 @@ public class TestCaseStepActionControlExecutionDAO implements ITestCaseStepActio
                 if (testCaseStepActionControlExecution.getStart() != 0) {
                     preStat.setTimestamp(10, new Timestamp(testCaseStepActionControlExecution.getStart()));
                 } else {
-                    preStat.setString(10, "1970-01-01 00:00:00");
+                    preStat.setString(10, "1970-01-01 01:01:01");
                 }
                 if (testCaseStepActionControlExecution.getEnd() != 0) {
                     preStat.setTimestamp(11, new Timestamp(testCaseStepActionControlExecution.getEnd()));
                 } else {
-                    preStat.setString(11, "1970-01-01 00:00:00");
+                    preStat.setString(11, "1970-01-01 01:01:01");
                 }
                 DateFormat df = new SimpleDateFormat(DateUtil.DATE_FORMAT_TIMESTAMP);
                 preStat.setString(12, df.format(testCaseStepActionControlExecution.getStart()));

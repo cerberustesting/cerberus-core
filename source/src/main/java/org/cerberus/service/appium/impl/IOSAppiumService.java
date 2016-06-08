@@ -19,7 +19,8 @@
  */
 package org.cerberus.service.appium.impl;
 
-import io.appium.java_client.IOSKeyCode;
+import io.appium.java_client.ios.IOSDriver;
+import io.appium.java_client.ios.IOSKeyCode;
 import org.apache.log4j.Logger;
 import org.cerberus.crud.entity.MessageEvent;
 import org.cerberus.crud.entity.Session;
@@ -46,7 +47,7 @@ public class IOSAppiumService extends AppiumService {
             KeyCode.valueOf(keyName);
 
             // Do the keyPress for the ENTER or SEARCH key
-            session.getAppiumDriver().getKeyboard().sendKeys("\n");
+            ((IOSDriver) session.getAppiumDriver()).getKeyboard().sendKeys("\n");
 
             // Finally return success
             return new MessageEvent(MessageEventEnum.ACTION_SUCCESS_KEYPRESS_NO_ELEMENT).resolveDescription("KEY", keyName);

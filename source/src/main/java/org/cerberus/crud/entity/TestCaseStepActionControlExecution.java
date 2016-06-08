@@ -246,23 +246,25 @@ public class TestCaseStepActionControlExecution {
     public JSONObject toJson() {
         JSONObject result = new JSONObject();
         try {
-            result.append("id", this.getId());
-            result.append("test", this.getTest());
-            result.append("testcase", this.getTestCase());
-            result.append("step", this.getStep());
-            result.append("sequence", this.getSequence());
-            result.append("control", this.getControl());
-            result.append("controlType", this.getControlType());
-            result.append("controlProperty", this.getControlProperty());
-            result.append("controlValue", this.getControlValue());
-            result.append("fatal", this.getFatal());
-            result.append("start", this.getStart());
-            result.append("end", this.getEndLong());
-            result.append("startlong", this.getStartLong());
-            result.append("endlong", this.getEnd());
-            result.append("screenshotFilename", this.getScreenshotFilename());
-            result.append("pageSourceFilename", this.getPageSourceFilename());
-            result.append("description", this.getDescription());
+            result.put("id", this.getId());
+            result.put("test", this.getTest());
+            result.put("testcase", this.getTestCase());
+            result.put("step", this.getStep());
+            result.put("sequence", this.getSequence());
+            result.put("control", this.getControl());
+            result.put("controlType", this.getControlType());
+            result.put("controlProperty", this.getControlProperty());
+            result.put("controlValue", this.getControlValue());
+            result.put("fatal", this.getFatal());
+            result.put("start", this.getStart());
+            result.put("end", this.getEndLong());
+            result.put("startlong", this.getStartLong());
+            result.put("endlong", this.getEnd());
+            result.put("screenshotFilename", this.getScreenshotFilename());
+            result.put("pageSourceFilename", this.getPageSourceFilename());
+            result.put("description", this.getDescription());
+            result.put("returnCode", this.getReturnCode());
+            result.put("returnMessage", this.getReturnMessage());
         } catch (JSONException ex) {
             Logger.getLogger(TestCaseStepExecution.class.getName()).log(Level.SEVERE, null, ex);
         }

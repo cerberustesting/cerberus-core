@@ -19,7 +19,8 @@
  */
 package org.cerberus.service.appium.impl;
 
-import io.appium.java_client.AndroidKeyCode;
+import io.appium.java_client.android.AndroidKeyCode;
+import io.appium.java_client.android.AndroidDriver;
 import org.apache.log4j.Logger;
 import org.cerberus.crud.entity.MessageEvent;
 import org.cerberus.crud.entity.Session;
@@ -42,7 +43,7 @@ public class AndroidAppiumService extends AppiumService {
     @Override
     public MessageEvent keyPress(Session session, String keyName) {
         try {
-            session.getAppiumDriver().sendKeyEvent(KeyCode.valueOf(keyName).getCode());
+            ((AndroidDriver) session.getAppiumDriver()).pressKeyCode(KeyCode.valueOf(keyName).getCode());
             return new MessageEvent(MessageEventEnum.ACTION_SUCCESS_KEYPRESS_NO_ELEMENT).resolveDescription("KEY", keyName);
         } catch (Exception e) {
             LOGGER.warn("Unable to key press due to " + e.getMessage(), e);
@@ -55,7 +56,7 @@ public class AndroidAppiumService extends AppiumService {
     @Override
     public MessageEvent hideKeyboard(Session session) {
         try {
-            session.getAppiumDriver().hideKeyboard();
+            ((AndroidDriver) session.getAppiumDriver()).hideKeyboard();
             return new MessageEvent(MessageEventEnum.ACTION_SUCCESS_HIDEKEYBOARD);
         } catch (Exception e) {
             LOGGER.warn("Unable to hide keyboard due to " + e.getMessage(), e);

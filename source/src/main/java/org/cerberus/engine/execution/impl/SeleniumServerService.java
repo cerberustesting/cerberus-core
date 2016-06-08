@@ -20,6 +20,8 @@
 package org.cerberus.engine.execution.impl;
 
 import io.appium.java_client.AppiumDriver;
+import io.appium.java_client.android.AndroidDriver;
+import io.appium.java_client.ios.IOSDriver;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -101,7 +103,7 @@ public class SeleniumServerService implements ISeleniumServerService {
                 defaultWait = Long.parseLong(to);
             } catch (CerberusException ex) {
                 //MyLogger.log(RunTestCase.class.getName(), Level.WARN, "Parameter (selenium_defaultWait) not in Parameter table, default wait set to 90 seconds");
-                LOG.warn("Parameter (selenium_defaultWait) not in Parameter table, default wait set to 90 seconds. "+ ex.toString());
+                LOG.warn("Parameter (selenium_defaultWait) not in Parameter table, default wait set to 90 seconds. " + ex.toString());
                 defaultWait = 90;
             }
             LOG.debug("TimeOut defined on session : " + defaultWait);
@@ -115,17 +117,17 @@ public class SeleniumServerService implements ISeleniumServerService {
             sc = new SessionCapabilities();
             sc.create("version", tCExecution.getVersion());
             capabilities.add(sc);
-            
+
             // Add additional capabilities if necessary
             List<RobotCapability> additionalCapabilities = tCExecution.getCapabilities();
             if (additionalCapabilities != null) {
-            	for (RobotCapability additionalCapability : additionalCapabilities) {
-            		sc = new SessionCapabilities();
-            		sc.create(additionalCapability.getCapability(), additionalCapability.getValue());
-            		capabilities.add(sc);
-            	}
+                for (RobotCapability additionalCapability : additionalCapabilities) {
+                    sc = new SessionCapabilities();
+                    sc.create(additionalCapability.getCapability(), additionalCapability.getValue());
+                    capabilities.add(sc);
+                }
             }
-            
+
             Session session = new Session();
             session.setDefaultWait(defaultWait);
             session.setHost(tCExecution.getSeleniumIP());
@@ -149,23 +151,26 @@ public class SeleniumServerService implements ISeleniumServerService {
             AppiumDriver appiumDriver = null;
             if (tCExecution.getApplication().getType().equalsIgnoreCase("GUI")) {
                 if (caps.getPlatform().is(Platform.ANDROID)) {
-
-                    appiumDriver = new AppiumDriver(new URL("http://" + tCExecution.getSession().getHost() + ":" + tCExecution.getSession().getPort() + "/wd/hub"), caps);
+                    appiumDriver = new AndroidDriver(new URL("http://" + tCExecution.getSession().getHost() + ":" + tCExecution.getSession().getPort() + "/wd/hub"), caps);
+                    driver = (WebDriver) appiumDriver;
+                } else if (caps.getPlatform().is(Platform.MAC)) {
+                    appiumDriver = new IOSDriver(new URL("http://" + tCExecution.getSession().getHost() + ":" + tCExecution.getSession().getPort() + "/wd/hub"), caps);
                     driver = (WebDriver) appiumDriver;
                 } else {
                     driver = new RemoteWebDriver(new URL("http://" + tCExecution.getSession().getHost() + ":" + tCExecution.getSession().getPort() + "/wd/hub"), caps);
                 }
             } else if (tCExecution.getApplication().getType().equalsIgnoreCase("APK")) {
-                appiumDriver = new AppiumDriver(new URL("http://" + tCExecution.getSession().getHost() + ":" + tCExecution.getSession().getPort() + "/wd/hub"), caps);
+                appiumDriver = new AndroidDriver(new URL("http://" + tCExecution.getSession().getHost() + ":" + tCExecution.getSession().getPort() + "/wd/hub"), caps);
                 driver = (WebDriver) appiumDriver;
             } else if (tCExecution.getApplication().getType().equalsIgnoreCase("IPA")) {
-                appiumDriver = new AppiumDriver(new URL("http://" + tCExecution.getSession().getHost() + ":" + tCExecution.getSession().getPort() + "/wd/hub"), caps);
+                appiumDriver = new IOSDriver(new URL("http://" + tCExecution.getSession().getHost() + ":" + tCExecution.getSession().getPort() + "/wd/hub"), caps);
                 driver = (WebDriver) appiumDriver;
             }
 
             /**
-             * Defining the timeout at the driver level.
-             * Only in case of not Appium Driver (see https://github.com/vertigo17/Cerberus/issues/754)
+             * Defining the timeout at the driver level. Only in case of not
+             * Appium Driver (see
+             * https://github.com/vertigo17/Cerberus/issues/754)
              */
             if (driver != null && appiumDriver == null) {
                 driver.manage().timeouts().pageLoadTimeout(tCExecution.getSession().getDefaultWait(), TimeUnit.SECONDS);
@@ -327,20 +332,20 @@ public class SeleniumServerService implements ISeleniumServerService {
 
     private DesiredCapabilities setCapabilities(TestCaseExecution tCExecution) throws CerberusException {
         DesiredCapabilities caps = new DesiredCapabilities();
-        
+
         // First, add all capabilities from test case execution
         for (SessionCapabilities cap : tCExecution.getSession().getCapabilities()) {
             // Only those with valid value
             if (StringUtil.isNullOrEmpty(cap.getValue())) {
                 continue;
             }
-            
+
             // Special case if capability if the browser
             if (tCExecution.getApplication().getType().equalsIgnoreCase("GUI") && cap.getCapability().equalsIgnoreCase("browser")) {
                 caps = this.setCapabilityBrowser(caps, cap.getValue(), tCExecution);
                 continue;
             }
-            
+
             // Otherwise, add the capability as is
             caps.setCapability(cap.getCapability(), cap.getValue());
         }

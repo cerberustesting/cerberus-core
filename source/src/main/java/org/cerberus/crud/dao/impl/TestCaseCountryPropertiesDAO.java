@@ -194,11 +194,11 @@ public class TestCaseCountryPropertiesDAO implements ITestCaseCountryPropertiesD
             try {
                 preStat.setString(1, testCaseCountryProperties.getTest());
                 preStat.setString(2, testCaseCountryProperties.getTestCase());
-                preStat.setString(3, testCaseCountryProperties.getProperty());
+                preStat.setNString(3, testCaseCountryProperties.getProperty());
                 preStat.setString(4, testCaseCountryProperties.getType());
                 preStat.setString(5, testCaseCountryProperties.getDatabase());
-                preStat.setString(6, testCaseCountryProperties.getValue1());
-                preStat.setString(7, testCaseCountryProperties.getValue2());
+                preStat.setNString(6, testCaseCountryProperties.getValue1());
+                preStat.setNString(7, testCaseCountryProperties.getValue2());
                 preStat.setString(8, String.valueOf(testCaseCountryProperties.getLength()));
                 preStat.setString(9, String.valueOf(testCaseCountryProperties.getRowLimit()));
                 preStat.setString(10, testCaseCountryProperties.getNature());
@@ -302,7 +302,7 @@ public class TestCaseCountryPropertiesDAO implements ITestCaseCountryPropertiesD
                 preStat.setString(1, test);
                 preStat.setString(2, testcase);
                 preStat.setString(3, country);
-                preStat.setString(4, property);
+                preStat.setNString(4, property);
 
                 ResultSet resultSet = preStat.executeQuery();
                 try {
@@ -360,11 +360,11 @@ public class TestCaseCountryPropertiesDAO implements ITestCaseCountryPropertiesD
                 preStat.setString(1, testCaseCountryProperties.getTest());
                 preStat.setString(2, testCaseCountryProperties.getTestCase());
                 preStat.setString(3, testCaseCountryProperties.getCountry());
-                preStat.setString(4, testCaseCountryProperties.getProperty());
+                preStat.setNString(4, testCaseCountryProperties.getProperty());
                 preStat.setString(5, testCaseCountryProperties.getType());
                 preStat.setString(6, testCaseCountryProperties.getDatabase());
-                preStat.setString(7, testCaseCountryProperties.getValue1());
-                preStat.setString(8, testCaseCountryProperties.getValue2());
+                preStat.setNString(7, testCaseCountryProperties.getValue1());
+                preStat.setNString(8, testCaseCountryProperties.getValue2());
                 preStat.setInt(9, testCaseCountryProperties.getLength());
                 preStat.setInt(10, testCaseCountryProperties.getRowLimit());
                 preStat.setString(11, testCaseCountryProperties.getNature());
@@ -407,15 +407,15 @@ public class TestCaseCountryPropertiesDAO implements ITestCaseCountryPropertiesD
             try {
                 preStat.setString(1, testCaseCountryProperties.getType());
                 preStat.setString(2, testCaseCountryProperties.getDatabase());
-                preStat.setString(3, testCaseCountryProperties.getValue1());
-                preStat.setString(4, testCaseCountryProperties.getValue2());
+                preStat.setNString(3, testCaseCountryProperties.getValue1());
+                preStat.setNString(4, testCaseCountryProperties.getValue2());
                 preStat.setInt(5, testCaseCountryProperties.getLength());
                 preStat.setInt(6, testCaseCountryProperties.getRowLimit());
                 preStat.setString(7, testCaseCountryProperties.getNature());
                 preStat.setString(8, testCaseCountryProperties.getTest());
                 preStat.setString(9, testCaseCountryProperties.getTestCase());
                 preStat.setString(10, testCaseCountryProperties.getCountry());
-                preStat.setString(11, testCaseCountryProperties.getProperty());
+                preStat.setNString(11, testCaseCountryProperties.getProperty());
 
                 preStat.executeUpdate();
                 throwExcep = false;
@@ -453,7 +453,7 @@ public class TestCaseCountryPropertiesDAO implements ITestCaseCountryPropertiesD
             try {
                 preStat.setString(1, test);
                 preStat.setString(2, testcase);
-                preStat.setString(3, property);
+                preStat.setNString(3, property);
 
                 ResultSet resultSet = preStat.executeQuery();
                 try {
@@ -504,7 +504,7 @@ public class TestCaseCountryPropertiesDAO implements ITestCaseCountryPropertiesD
                 preStat.setString(1, tccp.getTest());
                 preStat.setString(2, tccp.getTestCase());
                 preStat.setString(3, tccp.getCountry());
-                preStat.setString(4, tccp.getProperty());
+                preStat.setNString(4, tccp.getProperty());
 
                 throwExcep = preStat.executeUpdate() == 0;
             } catch (SQLException exception) {
