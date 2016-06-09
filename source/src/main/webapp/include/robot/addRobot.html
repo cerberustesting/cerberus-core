@@ -20,54 +20,83 @@
                                 </button>
                             </div>
                         </div>
-                        <div class="row">
-                            <div class="form-group col-xs-9">
-                                <label for="robot" name="robotField">Robot</label>
-                                <input type="text" class="form-control" name="robot" id="robot" aria-describedby="basic-addon1" maxlength="50">
+                        <!-- tabs definition-->
+                        <ul id="tabsAdd" class="nav nav-tabs" data-tabs="tabs">
+                            <li class="active"><a data-toggle="tab" href="#tabsAdd-1" id="addTab1Text" name="tabDefinition">Definition</a></li>
+                            <li><a data-toggle="tab" href="#tabsAdd-2" id="addTab2Text" name="tabCapabilities">Capabilities</a></li>
+                        </ul>
+                        <div class="tab-content">
+                            <div class="center marginTop25 tab-pane fade in active" id="tabsAdd-1">
+                                <div class="row">
+                                    <div class="form-group col-xs-9">
+                                        <label for="robot" name="robotField">Robot</label>
+                                        <input type="text" class="form-control" name="robot" id="robot" aria-describedby="basic-addon1" maxlength="50">
+                                    </div>
+                                    <div class="form-group col-xs-3">
+                                        <label for="active" name="activeField">Active</label>
+                                        <select class="form-control"  id="active" name="active">
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="form-group col-xs-9">
+                                        <label for="host" name="hostField">Host</label>
+                                        <input type="text" class="form-control" name="host" id="host" aria-describedby="basic-addon1" maxlength="150">
+                                    </div>
+                                    <div class="form-group col-xs-3">
+                                        <label for="port" name="portField">Port</label>
+                                        <input type="text" class="form-control" name="port" id="port" aria-describedby="basic-addon1" maxlength="20">
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="form-group col-xs-6">
+                                        <label for="platform" name="platformField">Platform</label>
+                                        <input type="text" class="form-control" name="platform" id="platform" aria-describedby="basic-addon1" maxlength="45">
+                                    </div>
+                                    <div class="form-group col-xs-6">
+                                        <label for="browser" name="browserField">Browser</label>
+                                        <input type="text" class="form-control" name="browser" id="browser" aria-describedby="basic-addon1" maxlength="45">
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="form-group col-xs-6">
+                                        <label for="version" name="versionField">Version</label>
+                                        <input type="text" class="form-control" name="version" id="version" aria-describedby="basic-addon1" maxlength="45">
+                                    </div>
+                                    <div class="form-group col-xs-6">
+                                        <label for="useragent" name="useragentField">User Agent</label>
+                                        <input type="text" class="form-control" name="useragent" id="useragent" aria-describedby="basic-addon1" maxlength="250">
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="form-group col-xs-12">
+                                        <label for="Description" name="descriptionField">Description</label>
+                                        <textarea id="Description" name="description"   
+                                                  class="form-control" maxlength="250"></textarea> 
+                                    </div>
+                                </div>
                             </div>
-                            <div class="form-group col-xs-3">
-                                <label for="active" name="activeField">Active</label>
-                                <select class="form-control"  id="active" name="active">
-                                </select>
+                            <div class="center tab-pane fade marginTop25" id="tabsAdd-2">
+                                <div id="listPanelAddCapabilities">
+                                    <div class="row">
+                                        <div class="col-xs-12">
+                                            <table class="table table-bordered table-hover nomarginbottom" id="addCapabilitiesTable">
+                                                <thead>
+                                                    <tr>
+                                                        <th style="width: 5%;"></th>
+                                                        <th class="text-center" id="addCapabilityHeader" name="addCapabilityHeader">Capability</th>
+                                                        <th class="text-center" id="addValueHeader" name="addValueHeader">Value</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody id="addCapabilitiesTableBody">
+                                                </tbody>
+                                            </table>
+                                            <button type="button" class="btn btn-default" id="addAddCapabilitiy">Add Capability</button>
+                                        </div>
+                                    </div>  
+                                </div>   
                             </div>
                         </div>
-                        <div class="row">
-                            <div class="form-group col-xs-9">
-                                <label for="host" name="hostField">Host</label>
-                                <input type="text" class="form-control" name="host" id="host" aria-describedby="basic-addon1" maxlength="150">
-                            </div>
-                            <div class="form-group col-xs-3">
-                                <label for="port" name="portField">Port</label>
-                                <input type="text" class="form-control" name="port" id="port" aria-describedby="basic-addon1" maxlength="20">
-                            </div>
-                        </div>
-                        <div class="row">
-                            <div class="form-group col-xs-6">
-                                <label for="platform" name="platformField">Platform</label>
-                                <input type="text" class="form-control" name="platform" id="platform" aria-describedby="basic-addon1" maxlength="45">
-                            </div>
-                            <div class="form-group col-xs-6">
-                                <label for="browser" name="browserField">Browser</label>
-                                <input type="text" class="form-control" name="browser" id="browser" aria-describedby="basic-addon1" maxlength="45">
-                            </div>
-                        </div>
-                        <div class="row">
-                            <div class="form-group col-xs-6">
-                                <label for="version" name="versionField">Version</label>
-                                <input type="text" class="form-control" name="version" id="version" aria-describedby="basic-addon1" maxlength="45">
-                            </div>
-                            <div class="form-group col-xs-6">
-                                <label for="useragent" name="useragentField">User Agent</label>
-                                <input type="text" class="form-control" name="useragent" id="useragent" aria-describedby="basic-addon1" maxlength="250">
-                            </div>
-                        </div>
-                        <div class="row">
-                            <div class="form-group col-xs-12">
-                                <label for="Description" name="descriptionField">Description</label>
-                                <textarea id="Description" name="description"   
-                                          class="form-control" maxlength="250"></textarea> 
-                            </div>
-                        </div>    
                     </div>
                 </form>
             </div>

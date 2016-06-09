@@ -24,7 +24,6 @@ import java.io.PrintWriter;
 import java.sql.Timestamp;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.UUID;
@@ -35,19 +34,16 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import org.apache.commons.lang3.StringEscapeUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.cerberus.crud.entity.ExecutionUUID;
+import org.cerberus.engine.entity.ExecutionUUID;
 import org.cerberus.crud.entity.MessageGeneral;
-import org.cerberus.crud.entity.Parameter;
 import org.cerberus.crud.entity.Robot;
-import org.cerberus.crud.entity.Session;
-import org.cerberus.crud.entity.SessionCapabilities;
+import org.cerberus.crud.entity.RobotCapability;
 import org.cerberus.crud.entity.TCase;
 import org.cerberus.crud.entity.TestCaseCountry;
 import org.cerberus.crud.entity.TestCaseExecution;
 import org.cerberus.crud.factory.IFactoryTCase;
 import org.cerberus.crud.factory.IFactoryTestCaseExecution;
 import org.cerberus.crud.service.ILogEventService;
-import org.cerberus.crud.service.IParameterService;
 import org.cerberus.crud.service.IRobotService;
 import org.cerberus.crud.service.ITestCaseCountryService;
 import org.cerberus.crud.service.ITestCaseExecutionInQueueService;
@@ -55,8 +51,8 @@ import org.cerberus.crud.service.ITestCaseExecutionService;
 import org.cerberus.crud.service.impl.LogEventService;
 import org.cerberus.enums.MessageGeneralEnum;
 import org.cerberus.exception.CerberusException;
-import org.cerberus.service.engine.IRunTestCaseService;
-import org.cerberus.service.engine.impl.RunTestCaseService;
+import org.cerberus.engine.execution.IRunTestCaseService;
+import org.cerberus.engine.execution.impl.RunTestCaseService;
 import org.cerberus.util.DateUtil;
 import org.cerberus.util.ParameterParserUtil;
 import org.cerberus.util.StringUtil;
@@ -137,6 +133,7 @@ public class RunTestCase extends HttpServlet {
         int getPageSource = 0;
         int getSeleniumLog = 0;
         String manualExecution = "";
+        List<RobotCapability> capabilities = null;
 
         //Test
         String test = ParameterParserUtil.parseStringParam(policy.sanitize(request.getParameter("Test")), "");
@@ -257,6 +254,7 @@ public class RunTestCase extends HttpServlet {
                 platform = ParameterParserUtil.parseStringParam(robObj.getPlatform(), platform);
                 active = robObj.getActive();
                 userAgent = robObj.getUserAgent();
+                capabilities = robObj.getCapabilities();
             } catch (CerberusException ex) {
                 out.println("Error - Robot [" + robot + "] does not exist.");
                 error = true;
@@ -300,7 +298,7 @@ public class RunTestCase extends HttpServlet {
                 ITestCaseExecutionService tces = appContext.getBean(ITestCaseExecutionService.class);
                 TCase tCase = factoryTCase.create(test, testCase);
 
-                TestCaseExecution tCExecution = factoryTCExecution.create(0, test, testCase, null, null, environment, country, browser, version, platform, "",
+                TestCaseExecution tCExecution = factoryTCExecution.create(0, test, testCase, null, null, environment, country, browser, version, platform, "", capabilities, 
                         0, 0, "", "", null, ss_ip, null, ss_p, tag, "N", verbose, screenshot, getPageSource, getSeleniumLog, synchroneous, timeout, outputFormat, null,
                         Infos.getInstance().getProjectNameAndVersion(), tCase, null, null, manualURL, myHost, myContextRoot, myLoginRelativeURL, myEnvData, ss_ip, ss_p,
                         null, new MessageGeneral(MessageGeneralEnum.EXECUTION_PE_TESTSTARTED), "Selenium", numberOfRetries, screenSize);
@@ -320,14 +318,14 @@ public class RunTestCase extends HttpServlet {
                 org.apache.log4j.Logger.getLogger(RunTestCase.class.getName()).log(org.apache.log4j.Level.INFO, "Execution Requested : UUID=" + executionUUID);
                 //MyLogger.log(RunTestCase.class.getName(), Level.INFO, "Execution Requested : UUID=" + executionUUID);
 
-
                 /**
                  * Set IdFromQueue
                  */
                 tCExecution.setIdFromQueue(idFromQueue);
 
                 /**
-                 * Loop on the execution of the testcase until we get an OK or reached the number of retries.
+                 * Loop on the execution of the testcase until we get an OK or
+                 * reached the number of retries.
                  */
                 while (tCExecution.getNumberOfRetries() >= 0 && !tCExecution.getResultMessage().getCodeString().equals("OK")) {
                     try {
@@ -339,7 +337,7 @@ public class RunTestCase extends HttpServlet {
                         break;
                     }
                 }
-                
+
                 /**
                  * If execution from queue, remove it from the queue or update
                  * information in Queue
@@ -357,9 +355,15 @@ public class RunTestCase extends HttpServlet {
                 } catch (CerberusException ex) {
                     org.apache.log4j.Logger.getLogger(RunTestCase.class.getName()).log(org.apache.log4j.Level.ERROR, "Error while performin testcase in queue ", ex);
                 }
-                
-                TestCaseExecution t = (TestCaseExecution) tces.readByKeyWithDependency(tCExecution.getId()).getItem();
-                org.apache.log4j.Logger.getLogger(RunTestCase.class.getName()).log(org.apache.log4j.Level.ERROR, "CerberusExecution "+ t.toJson());
+
+                /**
+                 * If execution happened, we Log the Execution.
+                 */
+                if (tCExecution.getId() != 0) {
+                    TestCaseExecution t = (TestCaseExecution) tces.readByKeyWithDependency(tCExecution.getId()).getItem();
+                    org.apache.log4j.Logger.getLogger(RunTestCase.class.getName()).log(org.apache.log4j.Level.ERROR, "CerberusExecution " + t.toJson());
+                }
+
                 /**
                  * Clean memory in case testcase has not been launched(Remove
                  * all object put in memory)

@@ -153,20 +153,8 @@ public class TestCaseExecutionDataDAO implements ITestCaseExecutionDataDAO {
                         String value2 = resultSet.getString("value2");
                         String returnCode = resultSet.getString("rc");
                         String returnMessage = resultSet.getString("rmessage");
-                        long start;
-                        try { // Managing the case where the date is 0000-00-00 00:00:00 inside MySQL
-                            start = resultSet.getTimestamp("start").getTime();
-                        } catch (Exception e) {
-                            LOG.warn("Start date on execution not definied. " + e.toString());
-                            start = 0;
-                        }
-                        long end;
-                        try { // Managing the case where the date is 0000-00-00 00:00:00 inside MySQL
-                            end = resultSet.getTimestamp("end").getTime();
-                        } catch (Exception e) {
-                            LOG.warn("End date on execution not definied. " + e.toString());
-                            end = 0;
-                        }
+                        long start = resultSet.getTimestamp("start")==null?0:resultSet.getTimestamp("start").getTime();
+                        long end = resultSet.getTimestamp("end")==null?0:resultSet.getTimestamp("end").getTime();
                         long startLong = resultSet.getLong("startlong");
                         long endLong = resultSet.getLong("endlong");
                         resultData = factoryTestCaseExecutionData.create(id, property, value, type, value1, value2, returnCode, returnMessage,
@@ -198,11 +186,12 @@ public class TestCaseExecutionDataDAO implements ITestCaseExecutionDataDAO {
     }
 
     @Override
-    public List<String> getPastValuesOfProperty(String propName, String test, String testCase, String build, String environment, String country) {
+    public List<String> getPastValuesOfProperty(long id, String propName, String test, String testCase, String build, String environment, String country) {
         List<String> list = null;
-        final String query = "SELECT distinct `VALUE` FROM testcaseexecutiondata WHERE Property = ? AND ID IN "
-                + "(SELECT id FROM testcaseexecution WHERE test = ? AND testcase = ? AND build = ? AND environment = ? AND country = ?) "
-                + "ORDER BY ID DESC";
+        final String query = "SELECT distinct exd.`VALUE` FROM testcaseexecution exe "
+                + "JOIN testcaseexecutiondata exd ON exd.Property = ? and exd.ID = exe.ID "
+                + "WHERE exe.test = ? AND exe.testcase = ? AND exe.build = ? AND exe.environment = ? "
+                + "AND exe.country = ? AND exe.id <> ? ;";
 
         // Debug message on SQL.
         if (LOG.isDebugEnabled()) {
@@ -213,6 +202,7 @@ public class TestCaseExecutionDataDAO implements ITestCaseExecutionDataDAO {
             LOG.debug("SQL.param : " + build);
             LOG.debug("SQL.param : " + environment);
             LOG.debug("SQL.param : " + country);
+            LOG.debug("SQL.param : " + id);
         }
 
         Connection connection = this.databaseSpring.connect();
@@ -225,6 +215,7 @@ public class TestCaseExecutionDataDAO implements ITestCaseExecutionDataDAO {
                 preStat.setString(4, build);
                 preStat.setString(5, environment);
                 preStat.setString(6, country);
+                preStat.setLong(7, id);
 
                 ResultSet resultSet = preStat.executeQuery();
                 try {
@@ -258,12 +249,12 @@ public class TestCaseExecutionDataDAO implements ITestCaseExecutionDataDAO {
     }
 
     @Override
-    public List<String> getInUseValuesOfProperty(String propName, String environment, String country, Integer timeoutInSecond) {
+    public List<String> getInUseValuesOfProperty(long id, String propName, String environment, String country, Integer timeoutInSecond) {
         List<String> list = null;
-        final String query = "SELECT distinct `VALUE` FROM testcaseexecutiondata WHERE Property = ? AND ID IN "
-                + "(SELECT id FROM testcaseexecution WHERE environment = ? AND country = ? AND ControlSTATUS = 'PE' "
-                + " AND TO_SECONDS(NOW()) - TO_SECONDS(start) < ? "
-                + ")";
+        final String query = "SELECT distinct exd.`VALUE` FROM testcaseexecution exe "
+                + "JOIN testcaseexecutiondata exd ON exd.Property = ? and exd.ID = exe.ID "
+                + "WHERE exe.environment = ? AND exe.country = ? AND exe.ControlSTATUS = 'PE' "
+                + "AND TO_SECONDS(NOW()) - TO_SECONDS(exe.start) < ? AND exe.ID <> ? ;";
 
         // Debug message on SQL.
         if (LOG.isDebugEnabled()) {
@@ -272,6 +263,7 @@ public class TestCaseExecutionDataDAO implements ITestCaseExecutionDataDAO {
             LOG.debug("SQL.param : " + environment);
             LOG.debug("SQL.param : " + country);
             LOG.debug("SQL.param : " + String.valueOf(timeoutInSecond));
+            LOG.debug("SQL.param : " + id);
         }
 
         Connection connection = this.databaseSpring.connect();
@@ -282,6 +274,7 @@ public class TestCaseExecutionDataDAO implements ITestCaseExecutionDataDAO {
                 preStat.setString(2, environment);
                 preStat.setString(3, country);
                 preStat.setInt(4, timeoutInSecond);
+                preStat.setLong(5, id);
 
                 ResultSet resultSet = preStat.executeQuery();
                 try {

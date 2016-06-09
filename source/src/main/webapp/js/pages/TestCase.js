@@ -85,9 +85,9 @@ $.when($.getScript("js/pages/global/global.js")).then(function() {
             var natureElement = parents.find("select[id*='properties_type_']");
             var propertyType = $(natureElement).find("option:selected").prop("value");
             if (propertyType === "getFromDataLib_BETA") {
-                $(this).find("option:first").prop("selected", true);
-                $(this).find("option[value='RANDOMNEW']").addClass("hideElement");
-                $(this).find("option[value='NOTINUSE']").addClass("hideElement");
+//                $(this).find("option:first").prop("selected", true);
+//                $(this).find("option[value='RANDOMNEW']").addClass("hideElement");
+//                $(this).find("option[value='NOTINUSE']").addClass("hideElement");
             } else {
                 $(this).find("option[value='RANDOMNEW']").removeClass("hideElement");
                 $(this).find("option[value='NOTINUSE']").removeClass("hideElement");

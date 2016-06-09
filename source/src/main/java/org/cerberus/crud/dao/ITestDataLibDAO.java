@@ -17,6 +17,8 @@
  */
 package org.cerberus.crud.dao;
 
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import org.cerberus.crud.entity.TestDataLib;
 import org.cerberus.util.answer.Answer;
 import org.cerberus.util.answer.AnswerItem;
@@ -72,6 +74,11 @@ public interface ITestDataLibDAO {
 
     /**
      *
+     * @param name filter by Name. null to disable the filter.
+     * @param system filter by System. null to disable the filter.
+     * @param environment filter by Environment. null to disable the filter.
+     * @param country filter by Country. null to disable the filter.
+     * @param type filter by Type. null to disable the filter.
      * @param start first row of the resultSet
      * @param amount number of row of the resultSet
      * @param colName order the resultSet by this column
@@ -81,7 +88,7 @@ public interface ITestDataLibDAO {
      * resultSet
      * @return
      */
-    AnswerList readByCriteria(int start, int amount, String colName, String dir, String searchTerm, String individualSearch);
+    AnswerList readByVariousByCriteria(String name, String system, String environment, String country, String type, int start, int amount, String colName, String dir, String searchTerm, String individualSearch);
 
     /**
      *
@@ -110,4 +117,11 @@ public interface ITestDataLibDAO {
      */
     Answer update(TestDataLib testDataLib);
 
+    /**
+     *
+     * @param resultSet
+     * @return
+     * @throws SQLException
+     */
+    TestDataLib loadFromResultSet(ResultSet resultSet) throws SQLException;
 }

@@ -45,6 +45,9 @@ public class AnswerUtil {
 
     public static Answer agregateAnswer(Answer existingAnswer, Answer newAnswer) {
         Answer ans = new Answer();
+        if (newAnswer == null) {// When new is null, nothing happen to the old (existing) Answer
+            return existingAnswer;
+        }
         if (newAnswer.isCodeStringEquals(MessageEventEnum.GENERIC_OK.getCodeString())) { // When new is OK, nothing happen to the old (existing) Answer
 
             return existingAnswer;

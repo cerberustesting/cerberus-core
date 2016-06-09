@@ -32,10 +32,15 @@ import org.cerberus.util.answer.AnswerList;
  */
 public interface ICountryEnvironmentDatabaseService {
 
+    /**
+     *
+     * @param system
+     * @param country
+     * @param environment
+     * @param database
+     * @return
+     */
     public AnswerItem readByKey(String system, String country, String environment, String database);
-
-
-
 
     /**
      *
@@ -60,11 +65,6 @@ public interface ICountryEnvironmentDatabaseService {
      * @return
      */
     public AnswerList readByVariousByCriteria(String system, String country, String environment, int start, int amount, String column, String dir, String searchTerm, String individualSearch);
-
-
-
-
-
 
     /**
      *

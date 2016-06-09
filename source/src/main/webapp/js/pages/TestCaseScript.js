@@ -81,7 +81,8 @@ $.when($.getScript("js/pages/global/global.js")).then(function () {
                 createStepList(json, stepList);
                 drawInheritedProperty(data.inheritedProp);
                 listenEnterKeypressWhenFocusingOnDescription();
-                setPlaceholder();
+                setPlaceholderAction();
+                setPlaceholderControl();
             },
             error: showUnexpectedError
         });
@@ -109,7 +110,8 @@ $.when($.getScript("js/pages/global/global.js")).then(function () {
                 toDelete: false
             };
 
-            drawProperty(newProperty, testcaseinfo);
+            drawProperty(newProperty, testcaseinfo, true);
+
         });
 
         $("#deleteStep").click(function () {
@@ -216,12 +218,12 @@ function saveScript() {
     });
 }
 
-function drawProperty(property, testcaseinfo) {
+function drawProperty(property, testcaseinfo, isNewLine) {
     var selectType = getSelectInvariant("PROPERTYTYPE", false);
     var selectDB = getSelectInvariant("PROPERTYDATABASE", false);
     var selectNature = getSelectInvariant("PROPERTYNATURE", false);
     var deleteBtn = $("<button></button>").addClass("btn btn-default btn-xs").append($("<span></span>").addClass("glyphicon glyphicon-trash"));
-    var propertyInput = $("<input>").addClass("form-control input-sm").val(property.property);
+    var propertyInput = $("<input id='propName'>").addClass("form-control input-sm").val(property.property);
     var valueInput = $("<textarea></textarea>").addClass("form-control input-sm").val(property.value1);
     var lengthInput = $("<input>").addClass("form-control input-sm").val(property.length);
     var rowLimitInput = $("<input>").addClass("form-control input-sm").val(property.rowLimit);
@@ -230,7 +232,7 @@ function drawProperty(property, testcaseinfo) {
     var row = $("<tr></tr>");
     var deleteBtnRow = $("<td></td>").append(deleteBtn);
     var propertyName = $("<td></td>").append(propertyInput);
-    var country = $("<td></td>").append(getTestCaseCountry(testcaseinfo.countryList, property.country, false));
+    var country = $("<td></td>").append(getTestCaseCountry(testcaseinfo.countryList, property.country, false, isNewLine));
     var type = $("<td></td>").append(selectType.val(property.type));
     var db = $("<td></td>").append(selectDB.val(property.database));
     var value = $("<td></td>").append(valueInput);
@@ -301,7 +303,7 @@ function drawInheritedProperty(propList) {
         var row = $("<tr></tr>");
         var deleteBtn = $("<td></td>").append($("<button></button>").addClass("btn btn-default btn-xs").append($("<span></span>").addClass("glyphicon glyphicon-trash")));
         var propertyName = $("<td></td>").append($("<input>").addClass("form-control input-sm").val(property.property).prop("readonly", true));
-        var country = $("<td></td>").append(getTestCaseCountry(property.country, property.country, true));
+        var country = $("<td></td>").append(getTestCaseCountry(property.country, property.country, true, false));
         var type = $("<td></td>").append(selectType.clone().val(property.type).prop("disabled", "disabled"));
         var db = $("<td></td>").append(selectDB.clone().val(property.database).prop("disabled", "disabled"));
         var value = $("<td></td>").append($("<textarea></textarea>").addClass("form-control input-sm").val(property.value1).prop("readonly", true));
@@ -334,14 +336,14 @@ function loadProperties(test, testcase, testcaseinfo) {
                 var property = data[index];
 
                 property.toDelete = false;
-                drawProperty(property, testcaseinfo);
+                drawProperty(property, testcaseinfo, false);
             }
         },
         error: showUnexpectedError
     });
 }
 
-function getTestCaseCountry(countryList, countryToCheck, isDisabled) {
+function getTestCaseCountry(countryList, countryToCheck, isDisabled, doForceAllCountries) {
     var html = [];
     var cpt = 0;
     var div = $("<div></div>").addClass("checkbox");
@@ -356,7 +358,7 @@ function getTestCaseCountry(countryList, countryToCheck, isDisabled) {
         }
         var input = $("<input>").attr("type", "checkbox").attr("name", country);
 
-        if (countryToCheck.indexOf(country) !== -1) {
+        if ((countryToCheck.indexOf(country) !== -1) || (doForceAllCountries)) {
             input.prop("checked", true);
         }
         if (isDisabled) {
@@ -437,6 +439,11 @@ function saveStep() {
 function addStep(event) {
     var stepList = event.data.stepList;
     $("#addStepModal").modal('show');
+
+    // Setting the focus on the Description of the step.
+    $('#addStepModal').on('shown.bs.modal', function () {
+        $('#description').focus();
+    })
 
     $(".sub-item").click(function () {
         var stepInfo = $(this).data("stepInfo");
@@ -1160,7 +1167,7 @@ Action.prototype.generateContent = function () {
     var obj = this;
     var content = $("<div></div>").addClass("content col-lg-10");
     var firstRow = $("<div></div>").addClass("row");
-    var secondRow = $("<div></div>").addClass("row form-inline");
+    var secondRow = $("<div></div>").addClass("rowAction form-inline");
 
     var actionList = $("<select></select>").addClass("form-control input-sm");
     var descField = $("<input>").addClass("description").addClass("form-control").prop("placeholder", "Describe this action");
@@ -1176,7 +1183,7 @@ Action.prototype.generateContent = function () {
     actionList.val(this.action);
     actionList.on("change", function () {
         obj.action = actionList.val();
-        setPlaceholder();
+        setPlaceholderAction();
     });
 
     objectField.val(this.object);
@@ -1312,7 +1319,7 @@ Control.prototype.generateContent = function () {
     var obj = this;
     var content = $("<div></div>").addClass("content col-lg-10");
     var firstRow = $("<div></div>").addClass("row");
-    var secondRow = $("<div></div>").addClass("row form-inline");
+    var secondRow = $("<div></div>").addClass("rowControl form-inline");
 
     var controlList = $("<select></select>").addClass("form-control input-sm");
     var descField = $("<input>").addClass("description").addClass("form-control").prop("placeholder", "Description");
@@ -1329,6 +1336,7 @@ Control.prototype.generateContent = function () {
     controlList.val(this.type);
     controlList.on("change", function () {
         obj.type = controlList.val();
+        setPlaceholderControl();
     });
 
     objectField.val(this.object);
@@ -1347,10 +1355,10 @@ Control.prototype.generateContent = function () {
     });
 
     firstRow.append(descField);
-    secondRow.append($("<span></span>").addClass("col-lg-3").append(controlList));
-    secondRow.append($("<span></span>").addClass("col-lg-4").append(objectField));
-    secondRow.append($("<span></span>").addClass("col-lg-4").append(propertyField));
-    secondRow.append($("<span></span>").addClass("col-lg-1").append(fatalField));
+    secondRow.append($("<span></span>").addClass("col-md-4").append(controlList));
+    secondRow.append($("<span></span>").addClass("col-md-3").append(objectField));
+    secondRow.append($("<span></span>").addClass("col-md-4").append(propertyField));
+    secondRow.append($("<span></span>").addClass("col-md-1").append(fatalField));
 
     if (this.parentStep.useStep === "Y") {
         descField.prop("readonly", true);
@@ -1431,7 +1439,7 @@ function addControl(action) {
     return control;
 }
 
-function setPlaceholder() {
+function setPlaceholderAction() {
     /**
      * Todo : GetFromDatabase
      */
@@ -1505,9 +1513,12 @@ function setPlaceholder() {
     user.language;
     var placeHolders = placeHoldersList[user.language];
 
-    $('div[class="row form-inline"] option:selected').each(function (i, e) {
+//    console.debug("-- Action");
+
+    $('div[class="rowAction form-inline"] option:selected').each(function (i, e) {
 
         for (var i = 0; i < placeHolders.length; i++) {
+//            console.debug(placeHolders[i].type + " - " + e.value);
             if (placeHolders[i].type === e.value) {
                 if (placeHolders[i].object !== null) {
                     $(e).parent().parent().next().show();
@@ -1525,3 +1536,103 @@ function setPlaceholder() {
         }
     });
 }
+
+function setPlaceholderControl() {
+    /**
+     * Todo : GetFromDatabase
+     */
+    var placeHoldersList = {"fr": [
+            {"type": "Unknown", "controlValue": null, "controlProp": null, "fatal": null},
+            {"type": "verifyStringEqual", "controlValue": "String1", "controlProp": "String2", "fatal": ""},
+            {"type": "verifyStringDifferent", "controlValue": "String1", "controlProp": "String2", "fatal": ""},
+            {"type": "verifyStringGreater", "controlValue": "String1 ex : AAA", "controlProp": "String2 ex: ZZZ", "fatal": ""},
+            {"type": "verifyStringMinor", "controlValue": "String1 ex : ZZZ", "controlProp": "String2 ex: AAA", "fatal": ""},
+            {"type": "verifyStringContains", "controlValue": "String1 ex : toto", "controlProp": "String2 ex : ot", "fatal": ""},
+            {"type": "verifyIntegerGreater", "controlValue": "Integer1 ex : 10", "controlProp": "Integer2 ex : 20", "fatal": ""},
+            {"type": "verifyIntegerMinor", "controlValue": "Integer1 ex : 20", "controlProp": "Integer2 ex : 10", "fatal": ""},
+            {"type": "verifyIntegerEquals", "controlValue": "Integer1", "controlProp": "Integer2", "fatal": ""},
+            {"type": "verifyIntegerDifferent", "controlValue": "Integer1", "controlProp": "Integer2", "fatal": ""},
+            {"type": "verifyElementPresent", "controlValue": null, "controlProp": "Element ex : data-cerberus=fieldToto", "fatal": ""},
+            {"type": "verifyElementNotPresent", "controlValue": null, "controlProp": "Element ex : data-cerberus=fieldToto", "fatal": ""},
+            {"type": "verifyElementVisible", "controlValue": null, "controlProp": "Element ex : data-cerberus=fieldToto", "fatal": ""},
+            {"type": "verifyElementNotVisible", "controlValue": null, "controlProp": "Element ex : data-cerberus=fieldToto", "fatal": ""},
+            {"type": "verifyElementEquals", "controlValue": "Expected element", "controlProp": "XPath of the element", "fatal": ""},
+            {"type": "verifyElementInElement", "controlValue": "Sub Element", "controlProp": "Master Element", "fatal": ""},
+            {"type": "verifyElementDifferent", "controlValue": "Not Expected element", "controlProp": "XPath of the element", "fatal": ""},
+            {"type": "verifyElementClickable", "controlValue": null, "controlProp": "Element ex : data-cerberus=fieldToto", "fatal": ""},
+            {"type": "verifyElementNotClickable", "controlValue": null, "controlProp": "Element ex : data-cerberus=fieldToto", "fatal": ""},
+            {"type": "verifyTextInElement", "controlValue": "Text", "controlProp": "Element", "fatal": ""},
+            {"type": "verifyTextNotInElement", "controlValue": "Text", "controlProp": "Element", "fatal": ""},
+            {"type": "verifyRegexInElement", "controlValue": "Regex", "controlProp": "Element", "fatal": ""},
+            {"type": "verifyTextInPage", "controlValue": null, "controlProp": "Regex", "fatal": ""},
+            {"type": "verifyTextNotInPage", "controlValue": null, "controlProp": "Regex", "fatal": ""},
+            {"type": "verifyTitle", "controlValue": null, "controlProp": "Title", "fatal": ""},
+            {"type": "verifyUrl", "controlValue": null, "controlProp": "URL", "fatal": ""},
+            {"type": "verifyTextInDialog", "controlValue": null, "controlProp": "Text", "fatal": ""},
+            {"type": "verifyXmlTreeStructure", "controlValue": "Tree", "controlProp": "XPath", "fatal": ""},
+            {"type": "takeScreenshot", "controlValue": null, "controlProp": null, "fatal": null}
+        ], "en": [
+            {"type": "Unknown", "controlValue": null, "controlProp": null, "fatal": null},
+            {"type": "verifyStringEqual", "controlValue": "String1", "controlProp": "String2", "fatal": ""},
+            {"type": "verifyStringDifferent", "controlValue": "String1", "controlProp": "String2", "fatal": ""},
+            {"type": "verifyStringGreater", "controlValue": "String1 ex : AAA", "controlProp": "String2 ex: ZZZ", "fatal": ""},
+            {"type": "verifyStringMinor", "controlValue": "String1 ex : ZZZ", "controlProp": "String2 ex: AAA", "fatal": ""},
+            {"type": "verifyStringContains", "controlValue": "String1 ex : toto", "controlProp": "String2 ex : ot", "fatal": ""},
+            {"type": "verifyIntegerGreater", "controlValue": "Integer1 ex : 10", "controlProp": "Integer2 ex : 20", "fatal": ""},
+            {"type": "verifyIntegerMinor", "controlValue": "Integer1 ex : 20", "controlProp": "Integer2 ex : 10", "fatal": ""},
+            {"type": "verifyIntegerEquals", "controlValue": "Integer1", "controlProp": "Integer2", "fatal": ""},
+            {"type": "verifyIntegerDifferent", "controlValue": "Integer1", "controlProp": "Integer2", "fatal": ""},
+            {"type": "verifyElementPresent", "controlValue": null, "controlProp": "Element ex : data-cerberus=fieldToto", "fatal": ""},
+            {"type": "verifyElementNotPresent", "controlValue": null, "controlProp": "Element ex : data-cerberus=fieldToto", "fatal": ""},
+            {"type": "verifyElementVisible", "controlValue": null, "controlProp": "Element ex : data-cerberus=fieldToto", "fatal": ""},
+            {"type": "verifyElementNotVisible", "controlValue": null, "controlProp": "Element ex : data-cerberus=fieldToto", "fatal": ""},
+            {"type": "verifyElementEquals", "controlValue": "Expected element", "controlProp": "XPath of the element", "fatal": ""},
+            {"type": "verifyElementInElement", "controlValue": "Sub Element", "controlProp": "Master Element", "fatal": ""},
+            {"type": "verifyElementDifferent", "controlValue": "Not Expected element", "controlProp": "XPath of the element", "fatal": ""},
+            {"type": "verifyElementClickable", "controlValue": null, "controlProp": "Element ex : data-cerberus=fieldToto", "fatal": ""},
+            {"type": "verifyElementNotClickable", "controlValue": null, "controlProp": "Element ex : data-cerberus=fieldToto", "fatal": ""},
+            {"type": "verifyTextInElement", "controlValue": "Text", "controlProp": "Element", "fatal": ""},
+            {"type": "verifyTextNotInElement", "controlValue": "Text", "controlProp": "Element", "fatal": ""},
+            {"type": "verifyRegexInElement", "controlValue": "Regex", "controlProp": "Element", "fatal": ""},
+            {"type": "verifyTextInPage", "controlValue": null, "controlProp": "Regex", "fatal": ""},
+            {"type": "verifyTextNotInPage", "controlValue": null, "controlProp": "Regex", "fatal": ""},
+            {"type": "verifyTitle", "controlValue": null, "controlProp": "Title", "fatal": ""},
+            {"type": "verifyUrl", "controlValue": null, "controlProp": "URL", "fatal": ""},
+            {"type": "verifyTextInDialog", "controlValue": null, "controlProp": "Text", "fatal": ""},
+            {"type": "verifyXmlTreeStructure", "controlValue": "Tree", "controlProp": "XPath", "fatal": ""},
+            {"type": "takeScreenshot", "controlValue": null, "controlProp": null, "fatal": null}
+        ]};
+
+    var user = getUser();
+    user.language;
+    var placeHolders = placeHoldersList[user.language];
+
+//    console.debug("-- Control");
+
+    $('div[class="rowControl form-inline"] option:selected').each(function (i, e) {
+
+        for (var i = 0; i < placeHolders.length; i++) {
+//            console.debug(placeHolders[i].type + " - " + e.value);
+            if (placeHolders[i].type === e.value) {
+                if (placeHolders[i].controlValue !== null) {
+                    $(e).parent().parent().next().show();
+                    $(e).parent().parent().next().find('input').prop("placeholder", placeHolders[i].controlValue);
+                } else {
+                    $(e).parent().parent().next().hide();
+                }
+                if (placeHolders[i].controlProp !== null) {
+                    $(e).parent().parent().next().next().show();
+                    $(e).parent().parent().next().next().find('input').prop("placeholder", placeHolders[i].controlProp);
+                } else {
+                    $(e).parent().parent().next().next().hide();
+                }
+                if (placeHolders[i].fatal !== null) {
+                    $(e).parent().parent().next().next().next().show();
+                } else {
+                    $(e).parent().parent().next().next().next().hide();
+                }
+            }
+        }
+    });
+}
+

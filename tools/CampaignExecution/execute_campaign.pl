@@ -12,33 +12,47 @@ use warnings;
 use LWP::Simple qw($ua get);
 use Getopt::Long;
 
+# Autoflush error and standard outputs.
+select(STDERR);
+$| = 1;
+select(STDOUT); # default
+$| = 1;
+
 my $debug = 0;
 
 # Specify default parameters value
 my $help = 0;
 my $campaign = 2;
-my $environment = 'QA';
+my $campaignName = '';
+my $environment = '';
 my $on = 3;
 my $robot = 'MyRobot';
-my $tag = '';
+my $screenshot = 1;
+my $tag = $campaignName . '-' . time();
+my $cerberusUrl = 'http://localhost:8080/Cerberus/';
 
 # Retrieve value of parameters
 GetOptions(
 	'campaign=i'	=> \$campaign,
+	'campaignName=s'	=> \$campaignName,
 	'environment=s'	=> \$environment,
 	'on=i'		=> \$on,
 	'robot=s'		=> \$robot,
+	'screenshot=i'	=>\$screenshot,
 	'tag=s'		=> \$tag,
+	'cerberusUrl=s' => \$cerberusUrl,
 	'help!'		=> \$help,
 ) or die "Usage incorrect!\n";
 
 # Set parameter values
 my %parameters = ('campaign'=>$campaign,
+	'campaignname'=>$campaignName,
 	'environment'=>$environment,
 	'on' => $on,
 	'robot'=>$robot,
+	'screenshot'=>$screenshot,
 	'tag'=>$tag,
-	'cerberus'=> 'http://localhost:8080/Cerberus-0.9.2-SNAPSHOT/',
+	'cerberus'=> $cerberusUrl,
 	'servlet'=> 'GetCampaignExecutionsCommand',
 	'timeout'=> 150000
 );
@@ -108,12 +122,11 @@ sub execute_tests {
 		# Generate cerberus RunTest URL by added environment parameter
 		my $TestURL = $listOfTest[$i].'&Environment='.$args{'environment'};
 
-		# display some information in the terminal
-		print "Execute Test $i/$numberOfTests of from=".$args{'from'}." on=".$args{'on'}."\n";
 		# display URL currently executed by the tread
 		$TestURL =~ s/Browser/browser/;
 
-		print $TestURL."\n\n";
+		$TestURL =~ /&Test=([^&]+).*&TestCase=([^&]+).*&Country=([^&]+)/;
+		print "Executing test case '$2', from test '$1' on '$3' environment...\n";
 
 		# retrieve the content of the URL (nothing done with it for the moment)
 		$content = get("$TestURL");
@@ -148,8 +161,10 @@ while ($threads[$index]) {
 
 if($tag) {
 	my $resultOfCampaign = get($parameters{'cerberus'}."/ResultCI?tag=".$parameters{'tag'});
+    print "Campaign result: $resultOfCampaign\n";
+	print "Campaign report: $cerberusUrl/ReportingExecutionByTag.jsp?Tag=$tag\n";
 
-	if($resultOfCampaign === "OK") {
+	if($resultOfCampaign eq "OK") {
 		exit 0;
 	} else {
 		exit 1;

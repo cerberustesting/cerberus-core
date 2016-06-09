@@ -25,11 +25,8 @@ import org.cerberus.crud.entity.CountryEnvironmentDatabase;
  *
  * @author bcivel
  */
-public interface IFactoryCountryEnvironmentDatabase{
-    
-    CountryEnvironmentDatabase create(String database,String environment,String country,
-            String connectionPoolName);
-    
-    CountryEnvironmentDatabase create(String system, String country,String environment,String database,
-            String connectionPoolName);
+public interface IFactoryCountryEnvironmentDatabase {
+
+    CountryEnvironmentDatabase create(String system, String country, String environment, String database,
+            String connectionPoolName, String soapUrl);
 }

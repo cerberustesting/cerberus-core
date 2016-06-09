@@ -21,7 +21,7 @@ import java.util.ArrayList;
 import java.util.List;
 import org.cerberus.crud.entity.TestDataLib;
 import org.cerberus.crud.entity.TestDataLibData;
-import org.cerberus.service.engine.testdata.TestDataLibResult;
+import org.cerberus.engine.entity.TestDataLibResult;
 import org.cerberus.util.answer.Answer;
 import org.cerberus.util.answer.AnswerItem;
 import org.cerberus.util.answer.AnswerList;
@@ -32,6 +32,58 @@ import org.cerberus.util.answer.AnswerList;
  * @author FNogueira
  */
 public interface ITestDataLibDataService {
+
+    /**
+     *
+     * @param testDataLibID
+     * @param subData
+     * @return
+     */
+    AnswerItem readByKey(Integer testDataLibID, String subData);
+
+    /**
+     * Returns the subdata entry that matches a specific technical key.
+     *
+     * @param testDataLibDataID
+     * @return
+     */
+    AnswerItem readByKeyTech(Integer testDataLibDataID);
+
+    /**
+     * Reads a list with basis on the test data library id
+     *
+     * @param testDataLibID
+     * @param columnEmpty Y will filter with empty string. N will filter not empty, null disable the filter.
+     * @param parsingAnswerEmpty Y will filter with empty string. N will filter not empty, null disable the filter.
+     * @return
+     */
+    AnswerList readByVarious(Integer testDataLibID, String columnEmpty, String parsingAnswerEmpty);
+
+    /**
+     *
+     * @return All TestDataLibData
+     */
+    AnswerList readAll();
+
+    /**
+     *
+     * @param start
+     * @param amount
+     * @param colName
+     * @param dir
+     * @param searchTerm
+     * @param individualSearch
+     * @return
+     */
+    AnswerList readByCriteria(int start, int amount, String colName, String dir, String searchTerm, String individualSearch);
+
+    /**
+     * Reads all test data library entries that match a specific name.
+     *
+     * @param testDataLibName
+     * @return
+     */
+    AnswerList readByName(String testDataLibName);
 
     /**
      *
@@ -68,13 +120,12 @@ public interface ITestDataLibDataService {
      * @param testDataLib
      * @return
      */
-     public Answer delete(TestDataLib testDataLib);
+    Answer delete(TestDataLib testDataLib);
 
     /**
      * Method that performs a CUD of operations in one set of testdatalibrary
      * entries
      *
-     * @param testDataLibID
      * @param entriesToInsert
      * @param entriesToUpdate
      * @param entriesToRemove
@@ -84,55 +135,17 @@ public interface ITestDataLibDataService {
 
     /**
      *
-     * @param testDataLibID
-     * @param subData
+     * @param subDataList
      * @return
      */
-    AnswerItem readByKey(Integer testDataLibID, String subData);
-
-    /**
-     * Reads a list with basis on the test data library id
-     * @param testDataLibID
-     * @return
-     */
-    AnswerList readByKey(Integer testDataLibID);
-    
-    /**
-     * Returns the subdata entry that matches a specific technical key.
-     * @param testDataLibDataID
-     * @return 
-     */
-    AnswerItem readByKeyTech(Integer testDataLibDataID);
-    
-    /**
-     *
-     * @return All TestDataLibData
-     */
-    AnswerList readAll();
-
-
-    /**
-     *
-     * @param start
-     * @param amount
-     * @param colName
-     * @param dir
-     * @param searchTerm
-     * @param individualSearch
-     * @return
-     */
-    AnswerList readByCriteria(int start, int amount, String colName, String dir, String searchTerm, String individualSearch);
-
-    /**
-     * Reads all test data library entries that match a specific name.
-     *
-     * @param testDataLibName
-     * @return
-     */
-    AnswerList readByName(String testDataLibName);
-
     Answer validate(List<TestDataLibData> subDataList);
 
+    /**
+     *
+     * @param result
+     * @param subDataEntry
+     * @return
+     */
     AnswerItem<String> fetchSubData(TestDataLibResult result, TestDataLibData subDataEntry);
 
 }

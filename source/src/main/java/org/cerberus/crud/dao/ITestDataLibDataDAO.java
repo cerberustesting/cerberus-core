@@ -34,81 +34,105 @@ public interface ITestDataLibDataDAO {
 
     /**
      *
-     * @param testDataLibData
-     * @return 
-     */
-    Answer create(TestDataLibData testDataLibData);
-
-    /**
-     *
-     * @param testDataLibData
-     * @return 
-     */
-    Answer update(TestDataLibData testDataLibData);
-
-    /**
-     *
-     * @param testDataLibData
-     * @return 
-     */
-    Answer delete(TestDataLibData testDataLibData);
-    /**
-     * Deletes all testdatalibdata records that belong to a testdatalib.
-     * @param testDataLibID - remove all entries that belong to a testdatalib entry.
-     * @return Answer indicating the status of the operation
-     */
-    public Answer delete(TestDataLib testDataLibID);
-    
-    /**
-     * Batch that deletes several records in the table TestDataLibData.
-     * @param subdataSet
-     * @return 
-     */
-    public Answer delete(List<TestDataLibData> subdataSet); 
-    
-    /**
-     *
      * @param testDataLibID
      * @param subData
      * @return
      */
     AnswerItem readByKey(Integer testDataLibID, String subData);
+
+    /**
+     *
+     * @param testDataLibDataID
+     * @return
+     */
+    AnswerItem readByKeyTech(Integer testDataLibDataID);
+
     /**
      *
      * @param testDataLibID resultSet
      * @return
      */
-    AnswerList readByKey(Integer testDataLibID);
+    AnswerList readByVarious(Integer testDataLibID, String columnEmpty, String parsingAnswerEmpty);
 
-    AnswerList readByCriteria(int start, int amount, String colName, String dir, String searchTerm, String individualSearch) ;
     /**
      *
      * @return All TestData
      */
     AnswerList readAll();
-    
-    
- 
+
+    /**
+     *
+     * @param start
+     * @param amount
+     * @param colName
+     * @param dir
+     * @param searchTerm
+     * @param individualSearch
+     * @return
+     */
+    AnswerList readByCriteria(int start, int amount, String colName, String dir, String searchTerm, String individualSearch);
+
+    /**
+     * Finds all subdata entries (testdatalibdata) that are associated with an
+     * entry name (testdatalib).
+     *
+     * @param testDataLibName - entry name used to filter the subdata entries
+     * @return Answer indicating the status of the operation
+     */
+    AnswerList readByName(String testDataLibName);
+
+    /**
+     *
+     * @param testDataLibData
+     * @return
+     */
+    Answer create(TestDataLibData testDataLibData);
+
     /**
      * Batch that inserts several records in the table TestDataLibData
+     *
      * @param subdataSet - entries to insert
      * @return Answer indicating the status of the operation
      */
-    public Answer create(List<TestDataLibData> subdataSet); 
+    Answer create(List<TestDataLibData> subdataSet);
+
+    /**
+     *
+     * @param testDataLibData
+     * @return
+     */
+    Answer update(TestDataLibData testDataLibData);
+
     /**
      * Batch that updates several records in the table TestDataLibData.
+     *
      * @param entriesToUpdate - entries to update
-     * @return  Answer indicating the status of the operation
+     * @return Answer indicating the status of the operation
      */
-    public Answer update(ArrayList<TestDataLibData> entriesToUpdate);
-    
-    /**
-     * Finds all subdata entries (testdatalibdata) that are associated with an entry name (testdatalib).
-     * @param testDataLibName - entry name used to filter the subdata entries
-     * @return  Answer indicating the status of the operation
-     */
-    public AnswerList readByName(String testDataLibName);
+    Answer update(ArrayList<TestDataLibData> entriesToUpdate);
 
-    public AnswerItem readByKeyTech(Integer testDataLibDataID);
- 
+    /**
+     *
+     * @param testDataLibData
+     * @return
+     */
+    Answer delete(TestDataLibData testDataLibData);
+
+    /**
+     * Deletes all testdatalibdata records that belong to a testdatalib.
+     *
+     * @param testDataLibID - remove all entries that belong to a testdatalib
+     * entry.
+     * @return Answer indicating the status of the operation
+     */
+    Answer delete(TestDataLib testDataLibID);
+
+    /**
+     * Batch that deletes several records in the table TestDataLibData.
+     *
+     * @param subdataSet
+     * @return
+     */
+    Answer delete(List<TestDataLibData> subdataSet);
+
 }

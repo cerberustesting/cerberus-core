@@ -30,23 +30,14 @@ import org.springframework.stereotype.Service;
 public class FactoryCountryEnvironmentDatabase implements IFactoryCountryEnvironmentDatabase {
 
     @Override
-    public CountryEnvironmentDatabase create(String database, String environment, String country, String connectionPoolName) {
-        CountryEnvironmentDatabase ced = new CountryEnvironmentDatabase();
-        ced.setCountry(country);
-        ced.setEnvironment(environment);
-        ced.setDatabase(database);
-        ced.setConnectionPoolName(connectionPoolName);
-        return ced;
-    }
-
-    @Override
-    public CountryEnvironmentDatabase create(String system, String country, String environment, String database, String connectionPoolName) {
+    public CountryEnvironmentDatabase create(String system, String country, String environment, String database, String connectionPoolName, String soapUrl) {
         CountryEnvironmentDatabase ced = new CountryEnvironmentDatabase();
         ced.setSystem(system);
         ced.setCountry(country);
         ced.setEnvironment(environment);
         ced.setDatabase(database);
         ced.setConnectionPoolName(connectionPoolName);
+        ced.setSoapUrl(soapUrl);
         return ced;
     }
 

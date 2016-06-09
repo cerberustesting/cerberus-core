@@ -17,9 +17,7 @@
  */
 package org.cerberus.crud.dao;
 
-import java.util.List;
 import org.cerberus.crud.entity.CountryEnvironmentDatabase;
-import org.cerberus.exception.CerberusException;
 import org.cerberus.util.answer.Answer;
 import org.cerberus.util.answer.AnswerItem;
 import org.cerberus.util.answer.AnswerList;
@@ -43,9 +41,6 @@ public interface ICountryEnvironmentDatabaseDAO {
      */
     AnswerItem readByKey(String system, String country, String environment, String database);
 
-
-    
-    
     /**
      *
      * @param system
@@ -60,10 +55,7 @@ public interface ICountryEnvironmentDatabaseDAO {
      * @return
      */
     AnswerList readByVariousByCriteria(String system, String country, String environment, int start, int amount, String column, String dir, String searchTerm, String individualSearch);
-    
-    
-    
-    
+
     /**
      *
      * @param object
@@ -84,6 +76,5 @@ public interface ICountryEnvironmentDatabaseDAO {
      * @return
      */
     Answer update(CountryEnvironmentDatabase object);
-
 
 }

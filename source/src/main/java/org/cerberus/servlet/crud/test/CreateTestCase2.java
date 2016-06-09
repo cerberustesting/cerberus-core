@@ -198,7 +198,6 @@ public class CreateTestCase2 extends HttpServlet {
         } else {
             tc.setProject(policy.sanitize(request.getParameter("project")));
         }
-        tc.setTest(policy.sanitize(request.getParameter("test")));
         tc.setApplication(policy.sanitize(request.getParameter("application")));
         tc.setRunQA(policy.sanitize(request.getParameter("activeQA")));
         tc.setRunUAT(policy.sanitize(request.getParameter("activeUAT")));
@@ -213,6 +212,7 @@ public class CreateTestCase2 extends HttpServlet {
         tc.setPriority(Integer.parseInt(request.getParameter("priority")));
 
         // Parameter that needs to be secured --> We SECURE+DECODE them
+        tc.setTest(ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("test"), "", charset));
         tc.setTestCase(ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("testCase"), "", charset));
         tc.setTicket(ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("ticket"), "", charset));
         tc.setOrigin(ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("origin"), "", charset));

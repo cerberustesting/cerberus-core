@@ -38,7 +38,11 @@ public interface ITestCaseExecutionDataDAO {
     void updateTestCaseExecutionData(TestCaseExecutionData testCaseExecutionData) throws CerberusException;
 
     /**
+     * Get the list of values of past execution data on the property @propName
+     * value in the given @test, @testcase, @build, @environment, @country
+     * excluding the current one (specified in @id parameter)
      *
+     * @param id
      * @param propName
      * @param test
      * @param testCase
@@ -47,12 +51,13 @@ public interface ITestCaseExecutionDataDAO {
      * @param country
      * @return
      */
-    List<String> getPastValuesOfProperty(String propName, String test, String testCase, String build, String environment, String country);
+    List<String> getPastValuesOfProperty(long id, String propName, String test, String testCase, String build, String environment, String country);
 
     /**
-     * We get the list of values currently in used in the given COUNTRY,
+     * Get the list of values currently in used in the given COUNTRY,
      * ENVIRONMENT, PROPERTY only STATUS = PE execution wil be used. Nb of
-     * seconds in timeout will be used to remove too old executions.
+     * seconds in timeout will be used to remove too old executions. ID
+     * execution will be excluded from the list.
      *
      * @param propName
      * @param environment
@@ -60,7 +65,7 @@ public interface ITestCaseExecutionDataDAO {
      * @param country
      * @return
      */
-    List<String> getInUseValuesOfProperty(String propName, String environment, String country, Integer timeoutInSecond);
+    List<String> getInUseValuesOfProperty(long id, String propName, String environment, String country, Integer timeoutInSecond);
 
     /**
      *

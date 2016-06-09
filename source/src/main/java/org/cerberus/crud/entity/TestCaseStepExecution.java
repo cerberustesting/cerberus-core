@@ -43,6 +43,7 @@ public class TestCaseStepExecution {
     private BigDecimal timeElapsed;
     private String returnCode;
     private String returnMessage;
+    private String description;
     /**
      * From here are data outside database model.
      */
@@ -245,26 +246,35 @@ public class TestCaseStepExecution {
         return testCaseStepActionExecutionList;
     }
 
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+    
     public JSONObject toJson() {
         JSONObject result = new JSONObject();
         try {
-            result.append("id", this.getId());
-            result.append("test", this.getTest());
-            result.append("testcase", this.getTestCase());
-            result.append("step", this.getStep());
-            result.append("batNumExe", this.getBatNumExe());
-            result.append("start", this.getStart());
-            result.append("end", this.getEnd());
-            result.append("fullStart", this.getFullStart());
-            result.append("fullEnd", this.getFullEnd());
-            result.append("timeElapsed", this.getTimeElapsed());
-            result.append("returnCode", this.getReturnCode());
-            result.append("returnMessage", this.getReturnMessage());
+            result.put("id", this.getId());
+            result.put("test", this.getTest());
+            result.put("testcase", this.getTestCase());
+            result.put("step", this.getStep());
+            result.put("batNumExe", this.getBatNumExe());
+            result.put("start", this.getStart());
+            result.put("end", this.getEnd());
+            result.put("fullStart", this.getFullStart());
+            result.put("fullEnd", this.getFullEnd());
+            result.put("timeElapsed", this.getTimeElapsed());
+            result.put("returnCode", this.getReturnCode());
+            result.put("returnMessage", this.getReturnMessage());
+            result.put("description", this.getDescription());
             JSONArray array = new JSONArray();
             for (Object testCaseStepExecution : this.getTestCaseStepActionExecutionList().getDataList()) {
                 array.put(((TestCaseStepActionExecution)testCaseStepExecution).toJson());
             }
-            result.append("testCaseStepActionExecutionList", array);
+            result.put("testCaseStepActionExecutionList", array);
         } catch (JSONException ex) {
             Logger.getLogger(TestCaseStepExecution.class.getName()).log(Level.SEVERE, null, ex);
         }

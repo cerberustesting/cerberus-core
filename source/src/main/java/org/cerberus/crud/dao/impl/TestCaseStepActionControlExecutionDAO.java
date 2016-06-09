@@ -67,8 +67,8 @@ public class TestCaseStepActionControlExecutionDAO implements ITestCaseStepActio
     public void insertTestCaseStepActionControlExecution(TestCaseStepActionControlExecution testCaseStepActionControlExecution) {
 
         final String query = "INSERT INTO testcasestepactioncontrolexecution(id, step, sequence, control, returncode, controltype, "
-                + "controlproperty, controlvalue, fatal, start, END, startlong, endlong, returnmessage, test, testcase, screenshotfilename, pageSourceFilename)"
-                + " VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+                + "controlproperty, controlvalue, fatal, start, END, startlong, endlong, returnmessage, test, testcase, screenshotfilename, pageSourceFilename, description)"
+                + " VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
         Connection connection = this.databaseSpring.connect();
         try {
@@ -86,12 +86,12 @@ public class TestCaseStepActionControlExecutionDAO implements ITestCaseStepActio
                 if (testCaseStepActionControlExecution.getStart() != 0) {
                     preStat.setTimestamp(10, new Timestamp(testCaseStepActionControlExecution.getStart()));
                 } else {
-                    preStat.setString(10, "0000-00-00 00:00:00");
+                    preStat.setString(10, "1970-01-01 01:01:01");
                 }
                 if (testCaseStepActionControlExecution.getEnd() != 0) {
                     preStat.setTimestamp(11, new Timestamp(testCaseStepActionControlExecution.getEnd()));
                 } else {
-                    preStat.setString(11, "0000-00-00 00:00:00");
+                    preStat.setString(11, "1970-01-01 01:01:01");
                 }
                 DateFormat df = new SimpleDateFormat(DateUtil.DATE_FORMAT_TIMESTAMP);
                 preStat.setString(12, df.format(testCaseStepActionControlExecution.getStart()));
@@ -101,7 +101,7 @@ public class TestCaseStepActionControlExecutionDAO implements ITestCaseStepActio
                 preStat.setString(16, testCaseStepActionControlExecution.getTestCase());
                 preStat.setString(17, testCaseStepActionControlExecution.getScreenshotFilename());
                 preStat.setString(18, testCaseStepActionControlExecution.getPageSourceFilename());
-
+                preStat.setString(19, testCaseStepActionControlExecution.getDescription());
                 preStat.executeUpdate();
 
             } catch (SQLException exception) {
@@ -127,7 +127,7 @@ public class TestCaseStepActionControlExecutionDAO implements ITestCaseStepActio
 
         final String query = "UPDATE testcasestepactioncontrolexecution SET returncode = ?, controltype = ?, "
                 + "controlproperty = ?, controlvalue = ?, fatal = ?, start = ?, END = ?, startlong = ?, endlong = ?"
-                + ", returnmessage = ?, screenshotfilename = ? , pageSourceFilename = ? "
+                + ", returnmessage = ?, screenshotfilename = ? , pageSourceFilename = ?, description = ? "
                 + "WHERE id = ? AND test = ? AND testcase = ? AND step = ? AND sequence = ? AND control = ? ";
 
         Connection connection = this.databaseSpring.connect();
@@ -142,12 +142,12 @@ public class TestCaseStepActionControlExecutionDAO implements ITestCaseStepActio
                 if (testCaseStepActionControlExecution.getStart() != 0) {
                     preStat.setTimestamp(6, new Timestamp(testCaseStepActionControlExecution.getStart()));
                 } else {
-                    preStat.setString(6, "0000-00-00 00:00:00");
+                    preStat.setString(6, "1970-01-01 01:01:01");
                 }
                 if (testCaseStepActionControlExecution.getEnd() != 0) {
                     preStat.setTimestamp(7, new Timestamp(testCaseStepActionControlExecution.getEnd()));
                 } else {
-                    preStat.setString(7, "0000-00-00 00:00:00");
+                    preStat.setString(7, "1970-01-01 01:01:01");
                 }
                 DateFormat df = new SimpleDateFormat(DateUtil.DATE_FORMAT_TIMESTAMP);
                 preStat.setString(8, df.format(testCaseStepActionControlExecution.getStart()));
@@ -155,12 +155,13 @@ public class TestCaseStepActionControlExecutionDAO implements ITestCaseStepActio
                 preStat.setString(10, StringUtil.getLeftString(ParameterParserUtil.parseStringParam(testCaseStepActionControlExecution.getReturnMessage(), ""), 500));
                 preStat.setString(11, testCaseStepActionControlExecution.getScreenshotFilename());
                 preStat.setString(12, testCaseStepActionControlExecution.getPageSourceFilename());
-                preStat.setLong(13, testCaseStepActionControlExecution.getId());
-                preStat.setString(14, testCaseStepActionControlExecution.getTest());
-                preStat.setString(15, testCaseStepActionControlExecution.getTestCase());
-                preStat.setInt(16, testCaseStepActionControlExecution.getStep());
-                preStat.setInt(17, testCaseStepActionControlExecution.getSequence());
-                preStat.setInt(18, testCaseStepActionControlExecution.getControl());
+                preStat.setString(13, testCaseStepActionControlExecution.getDescription());
+                preStat.setLong(14, testCaseStepActionControlExecution.getId());
+                preStat.setString(15, testCaseStepActionControlExecution.getTest());
+                preStat.setString(16, testCaseStepActionControlExecution.getTestCase());
+                preStat.setInt(17, testCaseStepActionControlExecution.getStep());
+                preStat.setInt(18, testCaseStepActionControlExecution.getSequence());
+                preStat.setInt(19, testCaseStepActionControlExecution.getControl());
 
                 preStat.executeUpdate();
 
@@ -315,26 +316,15 @@ public class TestCaseStepActionControlExecutionDAO implements ITestCaseStepActio
         String controlProperty = resultSet.getString("ControlProperty");
         String controlValue = resultSet.getString("controlValue");
         String fatal = resultSet.getString("fatal");
-        long start;
-        try { // Managing the case where the date is 0000-00-00 00:00:00 inside MySQL
-            start = resultSet.getTimestamp("start").getTime();
-        } catch (Exception e) {
-            LOG.warn("Start date on execution not definied. " + e.toString());
-            start = 0;
-        }
-        long end;
-        try { // Managing the case where the date is 0000-00-00 00:00:00 inside MySQL
-            end = resultSet.getTimestamp("end").getTime();
-        } catch (Exception e) {
-            LOG.warn("End date on execution not definied. " + e.toString());
-            end = 0;
-        }
+        long start = resultSet.getTimestamp("start")==null?0:resultSet.getTimestamp("start").getTime();
+        long end = resultSet.getTimestamp("end")==null?0:resultSet.getTimestamp("end").getTime();
         long startlong = resultSet.getLong("startlong");
         long endlong = resultSet.getLong("endlong");
         String screenshot = resultSet.getString("ScreenshotFilename");
         String pageSource = resultSet.getString("PageSourceFilename");
+        String description = resultSet.getString("description");
         return factoryTestCaseStepActionControlExecution.create(id, test, testCase, step,
                 sequence, control, returnCode, returnMessage, controlType, controlProperty, controlValue,
-                fatal, start, end, startlong, endlong, screenshot, pageSource, null, null);
+                fatal, start, end, startlong, endlong, screenshot, pageSource,description, null, null);
     }
 }

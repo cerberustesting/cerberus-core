@@ -48,29 +48,47 @@ public interface ITestCaseCountryPropertiesService {
 
     List<String> findCountryByPropertyNameAndTestCase(String test, String testcase, String property);
 
-    void deleteListTestCaseCountryProperties(List<TestCaseCountryProperties> tccpToDelete) throws CerberusException ;
-    
-    void deleteTestCaseCountryProperties(TestCaseCountryProperties tccp) throws CerberusException ;
-    
+    void deleteListTestCaseCountryProperties(List<TestCaseCountryProperties> tccpToDelete) throws CerberusException;
+
+    void deleteTestCaseCountryProperties(TestCaseCountryProperties tccp) throws CerberusException;
+
     /**
-     * Find all the properties of a testcase including those of the pretests and the use steps
+     * Find all the properties of a testcase including those of the pretests and
+     * the use steps
+     *
      * @param test
      * @param testcase
      * @param country
-     * @return List of unique testcasecountryproperties (from tc first, use step if not found in tc and then, in pretest if not found)
-     * @throws CerberusException 
+     * @return List of unique testcasecountryproperties (from tc first, use step
+     * if not found in tc and then, in pretest if not found)
+     * @throws CerberusException
      */
     public List<TestCaseCountryProperties> findAllWithDependencies(String test, String testcase, String country) throws CerberusException;
 
     /**
-     * Method that check if a determined property is used in the value1 of a property 
+     * Method that check if a determined property is used in the value1 of a
+     * property
+     *
      * @param testDataLibID testdatalib unique identifier
      * @param name testdatalib name
-     * @param country country where 
+     * @param country country where
      * @param propertyType
-     * @return an answer with the test cases and a message indicating the status of the operation
+     * @return an answer with the test cases and a message indicating the status
+     * of the operation
      */
     AnswerList findTestCaseCountryPropertiesByValue1(int testDataLibID, String name, String country, String propertyType);
 
     Answer createListTestCaseCountryPropertiesBatch(List<TestCaseCountryProperties> listOfPropertiesToInsert);
+
+    Answer create(TestCaseCountryProperties object);
+
+    Answer delete(TestCaseCountryProperties object);
+
+    Answer update(TestCaseCountryProperties object);
+
+    Answer createList(List<TestCaseCountryProperties> objectList);
+
+    Answer deleteList(List<TestCaseCountryProperties> objectList);
+
+    Answer compareListAndUpdateInsertDeleteElements(String test, String testCase, List<TestCaseCountryProperties> newList);
 }

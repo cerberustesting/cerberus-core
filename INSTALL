@@ -53,3 +53,22 @@ You can use the start-selenium.sh script in tools/selenium/ folder. Update it in
 Script execution automation can be done using the scripts located in tools/batchexecution/.
  
 NB : don't forget to update the cerberus parameters according to your Environment --> parameter page in Admin menu needs to be changed according to your local config (See CerberusPicturesConfig file inside docs folder).
+
+Update
+------
+
+0) Download and unzip(tar) Cerberus package
+
+1) [Optional] Backup database
+
+- mysqldump -u cerberus -p cerberus > CerberusBddBackup.sql
+
+2) Modify 00Config.sh file with your local parameters. Tips: you can copy file from previous installation.
+
+3) Deploy Cerberus Application
+
+- run deploy script --> 02DeployApp.sh[.bat]
+
+4) You can connect to cerberus. 
+- The first connection will invite you to update the database.
+- You can start to using Cerberus.

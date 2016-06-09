@@ -83,6 +83,7 @@ public class UpdateTestDataLib extends HttpServlet {
         String environment = policy.sanitize(request.getParameter("environment"));
         String country = policy.sanitize(request.getParameter("country"));
         String database = policy.sanitize(request.getParameter("database"));
+        String databaseUrl = policy.sanitize(request.getParameter("databaseUrl"));
         // Parameter that needs to be secured --> We SECURE+DECODE them
         String name = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("name"), "", charset); //this is mandatory
         String group = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("group"), "", charset);
@@ -158,6 +159,7 @@ public class UpdateTestDataLib extends HttpServlet {
                     lib.setCountry(country);
                     lib.setDatabase(database);
                     lib.setScript(script);
+                    lib.setDatabaseUrl(databaseUrl);
                     lib.setServicePath(servicePath);
                     lib.setMethod(method);
                     lib.setEnvelope(envelope);

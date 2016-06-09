@@ -89,9 +89,9 @@ public class UpdateCountryEnvParam extends HttpServlet {
         PolicyFactory policy = Sanitizers.FORMATTING.and(Sanitizers.LINKS);
         String charset = request.getCharacterEncoding();
 
-        ICountryEnvironmentDatabaseService cedService = appContext.getBean(ICountryEnvironmentDatabaseService.class);
+        ICountryEnvironmentDatabaseService cebService = appContext.getBean(ICountryEnvironmentDatabaseService.class);
         ICountryEnvironmentParametersService ceaService = appContext.getBean(ICountryEnvironmentParametersService.class);
-        ICountryEnvDeployTypeService cetService = appContext.getBean(ICountryEnvDeployTypeService.class);
+        ICountryEnvDeployTypeService cedService = appContext.getBean(ICountryEnvDeployTypeService.class);
         ICountryEnvLinkService celService = appContext.getBean(ICountryEnvLinkService.class);
 
         response.setContentType("application/json");
@@ -121,8 +121,8 @@ public class UpdateCountryEnvParam extends HttpServlet {
 
         // Getting list of database from JSON Call
         JSONArray objDatabaseArray = new JSONArray(request.getParameter("database"));
-        List<CountryEnvironmentDatabase> cedList;
-        cedList = getCountryEnvironmentDatabaseFromParameter(request, appContext, system, country, environment, objDatabaseArray);
+        List<CountryEnvironmentDatabase> cebList;
+        cebList = getCountryEnvironmentDatabaseFromParameter(request, appContext, system, country, environment, objDatabaseArray);
 
         // Getting list of application from JSON Call
         JSONArray objApplicationArray = new JSONArray(request.getParameter("application"));
@@ -131,8 +131,8 @@ public class UpdateCountryEnvParam extends HttpServlet {
 
         // Getting list of database from JSON Call
         JSONArray objDeployTypeArray = new JSONArray(request.getParameter("deployType"));
-        List<CountryEnvDeployType> cetList;
-        cetList = getCountryEnvironmentDeployTypeFromParameter(request, appContext, system, country, environment, objDeployTypeArray);
+        List<CountryEnvDeployType> cedList;
+        cedList = getCountryEnvironmentDeployTypeFromParameter(request, appContext, system, country, environment, objDeployTypeArray);
 
         // Getting list of database from JSON Call
         JSONArray objDepArray = new JSONArray(request.getParameter("dependencies"));
@@ -211,13 +211,13 @@ public class UpdateCountryEnvParam extends HttpServlet {
                 }
 
                 // Update the Database with the new list.
-                ans = cedService.compareListAndUpdateInsertDeleteElements(system, country, environment, cedList);
+                ans = cebService.compareListAndUpdateInsertDeleteElements(system, country, environment, cebList);
                 finalAnswer = AnswerUtil.agregateAnswer(finalAnswer, (Answer) ans);
                 // Update the Database with the new list.
                 ans = ceaService.compareListAndUpdateInsertDeleteElements(system, country, environment, ceaList);
                 finalAnswer = AnswerUtil.agregateAnswer(finalAnswer, (Answer) ans);
                 // Update the Database with the new list.
-                ans = cetService.compareListAndUpdateInsertDeleteElements(system, country, environment, cetList);
+                ans = cedService.compareListAndUpdateInsertDeleteElements(system, country, environment, cedList);
                 finalAnswer = AnswerUtil.agregateAnswer(finalAnswer, (Answer) ans);
                 // Update the Database with the new list.
                 ans = celService.compareListAndUpdateInsertDeleteElements(system, country, environment, celList);
@@ -237,8 +237,8 @@ public class UpdateCountryEnvParam extends HttpServlet {
     }
 
     private List<CountryEnvironmentDatabase> getCountryEnvironmentDatabaseFromParameter(HttpServletRequest request, ApplicationContext appContext, String system, String country, String environment, JSONArray json) throws JSONException {
-        List<CountryEnvironmentDatabase> cedList = new ArrayList();
-        IFactoryCountryEnvironmentDatabase cedFactory = appContext.getBean(IFactoryCountryEnvironmentDatabase.class);
+        List<CountryEnvironmentDatabase> cebList = new ArrayList();
+        IFactoryCountryEnvironmentDatabase cebFactory = appContext.getBean(IFactoryCountryEnvironmentDatabase.class);
 
         for (int i = 0; i < json.length(); i++) {
             JSONObject tcsaJson = json.getJSONObject(i);
@@ -246,18 +246,19 @@ public class UpdateCountryEnvParam extends HttpServlet {
             boolean delete = tcsaJson.getBoolean("toDelete");
             String database = tcsaJson.getString("database");
             String connectionPool = tcsaJson.getString("connectionPoolName");
+            String soapUrl = tcsaJson.getString("soapUrl");
 
             if (!delete) {
-                CountryEnvironmentDatabase ced = cedFactory.create(system, country, environment, database, connectionPool);
-                cedList.add(ced);
+                CountryEnvironmentDatabase ceb = cebFactory.create(system, country, environment, database, connectionPool, soapUrl);
+                cebList.add(ceb);
             }
         }
-        return cedList;
+        return cebList;
     }
 
     private List<CountryEnvironmentParameters> getCountryEnvironmentApplicationFromParameter(HttpServletRequest request, ApplicationContext appContext, String system, String country, String environment, JSONArray json) throws JSONException {
-        List<CountryEnvironmentParameters> cedList = new ArrayList();
-        IFactoryCountryEnvironmentParameters cedFactory = appContext.getBean(IFactoryCountryEnvironmentParameters.class);
+        List<CountryEnvironmentParameters> ceaList = new ArrayList();
+        IFactoryCountryEnvironmentParameters ceaFactory = appContext.getBean(IFactoryCountryEnvironmentParameters.class);
 
         for (int i = 0; i < json.length(); i++) {
             JSONObject tcsaJson = json.getJSONObject(i);
@@ -270,11 +271,11 @@ public class UpdateCountryEnvParam extends HttpServlet {
             String urlLogin = tcsaJson.getString("urlLogin");
 
             if (!delete) {
-                CountryEnvironmentParameters ced = cedFactory.create(system, country, environment, application, ip, domain, url, urlLogin);
-                cedList.add(ced);
+                CountryEnvironmentParameters cea = ceaFactory.create(system, country, environment, application, ip, domain, url, urlLogin);
+                ceaList.add(cea);
             }
         }
-        return cedList;
+        return ceaList;
     }
 
     private List<CountryEnvDeployType> getCountryEnvironmentDeployTypeFromParameter(HttpServletRequest request, ApplicationContext appContext, String system, String country, String environment, JSONArray json) throws JSONException {
@@ -297,8 +298,8 @@ public class UpdateCountryEnvParam extends HttpServlet {
     }
 
     private List<CountryEnvLink> getCountryEnvironmentLinkFromParameter(HttpServletRequest request, ApplicationContext appContext, String system, String country, String environment, JSONArray json) throws JSONException {
-        List<CountryEnvLink> cedList = new ArrayList();
-        IFactoryCountryEnvLink cedFactory = appContext.getBean(IFactoryCountryEnvLink.class);
+        List<CountryEnvLink> ceiList = new ArrayList();
+        IFactoryCountryEnvLink ceiFactory = appContext.getBean(IFactoryCountryEnvLink.class);
 
         for (int i = 0; i < json.length(); i++) {
             JSONObject tcsaJson = json.getJSONObject(i);
@@ -309,11 +310,11 @@ public class UpdateCountryEnvParam extends HttpServlet {
             String environmentLink = tcsaJson.getString("environmentLink");
 
             if (!delete) {
-                CountryEnvLink ced = cedFactory.create(system, country, environment, systemLink, countryLink, environmentLink);
-                cedList.add(ced);
+                CountryEnvLink cei = ceiFactory.create(system, country, environment, systemLink, countryLink, environmentLink);
+                ceiList.add(cei);
             }
         }
-        return cedList;
+        return ceiList;
     }
 
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">

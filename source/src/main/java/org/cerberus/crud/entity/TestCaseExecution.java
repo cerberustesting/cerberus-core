@@ -17,7 +17,7 @@
  */
 package org.cerberus.crud.entity;
 
-import org.cerberus.service.engine.testdata.TestDataLibResult;
+import org.cerberus.engine.entity.TestDataLibResult;
 import java.util.HashMap;
 import java.util.List;
 import java.util.logging.Level;
@@ -97,6 +97,7 @@ public class TestCaseExecution {
     private String timeout;
     private AnswerList testCaseStepExecutionAnswerList;
     private AnswerItem lastSOAPCalled;
+    private List<RobotCapability> capabilities;
 
     public String getUserAgent() {
         return userAgent;
@@ -581,37 +582,38 @@ public class TestCaseExecution {
     public JSONObject toJson() {
         JSONObject result = new JSONObject();
         try {
-            result.append("id", this.getId());
-            result.append("test", this.getTest());
-            result.append("testcase", this.getTestCase());
-            result.append("build", this.getBuild());
-            result.append("revision", this.getRevision());
-            result.append("environment", this.getEnvironment());
-            result.append("country", this.getCountry());
-            result.append("browser", this.getBrowser());
-            result.append("version", this.getVersion());
-            result.append("platform", this.getPlatform());
-            result.append("browserFullVersion", this.getBrowserFullVersion());
-            result.append("start", this.getStart());
-            result.append("end", this.getEnd());
-            result.append("controlStatus", this.getControlStatus());
-            result.append("controlMessage", this.getControlMessage());
-            result.append("application", this.getApplication());
-            result.append("ip", this.getIp());
-            result.append("url", this.getUrl());
-            result.append("port", this.getPort());
-            result.append("tag", this.getTag());
-            result.append("finished", this.getFinished());
-            result.append("verbose", this.getVerbose());
-            result.append("status", this.getStatus());
-            result.append("crbVersion", this.getCrbVersion());
-            result.append("executor", this.getExecutor());
-            result.append("screenSize", this.getScreenSize());
+            result.put("id", this.getId());
+            result.put("test", this.getTest());
+            result.put("testcase", this.getTestCase());
+            result.put("build", this.getBuild());
+            result.put("revision", this.getRevision());
+            result.put("environment", this.getEnvironment());
+            result.put("country", this.getCountry());
+            result.put("browser", this.getBrowser());
+            result.put("version", this.getVersion());
+            result.put("platform", this.getPlatform());
+            result.put("browserFullVersion", this.getBrowserFullVersion());
+            result.put("capabilities", this.getCapabilities());
+            result.put("start", this.getStart());
+            result.put("end", this.getEnd());
+            result.put("controlStatus", this.getControlStatus());
+            result.put("controlMessage", this.getControlMessage());
+            result.put("application", this.getApplication());
+            result.put("ip", this.getIp());
+            result.put("url", this.getUrl());
+            result.put("port", this.getPort());
+            result.put("tag", this.getTag());
+            result.put("finished", this.getFinished());
+            result.put("verbose", this.getVerbose());
+            result.put("status", this.getStatus());
+            result.put("crbVersion", this.getCrbVersion());
+            result.put("executor", this.getExecutor());
+            result.put("screenSize", this.getScreenSize());
             JSONArray array = new JSONArray();
             for (Object testCaseStepExecution : this.getTestCaseStepExecutionAnswerList().getDataList()) {
                 array.put( ((TestCaseStepExecution)testCaseStepExecution).toJson());
             }
-            result.append("testCaseStepExecutionList", array);
+            result.put("testCaseStepExecutionList", array);
         } catch (JSONException ex) {
             Logger.getLogger(TestCaseExecution.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -625,6 +627,13 @@ public class TestCaseExecution {
     public void setLastSOAPCalled(AnswerItem lastSOAPCalled) {
         this.lastSOAPCalled = lastSOAPCalled;
     }
-    
+
+	public List<RobotCapability> getCapabilities() {
+		return capabilities;
+	}
+
+	public void setCapabilities(List<RobotCapability> capabilities) {
+		this.capabilities = capabilities;
+	}
     
 }

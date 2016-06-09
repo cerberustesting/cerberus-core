@@ -34,6 +34,7 @@ import org.cerberus.crud.entity.TestDataLib;
 import org.cerberus.crud.factory.IFactoryTestDataLib;
 import org.cerberus.log.MyLogger;
 import org.cerberus.util.ParameterParserUtil;
+import org.cerberus.util.StringUtil;
 import org.cerberus.util.answer.Answer;
 import org.cerberus.util.answer.AnswerItem;
 import org.cerberus.util.answer.AnswerList;
@@ -145,11 +146,13 @@ public class TestDataLibDAO implements ITestDataLibDAO {
         TestDataLib result = null;
         MessageEvent msg;
 
-        final String query = new StringBuilder("SELECT * FROM testdatalib tdl where `name` LIKE ?")
-                .append(" and `system` = ? ")
-                .append(" and `environment` = ? ")
-                .append(" and `country` = ? ")
-                .append(" order by `name` DESC, system DESC, environment DESC, country DESC, tdl.TestDataLibID ASC")
+        final String query = new StringBuilder("SELECT * FROM testdatalib tdl ")
+                .append(" LEFT OUTER JOIN testdatalibdata tdd ON tdl.TestDataLibID = tdd.TestDataLibID and tdd.Subdata='' ")
+                .append("WHERE tdl.`name` LIKE ? ")
+                .append(" and tdl.`system` = ? ")
+                .append(" and tdl.`environment` = ? ")
+                .append(" and tdl.`country` = ? ")
+                .append(" order by tdl.`name` DESC, tdl.system DESC, tdl.environment DESC, tdl.country DESC, tdl.TestDataLibID ASC")
                 .append(" limit 1").toString();
 
         // Debug message on SQL.
@@ -221,7 +224,9 @@ public class TestDataLibDAO implements ITestDataLibDAO {
         AnswerItem answer = new AnswerItem();
         MessageEvent msg;
         TestDataLib result;
-        final String query = "SELECT * FROM testdatalib tdl where `TestDataLibID` = ?";
+        final String query = "SELECT * FROM testdatalib tdl "
+                + " LEFT OUTER JOIN testdatalibdata tdd ON tdl.TestDataLibID = tdd.TestDataLibID and tdd.Subdata='' "
+                + " WHERE tdl.`TestDataLibID` = ? ;";
 
         // Debug message on SQL.
         if (LOG.isDebugEnabled()) {
@@ -282,14 +287,6 @@ public class TestDataLibDAO implements ITestDataLibDAO {
         return answer;
     }
 
-    /**
-     * Searches for the testdatalib names that match (totally or partially) the
-     * name provided. Used by the autocomplete feature.
-     *
-     * @param testDataLibName
-     * @param limit
-     * @return
-     */
     @Override
     public AnswerList readNameListByName(String testDataLibName, int limit) {
         AnswerList answer = new AnswerList();
@@ -297,10 +294,12 @@ public class TestDataLibDAO implements ITestDataLibDAO {
         List<String> namesList = new ArrayList<String>();
 
         StringBuilder query = new StringBuilder();
-        query.append("select distinct(`name`) ");
-        query.append("from testdatalib tdl where `name` like ? ");
-        query.append(" order by `name`  ");
-        query.append(" limit ? ");
+        query.append("SELECT distinct(`name`) ")
+                .append("FROM testdatalib tdl ")
+                .append(" WHERE `name` like ? ")
+                .append(" order by `name`  ")
+                .append(" limit ? ");
+
         if ((limit <= 0) || (limit >= MAX_ROW_SELECTED)) {
             limit = MAX_ROW_SELECTED;
         }
@@ -320,7 +319,7 @@ public class TestDataLibDAO implements ITestDataLibDAO {
                 try {
 
                     while (resultSet.next()) {
-                        String name = resultSet.getString("Name");
+                        String name = resultSet.getString("tdl.Name");
                         namesList.add(name);
                     }
 
@@ -376,7 +375,8 @@ public class TestDataLibDAO implements ITestDataLibDAO {
         MessageEvent msg;
 
         List<TestDataLib> list = new ArrayList<TestDataLib>();
-        final String query = "SELECT * FROM testdatalib tdl";
+        final String query = "SELECT * FROM testdatalib tdl"
+                + " LEFT OUTER JOIN testdatalibdata tdd ON tdl.TestDataLibID = tdd.TestDataLibID and tdd.Subdata=''; ";
 
         // Debug message on SQL.
         if (LOG.isDebugEnabled()) {
@@ -436,14 +436,13 @@ public class TestDataLibDAO implements ITestDataLibDAO {
     }
 
     @Override
-    public AnswerList readByCriteria(int start, int amount, String colName, String dir, String searchTerm, String individualSearch) {
+    public AnswerList readByVariousByCriteria(String name, String system, String environment, String country, String type, int start, int amount, String column, String dir, String searchTerm, String individualSearch) {
 
         AnswerList answer = new AnswerList();
         MessageEvent msg;
         int nrTotalRows = 0;
-        List<TestDataLib> testDataLibList = new ArrayList<TestDataLib>();
+        List<TestDataLib> objectList = new ArrayList<TestDataLib>();
 
-        StringBuilder gSearch = new StringBuilder();
         StringBuilder searchSQL = new StringBuilder();
 
         StringBuilder query = new StringBuilder();
@@ -453,36 +452,46 @@ public class TestDataLibDAO implements ITestDataLibDAO {
 
         query.append("LEFT OUTER JOIN testdatalibdata tdd ON tdl.TestDataLibID=tdd.TestDataLibID and tdd.SubData='' ");
 
-        gSearch.append(" where (tdl.`name` like '%").append(searchTerm).append("%'");
-        gSearch.append(" or tdl.`group` like '%").append(searchTerm).append("%'");
-        gSearch.append(" or tdl.`type` like '%").append(searchTerm).append("%'");
-        gSearch.append(" or tdl.`database` like '%").append(searchTerm).append("%'");
-        gSearch.append(" or tdl.`script` like '%").append(searchTerm).append("%'");
-        gSearch.append(" or tdl.`servicepath` like '%").append(searchTerm).append("%'");
-        gSearch.append(" or tdl.`method` like '%").append(searchTerm).append("%'");
-        gSearch.append(" or tdl.`envelope` like '%").append(searchTerm).append("%'");
-        gSearch.append(" or tdl.`description` like '%").append(searchTerm).append("%'");
-        gSearch.append(" or tdl.`system` like '%").append(searchTerm).append("%'");
-        gSearch.append(" or tdl.`environment` like '%").append(searchTerm).append("%'");
-        gSearch.append(" or tdl.`country` like '%").append(searchTerm).append("%') ");
+        searchSQL.append(" WHERE 1=1 ");
 
-        if (!searchTerm.equals("") && !individualSearch.equals("")) {
-            searchSQL.append(gSearch.toString());
-            searchSQL.append(" and ");
-            searchSQL.append(individualSearch);
-        } else if (!individualSearch.equals("")) {
-            searchSQL.append(" where `");
-            searchSQL.append(individualSearch);
-            searchSQL.append("`");
-        } else if (!searchTerm.equals("")) {
-            searchSQL.append(gSearch.toString());
+        if (!StringUtil.isNullOrEmpty(searchTerm)) {
+            searchSQL.append(" and (tdl.`name` like ?");
+            searchSQL.append(" or tdl.`group` like ?");
+            searchSQL.append(" or tdl.`type` like ?");
+            searchSQL.append(" or tdl.`database` like ?");
+            searchSQL.append(" or tdl.`databaseUrl` like ?");
+            searchSQL.append(" or tdl.`script` like ?");
+            searchSQL.append(" or tdl.`servicepath` like ?");
+            searchSQL.append(" or tdl.`method` like ?");
+            searchSQL.append(" or tdl.`envelope` like ?");
+            searchSQL.append(" or tdl.`description` like ?");
+            searchSQL.append(" or tdl.`system` like ?");
+            searchSQL.append(" or tdl.`environment` like ?");
+            searchSQL.append(" or tdl.`country` like ?) ");
         }
-
+        if (!StringUtil.isNullOrEmpty(individualSearch)) {
+            searchSQL.append(" and (`?`)");
+        }
+        if (name != null) {
+            searchSQL.append(" and tdl.`name` = ? ");
+        }
+        if (system != null) {
+            searchSQL.append(" and tdl.`system` = ? ");
+        }
+        if (environment != null) {
+            searchSQL.append(" and tdl.`environment` = ? ");
+        }
+        if (country != null) {
+            searchSQL.append(" and tdl.`country` = ? ");
+        }
+        if (!StringUtil.isNullOrEmpty(type)) {
+            searchSQL.append(" and tdl.`type` = ? ");
+        }
         query.append(searchSQL);
-        query.append("order by `");
-        query.append(colName);
-        query.append("` ");
-        query.append(dir);
+
+        if (!StringUtil.isNullOrEmpty(column)) {
+            query.append(" order by ").append(column).append(" ").append(dir);
+        }
 
         if ((amount <= 0) || (amount >= MAX_ROW_SELECTED)) {
             query.append(" limit ").append(start).append(" , ").append(MAX_ROW_SELECTED);
@@ -493,17 +502,55 @@ public class TestDataLibDAO implements ITestDataLibDAO {
         // Debug message on SQL.
         if (LOG.isDebugEnabled()) {
             LOG.debug("SQL : " + query);
+            LOG.debug("SQL.name : " + name);
+            LOG.debug("SQL.system : " + system);
+            LOG.debug("SQL.environment : " + environment);
+            LOG.debug("SQL.country : " + country);
+            LOG.debug("SQL.type : " + type);
         }
 
         Connection connection = this.databaseSpring.connect();
         try {
             PreparedStatement preStat = connection.prepareStatement(query.toString());
             try {
+                int i = 1;
+                if (!StringUtil.isNullOrEmpty(searchTerm)) {
+                    preStat.setString(i++, "%" + searchTerm + "%");
+                    preStat.setString(i++, "%" + searchTerm + "%");
+                    preStat.setString(i++, "%" + searchTerm + "%");
+                    preStat.setString(i++, "%" + searchTerm + "%");
+                    preStat.setString(i++, "%" + searchTerm + "%");
+                    preStat.setString(i++, "%" + searchTerm + "%");
+                    preStat.setString(i++, "%" + searchTerm + "%");
+                    preStat.setString(i++, "%" + searchTerm + "%");
+                    preStat.setString(i++, "%" + searchTerm + "%");
+                    preStat.setString(i++, "%" + searchTerm + "%");
+                    preStat.setString(i++, "%" + searchTerm + "%");
+                    preStat.setString(i++, "%" + searchTerm + "%");
+                }
+                if (!StringUtil.isNullOrEmpty(individualSearch)) {
+                    preStat.setString(i++, individualSearch);
+                }
+                if (name != null) {
+                    preStat.setString(i++, name);
+                }
+                if (system != null) {
+                    preStat.setString(i++, system);
+                }
+                if (environment != null) {
+                    preStat.setString(i++, environment);
+                }
+                if (country != null) {
+                    preStat.setString(i++, country);
+                }
+                if (!StringUtil.isNullOrEmpty(type)) {
+                    preStat.setString(i++, type);
+                }
                 ResultSet resultSet = preStat.executeQuery();
                 try {
                     //gets the data
                     while (resultSet.next()) {
-                        testDataLibList.add(this.loadFromResultSet(resultSet));
+                        objectList.add(this.loadFromResultSet(resultSet));
                     }
 
                     //get the total number of rows
@@ -512,11 +559,11 @@ public class TestDataLibDAO implements ITestDataLibDAO {
                     if (resultSet != null && resultSet.next()) {
                         nrTotalRows = resultSet.getInt(1);
                     }
-                    if (testDataLibList.size() >= MAX_ROW_SELECTED) { // Result of SQl was limited by MAX_ROW_SELECTED constrain. That means that we may miss some lines in the resultList.
+                    if (objectList.size() >= MAX_ROW_SELECTED) { // Result of SQl was limited by MAX_ROW_SELECTED constrain. That means that we may miss some lines in the resultList.
                         MyLogger.log(TestDataLibDAO.class.getName(), Level.INFO, "Partial Result in the query.");
                         msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_WARNING_PARTIAL_RESULT);
                         msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", "Maximum row reached : " + MAX_ROW_SELECTED));
-                    } else if (testDataLibList.isEmpty()) {
+                    } else if (objectList.isEmpty()) {
                         msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_NO_DATA_FOUND);
                     } else {
                         msg = MessageEventUtil.createSelectSuccessMessageDAO(OBJECT_NAME);
@@ -525,7 +572,7 @@ public class TestDataLibDAO implements ITestDataLibDAO {
                 } catch (SQLException exception) {
                     MyLogger.log(TestDataLibDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
                     msg = MessageEventUtil.createSelectUnexpectedErrorMessageDAO();
-                    testDataLibList.clear();
+                    objectList.clear();
                 } finally {
                     if (resultSet != null) {
                         resultSet.close();
@@ -557,7 +604,7 @@ public class TestDataLibDAO implements ITestDataLibDAO {
         }
         answer.setTotalRows(nrTotalRows);
         answer.setResultMessage(msg);
-        answer.setDataList(testDataLibList);
+        answer.setDataList(objectList);
         return answer;
     }
 
@@ -566,7 +613,7 @@ public class TestDataLibDAO implements ITestDataLibDAO {
         AnswerList answerList = new AnswerList();
         ArrayList<String> listOfGroups = new ArrayList<String>();
         MessageEvent msg;
-        String query = "SELECT distinct(`Group`) FROM testdatalib  where `Group` <> '' order by `Group`";
+        String query = "SELECT distinct(`Group`) FROM testdatalib  WHERE `Group` <> '' ORDER BY `Group`";
 
         // Debug message on SQL.
         if (LOG.isDebugEnabled()) {
@@ -633,8 +680,8 @@ public class TestDataLibDAO implements ITestDataLibDAO {
         Answer answer = new Answer();
         StringBuilder query = new StringBuilder();
         query.append("INSERT INTO testdatalib (`name`, `system`, `environment`, `country`, `group`, `type`, `database`, "
-                + "`script`, `servicePath`, `method`, `envelope`, `description`, `creator`) ");
-        query.append("VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?)");
+                + "`script`, `databaseUrl`, `servicePath`, `method`, `envelope`, `description`, `creator`) ");
+        query.append("VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?)");
 
         // Debug message on SQL.
         if (LOG.isDebugEnabled()) {
@@ -653,11 +700,12 @@ public class TestDataLibDAO implements ITestDataLibDAO {
                 preStat.setString(6, testDataLib.getType());
                 preStat.setString(7, ParameterParserUtil.returnEmptyStringIfNull(testDataLib.getDatabase()));
                 preStat.setString(8, ParameterParserUtil.returnEmptyStringIfNull(testDataLib.getScript()));
-                preStat.setString(9, ParameterParserUtil.returnEmptyStringIfNull(testDataLib.getServicePath()));
-                preStat.setString(10, ParameterParserUtil.returnEmptyStringIfNull(testDataLib.getMethod()));
-                preStat.setString(11, testDataLib.getEnvelope()); //is the one that allows null values
-                preStat.setString(12, ParameterParserUtil.returnEmptyStringIfNull(testDataLib.getDescription()));
-                preStat.setString(13, ParameterParserUtil.returnEmptyStringIfNull(testDataLib.getCreator()));
+                preStat.setString(9, ParameterParserUtil.returnEmptyStringIfNull(testDataLib.getDatabaseUrl()));
+                preStat.setString(10, ParameterParserUtil.returnEmptyStringIfNull(testDataLib.getServicePath()));
+                preStat.setString(11, ParameterParserUtil.returnEmptyStringIfNull(testDataLib.getMethod()));
+                preStat.setString(12, testDataLib.getEnvelope()); //is the one that allows null values
+                preStat.setString(13, ParameterParserUtil.returnEmptyStringIfNull(testDataLib.getDescription()));
+                preStat.setString(14, ParameterParserUtil.returnEmptyStringIfNull(testDataLib.getCreator()));
 
                 preStat.executeUpdate();
 
@@ -714,7 +762,7 @@ public class TestDataLibDAO implements ITestDataLibDAO {
         Answer ans = new Answer();
         MessageEvent msg;
         StringBuilder query = new StringBuilder();
-        query.append("delete from testdatalib where testdatalibid = ?");
+        query.append("DELETE FROM testdatalib WHERE testdatalibid = ?");
 
         // Debug message on SQL.
         if (LOG.isDebugEnabled()) {
@@ -767,8 +815,8 @@ public class TestDataLibDAO implements ITestDataLibDAO {
     public Answer update(TestDataLib testDataLib) {
         Answer answer = new Answer();
         MessageEvent msg;
-        String query = "update testdatalib set `type`=?, `group`= ?, `system`=?, `environment`=?, `country`=?, `database`= ? , `script`= ? , "
-                + "`servicepath`= ? , `method`= ? , `envelope`= ? , `description`= ? , `LastModifier`= ?, `LastModified` = NOW() where "
+        String query = "UPDATE testdatalib SET `type`=?, `group`= ?, `system`=?, `environment`=?, `country`=?, `database`= ? , `script`= ? , "
+                + "`databaseUrl`= ? , `servicepath`= ? , `method`= ? , `envelope`= ? , `description`= ? , `LastModifier`= ?, `LastModified` = NOW() WHERE "
                 + "`TestDataLibID`= ?";
 
         // Debug message on SQL.
@@ -788,12 +836,13 @@ public class TestDataLibDAO implements ITestDataLibDAO {
                 preStat.setString(5, testDataLib.getCountry());
                 preStat.setString(6, testDataLib.getDatabase());
                 preStat.setString(7, testDataLib.getScript());
-                preStat.setString(8, testDataLib.getServicePath());
-                preStat.setString(9, testDataLib.getMethod());
-                preStat.setString(10, testDataLib.getEnvelope());
-                preStat.setString(11, testDataLib.getDescription());
-                preStat.setString(12, testDataLib.getLastModifier());
-                preStat.setInt(13, testDataLib.getTestDataLibID());
+                preStat.setString(8, testDataLib.getDatabaseUrl());
+                preStat.setString(9, testDataLib.getServicePath());
+                preStat.setString(10, testDataLib.getMethod());
+                preStat.setString(11, testDataLib.getEnvelope());
+                preStat.setString(12, testDataLib.getDescription());
+                preStat.setString(13, testDataLib.getLastModifier());
+                preStat.setInt(14, testDataLib.getTestDataLibID());
 
                 int rowsUpdated = preStat.executeUpdate();
 
@@ -836,6 +885,7 @@ public class TestDataLibDAO implements ITestDataLibDAO {
         return answer;
     }
 
+    @Override
     public TestDataLib loadFromResultSet(ResultSet resultSet) throws SQLException {
         Integer testDataLibID = resultSet.getInt("tdl.testDataLibID");
         String name = resultSet.getString("tdl.name");
@@ -846,6 +896,7 @@ public class TestDataLibDAO implements ITestDataLibDAO {
         String type = ParameterParserUtil.returnEmptyStringIfNull(resultSet.getString("tdl.type"));
         String database = ParameterParserUtil.returnEmptyStringIfNull(resultSet.getString("tdl.database"));
         String script = ParameterParserUtil.returnEmptyStringIfNull(resultSet.getString("tdl.script"));
+        String databaseUrl = ParameterParserUtil.returnEmptyStringIfNull(resultSet.getString("tdl.databaseUrl"));
         String servicePath = ParameterParserUtil.returnEmptyStringIfNull(resultSet.getString("tdl.servicePath"));
         String method = ParameterParserUtil.returnEmptyStringIfNull(resultSet.getString("tdl.method"));
         String envelope = ParameterParserUtil.returnEmptyStringIfNull(resultSet.getString("tdl.envelope"));
@@ -865,7 +916,7 @@ public class TestDataLibDAO implements ITestDataLibDAO {
             MyLogger.log(TestDataLibDAO.class.getName(), Level.WARN, ex.toString());
         }
 
-        return factoryTestDataLib.create(testDataLibID, name, system, environment, country, group, type, database, script, servicePath,
+        return factoryTestDataLib.create(testDataLibID, name, system, environment, country, group, type, database, script, databaseUrl, servicePath,
                 method, envelope, description, creator, created, lastModifier, lastModified, subDataValue, subDataColumn, subDataParsingAnswer);
     }
 

@@ -143,7 +143,6 @@ public class ReadTestDataLib extends HttpServlet {
             jsonResponse.put("messageType", answer.getResultMessage().getMessage().getCodeString());
             jsonResponse.put("message", answer.getResultMessage().getDescription());
 
-            response.setContentType("application/json");
             response.getWriter().print(jsonResponse.toString());
 
         } catch (JSONException e) {
@@ -183,7 +182,7 @@ public class ReadTestDataLib extends HttpServlet {
         String columnName = columnToSort[columnToSortParameter];
         String sort = ParameterParserUtil.parseStringParam(request.getParameter("sSortDir_0"), "asc");
 
-        AnswerList resp = testDataLibService.readByCriteria(startPosition, length, columnName, sort, searchParameter, "");
+        AnswerList resp = testDataLibService.readByVariousByCriteria(null, null, null, null, null, startPosition, length, columnName, sort, searchParameter, "");
 
         JSONArray jsonArray = new JSONArray();
         boolean userHasPermissions = request.isUserInRole("TestDataManager");

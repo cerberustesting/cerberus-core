@@ -19,7 +19,9 @@
  */
 package org.cerberus.crud.factory;
 
+import java.util.List;
 import org.cerberus.crud.entity.Robot;
+import org.cerberus.crud.entity.RobotCapability;
 
 /**
  * @author bcivel
@@ -42,5 +44,8 @@ public interface IFactoryRobot {
      */
     Robot create(Integer robotID, String robot, String host, String port, String platform ,
     String browser, String version, String active, String description, String userAgent);
+    
+    Robot create(Integer robotID, String robot, String host, String port, String platform ,
+    String browser, String version, String active, String description, String userAgent, List<RobotCapability> capabilities);
 
 }

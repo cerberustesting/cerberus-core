@@ -142,7 +142,7 @@
                                 if (sName.compareTo("Test") == 0 || sName.compareTo("TestCase") == 0
                                         || sName.compareTo("Country") == 0 || sName.compareTo("Environment") == 0
                                         || sName.compareTo("ss_ip") == 0 || sName.compareTo("ss_p") == 0
-                                        || sName.compareTo("browser") == 0
+                                        || sName.compareTo("browser") == 0 || sName.compareTo("version") == 0
                                         || sName.compareTo("manualURL") == 0
                                         || sName.compareTo("myhost") == 0 || sName.compareTo("mycontextroot") == 0 || sName.compareTo("myloginrelativeurl") == 0
                                         || sName.compareTo("myenvdata") == 0

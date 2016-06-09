@@ -15,7 +15,7 @@
         <title>ExecutionThreadMonitoring</title>
         <script>
             $(document).ready(function() {
-                $.get('ExecutionThreadMonitoring', function(data) {
+                $.get('ReadCerberusDetailInformation', function(data) {
                     $("#sizeOfQueue").html(data.size_queue);
                     $("#QueueInExecution").html(data.queue_in_execution);
                     $("#NumberOfThread").html(data.number_of_thread);

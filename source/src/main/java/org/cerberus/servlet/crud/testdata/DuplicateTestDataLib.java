@@ -23,7 +23,6 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import org.apache.commons.lang3.StringEscapeUtils;
 import org.cerberus.crud.entity.MessageEvent;
 import org.cerberus.crud.entity.TestDataLib;
 import org.cerberus.crud.factory.IFactoryTestDataLib;
@@ -93,6 +92,7 @@ public class DuplicateTestDataLib extends HttpServlet {
         String environment = policy.sanitize(request.getParameter("environment"));
         String country = policy.sanitize(request.getParameter("country"));
         String database = policy.sanitize(request.getParameter("database"));
+        String databaseUrl = policy.sanitize(request.getParameter("databaseUrl"));
         // Parameter that needs to be secured --> We SECURE+DECODE them
         String name = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("name"), null, charset);
         String group = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("group"), "", charset);
@@ -125,7 +125,7 @@ public class DuplicateTestDataLib extends HttpServlet {
             IFactoryTestDataLib factoryLibService = appContext.getBean(IFactoryTestDataLib.class);
 
             TestDataLib lib = factoryLibService.create(testdatalibid, name, system, environment, country, group, type, database, script,
-                    servicePath, method, envelope, description, request.getRemoteUser(), null, "", null, null, null, null);
+                    databaseUrl, servicePath, method, envelope, description, request.getRemoteUser(), null, "", null, null, null, null);
 
             AnswerItem existsAnswer = libService.readByKey(lib.getName(), lib.getSystem(), lib.getEnvironment(), lib.getCountry());
 

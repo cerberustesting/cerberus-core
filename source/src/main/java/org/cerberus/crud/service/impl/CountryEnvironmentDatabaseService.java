@@ -92,8 +92,8 @@ public class CountryEnvironmentDatabaseService implements ICountryEnvironmentDat
     @Override
     public Answer deleteList(List<CountryEnvironmentDatabase> objectList) {
         Answer ans = new Answer(null);
-        for (CountryEnvironmentDatabase objectToCreate : objectList) {
-            ans = countryEnvironmentDatabaseDao.delete(objectToCreate);
+        for (CountryEnvironmentDatabase objectToDelete : objectList) {
+            ans = countryEnvironmentDatabaseDao.delete(objectToDelete);
         }
         return ans;
     }
@@ -144,10 +144,10 @@ public class CountryEnvironmentDatabaseService implements ICountryEnvironmentDat
         listToDelete.removeAll(newList);
         List<CountryEnvironmentDatabase> listToDeleteToIterate = new ArrayList(listToDelete);
 
-        for (CountryEnvironmentDatabase tcsDifference : listToDeleteToIterate) {
-            for (CountryEnvironmentDatabase tcsInPage : newList) {
-                if (tcsDifference.hasSameKey(tcsInPage)) {
-                    listToDelete.remove(tcsDifference);
+        for (CountryEnvironmentDatabase objectDifference : listToDeleteToIterate) {
+            for (CountryEnvironmentDatabase objectInPage : newList) {
+                if (objectDifference.hasSameKey(objectInPage)) {
+                    listToDelete.remove(objectDifference);
                 }
             }
         }
