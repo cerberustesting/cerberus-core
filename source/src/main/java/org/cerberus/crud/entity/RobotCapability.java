@@ -83,7 +83,7 @@ public class RobotCapability {
     /**
      * Set the {@link Robot}'s name associated to this {@link RobotCapability}
      *
-     * @param robotId the new {@link Robot}'s name associated to this
+     * @param robot the new {@link Robot}'s name associated to this
      * {@link RobotCapability}
      */
     public void setRobot(String robot) {

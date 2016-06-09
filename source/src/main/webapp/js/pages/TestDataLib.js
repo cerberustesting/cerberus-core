@@ -216,6 +216,7 @@ function displayUpdateTestDataLibLabels(doc) {
     $("#lbl_description_edit").html(doc.getDocOnline("testdatalib", "description"));
     $("#lbl_database_edit").html(doc.getDocOnline("testdatalib", "database"));
     $("#lbl_script_edit").html(doc.getDocOnline("testdatalib", "script"));
+    $("#lbl_databaseUrl_edit").html(doc.getDocOnline("testdatalib", "databaseUrl"));
     $("#lbl_service_path_edit").html(doc.getDocOnline("testdatalib", "servicepath"));
     $("#lbl_method_edit").html(doc.getDocOnline("testdatalib", "method"));
     $("#lbl_envelope_edit").html(doc.getDocOnline("testdatalib", "envelope"));
@@ -253,6 +254,7 @@ function displayDuplicateTestDataLibLabels(doc) {
     $("#lbl_description_duplicate").html(doc.getDocOnline("testdatalib", "description"));
     $("#lbl_database_duplicate").html(doc.getDocOnline("testdatalib", "database"));
     $("#lbl_script_duplicate").html(doc.getDocOnline("testdatalib", "script"));
+    $("#lbl_databaseUrl_duplicate").html(doc.getDocOnline("testdatalib", "databaseUrl"));
     $("#lbl_service_path_duplicate").html(doc.getDocOnline("testdatalib", "servicepath"));
     $("#lbl_method_duplicate").html(doc.getDocOnline("testdatalib", "method"));
     $("#lbl_envelope_duplicate").html(doc.getDocOnline("testdatalib", "envelope"));
@@ -349,6 +351,7 @@ function displayCreateTestDataLibLabels(doc) {
     $("#lbl_description").html(doc.getDocOnline("testdatalib", "description"));
     $("#lbl_database").html(doc.getDocOnline("testdatalib", "database"));
     $("#lbl_script").html(doc.getDocOnline("testdatalib", "script"));
+    $("#lbl_databaseUrl").html(doc.getDocOnline("testdatalib", "databaseUrl"));
     $("#lbl_service_path").html(doc.getDocOnline("testdatalib", "servicepath"));
     $("#lbl_method").html(doc.getDocOnline("testdatalib", "method"));
     $("#lbl_envelope").html(doc.getDocOnline("testdatalib", "envelope"));
@@ -617,6 +620,7 @@ function createLibButtonClickHandler() {
         //Country
         loadSelectElement(countryList, $('#addTestDataLibModal #country'), true, '');
         //database
+        loadSelectElement(databaseList, $('#addTestDataLibModal #databaseUrl'), true, '');
         loadSelectElement(databaseList, $('#addTestDataLibModal #database'), true, '');
 
         var jqxhrGroups = $.getJSON("ReadTestDataLib", "groups");
@@ -1035,6 +1039,8 @@ function editTestDataLib(testDataLibID) {
             //database
             loadSelectElement(databaseList, $('#editTestDataLibModal #database'), true, '');
             $('#editTestDataLibModal #database').find('option[value="' + obj.database + '"]:first').prop("selected", "selected");
+            loadSelectElement(databaseList, $('#editTestDataLibModal #databaseUrl'), true, '');
+            $('#editTestDataLibModal #databaseUrl').find('option[value="' + obj.databaseUrl + '"]:first').prop("selected", "selected");
 
 
             //loads groups from database
@@ -1281,6 +1287,8 @@ function duplicateEntry(testDataLibID) {
             //database
             loadSelectElement(databaseList, $('#duplicateTestDataLibModal #database'), true, '');
             $('#duplicateTestDataLibModal #database').find('option[value="' + obj.database + '"]:first').prop("selected", "selected");
+            loadSelectElement(databaseList, $('#duplicateTestDataLibModal #databaseUrl'), true, '');
+            $('#duplicateTestDataLibModal #databaseUrl').find('option[value="' + obj.databaseUrl + '"]:first').prop("selected", "selected");
 
 
             //loads groups from database
@@ -1485,6 +1493,12 @@ function aoColumnsFuncTestDataLib(tableId) {
             "data": "script",
             "sWidth": "150px",
             "title": doc.getDocOnline("testdatalib", "script")
+        },
+        {
+            "sName": "DatabaseUrl",
+            "data": "databaseUrl",
+            "sWidth": "70px",
+            "title": doc.getDocOnline("testdatalib", "databaseUrl")
         },
         {
             "sName": "ServicePath",

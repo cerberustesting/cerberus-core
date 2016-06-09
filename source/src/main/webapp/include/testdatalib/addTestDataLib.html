@@ -92,16 +92,21 @@
                                             </div>
                                             <div id="panelSOAP" class="panel-body collapse">
                                                 <div class="row">
-                                                    <div class="form-group col-xs-6" >
+                                                    <div class="form-group  col-xs-3"> 
+                                                        <label id="lbl_databaseUrl_edit" for="databaseUrl">Database URL</label> 
+                                                        <select class="form-control" id="databaseUrl" name="databaseUrl">
+                                                        </select> 
+                                                    </div>    
+                                                    <div class="form-group col-xs-5" >
                                                         <label id="lbl_service_path" for="servicepath">Service Path</label>
                                                         <input id="servicepath" name="servicepath"  class="form-control" maxlength="250"  />  
                                                     </div>
-                                                    <div class="form-group col-xs-6">
+                                                    <div class="form-group col-xs-4">
                                                         <label id="lbl_method" for="method">Method</label>
                                                         <input id="method" name="method" class="form-control" maxlength="45"  />
                                                     </div>
                                                 </div>    
-                                                <div class="form-group">
+                                                <div class="row form-group col-xs-12">
                                                     <label id="lbl_envelope" for="envelope">Envelope</label>                    
                                                     <textarea id="envelope" name="envelope" 
                                                               class="form-control"></textarea>     

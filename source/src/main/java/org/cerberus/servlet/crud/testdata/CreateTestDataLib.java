@@ -84,6 +84,7 @@ public class CreateTestDataLib extends HttpServlet {
         String environment = policy.sanitize(request.getParameter("environment"));
         String country = policy.sanitize(request.getParameter("country"));
         String database = policy.sanitize(request.getParameter("database"));
+        String databaseUrl = policy.sanitize(request.getParameter("databaseUrl"));
         // Parameter that needs to be secured --> We SECURE+DECODE them
         String name = ParameterParserUtil.parseStringParam(request.getParameter("name"), null);
         String group = ParameterParserUtil.parseStringParam(request.getParameter("group"), "");
@@ -112,7 +113,7 @@ public class CreateTestDataLib extends HttpServlet {
             IFactoryTestDataLib factoryLibService = appContext.getBean(IFactoryTestDataLib.class);
 
             TestDataLib lib = factoryLibService.create(0, name, system, environment, country, group,
-                    type, database, script, servicePath, method, envelope, description,
+                    type, database, script, databaseUrl, servicePath, method, envelope, description,
                     request.getRemoteUser(), null, "", null, null, null, null);
             List<TestDataLibData> subDataList = new ArrayList<TestDataLibData>();
             subDataList.addAll(extractTestDataLibDataSet(appContext, request, policy));

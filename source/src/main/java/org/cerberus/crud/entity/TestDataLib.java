@@ -34,6 +34,7 @@ public class TestDataLib {
     private String type;
     private String database;
     private String script;
+    private String databaseUrl;
     private String servicePath;
     private String method;
     private String envelope;
@@ -42,14 +43,20 @@ public class TestDataLib {
     private Timestamp created;
     private String lastModifier;
     private Timestamp lastModified;
-    
+
     // Not included in table.
     // Master subdata record (correspond to subdata='')
     private String subDataValue;
     private String subDataColumn;
     private String subDataParsingAnswer;
-    
-    
+
+    public String getDatabaseUrl() {
+        return databaseUrl;
+    }
+
+    public void setDatabaseUrl(String databaseUrl) {
+        this.databaseUrl = databaseUrl;
+    }
 
     public Integer getTestDataLibID() {
         return testDataLibID;

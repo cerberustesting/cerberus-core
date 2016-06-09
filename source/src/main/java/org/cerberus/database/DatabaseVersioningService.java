@@ -5878,7 +5878,7 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLS = new StringBuilder();
         SQLS.append("DELETE FROM `robotcapability`;");
         SQLInstruction.add(SQLS.toString());
-        
+
         // Update testcaseexecution and testcasestepexecution to set default end to null.
         // Update last_modified timestamp default value
         //-- ------------------------ 785 - 794
@@ -5940,8 +5940,7 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLS.append("ALTER TABLE `testcasestepactioncontrolexecution`  ");
         SQLS.append("ADD COLUMN `Description` VARCHAR(255) NOT NULL DEFAULT '' AFTER `PageSourceFilename`;");
         SQLInstruction.add(SQLS.toString());
-        
-        
+
         //
         SQLS = new StringBuilder();
         SQLS.append("UPDATE `testdatalib` ");
@@ -5979,7 +5978,7 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLS.append("UPDATE `testcase` ");
         SQLS.append("SET `TCDateCrea` =  '1970-01-01 01:01:01' WHERE `TCDateCrea` = '0000-00-00 00:00:00';");
         SQLInstruction.add(SQLS.toString());
-        
+
         // Add main robot capability invariants
         //-- ------------------------ 807
         SQLS = new StringBuilder();
@@ -5993,7 +5992,7 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLS.append("('CAPABILITY', 'browserName', '6', 'Browser name (useful for Appium)', ''), ");
         SQLS.append("('CAPABILITY', 'autoWebview', '7', 'If auto web view has to be enabled (useful for Appium, e.g.: true) ', '');");
         SQLInstruction.add(SQLS.toString());
-        
+
         // Add documentation on robot capability
         //-- ------------------------ 808
         SQLS = new StringBuilder();
@@ -6008,7 +6007,7 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         //-- ------------------------ 809
         SQLS = new StringBuilder();
         SQLS.append("UPDATE testcasecountryproperties SET value2 = concat(value2, '/text()')");
-        SQLS.append(" WHERE `type` = 'getFromXML' and value2 not like '%ext()';    ");    
+        SQLS.append(" WHERE `type` = 'getFromXML' and value2 not like '%ext()';    ");
         SQLInstruction.add(SQLS.toString());
 
         // Adding missing index in order to support RANDOMNEW and NOTINUSE
@@ -6018,14 +6017,20 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLS.append(" ADD INDEX `IX_testcaseexecution_09` (`Country` ASC, `Environment` ASC, `ControlStatus` ASC), "); // Used for NOTINUSE   
         SQLS.append(" ADD INDEX `IX_testcaseexecution_10` (`Test` ASC, `TestCase` ASC, `Environment` ASC, `Country` ASC, `Build` ASC) ;"); // Used for RANDOMNEW
         SQLInstruction.add(SQLS.toString());
-        
+
         // Adding Soap URL on database table
         //-- ------------------------ 811
         SQLS = new StringBuilder();
-        SQLS.append("ALTER TABLE `countryenvironmentdatabase` "); 
-        SQLS.append("ADD COLUMN `SoapUrl` VARCHAR(200) NOT NULL DEFAULT ''  AFTER `ConnectionPoolName`;"); 
+        SQLS.append("ALTER TABLE `countryenvironmentdatabase` ");
+        SQLS.append("ADD COLUMN `SoapUrl` VARCHAR(200) NOT NULL DEFAULT ''  AFTER `ConnectionPoolName`;");
         SQLInstruction.add(SQLS.toString());
 
+        // Adding DatabaseUrl on testdatalib table
+        //-- ------------------------ 812
+        SQLS = new StringBuilder();
+        SQLS.append("ALTER TABLE `testdatalib` ");
+        SQLS.append("ADD COLUMN `DatabaseUrl` VARCHAR(45) NOT NULL DEFAULT '' AFTER `Script`;");
+        SQLInstruction.add(SQLS.toString());
 
         return SQLInstruction;
     }

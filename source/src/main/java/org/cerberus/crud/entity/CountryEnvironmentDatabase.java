@@ -28,6 +28,7 @@ public class CountryEnvironmentDatabase {
     private String environment;
     private String database;
     private String connectionPoolName;
+    private String soapUrl;
 
     public String getConnectionPoolName() {
         return connectionPoolName;
@@ -69,6 +70,14 @@ public class CountryEnvironmentDatabase {
         this.system = system;
     }
 
+    public String getSoapUrl() {
+        return soapUrl;
+    }
+
+    public void setSoapUrl(String soapUrl) {
+        this.soapUrl = soapUrl;
+    }
+
     public boolean hasSameKey(CountryEnvironmentDatabase obj) {
         if (obj == null) {
             return false;
@@ -100,6 +109,7 @@ public class CountryEnvironmentDatabase {
         hash = 29 * hash + (this.environment != null ? this.environment.hashCode() : 0);
         hash = 29 * hash + (this.database != null ? this.database.hashCode() : 0);
         hash = 29 * hash + (this.connectionPoolName != null ? this.connectionPoolName.hashCode() : 0);
+        hash = 29 * hash + (this.soapUrl != null ? this.soapUrl.hashCode() : 0);
         return hash;
     }
 
@@ -125,6 +135,9 @@ public class CountryEnvironmentDatabase {
             return false;
         }
         if ((this.connectionPoolName == null) ? (other.connectionPoolName != null) : !this.connectionPoolName.equals(other.connectionPoolName)) {
+            return false;
+        }
+        if ((this.soapUrl == null) ? (other.soapUrl != null) : !this.soapUrl.equals(other.soapUrl)) {
             return false;
         }
         return true;
