@@ -945,9 +945,15 @@ public class PropertyService implements IPropertyService {
     }
 
     private TestCaseExecutionData property_getFromXml(TestCaseExecutionData testCaseExecutionData, TestCaseExecution tCExecution, TestCaseCountryProperties testCaseCountryProperty, boolean forceCalculation) {
+        String xmlResponse = "";
         try {
+            /**
+             * If tCExecution LastSoapCalled exist, get the response;
+             */
+            if (null!=tCExecution.getLastSOAPCalled()){
             SOAPExecution lastSoapCalled = (SOAPExecution) tCExecution.getLastSOAPCalled().getItem();
-            String xmlResponse = SoapUtil.convertSoapMessageToString(lastSoapCalled.getSOAPResponse());
+            xmlResponse = SoapUtil.convertSoapMessageToString(lastSoapCalled.getSOAPResponse());
+            }
             String valueFromXml = xmlUnitService.getFromXml(xmlResponse, testCaseExecutionData.getValue1(), testCaseExecutionData.getValue2());
             if (valueFromXml != null) {
                 testCaseExecutionData.setValue(valueFromXml);
