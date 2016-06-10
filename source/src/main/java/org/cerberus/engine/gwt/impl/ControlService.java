@@ -207,6 +207,9 @@ public class ControlService implements IControlService {
             } else if (testCaseStepActionControlExecution.getControlType().equals("takeScreenshot")) {
                 res = this.takeScreenshot(tCExecution, testCaseStepActionControlExecution.getTestCaseStepActionExecution(), testCaseStepActionControlExecution);
 
+            } else if (testCaseStepActionControlExecution.getControlType().equals("skipControl")) {
+                res = new MessageEvent(MessageEventEnum.CONTROL_SUCCESS_SKIPCONTROL);
+
             } else {
                 res = new MessageEvent(MessageEventEnum.CONTROL_FAILED_UNKNOWNCONTROL);
                 res.setDescription(res.getDescription().replaceAll("%CONTROL%", testCaseStepActionControlExecution.getControlType()));

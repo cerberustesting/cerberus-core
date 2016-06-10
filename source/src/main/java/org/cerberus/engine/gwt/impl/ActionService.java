@@ -229,6 +229,9 @@ public class ActionService implements IActionService {
         } else if (testCaseStepActionExecution.getAction().equals("swipe")) {
             res = this.doActionSwipe(tCExecution, object, property);
 
+        } else if (testCaseStepActionExecution.getAction().equals("skipAction")) {
+            res = new MessageEvent(MessageEventEnum.ACTION_SUCCESS_SKIPACTION);
+
         } else if (testCaseStepActionExecution.getAction().equals("takeScreenshot")) {
             res = this.doActionTakeScreenshot(testCaseStepActionExecution);
             res.setDescription(MESSAGE_DEPRECATED + " " + res.getDescription());

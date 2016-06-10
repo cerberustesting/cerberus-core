@@ -6032,6 +6032,13 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLS.append("ADD COLUMN `DatabaseUrl` VARCHAR(45) NOT NULL DEFAULT '' AFTER `Script`;");
         SQLInstruction.add(SQLS.toString());
 
+        // Adding Action skipAction
+        //-- ------------------------ 813
+        SQLS = new StringBuilder();
+        SQLS.append("INSERT INTO `invariant` (`idname`, `value`, `sort`, `description`) ");
+        SQLS.append("VALUES ('ACTION', 'skipAction', '2600', 'skipAction');");
+        SQLInstruction.add(SQLS.toString());
+
         return SQLInstruction;
     }
 
