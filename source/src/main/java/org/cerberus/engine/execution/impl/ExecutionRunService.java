@@ -639,8 +639,8 @@ public class ExecutionRunService implements IExecutionRunService {
             /**
              * If control linked to skipAction, then override controlType into skipControl
              */
-            System.out.print(testCaseStepActionExecution.getReturnMessage());
-            if (testCaseStepActionExecution.getReturnMessage().equals(MessageEventEnum.ACTION_SUCCESS_SKIPACTION)){
+            //TODO Replace with Action and control ENUM
+            if (testCaseStepActionExecution.getAction().equals("skipAction")){
             testCaseStepActionControl.setType("skipControl");
             }
             
