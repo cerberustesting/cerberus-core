@@ -527,6 +527,7 @@ public class TestDataLibDAO implements ITestDataLibDAO {
                     preStat.setString(i++, "%" + searchTerm + "%");
                     preStat.setString(i++, "%" + searchTerm + "%");
                     preStat.setString(i++, "%" + searchTerm + "%");
+                    preStat.setString(i++, "%" + searchTerm + "%");
                 }
                 if (!StringUtil.isNullOrEmpty(individualSearch)) {
                     preStat.setString(i++, individualSearch);
