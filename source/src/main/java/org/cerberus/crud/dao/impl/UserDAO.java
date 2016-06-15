@@ -277,7 +277,7 @@ public class UserDAO implements IUserDAO {
     }
 
     @Override
-    public AnswerItem<User> updateUserPassword(User user, String password){
+    public AnswerItem<User> updateUserPassword(User user, String password, String requestNewPassword){
         AnswerItem<User> answer = new AnswerItem<User>();
         MessageEvent msg;
         boolean res = false;
@@ -288,7 +288,7 @@ public class UserDAO implements IUserDAO {
             PreparedStatement preStat = connection.prepareStatement(sql);
             try {
                 preStat.setString(1, password);
-                preStat.setString(2, "N");
+                preStat.setString(2, requestNewPassword);
                 preStat.setString(3, user.getLogin());
 
                 res = preStat.executeUpdate() > 0;
@@ -329,6 +329,32 @@ public class UserDAO implements IUserDAO {
         
         answer.setResultMessage(msg);
         return answer;
+    }
+    
+    @Override
+    public Answer clearResetPasswordToken(User user) {
+        Answer ans = new Answer();
+        MessageEvent msg = null;
+        final String sql = "UPDATE user SET resetPasswordToken = '' WHERE Login LIKE ?";
+
+        try (Connection connection = databaseSpring.connect();
+                PreparedStatement preStat = connection.prepareStatement(sql)) {
+            // Prepare and execute query
+            preStat.setString(1, user.getLogin());
+            preStat.executeUpdate();
+
+            // Set the final message
+            msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK).resolveDescription("ITEM", OBJECT_NAME)
+                    .resolveDescription("OPERATION", "UPDATE");
+        } catch (Exception e) {
+            LOG.warn("Unable to update user: " + e.getMessage());
+            msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED).resolveDescription("DESCRIPTION",
+                    e.toString());
+        } finally {
+            ans.setResultMessage(msg);
+        }
+
+        return ans;
     }
 
     @Override
@@ -371,11 +397,53 @@ public class UserDAO implements IUserDAO {
 
         return bool;
     }
+    
+    @Override
+    public boolean verifyResetPasswordToken(User user, String resetPasswordToken) {
+        boolean bool = false;
+        final String sql = "SELECT resetPasswordToken, SHA(?) AS currentPassword FROM user WHERE Login LIKE ?";
+
+        Connection connection = this.databaseSpring.connect();
+        try {
+            PreparedStatement preStat = connection.prepareStatement(sql);
+            try {
+                preStat.setString(1, resetPasswordToken);
+                preStat.setString(2, user.getLogin());
+                ResultSet rs = preStat.executeQuery();
+                try {
+                    if (rs.first()) {
+                        bool = rs.getString("resetPasswordToken").equals(rs.getString("currentPassword"));
+                    }
+                } catch (SQLException ex) {
+                    MyLogger.log(UserDAO.class.getName(), Level.FATAL, ex.toString());
+                } finally {
+                    rs.close();
+                }
+            } catch (SQLException exception) {
+                MyLogger.log(UserDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
+            } finally {
+                preStat.close();
+            }
+        } catch (SQLException exception) {
+            MyLogger.log(UserDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
+        } finally {
+            try {
+                if (connection != null) {
+                    connection.close();
+                }
+            } catch (SQLException e) {
+                MyLogger.log(UserDAO.class.getName(), Level.WARN, e.toString());
+            }
+        }
+
+        return bool;
+    }
 
     private User loadFromResultSet(ResultSet rs) throws SQLException {
         int userID = ParameterParserUtil.parseIntegerParam(rs.getString("userid"), 0);
         String login = ParameterParserUtil.parseStringParam(rs.getString("login"), "");
         String password = ParameterParserUtil.parseStringParam(rs.getString("password"), "");
+        String resetPasswordToken = ParameterParserUtil.parseStringParam(rs.getString("resetPasswordToken"), "");
         String request = ParameterParserUtil.parseStringParam(rs.getString("request"), "");
         String name = ParameterParserUtil.parseStringParam(rs.getString("name"), "");
         String team = ParameterParserUtil.parseStringParam(rs.getString("team"), "");
@@ -391,7 +459,7 @@ public class UserDAO implements IUserDAO {
         String robot = ParameterParserUtil.parseStringParam(rs.getString("robot"), "");
         //TODO remove when working in test with mockito and autowired
         factoryUser = new FactoryUser();
-        return factoryUser.create(userID, login, password, request, name, team, language, reportingFavorite, robotHost, robotPort, robotPlatform, robotBrowser, robotVersion, robot, defaultSystem, email, null, null);
+        return factoryUser.create(userID, login, password,resetPasswordToken, request, name, team, language, reportingFavorite, robotHost, robotPort, robotPlatform, robotBrowser, robotVersion, robot, defaultSystem, email, null, null);
     }
 
     @Override
@@ -908,7 +976,7 @@ public class UserDAO implements IUserDAO {
         StringBuilder query = new StringBuilder();
         query.append("UPDATE user SET Login = ?, Name = ?, Request = ?, ReportingFavorite = ?, RobotHost = ?,");
         query.append(" Team = ?, Language = ?, DefaultSystem = ?, Email= ? , robotPort = ?,");
-        query.append(" robotPlatform = ?, robotBrowser = ?, robotVersion = ? , robot = ?");
+        query.append(" robotPlatform = ?, robotBrowser = ?, robotVersion = ? , robot = ?, resetPasswordToken = SHA(?) ");
         query.append("    WHERE userid = ?");
 
         // Debug message on SQL.
@@ -933,7 +1001,8 @@ public class UserDAO implements IUserDAO {
                 preStat.setString(12, user.getRobotBrowser());
                 preStat.setString(13, user.getRobotVersion());
                 preStat.setString(14, user.getRobot());
-                preStat.setInt(15, user.getUserID());
+                preStat.setString(15, user.getResetPasswordToken());
+                preStat.setInt(16, user.getUserID());
 
                 preStat.executeUpdate();
                 msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);

@@ -33,7 +33,7 @@ import org.springframework.stereotype.Service;
 public class FactoryUser implements IFactoryUser {
 
     @Override
-    public User create(int userID, String login, String password, String request, String name, String team,String language,
+    public User create(int userID, String login, String password, String resetPasswordToken, String request, String name, String team,String language,
             String reportingFavorite, String robotHost,String robotPort, 
             String robotPlatform, String robotBrowser
             ,String robotVersion, String robot, String defaultSystem, String email, List<UserSystem> userSystems, List<Group> userGroups) {
@@ -56,6 +56,7 @@ public class FactoryUser implements IFactoryUser {
         newUser.setRobot(robot);
         newUser.setUserSystems(userSystems);
         newUser.setUserGroups(userGroups);
+        newUser.setResetPasswordToken(resetPasswordToken);
         return newUser;
     }
 }

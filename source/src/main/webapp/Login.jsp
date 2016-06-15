@@ -33,58 +33,86 @@
 <html>
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-        <link rel="stylesheet" type="text/css" href="css/crb_style.css">
-        <link rel="shortcut icon" type="image/x-icon" href="images/favicon.ico">
+        <%@ include file="include/dependenciesInclusions.html" %>
+        <script type='text/javascript' src='js/pages/Login.js'></script>
+        <script type="text/javascript">
+            EnvTuning("<%=System.getProperty("org.cerberus.environment")%>");
+        </script>
         <title>Login</title>
     </head>
     <body>
 
-<%
-	ApplicationContext appContext = WebApplicationContextUtils.getWebApplicationContext(this.getServletContext());
-    IParameterService myParameterService = appContext.getBean(IParameterService.class);
-    try {
-        String CerberusSupportEmail = myParameterService.findParameterByKey("cerberus_support_email", "").getValue();
-        String errorMessage = "";
-        if (request.getParameter("error") != null && request.getParameter("error").equalsIgnoreCase("1")) {
-            errorMessage = "User or password invalid !!!";
-            /**
-             * Adding Log entry.
-             */
-            ILogEventService logEventService = appContext.getBean(LogEventService.class);
-            IFactoryLogEvent factoryLogEvent = appContext.getBean(FactoryLogEvent.class);
-            logEventService.create(factoryLogEvent.create(0, 0, request.getParameter("j_username"), null, "/Login.jsp", "LOGINERROR", "Invalid Password for : " + request.getParameter("j_username"), request.getRemoteAddr(), request.getLocalAddr()));
-        }
-%>
-        <script type='text/javascript' src='js/Form.js'></script>
-        <script type="text/javascript">
-            EnvTuning("<%=System.getProperty("org.cerberus.environment")%>");
-        </script>
+        <%
+            ApplicationContext appContext = WebApplicationContextUtils.getWebApplicationContext(this.getServletContext());
+            IParameterService myParameterService = appContext.getBean(IParameterService.class);
+            try {
+                String CerberusSupportEmail = myParameterService.findParameterByKey("cerberus_support_email", "").getValue();
+                String errorMessage = "";
+                String display = "";
 
+                if (request.getParameter("error") != null && request.getParameter("error").equalsIgnoreCase("1")) {
+                    errorMessage = "User or password invalid !!!";
+                    display = "1";
+                    /**
+                     * Adding Log entry.
+                     */
+                    ILogEventService logEventService = appContext.getBean(LogEventService.class);
+                    IFactoryLogEvent factoryLogEvent = appContext.getBean(FactoryLogEvent.class);
+                    logEventService.create(factoryLogEvent.create(0, 0, request.getParameter("j_username"), null, "/Login.jsp", "LOGINERROR", "Invalid Password for : " + request.getParameter("j_username"), request.getRemoteAddr(), request.getLocalAddr()));
+                }
+        %>
+
+        <%@ include file="include/messagesArea.html"%>
+        <div id="error"><%=display%></div>
         <div style="padding-top: 7%; padding-left: 30%">
-            <div id="login-box">
+            <div id="login-box" class="login-box" >
                 <H2>Cerberus Login</H2><br>V<%=Infos.getInstance().getProjectVersion()%><br><br>
                 Please login in order to change TestCases and run Tests.<br>
                 If you don't have login, please contact <%= CerberusSupportEmail%>
                 <br>
                 <br>
                 <form method="post" action="j_security_check">
-                    <div class="login-box-name" style="margin-top:20px;">
+                    <div class="form-group col-xs-3" style="margin-top:10px;">
                         Username:
                     </div>
-                    <div class="login-box-field" style="margin-top:20px;">
+                    <div class="form-group col-xs-9">
                         <input name="j_username" class="form-login" title="Username" value="" size="30" maxlength="10">
                     </div>
-                    <div class="login-box-name">
+                    <div class="form-group col-xs-3" style="margin-top:10px;">
                         Password:
                     </div>
-                    <div class="login-box-field">
-                        <input name="j_password" type="password" class="form-login" title="Password" value="" size="30" maxlength="20">
+                    <div class="form-group col-xs-9">
+                        <input name="j_password" class="form-login" type="password" title="Password" value="" size="30" maxlength="20">
                     </div>
-                    <div class="login-box-error">
-                        <%= errorMessage%>
-                    </div>
-                    <input id="Login" name="Login" type="image" src="images/login-btn.png" value="Submit" alt="Submit" style="margin-left:90px;" onclick=sessionStorage.clear();>
+                    <button id="Login" name="Login" class="btn btn-primary col-xs-6" value="Submit" alt="Submit" onclick="sessionStorage.clear()";>Login</button>
                 </form>
+                <br><br>
+                <div class="col-xs-12">
+                    <a onclick="showForgotPasswordFormulary()">forgot password</a>
+                </div>
+            </div>
+            <div id="forgot-password-box" style="display: none" class="login-box">
+                <div class="container-fluid center">
+                    <H2>Cerberus Login</H2><br>V<%=Infos.getInstance().getProjectVersion()%><br><br>
+                    Please feed the field with your login. An email will be sent with the recovery information.<br>
+                    If you don't have login, please contact <%= CerberusSupportEmail%>
+                    <br>
+                    <br>
+                    <div class="form-group col-xs-3" style="margin-top:10px;">
+                        Username:
+                    </div>
+                    <div class="form-group col-xs-9">
+                        <input name="login" id="loginForgotPassword" class="form-login" title="Username" value="" size="30" maxlength="10">
+                    </div>
+                    <br>
+                    <div class="col-xs-12">
+                        <button id="RecoverPassword" name="RecoverPassword" class="btn btn-primary col-xs-6" style="margin-left:90px;" onclick="forgotPassword()">Reset Password</button>
+                    </div>
+                    <br><br>
+                    <div class="col-xs-12">
+                        <a href="./">homepage</a>
+                    </div>
+                </div>
             </div>
         </div>
     </body>

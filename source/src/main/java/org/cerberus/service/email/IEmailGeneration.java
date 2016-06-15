@@ -20,6 +20,8 @@
 package org.cerberus.service.email;
 
 import org.cerberus.crud.entity.User;
+import org.cerberus.util.answer.Answer;
+import org.cerberus.util.answer.AnswerItem;
 
 /**
  *
@@ -34,4 +36,6 @@ public interface IEmailGeneration {
     public String EmailGenerationNewChain(String system, String country, String env, String chain);
 
     public void BuildAndSendAccountCreationEmail(User user);
+    
+    public Answer SendForgotPasswordNotification(User user);
 }
