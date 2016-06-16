@@ -72,19 +72,23 @@
                 <br>
                 <br>
                 <form method="post" action="j_security_check">
-                    <div class="form-group col-xs-3" style="margin-top:10px;">
-                        Username:
+                    <div class="row">
+                        <div class="form-group col-xs-3" style="margin-top:10px;">
+                            Username:
+                        </div>
+                        <div class="form-group col-xs-9">
+                            <input name="j_username" class="form-login" title="Username" value="" size="30" maxlength="10">
+                        </div>
                     </div>
-                    <div class="form-group col-xs-9">
-                        <input name="j_username" class="form-login" title="Username" value="" size="30" maxlength="10">
+                    <div class="row">
+                        <div class="form-group col-xs-3" style="margin-top:10px;">
+                            Password:
+                        </div>
+                        <div class="form-group col-xs-9">
+                            <input name="j_password" class="form-login" type="password" title="Password" value="" size="30" maxlength="20">
+                        </div>
                     </div>
-                    <div class="form-group col-xs-3" style="margin-top:10px;">
-                        Password:
-                    </div>
-                    <div class="form-group col-xs-9">
-                        <input name="j_password" class="form-login" type="password" title="Password" value="" size="30" maxlength="20">
-                    </div>
-                    <button id="Login" name="Login" class="btn btn-primary col-xs-6" value="Submit" alt="Submit" onclick="sessionStorage.clear()";>Login</button>
+                    <button id="Login" name="Login" class="btn btn-primary col-xs-12" value="Submit" alt="Submit" onclick="sessionStorage.clear()";>Login</button>
                 </form>
                 <br><br>
                 <div class="col-xs-12">
@@ -92,26 +96,24 @@
                 </div>
             </div>
             <div id="forgot-password-box" style="display: none" class="login-box">
-                <div class="container-fluid center">
-                    <H2>Cerberus Login</H2><br>V<%=Infos.getInstance().getProjectVersion()%><br><br>
-                    Please feed the field with your login. An email will be sent with the recovery information.<br>
-                    If you don't have login, please contact <%= CerberusSupportEmail%>
-                    <br>
-                    <br>
+                <H2>Cerberus Login</H2><br>V<%=Infos.getInstance().getProjectVersion()%><br><br>
+                Please feed the field with your login. An email will be sent with the recovery information.<br>
+                If you don't have login, please contact <%= CerberusSupportEmail%>
+                <br>
+                <br>
+                <div class="row">
                     <div class="form-group col-xs-3" style="margin-top:10px;">
                         Username:
                     </div>
                     <div class="form-group col-xs-9">
                         <input name="login" id="loginForgotPassword" class="form-login" title="Username" value="" size="30" maxlength="10">
                     </div>
-                    <br>
-                    <div class="col-xs-12">
-                        <button id="RecoverPassword" name="RecoverPassword" class="btn btn-primary col-xs-6" style="margin-left:90px;" onclick="forgotPassword()">Reset Password</button>
-                    </div>
-                    <br><br>
-                    <div class="col-xs-12">
-                        <a href="./">homepage</a>
-                    </div>
+                </div>
+                <br><br>
+                <button id="RecoverPassword" name="RecoverPassword" class="btn btn-primary col-xs-12" onclick="forgotPassword()">Reset Password</button>
+                <br><br>
+                <div class="col-xs-12">
+                    <a href="./">homepage</a>
                 </div>
             </div>
         </div>
