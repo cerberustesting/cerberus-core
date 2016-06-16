@@ -189,29 +189,27 @@ public class CreateTestCase2 extends HttpServlet {
         PolicyFactory policy = Sanitizers.FORMATTING.and(Sanitizers.LINKS);
         String charset = request.getCharacterEncoding();
 
-        // Parameter that are already controled by GUI (no need to decode) --> We SECURE them
-        tc.setImplementer(policy.sanitize(request.getParameter("implementer")));
-        tc.setCreator(policy.sanitize(request.getUserPrincipal().getName()));
-        tc.setLastModifier(policy.sanitize(request.getUserPrincipal().getName()));
+        // Parameter that needs to be secured --> We SECURE+DECODE them
+        tc.setImplementer(ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("implementer"), "", charset));
+        tc.setCreator(ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getUserPrincipal().getName(), "", charset));
+        tc.setLastModifier(ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getUserPrincipal().getName(), "", charset));
         if (request.getParameter("project").isEmpty()) {
             tc.setProject(null);
         } else {
-            tc.setProject(policy.sanitize(request.getParameter("project")));
+            tc.setProject(ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("project"), "", charset));
         }
-        tc.setApplication(policy.sanitize(request.getParameter("application")));
-        tc.setRunQA(policy.sanitize(request.getParameter("activeQA")));
-        tc.setRunUAT(policy.sanitize(request.getParameter("activeUAT")));
-        tc.setRunPROD(policy.sanitize(request.getParameter("activeProd")));
-        tc.setFromSprint(policy.sanitize(request.getParameter("fromSprint")));
-        tc.setFromRevision(policy.sanitize(request.getParameter("fromRev")));
-        tc.setToSprint(policy.sanitize(request.getParameter("toSprint")));
-        tc.setToRevision(policy.sanitize(request.getParameter("toRev")));
-        tc.setActive(policy.sanitize(request.getParameter("active")));
-        tc.setTargetSprint(policy.sanitize(request.getParameter("targetSprint")));
-        tc.setTargetRevision(policy.sanitize(request.getParameter("targetRev")));
-        tc.setPriority(Integer.parseInt(request.getParameter("priority")));
-
-        // Parameter that needs to be secured --> We SECURE+DECODE them
+        tc.setApplication(ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("application"), "", charset));
+        tc.setRunQA(ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("activeQA"), "", charset));
+        tc.setRunUAT(ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("activeUAT"), "", charset));
+        tc.setRunPROD(ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("activeProd"), "", charset));
+        tc.setFromSprint(ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("fromSprint"), "", charset));
+        tc.setFromRevision(ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("fromRev"), "", charset));
+        tc.setToSprint(ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("toSprint"), "", charset));
+        tc.setToRevision(ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("toRev"), "", charset));
+        tc.setActive(ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("active"), "", charset));
+        tc.setTargetSprint(ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("targetSprint"), "", charset));
+        tc.setTargetRevision(ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("targetRev"), "", charset));
+        tc.setPriority(ParameterParserUtil.parseIntegerParamAndDecode(request.getParameter("priority"), 0, charset));
         tc.setTest(ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("test"), "", charset));
         tc.setTestCase(ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("testCase"), "", charset));
         tc.setTicket(ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("ticket"), "", charset));

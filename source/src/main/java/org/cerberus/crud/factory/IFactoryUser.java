@@ -33,6 +33,7 @@ public interface IFactoryUser {
      * @param userID            Internal ID of the user
      * @param login             login name of the user.
      * @param password          Password of the user
+     * @param resetPasswordToken
      * @param request           Y if the user needs to change the password on next login
      * @param name              Name of the user
      * @param team              Team the user belong to.
@@ -50,7 +51,7 @@ public interface IFactoryUser {
      * @param userGroups        List of group of the user
      * @return A User.
      */
-    User create(int userID, String login, String password, String request, String name, 
+    User create(int userID, String login, String password, String resetPasswordToken, String request, String name, 
             String team, String language, String reportingFavorite, String robotHost,String robotPort, 
             String robotPlatform, String robotBrowser
             ,String robotVersion, String robot, String defaultSystem, String email, List<UserSystem> userSystems, List<Group> userGroups);

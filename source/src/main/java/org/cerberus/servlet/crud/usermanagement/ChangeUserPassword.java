@@ -55,6 +55,7 @@ public class ChangeUserPassword extends HttpServlet {
         String currentPassword = request.getParameter("currentPassword");
         String newPassword = request.getParameter("newPassword");
         String confirmPassword = request.getParameter("confirmPassword");
+        String resetPasswordToken = request.getParameter("resetPasswordToken");
 
         ApplicationContext appContext = WebApplicationContextUtils.getWebApplicationContext(this.getServletContext());
         IUserService userService = appContext.getBean(UserService.class);
@@ -67,7 +68,7 @@ public class ChangeUserPassword extends HttpServlet {
             try {
                 myUser = userService.findUserByKey(login);
                 
-                AnswerItem ansPassword = userService.updateUserPassword(myUser, currentPassword, newPassword, confirmPassword);
+                AnswerItem ansPassword = userService.updateUserPassword(myUser, currentPassword, newPassword, confirmPassword, resetPasswordToken);
                 
                 jsonResponse.put("messageType", ansPassword.getResultMessage().getMessage().getCodeString());
                 jsonResponse.put("message", ansPassword.getResultMessage().getDescription()); 

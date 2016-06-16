@@ -69,10 +69,10 @@ public interface IUserService {
      * @param currentPassword
      * @param newPassword
      * @param confirmPassword
+     * @param resetPasswordToken
      * @return
-     * @throws CerberusException
      */
-    AnswerItem<User> updateUserPassword(User user, String currentPassword, String newPassword, String confirmPassword);
+    AnswerItem<User> updateUserPassword(User user, String currentPassword, String newPassword, String confirmPassword, String resetPasswordToken);
 
     /**
      * @param user
@@ -80,6 +80,13 @@ public interface IUserService {
      * @return
      */
     boolean verifyPassword(User user, String password);
+    
+    /**
+     * @param user
+     * @param password
+     * @return
+     */
+    boolean verifyResetPasswordToken(User user, String password);
 
     /**
      *
@@ -190,5 +197,13 @@ public interface IUserService {
      * @throws CerberusException
      */
     void convert(Answer answer) throws CerberusException;
+    
+    /**
+     * @param user
+     * @param newGeneratedPassword
+     * @return
+     * @throws CerberusException
+     */
+    Answer requestResetPassword(User user) throws CerberusException;
 
 }

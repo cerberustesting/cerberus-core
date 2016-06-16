@@ -16,41 +16,56 @@
   ~
   ~ You should have received a copy of the GNU General Public License
   ~ along with Cerberus.  If not, see <http://www.gnu.org/licenses/>.
-  --%>
-  
+--%>
+
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <!DOCTYPE html>
 <html>
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-        <script type="text/javascript" src="js/jquery-1.9.1.min.js"></script>
-        <link rel="stylesheet" type="text/css" href="css/crb_style.css">
-        <link rel="shortcut icon" type="image/x-icon" href="images/favicon.ico" />
+        <%@ include file="include/dependenciesInclusions.html" %>
         <title>Change Password</title>
         <script type="text/javascript" src="js/pages/ChangePassword.js"></script>
     </head>
     <body>
-        <%@ include file="include/function.jsp" %>
-        <%@ include file="include/header.jsp" %>
-        <div style="width: 100%; font: 90% sans-serif">
-            <table style="alignment-adjust: central"><tr><td style="alignment-adjust: central">
-            <form id="changePasswordForm" title="Change Password" method="post">
-                <h1>Hello <%=request.getUserPrincipal().getName() %>, you are requested to change your password.</h1>
-                <input type="hidden" name="login" id="login" value="<%=request.getUserPrincipal().getName() %>">
-                <br /><br />
-                <label for="currentPassword">Current Password</label>
-                <input type="password" name="currentPassword" id="currentPassword" maxlength="20" rel="0" />
-                <br /><br />
-                <label for="newPassword">New Password</label>
-                <input type="password" name="newPassword" id="newPassword" maxlength="20" rel="1" />
-                <br /><br />
-                <label for="confirmPassword">Confirm New Password</label>
-                <input type="password" name="confirmPassword" id="confirmPassword" maxlength="20" rel="2" />
-                <br /><br />
-                <!--<input id="submit" type="submit" value="Submit" />-->
-                <button type ="button" id="changePassword">Change Password</button>
-            </form>
-                    </td></tr></table>
+
+        <%@ include file="include/messagesArea.html"%>
+        <div style="padding-top: 7%; padding-left: 30%">
+            <div id="change-password-box" class="login-box" >
+                <form id="changePasswordForm" title="Change Password" method="post">
+                    <H3>Password Recovery</H3>
+                    <br><br>
+                    Dear,<br><br> 
+                    A request password request has been submitted to your account.
+                    Please feed the reset password formulary to acheive the change.
+                    <br><br>
+                    <input type="hidden" name="login" id="login" value="<%=request.getUserPrincipal() == null ? request.getParameter("login") : request.getUserPrincipal().getName()%>">
+                    <input type="hidden" name="resetPasswordToken" id="resetPasswordToken"/>
+
+                    <div id="currentPasswordLabel" class="form-group col-xs-5" style="margin-top:10px;">
+                        Current Password:
+                    </div>
+                    <div id="currentPasswordDiv" class="form-group col-xs-7">
+                        <input class="form-login" type="password" name="currentPassword" id="currentPassword" maxlength="20"/>
+                    </div>
+                    <div class="form-group col-xs-5" style="margin-top:10px;">
+                        New password:
+                    </div>
+                    <div class="form-group col-xs-7">
+                        <input class="form-login" type="password" name="newPassword" id="newPassword" maxlength="20"/>
+                    </div>
+                    <div class="form-group col-xs-5" style="margin-top:10px;">
+                        New password confirmation:
+                    </div>
+                    <div class="form-group col-xs-7">
+                        <input class="form-login" type="password" name="confirmPassword" id="confirmPassword" maxlength="20"/>
+                    </div>
+                    <button type ="button" class="btn btn-primary col-xs-6" id="changePassword">Change Password</button>
+                </form>
+                <div class="col-xs-12">
+                    <a href="./">homepage</a>
+                </div>
+            </div>
         </div>
     </body>
 </html>

@@ -27,6 +27,7 @@ public class User {
     private int userID;
     private String login;
     private String password;
+    private String resetPasswordToken;
     private String request;
     private String name;
     private String team;
@@ -42,6 +43,14 @@ public class User {
     private String email;
     private List<UserSystem> userSystems;
     private List<Group> userGroups;
+
+    public String getResetPasswordToken() {
+        return resetPasswordToken;
+    }
+
+    public void setResetPasswordToken(String resetPasswordToken) {
+        this.resetPasswordToken = resetPasswordToken;
+    }
 
     public List<Group> getUserGroups() {
         return userGroups;
@@ -238,6 +247,9 @@ public class User {
         if ((this.defaultSystem == null) ? (other.defaultSystem != null) : !this.defaultSystem.equals(other.defaultSystem)) {
             return false;
         }
+        if ((this.resetPasswordToken == null) ? (other.resetPasswordToken != null) : !this.resetPasswordToken.equals(other.resetPasswordToken)) {
+            return false;
+        }
         if ((this.email == null) ? (other.email != null) : !this.email.equals(other.email)) {
             return false;
         }
@@ -250,6 +262,7 @@ public class User {
         hash = 97 * hash + this.userID;
         hash = 97 * hash + (this.login != null ? this.login.hashCode() : 0);
         hash = 97 * hash + (this.password != null ? this.password.hashCode() : 0);
+        hash = 97 * hash + (this.resetPasswordToken != null ? this.resetPasswordToken.hashCode() : 0);        
         hash = 97 * hash + (this.request != null ? this.request.hashCode() : 0);
         hash = 97 * hash + (this.name != null ? this.name.hashCode() : 0);
         hash = 97 * hash + (this.team != null ? this.team.hashCode() : 0);
