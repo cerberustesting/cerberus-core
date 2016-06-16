@@ -598,7 +598,7 @@ function appendDatabaseRow(dtb) {
     var deleteBtn = $("<button type=\"button\"></button>").addClass("btn btn-default btn-xs").append($("<span></span>").addClass("glyphicon glyphicon-trash"));
     var selectDatabase = getSelectInvariant("PROPERTYDATABASE", false);
     var connectionPoolInput = $("<input  maxlength=\"25\" placeholder=\"-- " + doc.getDocLabel("countryenvironmentdatabase", "ConnectionPoolName") + " --\">").addClass("form-control input-sm").val(dtb.connectionPoolName);
-    var soapUrlInput = $("<input  maxlength=\"25\" placeholder=\"-- " + doc.getDocLabel("countryenvironmentdatabase", "SoapUrl") + " --\">").addClass("form-control input-sm").val(dtb.soapUrl);
+    var soapUrlInput = $("<input  maxlength=\"200\" placeholder=\"-- " + doc.getDocLabel("countryenvironmentdatabase", "SoapUrl") + " --\">").addClass("form-control input-sm").val(dtb.soapUrl);
     var table = $("#databaseTableBody");
 
     var row = $("<tr></tr>");

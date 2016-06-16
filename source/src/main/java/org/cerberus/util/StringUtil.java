@@ -282,7 +282,7 @@ public final class StringUtil {
      * This method is used in order to clean the host to make it compatible with
      * Selenium. Selenium require a fully qualitied host (including prefix
      * http://). Cerberus is more flexible and allow simple host such as
-     * www.laredoute.fr This function checks that the host is previxed by
+     * www.laredoute.fr This function checks that the host is prefixed by
      * http:// or https:// or ftp://. If protocol prefix is missing it adds by
      * default http:// if not it leave the existing host.
      *
@@ -314,6 +314,18 @@ public final class StringUtil {
         newHost = host.replace("http://", "").replace("https://", "").replace("ftp://", "").replace("ftps://", "");
         LOG.debug("Removed protocol host from " + host + " to " + newHost);
         return newHost;
+
+    }
+
+    /**
+     *
+     * This method is used in determine if an URL is relevant.
+     *
+     * @param url
+     * @return true is URL looks OK and false on any other cases.
+     */
+    public static boolean isURL(String url) {
+        return url.startsWith("http://") || url.startsWith("https://");
 
     }
 

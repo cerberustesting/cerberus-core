@@ -47,6 +47,7 @@ import org.cerberus.crud.entity.TestDataLib;
 import org.cerberus.crud.entity.TestDataLibData;
 import org.cerberus.crud.factory.IFactoryTestCaseCountryProperties;
 import org.cerberus.crud.factory.IFactoryTestCaseExecutionData;
+import org.cerberus.crud.service.ICountryEnvironmentDatabaseService;
 import org.cerberus.crud.service.IParameterService;
 import org.cerberus.crud.service.ISoapLibraryService;
 import org.cerberus.crud.service.ISqlLibraryService;
@@ -134,6 +135,8 @@ public class PropertyService implements IPropertyService {
     private IRecorderService recorderService;
     @Autowired
     private IParameterService parameterService;
+    @Autowired
+    private ICountryEnvironmentDatabaseService countryEnvironmentDatabaseService;
 
     private static final Pattern GETFROMDATALIB_PATTERN = Pattern.compile("^[_A-Za-z0-9]+\\([_A-Za-z0-9]+\\)$");
     private static final String GETFROMDATALIB_SPLIT = "\\s+|\\(\\s*|\\)";
@@ -950,9 +953,9 @@ public class PropertyService implements IPropertyService {
             /**
              * If tCExecution LastSoapCalled exist, get the response;
              */
-            if (null!=tCExecution.getLastSOAPCalled()){
-            SOAPExecution lastSoapCalled = (SOAPExecution) tCExecution.getLastSOAPCalled().getItem();
-            xmlResponse = SoapUtil.convertSoapMessageToString(lastSoapCalled.getSOAPResponse());
+            if (null != tCExecution.getLastSOAPCalled()) {
+                SOAPExecution lastSoapCalled = (SOAPExecution) tCExecution.getLastSOAPCalled().getItem();
+                xmlResponse = SoapUtil.convertSoapMessageToString(lastSoapCalled.getSOAPResponse());
             }
             String valueFromXml = xmlUnitService.getFromXml(xmlResponse, testCaseExecutionData.getValue1(), testCaseExecutionData.getValue2());
             if (valueFromXml != null) {
@@ -1416,9 +1419,90 @@ public class PropertyService implements IPropertyService {
         // system that will be used to get some parameters.
         String system = tCExecution.getApplication().getSystem();
 
+        /**
+         * Before making the call we check if the Service Path is already a
+         * propper URL. If it is not, we prefix with the SoapUrl defined from
+         * corresponding database. This is used to get the data from the correct
+         * environment.
+         */
+        String servicePath = lib.getServicePath();
+        LOG.debug("Service Path : " + lib.getServicePath());
+        if (!StringUtil.isURL(servicePath)) {
+            // Url is not valid, we try to get the corresponding DatabaseURL SoapURL to prefix.
+            if (!(StringUtil.isNullOrEmpty(lib.getDatabaseUrl()))) {
+
+                try {
+                    CountryEnvironmentDatabase countryEnvironmentDatabase;
+                    countryEnvironmentDatabase = this.countryEnvironmentDatabaseService.convert(this.countryEnvironmentDatabaseService.readByKey(system,
+                            tCExecution.getCountry(), tCExecution.getEnvironmentData(), lib.getDatabaseUrl()));
+                    if (countryEnvironmentDatabase == null) {
+                        msg = new MessageEvent(MessageEventEnum.PROPERTY_FAILED_GETFROMDATALIB_SOAP_URLKOANDDATABASESOAPURLNOTEXIST);
+                        msg.setDescription(msg.getDescription()
+                                .replace("%SERVICEURL%", lib.getServicePath())
+                                .replaceAll("%SYSTEM%", system)
+                                .replaceAll("%COUNTRY%", tCExecution.getCountry())
+                                .replaceAll("%ENV%", tCExecution.getEnvironmentData())
+                                .replaceAll("%DB%", lib.getDatabaseUrl()));
+                        answer.setResultMessage(msg);
+                        return answer;
+
+                    } else {
+                        String soapURL = countryEnvironmentDatabase.getSoapUrl();
+                        if (StringUtil.isNullOrEmpty(soapURL)) {
+                            msg = new MessageEvent(MessageEventEnum.PROPERTY_FAILED_GETFROMDATALIB_SOAP_URLKOANDDATABASESOAPURLEMPTY);
+                            msg.setDescription(msg.getDescription()
+                                    .replace("%SERVICEURL%", lib.getServicePath())
+                                    .replaceAll("%SYSTEM%", system)
+                                    .replaceAll("%COUNTRY%", tCExecution.getCountry())
+                                    .replaceAll("%ENV%", tCExecution.getEnvironmentData())
+                                    .replaceAll("%DB%", lib.getDatabaseUrl()));
+                            answer.setResultMessage(msg);
+                            return answer;
+                        }
+                        // soapURL from database is not empty so we prefix the Service URL with it.
+                        servicePath = soapURL + lib.getServicePath();
+
+                        if (!StringUtil.isURL(servicePath))  {
+                            msg = new MessageEvent(MessageEventEnum.PROPERTY_FAILED_GETFROMDATALIB_SOAP_URLKO);
+                            msg.setDescription(msg.getDescription()
+                                    .replace("%SERVICEURL%", servicePath)
+                                    .replace("%SOAPURL%", soapURL)
+                                    .replace("%SERVICEPATH%", lib.getServicePath())
+                                    .replace("%ENTRY%", lib.getName())
+                                    .replace("%ENTRYID%", lib.getTestDataLibID().toString()));
+                            answer.setResultMessage(msg);
+                            return answer;
+
+                        }
+
+                    }
+
+                } catch (CerberusException ex) {
+                    msg = new MessageEvent(MessageEventEnum.PROPERTY_FAILED_GETFROMDATALIB_SOAP_URLKOANDDATABASESOAPURLNOTEXIST);
+                    msg.setDescription(msg.getDescription()
+                            .replace("%SERVICEURL%", lib.getServicePath())
+                            .replaceAll("%SYSTEM%", system)
+                            .replaceAll("%COUNTRY%", tCExecution.getCountry())
+                            .replaceAll("%ENV%", tCExecution.getEnvironmentData())
+                            .replaceAll("%DB%", lib.getDatabaseUrl()));
+                    answer.setResultMessage(msg);
+                    return answer;
+                }
+
+            } else { // URL is not valid and DatabaseUrl is not defined.
+                msg = new MessageEvent(MessageEventEnum.PROPERTY_FAILED_GETFROMDATALIB_SOAP_URLKOANDNODATABASE);
+                msg.setDescription(msg.getDescription()
+                        .replace("%SERVICEURL%", lib.getServicePath())
+                        .replace("%ENTRY%", lib.getName())
+                        .replace("%ENTRYID%", lib.getTestDataLibID().toString()));
+                answer.setResultMessage(msg);
+                return answer;
+            }
+        }
+
         // SOAP Call is made here.
         String key = TestDataLibTypeEnum.SOAP.getCode() + lib.getTestDataLibID();
-        AnswerItem ai = soapService.callSOAP(lib.getEnvelope(), lib.getServicePath(),
+        AnswerItem ai = soapService.callSOAP(lib.getEnvelope(), servicePath,
                 lib.getMethod(), null);
         msg = ai.getResultMessage();
 
@@ -1664,12 +1748,20 @@ public class PropertyService implements IPropertyService {
                         .replace("%REASON%", ex.toString()));
             }
 
+        } else {
+            String soapError = msg.getDescription();
+            msg = new MessageEvent(MessageEventEnum.PROPERTY_FAILED_GETFROMDATALIB_SOAP_SOAPCALLFAILED);
+            msg.setDescription(msg.getDescription()
+                    .replace("%SOAPERROR%", soapError)
+                    .replace("%ENTRY%", lib.getName())
+                    .replace("%ENTRYID%", lib.getTestDataLibID().toString()));
+
         }
         answer.setItem(result);
         msg.setDescription(msg.getDescription()
                 .replaceAll("%ERRORDETAILMESSAGE%", " Issue when trying to get data from Testdata library " + lib.getName() + " (" + lib.getTestDataLibID() + ")")
                 .replaceAll("%ENTRY%", lib.getName())
-                .replaceAll("%SERVICE%", lib.getServicePath())
+                .replaceAll("%SERVICE%", servicePath)
                 .replaceAll("%OPERATION%", lib.getMethod())
                 .replaceAll("%ENTRYID%", lib.getTestDataLibID().toString()));
         answer.setResultMessage(msg);
