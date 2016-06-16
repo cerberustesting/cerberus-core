@@ -171,8 +171,8 @@ function renderOptionsForTestCaseList(data) {
 }
 
 function deleteEntryHandlerClick() {
-    var test = GetURLParameter('test');
-    var testCase = $('#confirmationModal').find('#hiddenField1').prop("value");
+    var test = $('#confirmationModal').find('#hiddenField1').prop("value");
+    var testCase = $('#confirmationModal').find('#hiddenField2').prop("value");
     var jqxhr = $.post("DeleteTestCase2", {test: test, testCase: testCase}, "json");
     $.when(jqxhr).then(function (data) {
         var messageType = getAlertType(data.messageType);
@@ -194,12 +194,12 @@ function deleteEntryHandlerClick() {
     }).fail(handleErrorAjaxAfterTimeout);
 }
 
-function deleteEntryClick(entry) {
+function deleteEntryClick(test, testCase) {
     clearResponseMessageMainPage();
     var doc = new Doc();
     var messageComplete = doc.getDocLabel("page_testcase", "message_delete");
-    messageComplete = messageComplete.replace("%ENTRY%", entry);
-    showModalConfirmation(deleteEntryHandlerClick, "Delete", messageComplete, entry, "", "", "");
+    messageComplete = messageComplete.replace("%ENTRY%", test + " / " + testCase);
+    showModalConfirmation(deleteEntryHandlerClick, "Delete", messageComplete, test, testCase, "", "");
 }
 
 function addEntryModalSaveHandler() {
@@ -708,7 +708,7 @@ function aoColumnsFunc(countries) {
                                 class="editEntry btn btn-default btn-xs margin-right5" \n\
                                 name="editEntry" title="' + doc.getDocLabel("page_testcaselist", "btn_view") + '" type="button">\n\
                                 <span class="glyphicon glyphicon-eye-open"></span></button>';
-                var deleteEntry = '<button id="deleteEntry" onclick="deleteEntryClick(\'' + escapeHtml(obj["testCase"]) + '\');"\n\
+                var deleteEntry = '<button id="deleteEntry" onclick="deleteEntryClick(\'' + escapeHtml(obj["test"]) + '\',\'' + escapeHtml(obj["testCase"]) + '\');"\n\
                                         class="deleteEntry btn btn-default btn-xs margin-right5" \n\
                                         name="deleteEntry" title="' + doc.getDocLabel("page_testcaselist", "btn_delete") + '" type="button">\n\
                                         <span class="glyphicon glyphicon-trash"></span></button>';
