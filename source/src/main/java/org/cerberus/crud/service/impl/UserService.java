@@ -20,8 +20,8 @@
 package org.cerberus.crud.service.impl;
 
 import java.util.List;
+import org.apache.commons.lang3.RandomStringUtils;
 import org.cerberus.crud.dao.IUserDAO;
-import org.cerberus.crud.entity.Application;
 import org.cerberus.crud.entity.MessageEvent;
 import org.cerberus.crud.entity.MessageGeneral;
 import org.cerberus.crud.entity.User;
@@ -95,14 +95,34 @@ public class UserService implements IUserService {
     }
 
     @Override
-    public AnswerItem<User> updateUserPassword(User user, String currentPassword, String newPassword, String confirmPassword) {
+    public AnswerItem<User> updateUserPassword(User user, String currentPassword, String newPassword, String confirmPassword, String resetPasswordToken) {
         AnswerItem answUpdate = new AnswerItem();
         MessageEvent msg;
-
+        //First check if both new password are the same
         if (newPassword.equals(confirmPassword)) {
+            //Then check if resetPasswordToken is fed
+            if (!resetPasswordToken.isEmpty()) {
+                //Then check if token is the one in database
+                if (verifyResetPasswordToken(user, resetPasswordToken)) {
+                    //verifications succeed, update password
+                    answUpdate = userDAO.updateUserPassword(user, newPassword, "N");
+                    //Clear Token
+                    userDAO.clearResetPasswordToken(user);
+                    return answUpdate;
+                } else {
+                    //If token is invalid, raise an error
+                    answUpdate.setItem(user);
+                    msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_VALIDATIONS_ERROR);
+                    msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", "Reset Password Token is not valid!"));
+                    answUpdate.setResultMessage(msg);
+                    return answUpdate;
+                }
+            }
+
+            //If resetPasswordToken empty, check if current password is correct
             if (this.verifyPassword(user, currentPassword)) {
                 //verifications succeed
-                answUpdate = userDAO.updateUserPassword(user, newPassword);
+                answUpdate = userDAO.updateUserPassword(user, newPassword, "N");
             } else {
                 //same user
                 answUpdate.setItem(user);
@@ -123,6 +143,11 @@ public class UserService implements IUserService {
     @Override
     public boolean verifyPassword(User user, String password) {
         return userDAO.verifyPassword(user, password);
+    }
+
+    @Override
+    public boolean verifyResetPasswordToken(User user, String token) {
+        return userDAO.verifyResetPasswordToken(user, token);
     }
 
     @Override
@@ -214,6 +239,25 @@ public class UserService implements IUserService {
             return;
         }
         throw new CerberusException(new MessageGeneral(MessageGeneralEnum.DATA_OPERATION_ERROR));
+    }
+
+    @Override
+    public Answer requestResetPassword(User user) throws CerberusException {
+        Answer answUpdate = new AnswerItem();
+        MessageEvent msg;
+
+        /**
+         * Generate new Password and set the RestPasswordRequest user.
+         */
+        String newPassGenerated = RandomStringUtils.randomAlphanumeric(10);
+        user.setResetPasswordToken(newPassGenerated);
+
+        /**
+         * Update in database
+         */
+        answUpdate = userDAO.update(user);
+
+        return answUpdate;
     }
 
 }

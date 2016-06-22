@@ -447,20 +447,21 @@ input#submitButtonDuplicate {
 
 /** 4 - LOGIN */
 
-#login-box {
-    width:333px;
+.login-box {
+    width: 333px;
     height: 352px;
     padding: 58px 76px 0 76px;
     color: #ebebeb;
     font: 12px Arial, Helvetica, sans-serif;
     background: url(../images/login-box-backg.png) no-repeat left top;
+    box-sizing: initial;
 }
 
-#login-box img {
+.login-box img {
     border:none;
 }
 
-#login-box h2 {
+.login-box h2 {
     padding:0;
     margin:0;
     color: #ebebeb;

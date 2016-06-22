@@ -635,7 +635,15 @@ public class ExecutionRunService implements IExecutionRunService {
              * Start Execution of TestCAseStepActionControl
              */
             long startControl = new Date().getTime();
-
+            
+            /**
+             * If control linked to skipAction, then override controlType into skipControl
+             */
+            //TODO Replace with Action and control ENUM
+            if (testCaseStepActionExecution.getAction().equals("skipAction")){
+            testCaseStepActionControl.setType("skipControl");
+            }
+            
             /**
              * Create and Register TestCaseStepActionControlExecution
              */

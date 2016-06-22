@@ -598,12 +598,14 @@ function appendDatabaseRow(dtb) {
     var deleteBtn = $("<button type=\"button\"></button>").addClass("btn btn-default btn-xs").append($("<span></span>").addClass("glyphicon glyphicon-trash"));
     var selectDatabase = getSelectInvariant("PROPERTYDATABASE", false);
     var connectionPoolInput = $("<input  maxlength=\"25\" placeholder=\"-- " + doc.getDocLabel("countryenvironmentdatabase", "ConnectionPoolName") + " --\">").addClass("form-control input-sm").val(dtb.connectionPoolName);
+    var soapUrlInput = $("<input  maxlength=\"200\" placeholder=\"-- " + doc.getDocLabel("countryenvironmentdatabase", "SoapUrl") + " --\">").addClass("form-control input-sm").val(dtb.soapUrl);
     var table = $("#databaseTableBody");
 
     var row = $("<tr></tr>");
     var deleteBtnRow = $("<td></td>").append(deleteBtn);
     var database = $("<td></td>").append(selectDatabase.val(dtb.database));
     var connectionPoolName = $("<td></td>").append(connectionPoolInput);
+    var soapUrl = $("<td></td>").append(soapUrlInput);
     deleteBtn.click(function () {
         dtb.toDelete = (dtb.toDelete) ? false : true;
 
@@ -619,9 +621,13 @@ function appendDatabaseRow(dtb) {
     connectionPoolInput.change(function () {
         dtb.connectionPoolName = $(this).val();
     });
+    soapUrlInput.change(function () {
+        dtb.soapUrl = $(this).val();
+    });
     row.append(deleteBtnRow);
     row.append(database);
     row.append(connectionPoolName);
+    row.append(soapUrl);
     dtb.database = selectDatabase.prop("value"); // Value that has been requested by dtb parameter may not exist in combo vlaues so we take the real selected value.
     row.data("database", dtb);
     table.append(row);
@@ -631,6 +637,7 @@ function addNewDatabaseRow() {
     var newDatabase = {
         database: "",
         connectionPoolName: "",
+        soapUrl: "",
         toDelete: false
     };
     appendDatabaseRow(newDatabase);

@@ -40,8 +40,13 @@ function getUser() {
     var user;
     if (sessionStorage.getItem("user") === null) {
         readUserFromDatabase();
+        
     }
     user = sessionStorage.getItem("user");
     user = JSON.parse(user);
+    if(user.request === 'Y'){
+        //user needs to change password
+        $(location).attr("href", "ChangePassword.jsp");
+    }
     return user;
 }

@@ -848,6 +848,14 @@
         <servlet-name>DummySoap</servlet-name>
         <servlet-class>org.cerberus.service.soap.impl.DummySoap</servlet-class>
     </servlet>
+    <servlet>
+        <servlet-name>ForgotPassword</servlet-name>
+        <servlet-class>org.cerberus.servlet.crud.usermanagement.ForgotPassword</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>ForgotPasswordEmailConfirmation</servlet-name>
+        <servlet-class>org.cerberus.servlet.crud.usermanagement.ForgotPasswordEmailConfirmation</servlet-class>
+    </servlet>
     <servlet-mapping>
         <servlet-name>ReadCerberusDetailInformation</servlet-name>
         <url-pattern>/ReadCerberusDetailInformation</url-pattern>
@@ -1676,6 +1684,14 @@
         <servlet-name>DummySoap</servlet-name>
         <url-pattern>/DummySoap</url-pattern>
     </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>ForgotPassword</servlet-name>
+        <url-pattern>/ForgotPassword</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>ForgotPasswordEmailConfirmation</servlet-name>
+        <url-pattern>/ForgotPasswordEmailConfirmation</url-pattern>
+    </servlet-mapping>
     <session-config>
         <session-timeout>60</session-timeout>
     </session-config>
@@ -2086,6 +2102,7 @@
             <url-pattern>/index1.jsp</url-pattern>
             <url-pattern>/index2.jsp</url-pattern>
             <url-pattern>/index3.jsp</url-pattern>
+            <url-pattern>/ChangePassword.jsp</url-pattern>
         </web-resource-collection>
         <web-resource-collection>
             <web-resource-name>servlet</web-resource-name>
@@ -2142,6 +2159,9 @@
             <url-pattern>/DisableEnvironmentV000</url-pattern>
             <url-pattern>/NewEnvironmentEventV000</url-pattern>
             <url-pattern>/DummySoap</url-pattern>
+            <url-pattern>/ForgotPassword</url-pattern>
+            <url-pattern>/ForgotPasswordEmailConfirmation</url-pattern>
+            <url-pattern>/ChangeUserPassword</url-pattern>
         </web-resource-collection>
     </security-constraint>
     <security-constraint>
@@ -2150,7 +2170,6 @@
             <web-resource-name>jsp</web-resource-name>
             <description>jsp</description>
             <url-pattern>/Homepage.jsp</url-pattern>
-            <url-pattern>/ChangePassword.jsp</url-pattern>
             <url-pattern>/Robot.jsp</url-pattern>
         </web-resource-collection>
         <web-resource-collection>
@@ -2158,7 +2177,6 @@
             <description>servlet</description>
             <url-pattern>/Homepage</url-pattern>
             <url-pattern>/ReadMyUser</url-pattern>
-            <url-pattern>/ChangeUserPassword</url-pattern>
             <url-pattern>/GeneratePerformanceString</url-pattern>
             <url-pattern>/UpdateMyUser</url-pattern>
             <url-pattern>/UpdateMyUserSystem</url-pattern>

@@ -27,15 +27,19 @@ import java.util.logging.Logger;
 import org.cerberus.database.DatabaseSpring;
 import org.cerberus.crud.entity.BatchInvariant;
 import org.cerberus.crud.entity.CountryEnvParam;
+import org.cerberus.crud.entity.MessageEvent;
 import org.cerberus.crud.entity.User;
 import org.cerberus.exception.CerberusException;
 import org.cerberus.log.MyLogger;
 import org.cerberus.crud.service.IBatchInvariantService;
 import org.cerberus.crud.service.ICountryEnvParamService;
 import org.cerberus.crud.service.IParameterService;
+import org.cerberus.enums.MessageEventEnum;
 import org.cerberus.service.email.IEmailBodyGeneration;
 import org.cerberus.service.email.IEmailGeneration;
 import org.cerberus.util.StringUtil;
+import org.cerberus.util.answer.Answer;
+import org.cerberus.util.answer.AnswerItem;
 import org.cerberus.version.Infos;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -250,6 +254,59 @@ public class EmailGeneration implements IEmailGeneration {
             Logger.getLogger(EmailGeneration.class.getName()).log(Level.SEVERE, null, ex);
         } catch (Exception ex) {
             Logger.getLogger(EmailGeneration.class.getName()).log(Level.SEVERE, null, ex);
+        }
+
+    }
+
+    @Override
+    public Answer SendForgotPasswordNotification(User user) {
+        Answer answer = new Answer();
+        String system = "";
+        String to;
+        String from;
+        String host;
+        int port;
+        String cc;
+        String subject;
+        String body;
+
+        try {
+
+            to = user.getEmail();
+            from = parameterService.findParameterByKey("cerberus_notification_accountcreation_from", system).getValue();
+            host = parameterService.findParameterByKey("integration_smtp_host", system).getValue();
+            port = Integer.valueOf(parameterService.findParameterByKey("integration_smtp_port", system).getValue());
+            cc = parameterService.findParameterByKey("cerberus_notification_accountcreation_cc", system).getValue();
+            subject = parameterService.findParameterByKey("cerberus_notification_forgotpassword_subject", system).getValue();
+            body = parameterService.findParameterByKey("cerberus_notification_forgotpassword_body", system).getValue();
+            body = body.replaceAll("%NAME%", user.getName());
+            body = body.replaceAll("%LOGIN%", user.getLogin());
+            String cerberusUrl = parameterService.findParameterByKey("cerberus_url", system).getValue();
+            StringBuilder sb = new StringBuilder();
+            sb.append("<a href='");
+            sb.append(cerberusUrl);
+            sb.append("/ChangePassword.jsp?login=");
+            sb.append(user.getLogin());
+            sb.append("&confirmationToken=");
+            sb.append(user.getResetPasswordToken());
+            sb.append("'>Click here to reset your password</a>");
+            
+            body = body.replaceAll("%LINK%", sb.toString());
+            
+            sendMail.sendHtmlMail(host, port, body, subject, from, to, cc);
+            
+            answer.setResultMessage(new MessageEvent(MessageEventEnum.GENERIC_OK));
+            return answer;
+        } catch (CerberusException ex) {
+            Logger.getLogger(EmailGeneration.class.getName()).log(Level.SEVERE, null, ex);
+            MessageEvent mes = new MessageEvent(MessageEventEnum.GENERIC_ERROR).resolveDescription("REASON", ex.toString());
+            answer.setResultMessage(mes);
+            return answer;
+        } catch (Exception ex) {
+            Logger.getLogger(EmailGeneration.class.getName()).log(Level.SEVERE, null, ex);
+            MessageEvent mes = new MessageEvent(MessageEventEnum.GENERIC_ERROR).resolveDescription("REASON", ex.toString());
+            answer.setResultMessage(mes);
+            return answer;
         }
 
     }

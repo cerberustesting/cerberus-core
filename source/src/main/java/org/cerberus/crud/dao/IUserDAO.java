@@ -75,10 +75,17 @@ public interface IUserDAO {
     /**
      * @param user
      * @param password as the new value of the password.
+     * @param requestNewPassword boolean (Y/N) . Y when Cerberus will request to change password
      * @return the user updated with the new password.
      * @throws CerberusException if the password cannot be updated.
      */
-    public AnswerItem<User> updateUserPassword(User user, String password);
+    public AnswerItem<User> updateUserPassword(User user, String password, String requestNewPassword);
+    
+    /**
+     * @param user
+     * @return 
+     */
+    public Answer clearResetPasswordToken(User user);
 
     /**
      * @param user
@@ -86,6 +93,13 @@ public interface IUserDAO {
      * @return true if password match and false if password does not match.
      */
     boolean verifyPassword(User user, String password);
+    
+    /**
+     * @param user
+     * @param password
+     * @return true if password match and false if password does not match.
+     */
+    boolean verifyResetPasswordToken(User user, String password);
 
     /**
      *

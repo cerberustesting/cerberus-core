@@ -65,7 +65,7 @@ public class CountryEnvironmentDatabaseDAO implements ICountryEnvironmentDatabas
     public AnswerItem readByKey(String system, String country, String environment, String database) {
         AnswerItem ans = new AnswerItem();
         CountryEnvironmentDatabase result = null;
-        final String query = "SELECT * FROM countryenvironmentdatabase ced WHERE ced.database = ? AND ced.environment = ? AND ced.country = ? AND ced.system = ?";
+        final String query = "SELECT * FROM countryenvironmentdatabase ceb WHERE ceb.database = ? AND ceb.environment = ? AND ceb.country = ? AND ceb.system = ?";
         MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
         msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", ""));
 
@@ -131,28 +131,29 @@ public class CountryEnvironmentDatabaseDAO implements ICountryEnvironmentDatabas
         StringBuilder query = new StringBuilder();
         //SQL_CALC_FOUND_ROWS allows to retrieve the total number of columns by disrearding the limit clauses that 
         //were applied -- used for pagination p
-        query.append("SELECT SQL_CALC_FOUND_ROWS * FROM countryenvironmentdatabase ");
+        query.append("SELECT SQL_CALC_FOUND_ROWS * FROM countryenvironmentdatabase ceb ");
 
         searchSQL.append(" where 1=1 ");
 
         if (!StringUtil.isNullOrEmpty(searchTerm)) {
-            searchSQL.append(" and (`system` like ?");
-            searchSQL.append(" or `Country` like ?");
-            searchSQL.append(" or `Environment` like ?");
-            searchSQL.append(" or `Database` like ?");
-            searchSQL.append(" or `ConnectionPoolName` like ?)");
+            searchSQL.append(" and (ceb.`system` like ?");
+            searchSQL.append(" or ceb.`Country` like ?");
+            searchSQL.append(" or ceb.`Environment` like ?");
+            searchSQL.append(" or ceb.`Database` like ?");
+            searchSQL.append(" or ceb.`ConnectionPoolName` like ?");
+            searchSQL.append(" or ceb.`SoapUrl` like ?)");
         }
         if (!StringUtil.isNullOrEmpty(individualSearch)) {
             searchSQL.append(" and (`?`)");
         }
         if (!StringUtil.isNullOrEmpty(system)) {
-            searchSQL.append(" and (`System` = ? )");
+            searchSQL.append(" and (ceb.`System` = ? )");
         }
         if (!StringUtil.isNullOrEmpty(country)) {
-            searchSQL.append(" and (`Country` = ? )");
+            searchSQL.append(" and (ceb.`Country` = ? )");
         }
         if (!StringUtil.isNullOrEmpty(environment)) {
-            searchSQL.append(" and (`Environment` = ? )");
+            searchSQL.append(" and (ceb.`Environment` = ? )");
         }
         query.append(searchSQL);
 
@@ -269,8 +270,8 @@ public class CountryEnvironmentDatabaseDAO implements ICountryEnvironmentDatabas
     public Answer create(CountryEnvironmentDatabase object) {
         MessageEvent msg = null;
         StringBuilder query = new StringBuilder();
-        query.append("INSERT INTO `countryenvironmentdatabase` (`system`, `country`, `environment`, `database`, `connectionpoolname`) ");
-        query.append("VALUES (?,?,?,?,?)");
+        query.append("INSERT INTO `countryenvironmentdatabase` (`system`, `country`, `environment`, `database`, `connectionpoolname`, `SoapUrl`) ");
+        query.append("VALUES (?,?,?,?,?,?)");
 
         // Debug message on SQL.
         if (LOG.isDebugEnabled()) {
@@ -285,6 +286,7 @@ public class CountryEnvironmentDatabaseDAO implements ICountryEnvironmentDatabas
                 preStat.setString(3, object.getEnvironment());
                 preStat.setString(4, object.getDatabase());
                 preStat.setString(5, object.getConnectionPoolName());
+                preStat.setString(6, object.getSoapUrl());
 
                 preStat.executeUpdate();
                 msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
@@ -366,7 +368,7 @@ public class CountryEnvironmentDatabaseDAO implements ICountryEnvironmentDatabas
     @Override
     public Answer update(CountryEnvironmentDatabase object) {
         MessageEvent msg = null;
-        final String query = "UPDATE `countryenvironmentdatabase` SET `connectionpoolname`=? WHERE `system`=? and `country`=? and `environment`=? and `database`=?";
+        final String query = "UPDATE `countryenvironmentdatabase` SET `connectionpoolname`=?, `SoapUrl`=? WHERE `system`=? and `country`=? and `environment`=? and `database`=?";
 
         // Debug message on SQL.
         if (LOG.isDebugEnabled()) {
@@ -377,10 +379,11 @@ public class CountryEnvironmentDatabaseDAO implements ICountryEnvironmentDatabas
             PreparedStatement preStat = connection.prepareStatement(query);
             try {
                 preStat.setString(1, object.getConnectionPoolName());
-                preStat.setString(2, object.getSystem());
-                preStat.setString(3, object.getCountry());
-                preStat.setString(4, object.getEnvironment());
-                preStat.setString(5, object.getDatabase());
+                preStat.setString(2, object.getSoapUrl());
+                preStat.setString(3, object.getSystem());
+                preStat.setString(4, object.getCountry());
+                preStat.setString(5, object.getEnvironment());
+                preStat.setString(6, object.getDatabase());
 
                 preStat.executeUpdate();
                 msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
@@ -409,12 +412,13 @@ public class CountryEnvironmentDatabaseDAO implements ICountryEnvironmentDatabas
     }
 
     private CountryEnvironmentDatabase loadFromResultSet(ResultSet resultSet) throws SQLException {
-        String system = resultSet.getString("System");
-        String count = resultSet.getString("Country");
-        String env = resultSet.getString("Environment");
-        String database = resultSet.getString("Database");
-        String connectionpoolname = resultSet.getString("ConnectionPoolName");
-        return factoryCountryEnvironmentDatabase.create(system, count, env, database, connectionpoolname);
+        String system = resultSet.getString("ceb.System");
+        String count = resultSet.getString("ceb.Country");
+        String env = resultSet.getString("ceb.Environment");
+        String database = resultSet.getString("ceb.Database");
+        String connectionpoolname = resultSet.getString("ceb.ConnectionPoolName");
+        String soapUrl = resultSet.getString("ceb.SoapUrl");
+        return factoryCountryEnvironmentDatabase.create(system, count, env, database, connectionpoolname, soapUrl);
     }
 
 }
