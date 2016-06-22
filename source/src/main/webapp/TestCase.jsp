@@ -1105,7 +1105,7 @@
                                                 <div style="width:100%;clear:both;color:blue;font-weight:bold;font-size:10px ;font-family: Trebuchet MS; background-color: transparent">
                                                     <div><div><img src="images/addAction.png" style="width:15px;height:15px" title="Add Action"
                                                                    data-fieldtype="addActionButton"
-                                                                   onclick="addTCSANew('BeforeFirstAction<%=tcs.getStep()%>', '<%=incrementStep%>', null);
+                                                                   onclick="addTCSANew('BeforeFirstAction<%=tcs.getStep()%>', '<%=incrementStep%>', '<%=tcs.getStep()%>', null);
                                                                            enableField('submitButtonAction');">
                                                         </div></div>
 
@@ -1116,7 +1116,7 @@
                                             <%}%>
                                             <div id="StepNumberDiv" style="float:left; width:10%">
                                                 &nbsp;&nbsp;Step&nbsp;&nbsp;
-                                                <input value="<%=incrementStep%>" name="step_number_<%=incrementStep%>" data-fieldtype="stepNumber" style="margin-top:15px;font-weight: bold; width:20px;background-color:transparent; border-width:0px">
+                                                <input value="<%=tcs.getStep()%>" name="step_number_<%=incrementStep%>" data-fieldtype="stepNumber" style="margin-top:15px;font-weight: bold; width:20px;background-color:transparent; border-width:0px">
                                                 <input type="hidden" name="initial_step_number_<%=incrementStep%>" id="initial_step_number_<%=incrementStep%>" value="<%=tcs.getStep()%>">
                                             </div>
                                             <div id="StepDescDiv" style="width:30%;float:left;margin-top:10px">
@@ -1288,23 +1288,23 @@
                                                                         id="action_delete_<%=incrementStep%>_<%=incrementAction%>" value="<%=tcsa.getStep() + "_" + tcsa.getSequence()%>" <%=isReadonly%>>
                                                                 <%}%>
                                                                 <input type="hidden" name="action_increment_<%=incrementStep%>" value="<%=incrementAction%>" >
-                                                                <input type="hidden" name="action_step_<%=incrementStep%>_<%=incrementAction%>" data-fieldtype="stepNumber" value="<%=incrementStep%>" >
+                                                                <input type="hidden" name="action_step_<%=incrementStep%>_<%=incrementAction%>" data-fieldtype="stepNumber" value="<%=tcsa.getStep()%>" >
                                                             </div>
                                                             <div style="height:100%;width:3%;float:left;display:inline-block">
                                                                 <%if (!useStep) {%>
                                                                 <div style="margin-top: 5px;height:50%;width:100%;clear:both;display:inline-block">
                                                                     <img src="images/addAction.png" style="width:15px;height:15px" title="Add Action" data-fieldtype="addActionButton"
-                                                                         onclick="addTCSANew('DivActionEndOfAction<%=incrementStep%><%=incrementAction%>', '<%=incrementStep%>', this)">
+                                                                         onclick="addTCSANew('DivActionEndOfAction<%=incrementStep%><%=incrementAction%>', '<%=incrementStep%>', '<%=tcsa.getStep()%>', this)">
                                                                 </div>
                                                                 <div style="margin-top:-15px;height:50%;width:100%;clear:both;display:inline-block">
                                                                     <img src="images/addControl.png" style="width:15px;height:15px" title="Add Control" data-fieldtype="addControlButton"
-                                                                         onclick="addTCSACNew('StepListOfActionDiv<%=incrementStep%><%=incrementAction%>', '<%=incrementStep%>', '<%=incrementAction%>', this)">
+                                                                         onclick="addTCSACNew('StepListOfActionDiv<%=incrementStep%><%=incrementAction%>', '<%=incrementStep%>', '<%=incrementAction%>', '<%=tcsa.getStep()%>', '<%=tcsa.getSequence()%>', this)">
                                                                 </div>
                                                                 <%}%>
                                                             </div>
                                                             <div style="height:100%;width:4%;display:inline-block;float:left">
                                                                 <input class="wob" style="width: 40px; font-weight: bold; background-color: transparent; height:100%; color:<%=actionFontColor%>"
-                                                                       value="<%=incrementAction%>" data-fieldtype="action_<%=incrementStep%>" data-field="sequence"
+                                                                       value="<%=tcsa.getSequence()%>" data-fieldtype="action_<%=incrementStep%>" data-field="sequence"
                                                                        name="action_sequence_<%=incrementStep%>_<%=incrementAction%>" id="action_sequence_<%=incrementStep%>_<%=incrementAction%>" <%if (useStep) {%>readonly<%}%>/>
                                                             </div>
                                                             <div style="height:100%;width:80%;float:left; display:inline-block">
@@ -1444,29 +1444,29 @@
                                                                         id="control_delete_<%=incrementStep%>_<%=incrementAction%>_<%=incrementControl%>" value="<%=tcsac.getStep() + '_' + tcsac.getSequence() + '_' + tcsac.getControl()%>">
                                                                 <% }%>
                                                                 <input type="hidden" value="<%=incrementControl%>" name="control_increment_<%=incrementStep%>_<%=incrementAction%>">
-                                                                <input type="hidden" value="<%=incrementStep%>" name="control_step_<%=incrementStep%>_<%=incrementAction%>_<%=incrementControl%>" data-fieldtype="stepNumber">
+                                                                <input type="hidden" value="<%=tcsac.getStep()%>" name="control_step_<%=incrementStep%>_<%=incrementAction%>_<%=incrementControl%>" data-fieldtype="stepNumber">
                                                             </div>
                                                             <div style="height:100%;width:3%;float:left;display:inline-block">
                                                                 <% if (!useStep) {%>
                                                                 <div style="margin-top:5px;height:50%;width:100%;clear:both;display:inline-block">
                                                                     <img src="images/addAction.png" style="width:15px;height:15px" title="Add Action" data-fieldtype="addActionButton"
-                                                                         onclick="addTCSANew('DivActionEndOfAction<%=incrementStep%><%=incrementAction%>', '<%=incrementStep%>', this);
+                                                                         onclick="addTCSANew('DivActionEndOfAction<%=incrementStep%><%=incrementAction%>', '<%=incrementStep%>', '<%=tcsac.getStep()%>', this);
                                                                                  enableField('submitButtonAction');">
                                                                 </div>
                                                                 <div style="margin-top:-10px;height:50%;width:100%;clear:both;display:inline-block">
                                                                     <img src="images/addControl.png" style="width:15px;height:15px" title="Add Control" data-fieldtype="addControlButton"
-                                                                         onclick="addTCSACNew('StepListOfControlDiv<%=incrementStep%><%=incrementAction%><%=incrementControl%>', '<%=incrementStep%>', '<%=incrementAction%>', this);
+                                                                         onclick="addTCSACNew('StepListOfControlDiv<%=incrementStep%><%=incrementAction%><%=incrementControl%>', '<%=incrementStep%>', '<%=incrementAction%>', '<%=tcsac.getStep()%>', '<%=tcsac.getSequence()%>', this);
                                                                                  enableField('submitButtonChanges');">
                                                                 </div>
                                                                 <%}%>
                                                             </div>
                                                             <div style="width:2%;float:left;height:100%;display:inline-block">
                                                                 <input data-fieldtype="ctrlseq_<%=incrementStep%>" data-field="sequence" class="wob" style="margin-top:20px;width: 20px; font-weight: bold;color:<%=actionFontColor%>"
-                                                                       value="<%=incrementAction%>" name="control_sequence_<%=incrementStep%>_<%=incrementAction%>_<%=incrementControl%>"  <%if (useStep) {%>readonly<%}%> />
+                                                                       value="<%=tcsac.getSequence()%>" name="control_sequence_<%=incrementStep%>_<%=incrementAction%>_<%=incrementControl%>"  <%if (useStep) {%>readonly<%}%> />
                                                             </div>
                                                             <div style="width:2%;float:left;height:100%;display:inline-block">
                                                                 <input class="wob" style="margin-top:20px;width: 20px; font-weight: bold; color:<%=actionFontColor%>" data-field="control"
-                                                                       data-fieldtype="control_<%=incrementStep%>_<%=incrementAction%>" value="<%=incrementControl%>" 
+                                                                       data-fieldtype="control_<%=incrementStep%>_<%=incrementAction%>" value="<%=tcsac.getControl()%>" 
                                                                        name="control_control_<%=incrementStep%>_<%=incrementAction%>_<%=incrementControl%>"  <%if (useStep) {%>readonly<%}%> />
                                                             </div>
                                                             <div style="height:100%;width:80%;float:left;display:inline-block">
