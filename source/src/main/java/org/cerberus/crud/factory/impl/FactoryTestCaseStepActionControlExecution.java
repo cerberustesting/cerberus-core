@@ -33,9 +33,14 @@ public class FactoryTestCaseStepActionControlExecution implements IFactoryTestCa
 
     @Override
     public TestCaseStepActionControlExecution create(long id, String test, String testCase, int step, int sequence,
-                                                     int control, String returnCode, String returnMessage, String controlType, String controlProperty,
-                                                     String controlValue, String fatal, long start, long end, long startLong, long endLong,
-                                                     String screenshotFilename, String pageSourceFilename, String description, TestCaseStepActionExecution testCaseStepActionExecution, MessageEvent resultMessage) {
+            int control, String returnCode, String returnMessage, String controlType, String controlProperty,
+            String controlValue, String fatal, long start, long end, long startLong, long endLong,
+            String screenshotFilename, String pageSourceFilename, String description, TestCaseStepActionExecution testCaseStepActionExecution, MessageEvent resultMessage) {
+        return create(id, test, testCase, step, sequence, control, control, returnCode, returnMessage, controlType, controlProperty, controlValue, fatal, start, end, startLong, endLong, screenshotFilename, pageSourceFilename, description, testCaseStepActionExecution, resultMessage);
+    }
+
+    @Override
+    public TestCaseStepActionControlExecution create(long id, String test, String testCase, int step, int sequence, int control, int sort, String returnCode, String returnMessage, String controlType, String controlProperty, String controlValue, String fatal, long start, long end, long startLong, long endLong, String screenshotFilename, String pageSourceFilename, String description, TestCaseStepActionExecution testCaseStepActionExecution, MessageEvent resultMessage) {
         TestCaseStepActionControlExecution testCaseStepActionControlExecution = new TestCaseStepActionControlExecution();
         testCaseStepActionControlExecution.setId(id);
         testCaseStepActionControlExecution.setTest(test);
@@ -43,6 +48,7 @@ public class FactoryTestCaseStepActionControlExecution implements IFactoryTestCa
         testCaseStepActionControlExecution.setStep(step);
         testCaseStepActionControlExecution.setSequence(sequence);
         testCaseStepActionControlExecution.setControl(control);
+        testCaseStepActionControlExecution.setSort(sort);
         testCaseStepActionControlExecution.setReturnCode(returnCode);
         testCaseStepActionControlExecution.setReturnMessage(returnMessage);
         testCaseStepActionControlExecution.setControlType(controlType);

@@ -27,6 +27,7 @@ public class TestCaseStep {
     private String test;
     private String testCase;
     private int step;
+    private int sort;
     private String description;
     private String useStep;  //  Y if the step use a step from another test 
     private String useStepTest; //  The test of the used step
@@ -122,6 +123,14 @@ public class TestCaseStep {
         return step;
     }
 
+    public int getSort() {
+        return sort;
+    }
+
+    public void setSort(int sort) {
+        this.sort = sort;
+    }
+
     public void setStep(int step) {
         this.step = step;
     }
@@ -168,6 +177,7 @@ public class TestCaseStep {
         hash = 29 * hash + (this.test != null ? this.test.hashCode() : 0);
         hash = 29 * hash + (this.testCase != null ? this.testCase.hashCode() : 0);
         hash = 29 * hash + this.step;
+        hash = 29 * hash + this.sort;
         hash = 29 * hash + (this.description != null ? this.description.hashCode() : 0);
         hash = 29 * hash + (this.useStep != null ? this.useStep.hashCode() : 0);
         hash = 29 * hash + (this.useStepTest != null ? this.useStepTest.hashCode() : 0);
@@ -192,6 +202,9 @@ public class TestCaseStep {
             return false;
         }
         if (this.step != other.step) {
+            return false;
+        }
+        if (this.sort != other.sort) {
             return false;
         }
         if ((this.description == null) ? (other.description != null) : !this.description.equals(other.description)) {

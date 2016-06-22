@@ -32,22 +32,16 @@ public class FactoryTestCaseStepActionControl implements IFactoryTestCaseStepAct
     @Override
     public TestCaseStepActionControl create(String test, String testCase, int step, int sequence,
                                             int control, String type, String controlValue, String controlProperty, String fatal, String description) {
-        TestCaseStepActionControl testCaseStepActionControl = new TestCaseStepActionControl();
-        testCaseStepActionControl.setTest(test);
-        testCaseStepActionControl.setTestCase(testCase);
-        testCaseStepActionControl.setType(type);
-        testCaseStepActionControl.setStep(step);
-        testCaseStepActionControl.setSequence(sequence);
-        testCaseStepActionControl.setControl(control);
-        testCaseStepActionControl.setControlValue(controlValue);
-        testCaseStepActionControl.setControlProperty(controlProperty);
-        testCaseStepActionControl.setFatal(fatal);
-        testCaseStepActionControl.setDescription(description);
-        return testCaseStepActionControl;
+        return create(test, testCase, step, sequence, control, control, type, controlValue, controlProperty, fatal, description, null);
     }
 
     @Override
     public TestCaseStepActionControl create(String test, String testCase, int step, int sequence, int control, String type, String controlValue, String controlProperty, String fatal, String description, String screenshotFilename) {
+        return create(test, testCase, step, sequence, control, control, type, controlValue, controlProperty, fatal, description, screenshotFilename);
+    }
+
+    @Override
+    public TestCaseStepActionControl create(String test, String testCase, int step, int sequence, int control, int sort, String type, String controlValue, String controlProperty, String fatal, String description, String screenshotFilename) {
         TestCaseStepActionControl testCaseStepActionControl = new TestCaseStepActionControl();
         testCaseStepActionControl.setTest(test);
         testCaseStepActionControl.setTestCase(testCase);
@@ -55,6 +49,7 @@ public class FactoryTestCaseStepActionControl implements IFactoryTestCaseStepAct
         testCaseStepActionControl.setStep(step);
         testCaseStepActionControl.setSequence(sequence);
         testCaseStepActionControl.setControl(control);
+        testCaseStepActionControl.setSort(sort);
         testCaseStepActionControl.setControlValue(controlValue);
         testCaseStepActionControl.setControlProperty(controlProperty);
         testCaseStepActionControl.setFatal(fatal);
@@ -62,5 +57,7 @@ public class FactoryTestCaseStepActionControl implements IFactoryTestCaseStepAct
         testCaseStepActionControl.setScreenshotFilename(screenshotFilename);
         return testCaseStepActionControl;
     }
+    
+    
 
 }

@@ -36,6 +36,11 @@ public class FactoryTestCaseStepActionExecution implements IFactoryTestCaseStepA
     public TestCaseStepActionExecution create(long id, String test, String testCase, int step, int sequence, String returnCode, String returnMessage, String action,
             String object, String property, long start, long end, long startLong, long endLong, String screenshotFilename, String pageSourceFilename,
             MessageEvent resultMessage, String description, TestCaseStepAction testCaseStepAction, TestCaseStepExecution testCaseStepExecution) {
+        return create(id, test, testCase, step, sequence, sequence, returnCode, returnMessage, action, object, property, start, end, startLong, endLong, screenshotFilename, pageSourceFilename, resultMessage, description, testCaseStepAction, testCaseStepExecution);
+    }
+
+    @Override
+    public TestCaseStepActionExecution create(long id, String test, String testCase, int step, int sequence, int sort, String returnCode, String returnMessage, String action, String object, String property, long start, long end, long startLong, long endLong, String screenshotFilename, String pageSourceFilename, MessageEvent resultMessage, String description, TestCaseStepAction testCaseStepAction, TestCaseStepExecution testCaseStepExecution) {
         TestCaseStepActionExecution testCaseStepActionExecution = new TestCaseStepActionExecution();
         testCaseStepActionExecution.setAction(action);
         testCaseStepActionExecution.setEnd(end);

@@ -19,7 +19,6 @@ package org.cerberus.crud.entity;
 
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -34,6 +33,7 @@ public class TestCaseStepActionControlExecution {
     private int step;
     private int sequence;
     private int control;
+    private int sort;
     private String returnCode;
     private String returnMessage;
     private String controlType;
@@ -105,6 +105,14 @@ public class TestCaseStepActionControlExecution {
 
     public void setControl(int control) {
         this.control = control;
+    }
+
+    public int getSort() {
+        return sort;
+    }
+
+    public void setSort(int sort) {
+        this.sort = sort;
     }
 
     public String getControlProperty() {
@@ -252,6 +260,7 @@ public class TestCaseStepActionControlExecution {
             result.put("step", this.getStep());
             result.put("sequence", this.getSequence());
             result.put("control", this.getControl());
+            result.put("sort", this.getSort());
             result.put("controlType", this.getControlType());
             result.put("controlProperty", this.getControlProperty());
             result.put("controlValue", this.getControlValue());

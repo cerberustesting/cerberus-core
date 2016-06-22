@@ -35,6 +35,7 @@ public class TestCaseStepExecution {
     private String test;
     private String testCase;
     private int step;
+    private int sort;
     private String batNumExe;
     private long start;
     private long end;
@@ -214,6 +215,14 @@ public class TestCaseStepExecution {
         this.step = step;
     }
 
+    public int getSort() {
+        return sort;
+    }
+
+    public void setSort(int sort) {
+        this.sort = sort;
+    }
+
     public String getTest() {
         return test;
     }
@@ -261,6 +270,7 @@ public class TestCaseStepExecution {
             result.put("test", this.getTest());
             result.put("testcase", this.getTestCase());
             result.put("step", this.getStep());
+            result.put("sort", this.getSort());
             result.put("batNumExe", this.getBatNumExe());
             result.put("start", this.getStart());
             result.put("end", this.getEnd());
