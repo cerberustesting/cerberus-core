@@ -133,6 +133,8 @@ public class TestCaseStep {
 
     public void setStep(int step) {
         this.step = step;
+        // TODO to remove when sorting will be fully enabled
+        setSort(step);
     }
 
     public String getTest() {

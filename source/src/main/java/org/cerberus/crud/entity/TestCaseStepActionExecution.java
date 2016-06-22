@@ -206,6 +206,8 @@ public class TestCaseStepActionExecution {
 
     public void setSequence(int sequence) {
         this.sequence = sequence;
+        // TODO to remove when sorting will be fully enabled
+        setSort(sequence);
     }
 
     public int getSort() {
