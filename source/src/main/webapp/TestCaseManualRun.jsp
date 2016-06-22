@@ -397,7 +397,7 @@
                                                 int incrementAction = 0;
                                                 for (TestCaseStepAction tcsa : tcsaList) {
 
-                                                    incrementAction = tcsa.getSequence();
+                                                    incrementAction++;
                                                     int b;
                                                     b = incrementAction % 2;
                                                     if (b != 1) {
@@ -498,7 +498,7 @@
                                                 int incrementControl = 0;
                                                 String controlColor = "white";
                                                 for (TestCaseStepActionControl tcsac : tcsacList) {
-                                                    incrementControl = tcsac.getControl();
+                                                    incrementControl++;
                                                     int e;
                                                     e = incrementControl % 2;
                                                     if (e != 1) {
