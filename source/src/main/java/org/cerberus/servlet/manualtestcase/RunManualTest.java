@@ -231,7 +231,7 @@ public class RunManualTest extends HttpServlet {
                 String stepResultMessage = getParameterIfExists(request, "stepResultMessage_" + inc);
                 String stepReturnCode = getParameterIfExists(request, "stepStatus_" + inc);
 
-                result.add(testCaseStepExecutionFactory.create(executionId, test, testCase, step, null, now, now, now, now,
+                result.add(testCaseStepExecutionFactory.create(executionId, test, testCase, step, Integer.parseInt(inc), null, now, now, now, now,
                         new BigDecimal("0"), stepReturnCode, stepResultMessage, ""));
             }
         }
@@ -260,7 +260,7 @@ public class RunManualTest extends HttpServlet {
                     actionScreenshotFileName = executionId + File.separator + actionScreenshotFileName;
                 }
 
-                result.add(testCaseStepActionExecutionFactory.create(executionId, test, testCase, step, sequence, actionReturnCode,
+                result.add(testCaseStepActionExecutionFactory.create(executionId, test, testCase, step, sequence, Integer.parseInt(inc), actionReturnCode,
                         actionReturnMessage, "Manual Action", null, null, now, now, now, now,
                         actionScreenshotFileName, null, null, "", null, null));
             }
@@ -292,7 +292,7 @@ public class RunManualTest extends HttpServlet {
                     controlScreenshot = executionId + File.separator + controlScreenshot;
                 }
 
-                result.add(testCaseStepActionExecutionFactory.create(executionId, test, testCase, step, sequence, control,
+                result.add(testCaseStepActionExecutionFactory.create(executionId, test, testCase, step, sequence, control, Integer.parseInt(inc),
                         controlReturnCode, controlReturnMessage, "Manual Control", null, null, null, now, now,
                         now, now, controlScreenshot, null,"", null, null));
             }

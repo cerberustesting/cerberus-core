@@ -350,7 +350,7 @@
                                 </div>
                                 <div id="StepNumberDiv" style="float:left; width:80px">
                                     &nbsp;&nbsp;Step&nbsp;&nbsp;
-                                    <input value="<%=incrementStep%>" name="step_number_<%=incrementStep%>" data-fieldtype="stepNumber" style="margin-top:15px;font-weight: bold; width:20px;background-color:transparent; border-width:0px">
+                                    <input value="<%=tcs.getStep()%>" name="step_number_<%=incrementStep%>" data-fieldtype="stepNumber" style="margin-top:15px;font-weight: bold; width:20px;background-color:transparent; border-width:0px">
                                     <input type="hidden" name="initial_step_number_<%=incrementStep%>" id="initial_step_number_<%=incrementStep%>" value="<%=tcs.getStep()%>">
                                 </div>
                                 <div id="StepDescDiv" style="width:550px;float:left">
@@ -416,11 +416,11 @@
                                                 </div>
                                                 <div style="display:inline-block;float:left;width:2%;height:100%;">
                                                     <input type="hidden" name="action_increment_<%=incrementStep%>" value="<%=incrementAction%>" >
-                                                    <input type="hidden" name="action_step_<%=incrementStep%>_<%=incrementAction%>" data-fieldtype="stepNumber" value="<%=incrementStep%>" >
+                                                    <input type="hidden" name="action_step_<%=incrementStep%>_<%=incrementAction%>" data-fieldtype="stepNumber" value="<%=tcsa.getStep()%>" >
                                                 </div>
                                                 <div style="height:100%;width:4%;display:inline-block;float:left">
                                                     <input class="wob" style="width: 20px; font-weight: bold; background-color: transparent; height:100%; color:<%=actionFontColor%>"
-                                                           value="<%=incrementAction%>" data-fieldtype="action_<%=incrementStep%>" data-field="sequence"
+                                                           value="<%=tcsa.getSequence()%>" data-fieldtype="action_<%=incrementStep%>" data-field="sequence"
                                                            name="action_sequence_<%=incrementStep%>_<%=incrementAction%>" id="action_sequence_<%=incrementStep%>_<%=incrementAction%>">
                                                 </div>
                                                 <div style="height:20px;width:50%;float:left; display:inline-block">
@@ -517,15 +517,15 @@
                                                 </div>
                                                 <div style="height:100%;width: 2%;float:left; text-align: center;">
                                                     <input type="hidden" value="<%=incrementControl%>" name="control_increment_<%=incrementStep%>_<%=incrementAction%>">
-                                                    <input type="hidden" value="<%=incrementStep%>" name="control_step_<%=incrementStep%>_<%=incrementAction%>_<%=incrementControl%>" data-fieldtype="stepNumber">
+                                                    <input type="hidden" value="<%=tcsac.getStep()%>" name="control_step_<%=incrementStep%>_<%=incrementAction%>_<%=incrementControl%>" data-fieldtype="stepNumber">
                                                 </div>
                                                 <div style="width:2%;float:left;height:100%;display:inline-block">
                                                     <input data-fieldtype="ctrlseq_<%=incrementStep%>" data-field="sequence" class="wob" style="width: 20px; font-weight: bold;color:<%=actionFontColor%>"
-                                                           value="<%=incrementAction%>" name="control_sequence_<%=incrementStep%>_<%=incrementAction%>_<%=incrementControl%>">
+                                                           value="<%=tcsac.getSequence()%>" name="control_sequence_<%=incrementStep%>_<%=incrementAction%>_<%=incrementControl%>">
                                                 </div>
                                                 <div style="width:2%;float:left;height:100%;display:inline-block">
                                                     <input class="wob" style="width: 20px; font-weight: bold; color:<%=actionFontColor%>"
-                                                           data-fieldtype="control_<%=incrementStep%>_<%=incrementAction%>" value="<%=incrementControl%>" name="control_control_<%=incrementStep%>_<%=incrementAction%>_<%=incrementControl%>">
+                                                           data-fieldtype="control_<%=incrementStep%>_<%=incrementAction%>" value="<%=tcsac.getControl()%>" name="control_control_<%=incrementStep%>_<%=incrementAction%>_<%=incrementControl%>">
                                                 </div>
                                                 <div style="height:100%;width:50%;float:left;display:inline-block">
                                                     <div class="functional_description_control" style="clear:both;width:100%;height:20px">
