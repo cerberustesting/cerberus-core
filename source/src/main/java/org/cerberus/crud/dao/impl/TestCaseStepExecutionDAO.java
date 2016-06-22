@@ -169,7 +169,7 @@ public class TestCaseStepExecutionDAO implements ITestCaseStepExecutionDAO {
     public List<TestCaseStepExecution> findTestCaseStepExecutionById(long id) {
         List<TestCaseStepExecution> result = null;
         TestCaseStepExecution resultData;
-        final String query = "SELECT * FROM testcasestepexecution WHERE id = ? ORDER BY fullstart";
+        final String query = "SELECT * FROM testcasestepexecution WHERE id = ? ORDER BY fullstart, sort";
 
         Connection connection = this.databaseSpring.connect();
         try {
