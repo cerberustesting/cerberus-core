@@ -79,7 +79,7 @@ public class TestCaseStepDAO implements ITestCaseStepDAO {
     @Override
     public List<TestCaseStep> findTestCaseStepByTestCase(String test, String testcase) {
         List<TestCaseStep> list = null;
-        final String query = "SELECT * FROM testcasestep WHERE test = ? AND testcase = ?";
+        final String query = "SELECT * FROM testcasestep WHERE test = ? AND testcase = ? ORDER BY sort";
 
         Connection connection = this.databaseSpring.connect();
         try {
