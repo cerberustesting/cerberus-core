@@ -226,12 +226,13 @@ public class RunManualTest extends HttpServlet {
 
         String[] testcase_step_increment = getParameterValuesIfExists(request, "step_increment");
         if (testcase_step_increment != null) {
-            for (String inc : testcase_step_increment) {
+            for (int i = 0; i < testcase_step_increment.length; i++) {
+                String inc = testcase_step_increment[i];
                 int step = Integer.valueOf(getParameterIfExists(request, "step_number_" + inc) == null ? "0" : getParameterIfExists(request, "step_number_" + inc));
                 String stepResultMessage = getParameterIfExists(request, "stepResultMessage_" + inc);
                 String stepReturnCode = getParameterIfExists(request, "stepStatus_" + inc);
 
-                result.add(testCaseStepExecutionFactory.create(executionId, test, testCase, step, Integer.parseInt(inc), null, now, now, now, now,
+                result.add(testCaseStepExecutionFactory.create(executionId, test, testCase, step, i + 1, null, now, now, now, now,
                         new BigDecimal("0"), stepReturnCode, stepResultMessage, ""));
             }
         }
@@ -246,7 +247,8 @@ public class RunManualTest extends HttpServlet {
 
         String[] stepAction_increment = getParameterValuesIfExists(request, "action_increment_" + stepId);
         if (stepAction_increment != null) {
-            for (String inc : stepAction_increment) {
+            for (int i = 0; i < stepAction_increment.length; i++) {
+                String inc = stepAction_increment[i];
                 int step = Integer.valueOf(getParameterIfExists(request, "action_step_" + stepId + "_" + inc) == null
                         ? "0" : getParameterIfExists(request, "action_step_" + stepId + "_" + inc));
                 int sequence = Integer.valueOf(getParameterIfExists(request, "action_sequence_" + stepId + "_" + inc) == null
@@ -260,7 +262,7 @@ public class RunManualTest extends HttpServlet {
                     actionScreenshotFileName = executionId + File.separator + actionScreenshotFileName;
                 }
 
-                result.add(testCaseStepActionExecutionFactory.create(executionId, test, testCase, step, sequence, Integer.parseInt(inc), actionReturnCode,
+                result.add(testCaseStepActionExecutionFactory.create(executionId, test, testCase, step, sequence, i + 1, actionReturnCode,
                         actionReturnMessage, "Manual Action", null, null, now, now, now, now,
                         actionScreenshotFileName, null, null, "", null, null));
             }
@@ -276,7 +278,8 @@ public class RunManualTest extends HttpServlet {
 
         String[] stepActionControl_increment = getParameterValuesIfExists(request, "control_increment_" + stepId + "_" + sequenceId);
         if (stepActionControl_increment != null) {
-            for (String inc : stepActionControl_increment) {
+            for (int i = 0; i < stepActionControl_increment.length; i++) {
+                String inc = stepActionControl_increment[i];
                 int step = Integer.valueOf(getParameterIfExists(request, "control_step_" + stepId + "_" + sequenceId + "_" + inc) == null
                         ? "0" : getParameterIfExists(request, "control_step_" + stepId + "_" + sequenceId + "_" + inc));
                 int sequence = Integer.valueOf(getParameterIfExists(request, "control_sequence_" + stepId + "_" + sequenceId + "_" + inc) == null
@@ -292,7 +295,7 @@ public class RunManualTest extends HttpServlet {
                     controlScreenshot = executionId + File.separator + controlScreenshot;
                 }
 
-                result.add(testCaseStepActionExecutionFactory.create(executionId, test, testCase, step, sequence, control, Integer.parseInt(inc),
+                result.add(testCaseStepActionExecutionFactory.create(executionId, test, testCase, step, sequence, control, i + 1,
                         controlReturnCode, controlReturnMessage, "Manual Control", null, null, null, now, now,
                         now, now, controlScreenshot, null,"", null, null));
             }

@@ -301,7 +301,7 @@
                             int incrementStep = 0;
                             List<TestCaseStep> tcsList = tcsService.getListOfSteps(test, testcase);
                             for (TestCaseStep tcs : tcsList) {
-                                incrementStep++;
+                                incrementStep = tcs.getStep();
                                 String testForQuery = "";
                                 String testcaseForQuery = "";
                                 int stepForQuery = 0;
@@ -397,7 +397,7 @@
                                                 int incrementAction = 0;
                                                 for (TestCaseStepAction tcsa : tcsaList) {
 
-                                                    incrementAction++;
+                                                    incrementAction = tcsa.getSequence();
                                                     int b;
                                                     b = incrementAction % 2;
                                                     if (b != 1) {
@@ -498,7 +498,7 @@
                                                 int incrementControl = 0;
                                                 String controlColor = "white";
                                                 for (TestCaseStepActionControl tcsac : tcsacList) {
-                                                    incrementControl++;
+                                                    incrementControl = tcsac.getControl();
                                                     int e;
                                                     e = incrementControl % 2;
                                                     if (e != 1) {
