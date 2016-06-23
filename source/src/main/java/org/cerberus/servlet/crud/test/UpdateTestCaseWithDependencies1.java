@@ -389,7 +389,7 @@ public class UpdateTestCaseWithDependencies1 extends HttpServlet {
             JSONArray stepActions = step.getJSONArray("actionArr");
 
             if (!delete) {
-                TestCaseStep tcStep = testCaseStepFactory.create(test, testCase, stepNumber, description, useStep, useStepTest, useStepTestCase, useStepStep, inLibrary);
+                TestCaseStep tcStep = testCaseStepFactory.create(test, testCase, stepNumber, stepNumber, description, useStep, useStepTest, useStepTestCase, useStepStep, inLibrary);
 
                 if (useStep.equals("N")) {
                     tcStep.setTestCaseStepAction(getTestCaseStepActionFromParameter(request, appContext, test, testCase, stepActions));
@@ -428,7 +428,7 @@ public class UpdateTestCaseWithDependencies1 extends HttpServlet {
             JSONArray controlArray = tcsaJson.getJSONArray("controlArr");
 
             if (!delete) {
-                TestCaseStepAction tcsa = testCaseStepActionFactory.create(test, testCase, step, sequence, action, object, property, description, screenshot);
+                TestCaseStepAction tcsa = testCaseStepActionFactory.create(test, testCase, step, sequence, sequence, action, object, property, description, screenshot);
                 tcsa.setTestCaseStepActionControl(getTestCaseStepActionControlFromParameter(request, appContext, test, testCase, controlArray));
                 testCaseStepAction.add(tcsa);
             }
@@ -454,7 +454,7 @@ public class UpdateTestCaseWithDependencies1 extends HttpServlet {
             String description = controlJson.getString("description");
             String screenshot = controlJson.getString("screenshotFileName");
             if (!delete) {
-                testCaseStepActionControl.add(testCaseStepActionControlFactory.create(test, testCase, step, sequence, control, type, controlValue, controlProperty, fatal, description, screenshot));
+                testCaseStepActionControl.add(testCaseStepActionControlFactory.create(test, testCase, step, sequence, control, control, type, controlValue, controlProperty, fatal, description, screenshot));
             }
         }
         return testCaseStepActionControl;

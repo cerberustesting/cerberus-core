@@ -35,11 +35,6 @@ public class FactoryTestCaseStepAction implements IFactoryTestCaseStepAction {
     }
 
     @Override
-    public TestCaseStepAction create(String test, String testCase, int step, int sequence, String action, String object, String property, String description, String screenshotFilename) {
-        return create(test, testCase, step, sequence, sequence, action, object, property, description, screenshotFilename);
-    }
-
-    @Override
     public TestCaseStepAction create(String test, String testCase, int step, int sequence, int sort, String action, String object, String property, String description, String screenshotFilename) {
         TestCaseStepAction testCaseStepAction = new TestCaseStepAction();
         testCaseStepAction.setAction(action);

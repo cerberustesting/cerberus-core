@@ -27,11 +27,6 @@ import org.cerberus.crud.entity.TestCaseStepActionExecution;
  * @author bcivel
  */
 public interface IFactoryTestCaseStepActionControlExecution {
-
-    TestCaseStepActionControlExecution create(long id, String test, String testCase, int step,
-                                              int sequence, int control, String returnCode, String returnMessage, String controlType,
-                                              String controlProperty, String controlValue, String fatal, long start, long end,
-                                              long startLong, long endLong, String screenshotFilename, String pageSourceFilename,String description, TestCaseStepActionExecution testCaseStepActionExecution, MessageEvent resultMessage);
     
     TestCaseStepActionControlExecution create(long id, String test, String testCase, int step,
                                               int sequence, int control, int sort, String returnCode, String returnMessage, String controlType,

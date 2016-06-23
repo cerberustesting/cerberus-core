@@ -458,7 +458,7 @@ public class TestCaseStepDAO implements ITestCaseStepDAO {
     public List<TestCaseStep> getStepUsedAsLibraryInOtherTestCaseByApplication(String application) throws CerberusException {
         List<TestCaseStep> list = null;
         StringBuilder query = new StringBuilder();
-        query.append("SELECT tcs.usesteptest, tcs.usesteptestcase,tcs.usestepstep, tcs2.description FROM testcasestep tcs ");
+        query.append("SELECT tcs.usesteptest, tcs.usesteptestcase,tcs.usestepstep,tcs.sort, tcs2.description FROM testcasestep tcs ");
         query.append("join testcase tc on tc.test=tcs.test and tc.testcase=tcs.testcase ");
         query.append("join testcasestep tcs2 on tcs.test=tcs2.test and tcs.testcase=tcs2.testcase and tcs.step=tcs2.step ");
         query.append("where tcs.usestep = 'Y' and tc.application = ?  ");
@@ -477,8 +477,9 @@ public class TestCaseStepDAO implements ITestCaseStepDAO {
                         String t = resultSet.getString("usesteptest");
                         String tc = resultSet.getString("usesteptestcase");
                         int s = resultSet.getInt("usestepstep");
+                        int sort = resultSet.getInt("sort");
                         String description = resultSet.getString("description");
-                        list.add(factoryTestCaseStep.create(t, tc, s, description, null, null, null, 0, null));
+                        list.add(factoryTestCaseStep.create(t, tc, s, sort, description, null, null, null, 0, null));
                     }
                 } catch (SQLException exception) {
                     LOG.error("Unable to execute query : " + exception.toString());

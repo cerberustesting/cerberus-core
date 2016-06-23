@@ -29,15 +29,6 @@ import org.cerberus.crud.entity.TestCaseStepExecution;
  * @author bcivel
  */
 public interface IFactoryTestCaseStepExecution {
-
-    TestCaseStepExecution create(long id, String test, String testCase, int step, String batNumExe,
-                                 long start, long end, long fullStart, long fullEnd, BigDecimal timeElapsed, String returnCode,
-                                 MessageEvent stepResultMessage, TestCaseStep testCaseStep, TestCaseExecution tCExecution, String useStep, String useStepTest, 
-                                 String useStepTestCase, int useStepTestCaseStep, String description);
-    
-    TestCaseStepExecution create(long id, String test, String testCase, int step, String batNumExe,
-                                 long start, long end, long fullStart, long fullEnd, BigDecimal timeElapsed, String returnCode,
-                                 String returnMessage, String description);
     
     TestCaseStepExecution create(long id, String test, String testCase, int step, int sort, String batNumExe,
                                  long start, long end, long fullStart, long fullEnd, BigDecimal timeElapsed, String returnCode,

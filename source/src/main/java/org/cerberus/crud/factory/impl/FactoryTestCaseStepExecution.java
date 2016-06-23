@@ -32,21 +32,6 @@ import org.springframework.stereotype.Service;
  */
 @Service
 public class FactoryTestCaseStepExecution implements IFactoryTestCaseStepExecution {
-
-    @Override
-    public TestCaseStepExecution create(long id, String test, String testCase, int step, String batNumExe, long start, long end, long fullStart, long fullEnd, BigDecimal timeElapsed,
-            String returnCode, MessageEvent stepResultMessage, TestCaseStep testCaseStep, TestCaseExecution tCExecution, String useStep, String useStepTest,
-            String useStepTestCase, int useStepTestCaseStep, String description) {
-        return create(id, test, testCase, step, step, batNumExe, start, end, fullStart, fullEnd, timeElapsed, returnCode, stepResultMessage, testCaseStep, tCExecution, useStep, useStepTest, useStepTestCase, useStepTestCaseStep, description);
-    }
-
-    @Override
-    public TestCaseStepExecution create(long id, String test, String testCase,
-            int step, String batNumExe, long start, long end, long fullStart,
-            long fullEnd, BigDecimal timeElapsed, String returnCode,
-            String returnMessage, String description) {
-        return create(id, test, testCase, step, step, batNumExe, start, end, fullStart, fullEnd, timeElapsed, returnCode, returnMessage, description);
-    }
     
         @Override
     public TestCaseStepExecution create(long id, String test, String testCase, int step, int sort, String batNumExe, long start, long end, long fullStart, long fullEnd, BigDecimal timeElapsed, String returnCode, String returnMessage, String description) {

@@ -327,7 +327,7 @@ public class TestCaseStepActionControlExecutionDAO implements ITestCaseStepActio
         String pageSource = resultSet.getString("PageSourceFilename");
         String description = resultSet.getString("description");
         return factoryTestCaseStepActionControlExecution.create(id, test, testCase, step,
-                sequence, control, returnCode, returnMessage, controlType, controlProperty, controlValue,
+                sequence, control, sort, returnCode, returnMessage, controlType, controlProperty, controlValue,
                 fatal, start, end, startlong, endlong, screenshot, pageSource,description, null, null);
     }
 }
