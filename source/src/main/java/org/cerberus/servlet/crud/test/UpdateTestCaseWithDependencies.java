@@ -491,7 +491,7 @@ public class UpdateTestCaseWithDependencies extends HttpServlet {
                                 }
                             }else{
                                 //if there was no changes then it uses the same information
-                                tcs = tcsService.findTestCaseStep(test, testCase, Integer.parseInt(inc));   
+                                tcs = tcsService.findTestCaseStep(test, testCase, step);   
                                 if(tcs != null){
                                     tcStep.setUseStepTest(tcs.getUseStepTest());
                                     tcStep.setUseStepTestCase(tcs.getUseStepTestCase());
@@ -501,7 +501,7 @@ public class UpdateTestCaseWithDependencies extends HttpServlet {
                            
                         }else{
                             //does not defines a valid step, then keep as it was before
-                            tcs = tcsService.findTestCaseStep(test, testCase, Integer.parseInt(inc));   
+                            tcs = tcsService.findTestCaseStep(test, testCase, step);   
                             if(tcs != null){
                                 tcStep.setUseStep("N");
                                 tcStep.setUseStepTest(tcs.getUseStepTest());
