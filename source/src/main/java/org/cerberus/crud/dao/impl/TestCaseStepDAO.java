@@ -514,6 +514,7 @@ public class TestCaseStepDAO implements ITestCaseStepDAO {
         query.append("join testcase tc on tc.test=tcs.test and tc.testcase=tcs.testcase ");
         query.append("join application app  on tc.application=app.application ");
         query.append("where tcs.inlibrary = 'Y' and app.system = ?  ");
+        query.append("order by tcs.test, tcs.testcase, tcs.sort");
 
         Connection connection = this.databaseSpring.connect();
         try {
@@ -564,6 +565,7 @@ public class TestCaseStepDAO implements ITestCaseStepDAO {
         query.append("join testcase tc on tc.test=tcs.test and tc.testcase=tcs.testcase ");
         query.append("join application app  on tc.application=app.application ");
         query.append("where tcs.inlibrary = 'Y' and app.system = ? and tcs.test = ? ");
+        query.append("order by tcs.test, tcs.testcase, tcs.sort");
 
         Connection connection = this.databaseSpring.connect();
         try {
@@ -618,7 +620,8 @@ public class TestCaseStepDAO implements ITestCaseStepDAO {
         query.append("SELECT tcs.test, tcs.testcase,tcs.step, tcs.sort, tcs.description FROM testcasestep tcs ");
         query.append("join testcase tc on tc.test=tcs.test and tc.testcase=tcs.testcase ");
         query.append("join application app  on tc.application=app.application ");
-        query.append("where tcs.inlibrary = 'Y' and app.system = ? and tcs.test = ? and tcs.testcase = ?");
+        query.append("where tcs.inlibrary = 'Y' and app.system = ? and tcs.test = ? and tcs.testcase = ? ");
+        query.append("order by tcs.test, tcs.testcase, tcs.sort");
 
         Connection connection = this.databaseSpring.connect();
         try {
