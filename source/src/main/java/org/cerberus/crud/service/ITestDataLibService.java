@@ -39,9 +39,10 @@ public interface ITestDataLibService {
      * @param system
      * @param environment
      * @param country
+     * @param type
      * @return
      */
-    AnswerItem readByNameBySystemByEnvironmentByCountry(String name, String system, String environment, String country);
+    AnswerItem readByNameBySystemByEnvironmentByCountry(String name, String system, String environment, String country, String type);
 
     /**
      *
@@ -76,6 +77,11 @@ public interface ITestDataLibService {
 
     /**
      *
+     * @param name
+     * @param system
+     * @param environment
+     * @param country
+     * @param type
      * @param start first row of the resultSet
      * @param amount number of row of the resultSet
      * @param column order the resultSet by this column
@@ -126,6 +132,11 @@ public interface ITestDataLibService {
      */
     Answer create(TestDataLib testDataLib, List<TestDataLibData> subDataList);
 
+    /**
+     *
+     * @param entries
+     * @return
+     */
     Answer create(HashMap<TestDataLib, List<TestDataLibData>> entries);
 
     /**
@@ -143,5 +154,10 @@ public interface ITestDataLibService {
      */
     Answer update(TestDataLib testDataLib);
 
+    /**
+     *
+     * @param lib
+     * @return
+     */
     Answer duplicate(TestDataLib lib);
 }

@@ -1472,9 +1472,7 @@ function setPlaceholderAction() {
             {"type": "removeDifference", "object": "Action Depreciée", "property": "Action Depreciée"},
             {"type": "executeSqlUpdate", "object": "Nom de Base de donnée", "property": "Script à executer"},
             {"type": "executeSqlStoredProcedure", "object": "Nom de Base de donnée", "property": "Procedure Stoquée à executer"},
-            {"type": "doNothing", "object": null, "property": null},
-            {"type": "callSoap_BETA", "object": "Nom du Soap (librairie)", "property": "Nom de propriété"},
-            {"type": "callSoapWithBase_BETA", "object": "Nom du Soap (librairie)", "property": "Nom de propriété"}
+            {"type": "doNothing", "object": null, "property": null}
         ], "en": [
             {"type": "Unknown", "object": null, "property": null},
             {"type": "click", "object": "Element path", "property": null},
@@ -1504,9 +1502,7 @@ function setPlaceholderAction() {
             {"type": "removeDifference", "object": "Deprecated", "property": "Deprecated"},
             {"type": "executeSqlUpdate", "object": "Database Name", "property": "Script"},
             {"type": "executeSqlStoredProcedure", "object": "Database Name", "property": "Stored Procedure"},
-            {"type": "doNothing", "object": null, "property": null},
-            {"type": "callSoap_BETA", "object": "Soap Name (library)", "property": "Property Name"},
-            {"type": "callSoapWithBase_BETA", "object": "Soap Name (library)", "property": "Property Name"}
+            {"type": "doNothing", "object": null, "property": null}
         ]};
 
     var user = getUser();

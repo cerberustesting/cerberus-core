@@ -88,7 +88,7 @@ public class ControlService implements IControlService {
             //if the property service was unable to decode the property that is specified in the object, 
             //then the execution of this control should not performed
             if (testCaseStepActionControlExecution.getControlProperty().contains("%")) {
-                testCaseStepActionControlExecution.setControlProperty(propertyService.getValue(testCaseStepActionControlExecution.getControlProperty(), testCaseStepActionControlExecution.getTestCaseStepActionExecution(), false));
+                testCaseStepActionControlExecution.setControlProperty(propertyService.decodeValueWithExistingProperties(testCaseStepActionControlExecution.getControlProperty(), testCaseStepActionControlExecution.getTestCaseStepActionExecution(), false));
 
                 if (!isPropertyGetValueSucceed(testCaseStepActionControlExecution)) {
                     return testCaseStepActionControlExecution;
@@ -96,7 +96,7 @@ public class ControlService implements IControlService {
             }
 
             if (testCaseStepActionControlExecution.getControlValue().contains("%")) {
-                testCaseStepActionControlExecution.setControlValue(propertyService.getValue(testCaseStepActionControlExecution.getControlValue(), testCaseStepActionControlExecution.getTestCaseStepActionExecution(), false));
+                testCaseStepActionControlExecution.setControlValue(propertyService.decodeValueWithExistingProperties(testCaseStepActionControlExecution.getControlValue(), testCaseStepActionControlExecution.getTestCaseStepActionExecution(), false));
 
                 if (!isPropertyGetValueSucceed(testCaseStepActionControlExecution)) {
                     return testCaseStepActionControlExecution;

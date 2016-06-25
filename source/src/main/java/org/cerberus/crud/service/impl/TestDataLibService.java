@@ -56,8 +56,8 @@ public class TestDataLibService implements ITestDataLibService {
     private static final org.apache.log4j.Logger LOG = org.apache.log4j.Logger.getLogger(TestDataLibService.class);
 
     @Override
-    public AnswerItem readByNameBySystemByEnvironmentByCountry(String name, String system, String environment, String country) {
-        return testDataLibDAO.readByNameBySystemByEnvironmentByCountry(name, system, environment, country);
+    public AnswerItem readByNameBySystemByEnvironmentByCountry(String name, String system, String environment, String country, String type) {
+        return testDataLibDAO.readByNameBySystemByEnvironmentByCountry(name, system, environment, country, type);
     }
 
     @Override

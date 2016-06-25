@@ -295,7 +295,7 @@ public class PropertyService implements IPropertyService {
     }
 
     @Override
-    public String getValue(String stringToDecode, TestCaseStepActionExecution testCaseStepActionExecution, boolean forceCalculation) throws CerberusEventException {
+    public String decodeValueWithExistingProperties(String stringToDecode, TestCaseStepActionExecution testCaseStepActionExecution, boolean forceCalculation) throws CerberusEventException {
         TestCaseExecution tCExecution = testCaseStepActionExecution.getTestCaseStepExecution().gettCExecution();
         TestCaseStepExecution tCSExecution = testCaseStepActionExecution.getTestCaseStepExecution();
         String test = testCaseStepActionExecution.getTest();
@@ -1098,7 +1098,7 @@ public class PropertyService implements IPropertyService {
         // We get here the correct TestDataLib entry from the Value1 (name) that better match the context on system, environment and country.
         AnswerItem answer = testDataLibService.readByNameBySystemByEnvironmentByCountry(testCaseExecutionData.getValue1(),
                 tCExecution.getApplication().getSystem(), tCExecution.getEnvironmentData(),
-                tCExecution.getCountry());
+                tCExecution.getCountry(), null);
 
         if (answer.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode()) && answer.getItem() != null) {
             testDataLib = (TestDataLib) answer.getItem();
@@ -1172,18 +1172,18 @@ public class PropertyService implements IPropertyService {
         try {
             if (lib.getType().equals(TestDataLibTypeEnum.SOAP.getCode())) {
                 //check if the servicepath contains properties that neeed to be calculated
-                String decodedServicePath = getValue(lib.getServicePath(), testCaseStepActionExecution, false);
+                String decodedServicePath = decodeValueWithExistingProperties(lib.getServicePath(), testCaseStepActionExecution, false);
                 lib.setServicePath(decodedServicePath);
                 //check if the method contains properties that neeed to be calculated
-                String decodedMethod = getValue(lib.getMethod(), testCaseStepActionExecution, false);
+                String decodedMethod = decodeValueWithExistingProperties(lib.getMethod(), testCaseStepActionExecution, false);
                 lib.setMethod(decodedMethod);
                 //check if the envelope contains properties that neeed to be calculated
-                String decodedEnvelope = getValue(lib.getEnvelope(), testCaseStepActionExecution, false);
+                String decodedEnvelope = decodeValueWithExistingProperties(lib.getEnvelope(), testCaseStepActionExecution, false);
                 lib.setEnvelope(decodedEnvelope);
 
             } else if (lib.getType().equals(TestDataLibTypeEnum.SQL.getCode())) {
                 //check if the script contains properties that neeed to be calculated
-                String decodedScript = getValue(lib.getScript(), testCaseStepActionExecution, false);
+                String decodedScript = decodeValueWithExistingProperties(lib.getScript(), testCaseStepActionExecution, false);
                 lib.setScript(decodedScript);
 
             }
