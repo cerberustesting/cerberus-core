@@ -32,11 +32,16 @@ import org.springframework.stereotype.Service;
  */
 @Service
 public class FactoryTestCaseStepExecution implements IFactoryTestCaseStepExecution {
+    
+        @Override
+    public TestCaseStepExecution create(long id, String test, String testCase, int step, int sort, String batNumExe, long start, long end, long fullStart, long fullEnd, BigDecimal timeElapsed, String returnCode, String returnMessage, String description) {
+        TestCaseStepExecution testCaseStepExecution = create(id, test, testCase, step, sort, batNumExe, start, end, fullStart, fullEnd, timeElapsed, returnCode, null, null, null, null, null, null, -1, description);
+        testCaseStepExecution.setReturnMessage(returnMessage);
+        return testCaseStepExecution;
+    }
 
     @Override
-    public TestCaseStepExecution create(long id, String test, String testCase, int step, String batNumExe, long start, long end, long fullStart, long fullEnd, BigDecimal timeElapsed,
-            String returnCode, MessageEvent stepResultMessage, TestCaseStep testCaseStep, TestCaseExecution tCExecution, String useStep, String useStepTest, 
-                                 String useStepTestCase, int useStepTestCaseStep, String description) {
+    public TestCaseStepExecution create(long id, String test, String testCase, int step, int sort, String batNumExe, long start, long end, long fullStart, long fullEnd, BigDecimal timeElapsed, String returnCode, MessageEvent stepResultMessage, TestCaseStep testCaseStep, TestCaseExecution tCExecution, String useStep, String useStepTest, String useStepTestCase, int useStepTestCaseStep, String description) {
         TestCaseStepExecution testCaseStepExecution = new TestCaseStepExecution();
         testCaseStepExecution.setBatNumExe(batNumExe);
         testCaseStepExecution.setEnd(end);
@@ -46,6 +51,7 @@ public class FactoryTestCaseStepExecution implements IFactoryTestCaseStepExecuti
         testCaseStepExecution.setReturnCode(returnCode);
         testCaseStepExecution.setStart(start);
         testCaseStepExecution.setStep(step);
+        testCaseStepExecution.setSort(sort);
         testCaseStepExecution.setTest(test);
         testCaseStepExecution.setTestCase(testCase);
         testCaseStepExecution.setTimeElapsed(timeElapsed);
@@ -56,28 +62,6 @@ public class FactoryTestCaseStepExecution implements IFactoryTestCaseStepExecuti
         testCaseStepExecution.setUseStepTest(useStepTest);
         testCaseStepExecution.setUseStepTestCase(useStepTestCase);
         testCaseStepExecution.setUseStepTestCaseStep(useStepTestCaseStep);
-        testCaseStepExecution.setDescription(description);
-        return testCaseStepExecution;
-    }
-
-    @Override
-    public TestCaseStepExecution create(long id, String test, String testCase, 
-            int step, String batNumExe, long start, long end, long fullStart, 
-            long fullEnd, BigDecimal timeElapsed, String returnCode, 
-            String returnMessage, String description) {
-        TestCaseStepExecution testCaseStepExecution = new TestCaseStepExecution();
-        testCaseStepExecution.setBatNumExe(batNumExe);
-        testCaseStepExecution.setEnd(end);
-        testCaseStepExecution.setFullEnd(fullEnd);
-        testCaseStepExecution.setFullStart(fullStart);
-        testCaseStepExecution.setId(id);
-        testCaseStepExecution.setReturnCode(returnCode);
-        testCaseStepExecution.setStart(start);
-        testCaseStepExecution.setStep(step);
-        testCaseStepExecution.setTest(test);
-        testCaseStepExecution.setTestCase(testCase);
-        testCaseStepExecution.setTimeElapsed(timeElapsed);
-        testCaseStepExecution.setReturnMessage(returnMessage);
         testCaseStepExecution.setDescription(description);
         return testCaseStepExecution;
     }

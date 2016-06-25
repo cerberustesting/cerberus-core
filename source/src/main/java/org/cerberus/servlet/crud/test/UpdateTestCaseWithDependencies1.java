@@ -179,7 +179,7 @@ public class UpdateTestCaseWithDependencies1 extends HttpServlet {
                             }
                         }
                     }
-
+                    
                     List<TestCaseStep> tcsFromDtb = new ArrayList(tcsService.getListOfSteps(initialTest, initialTestCase));
                     tcsService.compareListAndUpdateInsertDeleteElements(tcsFromPage, tcsFromDtb, duplicate);
 
@@ -188,53 +188,6 @@ public class UpdateTestCaseWithDependencies1 extends HttpServlet {
 
                     List<TestCaseStepActionControl> tcsacFromDtb = new ArrayList(tcsacService.findControlByTestTestCase(initialTest, initialTestCase));
                     tcsacService.compareListAndUpdateInsertDeleteElements(tcsacFromPage, tcsacFromDtb, duplicate);
-
-                    List<TestCaseStep> tcsNewFromPage = new ArrayList();
-                    List<TestCaseStepAction> tcsaNewFromPage = new ArrayList();
-                    List<TestCaseStepActionControl> tcsacNewFromPage = new ArrayList();
-                    List<TestCaseStep> tcsNewFromDtb = new ArrayList();
-                    List<TestCaseStepAction> tcsaNewFromDtb = new ArrayList();
-                    List<TestCaseStepActionControl> tcsacNewFromDtb = new ArrayList();
-
-                    tcsNewFromDtb = tcsService.getListOfSteps(test, testCase);
-                    int incrementStep = 0;
-                    for (TestCaseStep tcsNew : tcsNewFromDtb) {
-                        if (tcsService.getTestCaseStepUsingStepInParamter(test, testCase, tcsNew.getStep()).isEmpty()) {
-                            tcsNew.setIsStepInUseByOtherTestCase(false);
-                        } else {
-                            tcsNew.setIsStepInUseByOtherTestCase(true);
-                        }
-                        incrementStep++;
-                        tcsaNewFromDtb = tcsaService.getListOfAction(test, testCase, tcsNew.getStep());
-                        int incrementAction = 0;
-                        for (TestCaseStepAction tcsaNew : tcsaNewFromDtb) {
-                            incrementAction++;
-                            tcsacNewFromDtb = tcsacService.findControlByTestTestCaseStepSequence(test, testCase, tcsaNew.getStep(), tcsaNew.getSequence());
-                            int incrementControl = 0;
-                            for (TestCaseStepActionControl tcsacNew : tcsacNewFromDtb) {
-                                incrementControl++;
-                                tcsacNew.setControl(incrementControl);
-                                tcsacNew.setSequence(incrementAction);
-                                tcsacNew.setStep(incrementStep);
-                                tcsacNewFromPage.add(tcsacNew);
-                            }
-                            tcsaNew.setSequence(incrementAction);
-                            tcsaNew.setStep(incrementStep);
-                            tcsaNewFromPage.add(tcsaNew);
-                        }
-                        tcsNew.setInitialStep(tcsNew.getStep());
-                        tcsNew.setStep(incrementStep);
-                        tcsNewFromPage.add(tcsNew);
-                    }
-
-                    List<TestCaseStep> tcsNewNewFromDtb = new ArrayList(tcsService.getListOfSteps(test, testCase));
-                    tcsService.compareListAndUpdateInsertDeleteElements(tcsNewFromPage, tcsNewNewFromDtb, duplicate);
-
-                    List<TestCaseStepAction> tcsaNewNewFromDtb = new ArrayList(tcsaService.findTestCaseStepActionbyTestTestCase(test, testCase));
-                    tcsaService.compareListAndUpdateInsertDeleteElements(tcsaNewFromPage, tcsaNewNewFromDtb, duplicate);
-
-                    List<TestCaseStepActionControl> tcsacNewNewFromDtb = new ArrayList(tcsacService.findControlByTestTestCase(test, testCase));
-                    tcsacService.compareListAndUpdateInsertDeleteElements(tcsacNewFromPage, tcsacNewNewFromDtb, duplicate);
 
                     /**
                      * Adding Log entry.
@@ -379,7 +332,8 @@ public class UpdateTestCaseWithDependencies1 extends HttpServlet {
             JSONObject step = stepArray.getJSONObject(i);
 
             boolean delete = step.getBoolean("toDelete");
-            int stepNumber = step.getInt("step");
+            int stepNumber = step.isNull("step") ? -1 : step.getInt("step");
+            int sort = step.isNull("sort") ? -1 : step.getInt("sort");
             String description = step.getString("description");
             String useStep = step.getString("useStep");
             String useStepTest = step.getString("useStepTest");
@@ -389,7 +343,7 @@ public class UpdateTestCaseWithDependencies1 extends HttpServlet {
             JSONArray stepActions = step.getJSONArray("actionArr");
 
             if (!delete) {
-                TestCaseStep tcStep = testCaseStepFactory.create(test, testCase, stepNumber, description, useStep, useStepTest, useStepTestCase, useStepStep, inLibrary);
+                TestCaseStep tcStep = testCaseStepFactory.create(test, testCase, stepNumber, sort, description, useStep, useStepTest, useStepTestCase, useStepStep, inLibrary);
 
                 if (useStep.equals("N")) {
                     tcStep.setTestCaseStepAction(getTestCaseStepActionFromParameter(request, appContext, test, testCase, stepActions));
@@ -418,8 +372,9 @@ public class UpdateTestCaseWithDependencies1 extends HttpServlet {
             JSONObject tcsaJson = testCaseStepActionJson.getJSONObject(i);
 
             boolean delete = tcsaJson.getBoolean("toDelete");
-            int step = tcsaJson.getInt("step");
-            int sequence = tcsaJson.getInt("sequence");
+            int step = tcsaJson.isNull("step") ? -1 : tcsaJson.getInt("step");
+            int sequence = tcsaJson.isNull("sequence") ? -1 : tcsaJson.getInt("sequence");
+            int sort = tcsaJson.isNull("sort") ? -1 : tcsaJson.getInt("sort");
             String action = tcsaJson.getString("action");
             String object = tcsaJson.getString("object");
             String property = tcsaJson.getString("property");
@@ -428,7 +383,7 @@ public class UpdateTestCaseWithDependencies1 extends HttpServlet {
             JSONArray controlArray = tcsaJson.getJSONArray("controlArr");
 
             if (!delete) {
-                TestCaseStepAction tcsa = testCaseStepActionFactory.create(test, testCase, step, sequence, action, object, property, description, screenshot);
+                TestCaseStepAction tcsa = testCaseStepActionFactory.create(test, testCase, step, sequence, sort, action, object, property, description, screenshot);
                 tcsa.setTestCaseStepActionControl(getTestCaseStepActionControlFromParameter(request, appContext, test, testCase, controlArray));
                 testCaseStepAction.add(tcsa);
             }
@@ -444,9 +399,10 @@ public class UpdateTestCaseWithDependencies1 extends HttpServlet {
             JSONObject controlJson = controlArray.getJSONObject(i);
 
             boolean delete = controlJson.getBoolean("toDelete");
-            int step = controlJson.getInt("step");
-            int sequence = controlJson.getInt("sequence");
-            int control = controlJson.getInt("control");
+            int step = controlJson.isNull("step") ? -1 : controlJson.getInt("step");
+            int sequence = controlJson.isNull("sequence") ? -1 : controlJson.getInt("sequence");
+            int control = controlJson.isNull("control") ? -1 : controlJson.getInt("control");
+            int sort = controlJson.isNull("sort") ? -1 : controlJson.getInt("sort");
             String type = controlJson.getString("type");
             String controlValue = controlJson.getString("controlValue");
             String controlProperty = controlJson.getString("controlProperty");
@@ -454,7 +410,7 @@ public class UpdateTestCaseWithDependencies1 extends HttpServlet {
             String description = controlJson.getString("description");
             String screenshot = controlJson.getString("screenshotFileName");
             if (!delete) {
-                testCaseStepActionControl.add(testCaseStepActionControlFactory.create(test, testCase, step, sequence, control, type, controlValue, controlProperty, fatal, description, screenshot));
+                testCaseStepActionControl.add(testCaseStepActionControlFactory.create(test, testCase, step, sequence, control, sort, type, controlValue, controlProperty, fatal, description, screenshot));
             }
         }
         return testCaseStepActionControl;
@@ -465,7 +421,7 @@ public class UpdateTestCaseWithDependencies1 extends HttpServlet {
      * Handles the HTTP <code>GET</code> method.
      *
      * @param request servlet request
-     * @param response servlet response
+         * @param response servlet response
      * @throws ServletException if a servlet-specific error occurs
      * @throws IOException if an I/O error occurs
      */

@@ -291,7 +291,7 @@ public class ExecutionRunService implements IExecutionRunService {
                  */
                 TestCaseStepExecution testCaseStepExecution = factoryTestCaseStepExecution.create(
                         runID, testCaseStep.getTest(), testCaseStep.getTestCase(),
-                        testCaseStep.getStep(), null,
+                        testCaseStep.getStep(), testCaseStep.getSort(), null,
                         startStep, 0, startStep, 0, new BigDecimal("0"), null, new MessageEvent(MessageEventEnum.STEP_PENDING), testCaseStep, tCExecution,
                         testCaseStep.getUseStep(), testCaseStep.getUseStepTest(), testCaseStep.getUseStepTestCase(), testCaseStep.getUseStepStep(), testCaseStep.getDescription());
                 testCaseStepExecutionService.insertTestCaseStepExecution(testCaseStepExecution);
@@ -452,7 +452,7 @@ public class ExecutionRunService implements IExecutionRunService {
              */
             TestCaseStepActionExecution testCaseStepActionExecution = factoryTestCaseStepActionExecution.create(
                     testCaseStepExecution.getId(), testCaseStepAction.getTest(), testCaseStepAction.getTestCase(),
-                    testCaseStepAction.getStep(), testCaseStepAction.getSequence(),
+                    testCaseStepAction.getStep(), testCaseStepAction.getSequence(), testCaseStepAction.getSort(),
                     null, null, testCaseStepAction.getAction(), testCaseStepAction.getObject(), testCaseStepAction.getProperty(),
                     startAction, 0, startAction, 0, null, null, new MessageEvent(MessageEventEnum.ACTION_PENDING),
                     testCaseStepAction.getDescription(), testCaseStepAction, testCaseStepExecution);
@@ -650,7 +650,7 @@ public class ExecutionRunService implements IExecutionRunService {
             MyLogger.log(ExecutionRunService.class.getName(), Level.DEBUG, "Creating TestCaseStepActionControlExecution");
             TestCaseStepActionControlExecution testCaseStepActionControlExecution
                     = factoryTestCaseStepActionControlExecution.create(testCaseStepActionExecution.getId(), testCaseStepActionControl.getTest(),
-                            testCaseStepActionControl.getTestCase(), testCaseStepActionControl.getStep(), testCaseStepActionControl.getSequence(), testCaseStepActionControl.getControl(),
+                            testCaseStepActionControl.getTestCase(), testCaseStepActionControl.getStep(), testCaseStepActionControl.getSequence(), testCaseStepActionControl.getControl(), testCaseStepActionControl.getSort(),
                             null, null, testCaseStepActionControl.getType(), testCaseStepActionControl.getControlProperty(), testCaseStepActionControl.getControlValue(),
                             testCaseStepActionControl.getFatal(), startControl, 0, 0, 0, null, null,testCaseStepActionControl.getDescription(), testCaseStepActionExecution, new MessageEvent(MessageEventEnum.CONTROL_PENDING));
             this.testCaseStepActionControlExecutionService.insertTestCaseStepActionControlExecution(testCaseStepActionControlExecution);

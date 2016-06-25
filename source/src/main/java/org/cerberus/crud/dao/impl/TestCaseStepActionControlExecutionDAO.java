@@ -66,9 +66,9 @@ public class TestCaseStepActionControlExecutionDAO implements ITestCaseStepActio
     @Override
     public void insertTestCaseStepActionControlExecution(TestCaseStepActionControlExecution testCaseStepActionControlExecution) {
 
-        final String query = "INSERT INTO testcasestepactioncontrolexecution(id, step, sequence, control, returncode, controltype, "
+        final String query = "INSERT INTO testcasestepactioncontrolexecution(id, step, sequence, control, sort, returncode, controltype, "
                 + "controlproperty, controlvalue, fatal, start, END, startlong, endlong, returnmessage, test, testcase, screenshotfilename, pageSourceFilename, description)"
-                + " VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+                + " VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
         Connection connection = this.databaseSpring.connect();
         try {
@@ -78,30 +78,31 @@ public class TestCaseStepActionControlExecutionDAO implements ITestCaseStepActio
                 preStat.setInt(2, testCaseStepActionControlExecution.getStep());
                 preStat.setInt(3, testCaseStepActionControlExecution.getSequence());
                 preStat.setInt(4, testCaseStepActionControlExecution.getControl());
-                preStat.setString(5, ParameterParserUtil.parseStringParam(testCaseStepActionControlExecution.getReturnCode(), ""));
-                preStat.setString(6, StringUtil.getLeftString(testCaseStepActionControlExecution.getControlType(), 200));
-                preStat.setString(7, StringUtil.getLeftString(testCaseStepActionControlExecution.getControlProperty(), 2500));
-                preStat.setString(8, StringUtil.getLeftString(testCaseStepActionControlExecution.getControlValue(), 200));
-                preStat.setString(9, testCaseStepActionControlExecution.getFatal());
+                preStat.setInt(5, testCaseStepActionControlExecution.getSort());
+                preStat.setString(6, ParameterParserUtil.parseStringParam(testCaseStepActionControlExecution.getReturnCode(), ""));
+                preStat.setString(7, StringUtil.getLeftString(testCaseStepActionControlExecution.getControlType(), 200));
+                preStat.setString(8, StringUtil.getLeftString(testCaseStepActionControlExecution.getControlProperty(), 2500));
+                preStat.setString(9, StringUtil.getLeftString(testCaseStepActionControlExecution.getControlValue(), 200));
+                preStat.setString(10, testCaseStepActionControlExecution.getFatal());
                 if (testCaseStepActionControlExecution.getStart() != 0) {
-                    preStat.setTimestamp(10, new Timestamp(testCaseStepActionControlExecution.getStart()));
-                } else {
-                    preStat.setString(10, "1970-01-01 01:01:01");
-                }
-                if (testCaseStepActionControlExecution.getEnd() != 0) {
-                    preStat.setTimestamp(11, new Timestamp(testCaseStepActionControlExecution.getEnd()));
+                    preStat.setTimestamp(11, new Timestamp(testCaseStepActionControlExecution.getStart()));
                 } else {
                     preStat.setString(11, "1970-01-01 01:01:01");
                 }
+                if (testCaseStepActionControlExecution.getEnd() != 0) {
+                    preStat.setTimestamp(12, new Timestamp(testCaseStepActionControlExecution.getEnd()));
+                } else {
+                    preStat.setString(12, "1970-01-01 01:01:01");
+                }
                 DateFormat df = new SimpleDateFormat(DateUtil.DATE_FORMAT_TIMESTAMP);
-                preStat.setString(12, df.format(testCaseStepActionControlExecution.getStart()));
-                preStat.setString(13, df.format(testCaseStepActionControlExecution.getEnd()));
-                preStat.setString(14, StringUtil.getLeftString(ParameterParserUtil.parseStringParam(testCaseStepActionControlExecution.getReturnMessage(), ""), 500));
-                preStat.setString(15, testCaseStepActionControlExecution.getTest());
-                preStat.setString(16, testCaseStepActionControlExecution.getTestCase());
-                preStat.setString(17, testCaseStepActionControlExecution.getScreenshotFilename());
-                preStat.setString(18, testCaseStepActionControlExecution.getPageSourceFilename());
-                preStat.setString(19, testCaseStepActionControlExecution.getDescription());
+                preStat.setString(13, df.format(testCaseStepActionControlExecution.getStart()));
+                preStat.setString(14, df.format(testCaseStepActionControlExecution.getEnd()));
+                preStat.setString(15, StringUtil.getLeftString(ParameterParserUtil.parseStringParam(testCaseStepActionControlExecution.getReturnMessage(), ""), 500));
+                preStat.setString(16, testCaseStepActionControlExecution.getTest());
+                preStat.setString(17, testCaseStepActionControlExecution.getTestCase());
+                preStat.setString(18, testCaseStepActionControlExecution.getScreenshotFilename());
+                preStat.setString(19, testCaseStepActionControlExecution.getPageSourceFilename());
+                preStat.setString(20, testCaseStepActionControlExecution.getDescription());
                 preStat.executeUpdate();
 
             } catch (SQLException exception) {
@@ -127,7 +128,7 @@ public class TestCaseStepActionControlExecutionDAO implements ITestCaseStepActio
 
         final String query = "UPDATE testcasestepactioncontrolexecution SET returncode = ?, controltype = ?, "
                 + "controlproperty = ?, controlvalue = ?, fatal = ?, start = ?, END = ?, startlong = ?, endlong = ?"
-                + ", returnmessage = ?, screenshotfilename = ? , pageSourceFilename = ?, description = ? "
+                + ", returnmessage = ?, screenshotfilename = ? , pageSourceFilename = ?, description = ?, sort = ? "
                 + "WHERE id = ? AND test = ? AND testcase = ? AND step = ? AND sequence = ? AND control = ? ";
 
         Connection connection = this.databaseSpring.connect();
@@ -141,7 +142,7 @@ public class TestCaseStepActionControlExecutionDAO implements ITestCaseStepActio
                 preStat.setString(5, testCaseStepActionControlExecution.getFatal());
                 if (testCaseStepActionControlExecution.getStart() != 0) {
                     preStat.setTimestamp(6, new Timestamp(testCaseStepActionControlExecution.getStart()));
-                } else {
+                } else { 
                     preStat.setString(6, "1970-01-01 01:01:01");
                 }
                 if (testCaseStepActionControlExecution.getEnd() != 0) {
@@ -156,12 +157,13 @@ public class TestCaseStepActionControlExecutionDAO implements ITestCaseStepActio
                 preStat.setString(11, testCaseStepActionControlExecution.getScreenshotFilename());
                 preStat.setString(12, testCaseStepActionControlExecution.getPageSourceFilename());
                 preStat.setString(13, testCaseStepActionControlExecution.getDescription());
-                preStat.setLong(14, testCaseStepActionControlExecution.getId());
-                preStat.setString(15, testCaseStepActionControlExecution.getTest());
-                preStat.setString(16, testCaseStepActionControlExecution.getTestCase());
-                preStat.setInt(17, testCaseStepActionControlExecution.getStep());
-                preStat.setInt(18, testCaseStepActionControlExecution.getSequence());
-                preStat.setInt(19, testCaseStepActionControlExecution.getControl());
+                preStat.setInt(14, testCaseStepActionControlExecution.getSort());
+                preStat.setLong(15, testCaseStepActionControlExecution.getId());
+                preStat.setString(16, testCaseStepActionControlExecution.getTest());
+                preStat.setString(17, testCaseStepActionControlExecution.getTestCase());
+                preStat.setInt(18, testCaseStepActionControlExecution.getStep());
+                preStat.setInt(19, testCaseStepActionControlExecution.getSequence());
+                preStat.setInt(20, testCaseStepActionControlExecution.getControl());
 
                 preStat.executeUpdate();
 
@@ -188,7 +190,7 @@ public class TestCaseStepActionControlExecutionDAO implements ITestCaseStepActio
         List<TestCaseStepActionControlExecution> result = null;
         TestCaseStepActionControlExecution resultData;
         boolean throwEx = false;
-        final String query = "SELECT * FROM testcasestepactioncontrolexecution WHERE id = ? AND test = ? AND testcase = ? AND step = ? AND sequence = ? ORDER BY control";
+        final String query = "SELECT * FROM testcasestepactioncontrolexecution WHERE id = ? AND test = ? AND testcase = ? AND step = ? AND sequence = ? ORDER BY sort";
 
         Connection connection = this.databaseSpring.connect();
         try {
@@ -310,6 +312,7 @@ public class TestCaseStepActionControlExecutionDAO implements ITestCaseStepActio
         int step = resultSet.getInt("step");
         int sequence = resultSet.getInt("sequence");
         int control = resultSet.getInt("control");
+        int sort = resultSet.getInt("sort");
         String returnCode = resultSet.getString("returncode");
         String returnMessage = resultSet.getString("returnmessage");
         String controlType = resultSet.getString("controlType");
@@ -324,7 +327,7 @@ public class TestCaseStepActionControlExecutionDAO implements ITestCaseStepActio
         String pageSource = resultSet.getString("PageSourceFilename");
         String description = resultSet.getString("description");
         return factoryTestCaseStepActionControlExecution.create(id, test, testCase, step,
-                sequence, control, returnCode, returnMessage, controlType, controlProperty, controlValue,
+                sequence, control, sort, returnCode, returnMessage, controlType, controlProperty, controlValue,
                 fatal, start, end, startlong, endlong, screenshot, pageSource,description, null, null);
     }
 }

@@ -28,6 +28,7 @@ public class TestCaseStepAction {
     private String testCase;
     private int step;
     private int sequence;
+    private int sort;
     private String action;
     private String object;
     private String property;
@@ -82,8 +83,18 @@ public class TestCaseStepAction {
 
     public void setSequence(int sequence) {
         this.sequence = sequence;
+        // TODO to remove when sorting will be fully enabled
+        setSort(sequence);
     }
 
+    public int getSort() {
+        return sort;
+    }
+
+    public void setSort(int sort) {
+        this.sort = sort;
+    }
+    
     public int getStep() {
         return step;
     }
@@ -225,6 +236,7 @@ public class TestCaseStepAction {
         hash = 79 * hash + (this.testCase != null ? this.testCase.hashCode() : 0);
         hash = 79 * hash + this.step;
         hash = 79 * hash + this.sequence;
+        hash = 79 * hash + this.sort;
         hash = 79 * hash + (this.action != null ? this.action.hashCode() : 0);
         hash = 79 * hash + (this.object != null ? this.object.hashCode() : 0);
         hash = 79 * hash + (this.property != null ? this.property.hashCode() : 0);
@@ -251,6 +263,9 @@ public class TestCaseStepAction {
             return false;
         }
         if (this.sequence != other.sequence) {
+            return false;
+        }
+        if (this.sort != other.sort) {
             return false;
         }
         if ((this.action == null) ? (other.action != null) : !this.action.equals(other.action)) {

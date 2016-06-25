@@ -67,7 +67,7 @@ public class TestCaseStepActionExecutionDAO implements ITestCaseStepActionExecut
     public void updateTestCaseStepActionExecution(TestCaseStepActionExecution testCaseStepActionExecution) {
 
         final String query = "UPDATE testcasestepactionexecution SET ACTION = ?, object = ?, property = ?, start = ?, END = ?"
-                + ", startlong = ?, endlong = ?, returnCode = ?, returnMessage = ?, screenshotfilename = ?, pageSourceFilename = ?, description = ? "
+                + ", startlong = ?, endlong = ?, returnCode = ?, returnMessage = ?, screenshotfilename = ?, pageSourceFilename = ?, description = ?, sort = ?"
                 + " WHERE id = ? AND test = ? AND testcase = ? AND step = ? AND sequence = ? ;";
 
         Connection connection = this.databaseSpring.connect();
@@ -95,11 +95,12 @@ public class TestCaseStepActionExecutionDAO implements ITestCaseStepActionExecut
                 preStat.setString(10, testCaseStepActionExecution.getScreenshotFilename());
                 preStat.setString(11, testCaseStepActionExecution.getPageSourceFilename());
                 preStat.setString(12, testCaseStepActionExecution.getDescription());
-                preStat.setLong(13, testCaseStepActionExecution.getId());
-                preStat.setString(14, testCaseStepActionExecution.getTest());
-                preStat.setString(15, testCaseStepActionExecution.getTestCase());
-                preStat.setInt(16, testCaseStepActionExecution.getStep());
-                preStat.setInt(17, testCaseStepActionExecution.getSequence());
+                preStat.setInt(13, testCaseStepActionExecution.getSort());
+                preStat.setLong(14, testCaseStepActionExecution.getId());
+                preStat.setString(15, testCaseStepActionExecution.getTest());
+                preStat.setString(16, testCaseStepActionExecution.getTestCase());
+                preStat.setInt(17, testCaseStepActionExecution.getStep());
+                preStat.setInt(18, testCaseStepActionExecution.getSequence());
 
                 preStat.executeUpdate();
 
@@ -124,8 +125,8 @@ public class TestCaseStepActionExecutionDAO implements ITestCaseStepActionExecut
     @Override
     public void insertTestCaseStepActionExecution(TestCaseStepActionExecution testCaseStepActionExecution) {
 
-        final String query = "INSERT INTO testcasestepactionexecution(id, step, sequence, ACTION, object, property, start, END, startlong, endlong, returnCode, returnMessage, test, testcase, screenshotfilename, pagesourcefilename, description) "
-                + "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+        final String query = "INSERT INTO testcasestepactionexecution(id, step, sequence, sort, ACTION, object, property, start, END, startlong, endlong, returnCode, returnMessage, test, testcase, screenshotfilename, pagesourcefilename, description) "
+                + "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
         Connection connection = this.databaseSpring.connect();
         try {
@@ -134,29 +135,30 @@ public class TestCaseStepActionExecutionDAO implements ITestCaseStepActionExecut
                 preStat.setLong(1, testCaseStepActionExecution.getId());
                 preStat.setInt(2, testCaseStepActionExecution.getStep());
                 preStat.setInt(3, testCaseStepActionExecution.getSequence());
-                preStat.setString(4, testCaseStepActionExecution.getAction());
-                preStat.setString(5, StringUtil.getLeftString(testCaseStepActionExecution.getObject(), 200));
-                preStat.setString(6, StringUtil.getLeftString(ParameterParserUtil.securePassword(testCaseStepActionExecution.getProperty(), testCaseStepActionExecution.getPropertyName()), 200));
+                preStat.setInt(4, testCaseStepActionExecution.getSort());
+                preStat.setString(5, testCaseStepActionExecution.getAction());
+                preStat.setString(6, StringUtil.getLeftString(testCaseStepActionExecution.getObject(), 200));
+                preStat.setString(7, StringUtil.getLeftString(ParameterParserUtil.securePassword(testCaseStepActionExecution.getProperty(), testCaseStepActionExecution.getPropertyName()), 200));
                 if (testCaseStepActionExecution.getStart() != 0) {
-                    preStat.setTimestamp(7, new Timestamp(testCaseStepActionExecution.getStart()));
-                } else {
-                    preStat.setString(7, "1970-01-01 01:01:01");
-                }
-                if (testCaseStepActionExecution.getEnd() != 0) {
-                    preStat.setTimestamp(8, new Timestamp(testCaseStepActionExecution.getEnd()));
+                    preStat.setTimestamp(8, new Timestamp(testCaseStepActionExecution.getStart()));
                 } else {
                     preStat.setString(8, "1970-01-01 01:01:01");
                 }
+                if (testCaseStepActionExecution.getEnd() != 0) {
+                    preStat.setTimestamp(9, new Timestamp(testCaseStepActionExecution.getEnd()));
+                } else {
+                    preStat.setString(9, "1970-01-01 01:01:01");
+                }
                 DateFormat df = new SimpleDateFormat(DateUtil.DATE_FORMAT_TIMESTAMP);
-                preStat.setString(9, df.format(testCaseStepActionExecution.getStart()));
-                preStat.setString(10, df.format(testCaseStepActionExecution.getEnd()));
-                preStat.setString(11, testCaseStepActionExecution.getReturnCode());
-                preStat.setString(12, StringUtil.getLeftString(testCaseStepActionExecution.getReturnMessage(), 500));
-                preStat.setString(13, testCaseStepActionExecution.getTest());
-                preStat.setString(14, testCaseStepActionExecution.getTestCase());
-                preStat.setString(15, testCaseStepActionExecution.getScreenshotFilename());
-                preStat.setString(16, testCaseStepActionExecution.getPageSourceFilename());
-                preStat.setString(17, testCaseStepActionExecution.getDescription());
+                preStat.setString(10, df.format(testCaseStepActionExecution.getStart()));
+                preStat.setString(11, df.format(testCaseStepActionExecution.getEnd()));
+                preStat.setString(12, testCaseStepActionExecution.getReturnCode());
+                preStat.setString(13, StringUtil.getLeftString(testCaseStepActionExecution.getReturnMessage(), 500));
+                preStat.setString(14, testCaseStepActionExecution.getTest());
+                preStat.setString(15, testCaseStepActionExecution.getTestCase());
+                preStat.setString(16, testCaseStepActionExecution.getScreenshotFilename());
+                preStat.setString(17, testCaseStepActionExecution.getPageSourceFilename());
+                preStat.setString(18, testCaseStepActionExecution.getDescription());
                 preStat.executeUpdate();
 
             } catch (SQLException exception) {
@@ -177,7 +179,13 @@ public class TestCaseStepActionExecutionDAO implements ITestCaseStepActionExecut
         }
     }
 
+    /**
+     * @param idList
+     * @return
+     * @deprecated because no longer consistency with actual step/action/control sort attribute
+     */
     @Override
+    @Deprecated
     public List<List<String>> getListOfSequenceDuration(String idList) {
         List<List<String>> list = null;
         StringBuilder query = new StringBuilder();
@@ -251,7 +259,7 @@ public class TestCaseStepActionExecutionDAO implements ITestCaseStepActionExecut
     public List<TestCaseStepActionExecution> findTestCaseStepActionExecutionByCriteria(long id, String test, String testCase, int step) {
         List<TestCaseStepActionExecution> result = null;
         TestCaseStepActionExecution resultData;
-        final String query = "SELECT * FROM testcasestepactionexecution WHERE id = ? AND test = ? AND testcase = ? AND step = ? ORDER BY sequence";
+        final String query = "SELECT * FROM testcasestepactionexecution WHERE id = ? AND test = ? AND testcase = ? AND step = ? ORDER BY sort";
 
         Connection connection = this.databaseSpring.connect();
         try {
@@ -369,6 +377,7 @@ public class TestCaseStepActionExecutionDAO implements ITestCaseStepActionExecut
         String testCase = resultSet.getString("testcase");
         int step = resultSet.getInt("step");
         int seq = resultSet.getInt("sequence");
+        int sort = resultSet.getInt("sort");
         String returnCode = resultSet.getString("returncode");
         String returnMessage = resultSet.getString("returnmessage");
         String action = resultSet.getString("action");
@@ -381,7 +390,7 @@ public class TestCaseStepActionExecutionDAO implements ITestCaseStepActionExecut
         String screenshot = resultSet.getString("ScreenshotFilename");
         String pageSource = resultSet.getString("PageSourceFilename");
         String description = resultSet.getString("description");
-        return factoryTestCaseStepActionExecution.create(id, test, testCase, step, seq, returnCode, returnMessage, action, object, property, start, end, startlong, endlong, screenshot, pageSource, null,description, null, null);
+        return factoryTestCaseStepActionExecution.create(id, test, testCase, step, seq, sort, returnCode, returnMessage, action, object, property, start, end, startlong, endlong, screenshot, pageSource, null,description, null, null);
 
     }
 

@@ -32,9 +32,16 @@ public class FactoryTestCaseStep implements IFactoryTestCaseStep {
     @Override
     public TestCaseStep create(String test, String testCase, int step, String description, String useStep,
             String useStepTest, String useStepTestCase, Integer useStepStep, String inLibrary) {
+        return create(test, testCase, step, step, description, useStep, useStepTest, useStepTestCase, useStepStep, inLibrary);
+    }
+    
+    @Override
+    public TestCaseStep create(String test, String testCase, int step, int sort, String description, String useStep,
+            String useStepTest, String useStepTestCase, Integer useStepStep, String inLibrary) {
         TestCaseStep testCaseStep = new TestCaseStep();
         testCaseStep.setDescription(description);
         testCaseStep.setStep(step);
+        testCaseStep.setSort(sort);
         testCaseStep.setTest(test);
         testCaseStep.setTestCase(testCase);
         testCaseStep.setUseStep(useStep);
@@ -44,4 +51,5 @@ public class FactoryTestCaseStep implements IFactoryTestCaseStep {
         testCaseStep.setInLibrary(inLibrary);
         return testCaseStep;
     }
+    
 }

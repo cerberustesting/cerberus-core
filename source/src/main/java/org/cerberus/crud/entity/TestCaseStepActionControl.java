@@ -27,6 +27,7 @@ public class TestCaseStepActionControl {
     private int step;
     private int sequence;
     private int control;
+    private int sort;
     private String type;
     private String controlValue;
     private String controlProperty;
@@ -56,6 +57,16 @@ public class TestCaseStepActionControl {
 
     public void setControl(int control) {
         this.control = control;
+        // TODO to remove when sorting will be fully enabled
+        setSort(control);
+    }
+
+    public int getSort() {
+        return sort;
+    }
+
+    public void setSort(int sort) {
+        this.sort = sort;
     }
 
     public String getControlProperty() {
@@ -213,6 +224,7 @@ public class TestCaseStepActionControl {
         hash = 67 * hash + this.step;
         hash = 67 * hash + this.sequence;
         hash = 67 * hash + this.control;
+        hash = 67 * hash + this.sort;
         hash = 67 * hash + (this.type != null ? this.type.hashCode() : 0);
         hash = 67 * hash + (this.controlValue != null ? this.controlValue.hashCode() : 0);
         hash = 67 * hash + (this.controlProperty != null ? this.controlProperty.hashCode() : 0);
@@ -245,6 +257,9 @@ public class TestCaseStepActionControl {
         if (this.control != other.control) {
             return false;
         }
+        if (this.sort != other.sort) {
+            return false;
+        }
         if ((this.type == null) ? (other.type != null) : !this.type.equals(other.type)) {
             return false;
         }
@@ -265,7 +280,7 @@ public class TestCaseStepActionControl {
         }
         return true;
     }
-
+    
     @Override
     public String toString() {
         return "TestCaseStepActionControl{" + "test=" + test + ", testCase=" + testCase + ", step=" + step + ", sequence=" + sequence + ", control=" + control + ", type=" + type + ", controlValue=" + controlValue + ", controlProperty=" + controlProperty + ", fatal=" + fatal + ", description=" + description + '}';

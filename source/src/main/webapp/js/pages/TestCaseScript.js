@@ -147,40 +147,85 @@ function runTestCase(test, testcase) {
 
 function saveScript() {
     var stepList = $("#stepList li");
-    var stepNumber = 0;
     var stepArr = [];
 
+    // Get the maximum step number to be able to set new steps
+    var maxStepNumber = 0;
+    for (var i = 0; i < stepList.length; i++) {
+        var step = $(stepList[i]).data("item");
+        if (maxStepNumber < step.getStep()) {
+            maxStepNumber = step.getStep();
+        }
+    }
+    
+    // Iterate over steps
     for (var i = 0; i < stepList.length; i++) {
         var step = $(stepList[i]).data("item");
         var actionArr = [];
-        var seq = 0;
 
         if (!step.toDelete) {
+            // Check if step has to be numeroted
+            if (step.getStep() === undefined) {
+                step.setStep(++maxStepNumber);
+            }
+            
+            // Set the step's sort
+            step.setSort(i + 1);
+            
+            // Get step's actions
             var actionList = step.stepActionContainer.children(".action-group").children(".action");
-
-            stepNumber++;
-            step.setStep(stepNumber);
-
+            
+            // Get the maximum action sequence to be able to set new actions
+            var maxActionSequence = 0;
+            for (var actionListIdx = 0; actionListIdx < actionList.length; actionListIdx++) {
+                var action = $(actionList[actionListIdx]).data("item");
+                if (maxActionSequence < action.getSequence()) {
+                    maxActionSequence = action.getSequence();
+                }
+            }
+            
+            // Iterate over actions
             for (var j = 0; j < actionList.length; j++) {
                 var action = $(actionList[j]).data("item");
-                var controlNumber = 0;
                 var controlArr = [];
 
                 if (!action.toDelete) {
+                    // Check if action has to be numeroted
+                    if (action.getSequence() === undefined) {
+                        action.setSequence(++maxActionSequence);
+                    }
+                    
+                    // Set the action's step and sort
+                    action.setStep(step.getStep());
+                    action.setSort(j + 1);
+                    
+                    // Get action's controls
                     var controlList = action.html.children(".control");
 
-                    seq++;
-                    action.setStep(stepNumber);
-                    action.setSequence(seq);
-
+                    // Get the maximum control number to be able to set new controls
+                    var maxControlNumber = 0;
+                    for (var controlListIdx = 0; controlListIdx < controlList.length; controlListIdx++) {
+                        var control = $(controlList[controlListIdx]).data("item");
+                        if (maxControlNumber < control.getControl()) {
+                            maxControlNumber = control.getControl();
+                        }
+                    }
+                    
+                    // Iterate over controls
                     for (var k = 0; k < controlList.length; k++) {
                         var control = $(controlList[k]).data("item");
 
                         if (!control.toDelete) {
-                            controlNumber++;
-                            control.setStep(stepNumber);
-                            control.setSequence(seq);
-                            control.setControl(controlNumber);
+                            // Check if control has to be numeroted
+                            if (control.getControl() === undefined) {
+                                control.setControl(++maxControlNumber);
+                            }
+                    
+                            // Set the control's step, action and sort
+                            control.setStep(step.getStep());
+                            control.setSequence(action.getSequence());
+                            control.setSort(k + 1);
+                            
                             controlArr.push(control.getJsonData());
                         }
                     }
@@ -194,7 +239,7 @@ function saveScript() {
             stepArr.push(stepJson);
         }
     }
-
+    
     var properties = $("#propTable tr");
     var propArr = [];
     for (var i = 0; i < properties.length; i++) {
@@ -456,7 +501,6 @@ function addStep(event) {
     });
 
     $("#addStepConfirm").unbind("click").click(function (event) {
-        var stepNumber = $("#stepList li").length + 1;
         var step = {"inLibrary": "N",
             "objType": "step",
             "useStepTest": "",
@@ -464,7 +508,6 @@ function addStep(event) {
             "useStep": "N",
             "description": "",
             "useStepStep": -1,
-            "step": stepNumber,
             "actionList": []};
 
         step.description = $("#addStepModal #description").val();
@@ -886,12 +929,12 @@ function sortStep(step) {
         var action = step.actionList[j];
 
         action.controlList.sort(function (a, b) {
-            return a.control - b.control;
+            return a.sort - b.sort;
         });
     }
 
     step.actionList.sort(function (a, b) {
-        return a.sequence - b.sequence;
+        return a.sort - b.sort;
     });
 }
 
@@ -903,7 +946,7 @@ function sortData(agreg) {
     }
 
     agreg.sort(function (a, b) {
-        return a.step - b.step;
+        return a.sort - b.sort;
     });
 }
 
@@ -915,6 +958,7 @@ function Step(json, stepList) {
     this.test = json.test;
     this.testcase = json.testCase;
     this.step = json.step;
+    this.sort = json.sort;
     this.description = json.description;
     this.useStep = json.useStep;
     this.useStepTest = json.useStepTest;
@@ -1043,6 +1087,14 @@ Step.prototype.setStep = function (step) {
     this.step = step;
 };
 
+Step.prototype.getStep = function() {
+    return this.step;
+};
+
+Step.prototype.setSort = function (sort) {
+    this.sort = sort;
+};
+
 Step.prototype.getJsonData = function () {
     var json = {};
 
@@ -1050,6 +1102,7 @@ Step.prototype.getJsonData = function () {
     json.test = this.test;
     json.testcase = this.testcase;
     json.step = this.step;
+    json.sort = this.sort;
     json.description = this.description;
     json.useStep = this.useStep;
     json.useStepTest = this.useStepTest;
@@ -1069,6 +1122,7 @@ function Action(json, parentStep) {
         this.testcase = json.testCase;
         this.step = json.step;
         this.sequence = json.sequence;
+        this.sort = json.sort;
         this.description = json.description;
         this.action = json.action;
         this.object = json.object;
@@ -1080,7 +1134,6 @@ function Action(json, parentStep) {
         this.test = "";
         this.testcase = "";
         this.step = parentStep.step;
-        this.sequence = "";
         this.description = "";
         this.action = "Unknown";
         this.object = "";
@@ -1163,6 +1216,14 @@ Action.prototype.setSequence = function (sequence) {
     this.sequence = sequence;
 };
 
+Action.prototype.getSequence = function() {
+    return this.sequence;
+};
+
+Action.prototype.setSort = function (sort) {
+    this.sort = sort;
+};
+
 Action.prototype.generateContent = function () {
     var obj = this;
     var content = $("<div></div>").addClass("content col-lg-10");
@@ -1222,6 +1283,7 @@ Action.prototype.getJsonData = function () {
     json.testcase = this.testcase;
     json.step = this.step;
     json.sequence = this.sequence;
+    json.sort = this.sort;
     json.description = this.description;
     json.action = this.action;
     json.object = this.object;
@@ -1238,6 +1300,7 @@ function Control(json, parentAction) {
         this.step = json.step;
         this.sequence = json.sequence;
         this.control = json.control;
+        this.sort = json.sort;
         this.description = json.description;
         this.type = json.type;
         this.controlValue = json.controlValue;
@@ -1249,7 +1312,6 @@ function Control(json, parentAction) {
         this.testcase = "";
         this.step = parentAction.step;
         this.sequence = parentAction.sequence;
-        this.control = "";
         this.description = "";
         this.type = "Unknown";
         this.controlValue = "";
@@ -1311,8 +1373,16 @@ Control.prototype.setSequence = function (sequence) {
     this.sequence = sequence;
 };
 
+Control.prototype.getControl = function() {
+    return this.control;
+}
+
 Control.prototype.setControl = function (control) {
     this.control = control;
+};
+
+Control.prototype.setSort = function (sort) {
+    this.sort = sort;
 };
 
 Control.prototype.generateContent = function () {
@@ -1383,6 +1453,7 @@ Control.prototype.getJsonData = function () {
     json.step = this.step;
     json.sequence = this.sequence;
     json.control = this.control;
+    json.sort = this.sort;
     json.description = this.description;
     json.type = this.type;
     json.controlValue = this.controlValue;

@@ -75,8 +75,8 @@ public class TestCaseStepExecutionDAO implements ITestCaseStepExecutionDAO {
      */
     @Override
     public void insertTestCaseStepExecution(TestCaseStepExecution testCaseStepExecution) {
-        final String query = "INSERT INTO testcasestepexecution(id, test, testcase, step, batnumexe, returncode, start, fullstart, returnMessage, description) "
-                + "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+        final String query = "INSERT INTO testcasestepexecution(id, test, testcase, step, sort, batnumexe, returncode, start, fullstart, returnMessage, description) "
+                + "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
         Connection connection = this.databaseSpring.connect();
         try {
@@ -86,13 +86,14 @@ public class TestCaseStepExecutionDAO implements ITestCaseStepExecutionDAO {
                 preStat.setString(2, testCaseStepExecution.getTest());
                 preStat.setString(3, testCaseStepExecution.getTestCase());
                 preStat.setInt(4, testCaseStepExecution.getStep());
-                preStat.setString(5, testCaseStepExecution.getBatNumExe());
-                preStat.setString(6, testCaseStepExecution.getReturnCode());
-                preStat.setTimestamp(7, new Timestamp(testCaseStepExecution.getStart()));
+                preStat.setInt(5, testCaseStepExecution.getSort());
+                preStat.setString(6, testCaseStepExecution.getBatNumExe());
+                preStat.setString(7, testCaseStepExecution.getReturnCode());
+                preStat.setTimestamp(8, new Timestamp(testCaseStepExecution.getStart()));
                 DateFormat df = new SimpleDateFormat(DateUtil.DATE_FORMAT_TIMESTAMP);
-                preStat.setString(8, df.format(testCaseStepExecution.getStart()));
-                preStat.setString(9, testCaseStepExecution.getReturnMessage());
-                preStat.setString(10, testCaseStepExecution.getDescription());
+                preStat.setString(9, df.format(testCaseStepExecution.getStart()));
+                preStat.setString(10, testCaseStepExecution.getReturnMessage());
+                preStat.setString(11, testCaseStepExecution.getDescription());
                 MyLogger.log(TestCaseStepExecutionDAO.class.getName(), Level.DEBUG, "Insert testcasestepexecution " + testCaseStepExecution.getId() + "-"
                         + testCaseStepExecution.getTest() + "-" + testCaseStepExecution.getTestCase() + "-" + testCaseStepExecution.getStep());
 
@@ -118,7 +119,7 @@ public class TestCaseStepExecutionDAO implements ITestCaseStepExecutionDAO {
 
     @Override
     public void updateTestCaseStepExecution(TestCaseStepExecution testCaseStepExecution) {
-        final String query = "UPDATE testcasestepexecution SET returncode = ?, start = ?, fullstart = ?, end = ?, fullend = ?, timeelapsed = ?, returnmessage = ?, description = ? WHERE id = ? AND step = ? AND test = ? AND testcase = ?";
+        final String query = "UPDATE testcasestepexecution SET returncode = ?, start = ?, fullstart = ?, end = ?, fullend = ?, timeelapsed = ?, returnmessage = ?, description = ?, sort = ? WHERE id = ? AND step = ? AND test = ? AND testcase = ?";
 
         Connection connection = this.databaseSpring.connect();
         try {
@@ -136,10 +137,11 @@ public class TestCaseStepExecutionDAO implements ITestCaseStepExecutionDAO {
                 preStat.setFloat(6, (timeEnd.getTime() - timeStart.getTime()) / (float) 1000);
                 preStat.setString(7, testCaseStepExecution.getReturnMessage());
                 preStat.setString(8, testCaseStepExecution.getDescription());
-                preStat.setLong(9, testCaseStepExecution.getId());
-                preStat.setInt(10, testCaseStepExecution.getStep());
-                preStat.setString(11, testCaseStepExecution.getTest());
-                preStat.setString(12, testCaseStepExecution.getTestCase());
+                preStat.setInt(9, testCaseStepExecution.getSort());
+                preStat.setLong(10, testCaseStepExecution.getId());
+                preStat.setInt(11, testCaseStepExecution.getStep());
+                preStat.setString(12, testCaseStepExecution.getTest());
+                preStat.setString(13, testCaseStepExecution.getTestCase());
                 MyLogger.log(TestCaseStepExecutionDAO.class.getName(), Level.DEBUG, "Update testcasestepexecution " + testCaseStepExecution.getId() + "-"
                         + testCaseStepExecution.getTest() + "-" + testCaseStepExecution.getTestCase() + "-" + testCaseStepExecution.getStep());
 
@@ -167,7 +169,7 @@ public class TestCaseStepExecutionDAO implements ITestCaseStepExecutionDAO {
     public List<TestCaseStepExecution> findTestCaseStepExecutionById(long id) {
         List<TestCaseStepExecution> result = null;
         TestCaseStepExecution resultData;
-        final String query = "SELECT * FROM testcasestepexecution WHERE id = ? ORDER BY fullstart";
+        final String query = "SELECT * FROM testcasestepexecution WHERE id = ? ORDER BY fullstart, sort";
 
         Connection connection = this.databaseSpring.connect();
         try {
@@ -279,6 +281,7 @@ public class TestCaseStepExecutionDAO implements ITestCaseStepExecutionDAO {
         String test = resultSet.getString("test");
         String testcase = resultSet.getString("testcase");
         int step = resultSet.getInt("step");
+        int sort = resultSet.getInt("sort");
         String batNumExe = resultSet.getString("batnumexe");
         long start = resultSet.getTimestamp("start")==null?0:resultSet.getTimestamp("start").getTime();
         long end = resultSet.getTimestamp("end")==null?0:resultSet.getTimestamp("end").getTime();
@@ -288,6 +291,6 @@ public class TestCaseStepExecutionDAO implements ITestCaseStepExecutionDAO {
         String returnCode = resultSet.getString("returncode");
         String returnMessage = resultSet.getString("returnMessage");
         String description = resultSet.getString("description");
-        return factoryTestCaseStepExecution.create(id, test, testcase, step, batNumExe, start, end, fullstart, fullend, timeelapsed, returnCode, returnMessage, description);
+        return factoryTestCaseStepExecution.create(id, test, testcase, step, sort, batNumExe, start, end, fullstart, fullend, timeelapsed, returnCode, returnMessage, description);
     }
 }

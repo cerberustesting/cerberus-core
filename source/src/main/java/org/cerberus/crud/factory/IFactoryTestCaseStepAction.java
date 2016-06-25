@@ -26,9 +26,11 @@ import org.cerberus.crud.entity.TestCaseStepAction;
  */
 public interface IFactoryTestCaseStepAction {
 
+    @Deprecated
     TestCaseStepAction create(String test, String testCase, int step, int sequence,
                               String action, String object, String property, String description);
     
-    TestCaseStepAction create(String test, String testCase, int step, int sequence,
+    TestCaseStepAction create(String test, String testCase, int step, int sequence, int sort,
                               String action, String object, String property, String description, String screenshotFilename);
+    
 }

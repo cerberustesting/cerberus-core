@@ -6054,8 +6054,47 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLS.append("ADD COLUMN `ResetPasswordToken` CHAR(40) NOT NULL DEFAULT '' AFTER `Password`;");
         SQLInstruction.add(SQLS.toString());
 
+        // Add Sort column to test case step related tables (#569)
+        //-- ------------------------ 816 - 827 
+        SQLS = new StringBuilder();
+        SQLS.append("ALTER TABLE `testcasestep` ADD COLUMN `Sort` INT(10) UNSIGNED AFTER `Step`;");
+        SQLInstruction.add(SQLS.toString());
+        SQLS = new StringBuilder();
+        SQLS.append("UPDATE `testcasestep` SET `Sort` = `Step`;");
+        SQLInstruction.add(SQLS.toString());
+        SQLS = new StringBuilder();
+        SQLS.append("ALTER TABLE `testcasestepaction` ADD COLUMN `Sort` INT(10) UNSIGNED AFTER `Sequence`;");
+        SQLInstruction.add(SQLS.toString());
+        SQLS = new StringBuilder();
+        SQLS.append("UPDATE `testcasestepaction` SET `Sort` = `Sequence`;");
+        SQLInstruction.add(SQLS.toString());
+        SQLS = new StringBuilder();
+        SQLS.append("ALTER TABLE `testcasestepactioncontrol` ADD COLUMN `Sort` INT(10) UNSIGNED AFTER `Control`;");
+        SQLInstruction.add(SQLS.toString());
+        SQLS = new StringBuilder();
+        SQLS.append("UPDATE `testcasestepactioncontrol` SET `Sort` = `Control`;");
+        SQLInstruction.add(SQLS.toString());
+        SQLS = new StringBuilder();
+        SQLS.append("ALTER TABLE `testcasestepactioncontrolexecution` ADD COLUMN `Sort` INT(10) UNSIGNED AFTER `Control`;");
+        SQLInstruction.add(SQLS.toString());
+        SQLS = new StringBuilder();
+        SQLS.append("UPDATE `testcasestepactioncontrolexecution` SET `Sort` = `Control`;");
+        SQLInstruction.add(SQLS.toString());
+        SQLS = new StringBuilder();
+        SQLS.append("ALTER TABLE `testcasestepactionexecution` ADD COLUMN `Sort` INT(10) UNSIGNED AFTER `Sequence`;");
+        SQLInstruction.add(SQLS.toString());
+        SQLS = new StringBuilder();
+        SQLS.append("UPDATE `testcasestepactionexecution` SET `Sort` = `Sequence`;");
+        SQLInstruction.add(SQLS.toString());
+        SQLS = new StringBuilder();
+        SQLS.append("ALTER TABLE `testcasestepexecution` ADD COLUMN `Sort` INT(10) UNSIGNED AFTER `Step`;");
+        SQLInstruction.add(SQLS.toString());
+        SQLS = new StringBuilder();
+        SQLS.append("UPDATE `testcasestepexecution` SET `Sort` = `Step`;");
+        SQLInstruction.add(SQLS.toString());
+
         // Removed callSoapWithBase_BETA and callSoap_BETA actions.
-        //-- ------------------------ 8xx
+        //-- ------------------------ 828
         SQLS = new StringBuilder();
         SQLS.append("DELETE from invariant where idname='ACTION' and value in ('callSoapWithBase_BETA','callSoap_BETA');");
         SQLInstruction.add(SQLS.toString());

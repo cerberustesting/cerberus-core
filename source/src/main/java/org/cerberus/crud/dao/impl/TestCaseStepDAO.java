@@ -79,7 +79,7 @@ public class TestCaseStepDAO implements ITestCaseStepDAO {
     @Override
     public List<TestCaseStep> findTestCaseStepByTestCase(String test, String testcase) {
         List<TestCaseStep> list = null;
-        final String query = "SELECT * FROM testcasestep WHERE test = ? AND testcase = ?";
+        final String query = "SELECT * FROM testcasestep WHERE test = ? AND testcase = ? ORDER BY sort";
 
         Connection connection = this.databaseSpring.connect();
         try {
@@ -93,13 +93,14 @@ public class TestCaseStepDAO implements ITestCaseStepDAO {
                 try {
                     while (resultSet.next()) {
                         int step = resultSet.getInt("Step");
+                        int sort = resultSet.getInt("Sort");
                         String description = resultSet.getString("Description");
                         String useStep = resultSet.getString("useStep");
                         String useStepTest = resultSet.getString("useStepTest");
                         String useStepTestCase = resultSet.getString("useStepTestCase");
                         Integer useStepStep = resultSet.getInt("useStepStep");
                         String inLibrary = resultSet.getString("inlibrary");
-                        list.add(factoryTestCaseStep.create(test, testcase, step, description, useStep, useStepTest, useStepTestCase, useStepStep, inLibrary));
+                        list.add(factoryTestCaseStep.create(test, testcase, step, sort, description, useStep, useStepTest, useStepTestCase, useStepStep, inLibrary));
                     }
                 } catch (SQLException exception) {
                     LOG.error("Unable to execute query : " + exception.toString());
@@ -175,8 +176,8 @@ public class TestCaseStepDAO implements ITestCaseStepDAO {
     public void insertTestCaseStep(TestCaseStep testCaseStep) throws CerberusException {
         boolean throwExcep = false;
         StringBuilder query = new StringBuilder();
-        query.append("INSERT INTO `testcasestep` (`Test`,`TestCase`,`Step`,`Description`,`useStep`,`useStepTest`,`useStepTestCase`,`useStepStep`, `inLibrary`) ");
-        query.append("VALUES (?,?,?,?,?,?,?,?,?)");
+        query.append("INSERT INTO `testcasestep` (`Test`,`TestCase`,`Step`,`Sort`,`Description`,`useStep`,`useStepTest`,`useStepTestCase`,`useStepStep`, `inLibrary`) ");
+        query.append("VALUES (?,?,?,?,?,?,?,?,?,?)");
 
         Connection connection = this.databaseSpring.connect();
         try {
@@ -185,12 +186,13 @@ public class TestCaseStepDAO implements ITestCaseStepDAO {
                 preStat.setString(1, testCaseStep.getTest());
                 preStat.setString(2, testCaseStep.getTestCase());
                 preStat.setInt(3, testCaseStep.getStep());
-                preStat.setString(4, testCaseStep.getDescription());
-                preStat.setString(5, testCaseStep.getUseStep() == null ? "N" : testCaseStep.getUseStep());
-                preStat.setString(6, testCaseStep.getUseStepTest() == null ? "" : testCaseStep.getUseStepTest());
-                preStat.setString(7, testCaseStep.getUseStepTestCase() == null ? "" : testCaseStep.getUseStepTestCase());
-                preStat.setInt(8, testCaseStep.getUseStepStep() == null ? 0 : testCaseStep.getUseStepStep());
-                preStat.setString(9, testCaseStep.getInLibrary() == null ? "N" : testCaseStep.getInLibrary());
+                preStat.setInt(4, testCaseStep.getSort());
+                preStat.setString(5, testCaseStep.getDescription());
+                preStat.setString(6, testCaseStep.getUseStep() == null ? "N" : testCaseStep.getUseStep());
+                preStat.setString(7, testCaseStep.getUseStepTest() == null ? "" : testCaseStep.getUseStepTest());
+                preStat.setString(8, testCaseStep.getUseStepTestCase() == null ? "" : testCaseStep.getUseStepTestCase());
+                preStat.setInt(9, testCaseStep.getUseStepStep() == null ? 0 : testCaseStep.getUseStepStep());
+                preStat.setString(10, testCaseStep.getInLibrary() == null ? "N" : testCaseStep.getInLibrary());
 
                 preStat.executeUpdate();
                 throwExcep = false;
@@ -232,13 +234,14 @@ public class TestCaseStepDAO implements ITestCaseStepDAO {
                 ResultSet resultSet = preStat.executeQuery();
                 try {
                     if (resultSet.first()) {
+                        int sort = resultSet.getInt("Sort");
                         String description = resultSet.getString("Description");
                         String useStep = resultSet.getString("useStep");
                         String useStepTest = resultSet.getString("useStepTest");
                         String useStepTestCase = resultSet.getString("useStepTestCase");
                         Integer useStepStep = resultSet.getInt("useStepStep");
                         String inLibrary = resultSet.getString("inlibrary");
-                        result = factoryTestCaseStep.create(test, testcase, step, description, useStep, useStepTest, useStepTestCase, useStepStep, inLibrary);
+                        result = factoryTestCaseStep.create(test, testcase, step, sort, description, useStep, useStepTest, useStepTestCase, useStepStep, inLibrary);
                     }
                 } catch (SQLException exception) {
                     LOG.error("Unable to execute query : " + exception.toString());
@@ -305,7 +308,7 @@ public class TestCaseStepDAO implements ITestCaseStepDAO {
         StringBuilder query = new StringBuilder();
         query.append("UPDATE testcasestep SET ");
         query.append(" `Description` = ?,`useStep`=?,`useStepTest`=?,`useStepTestCase`=?,`useStepStep`=?,");
-        query.append(" `inlibrary` = ? WHERE Test = ? AND TestCase = ? AND step = ?");
+        query.append(" `inlibrary` = ?, `Sort` = ? WHERE Test = ? AND TestCase = ? AND step = ?");
 
         Connection connection = this.databaseSpring.connect();
         try {
@@ -317,9 +320,11 @@ public class TestCaseStepDAO implements ITestCaseStepDAO {
                 preStat.setString(4, tcs.getUseStepTestCase() == null ? "" : tcs.getUseStepTestCase());
                 preStat.setInt(5, tcs.getUseStepStep() == null ? 0 : tcs.getUseStepStep());
                 preStat.setString(6, tcs.getInLibrary() == null ? "N" : tcs.getInLibrary());
-                preStat.setString(7, tcs.getTest());
-                preStat.setString(8, tcs.getTestCase());
-                preStat.setInt(9, tcs.getStep());
+                preStat.setInt(7, tcs.getSort());
+                
+                preStat.setString(8, tcs.getTest());
+                preStat.setString(9, tcs.getTestCase());
+                preStat.setInt(10, tcs.getStep());
 
                 preStat.executeUpdate();
                 throwExcep = false;
@@ -364,13 +369,14 @@ public class TestCaseStepDAO implements ITestCaseStepDAO {
                         String t = resultSet.getString("Test");
                         String tc = resultSet.getString("TestCase");
                         int s = resultSet.getInt("Step");
+                        int sort = resultSet.getInt("Sort");
                         String description = resultSet.getString("Description");
                         String useStep = resultSet.getString("useStep");
                         String useStepTest = resultSet.getString("useStepTest");
                         String useStepTestCase = resultSet.getString("useStepTestCase");
                         Integer useStepStep = resultSet.getInt("useStepStep");
                         String inLibrary = resultSet.getString("inlibrary");
-                        list.add(factoryTestCaseStep.create(t, tc, s, description, useStep, useStepTest, useStepTestCase, useStepStep, inLibrary));
+                        list.add(factoryTestCaseStep.create(t, tc, s, sort, description, useStep, useStepTest, useStepTestCase, useStepStep, inLibrary));
                     }
                 } catch (SQLException exception) {
                     LOG.error("Unable to execute query : " + exception.toString());
@@ -415,13 +421,14 @@ public class TestCaseStepDAO implements ITestCaseStepDAO {
                         String t = resultSet.getString("Test");
                         String tc = resultSet.getString("TestCase");
                         int s = resultSet.getInt("Step");
+                        int sort = resultSet.getInt("Sort");
                         String description = resultSet.getString("Description");
                         String useStep = resultSet.getString("useStep");
                         String useStepTest = resultSet.getString("useStepTest");
                         String useStepTestCase = resultSet.getString("useStepTestCase");
                         Integer useStepStep = resultSet.getInt("useStepStep");
                         String inLibrary = resultSet.getString("inLibrary");
-                        list.add(factoryTestCaseStep.create(t, tc, s, description, useStep, useStepTest, useStepTestCase, useStepStep, inLibrary));
+                        list.add(factoryTestCaseStep.create(t, tc, s, sort, description, useStep, useStepTest, useStepTestCase, useStepStep, inLibrary));
                     }
                 } catch (SQLException exception) {
                     LOG.error("Unable to execute query : " + exception.toString());
@@ -451,7 +458,7 @@ public class TestCaseStepDAO implements ITestCaseStepDAO {
     public List<TestCaseStep> getStepUsedAsLibraryInOtherTestCaseByApplication(String application) throws CerberusException {
         List<TestCaseStep> list = null;
         StringBuilder query = new StringBuilder();
-        query.append("SELECT tcs.usesteptest, tcs.usesteptestcase,tcs.usestepstep, tcs2.description FROM testcasestep tcs ");
+        query.append("SELECT tcs.usesteptest, tcs.usesteptestcase,tcs.usestepstep,tcs.sort, tcs2.description FROM testcasestep tcs ");
         query.append("join testcase tc on tc.test=tcs.test and tc.testcase=tcs.testcase ");
         query.append("join testcasestep tcs2 on tcs.test=tcs2.test and tcs.testcase=tcs2.testcase and tcs.step=tcs2.step ");
         query.append("where tcs.usestep = 'Y' and tc.application = ?  ");
@@ -470,8 +477,9 @@ public class TestCaseStepDAO implements ITestCaseStepDAO {
                         String t = resultSet.getString("usesteptest");
                         String tc = resultSet.getString("usesteptestcase");
                         int s = resultSet.getInt("usestepstep");
+                        int sort = resultSet.getInt("sort");
                         String description = resultSet.getString("description");
-                        list.add(factoryTestCaseStep.create(t, tc, s, description, null, null, null, 0, null));
+                        list.add(factoryTestCaseStep.create(t, tc, s, sort, description, null, null, null, 0, null));
                     }
                 } catch (SQLException exception) {
                     LOG.error("Unable to execute query : " + exception.toString());
@@ -502,10 +510,11 @@ public class TestCaseStepDAO implements ITestCaseStepDAO {
     public List<TestCaseStep> getStepLibraryBySystem(String system) throws CerberusException {
         List<TestCaseStep> list = null;
         StringBuilder query = new StringBuilder();
-        query.append("SELECT tcs.test, tcs.testcase,tcs.step, tcs.description FROM testcasestep tcs ");
+        query.append("SELECT tcs.test, tcs.testcase,tcs.step, tcs.sort, tcs.description FROM testcasestep tcs ");
         query.append("join testcase tc on tc.test=tcs.test and tc.testcase=tcs.testcase ");
         query.append("join application app  on tc.application=app.application ");
         query.append("where tcs.inlibrary = 'Y' and app.system = ?  ");
+        query.append("order by tcs.test, tcs.testcase, tcs.sort");
 
         Connection connection = this.databaseSpring.connect();
         try {
@@ -520,8 +529,9 @@ public class TestCaseStepDAO implements ITestCaseStepDAO {
                         String t = resultSet.getString("test");
                         String tc = resultSet.getString("testcase");
                         int s = resultSet.getInt("step");
+                        int sort = resultSet.getInt("sort");
                         String description = resultSet.getString("description");
-                        list.add(factoryTestCaseStep.create(t, tc, s, description, null, null, null, 0, null));
+                        list.add(factoryTestCaseStep.create(t, tc, s, sort, description, null, null, null, 0, null));
                     }
                 } catch (SQLException exception) {
                     LOG.error("Unable to execute query : " + exception.toString());
@@ -551,10 +561,11 @@ public class TestCaseStepDAO implements ITestCaseStepDAO {
     public List<TestCaseStep> getStepLibraryBySystemTest(String system, String test) throws CerberusException {
         List<TestCaseStep> list = null;
         StringBuilder query = new StringBuilder();
-        query.append("SELECT tcs.test, tcs.testcase,tcs.step, tcs.description, tc.description as tcdesc FROM testcasestep tcs ");
+        query.append("SELECT tcs.test, tcs.testcase,tcs.step, tcs.sort, tcs.description, tc.description as tcdesc FROM testcasestep tcs ");
         query.append("join testcase tc on tc.test=tcs.test and tc.testcase=tcs.testcase ");
         query.append("join application app  on tc.application=app.application ");
         query.append("where tcs.inlibrary = 'Y' and app.system = ? and tcs.test = ? ");
+        query.append("order by tcs.test, tcs.testcase, tcs.sort");
 
         Connection connection = this.databaseSpring.connect();
         try {
@@ -570,10 +581,11 @@ public class TestCaseStepDAO implements ITestCaseStepDAO {
                         String t = resultSet.getString("test");
                         String tc = resultSet.getString("testcase");
                         int s = resultSet.getInt("step");
+                        int sort = resultSet.getInt("sort");
                         String description = resultSet.getString("description");
                         String tcdesc = resultSet.getString("tcdesc");
                         TCase tcToAdd = factoryTestCase.create(t, tc, tcdesc);
-                        TestCaseStep tcsToAdd = factoryTestCaseStep.create(t, tc, s, description, null, null, null, 0, null);
+                        TestCaseStep tcsToAdd = factoryTestCaseStep.create(t, tc, s, sort, description, null, null, null, 0, null);
                         tcsToAdd.setTestCaseObj(tcToAdd);
                         list.add(tcsToAdd);
                     }
@@ -605,10 +617,11 @@ public class TestCaseStepDAO implements ITestCaseStepDAO {
     public List<TestCaseStep> getStepLibraryBySystemTestTestCase(String system, String test, String testCase) throws CerberusException {
         List<TestCaseStep> list = null;
         StringBuilder query = new StringBuilder();
-        query.append("SELECT tcs.test, tcs.testcase,tcs.step, tcs.description FROM testcasestep tcs ");
+        query.append("SELECT tcs.test, tcs.testcase,tcs.step, tcs.sort, tcs.description FROM testcasestep tcs ");
         query.append("join testcase tc on tc.test=tcs.test and tc.testcase=tcs.testcase ");
         query.append("join application app  on tc.application=app.application ");
-        query.append("where tcs.inlibrary = 'Y' and app.system = ? and tcs.test = ? and tcs.testcase = ?");
+        query.append("where tcs.inlibrary = 'Y' and app.system = ? and tcs.test = ? and tcs.testcase = ? ");
+        query.append("order by tcs.test, tcs.testcase, tcs.sort");
 
         Connection connection = this.databaseSpring.connect();
         try {
@@ -625,8 +638,9 @@ public class TestCaseStepDAO implements ITestCaseStepDAO {
                         String t = resultSet.getString("test");
                         String tc = resultSet.getString("testcase");
                         int s = resultSet.getInt("step");
+                        int sort = resultSet.getInt("sort");
                         String description = resultSet.getString("description");
-                        list.add(factoryTestCaseStep.create(t, tc, s, description, null, null, null, 0, null));
+                        list.add(factoryTestCaseStep.create(t, tc, s, sort, description, null, null, null, 0, null));
                     }
                 } catch (SQLException exception) {
                     LOG.error("Unable to execute query : " + exception.toString());
@@ -659,7 +673,7 @@ public class TestCaseStepDAO implements ITestCaseStepDAO {
         msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", ""));
         List<TestCaseStep> stepList = new ArrayList<TestCaseStep>();
         StringBuilder query = new StringBuilder();
-        query.append("SELECT * FROM testcasestep WHERE test = ? AND testcase = ? ORDER BY step");
+        query.append("SELECT * FROM testcasestep WHERE test = ? AND testcase = ? ORDER BY sort");
 
         Connection connection = this.databaseSpring.connect();
         try {
@@ -745,6 +759,7 @@ public class TestCaseStepDAO implements ITestCaseStepDAO {
         String test = resultSet.getString("test") == null ? "" : resultSet.getString("test");
         String testcase = resultSet.getString("testcase") == null ? "" : resultSet.getString("testcase");
         int step = resultSet.getInt("step") == 0 ? 0 : resultSet.getInt("step");
+        int sort = resultSet.getInt("sort");
         String description = resultSet.getString("description") == null ? "" : resultSet.getString("description");
         String useStep = resultSet.getString("useStep") == null ? "" : resultSet.getString("useStep");
         String useStepTest = resultSet.getString("useStepTest") == null ? "" : resultSet.getString("useStepTest");
@@ -752,6 +767,6 @@ public class TestCaseStepDAO implements ITestCaseStepDAO {
         int useStepStep = resultSet.getInt("useStepStep") == 0 ? 0 : resultSet.getInt("useStepStep");
         String inLibrary = resultSet.getString("inLibrary") == null ? "" : resultSet.getString("inLibrary");
         
-        return factoryTestCaseStep.create(test, testcase, step, description, useStep, useStepTest, useStepTestCase, useStepStep, inLibrary);
+        return factoryTestCaseStep.create(test, testcase, step, sort, description, useStep, useStepTest, useStepTestCase, useStepStep, inLibrary);
     }
 }

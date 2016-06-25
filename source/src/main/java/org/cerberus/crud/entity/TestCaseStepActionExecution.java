@@ -35,6 +35,7 @@ public class TestCaseStepActionExecution {
     private String testCase;
     private int step;
     private int sequence;
+    private int sort;
     private String returnCode;
     private String returnMessage;
     private String action;
@@ -205,6 +206,16 @@ public class TestCaseStepActionExecution {
 
     public void setSequence(int sequence) {
         this.sequence = sequence;
+        // TODO to remove when sorting will be fully enabled
+        setSort(sequence);
+    }
+
+    public int getSort() {
+        return sort;
+    }
+
+    public void setSort(int sort) {
+        this.sort = sort;
     }
 
     public long getStart() {
@@ -271,6 +282,7 @@ public class TestCaseStepActionExecution {
             result.put("testcase", this.getTestCase());
             result.put("step", this.getStep());
             result.put("sequence", this.getSequence());
+            result.put("sort", this.getSort());
             result.put("action", this.getAction());
             result.put("object", this.getObject());
             result.put("property", this.getProperty());
