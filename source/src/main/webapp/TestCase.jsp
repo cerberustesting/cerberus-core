@@ -1855,9 +1855,9 @@
                                         </div>
                                         <br>
                                         <%  if (canEdit) {%>
+                                        <input type="button" onclick="submitTestCaseModificationNew('propertyAnchor');" class="buttonSaveChanges" value="Save Changes" id="SavePropertyChanges">              
                                         <input type="button" class="buttonSaveChanges" value="Add Property" id="AddProperty"
                                                onclick="addPropertyNew('<%=widthValue%>')">
-                                        <input type="button" onclick="submitTestCaseModificationNew('propertyAnchor');" class="buttonSaveChanges" value="Save Changes" id="SavePropertyChanges">              
                                         <input type="hidden" id="Test" name="Test" value="<%=test%>">
                                         <input type="hidden" id="TestCase" name="TestCase" value="<%=testcase%>">
                                         <input type="hidden" name="testcase_hidden" value="<%=test + " - " + testcase%>">
