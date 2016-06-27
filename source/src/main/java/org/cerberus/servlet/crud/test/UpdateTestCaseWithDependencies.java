@@ -326,10 +326,10 @@ public class UpdateTestCaseWithDependencies extends HttpServlet {
     }
     
     /**
-     * Get the next step number by computing the maximum value + 1 from given step numbers
+     * Get the highest step number from the given steps
      * 
-     * @param steps the collection of steps from which get the next step number
-     * @return the next step number according to the given collection of steps
+     * @param steps a collection of steps from which get the highest step number
+     * @return the highest step number from the given steps
      */
     private int getMaxStepNumber(Collection<TestCaseStep> steps) {
         int nextStepNumber = 0;
@@ -343,6 +343,12 @@ public class UpdateTestCaseWithDependencies extends HttpServlet {
         return nextStepNumber;
     }
     
+    /**
+     * Get the highest action sequence from the given actions
+     * 
+     * @param steps a collection of actions from which get the highest action sequence
+     * @return the highest action sequence from the given actions
+     */
     private int getMaxSequenceNumber(Collection<TestCaseStepAction> actions) {
         int nextSequenceNumber = 0;
         if (actions != null) {
@@ -355,6 +361,12 @@ public class UpdateTestCaseWithDependencies extends HttpServlet {
         return nextSequenceNumber;
     }
     
+    /**
+     * Get the highest control number from the given controls
+     * 
+     * @param controls a collection of controls from which get the highest control number
+     * @return the highest control number from the given controls
+     */
     private int getMaxControlNumber(Collection<TestCaseStepActionControl> controls) {
         int nextControlNumber = 0;
         if (controls != null) {
