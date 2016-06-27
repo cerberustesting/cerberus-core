@@ -213,8 +213,6 @@ public class TestCaseStepExecution {
 
     public void setStep(int step) {
         this.step = step;
-        // TODO to remove when sorting will be fully enabled
-        setSort(step);
     }
 
     public int getSort() {
