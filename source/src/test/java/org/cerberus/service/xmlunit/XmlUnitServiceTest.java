@@ -25,14 +25,9 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.net.URL;
 import javax.xml.soap.SOAPException;
-import javax.xml.soap.SOAPMessage;
 import org.cerberus.engine.entity.SOAPExecution;
 
-import org.cerberus.crud.entity.TestCaseExecution;
-import org.cerberus.service.xmlunit.Difference;
-import org.cerberus.service.xmlunit.Differences;
 import org.cerberus.util.XmlUtilException;
-import org.cerberus.util.answer.AnswerItem;
 import org.custommonkey.xmlunit.DetailedDiff;
 import org.custommonkey.xmlunit.XMLUnit;
 import org.junit.Assert;
@@ -42,7 +37,6 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.springframework.test.context.ContextConfiguration;
@@ -149,22 +143,26 @@ public class XmlUnitServiceTest {
         Assert.assertFalse(xmlUnitService.isSimilarTree(xmlResponse, "/plop", "<root><wrong>foo</wrong><a>bar</a></root>"));
     }
 
-//	@Test
-//	public void testGetFromXmlWithValidURLAndExistingElement() {
-//		Assert.assertEquals("2", xmlUnitService.getFromXml("1234", getClass().getResource("data.xml").toString(), "/root/a[2]"));
-//	}
-//	@Test
-//	public void testGetFromXmlWithValidURLAndExistingElementJustTheFirstOne() {
-//		Assert.assertEquals("1", xmlUnitService.getFromXml("1234", getClass().getResource("data.xml").toString(), "/root/a"));
-//	}
-//	@Test
-//	public void testGetFromXmlWithValidURLAndExistingElementWithNamespace() {
-//		Assert.assertEquals("2", xmlUnitService.getFromXml("1234", getClass().getResource("data-namespaces.xml").toString(), "/:root/prefix:a[2]"));
-//	}
-//	@Test
-//	public void testGetFromXmlWithValidURLAndNotExistingElement() {
-//		Assert.assertEquals(XmlUnitService.DEFAULT_GET_FROM_XML_VALUE, xmlUnitService.getFromXml("1234", getClass().getResource("data.xml").toString(), "/root/b"));
-//	}
+    @Test
+    public void testGetFromXmlWithValidURLAndExistingElement() {
+        Assert.assertEquals("2", xmlUnitService.getFromXml("1234", getClass().getResource("/org/cerberus/serviceEngine/impl/data.xml").toString(), "/root/a[2]/text()"));
+    }
+
+    @Test
+    public void testGetFromXmlWithValidURLAndExistingElementJustTheFirstOne() {
+        Assert.assertEquals("1", xmlUnitService.getFromXml("1234", getClass().getResource("/org/cerberus/serviceEngine/impl/data.xml").toString(), "/root/a/text()"));
+    }
+
+    @Test
+    public void testGetFromXmlWithValidURLAndExistingElementWithNamespace() {
+        Assert.assertEquals("2", xmlUnitService.getFromXml("1234", getClass().getResource("/org/cerberus/serviceEngine/impl/data-namespaces.xml").toString(), "/:root/prefix:a[2]/text()"));
+    }
+
+    @Test
+    public void testGetFromXmlWithValidURLAndNotExistingElement() {
+        Assert.assertEquals(XmlUnitService.DEFAULT_GET_FROM_XML_VALUE, xmlUnitService.getFromXml("1234", getClass().getResource("/org/cerberus/serviceEngine/impl/data.xml").toString(), "/root/b"));
+    }
+
     @Test
     public void testGetFromXmlWithNullURLAndExistingElement() {
         String xmlResponse = "<root><a>1</a><a>2</a></root>";
