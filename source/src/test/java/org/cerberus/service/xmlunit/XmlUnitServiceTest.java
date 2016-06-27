@@ -162,6 +162,16 @@ public class XmlUnitServiceTest {
     public void testGetFromXmlWithValidURLAndNotExistingElement() {
         Assert.assertEquals(XmlUnitService.DEFAULT_GET_FROM_XML_VALUE, xmlUnitService.getFromXml("1234", getClass().getResource("/org/cerberus/serviceEngine/impl/data.xml").toString(), "/root/b"));
     }
+    
+    @Test
+    public void testGetSubstringFromXmlWithValidURLAndExistingElement() {
+        Assert.assertEquals("1234", xmlUnitService.getFromXml("1234", getClass().getResource("/org/cerberus/serviceEngine/impl/data.xml").toString(), "substring(/root/a[3], 1, 4)"));
+    }
+    
+    @Test
+    public void testGetFromXmlWithValidURLAndExistingMultipleElement() {
+        Assert.assertEquals("1", xmlUnitService.getFromXml("1234", getClass().getResource("/org/cerberus/serviceEngine/impl/data.xml").toString(), "/root/c"));
+    }
 
     @Test
     public void testGetFromXmlWithNullURLAndExistingElement() {
