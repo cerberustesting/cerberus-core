@@ -508,7 +508,7 @@
                                         <td style="width:1%" class="<%=myActionData.getReturnCode()%>"><span class="<%=myActionData.getReturnCode()%>F" id="ACTSTS-<%=myStep + "-" + myActionData.getSequence()%>"><%=myActionData.getReturnCode()%></span></td>
                                         <td style="width:4%"><%=DateUtil.getFormatedDate(myActionData.getStartLong())%></td>
                                         <td style="width:5%"><%=DateUtil.getFormatedElapsed(myActionData.getStartLong(), myActionData.getEndLong())%></td>
-                                        <td style="width:5%"><%=myActionData.getSequence()%></td>
+                                        <td style="width:5%"><%=myActionData.getSort()%></td>
                                         <td style="width:20%" title="<%=myActionData.getDescription()%>"><%=myActionData.getDescription()%></td>
                                         <td style="width:20%" title="<%=myActionData.getDescription()%>"><b><%=myActionData.getAction()%></b></td>
                                         <td style="width:20%"><code><pre><%=StringUtil.textToHtmlConvertingURLsToLinks(myActionData.getObject())%></pre></code></td>
@@ -578,7 +578,7 @@
                                                     <td class="<%=myControlData.getReturnCode()%>"><span class="<%=myControlData.getReturnCode()%>F" id="CTLSTS-<%=myAction + "-" + myControlData.getControl()%>"><%=myControlData.getReturnCode()%></span></td>
                                                     <td><%=DateUtil.getFormatedDate(myControlData.getStartLong())%></td>
                                                     <td><%=DateUtil.getFormatedElapsed(myControlData.getStartLong(), myControlData.getEndLong())%></td>
-                                                    <td data-id="<%=myAction + "-" + myControlData.getControl()%>" class="control <%=myControlData.getControl()%>"><%=myControlData.getControl()%></td>
+                                                    <td data-id="<%=myAction + "-" + myControlData.getControl()%>" class="control <%=myControlData.getControl()%>"><%=myControlData.getSort()%></td>
                                                     <td title="<%=myControlData.getDescription()%>"><%=myControlData.getDescription()%></td>
                                                     <td title="<%=myControlData.getDescription()%>"><b><%=myControlData.getControlType()%></b></td>
                                                     <td id="CTLPRP-<%=myAction + "-" + myControlData.getControl()%>"><%=StringUtil.textToHtmlConvertingURLsToLinks(myControlData.getControlProperty())%></td>

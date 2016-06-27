@@ -489,7 +489,7 @@ public class ExecutionRunService implements IExecutionRunService {
                             throw new CerberusEventException(new MessageEvent(MessageEventEnum.PROPERTY_FAILED_CALCULATE_OBJECTPROPERTYNULL));
                         }*/
                     }
-                    propertyService.getValue("%" + propertyToCalculate + "%", testCaseStepActionExecution, isCalledFromCalculateProperty);
+                    propertyService.decodeValueWithExistingProperties("%" + propertyToCalculate + "%", testCaseStepActionExecution, isCalledFromCalculateProperty);
                 } catch (CerberusEventException ex) {
                     Logger.getLogger(ExecutionRunService.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
                 }

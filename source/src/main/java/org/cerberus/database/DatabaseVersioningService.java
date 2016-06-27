@@ -6002,7 +6002,7 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLS.append("('robot', 'capabilityValue', '', 'fr', 'Valeur', 'Valeur de la capabilité.'), ");
         SQLS.append("('robot', 'capabilityValue', '', 'en', 'Value', 'Capability value.');");
         SQLInstruction.add(SQLS.toString());
-        
+
         // Correct property to add the /text() in xpath.
         //-- ------------------------ 809
         SQLS = new StringBuilder();
@@ -6038,7 +6038,7 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLS.append("INSERT INTO `invariant` (`idname`, `value`, `sort`, `description`) ");
         SQLS.append("VALUES ('ACTION', 'skipAction', '2600', 'skipAction');");
         SQLInstruction.add(SQLS.toString());
-        
+
         // Adding Reset Password Email Parameters
         //-- ------------------------ 814
         SQLS = new StringBuilder();
@@ -6046,7 +6046,7 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLS.append("VALUES ('', 'cerberus_notification_forgotpassword_subject', '[Cerberus] Reset your password', 'Subject of Cerberus forgot password notification email.')");
         SQLS.append(", ('', 'cerberus_notification_forgotpassword_body', 'Hello %NAME%<br><br>We\\'ve received a request to reset your Cerberus password.<br><br>%LINK%<br><br>If you didn\\'t request a password reset, not to worry, just ignore this email and your current password will continue to work.<br><br>Cheers,<br>The Cerberus Team', 'Cerberus forgot password notification email body. %LOGIN%, %NAME% and %LINK% can be used as variables.');");
         SQLInstruction.add(SQLS.toString());
-        
+
         // Adding Column ResetPasswordToken in User Table
         //-- ------------------------ 815
         SQLS = new StringBuilder();
@@ -6092,7 +6092,13 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLS = new StringBuilder();
         SQLS.append("UPDATE `testcasestepexecution` SET `Sort` = `Step`;");
         SQLInstruction.add(SQLS.toString());
-        
+
+        // Removed callSoapWithBase_BETA and callSoap_BETA actions.
+        //-- ------------------------ 828
+        SQLS = new StringBuilder();
+        SQLS.append("DELETE from invariant where idname='ACTION' and value in ('callSoapWithBase_BETA','callSoap_BETA');");
+        SQLInstruction.add(SQLS.toString());
+
         return SQLInstruction;
     }
 

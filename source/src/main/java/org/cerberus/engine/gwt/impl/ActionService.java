@@ -20,9 +20,7 @@
 package org.cerberus.engine.gwt.impl;
 
 import org.cerberus.engine.execution.impl.RunTestCaseService;
-import java.io.File;
 import java.util.Date;
-import java.util.HashMap;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.cerberus.crud.entity.Identifier;
@@ -52,9 +50,7 @@ import org.cerberus.service.soap.ISoapService;
 import org.cerberus.service.webdriver.IWebDriverService;
 import org.cerberus.service.xmlunit.IXmlUnitService;
 import org.cerberus.util.StringUtil;
-import org.cerberus.util.answer.Answer;
 import org.cerberus.util.answer.AnswerItem;
-import org.cerberus.util.answer.MessageEventUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
@@ -112,7 +108,7 @@ public class ActionService implements IActionService {
             }
             try {
                 // We decode here the object with any potencial variables (ex : %TOTO%). If the Current action if calculateProperty, we force a new calculation of the Property.
-                testCaseStepActionExecution.setObject(propertyService.getValue(testCaseStepActionExecution.getObject(), testCaseStepActionExecution, isCalledFromCalculateProperty));
+                testCaseStepActionExecution.setObject(propertyService.decodeValueWithExistingProperties(testCaseStepActionExecution.getObject(), testCaseStepActionExecution, isCalledFromCalculateProperty));
                 //if the getvalue() indicates that the execution should stop then we stop it before the doAction 
                 //or if the property service was unable to decode the property that is specified in the object, 
                 //then the execution of this action should not performed
@@ -196,14 +192,8 @@ public class ActionService implements IActionService {
         } else if (testCaseStepActionExecution.getAction().equals("callSoapWithBase")) {
             res = this.doActionMakeSoapCall(testCaseStepActionExecution, object, property, true);
 
-        } else if (testCaseStepActionExecution.getAction().equals("callSoapWithBase_BETA")) { // ACTION that is plugged to the TestDataLib
-            res = this.doActionCallSoapFromDataLib(testCaseStepActionExecution, object, property);
-
         } else if (testCaseStepActionExecution.getAction().equals("callSoap")) {
             res = this.doActionMakeSoapCall(testCaseStepActionExecution, object, property, false);
-
-        } else if (testCaseStepActionExecution.getAction().equals("callSoap_BETA")) { // ACTION that is plugged to the TestDataLib
-            res = this.doActionCallSoapFromDataLib(testCaseStepActionExecution, object, property);
 
         } else if (testCaseStepActionExecution.getAction().equals("calculateProperty")) {
             res = this.doActionCalculateProperty(object, property, propertyName);
@@ -855,7 +845,7 @@ public class ActionService implements IActionService {
             String decodedEnveloppe = soapLibrary.getEnvelope();
             if (soapLibrary.getEnvelope().contains("%")) {
                 try {
-                    decodedEnveloppe = propertyService.getValue(soapLibrary.getEnvelope(), testCaseStepActionExecution, false);
+                    decodedEnveloppe = propertyService.decodeValueWithExistingProperties(soapLibrary.getEnvelope(), testCaseStepActionExecution, false);
                     //if the process of decoding originates a message that isStopExecution then we will stop the current action execution
                     if (testCaseStepActionExecution.isStopExecution()) {
                         return testCaseStepActionExecution.getActionResultMessage();
@@ -1018,37 +1008,6 @@ public class ActionService implements IActionService {
             return sqlService.executeCallableStatement(tCExecution.getApplication().getSystem(),
                     tCExecution.getCountry(), tCExecution.getEnvironment(), object, property);
         }
-    }
-
-    private MessageEvent doActionCallSoapFromDataLib(TestCaseStepActionExecution testCaseStepActionExecution,
-            String object, String property) {
-        MessageEvent message;
-        Answer ansCallSoap = soapService.callSoapFromDataLib(testCaseStepActionExecution, object);
-
-        if (ansCallSoap.isCodeEquals(MessageEventEnum.PROPERTY_SUCCESS.getCode())) {
-            HashMap<String, String> options = new HashMap<String, String>();
-            options.put("type", "SOAP");
-            options.put("description", MessageEventEnum.ACTION_SUCCESS_CALLSOAP.getDescription().
-                    replaceAll("%SOAPNAME%", object));
-
-            if (StringUtil.isNullOrEmpty(property)) {
-                options.put("request", "%REQUEST_NAME%");
-                options.put("response", "%RESPONSE_NAME%");
-            } else {
-                String descId = String.valueOf(testCaseStepActionExecution.getTestCaseStepExecution().gettCExecution().getId());
-                options.put("request", descId + File.separator + property + "_request.xml");
-                options.put("response", descId + File.separator + property + ".xml");
-            }
-
-            message = MessageEventUtil.createMessageDescriptionJSONFormat(MessageEventEnum.ACTION_SUCCESS_CALLSOAP, options);
-        } else {
-            message = new MessageEvent(MessageEventEnum.ACTION_FAILED_CALLSOAP);
-            message.setDescription(message.getDescription().replaceAll("%SOAPNAME%", object));
-            message.setDescription(message.getDescription().replaceAll("%DESCRIPTION%",
-                    ansCallSoap.getResultMessage().getDescription()));
-        }
-
-        return message;
     }
 
     private MessageEvent doActionHideKeyboard(TestCaseExecution tCExecution) {

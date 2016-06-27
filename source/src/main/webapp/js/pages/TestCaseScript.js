@@ -148,41 +148,19 @@ function runTestCase(test, testcase) {
 function saveScript() {
     var stepList = $("#stepList li");
     var stepArr = [];
-
-    // Get the maximum step number to be able to set new steps
-    var maxStepNumber = 0;
-    for (var i = 0; i < stepList.length; i++) {
-        var step = $(stepList[i]).data("item");
-        if (maxStepNumber < step.getStep()) {
-            maxStepNumber = step.getStep();
-        }
-    }
     
+    // Construct the step/action/control list:
     // Iterate over steps
     for (var i = 0; i < stepList.length; i++) {
         var step = $(stepList[i]).data("item");
         var actionArr = [];
 
         if (!step.toDelete) {
-            // Check if step has to be numeroted
-            if (step.getStep() === undefined) {
-                step.setStep(++maxStepNumber);
-            }
-            
             // Set the step's sort
             step.setSort(i + 1);
             
             // Get step's actions
             var actionList = step.stepActionContainer.children(".action-group").children(".action");
-            
-            // Get the maximum action sequence to be able to set new actions
-            var maxActionSequence = 0;
-            for (var actionListIdx = 0; actionListIdx < actionList.length; actionListIdx++) {
-                var action = $(actionList[actionListIdx]).data("item");
-                if (maxActionSequence < action.getSequence()) {
-                    maxActionSequence = action.getSequence();
-                }
-            }
             
             // Iterate over actions
             for (var j = 0; j < actionList.length; j++) {
@@ -190,42 +168,21 @@ function saveScript() {
                 var controlArr = [];
 
                 if (!action.toDelete) {
-                    // Check if action has to be numeroted
-                    if (action.getSequence() === undefined) {
-                        action.setSequence(++maxActionSequence);
-                    }
-                    
-                    // Set the action's step and sort
-                    action.setStep(step.getStep());
+                    // Set the action's sort
                     action.setSort(j + 1);
                     
                     // Get action's controls
                     var controlList = action.html.children(".control");
-
-                    // Get the maximum control number to be able to set new controls
-                    var maxControlNumber = 0;
-                    for (var controlListIdx = 0; controlListIdx < controlList.length; controlListIdx++) {
-                        var control = $(controlList[controlListIdx]).data("item");
-                        if (maxControlNumber < control.getControl()) {
-                            maxControlNumber = control.getControl();
-                        }
-                    }
                     
                     // Iterate over controls
                     for (var k = 0; k < controlList.length; k++) {
                         var control = $(controlList[k]).data("item");
 
                         if (!control.toDelete) {
-                            // Check if control has to be numeroted
-                            if (control.getControl() === undefined) {
-                                control.setControl(++maxControlNumber);
-                            }
-                    
-                            // Set the control's step, action and sort
-                            control.setStep(step.getStep());
-                            control.setSequence(action.getSequence());
+                            // Set the control's sort
                             control.setSort(k + 1);
                             
+                            // Then push control into result array
                             controlArr.push(control.getJsonData());
                         }
                     }
@@ -1543,9 +1500,7 @@ function setPlaceholderAction() {
             {"type": "removeDifference", "object": "Action Depreciée", "property": "Action Depreciée"},
             {"type": "executeSqlUpdate", "object": "Nom de Base de donnée", "property": "Script à executer"},
             {"type": "executeSqlStoredProcedure", "object": "Nom de Base de donnée", "property": "Procedure Stoquée à executer"},
-            {"type": "doNothing", "object": null, "property": null},
-            {"type": "callSoap_BETA", "object": "Nom du Soap (librairie)", "property": "Nom de propriété"},
-            {"type": "callSoapWithBase_BETA", "object": "Nom du Soap (librairie)", "property": "Nom de propriété"}
+            {"type": "doNothing", "object": null, "property": null}
         ], "en": [
             {"type": "Unknown", "object": null, "property": null},
             {"type": "click", "object": "Element path", "property": null},
@@ -1575,9 +1530,7 @@ function setPlaceholderAction() {
             {"type": "removeDifference", "object": "Deprecated", "property": "Deprecated"},
             {"type": "executeSqlUpdate", "object": "Database Name", "property": "Script"},
             {"type": "executeSqlStoredProcedure", "object": "Database Name", "property": "Stored Procedure"},
-            {"type": "doNothing", "object": null, "property": null},
-            {"type": "callSoap_BETA", "object": "Soap Name (library)", "property": "Property Name"},
-            {"type": "callSoapWithBase_BETA", "object": "Soap Name (library)", "property": "Property Name"}
+            {"type": "doNothing", "object": null, "property": null}
         ]};
 
     var user = getUser();

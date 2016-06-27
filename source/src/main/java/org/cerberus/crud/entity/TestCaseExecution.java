@@ -570,12 +570,12 @@ public class TestCaseExecution {
     public void setScreenSize(String screenSize) {
         this.screenSize = screenSize;
     }
-    
+
     public void setTestCaseStepExecutionList(AnswerList testCaseStepExecutionAnswerList) {
         this.testCaseStepExecutionAnswerList = testCaseStepExecutionAnswerList;
     }
-    
-    public AnswerList getTestCaseStepExecutionAnswerList(){
+
+    public AnswerList getTestCaseStepExecutionAnswerList() {
         return testCaseStepExecutionAnswerList;
     }
 
@@ -611,7 +611,7 @@ public class TestCaseExecution {
             result.put("screenSize", this.getScreenSize());
             JSONArray array = new JSONArray();
             for (Object testCaseStepExecution : this.getTestCaseStepExecutionAnswerList().getDataList()) {
-                array.put( ((TestCaseStepExecution)testCaseStepExecution).toJson());
+                array.put(((TestCaseStepExecution) testCaseStepExecution).toJson());
             }
             result.put("testCaseStepExecutionList", array);
         } catch (JSONException ex) {
@@ -628,12 +628,12 @@ public class TestCaseExecution {
         this.lastSOAPCalled = lastSOAPCalled;
     }
 
-	public List<RobotCapability> getCapabilities() {
-		return capabilities;
-	}
+    public List<RobotCapability> getCapabilities() {
+        return capabilities;
+    }
 
-	public void setCapabilities(List<RobotCapability> capabilities) {
-		this.capabilities = capabilities;
-	}
-    
+    public void setCapabilities(List<RobotCapability> capabilities) {
+        this.capabilities = capabilities;
+    }
+
 }

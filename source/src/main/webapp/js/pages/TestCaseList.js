@@ -871,7 +871,8 @@ function aoColumnsFunc(countries) {
             "bSearchable": false,
             "sClass": "center",
             "title": country,
-            "sDefaultContent": ""
+            "sDefaultContent": "",
+            "sWidth": "50px"
         };
 
         aoColumns.push(column);

@@ -57,8 +57,6 @@ public class TestCaseStepActionControl {
 
     public void setControl(int control) {
         this.control = control;
-        // TODO to remove when sorting will be fully enabled
-        setSort(control);
     }
 
     public int getSort() {
