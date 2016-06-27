@@ -22,6 +22,7 @@ package org.cerberus.servlet.crud.test;
 import java.io.IOException;
 import java.net.URLEncoder;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -260,23 +261,49 @@ public class UpdateTestCaseWithDependencies extends HttpServlet {
             }
             tccpService.deleteListTestCaseCountryProperties(tccpToDelete);
         }
-        /**
-         * For the list of testcasestep verify it exists. If it does not exists
-         * > create it If it exist, verify if it's the
+        
+        /*
+         * Get steps, actions and controls from page by:
+         * - generating a new step, action or control number,
+         * - setting the correct related step and action for action or control
          */
         List<TestCaseStep> tcsFromPage = getTestCaseStepFromParameter(request, appContext, test, testCase, duplicate);
         List<TestCaseStepAction> tcsaFromPage = new ArrayList();
         List<TestCaseStepActionControl> tcsacFromPage = new ArrayList();
-
-        for (TestCaseStep tcsL : tcsFromPage) {
-            if (tcsL.getTestCaseStepAction() != null) {
-                tcsaFromPage.addAll(tcsL.getTestCaseStepAction());
-                for (TestCaseStepAction tcsaL : tcsL.getTestCaseStepAction()) {
-                    tcsacFromPage.addAll(tcsaL.getTestCaseStepActionControl());
+ 
+        int nextStepNumber = getMaxStepNumber(tcsFromPage);
+        for (TestCaseStep tcs : tcsFromPage) {
+            if (tcs.getStep() == -1) {
+                tcs.setStep(++nextStepNumber);
+            }
+            
+            if (tcs.getTestCaseStepAction() != null) {
+                int nextSequenceNumber = getMaxSequenceNumber(tcs.getTestCaseStepAction());
+                for (TestCaseStepAction tcsa : tcs.getTestCaseStepAction()) {
+                    if (tcsa.getSequence() == -1) {
+                        tcsa.setSequence(++nextSequenceNumber);
+                    }
+                    tcsa.setStep(tcs.getStep());
+                    
+                    if (tcsa.getTestCaseStepActionControl() != null) {
+                            int nextControlNumber = getMaxControlNumber(tcsa.getTestCaseStepActionControl());
+                        for (TestCaseStepActionControl tscac : tcsa.getTestCaseStepActionControl()) {
+                            if (tscac.getControl() == -1) {
+                                tscac.setControl(++nextControlNumber);
+                            }
+                            tscac.setStep(tcs.getStep());
+                            tscac.setSequence(tcsa.getSequence());
+                        }
+                        tcsacFromPage.addAll(tcsa.getTestCaseStepActionControl());
+                    }
                 }
+                tcsaFromPage.addAll(tcs.getTestCaseStepAction());
             }
         }
 
+        /*
+         * Create, update or delete step, action and control according to the needs
+         */
         List<TestCaseStep> tcsFromDtb = new ArrayList(tcsService.getListOfSteps(initialTest, initialTestCase));
         tcsService.compareListAndUpdateInsertDeleteElements(tcsFromPage, tcsFromDtb, duplicate);
 
@@ -296,6 +323,48 @@ public class UpdateTestCaseWithDependencies extends HttpServlet {
         String encodedTestCase = URLEncoder.encode(tc.getTestCase(), "UTF-8");
         response.sendRedirect(response.encodeRedirectURL("TestCase.jsp?Load=Load&Test=" + encodedTest + "&TestCase=" + encodedTestCase));
 
+    }
+    
+    /**
+     * Get the next step number by computing the maximum value + 1 from given step numbers
+     * 
+     * @param steps the collection of steps from which get the next step number
+     * @return the next step number according to the given collection of steps
+     */
+    private int getMaxStepNumber(Collection<TestCaseStep> steps) {
+        int nextStepNumber = 0;
+        if (steps != null) {
+            for (TestCaseStep step : steps) {
+                if (nextStepNumber < step.getStep()) {
+                    nextStepNumber = step.getStep();
+                }
+            }
+        }
+        return nextStepNumber;
+    }
+    
+    private int getMaxSequenceNumber(Collection<TestCaseStepAction> actions) {
+        int nextSequenceNumber = 0;
+        if (actions != null) {
+            for (TestCaseStepAction action : actions) {
+                if (nextSequenceNumber < action.getSequence()) {
+                    nextSequenceNumber = action.getSequence();
+                }
+            }
+        }
+        return nextSequenceNumber;
+    }
+    
+    private int getMaxControlNumber(Collection<TestCaseStepActionControl> controls) {
+        int nextControlNumber = 0;
+        if (controls != null) {
+            for (TestCaseStepActionControl control : controls) {
+                if (nextControlNumber < control.getControl()) {
+                    nextControlNumber = control.getControl();
+                }
+            }
+        }
+        return nextControlNumber;
     }
 
     /**
@@ -409,12 +478,11 @@ public class UpdateTestCaseWithDependencies extends HttpServlet {
         String[] testcase_step_increment = getParameterValuesIfExists(request, "step_increment");
         IFactoryTestCaseStep testCaseStepFactory = appContext.getBean(IFactoryTestCaseStep.class);
         if (testcase_step_increment != null) {
-            for (int i = 0; i < testcase_step_increment.length; i++) {
-                String inc = testcase_step_increment[i];
+            for (String inc : testcase_step_increment) {
                 String delete = getParameterIfExists(request, "step_delete_" + inc);
                 String stepInUse = getParameterIfExists(request, "step_InUseInOtherTestCase_" + inc);
-                int step = Integer.valueOf(getParameterIfExists(request, "step_number_" + inc) == null ? "0" : getParameterIfExists(request, "step_number_" + inc));
-                int sort = i + 1;
+                int step = Integer.valueOf(getParameterIfExists(request, "step_technical_number_" + inc) == null ? "0" : getParameterIfExists(request, "step_technical_number_" + inc));
+                int sort = Integer.valueOf(getParameterIfExists(request, "step_number_" + inc) == null ? "0" : getParameterIfExists(request, "step_number_" + inc));
                 int initialStep = Integer.valueOf(getParameterIfExists(request, "initial_step_number_" + inc) == null ? "0" : getParameterIfExists(request, "initial_step_number_" + inc));
                 String desc = HtmlUtils.htmlEscape(getParameterIfExists(request, "step_description_" + inc));
                 String useStep = getParameterIfExists(request, "step_useStep_" + inc);
@@ -555,19 +623,17 @@ public class UpdateTestCaseWithDependencies extends HttpServlet {
         String[] stepAction_increment = getParameterValuesIfExists(request, "action_increment_" + stepInc);
         IFactoryTestCaseStepAction testCaseStepActionFactory = appContext.getBean(IFactoryTestCaseStepAction.class);
         if (stepAction_increment != null) {
-            for (int i = 0; i < stepAction_increment.length; i++) {
-                String inc = stepAction_increment[i];
+            for (String inc : stepAction_increment) {
                 String delete = getParameterIfExists(request, "action_delete_" + stepInc + "_" + inc);
-                int step = Integer.valueOf(getParameterIfExists(request, "action_step_" + stepInc + "_" + inc) == null ? "0" : getParameterIfExists(request, "action_step_" + stepInc + "_" + inc));
-                int sequence = Integer.valueOf(getParameterIfExists(request, "action_sequence_" + stepInc + "_" + inc) == null ? "0" : getParameterIfExists(request, "action_sequence_" + stepInc + "_" + inc));
-                int sort = i +1;
+                int sequence = Integer.valueOf(getParameterIfExists(request, "action_technical_sequence_" + stepInc + "_" + inc) == null ? "0" : getParameterIfExists(request, "action_technical_sequence_" + stepInc + "_" + inc));
+                int sort = Integer.valueOf(getParameterIfExists(request, "action_sequence_" + stepInc + "_" + inc) == null ? "0" : getParameterIfExists(request, "action_sequence_" + stepInc + "_" + inc));
                 String action = getParameterIfExists(request, "action_action_" + stepInc + "_" + inc);
                 String object = getParameterIfExists(request, "action_object_" + stepInc + "_" + inc).replaceAll("\"", "\\\"");
                 String property = getParameterIfExists(request, "action_property_" + stepInc + "_" + inc);
                 String description = HtmlUtils.htmlEscape(getParameterIfExists(request, "action_description_" + stepInc + "_" + inc));
                 String screenshot = getParameterIfExists(request, "action_screenshot_" + stepInc + "_" + inc);
                 if (delete == null) {
-                    TestCaseStepAction tcsa = testCaseStepActionFactory.create(test, testCase, step, sequence, sort, action, object, property, description, screenshot);
+                    TestCaseStepAction tcsa = testCaseStepActionFactory.create(test, testCase, -1, sequence, sort, action, object, property, description, screenshot);
                     tcsa.setTestCaseStepActionControl(getTestCaseStepActionControlFromParameter(request, appContext, test, testCase, stepInc, inc));
                     testCaseStepAction.add(tcsa);
                     //System.out.print("FromPage"+tcsa.toString());
@@ -582,13 +648,10 @@ public class UpdateTestCaseWithDependencies extends HttpServlet {
         String[] stepActionControl_increment = getParameterValuesIfExists(request, "control_increment_" + stepInc + "_" + actionInc);
         IFactoryTestCaseStepActionControl testCaseStepActionControlFactory = appContext.getBean(IFactoryTestCaseStepActionControl.class);
         if (stepActionControl_increment != null) {
-            for (int i = 0; i < stepActionControl_increment.length; i++) {
-                String inc = stepActionControl_increment[i];
+            for (String inc : stepActionControl_increment) {
                 String delete = getParameterIfExists(request, "control_delete_" + stepInc + "_" + actionInc + "_" + inc);
-                int step = Integer.valueOf(getParameterIfExists(request, "control_step_" + stepInc + "_" + actionInc + "_" + inc) == null ? "0" : getParameterIfExists(request, "control_step_" + stepInc + "_" + actionInc + "_" + inc));
-                int sequence = Integer.valueOf(getParameterIfExists(request, "control_sequence_" + stepInc + "_" + actionInc + "_" + inc) == null ? "0" : getParameterIfExists(request, "control_sequence_" + stepInc + "_" + actionInc + "_" + inc));
-                int control = Integer.valueOf(getParameterIfExists(request, "control_control_" + stepInc + "_" + actionInc + "_" + inc) == null ? "0" : getParameterIfExists(request, "control_control_" + stepInc + "_" + actionInc + "_" + inc));
-                int sort = i + 1;
+                int control = Integer.valueOf(getParameterIfExists(request, "control_technical_control_" + stepInc + "_" + actionInc + "_" + inc) == null ? "0" : getParameterIfExists(request, "control_technical_control_" + stepInc + "_" + actionInc + "_" + inc));
+                int sort = Integer.valueOf(getParameterIfExists(request, "control_control_" + stepInc + "_" + actionInc + "_" + inc) == null ? "0" : getParameterIfExists(request, "control_control_" + stepInc + "_" + actionInc + "_" + inc));
                 String type = getParameterIfExists(request, "control_type_" + stepInc + "_" + actionInc + "_" + inc);
                 String controlValue = getParameterIfExists(request, "control_value_" + stepInc + "_" + actionInc + "_" + inc).replaceAll("\"", "\\\"");
                 String controlProperty = getParameterIfExists(request, "control_property_" + stepInc + "_" + actionInc + "_" + inc).replaceAll("\"", "\\\"");
@@ -596,7 +659,7 @@ public class UpdateTestCaseWithDependencies extends HttpServlet {
                 String description = HtmlUtils.htmlEscape(getParameterIfExists(request, "control_description_" + stepInc + "_" + actionInc + "_" + inc));
                 String screenshot = getParameterIfExists(request, "control_screenshot_" + stepInc + "_" + actionInc + "_" + inc);
                 if (delete == null) {
-                    testCaseStepActionControl.add(testCaseStepActionControlFactory.create(test, testCase, step, sequence, control, sort, type, controlValue, controlProperty, fatal, description, screenshot));
+                    testCaseStepActionControl.add(testCaseStepActionControlFactory.create(test, testCase, -1, -1, control, sort, type, controlValue, controlProperty, fatal, description, screenshot));
                 }
             }
         }
