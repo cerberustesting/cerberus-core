@@ -376,8 +376,6 @@ function getTestCaseCountry(countryList, countryToCheck, isDisabled, doForceAllC
                 } else if (!checked && index !== -1) {
                     countryToCheck.splice(index, 1);
                 }
-
-                console.log(countryToCheck);
             });
         }
 
@@ -450,7 +448,7 @@ function addStep(event) {
     $(".sub-item").click(function () {
         var stepInfo = $(this).data("stepInfo");
 
-        $("#importInfo").text("Imported from " + stepInfo.test + " - " + stepInfo.testCase + " - " + stepInfo.step + ")").data("stepInfo", stepInfo);
+        $("#importInfo").text("Imported from " + stepInfo.test + " - " + stepInfo.testCase + " - " + stepInfo.sort + ")").data("stepInfo", stepInfo);
         $("#addStepModal #description").val(stepInfo.description);
         $("#useStep").prop("checked", true);
 
@@ -490,6 +488,7 @@ function addStep(event) {
                 step.useStepTest = useStep.test;
                 step.useStepTestCase = useStep.testCase;
                 step.useStepStep = useStep.step;
+                step.useStepStepSort = useStep.sort;
             }
         }
         var stepObj = new Step(step, stepList);
@@ -921,6 +920,7 @@ function Step(json, stepList) {
     this.useStepTest = json.useStepTest;
     this.useStepTestCase = json.useStepTestCase;
     this.useStepStep = json.useStepStep;
+    this.useStepStepSort = json.useStepStepSort;
     this.inLibrary = json.inLibrary;
     this.actionList = [];
     this.setActionList(json.actionList);
@@ -984,7 +984,7 @@ Step.prototype.show = function () {
     }
 
     if (object.useStep === "Y") {
-        $("#libInfo").text("(Imported from " + object.useStepTest + " - " + object.useStepTestCase + " - " + object.useStepStep + " )");
+        $("#libInfo").text("(Imported from " + object.useStepTest + " - " + object.useStepTestCase + " - " + object.useStepStepSort + ")");
     } else {
         $("#libInfo").text("");
     }
