@@ -536,7 +536,7 @@ function dragAndDroploadTestCaseAndStepComponents(testCaseElement, testStepEleme
                 $(testStepElement).append($("<option></option>")
                         .attr('value', data.testCaseStepList[i].step)
                         .attr('style', 'width:400px;')
-                        .text(data.testCaseStepList[i].step + ':' + data.testCaseStepList[i].description));
+                        .text(data.testCaseStepList[i].sort + ':' + data.testCaseStepList[i].description));
             }
 
             $(testStepElement).find("option[value='" + testStepSelectedOption + "']").attr("selected", "selected");
@@ -1829,7 +1829,7 @@ function findStepBySystemTestTestCase(testElement, testCaseElement, system, test
             $(testStepElement).append($("<option></option>")
                     .attr('value', data.testCaseStepList[i].step)
                     .attr('style', 'width:400px;')
-                    .text(data.testCaseStepList[i].step + ':' + data.testCaseStepList[i].description));
+                    .text(data.testCaseStepList[i].sort + ':' + data.testCaseStepList[i].description));
         }
 
         $(testStepElement).find("option[value='" + testStepSelectedOption + "']").attr("selected", "selected");

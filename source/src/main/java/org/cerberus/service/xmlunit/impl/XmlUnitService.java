@@ -186,9 +186,9 @@ public class XmlUnitService implements IXmlUnitService {
 
         try {
             Document document = url == null ? XmlUtil.fromString(lastSOAPResponse) : XmlUtil.fromURL(new URL(url));
-            NodeList candidates = XmlUtil.evaluate(document, xpath);
+            String result = XmlUtil.evaluateString(document, xpath);
             // Not that in case of multiple values then send the first one
-            return candidates != null && candidates.getLength() > 0 ? XmlUtil.toString(candidates.item(0)) : DEFAULT_GET_FROM_XML_VALUE;
+            return result != null && result.length() > 0 ? result : DEFAULT_GET_FROM_XML_VALUE;
         } catch (XmlUtilException e) {
             LOG.warn("Unable to get from xml", e);
         } catch (MalformedURLException e) {

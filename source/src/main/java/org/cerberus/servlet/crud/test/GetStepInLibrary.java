@@ -20,7 +20,6 @@
 package org.cerberus.servlet.crud.test;
 
 import java.io.IOException;
-import java.io.PrintWriter;
 import java.util.List;
 import java.util.logging.Logger;
 import javax.servlet.ServletException;
@@ -29,11 +28,9 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import org.apache.log4j.Level;
-import org.cerberus.crud.entity.TCase;
 import org.cerberus.crud.entity.TestCaseStep;
 import org.cerberus.exception.CerberusException;
 import org.cerberus.log.MyLogger;
-import org.cerberus.crud.service.ITestCaseService;
 import org.cerberus.crud.service.ITestCaseStepService;
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -86,6 +83,7 @@ public class GetStepInLibrary extends HttpServlet {
                 tcs.put("test", list.getTest());
                 tcs.put("testCase", list.getTestCase());
                 tcs.put("step", list.getStep());
+                tcs.put("sort", list.getSort());
                 tcs.put("description", list.getDescription());
                 if (list.getTestCaseObj()!=null){
                 tcs.put("tcdesc", list.getTestCaseObj().getDescription());

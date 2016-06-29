@@ -404,7 +404,7 @@ public final class XmlUtil {
 		NodeList nodeList = null;
 		try {
 			XPathExpression expr = xpathObject.compile(xpath);
-			nodeList = (NodeList) expr.evaluate(document, XPathConstants.NODESET);
+                        nodeList = (NodeList) expr.evaluate(document, XPathConstants.NODESET);
 		} catch (XPathExpressionException xpee) {
 			throw new XmlUtilException(xpee);
 		}
@@ -414,6 +414,43 @@ public final class XmlUtil {
 		}
 
 		return nodeList;
+	}
+        
+        /**
+	 * Evaluates the given xpath against the given document and produces 
+         * string which satisfy the xpath expression.
+	 * 
+	 * @param document
+	 *            the document to search against the given xpath
+	 * @param xpath
+	 *            the xpath expression
+	 * @return a string which satisfy the
+	 *         xpath expression against the given document.
+	 * @throws XmlUtilException
+	 *             if an error occurred
+	 */
+        public static String evaluateString(Document document, String xpath) throws XmlUtilException {
+		if (document == null || xpath == null) {
+			throw new XmlUtilException("Unable to evaluate null document or xpath");
+		}
+
+		XPathFactory xpathFactory = XPathFactory.newInstance();
+		XPath xpathObject = xpathFactory.newXPath();
+		xpathObject.setNamespaceContext(new UniversalNamespaceCache(document));
+
+		String result = null;
+		try {
+			XPathExpression expr = xpathObject.compile(xpath);
+                        result = (String) expr.evaluate(document, XPathConstants.STRING);
+		} catch (XPathExpressionException xpee) {
+			throw new XmlUtilException(xpee);
+		}
+
+		if (result == null) {
+			throw new XmlUtilException("Evaluation caused a null result");
+		}
+
+		return result;
 	}
 
 	/**

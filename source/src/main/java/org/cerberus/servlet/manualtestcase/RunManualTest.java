@@ -109,7 +109,7 @@ public class RunManualTest extends HttpServlet {
                          * Database
                          */
                         List tcae = new ArrayList();
-                        for (TestCaseStepActionExecution tcsae : getTestCaseStepActionExecution(req, appContext, test, testCase, executionId, tcse.getStep())) {
+                        for (TestCaseStepActionExecution tcsae : getTestCaseStepActionExecution(req, appContext, test, testCase, executionId, tcse.getSort())) {
                             testCaseStepActionExecutionService.insertTestCaseStepActionExecution(tcsae);
                             status.add(tcsae.getReturnCode());
 
@@ -117,7 +117,7 @@ public class RunManualTest extends HttpServlet {
                              * Get Step Action Control Execution and insert them
                              * into Database
                              */
-                            for (TestCaseStepActionControlExecution tcsace : getTestCaseStepActionControlExecution(req, appContext, test, testCase, executionId, tcse.getStep(), tcsae.getSequence())) {
+                            for (TestCaseStepActionControlExecution tcsace : getTestCaseStepActionControlExecution(req, appContext, test, testCase, executionId, tcse.getSort(), tcsae.getSort())) {
                                 testCaseStepActionControlExecutionService.insertTestCaseStepActionControlExecution(tcsace);
                                 status.add(tcsace.getReturnCode());
                             }
@@ -226,43 +226,44 @@ public class RunManualTest extends HttpServlet {
 
         String[] testcase_step_increment = getParameterValuesIfExists(request, "step_increment");
         if (testcase_step_increment != null) {
-            for (int i = 0; i < testcase_step_increment.length; i++) {
-                String inc = testcase_step_increment[i];
-                int step = Integer.valueOf(getParameterIfExists(request, "step_number_" + inc) == null ? "0" : getParameterIfExists(request, "step_number_" + inc));
+            for (String inc : testcase_step_increment) {
+                int step = Integer.valueOf(getParameterIfExists(request, "step_technical_number_" + inc) == null ? "0" : getParameterIfExists(request, "step_technical_number_" + inc));
+                int sort = Integer.valueOf(getParameterIfExists(request, "step_number_" + inc) == null ? "0" : getParameterIfExists(request, "step_number_" + inc));
                 String stepResultMessage = getParameterIfExists(request, "stepResultMessage_" + inc);
                 String stepReturnCode = getParameterIfExists(request, "stepStatus_" + inc);
 
-                result.add(testCaseStepExecutionFactory.create(executionId, test, testCase, step, i + 1, null, now, now, now, now,
+                result.add(testCaseStepExecutionFactory.create(executionId, test, testCase, step, sort, null, now, now, now, now,
                         new BigDecimal("0"), stepReturnCode, stepResultMessage, ""));
             }
         }
         return result;
     }
 
-    private List<TestCaseStepActionExecution> getTestCaseStepActionExecution(HttpServletRequest request, ApplicationContext appContext, String test, String testCase, long executionId, int stepId) {
+    private List<TestCaseStepActionExecution> getTestCaseStepActionExecution(HttpServletRequest request, ApplicationContext appContext, String test, String testCase, long executionId, int stepSort) {
         List<TestCaseStepActionExecution> result = new ArrayList();
         long now = new Date().getTime();
         IFactoryTestCaseStepActionExecution testCaseStepActionExecutionFactory = appContext.getBean(IFactoryTestCaseStepActionExecution.class);
         //IRecorderService recorderService = appContext.getBean(IRecorderService.class);
 
-        String[] stepAction_increment = getParameterValuesIfExists(request, "action_increment_" + stepId);
+        String[] stepAction_increment = getParameterValuesIfExists(request, "action_increment_" + stepSort);
         if (stepAction_increment != null) {
-            for (int i = 0; i < stepAction_increment.length; i++) {
-                String inc = stepAction_increment[i];
-                int step = Integer.valueOf(getParameterIfExists(request, "action_step_" + stepId + "_" + inc) == null
-                        ? "0" : getParameterIfExists(request, "action_step_" + stepId + "_" + inc));
-                int sequence = Integer.valueOf(getParameterIfExists(request, "action_sequence_" + stepId + "_" + inc) == null
-                        ? "0" : getParameterIfExists(request, "action_sequence_" + stepId + "_" + inc));
-                String actionReturnCode = getParameterIfExists(request, "actionStatus_" + stepId + "_" + inc);
-                String actionReturnMessage = getParameterIfExists(request, "actionResultMessage_" + stepId + "_" + inc);
-                String takeScreenshot = getParameterIfExists(request, "takeScreenshot_" + stepId + "_" + inc);
+            for (String inc : stepAction_increment) {
+                int step = Integer.valueOf(getParameterIfExists(request, "action_technical_step_" + stepSort + "_" + inc) == null
+                        ? "0" : getParameterIfExists(request, "action_technical_step_" + stepSort + "_" + inc));
+                int sequence = Integer.valueOf(getParameterIfExists(request, "action_technical_sequence_" + stepSort + "_" + inc) == null
+                        ? "0" : getParameterIfExists(request, "action_technical_sequence_" + stepSort + "_" + inc));
+                int sort = Integer.valueOf(getParameterIfExists(request, "action_sequence_" + stepSort + "_" + inc) == null
+                        ? "0" : getParameterIfExists(request, "action_sequence_" + stepSort + "_" + inc));
+                String actionReturnCode = getParameterIfExists(request, "actionStatus_" + stepSort + "_" + inc);
+                String actionReturnMessage = getParameterIfExists(request, "actionResultMessage_" + stepSort + "_" + inc);
+                String takeScreenshot = getParameterIfExists(request, "takeScreenshot_" + stepSort + "_" + inc);
                 String actionScreenshotFileName = null;
                 if (takeScreenshot.equals("Y")) {
-                    actionScreenshotFileName = FileUtil.generateScreenshotFilename(test, testCase, String.valueOf(stepId), inc, null, null, "jpg"); //TODO:FN should we enforce the extension? 
+                    actionScreenshotFileName = FileUtil.generateScreenshotFilename(test, testCase, String.valueOf(stepSort), inc, null, null, "jpg"); //TODO:FN should we enforce the extension? 
                     actionScreenshotFileName = executionId + File.separator + actionScreenshotFileName;
                 }
 
-                result.add(testCaseStepActionExecutionFactory.create(executionId, test, testCase, step, sequence, i + 1, actionReturnCode,
+                result.add(testCaseStepActionExecutionFactory.create(executionId, test, testCase, step, sequence, sort, actionReturnCode,
                         actionReturnMessage, "Manual Action", null, null, "", now, now, now, now,
                         actionScreenshotFileName, null, null, "", null, null));
             }
@@ -270,32 +271,33 @@ public class RunManualTest extends HttpServlet {
         return result;
     }
 
-    private List<TestCaseStepActionControlExecution> getTestCaseStepActionControlExecution(HttpServletRequest request, ApplicationContext appContext, String test, String testCase, long executionId, int stepId, int sequenceId) {
+    private List<TestCaseStepActionControlExecution> getTestCaseStepActionControlExecution(HttpServletRequest request, ApplicationContext appContext, String test, String testCase, long executionId, int stepSort, int actionSort) {
         List<TestCaseStepActionControlExecution> result = new ArrayList();
         long now = new Date().getTime();
         IFactoryTestCaseStepActionControlExecution testCaseStepActionExecutionFactory = appContext.getBean(IFactoryTestCaseStepActionControlExecution.class);
         //IRecorderService recorderService = appContext.getBean(IRecorderService.class);
 
-        String[] stepActionControl_increment = getParameterValuesIfExists(request, "control_increment_" + stepId + "_" + sequenceId);
+        String[] stepActionControl_increment = getParameterValuesIfExists(request, "control_increment_" + stepSort + "_" + actionSort);
         if (stepActionControl_increment != null) {
-            for (int i = 0; i < stepActionControl_increment.length; i++) {
-                String inc = stepActionControl_increment[i];
-                int step = Integer.valueOf(getParameterIfExists(request, "control_step_" + stepId + "_" + sequenceId + "_" + inc) == null
-                        ? "0" : getParameterIfExists(request, "control_step_" + stepId + "_" + sequenceId + "_" + inc));
-                int sequence = Integer.valueOf(getParameterIfExists(request, "control_sequence_" + stepId + "_" + sequenceId + "_" + inc) == null
-                        ? "0" : getParameterIfExists(request, "control_sequence_" + stepId + "_" + sequenceId + "_" + inc));
-                int control = Integer.valueOf(getParameterIfExists(request, "control_control_" + stepId + "_" + sequenceId + "_" + inc) == null
-                        ? "0" : getParameterIfExists(request, "control_control_" + stepId + "_" + sequenceId + "_" + inc));
-                String controlReturnCode = getParameterIfExists(request, "controlStatus_" + stepId + "_" + sequenceId + "_" + inc);
-                String controlReturnMessage = getParameterIfExists(request, "controlResultMessage_" + stepId + "_" + sequenceId + "_" + inc);
+            for (String inc : stepActionControl_increment) {
+                int step = Integer.valueOf(getParameterIfExists(request, "control_technical_step_" + stepSort + "_" + actionSort + "_" + inc) == null
+                        ? "0" : getParameterIfExists(request, "control_technical_step_" + stepSort + "_" + actionSort + "_" + inc));
+                int sequence = Integer.valueOf(getParameterIfExists(request, "control_technical_sequence_" + stepSort + "_" + actionSort + "_" + inc) == null
+                        ? "0" : getParameterIfExists(request, "control_technical_sequence_" + stepSort + "_" + actionSort + "_" + inc));
+                int control = Integer.valueOf(getParameterIfExists(request, "control_technical_control_" + stepSort + "_" + actionSort + "_" + inc) == null
+                        ? "0" : getParameterIfExists(request, "control_technical_control_" + stepSort + "_" + actionSort + "_" + inc));
+                int sort = Integer.valueOf(getParameterIfExists(request, "control_control_" + stepSort + "_" + actionSort + "_" + inc) == null
+                        ? "0" : getParameterIfExists(request, "control_control_" + stepSort + "_" + actionSort + "_" + inc));
+                String controlReturnCode = getParameterIfExists(request, "controlStatus_" + stepSort + "_" + actionSort + "_" + inc);
+                String controlReturnMessage = getParameterIfExists(request, "controlResultMessage_" + stepSort + "_" + actionSort + "_" + inc);
                 String controlScreenshot = null;
-                String takeScreenshot = getParameterIfExists(request, "takeScreenshot_" + stepId + "_" + sequenceId + "_" + inc);
+                String takeScreenshot = getParameterIfExists(request, "takeScreenshot_" + stepSort + "_" + actionSort + "_" + inc);
                 if (takeScreenshot.equals("Y")) {
-                    controlScreenshot = FileUtil.generateScreenshotFilename(test, testCase, String.valueOf(stepId), String.valueOf(sequenceId), inc, null, "jpg");
+                    controlScreenshot = FileUtil.generateScreenshotFilename(test, testCase, String.valueOf(stepSort), String.valueOf(actionSort), inc, null, "jpg");
                     controlScreenshot = executionId + File.separator + controlScreenshot;
                 }
 
-                result.add(testCaseStepActionExecutionFactory.create(executionId, test, testCase, step, sequence, control, i + 1,
+                result.add(testCaseStepActionExecutionFactory.create(executionId, test, testCase, step, sequence, control, sort,
                         controlReturnCode, controlReturnMessage, "Manual Control", null, null, null, now, now,
                         now, now, controlScreenshot, null,"", null, null));
             }

@@ -141,7 +141,7 @@ public final class StringUtil {
         }
 
         if (replacement != null) {
-            return str.replaceAll(formula, replacement);
+            return str.replaceAll(formula, Matcher.quoteReplacement(replacement));
         }
         return str;
     }

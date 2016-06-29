@@ -21,6 +21,7 @@ package org.cerberus.servlet.crud.test;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -162,24 +163,48 @@ public class UpdateTestCaseWithDependencies1 extends HttpServlet {
                     List<TestCaseCountryProperties> tccpFromPage = getTestCaseCountryPropertiesFromParameter(request, appContext, test, testCase);
                     tccpService.compareListAndUpdateInsertDeleteElements(initialTest, initialTestCase, tccpFromPage);
                     
+                    /*
+                    * Get steps, actions and controls from page by:
+                    * - generating a new step, action or control number,
+                    * - setting the correct related step and action for action or control
+                    */
+                   List<TestCaseStep> tcsFromPage = getTestCaseStepFromParameter(request, appContext, test, testCase, duplicate);
+                   List<TestCaseStepAction> tcsaFromPage = new ArrayList();
+                   List<TestCaseStepActionControl> tcsacFromPage = new ArrayList();
 
-                    /**
-                     * For the list of testcasestep verify it exists. If it does
-                     * not exists > create it If it exist, verify if it's the
-                     */
-                    List<TestCaseStep> tcsFromPage = getTestCaseStepFromParameter(request, appContext, test, testCase, duplicate);
-                    List<TestCaseStepAction> tcsaFromPage = new ArrayList();
-                    List<TestCaseStepActionControl> tcsacFromPage = new ArrayList();
+                   int nextStepNumber = getMaxStepNumber(tcsFromPage);
+                   for (TestCaseStep tcs : tcsFromPage) {
+                       if (tcs.getStep() == -1) {
+                           tcs.setStep(++nextStepNumber);
+                       }
 
-                    for (TestCaseStep tcsL : tcsFromPage) {
-                        if (tcsL.getTestCaseStepAction() != null) {
-                            tcsaFromPage.addAll(tcsL.getTestCaseStepAction());
-                            for (TestCaseStepAction tcsaL : tcsL.getTestCaseStepAction()) {
-                                tcsacFromPage.addAll(tcsaL.getTestCaseStepActionControl());
-                            }
-                        }
-                    }
-                    
+                       if (tcs.getTestCaseStepAction() != null) {
+                           int nextSequenceNumber = getMaxSequenceNumber(tcs.getTestCaseStepAction());
+                           for (TestCaseStepAction tcsa : tcs.getTestCaseStepAction()) {
+                               if (tcsa.getSequence() == -1) {
+                                   tcsa.setSequence(++nextSequenceNumber);
+                               }
+                               tcsa.setStep(tcs.getStep());
+
+                               if (tcsa.getTestCaseStepActionControl() != null) {
+                                       int nextControlNumber = getMaxControlNumber(tcsa.getTestCaseStepActionControl());
+                                   for (TestCaseStepActionControl tscac : tcsa.getTestCaseStepActionControl()) {
+                                       if (tscac.getControl() == -1) {
+                                           tscac.setControl(++nextControlNumber);
+                                       }
+                                       tscac.setStep(tcs.getStep());
+                                       tscac.setSequence(tcsa.getSequence());
+                                   }
+                                   tcsacFromPage.addAll(tcsa.getTestCaseStepActionControl());
+                               }
+                           }
+                           tcsaFromPage.addAll(tcs.getTestCaseStepAction());
+                       }
+                   }
+
+                   /*
+                    * Create, update or delete step, action and control according to the needs
+                    */
                     List<TestCaseStep> tcsFromDtb = new ArrayList(tcsService.getListOfSteps(initialTest, initialTestCase));
                     tcsService.compareListAndUpdateInsertDeleteElements(tcsFromPage, tcsFromDtb, duplicate);
 
@@ -213,6 +238,60 @@ public class UpdateTestCaseWithDependencies1 extends HttpServlet {
         response.getWriter().print(jsonResponse);
         response.getWriter().flush();
 
+    }
+    
+    /**
+     * Get the highest step number from the given steps
+     * 
+     * @param steps a collection of steps from which get the highest step number
+     * @return the highest step number from the given steps
+     */
+    private int getMaxStepNumber(Collection<TestCaseStep> steps) {
+        int nextStepNumber = 0;
+        if (steps != null) {
+            for (TestCaseStep step : steps) {
+                if (nextStepNumber < step.getStep()) {
+                    nextStepNumber = step.getStep();
+                }
+            }
+        }
+        return nextStepNumber;
+    }
+    
+    /**
+     * Get the highest action sequence from the given actions
+     * 
+     * @param steps a collection of actions from which get the highest action sequence
+     * @return the highest action sequence from the given actions
+     */
+    private int getMaxSequenceNumber(Collection<TestCaseStepAction> actions) {
+        int nextSequenceNumber = 0;
+        if (actions != null) {
+            for (TestCaseStepAction action : actions) {
+                if (nextSequenceNumber < action.getSequence()) {
+                    nextSequenceNumber = action.getSequence();
+                }
+            }
+        }
+        return nextSequenceNumber;
+    }
+    
+    /**
+     * Get the highest control number from the given controls
+     * 
+     * @param controls a collection of controls from which get the highest control number
+     * @return the highest control number from the given controls
+     */
+    private int getMaxControlNumber(Collection<TestCaseStepActionControl> controls) {
+        int nextControlNumber = 0;
+        if (controls != null) {
+            for (TestCaseStepActionControl control : controls) {
+                if (nextControlNumber < control.getControl()) {
+                    nextControlNumber = control.getControl();
+                }
+            }
+        }
+        return nextControlNumber;
     }
 
     /**
