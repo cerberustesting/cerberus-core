@@ -35,6 +35,7 @@
             <span id="crb-TheseusVersion">41473.4102923727</span>
             <span id="crb-elaspedTime">328</span>
             <span id="crb-env">PRODUCTION</span>
+            <span id="crb-dollar">$ 210</span>
             <span id="crb-env-hidden" hidden>PRODUCTION</span>
             <input name="crb-name" type="hidden" value="CERBERUS"/>
             <span id="crb-empty"></span>

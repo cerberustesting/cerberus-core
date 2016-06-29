@@ -213,7 +213,7 @@ public class PropertyService implements IPropertyService {
 
         } else {
             res = new MessageEvent(MessageEventEnum.PROPERTY_FAILED_UNKNOWNPROPERTY);
-            res.setDescription(res.getDescription().replaceAll("%PROPERTY%", testCaseCountryProperty.getType()));
+            res.setDescription(res.getDescription().replace("%PROPERTY%", testCaseCountryProperty.getType()));
             testCaseExecutionData.setPropertyResultMessage(res);
         }
 
@@ -282,8 +282,8 @@ public class PropertyService implements IPropertyService {
                     || tecdAuxiliary.getPropertyResultMessage().getCode() == MessageEventEnum.ACTION_FAILED_CALLSOAP.getCode()) { //error related with the soap call 
                 //redefinition of the error message
                 res = new MessageEvent(MessageEventEnum.PROPERTY_FAILED_SUBDATAACCESS);
-                res.setDescription(res.getDescription().replaceAll("%SUBDATAACCCESS%", testCaseCountryProperty.getProperty()));
-                res.setDescription(res.getDescription().replaceAll("%PROPERTY%", inner.getProperty()));
+                res.setDescription(res.getDescription().replace("%SUBDATAACCCESS%", testCaseCountryProperty.getProperty()));
+                res.setDescription(res.getDescription().replace("%PROPERTY%", inner.getProperty()));
                 testCaseExecutionData.setPropertyResultMessage(res);
             } else {
                 //the result message is the same returned by the getFromDataLib operation
@@ -776,8 +776,8 @@ public class PropertyService implements IPropertyService {
             if (valueFromHTML != null) {
                 testCaseExecutionData.setValue(valueFromHTML);
                 MessageEvent res = new MessageEvent(MessageEventEnum.PROPERTY_SUCCESS_HTMLVISIBLE);
-                res.setDescription(res.getDescription().replaceAll("%ELEMENT%", testCaseExecutionData.getValue1()));
-                res.setDescription(res.getDescription().replaceAll("%VALUE%", valueFromHTML));
+                res.setDescription(res.getDescription().replace("%ELEMENT%", testCaseExecutionData.getValue1()));
+                res.setDescription(res.getDescription().replace("%VALUE%", valueFromHTML));
                 testCaseExecutionData.setPropertyResultMessage(res);
 
             }
@@ -786,7 +786,7 @@ public class PropertyService implements IPropertyService {
                     .getName(), Level.DEBUG, exception.toString());
             MessageEvent res = new MessageEvent(MessageEventEnum.PROPERTY_FAILED_HTMLVISIBLE_ELEMENTDONOTEXIST);
 
-            res.setDescription(res.getDescription().replaceAll("%ELEMENT%", testCaseExecutionData.getValue1()));
+            res.setDescription(res.getDescription().replace("%ELEMENT%", testCaseExecutionData.getValue1()));
             testCaseExecutionData.setPropertyResultMessage(res);
         }
         return testCaseExecutionData;
@@ -799,8 +799,8 @@ public class PropertyService implements IPropertyService {
             if (valueFromHTML != null) {
                 testCaseExecutionData.setValue(valueFromHTML);
                 MessageEvent res = new MessageEvent(MessageEventEnum.PROPERTY_SUCCESS_HTML);
-                res.setDescription(res.getDescription().replaceAll("%ELEMENT%", testCaseExecutionData.getValue1()));
-                res.setDescription(res.getDescription().replaceAll("%VALUE%", valueFromHTML));
+                res.setDescription(res.getDescription().replace("%ELEMENT%", testCaseExecutionData.getValue1()));
+                res.setDescription(res.getDescription().replace("%VALUE%", valueFromHTML));
                 testCaseExecutionData.setPropertyResultMessage(res);
 
             }
@@ -809,7 +809,7 @@ public class PropertyService implements IPropertyService {
                     .getName(), Level.DEBUG, exception.toString());
             MessageEvent res = new MessageEvent(MessageEventEnum.PROPERTY_FAILED_HTML_ELEMENTDONOTEXIST);
 
-            res.setDescription(res.getDescription().replaceAll("%ELEMENT%", testCaseExecutionData.getValue1()));
+            res.setDescription(res.getDescription().replace("%ELEMENT%", testCaseExecutionData.getValue1()));
             testCaseExecutionData.setPropertyResultMessage(res);
         }
         return testCaseExecutionData;
@@ -830,12 +830,12 @@ public class PropertyService implements IPropertyService {
         if (valueFromJS != null) {
             testCaseExecutionData.setValue(valueFromJS);
             MessageEvent res = new MessageEvent(MessageEventEnum.PROPERTY_SUCCESS_HTML);
-            res.setDescription(res.getDescription().replaceAll("%ELEMENT%", testCaseExecutionData.getValue1()));
-            res.setDescription(res.getDescription().replaceAll("%VALUE%", script));
+            res.setDescription(res.getDescription().replace("%ELEMENT%", testCaseExecutionData.getValue1()));
+            res.setDescription(res.getDescription().replace("%VALUE%", script));
             testCaseExecutionData.setPropertyResultMessage(res);
         } else {
             MessageEvent res = new MessageEvent(MessageEventEnum.PROPERTY_FAILED_JS_EXCEPTION);
-            res.setDescription(res.getDescription().replaceAll("%EXCEPTION%", message));
+            res.setDescription(res.getDescription().replace("%EXCEPTION%", message));
             testCaseExecutionData.setPropertyResultMessage(res);
         }
 
@@ -852,8 +852,8 @@ public class PropertyService implements IPropertyService {
             if (valueFromTestData != null) {
                 testCaseExecutionData.setValue(valueFromTestData);
                 MessageEvent res = new MessageEvent(MessageEventEnum.PROPERTY_SUCCESS_TESTDATA);
-                res.setDescription(res.getDescription().replaceAll("%PROPERTY%", propertyValue));
-                res.setDescription(res.getDescription().replaceAll("%VALUE%", valueFromTestData));
+                res.setDescription(res.getDescription().replace("%PROPERTY%", propertyValue));
+                res.setDescription(res.getDescription().replace("%VALUE%", valueFromTestData));
                 testCaseExecutionData.setPropertyResultMessage(res);
             }
         } catch (CerberusException exception) {
@@ -861,7 +861,7 @@ public class PropertyService implements IPropertyService {
                     .getName(), Level.DEBUG, "Exception Getting value from TestData for data :'" + propertyValue + "'\n" + exception.getMessageError().getDescription());
             MessageEvent res = new MessageEvent(MessageEventEnum.PROPERTY_FAILED_TESTDATA_PROPERTYDONOTEXIST);
 
-            res.setDescription(res.getDescription().replaceAll("%PROPERTY%", testCaseExecutionData.getValue1()));
+            res.setDescription(res.getDescription().replace("%PROPERTY%", testCaseExecutionData.getValue1()));
             testCaseExecutionData.setPropertyResultMessage(res);
         }
         return testCaseExecutionData;
@@ -875,19 +875,19 @@ public class PropertyService implements IPropertyService {
             if (valueFromHTML != null) {
                 testCaseExecutionData.setValue(valueFromHTML);
                 res = new MessageEvent(MessageEventEnum.PROPERTY_SUCCESS_GETATTRIBUTEFROMHTML);
-                res.setDescription(res.getDescription().replaceAll("%VALUE%", valueFromHTML));
+                res.setDescription(res.getDescription().replace("%VALUE%", valueFromHTML));
             } else {
                 res = new MessageEvent(MessageEventEnum.PROPERTY_FAILED_HTML_ATTRIBUTEDONOTEXIST);
             }
-            res.setDescription(res.getDescription().replaceAll("%ELEMENT%", testCaseExecutionData.getValue1()));
-            res.setDescription(res.getDescription().replaceAll("%ATTRIBUTE%", testCaseExecutionData.getValue2()));
+            res.setDescription(res.getDescription().replace("%ELEMENT%", testCaseExecutionData.getValue1()));
+            res.setDescription(res.getDescription().replace("%ATTRIBUTE%", testCaseExecutionData.getValue2()));
 
         } catch (NoSuchElementException exception) {
             MyLogger.log(PropertyService.class
                     .getName(), Level.DEBUG, exception.toString());
             res = new MessageEvent(MessageEventEnum.PROPERTY_FAILED_HTMLVISIBLE_ELEMENTDONOTEXIST);
 
-            res.setDescription(res.getDescription().replaceAll("%ELEMENT%", testCaseExecutionData.getValue1()));
+            res.setDescription(res.getDescription().replace("%ELEMENT%", testCaseExecutionData.getValue1()));
         }
         testCaseExecutionData.setPropertyResultMessage(res);
         return testCaseExecutionData;
@@ -926,13 +926,13 @@ public class PropertyService implements IPropertyService {
                 if (result != null) {
                     testCaseExecutionData.setValue(result);
                     MessageEvent res = new MessageEvent(MessageEventEnum.PROPERTY_SUCCESS_SOAP);
-                    res.setDescription(res.getDescription().replaceAll("%REQUEST_PATH%", requestFilePath));
-                    res.setDescription(res.getDescription().replaceAll("%REQUEST_PATH%", responseFilePath));
+                    res.setDescription(res.getDescription().replace("%REQUEST_PATH%", requestFilePath));
+                    res.setDescription(res.getDescription().replace("%REQUEST_PATH%", responseFilePath));
                     testCaseExecutionData.setPropertyResultMessage(res);
                 } else {
                     MessageEvent res = new MessageEvent(MessageEventEnum.PROPERTY_FAILED_SOAPFROMLIB_NODATA);
-                    res.setDescription(res.getDescription().replaceAll("%REQUEST_PATH%", requestFilePath));
-                    res.setDescription(res.getDescription().replaceAll("%REQUEST_PATH%", responseFilePath));
+                    res.setDescription(res.getDescription().replace("%REQUEST_PATH%", requestFilePath));
+                    res.setDescription(res.getDescription().replace("%REQUEST_PATH%", responseFilePath));
                     testCaseExecutionData.setPropertyResultMessage(res);
                 }
             }
@@ -941,7 +941,7 @@ public class PropertyService implements IPropertyService {
                     .getName(), Level.ERROR, exception.toString());
             MessageEvent res = new MessageEvent(MessageEventEnum.PROPERTY_FAILED_TESTDATA_PROPERTYDONOTEXIST);
 
-            res.setDescription(res.getDescription().replaceAll("%PROPERTY%", testCaseExecutionData.getValue1()));
+            res.setDescription(res.getDescription().replace("%PROPERTY%", testCaseExecutionData.getValue1()));
             testCaseExecutionData.setPropertyResultMessage(res);
         }
         return testCaseExecutionData;
@@ -961,8 +961,8 @@ public class PropertyService implements IPropertyService {
             if (valueFromXml != null) {
                 testCaseExecutionData.setValue(valueFromXml);
                 MessageEvent res = new MessageEvent(MessageEventEnum.PROPERTY_SUCCESS_GETFROMXML);
-                res.setDescription(res.getDescription().replaceAll("%VALUE1%", testCaseExecutionData.getValue1()));
-                res.setDescription(res.getDescription().replaceAll("%VALUE2%", testCaseExecutionData.getValue2()));
+                res.setDescription(res.getDescription().replace("%VALUE1%", testCaseExecutionData.getValue1()));
+                res.setDescription(res.getDescription().replace("%VALUE2%", testCaseExecutionData.getValue2()));
                 testCaseExecutionData.setPropertyResultMessage(res);
             }
         } catch (Exception ex) {
@@ -970,8 +970,8 @@ public class PropertyService implements IPropertyService {
                     .getName(), Level.DEBUG, ex.toString());
             MessageEvent res = new MessageEvent(MessageEventEnum.PROPERTY_FAILED_GETFROMXML);
 
-            res.setDescription(res.getDescription().replaceAll("%VALUE1%", testCaseExecutionData.getValue1()));
-            res.setDescription(res.getDescription().replaceAll("%VALUE2%", testCaseExecutionData.getValue2()));
+            res.setDescription(res.getDescription().replace("%VALUE1%", testCaseExecutionData.getValue1()));
+            res.setDescription(res.getDescription().replace("%VALUE2%", testCaseExecutionData.getValue2()));
             testCaseExecutionData.setPropertyResultMessage(res);
         }
         return testCaseExecutionData;
@@ -984,20 +984,20 @@ public class PropertyService implements IPropertyService {
                 if (!valueFromCookie.equals("cookieNotFound")) {
                     testCaseExecutionData.setValue(valueFromCookie);
                     MessageEvent res = new MessageEvent(MessageEventEnum.PROPERTY_SUCCESS_GETFROMCOOKIE);
-                    res.setDescription(res.getDescription().replaceAll("%COOKIE%", testCaseExecutionData.getValue1()));
-                    res.setDescription(res.getDescription().replaceAll("%PARAM%", testCaseExecutionData.getValue2()));
-                    res.setDescription(res.getDescription().replaceAll("%VALUE%", valueFromCookie));
+                    res.setDescription(res.getDescription().replace("%COOKIE%", testCaseExecutionData.getValue1()));
+                    res.setDescription(res.getDescription().replace("%PARAM%", testCaseExecutionData.getValue2()));
+                    res.setDescription(res.getDescription().replace("%VALUE%", valueFromCookie));
                     testCaseExecutionData.setPropertyResultMessage(res);
                 } else {
                     MessageEvent res = new MessageEvent(MessageEventEnum.PROPERTY_FAILED_GETFROMCOOKIE_COOKIENOTFOUND);
-                    res.setDescription(res.getDescription().replaceAll("%COOKIE%", testCaseExecutionData.getValue1()));
-                    res.setDescription(res.getDescription().replaceAll("%PARAM%", testCaseExecutionData.getValue2()));
+                    res.setDescription(res.getDescription().replace("%COOKIE%", testCaseExecutionData.getValue1()));
+                    res.setDescription(res.getDescription().replace("%PARAM%", testCaseExecutionData.getValue2()));
                     testCaseExecutionData.setPropertyResultMessage(res);
                 }
             } else {
                 MessageEvent res = new MessageEvent(MessageEventEnum.PROPERTY_FAILED_GETFROMCOOKIE_PARAMETERNOTFOUND);
-                res.setDescription(res.getDescription().replaceAll("%COOKIE%", testCaseExecutionData.getValue1()));
-                res.setDescription(res.getDescription().replaceAll("%PARAM%", testCaseExecutionData.getValue2()));
+                res.setDescription(res.getDescription().replace("%COOKIE%", testCaseExecutionData.getValue1()));
+                res.setDescription(res.getDescription().replace("%PARAM%", testCaseExecutionData.getValue2()));
                 testCaseExecutionData.setPropertyResultMessage(res);
 
             }
@@ -1006,8 +1006,8 @@ public class PropertyService implements IPropertyService {
                     .getName(), Level.DEBUG, exception.toString());
             MessageEvent res = new MessageEvent(MessageEventEnum.PROPERTY_FAILED_GETFROMCOOKIE_COOKIENOTFOUND);
 
-            res.setDescription(res.getDescription().replaceAll("%COOKIE%", testCaseExecutionData.getValue1()));
-            res.setDescription(res.getDescription().replaceAll("%PARAM%", testCaseExecutionData.getValue2()));
+            res.setDescription(res.getDescription().replace("%COOKIE%", testCaseExecutionData.getValue1()));
+            res.setDescription(res.getDescription().replace("%PARAM%", testCaseExecutionData.getValue2()));
             testCaseExecutionData.setPropertyResultMessage(res);
         }
         return testCaseExecutionData;
@@ -1024,14 +1024,14 @@ public class PropertyService implements IPropertyService {
                 MyLogger.log(PropertyService.class.getName(), Level.INFO, "Computing done.");
                 testCaseExecutionData.setValue(differences);
                 MessageEvent res = new MessageEvent(MessageEventEnum.PROPERTY_SUCCESS_GETDIFFERENCESFROMXML);
-                res.setDescription(res.getDescription().replaceAll("%VALUE1%", testCaseExecutionData.getValue1()));
-                res.setDescription(res.getDescription().replaceAll("%VALUE2%", testCaseExecutionData.getValue2()));
+                res.setDescription(res.getDescription().replace("%VALUE1%", testCaseExecutionData.getValue1()));
+                res.setDescription(res.getDescription().replace("%VALUE2%", testCaseExecutionData.getValue2()));
                 testCaseExecutionData.setPropertyResultMessage(res);
             } else {
                 MyLogger.log(PropertyService.class.getName(), Level.INFO, "Computing failed.");
                 MessageEvent res = new MessageEvent(MessageEventEnum.PROPERTY_FAILED_GETDIFFERENCESFROMXML);
-                res.setDescription(res.getDescription().replaceAll("%VALUE1%", testCaseExecutionData.getValue1()));
-                res.setDescription(res.getDescription().replaceAll("%VALUE2%", testCaseExecutionData.getValue2()));
+                res.setDescription(res.getDescription().replace("%VALUE1%", testCaseExecutionData.getValue1()));
+                res.setDescription(res.getDescription().replace("%VALUE2%", testCaseExecutionData.getValue2()));
                 testCaseExecutionData.setPropertyResultMessage(res);
             }
         } catch (Exception ex) {
@@ -1039,8 +1039,8 @@ public class PropertyService implements IPropertyService {
                     .getName(), Level.INFO, ex.toString());
             MessageEvent res = new MessageEvent(MessageEventEnum.PROPERTY_FAILED_GETDIFFERENCESFROMXML);
 
-            res.setDescription(res.getDescription().replaceAll("%VALUE1%", testCaseExecutionData.getValue1()));
-            res.setDescription(res.getDescription().replaceAll("%VALUE2%", testCaseExecutionData.getValue2()));
+            res.setDescription(res.getDescription().replace("%VALUE1%", testCaseExecutionData.getValue1()));
+            res.setDescription(res.getDescription().replace("%VALUE2%", testCaseExecutionData.getValue2()));
             testCaseExecutionData.setPropertyResultMessage(res);
         }
         return testCaseExecutionData;
@@ -1053,20 +1053,20 @@ public class PropertyService implements IPropertyService {
                 if (!"".equals(valueFromJson)) {
                     testCaseExecutionData.setValue(valueFromJson);
                     MessageEvent res = new MessageEvent(MessageEventEnum.PROPERTY_SUCCESS_GETFROMJSON);
-                    res.setDescription(res.getDescription().replaceAll("%URL%", testCaseExecutionData.getValue1()));
-                    res.setDescription(res.getDescription().replaceAll("%PARAM%", testCaseExecutionData.getValue2()));
-                    res.setDescription(res.getDescription().replaceAll("%VALUE%", valueFromJson));
+                    res.setDescription(res.getDescription().replace("%URL%", testCaseExecutionData.getValue1()));
+                    res.setDescription(res.getDescription().replace("%PARAM%", testCaseExecutionData.getValue2()));
+                    res.setDescription(res.getDescription().replace("%VALUE%", valueFromJson));
                     testCaseExecutionData.setPropertyResultMessage(res);
                 } else {
                     MessageEvent res = new MessageEvent(MessageEventEnum.PROPERTY_FAILED_GETFROMJSON_PARAMETERNOTFOUND);
-                    res.setDescription(res.getDescription().replaceAll("%URL%", testCaseExecutionData.getValue1()));
-                    res.setDescription(res.getDescription().replaceAll("%PARAM%", testCaseExecutionData.getValue2()));
+                    res.setDescription(res.getDescription().replace("%URL%", testCaseExecutionData.getValue1()));
+                    res.setDescription(res.getDescription().replace("%PARAM%", testCaseExecutionData.getValue2()));
                     testCaseExecutionData.setPropertyResultMessage(res);
                 }
             } else {
                 MessageEvent res = new MessageEvent(MessageEventEnum.PROPERTY_FAILED_GETFROMJSON_PARAMETERNOTFOUND);
-                res.setDescription(res.getDescription().replaceAll("%URL%", testCaseExecutionData.getValue1()));
-                res.setDescription(res.getDescription().replaceAll("%PARAM%", testCaseExecutionData.getValue2()));
+                res.setDescription(res.getDescription().replace("%URL%", testCaseExecutionData.getValue1()));
+                res.setDescription(res.getDescription().replace("%PARAM%", testCaseExecutionData.getValue2()));
                 testCaseExecutionData.setPropertyResultMessage(res);
 
             }
@@ -1076,8 +1076,8 @@ public class PropertyService implements IPropertyService {
             }
             MessageEvent res = new MessageEvent(MessageEventEnum.PROPERTY_FAILED_GETFROMJSON_PARAMETERNOTFOUND);
 
-            res.setDescription(res.getDescription().replaceAll("%URL%", testCaseExecutionData.getValue1()));
-            res.setDescription(res.getDescription().replaceAll("%PARAM%", testCaseExecutionData.getValue2()));
+            res.setDescription(res.getDescription().replace("%URL%", testCaseExecutionData.getValue1()));
+            res.setDescription(res.getDescription().replace("%PARAM%", testCaseExecutionData.getValue2()));
             testCaseExecutionData.setPropertyResultMessage(res);
         }
         return testCaseExecutionData;
@@ -1137,7 +1137,7 @@ public class PropertyService implements IPropertyService {
                 // Updates the execution data list
                 tCExecution.setDataLibraryExecutionDataList(currentListResults);
             }
-            res.setDescription(res.getDescription().replaceAll("%ENTRY%", testDataLib.getName()).replaceAll("%ENTRYID%", String.valueOf(testDataLib.getTestDataLibID())));
+            res.setDescription(res.getDescription().replace("%ENTRY%", testDataLib.getName()).replace("%ENTRYID%", String.valueOf(testDataLib.getTestDataLibID())));
 
         } else {//no TestDataLib found was returned
             //the library does not exist at all
@@ -1155,7 +1155,7 @@ public class PropertyService implements IPropertyService {
             }
 
         }
-        res.setDescription(res.getDescription().replaceAll("%VALUE1%", testCaseExecutionData.getValue1()));
+        res.setDescription(res.getDescription().replace("%VALUE1%", testCaseExecutionData.getValue1()));
         testCaseExecutionData.setPropertyResultMessage(res);
 
         return testCaseExecutionData;
@@ -1268,8 +1268,8 @@ public class PropertyService implements IPropertyService {
             if (!propertyDefined) {
                 msg = new MessageEvent(MessageEventEnum.PROPERTY_FAILED_UNKNOWNPROPERTY);
             }
-            msg.setDescription(msg.getDescription().replaceAll("%COUNTRY%", country));
-            msg.setDescription(msg.getDescription().replaceAll("%PROP%", property));
+            msg.setDescription(msg.getDescription().replace("%COUNTRY%", country));
+            msg.setDescription(msg.getDescription().replace("%PROP%", property));
             item.setResultMessage(msg);
             if (LOG.isDebugEnabled()) {
                 LOG.debug(msg.getDescription());
@@ -1439,10 +1439,10 @@ public class PropertyService implements IPropertyService {
                         msg = new MessageEvent(MessageEventEnum.PROPERTY_FAILED_GETFROMDATALIB_SOAP_URLKOANDDATABASESOAPURLNOTEXIST);
                         msg.setDescription(msg.getDescription()
                                 .replace("%SERVICEURL%", lib.getServicePath())
-                                .replaceAll("%SYSTEM%", system)
-                                .replaceAll("%COUNTRY%", tCExecution.getCountry())
-                                .replaceAll("%ENV%", tCExecution.getEnvironmentData())
-                                .replaceAll("%DB%", lib.getDatabaseUrl()));
+                                .replace("%SYSTEM%", system)
+                                .replace("%COUNTRY%", tCExecution.getCountry())
+                                .replace("%ENV%", tCExecution.getEnvironmentData())
+                                .replace("%DB%", lib.getDatabaseUrl()));
                         answer.setResultMessage(msg);
                         return answer;
 
@@ -1452,10 +1452,10 @@ public class PropertyService implements IPropertyService {
                             msg = new MessageEvent(MessageEventEnum.PROPERTY_FAILED_GETFROMDATALIB_SOAP_URLKOANDDATABASESOAPURLEMPTY);
                             msg.setDescription(msg.getDescription()
                                     .replace("%SERVICEURL%", lib.getServicePath())
-                                    .replaceAll("%SYSTEM%", system)
-                                    .replaceAll("%COUNTRY%", tCExecution.getCountry())
-                                    .replaceAll("%ENV%", tCExecution.getEnvironmentData())
-                                    .replaceAll("%DB%", lib.getDatabaseUrl()));
+                                    .replace("%SYSTEM%", system)
+                                    .replace("%COUNTRY%", tCExecution.getCountry())
+                                    .replace("%ENV%", tCExecution.getEnvironmentData())
+                                    .replace("%DB%", lib.getDatabaseUrl()));
                             answer.setResultMessage(msg);
                             return answer;
                         }
@@ -1481,10 +1481,10 @@ public class PropertyService implements IPropertyService {
                     msg = new MessageEvent(MessageEventEnum.PROPERTY_FAILED_GETFROMDATALIB_SOAP_URLKOANDDATABASESOAPURLNOTEXIST);
                     msg.setDescription(msg.getDescription()
                             .replace("%SERVICEURL%", lib.getServicePath())
-                            .replaceAll("%SYSTEM%", system)
-                            .replaceAll("%COUNTRY%", tCExecution.getCountry())
-                            .replaceAll("%ENV%", tCExecution.getEnvironmentData())
-                            .replaceAll("%DB%", lib.getDatabaseUrl()));
+                            .replace("%SYSTEM%", system)
+                            .replace("%COUNTRY%", tCExecution.getCountry())
+                            .replace("%ENV%", tCExecution.getEnvironmentData())
+                            .replace("%DB%", lib.getDatabaseUrl()));
                     answer.setResultMessage(msg);
                     return answer;
                 }
@@ -1645,8 +1645,8 @@ public class PropertyService implements IPropertyService {
                         resultHash = listResult.get(position);
                         msg = new MessageEvent(MessageEventEnum.PROPERTY_SUCCESS_GETFROMDATALIB_SOAP_RANDOM);
                         msg.setDescription(msg.getDescription()
-                                .replaceAll("%POS%", Integer.toString(position))
-                                .replaceAll("%TOTALPOS%", Integer.toString(listResult.size())));
+                                .replace("%POS%", Integer.toString(position))
+                                .replace("%TOTALPOS%", Integer.toString(listResult.size())));
 
                     } else if (testCaseCountryProperty.getNature().equalsIgnoreCase(Property.NATURE_RANDOMNEW)) {
 
@@ -1678,13 +1678,13 @@ public class PropertyService implements IPropertyService {
                             resultHash = listResult.get(position);
                             msg = new MessageEvent(MessageEventEnum.PROPERTY_SUCCESS_GETFROMDATALIB_SOAP_RANDOMNEW);
                             msg.setDescription(msg.getDescription()
-                                    .replaceAll("%TOTNB%", Integer.toString(initNB))
-                                    .replaceAll("%REMNB%", Integer.toString(removedNB))
-                                    .replaceAll("%POS%", Integer.toString(position))
-                                    .replaceAll("%TOTALPOS%", Integer.toString(listResult.size())));
+                                    .replace("%TOTNB%", Integer.toString(initNB))
+                                    .replace("%REMNB%", Integer.toString(removedNB))
+                                    .replace("%POS%", Integer.toString(position))
+                                    .replace("%TOTALPOS%", Integer.toString(listResult.size())));
                         } else { // No more entries available.
                             msg = new MessageEvent(MessageEventEnum.PROPERTY_FAILED_GETFROMDATALIB_SOAP_RANDOMNEW_NOMORERECORD);
-                            msg.setDescription(msg.getDescription().replaceAll("%TOTNB%", Integer.toString(initNB)));
+                            msg.setDescription(msg.getDescription().replace("%TOTNB%", Integer.toString(initNB)));
                         }
 
                     } else if (testCaseCountryProperty.getNature().equalsIgnoreCase(Property.NATURE_NOTINUSE)) {
@@ -1716,13 +1716,13 @@ public class PropertyService implements IPropertyService {
                             resultHash = listResult.get(position);
                             msg = new MessageEvent(MessageEventEnum.PROPERTY_SUCCESS_GETFROMDATALIB_SOAP_NOTINUSE);
                             msg.setDescription(msg.getDescription()
-                                    .replaceAll("%TOTNB%", Integer.toString(initNB))
-                                    .replaceAll("%REMNB%", Integer.toString(removedNB))
-                                    .replaceAll("%POS%", Integer.toString(position))
-                                    .replaceAll("%TOTALPOS%", Integer.toString(listResult.size())));
+                                    .replace("%TOTNB%", Integer.toString(initNB))
+                                    .replace("%REMNB%", Integer.toString(removedNB))
+                                    .replace("%POS%", Integer.toString(position))
+                                    .replace("%TOTALPOS%", Integer.toString(listResult.size())));
                         } else { // No more entries available.
                             msg = new MessageEvent(MessageEventEnum.PROPERTY_FAILED_GETFROMDATALIB_SOAP_NOTINUSE_NOMORERECORD);
-                            msg.setDescription(msg.getDescription().replaceAll("%TOTNB%", Integer.toString(initNB)));
+                            msg.setDescription(msg.getDescription().replace("%TOTNB%", Integer.toString(initNB)));
                         }
 
                     }
@@ -1730,7 +1730,7 @@ public class PropertyService implements IPropertyService {
 
                 // If the return is successfull, we convert the result to JSON and add it to the message.
                 if (!listResult.isEmpty()) {
-                    msg.setDescription(msg.getDescription().replaceAll("%RESULTVALUE%", resultHash.toString()));
+                    msg.setDescription(msg.getDescription().replace("%RESULTVALUE%", resultHash.toString()));
                 }
 
                 // Save the result to the Lib object.
@@ -1759,11 +1759,11 @@ public class PropertyService implements IPropertyService {
         }
         answer.setItem(result);
         msg.setDescription(msg.getDescription()
-                .replaceAll("%ERRORDETAILMESSAGE%", " Issue when trying to get data from Testdata library " + lib.getName() + " (" + lib.getTestDataLibID() + ")")
-                .replaceAll("%ENTRY%", lib.getName())
-                .replaceAll("%SERVICE%", servicePath)
-                .replaceAll("%OPERATION%", lib.getMethod())
-                .replaceAll("%ENTRYID%", lib.getTestDataLibID().toString()));
+                .replace("%ERRORDETAILMESSAGE%", " Issue when trying to get data from Testdata library " + lib.getName() + " (" + lib.getTestDataLibID() + ")")
+                .replace("%ENTRY%", lib.getName())
+                .replace("%SERVICE%", servicePath)
+                .replace("%OPERATION%", lib.getMethod())
+                .replace("%ENTRYID%", lib.getTestDataLibID().toString()));
         answer.setResultMessage(msg);
         return answer;
     }
@@ -1797,9 +1797,9 @@ public class PropertyService implements IPropertyService {
                         int position = r.nextInt(list.size());
                         answer.setItem(list.get(position));
                         mes = new MessageEvent(MessageEventEnum.PROPERTY_SUCCESS_GETFROMDATALIB_STATIC_RANDOM);
-                        mes.setDescription(mes.getDescription().replaceAll("%POS%", Integer.toString(position))
-                                .replaceAll("%ENTRYSELID%", list.get(position).get("TestDataLibID"))
-                                .replaceAll("%TOTALPOS%", Integer.toString(list.size())));
+                        mes.setDescription(mes.getDescription().replace("%POS%", Integer.toString(position))
+                                .replace("%ENTRYSELID%", list.get(position).get("TestDataLibID"))
+                                .replace("%TOTALPOS%", Integer.toString(list.size())));
 
                     } else if (testCaseCountryProperty.getNature().equalsIgnoreCase(Property.NATURE_RANDOMNEW)) {
 
@@ -1830,14 +1830,14 @@ public class PropertyService implements IPropertyService {
                             int position = r.nextInt(list.size());
                             answer.setItem(list.get(position));
                             mes = new MessageEvent(MessageEventEnum.PROPERTY_SUCCESS_GETFROMDATALIB_STATIC_RANDOMNEW);
-                            mes.setDescription(mes.getDescription().replaceAll("%TOTNB%", Integer.toString(initNB))
-                                    .replaceAll("%REMNB%", Integer.toString(removedNB))
-                                    .replaceAll("%POS%", Integer.toString(position))
-                                    .replaceAll("%ENTRYSELID%", list.get(position).get("TestDataLibID"))
-                                    .replaceAll("%TOTALPOS%", Integer.toString(list.size())));
+                            mes.setDescription(mes.getDescription().replace("%TOTNB%", Integer.toString(initNB))
+                                    .replace("%REMNB%", Integer.toString(removedNB))
+                                    .replace("%POS%", Integer.toString(position))
+                                    .replace("%ENTRYSELID%", list.get(position).get("TestDataLibID"))
+                                    .replace("%TOTALPOS%", Integer.toString(list.size())));
                         } else { // No more entries available.
                             mes = new MessageEvent(MessageEventEnum.PROPERTY_FAILED_GETFROMDATALIB_STATIC_RANDOMNEW_NOMORERECORD);
-                            mes.setDescription(mes.getDescription().replaceAll("%TOTNB%", Integer.toString(initNB)));
+                            mes.setDescription(mes.getDescription().replace("%TOTNB%", Integer.toString(initNB)));
                         }
 
                     } else if (testCaseCountryProperty.getNature().equalsIgnoreCase(Property.NATURE_NOTINUSE)) {
@@ -1868,21 +1868,21 @@ public class PropertyService implements IPropertyService {
                             int position = r.nextInt(list.size());
                             answer.setItem(list.get(position));
                             mes = new MessageEvent(MessageEventEnum.PROPERTY_SUCCESS_GETFROMDATALIB_STATIC_NOTINUSE);
-                            mes.setDescription(mes.getDescription().replaceAll("%TOTNB%", Integer.toString(initNB))
-                                    .replaceAll("%REMNB%", Integer.toString(removedNB))
-                                    .replaceAll("%POS%", Integer.toString(position))
-                                    .replaceAll("%ENTRYSELID%", list.get(position).get("TestDataLibID"))
-                                    .replaceAll("%TOTALPOS%", Integer.toString(list.size())));
+                            mes.setDescription(mes.getDescription().replace("%TOTNB%", Integer.toString(initNB))
+                                    .replace("%REMNB%", Integer.toString(removedNB))
+                                    .replace("%POS%", Integer.toString(position))
+                                    .replace("%ENTRYSELID%", list.get(position).get("TestDataLibID"))
+                                    .replace("%TOTALPOS%", Integer.toString(list.size())));
                         } else { // No more entries available.
                             mes = new MessageEvent(MessageEventEnum.PROPERTY_FAILED_GETFROMDATALIB_STATIC_NOTINUSE_NOMORERECORD);
-                            mes.setDescription(mes.getDescription().replaceAll("%TOTNB%", Integer.toString(initNB)));
+                            mes.setDescription(mes.getDescription().replace("%TOTNB%", Integer.toString(initNB)));
                         }
 
                     }
 
                     // If the return is successfull, we convert the result to JSON and add it to the message.
                     if (!list.isEmpty()) {
-                        mes.setDescription(mes.getDescription().replaceAll("%RESULTVALUE%", answer.getItem().toString()));
+                        mes.setDescription(mes.getDescription().replace("%RESULTVALUE%", answer.getItem().toString()));
                     }
 
                 } else {
@@ -1895,7 +1895,7 @@ public class PropertyService implements IPropertyService {
 
         } catch (CerberusException ex) {
             mes = new MessageEvent(MessageEventEnum.PROPERTY_FAILED_GETFROMDATALIB_STATIC_GENERIC);
-            mes.setDescription(mes.getDescription().replaceAll("%SYSTEM%", system).replaceAll("%COUNTRY%", country).replaceAll("%ENV%", environment));
+            mes.setDescription(mes.getDescription().replace("%SYSTEM%", system).replace("%COUNTRY%", country).replace("%ENV%", environment));
         }
 
         answer.setResultMessage(mes);
