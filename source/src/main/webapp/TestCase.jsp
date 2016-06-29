@@ -1216,7 +1216,7 @@
                                                             if(tcstep.getInLibrary().equalsIgnoreCase("Y")){
                                                         %>
 
-                                                    <option style="width: 400px;" value="<%=tcstep.getStep()%>" <%=tcs.getUseStepStep().compareTo(tcstep.getStep()) == 0 ? " SELECTED " : ""%>><%=tcstep.getStep()%> : <%=tcstep.getDescription()%>
+                                                    <option style="width: 400px;" value="<%=tcstep.getStep()%>" <%=tcs.getUseStepStep().compareTo(tcstep.getStep()) == 0 ? " SELECTED " : ""%>><%=tcstep.getSort()%> : <%=tcstep.getDescription()%>
                                                     </option>
                                                     <% }
                                                         }

@@ -413,10 +413,14 @@ public class ReadTestCase extends HttpServlet {
 
             if (step.getUseStep().equals("Y")) {
                 //If this step is imported from library, we call the service to retrieve actions
+                TestCaseStep usedStep = testCaseStepService.findTestCaseStep(step.getUseStepTest(), step.getUseStepTestCase(), step.getUseStepStep());
                 List<TestCaseStepAction> actionList = testCaseStepActionService.getListOfAction(step.getUseStepTest(), step.getUseStepTestCase(), step.getUseStepStep());
                 List<TestCaseStepActionControl> controlList = testCaseStepActionControlService.findControlByTestTestCaseStep(step.getUseStepTest(), step.getUseStepTestCase(), step.getUseStepStep());
                 List<TestCaseCountryProperties> properties = testCaseCountryPropertiesService.findDistinctPropertiesOfTestCase(step.getUseStepTest(), step.getUseStepTestCase());
 
+                // Get the used step sort
+                jsonStep.put("useStepStepSort", usedStep.getSort());
+                
                 //retrieve the inherited properties
                 for (TestCaseCountryProperties prop : properties) {
                     JSONObject propertyFound = new JSONObject();
