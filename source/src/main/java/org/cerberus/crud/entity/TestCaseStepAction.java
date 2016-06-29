@@ -32,9 +32,33 @@ public class TestCaseStepAction {
     private String action;
     private String object;
     private String property;
+    private String forceExeStatus;
     private String description;
     private String screenshotFilename;
 
+    /**
+     * From here are data outside database model.
+     */
+    List<TestCaseStepActionControl> testCaseStepActionControl;
+
+    
+    private static final String SELENIUM_CLICK = "click";
+    private static final String SELENIUM_CLICK_WAIT = "clickAndWait";
+    private static final String SELENIUM_DOUBLECLICK = "doubleClick";
+    private static final String SELENIUM_ENTER = "enter";
+    private static final String SELENIUM_KEYPRESS = "keypress";
+    private static final String SELENIUM_MOUSEOVER = "mouseOver";
+    private static final String SELENIUM_MOUSEOVERANDWAIT = "mouseOverAndWait";
+    private static final String SELENIUM_OPENURL = "openUrlWithBase";
+    private static final String SELENIUM_SELECT = "select";
+    private static final String SELENIUM_SELECTWAIT = "selectAndWait";
+    private static final String SELENIUM_TYPE = "type";
+    private static final String SELENIUM_URLLOGIN = "openUrlLogin";
+    private static final String SELENIUM_WAIT = "wait";
+    private static final String ACTION_CALCULATEPROPERTY = "calculateProperty";
+    
+    
+    
     public String getScreenshotFilename() {
         return screenshotFilename;
     }
@@ -43,8 +67,6 @@ public class TestCaseStepAction {
         this.screenshotFilename = screenshotFilename;
     }
     
-    List<TestCaseStepActionControl> testCaseStepActionControl;
-
     public List<TestCaseStepActionControl> getTestCaseStepActionControl() {
         return testCaseStepActionControl;
     }
@@ -75,6 +97,14 @@ public class TestCaseStepAction {
 
     public void setProperty(String property) {
         this.property = property;
+    }
+
+    public String getForceExeStatus() {
+        return forceExeStatus;
+    }
+
+    public void setForceExeStatus(String forceExeStatus) {
+        this.forceExeStatus = forceExeStatus;
     }
 
     public int getSequence() {
@@ -126,20 +156,6 @@ public class TestCaseStepAction {
     public void setTestCase(String testCase) {
         this.testCase = testCase;
     }
-    private static final String SELENIUM_CLICK = "click";
-    private static final String SELENIUM_CLICK_WAIT = "clickAndWait";
-    private static final String SELENIUM_DOUBLECLICK = "doubleClick";
-    private static final String SELENIUM_ENTER = "enter";
-    private static final String SELENIUM_KEYPRESS = "keypress";
-    private static final String SELENIUM_MOUSEOVER = "mouseOver";
-    private static final String SELENIUM_MOUSEOVERANDWAIT = "mouseOverAndWait";
-    private static final String SELENIUM_OPENURL = "openUrlWithBase";
-    private static final String SELENIUM_SELECT = "select";
-    private static final String SELENIUM_SELECTWAIT = "selectAndWait";
-    private static final String SELENIUM_TYPE = "type";
-    private static final String SELENIUM_URLLOGIN = "openUrlLogin";
-    private static final String SELENIUM_WAIT = "wait";
-    private static final String ACTION_CALCULATEPROPERTY = "calculateProperty";
 
     public boolean isSeleniumClick() {
         return this.getAction().equalsIgnoreCase(SELENIUM_CLICK);
@@ -240,6 +256,7 @@ public class TestCaseStepAction {
         hash = 79 * hash + (this.action != null ? this.action.hashCode() : 0);
         hash = 79 * hash + (this.object != null ? this.object.hashCode() : 0);
         hash = 79 * hash + (this.property != null ? this.property.hashCode() : 0);
+        hash = 79 * hash + (this.forceExeStatus != null ? this.forceExeStatus.hashCode() : 0);
         hash = 79 * hash + (this.description != null ? this.description.hashCode() : 0);
         return hash;
     }
@@ -275,6 +292,9 @@ public class TestCaseStepAction {
             return false;
         }
         if ((this.property == null) ? (other.property != null) : !this.property.equals(other.property)) {
+            return false;
+        }
+        if ((this.forceExeStatus == null) ? (other.forceExeStatus != null) : !this.forceExeStatus.equals(other.forceExeStatus)) {
             return false;
         }
         if ((this.description == null) ? (other.description != null) : !this.description.equals(other.description)) {

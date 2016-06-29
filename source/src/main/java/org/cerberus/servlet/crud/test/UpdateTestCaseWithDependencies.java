@@ -564,10 +564,11 @@ public class UpdateTestCaseWithDependencies extends HttpServlet {
                 String action = getParameterIfExists(request, "action_action_" + stepInc + "_" + inc);
                 String object = getParameterIfExists(request, "action_object_" + stepInc + "_" + inc).replaceAll("\"", "\\\"");
                 String property = getParameterIfExists(request, "action_property_" + stepInc + "_" + inc);
+                String forceExeStatus = getParameterIfExists(request, "action_forceexestatus_" + stepInc + "_" + inc);
                 String description = HtmlUtils.htmlEscape(getParameterIfExists(request, "action_description_" + stepInc + "_" + inc));
                 String screenshot = getParameterIfExists(request, "action_screenshot_" + stepInc + "_" + inc);
                 if (delete == null) {
-                    TestCaseStepAction tcsa = testCaseStepActionFactory.create(test, testCase, step, sequence, sort, action, object, property, description, screenshot);
+                    TestCaseStepAction tcsa = testCaseStepActionFactory.create(test, testCase, step, sequence, sort, action, object, property, forceExeStatus, description, screenshot);
                     tcsa.setTestCaseStepActionControl(getTestCaseStepActionControlFromParameter(request, appContext, test, testCase, stepInc, inc));
                     testCaseStepAction.add(tcsa);
                     //System.out.print("FromPage"+tcsa.toString());

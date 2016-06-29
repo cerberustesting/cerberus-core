@@ -44,6 +44,7 @@ import org.cerberus.service.appium.IAppiumService;
 import org.cerberus.engine.execution.IIdentifierService;
 import org.cerberus.engine.gwt.IPropertyService;
 import org.cerberus.engine.execution.IRecorderService;
+import org.cerberus.enums.MessageGeneralEnum;
 import org.cerberus.service.sql.ISQLService;
 import org.cerberus.service.sikuli.ISikuliService;
 import org.cerberus.service.soap.ISoapService;
@@ -253,6 +254,21 @@ public class ActionService implements IActionService {
         }
 
         MyLogger.log(RunTestCaseService.class.getName(), Level.DEBUG, "Result of the action : " + res.getCodeString() + " " + res.getDescription());
+
+        /**
+         * In case 1/ the action is flaged as being Forced with a specific
+         * return code = PE and 2/ the return of the action is stoping the test
+         * --> whatever the return of the action is, we force the return to move
+         * forward the test with no screenshot, pagesource.
+         */
+        if (testCaseStepActionExecution.getForceExeStatus().equals("PE") && res.isStopTest()) {
+            res.setDescription(res.getDescription() + " -- Execution forced to continue.");
+            res.setDoScreenshot(false);
+            res.setGetPageSource(false);
+            res.setStopTest(false);
+            res.setMessage(MessageGeneralEnum.EXECUTION_PE_TESTEXECUTING);
+        }
+
         testCaseStepActionExecution.setActionResultMessage(res);
 
         /**
@@ -260,6 +276,7 @@ public class ActionService implements IActionService {
          * from the ResultMessage of the Action.
          */
         testCaseStepActionExecution.setExecutionResultMessage(new MessageGeneral(res.getMessage()));
+
         /**
          * Determine here if we stop the test from the ResultMessage of the
          * Action.

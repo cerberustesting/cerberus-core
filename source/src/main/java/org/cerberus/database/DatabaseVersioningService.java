@@ -4786,6 +4786,359 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         // New updated Documentation.
         //-- ------------------------ 765-766
         SQLS = new StringBuilder();
+        SQLS.append("SELECT 1 FROM dual;");
+        SQLInstruction.add(SQLS.toString());
+        SQLS = new StringBuilder();
+        SQLS.append("SELECT 1 FROM dual;");
+        SQLInstruction.add(SQLS.toString());
+
+        // Updated CHAIN invariant.
+        //-- ------------------------ 767-768
+        SQLS = new StringBuilder();
+        SQLS.append("UPDATE `invariant` SET `value`='Y', `description`='Yes' WHERE `idname`='CHAIN' and`value`='0';");
+        SQLInstruction.add(SQLS.toString());
+        SQLS = new StringBuilder();
+        SQLS.append("UPDATE `invariant` SET `value`='N', `description`='No' WHERE `idname`='CHAIN' and`value`='1';");
+        SQLInstruction.add(SQLS.toString());
+
+        // Add the hideKeyboard action.
+        //-- ------------------------ 769
+        SQLS = new StringBuilder();
+        SQLS.append("INSERT INTO `invariant` (`idname`, `value`, `sort`, `description`, `VeryShortDesc`) VALUES ('ACTION', 'hideKeyboard', '1200', 'hideKeyboard', '');");
+        SQLInstruction.add(SQLS.toString());
+
+        // Add the Unknown Control.
+        //-- ------------------------ 770
+        SQLS = new StringBuilder();
+        SQLS.append("INSERT INTO `invariant` (`idname`, `value`, `sort`, `description`, `VeryShortDesc`) VALUES ('CONTROL', 'Unknown', '10', 'Unknown', '');");
+        SQLInstruction.add(SQLS.toString());
+
+        // Add the hideKeyboard and update the keyPress action documentation.
+        //-- ------------------------ 771-772
+        SQLS = new StringBuilder();
+        SQLS.append("SELECT 1 FROM dual;");
+        SQLInstruction.add(SQLS.toString());
+        SQLS = new StringBuilder();
+        SQLS.append("SELECT 1 FROM dual;");
+        SQLInstruction.add(SQLS.toString());
+
+        // Add the swipe action.
+        //-- ------------------------ 773-775
+        SQLS = new StringBuilder();
+        SQLS.append("INSERT INTO `invariant` (`idname`, `value`, `sort`, `description`, `VeryShortDesc`) VALUES ('ACTION', 'swipe', '1300', 'Swipe mobile screen', '');");
+        SQLInstruction.add(SQLS.toString());
+        SQLS = new StringBuilder();
+        SQLS.append("SELECT 1 FROM dual;");
+        SQLInstruction.add(SQLS.toString());
+        SQLS = new StringBuilder();
+        SQLS.append("INSERT INTO `parameter` (`system`, `param`, `value`, `description`) VALUES ('', 'appium_swipeDuration', '2000', 'The duration for the Appium swipe action');");
+        SQLInstruction.add(SQLS.toString());
+
+        // Add the cerberus_notinuse_timeout parameter.
+        //-- ------------------------ 776
+        SQLS = new StringBuilder();
+        SQLS.append("INSERT INTO `parameter` (`system`, `param`, `value`, `description`) VALUES ('', 'cerberus_notinuse_timeout', '600', 'Integer that correspond to the number of seconds after which, any pending execution (status=PE) will not be considered as pending.');");
+        SQLInstruction.add(SQLS.toString());
+
+        // Remove unicity constrain on TestDataLib.
+        //-- ------------------------ 777
+        SQLS = new StringBuilder();
+        SQLS.append("ALTER TABLE `testdatalib` ");
+        SQLS.append("DROP INDEX `IX_testdatalib_01` ,");
+        SQLS.append("ADD INDEX `IX_testdatalib_01` (`Name` ASC, `system` ASC, `Environment` ASC, `Country` ASC) ;");
+        SQLInstruction.add(SQLS.toString());
+
+        // Add the RobotCapability table
+        //-- ------------------------ 778-779
+        SQLS = new StringBuilder();
+        SQLS.append("CREATE TABLE `robotcapability` (\n"
+                + "  `id` int(11) NOT NULL AUTO_INCREMENT,\n"
+                + "  `robot` varchar(100) NOT NULL,\n"
+                + "  `capability` varchar(45) NOT NULL,\n"
+                + "  `value` varchar(255) NOT NULL,\n"
+                + "  PRIMARY KEY (`id`),\n"
+                + "  UNIQUE KEY `uq_capability_value_idx` (`capability`,`value`,`robot`),\n"
+                + "  KEY `fk_robot_idx` (`robot`),\n"
+                + "  CONSTRAINT `fk_robot` FOREIGN KEY (`robot`) REFERENCES `robot` (`robot`) ON DELETE CASCADE ON UPDATE CASCADE\n"
+                + ") ENGINE=InnoDB DEFAULT CHARSET=utf8;\n");
+        SQLInstruction.add(SQLS.toString());
+        SQLS = new StringBuilder();
+        SQLS.append("INSERT INTO `robotcapability` (`robot`, `value`, `capability`)  \n"
+                + "\tSELECT `robot`, `platform`, 'platform' AS `capability` FROM `robot`\n"
+                + "    UNION\n"
+                + "    SELECT `robot`, `browser`, 'browser' AS `capability` FROM `robot`\n"
+                + "    UNION\n"
+                + "    SELECT `robot`, `version`, 'version' AS `capability` FROM `robot`");
+        SQLInstruction.add(SQLS.toString());
+
+        // Apply changes on RobotCapability indexes/keys to follow naming convention
+        //-- ------------------------ 780-782
+        SQLS = new StringBuilder();
+        SQLS.append("ALTER TABLE `robotcapability` \n"
+                + "DROP FOREIGN KEY `fk_robot`;");
+        SQLInstruction.add(SQLS.toString());
+        SQLS = new StringBuilder();
+        SQLS.append("ALTER TABLE `robotcapability` \n"
+                + "DROP INDEX `uq_capability_value_idx` ,\n"
+                + "ADD UNIQUE INDEX `IX_robotcapability_01` (`capability` ASC, `value` ASC, `robot` ASC),\n"
+                + "DROP INDEX `fk_robot_idx` ,\n"
+                + "ADD INDEX `IX_robotcapability_02` (`robot` ASC);");
+        SQLInstruction.add(SQLS.toString());
+        SQLS = new StringBuilder();
+        SQLS.append("ALTER TABLE `robotcapability` \n"
+                + "ADD CONSTRAINT `FK_robotcapability_01`\n"
+                + "  FOREIGN KEY (`robot`)\n"
+                + "  REFERENCES `robot` (`robot`)\n"
+                + "  ON DELETE CASCADE\n"
+                + "  ON UPDATE CASCADE;");
+        SQLInstruction.add(SQLS.toString());
+
+        //Add IPA application type inside 783
+        SQLS = new StringBuilder();
+        SQLS.append("INSERT INTO `invariant` (`idname`, `value`, `sort`, `description`) ");
+        SQLS.append("VALUES ('APPLITYPE', 'IPA', '50', 'IOS Application');");
+        SQLInstruction.add(SQLS.toString());
+
+        // Reverting changes on RobotCapability table
+        //-- ------------------------ 784
+        SQLS = new StringBuilder();
+        SQLS.append("DELETE FROM `robotcapability`;");
+        SQLInstruction.add(SQLS.toString());
+
+        // Update testcaseexecution and testcasestepexecution to set default end to null.
+        // Update last_modified timestamp default value
+        //-- ------------------------ 785 - 794
+        SQLS = new StringBuilder();
+        SQLS.append("ALTER TABLE `testcaseexecution` ");
+        SQLS.append("CHANGE COLUMN `End` `End` TIMESTAMP NOT NULL DEFAULT '1970-01-01 01:01:01',");
+        SQLS.append("CHANGE COLUMN `Start` `Start` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP;");
+        SQLInstruction.add(SQLS.toString());
+        SQLS = new StringBuilder();
+        SQLS.append("ALTER TABLE `testcasestepexecution` ");
+        SQLS.append("CHANGE COLUMN `End` `End` TIMESTAMP NOT NULL DEFAULT '1970-01-01 01:01:01',");
+        SQLS.append("CHANGE COLUMN `Start` `Start` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP;");
+        SQLInstruction.add(SQLS.toString());
+        SQLS = new StringBuilder();
+        SQLS.append("ALTER TABLE `testdatalib` ");
+        SQLS.append("CHANGE COLUMN `LastModified` `LastModified` TIMESTAMP NOT NULL DEFAULT '1970-01-01 01:01:01';");
+        SQLInstruction.add(SQLS.toString());
+        SQLS = new StringBuilder();
+        SQLS.append("ALTER TABLE `test` ");
+        SQLS.append("CHANGE COLUMN `last_modified` `last_modified` TIMESTAMP NOT NULL DEFAULT '1970-01-01 01:01:01';");
+        SQLInstruction.add(SQLS.toString());
+        SQLS = new StringBuilder();
+        SQLS.append("ALTER TABLE `testcase` ");
+        SQLS.append("CHANGE COLUMN `last_modified` `last_modified` TIMESTAMP NOT NULL DEFAULT '1970-01-01 01:01:01';");
+        SQLInstruction.add(SQLS.toString());
+        SQLS = new StringBuilder();
+        SQLS.append("ALTER TABLE `testcasecountry` ");
+        SQLS.append("CHANGE COLUMN `last_modified` `last_modified` TIMESTAMP NOT NULL DEFAULT '1970-01-01 01:01:01';");
+        SQLInstruction.add(SQLS.toString());
+        SQLS = new StringBuilder();
+        SQLS.append("ALTER TABLE `testcasecountryproperties` ");
+        SQLS.append("CHANGE COLUMN `last_modified` `last_modified` TIMESTAMP NOT NULL DEFAULT '1970-01-01 01:01:01';");
+        SQLInstruction.add(SQLS.toString());
+        SQLS = new StringBuilder();
+        SQLS.append("ALTER TABLE `testcasestep` ");
+        SQLS.append("CHANGE COLUMN `last_modified` `last_modified` TIMESTAMP NOT NULL DEFAULT '1970-01-01 01:01:01';");
+        SQLInstruction.add(SQLS.toString());
+        SQLS = new StringBuilder();
+        SQLS.append("ALTER TABLE `testcasestepaction` ");
+        SQLS.append("CHANGE COLUMN `last_modified` `last_modified` TIMESTAMP NOT NULL DEFAULT '1970-01-01 01:01:01';");
+        SQLInstruction.add(SQLS.toString());
+        SQLS = new StringBuilder();
+        SQLS.append("ALTER TABLE `testcasestepactioncontrol` ");
+        SQLS.append("CHANGE COLUMN `last_modified` `last_modified` TIMESTAMP NOT NULL DEFAULT '1970-01-01 01:01:01';");
+        SQLInstruction.add(SQLS.toString());
+
+        // Add description in testcasestepexecution, testcasestepactionexecution
+        // and testcasestepactioncontrolexecution tables
+        //-- ------------------------ 795 - 798
+        SQLS = new StringBuilder();
+        SQLS.append("ALTER TABLE `testcasestepexecution` ");
+        SQLS.append("ADD COLUMN `Description` VARCHAR(150) NOT NULL DEFAULT '' AFTER `ReturnMessage`;");
+        SQLInstruction.add(SQLS.toString());
+        SQLS = new StringBuilder();
+        SQLS.append("ALTER TABLE `testcasestepactionexecution` ");
+        SQLS.append("ADD COLUMN `Description` VARCHAR(255) NOT NULL DEFAULT '' AFTER `PageSourceFileName`;");
+        SQLInstruction.add(SQLS.toString());
+        SQLS = new StringBuilder();
+        SQLS.append("ALTER TABLE `testcasestepactioncontrolexecution`  ");
+        SQLS.append("ADD COLUMN `Description` VARCHAR(255) NOT NULL DEFAULT '' AFTER `PageSourceFilename`;");
+        SQLInstruction.add(SQLS.toString());
+
+        //
+        SQLS = new StringBuilder();
+        SQLS.append("UPDATE `testdatalib` ");
+        SQLS.append("SET `LastModified` =  '1970-01-01 01:01:01' WHERE `LastModified` = '0000-00-00 00:00:00';");
+        SQLInstruction.add(SQLS.toString());
+        SQLS = new StringBuilder();
+        SQLS.append("UPDATE `test` ");
+        SQLS.append("SET `last_modified` =  '1970-01-01 01:01:01' WHERE `last_modified` = '0000-00-00 00:00:00';");
+        SQLInstruction.add(SQLS.toString());
+        SQLS = new StringBuilder();
+        SQLS.append("UPDATE `testcase` ");
+        SQLS.append("SET `last_modified` =  '1970-01-01 01:01:01' WHERE `last_modified` = '0000-00-00 00:00:00';");
+        SQLInstruction.add(SQLS.toString());
+        SQLS = new StringBuilder();
+        SQLS.append("UPDATE `testcasecountry` ");
+        SQLS.append("SET `last_modified` =  '1970-01-01 01:01:01' WHERE `last_modified` = '0000-00-00 00:00:00';");
+        SQLInstruction.add(SQLS.toString());
+        SQLS = new StringBuilder();
+        SQLS.append("UPDATE `testcasecountryproperties` ");
+        SQLS.append("SET `last_modified` =  '1970-01-01 01:01:01' WHERE `last_modified` = '0000-00-00 00:00:00';");
+        SQLInstruction.add(SQLS.toString());
+        SQLS = new StringBuilder();
+        SQLS.append("UPDATE `testcasestep` ");
+        SQLS.append("SET `last_modified` =  '1970-01-01 01:01:01' WHERE `last_modified` = '0000-00-00 00:00:00';");
+        SQLInstruction.add(SQLS.toString());
+        SQLS = new StringBuilder();
+        SQLS.append("UPDATE `testcasestepaction` ");
+        SQLS.append("SET `last_modified` =  '1970-01-01 01:01:01' WHERE `last_modified` = '0000-00-00 00:00:00';");
+        SQLInstruction.add(SQLS.toString());
+        SQLS = new StringBuilder();
+        SQLS.append("UPDATE `testcasestepactioncontrol` ");
+        SQLS.append("SET `last_modified` =  '1970-01-01 01:01:01' WHERE `last_modified` = '0000-00-00 00:00:00';");
+        SQLInstruction.add(SQLS.toString());
+        SQLS = new StringBuilder();
+        SQLS.append("UPDATE `testcase` ");
+        SQLS.append("SET `TCDateCrea` =  '1970-01-01 01:01:01' WHERE `TCDateCrea` = '0000-00-00 00:00:00';");
+        SQLInstruction.add(SQLS.toString());
+
+        // Add main robot capability invariants
+        //-- ------------------------ 807
+        SQLS = new StringBuilder();
+        SQLS.append("INSERT INTO `invariant` (`idname`, `value`, `sort`, `description`, `VeryShortDesc`) VALUES ");
+        SQLS.append("('INVARIANTPUBLIC', 'CAPABILITY', '500', 'Robot capabilities', ''), ");
+        SQLS.append("('CAPABILITY', 'automationName', '1', 'Automation name, e.g.: Appium)', ''), ");
+        SQLS.append("('CAPABILITY', 'deviceName', '2', 'Device name (useful for Appium)', ''), ");
+        SQLS.append("('CAPABILITY', 'app', '3', 'Application name (useful for Appium)', ''), ");
+        SQLS.append("('CAPABILITY', 'platformName', '4', 'Platform name (useful for Appium)', ''), ");
+        SQLS.append("('CAPABILITY', 'platformVersion', '5', 'Platform version (useful for Appium)', ''), ");
+        SQLS.append("('CAPABILITY', 'browserName', '6', 'Browser name (useful for Appium)', ''), ");
+        SQLS.append("('CAPABILITY', 'autoWebview', '7', 'If auto web view has to be enabled (useful for Appium, e.g.: true) ', '');");
+        SQLInstruction.add(SQLS.toString());
+
+        // Add documentation on robot capability
+        //-- ------------------------ 808
+        SQLS = new StringBuilder();
+        SQLS.append("SELECT 1 FROM dual;");
+        SQLInstruction.add(SQLS.toString());
+
+        // Correct property to add the /text() in xpath.
+        //-- ------------------------ 809
+        SQLS = new StringBuilder();
+        SQLS.append("UPDATE testcasecountryproperties SET value2 = concat(value2, '/text()')");
+        SQLS.append(" WHERE `type` = 'getFromXML' and value2 not like '%ext()';    ");
+        SQLInstruction.add(SQLS.toString());
+
+        // Adding missing index in order to support RANDOMNEW and NOTINUSE
+        //-- ------------------------ 810
+        SQLS = new StringBuilder();
+        SQLS.append("ALTER TABLE `testcaseexecution` ");
+        SQLS.append(" ADD INDEX `IX_testcaseexecution_09` (`Country` ASC, `Environment` ASC, `ControlStatus` ASC), "); // Used for NOTINUSE   
+        SQLS.append(" ADD INDEX `IX_testcaseexecution_10` (`Test` ASC, `TestCase` ASC, `Environment` ASC, `Country` ASC, `Build` ASC) ;"); // Used for RANDOMNEW
+        SQLInstruction.add(SQLS.toString());
+
+        // Adding Soap URL on database table
+        //-- ------------------------ 811
+        SQLS = new StringBuilder();
+        SQLS.append("ALTER TABLE `countryenvironmentdatabase` ");
+        SQLS.append("ADD COLUMN `SoapUrl` VARCHAR(200) NOT NULL DEFAULT ''  AFTER `ConnectionPoolName`;");
+        SQLInstruction.add(SQLS.toString());
+
+        // Adding DatabaseUrl on testdatalib table
+        //-- ------------------------ 812
+        SQLS = new StringBuilder();
+        SQLS.append("ALTER TABLE `testdatalib` ");
+        SQLS.append("ADD COLUMN `DatabaseUrl` VARCHAR(45) NOT NULL DEFAULT '' AFTER `Script`;");
+        SQLInstruction.add(SQLS.toString());
+
+        // Adding Action skipAction
+        //-- ------------------------ 813
+        SQLS = new StringBuilder();
+        SQLS.append("INSERT INTO `invariant` (`idname`, `value`, `sort`, `description`) ");
+        SQLS.append("VALUES ('ACTION', 'skipAction', '2600', 'skipAction');");
+        SQLInstruction.add(SQLS.toString());
+
+        // Adding Reset Password Email Parameters
+        //-- ------------------------ 814
+        SQLS = new StringBuilder();
+        SQLS.append("INSERT INTO `parameter` (`system`, `param`, `value`, `description`) ");
+        SQLS.append("VALUES ('', 'cerberus_notification_forgotpassword_subject', '[Cerberus] Reset your password', 'Subject of Cerberus forgot password notification email.')");
+        SQLS.append(", ('', 'cerberus_notification_forgotpassword_body', 'Hello %NAME%<br><br>We\\'ve received a request to reset your Cerberus password.<br><br>%LINK%<br><br>If you didn\\'t request a password reset, not to worry, just ignore this email and your current password will continue to work.<br><br>Cheers,<br>The Cerberus Team', 'Cerberus forgot password notification email body. %LOGIN%, %NAME% and %LINK% can be used as variables.');");
+        SQLInstruction.add(SQLS.toString());
+
+        // Adding Column ResetPasswordToken in User Table
+        //-- ------------------------ 815
+        SQLS = new StringBuilder();
+        SQLS.append("ALTER TABLE `user` ");
+        SQLS.append("ADD COLUMN `ResetPasswordToken` CHAR(40) NOT NULL DEFAULT '' AFTER `Password`;");
+        SQLInstruction.add(SQLS.toString());
+
+        // Add Sort column to test case step related tables (#569)
+        //-- ------------------------ 816 - 827 
+        SQLS = new StringBuilder();
+        SQLS.append("ALTER TABLE `testcasestep` ADD COLUMN `Sort` INT(10) UNSIGNED AFTER `Step`;");
+        SQLInstruction.add(SQLS.toString());
+        SQLS = new StringBuilder();
+        SQLS.append("UPDATE `testcasestep` SET `Sort` = `Step`;");
+        SQLInstruction.add(SQLS.toString());
+        SQLS = new StringBuilder();
+        SQLS.append("ALTER TABLE `testcasestepaction` ADD COLUMN `Sort` INT(10) UNSIGNED AFTER `Sequence`;");
+        SQLInstruction.add(SQLS.toString());
+        SQLS = new StringBuilder();
+        SQLS.append("UPDATE `testcasestepaction` SET `Sort` = `Sequence`;");
+        SQLInstruction.add(SQLS.toString());
+        SQLS = new StringBuilder();
+        SQLS.append("ALTER TABLE `testcasestepactioncontrol` ADD COLUMN `Sort` INT(10) UNSIGNED AFTER `Control`;");
+        SQLInstruction.add(SQLS.toString());
+        SQLS = new StringBuilder();
+        SQLS.append("UPDATE `testcasestepactioncontrol` SET `Sort` = `Control`;");
+        SQLInstruction.add(SQLS.toString());
+        SQLS = new StringBuilder();
+        SQLS.append("ALTER TABLE `testcasestepactioncontrolexecution` ADD COLUMN `Sort` INT(10) UNSIGNED AFTER `Control`;");
+        SQLInstruction.add(SQLS.toString());
+        SQLS = new StringBuilder();
+        SQLS.append("UPDATE `testcasestepactioncontrolexecution` SET `Sort` = `Control`;");
+        SQLInstruction.add(SQLS.toString());
+        SQLS = new StringBuilder();
+        SQLS.append("ALTER TABLE `testcasestepactionexecution` ADD COLUMN `Sort` INT(10) UNSIGNED AFTER `Sequence`;");
+        SQLInstruction.add(SQLS.toString());
+        SQLS = new StringBuilder();
+        SQLS.append("UPDATE `testcasestepactionexecution` SET `Sort` = `Sequence`;");
+        SQLInstruction.add(SQLS.toString());
+        SQLS = new StringBuilder();
+        SQLS.append("ALTER TABLE `testcasestepexecution` ADD COLUMN `Sort` INT(10) UNSIGNED AFTER `Step`;");
+        SQLInstruction.add(SQLS.toString());
+        SQLS = new StringBuilder();
+        SQLS.append("UPDATE `testcasestepexecution` SET `Sort` = `Step`;");
+        SQLInstruction.add(SQLS.toString());
+
+        // Removed callSoapWithBase_BETA and callSoap_BETA actions.
+        //-- ------------------------ 828
+        SQLS = new StringBuilder();
+        SQLS.append("DELETE from invariant where idname='ACTION' and value in ('callSoapWithBase_BETA','callSoap_BETA');");
+        SQLInstruction.add(SQLS.toString());
+
+        // Added flag in order to support forcing Execution status at action level.
+        //-- ------------------------ 829-831
+        SQLS = new StringBuilder();
+        SQLS.append("ALTER TABLE `testcasestepaction` ADD COLUMN `ForceExeStatus` VARCHAR(45) NOT NULL DEFAULT '' AFTER `Property`;");
+        SQLInstruction.add(SQLS.toString());
+        SQLS = new StringBuilder();
+        SQLS.append("INSERT INTO `invariant` (`idname`, `value`, `sort`, `description`, `VeryShortDesc`) VALUES");
+        SQLS.append("  ('ACTIONFORCEEXESTATUS', '', '10', 'Standard behaviour.', 'Std Behaviour')");
+        SQLS.append(", ('ACTIONFORCEEXESTATUS', 'PE', '20', 'Force the Execution to continue running not impacting the final status whatever the result of the action is.', 'Continue')");
+        SQLS.append(", ('INVARIANTPRIVATE', 'ACTIONFORCEEXESTATUS', '540', '', '');");
+        SQLInstruction.add(SQLS.toString());
+        SQLS = new StringBuilder();
+        SQLS.append("ALTER TABLE `testcasestepactionexecution` ADD COLUMN `ForceExeStatus` VARCHAR(45) NOT NULL DEFAULT '' AFTER `Property`;");
+        SQLInstruction.add(SQLS.toString());
+
+        // New updated Documentation.
+        //-- ------------------------ 832-833
+        SQLS = new StringBuilder();
         SQLS.append("DELETE FROM `documentation`;");
         SQLInstruction.add(SQLS.toString());
         SQLS = new StringBuilder();
@@ -5525,6 +5878,10 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLS.append(",('robot','active','','fr','Actif','Defini si le robot est actif ou non.')");
         SQLS.append(",('robot','browser','','en','Browser','Broswer of the robot.')");
         SQLS.append(",('robot','browser','','fr','Navigateur','Navitateur du robot.')");
+        SQLS.append(",('robot','capabilityCapability','','en','Capability','Capability name.')");
+        SQLS.append(",('robot','capabilityCapability','','fr','Capabilité','Nom de la capabilité.')");
+        SQLS.append(",('robot','capabilityValue','','en','Value','Capability value.')");
+        SQLS.append(",('robot','capabilityValue','','fr','Valeur','Valeur de la capabilité.')");
         SQLS.append(",('robot','description','','en','Description','Robot Description.')");
         SQLS.append(",('robot','description','','fr','Description','Description du robot.')");
         SQLS.append(",('robot','host','','en','Hostname','IP Adress or host that host the selenium server that will execute the test case.')");
@@ -5657,7 +6014,8 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLS.append(",('testcasestepaction','Action','focusDefaultIframe','en','Focus on the default frame.','TBD')");
         SQLS.append(",('testcasestepaction','Action','focusToIframe','en','Focus to a specific frame.','TBD')");
         SQLS.append(",('testcasestepaction','Action','getPageSource','en','getPageSource','<code class=\\'doc-fixed\\'>getPageSource</code> will allow you to record the source of the page opened.<br><br> The result will be stored in a file which will be available in the execution detail<br><br>Usage :<br><doc class=\"usage\"><table cellspacing=0 cellpadding=2><th class=\\'ex\\'>Field</th><th class=\\'ex\\'>Usage</th><tr><td class=\\'ex\\'>Object</td><td class=\\'ex\\'></td></tr><tr><td class=\\'ex\\'>Property</td><td class=\\'ex\\'></td></tr></table></doc><br><br>Examples :<br><doc class=\"examples\"><table cellspacing=0 cellpadding=2><th class=\\'ex\\'>Object</th><th class=\\'ex\\'>Property</th><th class=\\'ex\\'>Result</th><tr><td class=\\'ex\\'></td><td class=\\'ex\\'> </td><td class=\\'ex\\'>Source will be recorded</td></tr></table></doc>')");
-        SQLS.append(",('testcasestepaction','Action','keypress','en','Press a specific key.','<code class=\\'doc-fixed\\'>keypress</code> will allow you to press any key in the current web page.<br><br>Usage :<br><doc class=\"usage\"><table cellspacing=0 cellpadding=2><th class=\\'ex\\'>Field</th><th class=\\'ex\\'>Usage</th><tr><td class=\\'ex\\'>Object</td><td class=\\'ex\\'>Keycode of the key to press.</td></tr><tr><td class=\\'ex\\'>Property</td><td class=\\'ex\\'>Property name (only used to activate or not double click depending on if the property exist for the country).</td></tr></table></doc><br><br>Examples :<br><doc class=\"examples\"><table cellspacing=0 cellpadding=2><th class=\\'ex\\'>Object</th><th class=\\'ex\\'>Property</th><th class=\\'ex\\'>Result</th><tr><td class=\\'ex\\'>ENTER</td><td class=\\'ex\\'></td><td class=\\'ex\\'>ENTER key will be pressed.</td></tr></table></doc>')");
+        SQLS.append(",('testcasestepaction','Action','hideKeyboard','en','Hide keyboard.','Hide the currently visible keyboard.')");
+        SQLS.append(",('testcasestepaction','Action','keypress','en','Press a specific key.','<code class=\\'doc-fixed\\'>keypress</code> will allow you to press any key in the current web page.<br><br>Usage :<br><doc class=\"usage\"><table cellspacing=0 cellpadding=2><th class=\\'ex\\'>Field</th><th class=\\'ex\\'>Usage</th><tr><td class=\\'ex\\'>Object</td><td class=\\'ex\\'>Keycode of the key to press.</td></tr><tr><td class=\\'ex\\'>Property</td><td class=\\'ex\\'>Property name (only used to activate or not double click depending on if the property exist for the country).</td></tr></table></doc><br><br>Examples :<br><doc class=\"examples\"><table cellspacing=0 cellpadding=2><th class=\\'ex\\'>Object</th><th class=\\'ex\\'>Property</th><th class=\\'ex\\'>Result</th><tr><td class=\\'ex\\'>ENTER</td><td class=\\'ex\\'></td><td class=\\'ex\\'>ENTER key will be pressed.</td></tr><tr><td class=\\'ex\\'>SEARCH</td><td class=\\'ex\\'></td><td class=\\'ex\\'>SEARCH key will be pressed.</td></tr></table></doc>')");
         SQLS.append(",('testcasestepaction','Action','manageDialog','en','Manage javascript dialog opened by application, specified ok to accept it or cancel to dismiss','<b>manageDialog</b><br><br>Let possibility to testcase to handle javascript dialog <br>Specify <b>ok</b> value to accept it or <b>cancel</b> to dismiss.')");
         SQLS.append(",('testcasestepaction','Action','mouseDown','en','Click mouse button and hold it clicked. ','TBD')");
         SQLS.append(",('testcasestepaction','Action','mouseOver','en','Mouse cursor over an object.','TBD')");
@@ -5670,12 +6028,14 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLS.append(",('testcasestepaction','Action','select','en','Select a value on a combo.','<b>select :</b> When the action expected is to select a value from a select box.<br><br><dd><u><i>How to feed it :</i></u> <br><br><dd><i>Action =</i> select, <i>Value =</i> the <i>id</i> of the select box.  and <i>Property =</i> the property containing the value to select.<br>It could be label=TheExactNameOfTheValue or value=the first letter or the place number of the value expected in the select box<br>For example : label=WEB   , value=W   , value=3 if the WEB is the third value in the selectbox<br><br><br>')");
         SQLS.append(",('testcasestepaction','Action','selectAndWait','en','[DEPRECATED] Select a value on a combo and wait a certain time.','<code class=\\'doc-fixed\\'>selectAndWait</code> is a deprecated action. Please don\\'t use it anymore. You can use <code class=\\'doc-action\\'>select</code> and <code class=\\'doc-action\\'>wait</code> actions in stead.')");
         SQLS.append(",('testcasestepaction','Action','skipAction','en','Skip this action.','<code class=\\'doc-fixed\\'>skipAction</code> will skip the action. Can be used in case of control that must be done without action before.<br><br>Usage :<br><doc class=\"usage\"><table cellspacing=0 cellpadding=2><th class=\\'ex\\'>Field</th><th class=\\'ex\\'>Usage</th><tr><td class=\\'ex\\'>Object</td><td class=\\'ex\\'></td></tr><tr><td class=\\'ex\\'>Property</td><td class=\\'ex\\'></td></tr></table></doc><br><br>Examples :<br><doc class=\"examples\"><table cellspacing=0 cellpadding=2><th class=\\'ex\\'>Object</th><th class=\\'ex\\'>Property</th><th class=\\'ex\\'>Result</th><tr><td class=\\'ex\\'></td><td class=\\'ex\\'></td><td class=\\'ex\\'>No action will be executed and engine will go to the next action or control</td></tr></table></doc>')");
+        SQLS.append(",('testcasestepaction','Action','swipe','en','Swipe the screen.','<code class=\\'doc-fixed\\'>swipe</code> will allow you to swipe a mobile screen to a specific direction.<br><br>Usage :<br><doc class=\"usage\"><table cellspacing=0 cellpadding=2><th class=\\'ex\\'>Field</th><th class=\\'ex\\'>Usage</th><tr><td class=\\'ex\\'>Object</td><td class=\\'ex\\'>Direction to swipe (UP, DOWN, RIGHT, LEFT or CUSTOM). In case of UP, DOWN, RIGHT and LEFT, swipe is done by computing from 1/3 to 2/3 of the screen resolution.</td></tr><tr><td class=\\'ex\\'>Property</td><td class=\\'ex\\'>Only in case of CUSTOM swipe direction, specify the custom direction thanks to the following format: x1;y1;x2;y2, where x1 and y1 are the coordinates of the start position on the screen and x2 and y2 are the coordinates of the end position on the screen.</td></tr></table></doc><br><br>Examples :<br><doc class=\"examples\"><table cellspacing=0 cellpadding=2><th class=\\'ex\\'>Object</th><th class=\\'ex\\'>Property</th><th class=\\'ex\\'>Result</th><tr><td class=\\'ex\\'>UP</td><td class=\\'ex\\'></td><td class=\\'ex\\'>Swipe is done from down to up (so the page go down).</td></tr><tr><td class=\\'ex\\'>CUSTOM</td><td class=\\'ex\\'>100;200;300;400</td></code><td class=\\'ex\\'>Swipe goes from (x1 = 100; y1 = 200) to (x2 = 300; y2 = 400) on the screen.</td></tr></table></doc>')");
         SQLS.append(",('testcasestepaction','Action','switchToWindow','en','Switching the focus to a window.','When the Test case need to switch to another window (like popup dialog) this action is used. Just specify title of other window in objet to switch to this window.')");
         SQLS.append(",('testcasestepaction','Action','takeScreenshot','en','[DEPRECATED] Take a screenshot.','<code class=\\'doc-fixed\\'>takeScreenshot</code> is a deprecated action. Please don\\'t use it anymore. You can use <code class=\\'doc-control\\'>takeScreenshot</code> Control associated to any action in stead.')");
         SQLS.append(",('testcasestepaction','Action','type','en','Put a data in a field.','<b>type :</b> When the action expected is to type something into a field.<br><br><dd><u><i>How to feed it :</i></u> <br><br><dd><i>Action =</i> type, <i>Value =</i> the <i>id</i> of the field  and <i>Property =</i> the property containing the value to type.<br><br><br>')");
         SQLS.append(",('testcasestepaction','Action','unknown','en','Unknown action.','This is the default action defined inside Cerberus.<br>It can be used when the action has not been identified or clarified yet.<br>NB : It is not implemented and will report a FA status on the corresponding execution.')");
         SQLS.append(",('testcasestepaction','Action','wait','en','Wait for a certain amount of time.','<b>wait :</b> When the action expected is to wait 5 seconds.<br><br><dd><u><i>How to feed it :</i></u> <br><br><dd><i>Action =</i> wait, <i>Value =</i> null  and  <i>Property =</i> null.<br><br><br>')");
         SQLS.append(",('testcasestepaction','description','','en','Description','This is the functional desciption of the action.')");
+        SQLS.append(",('testcasestepaction','ForceExeStatus','','en','Exe RC','<p>This parameter can be used in order to change the behaviour of the Cerberus execution engine.</p><p>If the field is empty, there will be no impact on the behaviour of the engine.</p>If PE, the execution will continue (stay pending) after the execution of the action no matter what is the result of the action. This value can be used in case an action needs to be done to perform the test but should not impact the result of the test if it fails (Ex : closing a marketing layer on a website).')");
         SQLS.append(",('testcasestepaction','image','','en','Picture','')");
         SQLS.append(",('testcasestepaction','Object','','en','Object','This is the object information that is used to perform the action.<br>The same variable as property value field can be used (See <a href=\"?DocTable=testcasecountryproperties&DocField=Value\">doc</a>)<br>This information needs to be feed according to the action chosen.<br><br>Get more information on <code class=\\'doc-fixed\\'>action</code> field.')");
         SQLS.append(",('testcasestepaction','Property','','en','Property','It is the name of the property which will be used to perform the action defined.<br><br>If during the execution, the property is not defined for the country the action will be discarded with a warning but execution status will not be impacted.<br>This technique can be used in order to desactivate an action for a specific country.<br><br>WARNING : YOU MUST PUT THE NAME OF A PROPERTY. YOU CANNOT PUT A VALUE HERE.<br><br>Get more information on <code class=\\'doc-fixed\\'>action</code> field.')");
@@ -5717,27 +6077,29 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLS.append(",('testcasestepactioncontrolexecution','ReturnCode','','en','Control Return Code','Return Code of the Control.')");
         SQLS.append(",('testcasestepactioncontrolexecution','ReturnMessage','','en','Return Message','This is the return message on that specific control.')");
         SQLS.append(",('testcasestepactioncontrolexecution','screenshotfilename','','en','Screenshot Filename','This is the filename of the screenshot.<br>It is null if no screenshots were taken.')");
+        SQLS.append(",('testcasestepactionexecution','ForceExeStatus','','en','Force Execution RC','This is the value of the Force Execution Status data used by the engine during the execution of the testcase.')");
         SQLS.append(",('testcasestepactionexecution','ReturnCode','','en','Action Return Code','This is the return code of the action.')");
         SQLS.append(",('testcasestepactionexecution','screenshotfilename','','en','Screenshot Filename','This is the filename of the screenshot.<br>It is null if no screenshots were taken.')");
         SQLS.append(",('testdatalib','actions','','en','Actions','<p> List of available actions for the current user: </p><p><table border=\\'1\\'><tr><th class=\\'ex\\'>Button</th><th class=\\'ex\\'>Function</th><th class=\\'ex\\'>Description</th></tr><tr><td><span class=\\'glyphicon glyphicon-pencil\\'></span></td><td>Edit Entry</td><td>Allows the update of the library entry: system, environment, country, type, group, database, script, method, service path, envelope and description. The name is not editable.</td></tr><tr><td><span class=\\'glyphicon glyphicon-trash\\'></span></td><td>Delete Entry</td><td>Allows the deletion of a library entry (and its sub-data entries). Only the entries that are not being used are possible to be deleted. </td></tr> <tr><td><span class=\\'glyphicon glyphicon-list-alt\\'></span></td><td>Edit Sub-Data Entries</td><td>Allows the management of the sub-data set specified for the library entry. </td></tr><tr><td>TC</td><td>Get List of test cases that use this entry</td><td>Allows the visualisation of the test cases that are currently using the library entry.</td></tr></table></p>  ')");
         SQLS.append(",('testdatalib','actions_nopermissions','','en','Actions','<p> List of available actions for the current user: </p><p><table border=\\'1\\'><tr><th class=\\'ex\\'>Button</th><th class=\\'ex\\'>Function</th><th class=\\'ex\\'>Description</th></tr><tr><td><span class=\\'glyphicon glyphicon-list-alt\\'></span></td><td>Sub-Data Entries</td><td>Allows the visualisation of the sub-data set specified for the library entry. </td></tr><tr><td>TC</td><td>Get list of test cases that use this entry</td><td>Allows the visualisation of the test cases that are currently using the library entry.</td></tr></table></p>  ')");
-        SQLS.append(",('testdatalib','country','','en','Country','<p>Country where the entry is available. If not specified, then the property applies to ALL countries. </p><p><b><u>Note</u></b>:The combination of <u>Name</u>, <u>System</u>, <u>Environment</u> and <u>Country</u> must be unique.</p>')");
+        SQLS.append(",('testdatalib','country','','en','Country','<p>Country where the entry is available. If not specified, then the data entry apply to ALL countries. </p>')");
         SQLS.append(",('testdatalib','created','','en','Creation Date','')");
         SQLS.append(",('testdatalib','creator','','en','Creator','User who created the data.')");
-        SQLS.append(",('testdatalib','database','','en','Database','<p>Specifies the database where the <i>script</i> attribute should be executed. </p><p><u>Property Type:</u> SQL</p>')");
+        SQLS.append(",('testdatalib','database','','en','Database','<p>Specifies the database where the <i>script</i> attribute should be executed. </p> You can then configure the JDBC Connection pool on that database at the environment level. That allows to create testdata independant from the environement where the testcase is executed.')");
+        SQLS.append(",('testdatalib','databaseUrl','','en','Database URL','<p>Specifies the database where the <i>Service Path</i> will be requested. </p> You can then configure the left part of the Service URL on that database at the environment level. That allows to create testdata independant from the environment where the testcase is executed.')");
         SQLS.append(",('testdatalib','description','','en','Description','<p>Textual description of the entry.</p>')");
-        SQLS.append(",('testdatalib','envelope','','en','Envelope','<p>Envelope that should be sent in the SOAP request.</p><p><u>Property Type:</u> SOAP</p><p><u>Allows the usage of other properties: </u>Yes</p>')");
-        SQLS.append(",('testdatalib','environment','','en','Environment','<p>Environment where the entry is available. If not specified, then the property applies to ALL environments.</p><p><b><u>Note</u></b>: The combination of <u>Name</u>, <u>System</u>, <u>Environment</u> and <u>Country</u> must be unique.</p>')");
+        SQLS.append(",('testdatalib','envelope','','en','Envelope','<p>Envelope that should be sent in the SOAP request.</p>')");
+        SQLS.append(",('testdatalib','environment','','en','Environment','<p>Environment where the entry is available. If not specified, then the data entry apply to ALL environments.</p>')");
         SQLS.append(",('testdatalib','group','','en','Group','<p>Name that groups entries that are at some extent correlated. It is an <b>optional</b> attribute.</p>')");
         SQLS.append(",('testdatalib','lastmodified','','en','Modification Date','')");
         SQLS.append(",('testdatalib','lastmodifier','','en','Last Modifier','User who last modified the data.')");
-        SQLS.append(",('testdatalib','method','','en','Method','<p>Method that is invoked by the SOAP request/call.</p><p><u>Property Type:</u> SOAP</p><p><u>Allows the usage of other properties: </u>Yes</p><p>Examples:</p><table><tr><td>MYMETHOD_REQUEST</td></tr><tr><td>%METHOD_NAME%</td></tr></table><p><b>Note: </b>SOAP Action.</p>')");
-        SQLS.append(",('testdatalib','name','','en','Name','<p>Name of the entry. It is a <b>mandatory</b> attribute.</p><p><b><u>Note</u></b>: The combination of <u>Name</u>, <u>System</u>, <u>Environment</u> and <u>Country</u> must be unique.</p>')");
-        SQLS.append(",('testdatalib','script','','en','Script','<p>SQL commands that should be executed to retrieve test data.</p><p><u>Property Type:</u> SQL</p><p><u>Allows the usage of other properties: </u>Yes</p><p>Examples:</p><table><tr><td>select * from table;</td></tr><tr><td>select * from table where column = %COLUMN%;</td></tr></table>')");
-        SQLS.append(",('testdatalib','servicepath','','en','Service Path','<p>Location of the service.</p><p><u>Property Type:</u> SOAP</p><p><u>Allows the usage of other properties: </u>Yes</p><p>Examples:</p><table><tr><td>http://mydomain/mywebservicelocation</td></tr><tr><td>http://%MY_DYNAMIC_IP%/mywebservicelocation</td></tr><tr><td>%LOCATION%</td></tr></table><p><b>Note:</b> Users must specify absolute paths.</p>')");
-        SQLS.append(",('testdatalib','system','','en','System','<p>System where the entry is available. If not specified, then the property applies to ALL systems.</p><p><b><u>Note</u></b>: The combination of <u>Name</u>, <u>System</u>, <u>Environment</u> and <u>Country</u> must be unique.</p>')");
+        SQLS.append(",('testdatalib','method','','en','Method','<p>Method that is invoked by the SOAP request/call.</p>')");
+        SQLS.append(",('testdatalib','name','','en','Name','<p>Name of the entry. It is a <b>mandatory</b> attribute.</p><p><b><u>Note</u></b>: The combination of <u>Name</u>, <u>System</u>, <u>Environment</u> and <u>Country</u> can be duplicated when the type is STATIC in order to allow a list of data to be available.</p>')");
+        SQLS.append(",('testdatalib','script','','en','Script','<p>SQL commands that should be executed to retrieve test data.</p><p>Examples:</p><table><tr><td>select * from table;</td></tr><tr><td>select * from table where column = %COLUMN%;</td></tr></table>')");
+        SQLS.append(",('testdatalib','servicepath','','en','Service Path','<p>Location of the service.</p><p>Examples:</p><table><tr><td>http://mydomain/mywebservicelocation</td></tr><tr><td>mywebservicelocation</td></tr><tr><td>http://%MY_DYNAMIC_IP%/mywebservicelocation</td></tr><tr><td>%LOCATION%</td></tr></table>')");
+        SQLS.append(",('testdatalib','system','','en','System','<p>System where the entry is available. If not specified, then the data entry apply to ALL systems.</p>')");
         SQLS.append(",('testdatalib','testdatalibid','','en','ID','<p>Unique identifier of the test data library entry</p>')");
-        SQLS.append(",('testdatalib','type','','en','Type','<p>Entry Type - Cerberus allows the definition of three types: STATIC, SQL and SOAP.</p><table border=\\'1\\'> <tr><th class=\\'ex\\'>Type</th><th class=\\'ex\\'>Description</th></tr> <tr><td>STATIC</td><td>Static test data - in each execution the values used by the test cases do not vary.</td></tr> <tr><td>SQL</td><td> Test data obtained from a SQL execution – values depend on what is stored in the database.</td></tr> <tr><td>SOAP</td><td>Test data obtained from a SOAP call – values depend on the web service implementation.</td></tr> </table>')");
+        SQLS.append(",('testdatalib','type','','en','Type','<p>Entry Type - Cerberus allows the definition of three types: STATIC, SQL and SOAP.</p><table border=\\'1\\'> <tr><th class=\\'ex\\'>Type</th><th class=\\'ex\\'>Description</th></tr> <tr><td>STATIC</td><td>Static test data - in each execution the values used by the test cases are statically definied directly in Cerberus.</td></tr> <tr><td>SQL</td><td> Test data obtained from a SQL execution – values depend on what the SQL return on the corresponding environment.</td></tr> <tr><td>SOAP</td><td>Test data obtained from a SOAP call – values depend on the result of the web service call.</td></tr></table>')");
         SQLS.append(",('testdatalibdata','column','','en','Column','<p>Column name representing the value that should be obtained after executing a SQL instruction (select).</p>')");
         SQLS.append(",('testdatalibdata','description','','en','Description','<p>Textual description for the sub-data entry.</p>')");
         SQLS.append(",('testdatalibdata','parsingAnswer','','en','Parsing Answer','<p>XPath expression that allows the user to parse data from the SOAP response.</p>')");
@@ -5746,357 +6108,6 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLS.append(",('user','DefaultSystem','','en','Default System','This is the default <code class=\\'doc-crbvvoca\\'>system</code> the user works on the most. It is used to default the perimeter of <code class=\\'doc-crbvvoca\\'>test case</code> or <code class=\\'doc-crbvvoca\\'>applications</code> displayed on some Cerberus pages.')");
         SQLS.append(",('user','Team','','en','Team','This is the team of the user.')");
         SQLS.append(",('usergroup','GroupName','','en','Group Name','Authorities are managed by group. In order to be granted to a set of feature, you must belong to the corresponding group.<br>Every user can of course belong to as many group as necessary in order to get access to as many feature as required.<br>In order to get the full access to the system you must belong to every group.<br>Some groups are linked together on the test perimeter and integration perimeter.<br><br><b>Test perimeter :</b><br><br><code class=\\'doc-fixed\\'>TestRO</code>: Has read only access to the information related to test cases and also has access to execution reporting options.<br><br><code class=\\'doc-fixed\\'>Test</code>: Can modify non WORKING test cases but cannot delete test cases.<br><br><code class=\\'doc-fixed\\'>TestAdmin</code>: Can modify or delete any test case (including Pre Testing test cases). Can also create or delete a test.<br><br>The minimum group you need to belong is <code class=\\'doc-fixed\\'>TestRO</code> that will give you access in read only to all test data (including its execution reporting page).<br>If you want to be able to modify the testcases (except the WORKING ones), you need <code class=\\'doc-fixed\\'>Test</code> group on top of <code class=\\'doc-fixed\\'>TestRO</code> group.<br>If you want the full access to all testcase (including beeing able to delete any testcase), you will need <code class=\\'doc-fixed\\'>TestAdmin</code> on top of <code class=\\'doc-fixed\\'>TestRO</code> and <code class=\\'doc-fixed\\'>Test</code> group.<br><br><b>Test Data perimeter :</b><br><br><code class=\\'doc-fixed\\'>TestDataManager</code>: Can modify the test data..<br><br><b>Test Execution perimeter :</b><br><br><code class=\\'doc-fixed\\'>RunTest</code>: Can run both Manual and Automated test cases from GUI.<br><br><b>Integration perimeter :</b><br><br><code class=\\'doc-fixed\\'>IntegratorRO</code>: Has access to the integration status.<br><br><code class=\\'doc-fixed\\'>Integrator</code>: Can add an application. Can change parameters of the environments.<br><br><code class=\\'doc-fixed\\'>IntegratorNewChain</code>: Can register the end of the chain execution. Has read only access to the other informations on the same page.<br><br><code class=\\'doc-fixed\\'>IntegratorDeploy</code>: Can disable or enable environments and register new build / revision.<br><br>The minimum group you need to belong is <code class=\\'doc-fixed\\'>IntegratorRO</code> that will give you access in read only to all environment data.<br>If you want to be able to modify the environment data, you need <code class=\\'doc-fixed\\'>Integrator</code> group on top of <code class=\\'doc-fixed\\'>IntegratorRO</code> group.<br><code class=\\'doc-fixed\\'>IntegratorNewChain</code> and <code class=\\'doc-fixed\\'>IntegratorDeploy</code> are used on top of <code class=\\'doc-fixed\\'>Integrator</code> Group to be able to create a new chain on an environment or perform a deploy operation.<br><br><b>Administration perimeter :</b><br><br><code class=\\'doc-fixed\\'>Administrator</code>: Can create, modify or delete users. Has access to log Event and Database Maintenance. Can change Parameter values.')");
-        SQLInstruction.add(SQLS.toString());
-
-        // Updated CHAIN invariant.
-        //-- ------------------------ 767-768
-        SQLS = new StringBuilder();
-        SQLS.append("UPDATE `invariant` SET `value`='Y', `description`='Yes' WHERE `idname`='CHAIN' and`value`='0';");
-        SQLInstruction.add(SQLS.toString());
-        SQLS = new StringBuilder();
-        SQLS.append("UPDATE `invariant` SET `value`='N', `description`='No' WHERE `idname`='CHAIN' and`value`='1';");
-        SQLInstruction.add(SQLS.toString());
-
-        // Add the hideKeyboard action.
-        //-- ------------------------ 769
-        SQLS = new StringBuilder();
-        SQLS.append("INSERT INTO `invariant` (`idname`, `value`, `sort`, `description`, `VeryShortDesc`) VALUES ('ACTION', 'hideKeyboard', '1200', 'hideKeyboard', '');");
-        SQLInstruction.add(SQLS.toString());
-
-        // Add the Unknown Control.
-        //-- ------------------------ 770
-        SQLS = new StringBuilder();
-        SQLS.append("INSERT INTO `invariant` (`idname`, `value`, `sort`, `description`, `VeryShortDesc`) VALUES ('CONTROL', 'Unknown', '10', 'Unknown', '');");
-        SQLInstruction.add(SQLS.toString());
-
-        // Add the hideKeyboard and update the keyPress action documentation.
-        //-- ------------------------ 771-772
-        SQLS = new StringBuilder();
-        SQLS.append("INSERT INTO `documentation` (`DocTable`, `DocField`, `DocValue`, `Lang`, `DocLabel`, `DocDesc`) VALUES ('testcasestepaction', 'Action', "
-                + "'hideKeyboard', 'en', 'Hide keyboard.', 'Hide the currently visible keyboard.');\n");
-        SQLInstruction.add(SQLS.toString());
-        SQLS = new StringBuilder();
-        SQLS.append("UPDATE `documentation` SET `DocDesc`='<code class=\\'doc-fixed\\'>keypress</code> will allow you to press any key in the current web page"
-                + ".<br><br>Usage :<br><doc class=\\\"usage\\\"><table cellspacing=0 cellpadding=2><th class=\\'ex\\'>Field</th><th class=\\'ex\\'>Usage</th><tr><td "
-                + "class=\\'ex\\'>Object</td><td class=\\'ex\\'>Keycode of the key to press.</td></tr><tr><td class=\\'ex\\'>Property</td><td class=\\'ex\\'>Property name (only "
-                + "used to activate or not double click depending on if the property exist for the country).</td></tr></table></doc><br><br>Examples :<br><doc "
-                + "class=\\\"examples\\\"><table cellspacing=0 cellpadding=2><th class=\\'ex\\'>Object</th><th class=\\'ex\\'>Property</th><th class=\\'ex\\'>Result</th><tr><td "
-                + "class=\\'ex\\'>ENTER</td><td class=\\'ex\\'></td><td class=\\'ex\\'>ENTER key will be pressed.</td></tr><tr><td class=\\'ex\\'>SEARCH</td><td "
-                + "class=\\'ex\\'></td><td class=\\'ex\\'>SEARCH key will be pressed.</td></tr></table></doc>' WHERE `DocTable`='testcasestepaction' and`DocField`='Action' "
-                + "and`DocValue`='keypress' and`Lang`='en';\n");
-        SQLInstruction.add(SQLS.toString());
-
-        // Add the swipe action.
-        //-- ------------------------ 773-775
-        SQLS = new StringBuilder();
-        SQLS.append("INSERT INTO `invariant` (`idname`, `value`, `sort`, `description`, `VeryShortDesc`) VALUES ('ACTION', 'swipe', '1300', 'Swipe mobile screen', '');\n");
-        SQLInstruction.add(SQLS.toString());
-        SQLS = new StringBuilder();
-        SQLS.append("INSERT INTO `documentation` (`DocTable`, `DocField`, `DocValue`, `Lang`, `DocLabel`, `DocDesc`) VALUES ('testcasestepaction', 'Action', 'swipe', "
-                + "'en', 'Swipe the screen.', '<code class=\\'doc-fixed\\'>swipe</code> will allow you to swipe a mobile screen to a specific direction.<br><br>Usage :<br><doc "
-                + "class=\\\"usage\\\"><table cellspacing=0 cellpadding=2><th class=\\'ex\\'>Field</th><th class=\\'ex\\'>Usage</th><tr><td class=\\'ex\\'>Object</td><td "
-                + "class=\\'ex\\'>Direction to swipe (UP, DOWN, RIGHT, LEFT or CUSTOM). In case of UP, DOWN, RIGHT and LEFT, swipe is done by computing from 1/3 to 2/3 of the "
-                + "screen resolution.</td></tr><tr><td class=\\'ex\\'>Property</td><td class=\\'ex\\'>Only in case of CUSTOM swipe direction, specify the custom direction thanks "
-                + "to the following format: x1;y1;x2;y2, where x1 and y1 are the coordinates of the start position on the screen and x2 and y2 are the coordinates of the end "
-                + "position on the screen.</td></tr></table></doc><br><br>Examples :<br><doc class=\\\"examples\\\"><table cellspacing=0 cellpadding=2><th "
-                + "class=\\'ex\\'>Object</th><th class=\\'ex\\'>Property</th><th class=\\'ex\\'>Result</th><tr><td class=\\'ex\\'>UP</td><td class=\\'ex\\'></td><td "
-                + "class=\\'ex\\'>Swipe is done from down to up (so the page go down).</td></tr><tr><td class=\\'ex\\'>CUSTOM</td><td class=\\'ex\\'>100;200;300;400</td></code><td"
-                + " class=\\'ex\\'>Swipe goes from (x1 = 100; y1 = 200) to (x2 = 300; y2 = 400) on the screen.</td></tr></table></doc>');");
-        SQLInstruction.add(SQLS.toString());
-        SQLS = new StringBuilder();
-        SQLS.append("INSERT INTO `parameter` (`system`, `param`, `value`, `description`) VALUES ('', 'appium_swipeDuration', '2000', 'The duration for the Appium "
-                + "swipe action');\n");
-        SQLInstruction.add(SQLS.toString());
-
-        // Add the cerberus_notinuse_timeout parameter.
-        //-- ------------------------ 776
-        SQLS = new StringBuilder();
-        SQLS.append("INSERT INTO `parameter` (`system`, `param`, `value`, `description`) VALUES ('', 'cerberus_notinuse_timeout', '600', 'Integer that correspond to the number of seconds after which, any pending execution (status=PE) will not be considered as pending.');");
-        SQLInstruction.add(SQLS.toString());
-
-        // Remove unicity constrain on TestDataLib.
-        //-- ------------------------ 777
-        SQLS = new StringBuilder();
-        SQLS.append("ALTER TABLE `testdatalib` ");
-        SQLS.append("DROP INDEX `IX_testdatalib_01` ,");
-        SQLS.append("ADD INDEX `IX_testdatalib_01` (`Name` ASC, `system` ASC, `Environment` ASC, `Country` ASC) ;");
-        SQLInstruction.add(SQLS.toString());
-
-        // Add the RobotCapability table
-        //-- ------------------------ 778-779
-        SQLS = new StringBuilder();
-        SQLS.append("CREATE TABLE `robotcapability` (\n"
-                + "  `id` int(11) NOT NULL AUTO_INCREMENT,\n"
-                + "  `robot` varchar(100) NOT NULL,\n"
-                + "  `capability` varchar(45) NOT NULL,\n"
-                + "  `value` varchar(255) NOT NULL,\n"
-                + "  PRIMARY KEY (`id`),\n"
-                + "  UNIQUE KEY `uq_capability_value_idx` (`capability`,`value`,`robot`),\n"
-                + "  KEY `fk_robot_idx` (`robot`),\n"
-                + "  CONSTRAINT `fk_robot` FOREIGN KEY (`robot`) REFERENCES `robot` (`robot`) ON DELETE CASCADE ON UPDATE CASCADE\n"
-                + ") ENGINE=InnoDB DEFAULT CHARSET=utf8;\n");
-        SQLInstruction.add(SQLS.toString());
-        SQLS = new StringBuilder();
-        SQLS.append("INSERT INTO `robotcapability` (`robot`, `value`, `capability`)  \n"
-                + "\tSELECT `robot`, `platform`, 'platform' AS `capability` FROM `robot`\n"
-                + "    UNION\n"
-                + "    SELECT `robot`, `browser`, 'browser' AS `capability` FROM `robot`\n"
-                + "    UNION\n"
-                + "    SELECT `robot`, `version`, 'version' AS `capability` FROM `robot`");
-        SQLInstruction.add(SQLS.toString());
-
-        // Apply changes on RobotCapability indexes/keys to follow naming convention
-        //-- ------------------------ 780-782
-        SQLS = new StringBuilder();
-        SQLS.append("ALTER TABLE `robotcapability` \n"
-                + "DROP FOREIGN KEY `fk_robot`;");
-        SQLInstruction.add(SQLS.toString());
-        SQLS = new StringBuilder();
-        SQLS.append("ALTER TABLE `robotcapability` \n"
-                + "DROP INDEX `uq_capability_value_idx` ,\n"
-                + "ADD UNIQUE INDEX `IX_robotcapability_01` (`capability` ASC, `value` ASC, `robot` ASC),\n"
-                + "DROP INDEX `fk_robot_idx` ,\n"
-                + "ADD INDEX `IX_robotcapability_02` (`robot` ASC);");
-        SQLInstruction.add(SQLS.toString());
-        SQLS = new StringBuilder();
-        SQLS.append("ALTER TABLE `robotcapability` \n"
-                + "ADD CONSTRAINT `FK_robotcapability_01`\n"
-                + "  FOREIGN KEY (`robot`)\n"
-                + "  REFERENCES `robot` (`robot`)\n"
-                + "  ON DELETE CASCADE\n"
-                + "  ON UPDATE CASCADE;");
-        SQLInstruction.add(SQLS.toString());
-
-        //Add IPA application type inside 783
-        SQLS = new StringBuilder();
-        SQLS.append("INSERT INTO `invariant` (`idname`, `value`, `sort`, `description`) ");
-        SQLS.append("VALUES ('APPLITYPE', 'IPA', '50', 'IOS Application');");
-        SQLInstruction.add(SQLS.toString());
-
-        // Reverting changes on RobotCapability table
-        //-- ------------------------ 784
-        SQLS = new StringBuilder();
-        SQLS.append("DELETE FROM `robotcapability`;");
-        SQLInstruction.add(SQLS.toString());
-
-        // Update testcaseexecution and testcasestepexecution to set default end to null.
-        // Update last_modified timestamp default value
-        //-- ------------------------ 785 - 794
-        SQLS = new StringBuilder();
-        SQLS.append("ALTER TABLE `testcaseexecution` ");
-        SQLS.append("CHANGE COLUMN `End` `End` TIMESTAMP NOT NULL DEFAULT '1970-01-01 01:01:01',");
-        SQLS.append("CHANGE COLUMN `Start` `Start` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP;");
-        SQLInstruction.add(SQLS.toString());
-        SQLS = new StringBuilder();
-        SQLS.append("ALTER TABLE `testcasestepexecution` ");
-        SQLS.append("CHANGE COLUMN `End` `End` TIMESTAMP NOT NULL DEFAULT '1970-01-01 01:01:01',");
-        SQLS.append("CHANGE COLUMN `Start` `Start` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP;");
-        SQLInstruction.add(SQLS.toString());
-        SQLS = new StringBuilder();
-        SQLS.append("ALTER TABLE `testdatalib` ");
-        SQLS.append("CHANGE COLUMN `LastModified` `LastModified` TIMESTAMP NOT NULL DEFAULT '1970-01-01 01:01:01';");
-        SQLInstruction.add(SQLS.toString());
-        SQLS = new StringBuilder();
-        SQLS.append("ALTER TABLE `test` ");
-        SQLS.append("CHANGE COLUMN `last_modified` `last_modified` TIMESTAMP NOT NULL DEFAULT '1970-01-01 01:01:01';");
-        SQLInstruction.add(SQLS.toString());
-        SQLS = new StringBuilder();
-        SQLS.append("ALTER TABLE `testcase` ");
-        SQLS.append("CHANGE COLUMN `last_modified` `last_modified` TIMESTAMP NOT NULL DEFAULT '1970-01-01 01:01:01';");
-        SQLInstruction.add(SQLS.toString());
-        SQLS = new StringBuilder();
-        SQLS.append("ALTER TABLE `testcasecountry` ");
-        SQLS.append("CHANGE COLUMN `last_modified` `last_modified` TIMESTAMP NOT NULL DEFAULT '1970-01-01 01:01:01';");
-        SQLInstruction.add(SQLS.toString());
-        SQLS = new StringBuilder();
-        SQLS.append("ALTER TABLE `testcasecountryproperties` ");
-        SQLS.append("CHANGE COLUMN `last_modified` `last_modified` TIMESTAMP NOT NULL DEFAULT '1970-01-01 01:01:01';");
-        SQLInstruction.add(SQLS.toString());
-        SQLS = new StringBuilder();
-        SQLS.append("ALTER TABLE `testcasestep` ");
-        SQLS.append("CHANGE COLUMN `last_modified` `last_modified` TIMESTAMP NOT NULL DEFAULT '1970-01-01 01:01:01';");
-        SQLInstruction.add(SQLS.toString());
-        SQLS = new StringBuilder();
-        SQLS.append("ALTER TABLE `testcasestepaction` ");
-        SQLS.append("CHANGE COLUMN `last_modified` `last_modified` TIMESTAMP NOT NULL DEFAULT '1970-01-01 01:01:01';");
-        SQLInstruction.add(SQLS.toString());
-        SQLS = new StringBuilder();
-        SQLS.append("ALTER TABLE `testcasestepactioncontrol` ");
-        SQLS.append("CHANGE COLUMN `last_modified` `last_modified` TIMESTAMP NOT NULL DEFAULT '1970-01-01 01:01:01';");
-        SQLInstruction.add(SQLS.toString());
-
-        // Add description in testcasestepexecution, testcasestepactionexecution
-        // and testcasestepactioncontrolexecution tables
-        //-- ------------------------ 795 - 798
-        SQLS = new StringBuilder();
-        SQLS.append("ALTER TABLE `testcasestepexecution` ");
-        SQLS.append("ADD COLUMN `Description` VARCHAR(150) NOT NULL DEFAULT '' AFTER `ReturnMessage`;");
-        SQLInstruction.add(SQLS.toString());
-        SQLS = new StringBuilder();
-        SQLS.append("ALTER TABLE `testcasestepactionexecution` ");
-        SQLS.append("ADD COLUMN `Description` VARCHAR(255) NOT NULL DEFAULT '' AFTER `PageSourceFileName`;");
-        SQLInstruction.add(SQLS.toString());
-        SQLS = new StringBuilder();
-        SQLS.append("ALTER TABLE `testcasestepactioncontrolexecution`  ");
-        SQLS.append("ADD COLUMN `Description` VARCHAR(255) NOT NULL DEFAULT '' AFTER `PageSourceFilename`;");
-        SQLInstruction.add(SQLS.toString());
-
-        //
-        SQLS = new StringBuilder();
-        SQLS.append("UPDATE `testdatalib` ");
-        SQLS.append("SET `LastModified` =  '1970-01-01 01:01:01' WHERE `LastModified` = '0000-00-00 00:00:00';");
-        SQLInstruction.add(SQLS.toString());
-        SQLS = new StringBuilder();
-        SQLS.append("UPDATE `test` ");
-        SQLS.append("SET `last_modified` =  '1970-01-01 01:01:01' WHERE `last_modified` = '0000-00-00 00:00:00';");
-        SQLInstruction.add(SQLS.toString());
-        SQLS = new StringBuilder();
-        SQLS.append("UPDATE `testcase` ");
-        SQLS.append("SET `last_modified` =  '1970-01-01 01:01:01' WHERE `last_modified` = '0000-00-00 00:00:00';");
-        SQLInstruction.add(SQLS.toString());
-        SQLS = new StringBuilder();
-        SQLS.append("UPDATE `testcasecountry` ");
-        SQLS.append("SET `last_modified` =  '1970-01-01 01:01:01' WHERE `last_modified` = '0000-00-00 00:00:00';");
-        SQLInstruction.add(SQLS.toString());
-        SQLS = new StringBuilder();
-        SQLS.append("UPDATE `testcasecountryproperties` ");
-        SQLS.append("SET `last_modified` =  '1970-01-01 01:01:01' WHERE `last_modified` = '0000-00-00 00:00:00';");
-        SQLInstruction.add(SQLS.toString());
-        SQLS = new StringBuilder();
-        SQLS.append("UPDATE `testcasestep` ");
-        SQLS.append("SET `last_modified` =  '1970-01-01 01:01:01' WHERE `last_modified` = '0000-00-00 00:00:00';");
-        SQLInstruction.add(SQLS.toString());
-        SQLS = new StringBuilder();
-        SQLS.append("UPDATE `testcasestepaction` ");
-        SQLS.append("SET `last_modified` =  '1970-01-01 01:01:01' WHERE `last_modified` = '0000-00-00 00:00:00';");
-        SQLInstruction.add(SQLS.toString());
-        SQLS = new StringBuilder();
-        SQLS.append("UPDATE `testcasestepactioncontrol` ");
-        SQLS.append("SET `last_modified` =  '1970-01-01 01:01:01' WHERE `last_modified` = '0000-00-00 00:00:00';");
-        SQLInstruction.add(SQLS.toString());
-        SQLS = new StringBuilder();
-        SQLS.append("UPDATE `testcase` ");
-        SQLS.append("SET `TCDateCrea` =  '1970-01-01 01:01:01' WHERE `TCDateCrea` = '0000-00-00 00:00:00';");
-        SQLInstruction.add(SQLS.toString());
-
-        // Add main robot capability invariants
-        //-- ------------------------ 807
-        SQLS = new StringBuilder();
-        SQLS.append("INSERT INTO `invariant` (`idname`, `value`, `sort`, `description`, `VeryShortDesc`) VALUES ");
-        SQLS.append("('INVARIANTPUBLIC', 'CAPABILITY', '500', 'Robot capabilities', ''), ");
-        SQLS.append("('CAPABILITY', 'automationName', '1', 'Automation name, e.g.: Appium)', ''), ");
-        SQLS.append("('CAPABILITY', 'deviceName', '2', 'Device name (useful for Appium)', ''), ");
-        SQLS.append("('CAPABILITY', 'app', '3', 'Application name (useful for Appium)', ''), ");
-        SQLS.append("('CAPABILITY', 'platformName', '4', 'Platform name (useful for Appium)', ''), ");
-        SQLS.append("('CAPABILITY', 'platformVersion', '5', 'Platform version (useful for Appium)', ''), ");
-        SQLS.append("('CAPABILITY', 'browserName', '6', 'Browser name (useful for Appium)', ''), ");
-        SQLS.append("('CAPABILITY', 'autoWebview', '7', 'If auto web view has to be enabled (useful for Appium, e.g.: true) ', '');");
-        SQLInstruction.add(SQLS.toString());
-
-        // Add documentation on robot capability
-        //-- ------------------------ 808
-        SQLS = new StringBuilder();
-        SQLS.append("INSERT INTO `documentation` (`DocTable`, `DocField`, `DocValue`, `Lang`, `DocLabel`, `DocDesc`) VALUES ");
-        SQLS.append("('robot', 'capabilityCapability', '', 'fr', 'Capabilité', 'Nom de la capabilité.'), ");
-        SQLS.append("('robot', 'capabilityCapability', '', 'en', 'Capability', 'Capability name.'), ");
-        SQLS.append("('robot', 'capabilityValue', '', 'fr', 'Valeur', 'Valeur de la capabilité.'), ");
-        SQLS.append("('robot', 'capabilityValue', '', 'en', 'Value', 'Capability value.');");
-        SQLInstruction.add(SQLS.toString());
-
-        // Correct property to add the /text() in xpath.
-        //-- ------------------------ 809
-        SQLS = new StringBuilder();
-        SQLS.append("UPDATE testcasecountryproperties SET value2 = concat(value2, '/text()')");
-        SQLS.append(" WHERE `type` = 'getFromXML' and value2 not like '%ext()';    ");
-        SQLInstruction.add(SQLS.toString());
-
-        // Adding missing index in order to support RANDOMNEW and NOTINUSE
-        //-- ------------------------ 810
-        SQLS = new StringBuilder();
-        SQLS.append("ALTER TABLE `testcaseexecution` ");
-        SQLS.append(" ADD INDEX `IX_testcaseexecution_09` (`Country` ASC, `Environment` ASC, `ControlStatus` ASC), "); // Used for NOTINUSE   
-        SQLS.append(" ADD INDEX `IX_testcaseexecution_10` (`Test` ASC, `TestCase` ASC, `Environment` ASC, `Country` ASC, `Build` ASC) ;"); // Used for RANDOMNEW
-        SQLInstruction.add(SQLS.toString());
-
-        // Adding Soap URL on database table
-        //-- ------------------------ 811
-        SQLS = new StringBuilder();
-        SQLS.append("ALTER TABLE `countryenvironmentdatabase` ");
-        SQLS.append("ADD COLUMN `SoapUrl` VARCHAR(200) NOT NULL DEFAULT ''  AFTER `ConnectionPoolName`;");
-        SQLInstruction.add(SQLS.toString());
-
-        // Adding DatabaseUrl on testdatalib table
-        //-- ------------------------ 812
-        SQLS = new StringBuilder();
-        SQLS.append("ALTER TABLE `testdatalib` ");
-        SQLS.append("ADD COLUMN `DatabaseUrl` VARCHAR(45) NOT NULL DEFAULT '' AFTER `Script`;");
-        SQLInstruction.add(SQLS.toString());
-
-        // Adding Action skipAction
-        //-- ------------------------ 813
-        SQLS = new StringBuilder();
-        SQLS.append("INSERT INTO `invariant` (`idname`, `value`, `sort`, `description`) ");
-        SQLS.append("VALUES ('ACTION', 'skipAction', '2600', 'skipAction');");
-        SQLInstruction.add(SQLS.toString());
-
-        // Adding Reset Password Email Parameters
-        //-- ------------------------ 814
-        SQLS = new StringBuilder();
-        SQLS.append("INSERT INTO `parameter` (`system`, `param`, `value`, `description`) ");
-        SQLS.append("VALUES ('', 'cerberus_notification_forgotpassword_subject', '[Cerberus] Reset your password', 'Subject of Cerberus forgot password notification email.')");
-        SQLS.append(", ('', 'cerberus_notification_forgotpassword_body', 'Hello %NAME%<br><br>We\\'ve received a request to reset your Cerberus password.<br><br>%LINK%<br><br>If you didn\\'t request a password reset, not to worry, just ignore this email and your current password will continue to work.<br><br>Cheers,<br>The Cerberus Team', 'Cerberus forgot password notification email body. %LOGIN%, %NAME% and %LINK% can be used as variables.');");
-        SQLInstruction.add(SQLS.toString());
-
-        // Adding Column ResetPasswordToken in User Table
-        //-- ------------------------ 815
-        SQLS = new StringBuilder();
-        SQLS.append("ALTER TABLE `user` ");
-        SQLS.append("ADD COLUMN `ResetPasswordToken` CHAR(40) NOT NULL DEFAULT '' AFTER `Password`;");
-        SQLInstruction.add(SQLS.toString());
-
-        // Add Sort column to test case step related tables (#569)
-        //-- ------------------------ 816 - 827 
-        SQLS = new StringBuilder();
-        SQLS.append("ALTER TABLE `testcasestep` ADD COLUMN `Sort` INT(10) UNSIGNED AFTER `Step`;");
-        SQLInstruction.add(SQLS.toString());
-        SQLS = new StringBuilder();
-        SQLS.append("UPDATE `testcasestep` SET `Sort` = `Step`;");
-        SQLInstruction.add(SQLS.toString());
-        SQLS = new StringBuilder();
-        SQLS.append("ALTER TABLE `testcasestepaction` ADD COLUMN `Sort` INT(10) UNSIGNED AFTER `Sequence`;");
-        SQLInstruction.add(SQLS.toString());
-        SQLS = new StringBuilder();
-        SQLS.append("UPDATE `testcasestepaction` SET `Sort` = `Sequence`;");
-        SQLInstruction.add(SQLS.toString());
-        SQLS = new StringBuilder();
-        SQLS.append("ALTER TABLE `testcasestepactioncontrol` ADD COLUMN `Sort` INT(10) UNSIGNED AFTER `Control`;");
-        SQLInstruction.add(SQLS.toString());
-        SQLS = new StringBuilder();
-        SQLS.append("UPDATE `testcasestepactioncontrol` SET `Sort` = `Control`;");
-        SQLInstruction.add(SQLS.toString());
-        SQLS = new StringBuilder();
-        SQLS.append("ALTER TABLE `testcasestepactioncontrolexecution` ADD COLUMN `Sort` INT(10) UNSIGNED AFTER `Control`;");
-        SQLInstruction.add(SQLS.toString());
-        SQLS = new StringBuilder();
-        SQLS.append("UPDATE `testcasestepactioncontrolexecution` SET `Sort` = `Control`;");
-        SQLInstruction.add(SQLS.toString());
-        SQLS = new StringBuilder();
-        SQLS.append("ALTER TABLE `testcasestepactionexecution` ADD COLUMN `Sort` INT(10) UNSIGNED AFTER `Sequence`;");
-        SQLInstruction.add(SQLS.toString());
-        SQLS = new StringBuilder();
-        SQLS.append("UPDATE `testcasestepactionexecution` SET `Sort` = `Sequence`;");
-        SQLInstruction.add(SQLS.toString());
-        SQLS = new StringBuilder();
-        SQLS.append("ALTER TABLE `testcasestepexecution` ADD COLUMN `Sort` INT(10) UNSIGNED AFTER `Step`;");
-        SQLInstruction.add(SQLS.toString());
-        SQLS = new StringBuilder();
-        SQLS.append("UPDATE `testcasestepexecution` SET `Sort` = `Step`;");
-        SQLInstruction.add(SQLS.toString());
-
-        // Removed callSoapWithBase_BETA and callSoap_BETA actions.
-        //-- ------------------------ 828
-        SQLS = new StringBuilder();
-        SQLS.append("DELETE from invariant where idname='ACTION' and value in ('callSoapWithBase_BETA','callSoap_BETA');");
         SQLInstruction.add(SQLS.toString());
 
         return SQLInstruction;

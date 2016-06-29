@@ -31,6 +31,6 @@ public interface IFactoryTestCaseStepAction {
                               String action, String object, String property, String description);
     
     TestCaseStepAction create(String test, String testCase, int step, int sequence, int sort,
-                              String action, String object, String property, String description, String screenshotFilename);
+                              String action, String object, String property, String forceExeStatus, String description, String screenshotFilename);
     
 }

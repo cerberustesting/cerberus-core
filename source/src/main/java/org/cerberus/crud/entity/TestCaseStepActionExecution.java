@@ -41,6 +41,7 @@ public class TestCaseStepActionExecution {
     private String action;
     private String object;
     private String property;
+    private String forceExeStatus;
     private long start;
     private long end;
     private long startLong;
@@ -48,6 +49,7 @@ public class TestCaseStepActionExecution {
     private String screenshotFilename;
     private String pageSourceFilename;
     private String description;
+
     /**
      * From here are data outside database model.
      */
@@ -59,7 +61,15 @@ public class TestCaseStepActionExecution {
     private boolean stopExecution;
     private List<TestCaseExecutionData> testCaseExecutionDataList; // Host the full list of data that was previously calculated and that will be used to calculate during the calculation of any property during the action.
     private AnswerList testCaseStepActionControlExecutionList;
-    
+
+    public String getForceExeStatus() {
+        return forceExeStatus;
+    }
+
+    public void setForceExeStatus(String forceExeStatus) {
+        this.forceExeStatus = forceExeStatus;
+    }
+
     public String getPageSourceFilename() {
         return pageSourceFilename;
     }
@@ -67,7 +77,7 @@ public class TestCaseStepActionExecution {
     public void setPageSourceFilename(String pageSourceFilename) {
         this.pageSourceFilename = pageSourceFilename;
     }
-    
+
     public String getPropertyName() {
         return propertyName;
     }
@@ -261,11 +271,11 @@ public class TestCaseStepActionExecution {
     public void setTestCaseStepActionControlExecutionList(AnswerList testCaseStepActionControlExecutionList) {
         this.testCaseStepActionControlExecutionList = testCaseStepActionControlExecutionList;
     }
-    
-    public AnswerList getTestCaseStepActionControlExecutionList(){
+
+    public AnswerList getTestCaseStepActionControlExecutionList() {
         return testCaseStepActionControlExecutionList;
     }
-    
+
     public String getDescription() {
         return description;
     }
@@ -286,6 +296,7 @@ public class TestCaseStepActionExecution {
             result.put("action", this.getAction());
             result.put("object", this.getObject());
             result.put("property", this.getProperty());
+            result.put("forceExeStatus", this.getForceExeStatus());
             result.put("start", this.getStart());
             result.put("end", this.getEndLong());
             result.put("startlong", this.getStartLong());
@@ -297,7 +308,7 @@ public class TestCaseStepActionExecution {
             result.put("returnMessage", this.getReturnMessage());
             JSONArray array = new JSONArray();
             for (Object testCaseStepActionControlExecution : this.getTestCaseStepActionControlExecutionList().getDataList()) {
-                array.put(((TestCaseStepActionControlExecution)testCaseStepActionControlExecution).toJson());
+                array.put(((TestCaseStepActionControlExecution) testCaseStepActionControlExecution).toJson());
             }
             result.put("testCaseStepActionControlExecutionList", array);
         } catch (JSONException ex) {

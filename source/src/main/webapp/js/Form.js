@@ -2049,6 +2049,8 @@ function addTCSANew(rowID, incrementStep, step, obj) {
             .attr('name', 'action_object_' + incrementStep + '_' + newNumberOfAction);
     $('#StepListOfActionDiv' + incrementStep + newNumberOfAction).find('input[data-id="action_property_template"]')
             .attr('name', 'action_property_' + incrementStep + '_' + newNumberOfAction);
+    $('#StepListOfActionDiv' + incrementStep + newNumberOfAction).find('#action_forceexestatus_template')
+            .attr('name', 'action_forceexestatus_' + incrementStep + '_' + newNumberOfAction);
 
     callEvent();
 

@@ -82,7 +82,7 @@
                     <li id="subactive"><a name="menu" id="menuSqlLibrary" href="SqlLibrary.jsp" style="width:130px">SQL Library</a></li>
                     <li id="subactive"><a name="menu" id="menuSoapLibrary" href="SoapLibrary.jsp" style="width:130px">SOAP Library</a></li>
                     <li id="subactive"><a name="menu" id="menuTestData" href="TestData.jsp" style="width:130px">Test Data</a></li>
-                    <li id="subactive"><a name="menu" id="menuTestDataLib" href="TestDataLib.jsp" style="width:130px">Test Data Lib<input type="button" class="btn btn-danger btn-small active" value="Beta" style="padding: 0px; margin-left: 5px; color: red"></a></li>
+                    <li id="subactive"><a name="menu" id="menuTestDataLib" href="TestDataLib.jsp" style="width:130px">Test Data Lib</a></li>
                 </ul>
             </li>
             <% }%>

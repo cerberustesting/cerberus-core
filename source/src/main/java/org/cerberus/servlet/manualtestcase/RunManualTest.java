@@ -263,7 +263,7 @@ public class RunManualTest extends HttpServlet {
                 }
 
                 result.add(testCaseStepActionExecutionFactory.create(executionId, test, testCase, step, sequence, i + 1, actionReturnCode,
-                        actionReturnMessage, "Manual Action", null, null, now, now, now, now,
+                        actionReturnMessage, "Manual Action", null, null, "", now, now, now, now,
                         actionScreenshotFileName, null, null, "", null, null));
             }
         }

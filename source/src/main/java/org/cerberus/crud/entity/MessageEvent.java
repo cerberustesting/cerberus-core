@@ -48,10 +48,10 @@ public class MessageEvent {
     private final int code;
     private final String codeString;
     private String description;
-    private final boolean stopTest;
-    private final boolean doScreenshot;
-    private final boolean getPageSource;
-    private final MessageGeneralEnum message;
+    private boolean stopTest;
+    private boolean doScreenshot;
+    private boolean getPageSource;
+    private MessageGeneralEnum message;
 
     public MessageEvent(MessageEventEnum tempMessage) {
         this.code = tempMessage.getCode();
@@ -73,22 +73,6 @@ public class MessageEvent {
         this.getPageSource = pageSource;
     }
 
-    public MessageGeneralEnum getMessage() {
-        return message;
-    }
-
-    public boolean isStopTest() {
-        return stopTest;
-    }
-
-    public boolean isDoScreenshot() {
-        return doScreenshot;
-    }
-
-    public boolean isGetPageSource() {
-        return getPageSource;
-    }
-
     public int getCode() {
         return this.code;
     }
@@ -97,8 +81,44 @@ public class MessageEvent {
         return codeString;
     }
 
+    public MessageGeneralEnum getMessage() {
+        return message;
+    }
+
+    public void setMessage(MessageGeneralEnum message) {
+        this.message = message;
+    }
+
+    public boolean isStopTest() {
+        return stopTest;
+    }
+
+    public void setStopTest(boolean stopTest) {
+        this.stopTest = stopTest;
+    }
+
+    public boolean isDoScreenshot() {
+        return doScreenshot;
+    }
+
+    public void setDoScreenshot(boolean doScreenshot) {
+        this.doScreenshot = doScreenshot;
+    }
+
+    public boolean isGetPageSource() {
+        return getPageSource;
+    }
+
+    public void setGetPageSource(boolean getPageSource) {
+        this.getPageSource = getPageSource;
+    }
+
     public String getDescription() {
         return this.description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
     }
 
     @Override
@@ -113,16 +133,6 @@ public class MessageEvent {
     @Override
     public int hashCode() {
         return super.hashCode();
-    }
-
-    /**
-     * The only thing that can be changed is the description. All the rest is
-     * static.
-     *
-     * @param description
-     */
-    public void setDescription(String description) {
-        this.description = description;
     }
 
     /**

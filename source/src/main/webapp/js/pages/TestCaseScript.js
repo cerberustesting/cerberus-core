@@ -30,6 +30,7 @@ $.when($.getScript("js/pages/global/global.js")).then(function () {
         getSelectInvariant("PROPERTYTYPE", false);
         getSelectInvariant("PROPERTYDATABASE", false);
         getSelectInvariant("PROPERTYNATURE", false);
+        getSelectInvariant("ACTIONFORCEEXESTATUS", false);
 
         loadLibraryStep();
         bindToggleCollapse();
@@ -1127,6 +1128,7 @@ function Action(json, parentStep) {
         this.action = json.action;
         this.object = json.object;
         this.property = json.property;
+        this.forceExeStatus = json.forceExeStatus;
         this.screenshotFileName = json.screenshotFileName;
         this.controlList = [];
         this.setControlList(json.controlList);
@@ -1138,6 +1140,7 @@ function Action(json, parentStep) {
         this.action = "Unknown";
         this.object = "";
         this.property = "";
+        this.forceExeStatus = "";
         this.screenshotFileName = "";
         this.controlList = [];
     }
@@ -1234,6 +1237,7 @@ Action.prototype.generateContent = function () {
     var descField = $("<input>").addClass("description").addClass("form-control").prop("placeholder", "Describe this action");
     var objectField = $("<input>").addClass("form-control input-sm");
     var propertyField = $("<input>").addClass("form-control input-sm");
+    var forceExeStatusList = $("<select></select>").addClass("form-control input-sm");
 
     descField.val(this.description);
     descField.on("change", function () {
@@ -1245,6 +1249,13 @@ Action.prototype.generateContent = function () {
     actionList.on("change", function () {
         obj.action = actionList.val();
         setPlaceholderAction();
+    });
+
+    forceExeStatusList = getSelectInvariant("ACTIONFORCEEXESTATUS", false);
+    forceExeStatusList.val(this.forceExeStatus);
+    forceExeStatusList.on("change", function () {
+        obj.forceExeStatus = forceExeStatusList.val();
+//        setPlaceholderAction();
     });
 
     objectField.val(this.object);
@@ -1260,13 +1271,15 @@ Action.prototype.generateContent = function () {
     firstRow.append(descField);
     secondRow.append($("<span></span>").addClass("col-lg-4").append(actionList));
     secondRow.append($("<span></span>").addClass("col-lg-4").append(objectField));
-    secondRow.append($("<span></span>").addClass("col-lg-4").append(propertyField));
+    secondRow.append($("<span></span>").addClass("col-lg-2").append(propertyField));
+    secondRow.append($("<span></span>").addClass("col-lg-2").append(forceExeStatusList));
 
     if (this.parentStep.useStep === "Y") {
         descField.prop("readonly", true);
         objectField.prop("readonly", true);
         propertyField.prop("readonly", true);
         actionList.prop("disabled", "disabled");
+        forceExeStatusList.prop("disabled", "disabled");
     }
 
     content.append(firstRow);
@@ -1288,6 +1301,7 @@ Action.prototype.getJsonData = function () {
     json.action = this.action;
     json.object = this.object;
     json.property = this.property;
+    json.forceExeStatus = this.forceExeStatus;
     json.screenshotFileName = "";
 
     return json;

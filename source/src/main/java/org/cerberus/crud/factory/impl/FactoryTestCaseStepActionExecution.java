@@ -33,7 +33,7 @@ import org.springframework.stereotype.Service;
 public class FactoryTestCaseStepActionExecution implements IFactoryTestCaseStepActionExecution {
 
     @Override
-    public TestCaseStepActionExecution create(long id, String test, String testCase, int step, int sequence, int sort, String returnCode, String returnMessage, String action, String object, String property, long start, long end, long startLong, long endLong, String screenshotFilename, String pageSourceFilename, MessageEvent resultMessage, String description, TestCaseStepAction testCaseStepAction, TestCaseStepExecution testCaseStepExecution) {
+    public TestCaseStepActionExecution create(long id, String test, String testCase, int step, int sequence, int sort, String returnCode, String returnMessage, String action, String object, String property, String forceExeStatus, long start, long end, long startLong, long endLong, String screenshotFilename, String pageSourceFilename, MessageEvent resultMessage, String description, TestCaseStepAction testCaseStepAction, TestCaseStepExecution testCaseStepExecution) {
         TestCaseStepActionExecution testCaseStepActionExecution = new TestCaseStepActionExecution();
         testCaseStepActionExecution.setAction(action);
         testCaseStepActionExecution.setEnd(end);
@@ -41,6 +41,7 @@ public class FactoryTestCaseStepActionExecution implements IFactoryTestCaseStepA
         testCaseStepActionExecution.setId(id);
         testCaseStepActionExecution.setObject(object);
         testCaseStepActionExecution.setProperty(property);
+        testCaseStepActionExecution.setForceExeStatus(forceExeStatus);
         testCaseStepActionExecution.setReturnCode(returnCode);
         testCaseStepActionExecution.setReturnMessage(returnMessage);
         testCaseStepActionExecution.setScreenshotFilename(screenshotFilename);
