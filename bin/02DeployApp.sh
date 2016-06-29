@@ -20,6 +20,5 @@ $GLASSFISHPATH/asadmin undeploy --target server --cascade=true Cerberus-1.1.1
 $GLASSFISHPATH/asadmin undeploy --target server --cascade=true Cerberus-1.1.2
 $GLASSFISHPATH/asadmin undeploy --target server --cascade=true Cerberus-1.1.3
 $GLASSFISHPATH/asadmin undeploy --target server --cascade=true Cerberus-1.1.4
-$GLASSFISHPATH/asadmin undeploy --target server --cascade=true Cerberus-1.1.5
-$GLASSFISHPATH/asadmin deploy --target server --contextroot Cerberus --availabilityenabled=true $MYPATH/../Cerberus-1.1.5.war
+$GLASSFISHPATH/asadmin deploy --target server --contextroot Cerberus --availabilityenabled=true $MYPATH/../Cerberus-1.1.4.war
 
