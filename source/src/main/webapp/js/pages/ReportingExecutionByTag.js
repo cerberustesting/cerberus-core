@@ -189,6 +189,8 @@ function loadTagFilters(urlTag) {
                 var option = $('<option></option>').attr("value", encodedString).text(data.contentTable[index]);
                 $('#selectTag').append(option);
             }
+            
+            $('#selectTag').select2();
 
             //if the tag is passed as a url parameter, then it loads the report from this tag
             if (urlTag !== null) {
