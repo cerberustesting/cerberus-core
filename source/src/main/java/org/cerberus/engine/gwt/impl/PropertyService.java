@@ -964,6 +964,11 @@ public class PropertyService implements IPropertyService {
                 res.setDescription(res.getDescription().replace("%VALUE1%", testCaseExecutionData.getValue1()));
                 res.setDescription(res.getDescription().replace("%VALUE2%", testCaseExecutionData.getValue2()));
                 testCaseExecutionData.setPropertyResultMessage(res);
+            } else {
+                MessageEvent res = new MessageEvent(MessageEventEnum.PROPERTY_FAILED_GETFROMXML);
+                res.setDescription(res.getDescription().replace("%VALUE1%", testCaseExecutionData.getValue1()));
+                res.setDescription(res.getDescription().replace("%VALUE2%", testCaseExecutionData.getValue2()));
+                testCaseExecutionData.setPropertyResultMessage(res);
             }
         } catch (Exception ex) {
             MyLogger.log(PropertyService.class
@@ -1462,7 +1467,7 @@ public class PropertyService implements IPropertyService {
                         // soapURL from database is not empty so we prefix the Service URL with it.
                         servicePath = soapURL + lib.getServicePath();
 
-                        if (!StringUtil.isURL(servicePath))  {
+                        if (!StringUtil.isURL(servicePath)) {
                             msg = new MessageEvent(MessageEventEnum.PROPERTY_FAILED_GETFROMDATALIB_SOAP_URLKO);
                             msg.setDescription(msg.getDescription()
                                     .replace("%SERVICEURL%", servicePath)
