@@ -37,8 +37,6 @@ import org.cerberus.database.DatabaseSpring;
 import org.cerberus.log.MyLogger;
 import org.cerberus.crud.service.ILogEventService;
 import org.cerberus.crud.service.IParameterService;
-import org.cerberus.crud.service.impl.LogEventService;
-import org.cerberus.crud.service.impl.ParameterService;
 import org.owasp.html.PolicyFactory;
 import org.owasp.html.Sanitizers;
 import org.springframework.context.ApplicationContext;
@@ -61,7 +59,7 @@ public class ResultCI extends HttpServlet {
         /**
          * Adding Log entry.
          */
-        ILogEventService logEventService = appContext.getBean(LogEventService.class);
+        ILogEventService logEventService = appContext.getBean(ILogEventService.class);
         logEventService.createPublicCalls("/ResultCI", "CALL", "ResultCIV0 called : " + request.getRequestURL(), request);
 
         String tag = policy.sanitize(request.getParameter("tag"));
@@ -183,7 +181,7 @@ public class ResultCI extends HttpServlet {
                     prepStmt4.close();
                 }
 
-                IParameterService parameterService = appContext.getBean(ParameterService.class);
+                IParameterService parameterService = appContext.getBean(IParameterService.class);
 
                 float pond1 = Float.valueOf(parameterService.findParameterByKey("CI_OK_prio1", "").getValue());
                 float pond2 = Float.valueOf(parameterService.findParameterByKey("CI_OK_prio2", "").getValue());

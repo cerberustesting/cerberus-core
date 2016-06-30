@@ -44,15 +44,14 @@ import org.cerberus.crud.entity.TestCaseExecution;
 import org.cerberus.crud.factory.IFactoryTCase;
 import org.cerberus.crud.factory.IFactoryTestCaseExecution;
 import org.cerberus.crud.service.ILogEventService;
+import org.cerberus.crud.service.IParameterService;
 import org.cerberus.crud.service.IRobotService;
 import org.cerberus.crud.service.ITestCaseCountryService;
 import org.cerberus.crud.service.ITestCaseExecutionInQueueService;
 import org.cerberus.crud.service.ITestCaseExecutionService;
-import org.cerberus.crud.service.impl.LogEventService;
 import org.cerberus.enums.MessageGeneralEnum;
 import org.cerberus.exception.CerberusException;
 import org.cerberus.engine.execution.IRunTestCaseService;
-import org.cerberus.engine.execution.impl.RunTestCaseService;
 import org.cerberus.util.DateUtil;
 import org.cerberus.util.ParameterParserUtil;
 import org.cerberus.util.StringUtil;
@@ -71,6 +70,8 @@ import org.springframework.web.context.support.WebApplicationContextUtils;
  */
 @WebServlet(name = "RunTestCase", urlPatterns = {"/RunTestCase"})
 public class RunTestCase extends HttpServlet {
+
+    private static final org.apache.log4j.Logger LOG = org.apache.log4j.Logger.getLogger(RunTestCase.class);
 
     public static final String SERVLET_URL = "/RunTestCase";
 
@@ -113,7 +114,7 @@ public class RunTestCase extends HttpServlet {
         /**
          * Adding Log entry.
          */
-        ILogEventService logEventService = appContext.getBean(LogEventService.class);
+        ILogEventService logEventService = appContext.getBean(ILogEventService.class);
         logEventService.createPublicCalls("/RunTestCase", "CALL", "RunTestCaseV0 called : " + request.getRequestURL(), request);
 
         PolicyFactory policy = Sanitizers.FORMATTING.and(Sanitizers.LINKS);
@@ -242,6 +243,19 @@ public class RunTestCase extends HttpServlet {
                 }
             }
         }
+        // We check that execution is not desactivated by cerberus_automaticexecution_enable parameter.
+        IParameterService parameterService = appContext.getBean(IParameterService.class);
+        try {
+            if (!("Y".equals(parameterService.findParameterByKey("cerberus_automaticexecution_enable", "").getValue()))) {
+                out.println("Error - Execution disable by configuration (cerberus_automaticexecution_enable=Y).");
+                error = true;
+                LOG.info("Execution request ignored by cerberus_automaticexecution_enable parameter. " + test + " / " + testCase);
+            }
+        } catch (CerberusException ex) {
+            LOG.error("Parameter cerberus_automaticexecution_enable not found on Cerberus database. Please make sure database is up to date.");
+        }
+
+        // If Robot is feeded, we check it exist. If it exist, we overwrite the associated parameters.
         if (!"".equals(robot)) {
             IRobotService robotService = appContext.getBean(IRobotService.class);
             try {
@@ -290,15 +304,15 @@ public class RunTestCase extends HttpServlet {
             //there is no need to lauch the execution if the test case does not exist for the country
             if (exists) {
                 //TODO:FN debug messages to be removed
-                org.apache.log4j.Logger.getLogger(RunTestCase.class.getName()).log(org.apache.log4j.Level.DEBUG, "[DEBUG] STARTED: Test " + test + "-" + testCase);
+                LOG.debug("STARTED: Test " + test + "-" + testCase);
 
-                IRunTestCaseService runTestCaseService = appContext.getBean(RunTestCaseService.class);
+                IRunTestCaseService runTestCaseService = appContext.getBean(IRunTestCaseService.class);
                 IFactoryTCase factoryTCase = appContext.getBean(IFactoryTCase.class);
                 IFactoryTestCaseExecution factoryTCExecution = appContext.getBean(IFactoryTestCaseExecution.class);
                 ITestCaseExecutionService tces = appContext.getBean(ITestCaseExecutionService.class);
                 TCase tCase = factoryTCase.create(test, testCase);
 
-                TestCaseExecution tCExecution = factoryTCExecution.create(0, test, testCase, null, null, environment, country, browser, version, platform, "", capabilities, 
+                TestCaseExecution tCExecution = factoryTCExecution.create(0, test, testCase, null, null, environment, country, browser, version, platform, "", capabilities,
                         0, 0, "", "", null, ss_ip, null, ss_p, tag, "N", verbose, screenshot, getPageSource, getSeleniumLog, synchroneous, timeout, outputFormat, null,
                         Infos.getInstance().getProjectNameAndVersion(), tCase, null, null, manualURL, myHost, myContextRoot, myLoginRelativeURL, myEnvData, ss_ip, ss_p,
                         null, new MessageGeneral(MessageGeneralEnum.EXECUTION_PE_TESTSTARTED), "Selenium", numberOfRetries, screenSize);
@@ -315,8 +329,7 @@ public class RunTestCase extends HttpServlet {
                 UUID executionUUID = UUID.randomUUID();
                 executionUUIDObject.setExecutionUUID(executionUUID.toString(), tCExecution);
                 tCExecution.setExecutionUUID(executionUUID.toString());
-                org.apache.log4j.Logger.getLogger(RunTestCase.class.getName()).log(org.apache.log4j.Level.INFO, "Execution Requested : UUID=" + executionUUID);
-                //MyLogger.log(RunTestCase.class.getName(), Level.INFO, "Execution Requested : UUID=" + executionUUID);
+                LOG.info("Execution Requested : UUID=" + executionUUID);
 
                 /**
                  * Set IdFromQueue
@@ -329,11 +342,11 @@ public class RunTestCase extends HttpServlet {
                  */
                 while (tCExecution.getNumberOfRetries() >= 0 && !tCExecution.getResultMessage().getCodeString().equals("OK")) {
                     try {
-                        org.apache.log4j.Logger.getLogger(RunTestCase.class.getName()).log(org.apache.log4j.Level.DEBUG, "Start execution " + tCExecution.getId());
+                        LOG.debug("Start execution " + tCExecution.getId());
                         tCExecution = runTestCaseService.runTestCase(tCExecution);
                         tCExecution.decreaseNumberOfRetries();
                     } catch (Exception ex) {
-                        org.apache.log4j.Logger.getLogger(RunTestCase.class.getName()).log(org.apache.log4j.Level.ERROR, "Error while executing RunTestCase ", ex);
+                        LOG.error("Error while executing RunTestCase ", ex);
                         break;
                     }
                 }
@@ -353,7 +366,7 @@ public class RunTestCase extends HttpServlet {
                         }
                     }
                 } catch (CerberusException ex) {
-                    org.apache.log4j.Logger.getLogger(RunTestCase.class.getName()).log(org.apache.log4j.Level.ERROR, "Error while performin testcase in queue ", ex);
+                    LOG.error("Error while performin testcase in queue ", ex);
                 }
 
                 /**
@@ -361,7 +374,7 @@ public class RunTestCase extends HttpServlet {
                  */
                 if (tCExecution.getId() != 0) {
                     TestCaseExecution t = (TestCaseExecution) tces.readByKeyWithDependency(tCExecution.getId()).getItem();
-                    org.apache.log4j.Logger.getLogger(RunTestCase.class.getName()).log(org.apache.log4j.Level.ERROR, "CerberusExecution " + t.toJson());
+                    LOG.error("CerberusExecution " + t.toJson());
                 }
 
                 /**
@@ -371,11 +384,11 @@ public class RunTestCase extends HttpServlet {
                 try {
                     if (tCExecution.getId() == 0) {
                         executionUUIDObject.removeExecutionUUID(tCExecution.getExecutionUUID());
-                        org.apache.log4j.Logger.getLogger(RunTestCase.class.getName()).log(org.apache.log4j.Level.DEBUG, "Clean ExecutionUUID");
+                        LOG.debug("Clean ExecutionUUID");
 
                     }
                 } catch (Exception ex) {
-                    org.apache.log4j.Logger.getLogger(RunTestCase.class.getName()).log(org.apache.log4j.Level.ERROR, "Exception cleaning Memory: ", ex);
+                    LOG.error("Exception cleaning Memory: ", ex);
                 }
 
                 /**
