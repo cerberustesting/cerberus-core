@@ -276,8 +276,7 @@ public class PropertyService implements IPropertyService {
             //after calculating the property base we can access the subdata entry
             calculateSubDataEntry(tCExecution, testCaseExecutionData, ((TestCaseSubDataAccessProperty) testCaseCountryProperty).getLibraryValue(), ((TestCaseSubDataAccessProperty) testCaseCountryProperty).getSubDataValue());//calculates the subdata entry
         } else //if the getFromDataLib does not succeed than it means that we are not able to perform the sub-data access 
-        {
-            if (tecdAuxiliary.getPropertyResultMessage().getCode() == MessageEventEnum.PROPERTY_FAILED_GETFROMDATALIB_NOT_FOUND_ERROR.getCode()
+         if (tecdAuxiliary.getPropertyResultMessage().getCode() == MessageEventEnum.PROPERTY_FAILED_GETFROMDATALIB_NOT_FOUND_ERROR.getCode()
                     || tecdAuxiliary.getPropertyResultMessage().getCode() == MessageEventEnum.PROPERTY_FAILED_GETFROMDATALIB_SQL_GENERIC.getCode() //same code as PROPERTY_FAILED_GETFROMDATALIB_NODATA
                     || tecdAuxiliary.getPropertyResultMessage().getCode() == MessageEventEnum.ACTION_FAILED_CALLSOAP.getCode()) { //error related with the soap call 
                 //redefinition of the error message
@@ -289,7 +288,6 @@ public class PropertyService implements IPropertyService {
                 //the result message is the same returned by the getFromDataLib operation
                 testCaseExecutionData.setPropertyResultMessage(tecdAuxiliary.getPropertyResultMessage());
             }
-        }
 
         return testCaseExecutionData;
     }
@@ -1311,7 +1309,7 @@ public class PropertyService implements IPropertyService {
         MessageEvent msg = new MessageEvent(MessageEventEnum.PROPERTY_SUCCESS);
         TestDataLibResult result = null;
 
-        MyLogger.log(TestDataLibService.class.getName(), Level.INFO, "Test data lib service STATIC.");
+        MyLogger.log(TestDataLibService.class.getName(), Level.DEBUG, "Test data lib service STATIC.");
 
         //sql data needs to collect the values for the n columns
         answer = calculateOnStaticDataLibNColumns(
@@ -1321,21 +1319,21 @@ public class PropertyService implements IPropertyService {
                 testCaseCountryProperty, tCExecution);
 
         //if the sql service returns a success message then we can process it
-        if (answer.getResultMessage().getCode() == MessageEventEnum.PROPERTY_SUCCESS_SQL.getCode()) {
+        if (answer.getResultMessage().getCode() == MessageEventEnum.PROPERTY_SUCCESS_GETFROMDATALIB_STATIC_STATIC.getCode()) {
             HashMap<String, String> columns = (HashMap<String, String>) answer.getItem();
 
             result = new TestDataLibResultStatic();
-//            result.setTestDataLibID(lib.getTestDataLibID());
             result.setTestDataLibID((int) Integer.valueOf(columns.get("TestDataLibID"))); // ID is taken from the selected line.
+
             // saving the raw data to the result.
             result.setDataLibRawData(columns);
 
             answer.setItem(result);
 
-        } else if (answer.getResultMessage().getCode() == MessageEventEnum.PROPERTY_FAILED_SQL_NODATA.getCode()) {
+        } else if (answer.getResultMessage().getCode() == MessageEventEnum.PROPERTY_FAILED_GETFROMDATALIB_STATIC_NODATA.getCode()) {
             //if the script does not return 
             answer.setItem(result);
-            msg = new MessageEvent(MessageEventEnum.PROPERTY_FAILED_GETFROMDATALIB_SQL_NODATA);
+            msg = new MessageEvent(MessageEventEnum.PROPERTY_FAILED_GETFROMDATALIB_STATIC_NODATA);
             msg.setDescription(msg.getDescription().replace("%ENTRY%", lib.getName()).replace("%SQL%", lib.getScript())
                     .replace("%DATABASE%", lib.getDatabase()));
             answer.setResultMessage(msg);
@@ -1462,7 +1460,7 @@ public class PropertyService implements IPropertyService {
                         // soapURL from database is not empty so we prefix the Service URL with it.
                         servicePath = soapURL + lib.getServicePath();
 
-                        if (!StringUtil.isURL(servicePath))  {
+                        if (!StringUtil.isURL(servicePath)) {
                             msg = new MessageEvent(MessageEventEnum.PROPERTY_FAILED_GETFROMDATALIB_SOAP_URLKO);
                             msg.setDescription(msg.getDescription()
                                     .replace("%SERVICEURL%", servicePath)
@@ -1886,7 +1884,7 @@ public class PropertyService implements IPropertyService {
                     }
 
                 } else {
-                    mes = new MessageEvent(MessageEventEnum.PROPERTY_FAILED_SQL_NODATA);
+                    mes = new MessageEvent(MessageEventEnum.PROPERTY_FAILED_GETFROMDATALIB_STATIC_NODATA);
                 }
 
             } else {
