@@ -177,8 +177,6 @@ public class FindAllSoapLibrary extends HttpServlet {
             JSONObject jsonResponse = new JSONObject();
 
             for (SoapLibrary soapLib : soapLibList) {
-                //String env1 = soapLib.getEnvelope().replaceAll("<", "$#60;");
-                //String env2 = env1.replaceAll(">", "$#62;");
                 JSONArray row = new JSONArray();
                 row.put(soapLib.getName())
                         .put(soapLib.getType())

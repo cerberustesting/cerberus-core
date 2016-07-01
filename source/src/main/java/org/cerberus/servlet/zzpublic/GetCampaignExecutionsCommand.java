@@ -142,10 +142,10 @@ public class GetCampaignExecutionsCommand extends HttpServlet {
         String notOnTag = policy.sanitize(request.getParameter("notOnTag"));
 
 
-        url = url.replaceAll("__HOST__", host)
-                .replaceAll("__PORT__", port)
-                .replaceAll("__TAG__", tag)
-                .replaceAll("__SCREEN__", screenshot);
+        url = url.replace("__HOST__", host)
+                .replace("__PORT__", port)
+                .replace("__TAG__", tag)
+                .replace("__SCREEN__", screenshot);
 
         PrintWriter printWriter = response.getWriter();
 
@@ -179,7 +179,7 @@ public class GetCampaignExecutionsCommand extends HttpServlet {
             }
 
             for (String query : listOfQueriesForCampaignParameters) {
-                printWriter.append(url.replaceAll("__QUERY__", query)).append("\r\n");
+                printWriter.append(url.replace("__QUERY__", query)).append("\r\n");
             }
 
             printWriter.close();

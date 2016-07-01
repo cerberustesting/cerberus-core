@@ -1364,9 +1364,9 @@ Control.prototype.generateContent = function () {
 
     var controlList = $("<select></select>").addClass("form-control input-sm");
     var descField = $("<input>").addClass("description").addClass("form-control").prop("placeholder", "Description");
-    var objectField = $("<input>").addClass("form-control input-sm");
-    var propertyField = $("<input>").addClass("form-control input-sm");
-    var fatalField = $("<select></select>").addClass("form-control input-sm");
+    var controlValueField = $("<input>").addClass("form-control input-sm");
+    var controlPropertyField = $("<input>").addClass("form-control input-sm");
+    var fatalList = $("<select></select>").addClass("form-control input-sm");
 
     descField.val(this.description);
     descField.on("change", function () {
@@ -1380,33 +1380,34 @@ Control.prototype.generateContent = function () {
         setPlaceholderControl();
     });
 
-    objectField.val(this.object);
-    objectField.on("change", function () {
-        obj.controlValue = objectField.val();
+    controlValueField.val(this.controlValue);
+    controlValueField.on("change", function () {
+        obj.controlValue = controlValueField.val();
     });
 
-    propertyField.val(this.property);
-    propertyField.on("change", function () {
-        obj.controlProperty = propertyField.val();
+    controlPropertyField.val(this.controlProperty);
+    controlPropertyField.on("change", function () {
+        obj.controlProperty = controlPropertyField.val();
     });
 
-    fatalField = getSelectInvariant("CTRLFATAL", false);
-    fatalField.on("change", function () {
-        obj.fatal = fatalField.val();
+    fatalList = getSelectInvariant("CTRLFATAL", false);
+    fatalList.val(this.fatal);
+    fatalList.on("change", function () {
+        obj.fatal = fatalList.val();
     });
 
     firstRow.append(descField);
     secondRow.append($("<span></span>").addClass("col-md-4").append(controlList));
-    secondRow.append($("<span></span>").addClass("col-md-3").append(objectField));
-    secondRow.append($("<span></span>").addClass("col-md-4").append(propertyField));
-    secondRow.append($("<span></span>").addClass("col-md-1").append(fatalField));
+    secondRow.append($("<span></span>").addClass("col-md-3").append(controlValueField));
+    secondRow.append($("<span></span>").addClass("col-md-4").append(controlPropertyField));
+    secondRow.append($("<span></span>").addClass("col-md-1").append(fatalList));
 
     if (this.parentStep.useStep === "Y") {
         descField.prop("readonly", true);
-        objectField.prop("readonly", true);
-        propertyField.prop("readonly", true);
+        controlValueField.prop("readonly", true);
+        controlPropertyField.prop("readonly", true);
         controlList.prop("disabled", "disabled");
-        fatalField.prop("disabled", "disabled");
+        fatalList.prop("disabled", "disabled");
     }
 
     content.append(firstRow);

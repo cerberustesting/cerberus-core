@@ -192,17 +192,17 @@
 
                     newBugURL = myApplicationService.convert(myApplicationService.readByKey(myApplication)).getBugTrackerNewUrl();
                     if (!StringUtil.isNullOrEmpty(newBugURL)) {
-                        newBugURL = newBugURL.replaceAll("%EXEID%", id_filter);
-                        newBugURL = newBugURL.replaceAll("%EXEDATE%", exedate);
-                        newBugURL = newBugURL.replaceAll("%TEST%", test);
-                        newBugURL = newBugURL.replaceAll("%TESTCASE%", testCase);
-                        newBugURL = newBugURL.replaceAll("%TESTCASEDESC%", testCaseDesc);
-                        newBugURL = newBugURL.replaceAll("%COUNTRY%", country);
-                        newBugURL = newBugURL.replaceAll("%ENV%", environment);
-                        newBugURL = newBugURL.replaceAll("%BUILD%", build);
-                        newBugURL = newBugURL.replaceAll("%REV%", revision);
-                        newBugURL = newBugURL.replaceAll("%BROWSER%", browser);
-                        newBugURL = newBugURL.replaceAll("%BROWSERFULLVERSION%", browserFullVersion);
+                        newBugURL = newBugURL.replace("%EXEID%", id_filter);
+                        newBugURL = newBugURL.replace("%EXEDATE%", exedate);
+                        newBugURL = newBugURL.replace("%TEST%", test);
+                        newBugURL = newBugURL.replace("%TESTCASE%", testCase);
+                        newBugURL = newBugURL.replace("%TESTCASEDESC%", testCaseDesc);
+                        newBugURL = newBugURL.replace("%COUNTRY%", country);
+                        newBugURL = newBugURL.replace("%ENV%", environment);
+                        newBugURL = newBugURL.replace("%BUILD%", build);
+                        newBugURL = newBugURL.replace("%REV%", revision);
+                        newBugURL = newBugURL.replace("%BROWSER%", browser);
+                        newBugURL = newBugURL.replace("%BROWSERFULLVERSION%", browserFullVersion);
                     }
 
             %>
@@ -330,7 +330,7 @@
                                     if (StringUtil.isNullOrEmpty(bugURL)) {
                                 %><%=bugid%><%
                                 } else {
-                                    bugURL = bugURL.replaceAll("%BUGID%", bugid);
+                                    bugURL = bugURL.replace("%BUGID%", bugid);
                                 %><a href="<%= bugURL%>" target='_blank' title="title"><%=bugid%></a><%
                                         }
                                     }

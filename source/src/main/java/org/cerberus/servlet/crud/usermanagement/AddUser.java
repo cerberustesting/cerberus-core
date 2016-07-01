@@ -92,7 +92,7 @@ public class AddUser extends HttpServlet {
         String system = "";
 
         try {
-            String login = request.getParameter("login").replaceAll("'", "");
+            String login = request.getParameter("login").replace("'", "");
             if (login.length() > 10) {
                 login = login.substring(0, 10);
             }

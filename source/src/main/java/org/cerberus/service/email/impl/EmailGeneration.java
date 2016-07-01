@@ -85,17 +85,17 @@ public class EmailGeneration implements IEmailGeneration {
             }
 
             /* Replace the Keywords from the fed text  */
-            subject = subject.replaceAll("%SYSTEM%", system);
-            subject = subject.replaceAll("%COUNTRY%", country);
-            subject = subject.replaceAll("%ENV%", env);
-            subject = subject.replaceAll("%BUILD%", build);
-            subject = subject.replaceAll("%REVISION%", revision);
+            subject = subject.replace("%SYSTEM%", system);
+            subject = subject.replace("%COUNTRY%", country);
+            subject = subject.replace("%ENV%", env);
+            subject = subject.replace("%BUILD%", build);
+            subject = subject.replace("%REVISION%", revision);
 
-            body = body.replaceAll("%SYSTEM%", system);
-            body = body.replaceAll("%COUNTRY%", country);
-            body = body.replaceAll("%ENV%", env);
-            body = body.replaceAll("%BUILD%", build);
-            body = body.replaceAll("%REVISION%", revision);
+            body = body.replace("%SYSTEM%", system);
+            body = body.replace("%COUNTRY%", country);
+            body = body.replace("%ENV%", env);
+            body = body.replace("%BUILD%", build);
+            body = body.replace("%REVISION%", revision);
 
             // Generate the Table Contented in the mail
             String content;
@@ -105,15 +105,15 @@ public class EmailGeneration implements IEmailGeneration {
 
             content = emailBodyGeneration.GenerateBuildContentTable(system, build, revision, lastBuild, lastRev, conn);
             content = content.replace("$", " ");
-            body = body.replaceAll("%BUILDCONTENT%", content);
+            body = body.replace("%BUILDCONTENT%", content);
 
             content = emailBodyGeneration.GenerateTestRecapTable(system, build, revision, country, conn);
             content = content.replace("$", " ");
-            body = body.replaceAll("%TESTRECAP%", content);
+            body = body.replace("%TESTRECAP%", content);
 
             content = emailBodyGeneration.GenerateTestRecapTable(system, build, revision, "ALL", conn);
             content = content.replace("$", " ");
-            body = body.replaceAll("%TESTRECAPALL%", content);
+            body = body.replace("%TESTRECAPALL%", content);
             //End
 
             result = to + "///" + cc + "///" + subject + "///" + body + "///" + build + "///" + revision;
@@ -154,17 +154,17 @@ public class EmailGeneration implements IEmailGeneration {
                 to = myCountryEnvParam.getDistribList();
             }
 
-            subject = subject.replaceAll("%SYSTEM%", system);
-            subject = subject.replaceAll("%COUNTRY%", country);
-            subject = subject.replaceAll("%ENV%", env);
-            subject = subject.replaceAll("%BUILD%", myCountryEnvParam.getBuild());
-            subject = subject.replaceAll("%REVISION%", myCountryEnvParam.getRevision());
+            subject = subject.replace("%SYSTEM%", system);
+            subject = subject.replace("%COUNTRY%", country);
+            subject = subject.replace("%ENV%", env);
+            subject = subject.replace("%BUILD%", myCountryEnvParam.getBuild());
+            subject = subject.replace("%REVISION%", myCountryEnvParam.getRevision());
 
-            body = body.replaceAll("%SYSTEM%", system);
-            body = body.replaceAll("%COUNTRY%", country);
-            body = body.replaceAll("%ENV%", env);
-            body = body.replaceAll("%BUILD%", myCountryEnvParam.getBuild());
-            body = body.replaceAll("%REVISION%", myCountryEnvParam.getRevision());
+            body = body.replace("%SYSTEM%", system);
+            body = body.replace("%COUNTRY%", country);
+            body = body.replace("%ENV%", env);
+            body = body.replace("%BUILD%", myCountryEnvParam.getBuild());
+            body = body.replace("%REVISION%", myCountryEnvParam.getRevision());
 
             result = to + "///" + cc + "///" + subject + "///" + body;
 
@@ -201,19 +201,19 @@ public class EmailGeneration implements IEmailGeneration {
                 to = myCountryEnvParam.getDistribList();
             }
 
-            subject = subject.replaceAll("%SYSTEM%", system);
-            subject = subject.replaceAll("%COUNTRY%", country);
-            subject = subject.replaceAll("%ENV%", env);
-            subject = subject.replaceAll("%BUILD%", myCountryEnvParam.getBuild());
-            subject = subject.replaceAll("%REVISION%", myCountryEnvParam.getRevision());
-            subject = subject.replaceAll("%CHAIN%", lastchain);
+            subject = subject.replace("%SYSTEM%", system);
+            subject = subject.replace("%COUNTRY%", country);
+            subject = subject.replace("%ENV%", env);
+            subject = subject.replace("%BUILD%", myCountryEnvParam.getBuild());
+            subject = subject.replace("%REVISION%", myCountryEnvParam.getRevision());
+            subject = subject.replace("%CHAIN%", lastchain);
 
-            body = body.replaceAll("%SYSTEM%", system);
-            body = body.replaceAll("%COUNTRY%", country);
-            body = body.replaceAll("%ENV%", env);
-            body = body.replaceAll("%BUILD%", myCountryEnvParam.getBuild());
-            body = body.replaceAll("%REVISION%", myCountryEnvParam.getRevision());
-            body = body.replaceAll("%CHAIN%", lastchain);
+            body = body.replace("%SYSTEM%", system);
+            body = body.replace("%COUNTRY%", country);
+            body = body.replace("%ENV%", env);
+            body = body.replace("%BUILD%", myCountryEnvParam.getBuild());
+            body = body.replace("%REVISION%", myCountryEnvParam.getRevision());
+            body = body.replace("%CHAIN%", lastchain);
 
             result = to + "///" + cc + "///" + subject + "///" + body + "///" + chain;
 
@@ -244,9 +244,9 @@ public class EmailGeneration implements IEmailGeneration {
             cc = parameterService.findParameterByKey("cerberus_notification_accountcreation_cc", system).getValue();
             subject = parameterService.findParameterByKey("cerberus_notification_accountcreation_subject", system).getValue();
             body = parameterService.findParameterByKey("cerberus_notification_accountcreation_body", system).getValue();
-            body = body.replaceAll("%NAME%", user.getName());
-            body = body.replaceAll("%LOGIN%", user.getLogin());
-            body = body.replaceAll("%DEFAULT_PASSWORD%", parameterService.findParameterByKey("cerberus_accountcreation_defaultpassword", system).getValue());
+            body = body.replace("%NAME%", user.getName());
+            body = body.replace("%LOGIN%", user.getLogin());
+            body = body.replace("%DEFAULT_PASSWORD%", parameterService.findParameterByKey("cerberus_accountcreation_defaultpassword", system).getValue());
             
             sendMail.sendHtmlMail(host, port, body, subject, from, to, cc);
             
@@ -279,8 +279,8 @@ public class EmailGeneration implements IEmailGeneration {
             cc = parameterService.findParameterByKey("cerberus_notification_accountcreation_cc", system).getValue();
             subject = parameterService.findParameterByKey("cerberus_notification_forgotpassword_subject", system).getValue();
             body = parameterService.findParameterByKey("cerberus_notification_forgotpassword_body", system).getValue();
-            body = body.replaceAll("%NAME%", user.getName());
-            body = body.replaceAll("%LOGIN%", user.getLogin());
+            body = body.replace("%NAME%", user.getName());
+            body = body.replace("%LOGIN%", user.getLogin());
             String cerberusUrl = parameterService.findParameterByKey("cerberus_url", system).getValue();
             StringBuilder sb = new StringBuilder();
             sb.append("<a href='");
@@ -291,7 +291,7 @@ public class EmailGeneration implements IEmailGeneration {
             sb.append(user.getResetPasswordToken());
             sb.append("'>Click here to reset your password</a>");
             
-            body = body.replaceAll("%LINK%", sb.toString());
+            body = body.replace("%LINK%", sb.toString());
             
             sendMail.sendHtmlMail(host, port, body, subject, from, to, cc);
             

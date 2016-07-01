@@ -663,42 +663,42 @@ public class PropertyService implements IPropertyService {
         /**
          * Trying to replace by system environment variables .
          */
-        stringToDecode = StringUtil.replaceAllProperties(stringToDecode, "%SYS_SYSTEM%", tCExecution.getApplication().getSystem());
-        stringToDecode = StringUtil.replaceAllProperties(stringToDecode, "%SYS_APPLI%", tCExecution.getApplication().getApplication());
-        stringToDecode = StringUtil.replaceAllProperties(stringToDecode, "%SYS_APP_DOMAIN%", tCExecution.getCountryEnvironmentParameters().getDomain());
-        stringToDecode = StringUtil.replaceAllProperties(stringToDecode, "%SYS_APP_HOST%", tCExecution.getCountryEnvironmentParameters().getIp());
-        stringToDecode = StringUtil.replaceAllProperties(stringToDecode, "%SYS_ENV%", tCExecution.getEnvironmentData());
-        stringToDecode = StringUtil.replaceAllProperties(stringToDecode, "%SYS_ENVGP%", tCExecution.getEnvironmentDataObj().getGp1());
-        stringToDecode = StringUtil.replaceAllProperties(stringToDecode, "%SYS_COUNTRY%", tCExecution.getCountry());
-        stringToDecode = StringUtil.replaceAllProperties(stringToDecode, "%SYS_COUNTRYGP1%", tCExecution.getCountryObj().getGp1());
-        stringToDecode = StringUtil.replaceAllProperties(stringToDecode, "%SYS_SSIP%", tCExecution.getSeleniumIP());
-        stringToDecode = StringUtil.replaceAllProperties(stringToDecode, "%SYS_SSPORT%", tCExecution.getSeleniumPort());
-        stringToDecode = StringUtil.replaceAllProperties(stringToDecode, "%SYS_TAG%", tCExecution.getTag());
-        stringToDecode = StringUtil.replaceAllProperties(stringToDecode, "%SYS_EXECUTIONID%", String.valueOf(tCExecution.getId()));
+        stringToDecode = stringToDecode.replace("%SYS_SYSTEM%", tCExecution.getApplication().getSystem());
+        stringToDecode = stringToDecode.replace("%SYS_APPLI%", tCExecution.getApplication().getApplication());
+        stringToDecode = stringToDecode.replace("%SYS_APP_DOMAIN%", tCExecution.getCountryEnvironmentParameters().getDomain());
+        stringToDecode = stringToDecode.replace("%SYS_APP_HOST%", tCExecution.getCountryEnvironmentParameters().getIp());
+        stringToDecode = stringToDecode.replace("%SYS_ENV%", tCExecution.getEnvironmentData());
+        stringToDecode = stringToDecode.replace("%SYS_ENVGP%", tCExecution.getEnvironmentDataObj().getGp1());
+        stringToDecode = stringToDecode.replace("%SYS_COUNTRY%", tCExecution.getCountry());
+        stringToDecode = stringToDecode.replace("%SYS_COUNTRYGP1%", tCExecution.getCountryObj().getGp1());
+        stringToDecode = stringToDecode.replace("%SYS_SSIP%", tCExecution.getSeleniumIP());
+        stringToDecode = stringToDecode.replace("%SYS_SSPORT%", tCExecution.getSeleniumPort());
+        stringToDecode = stringToDecode.replace("%SYS_TAG%", tCExecution.getTag());
+        stringToDecode = stringToDecode.replace("%SYS_EXECUTIONID%", String.valueOf(tCExecution.getId()));
 
         /**
          * Trying to replace date variables .
          */
-        stringToDecode = StringUtil.replaceAllProperties(stringToDecode, "%SYS_TODAY-yyyy%", DateUtil.getTodayFormat("yyyy"));
-        stringToDecode = StringUtil.replaceAllProperties(stringToDecode, "%SYS_TODAY-MM%", DateUtil.getTodayFormat("MM"));
-        stringToDecode = StringUtil.replaceAllProperties(stringToDecode, "%SYS_TODAY-dd%", DateUtil.getTodayFormat("dd"));
-        stringToDecode = StringUtil.replaceAllProperties(stringToDecode, "%SYS_TODAY-doy%", DateUtil.getTodayFormat("D"));
-        stringToDecode = StringUtil.replaceAllProperties(stringToDecode, "%SYS_TODAY-HH%", DateUtil.getTodayFormat("HH"));
-        stringToDecode = StringUtil.replaceAllProperties(stringToDecode, "%SYS_TODAY-mm%", DateUtil.getTodayFormat("mm"));
-        stringToDecode = StringUtil.replaceAllProperties(stringToDecode, "%SYS_TODAY-ss%", DateUtil.getTodayFormat("ss"));
-        stringToDecode = StringUtil.replaceAllProperties(stringToDecode, "%SYS_YESTERDAY-yyyy%", DateUtil.getYesterdayFormat("yyyy"));
-        stringToDecode = StringUtil.replaceAllProperties(stringToDecode, "%SYS_YESTERDAY-MM%", DateUtil.getYesterdayFormat("MM"));
-        stringToDecode = StringUtil.replaceAllProperties(stringToDecode, "%SYS_YESTERDAY-dd%", DateUtil.getYesterdayFormat("dd"));
-        stringToDecode = StringUtil.replaceAllProperties(stringToDecode, "%SYS_YESTERDAY-doy%", DateUtil.getYesterdayFormat("D"));
-        stringToDecode = StringUtil.replaceAllProperties(stringToDecode, "%SYS_YESTERDAY-HH%", DateUtil.getYesterdayFormat("HH"));
-        stringToDecode = StringUtil.replaceAllProperties(stringToDecode, "%SYS_YESTERDAY-mm%", DateUtil.getYesterdayFormat("mm"));
-        stringToDecode = StringUtil.replaceAllProperties(stringToDecode, "%SYS_YESTERDAY-ss%", DateUtil.getYesterdayFormat("ss"));
+        stringToDecode = stringToDecode.replace("%SYS_TODAY-yyyy%", DateUtil.getTodayFormat("yyyy"));
+        stringToDecode = stringToDecode.replace("%SYS_TODAY-MM%", DateUtil.getTodayFormat("MM"));
+        stringToDecode = stringToDecode.replace("%SYS_TODAY-dd%", DateUtil.getTodayFormat("dd"));
+        stringToDecode = stringToDecode.replace("%SYS_TODAY-doy%", DateUtil.getTodayFormat("D"));
+        stringToDecode = stringToDecode.replace("%SYS_TODAY-HH%", DateUtil.getTodayFormat("HH"));
+        stringToDecode = stringToDecode.replace("%SYS_TODAY-mm%", DateUtil.getTodayFormat("mm"));
+        stringToDecode = stringToDecode.replace("%SYS_TODAY-ss%", DateUtil.getTodayFormat("ss"));
+        stringToDecode = stringToDecode.replace("%SYS_YESTERDAY-yyyy%", DateUtil.getYesterdayFormat("yyyy"));
+        stringToDecode = stringToDecode.replace("%SYS_YESTERDAY-MM%", DateUtil.getYesterdayFormat("MM"));
+        stringToDecode = stringToDecode.replace("%SYS_YESTERDAY-dd%", DateUtil.getYesterdayFormat("dd"));
+        stringToDecode = stringToDecode.replace("%SYS_YESTERDAY-doy%", DateUtil.getYesterdayFormat("D"));
+        stringToDecode = stringToDecode.replace("%SYS_YESTERDAY-HH%", DateUtil.getYesterdayFormat("HH"));
+        stringToDecode = stringToDecode.replace("%SYS_YESTERDAY-mm%", DateUtil.getYesterdayFormat("mm"));
+        stringToDecode = stringToDecode.replace("%SYS_YESTERDAY-ss%", DateUtil.getYesterdayFormat("ss"));
 
         /**
          * Trying to replace timing variables .
          */
-        stringToDecode = StringUtil.replaceAllProperties(stringToDecode, "%SYS_ELAPSED-EXESTART%", "To Be Implemented");
-        stringToDecode = StringUtil.replaceAllProperties(stringToDecode, "%SYS_ELAPSED-STEPSTART%", "To Be Implemented");
+        stringToDecode = stringToDecode.replace("%SYS_ELAPSED-EXESTART%", "To Be Implemented");
+        stringToDecode = stringToDecode.replace("%SYS_ELAPSED-STEPSTART%", "To Be Implemented");
 
         return stringToDecode;
     }
@@ -713,7 +713,7 @@ public class PropertyService implements IPropertyService {
                     .getName()).log(java.util.logging.Level.SEVERE, null, ex);
             MessageEvent res = new MessageEvent(MessageEventEnum.PROPERTY_FAILED_SQL_SQLLIB_NOTEXIT);
 
-            res.setDescription(res.getDescription().replaceAll("%SQLLIB%", testCaseExecutionData.getValue1()));
+            res.setDescription(res.getDescription().replace("%SQLLIB%", testCaseExecutionData.getValue1()));
             testCaseExecutionData.setPropertyResultMessage(res);
 
             testCaseExecutionData.setEnd(
@@ -745,8 +745,8 @@ public class PropertyService implements IPropertyService {
                 String value = StringUtil.getRandomString(testCaseCountryProperty.getLength(), charset);
                 testCaseExecutionData.setValue(value);
                 MessageEvent res = new MessageEvent(MessageEventEnum.PROPERTY_SUCCESS_RANDOM);
-                res.setDescription(res.getDescription().replaceAll("%FORCED%", forceRecalculation == true ? "Re-" : ""));
-                res.setDescription(res.getDescription().replaceAll("%VALUE%", ParameterParserUtil.securePassword(value, testCaseCountryProperty.getProperty())));
+                res.setDescription(res.getDescription().replace("%FORCED%", forceRecalculation == true ? "Re-" : ""));
+                res.setDescription(res.getDescription().replace("%VALUE%", ParameterParserUtil.securePassword(value, testCaseCountryProperty.getProperty())));
                 testCaseExecutionData.setPropertyResultMessage(res);
 //                    if (testCaseCountryProperty.getNature().equals("RANDOM_NEW")) {
 //                        //TODO check if value exist on DB ( used in another test case of the revision )
@@ -761,7 +761,7 @@ public class PropertyService implements IPropertyService {
             testCaseExecutionData.setValue(value);
             MessageEvent res = new MessageEvent(MessageEventEnum.PROPERTY_SUCCESS_TEXT);
 
-            res.setDescription(res.getDescription().replaceAll("%VALUE%", ParameterParserUtil.securePassword(value, testCaseCountryProperty.getProperty())));
+            res.setDescription(res.getDescription().replace("%VALUE%", ParameterParserUtil.securePassword(value, testCaseCountryProperty.getProperty())));
             testCaseExecutionData.setPropertyResultMessage(res);
         }
         return testCaseExecutionData;

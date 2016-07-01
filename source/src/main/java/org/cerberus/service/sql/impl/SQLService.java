@@ -117,9 +117,9 @@ public class SQLService implements ISQLService {
                     } else {
                         mes = new MessageEvent(MessageEventEnum.PROPERTY_FAILED_SQL_NODATA);
                     }
-                    mes.setDescription(mes.getDescription().replaceAll("%DB%", db));
-                    mes.setDescription(mes.getDescription().replaceAll("%SQL%", sql));
-                    mes.setDescription(mes.getDescription().replaceAll("%JDBCPOOLNAME%", connectionName));
+                    mes.setDescription(mes.getDescription().replace("%DB%", db));
+                    mes.setDescription(mes.getDescription().replace("%SQL%", sql));
+                    mes.setDescription(mes.getDescription().replace("%JDBCPOOLNAME%", connectionName));
                     testCaseExecutionData.setPropertyResultMessage(mes);
 
                 } catch (CerberusEventException ex) {
@@ -128,17 +128,17 @@ public class SQLService implements ISQLService {
 
             } else {
                 mes = new MessageEvent(MessageEventEnum.PROPERTY_FAILED_SQL_EMPTYJDBCPOOL);
-                mes.setDescription(mes.getDescription().replaceAll("%SYSTEM%", tCExecution.getApplication().getSystem()));
-                mes.setDescription(mes.getDescription().replaceAll("%COUNTRY%", testCaseProperties.getCountry()));
-                mes.setDescription(mes.getDescription().replaceAll("%ENV%", tCExecution.getEnvironmentData()));
-                mes.setDescription(mes.getDescription().replaceAll("%DB%", db));
+                mes.setDescription(mes.getDescription().replace("%SYSTEM%", tCExecution.getApplication().getSystem()));
+                mes.setDescription(mes.getDescription().replace("%COUNTRY%", testCaseProperties.getCountry()));
+                mes.setDescription(mes.getDescription().replace("%ENV%", tCExecution.getEnvironmentData()));
+                mes.setDescription(mes.getDescription().replace("%DB%", db));
             }
         } catch (CerberusException ex) {
             mes = new MessageEvent(MessageEventEnum.PROPERTY_FAILED_SQL_JDBCPOOLNOTCONFIGURED);
-            mes.setDescription(mes.getDescription().replaceAll("%SYSTEM%", tCExecution.getApplication().getSystem()));
-            mes.setDescription(mes.getDescription().replaceAll("%COUNTRY%", testCaseProperties.getCountry()));
-            mes.setDescription(mes.getDescription().replaceAll("%ENV%", tCExecution.getEnvironmentData()));
-            mes.setDescription(mes.getDescription().replaceAll("%DB%", db));
+            mes.setDescription(mes.getDescription().replace("%SYSTEM%", tCExecution.getApplication().getSystem()));
+            mes.setDescription(mes.getDescription().replace("%COUNTRY%", testCaseProperties.getCountry()));
+            mes.setDescription(mes.getDescription().replace("%ENV%", tCExecution.getEnvironmentData()));
+            mes.setDescription(mes.getDescription().replace("%DB%", db));
         }
 
         testCaseExecutionData.setPropertyResultMessage(mes);
@@ -165,7 +165,7 @@ public class SQLService implements ISQLService {
                         country, environment, db));
                 if (countryEnvironmentDatabase == null) {
                     mes = new MessageEvent(MessageEventEnum.PROPERTY_FAILED_GETFROMDATALIB_SQL_DATABASENOTCONFIGURED);
-                    mes.setDescription(mes.getDescription().replaceAll("%SYSTEM%", system).replaceAll("%COUNTRY%", country).replaceAll("%ENV%", environment).replaceAll("%DATABASE%", db));
+                    mes.setDescription(mes.getDescription().replace("%SYSTEM%", system).replace("%COUNTRY%", country).replace("%ENV%", environment).replace("%DATABASE%", db));
 
                 } else {
 
@@ -203,7 +203,7 @@ public class SQLService implements ISQLService {
                                     int position = r.nextInt(list.size());
                                     answer.setItem(list.get(position));
                                     mes = new MessageEvent(MessageEventEnum.PROPERTY_SUCCESS_GETFROMDATALIB_SQL_RANDOM);
-                                    mes.setDescription(mes.getDescription().replaceAll("%POS%", Integer.toString(position)).replaceAll("%TOTALPOS%", Integer.toString(list.size())));
+                                    mes.setDescription(mes.getDescription().replace("%POS%", Integer.toString(position)).replace("%TOTALPOS%", Integer.toString(list.size())));
 
                                 } else if (testCaseCountryProperty.getNature().equalsIgnoreCase(Property.NATURE_RANDOMNEW)) {
 
@@ -234,13 +234,13 @@ public class SQLService implements ISQLService {
                                         int position = r.nextInt(list.size());
                                         answer.setItem(list.get(position));
                                         mes = new MessageEvent(MessageEventEnum.PROPERTY_SUCCESS_GETFROMDATALIB_SQL_RANDOMNEW);
-                                        mes.setDescription(mes.getDescription().replaceAll("%TOTNB%", Integer.toString(initNB))
-                                                .replaceAll("%REMNB%", Integer.toString(removedNB))
-                                                .replaceAll("%POS%", Integer.toString(position))
-                                                .replaceAll("%TOTALPOS%", Integer.toString(list.size())));
+                                        mes.setDescription(mes.getDescription().replace("%TOTNB%", Integer.toString(initNB))
+                                                .replace("%REMNB%", Integer.toString(removedNB))
+                                                .replace("%POS%", Integer.toString(position))
+                                                .replace("%TOTALPOS%", Integer.toString(list.size())));
                                     } else { // No more entries available.
                                         mes = new MessageEvent(MessageEventEnum.PROPERTY_FAILED_GETFROMDATALIB_SQL_RANDOMNEW_NOMORERECORD);
-                                        mes.setDescription(mes.getDescription().replaceAll("%TOTNB%", Integer.toString(initNB)));
+                                        mes.setDescription(mes.getDescription().replace("%TOTNB%", Integer.toString(initNB)));
                                     }
 
                                 } else if (testCaseCountryProperty.getNature().equalsIgnoreCase(Property.NATURE_NOTINUSE)) {
@@ -271,20 +271,20 @@ public class SQLService implements ISQLService {
                                         int position = r.nextInt(list.size());
                                         answer.setItem(list.get(position));
                                         mes = new MessageEvent(MessageEventEnum.PROPERTY_SUCCESS_GETFROMDATALIB_SQL_NOTINUSE);
-                                        mes.setDescription(mes.getDescription().replaceAll("%TOTNB%", Integer.toString(initNB))
-                                                .replaceAll("%REMNB%", Integer.toString(removedNB))
-                                                .replaceAll("%POS%", Integer.toString(position))
-                                                .replaceAll("%TOTALPOS%", Integer.toString(list.size())));
+                                        mes.setDescription(mes.getDescription().replace("%TOTNB%", Integer.toString(initNB))
+                                                .replace("%REMNB%", Integer.toString(removedNB))
+                                                .replace("%POS%", Integer.toString(position))
+                                                .replace("%TOTALPOS%", Integer.toString(list.size())));
                                     } else { // No more entries available.
                                         mes = new MessageEvent(MessageEventEnum.PROPERTY_FAILED_GETFROMDATALIB_SQL_NOTINUSE_NOMORERECORD);
-                                        mes.setDescription(mes.getDescription().replaceAll("%TOTNB%", Integer.toString(initNB)));
+                                        mes.setDescription(mes.getDescription().replace("%TOTNB%", Integer.toString(initNB)));
                                     }
 
                                 }
 
                                 // If the return is successfull, we convert the result to JSON and add it to the message.
                                 if (!list.isEmpty()) {
-                                    mes.setDescription(mes.getDescription().replaceAll("%RESULTVALUE%", answer.getItem().toString()));
+                                    mes.setDescription(mes.getDescription().replace("%RESULTVALUE%", answer.getItem().toString()));
                                 }
 
                             } else {
@@ -295,19 +295,19 @@ public class SQLService implements ISQLService {
                             mes = responseList.getResultMessage();
                         }
 
-                        mes.setDescription(mes.getDescription().replaceAll("%DB%", db));
-                        mes.setDescription(mes.getDescription().replaceAll("%SQL%", sql));
-                        mes.setDescription(mes.getDescription().replaceAll("%JDBCPOOLNAME%", connectionName));
+                        mes.setDescription(mes.getDescription().replace("%DB%", db));
+                        mes.setDescription(mes.getDescription().replace("%SQL%", sql));
+                        mes.setDescription(mes.getDescription().replace("%JDBCPOOLNAME%", connectionName));
 
                     } else {
                         mes = new MessageEvent(MessageEventEnum.PROPERTY_FAILED_GETFROMDATALIB_SQL_JDBCRESSOURCEMPTY);
-                        mes.setDescription(mes.getDescription().replaceAll("%SYSTEM%", system).replaceAll("%COUNTRY%", country).replaceAll("%ENV%", environment).replaceAll("%DATABASE%", db));
+                        mes.setDescription(mes.getDescription().replace("%SYSTEM%", system).replace("%COUNTRY%", country).replace("%ENV%", environment).replace("%DATABASE%", db));
                     }
                 }
             }
         } catch (CerberusException ex) {
             mes = new MessageEvent(MessageEventEnum.PROPERTY_FAILED_GETFROMDATALIB_SQL_DATABASENOTCONFIGURED);
-            mes.setDescription(mes.getDescription().replaceAll("%SYSTEM%", system).replaceAll("%COUNTRY%", country).replaceAll("%ENV%", environment).replaceAll("%DATABASE%", db));
+            mes.setDescription(mes.getDescription().replace("%SYSTEM%", system).replace("%COUNTRY%", country).replace("%ENV%", environment).replace("%DATABASE%", db));
         }
 
         answer.setResultMessage(mes);
@@ -330,7 +330,7 @@ public class SQLService implements ISQLService {
         int maxSecurityFetch = 100;
         int nbFetch = 0;
         MessageEvent msg = new MessageEvent(MessageEventEnum.PROPERTY_FAILED_SQL_GENERIC);
-        msg.setDescription(msg.getDescription().replaceAll("%JDBC%", "jdbc/" + connectionName));
+        msg.setDescription(msg.getDescription().replace("%JDBC%", "jdbc/" + connectionName));
 
         Connection connection = this.databaseSpring.connect(connectionName);
         try {
@@ -368,8 +368,8 @@ public class SQLService implements ISQLService {
             } catch (SQLException exception) {
                 MyLogger.log(SQLService.class.getName(), Level.WARN, exception.toString());
                 msg = new MessageEvent(MessageEventEnum.PROPERTY_FAILED_SQL_ERROR);
-                msg.setDescription(msg.getDescription().replaceAll("%SQL%", sql));
-                msg.setDescription(msg.getDescription().replaceAll("%EX%", exception.toString()));
+                msg.setDescription(msg.getDescription().replace("%SQL%", sql));
+                msg.setDescription(msg.getDescription().replace("%EX%", exception.toString()));
                 throwEx = true;
             } finally {
                 preStat.close();
@@ -377,15 +377,15 @@ public class SQLService implements ISQLService {
         } catch (SQLException exception) {
             MyLogger.log(SQLService.class.getName(), Level.FATAL, exception.toString());
             msg = new MessageEvent(MessageEventEnum.PROPERTY_FAILED_SQL_CANNOTACCESSJDBC);
-            msg.setDescription(msg.getDescription().replaceAll("%JDBC%", "jdbc/" + connectionName));
-            msg.setDescription(msg.getDescription().replaceAll("%EX%", exception.toString()));
+            msg.setDescription(msg.getDescription().replace("%JDBC%", "jdbc/" + connectionName));
+            msg.setDescription(msg.getDescription().replace("%EX%", exception.toString()));
             throwEx = true;
         } catch (NullPointerException exception) {
             //TODO check where exception occur
             MyLogger.log(SQLService.class.getName(), Level.FATAL, exception.toString());
             msg = new MessageEvent(MessageEventEnum.PROPERTY_FAILED_SQL_CANNOTACCESSJDBC);
-            msg.setDescription(msg.getDescription().replaceAll("%JDBC%", "jdbc/" + connectionName));
-            msg.setDescription(msg.getDescription().replaceAll("%EX%", exception.toString()));
+            msg.setDescription(msg.getDescription().replace("%JDBC%", "jdbc/" + connectionName));
+            msg.setDescription(msg.getDescription().replace("%EX%", exception.toString()));
             throwEx = true;
         } finally {
             try {
@@ -517,7 +517,7 @@ public class SQLService implements ISQLService {
         String error_desc = "";
 
         MessageEvent msg = new MessageEvent(MessageEventEnum.PROPERTY_SUCCESS);
-        msg.setDescription(msg.getDescription().replaceAll("%JDBC%", "jdbc/" + connectionName));
+        msg.setDescription(msg.getDescription().replace("%JDBC%", "jdbc/" + connectionName));
 
         Connection connection = this.databaseSpring.connect(connectionName);
         try {
@@ -564,10 +564,10 @@ public class SQLService implements ISQLService {
                         msg = new MessageEvent(MessageEventEnum.PROPERTY_FAILED_GETFROMDATALIB_SQL_NODATA);
                     } else if (nbColMatch == 0) { // None of the columns could be match.
                         msg = new MessageEvent(MessageEventEnum.PROPERTY_FAILED_GETFROMDATALIB_SQL_NOCOLUMNMATCH);
-                        msg.setDescription(msg.getDescription().replaceAll("%BADCOLUMNS%", error_desc));
+                        msg.setDescription(msg.getDescription().replace("%BADCOLUMNS%", error_desc));
                     } else if (!("".equals(error_desc))) { // At least a column could not be parsed
                         msg = new MessageEvent(MessageEventEnum.PROPERTY_FAILED_GETFROMDATALIB_SQL_COLUMNNOTMATCHING);
-                        msg.setDescription(msg.getDescription().replaceAll("%BADCOLUMNS%", error_desc));
+                        msg.setDescription(msg.getDescription().replace("%BADCOLUMNS%", error_desc));
                     }
 
                 } catch (SQLException exception) {
@@ -581,8 +581,8 @@ public class SQLService implements ISQLService {
             } catch (SQLException exception) {
                 MyLogger.log(SQLService.class.getName(), Level.WARN, exception.toString());
                 msg = new MessageEvent(MessageEventEnum.PROPERTY_FAILED_SQL_ERROR);
-                msg.setDescription(msg.getDescription().replaceAll("%SQL%", sql));
-                msg.setDescription(msg.getDescription().replaceAll("%EX%", exception.toString()));
+                msg.setDescription(msg.getDescription().replace("%SQL%", sql));
+                msg.setDescription(msg.getDescription().replace("%EX%", exception.toString()));
             } finally {
                 if (preStat != null) {
                     preStat.close();
@@ -591,14 +591,14 @@ public class SQLService implements ISQLService {
         } catch (SQLException exception) {
             MyLogger.log(SQLService.class.getName(), Level.FATAL, exception.toString());
             msg = new MessageEvent(MessageEventEnum.PROPERTY_FAILED_SQL_CANNOTACCESSJDBC);
-            msg.setDescription(msg.getDescription().replaceAll("%JDBC%", "jdbc/" + connectionName));
-            msg.setDescription(msg.getDescription().replaceAll("%EX%", exception.toString()));
+            msg.setDescription(msg.getDescription().replace("%JDBC%", "jdbc/" + connectionName));
+            msg.setDescription(msg.getDescription().replace("%EX%", exception.toString()));
         } catch (NullPointerException exception) {
             //TODO check where exception occur
             MyLogger.log(SQLService.class.getName(), Level.FATAL, exception.toString());
             msg = new MessageEvent(MessageEventEnum.PROPERTY_FAILED_SQL_CANNOTACCESSJDBC);
-            msg.setDescription(msg.getDescription().replaceAll("%JDBC%", "jdbc/" + connectionName));
-            msg.setDescription(msg.getDescription().replaceAll("%EX%", exception.toString()));
+            msg.setDescription(msg.getDescription().replace("%JDBC%", "jdbc/" + connectionName));
+            msg.setDescription(msg.getDescription().replace("%EX%", exception.toString()));
         } finally {
             try {
                 if (connection != null) {
@@ -623,7 +623,7 @@ public class SQLService implements ISQLService {
                     country, environment, database));
             connectionName = countryEnvironmentDatabase.getConnectionPoolName();
             msg = new MessageEvent(MessageEventEnum.ACTION_FAILED_SQL_GENERIC);
-            msg.setDescription(msg.getDescription().replaceAll("%JDBC%", "jdbc/" + connectionName));
+            msg.setDescription(msg.getDescription().replace("%JDBC%", "jdbc/" + connectionName));
 
             if (!(StringUtil.isNullOrEmpty(connectionName))) {
                 Connection connection = this.databaseSpring.connect(connectionName);
@@ -635,21 +635,21 @@ public class SQLService implements ISQLService {
                     } catch (SQLException exception) {
                         MyLogger.log(SQLService.class.getName(), Level.WARN, exception.toString());
                         msg = new MessageEvent(MessageEventEnum.ACTION_FAILED_SQL_ERROR);
-                        msg.setDescription(msg.getDescription().replaceAll("%SQL%", sql));
-                        msg.setDescription(msg.getDescription().replaceAll("%EX%", exception.toString()));
+                        msg.setDescription(msg.getDescription().replace("%SQL%", sql));
+                        msg.setDescription(msg.getDescription().replace("%EX%", exception.toString()));
                     } finally {
                         preStat.close();
                     }
                 } catch (SQLException exception) {
                     MyLogger.log(SQLService.class.getName(), Level.FATAL, exception.toString());
                     msg = new MessageEvent(MessageEventEnum.ACTION_FAILED_SQL_CANNOTACCESSJDBC);
-                    msg.setDescription(msg.getDescription().replaceAll("%JDBC%", "jdbc/" + connectionName));
-                    msg.setDescription(msg.getDescription().replaceAll("%EX%", exception.toString()));
+                    msg.setDescription(msg.getDescription().replace("%JDBC%", "jdbc/" + connectionName));
+                    msg.setDescription(msg.getDescription().replace("%EX%", exception.toString()));
                 } catch (NullPointerException exception) {
                     MyLogger.log(SQLService.class.getName(), Level.FATAL, exception.toString());
                     msg = new MessageEvent(MessageEventEnum.ACTION_FAILED_SQL_CANNOTACCESSJDBC);
-                    msg.setDescription(msg.getDescription().replaceAll("%JDBC%", "jdbc/" + connectionName));
-                    msg.setDescription(msg.getDescription().replaceAll("%EX%", exception.toString()));
+                    msg.setDescription(msg.getDescription().replace("%JDBC%", "jdbc/" + connectionName));
+                    msg.setDescription(msg.getDescription().replace("%EX%", exception.toString()));
                 } finally {
                     try {
                         if (connection != null) {
@@ -662,10 +662,10 @@ public class SQLService implements ISQLService {
             }
         } catch (CerberusException ex) {
             msg = new MessageEvent(MessageEventEnum.ACTION_FAILED_SQL_JDBCPOOLNOTCONFIGURED);
-            msg.setDescription(msg.getDescription().replaceAll("%SYSTEM%", system));
-            msg.setDescription(msg.getDescription().replaceAll("%COUNTRY%", country));
-            msg.setDescription(msg.getDescription().replaceAll("%ENV%", environment));
-            msg.setDescription(msg.getDescription().replaceAll("%DB%", database));
+            msg.setDescription(msg.getDescription().replace("%SYSTEM%", system));
+            msg.setDescription(msg.getDescription().replace("%COUNTRY%", country));
+            msg.setDescription(msg.getDescription().replace("%ENV%", environment));
+            msg.setDescription(msg.getDescription().replace("%DB%", database));
             MyLogger.log(SQLService.class.getName(), Level.FATAL, ex.getMessageError().getDescription());
         }
         return msg;
@@ -682,7 +682,7 @@ public class SQLService implements ISQLService {
                     country, environment, database));
             connectionName = countryEnvironmentDatabase.getConnectionPoolName();
             msg = new MessageEvent(MessageEventEnum.ACTION_FAILED_SQL_GENERIC);
-            msg.setDescription(msg.getDescription().replaceAll("%JDBC%", "jdbc/" + connectionName));
+            msg.setDescription(msg.getDescription().replace("%JDBC%", "jdbc/" + connectionName));
 
             if (!(StringUtil.isNullOrEmpty(connectionName))) {
                 Connection connection = this.databaseSpring.connect(connectionName);
@@ -694,21 +694,21 @@ public class SQLService implements ISQLService {
                     } catch (SQLException exception) {
                         MyLogger.log(SQLService.class.getName(), Level.WARN, exception.toString());
                         msg = new MessageEvent(MessageEventEnum.ACTION_FAILED_SQL_ERROR);
-                        msg.setDescription(msg.getDescription().replaceAll("%SQL%", sql));
-                        msg.setDescription(msg.getDescription().replaceAll("%EX%", exception.toString()));
+                        msg.setDescription(msg.getDescription().replace("%SQL%", sql));
+                        msg.setDescription(msg.getDescription().replace("%EX%", exception.toString()));
                     } finally {
                         cs.close();
                     }
                 } catch (SQLException exception) {
                     MyLogger.log(SQLService.class.getName(), Level.FATAL, exception.toString());
                     msg = new MessageEvent(MessageEventEnum.ACTION_FAILED_SQL_CANNOTACCESSJDBC);
-                    msg.setDescription(msg.getDescription().replaceAll("%JDBC%", "jdbc/" + connectionName));
-                    msg.setDescription(msg.getDescription().replaceAll("%EX%", exception.toString()));
+                    msg.setDescription(msg.getDescription().replace("%JDBC%", "jdbc/" + connectionName));
+                    msg.setDescription(msg.getDescription().replace("%EX%", exception.toString()));
                 } catch (NullPointerException exception) {
                     MyLogger.log(SQLService.class.getName(), Level.FATAL, exception.toString());
                     msg = new MessageEvent(MessageEventEnum.ACTION_FAILED_SQL_CANNOTACCESSJDBC);
-                    msg.setDescription(msg.getDescription().replaceAll("%JDBC%", "jdbc/" + connectionName));
-                    msg.setDescription(msg.getDescription().replaceAll("%EX%", exception.toString()));
+                    msg.setDescription(msg.getDescription().replace("%JDBC%", "jdbc/" + connectionName));
+                    msg.setDescription(msg.getDescription().replace("%EX%", exception.toString()));
                 } finally {
                     try {
                         if (connection != null) {
@@ -721,10 +721,10 @@ public class SQLService implements ISQLService {
             }
         } catch (CerberusException ex) {
             msg = new MessageEvent(MessageEventEnum.ACTION_FAILED_SQL_JDBCPOOLNOTCONFIGURED);
-            msg.setDescription(msg.getDescription().replaceAll("%SYSTEM%", system));
-            msg.setDescription(msg.getDescription().replaceAll("%COUNTRY%", country));
-            msg.setDescription(msg.getDescription().replaceAll("%ENV%", environment));
-            msg.setDescription(msg.getDescription().replaceAll("%DB%", database));
+            msg.setDescription(msg.getDescription().replace("%SYSTEM%", system));
+            msg.setDescription(msg.getDescription().replace("%COUNTRY%", country));
+            msg.setDescription(msg.getDescription().replace("%ENV%", environment));
+            msg.setDescription(msg.getDescription().replace("%DB%", database));
         }
         return msg;
     }

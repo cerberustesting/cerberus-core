@@ -213,13 +213,13 @@
         s = s.replaceAll("\r", "__enter__");
         s = s.replaceAll("\n", "__enter__");
         if (s.contains("br")) {
-            s = s.replaceAll("<br>", "__breakpoint__");
-            s = s.replaceAll("</br>", "__breakpoint__");
-            s = s.replaceAll("<br/>", "__breakpoint__");
-            s = s.replaceAll("<br />", "__breakpoint__");
+            s = s.replace("<br>", "__breakpoint__");
+            s = s.replace("</br>", "__breakpoint__");
+            s = s.replace("<br/>", "__breakpoint__");
+            s = s.replace("<br />", "__breakpoint__");
         }
-        s = s.replaceAll("<", "__abrir__");
-        s = s.replaceAll("/>", "__fechar__");
+        s = s.replace("<", "__abrir__");
+        s = s.replace("/>", "__fechar__");
         return s;
     }
 

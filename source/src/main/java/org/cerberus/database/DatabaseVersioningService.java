@@ -6115,8 +6115,28 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLS = new StringBuilder();
         SQLS.append("INSERT INTO `parameter` (`system`, `param`, `value`, `description`) VALUES ('', 'cerberus_automaticexecution_enable', 'Y', 'Activation boolean in order to activate the automatic executions.Y value will allow execution. Any other value will stop the execution returning an error message..');");
         SQLInstruction.add(SQLS.toString());
-        
-        
+
+        // Updated Description of cerberus_reporting_url parameter.
+        //-- ------------------------ 835
+        SQLS = new StringBuilder();
+        SQLS.append("UPDATE `parameter` SET `description`='URL to Cerberus reporting screen. the following variables can be used : %COUNTRY%, %ENV%,  %APPLI%, %BUILD% and %REV%.' WHERE `system`='' and`param`='cerberus_reporting_url';");
+        SQLInstruction.add(SQLS.toString());
+
+        // Updated Description of cerberus_reporting_url parameter.
+        //-- ------------------------ 836-839
+        SQLS = new StringBuilder();
+        SQLS.append("ALTER TABLE `testcasestepactioncontrol` CHANGE COLUMN `ControlValue` `ControlValue` VARCHAR(2500) NOT NULL DEFAULT ''  ,CHANGE COLUMN `ControlProperty` `ControlProperty` VARCHAR(2500) NULL DEFAULT NULL ;");
+        SQLInstruction.add(SQLS.toString());
+        SQLS = new StringBuilder();
+        SQLS.append("ALTER TABLE `testcasestepactioncontrolexecution` CHANGE COLUMN `ControlValue` `ControlValue` VARCHAR(2500) NULL DEFAULT NULL ;");
+        SQLInstruction.add(SQLS.toString());
+        SQLS = new StringBuilder();
+        SQLS.append("ALTER TABLE `testcasestepaction` CHANGE COLUMN `Object` `Object` VARCHAR(2500) NOT NULL DEFAULT ''  ,CHANGE COLUMN `Property` `Property` VARCHAR(2500) NULL DEFAULT NULL ;");
+        SQLInstruction.add(SQLS.toString());
+        SQLS = new StringBuilder();
+        SQLS.append("ALTER TABLE `testcasestepactionexecution` CHANGE COLUMN `Object` `Object` VARCHAR(2500) NULL DEFAULT NULL  ,CHANGE COLUMN `Property` `Property` VARCHAR(2500) NULL DEFAULT NULL ;");
+        SQLInstruction.add(SQLS.toString());
+
         return SQLInstruction;
     }
 

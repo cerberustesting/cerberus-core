@@ -128,7 +128,7 @@ public class ExecutionCheckService implements IExecutionCheckService {
             return true;
         }
         message = new MessageGeneral(MessageGeneralEnum.VALIDATION_FAILED_TEST_NOTACTIVE);
-        message.setDescription(message.getDescription().replaceAll("%TEST%", test.getTest()));
+        message.setDescription(message.getDescription().replace("%TEST%", test.getTest()));
         return false;
     }
 
@@ -265,8 +265,8 @@ public class ExecutionCheckService implements IExecutionCheckService {
             return true;
         }
         message = new MessageGeneral(MessageGeneralEnum.VALIDATION_FAILED_ENVIRONMENT_NOTDEFINED);
-        message.setDescription(message.getDescription().replaceAll("%ENV%", tCExecution.getEnvironmentData()));
-        message.setDescription(message.getDescription().replaceAll("%ENVGP%", tCExecution.getEnvironmentDataObj().getGp1()));
+        message.setDescription(message.getDescription().replace("%ENV%", tCExecution.getEnvironmentData()));
+        message.setDescription(message.getDescription().replace("%ENVGP%", tCExecution.getEnvironmentDataObj().getGp1()));
         return false;
     }
 
@@ -275,7 +275,7 @@ public class ExecutionCheckService implements IExecutionCheckService {
             return true;
         }
         message = new MessageGeneral(MessageGeneralEnum.VALIDATION_FAILED_RUNQA_NOTDEFINED);
-        message.setDescription(message.getDescription().replaceAll("%ENV%", env));
+        message.setDescription(message.getDescription().replace("%ENV%", env));
         return false;
     }
 
@@ -284,7 +284,7 @@ public class ExecutionCheckService implements IExecutionCheckService {
             return true;
         }
         message = new MessageGeneral(MessageGeneralEnum.VALIDATION_FAILED_RUNUAT_NOTDEFINED);
-        message.setDescription(message.getDescription().replaceAll("%ENV%", env));
+        message.setDescription(message.getDescription().replace("%ENV%", env));
         return false;
     }
 
@@ -293,7 +293,7 @@ public class ExecutionCheckService implements IExecutionCheckService {
             return true;
         }
         message = new MessageGeneral(MessageGeneralEnum.VALIDATION_FAILED_RUNPROD_NOTDEFINED);
-        message.setDescription(message.getDescription().replaceAll("%ENV%", env));
+        message.setDescription(message.getDescription().replace("%ENV%", env));
         return false;
     }
 

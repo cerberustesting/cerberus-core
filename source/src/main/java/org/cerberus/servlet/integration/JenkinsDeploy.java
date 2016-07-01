@@ -90,12 +90,12 @@ public class JenkinsDeploy extends HttpServlet {
 
             String url = parameterService.findParameterByKey("jenkins_deploy_url","").getValue();
             String final_url;
-            final_url = url.replaceAll("%APPLI%", request.getParameter("application"));
-            final_url = final_url.replaceAll("%JENKINSBUILDID%", request.getParameter("jenkinsbuildid"));
-            final_url = final_url.replaceAll("%DEPLOYTYPE%", request.getParameter("deploytype"));
-            final_url = final_url.replaceAll("%JENKINSAGENT%", request.getParameter("jenkinsagent"));
-            final_url = final_url.replaceAll("%RELEASE%", request.getParameter("release"));
-            final_url = final_url.replaceAll("%REPOSITORYURL%", request.getParameter("repositoryurl"));
+            final_url = url.replace("%APPLI%", request.getParameter("application"));
+            final_url = final_url.replace("%JENKINSBUILDID%", request.getParameter("jenkinsbuildid"));
+            final_url = final_url.replace("%DEPLOYTYPE%", request.getParameter("deploytype"));
+            final_url = final_url.replace("%JENKINSAGENT%", request.getParameter("jenkinsagent"));
+            final_url = final_url.replace("%RELEASE%", request.getParameter("release"));
+            final_url = final_url.replace("%REPOSITORYURL%", request.getParameter("repositoryurl"));
 
             //send request to Jenkins
             Integer responseCode = session.getURL(final_url);

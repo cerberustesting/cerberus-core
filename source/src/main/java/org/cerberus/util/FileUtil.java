@@ -62,6 +62,6 @@ public class FileUtil {
         sbScreenshotFilename.append(".");
         sbScreenshotFilename.append(extension);
 
-        return sbScreenshotFilename.toString().replaceAll(" ", "");
+        return sbScreenshotFilename.toString().replace(" ", "");
     }
 }

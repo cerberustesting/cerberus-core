@@ -330,8 +330,8 @@ public class WebDriverService implements IWebDriverService {
         String strings[] = cleanedCurrentURL.split(cleanedURL, 2);
         if (strings.length < 2) {
             MessageEvent msg = new MessageEvent(MessageEventEnum.CONTROL_FAILED_URL_NOT_MATCH_APPLICATION);
-            msg.setDescription(msg.getDescription().replaceAll("%HOST%", url));
-            msg.setDescription(msg.getDescription().replaceAll("%CURRENTURL%", session.getDriver().getCurrentUrl()));
+            msg.setDescription(msg.getDescription().replace("%HOST%", url));
+            msg.setDescription(msg.getDescription().replace("%CURRENTURL%", session.getDriver().getCurrentUrl()));
             MyLogger.log(WebDriverService.class.getName(), Level.WARN, msg.toString());
             throw new CerberusEventException(msg);
         }
@@ -443,7 +443,7 @@ public class WebDriverService implements IWebDriverService {
                 if (webElement != null) {
                     webElement.click();
                     message = new MessageEvent(MessageEventEnum.ACTION_SUCCESS_CLICK);
-                    message.setDescription(message.getDescription().replaceAll("%ELEMENT%", identifier.getIdentifier() + "=" + identifier.getLocator()));
+                    message.setDescription(message.getDescription().replace("%ELEMENT%", identifier.getIdentifier() + "=" + identifier.getLocator()));
                     return message;
                 }
             }
@@ -451,12 +451,12 @@ public class WebDriverService implements IWebDriverService {
             return answer.getResultMessage();
         } catch (NoSuchElementException exception) {
             message = new MessageEvent(MessageEventEnum.ACTION_FAILED_CLICK_NO_SUCH_ELEMENT);
-            message.setDescription(message.getDescription().replaceAll("%ELEMENT%", identifier.getIdentifier() + "=" + identifier.getLocator()));
+            message.setDescription(message.getDescription().replace("%ELEMENT%", identifier.getIdentifier() + "=" + identifier.getLocator()));
             MyLogger.log(WebDriverService.class.getName(), Level.DEBUG, exception.toString());
             return message;
         } catch (TimeoutException exception) {
             message = new MessageEvent(MessageEventEnum.ACTION_FAILED_TIMEOUT);
-            message.setDescription(message.getDescription().replaceAll("%TIMEOUT%", String.valueOf(session.getDefaultWait())));
+            message.setDescription(message.getDescription().replace("%TIMEOUT%", String.valueOf(session.getDefaultWait())));
             MyLogger.log(WebDriverService.class.getName(), Level.WARN, exception.toString());
             return message;
         } catch (WebDriverException exception) {
@@ -480,7 +480,7 @@ public class WebDriverService implements IWebDriverService {
                     actions.clickAndHold(webElement);
                     actions.build().perform();
                     message = new MessageEvent(MessageEventEnum.ACTION_SUCCESS_MOUSEDOWN);
-                    message.setDescription(message.getDescription().replaceAll("%ELEMENT%", identifier.getIdentifier() + "=" + identifier.getLocator()));
+                    message.setDescription(message.getDescription().replace("%ELEMENT%", identifier.getIdentifier() + "=" + identifier.getLocator()));
                     return message;
                 }
             }
@@ -488,12 +488,12 @@ public class WebDriverService implements IWebDriverService {
             return answer.getResultMessage();
         } catch (NoSuchElementException exception) {
             message = new MessageEvent(MessageEventEnum.ACTION_FAILED_MOUSEDOWN_NO_SUCH_ELEMENT);
-            message.setDescription(message.getDescription().replaceAll("%ELEMENT%", identifier.getIdentifier() + "=" + identifier.getLocator()));
+            message.setDescription(message.getDescription().replace("%ELEMENT%", identifier.getIdentifier() + "=" + identifier.getLocator()));
             MyLogger.log(WebDriverService.class.getName(), Level.DEBUG, exception.toString());
             return message;
         } catch (TimeoutException exception) {
             message = new MessageEvent(MessageEventEnum.ACTION_FAILED_TIMEOUT);
-            message.setDescription(message.getDescription().replaceAll("%TIMEOUT%", String.valueOf(session.getDefaultWait())));
+            message.setDescription(message.getDescription().replace("%TIMEOUT%", String.valueOf(session.getDefaultWait())));
             MyLogger.log(WebDriverService.class.getName(), Level.WARN, exception.toString());
             return message;
         } catch (WebDriverException exception) {
@@ -515,7 +515,7 @@ public class WebDriverService implements IWebDriverService {
                     actions.release(webElement);
                     actions.build().perform();
                     message = new MessageEvent(MessageEventEnum.ACTION_SUCCESS_MOUSEUP);
-                    message.setDescription(message.getDescription().replaceAll("%ELEMENT%", identifier.getIdentifier() + "=" + identifier.getLocator()));
+                    message.setDescription(message.getDescription().replace("%ELEMENT%", identifier.getIdentifier() + "=" + identifier.getLocator()));
                     return message;
                 }
             }
@@ -523,12 +523,12 @@ public class WebDriverService implements IWebDriverService {
             return answer.getResultMessage();
         } catch (NoSuchElementException exception) {
             message = new MessageEvent(MessageEventEnum.ACTION_FAILED_MOUSEUP_NO_SUCH_ELEMENT);
-            message.setDescription(message.getDescription().replaceAll("%ELEMENT%", identifier.getIdentifier() + "=" + identifier.getLocator()));
+            message.setDescription(message.getDescription().replace("%ELEMENT%", identifier.getIdentifier() + "=" + identifier.getLocator()));
             MyLogger.log(WebDriverService.class.getName(), Level.DEBUG, exception.toString());
             return message;
         } catch (TimeoutException exception) {
             message = new MessageEvent(MessageEventEnum.ACTION_FAILED_TIMEOUT);
-            message.setDescription(message.getDescription().replaceAll("%TIMEOUT%", String.valueOf(session.getDefaultWait())));
+            message.setDescription(message.getDescription().replace("%TIMEOUT%", String.valueOf(session.getDefaultWait())));
             MyLogger.log(WebDriverService.class.getName(), Level.WARN, exception.toString());
             return message;
         } catch (WebDriverException exception) {
@@ -563,7 +563,7 @@ public class WebDriverService implements IWebDriverService {
                     session.getDriver().switchTo().window(windowHandle);
                     if (seleniumTestTitleOfWindow(session, session.getDriver().getTitle(), identifier.getIdentifier(), identifier.getLocator())) {
                         message = new MessageEvent(MessageEventEnum.ACTION_SUCCESS_SWITCHTOWINDOW);
-                        message.setDescription(message.getDescription().replaceAll("%WINDOW%", windowTitle));
+                        message.setDescription(message.getDescription().replace("%WINDOW%", windowTitle));
                         return message;
                     }
                 }
@@ -573,7 +573,7 @@ public class WebDriverService implements IWebDriverService {
             MyLogger.log(WebDriverService.class.getName(), Level.DEBUG, exception.toString());
         } catch (TimeoutException exception) {
             message = new MessageEvent(MessageEventEnum.ACTION_FAILED_TIMEOUT);
-            message.setDescription(message.getDescription().replaceAll("%TIMEOUT%", String.valueOf(session.getDefaultWait())));
+            message.setDescription(message.getDescription().replace("%TIMEOUT%", String.valueOf(session.getDefaultWait())));
             MyLogger.log(WebDriverService.class.getName(), Level.WARN, exception.toString());
             return message;
         } catch (WebDriverException exception) {
@@ -582,7 +582,7 @@ public class WebDriverService implements IWebDriverService {
             return message;
         }
         message = new MessageEvent(MessageEventEnum.ACTION_FAILED_SWITCHTOWINDOW_NO_SUCH_ELEMENT);
-        message.setDescription(message.getDescription().replaceAll("%WINDOW%", windowTitle));
+        message.setDescription(message.getDescription().replace("%WINDOW%", windowTitle));
         return message;
     }
 
@@ -642,7 +642,7 @@ public class WebDriverService implements IWebDriverService {
                     actions.doubleClick(webElement);
                     actions.build().perform();
                     message = new MessageEvent(MessageEventEnum.ACTION_SUCCESS_DOUBLECLICK);
-                    message.setDescription(message.getDescription().replaceAll("%ELEMENT%", identifier.getIdentifier() + "=" + identifier.getLocator()));
+                    message.setDescription(message.getDescription().replace("%ELEMENT%", identifier.getIdentifier() + "=" + identifier.getLocator()));
                     return message;
                 }
             }
@@ -650,12 +650,12 @@ public class WebDriverService implements IWebDriverService {
             return message;
         } catch (NoSuchElementException exception) {
             message = new MessageEvent(MessageEventEnum.ACTION_FAILED_DOUBLECLICK_NO_SUCH_ELEMENT);
-            message.setDescription(message.getDescription().replaceAll("%ELEMENT%", identifier.getIdentifier() + "=" + identifier.getLocator()));
+            message.setDescription(message.getDescription().replace("%ELEMENT%", identifier.getIdentifier() + "=" + identifier.getLocator()));
             MyLogger.log(WebDriverService.class.getName(), Level.DEBUG, exception.toString());
             return message;
         } catch (TimeoutException exception) {
             message = new MessageEvent(MessageEventEnum.ACTION_FAILED_TIMEOUT);
-            message.setDescription(message.getDescription().replaceAll("%TIMEOUT%", String.valueOf(session.getDefaultWait())));
+            message.setDescription(message.getDescription().replace("%TIMEOUT%", String.valueOf(session.getDefaultWait())));
             MyLogger.log(WebDriverService.class.getName(), Level.WARN, exception.toString());
             return message;
         } catch (WebDriverException exception) {
@@ -678,11 +678,11 @@ public class WebDriverService implements IWebDriverService {
                         webElement.sendKeys(property);
                     }
                     message = new MessageEvent(MessageEventEnum.ACTION_SUCCESS_TYPE);
-                    message.setDescription(message.getDescription().replaceAll("%ELEMENT%", identifier.getIdentifier() + "=" + identifier.getLocator()));
+                    message.setDescription(message.getDescription().replace("%ELEMENT%", identifier.getIdentifier() + "=" + identifier.getLocator()));
                     if (!StringUtil.isNull(property)) {
-                        message.setDescription(message.getDescription().replaceAll("%DATA%", ParameterParserUtil.securePassword(property, propertyName)));
+                        message.setDescription(message.getDescription().replace("%DATA%", ParameterParserUtil.securePassword(property, propertyName)));
                     } else {
-                        message.setDescription(message.getDescription().replaceAll("%DATA%", "No property"));
+                        message.setDescription(message.getDescription().replace("%DATA%", "No property"));
                     }
                     return message;
                 }
@@ -690,12 +690,12 @@ public class WebDriverService implements IWebDriverService {
             return answer.getResultMessage();
         } catch (NoSuchElementException exception) {
             message = new MessageEvent(MessageEventEnum.ACTION_FAILED_TYPE_NO_SUCH_ELEMENT);
-            message.setDescription(message.getDescription().replaceAll("%ELEMENT%", identifier.getIdentifier() + "=" + identifier.getLocator()));
+            message.setDescription(message.getDescription().replace("%ELEMENT%", identifier.getIdentifier() + "=" + identifier.getLocator()));
             MyLogger.log(WebDriverService.class.getName(), Level.DEBUG, exception.toString());
             return message;
         } catch (TimeoutException exception) {
             message = new MessageEvent(MessageEventEnum.ACTION_FAILED_TIMEOUT);
-            message.setDescription(message.getDescription().replaceAll("%TIMEOUT%", String.valueOf(session.getDefaultWait())));
+            message.setDescription(message.getDescription().replace("%TIMEOUT%", String.valueOf(session.getDefaultWait())));
             MyLogger.log(WebDriverService.class.getName(), Level.WARN, exception.toString());
             return message;
         } catch (WebDriverException exception) {
@@ -717,7 +717,7 @@ public class WebDriverService implements IWebDriverService {
                     actions.moveToElement(menuHoverLink);
                     actions.build().perform();
                     message = new MessageEvent(MessageEventEnum.ACTION_SUCCESS_MOUSEOVER);
-                    message.setDescription(message.getDescription().replaceAll("%ELEMENT%", identifier.getIdentifier() + "=" + identifier.getLocator()));
+                    message.setDescription(message.getDescription().replace("%ELEMENT%", identifier.getIdentifier() + "=" + identifier.getLocator()));
                     return message;
                 }
             }
@@ -725,12 +725,12 @@ public class WebDriverService implements IWebDriverService {
             return answer.getResultMessage();
         } catch (NoSuchElementException exception) {
             message = new MessageEvent(MessageEventEnum.ACTION_FAILED_MOUSEOVER_NO_SUCH_ELEMENT);
-            message.setDescription(message.getDescription().replaceAll("%ELEMENT%", identifier.getIdentifier() + "=" + identifier.getLocator()));
+            message.setDescription(message.getDescription().replace("%ELEMENT%", identifier.getIdentifier() + "=" + identifier.getLocator()));
             MyLogger.log(WebDriverService.class.getName(), Level.DEBUG, exception.toString());
             return message;
         } catch (TimeoutException exception) {
             message = new MessageEvent(MessageEventEnum.ACTION_FAILED_TIMEOUT);
-            message.setDescription(message.getDescription().replaceAll("%TIMEOUT%", String.valueOf(session.getDefaultWait())));
+            message.setDescription(message.getDescription().replace("%TIMEOUT%", String.valueOf(session.getDefaultWait())));
             MyLogger.log(WebDriverService.class.getName(), Level.WARN, exception.toString());
             return message;
         } catch (WebDriverException exception) {
@@ -747,11 +747,11 @@ public class WebDriverService implements IWebDriverService {
             WebDriverWait wait = new WebDriverWait(session.getDriver(), TIMEOUT_WEBELEMENT);
             wait.until(ExpectedConditions.presenceOfElementLocated(this.getBy(identifier)));
             message = new MessageEvent(MessageEventEnum.ACTION_SUCCESS_WAIT_ELEMENT);
-            message.setDescription(message.getDescription().replaceAll("%ELEMENT%", identifier.getIdentifier() + "=" + identifier.getLocator()));
+            message.setDescription(message.getDescription().replace("%ELEMENT%", identifier.getIdentifier() + "=" + identifier.getLocator()));
             return message;
         } catch (NoSuchElementException exception) {
             message = new MessageEvent(MessageEventEnum.ACTION_FAILED_WAIT_NO_SUCH_ELEMENT);
-            message.setDescription(message.getDescription().replaceAll("%ELEMENT%", identifier.getIdentifier() + "=" + identifier.getLocator()));
+            message.setDescription(message.getDescription().replace("%ELEMENT%", identifier.getIdentifier() + "=" + identifier.getLocator()));
             MyLogger.log(WebDriverService.class.getName(), Level.DEBUG, exception.toString());
             return message;
         } catch (WebDriverException exception) {
@@ -773,8 +773,8 @@ public class WebDriverService implements IWebDriverService {
                     if (webElement != null) {
                         webElement.sendKeys(Keys.valueOf(property));
                         message = new MessageEvent(MessageEventEnum.ACTION_SUCCESS_KEYPRESS);
-                        message.setDescription(message.getDescription().replaceAll("%ELEMENT%", identifier.getIdentifier() + "=" + identifier.getLocator()));
-                        message.setDescription(message.getDescription().replaceAll("%DATA%", property));
+                        message.setDescription(message.getDescription().replace("%ELEMENT%", identifier.getIdentifier() + "=" + identifier.getLocator()));
+                        message.setDescription(message.getDescription().replace("%DATA%", property));
                         return message;
                     }
 
@@ -802,7 +802,7 @@ public class WebDriverService implements IWebDriverService {
                         MyLogger.log(WebDriverService.class.getName(), Level.DEBUG, "Key " + property + "is not available in the current environment");
                     }
 
-                    message.setDescription(message.getDescription().replaceAll("%KEY%", property));
+                    message.setDescription(message.getDescription().replace("%KEY%", property));
 
                 } catch (AWTException ex) {
                     Logger.getLogger(WebDriverService.class.getName()).log(Level.ERROR, null, ex);
@@ -813,12 +813,12 @@ public class WebDriverService implements IWebDriverService {
 
         } catch (NoSuchElementException exception) {
             message = new MessageEvent(MessageEventEnum.ACTION_FAILED_KEYPRESS_NO_SUCH_ELEMENT);
-            message.setDescription(message.getDescription().replaceAll("%ELEMENT%", identifier.getIdentifier() + "=" + identifier.getLocator()));
+            message.setDescription(message.getDescription().replace("%ELEMENT%", identifier.getIdentifier() + "=" + identifier.getLocator()));
             MyLogger.log(WebDriverService.class.getName(), Level.DEBUG, exception.toString());
 
         } catch (TimeoutException exception) {
             message = new MessageEvent(MessageEventEnum.ACTION_FAILED_TIMEOUT);
-            message.setDescription(message.getDescription().replaceAll("%TIMEOUT%", String.valueOf(session.getDefaultWait())));
+            message.setDescription(message.getDescription().replace("%TIMEOUT%", String.valueOf(session.getDefaultWait())));
             MyLogger.log(WebDriverService.class.getName(), Level.WARN, exception.toString());
 
         } catch (WebDriverException exception) {
@@ -842,16 +842,16 @@ public class WebDriverService implements IWebDriverService {
                 }
                 session.getDriver().get(url);
                 message = new MessageEvent(MessageEventEnum.ACTION_SUCCESS_OPENURL);
-                message.setDescription(message.getDescription().replaceAll("%URL%", url));
+                message.setDescription(message.getDescription().replace("%URL%", url));
 
             } else {
                 message = new MessageEvent(MessageEventEnum.ACTION_FAILED_OPENURL);
-                message.setDescription(message.getDescription().replaceAll("%URL%", url));
+                message.setDescription(message.getDescription().replace("%URL%", url));
             }
         } catch (TimeoutException exception) {
             message = new MessageEvent(MessageEventEnum.ACTION_FAILED_OPENURL_TIMEOUT);
-            message.setDescription(message.getDescription().replaceAll("%TIMEOUT%", String.valueOf(session.getDefaultWait())));
-            message.setDescription(message.getDescription().replaceAll("%URL%", url));
+            message.setDescription(message.getDescription().replace("%TIMEOUT%", String.valueOf(session.getDefaultWait())));
+            message.setDescription(message.getDescription().replace("%URL%", url));
             MyLogger.log(WebDriverService.class.getName(), Level.WARN, exception.toString());
         } catch (WebDriverException exception) {
             message = new MessageEvent(MessageEventEnum.ACTION_FAILED_SELENIUM_CONNECTIVITY);
@@ -874,8 +874,8 @@ public class WebDriverService implements IWebDriverService {
                         select = new Select(webElement);
                         this.selectRequestedOption(select, property, object.getIdentifier() + "=" + object.getLocator());
                         message = new MessageEvent(MessageEventEnum.ACTION_SUCCESS_SELECT);
-                        message.setDescription(message.getDescription().replaceAll("%ELEMENT%", object.getIdentifier() + "=" + object.getLocator()));
-                        message.setDescription(message.getDescription().replaceAll("%DATA%", property.getIdentifier() + "=" + property.getLocator()));
+                        message.setDescription(message.getDescription().replace("%ELEMENT%", object.getIdentifier() + "=" + object.getLocator()));
+                        message.setDescription(message.getDescription().replace("%DATA%", property.getIdentifier() + "=" + property.getLocator()));
                         return message;
                     }
                 }
@@ -883,12 +883,12 @@ public class WebDriverService implements IWebDriverService {
                 return answer.getResultMessage();
             } catch (NoSuchElementException exception) {
                 message = new MessageEvent(MessageEventEnum.ACTION_FAILED_SELECT_NO_SUCH_ELEMENT);
-                message.setDescription(message.getDescription().replaceAll("%ELEMENT%", object.getIdentifier() + "=" + object.getLocator()));
+                message.setDescription(message.getDescription().replace("%ELEMENT%", object.getIdentifier() + "=" + object.getLocator()));
                 MyLogger.log(WebDriverService.class.getName(), Level.DEBUG, exception.toString());
                 return message;
             } catch (TimeoutException exception) {
                 message = new MessageEvent(MessageEventEnum.ACTION_FAILED_TIMEOUT);
-                message.setDescription(message.getDescription().replaceAll("%TIMEOUT%", String.valueOf(session.getDefaultWait())));
+                message.setDescription(message.getDescription().replace("%TIMEOUT%", String.valueOf(session.getDefaultWait())));
                 MyLogger.log(WebDriverService.class.getName(), Level.WARN, exception.toString());
                 return message;
             }
@@ -945,13 +945,13 @@ public class WebDriverService implements IWebDriverService {
                 }
             } else {
                 message = new MessageEvent(MessageEventEnum.ACTION_FAILED_SELECT_NO_IDENTIFIER);
-                message.setDescription(message.getDescription().replaceAll("%IDENTIFIER%", property.getIdentifier()));
+                message.setDescription(message.getDescription().replace("%IDENTIFIER%", property.getIdentifier()));
                 throw new CerberusEventException(message);
             }
         } catch (NoSuchElementException exception) {
             message = new MessageEvent(MessageEventEnum.ACTION_FAILED_SELECT_NO_SUCH_VALUE);
-            message.setDescription(message.getDescription().replaceAll("%ELEMENT%", element));
-            message.setDescription(message.getDescription().replaceAll("%DATA%", property.getIdentifier() + "=" + property.getLocator()));
+            message.setDescription(message.getDescription().replace("%ELEMENT%", element));
+            message.setDescription(message.getDescription().replace("%DATA%", property.getIdentifier() + "=" + property.getLocator()));
             throw new CerberusEventException(message);
         } catch (WebDriverException exception) {
             message = new MessageEvent(MessageEventEnum.ACTION_FAILED_SELENIUM_CONNECTIVITY);
@@ -959,8 +959,8 @@ public class WebDriverService implements IWebDriverService {
             throw new CerberusEventException(message);
         } catch (PatternSyntaxException e) {
             message = new MessageEvent(MessageEventEnum.ACTION_FAILED_SELECT_REGEX_INVALIDPATERN);
-            message.setDescription(message.getDescription().replaceAll("%PATERN%", property.getLocator()));
-            message.setDescription(message.getDescription().replaceAll("%ERROR%", e.getMessage()));
+            message.setDescription(message.getDescription().replace("%PATERN%", property.getLocator()));
+            message.setDescription(message.getDescription().replace("%ERROR%", e.getMessage()));
             throw new CerberusEventException(message);
         }
     }
@@ -975,16 +975,16 @@ public class WebDriverService implements IWebDriverService {
         try {
             session.getDriver().get(url);
             message = new MessageEvent(MessageEventEnum.ACTION_SUCCESS_URLLOGIN);
-            message.setDescription(message.getDescription().replaceAll("%URL%", url));
+            message.setDescription(message.getDescription().replace("%URL%", url));
 
         } catch (TimeoutException exception) {
             message = new MessageEvent(MessageEventEnum.ACTION_FAILED_URLLOGIN_TIMEOUT);
-            message.setDescription(message.getDescription().replaceAll("%TIMEOUT%", String.valueOf(session.getDefaultWait())));
-            message.setDescription(message.getDescription().replaceAll("%URL%", url));
+            message.setDescription(message.getDescription().replace("%TIMEOUT%", String.valueOf(session.getDefaultWait())));
+            message.setDescription(message.getDescription().replace("%URL%", url));
             MyLogger.log(WebDriverService.class.getName(), Level.WARN, exception.toString());
         } catch (Exception e) {
             message = new MessageEvent(MessageEventEnum.ACTION_FAILED_URLLOGIN);
-            message.setDescription(message.getDescription().replaceAll("%URL%", url) + " " + e.getMessage());
+            message.setDescription(message.getDescription().replace("%URL%", url) + " " + e.getMessage());
         }
         return message;
     }
@@ -1000,7 +1000,7 @@ public class WebDriverService implements IWebDriverService {
                 if (webElement != null) {
                     session.getDriver().switchTo().frame(webElement);
                     message = new MessageEvent(MessageEventEnum.ACTION_SUCCESS_FOCUSTOIFRAME);
-                    message.setDescription(message.getDescription().replaceAll("%IFRAME%", identifier.getIdentifier() + "=" + identifier.getLocator()));
+                    message.setDescription(message.getDescription().replace("%IFRAME%", identifier.getIdentifier() + "=" + identifier.getLocator()));
                     return message;
                 }
 
@@ -1009,11 +1009,11 @@ public class WebDriverService implements IWebDriverService {
             return answer.getResultMessage();
         } catch (NoSuchElementException exception) {
             message = new MessageEvent(MessageEventEnum.ACTION_FAILED_FOCUS_NO_SUCH_ELEMENT);
-            message.setDescription(message.getDescription().replaceAll("%IFRAME%", identifier.getIdentifier() + "=" + identifier.getLocator()));
+            message.setDescription(message.getDescription().replace("%IFRAME%", identifier.getIdentifier() + "=" + identifier.getLocator()));
             MyLogger.log(WebDriverService.class.getName(), Level.DEBUG, exception.toString());
         } catch (TimeoutException exception) {
             message = new MessageEvent(MessageEventEnum.ACTION_FAILED_TIMEOUT);
-            message.setDescription(message.getDescription().replaceAll("%TIMEOUT%", String.valueOf(session.getDefaultWait())));
+            message.setDescription(message.getDescription().replace("%TIMEOUT%", String.valueOf(session.getDefaultWait())));
             MyLogger.log(WebDriverService.class.getName(), Level.WARN, exception.toString());
             return message;
         } catch (WebDriverException exception) {
@@ -1101,7 +1101,7 @@ public class WebDriverService implements IWebDriverService {
                     actions.contextClick(webElement);
                     actions.build().perform();
                     message = new MessageEvent(MessageEventEnum.ACTION_SUCCESS_RIGHTCLICK);
-                    message.setDescription(message.getDescription().replaceAll("%ELEMENT%", identifier.getIdentifier() + "=" + identifier.getLocator()));
+                    message.setDescription(message.getDescription().replace("%ELEMENT%", identifier.getIdentifier() + "=" + identifier.getLocator()));
                     return message;
                 }
             }
@@ -1109,12 +1109,12 @@ public class WebDriverService implements IWebDriverService {
             return answer.getResultMessage();
         } catch (NoSuchElementException exception) {
             message = new MessageEvent(MessageEventEnum.ACTION_FAILED_RIGHTCLICK_NO_SUCH_ELEMENT);
-            message.setDescription(message.getDescription().replaceAll("%ELEMENT%", identifier.getIdentifier() + "=" + identifier.getLocator()));
+            message.setDescription(message.getDescription().replace("%ELEMENT%", identifier.getIdentifier() + "=" + identifier.getLocator()));
             MyLogger.log(WebDriverService.class.getName(), Level.DEBUG, exception.toString());
             return message;
         } catch (TimeoutException exception) {
             message = new MessageEvent(MessageEventEnum.ACTION_FAILED_TIMEOUT);
-            message.setDescription(message.getDescription().replaceAll("%TIMEOUT%", String.valueOf(session.getDefaultWait())));
+            message.setDescription(message.getDescription().replace("%TIMEOUT%", String.valueOf(session.getDefaultWait())));
             MyLogger.log(WebDriverService.class.getName(), Level.WARN, exception.toString());
             return message;
         } catch (WebDriverException exception) {

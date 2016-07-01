@@ -98,7 +98,7 @@ public class ExecutionStartService implements IExecutionStartService {
             myInvariant = this.invariantService.findInvariantByIdValue("OUTPUTFORMAT", tCExecution.getOutputFormat());
         } catch (CerberusException ex) {
             MessageGeneral mes = new MessageGeneral(MessageGeneralEnum.VALIDATION_FAILED_OUTPUTFORMAT_INVALID);
-            mes.setDescription(mes.getDescription().replaceAll("%PARAM%", tCExecution.getOutputFormat()));
+            mes.setDescription(mes.getDescription().replace("%PARAM%", tCExecution.getOutputFormat()));
             LOG.debug(mes.getDescription());
             throw new CerberusException(mes);
         }
@@ -106,7 +106,7 @@ public class ExecutionStartService implements IExecutionStartService {
             myInvariant = this.invariantService.findInvariantByIdValue("VERBOSE", String.valueOf(tCExecution.getVerbose()));
         } catch (CerberusException ex) {
             MessageGeneral mes = new MessageGeneral(MessageGeneralEnum.VALIDATION_FAILED_VERBOSE_INVALID);
-            mes.setDescription(mes.getDescription().replaceAll("%PARAM%", String.valueOf(tCExecution.getVerbose())));
+            mes.setDescription(mes.getDescription().replace("%PARAM%", String.valueOf(tCExecution.getVerbose())));
             LOG.debug(mes.getDescription());
             throw new CerberusException(mes);
         }
@@ -114,7 +114,7 @@ public class ExecutionStartService implements IExecutionStartService {
             myInvariant = this.invariantService.findInvariantByIdValue("SCREENSHOT", String.valueOf(tCExecution.getScreenshot()));
         } catch (CerberusException ex) {
             MessageGeneral mes = new MessageGeneral(MessageGeneralEnum.VALIDATION_FAILED_SCREENSHOT_INVALID);
-            mes.setDescription(mes.getDescription().replaceAll("%PARAM%", String.valueOf(tCExecution.getScreenshot())));
+            mes.setDescription(mes.getDescription().replace("%PARAM%", String.valueOf(tCExecution.getScreenshot())));
             LOG.debug(mes.getDescription());
             throw new CerberusException(mes);
         }
@@ -141,8 +141,8 @@ public class ExecutionStartService implements IExecutionStartService {
             tCExecution.setStatus(tCase.getStatus());
         } catch (CerberusException ex) {
             MessageGeneral mes = new MessageGeneral(MessageGeneralEnum.VALIDATION_FAILED_TESTCASE_NOT_FOUND);
-            mes.setDescription(mes.getDescription().replaceAll("%TEST%", tCExecution.getTest()));
-            mes.setDescription(mes.getDescription().replaceAll("%TESTCASE%", tCExecution.getTestCase()));
+            mes.setDescription(mes.getDescription().replace("%TEST%", tCExecution.getTest()));
+            mes.setDescription(mes.getDescription().replace("%TESTCASE%", tCExecution.getTestCase()));
             LOG.debug(mes.getDescription());
             throw new CerberusException(mes);
         }
@@ -157,7 +157,7 @@ public class ExecutionStartService implements IExecutionStartService {
             tCExecution.setTestObj(this.testService.convert(this.testService.readByKey(tCExecution.getTest())));
         } catch (CerberusException ex) {
             MessageGeneral mes = new MessageGeneral(MessageGeneralEnum.VALIDATION_FAILED_TEST_NOT_FOUND);
-            mes.setDescription(mes.getDescription().replaceAll("%TEST%", tCExecution.getTest()));
+            mes.setDescription(mes.getDescription().replace("%TEST%", tCExecution.getTest()));
             LOG.debug(mes.getDescription());
             throw new CerberusException(mes);
         }
@@ -172,7 +172,7 @@ public class ExecutionStartService implements IExecutionStartService {
             tCExecution.setApplication(this.applicationService.convert(this.applicationService.readByKey(tCExecution.gettCase().getApplication())));
         } catch (CerberusException ex) {
             MessageGeneral mes = new MessageGeneral(MessageGeneralEnum.VALIDATION_FAILED_APPLICATION_NOT_FOUND);
-            mes.setDescription(mes.getDescription().replaceAll("%APPLI%", tCExecution.gettCase().getApplication()));
+            mes.setDescription(mes.getDescription().replace("%APPLI%", tCExecution.gettCase().getApplication()));
             LOG.debug(mes.getDescription());
             throw new CerberusException(mes);
         }
@@ -186,7 +186,7 @@ public class ExecutionStartService implements IExecutionStartService {
             tCExecution.setCountryObj(this.invariantService.findInvariantByIdValue("COUNTRY", tCExecution.getCountry()));
         } catch (CerberusException ex) {
             MessageGeneral mes = new MessageGeneral(MessageGeneralEnum.VALIDATION_FAILED_COUNTRY_NOT_FOUND);
-            mes.setDescription(mes.getDescription().replaceAll("%COUNTRY%", tCExecution.getCountry()));
+            mes.setDescription(mes.getDescription().replace("%COUNTRY%", tCExecution.getCountry()));
             LOG.debug(mes.getDescription());
             throw new CerberusException(mes);
         }
@@ -243,9 +243,9 @@ public class ExecutionStartService implements IExecutionStartService {
                     tCExecution.setUrl(cea.getIp() + cea.getUrl());
                 } else {
                     MessageGeneral mes = new MessageGeneral(MessageGeneralEnum.VALIDATION_FAILED_COUNTRYENVAPP_NOT_FOUND);
-                    mes.setDescription(mes.getDescription().replaceAll("%COUNTRY%", tCExecution.getCountry()));
-                    mes.setDescription(mes.getDescription().replaceAll("%ENV%", tCExecution.getEnvironment()));
-                    mes.setDescription(mes.getDescription().replaceAll("%APPLI%", tCExecution.gettCase().getApplication()));
+                    mes.setDescription(mes.getDescription().replace("%COUNTRY%", tCExecution.getCountry()));
+                    mes.setDescription(mes.getDescription().replace("%ENV%", tCExecution.getEnvironment()));
+                    mes.setDescription(mes.getDescription().replace("%APPLI%", tCExecution.gettCase().getApplication()));
                     LOG.error(mes.getDescription());
                     throw new CerberusException(mes);
                 }
@@ -255,9 +255,9 @@ public class ExecutionStartService implements IExecutionStartService {
                  */
             } catch (CerberusException ex) {
                 MessageGeneral mes = new MessageGeneral(MessageGeneralEnum.VALIDATION_FAILED_COUNTRYENVAPP_NOT_FOUND);
-                mes.setDescription(mes.getDescription().replaceAll("%COUNTRY%", tCExecution.getCountry()));
-                mes.setDescription(mes.getDescription().replaceAll("%ENV%", tCExecution.getEnvironment()));
-                mes.setDescription(mes.getDescription().replaceAll("%APPLI%", tCExecution.gettCase().getApplication()));
+                mes.setDescription(mes.getDescription().replace("%COUNTRY%", tCExecution.getCountry()));
+                mes.setDescription(mes.getDescription().replace("%ENV%", tCExecution.getEnvironment()));
+                mes.setDescription(mes.getDescription().replace("%APPLI%", tCExecution.gettCase().getApplication()));
                 LOG.error(mes.getDescription());
                 throw new CerberusException(mes);
             }
@@ -274,12 +274,12 @@ public class ExecutionStartService implements IExecutionStartService {
         } catch (CerberusException ex) {
             if (tCExecution.isManualURL()) {
                 MessageGeneral mes = new MessageGeneral(MessageGeneralEnum.VALIDATION_FAILED_ENVIRONMENT_DOESNOTEXIST_MAN);
-                mes.setDescription(mes.getDescription().replaceAll("%ENV%", tCExecution.getEnvironmentData()));
+                mes.setDescription(mes.getDescription().replace("%ENV%", tCExecution.getEnvironmentData()));
                 LOG.debug(mes.getDescription());
                 throw new CerberusException(mes);
             } else {
                 MessageGeneral mes = new MessageGeneral(MessageGeneralEnum.VALIDATION_FAILED_ENVIRONMENT_DOESNOTEXIST);
-                mes.setDescription(mes.getDescription().replaceAll("%ENV%", tCExecution.getEnvironmentData()));
+                mes.setDescription(mes.getDescription().replace("%ENV%", tCExecution.getEnvironmentData()));
                 LOG.debug(mes.getDescription());
                 throw new CerberusException(mes);
             }
@@ -305,9 +305,9 @@ public class ExecutionStartService implements IExecutionStartService {
             tCExecution.setRevision(countEnvParam.getRevision());
         } catch (CerberusException ex) {
             MessageGeneral mes = new MessageGeneral(MessageGeneralEnum.VALIDATION_FAILED_COUNTRYENV_NOT_FOUND);
-            mes.setDescription(mes.getDescription().replaceAll("%SYSTEM%", tCExecution.getApplication().getSystem()));
-            mes.setDescription(mes.getDescription().replaceAll("%COUNTRY%", tCExecution.getCountry()));
-            mes.setDescription(mes.getDescription().replaceAll("%ENV%", tCExecution.getEnvironmentData()));
+            mes.setDescription(mes.getDescription().replace("%SYSTEM%", tCExecution.getApplication().getSystem()));
+            mes.setDescription(mes.getDescription().replace("%COUNTRY%", tCExecution.getCountry()));
+            mes.setDescription(mes.getDescription().replace("%ENV%", tCExecution.getEnvironmentData()));
             LOG.debug(mes.getDescription());
             throw new CerberusException(mes);
         }
@@ -343,20 +343,20 @@ public class ExecutionStartService implements IExecutionStartService {
                 myInvariant = this.invariantService.findInvariantByIdValue("BROWSER", tCExecution.getBrowser());
             } catch (CerberusException ex) {
                 MessageGeneral mes = new MessageGeneral(MessageGeneralEnum.VALIDATION_FAILED_BROWSER_NOT_SUPPORTED);
-                mes.setDescription(mes.getDescription().replaceAll("%BROWSER%", tCExecution.getBrowser()));
+                mes.setDescription(mes.getDescription().replace("%BROWSER%", tCExecution.getBrowser()));
                 LOG.debug(mes.getDescription());
                 throw new CerberusException(mes);
             }
 
             if (tCExecution.getIp().equalsIgnoreCase("")) {
                 MessageGeneral mes = new MessageGeneral(MessageGeneralEnum.VALIDATION_FAILED_SELENIUM_EMPTYORBADIP);
-                mes.setDescription(mes.getDescription().replaceAll("%IP%", tCExecution.getIp()));
+                mes.setDescription(mes.getDescription().replace("%IP%", tCExecution.getIp()));
                 LOG.debug(mes.getDescription());
                 throw new CerberusException(mes);
             }
             if (tCExecution.getPort().equalsIgnoreCase("")) {
                 MessageGeneral mes = new MessageGeneral(MessageGeneralEnum.VALIDATION_FAILED_SELENIUM_EMPTYORBADPORT);
-                mes.setDescription(mes.getDescription().replaceAll("%PORT%", tCExecution.getPort()));
+                mes.setDescription(mes.getDescription().replace("%PORT%", tCExecution.getPort()));
                 LOG.debug(mes.getDescription());
                 throw new CerberusException(mes);
             }

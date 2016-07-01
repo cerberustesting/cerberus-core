@@ -55,7 +55,7 @@ public class UpdateMyUserSystem extends HttpServlet {
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         String login = request.getUserPrincipal().getName();
-        String value = request.getParameter("value").replaceAll("'", "");
+        String value = request.getParameter("value").replace("'", "");
 
         MyLogger.log(UpdateUser.class.getName(), Level.INFO, "value : " + value + " login : " + login);
 
