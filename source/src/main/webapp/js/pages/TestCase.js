@@ -1620,7 +1620,7 @@ function aoColumnsFunc() {
                 aoColumns.push({
                     className: "width150  center",
                     "data": "testDataLibID",
-                    "sName": "TestDataLibID",
+                    "sName": "tdl.TestDataLibID",
                     "bSortable": false,
                     "title": doc.getDocLabel("page_testcase_m_listtestdatalib", "actions"),
                     "mRender": function(data, type, oObj) {
@@ -1633,43 +1633,43 @@ function aoColumnsFunc() {
                 break;
 
             case 1 :
-                aoColumns.push({className: "width250", "sName": "Name", "data": "name", "title": doc.getDocLabel("testdatalib", "name")});
+                aoColumns.push({className: "width250", "sName": "tdl.Name", "data": "name", "title": doc.getDocLabel("testdatalib", "name")});
                 break;
             case 2 :
-                aoColumns.push({className: "width80", "sName": "System", "data": "system", "title": doc.getDocLabel("testdatalib", "system")});
+                aoColumns.push({className: "width80", "sName": "tdl.System", "data": "system", "title": doc.getDocLabel("testdatalib", "system")});
                 break;
             case 3 :
-                aoColumns.push({className: "width100", "sName": "Environment", "data": "environment", "title": doc.getDocLabel("testdatalib", "environment")});
+                aoColumns.push({className: "width100", "sName": "tdl.Environment", "data": "environment", "title": doc.getDocLabel("testdatalib", "environment")});
                 break;
             case 4 :
-                aoColumns.push({className: "width80", "sName": "Country", "data": "country", "title": doc.getDocLabel("testdatalib", "country")});
+                aoColumns.push({className: "width80", "sName": "tdl.Country", "data": "country", "title": doc.getDocLabel("testdatalib", "country")});
                 break;
             case 5 :
-                aoColumns.push({className: "width100", "sName": "Group", "data": "group", "title": doc.getDocLabel("testdatalib", "group")});
+                aoColumns.push({className: "width100", "sName": "tdl.Group", "data": "group", "title": doc.getDocLabel("testdatalib", "group")});
                 break;
             case 6 :
-                aoColumns.push({className: "width80", "sName": "Type", "data": "type", "title": doc.getDocLabel("testdatalib", "type")});
+                aoColumns.push({className: "width80", "sName": "tdl.Type", "data": "type", "title": doc.getDocLabel("testdatalib", "type")});
                 break;
             case 7 :
-                aoColumns.push({className: "width100", "sName": "Database", "data": "database", "title": doc.getDocLabel("testdatalib", "database")});
+                aoColumns.push({className: "width100", "sName": "tdl.Database", "data": "database", "title": doc.getDocLabel("testdatalib", "database")});
                 break;
             case 8 :
-                aoColumns.push({className: "width500", "sName": "Script", "data": "script", "title": doc.getDocLabel("testdatalib", "script")});
+                aoColumns.push({className: "width500", "sName": "tdl.Script", "data": "script", "title": doc.getDocLabel("testdatalib", "script")});
                 break;
             case 9 :
-                aoColumns.push({className: "width250", "sName": "ServicePath", "data": "servicePath", "title": doc.getDocLabel("testdatalib", "servicepath"),
+                aoColumns.push({className: "width250", "sName": "tdl.ServicePath", "data": "servicePath", "title": doc.getDocLabel("testdatalib", "servicepath"),
                     "mRender": function(data, type, oObj) {
                         return drawURL(data);//TODO:FN check the special characters that may be encapsulated                        
                     }});
                 break;
             case 10 :
-                aoColumns.push({className: "width250", "sName": "Method", "data": "method", "title": doc.getDocLabel("testdatalib", "method")});
+                aoColumns.push({className: "width250", "sName": "tdl.Method", "data": "method", "title": doc.getDocLabel("testdatalib", "method")});
                 break;
             case 11 :
-                aoColumns.push({className: "width500", "sName": "Envelope", "data": "envelope", "title": doc.getDocLabel("testdatalib", "envelope")});
+                aoColumns.push({className: "width500", "sName": "tdl.Envelope", "data": "envelope", "title": doc.getDocLabel("testdatalib", "envelope")});
                 break;
             case 12:
-                aoColumns.push({className: "width150", "sName": "Description", "data": "description", "title": doc.getDocLabel("testdatalib", "description")});
+                aoColumns.push({className: "width150", "sName": "tdl.Description", "data": "description", "title": doc.getDocLabel("testdatalib", "description")});
                 break;
 
             default :
