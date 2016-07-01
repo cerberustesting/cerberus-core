@@ -962,6 +962,11 @@ public class PropertyService implements IPropertyService {
                 res.setDescription(res.getDescription().replace("%VALUE1%", testCaseExecutionData.getValue1()));
                 res.setDescription(res.getDescription().replace("%VALUE2%", testCaseExecutionData.getValue2()));
                 testCaseExecutionData.setPropertyResultMessage(res);
+            } else {
+                MessageEvent res = new MessageEvent(MessageEventEnum.PROPERTY_FAILED_GETFROMXML);
+                res.setDescription(res.getDescription().replace("%VALUE1%", testCaseExecutionData.getValue1()));
+                res.setDescription(res.getDescription().replace("%VALUE2%", testCaseExecutionData.getValue2()));
+                testCaseExecutionData.setPropertyResultMessage(res);
             }
         } catch (Exception ex) {
             MyLogger.log(PropertyService.class
