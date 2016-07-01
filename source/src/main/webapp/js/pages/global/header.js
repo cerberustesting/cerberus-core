@@ -45,7 +45,7 @@ function ChangeLanguage() {
     var user = getUser();
 
     $.ajax({url: "UpdateMyUser",
-        data: {id: user.login, columnPosition: "8", value: selectValue},
+        data: {id: user.login, column: "language", value: selectValue},
         async: false,
         success: function () {
             sessionStorage.clear();
@@ -68,6 +68,18 @@ function ChangeSystem() {
             location.reload(true);
         }
     });
+}
+
+function updateUserPreferences() {
+    var uPref = JSON.stringify(localStorage);
+        $.ajax({url: "UpdateMyUser",
+            type: "POST",
+            data: {column: "userPreferences", value: uPref},
+            async: false,
+            success: function () {
+                readUserFromDatabase();
+            }
+        });
 }
 
 function displayMenuItem(doc) {

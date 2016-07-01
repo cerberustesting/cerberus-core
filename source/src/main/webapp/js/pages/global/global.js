@@ -314,7 +314,7 @@ function displayUniqueEnvList(selectName, system, defaultValue) {
     $.when($.getJSON("ReadCountryEnvParam", "unique=true&system=" + system)).then(function (data) {
         for (var option in data.contentTable) {
             var text = data.contentTable[option].environment;
-            if (data.contentTable[option].active === false )
+            if (data.contentTable[option].active === false)
                 text = text + " [Currently Disabled]";
             $("[name='" + selectName + "']").append($('<option></option>').text(text).val(data.contentTable[option].environment));
         }
@@ -968,12 +968,12 @@ function createDataTableWithPermissions(tableConfigurations, callbackFunction, o
         configs["sAjaxDataProp"] = tableConfigurations.ajaxProp;
         configs["fnStateSaveCallback"] = function (settings, data) {
             try {
-                //Compare user.localStorage and data excluding time
+                //Compare user.userPreferences and data excluding time
                 var user = getUser();
                 var localStorageValue = JSON.parse(JSON.stringify(data));
                 delete localStorageValue.time;
-                
-                var userPreferences = JSON.parse((JSON.parse(user.localStorage))['DataTables_' + settings.sInstance + '_' + location.pathname]);
+
+                var userPreferences = JSON.parse((JSON.parse(user.userPreferences))['DataTables_' + settings.sInstance + '_' + location.pathname]);
                 delete userPreferences.time;
 
                 //if different, update localStorage and user.userPreferences
@@ -990,8 +990,10 @@ function createDataTableWithPermissions(tableConfigurations, callbackFunction, o
         configs["fnStateLoadCallback"] = function (settings) {
             //Get UserPreferences from user object
             var user = getUser();
-            var userPref = JSON.parse(user.userPreferences);
-            return JSON.parse(userPref['DataTables_' + settings.sInstance + '_' + location.pathname]);
+            if ("" !== user.userPreferences) {
+                var userPref = JSON.parse(user.userPreferences);
+                return JSON.parse(userPref['DataTables_' + settings.sInstance + '_' + location.pathname]);
+            }
         };
         configs["fnServerData"] = function (sSource, aoData, fnCallback, oSettings) {
             oSettings.jqXHR = $.ajax({
@@ -1097,12 +1099,12 @@ function createDataTable(tableConfigurations, callbackFunction, userCallbackFunc
         configs["sAjaxDataProp"] = tableConfigurations.ajaxProp;
         configs["fnStateSaveCallback"] = function (settings, data) {
             try {
-                //Compare user.localStorage and data excluding time
+                //Compare user.userPreferences and data excluding time
                 var user = getUser();
                 var localStorageValue = JSON.parse(JSON.stringify(data));
                 delete localStorageValue.time;
-                
-                var userPreferences = JSON.parse((JSON.parse(user.localStorage))['DataTables_' + settings.sInstance + '_' + location.pathname]);
+
+                var userPreferences = JSON.parse((JSON.parse(user.userPreferences))['DataTables_' + settings.sInstance + '_' + location.pathname]);
                 delete userPreferences.time;
 
                 //if different, update localStorage and user.userPreferences
@@ -1119,8 +1121,10 @@ function createDataTable(tableConfigurations, callbackFunction, userCallbackFunc
         configs["fnStateLoadCallback"] = function (settings) {
             //Get UserPreferences from user object
             var user = getUser();
-            var userPref = JSON.parse(user.userPreferences);
-            return JSON.parse(userPref['DataTables_' + settings.sInstance + '_' + location.pathname]);
+            if ("" !== user.userPreferences) {
+                var userPref = JSON.parse(user.userPreferences);
+                return JSON.parse(userPref['DataTables_' + settings.sInstance + '_' + location.pathname]);
+            }
         };
         configs["fnServerData"] = function (sSource, aoData, fnCallback, oSettings) {
             oSettings.jqXHR = $.ajax({
@@ -1234,9 +1238,6 @@ function displayColumnSearch(tableId) {
         }));
 
     });
-
-
-
 }
 
 /**

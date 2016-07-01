@@ -52,18 +52,6 @@ function getUser() {
     return user;
 }
 
-function updateUserPreferences() {
-    var uPref = JSON.stringify(localStorage);
-        $.ajax({url: "UpdateMyUser",
-            type: "POST",
-            data: {column: "userPreferences", value: uPref},
-            async: false,
-            success: function () {
-                readUserFromDatabase();
-            }
-        });
-}
-
 
 function loadUserPreferences(user) {
     localStorage = user.userPreferences;
