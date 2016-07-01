@@ -110,7 +110,7 @@
                                     out.print("<tr><td>");
                                     out.print(i);
                                     out.print("</td><td class=\"wob\" style=\"width: 900px\"><textarea name=\"SQL\" rows=\"5\" style=\"font-size:x-small;width: 100%\" readonly>");
-                                    out.print(MySQL.replaceAll("</textarea>", "</text4rea>"));
+                                    out.print(MySQL.replace("</textarea>", "</text4rea>"));
                                     out.print("</textarea></td>");
                                     // Execute the SQL Here
                                     MyLogger.log("DatabaseMaintenance.jsp", Level.INFO, "Execute SQL to version : " + i + " / " + SQLInstruction.size());
@@ -166,7 +166,7 @@
                                         out.print("<tr><td>");
                                         out.print(i);
                                         out.print("</td><td class=\"wob\" style=\"width: 900px\"><textarea name=\"SQL\" rows=\"3\" style=\"font-size:x-small;width: 100%\" readonly>");
-                                        out.print(MySQL.replaceAll("</textarea>", "</text4rea>"));
+                                        out.print(MySQL.replace("</textarea>", "</text4rea>"));
                                         out.print("</textarea></td>");
                                         out.println("</tr>");
                                     }
@@ -196,7 +196,7 @@
                                     out.print("<tr><td>");
                                     out.print(i);
                                     out.print("</td><td class=\"wob\" style=\"width: 900px\"><textarea name=\"SQL\" rows=\"3\" style=\"font-size:x-small;width: 100%\" readonly>");
-                                    out.print(MySQL.replaceAll("</textarea>", "</text4rea>"));
+                                    out.print(MySQL.replace("</textarea>", "</text4rea>"));
                                     out.print("</textarea></td>");
                                     out.println("</tr>");
                                 }

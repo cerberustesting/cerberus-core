@@ -121,12 +121,12 @@ public class SikuliService implements ISikuliService {
             if (response.toString().contains("Failed")) {
                 if (!action.equals("verifyElementPresent")){
                 MessageEvent mes = new MessageEvent(MessageEventEnum.ACTION_FAILED_SIKULI_ELEMENT_NOT_FOUND);
-                mes.setDescription(mes.getDescription().replaceAll("%ACTION%", action));
-                mes.setDescription(mes.getDescription().replaceAll("%ELEMENT%", locator));
+                mes.setDescription(mes.getDescription().replace("%ACTION%", action));
+                mes.setDescription(mes.getDescription().replace("%ELEMENT%", locator));
                 return mes;
                 } else {
                 MessageEvent mes = new MessageEvent(MessageEventEnum.CONTROL_FAILED_PRESENT);
-                mes.setDescription(mes.getDescription().replaceAll("%STRING1%", locator));
+                mes.setDescription(mes.getDescription().replace("%STRING1%", locator));
                 return mes;
                 }
             }
@@ -135,12 +135,12 @@ public class SikuliService implements ISikuliService {
         } catch (MalformedURLException ex) {
             Logger.getLogger(SikuliService.class.getName()).log(Level.FATAL, ex);
             MessageEvent mes = new MessageEvent(MessageEventEnum.ACTION_FAILED_SIKULI_SERVER_NOT_REACHABLE);
-            mes.setDescription(mes.getDescription().replaceAll("%URL%", urlToConnect));
+            mes.setDescription(mes.getDescription().replace("%URL%", urlToConnect));
             return mes;
         } catch (FileNotFoundException ex) {
             Logger.getLogger(SikuliService.class.getName()).log(Level.FATAL, ex);
             MessageEvent mes = new MessageEvent(MessageEventEnum.ACTION_FAILED_SIKULI_FILE_NOT_FOUND);
-            mes.setDescription(mes.getDescription().replaceAll("%FILE%", locator));
+            mes.setDescription(mes.getDescription().replace("%FILE%", locator));
             return mes;
         } catch (IOException ex) {
             Logger.getLogger(SikuliService.class.getName()).log(Level.FATAL, ex);
@@ -158,29 +158,29 @@ public class SikuliService implements ISikuliService {
         MessageEvent message = null;
         if (action.equals("click")) {
             message = new MessageEvent(MessageEventEnum.ACTION_SUCCESS_CLICK);
-            message.setDescription(message.getDescription().replaceAll("%ELEMENT%", locator));
+            message.setDescription(message.getDescription().replace("%ELEMENT%", locator));
         } else if (action.equals("rightClick")) {
             message = new MessageEvent(MessageEventEnum.ACTION_SUCCESS_RIGHTCLICK);
-            message.setDescription(message.getDescription().replaceAll("%ELEMENT%", locator));
+            message.setDescription(message.getDescription().replace("%ELEMENT%", locator));
         } else if (action.equals("doubleClick")) {
             message = new MessageEvent(MessageEventEnum.ACTION_SUCCESS_DOUBLECLICK);
-            message.setDescription(message.getDescription().replaceAll("%ELEMENT%", locator));
+            message.setDescription(message.getDescription().replace("%ELEMENT%", locator));
         } else if (action.equals("type")) {
             message = new MessageEvent(MessageEventEnum.ACTION_SUCCESS_TYPE);
-            message.setDescription(message.getDescription().replaceAll("%ELEMENT%", locator));
-            message.setDescription(message.getDescription().replaceAll("%DATA%", text));
+            message.setDescription(message.getDescription().replace("%ELEMENT%", locator));
+            message.setDescription(message.getDescription().replace("%DATA%", text));
         } else if (action.equals("mouseOver")) {
             message = new MessageEvent(MessageEventEnum.ACTION_SUCCESS_MOUSEOVER);
-            message.setDescription(message.getDescription().replaceAll("%ELEMENT%", locator));
+            message.setDescription(message.getDescription().replace("%ELEMENT%", locator));
         } else if (action.equals("keyPress")) {
             message = new MessageEvent(MessageEventEnum.ACTION_SUCCESS_KEYPRESS);
-            message.setDescription(message.getDescription().replaceAll("%ELEMENT%", locator));
+            message.setDescription(message.getDescription().replace("%ELEMENT%", locator));
         } else if (action.equals("wait")) {
             message = new MessageEvent(MessageEventEnum.ACTION_SUCCESS_WAIT_ELEMENT);
-            message.setDescription(message.getDescription().replaceAll("%ELEMENT%", locator));
+            message.setDescription(message.getDescription().replace("%ELEMENT%", locator));
         } else if (action.equals("verifyElementPresent")) {
             message = new MessageEvent(MessageEventEnum.CONTROL_SUCCESS_PRESENT);
-            message.setDescription(message.getDescription().replaceAll("%STRING1%", locator));
+            message.setDescription(message.getDescription().replace("%STRING1%", locator));
         }
         return message;
 

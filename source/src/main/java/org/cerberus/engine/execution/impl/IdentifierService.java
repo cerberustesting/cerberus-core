@@ -68,7 +68,7 @@ public class IdentifierService implements IIdentifierService {
 
         if (!Arrays.asList(selectOptionAttributes).contains(identifier)) {
             MessageEvent message = new MessageEvent(MessageEventEnum.ACTION_FAILED_SELECT_NO_IDENTIFIER);
-            message.setDescription(message.getDescription().replaceAll("%IDENTIFIER%", identifier));
+            message.setDescription(message.getDescription().replace("%IDENTIFIER%", identifier));
             throw new CerberusEventException(message);
         }
 
@@ -80,7 +80,7 @@ public class IdentifierService implements IIdentifierService {
 
         if (!Arrays.asList(selectOptionAttributes).contains(identifier)) {
             MessageEvent message = new MessageEvent(MessageEventEnum.ACTION_FAILED_NO_SUCH_ELEMENT);
-            message.setDescription(message.getDescription().replaceAll("%IDENTIFIER%", identifier));
+            message.setDescription(message.getDescription().replace("%IDENTIFIER%", identifier));
             throw new CerberusEventException(message);
         }
     }
@@ -91,7 +91,7 @@ public class IdentifierService implements IIdentifierService {
 
         if (!Arrays.asList(selectOptionAttributes).contains(identifier)) {
             MessageEvent message = new MessageEvent(MessageEventEnum.ACTION_FAILED_NO_SUCH_ELEMENT);
-            message.setDescription(message.getDescription().replaceAll("%IDENTIFIER%", identifier));
+            message.setDescription(message.getDescription().replace("%IDENTIFIER%", identifier));
             throw new CerberusEventException(message);
         }
     }

@@ -531,8 +531,8 @@ public class ExecutionRunService implements IExecutionRunService {
                      */
                     if (testCaseExecutionData.getPropertyResultMessage().equals(new MessageEvent(MessageEventEnum.PROPERTY_FAILED_NO_PROPERTY_DEFINITION))) {
                         MessageEvent mes = new MessageEvent(MessageEventEnum.ACTION_NOTEXECUTED_NO_PROPERTY_DEFINITION);
-                        mes.setDescription(mes.getDescription().replaceAll("%PROP%", testCaseStepActionExecution.getProperty()));
-                        mes.setDescription(mes.getDescription().replaceAll("%COUNTRY%", testCaseStepActionExecution.getTestCaseStepExecution().gettCExecution().getCountry()));
+                        mes.setDescription(mes.getDescription().replace("%PROP%", testCaseStepActionExecution.getProperty()));
+                        mes.setDescription(mes.getDescription().replace("%COUNTRY%", testCaseStepActionExecution.getTestCaseStepExecution().gettCExecution().getCountry()));
                         testCaseStepActionExecution.setActionResultMessage(mes);
                     } else {
                         testCaseStepActionExecution.setActionResultMessage(new MessageEvent(MessageEventEnum.ACTION_FAILED_PROPERTYFAILED,

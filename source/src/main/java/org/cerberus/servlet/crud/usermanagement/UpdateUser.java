@@ -62,7 +62,7 @@ public class UpdateUser extends HttpServlet {
         //TODO create class Validator to validate all parameter from page
         String login = request.getParameter("id");
         int columnPosition = Integer.parseInt(request.getParameter("columnPosition"));
-        String value = request.getParameter("value").replaceAll("'", "");
+        String value = request.getParameter("value").replace("'", "");
 
         MyLogger.log(UpdateUser.class.getName(), Level.INFO, "value : " + value + " columnPosition : " + columnPosition + " login : " + login);
 

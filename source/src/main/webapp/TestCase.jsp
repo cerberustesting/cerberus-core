@@ -824,7 +824,7 @@
                             if ((tcase.getBugID() != null)
                                     && (tcase.getBugID().compareToIgnoreCase("") != 0)
                                     && (tcase.getBugID().compareToIgnoreCase("null") != 0)) {
-                                SitdmossBugtrackingURL = SitdmossBugtrackingURL.replaceAll("%BUGID%", tcase.getBugID());
+                                SitdmossBugtrackingURL = SitdmossBugtrackingURL.replace("%BUGID%", tcase.getBugID());
                             }
                         %>
                         <tr>
@@ -1687,7 +1687,7 @@
                                                     proplist = proplist + "" + tccp.getProperty() + "  /  ";
 
                                                     if (tccp.getType().equals("executeSqlFromLib")) {
-                                                        //SqlLibrary sqllib = libService.findSqlLibraryByKey(tccp.getValue1().replaceAll("'", "''"));
+                                                        //SqlLibrary sqllib = libService.findSqlLibraryByKey(tccp.getValue1().replace("'", "''"));
                                                     }
 
                                                     double widthValue1 = widthValue;

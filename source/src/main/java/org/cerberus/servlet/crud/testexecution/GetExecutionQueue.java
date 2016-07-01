@@ -178,7 +178,7 @@ public class GetExecutionQueue extends HttpServlet {
                     execution.setTestObj(testService.convert(testService.readByKey(execution.getTest())));
                 } catch (CerberusException ex) {
                     MessageGeneral mes = new MessageGeneral(MessageGeneralEnum.VALIDATION_FAILED_TEST_NOT_FOUND);
-                    mes.setDescription(mes.getDescription().replaceAll("%TEST%", execution.getTest()));
+                    mes.setDescription(mes.getDescription().replace("%TEST%", execution.getTest()));
                     validator.setValid(false);
                     validator.setMessage(mes.getDescription());
                     exception = true;
@@ -188,8 +188,8 @@ public class GetExecutionQueue extends HttpServlet {
                     execution.settCase(testCaseService.findTestCaseByKey(execution.getTest(), execution.getTestCase()));
                 } catch (CerberusException ex) {
                     MessageGeneral mes = new MessageGeneral(MessageGeneralEnum.VALIDATION_FAILED_TESTCASE_NOT_FOUND);
-                    mes.setDescription(mes.getDescription().replaceAll("%TEST%", execution.getTest()));
-                    mes.setDescription(mes.getDescription().replaceAll("%TESTCASE%", execution.getTestCase()));
+                    mes.setDescription(mes.getDescription().replace("%TEST%", execution.getTest()));
+                    mes.setDescription(mes.getDescription().replace("%TESTCASE%", execution.getTestCase()));
                     validator.setValid(false);
                     validator.setMessage(mes.getDescription());
                     exception = true;
@@ -199,7 +199,7 @@ public class GetExecutionQueue extends HttpServlet {
                     execution.setApplication(applicationService.convert(applicationService.readByKey(execution.gettCase().getApplication())));
                 } catch (CerberusException ex) {
                     MessageGeneral mes = new MessageGeneral(MessageGeneralEnum.VALIDATION_FAILED_APPLICATION_NOT_FOUND);
-                    mes.setDescription(mes.getDescription().replaceAll("%APPLI%", execution.gettCase().getApplication()));
+                    mes.setDescription(mes.getDescription().replace("%APPLI%", execution.gettCase().getApplication()));
                     validator.setValid(false);
                     validator.setMessage(mes.getDescription());
                     exception = true;
@@ -211,9 +211,9 @@ public class GetExecutionQueue extends HttpServlet {
                     execution.setCountryEnvParam(cepService.convert(cepService.readByKey(execution.getApplication().getSystem(), execution.getCountry(), execution.getEnvironment())));
                 } catch (CerberusException ex) {
                     MessageGeneral mes = new MessageGeneral(MessageGeneralEnum.VALIDATION_FAILED_COUNTRYENV_NOT_FOUND);
-                    mes.setDescription(mes.getDescription().replaceAll("%SYSTEM%", execution.getApplication().getSystem()));
-                    mes.setDescription(mes.getDescription().replaceAll("%COUNTRY%", execution.getCountry()));
-                    mes.setDescription(mes.getDescription().replaceAll("%ENV%", execution.getEnvironmentData()));
+                    mes.setDescription(mes.getDescription().replace("%SYSTEM%", execution.getApplication().getSystem()));
+                    mes.setDescription(mes.getDescription().replace("%COUNTRY%", execution.getCountry()));
+                    mes.setDescription(mes.getDescription().replace("%ENV%", execution.getEnvironmentData()));
                     validator.setValid(false);
                     validator.setMessage(mes.getDescription());
                     exception = true;
@@ -223,7 +223,7 @@ public class GetExecutionQueue extends HttpServlet {
                     execution.setEnvironmentDataObj(invariantService.findInvariantByIdValue("ENVIRONMENT", execution.getEnvironmentData()));
                 } catch (CerberusException ex) {
                     MessageGeneral mes = new MessageGeneral(MessageGeneralEnum.VALIDATION_FAILED_ENVIRONMENT_DOESNOTEXIST);
-                    mes.setDescription(mes.getDescription().replaceAll("%ENV%", execution.getEnvironmentData()));
+                    mes.setDescription(mes.getDescription().replace("%ENV%", execution.getEnvironmentData()));
                     validator.setValid(false);
                     validator.setMessage(mes.getDescription());
                     exception = true;

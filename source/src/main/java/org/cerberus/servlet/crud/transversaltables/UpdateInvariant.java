@@ -57,7 +57,7 @@ public class UpdateInvariant extends HttpServlet {
             throws ServletException, IOException, CerberusException {
         String key = request.getParameter("id");
         int columnPosition = Integer.parseInt(request.getParameter("columnPosition"));
-        String value = request.getParameter("value").replaceAll("'", "");
+        String value = request.getParameter("value").replace("'", "");
 
         ApplicationContext appContext = WebApplicationContextUtils.getWebApplicationContext(this.getServletContext());
         IInvariantService invariantService = appContext.getBean(IInvariantService.class);

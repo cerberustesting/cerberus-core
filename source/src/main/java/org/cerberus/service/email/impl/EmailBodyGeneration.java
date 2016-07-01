@@ -265,11 +265,11 @@ public class EmailBodyGeneration implements IEmailBodyGeneration {
 
             ResultSet rsBC = stmtBuildContent.executeQuery(contentSQL);
             String Cerberus_URL = parameterService.findParameterByKey("cerberus_reporting_url", "").getValue();
-            Cerberus_URL = Cerberus_URL.replaceAll("%env%", "");
-            Cerberus_URL = Cerberus_URL.replaceAll("%appli%", "");
-            Cerberus_URL = Cerberus_URL.replaceAll("%system%", system);
-            Cerberus_URL = Cerberus_URL.replaceAll("%build%", build);
-            Cerberus_URL = Cerberus_URL.replaceAll("%rev%", revision);
+            Cerberus_URL = Cerberus_URL.replace("%ENV%", "");
+            Cerberus_URL = Cerberus_URL.replace("%APPLI%", "");
+            Cerberus_URL = Cerberus_URL.replace("%SYSTEM%", system);
+            Cerberus_URL = Cerberus_URL.replace("%BUILD%", build);
+            Cerberus_URL = Cerberus_URL.replace("%REV%", revision);
 
             String CountryListSQL = "SELECT value from invariant where idname='COUNTRY';";
             ResultSet rsCountry = stmtCountryList.executeQuery(CountryListSQL);
@@ -279,8 +279,8 @@ public class EmailBodyGeneration implements IEmailBodyGeneration {
                 CountryList.append("&Country=");
             }
 
-            String Cerberus_URL_ALL = Cerberus_URL.replaceAll("%country%", CountryList.toString());
-            Cerberus_URL = Cerberus_URL.replaceAll("%country%", country);
+            String Cerberus_URL_ALL = Cerberus_URL.replace("%COUNTRY%", CountryList.toString());
+            Cerberus_URL = Cerberus_URL.replace("%COUNTRY%", country);
 
             if (rsBC.first()) {
 

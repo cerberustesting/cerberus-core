@@ -88,7 +88,7 @@ public abstract class AppiumService implements IAppiumService {
         }
         //driver.context("WEBVIEW_1");
         message = new MessageEvent(MessageEventEnum.ACTION_SUCCESS_SWITCHTOWINDOW);
-        message.setDescription(message.getDescription().replaceAll("%WINDOW%", newContext));
+        message.setDescription(message.getDescription().replace("%WINDOW%", newContext));
         return message;
     }
 
@@ -102,16 +102,16 @@ public abstract class AppiumService implements IAppiumService {
                 session.getAppiumDriver().getKeyboard().pressKey(property);
             }
             message = new MessageEvent(MessageEventEnum.ACTION_SUCCESS_TYPE);
-            message.setDescription(message.getDescription().replaceAll("%ELEMENT%", identifier.getIdentifier() + "=" + identifier.getLocator()));
+            message.setDescription(message.getDescription().replace("%ELEMENT%", identifier.getIdentifier() + "=" + identifier.getLocator()));
             if (!StringUtil.isNull(property)) {
-                message.setDescription(message.getDescription().replaceAll("%DATA%", ParameterParserUtil.securePassword(property, propertyName)));
+                message.setDescription(message.getDescription().replace("%DATA%", ParameterParserUtil.securePassword(property, propertyName)));
             } else {
-                message.setDescription(message.getDescription().replaceAll("%DATA%", "No property"));
+                message.setDescription(message.getDescription().replace("%DATA%", "No property"));
             }
             return message;
         } catch (NoSuchElementException exception) {
             message = new MessageEvent(MessageEventEnum.ACTION_FAILED_TYPE_NO_SUCH_ELEMENT);
-            message.setDescription(message.getDescription().replaceAll("%ELEMENT%", identifier.getIdentifier() + "=" + identifier.getLocator()));
+            message.setDescription(message.getDescription().replace("%ELEMENT%", identifier.getIdentifier() + "=" + identifier.getLocator()));
             MyLogger.log(WebDriverService.class.getName(), Level.DEBUG, exception.toString());
             return message;
         } catch (WebDriverException exception) {
@@ -130,11 +130,11 @@ public abstract class AppiumService implements IAppiumService {
                     .release()
                     .perform();
             message = new MessageEvent(MessageEventEnum.ACTION_SUCCESS_CLICK);
-            message.setDescription(message.getDescription().replaceAll("%ELEMENT%", identifier.getIdentifier() + "=" + identifier.getLocator()));
+            message.setDescription(message.getDescription().replace("%ELEMENT%", identifier.getIdentifier() + "=" + identifier.getLocator()));
             return message;
         } catch (NoSuchElementException exception) {
             message = new MessageEvent(MessageEventEnum.ACTION_FAILED_CLICK_NO_SUCH_ELEMENT);
-            message.setDescription(message.getDescription().replaceAll("%ELEMENT%", identifier.getIdentifier() + "=" + identifier.getLocator()));
+            message.setDescription(message.getDescription().replace("%ELEMENT%", identifier.getIdentifier() + "=" + identifier.getLocator()));
             MyLogger.log(WebDriverService.class.getName(), Level.DEBUG, exception.toString());
             return message;
         } catch (WebDriverException exception) {

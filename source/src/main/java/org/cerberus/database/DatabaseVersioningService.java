@@ -6115,8 +6115,13 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLS = new StringBuilder();
         SQLS.append("INSERT INTO `parameter` (`system`, `param`, `value`, `description`) VALUES ('', 'cerberus_automaticexecution_enable', 'Y', 'Activation boolean in order to activate the automatic executions.Y value will allow execution. Any other value will stop the execution returning an error message..');");
         SQLInstruction.add(SQLS.toString());
-        
-        
+
+        // Updated Description of cerberus_reporting_url parameter.
+        //-- ------------------------ 835
+        SQLS = new StringBuilder();
+        SQLS.append("UPDATE `parameter` SET `description`='URL to Cerberus reporting screen. the following variables can be used : %COUNTRY%, %ENV%,  %APPLI%, %BUILD% and %REV%.' WHERE `system`='' and`param`='cerberus_reporting_url';");
+        SQLInstruction.add(SQLS.toString());
+
         return SQLInstruction;
     }
 

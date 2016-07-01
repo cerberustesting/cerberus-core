@@ -29,12 +29,9 @@ import org.cerberus.crud.entity.MessageGeneral;
 import org.cerberus.enums.MessageGeneralEnum;
 import org.cerberus.crud.entity.TestData;
 import org.cerberus.exception.CerberusException;
-import org.cerberus.crud.factory.IFactoryLogEvent;
-import org.cerberus.crud.factory.impl.FactoryLogEvent;
 import org.cerberus.crud.service.ILogEventService;
 import org.cerberus.crud.service.ITestDataService;
 import org.cerberus.crud.service.impl.LogEventService;
-import org.cerberus.crud.service.impl.UserService;
 import org.owasp.html.PolicyFactory;
 import org.owasp.html.Sanitizers;
 import org.springframework.context.ApplicationContext;
@@ -83,7 +80,7 @@ public class UpdateTestData extends HttpServlet {
             }
 
             String name = policy.sanitize(request.getParameter("columnName"));
-            String value = policy.sanitize(request.getParameter("value").replaceAll("'", ""));
+            String value = policy.sanitize(request.getParameter("value").replace("'", ""));
 
             System.out.print(key + application + environment + country);
 

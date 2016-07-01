@@ -175,16 +175,16 @@ public class SoapService implements ISoapService {
             executionSOAP.setSOAPResponse(soapResponse);
 
             message = new MessageEvent(MessageEventEnum.ACTION_SUCCESS_CALLSOAP);
-            message.setDescription(message.getDescription().replaceAll("%SOAPNAME%", method));
+            message.setDescription(message.getDescription().replace("%SOAPNAME%", method));
             result.setItem(executionSOAP);
 
         } catch (SOAPException | UnsupportedOperationException | IOException | SAXException | ParserConfigurationException | CerberusException e) {
             MyLogger.log(SoapService.class.getName(), Level.ERROR, e.toString());
             message = new MessageEvent(MessageEventEnum.ACTION_FAILED_CALLSOAP);
             message.setDescription(message.getDescription()
-                    .replaceAll("%SERVICEPATH%", servicePath)
-                    .replaceAll("%SOAPNAME%", method)
-                    .replaceAll("%DESCRIPTION%", e.getMessage()));
+                    .replace("%SERVICEPATH%", servicePath)
+                    .replace("%SOAPNAME%", method)
+                    .replace("%DESCRIPTION%", e.getMessage()));
         } finally {
             try {
                 if (soapConnection != null) {

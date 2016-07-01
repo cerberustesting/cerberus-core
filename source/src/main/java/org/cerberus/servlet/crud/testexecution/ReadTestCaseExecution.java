@@ -408,7 +408,7 @@ public class ReadTestCaseExecution extends HttpServlet {
         String bugId;
         if (testCaseWithExecution.getApplicationObject() != null && testCaseWithExecution.getApplicationObject().getBugTrackerUrl() != null
                 && !"".equals(testCaseWithExecution.getApplicationObject().getBugTrackerUrl()) && testCaseWithExecution.getBugID() != null) {
-            bugId = testCaseWithExecution.getApplicationObject().getBugTrackerUrl().replaceAll("%BUGID%", testCaseWithExecution.getBugID());
+            bugId = testCaseWithExecution.getApplicationObject().getBugTrackerUrl().replace("%BUGID%", testCaseWithExecution.getBugID());
             bugId = new StringBuffer("<a href='")
                     .append(bugId)
                     .append("' target='reportBugID'>")

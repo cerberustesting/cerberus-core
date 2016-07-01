@@ -61,7 +61,7 @@ public class UpdateParameter extends HttpServlet {
         //TODO create class Validator to validate all parameter from page
         String param = request.getParameter("id");
         int columnPosition = Integer.parseInt(request.getParameter("columnPosition"));
-        String value = request.getParameter("value").replaceAll("'", "");
+        String value = request.getParameter("value").replace("'", "");
         String mySystem = request.getParameter("system");
 
         MyLogger.log(UpdateParameter.class.getName(), Level.DEBUG, "System : " + mySystem + " value : " + value + " columnPosition : " + columnPosition + " param : " + param);
