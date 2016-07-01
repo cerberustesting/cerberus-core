@@ -33,10 +33,9 @@ import org.springframework.stereotype.Service;
 public class FactoryUser implements IFactoryUser {
 
     @Override
-    public User create(int userID, String login, String password, String resetPasswordToken, String request, String name, String team,String language,
-            String reportingFavorite, String robotHost,String robotPort, 
-            String robotPlatform, String robotBrowser
-            ,String robotVersion, String robot, String defaultSystem, String email, List<UserSystem> userSystems, List<Group> userGroups) {
+    public User create(int userID, String login, String password, String resetPasswordToken, String request, String name, String team, String language,
+            String reportingFavorite, String robotHost, String robotPort,
+            String robotPlatform, String robotBrowser, String robotVersion, String robot, String defaultSystem, String email, List<UserSystem> userSystems, List<Group> userGroups) {
         User newUser = new User();
         newUser.setUserID(userID);
         newUser.setLogin(login);
@@ -56,6 +55,32 @@ public class FactoryUser implements IFactoryUser {
         newUser.setRobot(robot);
         newUser.setUserSystems(userSystems);
         newUser.setUserGroups(userGroups);
+        newUser.setResetPasswordToken(resetPasswordToken);
+        return newUser;
+    }
+
+    @Override
+    public User create(int userID, String login, String password, String resetPasswordToken, String request, String name, String team, String language,
+            String reportingFavorite, String robotHost, String robotPort,
+            String robotPlatform, String robotBrowser, String robotVersion, String robot, String defaultSystem, String email, String userPreferences) {
+        User newUser = new User();
+        newUser.setUserID(userID);
+        newUser.setLogin(login);
+        newUser.setPassword(password);
+        newUser.setRequest(request);
+        newUser.setName(name);
+        newUser.setTeam(team);
+        newUser.setLanguage(language);
+        newUser.setReportingFavorite(reportingFavorite);
+        newUser.setRobotHost(robotHost);
+        newUser.setDefaultSystem(defaultSystem);
+        newUser.setEmail(email);
+        newUser.setRobotBrowser(robotBrowser);
+        newUser.setRobotPlatform(robotPlatform);
+        newUser.setRobotPort(robotPort);
+        newUser.setRobotVersion(robotVersion);
+        newUser.setRobot(robot);
+        newUser.setUserPreferences(userPreferences);
         newUser.setResetPasswordToken(resetPasswordToken);
         return newUser;
     }

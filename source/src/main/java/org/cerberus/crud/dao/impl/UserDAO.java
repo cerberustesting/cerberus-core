@@ -234,7 +234,7 @@ public class UserDAO implements IUserDAO {
         query.append("UPDATE user SET Login = ?, Name = ?, Request = ?, ReportingFavorite = ?, RobotHost = ?,");
         query.append("Team = ?, Language = ?, DefaultSystem = ?, Email= ? , robotPort = ?, ");
         query.append("robotPlatform = ?, ");
-        query.append("robotBrowser = ?, robotVersion = ? , robot = ?   WHERE userid = ?");
+        query.append("robotBrowser = ?, robotVersion = ? , robot = ? , userPreferences = ?  WHERE userid = ?");
 
         Connection connection = this.databaseSpring.connect();
         try {
@@ -254,7 +254,8 @@ public class UserDAO implements IUserDAO {
                 preStat.setString(12, user.getRobotBrowser());
                 preStat.setString(13, user.getRobotVersion());
                 preStat.setString(14, user.getRobot());
-                preStat.setInt(15, user.getUserID());
+                preStat.setString(15, user.getUserPreferences());
+                preStat.setInt(16, user.getUserID());
 
                 bool = preStat.executeUpdate() > 0;
             } catch (SQLException exception) {
@@ -457,9 +458,10 @@ public class UserDAO implements IUserDAO {
         String robotBrowser = ParameterParserUtil.parseStringParam(rs.getString("robotBrowser"), "");
         String robotVersion = ParameterParserUtil.parseStringParam(rs.getString("robotVersion"), "");
         String robot = ParameterParserUtil.parseStringParam(rs.getString("robot"), "");
+        String userPreferences = ParameterParserUtil.parseStringParam(rs.getString("userPreferences"), "");
         //TODO remove when working in test with mockito and autowired
         factoryUser = new FactoryUser();
-        return factoryUser.create(userID, login, password,resetPasswordToken, request, name, team, language, reportingFavorite, robotHost, robotPort, robotPlatform, robotBrowser, robotVersion, robot, defaultSystem, email, null, null);
+        return factoryUser.create(userID, login, password,resetPasswordToken, request, name, team, language, reportingFavorite, robotHost, robotPort, robotPlatform, robotBrowser, robotVersion, robot, defaultSystem, email, userPreferences);
     }
 
     @Override
@@ -976,8 +978,8 @@ public class UserDAO implements IUserDAO {
         StringBuilder query = new StringBuilder();
         query.append("UPDATE user SET Login = ?, Name = ?, Request = ?, ReportingFavorite = ?, RobotHost = ?,");
         query.append(" Team = ?, Language = ?, DefaultSystem = ?, Email= ? , robotPort = ?,");
-        query.append(" robotPlatform = ?, robotBrowser = ?, robotVersion = ? , robot = ?, resetPasswordToken = SHA(?) ");
-        query.append("    WHERE userid = ?");
+        query.append(" robotPlatform = ?, robotBrowser = ?, robotVersion = ? , robot = ?, resetPasswordToken = SHA(?), ");
+        query.append(" userPreferences = ?   WHERE userid = ?");
 
         // Debug message on SQL.
         if (LOG.isDebugEnabled()) {
@@ -1002,7 +1004,8 @@ public class UserDAO implements IUserDAO {
                 preStat.setString(13, user.getRobotVersion());
                 preStat.setString(14, user.getRobot());
                 preStat.setString(15, user.getResetPasswordToken());
-                preStat.setInt(16, user.getUserID());
+                preStat.setString(16, user.getUserPreferences());
+                preStat.setInt(17, user.getUserID());
 
                 preStat.executeUpdate();
                 msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
@@ -1029,16 +1032,4 @@ public class UserDAO implements IUserDAO {
         }
         return new Answer(msg);
     }
-
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
 }

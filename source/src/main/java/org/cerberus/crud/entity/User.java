@@ -41,8 +41,17 @@ public class User {
     private String robot;
     private String defaultSystem;
     private String email;
+    private String userPreferences;
     private List<UserSystem> userSystems;
     private List<Group> userGroups;
+
+    public String getUserPreferences() {
+        return userPreferences;
+    }
+
+    public void setUserPreferences(String userPreferences) {
+        this.userPreferences = userPreferences;
+    }
 
     public String getResetPasswordToken() {
         return resetPasswordToken;

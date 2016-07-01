@@ -55,5 +55,31 @@ public interface IFactoryUser {
             String team, String language, String reportingFavorite, String robotHost,String robotPort, 
             String robotPlatform, String robotBrowser
             ,String robotVersion, String robot, String defaultSystem, String email, List<UserSystem> userSystems, List<Group> userGroups);
+    
+    /**
+     * @param userID            Internal ID of the user
+     * @param login             login name of the user.
+     * @param password          Password of the user
+     * @param resetPasswordToken
+     * @param request           Y if the user needs to change the password on next login
+     * @param name              Name of the user
+     * @param team              Team the user belong to.
+     * @param language          Gui Language of the user.
+     * @param reportingFavorite Default parameters for reporting.
+     * @param robotHost         Host used by Robot.
+     * @param robotPort
+     * @param robotPlatform
+     * @param robotBrowser
+     * @param defaultSystem     Default System of the user.
+     * @param robotVersion
+     * @param robot
+     * @param email             email of the user
+     * @param userPreferences   GUI user preferences
+     * @return A User.
+     */
+    User create(int userID, String login, String password, String resetPasswordToken, String request, String name, 
+            String team, String language, String reportingFavorite, String robotHost,String robotPort, 
+            String robotPlatform, String robotBrowser
+            ,String robotVersion, String robot, String defaultSystem, String email, String userPreferences);
 
 }

@@ -20,29 +20,24 @@
 package org.cerberus.servlet.crud.usermanagement;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import org.apache.log4j.Level;
-import org.cerberus.crud.entity.Group;
 import org.cerberus.crud.entity.User;
-import org.cerberus.crud.entity.UserSystem;
 import org.cerberus.exception.CerberusException;
 import org.cerberus.crud.factory.IFactoryGroup;
-import org.cerberus.crud.factory.IFactoryUserSystem;
 import org.cerberus.crud.factory.impl.FactoryGroup;
 import org.cerberus.log.MyLogger;
 import org.cerberus.crud.service.ILogEventService;
-import org.cerberus.crud.service.IUserGroupService;
 import org.cerberus.crud.service.IUserService;
-import org.cerberus.crud.service.IUserSystemService;
 import org.cerberus.crud.service.impl.LogEventService;
-import org.cerberus.crud.service.impl.UserGroupService;
 import org.cerberus.crud.service.impl.UserService;
+import org.cerberus.util.ParameterParserUtil;
+import org.owasp.html.PolicyFactory;
+import org.owasp.html.Sanitizers;
 import org.springframework.context.ApplicationContext;
 import org.springframework.web.context.support.WebApplicationContextUtils;
 
@@ -60,90 +55,52 @@ public class UpdateMyUser extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         //TODO create class Validator to validate all parameter from page
+        PolicyFactory policy = Sanitizers.FORMATTING.and(Sanitizers.LINKS);
+        String charset = request.getCharacterEncoding();
         String login = request.getUserPrincipal().getName();
-        int columnPosition = Integer.parseInt(request.getParameter("columnPosition"));
-        String value = request.getParameter("value").replaceAll("'", "");
+        String column = request.getParameter("column");
+        String value = ParameterParserUtil.parseStringParamAndDecode(request.getParameter("value"), "", charset);
 
-        MyLogger.log(UpdateMyUser.class.getName(), Level.INFO, "value : " + value + " columnPosition : " + columnPosition + " login : " + login);
+        MyLogger.log(UpdateMyUser.class.getName(), Level.INFO, "value : " + value + " column : " + column + " login : " + login);
 
         ApplicationContext appContext = WebApplicationContextUtils.getWebApplicationContext(this.getServletContext());
         IUserService userService = appContext.getBean(UserService.class);
-        IUserGroupService userGroupService = appContext.getBean(UserGroupService.class);
-        IFactoryUserSystem userSystemFactory = appContext.getBean(IFactoryUserSystem.class);
-        IUserSystemService userSystemService = appContext.getBean(IUserSystemService.class);
-
-        IFactoryGroup factoryGroup = new FactoryGroup();
-
+        
         User myUser;
-        List<Group> newGroups = null;
-        List<UserSystem> newSystems = null;
         try {
             myUser = userService.findUserByKey(login);
-            switch (columnPosition) {
-                case 0:
-                    newGroups = new ArrayList<Group>();
-                    for (String group : request.getParameterValues(login + "_UserGroup")) {
-                        newGroups.add(factoryGroup.create(group));
-                    }
-                    break;
-                case 1:
-                    myUser.setLogin(value);
-                    break;
-                case 2:
+            switch (column) {
+                case "name":
                     myUser.setName(value);
                     break;
-                case 3:
+                case "team":
                     myUser.setTeam(value);
                     break;
-                case 4:
-                    newSystems = new ArrayList<UserSystem>();
-                    for (String system : request.getParameterValues(login + "_UserSystem")) {
-                        newSystems.add(userSystemFactory.create(login, system));
-                    }
-                    break;
-                case 5:
+                case "defaultSystem":
                     myUser.setDefaultSystem(value);
                     request.getSession().setAttribute("MySystem", value);
                     break;
-                case 6:
-                    myUser.setRequest(value);
-                    break;
-                case 7:
+                case "email":
                     myUser.setEmail(value);
                     break;
-                case 8:
+                case "language":
                     myUser.setLanguage(value);
                     request.getSession().setAttribute("MyLang", value);
                     break;
+                case "userPreferences":
+                    myUser.setUserPreferences(value);
+                    break;
             }
             try {
-                if (newGroups != null) {
-                    userGroupService.updateUserGroups(myUser, newGroups);
 
-                    /**
-                     * Adding Log entry.
-                     */
-                    ILogEventService logEventService = appContext.getBean(LogEventService.class);
-                    logEventService.createPrivateCalls("/UpdateMyUser", "UPDATE", "Updated user groups : " + login, request);
+                userService.updateUser(myUser);
 
-                } else if (newSystems != null) {
-                    userSystemService.updateUserSystems(myUser, newSystems);
+                /**
+                 * Adding Log entry.
+                 */
+                ILogEventService logEventService = appContext.getBean(LogEventService.class);
+                logEventService.createPrivateCalls("/UpdateMyUser", "UPDATE", "Updated user : " + login, request);
 
-                    /**
-                     * Adding Log entry.
-                     */
-                    ILogEventService logEventService = appContext.getBean(LogEventService.class);
-                    logEventService.createPrivateCalls("/UpdateMyUser", "UPDATE", "Updated user system : " + login, request);
-
-                } else {
-                    userService.updateUser(myUser);
-
-                    /**
-                     * Adding Log entry.
-                     */
-                    ILogEventService logEventService = appContext.getBean(LogEventService.class);
-                    logEventService.createPrivateCalls("/UpdateMyUser", "UPDATE", "Updated user : " + login, request);
-                }
                 response.getWriter().print(value);
             } catch (CerberusException ex) {
                 response.getWriter().print(ex.getMessageError().getDescription());
