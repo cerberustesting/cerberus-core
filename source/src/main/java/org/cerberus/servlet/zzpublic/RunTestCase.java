@@ -247,7 +247,7 @@ public class RunTestCase extends HttpServlet {
         IParameterService parameterService = appContext.getBean(IParameterService.class);
         try {
             if (!("Y".equals(parameterService.findParameterByKey("cerberus_automaticexecution_enable", "").getValue()))) {
-                out.println("Error - Execution disable by configuration (cerberus_automaticexecution_enable=Y).");
+                out.println("Error - Execution disable by configuration (cerberus_automaticexecution_enable <> Y).");
                 error = true;
                 LOG.info("Execution request ignored by cerberus_automaticexecution_enable parameter. " + test + " / " + testCase);
             }
