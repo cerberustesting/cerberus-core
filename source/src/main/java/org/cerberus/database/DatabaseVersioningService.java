@@ -6137,6 +6137,13 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLS.append("ALTER TABLE `testcasestepactionexecution` CHANGE COLUMN `Object` `Object` VARCHAR(2500) NULL DEFAULT NULL  ,CHANGE COLUMN `Property` `Property` VARCHAR(2500) NULL DEFAULT NULL ;");
         SQLInstruction.add(SQLS.toString());
 
+        // Add userPreferences column in user table.
+        //-- ------------------------ 840
+        SQLS = new StringBuilder();
+        SQLS.append("ALTER TABLE `user` ");
+        SQLS.append("ADD COLUMN `UserPreferences` TEXT NOT NULL AFTER `Email`;");
+        SQLInstruction.add(SQLS.toString());
+        
         return SQLInstruction;
     }
 

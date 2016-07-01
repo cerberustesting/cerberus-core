@@ -966,6 +966,33 @@ function createDataTableWithPermissions(tableConfigurations, callbackFunction, o
         }
         configs["sAjaxSource"] = tableConfigurations.ajaxSource;
         configs["sAjaxDataProp"] = tableConfigurations.ajaxProp;
+        configs["fnStateSaveCallback"] = function (settings, data) {
+            try {
+                //Compare user.localStorage and data excluding time
+                var user = getUser();
+                var localStorageValue = JSON.parse(JSON.stringify(data));
+                delete localStorageValue.time;
+                
+                var userPreferences = JSON.parse((JSON.parse(user.localStorage))['DataTables_' + settings.sInstance + '_' + location.pathname]);
+                delete userPreferences.time;
+
+                //if different, update localStorage and user.userPreferences
+                if (localStorageValue !== userPreferences) {
+                    (settings.iStateDuration === -1 ? sessionStorage : localStorage).setItem(
+                            'DataTables_' + settings.sInstance + '_' + location.pathname,
+                            JSON.stringify(data)
+                            );
+                    updateUserPreferences();
+                }
+            } catch (e) {
+            }
+        };
+        configs["fnStateLoadCallback"] = function (settings) {
+            //Get UserPreferences from user object
+            var user = getUser();
+            var userPref = JSON.parse(user.userPreferences);
+            return JSON.parse(userPref['DataTables_' + settings.sInstance + '_' + location.pathname]);
+        };
         configs["fnServerData"] = function (sSource, aoData, fnCallback, oSettings) {
             oSettings.jqXHR = $.ajax({
                 "dataType": 'json',
@@ -1013,7 +1040,8 @@ function createDataTableWithPermissions(tableConfigurations, callbackFunction, o
 
     $("#" + tableConfigurations.divId + "_length").addClass("marginBottom10").addClass("width80");
     $("#" + tableConfigurations.divId + "_filter").addClass("marginBottom10").addClass("width150");
-
+    //TODO: To uncomment when activating feature
+    //displayColumnSearch(tableConfigurations.divId);
     return oTable;
 }
 
@@ -1067,6 +1095,33 @@ function createDataTable(tableConfigurations, callbackFunction, userCallbackFunc
         }
         configs["sAjaxSource"] = tableConfigurations.ajaxSource;
         configs["sAjaxDataProp"] = tableConfigurations.ajaxProp;
+        configs["fnStateSaveCallback"] = function (settings, data) {
+            try {
+                //Compare user.localStorage and data excluding time
+                var user = getUser();
+                var localStorageValue = JSON.parse(JSON.stringify(data));
+                delete localStorageValue.time;
+                
+                var userPreferences = JSON.parse((JSON.parse(user.localStorage))['DataTables_' + settings.sInstance + '_' + location.pathname]);
+                delete userPreferences.time;
+
+                //if different, update localStorage and user.userPreferences
+                if (localStorageValue !== userPreferences) {
+                    (settings.iStateDuration === -1 ? sessionStorage : localStorage).setItem(
+                            'DataTables_' + settings.sInstance + '_' + location.pathname,
+                            JSON.stringify(data)
+                            );
+                    updateUserPreferences();
+                }
+            } catch (e) {
+            }
+        };
+        configs["fnStateLoadCallback"] = function (settings) {
+            //Get UserPreferences from user object
+            var user = getUser();
+            var userPref = JSON.parse(user.userPreferences);
+            return JSON.parse(userPref['DataTables_' + settings.sInstance + '_' + location.pathname]);
+        };
         configs["fnServerData"] = function (sSource, aoData, fnCallback, oSettings) {
             oSettings.jqXHR = $.ajax({
                 "dataType": 'json',
@@ -1105,7 +1160,83 @@ function createDataTable(tableConfigurations, callbackFunction, userCallbackFunc
     $("#" + tableConfigurations.divId + "_length").addClass("marginBottom10").addClass("width80");
     $("#" + tableConfigurations.divId + "_filter").addClass("marginBottom10").addClass("width150");
 
+    //TODO: To uncomment when activating feature
+    //displayColumnSearch(tableConfigurations.divId);
     return oTable;
+}
+
+function displayColumnSearch(tableId) {
+    $.when($("#" + tableId).DataTable()).then(function (table) {
+        console.log(tableId);
+        $('#' + tableId + ' thead th').each(function (a) {
+            //This is the list of distinct value of the column
+            //to replace by server call to get distinct value in server mode
+            var data = [];
+            table.column(a).data().unique().sort().each(function (d, j) {
+                data.push(d);
+            });
+
+            //get the value from localstorage  
+            //The search recorded
+            var json_obj = JSON.stringify(table.ajax.params());
+            var param = JSON.parse(json_obj)["sSearch_" + a].split(',');
+            //The column names
+            var title = table.ajax.params().sColumns.split(',')[a];
+
+            //Build the string to display here (default picture if no data)
+            var display = '<span class="fa fa-tag fa-fw"></span>';
+            var val = [];
+            if (param.length > 1) {
+                $(param).each(function (i) {
+                    val[i] = "<span class='label'>" + $('<p>' + param[i] + '</p>').text() + "</span>";
+                });
+                display = val;
+            }
+
+            //Then init the editable object
+            var select = $('<span>Click to filter</span>')
+                    .appendTo($(this).attr('data-id', 'filter_' + a))
+                    .editable({
+                        type: 'checklist',
+                        title: title,
+                        source: data,
+                        onblur: 'submit',
+                        placement: 'bottom',
+                        emptytext: display,
+                        display: function (value, sourceData) {
+                            var val = [];
+                            $(value).each(function (i) {
+                                val[i] = "<span class='label'>" + $('<p>' + value[i] + '</p>').text() + "</span>";
+                            });
+                            $(this).html(val);
+                        },
+                        success: function (response, newValue) {
+                            $("#" + tableId).dataTable().fnFilter(newValue, a);
+                        }
+                    });
+        });
+    });
+
+
+//To put into a function
+//When clicking on the edit filter links
+    $(".editable").click(function () {
+        //Check the value already selected
+        $(this).find("span").each(function () {
+            $('.editable-checklist').find("input[value='" + $(this).text() + "']").prop('checked', true);
+        });
+
+        //Add a input field to search specific checkbox
+        $(this.parentNode).find("h3").after($('<input>').attr('placeholder', 'Search...')
+                .attr('class', 'form-control input-sm').on('keyup', function () {
+            $('.editable-checklist > div').hide();
+            $('.editable-checklist > div:contains(' + $(this).val() + ')').show();
+        }));
+
+    });
+
+
+
 }
 
 /**
@@ -1342,11 +1473,13 @@ function bindToggleCollapse() {
     $(".collapse").each(function () {
         $(this).on('shown.bs.collapse', function () {
             localStorage.setItem(this.id, true);
+            updateUserPreferences();
             $(this).prev().find(".toggle").removeClass("glyphicon-chevron-down").addClass("glyphicon-chevron-right");
         });
 
         $(this).on('hidden.bs.collapse', function () {
             localStorage.setItem(this.id, false);
+            updateUserPreferences();
             $(this).prev().find(".toggle").removeClass("glyphicon-chevron-right").addClass("glyphicon-chevron-down");
         });
 

@@ -29,6 +29,7 @@ function readUserFromDatabase() {
         success: function (data) {
             var user = data;
             sessionStorage.setItem("user", JSON.stringify(user));
+            loadUserPreferences(data);
         }
     });
 }
@@ -49,4 +50,21 @@ function getUser() {
         $(location).attr("href", "ChangePassword.jsp");
     }
     return user;
+}
+
+function updateUserPreferences() {
+    var uPref = JSON.stringify(localStorage);
+        $.ajax({url: "UpdateMyUser",
+            type: "POST",
+            data: {column: "userPreferences", value: uPref},
+            async: false,
+            success: function () {
+                readUserFromDatabase();
+            }
+        });
+}
+
+
+function loadUserPreferences(user) {
+    localStorage = user.userPreferences;
 }
