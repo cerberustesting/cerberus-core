@@ -194,7 +194,7 @@ function loadTagFilters(urlTag) {
 
             //if the tag is passed as a url parameter, then it loads the report from this tag
             if (urlTag !== null) {
-                $('#selectTag option[value="' + urlTag + '"]').attr("selected", "selected");
+                $('#selectTag').val(urlTag).trigger("change");
                 loadReport();
             }
         } else {
