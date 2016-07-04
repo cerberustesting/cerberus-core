@@ -42,17 +42,27 @@
             <h1 class="page-title-line">Test Case Script</h1>
             <h1 class="testTestCase"><span id="test"></span> / <span id="testCase"></span> - <span id="description"></span></h1>
             <div class="row" style="margin-top: 10px;">
-                <div class="col-lg-3" id="list-wrapper">
-                    <h3>Steps</h3>
-                    <ul class="list-group step-list side-item" id="stepList" style="max-height: 600px;overflow-y: scroll"></ul>
-                    <button class="btn btn-primary btn-block" id="addStep">Add step</button>
+                <div class="col-xs-3" id="list-wrapper">
+                    <div class="separator-left">
+                        <h3>Steps</h3>
+                        <ul class="list-group step-list side-item" id="stepList" style="max-height: 600px;overflow-y: scroll"></ul>
+                        <button class="btn btn-primary btn-block" id="addStep">Add step</button>
+                    </div>
+                    <div class="separator-top separator-left">
+                        <h3> Actions </h3>
+                        <div class="side-item">Last Execution was <a style="color : green">OK</a> in PREPROD in FR on Fri Nov 13 17:43:44 CET 2015<a><i> (Run it again) </i></a></div>
+                        <button class="btn btn-block btn-primary side-item" id="editTcInfo">Edit Test Case info</button>
+                        <button class="btn btn-block btn-primary side-item" id="manageProp">Manage properties</button>
+                        <button class="btn btn-block btn-primary side-item" id="saveScript">Save Script</button>
+                        <button class="btn btn-block btn-primary side-item" id="runTestCase">Run this Test Case</button>
+                    </div>
                 </div>
-                <div class="col-lg-8 well" style="min-height: 200px;">
+                <div class="col-xs-9 well" style="min-height: 200px;">
                     <div class="step-header clearfix">
                         <div id="stepInfo"  style="display: none;">
                             <div class="row">
-                                <div id="stepDescription" class="col-lg-9"></div>
-                                <div class="col-lg-3" id="editBtnArea">
+                                <div id="stepDescription" class="col-xs-9"></div>
+                                <div class="col-xs-3" id="editBtnArea">
                                     <div class="btn-group pull-right">
                                         <button class="btn btn-default" id="editBtn"><span class="glyphicon glyphicon-pencil"></span></button>
                                         <button class="btn btn-default" id="deleteStep"><span class="glyphicon glyphicon-trash"></span></button>
@@ -60,8 +70,7 @@
                                 </div>
                             </div>
                             <div class="row">
-                                <div class="col-lg-9 lib-info" id="libInfo">
-
+                                <div class="col-xs-9 lib-info" id="libInfo">
                                 </div>
                             </div>
                         </div>
@@ -84,16 +93,6 @@
                     </div>
                     <div id="actionContainer"></div>
                     <button class="btn btn-primary center-block" id="addAction"><span class="glyphicon glyphicon-plus"></span></button>
-                </div>
-                <div class="col-lg-1">
-                    <div class="separator-left" data-spy="affix">
-                        <h3> Actions </h3>
-                        <div class="side-item">Last Execution was <a style="color : green">OK</a> in PREPROD in FR on Fri Nov 13 17:43:44 CET 2015<a><i> (Run it again) </i></a></div>
-                        <button class="btn btn-block btn-primary side-item" id="editTcInfo">Edit Test Case info</button>
-                        <button class="btn btn-block btn-primary side-item" id="manageProp">Manage properties</button>
-                        <button class="btn btn-block btn-primary side-item" id="saveScript">Save Script</button>
-                        <button class="btn btn-block btn-primary side-item" id="runTestCase">Run this Test Case</button>
-                    </div>
                 </div>
             </div>
             <footer class="footer">

@@ -23,8 +23,14 @@
 
 .separator-left {
     border-left: 1px solid #E3E3E3;
-    width: inherit;
+/*    width: inherit;*/
     padding-left: 5px;
+    /*margin-right: 5px;*/
+}
+
+.separator-top {
+/*    width: inherit;*/
+    padding-top: 15px;
     /*margin-right: 5px;*/
 }
 
@@ -162,6 +168,38 @@ color: red !important;
 color: red !important;  
 }
 
+.property-table input::-webkit-input-placeholder {
+color: red !important;
+}
+ 
+.property-table input:-moz-placeholder { /* Firefox 18- */
+color: red !important;  
+}
+ 
+.property-table input::-moz-placeholder {  /* Firefox 19+ */
+color: red !important;  
+}
+ 
+.property-table input:-ms-input-placeholder {  
+color: red !important;  
+}
+
+.property-table textarea::-webkit-input-placeholder {
+color: red !important;
+}
+ 
+.property-table textarea:-moz-placeholder { /* Firefox 18- */
+color: red !important;  
+}
+ 
+.property-table textarea::-moz-placeholder {  /* Firefox 19+ */
+color: red !important;  
+}
+ 
+.property-table textarea:-ms-input-placeholder {  
+color: red !important;  
+}
+
 .lib-info {
     font-weight: bold;
     font-style: italic;
@@ -215,3 +253,5 @@ color: red !important;
 .control.toDelete select {
     background-color: #e74c3c;
 }
+
+

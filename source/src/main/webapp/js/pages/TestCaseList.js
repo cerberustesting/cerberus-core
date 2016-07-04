@@ -149,6 +149,10 @@ function loadTable(selectTest, sortColumn) {
     var jqxhr = $.getJSON("FindInvariantByID", "idName=COUNTRY");
 
     $.when(jqxhr).then(function (data) {
+
+        if (sortColumn === undefined)
+            sortColumn = 2;
+
         var config = new TableConfigurationsServerSide("testCaseTable", contentUrl, "contentTable", aoColumnsFunc(data), [sortColumn, 'asc']);
 
         var table = createDataTableWithPermissions(config, renderOptionsForTestCaseList, "#testCaseList");
@@ -284,7 +288,7 @@ function addEntryClick() {
     // By default we desactivate the execution of the testcase in production environment.
     $('#addEntryModalForm #actProd option[value="N"]').attr("selected", "selected");
 
-    // The rest of the field com from the LocalStorage.
+    // The rest of the field come from the LocalStorage.
     if (pref !== null) {
         form.find("#origin").val(pref.origin);
         form.find("#refOrigin").val(pref.refOrigin);
@@ -588,15 +592,20 @@ function loadTestFilters(selectTest) {
                 var option = $('<option></option>').attr("value", encodedString).text(text);
                 $('#selectTest').append(option);
             }
+            $('#selectTest').select2();
+
             //if the test is passed as a url parameter, then we load the testcase list from that test. If not we load the list with testcases from all tests.
             if (!isEmptyorALL(selectTest)) {
-                $('#selectTest').val(selectTest);
+//                $('#selectTest').val(selectTest);
+                $('#selectTest').val(selectTest).trigger("change");
+
                 var selectTestNew = $("#selectTest option:selected").attr("value");
-                if (selectTestNew !== selectTest) { // If the url test value exist in the combobox we send a warning.
+                if (selectTestNew !== selectTest) { // If the url test value does not exist in the combobox --> we display a warning message.
                     showMessageMainPage("warning", "The test \"" + selectTest + "\" contains no testcase on application that belong to " + getUser().defaultSystem + " system.");
                     option = $('<option></option>').attr("value", selectTest).text(selectTest);
                     $('#selectTest').append(option);
-                    $('#selectTest').val(selectTest);
+//                    $('#selectTest').val(selectTest);
+                    $('#selectTest').val(selectTest).trigger("change");
                 }
             }
         } else {

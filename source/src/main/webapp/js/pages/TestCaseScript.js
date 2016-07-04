@@ -84,6 +84,33 @@ $.when($.getScript("js/pages/global/global.js")).then(function () {
                 listenEnterKeypressWhenFocusingOnDescription();
                 setPlaceholderAction();
                 setPlaceholderControl();
+
+                // Building full list of country from testcase.
+                var myCountry = [];
+                $.each(testcaseinfo.countryList, function (index) {
+                    myCountry.push(index);
+                });
+
+                // Button Add Property insert a new Property
+                $("#addProperty").click(function () {
+                    var newProperty = {
+                        property: "",
+                        country: myCountry,
+                        type: "text",
+                        database: "",
+                        value1: "",
+                        value2: "",
+                        length: 0,
+                        rowLimit: 0,
+                        nature: "STATIC",
+                        toDelete: false
+                    };
+
+                    drawProperty(newProperty, testcaseinfo);
+
+                });
+
+
             },
             error: showUnexpectedError
         });
@@ -95,24 +122,6 @@ $.when($.getScript("js/pages/global/global.js")).then(function () {
             $("#addStepModal #description").val("");
             $("#useStep").prop("checked", false);
             $("#importDetail").hide();
-        });
-
-        $("#addProperty").click(function () {
-            var newProperty = {
-                property: "",
-                country: [],
-                type: "text",
-                database: "",
-                value1: "",
-                value2: "",
-                length: 0,
-                rowLimit: 0,
-                nature: "STATIC",
-                toDelete: false
-            };
-
-            drawProperty(newProperty, testcaseinfo, true);
-
         });
 
         $("#deleteStep").click(function () {
@@ -149,7 +158,7 @@ function runTestCase(test, testcase) {
 function saveScript() {
     var stepList = $("#stepList li");
     var stepArr = [];
-    
+
     // Construct the step/action/control list:
     // Iterate over steps
     for (var i = 0; i < stepList.length; i++) {
@@ -159,10 +168,10 @@ function saveScript() {
         if (!step.toDelete) {
             // Set the step's sort
             step.setSort(i + 1);
-            
+
             // Get step's actions
             var actionList = step.stepActionContainer.children(".action-group").children(".action");
-            
+
             // Iterate over actions
             for (var j = 0; j < actionList.length; j++) {
                 var action = $(actionList[j]).data("item");
@@ -171,10 +180,10 @@ function saveScript() {
                 if (!action.toDelete) {
                     // Set the action's sort
                     action.setSort(j + 1);
-                    
+
                     // Get action's controls
                     var controlList = action.html.children(".control");
-                    
+
                     // Iterate over controls
                     for (var k = 0; k < controlList.length; k++) {
                         var control = $(controlList[k]).data("item");
@@ -182,7 +191,7 @@ function saveScript() {
                         if (!control.toDelete) {
                             // Set the control's sort
                             control.setSort(k + 1);
-                            
+
                             // Then push control into result array
                             controlArr.push(control.getJsonData());
                         }
@@ -197,8 +206,8 @@ function saveScript() {
             stepArr.push(stepJson);
         }
     }
-    
-    var properties = $("#propTable tr");
+
+    var properties = $("[name='masterProp']");
     var propArr = [];
     for (var i = 0; i < properties.length; i++) {
         propArr.push($(properties[i]).data("property"));
@@ -221,24 +230,29 @@ function saveScript() {
     });
 }
 
-function drawProperty(property, testcaseinfo, isNewLine) {
+function drawProperty(property, testcaseinfo) {
     var selectType = getSelectInvariant("PROPERTYTYPE", false);
     var selectDB = getSelectInvariant("PROPERTYDATABASE", false);
     var selectNature = getSelectInvariant("PROPERTYNATURE", false);
     var deleteBtn = $("<button></button>").addClass("btn btn-default btn-xs").append($("<span></span>").addClass("glyphicon glyphicon-trash"));
-    var propertyInput = $("<input id='propName'>").addClass("form-control input-sm").val(property.property);
-    var valueInput = $("<textarea></textarea>").addClass("form-control input-sm").val(property.value1);
-    var lengthInput = $("<input>").addClass("form-control input-sm").val(property.length);
-    var rowLimitInput = $("<input>").addClass("form-control input-sm").val(property.rowLimit);
+
+    var selectAllBtn = $("<button disabled></button>").addClass("btn btn-default btn-xs").append($("<span></span>").addClass("glyphicon glyphicon-check"));
+    var selectNoneBtn = $("<button disabled></button>").addClass("btn btn-default btn-xs").append($("<span></span>").addClass("glyphicon glyphicon-unchecked"));
+
+    var propertyInput = $("<input id='propName' placeholder='Enter Property Name'>").addClass("form-control input-sm").val(property.property);
+    var valueInput = $("<textarea rows='1' placeholder='Value'></textarea>").addClass("form-control input-sm").val(property.value1);
+    var lengthInput = $("<input placeholder='Length'>").addClass("form-control input-sm").val(property.length);
+    var rowLimitInput = $("<input placeholder='Row Limit'>").addClass("form-control input-sm").val(property.rowLimit);
     var table = $("#propTable");
 
-    var row = $("<tr></tr>");
-    var deleteBtnRow = $("<td></td>").append(deleteBtn);
+    var row1 = $("<tr name='masterProp'></tr>");
+    var row2 = $("<tr></tr>");
+    var deleteBtnRow = $("<td></td>").append(deleteBtn).append(selectAllBtn).append(selectNoneBtn);
     var propertyName = $("<td></td>").append(propertyInput);
-    var country = $("<td></td>").append(getTestCaseCountry(testcaseinfo.countryList, property.country, false, isNewLine));
+    var country = $("<td></td>").append(getTestCaseCountry(testcaseinfo.countryList, property.country));
     var type = $("<td></td>").append(selectType.val(property.type));
     var db = $("<td></td>").append(selectDB.val(property.database));
-    var value = $("<td></td>").append(valueInput);
+    var value = $("<td colspan=6></td>").append(valueInput);
     var length = $("<td></td>").append(lengthInput);
     var rowLimit = $("<td></td>").append(rowLimitInput);
     var nature = $("<td></td>").append(selectNature.val(property.nature));
@@ -247,9 +261,11 @@ function drawProperty(property, testcaseinfo, isNewLine) {
         property.toDelete = (property.toDelete) ? false : true;
 
         if (property.toDelete) {
-            row.addClass("danger");
+            row1.addClass("danger");
+            row2.addClass("danger");
         } else {
-            row.removeClass("danger");
+            row1.removeClass("danger");
+            row2.removeClass("danger");
         }
     });
 
@@ -281,17 +297,19 @@ function drawProperty(property, testcaseinfo, isNewLine) {
         property.nature = $(this).val();
     });
 
-    row.data("property", property);
-    row.append(deleteBtnRow);
-    row.append(propertyName);
-    row.append(country);
-    row.append(type);
-    row.append(db);
-    row.append(value);
-    row.append(length);
-    row.append(rowLimit);
-    row.append(nature);
-    table.append(row);
+    row1.data("property", property);
+    row1.append(propertyName);
+    row1.append(country);
+    row1.append(type);
+    row1.append(db);
+    row1.append(length);
+    row1.append(rowLimit);
+    row1.append(nature);
+    table.append(row1);
+
+    row2.append(deleteBtnRow);
+    row2.append(value);
+    table.append(row2);
 }
 
 function drawInheritedProperty(propList) {
@@ -303,28 +321,30 @@ function drawInheritedProperty(propList) {
     for (var index = 0; index < propList.length; index++) {
         var property = propList[index];
 
-        var row = $("<tr></tr>");
-        var deleteBtn = $("<td></td>").append($("<button></button>").addClass("btn btn-default btn-xs").append($("<span></span>").addClass("glyphicon glyphicon-trash")));
+        var row1 = $("<tr></tr>");
+        var row2 = $("<tr></tr>");
         var propertyName = $("<td></td>").append($("<input>").addClass("form-control input-sm").val(property.property).prop("readonly", true));
-        var country = $("<td></td>").append(getTestCaseCountry(property.country, property.country, true, false));
+        var country = $("<td></td>").append(getTestCaseCountry(property.country, property.country, true));
         var type = $("<td></td>").append(selectType.clone().val(property.type).prop("disabled", "disabled"));
         var db = $("<td></td>").append(selectDB.clone().val(property.database).prop("disabled", "disabled"));
-        var value = $("<td></td>").append($("<textarea></textarea>").addClass("form-control input-sm").val(property.value1).prop("readonly", true));
+        var value = $("<td colspan=6></td>").append($("<textarea rows='1'></textarea>").addClass("form-control input-sm").val(property.value1).prop("readonly", true));
         var length = $("<td></td>").append($("<input>").addClass("form-control input-sm").val(property.length).prop("readonly", true));
         var rowLimit = $("<td></td>").append($("<input>").addClass("form-control input-sm").val(property.rowLimit).prop("readonly", true));
         var nature = $("<td></td>").append(selectNature.clone().val(property.nature).prop("disabled", "disabled"));
 
-        row.data("property", property);
-        row.append(deleteBtn);
-        row.append(propertyName);
-        row.append(country);
-        row.append(type);
-        row.append(db);
-        row.append(value);
-        row.append(length);
-        row.append(rowLimit);
-        row.append(nature);
-        table.append(row);
+        row1.data("property", property);
+        row1.append(propertyName);
+        row1.append(country);
+        row1.append(type);
+        row1.append(db);
+        row1.append(length);
+        row1.append(rowLimit);
+        row1.append(nature);
+        table.append(row1);
+
+        row2.append(value);
+        table.append(row2);
+
     }
 }
 
@@ -339,14 +359,14 @@ function loadProperties(test, testcase, testcaseinfo) {
                 var property = data[index];
 
                 property.toDelete = false;
-                drawProperty(property, testcaseinfo, false);
+                drawProperty(property, testcaseinfo);
             }
         },
         error: showUnexpectedError
     });
 }
 
-function getTestCaseCountry(countryList, countryToCheck, isDisabled, doForceAllCountries) {
+function getTestCaseCountry(countryList, countryToCheck, isDisabled) {
     var html = [];
     var cpt = 0;
     var div = $("<div></div>").addClass("checkbox");
@@ -361,8 +381,8 @@ function getTestCaseCountry(countryList, countryToCheck, isDisabled, doForceAllC
         }
         var input = $("<input>").attr("type", "checkbox").attr("name", country);
 
-        if ((countryToCheck.indexOf(country) !== -1) || (doForceAllCountries)) {
-            input.prop("checked", true);
+        if ((countryToCheck.indexOf(country) !== -1)) {
+            input.prop("checked", true).trigger("change");
         }
         if (isDisabled) {
             input.prop("disabled", "disabled");
@@ -385,9 +405,9 @@ function getTestCaseCountry(countryList, countryToCheck, isDisabled, doForceAllC
                 .append(country));
 
         cpt++;
-        if (cpt % 3 === 0) {
-            div = $("<div></div>").addClass("checkbox");
-        }
+//        if (cpt % 10 === 0) {
+//            div = $("<div></div>").addClass("checkbox");
+//        }
         html.push(div);
     });
 
@@ -1045,7 +1065,7 @@ Step.prototype.setStep = function (step) {
     this.step = step;
 };
 
-Step.prototype.getStep = function() {
+Step.prototype.getStep = function () {
     return this.step;
 };
 
@@ -1176,7 +1196,7 @@ Action.prototype.setSequence = function (sequence) {
     this.sequence = sequence;
 };
 
-Action.prototype.getSequence = function() {
+Action.prototype.getSequence = function () {
     return this.sequence;
 };
 
@@ -1344,7 +1364,7 @@ Control.prototype.setSequence = function (sequence) {
     this.sequence = sequence;
 };
 
-Control.prototype.getControl = function() {
+Control.prototype.getControl = function () {
     return this.control;
 }
 
@@ -1675,3 +1695,47 @@ function setPlaceholderControl() {
     });
 }
 
+function setPlaceholderProperty() {
+    /**
+     * Todo : GetFromDatabase
+     */
+    var placeHoldersList = {"fr": [
+            {"type": "text", "database": null, "length": null, "rowLimit": null, "nature": null},
+            {"type": "executeSql", "database": null, "length": null, "rowLimit": null, "nature": null}
+        ], "en": [
+            {"type": "text", "database": null, "length": null, "rowLimit": null, "nature": null},
+            {"type": "executeSql", "database": null, "length": null, "rowLimit": null, "nature": null}
+        ]};
+
+    var user = getUser();
+    user.language;
+    var placeHolders = placeHoldersList[user.language];
+
+    console.debug("-- Property");
+
+    $('div[class="rowProperty form-inline"] option:selected').each(function (i, e) {
+        console.debug(e.value);
+        for (var i = 0; i < placeHolders.length; i++) {
+            console.debug(placeHolders[i].type + " - " + e.value);
+            if (placeHolders[i].type === e.value) {
+                if (placeHolders[i].controlValue !== null) {
+                    $(e).parent().parent().next().show();
+                    $(e).parent().parent().next().find('input').prop("placeholder", placeHolders[i].controlValue);
+                } else {
+                    $(e).parent().parent().next().hide();
+                }
+                if (placeHolders[i].controlProp !== null) {
+                    $(e).parent().parent().next().next().show();
+                    $(e).parent().parent().next().next().find('input').prop("placeholder", placeHolders[i].controlProp);
+                } else {
+                    $(e).parent().parent().next().next().hide();
+                }
+                if (placeHolders[i].fatal !== null) {
+                    $(e).parent().parent().next().next().next().show();
+                } else {
+                    $(e).parent().parent().next().next().next().hide();
+                }
+            }
+        }
+    });
+}
