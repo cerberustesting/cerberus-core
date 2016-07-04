@@ -487,7 +487,7 @@
                                     <%=DateUtil.getFormatedDate(myStepData.getFullEnd())%> (
                                     <%=styleMainTestCase1%><%=myStepData.getTest()%><%=styleMainTestCase2%> / 
                                     <%=styleMainTestCase1%><%=myStepData.getTestCase()%><%=styleMainTestCase2%> / 
-                                    <%=styleMainTestCase1%>Step <%=myStepData.getStep()%><%=styleMainTestCase2%> )
+                                    <%=styleMainTestCase1%>Step <%=myStepData.getSort()%><%=styleMainTestCase2%> )
                                 </a>
                             </td>
                         </tr>
