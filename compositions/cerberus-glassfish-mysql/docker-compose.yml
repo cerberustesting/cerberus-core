@@ -33,6 +33,7 @@
 #
 # Volumes:
 #   - MySQL data directory                      : FROM /var/lib/mysql             TO ../localdata/mysql-db      (SERVICE cerberus-db-mysql)
+#   - Glassfish home directory                  : FROM /opt/glassfish             TO ../localdata/glassfish     (SERVICE cerberus-as-glassfish)
 #   - Cerberus execution screenshots directory  : FROM /opt/cerberus-screenshots  TO ../localdata/screenshots   (SERVICE cerberus-as-glassfish)
 #     ** IMPORTANT **
 #     The default mapping values are for test only. Don't forget to change them to be more relevant with your configuration.
@@ -49,12 +50,14 @@ services:
   cerberus-as-glassfish:
     image: cerberustesting/cerberus-as-glassfish:latest
     environment:
+      - GLASSFISH_HOME=/opt/glassfish
       - DATABASE_HOST=cerberus-db-mysql
       - DATABASE_PORT=3306
     ports:
       - "18080:8080"
       - "14848:4848"
     volumes:
+      - ./localdata/glassfish:/opt/glassfish
       - ./localdata/screenshots:/opt/cerberus-screenshots
     depends_on:
       - cerberus-db-mysql

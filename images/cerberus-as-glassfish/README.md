@@ -81,8 +81,13 @@ Where `/your/cerberus/screenshots/directory` in your directory to store Cerberus
 
 ## Existing Glassfish instance
 
-In case of an existing and Cerberus configured Glassfish instance, you can use the inherited GLASSFISH_HOME environment variable.
-Beware to map this new directory to a container volume. For instance:
+From the [1.1.5](https://github.com/cerberustesting/cerberus-docker/blob/master/images/cerberus-as-glassfish/1.1.5/Dockerfile) version, you can use a different Glassfish installation directory than the original one provided by the [Glassfish image](https://hub.docker.com/_/glassfish/).
+In order to do that, you need to:
+
+1. Redefine the `GLASSFISH_HOME` environment variable to a different directory than the original one (typically different than `/usr/local/glassfish4`)
+2. Map this new directory to your existing Glassfish installation directory.
+
+For instance:
 
     docker run -d -P -e GLASSFISH_HOME=/opt/glassfish -v /my/glassfish/instance:/opt/glassfish cerberus/cerberus-as-glassfish:latest
 
