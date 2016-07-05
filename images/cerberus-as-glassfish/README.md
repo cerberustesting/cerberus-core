@@ -86,6 +86,7 @@ In order to do that, you need to:
 
 1. Redefine the `GLASSFISH_HOME` environment variable to a different directory than the original one (typically different than `/usr/local/glassfish4`)
 2. Map this new directory to your existing Glassfish installation directory.
+3. And finally, create the empty `.cerberus` file into your existing Glassfish installation directory, **to by-pass the installation process**.
 
 For instance:
 

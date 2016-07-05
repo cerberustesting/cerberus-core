@@ -46,6 +46,7 @@ function setup() {
 
     # Copy the Glassfish installation directory to our GLASSFISH_HOME if different from the original one
     if [ "${ORIGINAL_GLASSFISH_HOME}" != "${GLASSFISH_HOME}" ]; then
+        mkdir -p ${GLASSFISH_HOME}
         cp -R ${ORIGINAL_GLASSFISH_HOME} ${GLASSFISH_HOME}
     fi
 
