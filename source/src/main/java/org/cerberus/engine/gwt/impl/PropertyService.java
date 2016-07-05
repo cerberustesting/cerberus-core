@@ -75,6 +75,7 @@ import org.cerberus.engine.entity.TestDataLibResult;
 import org.cerberus.engine.entity.TestDataLibResultSOAP;
 import org.cerberus.engine.entity.TestDataLibResultSQL;
 import org.cerberus.engine.entity.TestDataLibResultStatic;
+import org.cerberus.service.groovy.IGroovyService;
 import org.cerberus.util.DateUtil;
 import org.cerberus.util.FileUtil;
 import org.cerberus.util.ParameterParserUtil;
@@ -130,6 +131,8 @@ public class PropertyService implements IPropertyService {
     @Autowired
     private IJsonService jsonService;
     @Autowired
+    private IGroovyService groovyService;
+    @Autowired
     private IIdentifierService identifierService;
     @Autowired
     private IRecorderService recorderService;
@@ -184,7 +187,10 @@ public class PropertyService implements IPropertyService {
         } else if (testCaseCountryProperty.getType().equals(PropertyTypeEnum.GET_FROM_JS.getPropertyName())) {
             testCaseExecutionData = this.property_getFromJS(testCaseExecutionData, tCExecution, testCaseCountryProperty, forceRecalculation);
 
-        } else if (testCaseCountryProperty.getType().equals(PropertyTypeEnum.GET_FROM_TEST_DATA.getPropertyName())) {
+        } else if (testCaseCountryProperty.getType().equals(PropertyTypeEnum.GET_FROM_GRROVY.getPropertyName())) {
+            testCaseExecutionData = this.property_getFromGroovy(testCaseExecutionData, tCExecution, testCaseCountryProperty, forceRecalculation);
+
+        }else if (testCaseCountryProperty.getType().equals(PropertyTypeEnum.GET_FROM_TEST_DATA.getPropertyName())) {
             testCaseExecutionData = this.property_getFromTestData(testCaseExecutionData, tCExecution, testCaseCountryProperty, forceRecalculation);
 
         } else if (testCaseCountryProperty.getType().equals(PropertyTypeEnum.GET_ATTRIBUTE_FROM_HTML.getPropertyName())) {
@@ -835,6 +841,28 @@ public class PropertyService implements IPropertyService {
             MessageEvent res = new MessageEvent(MessageEventEnum.PROPERTY_FAILED_JS_EXCEPTION);
             res.setDescription(res.getDescription().replace("%EXCEPTION%", message));
             testCaseExecutionData.setPropertyResultMessage(res);
+        }
+
+        return testCaseExecutionData;
+    }
+    
+    private TestCaseExecutionData property_getFromGroovy(TestCaseExecutionData testCaseExecutionData, TestCaseExecution tCExecution, TestCaseCountryProperties testCaseCountryProperty, boolean forceCalculation) {
+        // Check if script has been correctly defined
+        String script = testCaseExecutionData.getValue1();
+        if (script == null || script.isEmpty()) {
+            testCaseExecutionData.setPropertyResultMessage(new MessageEvent(MessageEventEnum.PROPERTY_FAILED_GETFROMGROOVY_NULL));
+            return testCaseExecutionData;
+        }
+        
+        // Try to evaluate Groovy script
+        try {
+            String valueFromGroovy = groovyService.eval(script);
+            testCaseExecutionData.setValue(valueFromGroovy);
+            testCaseExecutionData.setPropertyResultMessage(new MessageEvent(MessageEventEnum.PROPERTY_SUCCESS_GETFROMGROOVY)
+                    .resolveDescription("VALUE", valueFromGroovy));
+        } catch (Exception e) {
+            MyLogger.log(PropertyService.class.getName(), Level.DEBUG, "Exception Running Grrovy Script :" + e.getMessage());
+            testCaseExecutionData.setPropertyResultMessage(new MessageEvent(MessageEventEnum.PROPERTY_FAILED_GETFROMGROOVY_EXCEPTION).resolveDescription("REASON", e.getMessage()));
         }
 
         return testCaseExecutionData;
@@ -1904,5 +1932,5 @@ public class PropertyService implements IPropertyService {
         answer.setResultMessage(mes);
         return answer;
     }
-
+    
 }
