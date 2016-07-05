@@ -22,6 +22,8 @@ package org.cerberus.servlet.crud.test;
 import com.google.common.base.Strings;
 import com.google.gson.Gson;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -53,6 +55,7 @@ import org.cerberus.crud.service.impl.TestCaseStepActionService;
 import org.cerberus.crud.service.impl.TestCaseStepService;
 import org.cerberus.enums.MessageEventEnum;
 import org.cerberus.util.ParameterParserUtil;
+import org.cerberus.util.SqlUtil;
 import org.cerberus.util.answer.AnswerItem;
 import org.cerberus.util.answer.AnswerList;
 import org.cerberus.util.servlet.ServletUtil;
@@ -221,9 +224,19 @@ public class ReadTestCase extends HttpServlet {
         int columnToSortParameter = Integer.parseInt(ParameterParserUtil.parseStringParam(request.getParameter("iSortCol_0"), "0"));
         String sColumns = ParameterParserUtil.parseStringParam(request.getParameter("sColumns"), "test,testcase,application,project,ticket,description,behaviororvalueexpected,readonly,bugtrackernewurl,deploytype,mavengroupid");
         String columnToSort[] = sColumns.split(",");
+
+        String individualSearch = " 1=1 ";
+        for (int a = 0; a < columnToSort.length; a++) {
+            if (!request.getParameter("sSearch_" + a).isEmpty()) {
+                List<String> search = new ArrayList(Arrays.asList(request.getParameter("sSearch_" + a).split(",")));
+                String sqlInClause = SqlUtil.getInSQLClause(search);
+                individualSearch += " AND tc." + columnToSort[a] + " " + sqlInClause;
+            }
+        }
+
         String columnName = columnToSort[columnToSortParameter];
         String sort = ParameterParserUtil.parseStringParam(request.getParameter("sSortDir_0"), "asc");
-        AnswerList testCaseList = testCaseService.readByTestByCriteria(system, test, startPosition, length, columnName, sort, searchParameter, "");
+        AnswerList testCaseList = testCaseService.readByTestByCriteria(system, test, startPosition, length, columnName, sort, searchParameter, individualSearch);
 
         AnswerList testCaseCountryList = testCaseCountryService.readByTestTestCase(system, test, null);
 
@@ -420,7 +433,7 @@ public class ReadTestCase extends HttpServlet {
 
                 // Get the used step sort
                 jsonStep.put("useStepStepSort", usedStep.getSort());
-                
+
                 //retrieve the inherited properties
                 for (TestCaseCountryProperties prop : properties) {
                     JSONObject propertyFound = new JSONObject();
