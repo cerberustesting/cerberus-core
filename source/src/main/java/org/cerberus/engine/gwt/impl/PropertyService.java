@@ -860,7 +860,7 @@ public class PropertyService implements IPropertyService {
             testCaseExecutionData.setValue(valueFromGroovy);
             testCaseExecutionData.setPropertyResultMessage(new MessageEvent(MessageEventEnum.PROPERTY_SUCCESS_GETFROMGROOVY)
                     .resolveDescription("VALUE", valueFromGroovy));
-        } catch (Exception e) {
+        } catch (IGroovyService.IGroovyServiceException e) {
             MyLogger.log(PropertyService.class.getName(), Level.DEBUG, "Exception Running Grrovy Script :" + e.getMessage());
             testCaseExecutionData.setPropertyResultMessage(new MessageEvent(MessageEventEnum.PROPERTY_FAILED_GETFROMGROOVY_EXCEPTION).resolveDescription("REASON", e.getMessage()));
         }
