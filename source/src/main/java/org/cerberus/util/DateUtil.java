@@ -35,7 +35,6 @@ public class DateUtil {
      */
     public static final String DATE_FORMAT_DISPLAY = "yyyy-MM-dd HH:mm:ss";
 
-    
     /**
      * SimpleDateFormat use to parse SQL Date in Cerberus BO
      */
@@ -43,7 +42,6 @@ public class DateUtil {
 
     private DateUtil() {
     }
-
 
     /**
      * @param nbMinutes
@@ -91,14 +89,18 @@ public class DateUtil {
 
     /**
      * Format a long into a String in the format yyyy-MM-dd hh:mm:ss.SSS
+     *
      * @param l a long with a length of 15
-     * @return a String in the format yyyy-MM-dd hh:mm:ss.SSS. 
-     * Return null if input long is null or if input length is different than 15 characters
+     * @return a String in the format yyyy-MM-dd hh:mm:ss.SSS. Return null if
+     * input long is null or if input length is different than 15 characters
      */
     public static String getFormatedDate(Long l) {
         String myDate = null;
-        if (null!=l && l.toString().length()==15){
-        myDate = String.valueOf(l).substring(8, 10) + ":" + String.valueOf(l).substring(10, 12) + ":" + String.valueOf(l).substring(12, 14) + "." + String.valueOf(l).substring(14, 15);
+        if (null != l && l.toString().length() == 15) {
+            myDate = String.valueOf(l).substring(8, 10) + ":" + String.valueOf(l).substring(10, 12) + ":" + String.valueOf(l).substring(12, 14) + "." + String.valueOf(l).substring(14, 15);
+        }
+        if (null != l && l.toString().length() == 17) {
+            myDate = String.valueOf(l).substring(8, 10) + ":" + String.valueOf(l).substring(10, 12) + ":" + String.valueOf(l).substring(12, 14) + "." + String.valueOf(l).substring(14, 17);
         }
         return myDate;
     }
