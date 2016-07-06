@@ -44,6 +44,7 @@
         <jsonxpath.version>1.2.0</jsonxpath.version>
         <poi.version>3.13</poi.version>
         <appium.version>3.4.1</appium.version>
+        <groovy.version>2.4.7</groovy.version>
         
         <!-- Maven plugin version -->
         <maven-compiler-plugin.version>2.3.2</maven-compiler-plugin.version>
@@ -236,7 +237,11 @@
             <artifactId>poi-ooxml</artifactId>
             <version>${poi.version}</version>
         </dependency>
-
+        <dependency>
+            <groupId>org.codehaus.groovy</groupId>
+            <artifactId>groovy</artifactId>
+            <version>${groovy.version}</version>
+        </dependency>
 
         <!-- Provided scope -->
         <dependency>

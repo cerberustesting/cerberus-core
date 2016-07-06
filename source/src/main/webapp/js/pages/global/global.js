@@ -1171,53 +1171,68 @@ function createDataTable(tableConfigurations, callbackFunction, userCallbackFunc
 
 function displayColumnSearch(tableId) {
     $.when($("#" + tableId).DataTable()).then(function (table) {
-        console.log(tableId);
-        $('#' + tableId + ' thead th').each(function (a) {
-            //This is the list of distinct value of the column
-            //to replace by server call to get distinct value in server mode
-            var data = [];
-            table.column(a).data().unique().sort().each(function (d, j) {
-                data.push(d);
-            });
-
-            //get the value from localstorage  
-            //The search recorded
-            var json_obj = JSON.stringify(table.ajax.params());
-            var param = JSON.parse(json_obj)["sSearch_" + a].split(',');
-            //The column names
-            var title = table.ajax.params().sColumns.split(',')[a];
-
-            //Build the string to display here (default picture if no data)
-            var display = '<span class="fa fa-tag fa-fw"></span>';
-            var val = [];
-            if (param.length > 1) {
-                $(param).each(function (i) {
-                    val[i] = "<span class='label'>" + $('<p>' + param[i] + '</p>').text() + "</span>";
+        var colVisIndex = 0;
+        //Iterate on all columns (visible and not visible)
+        $(table.columns()[0]).each(function (value, colIndex) {
+            //init only if visible
+            if (table.column(colIndex).visible()) {
+                
+                //This is the list of distinct value of the column
+                //This will determine value proposed inside the select
+                //TODO : to replace by server call to get distinct value in server mode
+                var data = [];
+                table.column(colIndex).data().unique().sort().each(function (d, j) {
+                    data.push(d);
                 });
-                display = val;
-            }
 
-            //Then init the editable object
-            var select = $('<span>Click to filter</span>')
-                    .appendTo($(this).attr('data-id', 'filter_' + a))
-                    .editable({
-                        type: 'checklist',
-                        title: title,
-                        source: data,
-                        onblur: 'submit',
-                        placement: 'bottom',
-                        emptytext: display,
-                        display: function (value, sourceData) {
-                            var val = [];
-                            $(value).each(function (i) {
-                                val[i] = "<span class='label'>" + $('<p>' + value[i] + '</p>').text() + "</span>";
-                            });
-                            $(this).html(val);
-                        },
-                        success: function (response, newValue) {
-                            $("#" + tableId).dataTable().fnFilter(newValue, a);
-                        }
+                //Get the value from storage (To display specific string if already filtered) 
+                var json_obj = JSON.stringify(table.ajax.params());
+                var param = JSON.parse(json_obj)["sSearch_" + colIndex].split(',');
+                
+                //Get the column names (for title display)
+                var title = table.ajax.params().sColumns.split(',')[colIndex];
+
+                //Build the string to display (default picture if no data)
+                var display = '<span class="fa fa-tag fa-fw"></span>';
+                var val = [];
+                if (param !== undefined && param.length > 0 && param[0] !== '') {
+                    $(param).each(function (i) {
+                        val[i] = "<span class='label'>" + $('<p>' + param[i] + '</p>').text() + "</span>";
                     });
+                    display = val;
+                }
+                
+                //Get the header cell to display the filter
+                var tableCell = $($('#'+tableId+' thead th')[colVisIndex++])[0];
+                
+                //Then init the editable object
+                var select = $('<span>Click to filter</span>')
+                        .appendTo($(tableCell).attr('data-id', 'filter_' + colIndex))
+                        .editable({
+                            type: 'checklist',
+                            title: title,
+                            source: data,
+                            onblur: 'cancel',
+                            placement: 'bottom',
+                            emptytext: display,
+                            send: 'always',
+                            validate: function (value) {
+                                if (value === null || value === '' || value.length === 0) {
+                                    $("#" + tableId).dataTable().fnFilter('', colIndex);
+                                }
+                            },
+                            display: function (value, sourceData) {
+                                var val = [];
+                                $(value).each(function (i) {
+                                    val[i] = "<span class='label'>" + $('<p>' + value[i] + '</p>').text() + "</span>";
+                                });
+                                $(this).html(val);
+                            },
+                            success: function (response, newValue) {
+                                $("#" + tableId).dataTable().fnFilter(newValue, colIndex);
+                            }
+                        });
+            }
         });
     });
 
@@ -1225,17 +1240,36 @@ function displayColumnSearch(tableId) {
 //To put into a function
 //When clicking on the edit filter links
     $(".editable").click(function () {
+
+        //Clear custom fields to avoid duplication
+        $("[data-type='custom']").remove();
+
         //Check the value already selected
         $(this).find("span").each(function () {
             $('.editable-checklist').find("input[value='" + $(this).text() + "']").prop('checked', true);
         });
 
-        //Add a input field to search specific checkbox
+        //Add an input field to search specific checkbox
         $(this.parentNode).find("h3").after($('<input>').attr('placeholder', 'Search...')
-                .attr('class', 'form-control input-sm').on('keyup', function () {
+                .attr('class', 'form-control input-sm').attr('name', 'searchField')
+                .attr('data-type', 'custom').on('keyup', function () {
             $('.editable-checklist > div').hide();
             $('.editable-checklist > div:contains(' + $(this).val() + ')').show();
         }));
+        //Add selectAll/unSelectAll button
+        $("[name='searchField']").after(
+                $('<button>').attr('class', 'glyphicon glyphicon-check')
+                .attr('title', 'select all').attr('name', 'selectAll')
+                .attr('data-type', 'custom').on('click', function () {
+            $(this).parent().find("[type='checkbox']:visible").prop('checked', true);
+        }));
+        $("[name='searchField']").after(
+                $('<button>').attr('class', 'glyphicon glyphicon-unchecked')
+                .attr('title', 'unselect all').attr('name', 'unSelectAll')
+                .attr('data-type', 'custom').on('click', function () {
+            $(this).parent().find("[type='checkbox']:visible").prop('checked', false);
+        }));
+
 
     });
 }

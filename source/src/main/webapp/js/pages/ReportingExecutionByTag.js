@@ -114,19 +114,15 @@ function loadCountryFilter() {
     });
     $("#countrySelectAll").on("click", function () {
         $("#countryFilter input").prop('checked', true);
-        console.log("select");
     });
     $("#countryUnselectAll").on("click", function () {
         $("#countryFilter input").prop('checked', false);
-        console.log("unselect");
     });
     $("#statusSelectAll").on("click", function () {
         $("#statusFilter input").prop('checked', true);
-        console.log("select");
     });
     $("#statusUnselectAll").on("click", function () {
         $("#statusFilter input").prop('checked', false);
-        console.log("unselect");
     });
 }
 
