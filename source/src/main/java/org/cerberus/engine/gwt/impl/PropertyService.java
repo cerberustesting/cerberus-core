@@ -187,10 +187,10 @@ public class PropertyService implements IPropertyService {
         } else if (testCaseCountryProperty.getType().equals(PropertyTypeEnum.GET_FROM_JS.getPropertyName())) {
             testCaseExecutionData = this.property_getFromJS(testCaseExecutionData, tCExecution, testCaseCountryProperty, forceRecalculation);
 
-        } else if (testCaseCountryProperty.getType().equals(PropertyTypeEnum.GET_FROM_GRROVY.getPropertyName())) {
+        } else if (testCaseCountryProperty.getType().equals(PropertyTypeEnum.GET_FROM_GROOVY.getPropertyName())) {
             testCaseExecutionData = this.property_getFromGroovy(testCaseExecutionData, tCExecution, testCaseCountryProperty, forceRecalculation);
 
-        }else if (testCaseCountryProperty.getType().equals(PropertyTypeEnum.GET_FROM_TEST_DATA.getPropertyName())) {
+        } else if (testCaseCountryProperty.getType().equals(PropertyTypeEnum.GET_FROM_TEST_DATA.getPropertyName())) {
             testCaseExecutionData = this.property_getFromTestData(testCaseExecutionData, tCExecution, testCaseCountryProperty, forceRecalculation);
 
         } else if (testCaseCountryProperty.getType().equals(PropertyTypeEnum.GET_ATTRIBUTE_FROM_HTML.getPropertyName())) {
@@ -282,7 +282,8 @@ public class PropertyService implements IPropertyService {
             //after calculating the property base we can access the subdata entry
             calculateSubDataEntry(tCExecution, testCaseExecutionData, ((TestCaseSubDataAccessProperty) testCaseCountryProperty).getLibraryValue(), ((TestCaseSubDataAccessProperty) testCaseCountryProperty).getSubDataValue());//calculates the subdata entry
         } else //if the getFromDataLib does not succeed than it means that we are not able to perform the sub-data access 
-         if (tecdAuxiliary.getPropertyResultMessage().getCode() == MessageEventEnum.PROPERTY_FAILED_GETFROMDATALIB_NOT_FOUND_ERROR.getCode()
+        {
+            if (tecdAuxiliary.getPropertyResultMessage().getCode() == MessageEventEnum.PROPERTY_FAILED_GETFROMDATALIB_NOT_FOUND_ERROR.getCode()
                     || tecdAuxiliary.getPropertyResultMessage().getCode() == MessageEventEnum.PROPERTY_FAILED_GETFROMDATALIB_SQL_GENERIC.getCode() //same code as PROPERTY_FAILED_GETFROMDATALIB_NODATA
                     || tecdAuxiliary.getPropertyResultMessage().getCode() == MessageEventEnum.ACTION_FAILED_CALLSOAP.getCode()) { //error related with the soap call 
                 //redefinition of the error message
@@ -294,6 +295,7 @@ public class PropertyService implements IPropertyService {
                 //the result message is the same returned by the getFromDataLib operation
                 testCaseExecutionData.setPropertyResultMessage(tecdAuxiliary.getPropertyResultMessage());
             }
+        }
 
         return testCaseExecutionData;
     }
@@ -845,7 +847,7 @@ public class PropertyService implements IPropertyService {
 
         return testCaseExecutionData;
     }
-    
+
     private TestCaseExecutionData property_getFromGroovy(TestCaseExecutionData testCaseExecutionData, TestCaseExecution tCExecution, TestCaseCountryProperties testCaseCountryProperty, boolean forceCalculation) {
         // Check if script has been correctly defined
         String script = testCaseExecutionData.getValue1();
@@ -853,7 +855,7 @@ public class PropertyService implements IPropertyService {
             testCaseExecutionData.setPropertyResultMessage(new MessageEvent(MessageEventEnum.PROPERTY_FAILED_GETFROMGROOVY_NULL));
             return testCaseExecutionData;
         }
-        
+
         // Try to evaluate Groovy script
         try {
             String valueFromGroovy = groovyService.eval(script);
@@ -1932,5 +1934,5 @@ public class PropertyService implements IPropertyService {
         answer.setResultMessage(mes);
         return answer;
     }
-    
+
 }

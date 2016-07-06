@@ -11,7 +11,7 @@ public enum PropertyTypeEnum {
     GET_FROM_HTML_VISIBLE("getFromHtmlVisible"), 
     GET_FROM_HTML("getFromHtml"), 
     GET_FROM_JS("getFromJS"), 
-    GET_FROM_GRROVY("getFromGroovy"), 
+    GET_FROM_GROOVY("getFromGroovy"), 
     GET_FROM_TEST_DATA("getFromTestData"), 
     GET_ATTRIBUTE_FROM_HTML("getAttributeFromHtml"),
     GET_FROM_COOKIE("getFromCookie"), 
