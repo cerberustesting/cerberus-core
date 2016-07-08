@@ -538,8 +538,8 @@ public class TestCaseDAO implements ITestCaseDAO {
                 preStat.setString(10, ParameterParserUtil.parseStringParam(testCase.getStatus(), ""));
                 preStat.setString(11, testCase.getActive() != null && !testCase.getActive().equals("Y") ? "N" : "Y");
                 preStat.setString(12, ParameterParserUtil.parseStringParam(testCase.getGroup(), ""));
-                preStat.setString(13, "");
-                preStat.setString(14, "");
+                preStat.setString(13, ParameterParserUtil.parseStringParam(testCase.getOrigin(), ""));
+                preStat.setString(14, ParameterParserUtil.parseStringParam(testCase.getRefOrigin(), ""));
                 preStat.setString(15, ParameterParserUtil.parseStringParam(testCase.getHowTo(), ""));
                 preStat.setString(16, ParameterParserUtil.parseStringParam(testCase.getComment(), ""));
                 preStat.setString(17, ParameterParserUtil.parseStringParam(testCase.getFromSprint(), ""));
