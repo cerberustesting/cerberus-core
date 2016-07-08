@@ -24,6 +24,7 @@ import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.cerberus.crud.dao.ITestDataLibDAO;
@@ -34,6 +35,7 @@ import org.cerberus.crud.entity.TestDataLib;
 import org.cerberus.crud.factory.IFactoryTestDataLib;
 import org.cerberus.log.MyLogger;
 import org.cerberus.util.ParameterParserUtil;
+import org.cerberus.util.SqlUtil;
 import org.cerberus.util.StringUtil;
 import org.cerberus.util.answer.Answer;
 import org.cerberus.util.answer.AnswerItem;
@@ -436,12 +438,13 @@ public class TestDataLibDAO implements ITestDataLibDAO {
     }
 
     @Override
-    public AnswerList readByVariousByCriteria(String name, String system, String environment, String country, String type, int start, int amount, String column, String dir, String searchTerm, String individualSearch) {
+    public AnswerList readByVariousByCriteria(String name, String system, String environment, String country, String type, int start, int amount, String column, String dir, String searchTerm, Map<String, List<String>> individualSearch) {
 
         AnswerList answer = new AnswerList();
         MessageEvent msg;
         int nrTotalRows = 0;
-        List<TestDataLib> objectList = new ArrayList<TestDataLib>();
+        List<TestDataLib> objectList = new ArrayList<>();
+        List<String> individalColumnSearchValues = new ArrayList<>();
 
         StringBuilder searchSQL = new StringBuilder();
 
@@ -469,8 +472,14 @@ public class TestDataLibDAO implements ITestDataLibDAO {
             searchSQL.append(" or tdl.`environment` like ?");
             searchSQL.append(" or tdl.`country` like ?) ");
         }
-        if (!StringUtil.isNullOrEmpty(individualSearch)) {
-            searchSQL.append(" and (`?`)");
+        if (!individualSearch.isEmpty()) {
+            searchSQL.append(" and ( 1=1 ");
+            for (Map.Entry<String, List<String>> entry : individualSearch.entrySet()) {
+                searchSQL.append(" and ");
+                searchSQL.append(SqlUtil.getInSQLClauseForPreparedStatement(entry.getKey(), entry.getValue()));
+                individalColumnSearchValues.addAll(entry.getValue());
+            }
+            searchSQL.append(" )");
         }
         if (name != null) {
             searchSQL.append(" and tdl.`name` = ? ");
@@ -529,8 +538,8 @@ public class TestDataLibDAO implements ITestDataLibDAO {
                     preStat.setString(i++, "%" + searchTerm + "%");
                     preStat.setString(i++, "%" + searchTerm + "%");
                 }
-                if (!StringUtil.isNullOrEmpty(individualSearch)) {
-                    preStat.setString(i++, individualSearch);
+                for (String individualColumnSearchValue : individalColumnSearchValues) {
+                    preStat.setString(i++, individualColumnSearchValue);
                 }
                 if (name != null) {
                     preStat.setString(i++, name);

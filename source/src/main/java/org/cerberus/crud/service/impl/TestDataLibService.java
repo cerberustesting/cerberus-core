@@ -22,6 +22,7 @@ package org.cerberus.crud.service.impl;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import org.cerberus.crud.dao.ITestDataLibDAO;
 import org.cerberus.crud.entity.MessageEvent;
 import org.cerberus.crud.entity.TestDataLib;
@@ -81,7 +82,7 @@ public class TestDataLibService implements ITestDataLibService {
     }
 
     @Override
-    public AnswerList readByVariousByCriteria(String name, String system, String environment, String country, String type, int start, int amount, String column, String dir, String searchTerm, String individualSearch) {
+    public AnswerList readByVariousByCriteria(String name, String system, String environment, String country, String type, int start, int amount, String column, String dir, String searchTerm, Map<String, List<String>> individualSearch) {
         return testDataLibDAO.readByVariousByCriteria(name, system, environment, country, type, start, amount, column, dir, searchTerm, individualSearch);
     }
 

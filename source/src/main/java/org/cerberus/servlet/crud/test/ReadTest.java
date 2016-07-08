@@ -219,7 +219,7 @@ public class ReadTest extends HttpServlet {
         String columnName = columnToSort[columnToSortParameter];
         String sort = ParameterParserUtil.parseStringParam(request.getParameter("sSortDir_0"), "asc");
         
-        Map<String, List<String>> individualSearch = new HashMap<String, List<String>>();
+        Map<String, List<String>> individualSearch = new HashMap<>();
         for (int a = 0; a < columnToSort.length; a++) {
             if (!request.getParameter("sSearch_" + a).isEmpty()) {
                 List<String> search = new ArrayList(Arrays.asList(request.getParameter("sSearch_" + a).split(",")));

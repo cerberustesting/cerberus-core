@@ -19,6 +19,7 @@ package org.cerberus.crud.service;
 
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import org.cerberus.crud.entity.TestDataLib;
 import org.cerberus.crud.entity.TestDataLibData;
 import org.cerberus.exception.CerberusException;
@@ -91,7 +92,7 @@ public interface ITestDataLibService {
      * resultSet
      * @return
      */
-    AnswerList readByVariousByCriteria(String name, String system, String environment, String country, String type, int start, int amount, String column, String dir, String searchTerm, String individualSearch);
+    AnswerList readByVariousByCriteria(String name, String system, String environment, String country, String type, int start, int amount, String column, String dir, String searchTerm, Map<String, List<String>> individualSearch);
 
     /**
      * Auxiliary method that retrieves all the group names that were already

@@ -19,6 +19,8 @@ package org.cerberus.crud.dao;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.List;
+import java.util.Map;
 import org.cerberus.crud.entity.TestDataLib;
 import org.cerberus.util.answer.Answer;
 import org.cerberus.util.answer.AnswerItem;
@@ -88,7 +90,7 @@ public interface ITestDataLibDAO {
      * resultSet
      * @return
      */
-    AnswerList readByVariousByCriteria(String name, String system, String environment, String country, String type, int start, int amount, String colName, String dir, String searchTerm, String individualSearch);
+    AnswerList readByVariousByCriteria(String name, String system, String environment, String country, String type, int start, int amount, String colName, String dir, String searchTerm, Map<String, List<String>> individualSearch);
 
     /**
      *

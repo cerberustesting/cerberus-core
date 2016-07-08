@@ -21,7 +21,11 @@ package org.cerberus.servlet.crud.testdata;
 
 import com.google.gson.Gson;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -182,7 +186,15 @@ public class ReadTestDataLib extends HttpServlet {
         String columnName = columnToSort[columnToSortParameter];
         String sort = ParameterParserUtil.parseStringParam(request.getParameter("sSortDir_0"), "asc");
 
-        AnswerList resp = testDataLibService.readByVariousByCriteria(null, null, null, null, null, startPosition, length, columnName, sort, searchParameter, "");
+        Map<String, List<String>> individualSearch = new HashMap<String, List<String>>();
+        for (int a = 0; a < columnToSort.length; a++) {
+            if (!request.getParameter("sSearch_" + a).isEmpty()) {
+                List<String> search = new ArrayList(Arrays.asList(request.getParameter("sSearch_" + a).split(",")));
+                individualSearch.put(columnToSort[a], search);
+            }
+        }
+        
+        AnswerList resp = testDataLibService.readByVariousByCriteria(null, null, null, null, null, startPosition, length, columnName, sort, searchParameter, individualSearch);
 
         JSONArray jsonArray = new JSONArray();
         boolean userHasPermissions = request.isUserInRole("TestDataManager");
