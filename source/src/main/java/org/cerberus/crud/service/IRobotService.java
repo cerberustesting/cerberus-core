@@ -20,6 +20,7 @@
 package org.cerberus.crud.service;
 
 import java.util.List;
+import java.util.Map;
 import org.cerberus.crud.entity.Robot;
 import org.cerberus.exception.CerberusException;
 import org.cerberus.util.answer.Answer;
@@ -62,7 +63,7 @@ public interface IRobotService {
      * @param string
      * @return
      */
-    AnswerList<Robot> readByCriteria(int startPosition, int length, String columnName, String sort, String searchParameter, String string);
+    AnswerList<Robot> readByCriteria(int startPosition, int length, String columnName, String sort, String searchParameter, Map<String, List<String>> individualSearch);
 
     /**
      *

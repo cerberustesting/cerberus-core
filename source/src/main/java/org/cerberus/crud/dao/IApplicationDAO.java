@@ -19,6 +19,8 @@ package org.cerberus.crud.dao;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.List;
+import java.util.Map;
 
 import org.cerberus.crud.entity.Application;
 import org.cerberus.util.answer.Answer;
@@ -53,7 +55,7 @@ public interface IApplicationDAO {
      * @param string
      * @return
      */
-    AnswerList readBySystemByCriteria(String system, int startPosition, int length, String columnName, String sort, String searchParameter, String string);
+    AnswerList readBySystemByCriteria(String system, int startPosition, int length, String columnName, String sort, String searchParameter, Map<String, List<String>> individualSearch);
 
     /**
      *

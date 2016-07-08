@@ -20,6 +20,7 @@
 package org.cerberus.crud.service.impl;
 
 import java.util.List;
+import java.util.Map;
 
 import org.apache.log4j.Logger;
 import org.cerberus.crud.dao.IRobotDAO;
@@ -73,8 +74,8 @@ public class RobotService implements IRobotService {
 
     @Override
     public AnswerList<Robot> readByCriteria(int startPosition, int length, String columnName, String sort,
-            String searchParameter, String string) {
-        return fillCapabilities(robotDao.readByCriteria(startPosition, length, columnName, sort, searchParameter, string));
+            String searchParameter, Map<String, List<String>> individualSearch) {
+        return fillCapabilities(robotDao.readByCriteria(startPosition, length, columnName, sort, searchParameter, individualSearch));
     }
 
     @Override

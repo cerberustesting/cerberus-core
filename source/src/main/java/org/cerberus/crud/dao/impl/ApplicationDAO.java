@@ -24,6 +24,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.log4j.Logger;
 import org.cerberus.crud.dao.IApplicationDAO;
@@ -34,6 +35,7 @@ import org.cerberus.enums.MessageEventEnum;
 import org.cerberus.crud.factory.IFactoryApplication;
 import org.cerberus.crud.factory.impl.FactoryApplication;
 import org.cerberus.util.ParameterParserUtil;
+import org.cerberus.util.SqlUtil;
 import org.cerberus.util.StringUtil;
 import org.cerberus.util.answer.Answer;
 import org.cerberus.util.answer.AnswerItem;
@@ -124,12 +126,13 @@ public class ApplicationDAO implements IApplicationDAO {
     }
 
     @Override
-    public AnswerList readBySystemByCriteria(String system, int start, int amount, String column, String dir, String searchTerm, String individualSearch) {
+    public AnswerList readBySystemByCriteria(String system, int start, int amount, String column, String dir, String searchTerm, Map<String, List<String>> individualSearch) {
         AnswerList response = new AnswerList();
         MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
         msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", ""));
         List<Application> objectList = new ArrayList<Application>();
         StringBuilder searchSQL = new StringBuilder();
+        List<String> individalColumnSearchValues = new ArrayList<String>();
 
         StringBuilder query = new StringBuilder();
         //SQL_CALC_FOUND_ROWS allows to retrieve the total number of columns by disrearding the limit clauses that 
@@ -151,9 +154,16 @@ public class ApplicationDAO implements IApplicationDAO {
             searchSQL.append(" or `deploytype` like ?");
             searchSQL.append(" or `mavengroupid` like ?)");
         }
-        if (!StringUtil.isNullOrEmpty(individualSearch)) {
-            searchSQL.append(" and (`?`)");
+        if (!individualSearch.isEmpty()) {
+            searchSQL.append(" and ( 1=1 ");
+            for (Map.Entry<String, List<String>> entry : individualSearch.entrySet()) {
+                searchSQL.append(" and ");
+                searchSQL.append(SqlUtil.getInSQLClauseForPreparedStatement(entry.getKey(), entry.getValue()));
+                individalColumnSearchValues.addAll(entry.getValue());
+            }
+            searchSQL.append(" )");
         }
+        
         if (!StringUtil.isNullOrEmpty(system)) {
             searchSQL.append(" and (`System` = ? )");
         }
@@ -191,8 +201,8 @@ public class ApplicationDAO implements IApplicationDAO {
                     preStat.setString(i++, "%" + searchTerm + "%");
                     preStat.setString(i++, "%" + searchTerm + "%");
                 }
-                if (!StringUtil.isNullOrEmpty(individualSearch)) {
-                    preStat.setString(i++, individualSearch);
+                for (String individualColumnSearchValue : individalColumnSearchValues) {
+                    preStat.setString(i++, individualColumnSearchValue);
                 }
                 if (!StringUtil.isNullOrEmpty(system)) {
                     preStat.setString(i++, system);

@@ -20,6 +20,7 @@
 package org.cerberus.crud.service.impl;
 
 import java.util.List;
+import java.util.Map;
 import org.apache.log4j.Logger;
 
 import org.cerberus.crud.dao.IApplicationDAO;
@@ -65,13 +66,13 @@ public class ApplicationService implements IApplicationService {
     }
 
     @Override
-    public AnswerList readByCriteria(int startPosition, int length, String columnName, String sort, String searchParameter, String string) {
-        return ApplicationDAO.readBySystemByCriteria(null, startPosition, length, columnName, sort, searchParameter, string);
+    public AnswerList readByCriteria(int startPosition, int length, String columnName, String sort, String searchParameter, Map<String, List<String>> individualSearch) {
+        return ApplicationDAO.readBySystemByCriteria(null, startPosition, length, columnName, sort, searchParameter, individualSearch);
     }
 
     @Override
-    public AnswerList readBySystemByCriteria(String system, int startPosition, int length, String columnName, String sort, String searchParameter, String string) {
-        return ApplicationDAO.readBySystemByCriteria(system, startPosition, length, columnName, sort, searchParameter, string);
+    public AnswerList readBySystemByCriteria(String system, int startPosition, int length, String columnName, String sort, String searchParameter, Map<String, List<String>> individualSearch) {
+        return ApplicationDAO.readBySystemByCriteria(system, startPosition, length, columnName, sort, searchParameter, individualSearch);
     }
 
     @Override

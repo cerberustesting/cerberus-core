@@ -20,6 +20,7 @@
 package org.cerberus.crud.service;
 
 import java.util.List;
+import java.util.Map;
 
 import org.cerberus.crud.entity.Application;
 import org.cerberus.exception.CerberusException;
@@ -63,7 +64,7 @@ public interface IApplicationService {
      * @param string
      * @return
      */
-    AnswerList readByCriteria(int startPosition, int length, String columnName, String sort, String searchParameter, String string);
+    AnswerList readByCriteria(int startPosition, int length, String columnName, String sort, String searchParameter, Map<String, List<String>> individualSearch);
 
     /**
      *
@@ -76,7 +77,7 @@ public interface IApplicationService {
      * @param string
      * @return
      */
-    AnswerList readBySystemByCriteria(String system, int startPosition, int length, String columnName, String sort, String searchParameter, String string);
+    AnswerList readBySystemByCriteria(String system, int startPosition, int length, String columnName, String sort, String searchParameter, Map<String, List<String>> individualSearch);
 
     /**
      *

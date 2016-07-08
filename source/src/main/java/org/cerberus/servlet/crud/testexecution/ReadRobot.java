@@ -21,7 +21,11 @@ package org.cerberus.servlet.crud.testexecution;
 
 import com.google.gson.Gson;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.logging.Logger;
 
 import javax.servlet.ServletException;
@@ -204,7 +208,16 @@ public class ReadRobot extends HttpServlet {
         String columnToSort[] = sColumns.split(",");
         String columnName = columnToSort[columnToSortParameter];
         String sort = ParameterParserUtil.parseStringParam(request.getParameter("sSortDir_0"), "asc");
-        AnswerList resp = robotService.readByCriteria(startPosition, length, columnName, sort, searchParameter, "");
+        
+        Map<String, List<String>> individualSearch = new HashMap<>();
+        for (int a = 0; a < columnToSort.length; a++) {
+            if (!request.getParameter("sSearch_" + a).isEmpty()) {
+                List<String> search = new ArrayList(Arrays.asList(request.getParameter("sSearch_" + a).split(",")));
+                individualSearch.put(columnToSort[a], search);
+            }
+        }
+        
+        AnswerList resp = robotService.readByCriteria(startPosition, length, columnName, sort, searchParameter, individualSearch);
 
         JSONArray jsonArray = new JSONArray();
         if (resp.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {//the service was able to perform the query, then we should get all values

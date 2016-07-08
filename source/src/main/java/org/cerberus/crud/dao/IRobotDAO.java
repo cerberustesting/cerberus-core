@@ -19,6 +19,8 @@ package org.cerberus.crud.dao;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.List;
+import java.util.Map;
 
 import org.cerberus.crud.entity.Robot;
 import org.cerberus.util.answer.Answer;
@@ -51,10 +53,10 @@ public interface IRobotDAO {
      * @param columnName
      * @param sort
      * @param searchParameter
-     * @param string
+     * @param individualSearch
      * @return
      */
-    AnswerList<Robot> readByCriteria(int startPosition, int length, String columnName, String sort, String searchParameter, String string);
+    AnswerList<Robot> readByCriteria(int startPosition, int length, String columnName, String sort, String searchParameter, Map<String, List<String>> individualSearch);
 
     /**
      *

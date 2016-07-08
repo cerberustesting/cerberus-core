@@ -26,6 +26,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import org.apache.log4j.Logger;
 import org.cerberus.crud.dao.IRobotDAO;
 import org.cerberus.database.DatabaseSpring;
@@ -35,6 +36,7 @@ import org.cerberus.enums.MessageEventEnum;
 import org.cerberus.crud.factory.IFactoryRobot;
 import org.cerberus.crud.factory.impl.FactoryRobot;
 import org.cerberus.util.ParameterParserUtil;
+import org.cerberus.util.SqlUtil;
 import org.cerberus.util.StringUtil;
 import org.cerberus.util.answer.Answer;
 import org.cerberus.util.answer.AnswerItem;
@@ -182,12 +184,13 @@ public class RobotDAO implements IRobotDAO {
     }
 
     @Override
-    public AnswerList<Robot> readByCriteria(int start, int amount, String column, String dir, String searchTerm, String individualSearch) {
+    public AnswerList<Robot> readByCriteria(int start, int amount, String column, String dir, String searchTerm, Map<String, List<String>> individualSearch) {
         AnswerList<Robot> response = new AnswerList<>();
         MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
         msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", ""));
         List<Robot> robotList = new ArrayList<Robot>();
         StringBuilder searchSQL = new StringBuilder();
+        List<String> individalColumnSearchValues = new ArrayList<String>();
 
         StringBuilder query = new StringBuilder();
         //SQL_CALC_FOUND_ROWS allows to retrieve the total number of columns by disrearding the limit clauses that 
@@ -206,8 +209,14 @@ public class RobotDAO implements IRobotDAO {
             searchSQL.append(" or `useragent` like ?");
             searchSQL.append(" or `version` like ?)");
         }
-        if (!StringUtil.isNullOrEmpty(individualSearch)) {
-            searchSQL.append(" and ( ? )");
+        if (!individualSearch.isEmpty()) {
+            searchSQL.append(" and ( 1=1 ");
+            for (Map.Entry<String, List<String>> entry : individualSearch.entrySet()) {
+                searchSQL.append(" and ");
+                searchSQL.append(SqlUtil.getInSQLClauseForPreparedStatement(entry.getKey(), entry.getValue()));
+                individalColumnSearchValues.addAll(entry.getValue());
+            }
+            searchSQL.append(" )");
         }
         query.append(searchSQL);
 
@@ -240,8 +249,8 @@ public class RobotDAO implements IRobotDAO {
                     preStat.setString(i++, "%" + searchTerm + "%");
                     preStat.setString(i++, "%" + searchTerm + "%");
                 }
-                if (!StringUtil.isNullOrEmpty(individualSearch)) {
-                    preStat.setString(i++, individualSearch);
+                for (String individualColumnSearchValue : individalColumnSearchValues) {
+                    preStat.setString(i++, individualColumnSearchValue);
                 }
                 ResultSet resultSet = preStat.executeQuery();
                 try {
