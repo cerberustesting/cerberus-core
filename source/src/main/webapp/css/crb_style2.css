@@ -6,7 +6,7 @@
 * - Button
 * - Various Execution status code.
 * - Documentation >> crb_style_doc.css
-*
+* - x-editor customisation
 */
 body {
     font-size: 70%;
@@ -744,4 +744,21 @@ table.wrapAll th {
     white-space: pre-line;
     word-wrap: break-word; /*CSS3*/
     word-break: break-all;
+}
+
+
+/**
+* x-editor customization
+*/
+.columnFiltered{
+    color : #DD1144;
+    font-size : 85%;
+    padding-left: 0;
+}
+
+/**
+* Datatable th
+*/
+table.dataTable thead th {
+    border-color: #E6E6E6;
 }
