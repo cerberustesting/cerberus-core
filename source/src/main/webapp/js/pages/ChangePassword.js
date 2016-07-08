@@ -34,7 +34,7 @@ $(document).ready(function () {
         $("#resetPasswordToken").val(token);
     }
     });
-    event.preventDefault(); //STOP default action
+    //event.preventDefault(); //STOP default action
     
     
     $("#changePassword").click(changePasswordClickHandler);
@@ -49,6 +49,7 @@ $(document).ready(function () {
         });
         $.when(jqxhr).then(function (data) {
             if (data.messageType === "OK") {
+                sessionStorage.clear();
                 $(location).attr("href", "Homepage.jsp");
             }
         });
