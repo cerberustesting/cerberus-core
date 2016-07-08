@@ -20,6 +20,7 @@
 package org.cerberus.crud.service;
 
 import java.util.List;
+import java.util.Map;
 import org.cerberus.crud.entity.Test;
 import org.cerberus.exception.CerberusException;
 import org.cerberus.util.answer.Answer;
@@ -73,7 +74,7 @@ public interface ITestService {
 
     public AnswerList readDistinctBySystem(String system);
     
-    public AnswerList readByCriteria(int start, int amount, String colName, String dir, String searchTerm, String individualSearch);
+    public AnswerList readByCriteria(int start, int amount, String colName, String dir, String searchTerm, Map<String, List<String>> individualSearch);
 
     public Answer create(Test test);
 

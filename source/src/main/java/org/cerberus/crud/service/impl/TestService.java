@@ -21,6 +21,7 @@ package org.cerberus.crud.service.impl;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import org.cerberus.crud.dao.ITestDAO;
 import org.cerberus.crud.entity.MessageGeneral;
 import org.cerberus.crud.entity.Test;
@@ -96,7 +97,7 @@ public class TestService implements ITestService {
     }
     
     @Override
-    public AnswerList readByCriteria(int start, int amount, String colName, String dir, String searchTerm, String individualSearch) {
+    public AnswerList readByCriteria(int start, int amount, String colName, String dir, String searchTerm, Map<String, List<String>> individualSearch) {
         return testDao.readByCriteria(start, amount, colName, dir, searchTerm, individualSearch);
     }
 
