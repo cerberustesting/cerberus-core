@@ -24,6 +24,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import org.cerberus.crud.dao.ITestCaseDAO;
 import org.cerberus.crud.entity.TCase;
@@ -304,7 +305,7 @@ public class TestCaseService implements ITestCaseService {
     }
 
     @Override
-    public AnswerList readByTestByCriteria(String system, String test, int start, int amount, String column, String dir, String searchTerm, String individualSearch) {
+    public AnswerList readByTestByCriteria(String system, String test, int start, int amount, String column, String dir, String searchTerm, Map<String, List<String>> individualSearch) {
         return testCaseDao.readByTestByCriteria(system, test, start, amount, column, dir, searchTerm, individualSearch);
     }
 

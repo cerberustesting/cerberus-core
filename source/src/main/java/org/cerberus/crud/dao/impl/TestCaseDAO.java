@@ -25,6 +25,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.cerberus.crud.dao.ITestCaseDAO;
@@ -39,6 +40,7 @@ import org.cerberus.crud.factory.IFactoryTCase;
 import org.cerberus.log.MyLogger;
 import org.cerberus.enums.MessageEventEnum;
 import org.cerberus.util.ParameterParserUtil;
+import org.cerberus.util.SqlUtil;
 import org.cerberus.util.StringUtil;
 import org.cerberus.util.answer.Answer;
 import org.cerberus.util.answer.AnswerItem;
@@ -129,12 +131,13 @@ public class TestCaseDAO implements ITestCaseDAO {
     }
 
     @Override
-    public AnswerList readByTestByCriteria(String system, String test, int start, int amount, String column, String dir, String searchTerm, String individualSearch) {
+    public AnswerList readByTestByCriteria(String system, String test, int start, int amount, String column, String dir, String searchTerm, Map<String, List<String>> individualSearch) {
         AnswerList answer = new AnswerList();
         MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
         msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", ""));
         List<TCase> testCaseList = new ArrayList<TCase>();
         StringBuilder searchSQL = new StringBuilder();
+        List<String> individalColumnSearchValues = new ArrayList<String>();
 
         StringBuilder query = new StringBuilder();
 
@@ -169,13 +172,19 @@ public class TestCaseDAO implements ITestCaseDAO {
             searchSQL.append(" or tc.`tcdatecrea` like ?");
             searchSQL.append(" or tc.`description` like ?)");
         }
-        if (!StringUtil.isNullOrEmpty(individualSearch)) {
-            searchSQL.append(" and ( "+ individualSearch +" )");
+        if (!individualSearch.isEmpty()) {
+            searchSQL.append(" and ( 1=1 ");
+            for (Map.Entry<String, List<String>> entry : individualSearch.entrySet()) {
+                searchSQL.append(" and ");
+                searchSQL.append(SqlUtil.getInSQLClauseForPreparedStatement(entry.getKey(), entry.getValue()));
+                individalColumnSearchValues.addAll(entry.getValue());
+            }
+            searchSQL.append(" )");
         }
         query.append(searchSQL);
 
         if (!StringUtil.isNullOrEmpty(column)) {
-            query.append(" order by tc.`").append(column).append("` ").append(dir);
+            query.append(" order by ").append(column).append(" ").append(dir);
         }
 
         if (amount != 0) {
@@ -214,8 +223,8 @@ public class TestCaseDAO implements ITestCaseDAO {
                     preStat.setString(i++, "%" + searchTerm + "%");
                     preStat.setString(i++, "%" + searchTerm + "%");
                 }
-                if (!StringUtil.isNullOrEmpty(individualSearch)) {
-                    //preStat.setString(i++, individualSearch);
+                for (String individualColumnSearchValue : individalColumnSearchValues) {
+                    preStat.setString(i++, individualColumnSearchValue);
                 }
 
                 ResultSet resultSet = preStat.executeQuery();
@@ -931,7 +940,7 @@ public class TestCaseDAO implements ITestCaseDAO {
         String runPROD = resultSet.getString("activePROD");
         String function = resultSet.getString("function");
         String dateCrea = resultSet.getString("tcdatecrea");
-        
+
         return factoryTestCase.create(test, testCase, origin, refOrigin, creator, implementer,
                 lastModifier, project, ticket, function, tcapplication, runQA, runUAT, runPROD, priority, group,
                 status, description, behavior, howTo, tcactive, fromSprint, fromRevision, toSprint,
@@ -1354,7 +1363,7 @@ public class TestCaseDAO implements ITestCaseDAO {
                 try {
                     if (resultSet.next()) {
                         max = resultSet.getString("MAXTC");
-                        }
+                    }
                 } catch (SQLException exception) {
                     MyLogger.log(TestCaseDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
                 } finally {

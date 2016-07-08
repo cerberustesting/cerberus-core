@@ -20,6 +20,7 @@
 package org.cerberus.crud.service;
 
 import java.util.List;
+import java.util.Map;
 import org.cerberus.crud.entity.TCase;
 import org.cerberus.crud.entity.TestCase;
 import org.cerberus.exception.CerberusException;
@@ -166,7 +167,7 @@ public interface ITestCaseService {
      * @param individualSearch
      * @return
      */
-    public AnswerList readByTestByCriteria(String system, String test, int start, int amount, String column, String dir, String searchTerm, String individualSearch);
+    public AnswerList readByTestByCriteria(String system, String test, int start, int amount, String column, String dir, String searchTerm, Map<String, List<String>> individualSearch);
 
     public AnswerItem readByKey(String test, String testCase);
 

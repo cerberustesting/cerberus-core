@@ -55,6 +55,32 @@ public class SqlUtil {
         String res = result.toString().substring(0, (result.length() - 1));
         return res + ")";
     }
+    
+    /**
+     *
+     * @param obj List of generic object that have a toString Method
+     * implementation
+     * @return a String that has all obj.toString values separated by , and
+     * surounded by '
+     */
+    public static String getInSQLClauseForPreparedStatement(String parameter, List<?> obj) {
+        if (obj == null) {
+            return "";
+        }
+        if (obj.isEmpty()) {
+            return "";
+        }
+        StringBuilder result = new StringBuilder();
+        result.append(" ");
+        result.append(parameter);
+        result.append(" in (");
+        for (Object myObj : obj) {
+            result.append("?");
+            result.append(",");
+        }
+        String res = result.toString().substring(0, (result.length() - 1));
+        return res + ")";
+    }
 
     public static String createWhereInClause(String field, List<String> values, boolean isString) {
 

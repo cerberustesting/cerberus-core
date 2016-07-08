@@ -6150,6 +6150,16 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLS.append("INSERT INTO `invariant` (`idname`, `value`, `sort`, `description`, `VeryShortDesc`) VALUES ('PROPERTYTYPE', 'getFromGroovy', '80', 'Getting value from a Groovy script', '');");
         SQLInstruction.add(SQLS.toString());
         
+        // Add filter information for tooltip in documentation table.
+        //-- ------------------------ 842
+        SQLS = new StringBuilder();
+        SQLS.append("INSERT INTO `documentation` (`DocTable`, `DocField`, `Lang`, `DocLabel`) VALUES " );
+        SQLS.append("('page_global', 'tooltip_column_filter_empty', 'en', 'Filter'), " );
+        SQLS.append("('page_global', 'tooltip_column_filter_empty', 'fr', 'Filtre'), " );
+        SQLS.append("('page_global', 'tooltip_column_filter_filtered', 'en', 'Filtered value(s)'), " );
+        SQLS.append("('page_global', 'tooltip_column_filter_filtered', 'fr', 'Valeur(s) filtrée(s)');" );
+        SQLInstruction.add(SQLS.toString());
+        
         return SQLInstruction;
     }
 

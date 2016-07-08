@@ -1201,7 +1201,7 @@ function displayColumnSearch(tableId) {
 
                 //Build the string to display (default picture if no data)
                 //Build the tooltip
-                var doc = getDoc();
+                var doc = new Doc();
                 var emptyFilter = doc.getDocLabel("page_global", "tooltip_column_filter_empty");
                 var selectedFilter = doc.getDocLabel("page_global", "tooltip_column_filter_filtered");
                 var display = '<span class="fa fa-tag fa-fw" data-toggle="tooltip" data-html="true" title="' + emptyFilter + '"></span>';

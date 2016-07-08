@@ -27,6 +27,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -225,12 +226,11 @@ public class ReadTestCase extends HttpServlet {
         String sColumns = ParameterParserUtil.parseStringParam(request.getParameter("sColumns"), "test,testcase,application,project,ticket,description,behaviororvalueexpected,readonly,bugtrackernewurl,deploytype,mavengroupid");
         String columnToSort[] = sColumns.split(",");
 
-        String individualSearch = " 1=1 ";
+        Map<String, List<String>> individualSearch = new HashMap<String, List<String>>();
         for (int a = 0; a < columnToSort.length; a++) {
             if (!request.getParameter("sSearch_" + a).isEmpty()) {
                 List<String> search = new ArrayList(Arrays.asList(request.getParameter("sSearch_" + a).split(",")));
-                String sqlInClause = SqlUtil.getInSQLClause(search);
-                individualSearch += " AND tc." + columnToSort[a] + " " + sqlInClause;
+                individualSearch.put(columnToSort[a], search);
             }
         }
 

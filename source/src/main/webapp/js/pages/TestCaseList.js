@@ -741,49 +741,49 @@ function aoColumnsFunc(countries) {
         },
         {
             "data": "test",
-            "sName": "test",
+            "sName": "tc.test",
             "title": doc.getDocOnline("test", "Test"),
             "sWidth": "120px",
             "sDefaultContent": ""
         },
         {
             "data": "testCase",
-            "sName": "testCase",
+            "sName": "tc.testCase",
             "title": doc.getDocOnline("testcase", "TestCase"),
             "sWidth": "70px",
             "sDefaultContent": ""
         },
         {
             "data": "application",
-            "sName": "application",
+            "sName": "tc.application",
             "title": doc.getDocOnline("application", "Application"),
             "sWidth": "100px",
             "sDefaultContent": ""
         },
         {
             "data": "project",
-            "sName": "project",
+            "sName": "tc.project",
             "title": doc.getDocOnline("project", "idproject"),
             "sWidth": "100px",
             "sDefaultContent": ""
         },
         {
             "data": "creator",
-            "sName": "creator",
+            "sName": "tc.creator",
             "title": doc.getDocOnline("testcase", "Creator"),
             "sWidth": "100px",
             "sDefaultContent": ""
         },
         {
             "data": "lastModifier",
-            "sName": "lastmodifier",
+            "sName": "tc.lastmodifier",
             "title": doc.getDocOnline("testcase", "LastModifier"),
             "sWidth": "100px",
             "sDefaultContent": ""
         },
         {
             "data": "active",
-            "sName": "active",
+            "sName": "tc.tcactive",
             "title": doc.getDocOnline("testcase", "TcActive"),
             "sDefaultContent": "",
             "sWidth": "70px",
@@ -806,49 +806,49 @@ function aoColumnsFunc(countries) {
         },
         {
             "data": "status",
-            "sName": "status",
+            "sName": "tc.status",
             "title": doc.getDocOnline("testcase", "Status"),
             "sWidth": "100px",
             "sDefaultContent": ""
         },
         {
             "data": "priority",
-            "sName": "priority",
+            "sName": "tc.priority",
             "title": doc.getDocOnline("invariant", "PRIORITY"),
             "sWidth": "70px",
             "sDefaultContent": ""
         },
         {
             "data": "origin",
-            "sName": "origine",
+            "sName": "tc.origine",
             "title": doc.getDocOnline("testcase", "Origine"),
             "sWidth": "70px",
             "sDefaultContent": ""
         },
         {
             "data": "refOrigin",
-            "sName": "refOrigine",
+            "sName": "tc.refOrigine",
             "title": doc.getDocOnline("testcase", "RefOrigine"),
             "sWidth": "80px",
             "sDefaultContent": ""
         },
         {
             "data": "group",
-            "sName": "group",
+            "sName": "tc.group",
             "title": doc.getDocOnline("invariant", "GROUP"),
             "sWidth": "100px",
             "sDefaultContent": ""
         },
         {
             "data": "shortDescription",
-            "sName": "description",
+            "sName": "tc.description",
             "title": doc.getDocOnline("testcase", "Description"),
             "sWidth": "300px",
             "sDefaultContent": ""
         },
         {
             "data": "tcDateCrea",
-            "sName": "tcDateCrea",
+            "sName": "tc.tcDateCrea",
             "title": doc.getDocOnline("testcase", "TCDateCrea"),
             "sWidth": "150px",
             "sDefaultContent": ""
