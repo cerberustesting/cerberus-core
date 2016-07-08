@@ -6144,6 +6144,12 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLS.append("ADD COLUMN `UserPreferences` TEXT NOT NULL AFTER `Email`;");
         SQLInstruction.add(SQLS.toString());
         
+        // Add the getFromGroovy property type
+        //-- ------------------------ 841
+        SQLS = new StringBuilder();
+        SQLS.append("INSERT INTO `invariant` (`idname`, `value`, `sort`, `description`, `VeryShortDesc`) VALUES ('PROPERTYTYPE', 'getFromGroovy', '80', 'Getting value from a Groovy script', '');");
+        SQLInstruction.add(SQLS.toString());
+        
         return SQLInstruction;
     }
 

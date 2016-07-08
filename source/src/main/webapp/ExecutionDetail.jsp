@@ -505,27 +505,27 @@
 //                                  %>
                                     <tr class="tableContent">
                                         <td style="width:1%">&nbsp;&nbsp;&nbsp;&nbsp;</td>
-                                        <td style="width:1%" class="<%=myActionData.getReturnCode()%>"><span class="<%=myActionData.getReturnCode()%>F" id="ACTSTS-<%=myStep + "-" + myActionData.getSequence()%>"><%=myActionData.getReturnCode()%></span></td>
-                                        <td style="width:4%"><%=DateUtil.getFormatedDate(myActionData.getStartLong())%></td>
-                                        <td style="width:5%"><%=DateUtil.getFormatedElapsed(myActionData.getStartLong(), myActionData.getEndLong())%></td>
-                                        <td style="width:5%"><%=myActionData.getSort()%></td>
-                                        <td style="width:20%" title="<%=myActionData.getDescription()%>"><%=myActionData.getDescription()%></td>
-                                        <td style="width:20%" title="<%=myActionData.getDescription()%>"><b><%=myActionData.getAction()%></b></td>
-                                        <td style="width:20%"><code><pre><%=StringUtil.textToHtmlConvertingURLsToLinks(myActionData.getObject())%></pre></code></td>
-                                        <td style="width:20%"><code><pre><%=StringUtil.textToHtmlConvertingURLsToLinks(myActionData.getProperty())%></pre></code></td>
-                                        <td style="width:2%"><%if (myActionData.getScreenshotFilename() != null) {%>
+                                        <td title="Action Return Code" style="width:1%" class="<%=myActionData.getReturnCode()%>"><span class="<%=myActionData.getReturnCode()%>F" id="ACTSTS-<%=myStep + "-" + myActionData.getSequence()%>"><%=myActionData.getReturnCode()%></span></td>
+                                        <td title="Action Start Time" style="width:4%"><%=DateUtil.getFormatedDate(myActionData.getStartLong())%></td>
+                                        <td title="Action Elapsed Time" style="width:5%"><%=DateUtil.getFormatedElapsed(myActionData.getStartLong(), myActionData.getEndLong())%></td>
+                                        <td title="Action Sort" style="width:5%"><%=myActionData.getSort()%></td>
+                                        <td title="Action Description" style="width:20%"><%=myActionData.getDescription()%></td>
+                                        <td title="Action" style="width:20%"><b><%=myActionData.getAction()%></b></td>
+                                        <td title="Action Object" style="width:20%"><code><pre><%=StringUtil.textToHtmlConvertingURLsToLinks(myActionData.getObject())%></pre></code></td>
+                                        <td title="Action Property" style="width:20%"><code><pre><%=StringUtil.textToHtmlConvertingURLsToLinks(myActionData.getProperty())%></pre></code></td>
+                                        <td title="Action Screenshot" style="width:2%"><%if (myActionData.getScreenshotFilename() != null) {%>
                                             <a href="<%=PictureURL%><%=myActionData.getScreenshotFilename().replaceAll("\\\\", "/")%>" id="ACTIMG-<%=myStep + "-" + myActionData.getSequence()%>" class="zoombox  zgallery1">img</a>
                                             <%}%>
                                         </td>
-                                        <td style="width:2%"><%if (myActionData.getPageSourceFilename() != null) {%>
+                                        <td title="Action Source File" style="width:2%"><%if (myActionData.getPageSourceFilename() != null) {%>
                                             <a href="<%=PictureURL%><%=myActionData.getPageSourceFilename().replaceAll("\\\\", "/")%>" id="ACTPS-<%=myStep + "-" + myActionData.getSequence()%>">src</a>
                                             <%}%>
                                         </td>
                                     </tr>
                                     <tr class="tableContent">
                                         <td style="width:1%">&nbsp;&nbsp;&nbsp;&nbsp;</td>
-                                        <td style="width:1%" class="<%=myActionData.getReturnCode()%>">>></td>
-                                        <td colspan="9" class="<%=myActionData.getReturnCode()%>F">
+                                        <td title="Action Return Code" style="width:1%" class="<%=myActionData.getReturnCode()%>">>></td>
+                                        <td title="Action Return Message" colspan="9" class="<%=myActionData.getReturnCode()%>F">
                                             <%
                                                 //TODO:FN to refactor while converting the page -- this should be in a servlet or javascript file
                                                 String returnMessage = myActionData.getReturnMessage();
@@ -575,20 +575,20 @@
                                                 <tr class="tableContent">
                                                     <td style="width:20px">&nbsp;&nbsp;&nbsp;&nbsp;</td>
                                                     <td style="width:20px">&nbsp;&nbsp;&nbsp;&nbsp;</td>
-                                                    <td class="<%=myControlData.getReturnCode()%>"><span class="<%=myControlData.getReturnCode()%>F" id="CTLSTS-<%=myAction + "-" + myControlData.getControl()%>"><%=myControlData.getReturnCode()%></span></td>
-                                                    <td><%=DateUtil.getFormatedDate(myControlData.getStartLong())%></td>
-                                                    <td><%=DateUtil.getFormatedElapsed(myControlData.getStartLong(), myControlData.getEndLong())%></td>
-                                                    <td data-id="<%=myAction + "-" + myControlData.getControl()%>" class="control <%=myControlData.getControl()%>"><%=myControlData.getSort()%></td>
-                                                    <td title="<%=myControlData.getDescription()%>"><%=myControlData.getDescription()%></td>
-                                                    <td title="<%=myControlData.getDescription()%>"><b><%=myControlData.getControlType()%></b></td>
-                                                    <td id="CTLPRP-<%=myAction + "-" + myControlData.getControl()%>"><%=StringUtil.textToHtmlConvertingURLsToLinks(myControlData.getControlProperty())%></td>
-                                                    <td><code><pre id="CTLVAL-<%=myAction + "-" + myControlData.getControl()%>"><%=StringUtil.textToHtmlConvertingURLsToLinks(myControlData.getControlValue())%></pre></code></td>
-                                                    <td><%=myControlData.getFatal()%></td>
-                                                    <td><%if (myControlData.getScreenshotFilename() != null) {%>
+                                                    <td title="Control Return Code" class="<%=myControlData.getReturnCode()%>"><span class="<%=myControlData.getReturnCode()%>F" id="CTLSTS-<%=myAction + "-" + myControlData.getControl()%>"><%=myControlData.getReturnCode()%></span></td>
+                                                    <td title="Control Start Time"><%=DateUtil.getFormatedDate(myControlData.getStartLong())%></td>
+                                                    <td title="Control Elapsed Time"><%=DateUtil.getFormatedElapsed(myControlData.getStartLong(), myControlData.getEndLong())%></td>
+                                                    <td title="Control Sort" data-id="<%=myAction + "-" + myControlData.getControl()%>" class="control <%=myControlData.getControl()%>"><%=myControlData.getSort()%></td>
+                                                    <td title="Control Description"><%=myControlData.getDescription()%></td>
+                                                    <td title="Control Function"><b><%=myControlData.getControlType()%></b></td>
+                                                    <td title="Control Property" id="CTLPRP-<%=myAction + "-" + myControlData.getControl()%>"><%=StringUtil.textToHtmlConvertingURLsToLinks(myControlData.getControlProperty())%></td>
+                                                    <td title="Control Value"><code><pre id="CTLVAL-<%=myAction + "-" + myControlData.getControl()%>"><%=StringUtil.textToHtmlConvertingURLsToLinks(myControlData.getControlValue())%></pre></code></td>
+                                                    <td title="Fatal"><%=myControlData.getFatal()%></td>
+                                                    <td title="Control Screenshot"><%if (myControlData.getScreenshotFilename() != null) {%>
                                                         <a href="<%=PictureURL%><%=myControlData.getScreenshotFilename().replaceAll("\\\\", "/")%>" class="zoombox  zgallery1">img</a>
                                                         <%}%>
                                                     </td>
-                                                    <td style="width:10px"><%if (myControlData.getPageSourceFilename() != null) {%>
+                                                    <td title="Control Source File" style="width:10px"><%if (myControlData.getPageSourceFilename() != null) {%>
                                                         <a href="<%=PictureURL%><%=myControlData.getPageSourceFilename().replaceAll("\\\\", "/")%>" id="ACTPS-<%=myStep + "-" + myControlData.getSequence()%>">src</a>
                                                         <%}%>
                                                     </td>
@@ -596,8 +596,8 @@
                                                 <tr class="tableContent">
                                         <td style="width:10px">&nbsp;&nbsp;&nbsp;&nbsp;</td>
                                         <td>&nbsp;&nbsp;&nbsp;&nbsp;</td>
-                                        <td style="width:20px" class="<%=myControlData.getReturnCode()%>">>></td>
-                                        <td colspan="10" class="<%=myControlData.getReturnCode()%>F">
+                                        <td title="Control Return Code" style="width:20px" class="<%=myControlData.getReturnCode()%>">>></td>
+                                        <td title="Control Return Message" colspan="10" class="<%=myControlData.getReturnCode()%>F">
                                             <code><pre><i><span id="CTLMES-<%=myAction + "-" + myControlData.getControl()%>"><%=StringUtil.replaceUrlByLinkInString(myControlData.getReturnMessage())%>
                                                 </span></i></pre></code></td>
                                     </tr>
@@ -628,7 +628,7 @@
                         <tr>
                             <td title="Status" class="<%=myData.getRC()%>"><span class="<%=myData.getRC()%>F" id="PROPSTS-<%=myData.getProperty()%>"><%=myData.getRC()%></span></td>
                             <td title="Start Time"><%=DateUtil.getFormatedDate(myData.getStartLong())%></td>
-                            <td title="Elapse Time"><%=DateUtil.getFormatedElapsed(myData.getStartLong(), myData.getEndLong())%></td>
+                            <td title="Elapsed Time"><%=DateUtil.getFormatedElapsed(myData.getStartLong(), myData.getEndLong())%></td>
                             <td title="Property name"><b><span id="PROP-<%=myData.getProperty()%>"><%=myData.getProperty()%></span></b></td>
                             <td title="Value"><code><b><i><span id="PROPVAL-<%=myData.getProperty()%>"><%=StringUtil.textToHtmlConvertingURLsToLinks(myData.getValue())%></span></i></b></code></td>
                             <td title="Type" style="font-size: x-small"><%=myData.getType()%></td>
