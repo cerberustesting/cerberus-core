@@ -28,8 +28,10 @@ ASADMIN="asadmin --user ${GLASSFISH_ADMIN_USER} --passwordfile /tmp/glassfish_ad
 # Initialization marker file
 INIT_MARKER_FILE=${GLASSFISH_HOME}/.cerberus
 
-# Original Glassfish directory installation
+# Keep trace of the original Glassfish home directory
+# and update $PATH to take into account the current one
 ORIGINAL_GLASSFISH_HOME=/usr/local/glassfish4
+export PATH=${GLASSFISH_HOME}/bin:$PATH
 
 # Deploy the installed Cerberus instance
 function deploy() {
@@ -44,11 +46,16 @@ function deploy() {
 function setup() {
     echo "* Starting Cerberus Glassfish setup..."
 
-    # Copy the Glassfish installation directory to our GLASSFISH_HOME if different from the original one
-    if [ "${ORIGINAL_GLASSFISH_HOME}" != "${GLASSFISH_HOME}" ]; then
+    # Create the Glassfish home directory if necessary
+    if [ ! -d ${GLASSFISH_HOME} ]; then
         mkdir -p ${GLASSFISH_HOME}
-        cp -R ${ORIGINAL_GLASSFISH_HOME} ${GLASSFISH_HOME}
+        chmod u+rwx ${GLASSFISH_HOME}
     fi
+
+    # Copy content from the original to the current Glassfish home directory
+    for content in `ls -A ${ORIGINAL_GLASSFISH_HOME}`; do
+      mv ${ORIGINAL_GLASSFISH_HOME}/${content} ${GLASSFISH_HOME}
+    done
 
     # Set the admin password
     local ASADMIN_DEFAULT=asadmin

@@ -34,6 +34,7 @@ ENV CERBERUS_VERSION 1.1.5
 ENV CERBERUS_PACKAGE_NAME ${CERBERUS_NAME}-${CERBERUS_VERSION}
 ENV GLASSFISH_ADMIN_USER admin
 ENV GLASSFISH_DOMAIN domain1
+ENV GLASSFISH_HOME /opt/glassfish
 
 # Get and extract the Cerberus package
 # Use RUN instead of ADD to avoid re-download (see https://github.com/docker/docker/issues/15717)

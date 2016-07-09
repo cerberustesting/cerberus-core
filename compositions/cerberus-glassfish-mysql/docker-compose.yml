@@ -50,7 +50,6 @@ services:
   cerberus-as-glassfish:
     image: cerberustesting/cerberus-as-glassfish:latest
     environment:
-      - GLASSFISH_HOME=/opt/glassfish
       - DATABASE_HOST=cerberus-db-mysql
       - DATABASE_PORT=3306
     ports:

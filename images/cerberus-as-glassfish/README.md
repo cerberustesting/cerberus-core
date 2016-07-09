@@ -72,25 +72,20 @@ With this example, you could access to the Glassfish administration console by r
 
 ## Volumes
 
-From the [1.1.3.1](https://github.com/cerberustesting/cerberus-docker/blob/master/images/cerberus-as-glassfish/1.1.3.1/Dockerfile) version, the new `/opt/cerberus-screenshots` directory has been created to store Cerberus execution screenshots.
+From the [1.1.3.1](https://github.com/cerberustesting/cerberus-docker/blob/master/images/cerberus-as-glassfish/1.1.3.1/Dockerfile) version, the new `/opt/cerberus-screenshots` directory is created to store Cerberus execution screenshots.
 Don't forget to map it to an existing folder out of your Docker host in order to make them persistent. Example:
 
     docker run [...] -v /your/cerberus/screenshots/directory:/opt/cerberus-screenshots cerberus/cerberus-as-glassfish:latest
 
-Where `/your/cerberus/screenshots/directory` in your directory to store Cerberus execution screenshots out of the Docker host.
+Where `/your/cerberus/screenshots/directory` is the directory to store the Cerberus execution screenshots out of your Docker host.
 
-## Existing Glassfish instance
+From the [1.1.5](https://github.com/cerberustesting/cerberus-docker/blob/master/images/cerberus-as-glassfish/1.1.5/Dockerfile) version, the new `/opt/glassfish` directory is created to store the Glassfish home directory and let you map it to an existing folder out of your Docker host. Example:
 
-From the [1.1.5](https://github.com/cerberustesting/cerberus-docker/blob/master/images/cerberus-as-glassfish/1.1.5/Dockerfile) version, you can use a different Glassfish installation directory than the original one provided by the [Glassfish image](https://hub.docker.com/_/glassfish/).
-In order to do that, you need to:
+    docker run [...] -v /your/glassfish/home/directory:/opt/glassfish cerberus/cerberus-as-glassfish:latest
 
-1. Redefine the `GLASSFISH_HOME` environment variable to a different directory than the original one (typically different than `/usr/local/glassfish4`)
-2. Map this new directory to your existing Glassfish installation directory.
-3. And finally, create the empty `.cerberus` file into your existing Glassfish installation directory, **to by-pass the installation process**.
+Where `/your/glassfish/home/directory` is the directory to store the Glassfish home directory out of your Docker host.
 
-For instance:
-
-    docker run -d -P -e GLASSFISH_HOME=/opt/glassfish -v /my/glassfish/instance:/opt/glassfish cerberus/cerberus-as-glassfish:latest
+Note: The setup process put the `.cerberus` file to the `${GLASSFISH_HOME}` root directory. This marker file is used to know if setup has already be done and then to not setup Glassfish twice. In case of using an existing Cerberus configured Glassfish instance, beware to put this file to your Glassfish home directory in order to by-pass the setup process.
 
 ## License
 

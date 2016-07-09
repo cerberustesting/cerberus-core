@@ -23,11 +23,11 @@ The `cerberus-glassfish-mysql` Docker composition runs Cerberus under the [Glass
  4. Waiting for images startup
 
  5. Open your favorite browser and go to `<docker_host>:18080/Cerberus`, where `<docker_host>` is your Docker host
- 
+
  6. If this is your first time with Cerberus, the gui will ask for database initialization. Please read the message on the page and click on the button `Initialize Database`, wait for all queries to execute, then scroll down and click on `Apply Next SQL`.
- 
+
  7. Go to `<docker_host>:18080/Cerberus` again, it should ask for user credentials. Two default users are created:
- 
+
    * User `admin`, password `admin`
    * User `cerberus`, password `cerberus`
 
@@ -57,6 +57,7 @@ Hereafter list of mapped volumes:
 Service                 | Data volume (Source)        | Host volume (Destination, default values)   | Description
 ------------------------|-----------------------------|---------------------------------------------| ---------------------
 `cerberus-db-mysql`     | `/var/lib/mysql`            | `./localdata/mysql-db`                      | The MySQL local database directory
+`cerberus-as-glassfish` | `/opt/glassfish`            | `./localdata/glassfish`                     | The Glassfish home directory
 `cerberus-as-glassfish` | `/opt/cerberus-screenshots` | `./localdata/screenshots`                   | The Cerberus execution screenshots directory
 
 Don't forget to change host volume default values to fit to your need.
