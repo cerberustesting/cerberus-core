@@ -21,6 +21,7 @@ package org.cerberus.crud.service.impl;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.cerberus.crud.dao.ICountryEnvParamDAO;
@@ -110,7 +111,7 @@ public class CountryEnvParamService implements ICountryEnvParamService {
     }
 
     @Override
-    public AnswerList readByVariousByCriteria(String system, String country, String environment, String build, String revision, String active, String envGp, int start, int amount, String colName, String dir, String searchTerm, String individualSearch) {
+    public AnswerList readByVariousByCriteria(String system, String country, String environment, String build, String revision, String active, String envGp, int start, int amount, String colName, String dir, String searchTerm, Map<String, List<String>> individualSearch) {
         return countryEnvParamDao.readByVariousByCriteria(system, country, environment, build, revision, active, envGp, start, amount, colName, dir, searchTerm, individualSearch);
     }
 

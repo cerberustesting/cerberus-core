@@ -20,6 +20,7 @@
 package org.cerberus.crud.service.impl;
 
 import java.util.List;
+import java.util.Map;
 
 import org.cerberus.crud.dao.IProjectDAO;
 import org.cerberus.crud.entity.MessageGeneral;
@@ -54,7 +55,7 @@ public class ProjectService implements IProjectService {
     }
 
     @Override
-    public AnswerList readByCriteria(int startPosition, int length, String columnName, String sort, String searchParameter, String string) {
+    public AnswerList readByCriteria(int startPosition, int length, String columnName, String sort, String searchParameter, Map<String, List<String>> string) {
         return projectDao.readByCriteria(startPosition, length, columnName, sort, searchParameter, string);
     }
 
