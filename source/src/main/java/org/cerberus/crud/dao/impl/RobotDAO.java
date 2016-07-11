@@ -209,7 +209,7 @@ public class RobotDAO implements IRobotDAO {
             searchSQL.append(" or `useragent` like ?");
             searchSQL.append(" or `version` like ?)");
         }
-        if (!individualSearch.isEmpty()) {
+        if (individualSearch != null && !individualSearch.isEmpty()) {
             searchSQL.append(" and ( 1=1 ");
             for (Map.Entry<String, List<String>> entry : individualSearch.entrySet()) {
                 searchSQL.append(" and ");

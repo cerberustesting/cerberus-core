@@ -154,7 +154,7 @@ public class ApplicationDAO implements IApplicationDAO {
             searchSQL.append(" or `deploytype` like ?");
             searchSQL.append(" or `mavengroupid` like ?)");
         }
-        if (!individualSearch.isEmpty()) {
+        if (individualSearch != null && !individualSearch.isEmpty()) {
             searchSQL.append(" and ( 1=1 ");
             for (Map.Entry<String, List<String>> entry : individualSearch.entrySet()) {
                 searchSQL.append(" and ");

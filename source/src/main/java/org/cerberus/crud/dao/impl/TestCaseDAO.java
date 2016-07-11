@@ -172,7 +172,7 @@ public class TestCaseDAO implements ITestCaseDAO {
             searchSQL.append(" or tc.`tcdatecrea` like ?");
             searchSQL.append(" or tc.`description` like ?)");
         }
-        if (!individualSearch.isEmpty()) {
+        if (individualSearch != null && !individualSearch.isEmpty()) {
             searchSQL.append(" and ( 1=1 ");
             for (Map.Entry<String, List<String>> entry : individualSearch.entrySet()) {
                 searchSQL.append(" and ");
