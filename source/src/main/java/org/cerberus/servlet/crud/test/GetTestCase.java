@@ -122,6 +122,7 @@ public class GetTestCase extends HttpServlet {
                     JSONObject property = new JSONObject();
 
                     property.put("property", prop.getProperty());
+                    property.put("description", prop.getDescription());
                     property.put("type", prop.getType());
                     property.put("database", prop.getDatabase());
                     property.put("value1", prop.getValue1());

@@ -113,6 +113,7 @@ public class CreateNotDefinedProperty extends HttpServlet {
                             toTestCase,
                             country,
                             propertyName,
+                            "",
                             propertyType,
                             "---",
                             notDefinedProperty,

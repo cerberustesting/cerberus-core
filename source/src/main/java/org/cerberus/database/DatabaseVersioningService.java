@@ -6160,6 +6160,16 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLS.append("('page_global', 'tooltip_column_filter_filtered', 'fr', 'Valeur(s) filtrée(s)');" );
         SQLInstruction.add(SQLS.toString());
         
+        // Add comment on properties.
+        //-- ------------------------ 843-844
+        SQLS = new StringBuilder();
+        SQLS.append("ALTER TABLE `testcasecountryproperties` ");
+        SQLS.append("ADD COLUMN `Description` VARCHAR(255) NULL DEFAULT '' AFTER `Property`;");
+        SQLInstruction.add(SQLS.toString());
+        SQLS = new StringBuilder();
+        SQLS.append("INSERT INTO `documentation` (`DocTable`, `DocField`, `DocValue`, `Lang`, `DocLabel`, `DocDesc`) VALUES ('testcasecountryproperties', 'Description', '', 'en', 'Description', 'Description of the property.');");
+        SQLInstruction.add(SQLS.toString());
+        
         return SQLInstruction;
     }
 

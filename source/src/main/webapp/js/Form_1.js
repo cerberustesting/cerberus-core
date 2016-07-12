@@ -367,7 +367,7 @@ function addTestCaseProperties(tableau, row_number, size, size2) {
     form2
             .setAttribute('style',
                     'width: 130px; font-weight: bold;font-style: italic; color: #FF0000;');
-    form2.setAttribute('placeholder', 'Feed Property Name');
+    form2.setAttribute('placeholder', 'Feed Property name');
     var TD2 = document.createElement('td');
     TD2.setAttribute('style', 'background-color:white');
     TD2.appendChild(form2);

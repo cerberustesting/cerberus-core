@@ -33,12 +33,13 @@ import org.springframework.stereotype.Service;
 public class FactoryTestCaseCountryProperties implements IFactoryTestCaseCountryProperties {
 
     @Override
-    public TestCaseCountryProperties create(String test, String testCase, String country, String property, String type, String database, String value1, String value2, int length, int rowLimit, String nature) {
+    public TestCaseCountryProperties create(String test, String testCase, String country, String property, String description, String type, String database, String value1, String value2, int length, int rowLimit, String nature) {
         TestCaseCountryProperties testCaseCountryProperties = new TestCaseCountryProperties();
         testCaseCountryProperties.setTest(test);
         testCaseCountryProperties.setTestCase(testCase);
         testCaseCountryProperties.setCountry(country);
         testCaseCountryProperties.setProperty(property);
+        testCaseCountryProperties.setDescription(description == null ? "" : description);
         testCaseCountryProperties.setType(type);
         testCaseCountryProperties.setDatabase(database);
         testCaseCountryProperties.setValue1(value1);
@@ -56,6 +57,7 @@ public class FactoryTestCaseCountryProperties implements IFactoryTestCaseCountry
         prop.setTestCase(tccp.getTestCase());
         prop.setCountry(tccp.getCountry());
         prop.setProperty(property);
+        prop.setDescription(tccp.getDescription() == null ? "" : tccp.getDescription());
         prop.setType(PropertyTypeEnum.ACCESS_SUBDATA.getPropertyName());
         prop.setDatabase("");
         prop.setValue1(""); //stores the testdatalib id
