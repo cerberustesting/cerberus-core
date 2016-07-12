@@ -2356,7 +2356,7 @@ function addPropertyNew(widthValue) {
             .attr('placeholder', 'Feed Property name');
     $('#propertyRow' + nextIncrementValue).find('textarea[data-id="properties_description_template"]')
             .attr('name', 'properties_description_' + nextIncrementValue)
-            .attr('placeholder', 'Feed Property Description');
+            .attr('placeholder', 'Feed Property description');
     $('#propertyRow' + nextIncrementValue).find('input[data-id="properties_country_template"]')
             .attr('name', 'properties_country_' + nextIncrementValue);
     $('#propertyRow' + nextIncrementValue).find('#properties_type_template')
