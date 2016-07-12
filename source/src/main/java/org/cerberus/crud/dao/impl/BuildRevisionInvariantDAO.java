@@ -23,6 +23,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.log4j.Logger;
 import org.cerberus.crud.dao.IBuildRevisionInvariantDAO;
@@ -33,6 +34,7 @@ import org.cerberus.crud.factory.IFactoryBuildRevisionInvariant;
 import org.cerberus.crud.factory.impl.FactoryBuildRevisionInvariant;
 import org.cerberus.enums.MessageEventEnum;
 import org.cerberus.util.ParameterParserUtil;
+import org.cerberus.util.SqlUtil;
 import org.cerberus.util.StringUtil;
 import org.cerberus.util.answer.Answer;
 import org.cerberus.util.answer.AnswerItem;
@@ -171,12 +173,13 @@ public class BuildRevisionInvariantDAO implements IBuildRevisionInvariantDAO {
     }
 
     @Override
-    public AnswerList readByVariousByCriteria(String system, Integer level, int start, int amount, String column, String dir, String searchTerm, String individualSearch) {
+    public AnswerList readByVariousByCriteria(String system, Integer level, int start, int amount, String column, String dir, String searchTerm, Map<String, List<String>> individualSearch) {
         AnswerList response = new AnswerList();
         MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
         msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", ""));
         List<BuildRevisionInvariant> briList = new ArrayList<BuildRevisionInvariant>();
         StringBuilder searchSQL = new StringBuilder();
+        List<String> individalColumnSearchValues = new ArrayList<String>();
 
         StringBuilder query = new StringBuilder();
         //SQL_CALC_FOUND_ROWS allows to retrieve the total number of columns by disrearding the limit clauses that 
@@ -190,8 +193,14 @@ public class BuildRevisionInvariantDAO implements IBuildRevisionInvariantDAO {
             searchSQL.append(" or `level` like ?");
             searchSQL.append(" or `versionname` like ? )");
         }
-        if (!StringUtil.isNullOrEmpty(individualSearch)) {
-            searchSQL.append(" and ( ? )");
+        if (individualSearch != null && !individualSearch.isEmpty()) {
+            searchSQL.append(" and ( 1=1 ");
+            for (Map.Entry<String, List<String>> entry : individualSearch.entrySet()) {
+                searchSQL.append(" and ");
+                searchSQL.append(SqlUtil.getInSQLClauseForPreparedStatement(entry.getKey(), entry.getValue()));
+                individalColumnSearchValues.addAll(entry.getValue());
+            }
+            searchSQL.append(" )");
         }
         if (!StringUtil.isNullOrEmpty(system)) {
             searchSQL.append(" and (`System` like ? )");
@@ -225,8 +234,8 @@ public class BuildRevisionInvariantDAO implements IBuildRevisionInvariantDAO {
                     preStat.setString(i++, "%" + searchTerm + "%");
                     preStat.setString(i++, "%" + searchTerm + "%");
                 }
-                if (!StringUtil.isNullOrEmpty(individualSearch)) {
-                    preStat.setString(i++, individualSearch);
+                for (String individualColumnSearchValue : individalColumnSearchValues) {
+                    preStat.setString(i++, individualColumnSearchValue);
                 }
                 if (!StringUtil.isNullOrEmpty(system)) {
                     preStat.setString(i++, system);

@@ -19,6 +19,8 @@
  */
 package org.cerberus.crud.service.impl;
 
+import java.util.List;
+import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.servlet.http.HttpServletRequest;
@@ -56,7 +58,7 @@ public class LogEventService implements ILogEventService {
     }
 
     @Override
-    public AnswerList readByCriteria(int start, int amount, String colName, String dir, String searchTerm, String individualSearch) {
+    public AnswerList readByCriteria(int start, int amount, String colName, String dir, String searchTerm, Map<String, List<String>> individualSearch) {
         return logEventDAO.readByCriteria(start, amount, colName, dir, searchTerm, individualSearch);
     }
 
