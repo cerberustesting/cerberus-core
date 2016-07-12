@@ -27,6 +27,7 @@ public class TestCaseExecutionData {
 
     private long id;
     private String property;
+    private String description;
     private String value;
     private String type;
     private String value1;
@@ -157,6 +158,14 @@ public class TestCaseExecutionData {
         this.property = property;
     }
 
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+    
     public String getRC() {
         return RC;
     }

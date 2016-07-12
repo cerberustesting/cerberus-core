@@ -368,7 +368,7 @@ function addTestCaseProperties(tableau, max_tcp_country,
     form2
             .setAttribute('style',
                     'width: 130px; font-weight: bold;font-style: italic; color: #FF0000;');
-    form2.setAttribute('placeholder', 'Feed Property Name');
+    form2.setAttribute('placeholder', 'Feed Property name');
     form2.setAttribute('maxlength', max_tcp_property);
     var TD2 = document.createElement('td');
     TD2.setAttribute('style', 'background-color:white');
@@ -1705,7 +1705,7 @@ function addTestCasePropertiesNew(tableau, row_number, size, size2) {
     form2
             .setAttribute('style',
                     'width: 130px; font-weight: bold;font-style: italic; color: #FF0000;');
-    form2.setAttribute('placeholder', 'Feed Property Name');
+    form2.setAttribute('placeholder', 'Feed Property name');
     var TD2 = document.createElement('td');
     TD2.setAttribute('style', 'background-color:white');
     TD2.appendChild(form2);
@@ -2353,7 +2353,10 @@ function addPropertyNew(widthValue) {
             .attr('name', 'property_increment').val(nextIncrementValue);
     $('#propertyRow' + nextIncrementValue).find('input[data-id="properties_property_template"]')
             .attr('name', 'properties_property_' + nextIncrementValue)
-            .attr('placeholder', 'Feed Property Name');
+            .attr('placeholder', 'Feed Property name');
+    $('#propertyRow' + nextIncrementValue).find('textarea[data-id="properties_description_template"]')
+            .attr('name', 'properties_description_' + nextIncrementValue)
+            .attr('placeholder', 'Feed Property description');
     $('#propertyRow' + nextIncrementValue).find('input[data-id="properties_country_template"]')
             .attr('name', 'properties_country_' + nextIncrementValue);
     $('#propertyRow' + nextIncrementValue).find('#properties_type_template')

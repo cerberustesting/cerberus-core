@@ -441,6 +441,7 @@ public class ReadTestCase extends HttpServlet {
                     propertyFound.put("fromTest", prop.getTest());
                     propertyFound.put("fromTestCase", prop.getTestCase());
                     propertyFound.put("property", prop.getProperty());
+                    propertyFound.put("description", prop.getDescription());
                     propertyFound.put("type", prop.getType());
                     propertyFound.put("database", prop.getDatabase());
                     propertyFound.put("value1", prop.getValue1());

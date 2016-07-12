@@ -28,6 +28,7 @@ public class TestCaseCountryProperties {
     private String testCase;
     private String country;
     private String property;
+    private String description;
     private String type;
     private String database;
     private String value1;
@@ -103,6 +104,14 @@ public class TestCaseCountryProperties {
         this.property = property;
     }
 
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+    
     public int getRowLimit() {
         return rowLimit;
     }
@@ -181,6 +190,7 @@ public class TestCaseCountryProperties {
         hash = 83 * hash + (this.testCase != null ? this.testCase.hashCode() : 0);
         hash = 83 * hash + (this.country != null ? this.country.hashCode() : 0);
         hash = 83 * hash + (this.property != null ? this.property.hashCode() : 0);
+        hash = 83 * hash + (this.description != null ? this.description.hashCode() : 0);
         hash = 83 * hash + (this.type != null ? this.type.hashCode() : 0);
         hash = 83 * hash + (this.database != null ? this.database.hashCode() : 0);
         hash = 83 * hash + (this.value1 != null ? this.value1.hashCode() : 0);
@@ -210,6 +220,9 @@ public class TestCaseCountryProperties {
             return false;
         }
         if ((this.property == null) ? (other.property != null) : !this.property.equals(other.property)) {
+            return false;
+        }
+        if ((this.description == null) ? (other.description != null) : !this.description.equals(other.description)) {
             return false;
         }
         if ((this.type == null) ? (other.type != null) : !this.type.equals(other.type)) {

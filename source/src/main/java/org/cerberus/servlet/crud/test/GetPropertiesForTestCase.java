@@ -73,6 +73,7 @@ public class GetPropertiesForTestCase extends HttpServlet {
                     JSONObject propertyFound = new JSONObject();
 
                     propertyFound.put("property", prop.getProperty());
+                    propertyFound.put("description", prop.getDescription());
                     propertyFound.put("type", prop.getType());
                     propertyFound.put("database", prop.getDatabase());
                     propertyFound.put("value1", prop.getValue1());

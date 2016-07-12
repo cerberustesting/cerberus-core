@@ -90,6 +90,7 @@ public class TestCaseCountryPropertiesDAO implements ITestCaseCountryPropertiesD
                     while (resultSet.next()) {
                         String country = resultSet.getString("country");
                         String property = resultSet.getString("property");
+                        String description = resultSet.getString("description");
                         String type = resultSet.getString("type");
                         String database = resultSet.getString("database");
                         String value1 = resultSet.getString("value1");
@@ -97,7 +98,7 @@ public class TestCaseCountryPropertiesDAO implements ITestCaseCountryPropertiesD
                         int length = resultSet.getInt("length");
                         int rowLimit = resultSet.getInt("rowLimit");
                         String nature = resultSet.getString("nature");
-                        list.add(factoryTestCaseCountryProperties.create(test, testcase, country, property, type, database, value1, value2, length, rowLimit, nature));
+                        list.add(factoryTestCaseCountryProperties.create(test, testcase, country, property, description, type, database, value1, value2, length, rowLimit, nature));
 
                     }
                 } catch (SQLException exception) {
@@ -145,6 +146,7 @@ public class TestCaseCountryPropertiesDAO implements ITestCaseCountryPropertiesD
                     while (resultSet.next()) {
                         String country = resultSet.getString("country");
                         String property = resultSet.getString("property");
+                        String description = resultSet.getString("description");
                         String type = resultSet.getString("type");
                         String database = resultSet.getString("database");
                         String value1 = resultSet.getString("value1");
@@ -152,7 +154,7 @@ public class TestCaseCountryPropertiesDAO implements ITestCaseCountryPropertiesD
                         int length = resultSet.getInt("length");
                         int rowLimit = resultSet.getInt("rowLimit");
                         String nature = resultSet.getString("nature");
-                        listProperties.add(factoryTestCaseCountryProperties.create(test, testcase, country, property, type, database, value1, value2, length, rowLimit, nature));
+                        listProperties.add(factoryTestCaseCountryProperties.create(test, testcase, country, property, description, type, database, value1, value2, length, rowLimit, nature));
 
                     }
                 } catch (SQLException exception) {
@@ -255,6 +257,7 @@ public class TestCaseCountryPropertiesDAO implements ITestCaseCountryPropertiesD
 
                     while (resultSet.next()) {
                         String property = resultSet.getString("property");
+                        String description = resultSet.getString("description");
                         String type = resultSet.getString("type");
                         String database = resultSet.getString("database");
                         String value1 = resultSet.getString("value1");
@@ -263,7 +266,7 @@ public class TestCaseCountryPropertiesDAO implements ITestCaseCountryPropertiesD
                         int rowLimit = resultSet.getInt("rowLimit");
                         String nature = resultSet.getString("nature");
                         MyLogger.log(TestCaseCountryPropertiesDAO.class.getName(), Level.DEBUG, "Found Test Case Country property : " + test + "-" + testcase + "-" + country + "-" + property);
-                        list.add(factoryTestCaseCountryProperties.create(test, testcase, country, property, type, database, value1, value2, length, rowLimit, nature));
+                        list.add(factoryTestCaseCountryProperties.create(test, testcase, country, property, description, type, database, value1, value2, length, rowLimit, nature));
                     }
                 } catch (SQLException exception) {
                     MyLogger.log(TestCaseCountryPropertiesDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
@@ -307,6 +310,7 @@ public class TestCaseCountryPropertiesDAO implements ITestCaseCountryPropertiesD
                 ResultSet resultSet = preStat.executeQuery();
                 try {
                     if (resultSet.first()) {
+                        String description = resultSet.getString("description");
                         String type = resultSet.getString("type");
                         String database = resultSet.getString("database");
                         String value1 = resultSet.getString("value1");
@@ -314,7 +318,7 @@ public class TestCaseCountryPropertiesDAO implements ITestCaseCountryPropertiesD
                         int length = resultSet.getInt("length");
                         int rowLimit = resultSet.getInt("rowLimit");
                         String nature = resultSet.getString("nature");
-                        result = factoryTestCaseCountryProperties.create(test, testcase, country, property, type, database, value1, value2, length, rowLimit, nature);
+                        result = factoryTestCaseCountryProperties.create(test, testcase, country, property, description, type, database, value1, value2, length, rowLimit, nature);
                     } else {
                         throwException = true;
                     }
@@ -349,9 +353,9 @@ public class TestCaseCountryPropertiesDAO implements ITestCaseCountryPropertiesD
     public void insertTestCaseCountryProperties(TestCaseCountryProperties testCaseCountryProperties) throws CerberusException {
         boolean throwExcep = false;
         StringBuilder query = new StringBuilder();
-        query.append("INSERT INTO testcasecountryproperties (`Test`,`TestCase`,`Country`,`Property` ,`Type`");
+        query.append("INSERT INTO testcasecountryproperties (`Test`,`TestCase`,`Country`,`Property` ,`Description`,`Type`");
         query.append(",`Database`,`Value1`,`Value2`,`Length`,`RowLimit`,`Nature`) ");
-        query.append("VALUES (?,?,?,?,?,?,?,?,?,?,?)");
+        query.append("VALUES (?,?,?,?,?,?,?,?,?,?,?,?)");
 
         Connection connection = this.databaseSpring.connect();
         try {
@@ -361,13 +365,14 @@ public class TestCaseCountryPropertiesDAO implements ITestCaseCountryPropertiesD
                 preStat.setString(2, testCaseCountryProperties.getTestCase());
                 preStat.setString(3, testCaseCountryProperties.getCountry());
                 preStat.setNString(4, testCaseCountryProperties.getProperty());
-                preStat.setString(5, testCaseCountryProperties.getType());
-                preStat.setString(6, testCaseCountryProperties.getDatabase());
-                preStat.setNString(7, testCaseCountryProperties.getValue1());
-                preStat.setNString(8, testCaseCountryProperties.getValue2());
-                preStat.setInt(9, testCaseCountryProperties.getLength());
-                preStat.setInt(10, testCaseCountryProperties.getRowLimit());
-                preStat.setString(11, testCaseCountryProperties.getNature());
+                preStat.setNString(5, testCaseCountryProperties.getDescription());
+                preStat.setString(6, testCaseCountryProperties.getType());
+                preStat.setString(7, testCaseCountryProperties.getDatabase());
+                preStat.setNString(8, testCaseCountryProperties.getValue1());
+                preStat.setNString(9, testCaseCountryProperties.getValue2());
+                preStat.setInt(10, testCaseCountryProperties.getLength());
+                preStat.setInt(11, testCaseCountryProperties.getRowLimit());
+                preStat.setString(12, testCaseCountryProperties.getNature());
 
                 preStat.executeUpdate();
                 throwExcep = false;
@@ -398,24 +403,25 @@ public class TestCaseCountryPropertiesDAO implements ITestCaseCountryPropertiesD
         boolean throwExcep = false;
         StringBuilder query = new StringBuilder();
         query.append("UPDATE testcasecountryproperties SET ");
-        query.append(" `Type` = ? ,`Database` = ? ,Value1 = ?,Value2 = ?,`Length` = ?,  RowLimit = ?,  `Nature` = ? ");
+        query.append(" `Description` = ?, `Type` = ? ,`Database` = ? ,Value1 = ?,Value2 = ?,`Length` = ?,  RowLimit = ?,  `Nature` = ? ");
         query.append(" WHERE Test = ? AND TestCase = ? AND Country = ? AND hex(`Property`) like hex(?)");
 
         Connection connection = this.databaseSpring.connect();
         try {
             PreparedStatement preStat = connection.prepareStatement(query.toString());
             try {
-                preStat.setString(1, testCaseCountryProperties.getType());
-                preStat.setString(2, testCaseCountryProperties.getDatabase());
-                preStat.setNString(3, testCaseCountryProperties.getValue1());
-                preStat.setNString(4, testCaseCountryProperties.getValue2());
-                preStat.setInt(5, testCaseCountryProperties.getLength());
-                preStat.setInt(6, testCaseCountryProperties.getRowLimit());
-                preStat.setString(7, testCaseCountryProperties.getNature());
-                preStat.setString(8, testCaseCountryProperties.getTest());
-                preStat.setString(9, testCaseCountryProperties.getTestCase());
-                preStat.setString(10, testCaseCountryProperties.getCountry());
-                preStat.setNString(11, testCaseCountryProperties.getProperty());
+                preStat.setNString(1, testCaseCountryProperties.getDescription());
+                preStat.setString(2, testCaseCountryProperties.getType());
+                preStat.setString(3, testCaseCountryProperties.getDatabase());
+                preStat.setNString(4, testCaseCountryProperties.getValue1());
+                preStat.setNString(5, testCaseCountryProperties.getValue2());
+                preStat.setInt(6, testCaseCountryProperties.getLength());
+                preStat.setInt(7, testCaseCountryProperties.getRowLimit());
+                preStat.setString(8, testCaseCountryProperties.getNature());
+                preStat.setString(9, testCaseCountryProperties.getTest());
+                preStat.setString(10, testCaseCountryProperties.getTestCase());
+                preStat.setString(11, testCaseCountryProperties.getCountry());
+                preStat.setNString(12, testCaseCountryProperties.getProperty());
 
                 preStat.executeUpdate();
                 throwExcep = false;
@@ -681,9 +687,9 @@ public class TestCaseCountryPropertiesDAO implements ITestCaseCountryPropertiesD
         Answer answer = new Answer();
         MessageEvent rs = null;
         StringBuilder query = new StringBuilder();
-        query.append("INSERT INTO testcasecountryproperties (`Test`,`TestCase`,`Country`,`Property` ,`Type`");
+        query.append("INSERT INTO testcasecountryproperties (`Test`,`TestCase`,`Country`,`Property` , `Description`, Type`");
         query.append(",`Database`,`Value1`,`Value2`,`Length`,`RowLimit`,`Nature`) ");
-        query.append("VALUES (?,?,?,?,?,?,?,?,?,?,?)");
+        query.append("VALUES (?,?,?,?,?,?,?,?,?,?,?,?)");
 
         Connection connection = this.databaseSpring.connect();
         try {
@@ -694,13 +700,14 @@ public class TestCaseCountryPropertiesDAO implements ITestCaseCountryPropertiesD
                     preStat.setString(2, prop.getTestCase());
                     preStat.setString(3, prop.getCountry());
                     preStat.setString(4, prop.getProperty());
-                    preStat.setString(5, prop.getType());
-                    preStat.setString(6, prop.getDatabase());
-                    preStat.setString(7, prop.getValue1());
-                    preStat.setString(8, prop.getValue2());
-                    preStat.setInt(9, prop.getLength());
-                    preStat.setInt(10, prop.getRowLimit());
-                    preStat.setString(11, prop.getNature());
+                    preStat.setString(5, prop.getDescription());
+                    preStat.setString(6, prop.getType());
+                    preStat.setString(7, prop.getDatabase());
+                    preStat.setString(8, prop.getValue1());
+                    preStat.setString(9, prop.getValue2());
+                    preStat.setInt(10, prop.getLength());
+                    preStat.setInt(11, prop.getRowLimit());
+                    preStat.setString(12, prop.getNature());
 
                     preStat.addBatch();
                 }
@@ -755,9 +762,9 @@ public class TestCaseCountryPropertiesDAO implements ITestCaseCountryPropertiesD
     public Answer create(TestCaseCountryProperties object) {
         MessageEvent msg = null;
         StringBuilder query = new StringBuilder();
-        query.append("INSERT INTO testcasecountryproperties (`Test`,`TestCase`,`Country`,`Property` ,`Type`");
+        query.append("INSERT INTO testcasecountryproperties (`Test`,`TestCase`,`Country`,`Property`,`Description`,`Type`");
         query.append(",`Database`,`Value1`,`Value2`,`Length`,`RowLimit`,`Nature`) ");
-        query.append("VALUES (?,?,?,?,?,?,?,?,?,?,?)");
+        query.append("VALUES (?,?,?,?,?,?,?,?,?,?,?,?)");
 
         // Debug message on SQL.
         if (LOG.isDebugEnabled()) {
@@ -771,13 +778,14 @@ public class TestCaseCountryPropertiesDAO implements ITestCaseCountryPropertiesD
                 preStat.setString(2, object.getTestCase());
                 preStat.setString(3, object.getCountry());
                 preStat.setString(4, object.getProperty());
-                preStat.setString(5, object.getType());
-                preStat.setString(6, object.getDatabase());
-                preStat.setString(7, object.getValue1());
-                preStat.setString(8, object.getValue2());
-                preStat.setInt(9, object.getLength());
-                preStat.setInt(10, object.getRowLimit());
-                preStat.setString(11, object.getNature());
+                preStat.setString(5, object.getDescription());
+                preStat.setString(6, object.getType());
+                preStat.setString(7, object.getDatabase());
+                preStat.setString(8, object.getValue1());
+                preStat.setString(9, object.getValue2());
+                preStat.setInt(10, object.getLength());
+                preStat.setInt(11, object.getRowLimit());
+                preStat.setString(12, object.getNature());
 
                 preStat.executeUpdate();
                 msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
@@ -859,7 +867,7 @@ public class TestCaseCountryPropertiesDAO implements ITestCaseCountryPropertiesD
     @Override
     public Answer update(TestCaseCountryProperties object) {
         MessageEvent msg = null;
-        final String query = "UPDATE testcasecountryproperties SET`Type` = ? ,`Database` = ? ,Value1 = ?,Value2 = ?,`Length` = ?,  RowLimit = ?,  `Nature` = ? WHERE Test = ? AND TestCase = ? AND Country = ? AND hex(`Property`) like hex(?)";
+        final String query = "UPDATE testcasecountryproperties SET `Description` = ?, `Type` = ? ,`Database` = ? ,Value1 = ?,Value2 = ?,`Length` = ?,  RowLimit = ?,  `Nature` = ? WHERE Test = ? AND TestCase = ? AND Country = ? AND hex(`Property`) like hex(?)";
 
         // Debug message on SQL.
         if (LOG.isDebugEnabled()) {
@@ -869,17 +877,18 @@ public class TestCaseCountryPropertiesDAO implements ITestCaseCountryPropertiesD
         try {
             PreparedStatement preStat = connection.prepareStatement(query);
             try {
-                preStat.setString(1, object.getType());
-                preStat.setString(2, object.getDatabase());
-                preStat.setString(3, object.getValue1());
-                preStat.setString(4, object.getValue2());
-                preStat.setInt(5, object.getLength());
-                preStat.setInt(6, object.getRowLimit());
-                preStat.setString(7, object.getNature());
-                preStat.setString(8, object.getTest());
-                preStat.setString(9, object.getTestCase());
-                preStat.setString(10, object.getCountry());
-                preStat.setString(11, object.getProperty());
+                preStat.setString(1, object.getDescription());
+                preStat.setString(2, object.getType());
+                preStat.setString(3, object.getDatabase());
+                preStat.setString(4, object.getValue1());
+                preStat.setString(5, object.getValue2());
+                preStat.setInt(6, object.getLength());
+                preStat.setInt(7, object.getRowLimit());
+                preStat.setString(8, object.getNature());
+                preStat.setString(9, object.getTest());
+                preStat.setString(10, object.getTestCase());
+                preStat.setString(11, object.getCountry());
+                preStat.setString(12, object.getProperty());
 
                 preStat.executeUpdate();
                 msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);

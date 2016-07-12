@@ -465,6 +465,7 @@ public class UpdateTestCaseWithDependencies extends HttpServlet {
                 String[] countries = getParameterValuesIfExists(request, "properties_country_" + inc);
                 String delete = getParameterIfExists(request, "properties_delete_" + inc);
                 String property = getParameterIfExists(request, "properties_property_" + inc);
+                String description = getParameterIfExists(request, "properties_description_" + inc);
                 String type = getParameterIfExists(request, "properties_type_" + inc);
                 String value = getParameterIfExists(request, "properties_value1_" + inc);
                 String value2 = getParameterIfExists(request, "properties_value2_" + inc);
@@ -475,7 +476,7 @@ public class UpdateTestCaseWithDependencies extends HttpServlet {
                 if (countries != null) {
                     for (String country : countries) {
                         if (delete == null && property != null && !property.equals("")) {
-                            testCaseCountryProp.add(testCaseCountryPropertiesFactory.create(test, testCase, country, property, type, database, value, value2, length, rowLimit, nature));
+                            testCaseCountryProp.add(testCaseCountryPropertiesFactory.create(test, testCase, country, property, description, type, database, value, value2, length, rowLimit, nature));
                         }
                     }
                 }
