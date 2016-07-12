@@ -23,6 +23,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.log4j.Logger;
 import org.cerberus.crud.dao.IDeployTypeDAO;
@@ -33,6 +34,7 @@ import org.cerberus.enums.MessageEventEnum;
 import org.cerberus.crud.factory.IFactoryDeployType;
 import org.cerberus.crud.factory.impl.FactoryDeployType;
 import org.cerberus.util.ParameterParserUtil;
+import org.cerberus.util.SqlUtil;
 import org.cerberus.util.StringUtil;
 import org.cerberus.util.answer.Answer;
 import org.cerberus.util.answer.AnswerItem;
@@ -202,12 +204,13 @@ public class DeployTypeDAO implements IDeployTypeDAO {
     }
 
     @Override
-    public AnswerList readByCriteria(int start, int amount, String column, String dir, String searchTerm, String individualSearch) {
+    public AnswerList readByCriteria(int start, int amount, String column, String dir, String searchTerm, Map<String, List<String>> individualSearch) {
         AnswerList response = new AnswerList();
         MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
         List<DeployType> deployTypeList = new ArrayList<DeployType>();
         StringBuilder gSearch = new StringBuilder();
         StringBuilder searchSQL = new StringBuilder();
+        List<String> individalColumnSearchValues = new ArrayList<String>();
 
         StringBuilder query = new StringBuilder();
         //SQL_CALC_FOUND_ROWS allows to retrieve the total number of columns by disrearding the limit clauses that 
@@ -220,8 +223,14 @@ public class DeployTypeDAO implements IDeployTypeDAO {
             searchSQL.append(" and (`deploytype` like ?");
             searchSQL.append(" or `description`  like ?)");
         }
-        if (!StringUtil.isNullOrEmpty(individualSearch)) {
-            searchSQL.append(" and (`").append(individualSearch).append("`)");
+        if (individualSearch != null && !individualSearch.isEmpty()) {
+            searchSQL.append(" and ( 1=1 ");
+            for (Map.Entry<String, List<String>> entry : individualSearch.entrySet()) {
+                searchSQL.append(" and ");
+                searchSQL.append(SqlUtil.getInSQLClauseForPreparedStatement(entry.getKey(), entry.getValue()));
+                individalColumnSearchValues.addAll(entry.getValue());
+            }
+            searchSQL.append(" )");
         }
         query.append(searchSQL);
 
@@ -243,9 +252,13 @@ public class DeployTypeDAO implements IDeployTypeDAO {
         try {
             PreparedStatement preStat = connection.prepareStatement(query.toString());
             try {
+                int i = 1;
                 if (!StringUtil.isNullOrEmpty(searchTerm)) {
-                    preStat.setString(1, "%" + searchTerm + "%");
-                    preStat.setString(2, "%" + searchTerm + "%");
+                    preStat.setString(i++, "%" + searchTerm + "%");
+                    preStat.setString(i++, "%" + searchTerm + "%");
+                }
+                for (String individualColumnSearchValue : individalColumnSearchValues) {
+                    preStat.setString(i++, individualColumnSearchValue);
                 }
                 ResultSet resultSet = preStat.executeQuery();
                 try {

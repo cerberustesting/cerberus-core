@@ -25,6 +25,7 @@ import org.cerberus.crud.service.IBuildRevisionParametersService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import java.util.List;
+import java.util.Map;
 import org.apache.log4j.Logger;
 import org.cerberus.crud.entity.MessageEvent;
 import org.cerberus.crud.entity.MessageGeneral;
@@ -67,7 +68,7 @@ public class BuildRevisionParametersService implements IBuildRevisionParametersS
     }
 
     @Override
-    public AnswerList readByVarious1ByCriteria(String system, String application, String build, String revision, int start, int amount, String column, String dir, String searchTerm, String individualSearch) {
+    public AnswerList readByVarious1ByCriteria(String system, String application, String build, String revision, int start, int amount, String column, String dir, String searchTerm, Map<String, List<String>> individualSearch) {
         return this.buildRevisionParametersDAO.readByVarious1ByCriteria(system, application, build, revision, start, amount, column, dir, searchTerm, individualSearch);
     }
 

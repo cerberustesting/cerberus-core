@@ -992,7 +992,9 @@ function createDataTableWithPermissions(tableConfigurations, callbackFunction, o
             var user = getUser();
             if ("" !== user.userPreferences) {
                 var userPref = JSON.parse(user.userPreferences);
-                return JSON.parse(userPref['DataTables_' + settings.sInstance + '_' + location.pathname]);
+                if (undefined !== userPref['DataTables_' + settings.sInstance + '_' + location.pathname]) {
+                    return JSON.parse(userPref['DataTables_' + settings.sInstance + '_' + location.pathname]);
+                }
             }
         };
         configs["fnServerData"] = function (sSource, aoData, fnCallback, oSettings) {
@@ -1126,7 +1128,9 @@ function createDataTable(tableConfigurations, callbackFunction, userCallbackFunc
             var user = getUser();
             if ("" !== user.userPreferences) {
                 var userPref = JSON.parse(user.userPreferences);
-                return JSON.parse(userPref['DataTables_' + settings.sInstance + '_' + location.pathname]);
+                if (undefined !== userPref['DataTables_' + settings.sInstance + '_' + location.pathname]) {
+                    return JSON.parse(userPref['DataTables_' + settings.sInstance + '_' + location.pathname]);
+                }
             }
         };
         configs["fnServerData"] = function (sSource, aoData, fnCallback, oSettings) {

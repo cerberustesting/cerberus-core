@@ -17,6 +17,8 @@
  */
 package org.cerberus.crud.dao;
 
+import java.util.List;
+import java.util.Map;
 import org.cerberus.crud.entity.BatchInvariant;
 import org.cerberus.util.answer.Answer;
 import org.cerberus.util.answer.AnswerItem;
@@ -29,7 +31,7 @@ public interface IBatchInvariantDAO {
 
     public AnswerItem readByKey(String batch);
 
-    public AnswerList readBySystemByCriteria(String system, int start, int amount, String column, String dir, String searchTerm, String individualSearch);
+    public AnswerList readBySystemByCriteria(String system, int start, int amount, String column, String dir, String searchTerm, Map<String, List<String>> individualSearch);
 
     public Answer create(BatchInvariant object);
 

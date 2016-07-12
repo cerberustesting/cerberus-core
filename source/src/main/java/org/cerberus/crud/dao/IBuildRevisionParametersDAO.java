@@ -21,6 +21,8 @@ package org.cerberus.crud.dao;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.List;
+import java.util.Map;
 import org.cerberus.crud.entity.BuildRevisionParameters;
 
 import org.cerberus.util.answer.Answer;
@@ -68,7 +70,7 @@ public interface IBuildRevisionParametersDAO {
      * @param individualSearch
      * @return
      */
-    AnswerList readByVarious1ByCriteria(String system, String application, String build, String revision, int start, int amount, String column, String dir, String searchTerm, String individualSearch);
+    AnswerList readByVarious1ByCriteria(String system, String application, String build, String revision, int start, int amount, String column, String dir, String searchTerm, Map<String, List<String>> individualSearch);
 
     /**
      *

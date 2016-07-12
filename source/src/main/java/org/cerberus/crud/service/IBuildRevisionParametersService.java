@@ -22,6 +22,7 @@ package org.cerberus.crud.service;
 import org.cerberus.crud.entity.BuildRevisionParameters;
 
 import java.util.List;
+import java.util.Map;
 import org.cerberus.exception.CerberusException;
 import org.cerberus.util.answer.Answer;
 import org.cerberus.util.answer.AnswerItem;
@@ -69,7 +70,7 @@ public interface IBuildRevisionParametersService {
      * @param individualSearch
      * @return
      */
-    AnswerList readByVarious1ByCriteria(String system, String application, String build, String revision, int start, int amount, String column, String dir, String searchTerm, String individualSearch);
+    AnswerList readByVarious1ByCriteria(String system, String application, String build, String revision, int start, int amount, String column, String dir, String searchTerm, Map<String, List<String>> individualSearch);
 
     /**
      *

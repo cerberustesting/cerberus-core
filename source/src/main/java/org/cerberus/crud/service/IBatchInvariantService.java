@@ -20,6 +20,7 @@
 package org.cerberus.crud.service;
 
 import java.util.List;
+import java.util.Map;
 import org.cerberus.crud.entity.BatchInvariant;
 import org.cerberus.exception.CerberusException;
 import org.cerberus.util.answer.Answer;
@@ -50,7 +51,7 @@ public interface IBatchInvariantService {
      * @param string
      * @return
      */
-    AnswerList readBySystemByCriteria(String system, int startPosition, int length, String columnName, String sort, String searchParameter, String string);
+    AnswerList readBySystemByCriteria(String system, int startPosition, int length, String columnName, String sort, String searchParameter, Map<String, List<String>> individualSearch);
 
     /**
      *

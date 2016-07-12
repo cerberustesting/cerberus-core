@@ -19,6 +19,8 @@
  */
 package org.cerberus.crud.service.impl;
 
+import java.util.List;
+import java.util.Map;
 import org.cerberus.crud.dao.IDeployTypeDAO;
 import org.cerberus.crud.entity.DeployType;
 import org.cerberus.crud.service.IDeployTypeService;
@@ -45,8 +47,8 @@ public class DeployTypeService implements IDeployTypeService {
     }
 
     @Override
-    public AnswerList readByCriteria(int startPosition, int length, String columnName, String sort, String searchParameter, String string) {
-        return deployTypeDAO.readByCriteria(startPosition, length, columnName, sort, searchParameter, string);
+    public AnswerList readByCriteria(int startPosition, int length, String columnName, String sort, String searchParameter, Map<String, List<String>> individualSearch) {
+        return deployTypeDAO.readByCriteria(startPosition, length, columnName, sort, searchParameter, individualSearch);
     }
 
     @Override
