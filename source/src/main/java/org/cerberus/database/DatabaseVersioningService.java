@@ -6161,13 +6161,17 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLInstruction.add(SQLS.toString());
         
         // Add comment on properties.
-        //-- ------------------------ 843-844
+        //-- ------------------------ 843-845
         SQLS = new StringBuilder();
         SQLS.append("ALTER TABLE `testcasecountryproperties` ");
         SQLS.append("ADD COLUMN `Description` VARCHAR(255) NULL DEFAULT '' AFTER `Property`;");
         SQLInstruction.add(SQLS.toString());
         SQLS = new StringBuilder();
         SQLS.append("INSERT INTO `documentation` (`DocTable`, `DocField`, `DocValue`, `Lang`, `DocLabel`, `DocDesc`) VALUES ('testcasecountryproperties', 'Description', '', 'en', 'Description', 'Description of the property.');");
+        SQLInstruction.add(SQLS.toString());
+        SQLS = new StringBuilder();
+        SQLS.append("ALTER TABLE `testcaseexecutiondata` ");
+        SQLS.append("ADD COLUMN `Description` VARCHAR(255) NULL DEFAULT '' AFTER `Property`;");
         SQLInstruction.add(SQLS.toString());
         
         return SQLInstruction;

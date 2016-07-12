@@ -252,7 +252,7 @@ public class PropertyService implements IPropertyService {
         TestCaseCountryProperties inner = ((TestCaseSubDataAccessProperty) testCaseCountryProperty).getPropertyLibEntry();
 
         //creates an auxiliary object that will store the value for computation
-        TestCaseExecutionData tecdAuxiliary = factoryTestCaseExecutionData.create(tCExecution.getId(), inner.getProperty(), inner.getType(),
+        TestCaseExecutionData tecdAuxiliary = factoryTestCaseExecutionData.create(tCExecution.getId(), inner.getProperty(), inner.getDescription(), inner.getType(),
                 inner.getValue1(), inner.getValue2(), new MessageEvent(MessageEventEnum.PROPERTY_SUCCESS_GETFROMDATALIB));
 
         //the testdatalibrary needs to be re-calculated
@@ -361,7 +361,7 @@ public class PropertyService implements IPropertyService {
              * First create testCaseExecutionData object
              */
             now = new Date().getTime();
-            tecd = factoryTestCaseExecutionData.create(tCExecution.getId(), eachTccp.getProperty(), null, eachTccp.getType(),
+            tecd = factoryTestCaseExecutionData.create(tCExecution.getId(), eachTccp.getProperty(), eachTccp.getDescription(), null, eachTccp.getType(),
                     eachTccp.getValue1(), eachTccp.getValue2(), null, null, now, now, now, now, new MessageEvent(MessageEventEnum.PROPERTY_PENDING));
             tecd.setTestCaseCountryProperties(eachTccp);
             if (LOG.isDebugEnabled()) {
