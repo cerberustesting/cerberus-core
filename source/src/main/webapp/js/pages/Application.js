@@ -92,7 +92,7 @@ function renderOptionsForApplication(data) {
     if (data["hasPermissions"]) {
         if ($("#createApplicationButton").length === 0) {
             var contentToAdd = "<div class='marginBottom10'><button id='createApplicationButton' type='button' class='btn btn-default'>\n\
-            " + doc.getDocLabel("page_application", "button_create") + "</button></div>";
+            <span class='glyphicon glyphicon-plus-sign'></span> " + doc.getDocLabel("page_application", "button_create") + "</button></div>";
 
             $("#applicationsTable_wrapper div.ColVis").before(contentToAdd);
             $('#applicationList #createApplicationButton').click(addEntryClick);

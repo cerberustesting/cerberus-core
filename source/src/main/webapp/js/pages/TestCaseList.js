@@ -166,7 +166,7 @@ function renderOptionsForTestCaseList(data) {
     if (data["hasPermissionsCreate"]) {
         if ($("#createTestCaseButton").length === 0) {
             var contentToAdd = "<div class='marginBottom10'><button id='createTestCaseButton' type='button' class='btn btn-default'>\n\
-            " + doc.getDocLabel("page_testcaselist", "btn_create") + "</button></div>";
+           <span class='glyphicon glyphicon-plus-sign'></span> " + doc.getDocLabel("page_testcaselist", "btn_create") + "</button></div>";
 
             $("#testCaseTable_wrapper div.ColVis").before(contentToAdd);
             $('#testCaseList #createTestCaseButton').click(data, addEntryClick);

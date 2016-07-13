@@ -61,7 +61,7 @@ function renderOptionsForDeployType(data) {
     if (data["hasPermissions"]) {
         if ($("#createDeployTypeButton").length === 0) {
             var contentToAdd = "<div class='marginBottom10'><button id='createDeployTypeButton' type='button' class='btn btn-default'>\n\
-            " + doc.getDocLabel("page_deploytype", "button_create") + "</button></div>";
+            <span class='glyphicon glyphicon-plus-sign'></span> " + doc.getDocLabel("page_deploytype", "button_create") + "</button></div>";
 
             $("#deploytypesTable_wrapper div.ColVis").before(contentToAdd);
             $('#deploytype #createDeployTypeButton').click(addEntryClick);

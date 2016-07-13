@@ -968,22 +968,10 @@ function createDataTableWithPermissions(tableConfigurations, callbackFunction, o
         configs["sAjaxDataProp"] = tableConfigurations.ajaxProp;
         configs["fnStateSaveCallback"] = function (settings, data) {
             try {
-                //Compare user.userPreferences and data excluding time
-                var user = getUser();
-                var localStorageValue = JSON.parse(JSON.stringify(data));
-                delete localStorageValue.time;
-
-                var userPreferences = JSON.parse((JSON.parse(user.userPreferences))['DataTables_' + settings.sInstance + '_' + location.pathname]);
-                delete userPreferences.time;
-
-                //if different, update localStorage and user.userPreferences
-                if (localStorageValue !== userPreferences) {
-                    (settings.iStateDuration === -1 ? sessionStorage : localStorage).setItem(
+                (settings.iStateDuration === -1 ? sessionStorage : localStorage).setItem(
                             'DataTables_' + settings.sInstance + '_' + location.pathname,
                             JSON.stringify(data)
                             );
-                    updateUserPreferences();
-                }
             } catch (e) {
             }
         };
@@ -1021,12 +1009,13 @@ function createDataTableWithPermissions(tableConfigurations, callbackFunction, o
             });
             $.when(oSettings.jqXHR).then(function (data) {
                 //updates the table with basis on the permissions that the current user has
+                
+                displayColumnSearch(tableConfigurations.divId);
+                $('[data-toggle="tooltip"]').tooltip();
+                
                 if (callbackFunction !== undefined)
                     callbackFunction(data);
 
-                //TODO: To uncomment when activating feature
-                displayColumnSearch(tableConfigurations.divId);
-                $('[data-toggle="tooltip"]').tooltip();
             });
         };
     } else {
@@ -1039,12 +1028,25 @@ function createDataTableWithPermissions(tableConfigurations, callbackFunction, o
     }
 
     if (tableConfigurations.showColvis) {
-        $("#" + tableConfigurations.divId + "_wrapper div.ColVis .ColVis_MasterButton").addClass("btn btn-default");
+        //Display button show/hide columns and Save table configuration
+        $("#saveTableConfigurationButton").remove();
+        $("#" + tableConfigurations.divId + "_wrapper div.ColVis .ColVis_MasterButton").attr('id', 'showHideColumnsButton').removeClass()
+                .addClass("btn btn-default").html("<span class='glyphicon glyphicon-cog'></span> Show/hide columns");
+        $("#showHideColumnsButton").after(
+                $("<button id='saveTableConfigurationButton'></button>").addClass("btn btn-default").append("<span class='glyphicon glyphicon-floppy-disk'></span> Save table configuration")
+                .click(function () {
+                    updateUserPreferences();
+                })
+                );
     }
     $("#" + tableConfigurations.divId + "_length select[name='" + tableConfigurations.divId + "_length']").addClass("form-control input-sm");
     $("#" + tableConfigurations.divId + "_length select[name='" + tableConfigurations.divId + "_length']").css("display", "inline");
 
     $("#" + tableConfigurations.divId + "_filter input[type='search']").addClass("form-control form-control input-sm");
+    
+    //Build the Message that appear when filter is fed
+    var showFilteredColumnsAlertMessage = "<div id='filterAlertDiv' class='col-sm-12 alert alert-warning'><div class='col-sm-11' id='activatedFilters'></div><div class='col-sm-1  filterMessageButtons'><span id='clearFilterButton' data-toggle='tooltip' title='Clear filters' class='glyphicon glyphicon-remove-sign'></span> | <span id='restoreFilterButton' title='Restore user preferences' data-toggle='tooltip' class='glyphicon glyphicon-floppy-open'></span></div>";
+    $(".showInlineElement").after($(showFilteredColumnsAlertMessage).hide());
 
     $("#" + tableConfigurations.divId + "_length").addClass("marginBottom10").addClass("width80");
     $("#" + tableConfigurations.divId + "_filter").addClass("marginBottom10").addClass("width150");
@@ -1104,22 +1106,10 @@ function createDataTable(tableConfigurations, callbackFunction, userCallbackFunc
         configs["sAjaxDataProp"] = tableConfigurations.ajaxProp;
         configs["fnStateSaveCallback"] = function (settings, data) {
             try {
-                //Compare user.userPreferences and data excluding time
-                var user = getUser();
-                var localStorageValue = JSON.parse(JSON.stringify(data));
-                delete localStorageValue.time;
-
-                var userPreferences = JSON.parse((JSON.parse(user.userPreferences))['DataTables_' + settings.sInstance + '_' + location.pathname]);
-                delete userPreferences.time;
-
-                //if different, update localStorage and user.userPreferences
-                if (localStorageValue !== userPreferences) {
-                    (settings.iStateDuration === -1 ? sessionStorage : localStorage).setItem(
+                (settings.iStateDuration === -1 ? sessionStorage : localStorage).setItem(
                             'DataTables_' + settings.sInstance + '_' + location.pathname,
                             JSON.stringify(data)
                             );
-                    updateUserPreferences();
-                }
             } catch (e) {
             }
         };
@@ -1165,27 +1155,87 @@ function createDataTable(tableConfigurations, callbackFunction, userCallbackFunc
         oTable.dataTable().fnSetFilteringDelay(500);
     }
     if (tableConfigurations.showColvis) {
-        $("#" + tableConfigurations.divId + "_wrapper .ColVis_MasterButton").addClass("btn btn-default");
+    //Display button show/hide columns and Save table configuration
+        $("#" + tableConfigurations.divId + "_wrapper div.ColVis .ColVis_MasterButton").attr('id','showHideColumnsButton').removeClass()
+                .addClass("btn btn-default").html("<span class='glyphicon glyphicon-cog'></span> Show/hide columns");
+        $("#showHideColumnsButton").after(
+            $("<button></button>").addClass("btn btn-default").append("<span class='glyphicon glyphicon-floppy-disk'></span> Save table configuration")
+                .click(function () {
+                    updateUserPreferences();
+                })
+        );
     }
     $("#" + tableConfigurations.divId + "_length select[name='" + tableConfigurations.divId + "_length']").addClass("form-control input-sm");
     $("#" + tableConfigurations.divId + "_length select[name='" + tableConfigurations.divId + "_length']").css("display", "inline");
 
     $("#" + tableConfigurations.divId + "_filter input[type='search']").addClass("form-control form-control input-sm");
 
+//Build the Message that appear when filter is fed
+    var showFilteredColumnsAlertMessage = "<div id='filterAlertDiv' class='col-sm-12 alert alert-warning'><div class='col-sm-11' id='activatedFilters'></div><div class='col-sm-1'><span id='clearFilterButton' data-toggle='tooltip' title='Clear filters' class='glyphicon glyphicon-remove-sign'></span> | <span id='restoreFilterButton' title='Restore user preferences' data-toggle='tooltip' class='glyphicon glyphicon-floppy-open'></span></div>";
+    $(".showInlineElement").after($(showFilteredColumnsAlertMessage).hide());
+
     $("#" + tableConfigurations.divId + "_length").addClass("marginBottom10").addClass("width80");
     $("#" + tableConfigurations.divId + "_filter").addClass("marginBottom10").addClass("width150");
 
-    //TODO: To uncomment when activating feature
-    //displayColumnSearch(tableConfigurations.divId);
-    return oTable;
+return oTable;
+}
+
+/**
+ * Function that allow to reset the filter selected
+ * @param {type} table
+ * @returns {undefined}
+ */
+function resetFilters(table) {
+    table.search('').columns().search('').draw();
 }
 
 function displayColumnSearch(tableId) {
+    //Hide filtered alert message displayed when filtered column
+    $("#filterAlertDiv").hide();
+    //Load the table
     $.when($("#" + tableId).DataTable()).then(function (table) {
-        var colVisIndex = 0;
+        var columnVisibleIndex = 0;//Used to Match visible column with columns available
+        var doc = new Doc();
+        
+        //Start building the Alert Message for filtered column information
+        //TODO : Replace with data from doc table
+        var filteredInformation = new Array();
+        filteredInformation.push("Showing information filtering : ");
+        if (table.search() !== "") {
+            filteredInformation.push("<strong>all columns</strong> containing " + table.search() + " AND ");
+        }
+
         //Iterate on all columns (visible and not visible)
         $(table.columns()[0]).each(function (value, colIndex) {
-            //init only if visible
+            //Get the value from storage (To display specific string if already filtered) 
+            var json_obj = JSON.stringify(table.ajax.params());
+            var columnSearchValues = JSON.parse(json_obj)["sSearch_" + colIndex].split(',');
+
+            //Get the column names (for title display)
+            var title = table.ajax.params().sColumns.split(',')[colIndex];
+
+            //Build the specific tooltip for filtered columns and the tooltip for not filtered columns
+            var emptyFilter = doc.getDocLabel("page_global", "tooltip_column_filter_empty");
+            var selectedFilter = doc.getDocLabel("page_global", "tooltip_column_filter_filtered");
+            var display = '<span class="glyphicon glyphicon-filter" data-toggle="tooltip" data-html="true" title="' + emptyFilter + '"></span>';
+            var valueFiltered = [];
+            if (columnSearchValues !== undefined && columnSearchValues.length > 0 && columnSearchValues[0] !== '') {
+                //Build the Alert Message for filtered column information
+                filteredInformation.push("<strong>" + title + "</strong> IN [ ");
+                
+                var filteredTooltip = '<div>';
+                $(columnSearchValues).each(function (i) {
+                    valueFiltered[i] = $('<p>' + columnSearchValues[i] + '</p>').text();
+                    filteredTooltip += "<br><span>" + $('<p>' + columnSearchValues[i] + '</p>').text() + "</span> ";
+                    filteredInformation.push(columnSearchValues[i] + " | ");
+
+                });
+                filteredTooltip += '</div>';
+                filteredInformation.push(" ] AND ");
+                display = "<span class='glyphicon glyphicon-filter columnFiltered' data-toggle='tooltip' data-html='true' title='" + valueFiltered.length + " " + selectedFilter + " : " + filteredTooltip + "'></span>";
+            }
+
+            //init column filter only if column visible
             if (table.column(colIndex).visible()) {
 
                 //This is the list of distinct value of the column
@@ -1196,37 +1246,13 @@ function displayColumnSearch(tableId) {
                     data.push(d);
                 });
 
-                //Get the value from storage (To display specific string if already filtered) 
-                var json_obj = JSON.stringify(table.ajax.params());
-                var param = JSON.parse(json_obj)["sSearch_" + colIndex].split(',');
-
-                //Get the column names (for title display)
-                var title = table.ajax.params().sColumns.split(',')[colIndex];
-
-                //Build the string to display (default picture if no data)
-                //Build the tooltip
-                var doc = new Doc();
-                var emptyFilter = doc.getDocLabel("page_global", "tooltip_column_filter_empty");
-                var selectedFilter = doc.getDocLabel("page_global", "tooltip_column_filter_filtered");
-                var display = '<span class="fa fa-tag fa-fw" data-toggle="tooltip" data-html="true" title="' + emptyFilter + '"></span>';
-                var val = [];
-                if (param !== undefined && param.length > 0 && param[0] !== '') {
-                    var filteredTooltip = '<div>';
-                    $(param).each(function (i) {
-                        val[i] = $('<p>' + param[i] + '</p>').text();
-                        filteredTooltip += "<br><span>" + $('<p>' + param[i] + '</p>').text() + "</span> ";
-                    });
-                    filteredTooltip += '</div>';
-                    display = "<span class='label columnFiltered' data-toggle='tooltip' data-html='true' \n\
-                                title='" + val.length + " " + selectedFilter + " : " + filteredTooltip + "'>" + val.length + " " + selectedFilter + " </span>";
-                }
 
                 //Get the header cell to display the filter
-                var tableCell = $($('#' + tableId + ' thead th')[colVisIndex++])[0];
+                var tableCell = $($('#' + tableId + ' thead th')[columnVisibleIndex++])[0];
                 $(tableCell).removeClass();
                 if (table.ajax.params()["bSearchable_" + colIndex]) {
                     //Then init the editable object
-                    var select = $('<span class="label columnFiltered"></span>')
+                    var select = $('<span class="label"></span>')
                             .appendTo($(tableCell).attr('data-id', 'filter_' + colIndex))
                             .editable({
                                 type: 'checklist',
@@ -1254,7 +1280,20 @@ function displayColumnSearch(tableId) {
                             });
                 }
             }
-        });
+        }); // end of loop on columns
+        
+    //Display the filtered alert message only if search is activated in at least 1 column
+        if (filteredInformation.length > 1) {
+            var filteredStringToDisplay = filteredInformation.toString();
+            $("#activatedFilters").html(filteredStringToDisplay.substr(0, filteredStringToDisplay.length - 4));
+            $("#clearFilterButton").click(function () {
+                resetFilters(table);
+            });
+            $("#restoreFilterButton").click(function () {
+                location.reload();
+            });
+            $("#filterAlertDiv").show();
+        }
     });
 
 

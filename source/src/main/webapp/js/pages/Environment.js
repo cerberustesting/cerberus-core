@@ -264,7 +264,7 @@ function renderOptionsForEnv(data) {
     if (data["hasPermissions"]) {
         if ($("#createEnvButton").length === 0) {
             var contentToAdd = "<div class='marginBottom10'><button id='createEnvButton' type='button' class='btn btn-default'>\n\
-            " + doc.getDocLabel("page_environment", "button_create") + "</button></div>";
+            <span class='glyphicon glyphicon-plus-sign'></span> " + doc.getDocLabel("page_environment", "button_create") + "</button></div>";
 
             $("#environmentsTable_wrapper div.ColVis").before(contentToAdd);
             $('#environmentList #createEnvButton').click(addEntryClick);
