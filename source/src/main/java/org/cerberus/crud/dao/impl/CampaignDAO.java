@@ -382,6 +382,12 @@ public class CampaignDAO implements ICampaignDAO {
                 .append("where tce.application = app.application ")
                 .append("group by tce.test, tce.testcase, tce.Environment, tce.Browser, tce.Country ").toString();
 
+        // Debug message on SQL.
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("SQL : " + query.toString());
+            LOG.debug("SQL.param.tag : " + tag);
+        }
+
         List<TestCaseWithExecution> testCaseWithExecutionList = new ArrayList<TestCaseWithExecution>();
         Connection connection = this.databaseSpring.connect();
         try {
@@ -462,7 +468,9 @@ public class CampaignDAO implements ICampaignDAO {
         } else {
             testCaseWithExecution.setStart(start);
         }
-        testCaseWithExecution.setEnd(resultSet.getString("End"));
+        if (!("PE".equals(resultSet.getString("ControlStatus")))) { // When execution is still PE End is not feeded correctly.
+            testCaseWithExecution.setEnd(resultSet.getString("End"));
+        }
         testCaseWithExecution.setStatusExecutionID(resultSet.getLong("statusExecutionID"));
         testCaseWithExecution.setControlStatus(resultSet.getString("ControlStatus"));
         testCaseWithExecution.setControlMessage(resultSet.getString("ControlMessage"));

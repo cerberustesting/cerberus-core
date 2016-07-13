@@ -524,8 +524,8 @@ public class TestCaseExecutionDAO implements ITestCaseExecutionDAO {
         String version = resultSet.getString("version");
         String platform = resultSet.getString("platform");
         String browserFullVersion = resultSet.getString("browserFullVersion");
-        long start = resultSet.getTimestamp("start")==null?0:resultSet.getTimestamp("start").getTime();
-        long end = resultSet.getTimestamp("end")==null?0:resultSet.getTimestamp("end").getTime();
+        long start = resultSet.getTimestamp("start") == null ? 0 : resultSet.getTimestamp("start").getTime();
+        long end = resultSet.getTimestamp("end") == null ? 0 : resultSet.getTimestamp("end").getTime();
         String controlStatus = resultSet.getString("controlStatus");
         String controlMessage = resultSet.getString("controlMessage");
         //TODO get Application
@@ -1296,7 +1296,9 @@ public class TestCaseExecutionDAO implements ITestCaseExecutionDAO {
         } else {
             testCaseWithExecution.setStart(start);
         }
-        testCaseWithExecution.setEnd(resultSet.getString("End"));
+        if (!("PE".equals(resultSet.getString("ControlStatus")))) { // When execution is still PE End is not feeded correctly.
+            testCaseWithExecution.setEnd(resultSet.getString("End"));
+        }
         testCaseWithExecution.setStatusExecutionID(resultSet.getLong("statusExecutionID"));
         testCaseWithExecution.setControlStatus(resultSet.getString("ControlStatus"));
         testCaseWithExecution.setControlMessage(resultSet.getString("ControlMessage"));
@@ -1703,7 +1705,7 @@ public class TestCaseExecutionDAO implements ITestCaseExecutionDAO {
         String platform = resultSet.getString("platform");
         String browserFullVersion = resultSet.getString("browserFullVersion");
         long start = resultSet.getTimestamp("start").getTime();
-        long end = resultSet.getTimestamp("end")==null?0:resultSet.getTimestamp("end").getTime();
+        long end = resultSet.getTimestamp("end") == null ? 0 : resultSet.getTimestamp("end").getTime();
         String controlStatus = resultSet.getString("controlStatus");
         String controlMessage = resultSet.getString("controlMessage");
         String application = resultSet.getString("application");
