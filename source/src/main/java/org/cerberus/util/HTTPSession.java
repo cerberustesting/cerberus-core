@@ -42,20 +42,25 @@ import org.apache.http.protocol.BasicHttpContext;
 import org.apache.http.protocol.ExecutionContext;
 import org.apache.http.protocol.HttpContext;
 import org.apache.http.util.EntityUtils;
+import org.apache.log4j.Logger;
 
 /**
- * 
+ *
  * @author UDPI1
  */
 public class HTTPSession {
 
+    private static final Logger LOG = Logger.getLogger(HTTPSession.class);
+
     private DefaultHttpClient client;
     private BasicScheme basicAuth;
     private BasicHttpContext context;
+
     /**
      * Start a HTTP Session with authorisation
+     *
      * @param username
-     * @param password 
+     * @param password
      */
     public void startSession(String username, String password) {
         // Create your httpclient
@@ -75,6 +80,7 @@ public class HTTPSession {
         // It will first intercept the request and preemptively initialize the authentication scheme if there is not
         client.addRequestInterceptor(new PreemptiveAuth(), 0);
     }
+
     /**
      * Start a HTTP Session without authorisation
      */
@@ -88,7 +94,7 @@ public class HTTPSession {
     }
 
     public int getURL(String url) {
-        System.out.println(url);
+        LOG.debug(url);
         HttpGet get = new HttpGet(url);
         HttpResponse response = null;
         HttpEntity entity = null;
@@ -102,7 +108,7 @@ public class HTTPSession {
             // TODO Auto-generated catch block
             e.printStackTrace();
         }
-        if( response!=null && response.getStatusLine()!=null){
+        if (response != null && response.getStatusLine() != null) {
             return response.getStatusLine().getStatusCode();
         }
         return 0;

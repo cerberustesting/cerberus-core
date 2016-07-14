@@ -26,10 +26,8 @@ import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.SocketTimeoutException;
 import java.net.URL;
-import java.net.URLConnection;
 import java.util.concurrent.Future;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import org.apache.log4j.Logger;
 import org.cerberus.engine.entity.ExecutionThreadPool;
 
 /**
@@ -42,6 +40,8 @@ public class ExecutionWorkerThread implements Runnable, Comparable {
     private ExecutionThreadPool execThreadPool;
     private String tag;
     private Future<?> future;
+
+    private static final Logger LOG = Logger.getLogger(ExecutionWorkerThread.class);
 
     public void setExecutionUrl(String url) {
         this.executionUrl = url;
@@ -64,11 +64,11 @@ public class ExecutionWorkerThread implements Runnable, Comparable {
         try {
             processCommand(executionUrl);
         } catch (MalformedURLException ex) {
-            Logger.getLogger(ExecutionWorkerThread.class.getName()).log(Level.SEVERE, null, ex);
+            LOG.error(ex.toString());
         } catch (IOException ex) {
-            Logger.getLogger(ExecutionWorkerThread.class.getName()).log(Level.SEVERE, null, ex);
+            LOG.error(ex.toString());
         } catch (Exception ex) {
-            Logger.getLogger(ExecutionWorkerThread.class.getName()).log(Level.SEVERE, null, ex);
+            LOG.error(ex.toString());
         } finally {
             execThreadPool.decrement(tag, future);
         }
@@ -95,7 +95,7 @@ public class ExecutionWorkerThread implements Runnable, Comparable {
             }
 
         } catch (SocketTimeoutException ex) {
-            System.out.print("TimeOut Exception " + ex);
+            LOG.error("TimeOut Exception " + ex.toString());
         } finally {
             if (null != br) {
                 br.close();

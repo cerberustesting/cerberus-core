@@ -277,7 +277,6 @@ public class RecorderService implements IRecorderService {
                  */
                 if (!returnCode.equals("CA")) {
                     String screenshotPath = recordScreenshotAndGetName(myExecution, testCaseStepActionExecution, controlNumber);
-                    System.out.print(screenshotPath);
                     if (testCaseStepActionControlExecution == null) {
                         testCaseStepActionExecution.setScreenshotFilename(screenshotPath);
                     } else {

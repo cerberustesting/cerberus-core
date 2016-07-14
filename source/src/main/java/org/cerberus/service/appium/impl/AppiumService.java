@@ -19,10 +19,8 @@
  */
 package org.cerberus.service.appium.impl;
 
-import org.cerberus.engine.execution.impl.RunTestCaseService;
 import io.appium.java_client.AppiumDriver;
 import io.appium.java_client.TouchAction;
-import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.cerberus.crud.entity.Identifier;
 import org.cerberus.crud.entity.MessageEvent;
@@ -31,7 +29,6 @@ import org.cerberus.crud.entity.Session;
 import org.cerberus.engine.entity.SwipeAction;
 import org.cerberus.crud.service.impl.ParameterService;
 import org.cerberus.enums.MessageEventEnum;
-import org.cerberus.log.MyLogger;
 import org.cerberus.service.appium.IAppiumService;
 import org.cerberus.util.ParameterParserUtil;
 import org.cerberus.util.StringUtil;
@@ -47,25 +44,23 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import java.awt.geom.Line2D;
 import java.util.Set;
-import org.cerberus.service.webdriver.impl.WebDriverService;
 
 /**
  * @author bcivel
  */
 public abstract class AppiumService implements IAppiumService {
 
-    /**
-     * The associated {@link Logger} to this class
-     */
-    private static final Logger LOGGER = Logger.getLogger(AppiumService.class);
+    private static final Logger LOG = Logger.getLogger(AppiumService.class);
 
     /**
-     * The Appium swipe duration parameter which is got thanks to the {@link ParameterService}
+     * The Appium swipe duration parameter which is got thanks to the
+     * {@link ParameterService}
      */
     private static final String APPIUM_SWIPE_DURATION_PARAMETER = "appium_swipeDuration";
 
     /**
-     * The default Appium swipe duration if no {@link AppiumService#APPIUM_SWIPE_DURATION_PARAMETER} has been defined
+     * The default Appium swipe duration if no
+     * {@link AppiumService#APPIUM_SWIPE_DURATION_PARAMETER} has been defined
      */
     private static final int DEFAULT_APPIUM_SWIPE_DURATION = 2000;
 
@@ -79,7 +74,7 @@ public abstract class AppiumService implements IAppiumService {
         String newContext = "";
         Set<String> contextNames = driver.getContextHandles();
         for (String contextName : contextNames) {
-            System.out.println("context" + contextName);
+            LOG.error("Context : " + contextName);
             if (contextName.contains("WEBVIEW")) {
                 driver.context(contextName);
                 newContext = contextName;
@@ -112,11 +107,11 @@ public abstract class AppiumService implements IAppiumService {
         } catch (NoSuchElementException exception) {
             message = new MessageEvent(MessageEventEnum.ACTION_FAILED_TYPE_NO_SUCH_ELEMENT);
             message.setDescription(message.getDescription().replace("%ELEMENT%", identifier.getIdentifier() + "=" + identifier.getLocator()));
-            MyLogger.log(WebDriverService.class.getName(), Level.DEBUG, exception.toString());
+            LOG.debug(exception.toString());
             return message;
         } catch (WebDriverException exception) {
             message = new MessageEvent(MessageEventEnum.ACTION_FAILED_SELENIUM_CONNECTIVITY);
-            MyLogger.log(WebDriverService.class.getName(), Level.FATAL, exception.toString());
+            LOG.fatal(exception.toString());
             return message;
         }
     }
@@ -135,11 +130,11 @@ public abstract class AppiumService implements IAppiumService {
         } catch (NoSuchElementException exception) {
             message = new MessageEvent(MessageEventEnum.ACTION_FAILED_CLICK_NO_SUCH_ELEMENT);
             message.setDescription(message.getDescription().replace("%ELEMENT%", identifier.getIdentifier() + "=" + identifier.getLocator()));
-            MyLogger.log(WebDriverService.class.getName(), Level.DEBUG, exception.toString());
+            LOG.debug(exception.toString());
             return message;
         } catch (WebDriverException exception) {
             message = new MessageEvent(MessageEventEnum.ACTION_FAILED_SELENIUM_CONNECTIVITY);
-            MyLogger.log(WebDriverService.class.getName(), Level.FATAL, exception.toString());
+            LOG.fatal(exception.toString());
             return message;
         }
 
@@ -147,7 +142,7 @@ public abstract class AppiumService implements IAppiumService {
 
     private By getBy(Identifier identifier) {
 
-        MyLogger.log(RunTestCaseService.class.getName(), Level.DEBUG, "Finding selenium Element : " + identifier.getLocator() + " by : " + identifier.getIdentifier());
+        LOG.debug("Finding selenium Element : " + identifier.getLocator() + " by : " + identifier.getIdentifier());
 
         if (identifier.getIdentifier().equalsIgnoreCase("id")) {
             return By.id(identifier.getLocator());
@@ -179,7 +174,7 @@ public abstract class AppiumService implements IAppiumService {
         AppiumDriver driver = session.getAppiumDriver();
         By locator = this.getBy(identifier);
 
-        MyLogger.log(RunTestCaseService.class.getName(), Level.DEBUG, "Waiting for Element : " + identifier.getIdentifier() + "=" + identifier.getLocator());
+        LOG.debug("Waiting for Element : " + identifier.getIdentifier() + "=" + identifier.getLocator());
         try {
             WebDriverWait wait = new WebDriverWait(driver, session.getDefaultWait());
             if (visible) {
@@ -192,10 +187,10 @@ public abstract class AppiumService implements IAppiumService {
                 wait.until(ExpectedConditions.presenceOfElementLocated(locator));
             }
         } catch (TimeoutException exception) {
-            MyLogger.log(RunTestCaseService.class.getName(), Level.FATAL, "Exception waiting for element :" + exception);
+            LOG.fatal("Exception waiting for element :" + exception.toString());
             throw new NoSuchElementException(identifier.getIdentifier() + "=" + identifier.getLocator());
         }
-        MyLogger.log(RunTestCaseService.class.getName(), Level.DEBUG, "Finding Element : " + identifier.getIdentifier() + "=" + identifier.getLocator());
+        LOG.debug("Finding Element : " + identifier.getIdentifier() + "=" + identifier.getLocator());
         return driver.findElement(locator);
     }
 
@@ -268,7 +263,7 @@ public abstract class AppiumService implements IAppiumService {
             );
             return new MessageEvent(MessageEventEnum.ACTION_SUCCESS_SWIPE).resolveDescription("DIRECTION", action.getActionType().name());
         } catch (Exception e) {
-            LOGGER.warn("Unable to swipe screen due to " + e.getMessage(), e);
+            LOG.warn("Unable to swipe screen due to " + e.getMessage(), e);
             return new MessageEvent(MessageEventEnum.ACTION_FAILED_SWIPE)
                     .resolveDescription("DIRECTION", action.getActionType().name())
                     .resolveDescription("REASON", e.getMessage());

@@ -65,7 +65,6 @@ public class GetStepInLibrary extends HttpServlet {
 
         ApplicationContext appContext = WebApplicationContextUtils.getWebApplicationContext(this.getServletContext());
         ITestCaseStepService testCaseStepService = appContext.getBean(ITestCaseStepService.class);
-       System.out.print(test+testCase);
                  
         JSONArray array = new JSONArray();
         JSONObject jsonObject = new JSONObject();

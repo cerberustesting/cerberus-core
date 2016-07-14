@@ -81,11 +81,9 @@ public class ImportTestCaseFromJson extends HttpServlet {
                         String name = item.getFieldName();
                         if (name.equals("test")) {
                             test = item.getString("UTF-8");
-                            System.out.println(test);
                         }
                         if (name.equals("testcase")) {
                             testcase = item.getString("UTF-8");
-                            System.out.println(testcase);
                         }
                     } else {
                         InputStream inputStream = item.getInputStream();
