@@ -69,7 +69,7 @@ public class RecorderService implements IRecorderService {
         long runId = testCaseExecution.getId();
 
         //used for logging purposes
-        String testDescription = "[" + test + " - " + testCase + " - step: " + step + " action: " + sequence + "]";
+        String testDescription = "[" + test + " - " + testCase + " - step: " + step + " action: " + sequence + "] ";
 
         MyLogger.log(RecorderService.class.getName(), Level.INFO, testDescription + "Doing screenshot.");
         /**
