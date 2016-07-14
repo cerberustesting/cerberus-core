@@ -313,6 +313,12 @@ public class TestCaseService implements ITestCaseService {
     public AnswerItem readByKey(String test, String testCase) {
         return testCaseDao.readByKey(test, testCase);
     }
+    
+    
+    @Override
+    public AnswerList readDistinctValuesByCriteria(String system, String test, String searchParameter, Map<String, List<String>> individualSearch, String columnName) {
+        return testCaseDao.readDistinctValuesByCriteria(system, test, searchParameter, individualSearch, columnName);
+    }
 
     @Override
     public Answer update(TCase testCase) {
