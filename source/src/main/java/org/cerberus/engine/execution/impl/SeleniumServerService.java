@@ -31,19 +31,16 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
-import java.util.logging.Logger;
 import org.apache.commons.io.IOUtils;
 import org.apache.http.HttpHost;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.message.BasicHttpEntityEnclosingRequest;
-import org.apache.log4j.Level;
 import org.cerberus.crud.entity.Invariant;
 import org.cerberus.crud.entity.MessageGeneral;
 import org.cerberus.crud.entity.Parameter;
 import org.cerberus.crud.entity.RobotCapability;
-import org.cerberus.crud.entity.Selenium;
 import org.cerberus.crud.entity.Session;
 import org.cerberus.crud.entity.SessionCapabilities;
 import org.cerberus.crud.entity.TestCaseExecution;
@@ -51,7 +48,6 @@ import org.cerberus.crud.service.IInvariantService;
 import org.cerberus.crud.service.IParameterService;
 import org.cerberus.enums.MessageGeneralEnum;
 import org.cerberus.exception.CerberusException;
-import org.cerberus.log.MyLogger;
 import org.cerberus.engine.execution.ISeleniumServerService;
 import org.cerberus.util.StringUtil;
 import org.json.JSONException;
@@ -63,7 +59,6 @@ import org.openqa.selenium.Point;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.firefox.FirefoxDriver;
 import org.openqa.selenium.firefox.FirefoxProfile;
-import org.openqa.selenium.remote.CapabilityType;
 import org.openqa.selenium.remote.DesiredCapabilities;
 import org.openqa.selenium.remote.HttpCommandExecutor;
 import org.openqa.selenium.remote.RemoteWebDriver;
@@ -92,6 +87,8 @@ public class SeleniumServerService implements ISeleniumServerService {
         String testCaseDescription = "[" + tCExecution.getTest() + " - " + tCExecution.getTestCase() + "] ";
         try {
 
+            LOG.info(testCaseDescription + "Start Selenium Server");
+
             /**
              * Set Session
              */
@@ -102,11 +99,10 @@ public class SeleniumServerService implements ISeleniumServerService {
                 String to = tCExecution.getTimeout().equals("") ? param.getValue() : tCExecution.getTimeout();
                 defaultWait = Long.parseLong(to);
             } catch (CerberusException ex) {
-                //MyLogger.log(RunTestCase.class.getName(), Level.WARN, "Parameter (selenium_defaultWait) not in Parameter table, default wait set to 90 seconds");
-                LOG.warn("Parameter (selenium_defaultWait) not in Parameter table, default wait set to 90 seconds. " + ex.toString());
+                LOG.warn(testCaseDescription + "Parameter (selenium_defaultWait) not in Parameter table, default wait set to 90 seconds. " + ex.toString());
                 defaultWait = 90;
             }
-            LOG.debug("TimeOut defined on session : " + defaultWait);
+            LOG.debug(testCaseDescription + "TimeOut defined on session : " + defaultWait);
             List<SessionCapabilities> capabilities = new ArrayList();
             SessionCapabilities sc = new SessionCapabilities();
             sc.create("browser", tCExecution.getBrowser());
@@ -135,18 +131,18 @@ public class SeleniumServerService implements ISeleniumServerService {
             session.setCapabilities(capabilities);
 
             tCExecution.setSession(session);
-            LOG.debug("Session is set.");
+            LOG.debug(testCaseDescription + "Session is set.");
 
             /**
              * SetUp Capabilities
              */
-            MyLogger.log(SeleniumServerService.class.getName(), Level.DEBUG, testCaseDescription + "Set Capabilities");
+            LOG.debug(testCaseDescription + "Set Capabilities");
             DesiredCapabilities caps = this.setCapabilities(tCExecution);
 
             /**
              * SetUp Driver
              */
-            MyLogger.log(SeleniumServerService.class.getName(), Level.DEBUG, testCaseDescription + "Set Driver");
+            LOG.debug(testCaseDescription + "Set Driver");
             WebDriver driver = null;
             AppiumDriver appiumDriver = null;
             if (tCExecution.getApplication().getType().equalsIgnoreCase("GUI")) {
@@ -202,21 +198,21 @@ public class SeleniumServerService implements ISeleniumServerService {
             tCExecution.getSession().setStarted(true);
 
         } catch (CerberusException exception) {
-            MyLogger.log(Selenium.class.getName(), Level.ERROR, exception.toString());
+            LOG.error(testCaseDescription + exception.toString());
             throw new CerberusException(exception.getMessageError());
         } catch (MalformedURLException exception) {
-            MyLogger.log(Selenium.class.getName(), Level.ERROR, exception.toString());
+            LOG.error(testCaseDescription + exception.toString());
             MessageGeneral mes = new MessageGeneral(MessageGeneralEnum.VALIDATION_FAILED_URL_MALFORMED);
             mes.setDescription(mes.getDescription().replace("%URL%", tCExecution.getSession().getHost() + ":" + tCExecution.getSession().getPort()));
             throw new CerberusException(mes);
         } catch (UnreachableBrowserException exception) {
-            MyLogger.log(Selenium.class.getName(), Level.ERROR, exception.toString());
+            LOG.error(testCaseDescription + exception.toString());
             MessageGeneral mes = new MessageGeneral(MessageGeneralEnum.VALIDATION_FAILED_SELENIUM_COULDNOTCONNECT);
             mes.setDescription(mes.getDescription().replace("%SSIP%", tCExecution.getSeleniumIP()));
             mes.setDescription(mes.getDescription().replace("%SSPORT%", tCExecution.getSeleniumPort()));
             throw new CerberusException(mes);
         } catch (Exception exception) {
-            MyLogger.log(Selenium.class.getName(), Level.ERROR, exception.toString());
+            LOG.error(testCaseDescription + exception.toString());
             MessageGeneral mes = new MessageGeneral(MessageGeneralEnum.EXECUTION_FA_SELENIUM);
             mes.setDescription(mes.getDescription().replace("%MES%", exception.toString()));
             throw new CerberusException(mes);
@@ -232,13 +228,13 @@ public class SeleniumServerService implements ISeleniumServerService {
         try {
             Invariant invariant = this.invariantService.findInvariantByIdValue("COUNTRY", tCExecution.getCountry());
             if (invariant.getGp2() == null) {
-                MyLogger.log(Selenium.class.getName(), Level.WARN, "Country selected (" + tCExecution.getCountry() + ") has no value of GP2 in Invariant table, default language set to English(en)");
+                LOG.warn("Country selected (" + tCExecution.getCountry() + ") has no value of GP2 in Invariant table, default language set to English (en)");
                 profile.setPreference("intl.accept_languages", "en");
             } else {
                 profile.setPreference("intl.accept_languages", invariant.getGp2());
             }
         } catch (CerberusException ex) {
-            MyLogger.log(Selenium.class.getName(), Level.WARN, "Country selected (" + tCExecution.getCountry() + ") not in Invariant table, default language set to English(en)");
+            LOG.warn("Country selected (" + tCExecution.getCountry() + ") not in Invariant table, default language set to English (en)");
             profile.setPreference("intl.accept_languages", "en");
         }
 
@@ -258,17 +254,17 @@ public class SeleniumServerService implements ISeleniumServerService {
 
             File firebug = new File(firebugPath);
             if (!firebug.canRead()) {
-                MyLogger.log(Selenium.class.getName(), Level.WARN, "Can't read : " + firebugPath);
+                LOG.warn("Can't read : " + firebugPath);
                 MessageGeneral mes = new MessageGeneral(MessageGeneralEnum.EXECUTION_FA_SELENIUM);
                 mes.setDescription(mes.getDescription().replace("%MES%", "File not found : '" + firebugPath + "' Change the Cerberus parameter : cerberus_selenium_firefoxextension_firebug"));
                 throw new CerberusException(mes);
 
             }
             try {
-                MyLogger.log(SeleniumServerService.class.getName(), Level.DEBUG, "Adding firebug extension : " + firebugPath);
+                LOG.debug("Adding firebug extension : " + firebugPath);
                 profile.addExtension(firebug);
             } catch (IOException exception) {
-                MyLogger.log(Selenium.class.getName(), Level.WARN, exception.toString());
+                LOG.warn(exception.toString());
                 MessageGeneral mes = new MessageGeneral(MessageGeneralEnum.EXECUTION_FA_SELENIUM);
                 mes.setDescription(mes.getDescription().replace("%MES%", "File not found : " + firebugPath));
                 throw new CerberusException(mes);
@@ -276,16 +272,16 @@ public class SeleniumServerService implements ISeleniumServerService {
 
             File netExport = new File(netexportPath);
             if (!netExport.canRead()) {
-                MyLogger.log(Selenium.class.getName(), Level.WARN, "Can't read : " + netexportPath);
+                LOG.warn("Can't read : " + netexportPath);
                 MessageGeneral mes = new MessageGeneral(MessageGeneralEnum.EXECUTION_FA_SELENIUM);
                 mes.setDescription(mes.getDescription().replace("%MES%", "File not found : " + netexportPath + "' Change the Cerberus parameter : cerberus_selenium_firefoxextension_netexport"));
                 throw new CerberusException(mes);
             }
             try {
-                MyLogger.log(SeleniumServerService.class.getName(), Level.DEBUG, "Adding netexport extension : " + netexportPath);
+                LOG.debug("Adding netexport extension : " + netexportPath);
                 profile.addExtension(netExport);
             } catch (IOException exception) {
-                MyLogger.log(Selenium.class.getName(), Level.WARN, exception.toString());
+                LOG.warn(exception.toString());
                 MessageGeneral mes = new MessageGeneral(MessageGeneralEnum.EXECUTION_FA_SELENIUM);
                 mes.setDescription(mes.getDescription().replace("%MES%", "File not found : " + netexportPath));
                 throw new CerberusException(mes);
@@ -313,7 +309,7 @@ public class SeleniumServerService implements ISeleniumServerService {
             String url = cerberusUrl + "/SaveStatistic?logId=" + tCExecution.getExecutionUUID();
             profile.setPreference("extensions.firebug.netexport.autoExportToServer", true);
             profile.setPreference("extensions.firebug.netexport.beaconServerURL", url);
-            MyLogger.log(SeleniumServerService.class.getName(), Level.DEBUG, "Selenium netexport.beaconServerURL : " + url);
+            LOG.debug("Selenium netexport.beaconServerURL : " + url);
             profile.setPreference("extensions.firebug.netexport.sendToConfirmation", false);
             profile.setPreference("extensions.firebug.netexport.showPreview", false);
 
@@ -425,9 +421,9 @@ public class SeleniumServerService implements ISeleniumServerService {
                 // Wait 2 sec till HAR is exported
                 Thread.sleep(2000);
             } catch (InterruptedException ex) {
-                Logger.getLogger(SeleniumServerService.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+                LOG.error(ex.toString());
             }
-            Logger.getLogger(SeleniumServerService.class.getName()).log(java.util.logging.Level.INFO, "Stop Selenium Server");
+            LOG.info("Stop Selenium Server");
             session.getDriver().quit();
             return true;
         }
@@ -459,9 +455,9 @@ public class SeleniumServerService implements ISeleniumServerService {
             }
 
         } catch (IOException ex) {
-            Logger.getLogger(SeleniumServerService.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            LOG.error(ex.toString());
         } catch (JSONException ex) {
-            Logger.getLogger(SeleniumServerService.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            LOG.error(ex.toString());
         }
     }
 
@@ -484,7 +480,7 @@ public class SeleniumServerService implements ISeleniumServerService {
             } else if (browser.contains("safari")) {
                 capabilities = DesiredCapabilities.safari();
             } else {
-                MyLogger.log(Selenium.class.getName(), Level.WARN, "Not supported Browser : " + browser);
+                LOG.warn("Not supported Browser : " + browser);
                 MessageGeneral mes = new MessageGeneral(MessageGeneralEnum.EXECUTION_FA_SELENIUM);
                 mes.setDescription(mes.getDescription().replace("%MES%", "Browser '" + browser + "' is not supported"));
                 mes.setDescription("Not supported Browser : " + browser);

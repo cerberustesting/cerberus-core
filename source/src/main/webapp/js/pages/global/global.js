@@ -1487,7 +1487,7 @@ function displayFooter(doc) {
 
     footerString = footerString.replace("%VERSION%", cerberusInformation.projectName + cerberusInformation.projectVersion);
     footerString = footerString.replace("%ENV%", cerberusInformation.environment);
-    footerString = footerString.replace("%DATE%", date.toDateString());
+    footerString = footerString.replace("%DATE%", date.toISOString());
     footerString = footerString.replace("%TIMING%", loadTime);
     footerBugString = footerBugString.replace("%LINK%", "https://github.com/vertigo17/Cerberus/issues/new?body=Cerberus%20Version%20:%20" + cerberusInformation.projectVersion);
     $("#footer").html(footerString + " - " + footerBugString);

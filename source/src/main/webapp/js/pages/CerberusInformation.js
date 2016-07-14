@@ -44,6 +44,7 @@ function feedContent() {
     var jqxhr = $.getJSON("ReadCerberusDetailInformation");
     $.when(jqxhr).then(function (data) {
         var table = $("#cerberusTableBody");
+        table.empty();
         var row = $("<tr></tr>");
         var cel1 = $("<td></td>").append(data.projectName);
         var cel2 = $("<td></td>").append(data.projectVersion);
@@ -54,18 +55,21 @@ function feedContent() {
         table.append(row);
 
         var table = $("#jvmTableBody");
+        table.empty();
         var row = $("<tr></tr>");
         var cel1 = $("<td></td>").append(data.javaVersion);
         row.append(cel1);
         table.append(row);
 
         var table = $("#sessionNbTableBody");
+        table.empty();
         var row = $("<tr></tr>");
         var cel1 = $("<td></td>").append(data.simultaneous_session);
         row.append(cel1);
         table.append(row);
 
         var table = $("#sessionTableBody");
+        table.empty();
         $.each(data["active_users"], function (idx, obj) {
             var row = $("<tr></tr>");
             var cel1 = $("<td></td>").append(obj);
@@ -74,23 +78,27 @@ function feedContent() {
         });
 
         var table = $("#exeNbTableBody");
+        table.empty();
         var row = $("<tr></tr>");
         var cel1 = $("<td></td>").append(data.simultaneous_execution);
         row.append(cel1);
         table.append(row);
 
         var table = $("#exeTableBody");
+        table.empty();
         $.each(data["simultaneous_execution_list"], function (idx, obj) {
             var row = $("<tr></tr>");
-            var cel1 = $("<td></td>").append(obj.id);
+            var cel1 = $("<td></td>").append(FormatedExeId(obj.id));
             row.append(cel1);
-            var cel1 = $("<td></td>").append(obj.test);
-            row.append(cel1);
-            var cel1 = $("<td></td>").append(obj.testcase);
+            var cel1 = $("<td></td>").append(obj.start);
             row.append(cel1);
             var cel1 = $("<td></td>").append(obj.system);
             row.append(cel1);
             var cel1 = $("<td></td>").append(obj.application);
+            row.append(cel1);
+            var cel1 = $("<td></td>").append(obj.test);
+            row.append(cel1);
+            var cel1 = $("<td></td>").append("<a href='TestCase.jsp?Test=" + obj.test + "&TestCase=" + obj.testcase + "'>" + obj.testcase + "</a>");
             row.append(cel1);
             var cel1 = $("<td></td>").append(obj.environment);
             row.append(cel1);
@@ -98,10 +106,13 @@ function feedContent() {
             row.append(cel1);
             var cel1 = $("<td></td>").append(obj.robotIP);
             row.append(cel1);
+            var cel1 = $("<td></td>").append(FormatedTag(obj.tag));
+            row.append(cel1);
             table.append(row);
         });
 
         var table = $("#threadTableBody");
+        table.empty();
         var row = $("<tr></tr>");
         var cel1 = $("<td></td>").append(data.queue_in_execution + " / " + data.size_queue);
         var cel2 = $("<td></td>").append(data.number_of_thread);
@@ -110,6 +121,7 @@ function feedContent() {
         table.append(row);
 
         var table = $("#databaseTableBody");
+        table.empty();
         var row = $("<tr></tr>");
         var cel1 = $("<td></td>").append(data.DatabaseProductName);
         var cel2 = $("<td></td>").append(data.DatabaseProductVersion);
@@ -122,6 +134,7 @@ function feedContent() {
         table.append(row);
 
         var table = $("#driverTableBody");
+        table.empty();
         var row = $("<tr></tr>");
         var cel1 = $("<td></td>").append(data.DriverName);
         var cel2 = $("<td></td>").append(data.DriverVersion);
@@ -134,6 +147,7 @@ function feedContent() {
         table.append(row);
 
         var table = $("#jdbcTableBody");
+        table.empty();
         var row = $("<tr></tr>");
         var cel1 = $("<td></td>").append(data.JDBCMinorVersion);
         var cel2 = $("<td></td>").append(data.JDBCMajorVersion);
@@ -142,6 +156,23 @@ function feedContent() {
         table.append(row);
     });
 
+}
+
+
+function FormatedExeId(id) {
+    if (id === 0) {
+        return id
+    } else {
+        return "<a href='ExecutionDetail.jsp?id_tc=" + id + "'>" + id + "</a>";
+    }
+}
+
+function FormatedTag(tag) {
+    if (tag === undefined) {
+        return tag
+    } else {
+        return "<a href='ReportingExecutionByTag.jsp?Tag=" + tag + "'>" + tag + "</a>";
+    }
 }
 
 function resetThreadPool() {

@@ -47,7 +47,8 @@
                         <div class="panel-body collapse in" id="cerberusActivity">
                             <div class="row">
                                 <div class="form-group col-xs-12">
-                                    <button type="button" class="btn btn-default" id="btnReset" name="btnLoad"  onclick="resetThreadPool()">Reset Queue</button>
+                                    <button type="button" class="btn btn-default" id="btnReset" name="btnReset"  onclick="resetThreadPool()">Reset Queue</button>
+                                    <button type="button" class="btn btn-default" id="btnRefresh" name="btnRefresh"  onclick="feedContent()">Refresh</button>
                                 </div>
                             </div>
 
@@ -96,13 +97,15 @@
                                         <thead>
                                             <tr>
                                                 <th class="text-center">ID</th>
-                                                <th class="text-center">Test</th>
-                                                <th class="text-center">TestCase</th>
+                                                <th class="text-center">Start</th>
                                                 <th class="text-center">System</th>
                                                 <th class="text-center">Application</th>
+                                                <th class="text-center">Test</th>
+                                                <th class="text-center">TestCase</th>
                                                 <th class="text-center">Environment</th>
                                                 <th class="text-center">Country</th>
                                                 <th class="text-center">Robot</th>
+                                                <th class="text-center">Tag</th>
                                             </tr>
                                         </thead>
                                         <tbody id="exeTableBody">
@@ -164,7 +167,7 @@
                             <div class="panel panel-default">
                                 <div class="panel-heading card" data-toggle="collapse"  data-target="#jvmInformation">
                                     <span class="fa fa-tag fa-fw"></span>
-                                    <label id="filters" name="filtersField">JMV Information</label>
+                                    <label id="filters" name="filtersField">JVM Information</label>
                                     <span class="toggle glyphicon glyphicon-chevron-right pull-right"></span>
                                 </div>
                                 <div class="panel-body collapse in" id="jvmInformation">
