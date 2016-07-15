@@ -1142,7 +1142,7 @@ function createDataTable(tableConfigurations, callbackFunction, userCallbackFunc
                 error: showUnexpectedError
             });
             $.when(oSettings.jqXHR).then(function (data) {
-                displayColumnSearch(tableConfigurations.divId);
+                displayColumnSearch(tableConfigurations.divId, tableConfigurations.ajaxSource);
                 $('[data-toggle="tooltip"]').tooltip();
             });
         };
@@ -1258,7 +1258,9 @@ function displayColumnSearch(tableId, contentUrl) {
                                 type: 'checklist',
                                 title: title,
                                 source: function () {
-                                    var url = './' + contentUrl + '&columnName=' + title;
+                                    //Check if URL already contains parameters
+                                    var urlSeparator = contentUrl.indexOf("?")>-1?"&":"?";
+                                    var url = './' + contentUrl + urlSeparator +'columnName=' + title;
                                     var result;
                                     $.ajax({
                                         type: 'GET',

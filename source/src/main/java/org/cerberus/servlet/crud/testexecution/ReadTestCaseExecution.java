@@ -19,14 +19,18 @@
  */
 package org.cerberus.servlet.crud.testexecution;
 
+import com.google.common.base.Strings;
 import java.io.IOException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.servlet.ServletException;
@@ -94,10 +98,17 @@ public class ReadTestCaseExecution extends HttpServlet {
             String system = ParameterParserUtil.parseStringParam(request.getParameter("system"), "");
             long executionId = ParameterParserUtil.parseLongParam(request.getParameter("executionId"), 0);
             boolean executionWithDependency = ParameterParserUtil.parseBooleanParam("executionWithDependency", false);
-            if (sEcho == 0 && !Tag.equals("")) {
+            String columnName = ParameterParserUtil.parseStringParam(request.getParameter("columnName"), "");
+
+            if (!Strings.isNullOrEmpty(columnName)) {
+                //If columnName is present, then return the distinct value of this column.
+                //In this specific case, do nothing as distinct will be done client side
+            } else if (sEcho == 0 && !Tag.equals("")) {
+                //Return the columns to display in the execution table
                 answer = findExecutionColumns(appContext, request, Tag);
                 jsonResponse = (JSONObject) answer.getItem();
             } else if (sEcho != 0 && !Tag.equals("")) {
+                //Return the list of execution for the execution table
                 answer = findExecutionList(appContext, request, Tag);
                 jsonResponse = (JSONObject) answer.getItem();
             } else if (!system.isEmpty()) {
@@ -273,8 +284,16 @@ public class ReadTestCaseExecution extends HttpServlet {
         String columnToSort[] = sColumns.split(",");
         String columnName = columnToSort[columnToSortParameter];
         String sort = ParameterParserUtil.parseStringParam(request.getParameter("sSortDir_0"), "asc");
+        
+        Map<String, List<String>> individualSearch = new HashMap<String, List<String>>();
+        for (int a = 0; a < columnToSort.length; a++) {
+            if (null!=request.getParameter("sSearch_" + a) && !request.getParameter("sSearch_" + a).isEmpty()) {
+                List<String> search = new ArrayList(Arrays.asList(request.getParameter("sSearch_" + a).split(",")));
+                individualSearch.put(columnToSort[a], search);
+            }
+        }
 
-        List<TestCaseWithExecution> testCaseWithExecutions = readExecutionByTagList(appContext, Tag, startPosition, length, columnName, sort, searchParameter);
+        List<TestCaseWithExecution> testCaseWithExecutions = readExecutionByTagList(appContext, Tag, startPosition, length, columnName, sort, searchParameter, individualSearch);
 
         JSONArray executionList = new JSONArray();
         JSONObject statusFilter = getStatusList(request);
@@ -429,7 +448,7 @@ public class ReadTestCaseExecution extends HttpServlet {
         return result;
     }
 
-    private List<TestCaseWithExecution> readExecutionByTagList(ApplicationContext appContext, String Tag, int startPosition, int length, String columnName, String sort, String searchParameter) throws ParseException, CerberusException {
+    private List<TestCaseWithExecution> readExecutionByTagList(ApplicationContext appContext, String Tag, int startPosition, int length, String columnName, String sort, String searchParameter, Map<String, List<String>> individualSearch) throws ParseException, CerberusException {
         AnswerList testCaseExecution;
         AnswerList testCaseExecutionInQueue;
 
@@ -439,7 +458,7 @@ public class ReadTestCaseExecution extends HttpServlet {
         /**
          * Get list of execution by tag, env, country, browser
          */
-        testCaseExecution = testCaseExecService.readByTagByCriteria(Tag, startPosition, length, columnName, sort, searchParameter, "");
+        testCaseExecution = testCaseExecService.readByTagByCriteria(Tag, startPosition, length, columnName, sort, searchParameter, individualSearch);
         List<TestCaseWithExecution> testCaseWithExecutions = testCaseExecution.getDataList();
         /**
          * Get list of Execution in Queue by Tag

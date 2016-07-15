@@ -104,4 +104,13 @@ public interface ITestService {
      * @throws CerberusException
      */
     void convert(Answer answer) throws CerberusException;
+    
+    /**
+     * Read distinct Value of specified column
+     * @param searchTerm
+     * @param individualSearch
+     * @param columnName
+     * @return 
+     */
+    AnswerList<List<String>> readDistinctValuesByCriteria(String searchTerm, Map<String, List<String>> individualSearch, String columnName);
 }

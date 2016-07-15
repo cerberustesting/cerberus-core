@@ -17,6 +17,7 @@
  */
 package org.cerberus.crud.dao.impl;
 
+import com.google.common.base.Strings;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -26,6 +27,7 @@ import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
@@ -961,9 +963,10 @@ public class TestCaseExecutionDAO implements ITestCaseExecutionDAO {
     }
 
     @Override
-    public AnswerList readByTagByCriteria(String tag, int start, int amount, String column, String dir, String searchTerm, String individualSearch) throws CerberusException {
+    public AnswerList readByTagByCriteria(String tag, int start, int amount, String column, String dir, String searchTerm, Map<String, List<String>> individualSearch) throws CerberusException {
         MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
         AnswerList answer = new AnswerList();
+        List<String> individalColumnSearchValues = new ArrayList<String>();
 
         final StringBuffer query = new StringBuffer();
 
@@ -984,10 +987,21 @@ public class TestCaseExecutionDAO implements ITestCaseExecutionDAO {
         query.append(" , application app where tce.application = app.application ");
 
         if (!StringUtil.isNullOrEmpty(searchTerm)) {
-            query.append("and (tce.`test` like '%").append(searchTerm).append("%'");
-            query.append(" or tce.`testCase` like '%").append(searchTerm).append("%'");
-            query.append(" or tce.`application` like '%").append(searchTerm).append("%'");
-            query.append(" or tce.`description` like '%").append(searchTerm).append("%')");
+            query.append("and (tce.`test` like ? ");
+            query.append(" or tce.`testCase` like ? ");
+            query.append(" or tce.`application` like ? ");
+            query.append(" or tc.`bugid` like ? ");
+            query.append(" or tc.`priority` like ? ");
+            query.append(" or tc.`description` like ? )");
+        }
+        if (individualSearch != null && !individualSearch.isEmpty()) {
+            query.append(" and ( 1=1 ");
+            for (Map.Entry<String, List<String>> entry : individualSearch.entrySet()) {
+                query.append(" and ");
+                query.append(SqlUtil.getInSQLClauseForPreparedStatement(entry.getKey(), entry.getValue()));
+                individalColumnSearchValues.addAll(entry.getValue());
+            }
+            query.append(" ) ");
         }
 
         query.append("group by tce.test, tce.testcase, tce.Environment, tce.Browser, tce.Country ");
@@ -1010,8 +1024,20 @@ public class TestCaseExecutionDAO implements ITestCaseExecutionDAO {
         Connection connection = this.databaseSpring.connect();
         try {
             PreparedStatement preStat = connection.prepareStatement(query.toString());
+            int i = 1;
             if (!StringUtil.isNullOrEmpty(tag)) {
-                preStat.setString(1, tag);
+                preStat.setString(i++, tag);
+            }
+            if (!Strings.isNullOrEmpty(searchTerm)) {
+                preStat.setString(i++, "%" + searchTerm + "%");
+                preStat.setString(i++, "%" + searchTerm + "%");
+                preStat.setString(i++, "%" + searchTerm + "%");
+                preStat.setString(i++, "%" + searchTerm + "%");
+                preStat.setString(i++, "%" + searchTerm + "%");
+                preStat.setString(i++, "%" + searchTerm + "%");
+            }
+            for (String individualColumnSearchValue : individalColumnSearchValues) {
+                preStat.setString(i++, individualColumnSearchValue);
             }
 
             try {
@@ -1020,13 +1046,6 @@ public class TestCaseExecutionDAO implements ITestCaseExecutionDAO {
                     while (resultSet.next()) {
                         testCaseWithExecutionList.add(this.loadTestCaseWithExecutionFromResultSet(resultSet));
                     }
-
-//                    resultSet = preStat.executeQuery("SELECT FOUND_ROWS()");
-//                    int nrTotalRows = 0;
-//
-//                    if (resultSet != null && resultSet.next()) {
-//                        nrTotalRows = resultSet.getInt(1);
-//                    }
                     msg.setDescription(msg.getDescription().replace("%ITEM%", "TestCaseExecution").replace("%OPERATION%", "SELECT"));
                     answer = new AnswerList(testCaseWithExecutionList, testCaseWithExecutionList.size());
                 } catch (SQLException exception) {

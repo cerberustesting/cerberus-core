@@ -62,5 +62,7 @@ public interface ITestDAO {
     public Answer update(Test test);
     
     public Answer delete(Test test);
+    
+    public AnswerList<List<String>> readDistinctValuesByCriteria(String searchTerm, Map<String, List<String>> individualSearch, String columnName);
 
 }

@@ -21,6 +21,7 @@ package org.cerberus.crud.service.impl;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.log4j.Level;
 import org.cerberus.crud.dao.ITestCaseExecutionDAO;
@@ -31,6 +32,7 @@ import org.cerberus.exception.CerberusException;
 import org.cerberus.log.MyLogger;
 import org.cerberus.crud.service.ITestCaseExecutionService;
 import org.cerberus.crud.service.ITestCaseStepExecutionService;
+import org.cerberus.dto.TestCaseWithExecution;
 import org.cerberus.enums.MessageEventEnum;
 import org.cerberus.enums.MessageGeneralEnum;
 import org.cerberus.util.ParameterParserUtil;
@@ -146,7 +148,7 @@ public class TestCaseExecutionService implements ITestCaseExecutionService {
     }
 
     @Override
-    public AnswerList readByTagByCriteria(String tag, int start, int amount, String column, String dir, String searchTerm, String individualSearch) throws CerberusException {
+    public AnswerList readByTagByCriteria(String tag, int start, int amount, String column, String dir, String searchTerm, Map<String, List<String>> individualSearch) throws CerberusException {
         return testCaseExecutionDao.readByTagByCriteria(tag, start, amount, column, dir, searchTerm, individualSearch);
     }
 

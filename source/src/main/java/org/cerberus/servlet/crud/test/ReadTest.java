@@ -19,6 +19,7 @@
  */
 package org.cerberus.servlet.crud.test;
 
+import com.google.common.base.Strings;
 import com.google.gson.Gson;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -93,6 +94,7 @@ public class ReadTest extends HttpServlet {
          */
         String test = ParameterParserUtil.parseStringParam(request.getParameter("test"), "");
         String system = ParameterParserUtil.parseStringParam(request.getParameter("system"), "");
+        String columnName = ParameterParserUtil.parseStringParam(request.getParameter("columnName"), "");
 
         // Global boolean on the servlet that define if the user has permition to edit and delete object.
         boolean userHasPermissions = request.isUserInRole("TestAdmin");
@@ -107,6 +109,9 @@ public class ReadTest extends HttpServlet {
                 jsonResponse = (JSONObject) answer.getItem();
             } else if (!system.equals("")) {
                 answer = findTestBySystem(system, appContext, userHasPermissions);
+                jsonResponse = (JSONObject) answer.getItem();
+            } else if (!Strings.isNullOrEmpty(columnName)) {
+                answer = findDistinctValuesOfColumn(appContext, request, columnName);
                 jsonResponse = (JSONObject) answer.getItem();
             } else {
                 answer = findTestList(appContext, userHasPermissions, request);
@@ -278,6 +283,33 @@ public class ReadTest extends HttpServlet {
         Gson gson = new Gson();
         JSONObject result = new JSONObject(gson.toJson(test));
         return result;
+    }
+    
+    private AnswerItem findDistinctValuesOfColumn(ApplicationContext appContext, HttpServletRequest request, String columnName) throws JSONException{
+        AnswerItem answer = new AnswerItem();
+        JSONObject object = new JSONObject();
+
+        testService = appContext.getBean(TestService.class);
+        
+        String searchParameter = ParameterParserUtil.parseStringParam(request.getParameter("sSearch"), "");
+        String sColumns = ParameterParserUtil.parseStringParam(request.getParameter("sColumns"), "test,testcase,application,project,ticket,description,behaviororvalueexpected,readonly,bugtrackernewurl,deploytype,mavengroupid");
+        String columnToSort[] = sColumns.split(",");
+
+        Map<String, List<String>> individualSearch = new HashMap<String, List<String>>();
+        for (int a = 0; a < columnToSort.length; a++) {
+            if (null!=request.getParameter("sSearch_" + a) && !request.getParameter("sSearch_" + a).isEmpty()) {
+                List<String> search = new ArrayList(Arrays.asList(request.getParameter("sSearch_" + a).split(",")));
+                individualSearch.put(columnToSort[a], search);
+            }
+        }
+
+        AnswerList testCaseList = testService.readDistinctValuesByCriteria( searchParameter, individualSearch, columnName);
+
+        object.put("distinctValues", testCaseList.getDataList());
+
+        answer.setItem(object);
+        answer.setResultMessage(testCaseList.getResultMessage());
+        return answer;
     }
 
 }

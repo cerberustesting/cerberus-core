@@ -149,6 +149,7 @@ public class ReadTestCase extends HttpServlet {
                 answer = findTestCaseByCampaign(appContext, campaign);
                 jsonResponse = (JSONObject) answer.getItem();
             } else if (!Strings.isNullOrEmpty(columnName)) {
+                //If columnName is present, then return the distinct value of this column.
                 answer = findDistinctValuesOfColumn(system, test, appContext, request, columnName);
                 jsonResponse = (JSONObject) answer.getItem();
             } else {
@@ -539,15 +540,11 @@ public class ReadTestCase extends HttpServlet {
         testCaseService = appContext.getBean(TestCaseService.class);
         testCaseCountryService = appContext.getBean(TestCaseCountryService.class);
 
-        int startPosition = Integer.valueOf(ParameterParserUtil.parseStringParam(request.getParameter("iDisplayStart"), "0"));
-        int length = Integer.valueOf(ParameterParserUtil.parseStringParam(request.getParameter("iDisplayLength"), "0"));
-
         String searchParameter = ParameterParserUtil.parseStringParam(request.getParameter("sSearch"), "");
-        int columnToSortParameter = Integer.parseInt(ParameterParserUtil.parseStringParam(request.getParameter("iSortCol_0"), "0"));
         String sColumns = ParameterParserUtil.parseStringParam(request.getParameter("sColumns"), "test,testcase,application,project,ticket,description,behaviororvalueexpected,readonly,bugtrackernewurl,deploytype,mavengroupid");
         String columnToSort[] = sColumns.split(",");
 
-        Map<String, List<String>> individualSearch = new HashMap<String, List<String>>();
+        Map<String, List<String>> individualSearch = new HashMap<>();
         for (int a = 0; a < columnToSort.length; a++) {
             if (null!=request.getParameter("sSearch_" + a) && !request.getParameter("sSearch_" + a).isEmpty()) {
                 List<String> search = new ArrayList(Arrays.asList(request.getParameter("sSearch_" + a).split(",")));
