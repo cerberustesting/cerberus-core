@@ -915,8 +915,7 @@ public class PropertyService implements IPropertyService {
                 testCaseExecutionData.setPropertyResultMessage(res);
             }
         } catch (Exception ex) {
-            MyLogger.log(PropertyService.class
-                    .getName(), Level.DEBUG, ex.toString());
+            MyLogger.log(PropertyService.class.getName(), Level.DEBUG, ex.toString());
             MessageEvent res = new MessageEvent(MessageEventEnum.PROPERTY_FAILED_GETFROMXML);
 
             res.setDescription(res.getDescription().replace("%VALUE1%", testCaseExecutionData.getValue1()));
