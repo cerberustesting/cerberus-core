@@ -19,18 +19,25 @@
  */
 package org.cerberus.engine.gwt;
 
-import org.cerberus.crud.entity.TestCaseStepActionExecution;
-import org.cerberus.exception.CerberusEventException;
+import org.cerberus.engine.gwt.impl.PropertyService;
+import org.junit.Test;
+import org.mockito.InjectMocks;
 
 /**
- * {Insert class description here}
  *
- * @author Tiago Bernardes
- * @version 1.0, 10/01/2013
- * @since 2.0.0
+ * @author vertigo
  */
-public interface IPropertyService {
-
-    String decodeValueWithExistingProperties(String stringToDecode, TestCaseStepActionExecution testCaseStepActionExecution, boolean forceCalculation) throws CerberusEventException;
-
+public class PropertyServiceTest {
+    
+    @InjectMocks
+    private PropertyService propertyService;
+    
+    @Test
+    public void testGetAllProperties() {
+//        List<String> properties = propertyService.getAllProperties("A%B%%C%D");
+//        Assert.assertEquals(2, properties.size());
+//        Assert.assertEquals("B", properties.get(0));
+//        Assert.assertEquals("C", properties.get(1));
+    }
+    
 }

@@ -118,6 +118,7 @@ public class ExecutionStartService implements IExecutionStartService {
             LOG.debug(mes.getDescription());
             throw new CerberusException(mes);
         }
+        LOG.debug("Parameters checked.");
 
         /**
          * Load TestCase information and set TCase to the TestCaseExecution
@@ -176,7 +177,7 @@ public class ExecutionStartService implements IExecutionStartService {
             LOG.debug(mes.getDescription());
             throw new CerberusException(mes);
         }
-        LOG.debug("Application Information Loaded - " + tCExecution.getApplication().getDescription());
+        LOG.debug("Application Information Loaded - " + tCExecution.getApplication().getApplication() + " - " + tCExecution.getApplication().getDescription());
 
         /**
          * Load Country information and Set it to the TestCaseExecution object.
@@ -190,7 +191,7 @@ public class ExecutionStartService implements IExecutionStartService {
             LOG.debug(mes.getDescription());
             throw new CerberusException(mes);
         }
-        LOG.debug("Country Information Loaded - " + tCExecution.getCountryObj().getDescription());
+        LOG.debug("Country Information Loaded - " + tCExecution.getCountryObj().getValue() + " - "+ tCExecution.getCountryObj().getDescription());
 
         /**
          * Checking if execution is manual or automaticaly configured. If
@@ -261,14 +262,15 @@ public class ExecutionStartService implements IExecutionStartService {
                 LOG.error(mes.getDescription());
                 throw new CerberusException(mes);
             }
-            LOG.debug("-> Execution will be done with automatic application connectivity setting. IP/URL/LOGIN : " + cea.getIp() + "-" + cea.getUrl() + "-" + cea.getUrlLogin());
+            LOG.debug("Country/Environment/Application Information Loaded. " + tCExecution.getCountry() + " - " + tCExecution.getEnvironment() + " - " + tCExecution.getApplication().getApplication());
+            LOG.debug(" -> Execution will be done with automatic application connectivity setting. IP/URL/LOGIN : " + cea.getIp() + "-" + cea.getUrl() + "-" + cea.getUrlLogin());
             tCExecution.setEnvironmentData(tCExecution.getEnvironment());
         }
 
         /**
          * Load Environment object from invariant table.
          */
-        LOG.debug("Loading Environment Information" + tCExecution.getEnvironmentData());
+        LOG.debug("Loading Environment Information. " + tCExecution.getEnvironmentData());
         try {
             tCExecution.setEnvironmentDataObj(this.invariantService.findInvariantByIdValue("ENVIRONMENT", tCExecution.getEnvironmentData()));
         } catch (CerberusException ex) {
@@ -291,7 +293,7 @@ public class ExecutionStartService implements IExecutionStartService {
          * TestCaseExecution object. Environment considered here is the data
          * environment.
          */
-        LOG.debug("Loading Country/Environment Information. " + tCExecution.getCountry() + "-" + tCExecution.getEnvironmentData());
+        LOG.debug("Loading Country/Environment Information. " + tCExecution.getCountry() + " - " + tCExecution.getEnvironmentData());
         CountryEnvParam countEnvParam;
         try {
             countEnvParam = this.countryEnvParamService.convert(this.countryEnvParamService.readByKey(tCExecution.getApplication().getSystem(), tCExecution.getCountry(), tCExecution.getEnvironmentData()));
@@ -311,6 +313,7 @@ public class ExecutionStartService implements IExecutionStartService {
             LOG.debug(mes.getDescription());
             throw new CerberusException(mes);
         }
+        LOG.debug("Country/Environment Information Loaded. " + tCExecution.getCountry() + " - " + tCExecution.getEnvironmentData());
 
         /**
          * What is that for ???
@@ -331,6 +334,7 @@ public class ExecutionStartService implements IExecutionStartService {
         if (!(tCExecution.getResultMessage().equals(new MessageGeneral(MessageGeneralEnum.EXECUTION_PE_CHECKINGPARAMETERS)))) {
             return tCExecution;
         }
+        LOG.debug("Checks performed -- > OK to continue.");
 
         /**
          * Check if Browser is supported and if selenium server is reachable.
@@ -371,9 +375,10 @@ public class ExecutionStartService implements IExecutionStartService {
                 LOG.debug(ex.getMessageError().getDescription());
                 throw new CerberusException(ex.getMessageError());
             }
+            LOG.debug("Selenium Server Started.");
+
         }
 
-//        }
         /**
          * Register RunID inside database.
          */
@@ -399,7 +404,7 @@ public class ExecutionStartService implements IExecutionStartService {
             throw new CerberusException(ex.getMessageError());
         }
 
-        LOG.debug(tCExecution.getId() + " - RunID Registered on database.");
+        LOG.debug("Execution ID registered on database : " + tCExecution.getId());
 
         /**
          * Stop the browser if executionID is equal to zero (to prevent database
@@ -407,7 +412,9 @@ public class ExecutionStartService implements IExecutionStartService {
          */
         try {
             if (tCExecution.getId() == 0) {
+                LOG.debug("Starting to Stop the Selenium Server.");
                 this.serverService.stopServer(tCExecution.getSession());
+                LOG.debug("Selenium Server stopped.");
             }
         } catch (Exception ex) {
             LOG.warn(ex.toString());

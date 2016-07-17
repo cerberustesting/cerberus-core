@@ -559,7 +559,7 @@ public class ActionService implements IActionService {
                         .resolveDescription("APPLICATIONTYPE", tCExecution.getApplication().getType());
             }
         } catch (CerberusEventException ex) {
-            LOG.fatal("Error doing Action Type :" + ex);
+            LOG.fatal("Error doing Action Type : " + ex);
             return ex.getMessageError();
         }
     }

@@ -89,49 +89,58 @@ public class SQLService implements ISQLService {
         MessageEvent mes = new MessageEvent(MessageEventEnum.PROPERTY_SUCCESS_SQL);
 
         try {
-            countryEnvironmentDatabase = this.countryEnvironmentDatabaseService.convert(this.countryEnvironmentDatabaseService.readByKey(tCExecution.getApplication().getSystem(),
-                    testCaseProperties.getCountry(), tCExecution.getEnvironmentData(), db));
-            connectionName = countryEnvironmentDatabase.getConnectionPoolName();
+            String system = tCExecution.getApplication().getSystem();
+            String country = testCaseProperties.getCountry();
+            String environment = tCExecution.getEnvironmentData();
+            countryEnvironmentDatabase = this.countryEnvironmentDatabaseService.convert(this.countryEnvironmentDatabaseService.readByKey(system, country, environment, db));
 
-            if (!(StringUtil.isNullOrEmpty(connectionName))) {
-                try {
-                    List<String> list = this.queryDatabase(connectionName, sql, testCaseProperties.getRowLimit());
-
-                    if (list != null && !list.isEmpty()) {
-                        if (testCaseProperties.getNature().equalsIgnoreCase(Property.NATURE_STATIC)) {
-                            testCaseExecutionData.setValue(list.get(0));
-
-                        } else if (testCaseProperties.getNature().equalsIgnoreCase(Property.NATURE_RANDOM)) {
-                            testCaseExecutionData.setValue(this.getRandomStringFromList(list));
-                            mes = new MessageEvent(MessageEventEnum.PROPERTY_SUCCESS_SQL_RANDOM);
-
-                        } else if (testCaseProperties.getNature().equalsIgnoreCase(Property.NATURE_RANDOMNEW)) {
-                            testCaseExecutionData.setValue(this.calculateNatureRandomNew(list, testCaseProperties.getProperty(), tCExecution));
-                            mes = new MessageEvent(MessageEventEnum.PROPERTY_SUCCESS_SQL_RANDOM_NEW);
-
-                        } else if (testCaseProperties.getNature().equalsIgnoreCase(Property.NATURE_NOTINUSE)) {
-                            testCaseExecutionData.setValue(this.calculateNatureNotInUse(list, testCaseProperties.getProperty(), tCExecution));
-                            mes = new MessageEvent(MessageEventEnum.PROPERTY_SUCCESS_SQL_NOTINUSE);
-
-                        }
-                    } else {
-                        mes = new MessageEvent(MessageEventEnum.PROPERTY_FAILED_SQL_NODATA);
-                    }
-                    mes.setDescription(mes.getDescription().replace("%DB%", db));
-                    mes.setDescription(mes.getDescription().replace("%SQL%", sql));
-                    mes.setDescription(mes.getDescription().replace("%JDBCPOOLNAME%", connectionName));
-                    testCaseExecutionData.setPropertyResultMessage(mes);
-
-                } catch (CerberusEventException ex) {
-                    mes = ex.getMessageError();
-                }
+            if (countryEnvironmentDatabase == null) {
+                mes = new MessageEvent(MessageEventEnum.PROPERTY_FAILED_SQL_DATABASENOTCONFIGURED);
+                mes.setDescription(mes.getDescription().replace("%SYSTEM%", system).replace("%COUNTRY%", country).replace("%ENV%", environment).replace("%DATABASE%", db));
 
             } else {
-                mes = new MessageEvent(MessageEventEnum.PROPERTY_FAILED_SQL_EMPTYJDBCPOOL);
-                mes.setDescription(mes.getDescription().replace("%SYSTEM%", tCExecution.getApplication().getSystem()));
-                mes.setDescription(mes.getDescription().replace("%COUNTRY%", testCaseProperties.getCountry()));
-                mes.setDescription(mes.getDescription().replace("%ENV%", tCExecution.getEnvironmentData()));
-                mes.setDescription(mes.getDescription().replace("%DB%", db));
+
+                connectionName = countryEnvironmentDatabase.getConnectionPoolName();
+
+                if (!(StringUtil.isNullOrEmpty(connectionName))) {
+                    try {
+                        List<String> list = this.queryDatabase(connectionName, sql, testCaseProperties.getRowLimit());
+
+                        if (list != null && !list.isEmpty()) {
+                            if (testCaseProperties.getNature().equalsIgnoreCase(Property.NATURE_STATIC)) {
+                                testCaseExecutionData.setValue(list.get(0));
+
+                            } else if (testCaseProperties.getNature().equalsIgnoreCase(Property.NATURE_RANDOM)) {
+                                testCaseExecutionData.setValue(this.getRandomStringFromList(list));
+                                mes = new MessageEvent(MessageEventEnum.PROPERTY_SUCCESS_SQL_RANDOM);
+
+                            } else if (testCaseProperties.getNature().equalsIgnoreCase(Property.NATURE_RANDOMNEW)) {
+                                testCaseExecutionData.setValue(this.calculateNatureRandomNew(list, testCaseProperties.getProperty(), tCExecution));
+                                mes = new MessageEvent(MessageEventEnum.PROPERTY_SUCCESS_SQL_RANDOM_NEW);
+
+                            } else if (testCaseProperties.getNature().equalsIgnoreCase(Property.NATURE_NOTINUSE)) {
+                                testCaseExecutionData.setValue(this.calculateNatureNotInUse(list, testCaseProperties.getProperty(), tCExecution));
+                                mes = new MessageEvent(MessageEventEnum.PROPERTY_SUCCESS_SQL_NOTINUSE);
+
+                            }
+                        } else {
+                            mes = new MessageEvent(MessageEventEnum.PROPERTY_FAILED_SQL_NODATA);
+                        }
+                        mes.setDescription(mes.getDescription().replace("%DB%", db));
+                        mes.setDescription(mes.getDescription().replace("%SQL%", sql));
+                        mes.setDescription(mes.getDescription().replace("%JDBCPOOLNAME%", connectionName));
+                        testCaseExecutionData.setPropertyResultMessage(mes);
+
+                    } catch (CerberusEventException ex) {
+                        mes = ex.getMessageError();
+                    }
+                } else {
+                    mes = new MessageEvent(MessageEventEnum.PROPERTY_FAILED_SQL_EMPTYJDBCPOOL);
+                    mes.setDescription(mes.getDescription().replace("%SYSTEM%", tCExecution.getApplication().getSystem()));
+                    mes.setDescription(mes.getDescription().replace("%COUNTRY%", testCaseProperties.getCountry()));
+                    mes.setDescription(mes.getDescription().replace("%ENV%", tCExecution.getEnvironmentData()));
+                    mes.setDescription(mes.getDescription().replace("%DB%", db));
+                }
             }
         } catch (CerberusException ex) {
             mes = new MessageEvent(MessageEventEnum.PROPERTY_FAILED_SQL_JDBCPOOLNOTCONFIGURED);
