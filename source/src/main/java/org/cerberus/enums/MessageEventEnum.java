@@ -90,7 +90,7 @@ public enum MessageEventEnum {
     PROPERTY_FAILED_UNKNOWNPROPERTY(182, "FA", "Property '%PROP%' does not exist or is not supported by the engine.", true, false, false, MessageGeneralEnum.EXECUTION_FA),
     PROPERTY_FAILED_TEXTRANDOMLENGHT0(183, "FA", "RANDOM or RANDOMNEW text Property function cannot have a lenght at 0. Pick STATIC nature (if you want an empty string) or increase the lenght.", true, false, false, MessageGeneralEnum.EXECUTION_FA),
     PROPERTY_FAILED_TESTDATA_PROPERTYDONOTEXIST(184, "NA", "TestData %PROPERTY% do not exist!", true, true, false, MessageGeneralEnum.EXECUTION_NA),
-    PROPERTY_FAILED_JS_EXCEPTION(185, "NA", "Failed to Execute script!\nException reached : %EXCEPTION%.", true, true, false, MessageGeneralEnum.EXECUTION_NA),
+    PROPERTY_FAILED_JS_EXCEPTION(185, "NA", "Failed to Execute script!\nException reached : %EXCEPTION%.", true, true, true, MessageGeneralEnum.EXECUTION_NA),
     PROPERTY_FAILED_GETFROMXML(186, "FA", "Failed to get Data from '%VALUE1%' because could not find xpath : '%VALUE2%'!", true, true, false, MessageGeneralEnum.EXECUTION_FA),
     PROPERTY_FAILED_GETFROMCOOKIE_COOKIENOTFOUND(187, "FA", "Failed to get Parameter '%PARAM%' because could not find cookie '%COOKIE%'!", true, true, true, MessageGeneralEnum.EXECUTION_FA),
     PROPERTY_FAILED_GETFROMCOOKIE_PARAMETERNOTFOUND(187, "FA", "Cannot find Parameter '%PARAM%' form Cookie '%COOKIE%'. Parameter do not exist or is not supported!", true, true, true, MessageGeneralEnum.EXECUTION_FA),

@@ -21,12 +21,10 @@ package org.cerberus.crud.service.impl;
 
 import java.util.List;
 
-import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.cerberus.crud.dao.IParameterDAO;
 import org.cerberus.crud.entity.Parameter;
 import org.cerberus.exception.CerberusException;
-import org.cerberus.log.MyLogger;
 import org.cerberus.crud.service.IParameterService;
 import org.cerberus.version.Infos;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -42,22 +40,25 @@ public class ParameterService implements IParameterService {
     @Autowired
     private IParameterDAO parameterDao;
 
+    private static final Logger LOG = Logger.getLogger(ParameterService.class);
+
     @Override
     public Parameter findParameterByKey(String key, String system) throws CerberusException {
+        String logPrefix = Infos.getInstance().getProjectNameAndVersion() + " - ";
         Parameter myParameter;
         /**
          * We try to get the parameter using the system parameter but if it does
-         * not exist or empty, we get it with system="" which correspond to the default
-         * global Cerberus Parameter.
+         * not exist or empty, we get it with system="" which correspond to the
+         * default global Cerberus Parameter.
          */
         try {
-            Logger.getLogger(ParameterService.class.getName()).log(Level.DEBUG, Infos.getInstance().getProjectNameAndVersion() + " - Trying to retrieve parameter : " + key + " - [" + system + "]");
+            LOG.debug(logPrefix + "Trying to retrieve parameter : " + key + " - [" + system + "]");
             myParameter = parameterDao.findParameterByKey(system, key);
             if (myParameter != null && myParameter.getValue().equalsIgnoreCase("")) {
                 myParameter = parameterDao.findParameterByKey("", key);
             }
         } catch (CerberusException ex) {
-            Logger.getLogger(ParameterService.class.getName()).log(Level.DEBUG, Infos.getInstance().getProjectNameAndVersion() + " - Trying to retrieve parameter : " + key + " - []");
+            LOG.debug(logPrefix + "Trying to retrieve parameter : " + key + " - []");
             myParameter = parameterDao.findParameterByKey("", key);
             return myParameter;
         }
@@ -81,14 +82,16 @@ public class ParameterService implements IParameterService {
 
     @Override
     public void saveParameter(Parameter parameter) throws CerberusException {
-        MyLogger.log(ParameterService.class.getName(), Level.DEBUG, "Saving Parameter");
+        String logPrefix = Infos.getInstance().getProjectNameAndVersion() + " - ";
+
+        LOG.debug("Saving Parameter");
         try {
             parameterDao.findParameterByKey(parameter.getSystem(), parameter.getParam());
             parameterDao.updateParameter(parameter);
-            MyLogger.log(ParameterService.class.getName(), Level.DEBUG, "Parameter Updated");
+            LOG.debug("Parameter Updated");
         } catch (CerberusException ex) {
             parameterDao.insertParameter(parameter);
-            MyLogger.log(ParameterService.class.getName(), Level.DEBUG, "Parameter Inserted");
+            LOG.debug("Parameter Inserted");
         }
     }
 }
