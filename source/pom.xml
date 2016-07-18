@@ -296,12 +296,12 @@
         </dependency>
         
         <!-- System path -->
-                <dependency>
+        <dependency>
             <groupId>harlib</groupId>
             <artifactId>harlib</artifactId>
             <version>${harlib.version}</version>
             <scope>system</scope>
-        <systemPath>${basedir}/src/main/webapp/WEB-INF/lib/harlib-${harlib.version}.jar</systemPath>
+            <systemPath>${basedir}/src/main/webapp/WEB-INF/lib/harlib-${harlib.version}.jar</systemPath>
         </dependency>
         <dependency>
             <groupId>org.elfinder</groupId>
