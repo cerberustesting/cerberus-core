@@ -35,6 +35,7 @@ import org.apache.commons.fileupload.FileItemFactory;
 import org.apache.commons.fileupload.FileUploadException;
 import org.apache.commons.fileupload.disk.DiskFileItemFactory;
 import org.apache.commons.fileupload.servlet.ServletFileUpload;
+import org.apache.log4j.Logger;
 
 /**
  *
@@ -43,6 +44,8 @@ import org.apache.commons.fileupload.servlet.ServletFileUpload;
 @WebServlet(name = "importFile", urlPatterns = {"/importFile"})
 public class importFile extends HttpServlet {
 
+    private static final Logger LOG = Logger.getLogger(importFile.class);
+    
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         if (ServletFileUpload.isMultipartContent(request)) {
@@ -71,7 +74,7 @@ public class importFile extends HttpServlet {
                         }
 
                         uploadedFile = new File(pathFile + "/" + fileName);
-                        System.out.println(uploadedFile.getAbsolutePath());
+                        LOG.debug(uploadedFile.getAbsolutePath());
                         item.write(uploadedFile);
                     } else {
                         String name = item.getFieldName();

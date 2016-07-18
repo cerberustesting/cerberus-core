@@ -69,6 +69,15 @@ public class CountryEnvironmentDatabaseDAO implements ICountryEnvironmentDatabas
         MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
         msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", ""));
 
+        // Debug message on SQL.
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("SQL : " + query);
+            LOG.debug("SQL.param.database : " + database);
+            LOG.debug("SQL.param.environment : " + environment);
+            LOG.debug("SQL.param.country : " + country);
+            LOG.debug("SQL.param.system : " + system);
+        }
+
         Connection connection = this.databaseSpring.connect();
         try {
             PreparedStatement preStat = connection.prepareStatement(query);

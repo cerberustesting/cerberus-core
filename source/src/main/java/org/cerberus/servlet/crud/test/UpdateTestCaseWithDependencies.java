@@ -624,7 +624,6 @@ public class UpdateTestCaseWithDependencies extends HttpServlet {
                     
                     
                     testCaseStep.add(tcStep);
-                    //System.out.print("FromPage" + tcStep.toString());
                 }
             }
         }
@@ -650,7 +649,6 @@ public class UpdateTestCaseWithDependencies extends HttpServlet {
                     TestCaseStepAction tcsa = testCaseStepActionFactory.create(test, testCase, -1, sequence, sort, action, object, property, forceExeStatus, description, screenshot);
                     tcsa.setTestCaseStepActionControl(getTestCaseStepActionControlFromParameter(request, appContext, test, testCase, stepInc, inc));
                     testCaseStepAction.add(tcsa);
-                    //System.out.print("FromPage"+tcsa.toString());
                 }
             }
         }

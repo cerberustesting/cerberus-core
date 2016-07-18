@@ -53,6 +53,7 @@ import org.cerberus.servlet.crud.testcampaign.CampaignExecutionReport;
 import org.cerberus.util.ParameterParserUtil;
 import org.cerberus.util.answer.AnswerItem;
 import org.cerberus.util.answer.AnswerList;
+import org.cerberus.util.answer.AnswerUtil;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -139,15 +140,7 @@ public class ReadTestCaseExecution extends HttpServlet {
         } catch (JSONException ex) {
             org.apache.log4j.Logger.getLogger(ReadTestCaseExecution.class.getName()).log(org.apache.log4j.Level.ERROR, null, ex);
             //returns a default error message with the json format that is able to be parsed by the client-side
-            MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
-            StringBuilder errorMessage = new StringBuilder();
-            errorMessage.append("{'messageType':'").append(msg.getCode()).append("', ");
-            errorMessage.append(" 'message': '");
-            errorMessage.append(msg.getDescription().replace("%DESCRIPTION%", "Unable to check the status of your request! Try later or - Open a bug or ask for any new feature \n"
-                    + "<a href=\"https://github.com/vertigo17/Cerberus/issues/\" target=\"_blank\">here</a>"));
-            errorMessage.append("'}");
-            response.getWriter().print(errorMessage.toString());
-
+            response.getWriter().print(AnswerUtil.createGenericErrorAnswer());
         }
     }
 

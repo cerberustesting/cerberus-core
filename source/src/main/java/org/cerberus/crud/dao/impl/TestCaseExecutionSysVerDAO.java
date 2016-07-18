@@ -25,6 +25,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.log4j.Level;
+import org.apache.log4j.Logger;
 import org.cerberus.crud.dao.ITestCaseExecutionSysVerDAO;
 import org.cerberus.database.DatabaseSpring;
 import org.cerberus.crud.entity.MessageGeneral;
@@ -54,19 +55,25 @@ public class TestCaseExecutionSysVerDAO implements ITestCaseExecutionSysVerDAO {
     @Autowired
     private IFactoryTestCaseExecutionSysVer factoryTestCaseExecutionSysVer;
 
-    /**
-     * Short one line description.
-     * <p/>
-     * Longer description. If there were any, it would be here. <p> And even
-     * more explanations to follow in consecutive paragraphs separated by HTML
-     * paragraph breaks.
-     *
-     * @throws org.cerberus.exception.CerberusException
-     */
+    private static final Logger LOG = Logger.getLogger(TestCaseExecutionSysVerDAO.class);
+
+    private final String OBJECT_NAME = "TestCaseExecution System Version";
+    private final String SQL_DUPLICATED_CODE = "23000";
+    private final int MAX_ROW_SELECTED = 100000;
+
     @Override
     public void insertTestCaseExecutionSysVer(TestCaseExecutionSysVer testCaseExecutionSysVer)  throws CerberusException {
         final String query = "INSERT INTO testcaseexecutionsysver (id, system, build, revision) "
                 + "VALUES (?, ?, ?, ?)";
+
+        // Debug message on SQL.
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("SQL : " + query);
+            LOG.debug("SQL.param.id : " + testCaseExecutionSysVer.getID());
+            LOG.debug("SQL.param.system : " + testCaseExecutionSysVer.getSystem());
+            LOG.debug("SQL.param.build : " + testCaseExecutionSysVer.getBuild());
+            LOG.debug("SQL.param.revision : " + testCaseExecutionSysVer.getRevision());
+        }
 
         Connection connection = this.databaseSpring.connect();
         try {
@@ -76,9 +83,6 @@ public class TestCaseExecutionSysVerDAO implements ITestCaseExecutionSysVerDAO {
                 preStat.setString(2, testCaseExecutionSysVer.getSystem());
                 preStat.setString(3, testCaseExecutionSysVer.getBuild());
                 preStat.setString(4, testCaseExecutionSysVer.getRevision());
-                MyLogger.log(TestCaseExecutionSysVerDAO.class.getName(), Level.DEBUG, "Insert testcaseexecutionsysver " + testCaseExecutionSysVer.getID() + "-"
-                        + testCaseExecutionSysVer.getSystem() + "-" + testCaseExecutionSysVer.getBuild() + "-" + testCaseExecutionSysVer.getRevision());
-
                 preStat.executeUpdate();
 
             } catch (SQLException exception) {

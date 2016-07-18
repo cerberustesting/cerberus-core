@@ -155,8 +155,8 @@ public class TestCaseExecutionDataDAO implements ITestCaseExecutionDataDAO {
                         String value2 = resultSet.getString("value2");
                         String returnCode = resultSet.getString("rc");
                         String returnMessage = resultSet.getString("rmessage");
-                        long start = resultSet.getTimestamp("start")==null?0:resultSet.getTimestamp("start").getTime();
-                        long end = resultSet.getTimestamp("end")==null?0:resultSet.getTimestamp("end").getTime();
+                        long start = resultSet.getTimestamp("start") == null ? 0 : resultSet.getTimestamp("start").getTime();
+                        long end = resultSet.getTimestamp("end") == null ? 0 : resultSet.getTimestamp("end").getTime();
                         long startLong = resultSet.getLong("startlong");
                         long endLong = resultSet.getLong("endlong");
                         resultData = factoryTestCaseExecutionData.create(id, property, description, value, type, value1, value2, returnCode, returnMessage,
@@ -198,13 +198,13 @@ public class TestCaseExecutionDataDAO implements ITestCaseExecutionDataDAO {
         // Debug message on SQL.
         if (LOG.isDebugEnabled()) {
             LOG.debug("SQL : " + query);
-            LOG.debug("SQL.param : " + propName);
-            LOG.debug("SQL.param : " + test);
-            LOG.debug("SQL.param : " + testCase);
-            LOG.debug("SQL.param : " + build);
-            LOG.debug("SQL.param : " + environment);
-            LOG.debug("SQL.param : " + country);
-            LOG.debug("SQL.param : " + id);
+            LOG.debug("SQL.param.property : " + propName);
+            LOG.debug("SQL.param.test : " + test);
+            LOG.debug("SQL.param.testcase : " + testCase);
+            LOG.debug("SQL.param.build : " + build);
+            LOG.debug("SQL.param.environment : " + environment);
+            LOG.debug("SQL.param.country : " + country);
+            LOG.debug("SQL.param.id : " + id);
         }
 
         Connection connection = this.databaseSpring.connect();
@@ -315,6 +315,16 @@ public class TestCaseExecutionDataDAO implements ITestCaseExecutionDataDAO {
         final String query = "INSERT INTO testcaseexecutiondata(id, property, description, VALUE, TYPE, VALUE1,VALUE2, rc, rmessage, start, END, startlong, endlong) "
                 + "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
+        // Debug message on SQL.
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("SQL : " + query);
+            LOG.debug("SQL.param.id : " + testCaseExecutionData.getId());
+            LOG.debug("SQL.param.property : " + testCaseExecutionData.getProperty());
+            LOG.debug("SQL.param.value : " + ParameterParserUtil.securePassword(StringUtil.getLeftString(testCaseExecutionData.getValue(), 3000), testCaseExecutionData.getProperty()));
+            LOG.debug("SQL.param.value1 : " + ParameterParserUtil.securePassword(StringUtil.getLeftString(testCaseExecutionData.getValue1(), 3000), testCaseExecutionData.getProperty()));
+            LOG.debug("SQL.param.value2 : " + ParameterParserUtil.securePassword(StringUtil.getLeftString(testCaseExecutionData.getValue2(), 2500), testCaseExecutionData.getProperty()));
+        }
+
         Connection connection = this.databaseSpring.connect();
         try {
             PreparedStatement preStat = connection.prepareStatement(query);
@@ -364,6 +374,16 @@ public class TestCaseExecutionDataDAO implements ITestCaseExecutionDataDAO {
         boolean throwException = true;
         final String query = "UPDATE testcaseexecutiondata SET DESCRIPTION = ?, VALUE = ?, TYPE = ?, VALUE1 = ?, VALUE2 = ?, rc = ?, rmessage = ?, start = ?, END = ?, startlong = ?, endlong = ? "
                 + "WHERE id = ? AND property = ?";
+
+        // Debug message on SQL.
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("SQL : " + query);
+            LOG.debug("SQL.param.id : " + testCaseExecutionData.getId());
+            LOG.debug("SQL.param.property : " + testCaseExecutionData.getProperty());
+            LOG.debug("SQL.param.value : " + ParameterParserUtil.securePassword(StringUtil.getLeftString(testCaseExecutionData.getValue(), 3000), testCaseExecutionData.getProperty()));
+            LOG.debug("SQL.param.value1 : " + ParameterParserUtil.securePassword(StringUtil.getLeftString(testCaseExecutionData.getValue1(), 3000), testCaseExecutionData.getProperty()));
+            LOG.debug("SQL.param.value2 : " + ParameterParserUtil.securePassword(StringUtil.getLeftString(testCaseExecutionData.getValue2(), 2500), testCaseExecutionData.getProperty()));
+        }
 
         Connection connection = this.databaseSpring.connect();
         try {

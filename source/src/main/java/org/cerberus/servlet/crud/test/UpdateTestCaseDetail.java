@@ -158,7 +158,6 @@ public class UpdateTestCaseDetail extends HttpServlet {
                 //TODO Auto-generated catch block
                 e.printStackTrace();
             }
-//            System.out.println("Properties Values for : " + request.getParameter(parameter));
             String[] parameters = request.getParameterValues(parameter);
             if (toEscape) {
                 for (int i = 0; i < parameters.length; i++) {
@@ -677,7 +676,6 @@ public class UpdateTestCaseDetail extends HttpServlet {
                                 + ", "
                                 + "'"
                                 + step_desc_toadd[i] + "')");
-                        // System.out.println ( sql ) ;
                         stmt4.execute(sql);
                     }
 
@@ -731,7 +729,6 @@ public class UpdateTestCaseDetail extends HttpServlet {
                                 + " AND TestCase = '" + test_testcase_format[1]
                                 + "' " + " AND Step = " + step_number_hide[i] + " "
                                 + " AND Sequence = " + step_sequence[i]);
-                        // System.out.println ( "Step Key : " + sql ) ;
                         ResultSet rs_stepaction = stmt4.executeQuery(sql);
                         try {
                             IFactoryTestCaseStepAction actionFactory = appContext.getBean(IFactoryTestCaseStepAction.class);
@@ -779,7 +776,6 @@ public class UpdateTestCaseDetail extends HttpServlet {
                                 + "' " + " AND Step = " + controls_step[i] + " "
                                 + " AND Sequence = " + controls_sequence[i] + " "
                                 + " AND control = " + controls_control[i]);
-                        // System.out.println ( "Step Key : " + sql ) ;
                         ResultSet rs_stepactioncontrol = stmt4.executeQuery(sql);
                         try {
                             IFactoryTestCaseStepActionControl controlFactory = appContext.getBean(IFactoryTestCaseStepActionControl.class);

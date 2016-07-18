@@ -20,8 +20,7 @@ package org.cerberus.crud.entity;
 import org.cerberus.engine.entity.TestDataLibResult;
 import java.util.HashMap;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import org.apache.log4j.Logger;
 import org.cerberus.util.answer.AnswerItem;
 import org.cerberus.util.answer.AnswerList;
 import org.json.JSONArray;
@@ -99,6 +98,8 @@ public class TestCaseExecution {
     private AnswerItem lastSOAPCalled;
     private List<RobotCapability> capabilities;
 
+    private static final Logger LOG = Logger.getLogger(TestCaseExecution.class);
+    
     public String getUserAgent() {
         return userAgent;
     }
@@ -615,7 +616,7 @@ public class TestCaseExecution {
             }
             result.put("testCaseStepExecutionList", array);
         } catch (JSONException ex) {
-            Logger.getLogger(TestCaseExecution.class.getName()).log(Level.SEVERE, null, ex);
+            LOG.error(ex.toString());
         }
         return result;
     }

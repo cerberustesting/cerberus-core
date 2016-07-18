@@ -84,25 +84,26 @@ public class SeleniumServerService implements ISeleniumServerService {
     @Override
     public void startServer(TestCaseExecution tCExecution) throws CerberusException {
         //message used for log purposes 
-        String testCaseDescription = "[" + tCExecution.getTest() + " - " + tCExecution.getTestCase() + "] ";
+        String logPrefix = "[" + tCExecution.getTest() + " - " + tCExecution.getTestCase() + "] ";
+        
         try {
 
-            LOG.info(testCaseDescription + "Start Selenium Server");
+            LOG.info(logPrefix + "Start Selenium Server");
 
             /**
              * Set Session
              */
-            LOG.debug(testCaseDescription + "Setting the session.");
+            LOG.debug(logPrefix + "Setting the session.");
             long defaultWait;
             try {
                 Parameter param = parameterService.findParameterByKey("selenium_defaultWait", tCExecution.getApplication().getSystem());
                 String to = tCExecution.getTimeout().equals("") ? param.getValue() : tCExecution.getTimeout();
                 defaultWait = Long.parseLong(to);
             } catch (CerberusException ex) {
-                LOG.warn(testCaseDescription + "Parameter (selenium_defaultWait) not in Parameter table, default wait set to 90 seconds. " + ex.toString());
+                LOG.warn(logPrefix + "Parameter (selenium_defaultWait) not in Parameter table, default wait set to 90 seconds. " + ex.toString());
                 defaultWait = 90;
             }
-            LOG.debug(testCaseDescription + "TimeOut defined on session : " + defaultWait);
+            LOG.debug(logPrefix + "TimeOut defined on session : " + defaultWait);
             List<SessionCapabilities> capabilities = new ArrayList();
             SessionCapabilities sc = new SessionCapabilities();
             sc.create("browser", tCExecution.getBrowser());
@@ -131,18 +132,18 @@ public class SeleniumServerService implements ISeleniumServerService {
             session.setCapabilities(capabilities);
 
             tCExecution.setSession(session);
-            LOG.debug(testCaseDescription + "Session is set.");
+            LOG.debug(logPrefix + "Session is set.");
 
             /**
              * SetUp Capabilities
              */
-            LOG.debug(testCaseDescription + "Set Capabilities");
+            LOG.debug(logPrefix + "Set Capabilities");
             DesiredCapabilities caps = this.setCapabilities(tCExecution);
 
             /**
              * SetUp Driver
              */
-            LOG.debug(testCaseDescription + "Set Driver");
+            LOG.debug(logPrefix + "Set Driver");
             WebDriver driver = null;
             AppiumDriver appiumDriver = null;
             if (tCExecution.getApplication().getType().equalsIgnoreCase("GUI")) {
@@ -198,21 +199,21 @@ public class SeleniumServerService implements ISeleniumServerService {
             tCExecution.getSession().setStarted(true);
 
         } catch (CerberusException exception) {
-            LOG.error(testCaseDescription + exception.toString());
+            LOG.error(logPrefix + exception.toString());
             throw new CerberusException(exception.getMessageError());
         } catch (MalformedURLException exception) {
-            LOG.error(testCaseDescription + exception.toString());
+            LOG.error(logPrefix + exception.toString());
             MessageGeneral mes = new MessageGeneral(MessageGeneralEnum.VALIDATION_FAILED_URL_MALFORMED);
             mes.setDescription(mes.getDescription().replace("%URL%", tCExecution.getSession().getHost() + ":" + tCExecution.getSession().getPort()));
             throw new CerberusException(mes);
         } catch (UnreachableBrowserException exception) {
-            LOG.error(testCaseDescription + exception.toString());
+            LOG.error(logPrefix + exception.toString());
             MessageGeneral mes = new MessageGeneral(MessageGeneralEnum.VALIDATION_FAILED_SELENIUM_COULDNOTCONNECT);
             mes.setDescription(mes.getDescription().replace("%SSIP%", tCExecution.getSeleniumIP()));
             mes.setDescription(mes.getDescription().replace("%SSPORT%", tCExecution.getSeleniumPort()));
             throw new CerberusException(mes);
         } catch (Exception exception) {
-            LOG.error(testCaseDescription + exception.toString());
+            LOG.error(logPrefix + exception.toString());
             MessageGeneral mes = new MessageGeneral(MessageGeneralEnum.EXECUTION_FA_SELENIUM);
             mes.setDescription(mes.getDescription().replace("%MES%", exception.toString()));
             throw new CerberusException(mes);

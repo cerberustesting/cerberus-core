@@ -37,6 +37,7 @@ import org.cerberus.crud.service.impl.InvariantService;
 import org.cerberus.enums.MessageEventEnum;
 import org.cerberus.util.answer.AnswerItem;
 import org.cerberus.util.answer.AnswerList;
+import org.cerberus.util.answer.AnswerUtil;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -93,14 +94,7 @@ public class Homepage extends HttpServlet {
         } catch (JSONException e) {
             org.apache.log4j.Logger.getLogger(Homepage.class.getName()).log(org.apache.log4j.Level.ERROR, null, e);
             //returns a default error message with the json format that is able to be parsed by the client-side
-            response.setContentType("application/json");
-            MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
-            StringBuilder errorMessage = new StringBuilder();
-            errorMessage.append("{\"messageType\":\"").append(msg.getCode()).append("\",");
-            errorMessage.append("\"message\":\"");
-            errorMessage.append(msg.getDescription().replace("%DESCRIPTION%", "Unable to check the status of your request! Try later or open a bug."));
-            errorMessage.append("\"}");
-            response.getWriter().print(errorMessage.toString());
+            response.getWriter().print(AnswerUtil.createGenericErrorAnswer());
         }
     }
 

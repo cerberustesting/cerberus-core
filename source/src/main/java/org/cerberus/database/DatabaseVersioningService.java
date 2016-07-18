@@ -6143,23 +6143,23 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLS.append("ALTER TABLE `user` ");
         SQLS.append("ADD COLUMN `UserPreferences` TEXT NOT NULL AFTER `Email`;");
         SQLInstruction.add(SQLS.toString());
-        
-        // Add the getFromGroovy property type
+
+        // Add the getFromGroovy property type.
         //-- ------------------------ 841
         SQLS = new StringBuilder();
         SQLS.append("INSERT INTO `invariant` (`idname`, `value`, `sort`, `description`, `VeryShortDesc`) VALUES ('PROPERTYTYPE', 'getFromGroovy', '80', 'Getting value from a Groovy script', '');");
         SQLInstruction.add(SQLS.toString());
-        
+
         // Add filter information for tooltip in documentation table.
         //-- ------------------------ 842
         SQLS = new StringBuilder();
-        SQLS.append("INSERT INTO `documentation` (`DocTable`, `DocField`, `Lang`, `DocLabel`) VALUES " );
-        SQLS.append("('page_global', 'tooltip_column_filter_empty', 'en', 'Filter'), " );
-        SQLS.append("('page_global', 'tooltip_column_filter_empty', 'fr', 'Filtre'), " );
-        SQLS.append("('page_global', 'tooltip_column_filter_filtered', 'en', 'Filtered value(s)'), " );
-        SQLS.append("('page_global', 'tooltip_column_filter_filtered', 'fr', 'Valeur(s) filtrée(s)');" );
+        SQLS.append("INSERT INTO `documentation` (`DocTable`, `DocField`, `Lang`, `DocLabel`) VALUES ");
+        SQLS.append("('page_global', 'tooltip_column_filter_empty', 'en', 'Filter'), ");
+        SQLS.append("('page_global', 'tooltip_column_filter_empty', 'fr', 'Filtre'), ");
+        SQLS.append("('page_global', 'tooltip_column_filter_filtered', 'en', 'Filtered value(s)'), ");
+        SQLS.append("('page_global', 'tooltip_column_filter_filtered', 'fr', 'Valeur(s) filtrée(s)');");
         SQLInstruction.add(SQLS.toString());
-        
+
         // Add comment on properties.
         //-- ------------------------ 843-845
         SQLS = new StringBuilder();
@@ -6173,13 +6173,22 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLS.append("ALTER TABLE `testcaseexecutiondata` ");
         SQLS.append("ADD COLUMN `Description` VARCHAR(255) NULL DEFAULT '' AFTER `Property`;");
         SQLInstruction.add(SQLS.toString());
-        
-        // Add documentation to the getFromGroovy property type
+
+        // Add documentation to the getFromGroovy property type.
         //-- ------------------------ 846
         SQLS = new StringBuilder();
         SQLS.append("INSERT INTO `documentation` (`DocTable`, `DocField`, `DocValue`, `Lang`, `DocLabel`, `DocDesc`) VALUES ('testcasecountryproperties', 'Type', 'getFromGroovy', 'en', 'Get a value from a Groovy expression.', '<code class=\\'doc-fixed\\'>getFromGroovy</code> will allow you to calculate a string from a Groovy execution.\\n<br/>\\nUsing this feature, you can use the full power of Groovy without the need to be related to a web context as the <a href=\\\"/Cerberus/Documentation.jsp?DocTable=testcasecountryproperties&DocField=type&DocValue=getFromJS&Lang=en\\\"><code>getFromJS</code></a> property type.\\n<br/>\\n<br/>\\nUsage:\\n<br/>\\n<doc class=\\'usage\\'>\\n  <table cellspacing=\\'0\\' cellpadding=\\'2\\'>\\n    <tr>\\n      <th class=\\'ex\\'>Field</th>\\n      <th class=\\'ex\\'>Usage</th>\\n    </tr>\\n    <tr>\\n      <td class=\\'ex\\'>DTB</td>\\n      <td class=\\'ex\\'>Not used.</td>\\n    </tr>\\n    <tr>\\n      <td class=\\'ex\\'>Value</td>\\n      <td class=\\'ex\\'>Groovy expression to execute.</td>\\n    </tr>\\n    <tr>\\n      <td class=\\'ex\\'>Length</td>\\n      <td class=\\'ex\\'>Not used.</td>\\n    </tr>\\n    <tr>\\n      <td class=\\'ex\\'>RowLimit</td>\\n      <td class=\\'ex\\'>Not used.</td>\\n    </tr>\\n    <tr>\\n      <td class=\\'ex\\'>Nature</td>\\n      <td class=\\'ex\\'>Not used.</td>\\n    </tr>\\n  </table>\\n</doc>\\n<br/>\\n<br/>\\nFor examples:\\n<br/>\\n<doc class=\\'examples\\'>\\n  <table cellspacing=\\'0\\' cellpadding=\\'2\\'>\\n    <tr>\\n      <th class=\\'ex\\'>Value</th>\\n      <th class=\\'ex\\'>Result</th>\\n    </tr>\\n    <tr>\\n      <td class=\\'ex\\'><code class=\\'doc-fixed\\'>1+1</code></td>\\n      <td class=\\'ex\\'>2</td>\\n    </tr>\\n    <tr>\\n      <td class=\\'ex\\'><code class=\\'doc-fixed\\'>\\\"foobar\\\".replace(\\\"foo\\\", \\\"oof\\\")</code></td>\\n      <td class=\\'ex\\'><code class=\\'doc-fixed\\'>oofbar</code></td>\\n    </tr>\\n    <tr>\\n      <td class=\\'ex\\'><code class=\\'doc-fixed\\'>\\\"foo\\\".toUpperCase().equals(\\\"FOO\\\")</code></td>\\n      <td class=\\'ex\\'><code class=\\'doc-fixed\\'>true</code></td>\\n    </tr>\\n    <tr>\\n      <td class=\\'ex\\'><code class=\\'doc-fixed\\'>123 == 123<code></td>\\n      <td class=\\'ex\\'><code class=\\'doc-fixed\\'>true<code></td>\\n    </tr>\\n    <tr>\\n      <td class=\\'ex\\'>\\n        <code class=\\'doc-fixed\\'>\\n        def square = { number -> number * number };\\n        square(2)\\n      </code>\\n      </td>\\n      <td class=\\'ex\\'><code class=\\'doc-fixed\\'>4</code></td>\\n    </tr>\\n  </table>\\n</doc>\\n<br/>\\n<br/>\\nFor more information, you can access to the fully documentation from the <a href=\\\"http://groovy-lang.org/documentation.html\\\">official Groovy website</a>.\\n');");
         SQLInstruction.add(SQLS.toString());
-        
+
+        // Clean URLLOGIN column in countryenvironmentparameters table.
+        //-- ------------------------ 847-848
+        SQLS = new StringBuilder();
+        SQLS.append("UPDATE countryenvironmentparameters SET URLLOGIN = '' WHERE URLLOGIN is null;");
+        SQLInstruction.add(SQLS.toString());
+        SQLS = new StringBuilder();
+        SQLS.append("ALTER TABLE `countryenvironmentparameters` CHANGE COLUMN `URLLOGIN` `URLLOGIN` VARCHAR(150) NOT NULL DEFAULT '' ;");
+        SQLInstruction.add(SQLS.toString());
+
         return SQLInstruction;
     }
 
