@@ -23,14 +23,19 @@
  * @returns {void}
  */
 function readUserFromDatabase() {
-    $.ajax({url: "ReadMyUser",
+    var user;
+    var jqxhr = $.ajax({url: "ReadMyUser",
         async: false,
         dataType: 'json',
         success: function (data) {
-            var user = data;
+            user = data;
             sessionStorage.setItem("user", JSON.stringify(user));
             loadUserPreferences(data);
+            return user;
         }
+    });
+    $.when(jqxhr).then(function (data) {
+        return data;
     });
 }
 /**
@@ -40,12 +45,13 @@ function readUserFromDatabase() {
 function getUser() {
     var user;
     if (sessionStorage.getItem("user") === null) {
-        readUserFromDatabase();
-        
+        $.when(readUserFromDatabase()).then(function (data) {
+            user = data;
+        });
     }
     user = sessionStorage.getItem("user");
     user = JSON.parse(user);
-    if(user.request === 'Y'){
+    if (user.request === 'Y') {
         //user needs to change password
         $(location).attr("href", "ChangePassword.jsp");
     }

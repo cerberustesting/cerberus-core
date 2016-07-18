@@ -168,7 +168,7 @@ function displayApplicationList(selectName, system, defaultValue) {
 
         if (defaultValue !== undefined && defaultValue !== null) {
             $("[name='" + selectName + "']").val(defaultValue);
-        } 
+        }
     });
 }
 
@@ -932,7 +932,7 @@ function createDataTableWithPermissions(tableConfigurations, callbackFunction, o
     if (!tableConfigurations.showColvis) {
         domConf = 'l<"showInlineElement pull-left marginLeft5"f>rti<"marginTop5"p>';
     }
-    
+
     var configs = {};
     configs["dom"] = domConf;
     configs["serverSide"] = tableConfigurations.serverSide;
@@ -978,8 +978,15 @@ function createDataTableWithPermissions(tableConfigurations, callbackFunction, o
         };
         configs["fnStateLoadCallback"] = function (settings) {
             //Get UserPreferences from user object
-            var user = getUser();
-            if ("" !== user.userPreferences) {
+            var user = null;
+            $.when(getUser()).then(function (data) {
+                user = data;
+            });
+            while (user === null) {
+                //Wait for user information make sure to don't loose it
+            }
+
+            if ("" !== user.userPreferences && undefined !== user.userPreferences && null !== user.userPreferences) {
                 var userPref = JSON.parse(user.userPreferences);
                 if (undefined !== userPref['DataTables_' + settings.sInstance + '_' + location.pathname]) {
                     return JSON.parse(userPref['DataTables_' + settings.sInstance + '_' + location.pathname]);
@@ -1037,7 +1044,9 @@ function createDataTableWithPermissions(tableConfigurations, callbackFunction, o
         $("#restoreFilterButton").remove();
         $("#" + tableConfigurations.divId + "_wrapper")
                 .find("[class='dt-buttons btn-group']").removeClass().addClass("pull-right").find("a").attr('id', 'showHideColumnsButton').removeClass()
-                .addClass("btn btn-default").click(function(){$("#"+tableConfigurations.divIdrobots+" thead").empty()}).html("<span class='glyphicon glyphicon-cog'></span> Show/hide columns");
+                .addClass("btn btn-default").click(function () {
+            $("#" + tableConfigurations.divIdrobots + " thead").empty()
+        }).html("<span class='glyphicon glyphicon-cog'></span> Show/hide columns");
         $("#showHideColumnsButton").parent().before(
                 $("<button id='saveTableConfigurationButton'></button>").addClass("btn btn-default pull-right").append("<span class='glyphicon glyphicon-floppy-save'></span> Save table configuration")
                 .click(function () {
@@ -1131,14 +1140,21 @@ function createDataTable(tableConfigurations, callbackFunction, userCallbackFunc
         };
         configs["fnStateLoadCallback"] = function (settings) {
             //Get UserPreferences from user object
-            var user = getUser();
-            if ("" !== user.userPreferences) {
+            var user = null;
+            $.when(getUser()).then(function (data) {
+                user = data;
+            });
+            while (user === null) {
+                //Wait for user information make sure to don't loose it
+            }
+
+            if ("" !== user.userPreferences && undefined !== user.userPreferences && null !== user.userPreferences) {
                 var userPref = JSON.parse(user.userPreferences);
                 if (undefined !== userPref['DataTables_' + settings.sInstance + '_' + location.pathname]) {
                     return JSON.parse(userPref['DataTables_' + settings.sInstance + '_' + location.pathname]);
                 }
             }
-        };
+            };
         configs["buttons"] = [
             'colvis'
         ];
@@ -1179,7 +1195,9 @@ function createDataTable(tableConfigurations, callbackFunction, userCallbackFunc
         $("#restoreFilterButton").remove();
         $("#" + tableConfigurations.divId + "_wrapper")
                 .find("[class='dt-buttons btn-group']").removeClass().addClass("pull-right").find("a").attr('id', 'showHideColumnsButton').removeClass()
-                .addClass("btn btn-default").click(function(){$("#"+tableConfigurations.divIdrobots+" thead").empty()}).html("<span class='glyphicon glyphicon-cog'></span> Show/hide columns");
+                .addClass("btn btn-default").click(function () {
+            $("#" + tableConfigurations.divIdrobots + " thead").empty()
+        }).html("<span class='glyphicon glyphicon-cog'></span> Show/hide columns");
         $("#showHideColumnsButton").parent().before(
                 $("<button id='saveTableConfigurationButton'></button>").addClass("btn btn-default pull-right").append("<span class='glyphicon glyphicon-floppy-save'></span> Save table configuration")
                 .click(function () {
@@ -1245,7 +1263,7 @@ function displayColumnSearch(tableId, contentUrl) {
         $('.dataTables_scrollHeadInner table thead tr th').each(function () {
             $("#filterHeader").append("<th name='filterColumnHeader'></th>");
         });
-        
+
 //Iterate on all columns (visible and not visible)
         $(table.columns()[0]).each(function (value, colIndex) {
             //Get the value from storage (To display specific string if already filtered) 
@@ -1362,13 +1380,13 @@ function displayColumnSearch(tableId, contentUrl) {
             });
             $("#filterAlertDiv").show();
         }
-        
+
         //call the displayColumnSearch when table configuration is changed
-        $("#showHideColumnsButton").click(function(){
-        $('ul[class="dt-button-collection dropdown-menu"] li').click(function(){
-            displayColumnSearch(tableId, contentUrl);
+        $("#showHideColumnsButton").click(function () {
+            $('ul[class="dt-button-collection dropdown-menu"] li').click(function () {
+                displayColumnSearch(tableId, contentUrl);
+            });
         });
-    });
     });
 
 
