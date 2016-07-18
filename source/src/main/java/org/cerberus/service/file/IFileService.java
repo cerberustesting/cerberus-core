@@ -17,27 +17,16 @@
  * You should have received a copy of the GNU General Public License
  * along with Cerberus.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.cerberus.service.datalib;
+package org.cerberus.service.file;
 
-import org.cerberus.crud.entity.TestCaseCountryProperties;
-import org.cerberus.crud.entity.TestCaseExecution;
-import org.cerberus.crud.entity.TestDataLib;
-import org.cerberus.util.answer.AnswerItem;
+import java.util.HashMap;
 import org.cerberus.util.answer.AnswerList;
 
 /**
  *
  * @author bcivel
  */
-public interface IDataLibService {
+public interface IFileService {
     
-    AnswerItem getStaticFromDataSet(AnswerList dataSet);
-    
-    AnswerItem getRandomFromDataSet(AnswerList dataSet);
-    
-    AnswerItem getRandomNewFromDataSet(AnswerList dataSet, TestCaseExecution tCExecution, TestCaseCountryProperties testCaseProperties);
-    
-    AnswerItem getNotInUseFromDataSet(AnswerList dataSet, TestCaseExecution tCExecution, TestCaseCountryProperties testCaseProperties);
-    
-    AnswerItem getFromDataLib(TestDataLib lib, TestCaseCountryProperties testCaseCountryProperty, TestCaseExecution tCExecution);
+    AnswerList parseCSVFile(String urlToCSVFile, String separator, HashMap<String, String> columnsToGet);
 }

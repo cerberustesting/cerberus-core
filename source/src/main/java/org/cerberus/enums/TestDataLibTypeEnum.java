@@ -26,7 +26,8 @@ package org.cerberus.enums;
 public enum TestDataLibTypeEnum {
     STATIC("STATIC", "STATIC"),
     SQL("SQL", "SQL"),
-    SOAP("SOAP", "SOAP");
+    SOAP("SOAP", "SOAP"),
+    CSV("CSV", "CSV");
     
     private final String code;
     private final String description;

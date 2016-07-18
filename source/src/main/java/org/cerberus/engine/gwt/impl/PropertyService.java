@@ -75,6 +75,8 @@ import org.cerberus.engine.entity.TestDataLibResult;
 import org.cerberus.engine.entity.TestDataLibResultSOAP;
 import org.cerberus.engine.entity.TestDataLibResultSQL;
 import org.cerberus.engine.entity.TestDataLibResultStatic;
+import org.cerberus.service.datalib.IDataLibService;
+import org.cerberus.service.file.IFileService;
 import org.cerberus.service.groovy.IGroovyService;
 import org.cerberus.util.DateUtil;
 import org.cerberus.util.FileUtil;
@@ -140,6 +142,9 @@ public class PropertyService implements IPropertyService {
     private IParameterService parameterService;
     @Autowired
     private ICountryEnvironmentDatabaseService countryEnvironmentDatabaseService;
+    @Autowired
+    private IDataLibService dataLibService;
+    
 
     private static final Pattern GETFROMDATALIB_PATTERN = Pattern.compile("^[_A-Za-z0-9]+\\([_A-Za-z0-9]+\\)$");
     private static final String GETFROMDATALIB_SPLIT = "\\s+|\\(\\s*|\\)";
@@ -1334,6 +1339,12 @@ public class PropertyService implements IPropertyService {
             result = (TestDataLibResult) soapResult.getItem();
             msg = soapResult.getResultMessage();
             answer.setItem(result);
+            
+        } else if (lib.getType().equals(TestDataLibTypeEnum.CSV.getCode())) {
+            AnswerItem csvResult = fetchDataCSV(lib, testCaseCountryProperty, tCExecution);
+            result = (TestDataLibResult) csvResult.getItem();
+            msg = csvResult.getResultMessage();
+            answer.setItem(result);
         }
         answer.setResultMessage(msg);
         return answer;
@@ -1431,6 +1442,14 @@ public class PropertyService implements IPropertyService {
             answer.setResultMessage(msg);
 
         }
+        return answer;
+    }
+    
+    private AnswerItem fetchDataCSV(TestDataLib lib, TestCaseCountryProperties testCaseCountryProperty, TestCaseExecution tCExecution) {
+        AnswerItem answer;
+        
+        answer = dataLibService.getFromDataLib(lib, testCaseCountryProperty, tCExecution);
+        
         return answer;
     }
 

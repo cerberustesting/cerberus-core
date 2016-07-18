@@ -25,6 +25,11 @@ import java.sql.Timestamp;
  */
 public class TestDataLib {
 
+    public static final String TYPE_SQL = "SQL";
+    public static final String TYPE_STATIC = "STATIC";
+    public static final String TYPE_SOAP = "SOAP";
+    public static final String TYPE_CSV = "CSV";
+    
     private Integer testDataLibID;
     private String name;
     private String system;
