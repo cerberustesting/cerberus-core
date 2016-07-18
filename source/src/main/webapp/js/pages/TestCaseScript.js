@@ -355,7 +355,6 @@ function drawInheritedProperty(propList) {
         row2.append(value);
         table.append(row2);
 
-        row3.append(deleteBtnRow);
         row3.append(country);
         row3.append(type);
         row3.append(db);
