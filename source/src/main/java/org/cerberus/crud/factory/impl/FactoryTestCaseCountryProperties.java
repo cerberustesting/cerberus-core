@@ -20,9 +20,7 @@
 package org.cerberus.crud.factory.impl;
 
 import org.cerberus.crud.entity.TestCaseCountryProperties;
-import org.cerberus.crud.entity.TestCaseSubDataAccessProperty;
 import org.cerberus.crud.factory.IFactoryTestCaseCountryProperties;
-import org.cerberus.enums.PropertyTypeEnum;
 import org.springframework.stereotype.Service;
 
 /**
@@ -33,12 +31,13 @@ import org.springframework.stereotype.Service;
 public class FactoryTestCaseCountryProperties implements IFactoryTestCaseCountryProperties {
 
     @Override
-    public TestCaseCountryProperties create(String test, String testCase, String country, String property, String type, String database, String value1, String value2, int length, int rowLimit, String nature) {
+    public TestCaseCountryProperties create(String test, String testCase, String country, String property, String description, String type, String database, String value1, String value2, int length, int rowLimit, String nature) {
         TestCaseCountryProperties testCaseCountryProperties = new TestCaseCountryProperties();
         testCaseCountryProperties.setTest(test);
         testCaseCountryProperties.setTestCase(testCase);
         testCaseCountryProperties.setCountry(country);
         testCaseCountryProperties.setProperty(property);
+        testCaseCountryProperties.setDescription(description == null ? "" : description);
         testCaseCountryProperties.setType(type);
         testCaseCountryProperties.setDatabase(database);
         testCaseCountryProperties.setValue1(value1);
@@ -49,21 +48,4 @@ public class FactoryTestCaseCountryProperties implements IFactoryTestCaseCountry
         return testCaseCountryProperties;
     }
 
-    @Override
-    public TestCaseSubDataAccessProperty create(TestCaseCountryProperties tccp, String property, String libName, String subdataName) {
-        TestCaseSubDataAccessProperty prop = new TestCaseSubDataAccessProperty();
-        prop.setTest(tccp.getTest());
-        prop.setTestCase(tccp.getTestCase());
-        prop.setCountry(tccp.getCountry());
-        prop.setProperty(property);
-        prop.setType(PropertyTypeEnum.ACCESS_SUBDATA.getPropertyName());
-        prop.setDatabase("");
-        prop.setValue1(""); //stores the testdatalib id
-        prop.setValue2(subdataName); //stores the name of the subdata entry
-        prop.setAccessName(property);
-        prop.setLibraryValue(libName);
-        prop.setSubDataValue(subdataName);
-        prop.setPropertyLibEntry(tccp);
-        return prop;
-    }
 }

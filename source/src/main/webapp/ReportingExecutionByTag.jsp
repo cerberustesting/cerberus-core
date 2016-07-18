@@ -11,8 +11,8 @@
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
         <%@ include file="include/dependenciesInclusions.html" %>
         <link rel="stylesheet" href="css/pages/ReportingExecutionByTag.css" type="text/css"/>
-        <script type="text/javascript" src="js/d3.min.js"></script>
-        <script type="text/javascript" src="js/d3tip.js"></script>
+        <script type="text/javascript" src="dependencies/D3js-3.x.x/js/d3.min.js"></script>
+        <script type="text/javascript" src="dependencies/D3-tip-0.6.7/js/index.js"></script>
         <script type="text/javascript" src="js/pages/ReportingExecutionByTag.js"></script>
         <title id="pageTitle">Campaign Reporting</title>
     </head>

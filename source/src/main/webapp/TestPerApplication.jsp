@@ -28,19 +28,7 @@
     <head>
         <meta content="text/html; charset=UTF-8" http-equiv="content-type">
         <title>Test Per Application</title>
-        <link rel="stylesheet" type="text/css" href="css/crb_style.css">
-        <link rel="stylesheet" type="text/css" href="css/jquery.dataTables.css">
-        <link rel="stylesheet" type="text/css" href="css/jquery-ui.css">
-        <link rel="stylesheet" type="text/css" href="css/dataTables_jui.css">
-        <link rel="shortcut icon" type="image/x-icon" href="images/favicon.ico">
-        <link type="text/css" rel="stylesheet" href="css/jquery.multiselect.css">
-        <script type="text/javascript" src="js/jquery-1.9.1.min.js"></script>
-        <script type="text/javascript" src="js/jquery-ui-1.10.2.js"></script>
-        <script type="text/javascript" src="js/jquery.jeditable.mini.js"></script>
-        <script type="text/javascript" src="js/jquery.dataTables.min.js"></script>
-        <script type="text/javascript" src="js/jquery.dataTables.editable.js"></script>
-        <script type="text/javascript" src="js/jquery.validate.min.js"></script>
-        <script type="text/javascript" src="js/jquery.multiselect.js" charset="utf-8"></script>
+        <%@ include file="include/dependenciesInclusions_old.html" %>
         <style>
             .divBorder{
                 background-color: #f3f6fa;
@@ -292,7 +280,7 @@
  </script>
         <br><% out.print(display_footer(DatePageStart));%>
     <script type="text/javascript">
-            (document).ready($("#Application").multiselect({
+            $(document).ready($("#Application").multiselect({
                 multiple: false,
                 header: "Select an option",
                 noneSelectedText: "Select an Option",

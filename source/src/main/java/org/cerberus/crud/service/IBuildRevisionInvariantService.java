@@ -20,6 +20,7 @@
 package org.cerberus.crud.service;
 
 import java.util.List;
+import java.util.Map;
 
 import org.cerberus.crud.entity.BuildRevisionInvariant;
 import org.cerberus.exception.CerberusException;
@@ -37,7 +38,7 @@ public interface IBuildRevisionInvariantService {
 
     AnswerItem readByKey(String system, Integer level, String versionName);
 
-    AnswerList readBySystemByCriteria(String system, Integer level, int start, int amount, String column, String dir, String searchTerm, String individualSearch);
+    AnswerList readBySystemByCriteria(String system, Integer level, int start, int amount, String column, String dir, String searchTerm, Map<String, List<String>> individualSearch);
 
     AnswerList readBySystemLevel(String system, Integer level);
 

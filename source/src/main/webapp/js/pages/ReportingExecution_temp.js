@@ -21,8 +21,8 @@
 var globalGroupList;
 var globalTCStatusList;
 var globalControlStatusList;
-$.when($.getScript("js/pages/global/global.js")).then(function() {
-    $(document).ready(function() {
+$.when($.getScript("js/pages/global/global.js")).then(function () {
+    $(document).ready(function () {
         initPage();
         $('a[id="tab4Text"]').on('shown.bs.tab', function (e) {
             //need to redraw the table to avoid problems with misaliged columns
@@ -75,7 +75,7 @@ function parseReportingFavoriteURLFormat(favorite) {
     var priority = [];
     var browser = [];
 
-    $.each(res, function(idx, obj) {
+    $.each(res, function (idx, obj) {
         if (obj.indexOf("Ip=") > -1) {
             favoriteObj["ip"] = obj.replace("Ip=", "");
         } else if (obj.indexOf("Port=") > -1) {
@@ -228,7 +228,7 @@ function loadFilters() {
 
     //loads all invariants 
     var jqxhr = $.getJSON("ReadInvariant", "");
-    $.when(jqxhr).then(function(data) {
+    $.when(jqxhr).then(function (data) {
         //var systemsList = [];
         var environmentList = [];
         var countryList = [];
@@ -238,7 +238,7 @@ function loadFilters() {
         var groupList = [];
         var activeList = [];
         var executionStatusList = [];
-        $.each(data["contentTable"], function(idx, obj) {
+        $.each(data["contentTable"], function (idx, obj) {
             //extract all invariants that are needed for the page
             var element = {value: obj.value, description: obj.description};
             /*if (obj.idName === 'SYSTEM') {l
@@ -297,7 +297,7 @@ function loadFilters() {
         globalGroupList = groupList;
         loadTestCaseExecutionStatus(executionStatusList);
         //TODO: load this list globalControlStatusList to create the statistics
-        
+
         //
         //comment
         loadTextComponent("#comment", preferences.cm);
@@ -332,8 +332,8 @@ function loadTextComponent(element, text) {
 function readAndLoadTest(selectedSystem) {
     var jqxhr = $.getJSON("ReadTest", "system=" + selectedSystem);
     var testList = [];
-    $.when(jqxhr).then(function(data) {
-        $.each(data["contentTable"], function(idx, obj) {
+    $.when(jqxhr).then(function (data) {
+        $.each(data["contentTable"], function (idx, obj) {
             //loads all the tests retrieved 
             var element = {test: obj.test, description: obj.description};
             testList.push(element);
@@ -379,8 +379,8 @@ function readAndLoadTest(selectedSystem) {
 function readAndLoadApplication(selectedSystem) {
     var jqxhr = $.getJSON("ReadApplication", "system=" + selectedSystem);
     var applicationsList = [];
-    $.when(jqxhr).then(function(data) {
-        $.each(data["contentTable"], function(idx, obj) {
+    $.when(jqxhr).then(function (data) {
+        $.each(data["contentTable"], function (idx, obj) {
             var element = {application: obj.application, system: obj.system};
             applicationsList.push(element);
 
@@ -393,10 +393,10 @@ function readAndLoadApplication(selectedSystem) {
 function readAndLoadProject(projectsToSelect) {
     var jqxhr = $.getJSON("ReadProject", "");
 
-    $.when(jqxhr).then(function(data) {
+    $.when(jqxhr).then(function (data) {
         var projectList = [];
 
-        $.each(data["contentTable"], function(idx, obj) {
+        $.each(data["contentTable"], function (idx, obj) {
             var element = {idProject: obj.idProject, description: obj.description};
             projectList.push(element);
         });
@@ -408,10 +408,10 @@ function readAndLoadProject(projectsToSelect) {
 function readAndLoadCreatorImplementer() {
     //loads the creator and implementer
     var jqxhr = $.getJSON("ReadUserPublic", "");
-    $.when(jqxhr).then(function(data) {
+    $.when(jqxhr).then(function (data) {
         //console.log("data " + data["contentTable"]);
         var loginList = [];
-        $.each(data["contentTable"], function(idx, obj) {
+        $.each(data["contentTable"], function (idx, obj) {
             loginList.push(obj.login);
         });
         loadCreators(loginList);
@@ -422,12 +422,12 @@ function readAndLoadCreatorImplementer() {
 function readAndLoadTargetRevisionAndSprint(system) {
 
     var jqxhr = $.getJSON("ReadBuildRevisionInvariant", "system=" + system);
-    $.when(jqxhr).then(function(data) {
+    $.when(jqxhr).then(function (data) {
 
         var buildList = [];
         var revisionList = [];
         ///console.log(data)
-        $.each(data["contentTable"], function(idx, obj) {
+        $.each(data["contentTable"], function (idx, obj) {
             if (obj.level === 1) { //build
                 buildList.push(obj.versionName);
             } else if (obj.level === 2) { //revision
@@ -453,7 +453,7 @@ function searchExecutionsClickHandler() {
     var form = $('#executionReportingForm');
 
     var countriesSelected = [];
-    $("input[type='checkbox'][name='country']").each(function(idx, obj) {
+    $("input[type='checkbox'][name='country']").each(function (idx, obj) {
         if ($(this).prop("checked")) {
             countriesSelected.push($(this).val());
         }
@@ -461,7 +461,7 @@ function searchExecutionsClickHandler() {
     countriesSelected.sort();
 
     var browsersSelected = [];
-    $("input[type='checkbox'][name='browser']").each(function(idx, obj) {
+    $("input[type='checkbox'][name='browser']").each(function (idx, obj) {
         if ($(this).prop("checked")) {
             browsersSelected.push($(this).val());
         }
@@ -476,7 +476,7 @@ function searchExecutionsClickHandler() {
     //sends the system and all information available in the form
     var jqxhr = $.post("ReadTestCaseExecution", "system=" + system + "&" + form.serialize(), "json");//TODO:FN add getreport_1 to the servlet
 
-    $.when(jqxhr).then(function(result) {
+    $.when(jqxhr).then(function (result) {
         //check how many countries should be displayed
         $('#executionTable').removeClass("invisible");
 
@@ -509,18 +509,18 @@ function createSummaryTables(data, countriesSelected, browsersSelected) {
     var recordsPerGroup = [];
     var recordsPerTCStatus = [];
 
-    $.each(data, function(idx, row) {
+    $.each(data, function (idx, row) {
         var testName = row.test;
         var groupName = row.group;
         var tcStatusName = row.status;
 
         var elementGroup = null, elementTCstatus = null;
 
-        $.each(recordsPerGroup, function(idxTest, testObject) {
+        $.each(recordsPerGroup, function (idxTest, testObject) {
 
             if (testObject.test === testName) {
                 elementGroup = testObject;
-                $.each(testObject.data, function(idxGroup, groupObject) {
+                $.each(testObject.data, function (idxGroup, groupObject) {
                     groupObject.total++;
                     testObject.data[idxGroup] = groupObject;
                     recordsPerGroup[idxTest] = testObject;
@@ -530,10 +530,10 @@ function createSummaryTables(data, countriesSelected, browsersSelected) {
             }
         });
 
-        $.each(recordsPerTCStatus, function(idxTest, testObject) {
+        $.each(recordsPerTCStatus, function (idxTest, testObject) {
             if (testObject.test === testName) {
                 elementTCstatus = testObject;
-                $.each(testObject.data, function(idxStatus, tcStatusObj) {
+                $.each(testObject.data, function (idxStatus, tcStatusObj) {
                     tcStatusObj.total++;
                     testObject.data[idxStatus] = tcStatusObj;
                     recordsPerTCStatus[idxTest] = testObject;
@@ -579,7 +579,7 @@ function drawTotalsPerGroup(data) {
         recreateGroupTable();
     }
 
-    
+
     var configurations = new TableConfigurationsClientSide("statisticsPerTCGroup", dataSetTable, aoColumnsFuncAux(globalGroupList));
 
     configurations.scrollX = true;
@@ -591,7 +591,7 @@ function drawTotalsPerGroup(data) {
     //add total tests to foot
     var $tr = $('<tr>');
     $tr.addClass("summaryTotal");
-    $.each(totalTests, function(idx, totalValue) {
+    $.each(totalTests, function (idx, totalValue) {
         var $td = $('<td>');
         $td.text(totalValue);
         $td.addClass("width150");
@@ -626,7 +626,7 @@ function drawTotalsPerTCStatus(data) {
         recreateTCStatusTable();
     }
 
-    
+
     var configurations = new TableConfigurationsClientSide("statisticsPerTCStatus", dataSetTable, aoColumnsFuncAux(globalTCStatusList));
 
     configurations.scrollX = true;
@@ -638,7 +638,7 @@ function drawTotalsPerTCStatus(data) {
     //add total tests to foot
     var $tr = $('<tr>');
     $tr.addClass("summaryTotal");
-    $.each(totalTests, function(idx, totalValue) {
+    $.each(totalTests, function (idx, totalValue) {
         var $td = $('<td>');
         $td.text(totalValue);
         $td.addClass("width150");
@@ -658,20 +658,20 @@ function getStatisticsDataSet(dataSet, globalList) {
     var dataSetTable = [];
     var row = 0;
     var totalTests = {};
-    totalTests["total"]  = "Total"; //add translations
+    totalTests["total"] = "Total"; //add translations
     //Add header
-    $.each(dataSet, function(idx, testObj) {
+    $.each(dataSet, function (idx, testObj) {
         var rowData = {};
 
         var totalRow = 0;
         rowData["test"] = testObj.test;
-        $.each(globalList, function(idx, item) {
+        $.each(globalList, function (idx, item) {
             if (!totalTests.hasOwnProperty(item.value)) {
                 totalTests[item.value] = 0;
             }
             var found = false;
             var total = -1;
-            $.each(testObj.data, function(idxGroup, statistic) {
+            $.each(testObj.data, function (idxGroup, statistic) {
                 if (statistic.name === item.value) {
                     totalRow += statistic.total;
                     total = statistic.total;
@@ -699,7 +699,7 @@ function getStatisticsDataSet(dataSet, globalList) {
 function aoColumnsFuncAux(globalList) {
     var aoColumns = [];
     aoColumns.push({className: "width200", "sName": "test", "data": "test", "title": "Test"});
-    $.each(globalList, function(idx, obj) {
+    $.each(globalList, function (idx, obj) {
         aoColumns.push({className: "width150", "sName": obj.value, "data": obj.value, "title": obj.value});
     });
     aoColumns.push({className: "width150", "sName": "totalRow", "data": "totalRow", "title": "Total"});
@@ -717,7 +717,7 @@ function drawStatisticsTable2(dataSet, globalList, tableID) {
     $tr.append($th);
     var totalTests = [];
 
-    $.each(globalList, function(idx, item) {
+    $.each(globalList, function (idx, item) {
         $th = $('<th>');
         $th.addClass("width150");
         $th.text(item.value);
@@ -736,7 +736,7 @@ function drawStatisticsTable2(dataSet, globalList, tableID) {
     $("#" + tableID).append($thead);
 
 
-    $.each(dataSet, function(idx, testObj) {
+    $.each(dataSet, function (idx, testObj) {
         var $tr = $('<tr>');
         var $td = $('<td>');
 
@@ -745,10 +745,10 @@ function drawStatisticsTable2(dataSet, globalList, tableID) {
         $tr.append($td);
         var totalRow = 0;
 
-        $.each(globalList, function(idx, item) {
+        $.each(globalList, function (idx, item) {
             $td = $('<td>');
             var found = false;
-            $.each(testObj.data, function(idxGroup, statistic) {
+            $.each(testObj.data, function (idxGroup, statistic) {
                 if (statistic.name === item.value) {
                     totalRow += statistic.total;
                     $td.text(statistic.total);
@@ -775,7 +775,7 @@ function drawStatisticsTable2(dataSet, globalList, tableID) {
     var $td = $('<td>');
     $td.text("Total"); //translations
     $tr.append($td);
-    $.each(globalList, function(idx, tcStatusObj) {
+    $.each(globalList, function (idx, tcStatusObj) {
         $td = $('<td>');
         $td.text(totalTests[tcStatusObj.value]);
         $tr.append($td);
@@ -819,8 +819,8 @@ function reconstructTable() {
 function addCountryandBrowserColumnHeaders(countriesSelected, browsersSelected) {
     var currentTD = $('table[name="executionTable"] #headerStatus');
 
-    $.each(countriesSelected, function(idx, obj) {
-        $.each(browsersSelected, function(idx2, obj2) {
+    $.each(countriesSelected, function (idx, obj) {
+        $.each(browsersSelected, function (idx2, obj2) {
             var $newTd = $('<th class="dynamicHeader">');
             var $divNewTD = $('<div>').text(obj + "-" + obj2);
             $divNewTD.css("width", "70px");
@@ -886,7 +886,7 @@ function setFiltersClickHandler() {
     var form = $('#executionReportingForm');
 
     var jqxhr = $.post("UpdateMyUserReporting1", form.serialize(), "json");
-    $.when(jqxhr).then(function(data) {
+    $.when(jqxhr).then(function (data) {
         var dataJson = JSON.parse(data);
         var code = getAlertType(dataJson.messageType);
         if (code === "success") {
@@ -966,7 +966,7 @@ function loadCheckboxValuesSelection(group, listToSelect) {
     $("input[name='" + group + "']").removeProp("checked");
 
     if (typeof listToSelect !== 'undefined') {
-        $("input[name='" + group + "']").each(function() {
+        $("input[name='" + group + "']").each(function () {
             var value = $(this).prop("value");
             if (listToSelect.indexOf(value) > -1) {
                 $(this).prop("checked", "checked");
@@ -980,7 +980,7 @@ function clearMultiselectSelection(elementID) {
 }
 function loadTests(data) {
     $("#test").empty();
-    $.each(data, function(idx, obj) {
+    $.each(data, function (idx, obj) {
         $("#test").append("<option value='" + obj.test + "'>" + obj.test + " - " + obj.description + "</option>");
     });
 
@@ -1049,15 +1049,15 @@ function loadEnvironments(data, environmentsToSelect) {
 
 function loadBuilds(data) {
     loadSelectElement(data, $("#build"), false);
-    $("#build").multiselect({
-        maxHeight: 150,
-        checkboxName: 'build',
-        buttonWidth: '100%',
-        includeSelectAllOption: true,
-        enableFiltering: true,
-        enableCaseInsensitiveFiltering: true,
-        selectAllValue: 'multiselect-all-build',
-    });
+        $("#build").multiselect({
+            maxHeight: 150,
+            checkboxName: 'build',
+            buttonWidth: '100%',
+            includeSelectAllOption: true,
+            enableFiltering: true,
+            enableCaseInsensitiveFiltering: true,
+            selectAllValue: 'multiselect-all-build',
+        });
 }
 
 function loadRevisions(data) {
@@ -1089,7 +1089,7 @@ function loadRevisions(data) {
 function loadApplications(data) {
 
     $("#application").empty();
-    $.each(data, function(idx, obj) {
+    $.each(data, function (idx, obj) {
         $("#application").append("<option value='" + obj.application + "'>" + obj.application + "</option>");
     });
 
@@ -1107,7 +1107,7 @@ function loadApplications(data) {
 function loadProjects(data) {
 
     $("#project").empty();
-    $.each(data, function(idx, obj) {
+    $.each(data, function (idx, obj) {
         $("#project").append("<option value='" + obj.idProject + "'>" + obj.idProject + " - " + obj.description + "</option>");
     });
 
@@ -1182,7 +1182,7 @@ function loadBrowserFilter(list) {
 
 function loadFilter(list, element, name) {
 
-    $.each(list, function(idx, obj) {
+    $.each(list, function (idx, obj) {
         var checked = obj.hasOwnProperty("checked") ? ' checked="checked" ' : "";
         var cb = '<label title="' + obj.description + '"  class="checkbox-inline">\n\
                         <input title="' + obj.description + '"  type="checkbox" name="' + name + '" id="' + obj.value
@@ -1198,25 +1198,25 @@ function aoColumnsFuncReportExecution(tableId, countryList, browserList) {
     var doc = new Doc();
     //doc.getDocOnline("testdatalib", "name")
     var aoColumns = [];
-    $("#" + tableId + " th ").each(function(i) {
+    $("#" + tableId + " th ").each(function (i) {
         switch (i) {
             case 0:
                 aoColumns.push({className: "width350", "sName": "test", "data": "test", "title": "Test",
-                    "mRender": function(data, type, oObj) {
+                    "mRender": function (data, type, oObj) {
                         return "<div>" + oObj.test + " " + drawHyperlinkExternal("TestCaseList.jsp?test=" + encodeURIComponent(oObj.test),
                                 '<span title="Open list of test cases for this test" class="glyphicon glyphicon-new-window"></span>') + "</div>";
                     }});
                 break;
             case 1 :
                 aoColumns.push({className: "width100", "sName": "testCase", "data": "testCase", "title": "Test Case",
-                    "mRender": function(data, type, oObj) {
+                    "mRender": function (data, type, oObj) {
                         return "<div>" + oObj.testCase + " " + drawHyperlinkExternal("TestCase.jsp?Test=" + encodeURIComponent(oObj.test) + "&TestCase=" +
                                 encodeURIComponent(oObj.testCase) + "&Load=Load", '<span title="Open Test Case" class="glyphicon glyphicon-new-window"></span>') + "</div>";
                     }});
                 break;
             case 2 :
                 aoColumns.push({className: "width130", "sName": "application", "data": "application", "title": "Application",
-                    "mRender": function(data, type, oObj) {
+                    "mRender": function (data, type, oObj) {
                         if (!jQuery.isEmptyObject(oObj.application)) {
                             return "<div> " + oObj.application + " " + drawHyperlinkExternal("TestPerApplication.jsp?Application=" + encodeURIComponent(oObj.application),
                                     '<span title="Open list of test cases for this application." class="glyphicon glyphicon-new-window"></span>'.trim()) + "</div>";
@@ -1243,11 +1243,11 @@ function aoColumnsFuncReportExecution(tableId, countryList, browserList) {
         }
     });
     //adds each column for each pair country-browser
-    $.each(countryList, function(idx, country) {
-        $.each(browserList, function(idx2, browser) {
+    $.each(countryList, function (idx, country) {
+        $.each(browserList, function (idx2, browser) {
             var key = country + " " + browser;
             aoColumns.push({className: "dynamicHeader width100", "sName": key, "data": key, "title": key,
-                "mRender": function(data, type, oObj) {
+                "mRender": function (data, type, oObj) {
 
                     if (!jQuery.isEmptyObject(oObj.execTab[key])) {
                         var rowDetails = oObj.execTab[key];

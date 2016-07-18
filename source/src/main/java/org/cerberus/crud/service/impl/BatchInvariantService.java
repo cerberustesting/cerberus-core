@@ -20,6 +20,7 @@
 package org.cerberus.crud.service.impl;
 
 import java.util.List;
+import java.util.Map;
 import org.cerberus.crud.dao.IBatchInvariantDAO;
 import org.cerberus.crud.entity.BatchInvariant;
 import org.cerberus.crud.entity.MessageGeneral;
@@ -45,8 +46,8 @@ public class BatchInvariantService implements IBatchInvariantService {
     }
 
     @Override
-    public AnswerList readBySystemByCriteria(String system, int startPosition, int length, String columnName, String sort, String searchParameter, String string) {
-        return batchInvariantDAO.readBySystemByCriteria(system, startPosition, length, columnName, sort, searchParameter, string);
+    public AnswerList readBySystemByCriteria(String system, int startPosition, int length, String columnName, String sort, String searchParameter, Map<String, List<String>> individualSearch) {
+        return batchInvariantDAO.readBySystemByCriteria(system, startPosition, length, columnName, sort, searchParameter, individualSearch);
     }
 
     @Override

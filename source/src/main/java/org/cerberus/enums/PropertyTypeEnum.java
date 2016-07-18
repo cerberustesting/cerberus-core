@@ -18,8 +18,7 @@ public enum PropertyTypeEnum {
     GET_FROM_XML("getFromXml"), 
     GET_FROM_JSON("getFromJson"), 
     EXECUTE_SOAP_FROM_LIB("executeSoapFromLib"), 
-    GET_DIFFERENCES_FROM_XML("getDifferencesFromXml"),
-    ACCESS_SUBDATA("accessSubData") // Is not accessible from the GUI of Cerberus but is created by the engine when a subdata is used.
+    GET_DIFFERENCES_FROM_XML("getDifferencesFromXml")
     ;
     
     private final String propertyName;

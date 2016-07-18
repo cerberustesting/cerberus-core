@@ -33,11 +33,12 @@ import org.springframework.stereotype.Service;
 public class FactoryTestCaseExecutionData implements IFactoryTestCaseExecutionData {
 
     @Override
-    public TestCaseExecutionData create(long id, String property, String value, String type, String value1,String value2,
+    public TestCaseExecutionData create(long id, String property, String description, String value, String type, String value1,String value2,
                                         String returnCode,String rMessage, long start, long end, long startLong, long endLong, MessageEvent message) {
         TestCaseExecutionData testCaseExecutionData = new TestCaseExecutionData();
         testCaseExecutionData.setId(id);
         testCaseExecutionData.setProperty(property);
+        testCaseExecutionData.setDescription(description);
         testCaseExecutionData.setValue(value);
         testCaseExecutionData.setType(type);
         testCaseExecutionData.setValue1(value1);
@@ -54,10 +55,11 @@ public class FactoryTestCaseExecutionData implements IFactoryTestCaseExecutionDa
     }
 
     @Override
-    public TestCaseExecutionData create(long id, String property, String type, String value1, String value2, MessageEvent message) {
+    public TestCaseExecutionData create(long id, String property, String description, String type, String value1, String value2, MessageEvent message) {
         TestCaseExecutionData testCaseExecutionData = new TestCaseExecutionData();
         testCaseExecutionData.setId(id);
         testCaseExecutionData.setProperty(property);
+        testCaseExecutionData.setDescription(description);
         testCaseExecutionData.setType(type);
         testCaseExecutionData.setValue1(value1);
         testCaseExecutionData.setValue2(value2);

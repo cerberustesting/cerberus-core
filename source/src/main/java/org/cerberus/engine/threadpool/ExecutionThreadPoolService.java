@@ -20,21 +20,15 @@
 package org.cerberus.engine.threadpool;
 
 import java.io.UnsupportedEncodingException;
-import java.net.URLDecoder;
-import java.net.URLEncoder;
 import java.util.List;
 import java.util.concurrent.Future;
-import java.util.concurrent.PriorityBlockingQueue;
 import java.util.concurrent.RejectedExecutionException;
-import java.util.concurrent.RunnableFuture;
-import java.util.concurrent.TimeUnit;
-import org.apache.log4j.Level;
+import org.apache.log4j.Logger;
 import org.cerberus.engine.entity.ExecutionThreadPool;
 import org.cerberus.crud.entity.TestCaseExecutionInQueue;
 import org.cerberus.crud.service.IParameterService;
 import org.cerberus.crud.service.ITestCaseExecutionInQueueService;
 import org.cerberus.exception.CerberusException;
-import org.cerberus.log.MyLogger;
 import org.cerberus.servlet.zzpublic.RunTestCase;
 import org.cerberus.util.ParamRequestMaker;
 import org.cerberus.util.ParameterParserUtil;
@@ -56,6 +50,8 @@ public class ExecutionThreadPoolService {
     @Autowired
     IParameterService parameterService;
 
+    private static final Logger LOG = Logger.getLogger(ExecutionThreadPoolService.class);
+
     @Async
     public void putExecutionInQueue(String url, String tag) throws CerberusException, InterruptedException {
         ExecutionWorkerThread task = new ExecutionWorkerThread();
@@ -67,10 +63,9 @@ public class ExecutionThreadPoolService {
             threadPool.increment(tag, future);
             task.setFuture(future);
         } catch (RejectedExecutionException e) {
-            System.out.println("RejectedExecutionException :"+e);
+            LOG.error("RejectedExecutionException : " + e);
         }
     }
-
 
     public void searchExecutionInQueueTableAndTriggerExecution() throws CerberusException, UnsupportedEncodingException, InterruptedException {
 
@@ -102,7 +97,7 @@ public class ExecutionThreadPoolService {
             }
 
         } catch (CerberusException ex) {
-            MyLogger.log(ExecutionThreadPoolService.class.getName(), Level.INFO, ex.toString());
+            LOG.info(ex.toString());
         }
 
     }

@@ -20,6 +20,7 @@
 package org.cerberus.servlet.information;
 
 import java.io.IOException;
+import java.sql.Timestamp;
 import java.util.HashMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -84,6 +85,8 @@ public class ReadCerberusDetailInformation extends HttpServlet {
                 object.put("environment", execution.getEnvironmentData());
                 object.put("country", execution.getCountry());
                 object.put("robotIP", execution.getSeleniumIP());
+                object.put("tag", execution.getTag());
+                object.put("start", new Timestamp(execution.getStart()));
                 executionArray.put(object);
             }
             jsonResponse.put("simultaneous_execution_list", executionArray);

@@ -19,6 +19,7 @@
  */
 package org.cerberus.servlet.crud.test;
 
+import com.google.common.base.Strings;
 import com.google.gson.Gson;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -41,6 +42,7 @@ import org.cerberus.enums.MessageEventEnum;
 import org.cerberus.util.ParameterParserUtil;
 import org.cerberus.util.answer.AnswerItem;
 import org.cerberus.util.answer.AnswerList;
+import org.cerberus.util.answer.AnswerUtil;
 import org.cerberus.util.servlet.ServletUtil;
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -93,6 +95,7 @@ public class ReadTest extends HttpServlet {
          */
         String test = ParameterParserUtil.parseStringParam(request.getParameter("test"), "");
         String system = ParameterParserUtil.parseStringParam(request.getParameter("system"), "");
+        String columnName = ParameterParserUtil.parseStringParam(request.getParameter("columnName"), "");
 
         // Global boolean on the servlet that define if the user has permition to edit and delete object.
         boolean userHasPermissions = request.isUserInRole("TestAdmin");
@@ -108,6 +111,9 @@ public class ReadTest extends HttpServlet {
             } else if (!system.equals("")) {
                 answer = findTestBySystem(system, appContext, userHasPermissions);
                 jsonResponse = (JSONObject) answer.getItem();
+            } else if (!Strings.isNullOrEmpty(columnName)) {
+                answer = findDistinctValuesOfColumn(appContext, request, columnName);
+                jsonResponse = (JSONObject) answer.getItem();
             } else {
                 answer = findTestList(appContext, userHasPermissions, request);
                 jsonResponse = (JSONObject) answer.getItem();
@@ -121,14 +127,7 @@ public class ReadTest extends HttpServlet {
         } catch (JSONException e) {
             org.apache.log4j.Logger.getLogger(ReadTest.class.getName()).log(org.apache.log4j.Level.ERROR, null, e);
             //returns a default error message with the json format that is able to be parsed by the client-side
-            response.setContentType("application/json");
-            msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
-            StringBuilder errorMessage = new StringBuilder();
-            errorMessage.append("{\"messageType\":\"").append(msg.getCode()).append("\",");
-            errorMessage.append("\"message\":\"");
-            errorMessage.append(msg.getDescription().replace("%DESCRIPTION%", "Unable to check the status of your request! Try later or open a bug."));
-            errorMessage.append("\"}");
-            response.getWriter().print(errorMessage.toString());
+            response.getWriter().print(AnswerUtil.createGenericErrorAnswer());
         }
 
     }
@@ -278,6 +277,33 @@ public class ReadTest extends HttpServlet {
         Gson gson = new Gson();
         JSONObject result = new JSONObject(gson.toJson(test));
         return result;
+    }
+    
+    private AnswerItem findDistinctValuesOfColumn(ApplicationContext appContext, HttpServletRequest request, String columnName) throws JSONException{
+        AnswerItem answer = new AnswerItem();
+        JSONObject object = new JSONObject();
+
+        testService = appContext.getBean(TestService.class);
+        
+        String searchParameter = ParameterParserUtil.parseStringParam(request.getParameter("sSearch"), "");
+        String sColumns = ParameterParserUtil.parseStringParam(request.getParameter("sColumns"), "test,testcase,application,project,ticket,description,behaviororvalueexpected,readonly,bugtrackernewurl,deploytype,mavengroupid");
+        String columnToSort[] = sColumns.split(",");
+
+        Map<String, List<String>> individualSearch = new HashMap<String, List<String>>();
+        for (int a = 0; a < columnToSort.length; a++) {
+            if (null!=request.getParameter("sSearch_" + a) && !request.getParameter("sSearch_" + a).isEmpty()) {
+                List<String> search = new ArrayList(Arrays.asList(request.getParameter("sSearch_" + a).split(",")));
+                individualSearch.put(columnToSort[a], search);
+            }
+        }
+
+        AnswerList testCaseList = testService.readDistinctValuesByCriteria( searchParameter, individualSearch, columnName);
+
+        object.put("distinctValues", testCaseList.getDataList());
+
+        answer.setItem(object);
+        answer.setResultMessage(testCaseList.getResultMessage());
+        return answer;
     }
 
 }

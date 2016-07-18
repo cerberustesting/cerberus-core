@@ -42,7 +42,7 @@
                 <div class="col-lg-12" id="FiltersPanel">
                     <div class="panel panel-default">
                         <div class="panel-heading card">
-                            <span class="fa fa-tag fa-fw"></span>
+                            <span class="glyphicon glyphicon-filter"></span>
                             <label id="filters" name="filtersField">Filters</label>
                         </div>
                         <div class="panel-body">
@@ -70,6 +70,7 @@
 
             <div class="panel panel-default">
                 <div class="panel-heading card">
+                    <span class="glyphicon glyphicon-list"></span>
                     <label id="shortcuts" name="listField">Build Content List</label>
                 </div>
                 <form id="massActionForm" name="massActionForm"  title="" role="form">

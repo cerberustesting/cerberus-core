@@ -20,6 +20,7 @@
 package org.cerberus.crud.service.impl;
 
 import java.util.List;
+import java.util.Map;
 import org.cerberus.crud.dao.ICountryEnvParam_logDAO;
 
 import org.cerberus.crud.entity.CountryEnvParam_log;
@@ -57,8 +58,8 @@ public class CountryEnvParam_logService implements ICountryEnvParam_logService {
     }
 
     @Override
-    public AnswerList readByVariousByCriteria(String system, String country, String environment, String build, String revision, int startPosition, int length, String columnName, String sort, String searchParameter, String string) {
-        return countryEnvParamLogDao.readByVariousByCriteria(system, country, environment, build, revision, startPosition, length, columnName, sort, searchParameter, string);
+    public AnswerList readByVariousByCriteria(String system, String country, String environment, String build, String revision, int startPosition, int length, String columnName, String sort, String searchParameter, Map<String, List<String>> individualSearch) {
+        return countryEnvParamLogDao.readByVariousByCriteria(system, country, environment, build, revision, startPosition, length, columnName, sort, searchParameter, individualSearch);
     }
 
     @Override

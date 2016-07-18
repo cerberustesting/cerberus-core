@@ -35,9 +35,15 @@
             <%@ include file="include/batchinvariant/editBatchInvariant.html"%> 
 
             <h1 class="page-title-line" id="title">Deploy Type</h1>
-            <div id="batchinvariant" class="well">
-                <table id="batchinvariantsTable" class="table table-hover display" name="batchinvariantsTable"></table>
-                <div class="marginBottom20"></div>
+            <div class="panel panel-default">
+                <div class="panel-heading" id="batchinvariantListLabel">
+                    <span class="glyphicon glyphicon-list"></span>
+                    Application List
+                </div>
+                <div class="panel-body" id="batchinvariantList">
+                    <table id="batchinvariantsTable" class="table table-bordered table-hover display" name="batchinvariantsTable"></table>
+                    <div class="marginBottom20"></div>
+                </div>
             </div>
             <footer class="footer">
                 <div class="container-fluid" id="footer"></div>

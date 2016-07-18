@@ -63,10 +63,10 @@ function renderOptionsForBatchInvariant(data) {
     if (data["hasPermissions"]) {
         if ($("#createBatchInvariantButton").length === 0) {
             var contentToAdd = "<div class='marginBottom10'><button id='createBatchInvariantButton' type='button' class='btn btn-default'>\n\
-            " + doc.getDocLabel("page_batchinvariant", "button_create") + "</button></div>";
+            <span class='glyphicon glyphicon-plus-sign'></span> " + doc.getDocLabel("page_batchinvariant", "button_create") + "</button></div>";
 
-            $("#batchinvariantsTable_wrapper div.ColVis").before(contentToAdd);
-            $('#batchinvariant #createBatchInvariantButton').click(addEntryClick);
+            $("#batchinvariantsTable_wrapper batchinvariantsTable_length").before(contentToAdd);
+            $('#batchinvariantList #createBatchInvariantButton').click(addEntryClick);
         }
     }
 }

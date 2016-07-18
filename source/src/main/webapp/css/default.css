@@ -272,7 +272,7 @@ select option{
 
 /************PAGINATION***************************/
 
-.paging_two_button .ui-button {
+/*.paging_two_button .ui-button {
     float: left;
     cursor: pointer;
     *cursor: hand;
@@ -295,7 +295,7 @@ select option{
 
 .paging_full_numbers {
     width: 350px !important;
-}
+}*/
 
 table.display { table-layout:fixed;}
 table.display  th, #listOfTestDataLib td , #viewTestDataLibDataEntriesTable td{ word-wrap:break-word; overflow:hidden; 

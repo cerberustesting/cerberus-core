@@ -21,7 +21,11 @@ package org.cerberus.servlet.crud.countryenvironment;
 
 import com.google.gson.Gson;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.servlet.ServletException;
@@ -37,6 +41,7 @@ import org.cerberus.exception.CerberusException;
 import org.cerberus.util.ParameterParserUtil;
 import org.cerberus.util.answer.AnswerItem;
 import org.cerberus.util.answer.AnswerList;
+import org.cerberus.util.answer.AnswerUtil;
 import org.cerberus.util.servlet.ServletUtil;
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -110,14 +115,7 @@ public class ReadCountryEnvParam_log extends HttpServlet {
         } catch (JSONException e) {
             org.apache.log4j.Logger.getLogger(ReadCountryEnvParam_log.class.getName()).log(org.apache.log4j.Level.ERROR, null, e);
             //returns a default error message with the json format that is able to be parsed by the client-side
-            response.setContentType("application/json");
-            msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
-            StringBuilder errorMessage = new StringBuilder();
-            errorMessage.append("{\"messageType\":\"").append(msg.getCode()).append("\",");
-            errorMessage.append("\"message\":\"");
-            errorMessage.append(msg.getDescription().replace("%DESCRIPTION%", "Unable to check the status of your request! Try later or open a bug."));
-            errorMessage.append("\"}");
-            response.getWriter().print(errorMessage.toString());
+            response.getWriter().print(AnswerUtil.createGenericErrorAnswer());
         }
     }
 
@@ -184,7 +182,16 @@ public class ReadCountryEnvParam_log extends HttpServlet {
         String columnToSort[] = sColumns.split(",");
         String columnName = columnToSort[columnToSortParameter];
         String sort = ParameterParserUtil.parseStringParam(request.getParameter("sSortDir_0"), "asc");
-        AnswerList resp = ceplService.readByVariousByCriteria(system, country, environment, null, null, startPosition, length, columnName, sort, searchParameter, "");
+        
+        Map<String, List<String>> individualSearch = new HashMap<String, List<String>>();
+        for (int a = 0; a < columnToSort.length; a++) {
+            if (null!=request.getParameter("sSearch_" + a) && !request.getParameter("sSearch_" + a).isEmpty()) {
+                List<String> search = new ArrayList(Arrays.asList(request.getParameter("sSearch_" + a).split(",")));
+                individualSearch.put(columnToSort[a], search);
+            }
+        }
+        
+        AnswerList resp = ceplService.readByVariousByCriteria(system, country, environment, null, null, startPosition, length, columnName, sort, searchParameter, individualSearch);
 
         JSONArray jsonArray = new JSONArray();
         if (resp.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {//the service was able to perform the query, then we should get all values

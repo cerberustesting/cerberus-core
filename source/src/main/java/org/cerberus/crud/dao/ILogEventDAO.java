@@ -19,6 +19,8 @@ package org.cerberus.crud.dao;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.List;
+import java.util.Map;
 
 import org.cerberus.crud.entity.LogEvent;
 import org.cerberus.exception.CerberusException;
@@ -48,7 +50,7 @@ public interface ILogEventDAO {
      * @param individualSearch
      * @return a list of all LogEvent.
      */
-    AnswerList readByCriteria(int start, int amount, String colName, String dir, String searchTerm, String individualSearch);
+    AnswerList readByCriteria(int start, int amount, String colName, String dir, String searchTerm, Map<String, List<String>> individualSearch);
 
     /**
      * Insert a logEvent into the database.

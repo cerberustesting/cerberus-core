@@ -10,7 +10,7 @@
     <head>
         <meta content="text/html; charset=UTF-8" http-equiv="content-type">
         <%@ include file="include/dependenciesInclusions.html" %>
-        <script type="text/javascript" src="js/tinymce/tinymce.min.js"></script>
+        <script type="text/javascript" src="dependencies/Tinymce-4.2.6/tinymce.min.js"></script>
         <script type="text/javascript" src="js/pages/TestCaseList.js"></script>
         <title id="pageTitle">Test Case List</title>
     </head>
@@ -28,7 +28,7 @@
                 <div class="col-lg-6" id="FiltersPanel">
                     <div class="panel panel-default">
                         <div class="panel-heading">
-                            <span class="fa fa-tag fa-fw"></span>
+                            <span class="glyphicon glyphicon-filter"></span>
                             <label id="filters">Filters</label>
                         </div>
                         <div class="panel-body">
@@ -43,11 +43,12 @@
             </div>
 
             <div class="panel panel-default">
-                <div class="panel-heading" id="testCaseListLabel">
-                    Test Case List
+                <div class="panel-heading">
+                    <span class="glyphicon glyphicon-list"></span>
+                    <label id="testCaseListLabel">Test Case List</label>
                 </div>
                 <div class="panel-body" id="testCaseList">
-                    <table id="testCaseTable" class="table table-hover display" name="testCaseTable"></table>
+                    <table id="testCaseTable" class="table table-bordered table-hover display" name="testCaseTable"></table>
                     <div class="marginBottom20"></div>
                 </div>
             </div>

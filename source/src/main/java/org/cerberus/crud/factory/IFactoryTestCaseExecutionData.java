@@ -28,8 +28,8 @@ import org.cerberus.crud.entity.TestCaseExecutionData;
  */
 public interface IFactoryTestCaseExecutionData {
     
-    TestCaseExecutionData create(long id,String property,String value,String type,String value1,String value2,
+    TestCaseExecutionData create(long id,String property, String description, String value,String type,String value1,String value2,
             String returnCode, String rMessage, long start,long end,long startLong,long endLong, MessageEvent message);
     
-    TestCaseExecutionData create(long id,String property, String type,String value1,String value2, MessageEvent message);
+    TestCaseExecutionData create(long id,String property, String description, String type,String value1,String value2, MessageEvent message);
 }

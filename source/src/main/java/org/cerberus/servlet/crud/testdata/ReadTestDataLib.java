@@ -19,6 +19,7 @@
  */
 package org.cerberus.servlet.crud.testdata;
 
+import com.google.common.base.Strings;
 import com.google.gson.Gson;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -36,6 +37,7 @@ import org.cerberus.crud.entity.MessageEvent;
 import org.cerberus.crud.entity.TestDataLib;
 import org.cerberus.crud.service.ITestCaseService;
 import org.cerberus.crud.service.ITestDataLibService;
+import org.cerberus.crud.service.impl.TestDataService;
 import org.cerberus.dto.TestCaseListDTO;
 import org.cerberus.dto.TestListDTO;
 import org.cerberus.enums.MessageEventEnum;
@@ -91,6 +93,7 @@ public class ReadTestDataLib extends HttpServlet {
          */
         String name = policy.sanitize(request.getParameter("name"));
         String country = policy.sanitize(request.getParameter("country"));
+        String columnName = ParameterParserUtil.parseStringParam(request.getParameter("columnName"), "");
         Integer testDataLibId = 0;
 
         Integer limit = -1;
@@ -137,6 +140,9 @@ public class ReadTestDataLib extends HttpServlet {
             } else if (request.getParameter("groups") != null) {
                 //gets the list of distinct groups
                 answer = findDistinctGroups(appContext);
+            } else if (!Strings.isNullOrEmpty(columnName)) {
+                answer = findDistinctValuesOfColumn(appContext, request, columnName);
+                jsonResponse = (JSONObject) answer.getItem();
             } else {
                 //no parameters, then retrieves the full list
                 answer = findTestDataLibList(appContext, request);
@@ -391,6 +397,33 @@ public class ReadTestDataLib extends HttpServlet {
         Gson gson = new Gson();
         JSONObject result = new JSONObject(gson.toJson(testDataLib));
         return result;
+    }
+    
+    private AnswerItem findDistinctValuesOfColumn( ApplicationContext appContext, HttpServletRequest request, String columnName) throws JSONException{
+        AnswerItem answer = new AnswerItem();
+        JSONObject object = new JSONObject();
+
+        testDataLibService = appContext.getBean(ITestDataLibService.class);
+        
+        String searchParameter = ParameterParserUtil.parseStringParam(request.getParameter("sSearch"), "");
+        String sColumns = ParameterParserUtil.parseStringParam(request.getParameter("sColumns"), "test,testcase,application,project,ticket,description,behaviororvalueexpected,readonly,bugtrackernewurl,deploytype,mavengroupid");
+        String columnToSort[] = sColumns.split(",");
+
+        Map<String, List<String>> individualSearch = new HashMap<>();
+        for (int a = 0; a < columnToSort.length; a++) {
+            if (null!=request.getParameter("sSearch_" + a) && !request.getParameter("sSearch_" + a).isEmpty()) {
+                List<String> search = new ArrayList(Arrays.asList(request.getParameter("sSearch_" + a).split(",")));
+                individualSearch.put(columnToSort[a], search);
+            }
+        }
+
+        AnswerList testCaseList = testDataLibService.readDistinctValuesByCriteria(searchParameter, individualSearch, columnName);
+
+        object.put("distinctValues", testCaseList.getDataList());
+
+        answer.setItem(object);
+        answer.setResultMessage(testCaseList.getResultMessage());
+        return answer;
     }
 
 }

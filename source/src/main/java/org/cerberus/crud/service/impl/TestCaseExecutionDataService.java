@@ -65,13 +65,12 @@ public class TestCaseExecutionDataService implements ITestCaseExecutionDataServi
 
     @Override
     public void insertOrUpdateTestCaseExecutionData(TestCaseExecutionData testCaseExecutionData) throws CerberusException {
-        if (findTestCaseExecutionDataByKey(testCaseExecutionData.getId(), testCaseExecutionData.getProperty())!=null){
-        updateTestCaseExecutionData(testCaseExecutionData);
+        if (findTestCaseExecutionDataByKey(testCaseExecutionData.getId(), testCaseExecutionData.getProperty()) != null) {
+            updateTestCaseExecutionData(testCaseExecutionData);
         } else {
-        insertTestCaseExecutionData(testCaseExecutionData);
+            insertTestCaseExecutionData(testCaseExecutionData);
         }
-        
+
     }
-    
-    
+
 }

@@ -19,12 +19,11 @@ package org.cerberus.servlet.crud.testdata;
 
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import org.apache.log4j.Logger;
 import org.cerberus.crud.entity.MessageGeneral;
 import org.cerberus.enums.MessageGeneralEnum;
 import org.cerberus.crud.entity.TestData;
@@ -42,6 +41,8 @@ import org.springframework.web.context.support.WebApplicationContextUtils;
  * @author bcivel
  */
 public class UpdateTestData extends HttpServlet {
+
+    private static final Logger LOG = Logger.getLogger(UpdateTestData.class);
 
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
@@ -81,8 +82,6 @@ public class UpdateTestData extends HttpServlet {
 
             String name = policy.sanitize(request.getParameter("columnName"));
             String value = policy.sanitize(request.getParameter("value").replace("'", ""));
-
-            System.out.print(key + application + environment + country);
 
             ApplicationContext appContext = WebApplicationContextUtils.getWebApplicationContext(this.getServletContext());
             ITestDataService testDataService = appContext.getBean(ITestDataService.class);
@@ -125,8 +124,7 @@ public class UpdateTestData extends HttpServlet {
             processRequest(request, response);
 
         } catch (CerberusException ex) {
-            Logger.getLogger(UpdateTestData.class
-                    .getName()).log(Level.SEVERE, null, ex);
+            LOG.error(ex.toString());
         }
     }
 

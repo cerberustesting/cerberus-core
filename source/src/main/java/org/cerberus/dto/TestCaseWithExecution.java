@@ -45,9 +45,9 @@ public class TestCaseWithExecution extends TCase {
     }
 
     public TestCaseWithExecution(TCase testCase) {
-        
+
         super();
-        
+
         this.setTest(testCase.getTest());
         this.setTestCase(testCase.getTestCase());
         this.setOrigin(testCase.getOrigin());
@@ -167,9 +167,9 @@ public class TestCaseWithExecution extends TCase {
             for (String country : countries) {
                 for (String environment : environments) {
                     for (TCase testCase : listOfTestCases) {
-                        key = browser + "_" + country + "_" + environment + "_" 
+                        key = browser + "_" + country + "_" + environment + "_"
                                 + testCase.getTest() + "_" + testCase.getTestCase();
-                        if(!result.containsKey(key)) {
+                        if (!result.containsKey(key)) {
                             testCaseWithExecution = new TestCaseWithExecution(testCase);
                             testCaseWithExecution.setBrowser(browser);
                             testCaseWithExecution.setCountry(country);
@@ -181,7 +181,7 @@ public class TestCaseWithExecution extends TCase {
                 }
             }
         }
-        
+
         return result;
     }
 }

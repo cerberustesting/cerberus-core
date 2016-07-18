@@ -126,4 +126,13 @@ public interface ITestDataLibDAO {
      * @throws SQLException
      */
     TestDataLib loadFromResultSet(ResultSet resultSet) throws SQLException;
+
+    /**
+     * Read distinct Value of specified column
+     * @param searchTerm
+     * @param individualSearch
+     * @param columnName
+     * @return 
+     */
+    public AnswerList<List<String>> readDistinctValuesByCriteria(String searchTerm, Map<String, List<String>> individualSearch, String columnName);
 }

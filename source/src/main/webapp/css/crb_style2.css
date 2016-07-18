@@ -9,7 +9,7 @@
 * - x-editor customisation
 */
 body {
-    font-size: 70%;
+    font-size: 11px;
     font-family: helvetica;
 }
 /*div{
@@ -307,19 +307,29 @@ td#underlined {
     border-right: 0px;
     border-top: 0px;
     border-left:  0px;
+    border-bottom-width: 1px;
 }
-td { 
+h4 {
+    font-size:100%;
+    display: block;
+    -webkit-margin-before: 1.33em;
+    -webkit-margin-after: 1.33em;
+    -webkit-margin-start: 0px;
+    -webkit-margin-end: 0px;
+    font-weight: bold;
+}
+/*td { 
     border-width:1px;
     border-style:groove; 
     border-color:#ffffff #cfcfcf #cfcfcf #ffffff; 
 
-}
-th { 
+}*/
+/*th { 
     border-width:1px;
     border-style:groove; 
     border-color:#ffffff #cfcfcf #cfcfcf #ffffff; 
 
-}
+}*/
 td#toto { 
     border-width:1px;
     border-style:groove; 
@@ -751,14 +761,37 @@ table.wrapAll th {
 * x-editor customization
 */
 .columnFiltered{
-    color : #DD1144;
+    color : red;
     font-size : 100%;
     padding-left: 0;
 }
+span.editable-empty,.editable-empty:hover,.editable-empty:focus {
+    color: black;  
+}
+
+
+/**
+*Specifc for Alert Message Button size
+*/
+.filterMessageButtons{
+    font-size : 130%;  
+}
+
 
 /**
 * Datatable th
 */
 table.dataTable thead th {
-    border-color: #E6E6E6;
+    border-bottom-color: transparent;
+    border-top-color: transparent;
+    background-color: #E6E6E6;
+}
+
+.dataTables_scroll{
+    clear: both;
+}
+
+.popover{
+    max-height: 350px;
+    overflow: auto;
 }

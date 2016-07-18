@@ -67,9 +67,9 @@ function renderOptionsForBuildRevDefinition(data) {
     if (data["hasPermissions"]) {
         if ($("#createBuildRevDefinitionButton").length === 0) {
             var contentToAdd = "<div class='marginBottom10'><button id='createBuildRevDefinitionButton' type='button' class='btn btn-default'>\n\
-            " + doc.getDocLabel("page_buildrevdefinition", "button_create") + "</button></div>";
+            <span class='glyphicon glyphicon-plus-sign'></span> " + doc.getDocLabel("page_buildrevdefinition", "button_create") + "</button></div>";
 
-            $("#buildrevdefinitionsTable_wrapper div.ColVis").before(contentToAdd);
+            $("#buildrevdefinitionsTable_wrapper #buildrevdefinitionsTable_length").before(contentToAdd);
             $('#buildrevdefinition #createBuildRevDefinitionButton').click(addEntryClick);
         }
     }

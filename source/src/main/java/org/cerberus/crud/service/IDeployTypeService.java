@@ -19,6 +19,8 @@
  */
 package org.cerberus.crud.service;
 
+import java.util.List;
+import java.util.Map;
 import org.cerberus.crud.entity.DeployType;
 import org.cerberus.util.answer.Answer;
 import org.cerberus.util.answer.AnswerItem;
@@ -34,7 +36,7 @@ public interface IDeployTypeService {
 
     public AnswerList readAll();
     
-    public AnswerList readByCriteria(int startPosition, int length, String columnName, String sort, String searchParameter, String string);
+    public AnswerList readByCriteria(int startPosition, int length, String columnName, String sort, String searchParameter, Map<String, List<String>> individualSearch);
     
     public Answer create(DeployType deployType);
 

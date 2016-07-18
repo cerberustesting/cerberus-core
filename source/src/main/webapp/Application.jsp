@@ -35,9 +35,15 @@
             <%@ include file="include/application/editApplication.html"%> 
 
             <h1 class="page-title-line" id="title">Application</h1>
-            <div id="applicationList" class="well">
-                <table id="applicationsTable" class="table table-hover display" name="applicationsTable"></table>
-                <div class="marginBottom20"></div>
+            <div class="panel panel-default">
+                <div class="panel-heading" id="applicationListLabel">
+                    <span class="glyphicon glyphicon-list"></span>
+                    Application List
+                </div>
+                <div class="panel-body" id="applicationList">
+                    <table id="applicationsTable" class="table table-bordered table-hover display" name="applicationsTable"></table>
+                    <div class="marginBottom20"></div>
+                </div>
             </div>
             <footer class="footer">
                 <div class="container-fluid" id="footer"></div>

@@ -94,6 +94,15 @@ public interface ITestDataLibService {
      */
     AnswerList readByVariousByCriteria(String name, String system, String environment, String country, String type, int start, int amount, String column, String dir, String searchTerm, Map<String, List<String>> individualSearch);
 
+     /**
+     * Read distinct Value of specified column
+     * @param searchTerm
+     * @param individualSearch
+     * @param columnName
+     * @return 
+     */
+    AnswerList<List<String>> readDistinctValuesByCriteria(String searchTerm, Map<String, List<String>> individualSearch, String columnName);
+
     /**
      * Auxiliary method that retrieves all the group names that were already
      * defined for a type.

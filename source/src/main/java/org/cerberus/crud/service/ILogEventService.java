@@ -19,6 +19,8 @@
  */
 package org.cerberus.crud.service;
 
+import java.util.List;
+import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 
 import org.cerberus.crud.entity.LogEvent;
@@ -49,7 +51,7 @@ public interface ILogEventService {
      * @param individualSearch
      * @return
      */
-    AnswerList readByCriteria(int start, int amount, String colName, String dir, String searchTerm, String individualSearch);
+    AnswerList readByCriteria(int start, int amount, String colName, String dir, String searchTerm, Map<String, List<String>> individualSearch);
 
     /**
      *

@@ -19,11 +19,8 @@
  */
 package org.cerberus.engine.execution.impl;
 
-import org.apache.log4j.Level;
-import org.cerberus.engine.entity.ExecutionUUID;
 import org.cerberus.crud.entity.TestCaseExecution;
 import org.cerberus.exception.CerberusException;
-import org.cerberus.log.MyLogger;
 import org.cerberus.engine.execution.IExecutionRunService;
 import org.cerberus.engine.execution.IExecutionStartService;
 import org.cerberus.engine.execution.IRunTestCaseService;
@@ -44,7 +41,9 @@ public class RunTestCaseService implements IRunTestCaseService {
     private IExecutionStartService executionStartService;
     @Autowired
     private IExecutionRunService executionRunService;
-    
+
+    private static final org.apache.log4j.Logger LOG = org.apache.log4j.Logger.getLogger(RunTestCaseService.class);
+
     @Override
     public TestCaseExecution runTestCase(TestCaseExecution tCExecution) {
 
@@ -53,14 +52,13 @@ public class RunTestCaseService implements IRunTestCaseService {
          *
          */
         try {
-            //TODO:FN debug messages to be removed
-            org.apache.log4j.Logger.getLogger(ExecutionStartService.class.getName()).log(org.apache.log4j.Level.DEBUG, "[DEBUG] START " + "__ID=" + tCExecution.getId());
+            org.apache.log4j.Logger.getLogger(ExecutionStartService.class.getName()).log(org.apache.log4j.Level.DEBUG, "Start Execution " + "__ID=" + tCExecution.getId());
             tCExecution = executionStartService.startExecution(tCExecution);
-            MyLogger.log(ExecutionStartService.class.getName(), Level.INFO, "Execution Started : UUID=" + tCExecution.getExecutionUUID() + "__ID=" + tCExecution.getId());
+            LOG.info("Execution Started : UUID=" + tCExecution.getExecutionUUID() + "__ID=" + tCExecution.getId());
 
         } catch (CerberusException ex) {
             tCExecution.setResultMessage(ex.getMessageError());
-            MyLogger.log(RunTestCaseService.class.getName(), Level.INFO, "Execution not Launched : UUID=" + tCExecution.getExecutionUUID() + "__causedBy=" + ex.getMessageError().getDescription());
+            LOG.info("Execution not Launched : UUID=" + tCExecution.getExecutionUUID() + "__causedBy=" + ex.getMessageError().getDescription());
             return tCExecution;
         }
 
@@ -69,16 +67,11 @@ public class RunTestCaseService implements IRunTestCaseService {
          */
         if (tCExecution.getId() != 0) {
             try {
-                // MyLogger.log(ExecutionStartService.class.getName(), Level.INFO, "to remove");
-//                if (!tCExecution.getManualExecution().equals("Y")) {
-                    if (!tCExecution.isSynchroneous()) {
-                        executionRunService.executeAsynchroneouslyTestCase(tCExecution);
-                    } else {
-                        tCExecution = executionRunService.executeTestCase(tCExecution);
-                    }
-//                } else {
-//                
-//                }
+                if (!tCExecution.isSynchroneous()) {
+                    executionRunService.executeAsynchroneouslyTestCase(tCExecution);
+                } else {
+                    tCExecution = executionRunService.executeTestCase(tCExecution);
+                }
             } catch (CerberusException ex) {
                 tCExecution.setResultMessage(ex.getMessageError());
             }
@@ -86,7 +79,7 @@ public class RunTestCaseService implements IRunTestCaseService {
         /**
          * Return tcexecution object
          */
-        MyLogger.log(RunTestCaseService.class.getName(), Level.DEBUG, "Exit RunTestCaseService : " + tCExecution.getId());
+        LOG.debug("Exit RunTestCaseService : " + tCExecution.getId());
         return tCExecution;
     }
 }

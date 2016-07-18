@@ -20,6 +20,7 @@
 package org.cerberus.crud.service;
 
 import java.util.List;
+import java.util.Map;
 import org.cerberus.crud.entity.CountryEnvParam_log;
 import org.cerberus.exception.CerberusException;
 import org.cerberus.util.answer.Answer;
@@ -60,7 +61,7 @@ public interface ICountryEnvParam_logService {
      * @param string
      * @return
      */
-    AnswerList readByVariousByCriteria(String system, String country, String environment, String build, String revision, int startPosition, int length, String columnName, String sort, String searchParameter, String string);
+    AnswerList readByVariousByCriteria(String system, String country, String environment, String build, String revision, int startPosition, int length, String columnName, String sort, String searchParameter, Map<String, List<String>> individualSearch);
 
     /**
      *

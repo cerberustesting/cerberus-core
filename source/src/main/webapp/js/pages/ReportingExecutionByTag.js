@@ -747,7 +747,7 @@ function aoColumnsFunc(Columns) {
         },
         {
             "data": "application",
-            "sName": "application",
+            "sName": "app.application",
             "sWidth": testCaseInfoWidth + "%",
             "title": doc.getDocOnline("application", "Application")
         }

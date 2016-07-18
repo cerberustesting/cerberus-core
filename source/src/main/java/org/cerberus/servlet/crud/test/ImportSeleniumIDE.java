@@ -159,7 +159,7 @@ public class ImportSeleniumIDE extends HttpServlet {
                     {
                         ITestCaseCountryPropertiesService propertyService = appContext.getBean(ITestCaseCountryPropertiesService.class);
                         IFactoryTestCaseCountryProperties propertyFactory = appContext.getBean(IFactoryTestCaseCountryProperties.class);
-                        propertyService.insertTestCaseCountryProperties(propertyFactory.create(test, testcase, countryList.get(k), propertyName[j], "text", "", propertyValue[j], "", 0, 0, "STATIC"));
+                        propertyService.insertTestCaseCountryProperties(propertyFactory.create(test, testcase, countryList.get(k), propertyName[j], "", "text", "", propertyValue[j], "", 0, 0, "STATIC"));
                         
                     }
                 }

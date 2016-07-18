@@ -19,9 +19,6 @@
  */
 package org.cerberus.engine.gwt;
 
-
-import java.util.List;
-import org.cerberus.crud.entity.TestCaseCountryProperties;
 import org.cerberus.crud.entity.TestCaseStepActionExecution;
 import org.cerberus.exception.CerberusEventException;
 
@@ -33,10 +30,7 @@ import org.cerberus.exception.CerberusEventException;
  * @since 2.0.0
  */
 public interface IPropertyService {
-	
+
     String decodeValueWithExistingProperties(String stringToDecode, TestCaseStepActionExecution testCaseStepActionExecution, boolean forceCalculation) throws CerberusEventException;
-        
-    List<TestCaseCountryProperties> getListOfPropertiesLinkedToProperty(String test, String testCase, String country, String property, String usedTest, String usedTestCase, List<String> crossedProperties, List<TestCaseCountryProperties> propertieOfTestcase) ;
-    
-        
+
 }

@@ -59,6 +59,7 @@ import org.cerberus.util.ParameterParserUtil;
 import org.cerberus.util.SqlUtil;
 import org.cerberus.util.answer.AnswerItem;
 import org.cerberus.util.answer.AnswerList;
+import org.cerberus.util.answer.AnswerUtil;
 import org.cerberus.util.servlet.ServletUtil;
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -118,6 +119,7 @@ public class ReadTestCase extends HttpServlet {
         boolean getMaxTC = ParameterParserUtil.parseBooleanParam(request.getParameter("getMaxTC"), false);
         boolean filter = ParameterParserUtil.parseBooleanParam(request.getParameter("filter"), false);
         boolean withStep = ParameterParserUtil.parseBooleanParam(request.getParameter("withStep"), false);
+        String columnName = ParameterParserUtil.parseStringParam(request.getParameter("columnName"), "");
 
         // Global boolean on the servlet that define if the user has permition to edit and delete object.
         boolean userHasPermissions = request.isUserInRole("TestAdmin");
@@ -147,6 +149,10 @@ public class ReadTestCase extends HttpServlet {
             } else if (!Strings.isNullOrEmpty(campaign)) {
                 answer = findTestCaseByCampaign(appContext, campaign);
                 jsonResponse = (JSONObject) answer.getItem();
+            } else if (!Strings.isNullOrEmpty(columnName)) {
+                //If columnName is present, then return the distinct value of this column.
+                answer = findDistinctValuesOfColumn(system, test, appContext, request, columnName);
+                jsonResponse = (JSONObject) answer.getItem();
             } else {
                 answer = findTestCaseByTest(system, test, appContext, request);
                 jsonResponse = (JSONObject) answer.getItem();
@@ -160,14 +166,7 @@ public class ReadTestCase extends HttpServlet {
         } catch (JSONException e) {
             org.apache.log4j.Logger.getLogger(ReadTestCase.class.getName()).log(org.apache.log4j.Level.ERROR, null, e);
             //returns a default error message with the json format that is able to be parsed by the client-side
-            response.setContentType("application/json");
-            msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
-            StringBuilder errorMessage = new StringBuilder();
-            errorMessage.append("{\"messageType\":\"").append(msg.getCode()).append("\",");
-            errorMessage.append("\"message\":\"");
-            errorMessage.append(msg.getDescription().replace("%DESCRIPTION%", "Unable to check the status of your request! Try later or open a bug."));
-            errorMessage.append("\"}");
-            response.getWriter().print(errorMessage.toString());
+            response.getWriter().print(AnswerUtil.createGenericErrorAnswer());
         }
 
     }
@@ -441,6 +440,7 @@ public class ReadTestCase extends HttpServlet {
                     propertyFound.put("fromTest", prop.getTest());
                     propertyFound.put("fromTestCase", prop.getTestCase());
                     propertyFound.put("property", prop.getProperty());
+                    propertyFound.put("description", prop.getDescription());
                     propertyFound.put("type", prop.getType());
                     propertyFound.put("database", prop.getDatabase());
                     propertyFound.put("value1", prop.getValue1());
@@ -525,6 +525,34 @@ public class ReadTestCase extends HttpServlet {
         Gson gson = new Gson();
         JSONObject result = new JSONObject(gson.toJson(testCase));
         return result;
+    }
+
+    private AnswerItem findDistinctValuesOfColumn(String system, String test, ApplicationContext appContext, HttpServletRequest request, String columnName) throws JSONException{
+        AnswerItem answer = new AnswerItem();
+        JSONObject object = new JSONObject();
+
+        testCaseService = appContext.getBean(TestCaseService.class);
+        testCaseCountryService = appContext.getBean(TestCaseCountryService.class);
+
+        String searchParameter = ParameterParserUtil.parseStringParam(request.getParameter("sSearch"), "");
+        String sColumns = ParameterParserUtil.parseStringParam(request.getParameter("sColumns"), "test,testcase,application,project,ticket,description,behaviororvalueexpected,readonly,bugtrackernewurl,deploytype,mavengroupid");
+        String columnToSort[] = sColumns.split(",");
+
+        Map<String, List<String>> individualSearch = new HashMap<>();
+        for (int a = 0; a < columnToSort.length; a++) {
+            if (null!=request.getParameter("sSearch_" + a) && !request.getParameter("sSearch_" + a).isEmpty()) {
+                List<String> search = new ArrayList(Arrays.asList(request.getParameter("sSearch_" + a).split(",")));
+                individualSearch.put(columnToSort[a], search);
+            }
+        }
+
+        AnswerList testCaseList = testCaseService.readDistinctValuesByCriteria(system, test, searchParameter, individualSearch, columnName);
+
+        object.put("distinctValues", testCaseList.getDataList());
+
+        answer.setItem(object);
+        answer.setResultMessage(testCaseList.getResultMessage());
+        return answer;
     }
 
 }

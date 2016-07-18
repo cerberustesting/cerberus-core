@@ -42,6 +42,7 @@ import org.cerberus.crud.service.impl.TestCaseCountryPropertiesService;
 import org.cerberus.crud.service.impl.TestCaseCountryService;
 import org.cerberus.servlet.crud.testdata.CreateTestDataLib;
 import org.cerberus.util.answer.Answer;
+import org.cerberus.util.answer.AnswerUtil;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.springframework.context.ApplicationContext;
@@ -113,6 +114,7 @@ public class CreateNotDefinedProperty extends HttpServlet {
                             toTestCase,
                             country,
                             propertyName,
+                            "",
                             propertyType,
                             "---",
                             notDefinedProperty,
@@ -150,15 +152,7 @@ public class CreateNotDefinedProperty extends HttpServlet {
 
             org.apache.log4j.Logger.getLogger(CreateTestDataLib.class.getName()).log(org.apache.log4j.Level.ERROR, null, ex);
             //returns a default error message with the json format that is able to be parsed by the client-side
-            response.setContentType("application/json");
-            MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
-            StringBuilder errorMessage = new StringBuilder();
-            errorMessage.append("{'messageType':'").append(msg.getCode()).append("', ");
-            errorMessage.append(" 'message': '");
-            errorMessage.append(msg.getDescription().replace("%DESCRIPTION%", "Unable to check the status of your request! Try later or - Open a bug or ask for any new feature \n"
-                    + "<a href=\"https://github.com/vertigo17/Cerberus/issues/\" target=\"_blank\">here</a>"));
-            errorMessage.append("'}");
-            response.getWriter().print(errorMessage.toString());
+            response.getWriter().print(AnswerUtil.createGenericErrorAnswer());
         }
     }
 

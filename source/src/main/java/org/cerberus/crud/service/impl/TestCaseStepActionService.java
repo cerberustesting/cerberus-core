@@ -119,7 +119,6 @@ public class TestCaseStepActionService implements ITestCaseStepActionService {
         for (TestCaseStepAction tcsaDifference : tcsaToUpdateOrInsertToIterate) {
             for (TestCaseStepAction tcsaInDatabase : oldList) {
                 if (tcsaDifference.hasSameKey(tcsaInDatabase)) {
-                    //System.out.print("Upd" + tcsaDifference.toString());
                     this.updateTestCaseStepAction(tcsaDifference);
                     tcsaToUpdateOrInsert.remove(tcsaDifference);
                 }
@@ -138,7 +137,6 @@ public class TestCaseStepActionService implements ITestCaseStepActionService {
             List<TestCaseStepAction> tcsaToDeleteToIterate = new ArrayList(tcsaToDelete);
 
             for (TestCaseStepAction tcsaDifference : tcsaToDeleteToIterate) {
-                //System.out.print("ToDlt" + tcsaDifference.toString());
                 for (TestCaseStepAction tcsaInPage : newList) {
                     if (tcsaDifference.hasSameKey(tcsaInPage)) {
                         tcsaToDelete.remove(tcsaDifference);

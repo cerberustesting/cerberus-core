@@ -95,6 +95,7 @@ $.when($.getScript("js/pages/global/global.js")).then(function () {
                 $("#addProperty").click(function () {
                     var newProperty = {
                         property: "",
+                        description: "",
                         country: myCountry,
                         type: "text",
                         database: "",
@@ -239,7 +240,8 @@ function drawProperty(property, testcaseinfo) {
     var selectAllBtn = $("<button disabled></button>").addClass("btn btn-default btn-xs").append($("<span></span>").addClass("glyphicon glyphicon-check"));
     var selectNoneBtn = $("<button disabled></button>").addClass("btn btn-default btn-xs").append($("<span></span>").addClass("glyphicon glyphicon-unchecked"));
 
-    var propertyInput = $("<input id='propName' placeholder='Enter Property Name'>").addClass("form-control input-sm").val(property.property);
+    var propertyInput = $("<input id='propName' placeholder='Feed Property name'>").addClass("form-control input-sm").val(property.property);
+    var descriptionInput = $("<textarea rows='1' id='propDescription' placeholder='Feed Property description'>").addClass("form-control input-sm").val(property.description);
     var valueInput = $("<textarea rows='1' placeholder='Value'></textarea>").addClass("form-control input-sm").val(property.value1);
     var lengthInput = $("<input placeholder='Length'>").addClass("form-control input-sm").val(property.length);
     var rowLimitInput = $("<input placeholder='Row Limit'>").addClass("form-control input-sm").val(property.rowLimit);
@@ -249,10 +251,11 @@ function drawProperty(property, testcaseinfo) {
     var row2 = $("<tr></tr>");
     var deleteBtnRow = $("<td></td>").append(deleteBtn).append(selectAllBtn).append(selectNoneBtn);
     var propertyName = $("<td></td>").append(propertyInput);
+    var description = $("<td></td>").append(descriptionInput);
     var country = $("<td></td>").append(getTestCaseCountry(testcaseinfo.countryList, property.country));
     var type = $("<td></td>").append(selectType.val(property.type));
     var db = $("<td></td>").append(selectDB.val(property.database));
-    var value = $("<td colspan=6></td>").append(valueInput);
+    var value = $("<td colspan=7></td>").append(valueInput);
     var length = $("<td></td>").append(lengthInput);
     var rowLimit = $("<td></td>").append(rowLimitInput);
     var nature = $("<td></td>").append(selectNature.val(property.nature));
@@ -263,14 +266,20 @@ function drawProperty(property, testcaseinfo) {
         if (property.toDelete) {
             row1.addClass("danger");
             row2.addClass("danger");
+            row3.addClass("danger");
         } else {
             row1.removeClass("danger");
             row2.removeClass("danger");
+            row3.removeClass("danger");
         }
     });
 
     propertyInput.change(function () {
         property.property = $(this).val();
+    });
+    
+    descriptionInput.change(function () {
+        property.description = $(this).val();
     });
 
     selectType.change(function () {
@@ -305,8 +314,9 @@ function drawProperty(property, testcaseinfo) {
     row1.append(length);
     row1.append(rowLimit);
     row1.append(nature);
+    row1.append(description);
     table.append(row1);
-
+    
     row2.append(deleteBtnRow);
     row2.append(value);
     table.append(row2);
@@ -323,11 +333,13 @@ function drawInheritedProperty(propList) {
 
         var row1 = $("<tr></tr>");
         var row2 = $("<tr></tr>");
+        var row3 = $("<tr></tr>");
         var propertyName = $("<td></td>").append($("<input>").addClass("form-control input-sm").val(property.property).prop("readonly", true));
+        var description = $("<td></td>").append($("<textarea rows='1'></textarea>").addClass("form-control input-sm").val(property.description).prop("readonly", true));
         var country = $("<td></td>").append(getTestCaseCountry(property.country, property.country, true));
         var type = $("<td></td>").append(selectType.clone().val(property.type).prop("disabled", "disabled"));
         var db = $("<td></td>").append(selectDB.clone().val(property.database).prop("disabled", "disabled"));
-        var value = $("<td colspan=6></td>").append($("<textarea rows='1'></textarea>").addClass("form-control input-sm").val(property.value1).prop("readonly", true));
+        var value = $("<td colspan=8></td>").append($("<textarea rows='1'></textarea>").addClass("form-control input-sm").val(property.value1).prop("readonly", true));
         var length = $("<td></td>").append($("<input>").addClass("form-control input-sm").val(property.length).prop("readonly", true));
         var rowLimit = $("<td></td>").append($("<input>").addClass("form-control input-sm").val(property.rowLimit).prop("readonly", true));
         var nature = $("<td></td>").append(selectNature.clone().val(property.nature).prop("disabled", "disabled"));
@@ -340,6 +352,7 @@ function drawInheritedProperty(propList) {
         row1.append(length);
         row1.append(rowLimit);
         row1.append(nature);
+        row1.append(description);
         table.append(row1);
 
         row2.append(value);

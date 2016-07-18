@@ -49,11 +49,6 @@ public final class StringUtil {
 
     private static final Pattern urlMatch = Pattern.compile("(.*[<>' \"^]+)([a-zA-Z]+://[^<>[:space:]]+[[:alnum:]/]*)([$<> ' \"].*)");
 
-    /**
-     * The property variable {@link Pattern}
-     */
-    public static final Pattern PROPERTY_VARIABLE_PATTERN = Pattern.compile("%[^%]+%");
-
     private static final org.apache.log4j.Logger LOG = org.apache.log4j.Logger.getLogger(StringUtil.class);
 
     /**
@@ -121,55 +116,6 @@ public final class StringUtil {
             return true;
         }
         return false;
-    }
-
-    /**
-     * Check for null string
-     *
-     * @param str
-     * @param formula
-     * @param replacement
-     * @return if replacement not null, replace in str, all formula with
-     * replacement
-     */
-    public static String replaceAllProperties(String str, String formula, String replacement) {
-        //replaceAll uses regex, therefore the syntax of the subdata entries ENTRY(SUBDATA) will be handled as part of the regex expression,
-        //namely the characters '(' and ')'. As a consequence we need to escape those characteres and ensure that the replaceAll method
-        //will consider the correct property name.
-        if (formula.contains("(") || formula.contains(")")) { //Its used becuse of the replacement of subdataentries'values. e.g., Person(Name)
-            formula = Pattern.quote(formula);
-        }
-
-        if (replacement != null) {
-            return str.replaceAll(formula, Matcher.quoteReplacement(replacement));
-        }
-        return str;
-    }
-
-    /**
-     * Gets all properties contained into the given {@link String}
-     *
-     * <p>
-     * A property is defined by including its name between two '%' character.
-     * </p>
-     *
-     * @see #PROPERTY_VARIABLE_PATTERN
-     * @param str the {@link String} to get all properties
-     * @return a list of properties contained into the given {@link String}
-     */
-    public static List<String> getAllProperties(String str) {
-        List<String> properties = new ArrayList<String>();
-        if (str == null) {
-            return properties;
-        }
-
-        Matcher propertyMatcher = PROPERTY_VARIABLE_PATTERN.matcher(str);
-        while (propertyMatcher.find()) {
-            String rawProperty = propertyMatcher.group();
-            // Removes the first and last '%' character to only get the property name
-            properties.add(rawProperty.substring(1, rawProperty.length() - 1));
-        }
-        return properties;
     }
 
     /**

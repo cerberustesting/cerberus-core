@@ -35,9 +35,15 @@
             <%@ include file="include/project/editProject.html"%> 
 
             <h1 class="page-title-line" id="title">Project</h1>
-            <div id="project" class="well">
-                <table id="projectsTable" class="table table-hover display" name="projectsTable"></table>
-                <div class="marginBottom20"></div>
+            <div class="panel panel-default">
+                <div class="panel-heading" id="projectListLabel">
+                    <span class="glyphicon glyphicon-list"></span>
+                    Application List
+                </div>
+                <div class="panel-body" id="projectList">
+                    <table id="projectsTable" class="table table-bordered table-hover display" name="projectsTable"></table>
+                    <div class="marginBottom20"></div>
+                </div>
             </div>
             <footer class="footer">
                 <div class="container-fluid" id="footer"></div>

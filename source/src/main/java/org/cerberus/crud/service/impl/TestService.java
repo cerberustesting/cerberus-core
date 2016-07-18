@@ -142,4 +142,9 @@ public class TestService implements ITestService {
         }
         throw new CerberusException(new MessageGeneral(MessageGeneralEnum.DATA_OPERATION_ERROR));
     }
+
+    @Override
+    public AnswerList<List<String>> readDistinctValuesByCriteria(String searchTerm, Map<String, List<String>> individualSearch, String columnName) {
+        return testDao.readDistinctValuesByCriteria(searchTerm, individualSearch, columnName);
+    }
 }

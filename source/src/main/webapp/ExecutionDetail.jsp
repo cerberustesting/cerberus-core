@@ -65,27 +65,27 @@
         <meta name="refresh" HTTP-EQUIV="Refresh">
         <link rel="stylesheet" type="text/css" href="css/crb_style.css">
         <link rel="shortcut icon" type="image/x-icon" href="images/favicon.ico" />
-        <link rel="stylesheet" type="text/css" href="css/jquery-ui.css" >
-        <link rel="stylesheet" type="text/css" href="js/jqplot/jquery.jqplot.min.css" >
-        <link type="text/css" rel="stylesheet" href="js/jqplot/syntaxhighlighter/styles/shCoreDefault.min.css" >
-        <link type="text/css" rel="stylesheet" href="js/jqplot/syntaxhighlighter/styles/shThemejqPlot.min.css" >
-        <link type="text/css" rel="stylesheet" href="js/zoombox/zoombox.css" >
+        <link rel="stylesheet" type="text/css" href="dependencies/zz_OldDependencies/css/jquery-ui.css" >
+        <link rel="stylesheet" type="text/css" href="dependencies/zz_OldDependencies/jqplot/jquery.jqplot.min.css" >
+        <link type="text/css" rel="stylesheet" href="dependencies/zz_OldDependencies/jqplot/syntaxhighlighter/styles/shCoreDefault.min.css" >
+        <link type="text/css" rel="stylesheet" href="dependencies/zz_OldDependencies/jqplot/syntaxhighlighter/styles/shThemejqPlot.min.css" >
+        <link type="text/css" rel="stylesheet" href="dependencies/zz_OldDependencies/zoombox/zoombox.css" >
         <script type="text/javascript" src="js/Form.js"></script>
-        <script type="text/javascript" src="js/jquery-1.9.1.min.js"></script>
-        <script type="text/javascript" src="js/jquery-migrate-1.2.1.min.js"></script>
-        <script type="text/javascript" src="js/jquery-ui-1.10.2.js"></script>
-        <script type="text/javascript" src="js/jqplot/jquery.jqplot.min.js"></script>
-        <script type="text/javascript" src="js/jqplot/plugins/jqplot.dateAxisRenderer.min.js"></script>
-        <script type="text/javascript" src="js/jqplot/plugins/jqplot.cursor.min.js"></script>
-        <script type="text/javascript" src="js/jqplot/plugins/jqplot.highlighter.min.js"></script>
-        <script type="text/javascript" src="js/jqplot/plugins/jqplot.enhancedLegendRenderer.min.js"></script>
-        <script type="text/javascript" src="js/jqplot/plugins/jqplot.json2.min.js"></script>
-        <script type="text/javascript" src="js/jqplot/plugins/jqplot.canvasTextRenderer.min.js"></script>
-        <script type="text/javascript" src="js/jqplot/plugins/jqplot.canvasAxisLabelRenderer.min.js"></script>
-        <script type="text/javascript" src="js/jqplot/plugins/jqplot.canvasAxisTickRenderer.min.js"></script>
-        <script type="text/javascript" src="js/jqplot/plugins/jqplot.barRenderer.min.js"></script>
-        <script type="text/javascript" src="js/zoombox/zoombox.js"></script>
-        <script type="text/javascript" src="js/diff_match_patch/diff_match_patch.js"></script>
+        <script type="text/javascript" src="dependencies/zz_OldDependencies/js/jquery-1.9.1.min.js"></script>
+        <script type="text/javascript" src="dependencies/zz_OldDependencies/js/jquery-migrate-1.2.1.min.js"></script>
+        <script type="text/javascript" src="dependencies/zz_OldDependencies/js/jquery-ui-1.10.2.js"></script>
+        <script type="text/javascript" src="dependencies/zz_OldDependencies/jqplot/jquery.jqplot.min.js"></script>
+        <script type="text/javascript" src="dependencies/zz_OldDependencies/jqplot/plugins/jqplot.dateAxisRenderer.min.js"></script>
+        <script type="text/javascript" src="dependencies/zz_OldDependencies/jqplot/plugins/jqplot.cursor.min.js"></script>
+        <script type="text/javascript" src="dependencies/zz_OldDependencies/jqplot/plugins/jqplot.highlighter.min.js"></script>
+        <script type="text/javascript" src="dependencies/zz_OldDependencies/jqplot/plugins/jqplot.enhancedLegendRenderer.min.js"></script>
+        <script type="text/javascript" src="dependencies/zz_OldDependencies/jqplot/plugins/jqplot.json2.min.js"></script>
+        <script type="text/javascript" src="dependencies/zz_OldDependencies/jqplot/plugins/jqplot.canvasTextRenderer.min.js"></script>
+        <script type="text/javascript" src="dependencies/zz_OldDependencies/jqplot/plugins/jqplot.canvasAxisLabelRenderer.min.js"></script>
+        <script type="text/javascript" src="dependencies/zz_OldDependencies/jqplot/plugins/jqplot.canvasAxisTickRenderer.min.js"></script>
+        <script type="text/javascript" src="dependencies/zz_OldDependencies/jqplot/plugins/jqplot.barRenderer.min.js"></script>
+        <script type="text/javascript" src="dependencies/zz_OldDependencies/zoombox/zoombox.js"></script>
+        <script type="text/javascript" src="dependencies/zz_OldDependencies/diff_match_patch/diff_match_patch.js"></script>
         <title>Execution Detail</title>
 
 
@@ -630,6 +630,7 @@
                             <td title="Start Time"><%=DateUtil.getFormatedDate(myData.getStartLong())%></td>
                             <td title="Elapsed Time"><%=DateUtil.getFormatedElapsed(myData.getStartLong(), myData.getEndLong())%></td>
                             <td title="Property name"><b><span id="PROP-<%=myData.getProperty()%>"><%=myData.getProperty()%></span></b></td>
+                            <td title="Description"><span id="DESCRIPTION-<%=myData.getProperty()%>"><%= myData.getDescription() == null || myData.getDescription().isEmpty() ? "<i>No description defined.</i>" : myData.getDescription() %></span></td>
                             <td title="Value"><code><b><i><span id="PROPVAL-<%=myData.getProperty()%>"><%=StringUtil.textToHtmlConvertingURLsToLinks(myData.getValue())%></span></i></b></code></td>
                             <td title="Type" style="font-size: x-small"><%=myData.getType()%></td>
                             <td title="Value1 / Value2" style="font-size: x-small"><code><%=StringUtil.textToHtmlConvertingURLsToLinks(myData.getValue1())%> / <%=myData.getValue2()%></code></td>

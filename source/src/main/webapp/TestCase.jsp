@@ -72,21 +72,21 @@
         <meta content="text/html; charset=UTF-8" http-equiv="content-type">
         <%@ include file="include/dependenciesInclusions.html" %>
         <!--<script type='text/javascript' src='js/Form_1.js'></script>-->
-        <script type="text/javascript" src="js/jquery-migrate-1.2.1.min.js"></script>
-        <script type="text/javascript" src="js/jquery-ui-1.10.2.js"></script>
-        <script type="text/javascript" src="js/elrte.min.js"></script>
-        <script type="text/javascript" src="js/i18n/elrte.en.js"></script>
-        <script type="text/javascript" src="js/elfinder.min.js"></script>
-        <script type="text/javascript" src="js/elFinderSupportVer1.js"></script>
+        <script type="text/javascript" src="dependencies/zz_OldDependencies/js/jquery-migrate-1.2.1.min.js"></script>
+        <script type="text/javascript" src="dependencies/zz_OldDependencies/js/jquery-ui-1.10.2.js"></script>
+        <script type="text/javascript" src="dependencies/zz_OldDependencies/js/elrte.min.js"></script>
+        <script type="text/javascript" src="dependencies/zz_OldDependencies/js/i18n/elrte.en.js"></script>
+        <script type="text/javascript" src="dependencies/zz_OldDependencies/js/elfinder.min.js"></script>
+        <script type="text/javascript" src="dependencies/zz_OldDependencies/js/elFinderSupportVer1.js"></script>
         <!--<script type="text/javascript" src="js/jquery.dataTables.js"></script>-->
-        <script type="text/javascript" src="js/jquery.jeditable.mini.js"></script>
-        <script type="text/javascript" src="js/jquery.dataTables.editable.js"></script>
+        <script type="text/javascript" src="dependencies/zz_OldDependencies/js/jquery.jeditable.mini.js"></script>
+        <script type="text/javascript" src="dependencies/zz_OldDependencies/js/jquery.dataTables.editable.js"></script>
         <script type="text/javascript" src="js/pages/TestCase.js"></script>
-        <link rel="stylesheet" type="text/css" href="css/elrte.min.css">
-        <link rel="stylesheet" type="text/css" href="css/elfinder.min.css">
-        <link rel="stylesheet" type="text/css" href="css/theme.css">
+        <link rel="stylesheet" type="text/css" href="dependencies/zz_OldDependencies/css/elrte.min.css">
+        <link rel="stylesheet" type="text/css" href="dependencies/zz_OldDependencies/css/elfinder.min.css">
+        <link rel="stylesheet" type="text/css" href="dependencies/zz_OldDependencies/css/theme.css">
         
-
+        
         <script type="text/javascript">
             var displayOnlyFunctional = false;
             function showOnlyFunctional() {
@@ -974,7 +974,7 @@
                     <div id="AutomationScriptDiv" class="arrond" style="display : inline-block">
                         <div id="AutomationScriptFirstLine" style="clear:both; height:30px">
                             <div id="AutomationScriptTitle" style="float:left">
-                                <h3>TestCase Detailed Description</h3>
+                                <h4>TestCase Detailed Description</h4>
                             </div>
                             <div id="AutomationScriptFunctionalButtonDiv" style="float:left;margin-left:30px">
                                 <select id="selectView" style="float:left; height:20px; width:100px" onchange="javascript:customizeView(this.value);
@@ -1654,7 +1654,13 @@
                                             <div class="StepHeaderDiv">
                                                 <div style="width: 3%; float:left"><%out.print(docService.findLabelHTML("page_testcase", "delete", "Delete", myLang));%>
                                                 </div>
-                                                <div style="width: 10%; float:left"><%out.print(docService.findLabelHTML("testcasecountryproperties", "property", "Property", myLang));%>
+                                                <div style="width: 15%; float:left">
+                                                    <div>
+                                                        <%out.print(docService.findLabelHTML("testcasecountryproperties", "property", "Property", myLang));%>
+                                                    </div>
+                                                    <div style="margin-top: 8px">
+                                                        <%out.print(docService.findLabelHTML("testcasecountryproperties", "description", "Description", myLang));%>
+                                                    </div>
                                                 </div>
                                                 <div style="width: <%=1.5 * countryListTestcase.size()%>%; float:left"><%out.print(docService.findLabelHTML("invariant", "country", "Country", myLang));%>
                                                 </div>
@@ -1668,7 +1674,7 @@
                                                 </div>
                                                 <div style="width: 3%; float:left"><%out.print(docService.findLabelHTML("testcasecountryproperties", "rowlimit", "RowLimit", myLang));%>
                                                 </div>
-                                                <div style="width: 8%; float:left"><%out.print(docService.findLabelHTML("testcasecountryproperties", "nature", "Nature", myLang));%>
+                                                <div style="width: 5%; float:left"><%out.print(docService.findLabelHTML("testcasecountryproperties", "nature", "Nature", myLang));%>
                                                 </div>
                                             </div>
                                             <div id="cache_properties">
@@ -1725,9 +1731,25 @@
                                                     <%}%>
                                                     <input type="hidden" name="property_increment" value="<%=incrementProperty%>">
                                                 </div>
-                                                <div style="border-right-width:thin;border-right-style:solid;border-right-color:#CCCCCC;width:10%;float:left;display:inline-block;height:50px">
-                                                    <input class="wob properties_id_<%=rowNumber%> property_name" style="background-color:transparent;margin-top:20px;width:100%;font-weight: bold;"
-                                                           name="properties_property_<%=incrementProperty%>" id="properties_property_<%=incrementProperty%>" value="<%=tccp.getProperty()%>">
+                                                <div style="border-right-width:thin;border-right-style:solid;border-right-color:#CCCCCC;width:15%;float:left;display:inline-block;height:50px">
+                                                    <table style="width:100%">
+                                                        <tr style="width:100%">
+                                                            <td class="wob" style="width:100%">
+                                                                <div style="width:100%">
+                                                                    <input class="wob properties_id_<%=rowNumber%> property_name" style="background-color:transparent;width:100%;font-weight: bold;"
+                                                               name="properties_property_<%=incrementProperty%>" id="properties_property_<%=incrementProperty%>" placeholder="Feed Property name" value="<%=tccp.getProperty()%>">
+                                                                </div>
+                                                            </td>
+                                                        </tr>
+                                                        <tr style="width:100%">
+                                                            <td class="wob" style="width:100%">
+                                                                <div style="width:100%">
+                                                                    <textarea class="wob properties_id_<%=rowNumber%> property_description" style="background-color:transparent;width:100%;"
+                                                                              name="properties_description_<%=incrementProperty%>" id="properties_description_<%=incrementProperty%>" placeholder="Feed Property description"><%=tccp.getDescription()%></textarea>
+                                                                </div>
+                                                            </td>
+                                                        </tr>
+                                                    </table>
                                                 </div>
                                                 <div style="border-right-width:thin;border-right-style:solid;border-right-color:#CCCCCC;float:left; font-size : x-small ;display:inline-block;height:50px; width: <%=1.5 * countryListTestcase.size()%>%;">
                                                     <table>
@@ -1808,15 +1830,15 @@
                                                               name="properties_value2_<%=incrementProperty%>"><%=tccp.getValue2()%></textarea>
                                                     </div>
                                                 </div>
-                                                <div style="border-right-width:thin;border-right-style:solid;background-color:transparent;border-right-color:#CCCCCC;float:left;width:3%;display:inline-block;height:50px">
+                                                <div style="border-right-width:thin;border-right-style:solid;background-color:transparent;border-right-color:#CCCCCC;float:left;width:2%;display:inline-block;height:50px">
                                                     <input class="wob" style="background-color:transparent;width:  100%;margin-top:20px;" name="properties_length_<%=incrementProperty%>"
                                                            value="<%=tccp.getLength()%>">
                                                 </div>
-                                                <div style="border-right-width:thin;border-right-style:solid;background-color:transparent;border-right-color:#CCCCCC;float:left;width:3%;display:inline-block;height:50px">
+                                                <div style="border-right-width:thin;border-right-style:solid;background-color:transparent;border-right-color:#CCCCCC;float:left;width:2%;display:inline-block;height:50px">
                                                     <input class="wob" style="background-color:transparent;width: 100%;margin-top:20px;" name="properties_rowlimit_<%=incrementProperty%>"
                                                            value="<%=tccp.getRowLimit()%>">
                                                 </div>
-                                                <div style="float:left;width:8%;display:inline-block;height:50px"><%=ComboInvariant(appContext, "properties_nature_" + incrementProperty, 
+                                                <div style="float:left;width:5%;display:inline-block;height:50px"><%=ComboInvariant(appContext, "properties_nature_" + incrementProperty, 
                                                         "background-color:transparent;margin-top:20px;width: 100%;", "properties_nature_" + incrementProperty, "wob", "PROPERTYNATURE", tccp.getNature(), 
                                                                    "trackChanges(0, this.selectedIndex, 'submitButtonChanges')", null)%>
                                                 </div>
@@ -2161,9 +2183,25 @@
                     <img style="margin-top:12px" src="images/bin.png" data-id="property_img_delete">
                     <input type="hidden" data-id="property_increment_template">
                 </div>
-                <div style="border-right-width:thin;border-right-style:solid;border-right-color:#CCCCCC;width:10%;float:left;display:inline-block;height:100%">
-                    <input class="wob property_name" style="background-color:transparent;margin-top:20px;width:100%;font-weight: bold;"
+                <div style="border-right-width:thin;border-right-style:solid;border-right-color:#CCCCCC;width:15%;float:left;display:inline-block;height:100%">
+                    <table style="width:100%">
+                        <tr style="width:100%">
+                            <td class="wob" style="width:100%">
+                                <div style="width:100%">
+                                    <input class="wob property_name" style="background-color:transparent;width:100%;font-weight: bold;"
                            data-id="properties_property_template">
+                                </div>
+                            </td>
+                        </tr>
+                        <tr style="width:100%">
+                            <td class="wob" style="width:100%">
+                                <div style="width:100%">
+                                    <textarea class="wob properties_id_<%=rowNumber%> property_description" style="background-color:transparent;width:100%;"
+                                              data-id="properties_description_template"></textarea>
+                                </div>
+                            </td>
+                        </tr>
+                    </table>
                 </div>
                 <div style="border-right-width:thin;border-right-style:solid;border-right-color:#CCCCCC;float:left; font-size : x-small ;display:inline-block;height:100%; width: <%=1.5 * countryListTestcase.size()%>%;">
                     <table>
@@ -2209,15 +2247,15 @@
                         <textarea data-id="properties_value2_template" rows="2" class="wob" style="background-color:transparent;width: 100%;height:50px"></textarea>
                     </div>
                 </div>
-                <div style="border-right-width:thin;border-right-style:solid;border-right-color:#CCCCCC;float:left;width:3%;display:inline-block;height:100%">
+                <div style="border-right-width:thin;border-right-style:solid;border-right-color:#CCCCCC;float:left;width:2%;display:inline-block;height:100%">
                     <input class="wob" style="background-color:transparent;width:  100%;margin-top:20px;" 
                            data-id="properties_length_template">
                 </div>
-                <div style="border-right-width:thin;border-right-style:solid;border-right-color:#CCCCCC;float:left;width:3%;display:inline-block;height:100%">
+                <div style="border-right-width:thin;border-right-style:solid;border-right-color:#CCCCCC;float:left;width:2%;display:inline-block;height:100%">
                     <input class="wob" style="background-color:transparent;width: 100%;margin-top:20px;" 
                            data-id="properties_rowlimit_template">
                 </div>
-                <div style="float:left;width:8%;display:inline-block;height:100%">
+                <div style="float:left;width:5%;display:inline-block;height:100%">
                     <%=ComboInvariant(appContext, "", "background-color:transparent;margin-top:20px;width: 100%;", "properties_nature_template", "wob", "PROPERTYNATURE", "", "", null)%>
                 </div>
                 <div style="background-color:yellow; width:3px;height:100%;display:inline-block;float:right">

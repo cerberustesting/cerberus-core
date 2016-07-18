@@ -67,7 +67,7 @@ public class TCase {
     public void setTcDateCrea(String tcDateCrea) {
         this.tcDateCrea = tcDateCrea;
     }
-    
+
     public String getFunction() {
         return function;
     }

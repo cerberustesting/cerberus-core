@@ -75,6 +75,7 @@ public class ApplicationDAO implements IApplicationDAO {
         // Debug message on SQL.
         if (LOG.isDebugEnabled()) {
             LOG.debug("SQL : " + query);
+            LOG.debug("SQL.param.application : " + application);
         }
 
         Connection connection = this.databaseSpring.connect();

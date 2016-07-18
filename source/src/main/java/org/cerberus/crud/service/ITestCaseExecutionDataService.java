@@ -45,10 +45,18 @@ public interface ITestCaseExecutionDataService {
     
     /**
      *
-     * @param id
+     * @param property
+     * @param value
+     * @param controlStatus
+     * @param nbMinutes
      * @return List of TestCaseExecutionData that match the Id.
      */
     List<TestCaseExecutionData> findTestCaseExecutionDataByCriteria1(String property, String value, String controlStatus, Integer nbMinutes);
     
+    /**
+     *
+     * @param testCaseExecutionData
+     * @throws CerberusException
+     */
     void insertOrUpdateTestCaseExecutionData(TestCaseExecutionData testCaseExecutionData) throws CerberusException;
 }

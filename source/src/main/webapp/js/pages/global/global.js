@@ -166,7 +166,7 @@ function displayApplicationList(selectName, system, defaultValue) {
             $("[name='" + selectName + "']").append($('<option></option>').text(data.contentTable[option].application + " - " + data.contentTable[option].description).val(data.contentTable[option].application));
         }
 
-        if (defaultValue !== undefined) {
+        if (defaultValue !== undefined && defaultValue !== null) {
             $("[name='" + selectName + "']").val(defaultValue);
         }
     });
@@ -826,11 +826,11 @@ function TableConfigurationsClientSide(divId, data, aoColumnsFunction, defineLen
     if (defineLenghtMenu) {
         this.lengthMenu = [10, 25, 50, 100];
         this.lengthChange = true;
-        this.paginate = false;
+        this.bPaginate = false;
         this.displayLength = 10;
-        this.paginationType = "full_numbers";
+        this.sPaginationType = "full_numbers";
     } else {
-        this.paginate = false;
+        this.bPaginate = false;
         this.lengthChange = false;
         this.displayLength = "All";
     }
@@ -848,6 +848,7 @@ function TableConfigurationsClientSide(divId, data, aoColumnsFunction, defineLen
     this.stateSave = true;
     this.showColvis = true;
     this.scrollY = false;
+    this.scrollX = true;
     this.scrollCollapse = false;
     this.lang = getDataTableLanguage();
 }
@@ -877,8 +878,8 @@ function TableConfigurationsServerSide(divId, ajaxSource, ajaxProp, aoColumnsFun
     this.tableWidth = "1500px";
     this.displayLength = 10;
     this.bJQueryUI = true; //Enable jQuery UI ThemeRoller support (required as ThemeRoller requires some slightly different and additional mark-up from what DataTables has traditionally used
-    this.paginate = true;
-    this.paginationType = "full_numbers";
+    this.bPaginate = true;
+    this.sPaginationType = "full_numbers";
     //Enable or disable automatic column width calculation. This can be disabled as an optimisation (it takes some time to calculate the widths) if the tables widths are passed in using aoColumns.
     this.autoWidth = false;
     //Enable or disable state saving. When enabled a cookie will be used to save table display information such as pagination information, display length, filtering and sorting. As such when the end user reloads the page the display will match what they had previously set up
@@ -927,7 +928,7 @@ function showUnexpectedError(jqXHR, textStatus, errorThrown) {
  * @return {Object} Return the dataTable object to use the api
  */
 function createDataTableWithPermissions(tableConfigurations, callbackFunction, objectWaitingLayer) {
-    var domConf = 'Cl<"showInlineElement pull-left marginLeft5"f>rti<"marginTop5"p>';
+    var domConf = 'Cl<"showInlineElement pull-left marginLeft5"f>rBti<"marginTop5"p>';
     if (!tableConfigurations.showColvis) {
         domConf = 'l<"showInlineElement pull-left marginLeft5"f>rti<"marginTop5"p>';
     }
@@ -937,9 +938,9 @@ function createDataTableWithPermissions(tableConfigurations, callbackFunction, o
     configs["serverSide"] = tableConfigurations.serverSide;
     configs["processing"] = tableConfigurations.processig;
     configs["bJQueryUI"] = tableConfigurations.bJQueryUI;
-    configs["paging"] = tableConfigurations.paginate;
+    configs["bPaginate"] = tableConfigurations.bPaginate;
     configs["autoWidth"] = tableConfigurations.autoWidth;
-    configs["pagingType"] = tableConfigurations.paginationType;
+    configs["sPaginationType"] = tableConfigurations.sPaginationType;
     configs["columns.searchable"] = false;
     configs["columnDefs.targets"] = [0];
     configs["pageLength"] = tableConfigurations.displayLength;
@@ -960,7 +961,7 @@ function createDataTableWithPermissions(tableConfigurations, callbackFunction, o
     }
 
     if (tableConfigurations.serverSide) {
-        var objectWL = $(objectWaitingLayer)
+        var objectWL = $(objectWaitingLayer);
         if (objectWaitingLayer !== undefined) {
             showLoader(objectWL);
         }
@@ -968,33 +969,33 @@ function createDataTableWithPermissions(tableConfigurations, callbackFunction, o
         configs["sAjaxDataProp"] = tableConfigurations.ajaxProp;
         configs["fnStateSaveCallback"] = function (settings, data) {
             try {
-                //Compare user.userPreferences and data excluding time
-                var user = getUser();
-                var localStorageValue = JSON.parse(JSON.stringify(data));
-                delete localStorageValue.time;
-
-                var userPreferences = JSON.parse((JSON.parse(user.userPreferences))['DataTables_' + settings.sInstance + '_' + location.pathname]);
-                delete userPreferences.time;
-
-                //if different, update localStorage and user.userPreferences
-                if (localStorageValue !== userPreferences) {
-                    (settings.iStateDuration === -1 ? sessionStorage : localStorage).setItem(
-                            'DataTables_' + settings.sInstance + '_' + location.pathname,
-                            JSON.stringify(data)
-                            );
-                    updateUserPreferences();
-                }
+                (settings.iStateDuration === -1 ? sessionStorage : localStorage).setItem(
+                        'DataTables_' + settings.sInstance + '_' + location.pathname,
+                        JSON.stringify(data)
+                        );
             } catch (e) {
             }
         };
         configs["fnStateLoadCallback"] = function (settings) {
             //Get UserPreferences from user object
-            var user = getUser();
-            if ("" !== user.userPreferences) {
+            var user = null;
+            $.when(getUser()).then(function (data) {
+                user = data;
+            });
+            while (user === null) {
+                //Wait for user information make sure to don't loose it
+            }
+
+            if ("" !== user.userPreferences && undefined !== user.userPreferences && null !== user.userPreferences) {
                 var userPref = JSON.parse(user.userPreferences);
-                return JSON.parse(userPref['DataTables_' + settings.sInstance + '_' + location.pathname]);
+                if (undefined !== userPref['DataTables_' + settings.sInstance + '_' + location.pathname]) {
+                    return JSON.parse(userPref['DataTables_' + settings.sInstance + '_' + location.pathname]);
+                }
             }
         };
+        configs["buttons"] = [
+            'colvis'
+        ];
         configs["fnServerData"] = function (sSource, aoData, fnCallback, oSettings) {
             oSettings.jqXHR = $.ajax({
                 "dataType": 'json',
@@ -1019,12 +1020,13 @@ function createDataTableWithPermissions(tableConfigurations, callbackFunction, o
             });
             $.when(oSettings.jqXHR).then(function (data) {
                 //updates the table with basis on the permissions that the current user has
+
+                displayColumnSearch(tableConfigurations.divId, tableConfigurations.ajaxSource);
+                $('[data-toggle="tooltip"]').tooltip();
+
                 if (callbackFunction !== undefined)
                     callbackFunction(data);
 
-                //TODO: To uncomment when activating feature
-                displayColumnSearch(tableConfigurations.divId);
-                $('[data-toggle="tooltip"]').tooltip();
             });
         };
     } else {
@@ -1033,18 +1035,41 @@ function createDataTableWithPermissions(tableConfigurations, callbackFunction, o
     var oTable = $("#" + tableConfigurations.divId).dataTable(configs);
     //if is a server side table then we use a delay to avoid too many calls to the server
     if (tableConfigurations.serverSide) {
-        oTable.dataTable().fnSetFilteringDelay(500);
+        oTable.fnSetFilteringDelay(500);
     }
 
     if (tableConfigurations.showColvis) {
-        $("#" + tableConfigurations.divId + "_wrapper div.ColVis .ColVis_MasterButton").addClass("btn btn-default");
+        //Display button show/hide columns and Save table configuration
+        $("#saveTableConfigurationButton").remove();
+        $("#restoreFilterButton").remove();
+        $("#" + tableConfigurations.divId + "_wrapper")
+                .find("[class='dt-buttons btn-group']").removeClass().addClass("pull-right").find("a").attr('id', 'showHideColumnsButton').removeClass()
+                .addClass("btn btn-default").click(function () {
+            $("#" + tableConfigurations.divIdrobots + " thead").empty()
+        }).html("<span class='glyphicon glyphicon-cog'></span> Show/hide columns");
+        $("#showHideColumnsButton").parent().before(
+                $("<button id='saveTableConfigurationButton'></button>").addClass("btn btn-default pull-right").append("<span class='glyphicon glyphicon-floppy-save'></span> Save table configuration")
+                .click(function () {
+                    updateUserPreferences();
+                })
+                );
+        $("#saveTableConfigurationButton").before(
+                $("<button id='restoreFilterButton'></button>").addClass("btn btn-default pull-right").append("<span class='glyphicon glyphicon-floppy-open'></span> Restore user preferences")
+                .click(function () {
+                    location.reload();
+                })
+                );
     }
     $("#" + tableConfigurations.divId + "_length select[name='" + tableConfigurations.divId + "_length']").addClass("form-control input-sm");
     $("#" + tableConfigurations.divId + "_length select[name='" + tableConfigurations.divId + "_length']").css("display", "inline");
 
     $("#" + tableConfigurations.divId + "_filter input[type='search']").addClass("form-control form-control input-sm");
 
-    $("#" + tableConfigurations.divId + "_length").addClass("marginBottom10").addClass("width80");
+    //Build the Message that appear when filter is fed
+    var showFilteredColumnsAlertMessage = "<div id='filterAlertDiv' class='col-sm-12 alert alert-warning'><div class='col-sm-11' id='activatedFilters'></div><div class='col-sm-1  filterMessageButtons'><span id='clearFilterButton' data-toggle='tooltip' title='Clear filters' class='glyphicon glyphicon-remove-sign'></span></div>";
+    $("#showHideColumnsButton").parent().after($(showFilteredColumnsAlertMessage).hide());
+
+    $("#" + tableConfigurations.divId + "_length").addClass("marginBottom10").addClass("width80").addClass("pull-left");
     $("#" + tableConfigurations.divId + "_filter").addClass("marginBottom10").addClass("width150");
 
     return oTable;
@@ -1059,7 +1084,7 @@ function createDataTableWithPermissions(tableConfigurations, callbackFunction, o
  * @return {Object} Return the dataTable object to use the api
  */
 function createDataTable(tableConfigurations, callbackFunction, userCallbackFunction, objectWaitingLayer) {
-    var domConf = 'Cl<"showInlineElement pull-left marginLeft5"f>rti<"marginTop5"p>';
+    var domConf = 'Cl<"showInlineElement pull-left marginLeft5"f>rBti<"marginTop5"p>';
     if (!tableConfigurations.showColvis) {
         domConf = 'l<"showInlineElement pull-left marginLeft5"f>rti<"marginTop5"p>';
     }
@@ -1070,9 +1095,9 @@ function createDataTable(tableConfigurations, callbackFunction, userCallbackFunc
     configs["serverSide"] = tableConfigurations.serverSide;
     configs["processing"] = tableConfigurations.processig;
     configs["bJQueryUI"] = tableConfigurations.bJQueryUI;
-    configs["paging"] = tableConfigurations.paginate;
+    configs["bPaginate"] = tableConfigurations.bPaginate;
     configs["autoWidth"] = tableConfigurations.autoWidth;
-    configs["pagingType"] = tableConfigurations.paginationType;
+    configs["sPaginationType"] = tableConfigurations.sPaginationType;
     configs["columnDefs.targets"] = [0];
     configs["pageLength"] = tableConfigurations.displayLength;
     configs["scrollX"] = tableConfigurations.scrollX;
@@ -1100,35 +1125,39 @@ function createDataTable(tableConfigurations, callbackFunction, userCallbackFunc
         }
         configs["sAjaxSource"] = tableConfigurations.ajaxSource;
         configs["sAjaxDataProp"] = tableConfigurations.ajaxProp;
+
+        configs["buttons"] = [
+            'colvis'
+        ];
         configs["fnStateSaveCallback"] = function (settings, data) {
             try {
-                //Compare user.userPreferences and data excluding time
-                var user = getUser();
-                var localStorageValue = JSON.parse(JSON.stringify(data));
-                delete localStorageValue.time;
-
-                var userPreferences = JSON.parse((JSON.parse(user.userPreferences))['DataTables_' + settings.sInstance + '_' + location.pathname]);
-                delete userPreferences.time;
-
-                //if different, update localStorage and user.userPreferences
-                if (localStorageValue !== userPreferences) {
-                    (settings.iStateDuration === -1 ? sessionStorage : localStorage).setItem(
-                            'DataTables_' + settings.sInstance + '_' + location.pathname,
-                            JSON.stringify(data)
-                            );
-                    updateUserPreferences();
-                }
+                (settings.iStateDuration === -1 ? sessionStorage : localStorage).setItem(
+                        'DataTables_' + settings.sInstance + '_' + location.pathname,
+                        JSON.stringify(data)
+                        );
             } catch (e) {
             }
         };
         configs["fnStateLoadCallback"] = function (settings) {
             //Get UserPreferences from user object
-            var user = getUser();
-            if ("" !== user.userPreferences) {
-                var userPref = JSON.parse(user.userPreferences);
-                return JSON.parse(userPref['DataTables_' + settings.sInstance + '_' + location.pathname]);
+            var user = null;
+            $.when(getUser()).then(function (data) {
+                user = data;
+            });
+            while (user === null) {
+                //Wait for user information make sure to don't loose it
             }
-        };
+
+            if ("" !== user.userPreferences && undefined !== user.userPreferences && null !== user.userPreferences) {
+                var userPref = JSON.parse(user.userPreferences);
+                if (undefined !== userPref['DataTables_' + settings.sInstance + '_' + location.pathname]) {
+                    return JSON.parse(userPref['DataTables_' + settings.sInstance + '_' + location.pathname]);
+                }
+            }
+            };
+        configs["buttons"] = [
+            'colvis'
+        ];
         configs["fnServerData"] = function (sSource, aoData, fnCallback, oSettings) {
             oSettings.jqXHR = $.ajax({
                 "dataType": 'json',
@@ -1148,7 +1177,7 @@ function createDataTable(tableConfigurations, callbackFunction, userCallbackFunc
                 error: showUnexpectedError
             });
             $.when(oSettings.jqXHR).then(function (data) {
-                displayColumnSearch(tableConfigurations.divId);
+                displayColumnSearch(tableConfigurations.divId, tableConfigurations.ajaxSource);
                 $('[data-toggle="tooltip"]').tooltip();
             });
         };
@@ -1161,27 +1190,111 @@ function createDataTable(tableConfigurations, callbackFunction, userCallbackFunc
         oTable.dataTable().fnSetFilteringDelay(500);
     }
     if (tableConfigurations.showColvis) {
-        $("#" + tableConfigurations.divId + "_wrapper .ColVis_MasterButton").addClass("btn btn-default");
+        //Display button show/hide columns and Save table configuration
+        $("#saveTableConfigurationButton").remove();
+        $("#restoreFilterButton").remove();
+        $("#" + tableConfigurations.divId + "_wrapper")
+                .find("[class='dt-buttons btn-group']").removeClass().addClass("pull-right").find("a").attr('id', 'showHideColumnsButton').removeClass()
+                .addClass("btn btn-default").click(function () {
+            $("#" + tableConfigurations.divIdrobots + " thead").empty()
+        }).html("<span class='glyphicon glyphicon-cog'></span> Show/hide columns");
+        $("#showHideColumnsButton").parent().before(
+                $("<button id='saveTableConfigurationButton'></button>").addClass("btn btn-default pull-right").append("<span class='glyphicon glyphicon-floppy-save'></span> Save table configuration")
+                .click(function () {
+                    updateUserPreferences();
+                })
+                );
+        $("#saveTableConfigurationButton").before(
+                $("<button id='restoreFilterButton'></button>").addClass("btn btn-default pull-right").append("<span class='glyphicon glyphicon-floppy-open'></span> Restore user preferences")
+                .click(function () {
+                    location.reload();
+                })
+                );
     }
     $("#" + tableConfigurations.divId + "_length select[name='" + tableConfigurations.divId + "_length']").addClass("form-control input-sm");
     $("#" + tableConfigurations.divId + "_length select[name='" + tableConfigurations.divId + "_length']").css("display", "inline");
 
     $("#" + tableConfigurations.divId + "_filter input[type='search']").addClass("form-control form-control input-sm");
 
-    $("#" + tableConfigurations.divId + "_length").addClass("marginBottom10").addClass("width80");
+//Build the Message that appear when filter is fed
+    var showFilteredColumnsAlertMessage = "<div id='filterAlertDiv' class='col-sm-12 alert alert-warning'><div class='col-sm-11' id='activatedFilters'></div><div class='col-sm-1  filterMessageButtons'><span id='clearFilterButton' data-toggle='tooltip' title='Clear filters' class='glyphicon glyphicon-remove-sign'></span></div>";
+    $("#showHideColumnsButton").parent().after($(showFilteredColumnsAlertMessage).hide());
+
+    $("#" + tableConfigurations.divId + "_length").addClass("marginBottom10").addClass("width80").addClass("pull-left");
     $("#" + tableConfigurations.divId + "_filter").addClass("marginBottom10").addClass("width150");
 
-    //TODO: To uncomment when activating feature
-    //displayColumnSearch(tableConfigurations.divId);
     return oTable;
 }
 
-function displayColumnSearch(tableId) {
+/**
+ * Function that allow to reset the filter selected
+ * @param {type} table
+ * @returns {undefined}
+ */
+function resetFilters(table) {
+    table.search('').columns().search('').draw();
+}
+
+function displayColumnSearch(tableId, contentUrl) {
+    //Hide filtered alert message displayed when filtered column
+    $("#filterAlertDiv").hide();
+    //Load the table
     $.when($("#" + tableId).DataTable()).then(function (table) {
-        var colVisIndex = 0;
-        //Iterate on all columns (visible and not visible)
+        var columnVisibleIndex = 0;//Used to Match visible column with columns available
+        var doc = new Doc();
+
+        //Start building the Alert Message for filtered column information
+        //TODO : Replace with data from doc table
+        var filteredInformation = new Array();
+        filteredInformation.push("Showing information filtering : ");
+        if (table.search() !== "") {
+            filteredInformation.push("<strong>all columns</strong> containing " + table.search() + " AND ");
+        }
+
+        // Delete and Build a new tr in the header to display the editable mark        
+        //So first delete in case on page reload
+        $("#filterHeader").remove();
+        //Set the table with relative position position for the editable box.
+        $("#" + tableId + "_wrapper").attr("style", "position: relative");
+        //Remove the relative position of the header
+        $('[class="dataTables_scrollHead ui-state-default"]').attr("style", "overflow: hidden; border: 0px; width: 100%;");
+        //Then create a th tag for each columns
+        $('.dataTables_scrollHeadInner table thead').append('<tr id="filterHeader"></tr>');
+        $('.dataTables_scrollHeadInner table thead tr th').each(function () {
+            $("#filterHeader").append("<th name='filterColumnHeader'></th>");
+        });
+
+//Iterate on all columns (visible and not visible)
         $(table.columns()[0]).each(function (value, colIndex) {
-            //init only if visible
+            //Get the value from storage (To display specific string if already filtered) 
+            var json_obj = JSON.stringify(table.ajax.params());
+            var columnSearchValues = JSON.parse(json_obj)["sSearch_" + colIndex].split(',');
+
+            //Get the column names (for title display)
+            var title = table.ajax.params().sColumns.split(',')[colIndex];
+
+            //Build the specific tooltip for filtered columns and the tooltip for not filtered columns
+            var emptyFilter = doc.getDocLabel("page_global", "tooltip_column_filter_empty");
+            var selectedFilter = doc.getDocLabel("page_global", "tooltip_column_filter_filtered");
+            var display = '<span class="glyphicon glyphicon-filter" data-toggle="tooltip" data-html="true" title="' + emptyFilter + '"></span>';
+            var valueFiltered = [];
+            if (columnSearchValues !== undefined && columnSearchValues.length > 0 && columnSearchValues[0] !== '') {
+                //Build the Alert Message for filtered column information
+                filteredInformation.push("<strong>" + title + "</strong> IN [ ");
+
+                var filteredTooltip = '<div>';
+                $(columnSearchValues).each(function (i) {
+                    valueFiltered[i] = $('<p>' + columnSearchValues[i] + '</p>').text();
+                    filteredTooltip += "<br><span>" + $('<p>' + columnSearchValues[i] + '</p>').text() + "</span> ";
+                    filteredInformation.push(columnSearchValues[i] + " | ");
+
+                });
+                filteredTooltip += '</div>';
+                filteredInformation.push(" ] AND ");
+                display = "<span class='glyphicon glyphicon-filter columnFiltered' data-toggle='tooltip' data-html='true' title='" + valueFiltered.length + " " + selectedFilter + " : " + filteredTooltip + "'></span>";
+            }
+
+            //init column filter only if column visible
             if (table.column(colIndex).visible()) {
 
                 //This is the list of distinct value of the column
@@ -1192,43 +1305,46 @@ function displayColumnSearch(tableId) {
                     data.push(d);
                 });
 
-                //Get the value from storage (To display specific string if already filtered) 
-                var json_obj = JSON.stringify(table.ajax.params());
-                var param = JSON.parse(json_obj)["sSearch_" + colIndex].split(',');
-
-                //Get the column names (for title display)
-                var title = table.ajax.params().sColumns.split(',')[colIndex];
-
-                //Build the string to display (default picture if no data)
-                //Build the tooltip
-                var doc = new Doc();
-                var emptyFilter = doc.getDocLabel("page_global", "tooltip_column_filter_empty");
-                var selectedFilter = doc.getDocLabel("page_global", "tooltip_column_filter_filtered");
-                var display = '<span class="fa fa-tag fa-fw" data-toggle="tooltip" data-html="true" title="' + emptyFilter + '"></span>';
-                var val = [];
-                if (param !== undefined && param.length > 0 && param[0] !== '') {
-                    var filteredTooltip = '<div>';
-                    $(param).each(function (i) {
-                        val[i] = $('<p>' + param[i] + '</p>').text();
-                        filteredTooltip += "<br><span>" + $('<p>' + param[i] + '</p>').text() + "</span> ";
-                    });
-                    filteredTooltip += '</div>';
-                    display = "<span class='label columnFiltered' data-toggle='tooltip' data-html='true' \n\
-                                title='" + val.length + " " + selectedFilter + " : " + filteredTooltip + "'>" + val.length + " " + selectedFilter + " </span>";
-                }
 
                 //Get the header cell to display the filter
-                var tableCell = $($('#' + tableId + ' thead th')[colVisIndex++])[0];
-                $(tableCell).removeClass();
+                var tableCell = $($('[name="filterColumnHeader"]')[columnVisibleIndex++])[0];
+                $(tableCell).removeClass().addClass("filterHeader");
                 if (table.ajax.params()["bSearchable_" + colIndex]) {
                     //Then init the editable object
-                    var select = $('<span class="label columnFiltered"></span>')
+                    var select = $('<span class="label"></span>')
                             .appendTo($(tableCell).attr('data-id', 'filter_' + colIndex))
                             .editable({
                                 type: 'checklist',
                                 title: title,
-                                source: data,
+                                source: function () {
+                                    //Check if URL already contains parameters
+                                    var urlSeparator = contentUrl.indexOf("?") > -1 ? "&" : "?";
+                                    var url = './' + contentUrl + urlSeparator + 'columnName=' + title;
+                                    var result;
+                                    $.ajax({
+                                        type: 'GET',
+                                        async: false,
+                                        url: url,
+                                        success: function (responseObject) {
+                                            if (responseObject.distinctValues !== undefined) {
+                                                result = responseObject.distinctValues;
+                                            } else {
+                                                //TODO : To remove when all servlet have method to find distinct values
+                                                //if undefined, display the distinct value displayed in the table
+                                                result = data;
+                                            }
+                                        },
+                                        error: function () {
+                                            //TODO : To remove when all servlet have method to find distinct values
+                                            //if error, display the distinct value displayed in the table
+                                            result = data;
+                                        }
+                                    });
+                                    return result;
+                                }
+                                ,
                                 onblur: 'cancel',
+                                mode: 'popup',
                                 placement: 'bottom',
                                 emptytext: display,
                                 send: 'always',
@@ -1250,6 +1366,26 @@ function displayColumnSearch(tableId) {
                             });
                 }
             }
+        }); // end of loop on columns
+
+        //Display the filtered alert message only if search is activated in at least 1 column
+        if (filteredInformation.length > 1) {
+            var filteredStringToDisplay = filteredInformation.toString();
+            $("#activatedFilters").html(filteredStringToDisplay.substr(0, filteredStringToDisplay.length - 4));
+            $("#clearFilterButton").click(function () {
+                resetFilters(table);
+            });
+            $("#restoreFilterButton").click(function () {
+                location.reload();
+            });
+            $("#filterAlertDiv").show();
+        }
+
+        //call the displayColumnSearch when table configuration is changed
+        $("#showHideColumnsButton").click(function () {
+            $('ul[class="dt-button-collection dropdown-menu"] li').click(function () {
+                displayColumnSearch(tableId, contentUrl);
+            });
         });
     });
 
@@ -1444,7 +1580,7 @@ function displayFooter(doc) {
 
     footerString = footerString.replace("%VERSION%", cerberusInformation.projectName + cerberusInformation.projectVersion);
     footerString = footerString.replace("%ENV%", cerberusInformation.environment);
-    footerString = footerString.replace("%DATE%", date.toDateString());
+    footerString = footerString.replace("%DATE%", date.toISOString());
     footerString = footerString.replace("%TIMING%", loadTime);
     footerBugString = footerBugString.replace("%LINK%", "https://github.com/vertigo17/Cerberus/issues/new?body=Cerberus%20Version%20:%20" + cerberusInformation.projectVersion);
     $("#footer").html(footerString + " - " + footerBugString);

@@ -20,6 +20,7 @@
 package org.cerberus.crud.service.impl;
 
 import java.util.List;
+import java.util.Map;
 
 import org.cerberus.crud.dao.IBuildRevisionInvariantDAO;
 import org.cerberus.crud.entity.BuildRevisionInvariant;
@@ -51,7 +52,7 @@ public class BuildRevisionInvariantService implements IBuildRevisionInvariantSer
     }
 
     @Override
-    public AnswerList readBySystemByCriteria(String system, Integer level, int start, int amount, String column, String dir, String searchTerm, String individualSearch) {
+    public AnswerList readBySystemByCriteria(String system, Integer level, int start, int amount, String column, String dir, String searchTerm, Map<String, List<String>> individualSearch) {
         return BuildRevisionInvariantDAO.readByVariousByCriteria(system, level, start, amount, column, dir, searchTerm, individualSearch);
     }
 

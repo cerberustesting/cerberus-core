@@ -65,10 +65,10 @@ function renderOptionsForProject(data) {
     if (data["hasPermissions"]) {
         if ($("#createProjectButton").length === 0) {
             var contentToAdd = "<div class='marginBottom10'><button id='createProjectButton' type='button' class='btn btn-default'>\n\
-            " + doc.getDocLabel("page_project", "button_create") + "</button></div>";
+            <span class='glyphicon glyphicon-plus-sign'></span> " + doc.getDocLabel("page_project", "button_create") + "</button></div>";
 
-            $("#projectsTable_wrapper div.ColVis").before(contentToAdd);
-            $('#project #createProjectButton').click(addEntryClick);
+            $("#projectsTable_wrapper #projectsTable_length").before(contentToAdd);
+            $('#projectList #createProjectButton').click(addEntryClick);
         }
     }
 }

@@ -20,7 +20,6 @@
 package org.cerberus.crud.factory;
 
 import org.cerberus.crud.entity.TestCaseCountryProperties;
-import org.cerberus.crud.entity.TestCaseSubDataAccessProperty;
 
 /**
  * @author bcivel
@@ -28,8 +27,7 @@ import org.cerberus.crud.entity.TestCaseSubDataAccessProperty;
  */
 public interface IFactoryTestCaseCountryProperties {
 
-    TestCaseCountryProperties create(String test, String testCase, String country, String property,
+    TestCaseCountryProperties create(String test, String testCase, String country, String property, String description,
             String type, String database, String value1, String value2, int length, int rowLimit, String nature);
 
-    TestCaseSubDataAccessProperty create(TestCaseCountryProperties tccp, String property, String libName, String subdataName);
 }

@@ -82,9 +82,9 @@ function renderOptionsForRobot(data) {
     if (data["hasPermissions"]) {
         if ($("#createRobotButton").length === 0) {
             var contentToAdd = "<div class='marginBottom10'><button id='createRobotButton' type='button' class='btn btn-default'>\n\
-            " + doc.getDocLabel("page_robot", "button_create") + "</button></div>";
+            <span class='glyphicon glyphicon-plus-sign'></span> " + doc.getDocLabel("page_robot", "button_create") + "</button></div>";
 
-            $("#robotsTable_wrapper div.ColVis").before(contentToAdd);
+            $("#robotsTable_wrapper #robotsTable_length").before(contentToAdd);
             $('#robotList #createRobotButton').click(addEntryClick);
         }
     }

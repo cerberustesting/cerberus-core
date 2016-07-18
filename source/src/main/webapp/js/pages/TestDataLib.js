@@ -392,13 +392,13 @@ function renderOptionsForTestDataManager(data) {
 
     if (data["hasPermissions"]) {
         if ($("#createLibButton").length === 0) {
-            var contentToAdd = "<div class='marginBottom10'><button id='createLibButton' type='bytton' class='btn btn-default'>";
+            var contentToAdd = "<div class='marginBottom10'><button id='createLibButton' type='bytton' class='btn btn-default'><span class='glyphicon glyphicon-plus-sign'></span> ";
             contentToAdd += doc.getDocLabel("page_testdatalib", "btn_create"); //translation for the create button;
-            contentToAdd += "</button><button id='importDataButton' type='bytton' class='btn btn-default marginLeft5'>";
+            contentToAdd += "</button><button id='importDataButton' type='bytton' class='btn btn-default marginLeft5'><span class='glyphicon glyphicon-import'></span> ";
             contentToAdd += doc.getDocLabel("page_testdatalib", "btn_import"); //translation for the create button;
             contentToAdd += "</button></div>";
 
-            $("#listOfTestDataLib_wrapper div.ColVis").before(contentToAdd);
+            $("#listOfTestDataLib_wrapper #listOfTestDataLib_length").before(contentToAdd);
             $('#createLibButton').click(createLibButtonClickHandler);
 
             $('#importDataButton').click(function () {

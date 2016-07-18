@@ -112,8 +112,6 @@ public interface ITestCaseDAO {
 
     public String findSystemOfTestCase(String test, String testcase) throws CerberusException;
 
-    public AnswerList findNumberOfTestCasePerTCStatus(String system, int startPosition, int length, String columnName, String sort, String searchParameter, String individualSearch);
-
     AnswerList readTestCaseByStepsInLibrary(String test);
 
     public AnswerList readByTestByCriteria(String system, String test, int start, int amount, String column, String dir, String searchTerm, Map<String, List<String>> individualSearch);
@@ -122,7 +120,9 @@ public interface ITestCaseDAO {
                                             String[] testBattery, String[] campaign, String[] priority, String[] group, String[] status);
 
     public AnswerItem readByKey(String test, String testCase);
-
+    
+    public AnswerList readDistinctValuesByCriteria(String system, String test, String searchParameter, Map<String, List<String>> individualSearch, String columnName);
+    
     public Answer update(TCase testCase);
 
     public Answer create(TCase testCase);
