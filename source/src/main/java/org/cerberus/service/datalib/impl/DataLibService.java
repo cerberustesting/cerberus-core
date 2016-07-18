@@ -63,8 +63,8 @@ public class DataLibService implements IDataLibService {
     private ITestDataLibDataService testDataLibDataService;
 
     @Override
-    public AnswerItem getFromDataLib(TestDataLib lib, TestCaseCountryProperties testCaseCountryProperty, TestCaseExecution tCExecution) {
-        AnswerItem result = null;
+    public AnswerItem<TestDataLibResult> getFromDataLib(TestDataLib lib, TestCaseCountryProperties testCaseCountryProperty, TestCaseExecution tCExecution) {
+        AnswerItem<TestDataLibResult> result = null;
 
         /**
          * Gets the list of columns to get from TestDataLibData.
@@ -74,18 +74,18 @@ public class DataLibService implements IDataLibService {
         /**
          * Get List of DataObject in a format List<Map<String>>
          */
-        AnswerList dataObjectList = getDataObjectList(lib, columnList);
+        AnswerList<List<HashMap<String, String>>> dataObjectList = getDataObjectList(lib, columnList);
 
         /**
          * Get the dataObject from the list depending on the nature
          */
-        result = getDataSetFromList(testCaseCountryProperty.getNature(), dataObjectList, tCExecution, testCaseCountryProperty);
+        AnswerItem<HashMap<String, String>> dataObject = getDataSetFromList(testCaseCountryProperty.getNature(), dataObjectList, tCExecution, testCaseCountryProperty);
 
         /**
          * Save the result to the Lib object.
          */
         TestDataLibResult tdlResult = new TestDataLibResultStatic();
-        tdlResult.setDataLibRawData((HashMap<String, String>) result.getItem());
+        tdlResult.setDataLibRawData((HashMap<String, String>) dataObject.getItem());
         tdlResult.setTestDataLibID(lib.getTestDataLibID());
 
         result.setItem(tdlResult);
@@ -101,7 +101,7 @@ public class DataLibService implements IDataLibService {
      * @param testCaseCountryProperties : TestCaseCountryProperties
      * @return one item (dataObject) from the dataObjectList
      */
-    private AnswerItem getDataSetFromList(String nature, AnswerList dataObjectList, TestCaseExecution tCExecution, TestCaseCountryProperties testCaseCountryProperties) {
+    private AnswerItem<HashMap<String, String>> getDataSetFromList(String nature, AnswerList dataObjectList, TestCaseExecution tCExecution, TestCaseCountryProperties testCaseCountryProperties) {
         switch (nature) {
             case Property.NATURE_STATIC:
                 return getStaticFromDataSet(dataObjectList);
@@ -122,9 +122,9 @@ public class DataLibService implements IDataLibService {
      * @return The first item from dataObjectList
      */
     @Override
-    public AnswerItem getStaticFromDataSet(AnswerList dataObjectList) {
-        AnswerItem result = new AnswerItem();
-        result.setItem(dataObjectList.getDataList().get(0));
+    public AnswerItem<HashMap<String, String>> getStaticFromDataSet(AnswerList dataObjectList) {
+        AnswerItem<HashMap<String, String>> result = new AnswerItem();
+        result.setItem((HashMap<String, String>) dataObjectList.getDataList().get(0));
         result.setResultMessage(new MessageEvent(MessageEventEnum.PROPERTY_SUCCESS_GETFROMDATALIB_SQL_STATIC));
         return result;
     }
@@ -135,11 +135,11 @@ public class DataLibService implements IDataLibService {
      * @return An item from dataObjectList choosen randomly
      */
     @Override
-    public AnswerItem getRandomFromDataSet(AnswerList dataObjectList) {
-        AnswerItem result = new AnswerItem();
+    public AnswerItem<HashMap<String, String>> getRandomFromDataSet(AnswerList dataObjectList) {
+        AnswerItem<HashMap<String, String>> result = new AnswerItem();
         Random r = new Random();
         int position = r.nextInt(dataObjectList.getDataList().size());
-        result.setItem(dataObjectList.getDataList().get(position));
+        result.setItem((HashMap<String, String>) dataObjectList.getDataList().get(position));
         result.setResultMessage(new MessageEvent(MessageEventEnum.PROPERTY_SUCCESS_GETFROMDATALIB_SQL_RANDOM)
                 .resolveDescription("%POS%", Integer.toString(position)).resolveDescription("%TOTALPOS%", Integer.toString(dataObjectList.getDataList().size())));
         return result;
@@ -153,8 +153,8 @@ public class DataLibService implements IDataLibService {
      * @return An item from dataObjectList choosen randomly
      */
     @Override
-    public AnswerItem getRandomNewFromDataSet(AnswerList dataObjectList, TestCaseExecution tCExecution, TestCaseCountryProperties testCaseProperties) {
-        AnswerItem result = new AnswerItem();
+    public AnswerItem<HashMap<String, String>> getRandomNewFromDataSet(AnswerList dataObjectList, TestCaseExecution tCExecution, TestCaseCountryProperties testCaseProperties) {
+        AnswerItem<HashMap<String, String>> result = new AnswerItem();
         List<HashMap<String, String>> list;
         int initNB = dataObjectList.getDataList().size();
         // We get the list of values that are already used.
@@ -203,8 +203,8 @@ public class DataLibService implements IDataLibService {
      * @return An item from dataObjectList excluding the one used in other execution choosen randomly
      */
     @Override
-    public AnswerItem getNotInUseFromDataSet(AnswerList dataObjectList, TestCaseExecution tCExecution, TestCaseCountryProperties testCaseCountryProperty) {
-        AnswerItem result = new AnswerItem();
+    public AnswerItem<HashMap<String, String>> getNotInUseFromDataSet(AnswerList dataObjectList, TestCaseExecution tCExecution, TestCaseCountryProperties testCaseCountryProperty) {
+        AnswerItem<HashMap<String, String>> result = new AnswerItem();
         List<HashMap<String, String>> list = dataObjectList.getDataList();
         int initNB = dataObjectList.getDataList().size();
         // We get the list of values that are already used.

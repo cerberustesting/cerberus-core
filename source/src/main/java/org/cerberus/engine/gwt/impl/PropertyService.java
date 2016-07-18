@@ -1159,10 +1159,8 @@ public class PropertyService implements IPropertyService {
             answer.setItem(result);
             
         } else if (lib.getType().equals(TestDataLibTypeEnum.CSV.getCode())) {
-            AnswerItem csvResult = fetchDataCSV(lib, testCaseCountryProperty, tCExecution);
-            result = (TestDataLibResult) csvResult.getItem();
-            msg = csvResult.getResultMessage();
-            answer.setItem(result);
+            answer = dataLibService.getFromDataLib(lib, testCaseCountryProperty, tCExecution);
+            return answer;
         }
         answer.setResultMessage(msg);
         return answer;
@@ -1263,14 +1261,6 @@ public class PropertyService implements IPropertyService {
         return answer;
     }
     
-    private AnswerItem fetchDataCSV(TestDataLib lib, TestCaseCountryProperties testCaseCountryProperty, TestCaseExecution tCExecution) {
-        AnswerItem answer;
-        
-        answer = dataLibService.getFromDataLib(lib, testCaseCountryProperty, tCExecution);
-        
-        return answer;
-    }
-
     private AnswerItem<TestDataLibResult> fetchDataSOAP(TestDataLib lib, TestCaseCountryProperties testCaseCountryProperty, TestCaseExecution tCExecution) {
         AnswerItem answer = new AnswerItem();
         MessageEvent msg;
