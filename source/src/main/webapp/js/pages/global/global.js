@@ -1047,7 +1047,7 @@ function createDataTableWithPermissions(tableConfigurations, callbackFunction, o
         $("#saveTableConfigurationButton").before(
                 $("<button id='restoreFilterButton'></button>").addClass("btn btn-default pull-right").append("<span class='glyphicon glyphicon-floppy-open'></span> Restore user preferences")
                 .click(function () {
-                    updateUserPreferences();
+                    location.reload();
                 })
                 );
     }
@@ -1189,7 +1189,7 @@ function createDataTable(tableConfigurations, callbackFunction, userCallbackFunc
         $("#saveTableConfigurationButton").before(
                 $("<button id='restoreFilterButton'></button>").addClass("btn btn-default pull-right").append("<span class='glyphicon glyphicon-floppy-open'></span> Restore user preferences")
                 .click(function () {
-                    updateUserPreferences();
+                    location.reload();
                 })
                 );
     }
@@ -1245,7 +1245,7 @@ function displayColumnSearch(tableId, contentUrl) {
         $('.dataTables_scrollHeadInner table thead tr th').each(function () {
             $("#filterHeader").append("<th name='filterColumnHeader'></th>");
         });
-
+        
 //Iterate on all columns (visible and not visible)
         $(table.columns()[0]).each(function (value, colIndex) {
             //Get the value from storage (To display specific string if already filtered) 
@@ -1362,6 +1362,13 @@ function displayColumnSearch(tableId, contentUrl) {
             });
             $("#filterAlertDiv").show();
         }
+        
+        //call the displayColumnSearch when table configuration is changed
+        $("#showHideColumnsButton").click(function(){
+        $('ul[class="dt-button-collection dropdown-menu"] li').click(function(){
+            displayColumnSearch(tableId, contentUrl);
+        });
+    });
     });
 
 
