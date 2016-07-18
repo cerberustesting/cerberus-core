@@ -398,7 +398,7 @@ function renderOptionsForTestDataManager(data) {
             contentToAdd += doc.getDocLabel("page_testdatalib", "btn_import"); //translation for the create button;
             contentToAdd += "</button></div>";
 
-            $("#listOfTestDataLib_wrapper div.ColVis").before(contentToAdd);
+            $("#listOfTestDataLib_wrapper #listOfTestDataLib_length").before(contentToAdd);
             $('#createLibButton').click(createLibButtonClickHandler);
 
             $('#importDataButton').click(function () {

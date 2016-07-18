@@ -67,8 +67,8 @@ function renderOptionsForProject(data) {
             var contentToAdd = "<div class='marginBottom10'><button id='createProjectButton' type='button' class='btn btn-default'>\n\
             <span class='glyphicon glyphicon-plus-sign'></span> " + doc.getDocLabel("page_project", "button_create") + "</button></div>";
 
-            $("#projectsTable_wrapper div.ColVis").before(contentToAdd);
-            $('#project #createProjectButton').click(addEntryClick);
+            $("#projectsTable_wrapper #projectsTable_length").before(contentToAdd);
+            $('#projectList #createProjectButton').click(addEntryClick);
         }
     }
 }

@@ -9,9 +9,7 @@
 <html>
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-        <link rel="stylesheet" type="text/css" href="css/crb_style.css">
-        <script type="text/javascript" src="js/jquery-1.9.1.min.js"></script>
-        <script type="text/javascript" src="js/jquery-ui-1.10.2.js"></script>
+        <%@ include file="include/dependenciesInclusions_old.html" %>
         <title>ExecutionThreadMonitoring</title>
         <script>
             $(document).ready(function() {

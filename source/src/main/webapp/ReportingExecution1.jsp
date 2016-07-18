@@ -44,7 +44,7 @@
                     <div class="col-xs-12" id="FiltersPanel">
                         <div class="panel panel-default">
                             <div class="panel-heading card" data-toggle="collapse" data-target="#filtersArea">
-                                <span class="fa fa-tag fa-fw"></span>
+                                <span class="glyphicon glyphicon-filter"></span>
                                 <label id="filtersLbl">Filters</label>
                                 <span class="toggle glyphicon glyphicon-chevron-right pull-right"></span>
                             </div>

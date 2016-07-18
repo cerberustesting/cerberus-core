@@ -27,9 +27,7 @@
     <head>
         <meta content="text/html; charset=UTF-8" http-equiv="content-type">
         <title>Execution Per Build and Revision</title>
-        <link rel="stylesheet" type="text/css" href="css/crb_style.css">
-        <link rel="shortcut icon" type="image/x-icon" href="images/favicon.ico" />
-        <script type="text/javascript" src="js/jquery-1.9.1.min.js"></script>
+        <%@ include file="include/dependenciesInclusions_old.html" %>
         <style>
             .divBorder{
                 background-color: #f3f6fa;

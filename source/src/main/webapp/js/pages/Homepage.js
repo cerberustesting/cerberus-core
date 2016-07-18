@@ -93,7 +93,7 @@ $.when($.getScript("js/pages/global/global.js")).then(function () {
         $.when(jqxhr).then(function (result) {
             var configurations = new TableConfigurationsClientSide("homePageTable", result["aaData"], aoColumnsFunc(), true);
             configurations.tableWidth = "550px";
-
+            configurations.showColvis = false;
             if ($('#homePageTable').hasClass('dataTable') === false) {
                 createDataTable(configurations);
             } else {

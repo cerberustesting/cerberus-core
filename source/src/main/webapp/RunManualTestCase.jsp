@@ -25,18 +25,8 @@
     <head>
         <title>Run Manual Test Case</title>
         <meta content="text/html; charset=UTF-8" http-equiv="content-type">
-        <link rel="stylesheet" type="text/css" href="css/crb_style.css">
-        <link rel="stylesheet" type="text/css" href="css/jquery.dataTables.css">
-        <link rel="stylesheet" type="text/css" href="css/jquery-ui.css">
-        <link rel="stylesheet" type="text/css" href="css/dataTables_jui.css">
-        <link rel="shortcut icon" type="image/x-icon" href="images/favicon.ico">
-        <script type="text/javascript" src="js/jquery-1.9.1.min.js"></script>
-        <script type="text/javascript" src="js/jquery-ui-1.10.2.js"></script>
-        <script type="text/javascript" src="js/jquery.jeditable.mini.js"></script>
-        <script type="text/javascript" src="js/jquery.dataTables.min.js"></script>
-        <script type="text/javascript" src="js/jquery.dataTables.editable.js"></script>
-        <script type="text/javascript" src="js/jquery.validate.min.js"></script>
-        <script type="text/javascript" src="js/ajax-loader.js"></script>
+        <%@ include file="include/dependenciesInclusions_old.html" %>
+        <script type="text/javascript" src="dependencies/zz_OldDependencies/js/ajax-loader.js"></script>
         <style type="text/css">
             .fields {
                 background-color: #E1E7F3;

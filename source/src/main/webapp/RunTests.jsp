@@ -53,13 +53,7 @@
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
         <title>Run Test Case</title>
-        <link rel="stylesheet" type="text/css" href="css/crb_style.css">
-        <link rel="stylesheet" type="text/css" href="css/jquery.dataTables.css">
-        <link rel="stylesheet" type="text/css" href="css/jquery-ui.css">
-        <link rel="shortcut icon" type="image/x-icon" href="images/favicon.ico" />
-        <script type="text/javascript" src="js/jquery-1.9.1.min.js"></script>
-        <script type="text/javascript" src="js/jquery-ui-1.10.2.js"></script>
-        <script type="text/javascript" src="js/Form.js"></script>
+        <%@ include file="include/dependenciesInclusions_old.html" %>
     </head>
     <body>
         <%@ include file="include/function.jsp"%>
@@ -709,7 +703,7 @@
                 var browser = $("#browser").val();
                 var tag = $("#tag").val();
                 var manualExec = $("#manualExecution option:selected").val();
-                $.getJSON('GetTestCase?test=' + test + "&testcase=" + testcase, function(data) {
+                $.getJSON('GetTestCase?test=' + test + "&testcase=" + testcase, function (data) {
 
 
                     if (manualExec === "Y") {
@@ -751,8 +745,8 @@
             var tcS = document.getElementById("defTestCase").value;
 
 
-            $(document).ready(function() {
-                $.getJSON('GetTestBySystem?system=' + systemSelected, function(data) {
+            $(document).ready(function () {
+                $.getJSON('GetTestBySystem?system=' + systemSelected, function (data) {
                     $("#test").empty();
 
                     for (var i = 0; i < data.testsList.length; i++) {
@@ -760,7 +754,7 @@
                                 .attr("value", data.testsList[i])
                                 .text(data.testsList[i]));
                     }
-                    $("#test").find('option').each(function(i, opt) {
+                    $("#test").find('option').each(function (i, opt) {
                         if (opt.value === testS)
                             $(opt).attr('selected', 'selected');
                     });
@@ -783,7 +777,7 @@
                 var tcS = document.getElementById("defTestCase").value;
                 var countryS = document.getElementById("defCountry").value;
 
-                $.getJSON('GetTestCaseForTest?system=' + systemSelected + '&test=' + testSelected, function(data) {
+                $.getJSON('GetTestCaseForTest?system=' + systemSelected + '&test=' + testSelected, function (data) {
                     $("#testcase").empty();
                     $("#country").empty();
                     $("#environment").empty();
@@ -796,7 +790,7 @@
                                 .attr("data-application", data.testCaseList[i].application)
                                 .text(data.testCaseList[i].description));
                     }
-                    $("#testcase").find('option').each(function(i, opt) {
+                    $("#testcase").find('option').each(function (i, opt) {
                         if (opt.value === tcS)
                             $(opt).attr('selected', 'selected');
                     });
@@ -811,29 +805,31 @@
                 var b = document.getElementById("test");
                 var testSelected = b.options[b.selectedIndex].value;
                 var c = document.getElementById("testcase");
-                var testCaseSelected = c.options[c.selectedIndex].getAttribute('data-testcase');
-                var countryS = document.getElementById("defCountry").value;
-                var env = document.getElementById("defEnvironment").value;
+                if (undefined !== c.options[c.selectedIndex]) {
+                    var testCaseSelected = c.options[c.selectedIndex].getAttribute('data-testcase');
+                    var countryS = document.getElementById("defCountry").value;
+                    var env = document.getElementById("defEnvironment").value;
 
-                $.getJSON('GetCountryForTestCase?test=' + testSelected + '&testCase=' + testCaseSelected, function(data) {
-                    $("#country").empty();
-                    $("#environment").empty();
-                    $("#myenvdata").empty();
+                    $.getJSON('GetCountryForTestCase?test=' + testSelected + '&testCase=' + testCaseSelected, function (data) {
+                        $("#country").empty();
+                        $("#environment").empty();
+                        $("#myenvdata").empty();
 
-                    for (var i = 0; i < data.countriesList.length; i++) {
-                        $("#country").append($("<option></option>")
-                                .attr("value", data.countriesList[i])
-                                .text(data.countriesList[i]));
-                    }
-                    $("#country").find('option').each(function(i, opt) {
-                        if (opt.value === countryS)
-                            $(opt).attr('selected', 'selected');
+                        for (var i = 0; i < data.countriesList.length; i++) {
+                            $("#country").append($("<option></option>")
+                                    .attr("value", data.countriesList[i])
+                                    .text(data.countriesList[i]));
+                        }
+                        $("#country").find('option').each(function (i, opt) {
+                            if (opt.value === countryS)
+                                $(opt).attr('selected', 'selected');
+                        });
+                        if (env !== "%%") {
+                            getApplicationList();
+                        }
+
                     });
-                    if (env !== "%%") {
-                        getApplicationList();
-                    }
-
-                });
+                }
             }
             ;
         </script>
@@ -849,7 +845,7 @@
                 var env = document.getElementById("defEnvironment").value;
                 var autoRun = document.getElementById("defAutoRun").value;
 
-                $.getJSON('findEnvironmentByCriteria?system=' + systemSelected + '&country=' + countrySelected + '&application=' + applicationSelected, function(data) {
+                $.getJSON('findEnvironmentByCriteria?system=' + systemSelected + '&country=' + countrySelected + '&application=' + applicationSelected, function (data) {
                     $("#environment").empty();
                     $("#myenvdata").empty();
 
@@ -861,7 +857,7 @@
                                 .attr("value", data[i].environment)
                                 .text(data[i].environment + " [ " + data[i].ip + data[i].url + " ] with Build :" + data[i].build + " and Revision :" + data[i].revision));
                     }
-                    $("#environment").find('option').each(function(i, opt) {
+                    $("#environment").find('option').each(function (i, opt) {
                         if (opt.value === env)
                             $(opt).attr('selected', 'selected');
                     });
@@ -878,8 +874,8 @@
         ;
     </script>
     <script type="text/javascript">
-        $(document).ready(function() {
-            $.getJSON('FindInvariantByID?idName=OUTPUTFORMAT', function(data) {
+        $(document).ready(function () {
+            $.getJSON('FindInvariantByID?idName=OUTPUTFORMAT', function (data) {
                 $("#outputformat").empty();
 
                 for (var i = 0; i < data.length; i++) {
@@ -895,8 +891,8 @@
 
     </script>
     <script type="text/javascript">
-        $(document).ready(function() {
-            $.getJSON('FindInvariantByID?idName=VERBOSE', function(data) {
+        $(document).ready(function () {
+            $.getJSON('FindInvariantByID?idName=VERBOSE', function (data) {
                 $("#verbose").empty();
                 var pl = document.getElementById("defVerbose").value;
 
@@ -908,7 +904,7 @@
 
                 setCookie('VerbosePreference', 'verbose');
 
-                $("#verbose").find('option').each(function(i, opt) {
+                $("#verbose").find('option').each(function (i, opt) {
                     if (opt.value === pl) {
                         $(opt).attr('selected', 'selected');
                     }
@@ -921,8 +917,8 @@
 
     </script>
     <script type="text/javascript">
-        $(document).ready(function() {
-            $.getJSON('FindInvariantByID?idName=SYNCHRONEOUS', function(data) {
+        $(document).ready(function () {
+            $.getJSON('FindInvariantByID?idName=SYNCHRONEOUS', function (data) {
                 $("#synchroneous").empty();
                 var pl = document.getElementById("defSynchroneous").value;
 
@@ -934,7 +930,7 @@
 
                 setCookie('SynchroneousPreference', 'synchroneous');
 
-                $("#synchroneous").find('option').each(function(i, opt) {
+                $("#synchroneous").find('option').each(function (i, opt) {
                     if (opt.value === pl) {
                         $(opt).attr('selected', 'selected');
                     }
@@ -947,8 +943,8 @@
 
     </script>
     <script type="text/javascript">
-        $(document).ready(function() {
-            $.getJSON('FindInvariantByID?idName=MANUALEXECUTION', function(data) {
+        $(document).ready(function () {
+            $.getJSON('FindInvariantByID?idName=MANUALEXECUTION', function (data) {
                 $("#manualExecution").empty();
 
                 var pl = document.getElementById("defManualExecution").value;
@@ -961,7 +957,7 @@
 
                 setCookie('ManualExecutionPreference', 'manualExecution');
 
-                $("#manualExecution").find('option').each(function(i, opt) {
+                $("#manualExecution").find('option').each(function (i, opt) {
                     if (opt.value === pl) {
                         $(opt).attr('selected', 'selected');
                     }
@@ -974,8 +970,8 @@
 
     </script>
     <script type="text/javascript">
-        $(document).ready(function() {
-            $.getJSON('FindInvariantByID?idName=SCREENSHOT', function(data) {
+        $(document).ready(function () {
+            $.getJSON('FindInvariantByID?idName=SCREENSHOT', function (data) {
                 $("#screenshot").empty();
                 var pl = document.getElementById("defScreenshot").value;
 
@@ -995,7 +991,7 @@
 
 
 
-                $("#screenshot").find('option').each(function(i, opt) {
+                $("#screenshot").find('option').each(function (i, opt) {
                     if (opt.value === pl) {
                         $(opt).attr('selected', 'selected');
                     }
@@ -1007,8 +1003,8 @@
 
     </script>
     <script type="text/javascript">
-        $(document).ready(function() {
-            $.getJSON('FindInvariantByID?idName=PAGESOURCE', function(data) {
+        $(document).ready(function () {
+            $.getJSON('FindInvariantByID?idName=PAGESOURCE', function (data) {
                 $("#pageSource").empty();
                 var pl = document.getElementById("defPageSource").value;
 
@@ -1028,7 +1024,7 @@
 
 
 
-                $("#pageSource").find('option').each(function(i, opt) {
+                $("#pageSource").find('option').each(function (i, opt) {
                     if (opt.value === pl) {
                         $(opt).attr('selected', 'selected');
                     }
@@ -1040,8 +1036,8 @@
 
     </script>
     <script type="text/javascript">
-        $(document).ready(function() {
-            $.getJSON('FindInvariantByID?idName=SELENIUMLOG', function(data) {
+        $(document).ready(function () {
+            $.getJSON('FindInvariantByID?idName=SELENIUMLOG', function (data) {
                 $("#seleniumLog").empty();
                 var pl = document.getElementById("defSeleniumLog").value;
 
@@ -1061,7 +1057,7 @@
 
 
 
-                $("#seleniumLog").find('option').each(function(i, opt) {
+                $("#seleniumLog").find('option').each(function (i, opt) {
                     if (opt.value === pl) {
                         $(opt).attr('selected', 'selected');
                     }
@@ -1073,8 +1069,8 @@
 
     </script>
     <script type="text/javascript">
-        $(document).ready(function() {
-            $.getJSON('FindInvariantByID?idName=BROWSER', function(data) {
+        $(document).ready(function () {
+            $.getJSON('FindInvariantByID?idName=BROWSER', function (data) {
                 $("#browser").empty();
                 var pl = document.getElementById("defBrowser").value;
 
@@ -1083,7 +1079,7 @@
                             .attr("value", data[i].value)
                             .text(data[i].value + " ( " + data[i].description + " )"));
                 }
-                $("#browser").find('option').each(function(i, opt) {
+                $("#browser").find('option').each(function (i, opt) {
                     if (opt.value === pl) {
                         $(opt).attr('selected', 'selected');
                     }
@@ -1095,8 +1091,8 @@
 
     </script>
     <script type="text/javascript">
-        $(document).ready(function() {
-            $.getJSON('FindInvariantByID?idName=PLATFORM', function(data) {
+        $(document).ready(function () {
+            $.getJSON('FindInvariantByID?idName=PLATFORM', function (data) {
                 $("#platform").empty();
                 var pl = document.getElementById("defPlatform").value;
 
@@ -1110,7 +1106,7 @@
                             .text(data[i].value + " ( " + data[i].description + " )"));
                 }
 
-                $("#platform").find('option').each(function(i, opt) {
+                $("#platform").find('option').each(function (i, opt) {
                     if (opt.value === pl) {
                         $(opt).attr('selected', 'selected');
                     }
@@ -1122,8 +1118,8 @@
 
     </script>
     <script type="text/javascript">
-        $(document).ready(function() {
-            $.getJSON('FindInvariantByID?idName=screensize', function(data) {
+        $(document).ready(function () {
+            $.getJSON('FindInvariantByID?idName=screensize', function (data) {
                 $("#screenSize").empty();
                 var pl = document.getElementById("defScreenSize").value;
 
@@ -1147,7 +1143,7 @@
 
 
 
-                $("#screenSize").find('option').each(function(i, opt) {
+                $("#screenSize").find('option').each(function (i, opt) {
                     if (opt.value === pl) {
                         $(opt).attr('selected', 'selected');
                     }
@@ -1159,8 +1155,8 @@
 
     </script>
     <script type="text/javascript">
-        $(document).ready(function() {
-            $.getJSON('FindInvariantByID?idName=RETRIES', function(data) {
+        $(document).ready(function () {
+            $.getJSON('FindInvariantByID?idName=RETRIES', function (data) {
                 $("#retries").empty();
                 var pl = document.getElementById("defRetries").value;
 
@@ -1180,7 +1176,7 @@
 
 
 
-                $("#retries").find('option').each(function(i, opt) {
+                $("#retries").find('option').each(function (i, opt) {
                     if (opt.value === pl) {
                         $(opt).attr('selected', 'selected');
                     }
@@ -1192,7 +1188,7 @@
 
     </script>
     <script type="text/javascript">
-        $(document).ready(function() {
+        $(document).ready(function () {
             $("#tag").empty();
             var tag = document.getElementById("defTag").value;
             if (tag !== "None") {
@@ -1204,7 +1200,7 @@
 
     </script>
     <script type="text/javascript">
-        $(document).ready(function() {
+        $(document).ready(function () {
             $("#timeout").empty();
             setCookie('TimeoutPreference', 'timeout');
         });

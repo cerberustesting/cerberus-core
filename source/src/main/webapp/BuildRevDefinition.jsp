@@ -35,9 +35,16 @@
             <%@ include file="include/buildrevdefinition/editBuildRevDefinition.html"%> 
 
             <h1 class="page-title-line" id="title">Build Revision Definition</h1>
-            <div id="buildrevdefinition" class="well">
-                <table id="buildrevdefinitionsTable" class="table table-hover display" name="buildrevdefinitionsTable"></table>
-                <div class="marginBottom20"></div>
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <span class="glyphicon glyphicon-list"></span>
+                    <label id="buildrevdefinitionListLabel">Build Revision List</label>
+                </div>
+                <div class="panel-body" id="buildrevdefinition">
+                    <table id="buildrevdefinitionsTable" class="table table-bordered table-hover display" name="buildrevdefinitionsTable">
+                    </table>
+                    <div class="marginBottom20"></div>
+                </div>
             </div>
             <footer class="footer">
                 <div class="container-fluid" id="footer"></div>

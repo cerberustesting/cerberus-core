@@ -123,10 +123,10 @@ text {
     text-overflow: ellipsis;
 }
 
-.table > tbody > tr > td {
+/*.table > tbody > tr > td {
     border-top: 0px;
     border-style: none;
-}
+}*/
 
 .total {
     font-size: 20px;
@@ -214,4 +214,14 @@ text {
 .tooltip-inner {
     max-width: none;
     white-space: nowrap;
+}
+
+td.shortDesc{
+    border-top-color: transparent !important;
+    background-color: transparent!important;
+}
+
+tr:hover + tr.printBorder{
+    background-color: #f6f6f6!important;  
+    border-top-color: #f6f6f6!important;
 }

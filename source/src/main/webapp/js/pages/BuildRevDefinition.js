@@ -69,7 +69,7 @@ function renderOptionsForBuildRevDefinition(data) {
             var contentToAdd = "<div class='marginBottom10'><button id='createBuildRevDefinitionButton' type='button' class='btn btn-default'>\n\
             <span class='glyphicon glyphicon-plus-sign'></span> " + doc.getDocLabel("page_buildrevdefinition", "button_create") + "</button></div>";
 
-            $("#buildrevdefinitionsTable_wrapper div.ColVis").before(contentToAdd);
+            $("#buildrevdefinitionsTable_wrapper #buildrevdefinitionsTable_length").before(contentToAdd);
             $('#buildrevdefinition #createBuildRevDefinitionButton').click(addEntryClick);
         }
     }

@@ -25,16 +25,7 @@
     <head>
         <meta content="text/html; charset=UTF-8" http-equiv="content-type">
         <title>TestCase Creation</title>
-        <script type="text/javascript" src="js/jquery-1.9.1.min.js"></script>
-        <script type="text/javascript" src="js/jquery-migrate-1.2.1.min.js"></script>
-        <script type="text/javascript" src="js/jquery-ui-1.10.2.js"></script>
-        <script type="text/javascript" src="js/Form.js"></script>
-        <link rel="stylesheet" type="text/css" href="css/jquery-ui.css">
-        <link rel="stylesheet" type="text/css" href="css/elrte.min.css">
-        <link rel="stylesheet" type="text/css" href="css/crb_style.css">
-        <link rel="stylesheet" type="text/css" href="css/theme.css">
-        <link rel="shortcut icon" type="image/x-icon" href="images/favicon.ico" />
-        
+        <%@ include file="include/dependenciesInclusions_old.html" %>
     </head>
     <body>
         <%@ include file="include/function.jsp" %>

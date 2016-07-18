@@ -54,7 +54,7 @@
 
                             <div class="row">
                                 <div class="form-group col-xs-12">
-                                    <table class="table table-bordered table-hover nomarginbottom" id="sessionNbTable">
+                                    <table class="table table-bordered table-hover nomarginbottom dataTable" id="sessionNbTable">
                                         <thead>
                                             <tr>
                                                 <th class="text-center" id="systemHeader" name="systemHeader">Number of HTTP Session opened</th>
@@ -67,7 +67,7 @@
                             </div>
                             <div class="row">
                                 <div class="form-group col-xs-12">
-                                    <table class="table table-bordered table-hover nomarginbottom" id="sessionTable">
+                                    <table class="table table-bordered table-hover nomarginbottom dataTable" id="sessionTable">
                                         <thead>
                                             <tr>
                                                 <th class="text-center" id="systemHeader" name="systemHeader">Active User List</th>
@@ -80,7 +80,7 @@
                             </div>
                             <div class="row">
                                 <div class="form-group col-xs-12">
-                                    <table class="table table-bordered table-hover nomarginbottom" id="exeNbTable">
+                                    <table class="table table-bordered table-hover nomarginbottom dataTable" id="exeNbTable">
                                         <thead>
                                             <tr>
                                                 <th class="text-center" id="systemHeader" name="systemHeader">Number of Actual Simultaneous Execution</th>
@@ -93,7 +93,7 @@
                             </div>
                             <div class="row">
                                 <div class="form-group col-xs-12">
-                                    <table class="table table-bordered table-hover nomarginbottom" id="exeTable">
+                                    <table class="table table-bordered table-hover nomarginbottom dataTable" id="exeTable">
                                         <thead>
                                             <tr>
                                                 <th class="text-center">ID</th>
@@ -115,7 +115,7 @@
                             </div>
                             <div class="row">
                                 <div class="form-group col-xs-12">
-                                    <table class="table table-bordered table-hover nomarginbottom" id="threadTable">
+                                    <table class="table table-bordered table-hover nomarginbottom dataTable" id="threadTable">
                                         <thead>
                                             <tr>
                                                 <th class="text-center" id="systemHeader" name="systemHeader">Size Of Pending Execution In Queue</th>
@@ -144,7 +144,7 @@
                                 <div class="panel-body collapse in" id="cerberusInformation">
                                     <div class="row">
                                         <div class="form-group col-xs-12">
-                                            <table class="table table-bordered table-hover nomarginbottom" id="cerberusTable">
+                                            <table class="table table-bordered table-hover nomarginbottom dataTable" id="cerberusTable">
                                                 <thead>
                                                     <tr>
                                                         <th class="text-center" id="systemHeader" name="systemHeader">Project</th>
@@ -173,7 +173,7 @@
                                 <div class="panel-body collapse in" id="jvmInformation">
                                     <div class="row">
                                         <div class="form-group col-xs-12">
-                                            <table class="table table-bordered table-hover nomarginbottom" id="jvmTable">
+                                            <table class="table table-bordered table-hover nomarginbottom dataTable" id="jvmTable">
                                                 <thead>
                                                     <tr>
                                                         <th class="text-center" id="systemHeader" name="systemHeader">JAVA Version</th>
@@ -200,7 +200,7 @@
                         <div class="panel-body collapse in" id="dtbInformation">
                             <div class="row">
                                 <div class="form-group col-xs-12">
-                                    <table class="table table-bordered table-hover nomarginbottom" id="databaseTable">
+                                    <table class="table table-bordered table-hover nomarginbottom dataTable" id="databaseTable">
                                         <thead>
                                             <tr>
                                                 <th class="text-center" id="systemHeader" name="systemHeader">Database</th>
@@ -216,7 +216,7 @@
                             </div>
                             <div class="row">
                                 <div class="form-group col-xs-12">
-                                    <table class="table table-bordered table-hover nomarginbottom" id="driverTable">
+                                    <table class="table table-bordered table-hover nomarginbottom dataTable" id="driverTable">
                                         <thead>
                                             <tr>
                                                 <th class="text-center" id="systemHeader" name="systemHeader">Driver Name</th>
@@ -232,7 +232,7 @@
                             </div>
                             <div class="row">
                                 <div class="form-group col-xs-12">
-                                    <table class="table table-bordered table-hover nomarginbottom" id="jdbcTable">
+                                    <table class="table table-bordered table-hover nomarginbottom dataTable" id="jdbcTable">
                                         <thead>
                                             <tr>
                                                 <th class="text-center" id="systemHeader" name="systemHeader">JDBC Minor Version</th>

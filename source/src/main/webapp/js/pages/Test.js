@@ -68,7 +68,7 @@ function renderOptionsForTest(data) {
             var contentToAdd = "<div class='marginBottom10'><button id='createTestButton' type='button' class='btn btn-default'>\n\
             <span class='glyphicon glyphicon-plus-sign'></span> " + doc.getDocLabel("page_test", "btn_create") + "</button></div>";
 
-            $("#testTable_wrapper div.ColVis").before(contentToAdd);
+            $("#testTable_wrapper div#testTable_length").before(contentToAdd);
             $('#testList #createTestButton').click(addEntryClick);
         }
     }

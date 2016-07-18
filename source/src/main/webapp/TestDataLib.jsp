@@ -41,9 +41,15 @@
             <%@ include file="include/utils/modal-upload.html"%>       
 
             <h1 class="page-title-line" id="title">Test Data Library</h1>
-            <div id="testdatalib" class="well">               
-                <table  class="table table-hover display" id="listOfTestDataLib" name="listOfTestDataLib"></table>
-                <div class="marginBottom20"></div>
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <span class="glyphicon glyphicon-list"></span>
+                    <label id="testListLabel">Test Data List</label>
+                </div>
+                <div class="panel-body" id="testDataLibList">
+                    <table id="listOfTestDataLib" class="table table-bordered table-hover display" name="listOfTestDataLib"></table>
+                    <div class="marginBottom20"></div>
+                </div>
             </div>
             <footer class="footer">
                 <div class="container-fluid" id="footer"></div>

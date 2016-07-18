@@ -43,21 +43,21 @@
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
         <link rel="stylesheet" type="text/css" href="css/crb_style.css">
         <link rel="shortcut icon" type="image/x-icon" href="images/favicon.ico" />
-        <link rel="stylesheet" type="text/css" href="js/jqplot/jquery.jqplot.min.css" >
-        <link rel="stylesheet" type="text/css" href="js/jqplot/syntaxhighlighter/styles/shCoreDefault.min.css" >
-        <link rel="stylesheet" type="text/css" href="js/jqplot/syntaxhighlighter/styles/shThemejqPlot.min.css" >
-        <script type="text/javascript" src="js/jquery-1.9.1.min.js"></script>  
-        <script type="text/javascript" src="js/jquery-migrate-1.2.1.min.js"></script>
-        <script type="text/javascript" src="js/jqplot/jquery.jqplot.min.js"></script>
-        <script type="text/javascript" src="js/jqplot/plugins/jqplot.dateAxisRenderer.js"></script>
-        <script type="text/javascript" src="js/jqplot/plugins/jqplot.cursor.min.js"></script>
-        <script type="text/javascript" src="js/jqplot/plugins/jqplot.highlighter.js"></script>
-        <script type="text/javascript" src="js/jqplot/plugins/jqplot.enhancedLegendRenderer.js"></script>
-        <script type="text/javascript" src="js/jqplot/plugins/jqplot.json2.js"></script>
-        <script type="text/javascript" src="js/jqplot/plugins/jqplot.canvasTextRenderer.min.js"></script>
-        <script type="text/javascript" src="js/jqplot/plugins/jqplot.canvasAxisLabelRenderer.min.js"></script>	
-        <script type="text/javascript" src="js/jqplot/plugins/jqplot.canvasAxisTickRenderer.js"></script>
-        <script type="text/javascript" src="js/jqplot/plugins/jqplot.barRenderer.js"></script>
+        <link rel="stylesheet" type="text/css" href="dependencies/zz_OldDependencies/jqplot/jquery.jqplot.min.css" >
+        <link rel="stylesheet" type="text/css" href="dependencies/zz_OldDependencies/jqplot/syntaxhighlighter/styles/shCoreDefault.min.css" >
+        <link rel="stylesheet" type="text/css" href="dependencies/zz_OldDependencies/jqplot/syntaxhighlighter/styles/shThemejqPlot.min.css" >
+        <script type="text/javascript" src="dependencies/zz_OldDependencies/js/jquery-1.9.1.min.js"></script>  
+        <script type="text/javascript" src="dependencies/zz_OldDependencies/js/jquery-migrate-1.2.1.min.js"></script>
+        <script type="text/javascript" src="dependencies/zz_OldDependencies/jqplot/jquery.jqplot.min.js"></script>
+        <script type="text/javascript" src="dependencies/zz_OldDependencies/jqplot/plugins/jqplot.dateAxisRenderer.js"></script>
+        <script type="text/javascript" src="dependencies/zz_OldDependencies/jqplot/plugins/jqplot.cursor.min.js"></script>
+        <script type="text/javascript" src="dependencies/zz_OldDependencies/jqplot/plugins/jqplot.highlighter.js"></script>
+        <script type="text/javascript" src="dependencies/zz_OldDependencies/jqplot/plugins/jqplot.enhancedLegendRenderer.js"></script>
+        <script type="text/javascript" src="dependencies/zz_OldDependencies/jqplot/plugins/jqplot.json2.js"></script>
+        <script type="text/javascript" src="dependencies/zz_OldDependencies/jqplot/plugins/jqplot.canvasTextRenderer.min.js"></script>
+        <script type="text/javascript" src="dependencies/zz_OldDependencies/jqplot/plugins/jqplot.canvasAxisLabelRenderer.min.js"></script>	
+        <script type="text/javascript" src="dependencies/zz_OldDependencies/jqplot/plugins/jqplot.canvasAxisTickRenderer.js"></script>
+        <script type="text/javascript" src="dependencies/zz_OldDependencies/jqplot/plugins/jqplot.barRenderer.js"></script>
 
         <title>Execution Detail List</title>
 

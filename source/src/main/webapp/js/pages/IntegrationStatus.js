@@ -95,7 +95,7 @@ function loadHistoTable() {
         var tableHead = $("#histoTableHead");
         var row = $("<tr></tr>");
         $.each(result["contentTable"], function (idx, obj) {
-            var countryCol = $("<td></td>").append(obj.value);
+            var countryCol = $("<th></th>").append(obj.value);
             row.append(countryCol);
         });
         tableHead.append(row);
@@ -152,12 +152,12 @@ function appendBuildRevRow(dtb) {
     var toto = counterFormated(dtb.nbEnvDEV);
 
     var row = $("<tr></tr>");
-    var buildRow = $("<td></td>").append(dtb.build);
-    var revRow = $("<td></td>").append(dtb.revision);
-    var nbdev = $("<td style=\"text-align: right;\"></td>").append(counterFormated(dtb.nbEnvDEV, dtb.build, dtb.revision, "DEV"));
-    var nbqa = $("<td style=\"text-align: right;\"></td>").append(counterFormated(dtb.nbEnvQA, dtb.build, dtb.revision, "QA"));
-    var nbuat = $("<td style=\"text-align: right;\"></td>").append(counterFormated(dtb.nbEnvUAT, dtb.build, dtb.revision, "UAT"));
-    var nbprod = $("<td style=\"text-align: right;\"></td>").append(counterFormated(dtb.nbEnvPROD, dtb.build, dtb.revision, "PROD"));
+    var buildRow = $("<th></th>").append(dtb.build);
+    var revRow = $("<th></th>").append(dtb.revision);
+    var nbdev = $("<th style=\"text-align: right;\"></th>").append(counterFormated(dtb.nbEnvDEV, dtb.build, dtb.revision, "DEV"));
+    var nbqa = $("<th style=\"text-align: right;\"></th>").append(counterFormated(dtb.nbEnvQA, dtb.build, dtb.revision, "QA"));
+    var nbuat = $("<th style=\"text-align: right;\"></th>").append(counterFormated(dtb.nbEnvUAT, dtb.build, dtb.revision, "UAT"));
+    var nbprod = $("<th style=\"text-align: right;\"></th>").append(counterFormated(dtb.nbEnvPROD, dtb.build, dtb.revision, "PROD"));
 
     row.append(buildRow);
     row.append(revRow);

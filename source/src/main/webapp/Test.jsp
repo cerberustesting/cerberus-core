@@ -22,12 +22,17 @@
             <%@ include file="include/test/addTest.html" %>
 
             <h1 class="page-title-line" id="title">Test</h1>
-
-            <div class="well" id="testList">
-                <table id="testTable" class="table table-hover display" name="testTable"></table>
-                <div class="marginBottom20"></div>
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <span class="glyphicon glyphicon-list"></span>
+                    <label id="testListLabel">Test List</label>
+                </div>
+                <div class="panel-body" id="testList">
+                    <table id="testTable" class="table table-bordered table-hover display" name="testTable">
+                    </table>
+                    <div class="marginBottom20"></div>
+                </div>
             </div>
-
             <footer class="footer">
                 <div class="container-fluid" id="footer"></div>
             </footer>

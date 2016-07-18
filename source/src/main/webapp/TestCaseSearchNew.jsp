@@ -19,18 +19,7 @@
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
         <title>TestCase Search</title>
-        <link rel="stylesheet" type="text/css" href="css/crb_style.css">
-        <link type="text/css" rel="stylesheet" href="css/jquery.multiselect.css">
-        <link type="text/css" rel="stylesheet" href="css/jquery.multiselect.filter.css">
-        <link rel="stylesheet" type="text/css" href="css/dataTables_jui.css">
-        <link rel="stylesheet" type="text/css" href="css/jquery-ui.css">
-        <link rel="shortcut icon" type="image/x-icon" href="images/favicon.ico" />
-
-        <script type="text/javascript" src="js/jquery-1.9.1.min.js"></script>
-        <script type="text/javascript" src="js/jquery-ui-1.10.2.js"></script>
-        <script type="text/javascript" src="js/jquery.multiselect.js"></script>
-        <script type="text/javascript" src="js/jquery.multiselect.filter.js"></script>
-
+        <%@ include file="include/dependenciesInclusions_old.html" %>
         <script>
             $(document).ready(function() {
                 $.get('http://localhost:8080/solr/cerberus/select?q=%2A:%2A&wt=json&indent=true&group=true&group.field=ttc&group.ngroups=true', function(data) {

@@ -55,7 +55,8 @@ function initPage() {
     var select = $('#selectApplication');
     select.append($('<option></option>').text("-- ALL --").val("ALL"));
     displayApplicationList("application", getUser().defaultSystem, urlApplication);
-
+    select.val('ALL');
+    
     displayProjectList("project");
     displayUserList("releaseowner");
 
@@ -135,13 +136,13 @@ function displayPageLabel() {
 function loadBCTable(selectBuild, selectRevision, selectApplication) {
 
     if (isEmpty(selectBuild)) {
-        selectBuild = $("#selectBuild").val();
+        selectBuild = $("#selectBuild").val('ALL').val();
     }
     if (isEmpty(selectRevision)) {
-        selectRevision = $("#selectRevision").val();
+        selectRevision = $("#selectRevision").val('ALL').val();
     }
     if (isEmpty(selectApplication)) {
-        selectApplication = $("#selectApplication").val();
+        selectApplication = $("#selectApplication").val('ALL').val();
     }
 
     // We add the Browser history.
@@ -192,7 +193,7 @@ function renderOptionsForBrp(data) {
             contentToAdd += "<button id='createBrpButton' type='button' class='btn btn-default' ><span class='glyphicon glyphicon-plus-sign'></span> " + doc.getDocLabel("page_buildcontent", "button_create") + "</button>";
             contentToAdd += "</div>";
 
-            $("#buildrevisionparametersTable_wrapper div.ColVis").before(contentToAdd);
+            $("#buildrevisionparametersTable_wrapper #buildrevisionparametersTable_length").before(contentToAdd);
             $('#buildContentList #createBrpButton').click(addEntryClick);
             $('#buildContentList #createBrpMassButton').click(massActionClick);
         }

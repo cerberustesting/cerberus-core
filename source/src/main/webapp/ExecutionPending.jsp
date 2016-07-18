@@ -21,7 +21,8 @@
 <%@page import="org.json.JSONArray"%>
 <%@page import="org.cerberus.crud.entity.TestCaseExecution"%>
 <%@page import="org.cerberus.crud.service.ITestCaseExecutionService"%>
-<% Date start = new Date();%>
+<% Date start = new Date();
+   %>
 
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <!DOCTYPE html>
@@ -29,20 +30,12 @@
     <head>
         <title>Execution in Queue</title>
         <meta content="text/html; charset=UTF-8" http-equiv="content-type">
-        <link rel="stylesheet" type="text/css" href="css/crb_style.css">
-        <link rel="stylesheet" type="text/css" href="css/jquery.dataTables.css">
-        <link rel="stylesheet" type="text/css" href="css/jquery-ui.css">
-        <link rel="stylesheet" type="text/css" href="css/dataTables_jui.css">
-        <link rel="stylesheet" type="text/css" href="css/jquery.dataTables.tableTools.css">
-        <link rel="shortcut icon" type="image/x-icon" href="images/favicon.ico">
-        <script type="text/javascript" src="js/jquery-1.9.1.min.js"></script>
-        <script type="text/javascript" src="js/jquery-ui-1.10.2.js"></script>
-        <script type="text/javascript" src="js/jquery.jeditable.mini.js"></script>
-        <script type="text/javascript" src="js/jquery.dataTables.min.js"></script>
-        <script type="text/javascript" src="js/jquery.dataTables.editable.js"></script>
-        <script type="text/javascript" src="js/jquery.validate.min.js"></script>
-        <script type="text/javascript" src="js/ajax-loader.js"></script>
-        <script type="text/javascript" src="js/jquery.dataTables.tableTools.js"></script>
+
+        <link rel="stylesheet" type="text/css" href="dependencies/zz_OldDependencies/css/jquery.dataTables.tableTools.css">
+        <%@ include file="include/dependenciesInclusions_old.html" %>
+
+        <script type="text/javascript" src="dependencies/zz_OldDependencies/js/ajax-loader.js"></script>
+        <script type="text/javascript" src="dependencies/zz_OldDependencies/js/jquery.dataTables.tableTools.js"></script>
         <style type="text/css">
             .fields {
                 background-color: #E1E7F3;
@@ -148,14 +141,14 @@
                         "aButtons": [
                             {"sExtends": "select",
                                 "sButtonText": "Select All",
-                                "fnClick": function(nButton, oConfig, oFlash) {
+                                "fnClick": function (nButton, oConfig, oFlash) {
                                     var oTT = TableTools.fnGetInstance('testCaseTable');
                                     oTT.fnSelectAll(true); //True = Select only filtered rows (true). Optional - default false.
                                     checkSelected();
                                 }},
                             {"sExtends": "select",
                                 "sButtonText": "Select None",
-                                "fnClick": function(nButton, oConfig, oFlash) {
+                                "fnClick": function (nButton, oConfig, oFlash) {
                                     var oTT = TableTools.fnGetInstance('testCaseTable');
                                     oTT.fnSelectNone(true); //True = Select only filtered rows (true). Optional - default false.
                                     checkSelected();
@@ -168,7 +161,7 @@
                                 "bSelectedOnly": true,
                                 "mColumns": [0],
                                 "sFieldSeperator": "|",
-                                "fnClick": function(nButton, oConfig) {
+                                "fnClick": function (nButton, oConfig) {
                                     var sData = this.fnGetTableData(oConfig);
                                     if (!$(nButton).hasClass('DTTT_disabled') && confirm('Do you really want to delete?')) {
                                         $.ajax({
@@ -179,13 +172,13 @@
                                                     "value": sData
                                                 }
                                             ],
-                                            "success": function() {
+                                            "success": function () {
                                                 loadTestCases()
                                             },
                                             "dataType": "json",
                                             "type": "POST",
                                             "cache": false,
-                                            "error": function() {
+                                            "error": function () {
                                                 alert("Error detected when sending table data to server");
                                             }
                                         });
@@ -209,7 +202,7 @@
                                         "mColumns": [0],
                                         "bOpenRows": true,
                                         "sFieldSeperator": "|",
-                                        "fnClick": function(nButton, oConfig) {
+                                        "fnClick": function (nButton, oConfig) {
                                             var sData = this.fnGetTableData(oConfig);
                                             if (!$(nButton).hasClass('DTTT_disabled')) {
                                                 $.ajax({
@@ -220,13 +213,13 @@
                                                             "value": sData
                                                         }
                                                     ],
-                                                    "success": function() {
+                                                    "success": function () {
                                                         loadTestCases()
                                                     },
                                                     "dataType": "json",
                                                     "type": "POST",
                                                     "cache": false,
-                                                    "error": function() {
+                                                    "error": function () {
                                                         alert("Error detected when sending table data to server");
                                                     }
                                                 });
@@ -239,13 +232,13 @@
                                         "sAjaxUrl": "UpdateExecutionInQueue?changeTo=0",
                                         "bSelectedOnly": true,
                                         "sRowSelect": "multi",
-                                        "success": function() {
+                                        "success": function () {
                                             loadTestCases()
                                         },
                                         "bHeader": false,
                                         "mColumns": [0],
                                         "bOpenRows": true,
-                                        "sFieldSeperator": "|", "fnClick": function(nButton, oConfig) {
+                                        "sFieldSeperator": "|", "fnClick": function (nButton, oConfig) {
                                             var sData = this.fnGetTableData(oConfig);
                                             if (!$(nButton).hasClass('DTTT_disabled')) {
                                                 $.ajax({
@@ -256,13 +249,13 @@
                                                             "value": sData
                                                         }
                                                     ],
-                                                    "success": function() {
+                                                    "success": function () {
                                                         loadTestCases()
                                                     },
                                                     "dataType": "json",
                                                     "type": "POST",
                                                     "cache": false,
-                                                    "error": function() {
+                                                    "error": function () {
                                                         alert("Error detected when sending table data to server");
                                                     }
                                                 });
@@ -285,14 +278,14 @@
                     aoColumnDefs: [
                         {
                             "aTargets": [8],
-                            "mRender": function(data, type, full) {
+                            "mRender": function (data, type, full) {
                                 return "<p style='text-align: center'><input type='button' style='background-image: url(images/play.png);background-size: 100%; width: 20px; height: 20px; border: 0 none; top: 0px' onclick=window.location.href='RunTests.jsp?queuedExecution=" + full[0] + "'></p>"
                             }
                         }
                     ]
                 });
                 $('#manualTestCaseExecution').show();
-                $('#testCaseTable tbody').on('click', 'tr', function() {
+                $('#testCaseTable tbody').on('click', 'tr', function () {
                     $(this).toggleClass('selected');
                     checkSelected();
                 });
@@ -317,7 +310,7 @@
 
         </script>
         <script>
-            $(document).ready(function() {
+            $(document).ready(function () {
                 loadTestCases();
             });
         </script>

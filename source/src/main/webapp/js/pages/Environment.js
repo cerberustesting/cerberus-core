@@ -40,18 +40,22 @@ function initPage() {
     var select = $('#selectCountry');
     select.append($('<option></option>').text("-- ALL --").val("ALL"));
     displayInvariantList("country", "COUNTRY", false, urlCountry);
+    select.val("ALL");
 
     var select = $('#selectEnvironment');
     select.append($('<option></option>').text("-- ALL --").val("ALL"));
     displayInvariantList("environment", "ENVIRONMENT", false, urlEnvironment);
+    select.val("ALL");
 
     var select = $('#selectEnvGp');
     select.append($('<option></option>').text("-- ALL --").val("ALL"));
     displayInvariantList("envGp", "ENVGP", false, urlEnvGp);
+    select.val("ALL");
 
     var select = $('#selectActive');
     select.append($('<option></option>').text("-- ALL --").val("ALL"));
     displayInvariantList("active", "ENVACTIVE", false, urlActive);
+    select.val("ALL");
 
     displayInvariantList("system", "SYSTEM", false);
     displayInvariantList("type", "ENVTYPE", false);
@@ -219,16 +223,16 @@ function loadEnvTable(selectCountry, selectEnvironment, selectBuild, selectRevis
     if (!isEmptyorALL(selectBuild))
         CallParam += '&build=' + encodeURIComponent(selectBuild);
     if (!isEmptyorALL(selectRevision))
-        CallParam += '&revision=' + encodeURIComponent(selectRevision)
+        CallParam += '&revision=' + encodeURIComponent(selectRevision);
     if (!isEmptyorALL(selectEnvGp))
-        CallParam += '&envgp=' + encodeURIComponent(selectEnvGp)
+        CallParam += '&envgp=' + encodeURIComponent(selectEnvGp);
     if (!isEmptyorALL(selectActive))
-        CallParam += '&active=' + encodeURIComponent(selectActive)
+        CallParam += '&active=' + encodeURIComponent(selectActive);
     InsertURLInHistory('Environment.jsp' + CallParam);
 
     //clear the old report content before reloading it
     $("#environmentList").empty();
-    $("#environmentList").html('<table id="environmentsTable" class="table table-hover display" name="environmentsTable">\n\
+    $("#environmentList").html('<table id="environmentsTable" class="table table-bordered table-hover display" name="environmentsTable">\n\
                                             </table><div class="marginBottom20"></div>');
 
     //configure and create the dataTable
@@ -287,9 +291,10 @@ function appendBuildList(selectName, level, defaultValue) {
             for (var option in data.contentTable) {
                 select.append($('<option></option>').text(data.contentTable[option].versionName).val(data.contentTable[option].versionName));
             }
-
-            if (defaultValue !== undefined) {
+            if (defaultValue !== undefined && defaultValue !== null) {
                 select.val(defaultValue);
+            }else{
+                select.val("ALL");
             }
 
         },

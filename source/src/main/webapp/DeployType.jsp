@@ -35,9 +35,16 @@
             <%@ include file="include/deploytype/editDeployType.html"%> 
 
             <h1 class="page-title-line" id="title">Deploy Type</h1>
-            <div id="deploytype" class="well">
-                <table id="deploytypesTable" class="table table-hover display" name="deploytypesTable"></table>
-                <div class="marginBottom20"></div>
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <span class="glyphicon glyphicon-list"></span>
+                    <label id="deploytypeListLabel">Deploy Type List</label>
+                </div>
+                <div class="panel-body" id="deploytype">
+                    <table id="deploytypesTable" class="table table-bordered table-hover display" name="deploytypesTable">
+                    </table>
+                    <div class="marginBottom20"></div>
+                </div>
             </div>
             <footer class="footer">
                 <div class="container-fluid" id="footer"></div>

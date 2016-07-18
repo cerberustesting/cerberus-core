@@ -137,7 +137,7 @@ function loadTable(selectTest, sortColumn) {
 
     //clear the old report content before reloading it
     $("#testCaseList").empty();
-    $("#testCaseList").html('<table id="testCaseTable" class="table table-hover display" name="testCaseTable">\n\
+    $("#testCaseList").html('<table id="testCaseTable" class="table table-bordered table-hover display" name="testCaseTable">\n\
                                             </table><div class="marginBottom20"></div>');
 
     var contentUrl = "ReadTestCase?system=" + getUser().defaultSystem;
@@ -168,7 +168,7 @@ function renderOptionsForTestCaseList(data) {
             var contentToAdd = "<div class='marginBottom10'><button id='createTestCaseButton' type='button' class='btn btn-default'>\n\
            <span class='glyphicon glyphicon-plus-sign'></span> " + doc.getDocLabel("page_testcaselist", "btn_create") + "</button></div>";
 
-            $("#testCaseTable_wrapper div.ColVis").before(contentToAdd);
+            $("#testCaseTable_wrapper #testCaseTable_length").before(contentToAdd);
             $('#testCaseList #createTestCaseButton').click(data, addEntryClick);
         }
     }
@@ -721,12 +721,17 @@ function aoColumnsFunc(countries) {
                                         class="deleteEntry btn btn-default btn-xs margin-right5" \n\
                                         name="deleteEntry" title="' + doc.getDocLabel("page_testcaselist", "btn_delete") + '" type="button">\n\
                                         <span class="glyphicon glyphicon-trash"></span></button>';
+                 var duplicateEntry = '<button id="duplicateEntry" onclick="duplicateEntryClick(\'' + escapeHtml(obj["test"]) + '\',\'' + escapeHtml(obj["testCase"]) + '\');"\n\
+                                        class="duplicateEntry btn btn-default btn-xs margin-right5" \n\
+                                        name="duplicateEntry" title="' + doc.getDocLabel("page_testcaselist", "btn_delete") + '" type="button">\n\
+                                        <span class="glyphicon glyphicon-duplicate"></span></button>';
                 var testCaseBetaLink = '<a id="testCaseBetaLink" class="btn btn-warning btn-xs margin-right5"\n\
                                     title="' + doc.getDocLabel("page_testcaselist", "btn_editScript") + " (beta page)" + '" href="TestCaseScript.jsp?test=' + encodeURIComponent(obj["test"]) + "&testcase=" + encodeURIComponent(obj["testCase"]) + '">\n\
                                     <span class="glyphicon glyphicon-new-window"></span>\n\
                                     </a>';
                 if (data.hasPermissionsUpdate) {
                     buttons += editEntry;
+                    buttons += duplicateEntry;
                 } else {
                     buttons += viewEntry;
                 }

@@ -94,7 +94,7 @@ function renderOptionsForApplication(data) {
             var contentToAdd = "<div class='marginBottom10'><button id='createApplicationButton' type='button' class='btn btn-default'>\n\
             <span class='glyphicon glyphicon-plus-sign'></span> " + doc.getDocLabel("page_application", "button_create") + "</button></div>";
 
-            $("#applicationsTable_wrapper div.ColVis").before(contentToAdd);
+            $("#applicationsTable_wrapper div#applicationsTable_length").before(contentToAdd);
             $('#applicationList #createApplicationButton').click(addEntryClick);
         }
     }

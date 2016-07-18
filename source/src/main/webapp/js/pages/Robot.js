@@ -84,7 +84,7 @@ function renderOptionsForRobot(data) {
             var contentToAdd = "<div class='marginBottom10'><button id='createRobotButton' type='button' class='btn btn-default'>\n\
             <span class='glyphicon glyphicon-plus-sign'></span> " + doc.getDocLabel("page_robot", "button_create") + "</button></div>";
 
-            $("#robotsTable_wrapper div.ColVis").before(contentToAdd);
+            $("#robotsTable_wrapper #robotsTable_length").before(contentToAdd);
             $('#robotList #createRobotButton').click(addEntryClick);
         }
     }

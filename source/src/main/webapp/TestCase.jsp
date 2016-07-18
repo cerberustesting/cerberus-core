@@ -72,21 +72,21 @@
         <meta content="text/html; charset=UTF-8" http-equiv="content-type">
         <%@ include file="include/dependenciesInclusions.html" %>
         <!--<script type='text/javascript' src='js/Form_1.js'></script>-->
-        <script type="text/javascript" src="js/jquery-migrate-1.2.1.min.js"></script>
-        <script type="text/javascript" src="js/jquery-ui-1.10.2.js"></script>
-        <script type="text/javascript" src="js/elrte.min.js"></script>
-        <script type="text/javascript" src="js/i18n/elrte.en.js"></script>
-        <script type="text/javascript" src="js/elfinder.min.js"></script>
-        <script type="text/javascript" src="js/elFinderSupportVer1.js"></script>
+        <script type="text/javascript" src="dependencies/zz_OldDependencies/js/jquery-migrate-1.2.1.min.js"></script>
+        <script type="text/javascript" src="dependencies/zz_OldDependencies/js/jquery-ui-1.10.2.js"></script>
+        <script type="text/javascript" src="dependencies/zz_OldDependencies/js/elrte.min.js"></script>
+        <script type="text/javascript" src="dependencies/zz_OldDependencies/js/i18n/elrte.en.js"></script>
+        <script type="text/javascript" src="dependencies/zz_OldDependencies/js/elfinder.min.js"></script>
+        <script type="text/javascript" src="dependencies/zz_OldDependencies/js/elFinderSupportVer1.js"></script>
         <!--<script type="text/javascript" src="js/jquery.dataTables.js"></script>-->
-        <script type="text/javascript" src="js/jquery.jeditable.mini.js"></script>
-        <script type="text/javascript" src="js/jquery.dataTables.editable.js"></script>
+        <script type="text/javascript" src="dependencies/zz_OldDependencies/js/jquery.jeditable.mini.js"></script>
+        <script type="text/javascript" src="dependencies/zz_OldDependencies/js/jquery.dataTables.editable.js"></script>
         <script type="text/javascript" src="js/pages/TestCase.js"></script>
-        <link rel="stylesheet" type="text/css" href="css/elrte.min.css">
-        <link rel="stylesheet" type="text/css" href="css/elfinder.min.css">
-        <link rel="stylesheet" type="text/css" href="css/theme.css">
+        <link rel="stylesheet" type="text/css" href="dependencies/zz_OldDependencies/css/elrte.min.css">
+        <link rel="stylesheet" type="text/css" href="dependencies/zz_OldDependencies/css/elfinder.min.css">
+        <link rel="stylesheet" type="text/css" href="dependencies/zz_OldDependencies/css/theme.css">
         
-
+        
         <script type="text/javascript">
             var displayOnlyFunctional = false;
             function showOnlyFunctional() {
@@ -974,7 +974,7 @@
                     <div id="AutomationScriptDiv" class="arrond" style="display : inline-block">
                         <div id="AutomationScriptFirstLine" style="clear:both; height:30px">
                             <div id="AutomationScriptTitle" style="float:left">
-                                <h3>TestCase Detailed Description</h3>
+                                <h4>TestCase Detailed Description</h4>
                             </div>
                             <div id="AutomationScriptFunctionalButtonDiv" style="float:left;margin-left:30px">
                                 <select id="selectView" style="float:left; height:20px; width:100px" onchange="javascript:customizeView(this.value);

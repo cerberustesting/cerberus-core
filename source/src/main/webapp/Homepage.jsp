@@ -71,7 +71,7 @@
                     <label id="testCaseStatusByApp">Test Case Status by Application</label>
                 </div>
                 <div class="panel-body collapse in" id="applicationPanel">
-                    <table id="homePageTable" class="table table-hover display" name="homePageTable"></table>
+                    <table id="homePageTable" class="table table-bordered table-hover display" name="homePageTable"></table>
                     <div class="marginBottom20"></div>
                 </div>
             </div>
@@ -102,7 +102,7 @@
                         <div class="panel-body collapse in" id="EnvStatus">
                             <div class="row">
                                 <div class="col-xs-12" id="EnvByBuildRevisionTable">
-                                    <table class="table table-bordered table-hover nomarginbottom" id="envTable">
+                                    <table class="table dataTable table-bordered table-hover nomarginbottom" id="envTable">
                                         <thead>
                                             <tr>
                                                 <th class="text-center" id="buildHeader" name="buildHeader">Build</th>

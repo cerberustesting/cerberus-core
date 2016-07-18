@@ -49,22 +49,8 @@
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
     <title>Execution Reporting : Status</title>
-
-    <link rel="shortcut icon" type="image/x-icon" href="images/favicon.ico"/>
-
-    <link rel="stylesheet" type="text/css" href="css/crb_style.css">
-    <link rel="stylesheet" type="text/css" href="css/jquery.dataTables.css">
-    <link rel="stylesheet" type="text/css" href="css/jquery-ui.css">
-    <link rel="stylesheet" type="text/css" href="css/dataTables_jui.css">
-    <link type="text/css" rel="stylesheet" href="css/jquery.multiselect.css">
-    <link type="text/css" rel="stylesheet" href="css/jquery.multiselect.filter.css">
-    <script type="text/javascript" src="js/jquery-1.9.1.min.js"></script>
-    <script type="text/javascript" src="js/jquery-ui-1.10.2.js"></script>
-    <script type="text/javascript" src="js/jquery.dataTables.min.js"></script>
-    <script type="text/javascript" src="js/FixedHeader.js"></script>
-    <script type="text/javascript" src="js/jquery.multiselect.js"></script>
-    <script type="text/javascript" src="js/jquery.multiselect.filter.js"></script>
-    <script type="text/javascript" src="js/jquery.jeditable.mini.js"></script>
+    <%@ include file="include/dependenciesInclusions_old.html" %>
+    <script type="text/javascript" src="dependencies/zz_OldDependencies/js/FixedHeader.js"></script>
 
 <%
     try{

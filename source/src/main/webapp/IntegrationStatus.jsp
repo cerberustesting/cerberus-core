@@ -43,7 +43,7 @@
                                         </div>
                                     </div>
                                     <div class="row" id="tagFilter">
-                                        <table class="table table-bordered table-hover nomarginbottom" id="histoTable">
+                                        <table class="table table-bordered table-hover nomarginbottom dataTable" id="histoTable">
                                             <thead id="histoTableHead">
                                             </thead>
                                             <tbody id="histoTableBody">
@@ -65,7 +65,7 @@
                         <div class="panel-body collapse in" id="EnvStatus">
                             <div class="row">
                                 <div class="col-xs-12" id="EnvByBuildRevisionTable">
-                                    <table class="table table-bordered table-hover nomarginbottom" id="envTable">
+                                    <table class="table table-bordered table-hover nomarginbottom dataTable" id="envTable">
                                         <thead>
                                             <tr>
                                                 <th class="text-center" id="buildHeader" name="buildHeader">Build</th>
