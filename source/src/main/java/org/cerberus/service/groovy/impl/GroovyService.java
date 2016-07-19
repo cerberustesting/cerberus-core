@@ -19,9 +19,17 @@
  */
 package org.cerberus.service.groovy.impl;
 
-import groovy.lang.GroovyRuntimeException;
-import groovy.util.Eval;
+import groovy.lang.GroovyShell;
+import java.util.Collections;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
+import javax.annotation.PostConstruct;
+import javax.annotation.PreDestroy;
 import org.cerberus.service.groovy.IGroovyService;
+import org.codehaus.groovy.control.CompilerConfiguration;
+import org.kohsuke.groovy.sandbox.SandboxTransformer;
 import org.springframework.stereotype.Service;
 
 /**
@@ -32,15 +40,56 @@ import org.springframework.stereotype.Service;
 @Service
 public class GroovyService implements IGroovyService {
 
+    /**
+     * Groovy specific compilation customizer in order to avoid code injection
+     */
+    private static final CompilerConfiguration GROOVY_COMPILER_CONFIGURATION = new CompilerConfiguration().addCompilationCustomizers(new SandboxTransformer());
+
+    /**
+     * Each Groovy execution is ran inside a dedicated {@link Thread},
+     * especially to register our Groovy interceptor
+     */
+    private ExecutorService executorService;
+
+    @PostConstruct
+    private void init() {
+        executorService = Executors.newCachedThreadPool();
+    }
+
+    @PreDestroy
+    private void shutdown() {
+        if (executorService != null && !executorService.isShutdown()) {
+            executorService.shutdownNow();
+        }
+    }
+
     @Override
-    public String eval(String script) throws IGroovyServiceException {
+    public String eval(final String script) throws IGroovyServiceException {
         try {
-            Object eval = Eval.me(script);
+            Future<String> expression = executorService.submit(new Callable<String>() {
+                @Override
+                public String call() throws Exception {
+                    RestrictiveGroovyInterceptor interceptor = new RestrictiveGroovyInterceptor(
+                            Collections.<Class<?>>emptySet(),
+                            Collections.<Class<?>>emptySet(),
+                            Collections.<RestrictiveGroovyInterceptor.AllowedPrefix>emptyList()
+                    );
+                    try {
+                        interceptor.register();
+                        GroovyShell shell = new GroovyShell(GROOVY_COMPILER_CONFIGURATION);
+                        return shell.evaluate(script).toString();
+                    } finally {
+                        interceptor.unregister();
+                    }
+                }
+            });
+
+            String eval = expression.get();
             if (eval == null) {
                 throw new IGroovyServiceException("Groovy evaluation returns null result");
             }
-            return eval.toString();
-        } catch (GroovyRuntimeException e) {
+            return eval;
+        } catch (Exception e) {
             throw new IGroovyServiceException(e);
         }
     }

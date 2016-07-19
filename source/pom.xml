@@ -45,6 +45,7 @@
         <poi.version>3.13</poi.version>
         <appium.version>3.4.1</appium.version>
         <groovy.version>2.4.7</groovy.version>
+        <groovy-sandbox.version>1.10</groovy-sandbox.version>
         
         <!-- Maven plugin version -->
         <maven-compiler-plugin.version>2.3.2</maven-compiler-plugin.version>
@@ -240,7 +241,12 @@
         <dependency>
             <groupId>org.codehaus.groovy</groupId>
             <artifactId>groovy</artifactId>
-            <version>${groovy.version}</version>
+            <!-- Version handled by dependency management to be compatible with that of the groovy-sandbox -->
+        </dependency>
+        <dependency>
+            <groupId>org.kohsuke</groupId>
+            <artifactId>groovy-sandbox</artifactId>
+            <version>${groovy-sandbox.version}</version>
         </dependency>
 
         <!-- Provided scope -->
@@ -317,6 +323,11 @@
                 <groupId>com.google.code.gson</groupId>
                 <artifactId>gson</artifactId>
                 <version>${gson.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.codehaus.groovy</groupId>
+                <artifactId>groovy</artifactId>
+                <version>${groovy.version}</version>
             </dependency>
         </dependencies>
     </dependencyManagement>
