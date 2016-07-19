@@ -851,6 +851,7 @@ function TableConfigurationsClientSide(divId, data, aoColumnsFunction, defineLen
     this.scrollX = true;
     this.scrollCollapse = false;
     this.lang = getDataTableLanguage();
+    this.stateDuration = 0;
 }
 
 /**
@@ -892,6 +893,7 @@ function TableConfigurationsServerSide(divId, ajaxSource, ajaxProp, aoColumnsFun
     this.orderClasses = true;
     this.bDeferRender = false;
     this.aaSorting = aaSorting;
+    this.stateDuration = 0;
 }
 
 function returnMessageHandler(response) {
@@ -935,6 +937,7 @@ function createDataTableWithPermissions(tableConfigurations, callbackFunction, o
 
     var configs = {};
     configs["dom"] = domConf;
+    configs["stateDuration"] = tableConfigurations.stateDuration;
     configs["serverSide"] = tableConfigurations.serverSide;
     configs["processing"] = tableConfigurations.processig;
     configs["bJQueryUI"] = tableConfigurations.bJQueryUI;
@@ -969,7 +972,7 @@ function createDataTableWithPermissions(tableConfigurations, callbackFunction, o
         configs["sAjaxDataProp"] = tableConfigurations.ajaxProp;
         configs["fnStateSaveCallback"] = function (settings, data) {
             try {
-                (settings.iStateDuration === -1 ? sessionStorage : localStorage).setItem(
+                localStorage.setItem(
                         'DataTables_' + settings.sInstance + '_' + location.pathname,
                         JSON.stringify(data)
                         );
@@ -989,6 +992,7 @@ function createDataTableWithPermissions(tableConfigurations, callbackFunction, o
             if ("" !== user.userPreferences && undefined !== user.userPreferences && null !== user.userPreferences) {
                 var userPref = JSON.parse(user.userPreferences);
                 if (undefined !== userPref['DataTables_' + settings.sInstance + '_' + location.pathname]) {
+                    console.log(JSON.parse(userPref['DataTables_' + settings.sInstance + '_' + location.pathname]));
                     return JSON.parse(userPref['DataTables_' + settings.sInstance + '_' + location.pathname]);
                 }
             }
@@ -1092,6 +1096,7 @@ function createDataTable(tableConfigurations, callbackFunction, userCallbackFunc
 
     var configs = {};
     configs["dom"] = domConf;
+    configs["stateDuration"] = tableConfigurations.stateDuration;
     configs["serverSide"] = tableConfigurations.serverSide;
     configs["processing"] = tableConfigurations.processig;
     configs["bJQueryUI"] = tableConfigurations.bJQueryUI;
