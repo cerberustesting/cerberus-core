@@ -107,4 +107,9 @@ public class ProjectService implements IProjectService {
         throw new CerberusException(new MessageGeneral(MessageGeneralEnum.DATA_OPERATION_ERROR));
     }
 
+    @Override
+    public AnswerList readDistinctValuesByCriteria(String searchParameter, Map<String, List<String>> individualSearch, String columnName) {
+        return projectDao.readDistinctValuesByCriteria(searchParameter,individualSearch,columnName);
+    }
+
 }
