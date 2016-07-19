@@ -21,7 +21,7 @@ package org.cerberus.crud.entity;
  *
  * @author vertigo
  */
-public class Group {
+public class UserGroup {
 
     private String groupName;
     private String login;

@@ -28,7 +28,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import org.apache.log4j.Level;
-import org.cerberus.crud.entity.Group;
+import org.cerberus.crud.entity.UserGroup;
 import org.cerberus.crud.entity.User;
 import org.cerberus.crud.entity.UserSystem;
 import org.cerberus.exception.CerberusException;
@@ -75,13 +75,13 @@ public class UpdateUser extends HttpServlet {
         IFactoryGroup factoryGroup = new FactoryGroup();
 
         User myUser;
-        List<Group> newGroups = null;
+        List<UserGroup> newGroups = null;
         List<UserSystem> newSystems = null;
         try {
             myUser = userService.findUserByKey(login);
             switch (columnPosition) {
                 case 0:
-                    newGroups = new ArrayList<Group>();
+                    newGroups = new ArrayList<UserGroup>();
                     for (String group : request.getParameterValues(login + "_UserGroup")) {
                         newGroups.add(factoryGroup.create(group));
                     }

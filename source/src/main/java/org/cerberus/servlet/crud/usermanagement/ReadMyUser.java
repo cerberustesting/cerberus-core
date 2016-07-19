@@ -27,7 +27,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
-import org.cerberus.crud.entity.Group;
+import org.cerberus.crud.entity.UserGroup;
 import org.cerberus.crud.entity.User;
 import org.cerberus.crud.entity.UserSystem;
 import org.cerberus.exception.CerberusException;
@@ -92,7 +92,7 @@ public class ReadMyUser extends HttpServlet {
             data.put("userPreferences", myUser.getUserPreferences());
 
             JSONArray groups = new JSONArray();
-            for (Group group : userGroupService.findGroupByKey(myUser.getLogin())) {
+            for (UserGroup group : userGroupService.findGroupByKey(myUser.getLogin())) {
                 groups.put(group.getGroup());
             }
             data.put("group", groups);

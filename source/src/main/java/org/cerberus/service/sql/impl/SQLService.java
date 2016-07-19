@@ -34,7 +34,6 @@ import org.apache.log4j.Level;
 import org.cerberus.crud.dao.ITestCaseExecutionDataDAO;
 import org.cerberus.crud.entity.CountryEnvironmentDatabase;
 import org.cerberus.crud.entity.MessageEvent;
-import org.cerberus.crud.entity.Property;
 import org.cerberus.crud.entity.TestCaseCountryProperties;
 import org.cerberus.crud.entity.TestCaseExecution;
 import org.cerberus.crud.entity.TestCaseExecutionData;
@@ -107,18 +106,18 @@ public class SQLService implements ISQLService {
                         List<String> list = this.queryDatabase(connectionName, sql, testCaseProperties.getRowLimit());
 
                         if (list != null && !list.isEmpty()) {
-                            if (testCaseProperties.getNature().equalsIgnoreCase(Property.NATURE_STATIC)) {
+                            if (testCaseProperties.getNature().equalsIgnoreCase(TestCaseCountryProperties.NATURE_STATIC)) {
                                 testCaseExecutionData.setValue(list.get(0));
 
-                            } else if (testCaseProperties.getNature().equalsIgnoreCase(Property.NATURE_RANDOM)) {
+                            } else if (testCaseProperties.getNature().equalsIgnoreCase(TestCaseCountryProperties.NATURE_RANDOM)) {
                                 testCaseExecutionData.setValue(this.getRandomStringFromList(list));
                                 mes = new MessageEvent(MessageEventEnum.PROPERTY_SUCCESS_SQL_RANDOM);
 
-                            } else if (testCaseProperties.getNature().equalsIgnoreCase(Property.NATURE_RANDOMNEW)) {
+                            } else if (testCaseProperties.getNature().equalsIgnoreCase(TestCaseCountryProperties.NATURE_RANDOMNEW)) {
                                 testCaseExecutionData.setValue(this.calculateNatureRandomNew(list, testCaseProperties.getProperty(), tCExecution));
                                 mes = new MessageEvent(MessageEventEnum.PROPERTY_SUCCESS_SQL_RANDOM_NEW);
 
-                            } else if (testCaseProperties.getNature().equalsIgnoreCase(Property.NATURE_NOTINUSE)) {
+                            } else if (testCaseProperties.getNature().equalsIgnoreCase(TestCaseCountryProperties.NATURE_NOTINUSE)) {
                                 testCaseExecutionData.setValue(this.calculateNatureNotInUse(list, testCaseProperties.getProperty(), tCExecution));
                                 mes = new MessageEvent(MessageEventEnum.PROPERTY_SUCCESS_SQL_NOTINUSE);
 
@@ -181,7 +180,7 @@ public class SQLService implements ISQLService {
                     connectionName = countryEnvironmentDatabase.getConnectionPoolName();
 
                     if (!(StringUtil.isNullOrEmpty(connectionName))) {
-                        if (testCaseCountryProperty.getNature().equalsIgnoreCase(Property.NATURE_STATIC)) { // If Nature of the property is static, we don't need to getch more than 1 record.
+                        if (testCaseCountryProperty.getNature().equalsIgnoreCase(TestCaseCountryProperties.NATURE_STATIC)) { // If Nature of the property is static, we don't need to getch more than 1 record.
                             rowLimit = 1;
                         }
 
@@ -203,18 +202,18 @@ public class SQLService implements ISQLService {
                             list = responseList.getDataList();
                             if (list != null && !list.isEmpty()) {
 
-                                if (testCaseCountryProperty.getNature().equalsIgnoreCase(Property.NATURE_STATIC)) {
+                                if (testCaseCountryProperty.getNature().equalsIgnoreCase(TestCaseCountryProperties.NATURE_STATIC)) {
                                     answer.setItem((list.get(0)));
                                     mes = new MessageEvent(MessageEventEnum.PROPERTY_SUCCESS_GETFROMDATALIB_SQL_STATIC);
 
-                                } else if (testCaseCountryProperty.getNature().equalsIgnoreCase(Property.NATURE_RANDOM)) {
+                                } else if (testCaseCountryProperty.getNature().equalsIgnoreCase(TestCaseCountryProperties.NATURE_RANDOM)) {
                                     Random r = new Random();
                                     int position = r.nextInt(list.size());
                                     answer.setItem(list.get(position));
                                     mes = new MessageEvent(MessageEventEnum.PROPERTY_SUCCESS_GETFROMDATALIB_SQL_RANDOM);
                                     mes.setDescription(mes.getDescription().replace("%POS%", Integer.toString(position)).replace("%TOTALPOS%", Integer.toString(list.size())));
 
-                                } else if (testCaseCountryProperty.getNature().equalsIgnoreCase(Property.NATURE_RANDOMNEW)) {
+                                } else if (testCaseCountryProperty.getNature().equalsIgnoreCase(TestCaseCountryProperties.NATURE_RANDOMNEW)) {
 
                                     int initNB = list.size();
                                     // We get the list of values that are already used.
@@ -252,7 +251,7 @@ public class SQLService implements ISQLService {
                                         mes.setDescription(mes.getDescription().replace("%TOTNB%", Integer.toString(initNB)));
                                     }
 
-                                } else if (testCaseCountryProperty.getNature().equalsIgnoreCase(Property.NATURE_NOTINUSE)) {
+                                } else if (testCaseCountryProperty.getNature().equalsIgnoreCase(TestCaseCountryProperties.NATURE_NOTINUSE)) {
 
                                     int initNB = list.size();
                                     // We get the list of values that are already used.

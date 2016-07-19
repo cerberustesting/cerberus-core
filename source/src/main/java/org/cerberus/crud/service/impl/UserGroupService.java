@@ -22,7 +22,7 @@ package org.cerberus.crud.service.impl;
 import java.util.List;
 
 import org.cerberus.crud.dao.IUserGroupDAO;
-import org.cerberus.crud.entity.Group;
+import org.cerberus.crud.entity.UserGroup;
 import org.cerberus.crud.entity.MessageGeneral;
 import org.cerberus.enums.MessageGeneralEnum;
 import org.cerberus.crud.entity.User;
@@ -45,32 +45,32 @@ public class UserGroupService implements IUserGroupService {
     private IUserGroupDAO userGroupDAO;
 
     @Override
-    public void updateUserGroups(User user, List<Group> newGroups) throws CerberusException {
+    public void updateUserGroups(User user, List<UserGroup> newGroups) throws CerberusException {
 
-        List<Group> oldGroups = this.findGroupByKey(user.getLogin());
+        List<UserGroup> oldGroups = this.findGroupByKey(user.getLogin());
 
         //delete if don't exist in new
-        for (Group old : oldGroups) {
+        for (UserGroup old : oldGroups) {
             if (!newGroups.contains(old)) {
                 this.removeGroupFromUser(old, user);
             }
         }
         //insert if don't exist in old
-        for (Group group : newGroups) {
+        for (UserGroup group : newGroups) {
             if (!oldGroups.contains(group)) {
                 this.addGroupToUser(group, user);
             }
         }
     }
 
-    private void addGroupToUser(Group group, User user) throws CerberusException {
+    private void addGroupToUser(UserGroup group, User user) throws CerberusException {
         if (!userGroupDAO.addGroupToUser(group, user)) {
             //TODO define message => error occur trying to add group user
             throw new CerberusException(new MessageGeneral(MessageGeneralEnum.NO_DATA_FOUND));
         }
     }
 
-    private void removeGroupFromUser(Group group, User user) throws CerberusException {
+    private void removeGroupFromUser(UserGroup group, User user) throws CerberusException {
         if (!userGroupDAO.removeGroupFromUser(group, user)) {
             //TODO define message => error occur trying to delete group user
             throw new CerberusException(new MessageGeneral(MessageGeneralEnum.NO_DATA_FOUND));
@@ -78,8 +78,8 @@ public class UserGroupService implements IUserGroupService {
     }
 
     @Override
-    public List<Group> findGroupByKey(String login) throws CerberusException {
-        List<Group> list = userGroupDAO.findGroupByKey(login);
+    public List<UserGroup> findGroupByKey(String login) throws CerberusException {
+        List<UserGroup> list = userGroupDAO.findGroupByKey(login);
         if (list == null) {
             //TODO define message => error occur trying to find group user
             throw new CerberusException(new MessageGeneral(MessageGeneralEnum.NO_DATA_FOUND));

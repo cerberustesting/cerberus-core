@@ -35,7 +35,6 @@ import org.cerberus.crud.entity.CountryEnvironmentDatabase;
 import org.cerberus.crud.entity.Identifier;
 import org.cerberus.crud.entity.MessageEvent;
 import org.cerberus.crud.entity.MessageGeneral;
-import org.cerberus.crud.entity.Property;
 import org.cerberus.crud.entity.SoapLibrary;
 import org.cerberus.crud.entity.TestCaseCountryProperties;
 import org.cerberus.crud.entity.TestCaseExecution;
@@ -75,7 +74,6 @@ import org.cerberus.engine.entity.TestDataLibResultSOAP;
 import org.cerberus.engine.entity.TestDataLibResultSQL;
 import org.cerberus.engine.entity.TestDataLibResultStatic;
 import org.cerberus.service.datalib.IDataLibService;
-import org.cerberus.service.file.IFileService;
 import org.cerberus.service.groovy.IGroovyService;
 import org.cerberus.util.DateUtil;
 import org.cerberus.util.FileUtil;
@@ -656,9 +654,9 @@ public class PropertyService implements IPropertyService {
     }
 
     private TestCaseExecutionData property_calculateText(TestCaseExecutionData testCaseExecutionData, TestCaseCountryProperties testCaseCountryProperty, boolean forceRecalculation) {
-        if (Property.NATURE_RANDOM.equals(testCaseCountryProperty.getNature())
+        if (TestCaseCountryProperties.NATURE_RANDOM.equals(testCaseCountryProperty.getNature())
                 //TODO CTE Voir avec B. Civel "RANDOM_NEW"
-                || (testCaseCountryProperty.getNature().equals(Property.NATURE_RANDOMNEW))) {
+                || (testCaseCountryProperty.getNature().equals(TestCaseCountryProperties.NATURE_RANDOMNEW))) {
             if (testCaseCountryProperty.getLength() == 0) {
                 MessageEvent res = new MessageEvent(MessageEventEnum.PROPERTY_FAILED_TEXTRANDOMLENGHT0);
                 testCaseExecutionData.setPropertyResultMessage(res);
@@ -1495,11 +1493,11 @@ public class PropertyService implements IPropertyService {
                  * from the type of Property.
                  */
                 if (msg.getCode() == MessageEventEnum.ACTION_SUCCESS_CALLSOAP.getCode()) {
-                    if (testCaseCountryProperty.getNature().equalsIgnoreCase(Property.NATURE_STATIC)) {
+                    if (testCaseCountryProperty.getNature().equalsIgnoreCase(TestCaseCountryProperties.NATURE_STATIC)) {
                         resultHash = listResult.get(0);
                         msg = new MessageEvent(MessageEventEnum.PROPERTY_SUCCESS_GETFROMDATALIB_SOAP_STATIC);
 
-                    } else if (testCaseCountryProperty.getNature().equalsIgnoreCase(Property.NATURE_RANDOM)) {
+                    } else if (testCaseCountryProperty.getNature().equalsIgnoreCase(TestCaseCountryProperties.NATURE_RANDOM)) {
                         Random r = new Random();
                         int position = r.nextInt(listResult.size());
                         resultHash = listResult.get(position);
@@ -1508,7 +1506,7 @@ public class PropertyService implements IPropertyService {
                                 .replace("%POS%", Integer.toString(position))
                                 .replace("%TOTALPOS%", Integer.toString(listResult.size())));
 
-                    } else if (testCaseCountryProperty.getNature().equalsIgnoreCase(Property.NATURE_RANDOMNEW)) {
+                    } else if (testCaseCountryProperty.getNature().equalsIgnoreCase(TestCaseCountryProperties.NATURE_RANDOMNEW)) {
 
                         int initNB = listResult.size();
                         // We get the list of values that are already used.
@@ -1547,7 +1545,7 @@ public class PropertyService implements IPropertyService {
                             msg.setDescription(msg.getDescription().replace("%TOTNB%", Integer.toString(initNB)));
                         }
 
-                    } else if (testCaseCountryProperty.getNature().equalsIgnoreCase(Property.NATURE_NOTINUSE)) {
+                    } else if (testCaseCountryProperty.getNature().equalsIgnoreCase(TestCaseCountryProperties.NATURE_NOTINUSE)) {
 
                         int initNB = listResult.size();
                         // We get the list of values that are already used.
@@ -1637,7 +1635,7 @@ public class PropertyService implements IPropertyService {
 
         try {
 
-            if (testCaseCountryProperty.getNature().equalsIgnoreCase(Property.NATURE_STATIC)) { // If Nature of the property is static, we don't need to getch more than 1 record.
+            if (testCaseCountryProperty.getNature().equalsIgnoreCase(TestCaseCountryProperties.NATURE_STATIC)) { // If Nature of the property is static, we don't need to getch more than 1 record.
                 rowLimit = 1;
             }
             //performs a query that returns several rows containing n columns
@@ -1648,11 +1646,11 @@ public class PropertyService implements IPropertyService {
                 list = responseList.getDataList();
                 if (list != null && !list.isEmpty()) {
 
-                    if (testCaseCountryProperty.getNature().equalsIgnoreCase(Property.NATURE_STATIC)) {
+                    if (testCaseCountryProperty.getNature().equalsIgnoreCase(TestCaseCountryProperties.NATURE_STATIC)) {
                         answer.setItem((list.get(0)));
                         mes = new MessageEvent(MessageEventEnum.PROPERTY_SUCCESS_GETFROMDATALIB_STATIC_STATIC);
 
-                    } else if (testCaseCountryProperty.getNature().equalsIgnoreCase(Property.NATURE_RANDOM)) {
+                    } else if (testCaseCountryProperty.getNature().equalsIgnoreCase(TestCaseCountryProperties.NATURE_RANDOM)) {
                         Random r = new Random();
                         int position = r.nextInt(list.size());
                         answer.setItem(list.get(position));
@@ -1661,7 +1659,7 @@ public class PropertyService implements IPropertyService {
                                 .replace("%ENTRYSELID%", list.get(position).get("TestDataLibID"))
                                 .replace("%TOTALPOS%", Integer.toString(list.size())));
 
-                    } else if (testCaseCountryProperty.getNature().equalsIgnoreCase(Property.NATURE_RANDOMNEW)) {
+                    } else if (testCaseCountryProperty.getNature().equalsIgnoreCase(TestCaseCountryProperties.NATURE_RANDOMNEW)) {
 
                         int initNB = list.size();
                         // We get the list of values that are already used.
@@ -1700,7 +1698,7 @@ public class PropertyService implements IPropertyService {
                             mes.setDescription(mes.getDescription().replace("%TOTNB%", Integer.toString(initNB)));
                         }
 
-                    } else if (testCaseCountryProperty.getNature().equalsIgnoreCase(Property.NATURE_NOTINUSE)) {
+                    } else if (testCaseCountryProperty.getNature().equalsIgnoreCase(TestCaseCountryProperties.NATURE_NOTINUSE)) {
 
                         int initNB = list.size();
                         // We get the list of values that are already used.

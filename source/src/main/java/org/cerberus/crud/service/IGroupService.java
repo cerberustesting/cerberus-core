@@ -21,7 +21,7 @@ package org.cerberus.crud.service;
 
 import java.util.List;
 
-import org.cerberus.crud.entity.Group;
+import org.cerberus.crud.entity.UserGroup;
 import org.cerberus.crud.entity.User;
 import org.cerberus.exception.CerberusException;
 
@@ -37,14 +37,14 @@ public interface IGroupService {
      * @return the list of group the user belong it return null if no groups are
      * found.
      */
-    List<Group> findGroupByUser(User user);
+    List<UserGroup> findGroupByUser(User user);
 
     /**
      *
      * @return a list of all groups that exist.
      * @throws CerberusException if no groups exist.
      */
-    List<Group> findallGroup() throws CerberusException;
+    List<UserGroup> findallGroup() throws CerberusException;
 
     /**
      *
@@ -52,7 +52,7 @@ public interface IGroupService {
      * @param group, the group that will be inserted to the user.
      * @throws CerberusException if insert could not be done (already exist).
      */
-    void insertGroupToUser(Group group, User user) throws CerberusException;
+    void insertGroupToUser(UserGroup group, User user) throws CerberusException;
 
     /**
      *
@@ -61,7 +61,7 @@ public interface IGroupService {
      * @return
      * @throws CerberusException if the link does not exist.
      */
-    void deleteGroupFromUser(Group group, User user) throws CerberusException;
+    void deleteGroupFromUser(UserGroup group, User user) throws CerberusException;
 
     /**
      *
@@ -72,5 +72,5 @@ public interface IGroupService {
      * @throws CerberusException if the user does not exist and list of group
      * could not be updated.
      */
-    User updateGroupListToUser(List<Group> listGroup, User user) throws CerberusException;
+    User updateGroupListToUser(List<UserGroup> listGroup, User user) throws CerberusException;
 }

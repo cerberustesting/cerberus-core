@@ -43,7 +43,7 @@ public class User {
     private String email;
     private String userPreferences;
     private List<UserSystem> userSystems;
-    private List<Group> userGroups;
+    private List<UserGroup> userGroups;
 
     public String getUserPreferences() {
         return userPreferences;
@@ -61,11 +61,11 @@ public class User {
         this.resetPasswordToken = resetPasswordToken;
     }
 
-    public List<Group> getUserGroups() {
+    public List<UserGroup> getUserGroups() {
         return userGroups;
     }
 
-    public void setUserGroups(List<Group> userGroups) {
+    public void setUserGroups(List<UserGroup> userGroups) {
         this.userGroups = userGroups;
     }
 

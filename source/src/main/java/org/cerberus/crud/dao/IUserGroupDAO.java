@@ -19,7 +19,7 @@ package org.cerberus.crud.dao;
 
 import java.util.List;
 
-import org.cerberus.crud.entity.Group;
+import org.cerberus.crud.entity.UserGroup;
 import org.cerberus.crud.entity.User;
 
 /**
@@ -38,7 +38,7 @@ public interface IUserGroupDAO {
      * @param user
      * @return true if remove successfully amd false if an error occur
      */
-    public boolean addGroupToUser(Group group, User user);
+    public boolean addGroupToUser(UserGroup group, User user);
 
     /**
      * Remove the group from the user.
@@ -47,11 +47,11 @@ public interface IUserGroupDAO {
      * @param user
      * @return true if remove successfully amd false if an error occur
      */
-    public boolean removeGroupFromUser(Group group, User user);
+    public boolean removeGroupFromUser(UserGroup group, User user);
 
     /**
      * @param login
      * @return a list of group user that correspond to the login.
      */
-    public List<Group> findGroupByKey(String login);
+    public List<UserGroup> findGroupByKey(String login);
 }

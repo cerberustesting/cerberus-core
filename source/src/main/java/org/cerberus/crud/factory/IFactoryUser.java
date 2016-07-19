@@ -20,7 +20,7 @@
 package org.cerberus.crud.factory;
 
 import java.util.List;
-import org.cerberus.crud.entity.Group;
+import org.cerberus.crud.entity.UserGroup;
 import org.cerberus.crud.entity.User;
 import org.cerberus.crud.entity.UserSystem;
 
@@ -54,7 +54,7 @@ public interface IFactoryUser {
     User create(int userID, String login, String password, String resetPasswordToken, String request, String name, 
             String team, String language, String reportingFavorite, String robotHost,String robotPort, 
             String robotPlatform, String robotBrowser
-            ,String robotVersion, String robot, String defaultSystem, String email, List<UserSystem> userSystems, List<Group> userGroups);
+            ,String robotVersion, String robot, String defaultSystem, String email, List<UserSystem> userSystems, List<UserGroup> userGroups);
     
     /**
      * @param userID            Internal ID of the user

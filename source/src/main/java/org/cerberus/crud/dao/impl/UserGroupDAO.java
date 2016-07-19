@@ -27,7 +27,7 @@ import java.util.List;
 import org.apache.log4j.Level;
 import org.cerberus.crud.dao.IUserGroupDAO;
 import org.cerberus.database.DatabaseSpring;
-import org.cerberus.crud.entity.Group;
+import org.cerberus.crud.entity.UserGroup;
 import org.cerberus.crud.entity.User;
 import org.cerberus.crud.factory.IFactoryGroup;
 import org.cerberus.log.MyLogger;
@@ -50,7 +50,7 @@ public class UserGroupDAO implements IUserGroupDAO {
     private IFactoryGroup factoryGroup;
 
     @Override
-    public boolean addGroupToUser(Group group, User user) {
+    public boolean addGroupToUser(UserGroup group, User user) {
         boolean bool = false;
         final String query = "INSERT INTO usergroup (Login, GroupName) VALUES (?, ?)";
 
@@ -83,7 +83,7 @@ public class UserGroupDAO implements IUserGroupDAO {
     }
 
     @Override
-    public boolean removeGroupFromUser(Group group, User user) {
+    public boolean removeGroupFromUser(UserGroup group, User user) {
         boolean bool = false;
         final String query = "DELETE FROM usergroup WHERE login = ? AND groupname = ?";
 
@@ -116,8 +116,8 @@ public class UserGroupDAO implements IUserGroupDAO {
     }
 
     @Override
-    public List<Group> findGroupByKey(String login) {
-        List<Group> list = null;
+    public List<UserGroup> findGroupByKey(String login) {
+        List<UserGroup> list = null;
         final String query = "SELECT groupname FROM usergroup WHERE login = ? ORDER BY groupname";
 
         Connection connection = this.databaseSpring.connect();
@@ -128,9 +128,9 @@ public class UserGroupDAO implements IUserGroupDAO {
 
                 ResultSet resultSet = preStat.executeQuery();
                 try {
-                    list = new ArrayList<Group>();
+                    list = new ArrayList<UserGroup>();
                     while (resultSet.next()) {
-                        Group group = factoryGroup.create(resultSet.getString("groupname"));
+                        UserGroup group = factoryGroup.create(resultSet.getString("groupname"));
                         list.add(group);
                     }
                 } catch (SQLException exception) {

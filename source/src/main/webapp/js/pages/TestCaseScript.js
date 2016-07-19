@@ -1521,6 +1521,9 @@ function setPlaceholderAction() {
      */
     var placeHoldersList = {"fr": [
             {"type": "Unknown", "object": null, "property": null},
+            {"type": "skipAction", "object": null, "property": null},
+            {"type": "hideKeyboard", "object": null, "property": null},
+            {"type": "swipe", "object": null, "property": null},
             {"type": "click", "object": "Chemin vers l'élement à cliquer", "property": null},
             {"type": "clickAndWait", "object": "Action Depreciée", "property": "Action Depreciée"},
             {"type": "calculateProperty", "object": null, "property": "Nom d'une Proprieté"},
@@ -1551,6 +1554,9 @@ function setPlaceholderAction() {
             {"type": "doNothing", "object": null, "property": null}
         ], "en": [
             {"type": "Unknown", "object": null, "property": null},
+            {"type": "skipAction", "object": null, "property": null},
+            {"type": "hideKeyboard", "object": null, "property": null},
+            {"type": "swipe", "object": null, "property": null},
             {"type": "click", "object": "Element path", "property": null},
             {"type": "clickAndWait", "object": "Deprecated", "property": "Deprecated"},
             {"type": "calculateProperty", "object": null, "property": "Property Name"},

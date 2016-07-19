@@ -20,7 +20,7 @@
 package org.cerberus.crud.factory.impl;
 
 import java.util.List;
-import org.cerberus.crud.entity.Group;
+import org.cerberus.crud.entity.UserGroup;
 import org.cerberus.crud.entity.User;
 import org.cerberus.crud.entity.UserSystem;
 import org.cerberus.crud.factory.IFactoryUser;
@@ -35,7 +35,7 @@ public class FactoryUser implements IFactoryUser {
     @Override
     public User create(int userID, String login, String password, String resetPasswordToken, String request, String name, String team, String language,
             String reportingFavorite, String robotHost, String robotPort,
-            String robotPlatform, String robotBrowser, String robotVersion, String robot, String defaultSystem, String email, List<UserSystem> userSystems, List<Group> userGroups) {
+            String robotPlatform, String robotBrowser, String robotVersion, String robot, String defaultSystem, String email, List<UserSystem> userSystems, List<UserGroup> userGroups) {
         User newUser = new User();
         newUser.setUserID(userID);
         newUser.setLogin(login);

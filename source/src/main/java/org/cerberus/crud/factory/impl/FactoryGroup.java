@@ -19,7 +19,7 @@
  */
 package org.cerberus.crud.factory.impl;
 
-import org.cerberus.crud.entity.Group;
+import org.cerberus.crud.entity.UserGroup;
 import org.cerberus.crud.factory.IFactoryGroup;
 import org.springframework.stereotype.Service;
 
@@ -30,15 +30,15 @@ import org.springframework.stereotype.Service;
 public class FactoryGroup implements IFactoryGroup {
 
     @Override
-    public Group create(String group) {
-        Group newGroup = new Group();
+    public UserGroup create(String group) {
+        UserGroup newGroup = new UserGroup();
         newGroup.setGroup(group);
         return newGroup;
     }
 
     @Override
-    public Group create(String login, String group) {
-        Group newGroup = new Group();
+    public UserGroup create(String login, String group) {
+        UserGroup newGroup = new UserGroup();
         newGroup.setGroup(group);
         newGroup.setLogin(login);
         return newGroup;

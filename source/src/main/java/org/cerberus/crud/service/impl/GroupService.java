@@ -23,7 +23,7 @@ import java.util.List;
 
 import org.apache.log4j.Level;
 import org.cerberus.crud.dao.IGroupDAO;
-import org.cerberus.crud.entity.Group;
+import org.cerberus.crud.entity.UserGroup;
 import org.cerberus.crud.entity.MessageGeneral;
 import org.cerberus.enums.MessageGeneralEnum;
 import org.cerberus.crud.entity.User;
@@ -44,30 +44,30 @@ public class GroupService implements IGroupService {
     private IGroupDAO GroupDAO;
 
     @Override
-    public List<Group> findGroupByUser(User user) {
+    public List<UserGroup> findGroupByUser(User user) {
         return GroupDAO.findGroupByUser(user);
     }
 
     @Override
-    public List<Group> findallGroup() throws CerberusException {
+    public List<UserGroup> findallGroup() throws CerberusException {
         MyLogger.log(GroupService.class.getName(), Level.ERROR, "TO BE IMPLEMENTED - findallGroup");
         throw new CerberusException(new MessageGeneral(MessageGeneralEnum.NOT_IMPLEMEMTED));
     }
 
     @Override
-    public void insertGroupToUser(Group group, User user) throws CerberusException {
+    public void insertGroupToUser(UserGroup group, User user) throws CerberusException {
         MyLogger.log(GroupService.class.getName(), Level.ERROR, "TO BE IMPLEMENTED - insertGroupToUser");
         throw new CerberusException(new MessageGeneral(MessageGeneralEnum.NOT_IMPLEMEMTED));
     }
 
     @Override
-    public void deleteGroupFromUser(Group group, User user) throws CerberusException {
+    public void deleteGroupFromUser(UserGroup group, User user) throws CerberusException {
         MyLogger.log(GroupService.class.getName(), Level.ERROR, "TO BE IMPLEMENTED - deleteGroupFromUser");
         throw new CerberusException(new MessageGeneral(MessageGeneralEnum.NOT_IMPLEMEMTED));
     }
 
     @Override
-    public User updateGroupListToUser(List<Group> listGroup, User user) throws CerberusException {
+    public User updateGroupListToUser(List<UserGroup> listGroup, User user) throws CerberusException {
         MyLogger.log(GroupService.class.getName(), Level.ERROR, "TO BE IMPLEMENTED - updateGroupListToUser");
         throw new CerberusException(new MessageGeneral(MessageGeneralEnum.NOT_IMPLEMEMTED));
     }

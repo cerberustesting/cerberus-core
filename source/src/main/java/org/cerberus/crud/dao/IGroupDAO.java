@@ -19,7 +19,7 @@ package org.cerberus.crud.dao;
 
 import java.util.List;
 
-import org.cerberus.crud.entity.Group;
+import org.cerberus.crud.entity.UserGroup;
 import org.cerberus.crud.entity.User;
 
 /**
@@ -33,5 +33,5 @@ public interface IGroupDAO {
      * @param user
      * @return
      */
-    List<Group> findGroupByUser(User user);
+    List<UserGroup> findGroupByUser(User user);
 }

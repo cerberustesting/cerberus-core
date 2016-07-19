@@ -19,7 +19,7 @@
  */
 package org.cerberus.crud.factory;
 
-import org.cerberus.crud.entity.Group;
+import org.cerberus.crud.entity.UserGroup;
 
 /**
  *
@@ -32,8 +32,8 @@ public interface IFactoryGroup {
      * @param group
      * @return
      */
-    Group create(String group);
+    UserGroup create(String group);
     
-    Group create(String login, String group);
+    UserGroup create(String login, String group);
         
 }

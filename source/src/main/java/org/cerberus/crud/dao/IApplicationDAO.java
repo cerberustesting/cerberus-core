@@ -19,6 +19,7 @@ package org.cerberus.crud.dao;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -42,7 +43,7 @@ public interface IApplicationDAO {
      * @param application
      * @return
      */
-    AnswerItem readByKey(String application);
+    AnswerItem<Application> readByKey(String application);
 
     /**
      *
@@ -52,17 +53,17 @@ public interface IApplicationDAO {
      * @param columnName
      * @param sort
      * @param searchParameter
-     * @param string
+     * @param individualSearch
      * @return
      */
-    AnswerList readBySystemByCriteria(String system, int startPosition, int length, String columnName, String sort, String searchParameter, Map<String, List<String>> individualSearch);
+    AnswerList<List<Application>> readBySystemByCriteria(String system, int startPosition, int length, String columnName, String sort, String searchParameter, Map<String, List<String>> individualSearch);
 
     /**
      *
      * @param system
      * @return
      */
-    AnswerItem readTestCaseCountersBySystemByStatus(String system);
+    AnswerItem<HashMap<String, HashMap<String, Integer>>> readTestCaseCountersBySystemByStatus(String system);
 
     /**
      *
@@ -87,9 +88,9 @@ public interface IApplicationDAO {
 
     /**
      *
-     * @return 
+     * @return
      */
-    AnswerList readDistinctSystem();
+    AnswerList<List<String>> readDistinctSystem();
 
     /**
      * Uses data of ResultSet to create object {@link Application}

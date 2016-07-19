@@ -29,7 +29,7 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import org.cerberus.crud.entity.Group;
+import org.cerberus.crud.entity.UserGroup;
 import org.cerberus.crud.entity.TestData;
 import org.cerberus.crud.entity.User;
 import org.cerberus.crud.entity.UserSystem;
@@ -181,7 +181,7 @@ public class FindAllUsers extends HttpServlet {
                     u.put("email", myUser.getEmail());
 
                     JSONArray groups = new JSONArray();
-                    for (Group group : userGroupService.findGroupByKey(myUser.getLogin())) {
+                    for (UserGroup group : userGroupService.findGroupByKey(myUser.getLogin())) {
                         groups.put(group.getGroup());
                     }
                     u.put("group", groups);

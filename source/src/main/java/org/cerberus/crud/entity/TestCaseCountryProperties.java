@@ -36,10 +36,36 @@ public class TestCaseCountryProperties {
     private int length;
     private int rowLimit;
     private String nature;
+
+    /**
+     * From here are data outside database model.
+     */
     private MessageEvent result;
     private TestCaseCountry testCaseCountry;
     private List<TestCaseCountry> tccList;
 
+    /**
+     * Invariant String.
+     */
+    public static final String TYPE_GETFROMTESTDATA = "getFromTestData";
+    public static final String TYPE_EXECUTESQL = "executeSql";
+    public static final String TYPE_EXECUTESQLFROMLIB = "executeSqlFromLib";
+    public static final String TYPE_EXECUTESOAPFROMLIB = "executeSoapFromLib";
+    public static final String TYPE_GETFROMHTML = "getFromHtml";
+    public static final String TYPE_GETFROMHTMLVISIBLE = "getFromHtmlVisible";
+    public static final String TYPE_GETFROMJS = "getFromJS";
+    public static final String TYPE_GETATTRIBUTEFROMHTML = "getAttributeFromHtml";
+    public static final String TYPE_GETFROMXML = "getFromXml";
+    public static final String TYPE_GETDIFFERENCESFROMXML = "getDifferencesFromXml";
+    public static final String TYPE_FROMCOOKIE = "getFromCookie";
+    public static final String TYPE_GETFROMJSON = "getFromJson";
+    public static final String TYPE_GETFROMDATALIB_BETA = "getFromDataLib_BETA";
+    public static final String TYPE_GETFROMGROOVY = "getFromGroovy";
+    public static final String NATURE_STATIC = "STATIC";
+    public static final String NATURE_RANDOM = "RANDOM";
+    public static final String NATURE_RANDOMNEW = "RANDOMNEW";
+    public static final String NATURE_NOTINUSE = "NOTINUSE";
+    
     public List<TestCaseCountry> getTccList() {
         return tccList;
     }

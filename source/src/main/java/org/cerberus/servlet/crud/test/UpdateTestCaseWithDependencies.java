@@ -28,7 +28,7 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import org.cerberus.crud.entity.Group;
+import org.cerberus.crud.entity.UserGroup;
 import org.cerberus.crud.entity.Invariant;
 import org.cerberus.crud.entity.TCase;
 import org.cerberus.crud.entity.Test;
@@ -106,9 +106,9 @@ public class UpdateTestCaseWithDependencies extends HttpServlet {
          * Get User and Groups of this user
          */
         User user = userService.findUserByKey(request.getUserPrincipal().getName());
-        List<Group> userGroupList = groupService.findGroupByUser(user);
+        List<UserGroup> userGroupList = groupService.findGroupByUser(user);
         List<String> groupList = new ArrayList();
-        for (Group group : userGroupList) {
+        for (UserGroup group : userGroupList) {
             groupList.add(group.getGroup());
         }
 

@@ -26,7 +26,7 @@ import java.util.List;
 import org.apache.log4j.Logger;
 import org.cerberus.crud.dao.IGroupDAO;
 import org.cerberus.database.DatabaseSpring;
-import org.cerberus.crud.entity.Group;
+import org.cerberus.crud.entity.UserGroup;
 import org.cerberus.crud.entity.User;
 import org.cerberus.crud.factory.IFactoryGroup;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -43,8 +43,8 @@ public class GroupDAO implements IGroupDAO {
     private static final Logger LOG = Logger.getLogger(GroupDAO.class);
     
     @Override
-    public List<Group> findGroupByUser(User user) {
-        List<Group> result = null;
+    public List<UserGroup> findGroupByUser(User user) {
+        List<UserGroup> result = null;
         final String query = "SELECT * FROM `usergroup` u WHERE u.login = ?";
 
         Connection connection = this.databaseSpring.connect();
@@ -55,9 +55,9 @@ public class GroupDAO implements IGroupDAO {
 
                 ResultSet resultSet = preStat.executeQuery();
                 try {
-                    result = new ArrayList<Group>();
+                    result = new ArrayList<UserGroup>();
                     while (resultSet.next()) {
-                        Group group = factoryGroup.create(resultSet.getString("login"), resultSet.getString("groupName"));
+                        UserGroup group = factoryGroup.create(resultSet.getString("login"), resultSet.getString("groupName"));
                         result.add(group);
                     }
                 } catch (SQLException exception) {

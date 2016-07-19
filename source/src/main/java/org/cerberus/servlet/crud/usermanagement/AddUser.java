@@ -29,7 +29,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
-import org.cerberus.crud.entity.Group;
+import org.cerberus.crud.entity.UserGroup;
 import org.cerberus.crud.entity.User;
 import org.cerberus.crud.entity.UserSystem;
 import org.cerberus.exception.CerberusException;
@@ -104,7 +104,7 @@ public class AddUser extends HttpServlet {
             String email = ParameterParserUtil.parseStringParam(request.getParameter("email"), "");
 
             IFactoryGroup factoryGroup = new FactoryGroup();
-            List<Group> groups = new ArrayList<Group>();
+            List<UserGroup> groups = new ArrayList<UserGroup>();
             for (String group : request.getParameterValues("groups")) {
                 groups.add(factoryGroup.create(group));
             }

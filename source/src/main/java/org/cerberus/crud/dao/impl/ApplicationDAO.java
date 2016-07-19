@@ -65,7 +65,7 @@ public class ApplicationDAO implements IApplicationDAO {
     private final int MAX_ROW_SELECTED = 100000;
 
     @Override
-    public AnswerItem readByKey(String application) {
+    public AnswerItem<Application> readByKey(String application) {
         AnswerItem ans = new AnswerItem();
         Application result = null;
         final String query = "SELECT * FROM `application` WHERE `application` = ?";
@@ -127,7 +127,7 @@ public class ApplicationDAO implements IApplicationDAO {
     }
 
     @Override
-    public AnswerList readBySystemByCriteria(String system, int start, int amount, String column, String dir, String searchTerm, Map<String, List<String>> individualSearch) {
+    public AnswerList<List<Application>> readBySystemByCriteria(String system, int start, int amount, String column, String dir, String searchTerm, Map<String, List<String>> individualSearch) {
         AnswerList response = new AnswerList();
         MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
         msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", ""));
@@ -164,7 +164,7 @@ public class ApplicationDAO implements IApplicationDAO {
             }
             searchSQL.append(" )");
         }
-        
+
         if (!StringUtil.isNullOrEmpty(system)) {
             searchSQL.append(" and (`System` = ? )");
         }
@@ -280,7 +280,7 @@ public class ApplicationDAO implements IApplicationDAO {
     }
 
     @Override
-    public AnswerItem readTestCaseCountersBySystemByStatus(String system) {
+    public AnswerItem<HashMap<String, HashMap<String, Integer>>> readTestCaseCountersBySystemByStatus(String system) {
         AnswerItem response = new AnswerItem();
         MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
         msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", ""));
@@ -294,7 +294,7 @@ public class ApplicationDAO implements IApplicationDAO {
         query.append("and inv.idname='TCSTATUS' and inv.gp1='Y' ");
         query.append("group by a.application, inv.`value` ");
 
-        HashMap<String, HashMap<String, Integer>> map = new HashMap<String, HashMap<String, Integer>>();
+        HashMap<String, HashMap<String, Integer>> result = new HashMap<String, HashMap<String, Integer>>();
 
         // Debug message on SQL.
         if (LOG.isDebugEnabled()) {
@@ -315,12 +315,12 @@ public class ApplicationDAO implements IApplicationDAO {
                         String appName = resultSet.getString("ApplicationName");
                         String tcStatus = resultSet.getString("Status");
                         int countStatus = resultSet.getInt("CountStatus");
-                        HashMap<String, Integer> totalsMap = map.get(appName);
+                        HashMap<String, Integer> totalsMap = result.get(appName);
                         if (totalsMap == null) {
                             totalsMap = new HashMap<String, Integer>();
                         }
                         totalsMap.put(tcStatus, countStatus);
-                        map.put(appName, totalsMap);
+                        result.put(appName, totalsMap);
                     }
 
                     if (has_data) {
@@ -368,7 +368,7 @@ public class ApplicationDAO implements IApplicationDAO {
         }
 
         response.setResultMessage(msg);
-        response.setItem(map);
+        response.setItem(result);
         return response;
     }
 
@@ -525,10 +525,10 @@ public class ApplicationDAO implements IApplicationDAO {
     }
 
     @Override
-    public AnswerList readDistinctSystem() {
+    public AnswerList<List<String>> readDistinctSystem() {
         MessageEvent msg;
         AnswerList answer = new AnswerList();
-        List<String> list = new ArrayList<String>();
+        List<String> result = new ArrayList<String>();
         final String query = "SELECT DISTINCT a.system FROM application a ORDER BY a.system ASC";
 
         // Debug message on SQL.
@@ -544,9 +544,9 @@ public class ApplicationDAO implements IApplicationDAO {
                 try {
 
                     while (resultSet.next()) {
-                        list.add(resultSet.getString("system"));
+                        result.add(resultSet.getString("system"));
                     }
-                    if (list.isEmpty()) {
+                    if (result.isEmpty()) {
                         msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_NO_DATA_FOUND);
                     } else {
                         msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
@@ -555,7 +555,7 @@ public class ApplicationDAO implements IApplicationDAO {
                     LOG.error("Unable to execute query : " + exception.toString());
                     msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
                     msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", exception.toString()));
-                    list.clear();
+                    result.clear();
                 } finally {
                     if (resultSet != null) {
                         resultSet.close();
@@ -584,8 +584,8 @@ public class ApplicationDAO implements IApplicationDAO {
             }
         }
 
-        answer.setTotalRows(list.size());
-        answer.setDataList(list);
+        answer.setTotalRows(result.size());
+        answer.setDataList(result);
         answer.setResultMessage(msg);
         return answer;
     }

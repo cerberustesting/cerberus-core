@@ -35,6 +35,41 @@ public class TestCaseStepActionControl {
     private String description;
     private String screenshotFilename;
 
+    /**
+     * Invariant String.
+     */
+    public static final String CONTROL_UNKNOWN = "Unknown";
+    public static final String CONTROL_VERIFYSTRINGEQUAL = "verifyStringEqual";
+    public static final String CONTROL_VERIFYSTRINGDIFFERENT = "verifyStringDifferent";
+    public static final String CONTROL_VERIFYSTRINGGREATER = "verifyStringGreater";
+    public static final String CONTROL_VERIFYSTRINGMINOR = "verifyStringMinor";
+    public static final String CONTROL_VERIFYSTRINGCONTAINS = "verifyStringContains";
+    public static final String CONTROL_VERIFYINTEGERGREATER = "verifyIntegerGreater";
+    public static final String CONTROL_VERIFYINTEGERMINOR = "verifyIntegerMinor";
+    public static final String CONTROL_VERIFYINTEGEREQUALS = "verifyIntegerEquals";
+    public static final String CONTROL_VERIFYINTEGERDIFFERENT = "verifyIntegerDifferent";
+    public static final String CONTROL_VERIFYELEMENTPRESENT = "verifyElementPresent";
+    public static final String CONTROL_VERIFYELEMENTNOTPRESENT = "verifyElementNotPresent";
+    public static final String CONTROL_VERIFYELEMENTVISIBLE = "verifyElementVisible";
+    public static final String CONTROL_VERIFYELEMENTNOTVISIBLE = "verifyElementNotVisible";
+    public static final String CONTROL_VERIFYELEMENTEQUALS = "verifyElementEquals";
+    public static final String CONTROL_VERIFYELEMENTINELEMENT = "verifyElementInElement";
+    public static final String CONTROL_VERIFYELEMENTDIFFERENT = "verifyElementDifferent";
+    public static final String CONTROL_VERIFYELEMENTCLICKABLE = "verifyElementClickable";
+    public static final String CONTROL_VERIFYELEMENTNOTCLICKABLE = "verifyElementNotClickable";
+    public static final String CONTROL_VERIFYTEXTINELEMENT = "verifyTextInElement";
+    public static final String CONTROL_VERIFYTEXTNOTINELEMENT = "verifyTextNotInElement";
+    public static final String CONTROL_VERIFYREGEXINELEMENT = "verifyRegexInElement";
+    public static final String CONTROL_VERIFYTEXTINPAGE = "verifyTextInPage";
+    public static final String CONTROL_VERIFYTEXTNOTINPAGE = "verifyTextNotInPage";
+    public static final String CONTROL_VERIFYTITLE = "verifyTitle";
+    public static final String CONTROL_VERIFYURL = "verifyUrl";
+    public static final String CONTROL_VERIFYTEXTINDIALOG = "verifyTextInDialog";
+    public static final String CONTROL_VERIFYXMLTREESTRUCTURE = "verifyXmlTreeStructure";
+    public static final String CONTROL_TAKESCREENSHOT = "takeScreenshot";
+    public static final String FATAL_YES = "Y";
+    public static final String FATAL_NO = "N";
+
     public String getScreenshotFilename() {
         return screenshotFilename;
     }
@@ -131,63 +166,6 @@ public class TestCaseStepActionControl {
         this.type = type;
     }
 
-    private static final String PROPERTY_EQUAL = "PropertyIsEqualTo";
-    private static final String PROPERTY_DIFFERENT = "PropertyIsDifferentFrom";
-    private static final String PROPERTY_GREATER = "PropertyIsGreaterThan";
-    private static final String PROPERTY_MINOR = "PropertyIsMinorThan";
-    private static final String VERIFY_ELEMENTPRESENT = "verifyElementPresent";
-    private static final String VERIFY_ELEMENTNOTPRESENT = "verifyElementNotPresent";
-    private static final String VERIFY_ELEMENTVISIBLE = "verifyElementVisible";
-    private static final String VERIFY_TEXT = "verifyText";
-    private static final String VERIFY_TEXTPRESENT = "verifyTextPresent";
-    private static final String VERIFY_TITLE = "verifytitle";
-    private static final String VERIFY_URL = "verifyurl";
-
-
-    public boolean isVerifyPropertyDifferent() {
-        return this.getType().equalsIgnoreCase(PROPERTY_DIFFERENT);
-    }
-
-    public boolean isVerifyPropertyEqual() {
-        return this.getType().equalsIgnoreCase(PROPERTY_EQUAL);
-    }
-
-    public boolean isVerifyPropertyGreater() {
-        return this.getType().equalsIgnoreCase(PROPERTY_GREATER);
-    }
-
-    public boolean isVerifyPropertyMinor() {
-        return this.getType().equalsIgnoreCase(PROPERTY_MINOR);
-    }
-
-    public boolean isVerifyElementPresent() {
-        return this.getType().equalsIgnoreCase(VERIFY_ELEMENTPRESENT);
-    }
-
-    public boolean isVerifyElementNotPresent() {
-        return this.getType().equalsIgnoreCase(VERIFY_ELEMENTNOTPRESENT);
-    }
-
-    public boolean isVerifyElementVisible() {
-        return this.getType().equalsIgnoreCase(VERIFY_ELEMENTVISIBLE);
-    }
-
-    public boolean isVerifyText() {
-        return this.getType().equalsIgnoreCase(VERIFY_TEXT);
-    }
-
-    public boolean isVerifyTextPresent() {
-        return this.getType().equalsIgnoreCase(VERIFY_TEXTPRESENT);
-    }
-
-    public boolean isVerifyTitle() {
-        return this.getType().equalsIgnoreCase(VERIFY_TITLE);
-    }
-
-    public boolean isVerifyUrl() {
-        return this.getType().equalsIgnoreCase(VERIFY_URL);
-    }
-
     public boolean hasSameKey(TestCaseStepActionControl obj) {
         if (obj == null) {
             return false;
@@ -278,11 +256,10 @@ public class TestCaseStepActionControl {
         }
         return true;
     }
-    
+
     @Override
     public String toString() {
         return "TestCaseStepActionControl{" + "test=" + test + ", testCase=" + testCase + ", step=" + step + ", sequence=" + sequence + ", control=" + control + ", type=" + type + ", controlValue=" + controlValue + ", controlProperty=" + controlProperty + ", fatal=" + fatal + ", description=" + description + '}';
     }
-    
-    
+
 }

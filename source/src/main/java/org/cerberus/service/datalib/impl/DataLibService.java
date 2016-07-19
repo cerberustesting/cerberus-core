@@ -28,7 +28,6 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.cerberus.crud.dao.ITestCaseExecutionDataDAO;
 import org.cerberus.crud.entity.MessageEvent;
-import org.cerberus.crud.entity.Property;
 import org.cerberus.crud.entity.TestCaseCountryProperties;
 import org.cerberus.crud.entity.TestCaseExecution;
 import org.cerberus.crud.entity.TestDataLib;
@@ -103,13 +102,13 @@ public class DataLibService implements IDataLibService {
      */
     private AnswerItem<HashMap<String, String>> getDataSetFromList(String nature, AnswerList dataObjectList, TestCaseExecution tCExecution, TestCaseCountryProperties testCaseCountryProperties) {
         switch (nature) {
-            case Property.NATURE_STATIC:
+            case TestCaseCountryProperties.NATURE_STATIC:
                 return getStaticFromDataSet(dataObjectList);
-            case Property.NATURE_RANDOM:
+            case TestCaseCountryProperties.NATURE_RANDOM:
                 return getRandomFromDataSet(dataObjectList);
-            case Property.NATURE_RANDOMNEW:
+            case TestCaseCountryProperties.NATURE_RANDOMNEW:
                 return getRandomNewFromDataSet(dataObjectList, tCExecution, testCaseCountryProperties);
-            case Property.NATURE_NOTINUSE:
+            case TestCaseCountryProperties.NATURE_NOTINUSE:
                 return getNotInUseFromDataSet(dataObjectList, tCExecution, testCaseCountryProperties);
         }
         //TODO throw exception when Nature not known

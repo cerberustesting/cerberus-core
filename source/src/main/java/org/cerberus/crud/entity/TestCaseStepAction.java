@@ -41,23 +41,42 @@ public class TestCaseStepAction {
      */
     List<TestCaseStepActionControl> testCaseStepActionControl;
 
-    
-    private static final String SELENIUM_CLICK = "click";
-    private static final String SELENIUM_CLICK_WAIT = "clickAndWait";
-    private static final String SELENIUM_DOUBLECLICK = "doubleClick";
-    private static final String SELENIUM_ENTER = "enter";
-    private static final String SELENIUM_KEYPRESS = "keypress";
-    private static final String SELENIUM_MOUSEOVER = "mouseOver";
-    private static final String SELENIUM_MOUSEOVERANDWAIT = "mouseOverAndWait";
-    private static final String SELENIUM_OPENURL = "openUrlWithBase";
-    private static final String SELENIUM_SELECT = "select";
-    private static final String SELENIUM_SELECTWAIT = "selectAndWait";
-    private static final String SELENIUM_TYPE = "type";
-    private static final String SELENIUM_URLLOGIN = "openUrlLogin";
-    private static final String SELENIUM_WAIT = "wait";
-    private static final String ACTION_CALCULATEPROPERTY = "calculateProperty";
-    
-    
+    /**
+     * Invariant String.
+     */
+    public static final String ACTION_CICKANDWAIT = "clickAndWait";
+    public static final String ACTION_DOUBLECLICK = "doubleClick";
+    public static final String ACTION_KEYPRESS = "keypress";
+    public static final String ACTION_SWITCHTOWINDOW = "switchToWindow";
+    public static final String ACTION_MANAGEDILOG = "manageDialog";
+    public static final String ACTION_UNKNOWN = "Unknown";
+    public static final String ACTION_HIDEKEYBOARD = "hideKeyboard";
+    public static final String ACTION_SWIPE = "swipe";
+    public static final String ACTION_CALCULATEPROPERTY = "calculateProperty";
+    public static final String ACTION_SKIPACTION = "skipAction";
+    public static final String ACTION_CLICK = "click";
+    public static final String ACTION_MOUSELEFTBUTTONPRESS = "mouseLeftButtonPress";
+    public static final String ACTION_MOUSELEFTBUTTONRELEASE = "mouseLeftButtonRelease";
+    public static final String ACTION_ENTER = "enter";
+    public static final String ACTION_FOCUSTOIFRAME = "focusToIframe";
+    public static final String ACTION_FOCUSDEFAULTIFRAME = "focusDefaultIframe";
+    public static final String ACTION_MOUSEOVER = "mouseOver";
+    public static final String ACTION_MOUSEOVERANDWAIT = "mouseOverAndWait";
+    public static final String ACTION_OPENURLWITHBASE = "openUrlWithBase";
+    public static final String ACTION_OPENURLLOGIN = "openUrlLogin";
+    public static final String ACTION_OPENURL = "openUrl";
+    public static final String ACTION_SELECT = "select";
+    public static final String ACTION_SELECTANDWAIT = "selectAndWait";
+    public static final String ACTION_TYPE = "type";
+    public static final String ACTION_WAIT = "wait";
+    public static final String ACTION_CALLSOAP = "callSoap";
+    public static final String ACTION_CALLSOAPWITHBASE = "callSoapWithBase";
+    public static final String ACTION_GETPAGESOURCE = "getPageSource";
+    public static final String ACTION_REMOVEDIFFERENCE = "removeDifference";
+    public static final String ACTION_EXECUTESQLUPDATE = "executeSqlUpdate";
+    public static final String ACTION_EXECUTESQLSTOREPROCEDURE = "executeSqlStoredProcedure";
+    public static final String ACTION_DONOTHING = "doNothing";
+    public static final String FORCEEXESTATUS_PE = "PE";
     
     public String getScreenshotFilename() {
         return screenshotFilename;
@@ -66,7 +85,7 @@ public class TestCaseStepAction {
     public void setScreenshotFilename(String screenshotFilename) {
         this.screenshotFilename = screenshotFilename;
     }
-    
+
     public List<TestCaseStepActionControl> getTestCaseStepActionControl() {
         return testCaseStepActionControl;
     }
@@ -122,7 +141,7 @@ public class TestCaseStepAction {
     public void setSort(int sort) {
         this.sort = sort;
     }
-    
+
     public int getStep() {
         return step;
     }
@@ -138,7 +157,7 @@ public class TestCaseStepAction {
     public void setTest(String test) {
         this.test = test;
     }
-    
+
     public String getDescription() {
         return description;
     }
@@ -153,71 +172,6 @@ public class TestCaseStepAction {
 
     public void setTestCase(String testCase) {
         this.testCase = testCase;
-    }
-
-    public boolean isSeleniumClick() {
-        return this.getAction().equalsIgnoreCase(SELENIUM_CLICK);
-    }
-
-    public boolean isSeleniumClickAndWait() {
-        return this.getAction().equalsIgnoreCase(SELENIUM_CLICK_WAIT);
-    }
-
-    public boolean isSeleniumDoubleClick() {
-        return this.getAction().equalsIgnoreCase(SELENIUM_DOUBLECLICK);
-    }
-
-    public boolean isSeleniumEnter() {
-        return this.getAction().equalsIgnoreCase(SELENIUM_ENTER);
-    }
-
-    public boolean isSeleniumKeypress() {
-        return this.getAction().equalsIgnoreCase(SELENIUM_KEYPRESS);
-    }
-
-    public boolean isSeleniumMouseOver() {
-        return this.getAction().equalsIgnoreCase(SELENIUM_MOUSEOVER);
-    }
-
-    public boolean isSeleniumMouseOverAndWait() {
-        return this.getAction().equalsIgnoreCase(SELENIUM_MOUSEOVERANDWAIT);
-    }
-
-    public boolean isSeleniumOpenURL() {
-        return this.getAction().equalsIgnoreCase(SELENIUM_OPENURL);
-    }
-
-    public boolean isSeleniumSelect() {
-        return this.getAction().equalsIgnoreCase(SELENIUM_SELECT);
-    }
-
-    public boolean isSeleniumSelectAndWait() {
-        return this.getAction().equalsIgnoreCase(SELENIUM_SELECTWAIT);
-    }
-
-    public boolean isSeleniumType() {
-        return this.getAction().equalsIgnoreCase(SELENIUM_TYPE);
-    }
-
-    public boolean isSeleniumUrlLogin() {
-        return this.getAction().equalsIgnoreCase(SELENIUM_URLLOGIN);
-    }
-
-    public boolean isSeleniumWait() {
-        return this.getAction().equalsIgnoreCase(SELENIUM_WAIT);
-    }
-
-    public boolean isCalculateProperty() {
-        return this.getAction().equalsIgnoreCase(ACTION_CALCULATEPROPERTY);
-    }
-
-    public boolean isSeleniumAction() {
-        return this.getAction().equalsIgnoreCase(SELENIUM_CLICK) || this.getAction().equalsIgnoreCase(SELENIUM_CLICK_WAIT)
-                || this.getAction().equalsIgnoreCase(SELENIUM_DOUBLECLICK) || this.getAction().equalsIgnoreCase(SELENIUM_ENTER)
-                || this.getAction().equalsIgnoreCase(SELENIUM_KEYPRESS) || this.getAction().equalsIgnoreCase(SELENIUM_OPENURL)
-                || this.getAction().equalsIgnoreCase(SELENIUM_MOUSEOVER) || this.getAction().equalsIgnoreCase(SELENIUM_MOUSEOVERANDWAIT)
-                || this.getAction().equalsIgnoreCase(SELENIUM_TYPE) || this.getAction().equalsIgnoreCase(SELENIUM_WAIT)
-                || this.getAction().equalsIgnoreCase(SELENIUM_SELECTWAIT) || this.getAction().equalsIgnoreCase(SELENIUM_URLLOGIN);
     }
 
     public boolean hasSameKey(TestCaseStepAction obj) {
@@ -308,6 +262,5 @@ public class TestCaseStepAction {
     public String toString() {
         return "TestCaseStepAction{" + "test=" + test + ", testCase=" + testCase + ", step=" + step + ", sequence=" + sequence + ", action=" + action + ", object=" + object + ", property=" + property + ", description=" + description + ", testCaseStepActionControl=" + testCaseStepActionControl + '}';
     }
-    
-    
+
 }
