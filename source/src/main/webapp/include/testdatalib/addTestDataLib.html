@@ -141,6 +141,32 @@
                                         </div>
                                     </div>
                                 </div>
+                                <!--CSV-->
+                                <div class="row" >
+                                    <div class="col-xs-12" id="csvConfigurationsPanel">
+                                        <div class="panel panel-default">
+                                            <div class="panel-heading card" data-toggle="collapse" data-target="#panelCSV">
+                                                <label id="csvConfigurationsLbl">CSV Configurations </label>
+                                                <span class="toggle glyphicon glyphicon-chevron-right pull-right"></span>
+                                            </div>
+                                            <div id="panelCSV" class="panel-body collapse">
+                                                <div class="row">
+                                                    <div class="form-group col-xs-8"> 
+                                                        <label id="lbl_csvUrl" for="csvUrl">CSVUrl</label> 
+                                                        <input id="csvUrl" name="csvUrl" 
+                                                                  class="form-control">     
+                                                    </div>
+                                                    <div class="form-group col-xs-4"> 
+                                                        <label id="lbl_separator" for="separator">Separator</label> 
+                                                        <input id="separator" name="separator" 
+                                                                  class="form-control">     
+                                                    </div>
+                                                </div>
+
+                                            </div> 
+                                        </div>
+                                    </div>
+                                </div>
                             </div>       
                             <div class="center tab-pane fade marginTop25" id="tabs-2">
                                 <div id="panelSubData">
@@ -154,6 +180,7 @@
                                                         <th id="valueHeader" class="text-center">Value</th>
                                                         <th id="columnHeader" class="text-center">Column</th>
                                                         <th id="parsingAnswerHeader" class="text-center">Parsing Answer</th>
+                                                        <th id="columnPositionHeader" class="text-center">Column Position</th>
                                                         <th id="descriptionHeader" class="text-center">Description</th>
                                                     </tr>
                                                 </thead>
@@ -164,6 +191,7 @@
                                                         <td class="text-center"><div class="nomarginbottom form-group form-group-sm"><input id="defaultSubDataValue"  name="value"  class="dataClass form-control input-xs" /></div></td>
                                                         <td class="text-center"><div class="nomarginbottom form-group form-group-sm"><input id="defaultSubDataColumn" name="column" class="dataClass form-control input-xs" /></div></td>
                                                         <td class="text-center"><div class="nomarginbottom form-group form-group-sm"><input id="defaultSubDataParsingAnswer" name="parsinganswer" class="dataClass form-control input-xs" /></div></td>
+                                                        <td class="text-center"><div class="nomarginbottom form-group form-group-sm"><input id="defaultSubDataColumnPosition" name="columnPosition" class="dataClass form-control input-xs" /></div></td>
                                                         <td class="text-center"><div class="nomarginbottom form-group form-group-sm"><input id="defaultSubDataDescription"  name="description"  class="descriptionClass form-control input-xs" /></div></td>
                                                     </tr>
                                                 </tbody>

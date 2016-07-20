@@ -43,6 +43,8 @@ public interface IFactoryTestDataLib {
      * @param servicePath
      * @param method
      * @param envelope
+     * @param csvUrl
+     * @param separator
      * @param description
      * @param creator
      * @param Created
@@ -51,12 +53,14 @@ public interface IFactoryTestDataLib {
      * @param subDataValue
      * @param subDataColumn
      * @param subDataParsingAnswer
+     * @param subDataColumnPosition
      * @return a TestData
      */
     TestDataLib create(Integer testDataLibID, String name, String system, String environment,
             String country, String group, String type,
             String database, String script, String databaseUrl, String servicePath,
-            String method, String envelope, String description,
-            String creator, Timestamp Created, String LastModifier, Timestamp LastModified, String subDataValue, String subDataColumn, String subDataParsingAnswer);
+            String method, String envelope,String csvUrl, String separator, String description,
+            String creator, Timestamp Created, String LastModifier, Timestamp LastModified, 
+            String subDataValue, String subDataColumn, String subDataParsingAnswer, String subDataColumnPosition);
 
 }

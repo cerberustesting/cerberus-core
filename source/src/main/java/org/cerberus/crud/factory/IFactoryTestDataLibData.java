@@ -35,10 +35,11 @@ public interface IFactoryTestDataLibData {
      * @param value
      * @param column
      * @param parsingAnswer
+     * @param columnPosition
      * @param description
      * @return a TestData
      */
     TestDataLibData create(Integer testDataLibDataID, Integer testDataLibID, String subData, String value,
-            String column, String parsingAnswer, String description);
+            String column, String parsingAnswer, String columnPosition, String description);
 
 }

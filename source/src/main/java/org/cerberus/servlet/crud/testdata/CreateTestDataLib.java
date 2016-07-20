@@ -94,6 +94,8 @@ public class CreateTestDataLib extends HttpServlet {
         String servicePath = ParameterParserUtil.parseStringParam(request.getParameter("servicepath"), "");
         String method = ParameterParserUtil.parseStringParam(request.getParameter("method"), "");
         String envelope = ParameterParserUtil.parseStringParam(request.getParameter("envelope"), "");
+        String csvUrl = ParameterParserUtil.parseStringParam(request.getParameter("csvUrl"), "");
+        String separator = ParameterParserUtil.parseStringParam(request.getParameter("separator"), "");
         /**
          * Checking all constrains before calling the services.
          */
@@ -113,8 +115,8 @@ public class CreateTestDataLib extends HttpServlet {
             IFactoryTestDataLib factoryLibService = appContext.getBean(IFactoryTestDataLib.class);
 
             TestDataLib lib = factoryLibService.create(0, name, system, environment, country, group,
-                    type, database, script, databaseUrl, servicePath, method, envelope, description,
-                    request.getRemoteUser(), null, "", null, null, null, null);
+                    type, database, script, databaseUrl, servicePath, method, envelope,csvUrl, separator, description,
+                    request.getRemoteUser(), null, "", null, null, null, null, null);
             List<TestDataLibData> subDataList = new ArrayList<TestDataLibData>();
             subDataList.addAll(extractTestDataLibDataSet(appContext, request, policy));
             //Creates the entries and the subdata list
@@ -158,6 +160,7 @@ public class CreateTestDataLib extends HttpServlet {
         String[] subdataValues = request.getParameterValues("value");
         String[] subdataColumns = request.getParameterValues("column");
         String[] subdataParsingAnswer = request.getParameterValues("parsinganswer");
+        String[] subdataColumnPosition = request.getParameterValues("columnPosition");
         String[] subdataDescriptions = request.getParameterValues("description");
         String charset = request.getCharacterEncoding();
 
@@ -172,9 +175,10 @@ public class CreateTestDataLib extends HttpServlet {
             String value = ParameterParserUtil.parseStringParam(subdataValues[i], "");
             String column = ParameterParserUtil.parseStringParam(subdataColumns[i], "");
             String parsinganswer = ParameterParserUtil.parseStringParam(subdataParsingAnswer[i], "");
+            String columnPosition = ParameterParserUtil.parseStringParam(subdataColumnPosition[i], "");
 
             subData = factorySubdataService.create(null, null, //ids are not available yet
-                    subdata, value, column, parsinganswer, description);
+                    subdata, value, column, parsinganswer, columnPosition, description);
             listSubdata.add(subData);
         }
 

@@ -156,7 +156,7 @@ public class TestDataLibService implements ITestDataLibService {
             if (subDataList != null && !subDataList.isEmpty()) {
                 for (TestDataLibData libData : subDataList) {
                     TestDataLibData data = testDataLibDataFactory.create(-1, testDataLib.getTestDataLibID(), libData.getSubData(), libData.getValue(),
-                            libData.getColumn(), libData.getParsingAnswer(), libData.getDescription());
+                            libData.getColumn(), libData.getParsingAnswer(), libData.getColumnPosition(), libData.getDescription());
                     completeSubDataList.add(data);
                 }
 
@@ -194,7 +194,7 @@ public class TestDataLibService implements ITestDataLibService {
                 if (subDataList != null && !subDataList.isEmpty()) {
                     for (TestDataLibData libData : subDataList) {
                         TestDataLibData data = testDataLibDataFactory.create(-1, testDataLib.getTestDataLibID(), libData.getSubData(), libData.getValue(),
-                                libData.getColumn(), libData.getParsingAnswer(), libData.getDescription());
+                                libData.getColumn(), libData.getParsingAnswer(), libData.getColumnPosition(),libData.getDescription());
                         completeSubDataList.add(data);
                     }
                     ansInsert = testDataLibDataService.create(completeSubDataList);
@@ -256,7 +256,7 @@ public class TestDataLibService implements ITestDataLibService {
                 if (originalList != null && !originalList.isEmpty()) {
                     for (TestDataLibData libData : originalList) {
                         TestDataLibData data = testDataLibDataFactory.create(-1, lib.getTestDataLibID(), libData.getSubData(), libData.getValue(),
-                                libData.getColumn(), libData.getParsingAnswer(), libData.getDescription());
+                                libData.getColumn(), libData.getParsingAnswer(),libData.getColumnPosition(), libData.getDescription());
                         newList.add(data);
                     }
                     answer = testDataLibDataService.create(newList);

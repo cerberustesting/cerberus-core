@@ -6188,7 +6188,39 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLS = new StringBuilder();
         SQLS.append("ALTER TABLE `countryenvironmentparameters` CHANGE COLUMN `URLLOGIN` `URLLOGIN` VARCHAR(150) NOT NULL DEFAULT '' ;");
         SQLInstruction.add(SQLS.toString());
-
+        
+        // Add columns in testdatalib and testdatatlibdata to related to CSV type.
+        // Add CSV TESTDATATYPE invariant 
+        // Add documentation
+        //-- ------------------------ 849-853
+        SQLS = new StringBuilder();
+        SQLS.append("ALTER TABLE `testdatalib` ");
+        SQLS.append("ADD COLUMN `CsvUrl` VARCHAR(250) NOT NULL DEFAULT '' AFTER `Envelope`;");
+        SQLInstruction.add(SQLS.toString());
+        SQLS = new StringBuilder();
+        SQLS.append("ALTER TABLE `testdatalibdata` "); 
+        SQLS.append("ADD COLUMN `ColumnPosition` VARCHAR(45) NOT NULL DEFAULT '' AFTER `ParsingAnswer`;");
+        SQLInstruction.add(SQLS.toString());
+        SQLS = new StringBuilder();
+        SQLS.append("INSERT INTO `invariant` (`idname`, `value`, `sort`, `description`) ");
+        SQLS.append("VALUES ('TESTDATATYPE', 'CSV', '40', 'Dynamic test data from CSV file');");
+        SQLInstruction.add(SQLS.toString());
+        SQLS = new StringBuilder();
+        SQLS.append("ALTER TABLE `testdatalib` ");
+        SQLS.append("ADD COLUMN `Separator` VARCHAR(45) NOT NULL DEFAULT '' AFTER `CsvUrl`;");
+        SQLInstruction.add(SQLS.toString());
+        SQLS = new StringBuilder();
+        SQLS.append("INSERT INTO `documentation` (`DocTable`, `DocField`, `DocValue`, `Lang`, `DocLabel`, `DocDesc`) VALUES ");
+        SQLS.append("  ('testdatalib', 'csvUrl', '', 'en', 'CSV URL', '<p>CSV URL specifies the URL where the CSV can be reached.</p>')");
+        SQLS.append(", ('testdatalibdata', 'columnPosition', '', 'en', 'Column Position', '<p>Column position [1,2,3…] representing the value that should be obtained after parsing a CSV file.</p>')");
+        SQLS.append(", ('page_testdatalib_m_createupdatelib', 'title_csv_configurations', '', 'en', 'CSV configurations', '')");
+        SQLS.append(", ('testdatalib', 'csvUrl', '', 'fr', 'URL du CSV', '<p>L’URL du CSV représente l’URL du fichier CSV à décrypter.</p>')");
+        SQLS.append(", ('testdatalibdata', 'columnPosition', '', 'fr', 'Position', '<p>Position [1,2,3…] de la valeur à obtenir lors du décryptage du CSV.</p>')");
+        SQLS.append(", ('page_testdatalib_m_createupdatelib', 'title_csv_configurations', '', 'fr', 'Configuration CSV', '')");
+        SQLS.append(", ('testdatalib', 'separator', '', 'fr', 'Séparateur', '<p>Séparateur à utiliser pour le décryptage du CSV.</p>')");
+        SQLS.append(", ('testdatalib', 'separator', '', 'en', 'Separator', '<p>Separator used parsing a CSV.</p>')");
+        SQLInstruction.add(SQLS.toString());
+        
         return SQLInstruction;
     }
 

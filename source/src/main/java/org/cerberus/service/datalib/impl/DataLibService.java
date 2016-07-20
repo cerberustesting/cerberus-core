@@ -292,7 +292,7 @@ public class DataLibService implements IDataLibService {
 
         switch (lib.getType()) {
             case TestDataLib.TYPE_CSV:
-                result = fileService.parseCSVFile(lib.getEnvelope(), lib.getMethod(), columnList);
+                result = fileService.parseCSVFile(lib.getCsvUrl(), lib.getSeparator(), columnList);
                 return result;
             case TestDataLib.TYPE_SQL:
                 result = null;
